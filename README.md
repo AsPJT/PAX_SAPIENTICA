@@ -3,4 +3,4 @@
 GIS & Archaeological Simulator
 
 # Screenshot
-![2023-01-15](./Image/Screenshot/2023-01-15%2003.31.56.png)
+![2023-01-15](./Image/Screenshot/2023-01-16%2001.42.30.png)
