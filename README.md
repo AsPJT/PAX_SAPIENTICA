@@ -23,3 +23,13 @@ GIS & Archaeological Simulator
 
 # Screenshot
 ![2023-01-15](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.0%202023_01_16%2021_07_26.png)
+
+---
+
+# License
+
+These codes in the Library directory are licensed under **CC0 (PUBLIC DOMAIN)**.
+
+Third party content is copyrighted by its respective owners.
+
+[![CC0](https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/cc-zero.svg "CC0")](http://creativecommons.org/publicdomain/zero/1.0/deed.en)
