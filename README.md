@@ -22,7 +22,7 @@ GIS & Archaeological Simulator
 - 主に1世紀から7世紀の時代が登録されています。
 
 # Screenshot
-![2023-01-15](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.0%202023_01_16%2021_07_26.png)
+![2023-01-15](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.0%202023_01_17%2017_26_47.png)
 
 ---
 
