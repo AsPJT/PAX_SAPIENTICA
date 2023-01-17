@@ -12,4 +12,4 @@
   - https://chimei.nabunken.go.jp/
 
 # Kojiki Place Name 古事記に登場する地名
-![Kojiki](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.0%202023_01_18%200_05_01.png)
+![Kojiki](./../Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.0%202023_01_18%200_05_01.png)
