@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20230112L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20230119L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 )
@@ -34,20 +34,32 @@
 
 // PAX_SAPIENTICA 微修正バージョン
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (5)
 #endif
 
 // 正式バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.0.0"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.0.5"
 #endif
 
 /*##########################################################################################
 	更新履歴
 	バージョン	| 更新日		| 概要
 	6.0.0.0.X	| 2023/0X/XX	| コピペ用
+	6.0.0.0.5	| 2023/01/18	| 2,162 件の和名類聚抄の地名データを追加
+	6.0.0.0.4	| 2023/01/17	| 66 件の古事記の地名データを追加
+	6.0.0.0.3	| 2023/01/16	| 主な日本の旧国名を追加
+	6.0.0.0.3	| 2023/01/16	| 英語表示の暦を追加
+	6.0.0.0.2	| 2023/01/15	| 集落遺跡のピンを表示する機能を追加
+	6.0.0.0.2	| 2023/01/15	| 日本国外の地図を追加
+	6.0.0.0.1	| 2023/01/13	| 地名を表示する機能を追加
+	6.0.0.0.1	| 2023/01/13	| 和暦の計算機能を追加
+	6.0.0.0.0	| 2023/01/11	| ユリウス暦とグレゴリオ暦の計算機能を追加
 	6.0.0.0.0	| 2023/01/11	| PAX_SAPIENTICA をライブラリ化
-	6.0.0.0.0	| 2020/09/21	| PAX SAPIENTICA の名称を考案
+	6.0.0.0.z	| 2023/01/11	| PAX_SAPIENTICA のロゴを作成
+	6.0.0.0.z	| 2023/01/11	| 中国暦のデータの対応を検討
+	6.0.0.0.z	| 2023/01/10	| 和暦のデータの対応を開始
+	6.0.0.0.a	| 2020/09/21	| PAX SAPIENTICA の名称を考案
 ##########################################################################################*/
 
 // AsDungeon 世代 ( PAX_SAPIENTICA 第六世代 )
