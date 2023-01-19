@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20230119L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20230120L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 )
@@ -34,18 +34,19 @@
 
 // PAX_SAPIENTICA 微修正バージョン
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (5)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (6)
 #endif
 
 // 正式バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.0.5"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.0.6"
 #endif
 
 /*##########################################################################################
 	更新履歴
 	バージョン	| 更新日		| 概要
 	6.0.0.0.X	| 2023/0X/XX	| コピペ用
+	6.0.0.0.6	| 2023/01/20	| XYZ Tiles の地図の読み込みに対応
 	6.0.0.0.5	| 2023/01/18	| 2,162 件の和名類聚抄の地名データを追加
 	6.0.0.0.4	| 2023/01/17	| 66 件の古事記の地名データを追加
 	6.0.0.0.3	| 2023/01/16	| 主な日本の旧国名を追加
