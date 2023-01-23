@@ -1,4 +1,4 @@
-![PAX SAPIENTICA Logo](./Image/TitleLogo.svg)
+![PAX SAPIENTICA Logo](./Image/TitleBanner.svg)
 
 GIS & Archaeological Simulator
 
