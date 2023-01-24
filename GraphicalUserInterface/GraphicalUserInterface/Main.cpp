@@ -242,8 +242,8 @@ void Main() {
 		30, getLatitudeToMercatorY(41), 129, getLatitudeToMercatorY(62));
 
 
-	location_range_list.emplace_back(U"./../../../Data/Map/TestMap/YodoRiverAndYamatoRiverBasins.svg",
-		/*135.291055*/135.45, getLatitudeToMercatorY(/*34.398726*/34.6), 135.853110, getLatitudeToMercatorY(35.010042));
+	//location_range_list.emplace_back(U"./../../../Data/Map/TestMap/YodoRiverAndYamatoRiverBasins.svg",
+	//	/*135.291055*/135.45, getLatitudeToMercatorY(/*34.398726*/34.6), 135.853110, getLatitudeToMercatorY(35.010042));
 
 	const s3d::Array<s3d::String> options = {
 		U"旧石器時代", U"縄文時代", U"弥生時代", U"古墳時代 CE251-",
@@ -264,7 +264,7 @@ void Main() {
 	inputPlace("./../../../Data/PlaceName/PlaceName.tsv", location_point_list);
 	inputPlace("./../../../Data/PlaceName/WamyoRuijushoPlaceName.tsv", location_point_list);
 	inputPlace("./../../../Data/PlaceName/OmoroSoshiPlaceName.tsv", location_point_list);
-	inputPlace("./../../../Data/PlaceName/TestMap/Kofun.tsv", location_point_list, LocationPointEnum::location_point_zempo_koen_fun);
+	//inputPlace("./../../../Data/PlaceName/TestMap/Kofun.tsv", location_point_list, LocationPointEnum::location_point_zempo_koen_fun);
 
 	// ピン
 	//location_point_list.emplace_back("原の辻遺跡", "", 129.753222, getLatitudeToMercatorY(33.759444), 0.0, 2.0, 1721424, 1940208, LocationPointEnum::location_point_pit_dwelling, "");

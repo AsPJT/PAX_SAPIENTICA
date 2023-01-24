@@ -94,7 +94,7 @@ namespace paxs {
 						+ s3d::String(U"/") + s3d::ToString(i)
 						+ s3d::String(U".png");
 
-					const s3d::FilePath new_saveFilePath = s3d::String(U"./TestMap/") + map_name
+					const s3d::FilePath new_saveFilePath = s3d::String(U"./SavedMap/") + map_name
 						+ s3d::String(U"_") + s3d::ToString(xyz_tile_z)
 						+ s3d::String(U"_") + s3d::ToString(j)
 						+ s3d::String(U"_") + s3d::ToString(i)
