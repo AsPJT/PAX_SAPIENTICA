@@ -1,0 +1,405 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{5ad0faa9-6845-4470-b233-aa0db454a98a}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GraphicalUserInterface</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Debug\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Debug\Intermediate\</IntDir>
+    <TargetName>$(ProjectName)(debug)</TargetName>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
+    <IncludePath>$(SIV3D_0_6_6)\include;$(SIV3D_0_6_6)\include\ThirdParty;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SIV3D_0_6_6)\lib\Windows;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
+    <IncludePath>$(SIV3D_0_6_6)\include;$(SIV3D_0_6_6)\include\ThirdParty;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SIV3D_0_6_6)\lib\Windows;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_ENABLE_EXTENDED_ALIGNED_STORAGE;_SILENCE_CXX20_CISO646_REMOVED_WARNING;_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>./../../Library/</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_ENABLE_EXTENDED_ALIGNED_STORAGE;_SILENCE_CXX20_CISO646_REMOVED_WARNING;_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalIncludeDirectories>./../../Library/</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <DelayLoadDLLs>advapi32.dll;crypt32.dll;dwmapi.dll;gdi32.dll;imm32.dll;ole32.dll;oleaut32.dll;opengl32.dll;shell32.dll;shlwapi.dll;user32.dll;winmm.dll;ws2_32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <PostBuildEvent>
+      <Command>xcopy /I /D /Y "$(OutDir)$(TargetFileName)" "$(ProjectDir)App"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="App\engine\texture\box-shadow\128.png" />
+    <Image Include="App\engine\texture\box-shadow\16.png" />
+    <Image Include="App\engine\texture\box-shadow\256.png" />
+    <Image Include="App\engine\texture\box-shadow\32.png" />
+    <Image Include="App\engine\texture\box-shadow\64.png" />
+    <Image Include="App\engine\texture\box-shadow\8.png" />
+    <Image Include="App\example\bay.jpg" />
+    <Image Include="App\example\gif\test.gif" />
+    <Image Include="App\example\obj\bark.jpg" />
+    <Image Include="App\example\obj\leaves.png" />
+    <Image Include="App\example\obj\pine_leaves_red.png" />
+    <Image Include="App\example\obj\siv3d-kun-eye.png" />
+    <Image Include="App\example\obj\siv3d-kun.png" />
+    <Image Include="App\example\particle.png" />
+    <Image Include="App\example\siv3d-kun.png" />
+    <Image Include="App\example\spritesheet\siv3d-kun-16.png" />
+    <Image Include="App\example\texture\earth.jpg" />
+    <Image Include="App\example\texture\grass.jpg" />
+    <Image Include="App\example\texture\ground.jpg" />
+    <Image Include="App\example\texture\rock.jpg" />
+    <Image Include="App\example\texture\uv.png" />
+    <Image Include="App\example\texture\wood.jpg" />
+    <Image Include="App\example\windmill.png" />
+    <Image Include="App\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="App\Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="App\dll\soundtouch\COPYING.TXT" />
+    <Text Include="App\engine\font\fontawesome\LICENSE.txt" />
+    <Text Include="App\engine\soundfont\GMGSx.sf2.txt" />
+    <Text Include="App\example\font\DotGothic16\OFL.txt" />
+    <Text Include="App\example\font\RocknRoll\OFL.txt" />
+    <Text Include="App\example\LICENSE.txt" />
+    <Text Include="App\example\midi\test.txt" />
+    <Text Include="App\example\obj\credit.txt" />
+    <Text Include="App\example\spritesheet\siv3d-kun-16.txt" />
+    <Text Include="App\example\svg\README.txt" />
+    <Text Include="App\example\texture\credit.txt" />
+    <Text Include="App\example\txt\en.txt" />
+    <Text Include="App\example\txt\jp.txt" />
+    <Text Include="App\example\txt\kr.txt" />
+    <Text Include="App\example\txt\sc.txt" />
+    <Text Include="App\example\video\river.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
+    <None Include="App\dll\soundtouch\SoundTouch_x64.dll" />
+    <None Include="App\engine\font\fontawesome\fontawesome-brands.otf.zstdcmp" />
+    <None Include="App\engine\font\fontawesome\fontawesome-solid.otf.zstdcmp" />
+    <None Include="App\engine\font\materialdesignicons\license.md" />
+    <None Include="App\engine\font\materialdesignicons\materialdesignicons-webfont.ttf.zstdcmp" />
+    <None Include="App\engine\font\min\LICENSE" />
+    <None Include="App\engine\font\min\siv3d-min.woff" />
+    <None Include="App\engine\font\mplus\LICENSE_E" />
+    <None Include="App\engine\font\mplus\mplus-1p-black.ttf.zstdcmp" />
+    <None Include="App\engine\font\mplus\mplus-1p-bold.ttf.zstdcmp" />
+    <None Include="App\engine\font\mplus\mplus-1p-heavy.ttf.zstdcmp" />
+    <None Include="App\engine\font\mplus\mplus-1p-light.ttf.zstdcmp" />
+    <None Include="App\engine\font\mplus\mplus-1p-medium.ttf.zstdcmp" />
+    <None Include="App\engine\font\mplus\mplus-1p-regular.ttf.zstdcmp" />
+    <None Include="App\engine\font\mplus\mplus-1p-thin.ttf.zstdcmp" />
+    <None Include="App\engine\font\noto-cjk\LICENSE" />
+    <None Include="App\engine\font\noto-cjk\NotoSansCJK-Regular.ttc.zstdcmp" />
+    <None Include="App\engine\font\noto-cjk\NotoSansJP-Regular.otf.zstdcmp" />
+    <None Include="App\engine\font\noto-emoji\LICENSE" />
+    <None Include="App\engine\font\noto-emoji\NotoColorEmoji.ttf.zstdcmp" />
+    <None Include="App\engine\font\noto-emoji\NotoEmoji-Regular.ttf.zstdcmp" />
+    <None Include="App\engine\shader\d3d11\apply_srgb_curve.ps" />
+    <None Include="App\engine\shader\d3d11\bitmapfont.ps" />
+    <None Include="App\engine\shader\d3d11\copy.ps" />
+    <None Include="App\engine\shader\d3d11\forward3d.ps" />
+    <None Include="App\engine\shader\d3d11\forward3d.vs" />
+    <None Include="App\engine\shader\d3d11\fullscreen_triangle.ps" />
+    <None Include="App\engine\shader\d3d11\fullscreen_triangle.vs" />
+    <None Include="App\engine\shader\d3d11\gaussian_blur_9.ps" />
+    <None Include="App\engine\shader\d3d11\line3d.ps" />
+    <None Include="App\engine\shader\d3d11\line3d.vs" />
+    <None Include="App\engine\shader\d3d11\msdffont.ps" />
+    <None Include="App\engine\shader\d3d11\msdffont_outline.ps" />
+    <None Include="App\engine\shader\d3d11\msdffont_outlineshadow.ps" />
+    <None Include="App\engine\shader\d3d11\msdffont_shadow.ps" />
+    <None Include="App\engine\shader\d3d11\msdfprint.ps" />
+    <None Include="App\engine\shader\d3d11\round_dot.ps" />
+    <None Include="App\engine\shader\d3d11\sdffont.ps" />
+    <None Include="App\engine\shader\d3d11\sdffont_outline.ps" />
+    <None Include="App\engine\shader\d3d11\sdffont_outlineshadow.ps" />
+    <None Include="App\engine\shader\d3d11\sdffont_shadow.ps" />
+    <None Include="App\engine\shader\d3d11\shape.ps" />
+    <None Include="App\engine\shader\d3d11\sky.ps" />
+    <None Include="App\engine\shader\d3d11\sprite.vs" />
+    <None Include="App\engine\shader\d3d11\square_dot.ps" />
+    <None Include="App\engine\shader\d3d11\texture.ps" />
+    <None Include="App\engine\shader\glsl\apply_srgb_curve.frag" />
+    <None Include="App\engine\shader\glsl\bitmapfont.frag" />
+    <None Include="App\engine\shader\glsl\copy.frag" />
+    <None Include="App\engine\shader\glsl\forward3d.frag" />
+    <None Include="App\engine\shader\glsl\forward3d.vert" />
+    <None Include="App\engine\shader\glsl\fullscreen_triangle.frag" />
+    <None Include="App\engine\shader\glsl\fullscreen_triangle.vert" />
+    <None Include="App\engine\shader\glsl\gaussian_blur_9.frag" />
+    <None Include="App\engine\shader\glsl\line3d.frag" />
+    <None Include="App\engine\shader\glsl\line3d.vert" />
+    <None Include="App\engine\shader\glsl\msdffont.frag" />
+    <None Include="App\engine\shader\glsl\msdffont_outline.frag" />
+    <None Include="App\engine\shader\glsl\msdffont_outlineshadow.frag" />
+    <None Include="App\engine\shader\glsl\msdffont_shadow.frag" />
+    <None Include="App\engine\shader\glsl\msdfprint.frag" />
+    <None Include="App\engine\shader\glsl\round_dot.frag" />
+    <None Include="App\engine\shader\glsl\sdffont.frag" />
+    <None Include="App\engine\shader\glsl\sdffont_outline.frag" />
+    <None Include="App\engine\shader\glsl\sdffont_outlineshadow.frag" />
+    <None Include="App\engine\shader\glsl\sdffont_shadow.frag" />
+    <None Include="App\engine\shader\glsl\shape.frag" />
+    <None Include="App\engine\shader\glsl\sky.frag" />
+    <None Include="App\engine\shader\glsl\sprite.vert" />
+    <None Include="App\engine\shader\glsl\square_dot.frag" />
+    <None Include="App\engine\shader\glsl\texture.frag" />
+    <None Include="App\engine\soundfont\GMGSx.sf2.zstdcmp" />
+    <None Include="App\example\csv\config.csv" />
+    <None Include="App\example\font\DotGothic16\README-JP.md" />
+    <None Include="App\example\font\DotGothic16\README.md" />
+    <None Include="App\example\font\RocknRoll\README-JP.md" />
+    <None Include="App\example\font\RocknRoll\README.md" />
+    <None Include="App\example\geojson\countries.geojson" />
+    <None Include="App\example\ini\config.ini" />
+    <None Include="App\example\json\config.json" />
+    <None Include="App\example\json\empty.json" />
+    <None Include="App\example\json\invalid-blank.json" />
+    <None Include="App\example\json\invalid-syntax.json" />
+    <None Include="App\example\json\test.json" />
+    <None Include="App\example\midi\test.mid" />
+    <None Include="App\example\obj\blacksmith.mtl" />
+    <None Include="App\example\obj\crystal1.mtl" />
+    <None Include="App\example\obj\crystal2.mtl" />
+    <None Include="App\example\obj\crystal3.mtl" />
+    <None Include="App\example\obj\mill.mtl" />
+    <None Include="App\example\obj\pine.mtl" />
+    <None Include="App\example\obj\siv3d-kun.mtl" />
+    <None Include="App\example\obj\tree.mtl" />
+    <None Include="App\example\script\breakout.as" />
+    <None Include="App\example\script\hello.as" />
+    <None Include="App\example\script\paint.as" />
+    <None Include="App\example\script\piano.as" />
+    <None Include="App\example\script\test.as" />
+    <None Include="App\example\shader\glsl\default2d.vert" />
+    <None Include="App\example\shader\glsl\default2d_shape.frag" />
+    <None Include="App\example\shader\glsl\default2d_texture.frag" />
+    <None Include="App\example\shader\glsl\default3d_forward.frag" />
+    <None Include="App\example\shader\glsl\default3d_forward.vert" />
+    <None Include="App\example\shader\glsl\extract_bright_linear.frag" />
+    <None Include="App\example\shader\glsl\forward_fog.frag" />
+    <None Include="App\example\shader\glsl\forward_triplanar.frag" />
+    <None Include="App\example\shader\glsl\game_of_life.frag" />
+    <None Include="App\example\shader\glsl\grayscale.frag" />
+    <None Include="App\example\shader\glsl\homography.frag" />
+    <None Include="App\example\shader\glsl\homography.vert" />
+    <None Include="App\example\shader\glsl\multi_texture_blend.frag" />
+    <None Include="App\example\shader\glsl\multi_texture_mask.frag" />
+    <None Include="App\example\shader\glsl\poisson_disk.frag" />
+    <None Include="App\example\shader\glsl\posterize.frag" />
+    <None Include="App\example\shader\glsl\rgb_shift.frag" />
+    <None Include="App\example\shader\glsl\rgb_to_bgr.frag" />
+    <None Include="App\example\shader\glsl\soft_shape.vert" />
+    <None Include="App\example\shader\glsl\swirl.frag" />
+    <None Include="App\example\shader\glsl\terrain_forward.frag" />
+    <None Include="App\example\shader\glsl\terrain_forward.vert" />
+    <None Include="App\example\shader\glsl\terrain_normal.frag" />
+    <None Include="App\example\svg\cat.svg" />
+    <None Include="App\example\svg\turtle.svg" />
+    <None Include="App\example\toml\config.toml" />
+    <None Include="App\example\toml\test.toml" />
+    <None Include="App\example\zip\zip_test.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="App\example\shot.mp3" />
+    <Media Include="App\example\test.mp3" />
+    <Media Include="App\example\video\river.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="App\example\font\DotGothic16\DotGothic16-Regular.ttf" />
+    <Font Include="App\example\font\RocknRoll\RocknRollOne-Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="App\example\objdetect\haarcascade\eye.xml" />
+    <Xml Include="App\example\objdetect\haarcascade\face_anime.xml" />
+    <Xml Include="App\example\objdetect\haarcascade\frontal_catface.xml" />
+    <Xml Include="App\example\objdetect\haarcascade\frontal_face_alt2.xml" />
+    <Xml Include="App\example\xml\config.xml" />
+    <Xml Include="App\example\xml\test.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App\example\obj\blacksmith.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\obj\crystal1.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\obj\crystal2.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\obj\crystal3.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\obj\mill.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\obj\pine.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\obj\siv3d-kun.obj">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\obj\tree.obj">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App\example\shader\hlsl\default2d.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\default3d_forward.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\extract_bright_linear.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\forward_fog.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\forward_triplanar.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\game_of_life.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\grayscale.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\homography.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\multi_texture_blend.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\multi_texture_mask.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\poisson_disk.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\posterize.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\rgb_shift.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\rgb_to_bgr.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\soft_shape.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\swirl.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\terrain_forward.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="App\example\shader\hlsl\terrain_normal.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -270,4 +270,4 @@ build*/
 *-*.txt
 
 TestMap/
-GraphicalUserInterface/
+*.exe
