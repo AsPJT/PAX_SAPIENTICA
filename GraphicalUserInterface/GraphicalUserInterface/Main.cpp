@@ -297,16 +297,24 @@ void Main() {
 	constexpr int koyomi_font_en_y = 220;
 
 	// 通常のフォントを作成 | Create a new font
-	const s3d::Font koyomi_font{ s3d::FontMethod::SDF, koyomi_font_size /*, Typeface::Bold*/ };
+	const s3d::Font koyomi_font{ s3d::FontMethod::SDF, koyomi_font_size /*, Typeface::Bold*/
+		, U"./engine/font/noto-sans-jp/NotoSansJP-Regular.otf"
+	};
 	koyomi_font.setBufferThickness(3);
 
-	const s3d::Font pin_font{ s3d::FontMethod::SDF, 20 /*, Typeface::Bold*/ };
+	const s3d::Font pin_font{ s3d::FontMethod::SDF, 20 /*, Typeface::Bold*/
+		, U"./engine/font/noto-sans-jp/NotoSansJP-Regular.otf"
+	};
 	pin_font.setBufferThickness(3);
 
-	const s3d::Font en_font{ s3d::FontMethod::SDF, 18 /*, Typeface::Bold*/ };
+	const s3d::Font en_font{ s3d::FontMethod::SDF, 18 /*, Typeface::Bold*/
+		, U"./engine/font/noto-sans-jp/NotoSansJP-Regular.otf"
+	};
 	en_font.setBufferThickness(3);
 
-	const s3d::Font font{ s3d::FontMethod::SDF, 26 /*, Typeface::Bold*/ };
+	const s3d::Font font{ s3d::FontMethod::SDF, 26 /*, Typeface::Bold*/
+		, U"./engine/font/noto-sans-jp/NotoSansJP-Regular.otf"
+	};
 	font.setBufferThickness(3);
 
 	constexpr s3d::Vec2 pos{ 800,500 };
