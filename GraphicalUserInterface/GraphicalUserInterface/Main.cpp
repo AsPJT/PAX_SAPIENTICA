@@ -26,7 +26,6 @@ struct MapVec2D {
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/FileRead/Split.hpp>
 #include <PAX_SAPIENTICA/Math/Stoi.hpp>
-#include <PAX_SAPIENTICA/Constant/Version.hpp>
 
 #include <array>
 #include <cmath>
@@ -99,6 +98,7 @@ void inputPlace(const std::string& str_, std::vector<LocationPoint>& location_po
 
 #include <PAX_SAPIENTICA/Siv3D/Key.hpp> // キーボードの入力
 #include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp> // タイルの更新
+#include <PAX_SAPIENTICA/Siv3D/InitLogo.hpp> // ロゴを描画
 
 
 /*##########################################################################################
@@ -106,16 +106,7 @@ void inputPlace(const std::string& str_, std::vector<LocationPoint>& location_po
 ##########################################################################################*/
 void Main() {
 	s3d::Window::Resize(1280, 720);
-	s3d::Scene::SetBackground(s3d::Color{ 181, 0, 0 }); // PAX SAPIENTICA 用の背景
-	s3d::System::Update();
-	s3d::Window::SetTitle(s3d::Unicode::FromUTF8("PAX SAPIENTICA v") + s3d::Unicode::FromUTF8(PAX_SAPIENTICA_LIBRARY_VERSION_NAME));
-	const s3d::Texture texture_tl{ U"./../../../Image/Logo/TitleLogo2.svg" };
-	const s3d::Texture texture_tm{ U"./../../../Image/Logo/TitleMap.svg" };
-	texture_tl.drawAt(s3d::Scene::Center()); // タイトルロゴを描画
-	texture_tm.draw(s3d::Arg::bottomRight = s3d::Vec2(s3d::Scene::Width(), s3d::Scene::Height()));
-	s3d::System::Update();
-	texture_tl.drawAt(s3d::Scene::Center()); // タイトルロゴを描画
-	texture_tm.draw(s3d::Arg::bottomRight = s3d::Vec2(s3d::Scene::Width(), s3d::Scene::Height()));
+	paxs::initLogo();
 
 	enum class KoyomiEnum {
 		koyomi_japan,
