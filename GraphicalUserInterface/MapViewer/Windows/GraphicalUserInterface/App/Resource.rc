@@ -94,6 +94,12 @@ Resource(engine/font/mplus/mplus-1p-heavy.ttf.zstdcmp)
 Resource(engine/font/mplus/mplus-1p-black.ttf.zstdcmp)
 Resource(engine/font/noto-cjk/NotoSansCJK-Regular.ttc.zstdcmp)
 //Resource(engine/font/noto-cjk/NotoSansJP-Regular.otf.zstdcmp)
+Resource(engine/font/noto-sans-jp/NotoSansJP-Black.otf)
+Resource(engine/font/noto-sans-jp/NotoSansJP-Bold.otf)
+Resource(engine/font/noto-sans-jp/NotoSansJP-Light.otf)
+Resource(engine/font/noto-sans-jp/NotoSansJP-Medium.otf)
+Resource(engine/font/noto-sans-jp/NotoSansJP-Regular.otf)
+Resource(engine/font/noto-sans-jp/NotoSansJP-Thin.otf)
 
 //
 //	Emoji Fonts

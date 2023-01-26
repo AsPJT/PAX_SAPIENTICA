@@ -4,20 +4,20 @@ GIS & Archaeological Simulator
 
 # List of elements supported by this software.
 
-## Calendar
+## Calendar 暦
 
-|Available|Calendar Name|
+|Available|暦名|
 |:---:|:---|
-|✅|Julian calendar|
-|✅|Gregorian calendar|
-|✅|Japanese calendar|
-|✅|Julian day number|
+|✅|ユリウス暦|
+|✅|グレゴリオ暦|
+|✅|和暦|
+|✅|ユリウス日|
 
-## Place Name
-- The number of registered East Asian place names is high. Place names around the Japanese archipelago have a particularly high number of registrations.
+## 地名
+- 東アジアの地名の登録件数が多いです。日本列島周辺の地名は特に登録件数が多いです。
 
-## Historical Period
-- The main periods registered are from the 1st to the 7th century.
+## 時代
+- 主に1世紀から7世紀の時代が登録されています。
 
 # Screenshot
 ## Original Map
