@@ -15,17 +15,21 @@
 
 #include <fstream>
 
-int main() {
+// CSV/TSV ファイルを読み込み、左の文字列を右の文字列へ変換する
+void convertLeftToRight(
+	const std::string& str, 
+	const char delimiter_, 
+	const std::string& str2, 
+	const std::string& str3) {
 
 	std::vector<std::string> to;
 	std::vector<std::string> from;
 
-	std::string str = "./../../../../Data/Character/KanaAndRomajiConversion.tsv";
 	std::ifstream ifs(str);
-	if (ifs.fail()) return 0;
+	if (ifs.fail()) return;
 	std::string line;
 	while (std::getline(ifs, line)) {
-		std::vector<std::string> strvec = paxs::split(line, '\t');
+		std::vector<std::string> strvec = paxs::split(line, delimiter_);
 		if (strvec.size() == 0) continue;
 		else if (strvec.size() == 1) {
 			to.emplace_back(strvec[0]);
@@ -37,16 +41,22 @@ int main() {
 		}
 	}
 
-	std::ofstream ofs("output.txt");
-	if (ofs.fail()) return 0;
+	std::ofstream ofs(str3);
+	if (ofs.fail()) return;
 
-	std::string str2 = "input.txt";
 	std::ifstream ifs2(str2);
-	if (ifs2.fail()) return 0;
+	if (ifs2.fail()) return;
 	std::string line2;
 	while (std::getline(ifs2, line2)) {
 		paxs::replaceList(line2, to, from);
 		ofs << line2 << '\n';
 	}
+}
+
+int main() {
+	convertLeftToRight(
+		"./../../../../Data/Character/KanaAndRomajiConversion.tsv",
+		'\t',
+		"input.txt", "output.txt");
 	return 0;
 }
