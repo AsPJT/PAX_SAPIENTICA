@@ -558,6 +558,7 @@ namespace paxs {
 
 			font(s3d::String{ U"拡大率" } + s3d::ToString(map_view_width)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 600), s3d::Palette::Black);
 			font(s3d::String{ U"メルカトル座標" } + s3d::ToString(map_view_center_x) + s3d::String{ U":" } + s3d::ToString(map_view_center_y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 300), s3d::Palette::Black);
+			font(s3d::String{ U"タイル" } + s3d::ToString(xyz_tile_z) + s3d::String{ U":" } + s3d::ToString(xyz_tile_z_num)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 500), s3d::Palette::Black);
 			//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
 			//font(s3d::String{ U"B" } + s3d::ToString(xyz_tile_pos.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
 			pin_font(map_license_name).draw(

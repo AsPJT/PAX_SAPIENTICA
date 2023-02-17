@@ -90,14 +90,14 @@ namespace paxs {
 					const s3d::URL new_url =
 						s3d::String(map_url_name)
 						+ s3d::String(U"/") + s3d::ToString(xyz_tile_z)
-						+ s3d::String(U"/") + s3d::ToString(j)
-						+ s3d::String(U"/") + s3d::ToString(i)
+						+ s3d::String(U"/") + s3d::ToString((j + xyz_tile_z_num) % xyz_tile_z_num)
+						+ s3d::String(U"/") + s3d::ToString((i + xyz_tile_z_num) % xyz_tile_z_num)
 						+ s3d::String(U".png");
 
 					const s3d::FilePath new_saveFilePath = s3d::String(U"./SavedMap/") + map_name
 						+ s3d::String(U"_") + s3d::ToString(xyz_tile_z)
-						+ s3d::String(U"_") + s3d::ToString(j)
-						+ s3d::String(U"_") + s3d::ToString(i)
+						+ s3d::String(U"_") + s3d::ToString((j + xyz_tile_z_num) % xyz_tile_z_num)
+						+ s3d::String(U"_") + s3d::ToString((i + xyz_tile_z_num) % xyz_tile_z_num)
 						+ s3d::String(U".png");
 
 					// ファイルを同期ダウンロード

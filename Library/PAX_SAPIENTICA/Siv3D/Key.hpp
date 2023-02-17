@@ -31,15 +31,27 @@ namespace paxs {
 	) {
 		if (s3d::KeyA.pressed() || s3d::KeyLeft.pressed()) {
 			map_view_center_x -= (map_view_width / map_view_movement_size);
+			if (map_view_center_x < -180.0) {
+				map_view_center_x += 360.0;
+			}
 		}
 		if (s3d::KeyD.pressed() || s3d::KeyRight.pressed()) {
 			map_view_center_x += (map_view_width / map_view_movement_size);
+			if (map_view_center_x >= 180.0) {
+				map_view_center_x -= 360.0;
+			}
 		}
 		if (s3d::KeyS.pressed() || s3d::KeyDown.pressed()) {
 			map_view_center_y -= (map_view_width / map_view_movement_size);
+			if (map_view_center_y < -180.0) {
+				map_view_center_y = -180.0;
+			}
 		}
 		if (s3d::KeyW.pressed() || s3d::KeyUp.pressed()) {
 			map_view_center_y += (map_view_width / map_view_movement_size);
+			if (map_view_center_y > 180.0) {
+				map_view_center_y = 180.0;
+			}
 		}
 		if (s3d::KeyQ.pressed()) {
 			if (map_view_width > map_view_min_width) {
