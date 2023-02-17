@@ -16,7 +16,48 @@
 
 ##########################################################################################*/
 
+#include<array>
+#include<memory>
+#include<new>
+
 namespace paxs {
+	struct BaseKey {
+	public:
+		virtual void update() = 0;
+		virtual bool getKey() const = 0;
+		virtual ~BaseKey() {}
+	};
+
+	class Key : BaseKey {
+	public:
+		explicit Key(s3d::Input key) : key(key) {}
+		void update() {
+			is_pressed = key.pressed();
+		}
+		bool getKey() const {
+			return is_pressed;
+		}
+	private:
+		s3d::Input key;
+		bool is_pressed = false;
+	};
+
+	class Input {
+	public:
+		explicit Input() {
+			std::array<s3d::Input, 10> s3d_keys = { s3d::KeyA,s3d::KeyLeft,s3d::KeyD,s3d::KeyRight,s3d::KeyS,s3d::KeyDown,s3d::KeyW,s3d::KeyUp,s3d::KeyQ,s3d::KeyE };
+			for (int i = 0; i < s3d_keys.size(); ++i) {
+				keys[i].reset((BaseKey*)(new(std::nothrow) Key(s3d_keys[i])));
+			}
+		}
+		void update() {
+			for (auto& key : keys) {
+				key->update();
+			}
+		}
+	private:
+		std::array<std::unique_ptr<BaseKey>, 10> keys;
+	};
 
 	// キーボード入力を更新（どの入力が必要か未確定なのでまだクラス化前）
 	void updateKey(
