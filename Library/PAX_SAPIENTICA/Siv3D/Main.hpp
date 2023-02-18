@@ -50,8 +50,8 @@ namespace paxs {
 
 		// 9 = 3.2
 		// 19 は無い
-		std::vector<MapVec2D> xyz_tile_pos_list;
-		std::vector<s3d::Texture> xyz_tile_texture_list;
+		//std::vector<MapVec2D> xyz_tile_pos_list;
+		//std::vector<s3d::Texture> xyz_tile_texture_list;
 
 		//const s3d::String map_name = U"openstreetmap";
 		//const s3d::String map_url_name = U"http://tiles.wmflabs.org/bw-mapnik";
@@ -67,35 +67,36 @@ namespace paxs {
 		//const s3d::String map_url_name = U"https://cyberjapandata.gsi.go.jp/xyz/std";
 		//const s3d::String map_license_name = U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）";
 
-		const s3d::String map_name = U"mierune";
-		const s3d::String map_url_name = U"https://tile.mierune.co.jp/mierune";
+		//const s3d::String map_name = U"mierune";
+		//const s3d::String map_url_name = U"https://tile.mierune.co.jp/mierune";
 		const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.";
 
 		// タイルの Z
-		int xyz_tile_z = 2;
-		int xyz_tile_z_num = int(std::pow(2, xyz_tile_z));
+		std::unique_ptr<XYZTile>  xyz_tile(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		//int xyz_tile_z = 2;
+		//int xyz_tile_z_num = int(std::pow(2, xyz_tile_z));
 
-		MapVec2 xyz_tile_start_cell = { int((((map_view->getCenterX() - map_view->getWidth() / 2) + 180.0) / 360.0) * xyz_tile_z_num),
-			int(((360.0 - ((map_view->getCenterY() + map_view->getHeight() / 2) + 180.0)) / 360.0)* xyz_tile_z_num)};
+		//MapVec2 xyz_tile_start_cell = { int((((map_view->getCenterX() - map_view->getWidth() / 2) + 180.0) / 360.0) * xyz_tile_z_num),
+		//	int(((360.0 - ((map_view->getCenterY() + map_view->getHeight() / 2) + 180.0)) / 360.0)* xyz_tile_z_num)};
 
-		MapVec2 xyz_tile_end_cell = { int((((map_view->getCenterX() + map_view->getWidth() / 2) + 180.0) / 360.0) * xyz_tile_z_num),
-			int(((360.0 - ((map_view->getCenterY() - map_view->getHeight() / 2) + 180.0)) / 360.0)* xyz_tile_z_num)};
+		//MapVec2 xyz_tile_end_cell = { int((((map_view->getCenterX() + map_view->getWidth() / 2) + 180.0) / 360.0) * xyz_tile_z_num),
+		//	int(((360.0 - ((map_view->getCenterY() - map_view->getHeight() / 2) + 180.0)) / 360.0)* xyz_tile_z_num)};
 
-		MapVec2 xyz_tile_cell_num = {
-			(xyz_tile_end_cell.x - xyz_tile_start_cell.x),
-			(xyz_tile_end_cell.y - xyz_tile_start_cell.y)
-		};
-		int xyz_tile_cell_all_num = (xyz_tile_cell_num.x + 1) * (xyz_tile_cell_num.y + 1);
-		xyz_tile_pos_list.resize(xyz_tile_cell_all_num);
-		xyz_tile_texture_list.resize(xyz_tile_cell_all_num);
-		for (int i = xyz_tile_start_cell.y, k = 0; i <= xyz_tile_end_cell.y; ++i) {
-			for (int j = xyz_tile_start_cell.x; j <= xyz_tile_end_cell.x; ++j, ++k) {
-				xyz_tile_pos_list[k] =
-					//xyz_tile_pos_list[i * xyz_tile_cell_num.x + j] =
-					MapVec2D{ j * 360.0 / xyz_tile_z_num - 180.0,
-			(360.0 - i * 360.0 / xyz_tile_z_num) - 180.0 };
-			}
-		}
+		//MapVec2 xyz_tile_cell_num = {
+		//	(xyz_tile_end_cell.x - xyz_tile_start_cell.x),
+		//	(xyz_tile_end_cell.y - xyz_tile_start_cell.y)
+		//};
+		//int xyz_tile_cell_all_num = (xyz_tile_cell_num.x + 1) * (xyz_tile_cell_num.y + 1);
+		//xyz_tile_pos_list.resize(xyz_tile_cell_all_num);
+		//xyz_tile_texture_list.resize(xyz_tile_cell_all_num);
+		//for (int i = xyz_tile_start_cell.y, k = 0; i <= xyz_tile_end_cell.y; ++i) {
+		//	for (int j = xyz_tile_start_cell.x; j <= xyz_tile_end_cell.x; ++j, ++k) {
+		//		xyz_tile_pos_list[k] =
+		//			//xyz_tile_pos_list[i * xyz_tile_cell_num.x + j] =
+		//			MapVec2D{ j * 360.0 / xyz_tile_z_num - 180.0,
+		//	(360.0 - i * 360.0 / xyz_tile_z_num) - 180.0 };
+		//	}
+		//}
 
 		struct LocationRange {
 			s3d::Texture texture;
@@ -271,22 +272,22 @@ namespace paxs {
 			//	map_view_height, map_view_movement_size, map_view_expansion_size);
 
 			// タイルを更新
-			paxs::updateXYZTiles(
-				xyz_tile_z,
-				xyz_tile_z_num,
-				map_view->getWidth(),
-				map_view->getHeight(),
-				map_view->getCenterX(),
-				map_view->getCenterY(),
-				xyz_tile_start_cell,
-				xyz_tile_end_cell,
-				xyz_tile_cell_num,
-				xyz_tile_cell_all_num,
-				xyz_tile_pos_list,
-				xyz_tile_texture_list,
-				map_url_name,
-				map_name
-			);
+			//paxs::updateXYZTiles(
+			//	xyz_tile_z,
+			//	xyz_tile_z_num,
+			//	map_view->getWidth(),
+			//	map_view->getHeight(),
+			//	map_view->getCenterX(),
+			//	map_view->getCenterY(),
+			//	xyz_tile_start_cell,
+			//	xyz_tile_end_cell,
+			//	xyz_tile_cell_num,
+			//	xyz_tile_cell_all_num,
+			//	xyz_tile_pos_list,
+			//	xyz_tile_texture_list,
+			//	map_url_name,
+			//	map_name
+			//);
 
 			// テクスチャを描く | Draw a texture
 			//texture.resized(150).drawAt(Scene::Center());
@@ -308,16 +309,22 @@ namespace paxs {
 			}
 
 			// 地図の描画
-			for (int i = xyz_tile_start_cell.y, k = 0; i <= xyz_tile_end_cell.y; ++i) {
-				for (int j = xyz_tile_start_cell.x; j <= xyz_tile_end_cell.x; ++j, ++k) {
-					if (xyz_tile_texture_list[k]) {
-						xyz_tile_texture_list[k].resized(
-							(360.0 / xyz_tile_z_num) / map_view->getWidth() * double(s3d::Scene::Width())
-							, (360.0 / xyz_tile_z_num) / map_view->getHeight() * double(s3d::Scene::Height())
-						).draw(
-							(xyz_tile_pos_list[k].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((xyz_tile_pos_list[k].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
-						);
+			{
+				MapVec2 xyz_tile_start_cell = xyz_tile->getStartCell();
+				MapVec2 xyz_tile_end_cell = xyz_tile->getEndCell();
+				int xyz_tile_z_num = xyz_tile->getZNum();
+				
+				for (int i = xyz_tile_start_cell.y, k = 0; i <= xyz_tile_end_cell.y; ++i) {
+					for (int j = xyz_tile_start_cell.x; j <= xyz_tile_end_cell.x; ++j, ++k) {
+						if (xyz_tile->xyz_tile_texture_list[k]) {
+							xyz_tile->xyz_tile_texture_list[k].resized(
+								(360.0 / xyz_tile_z_num) / map_view->getWidth() * double(s3d::Scene::Width())
+								, (360.0 / xyz_tile_z_num) / map_view->getHeight() * double(s3d::Scene::Height())
+							).draw(
+								(xyz_tile->xyz_tile_pos_list[k].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+								double(s3d::Scene::Height()) - ((xyz_tile->xyz_tile_pos_list[k].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
+							);
+						}
 					}
 				}
 			}
@@ -560,7 +567,7 @@ namespace paxs {
 
 			font(s3d::String{ U"拡大率" } + s3d::ToString(map_view->getWidth())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 600), s3d::Palette::Black);
 			font(s3d::String{ U"メルカトル座標" } + s3d::ToString(map_view->getCenterX()) + s3d::String{ U":" } + s3d::ToString(map_view->getCenterY())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 300), s3d::Palette::Black);
-			font(s3d::String{ U"タイル" } + s3d::ToString(xyz_tile_z) + s3d::String{ U":" } + s3d::ToString(xyz_tile_z_num)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 500), s3d::Palette::Black);
+			font(s3d::String{ U"タイル" } + s3d::ToString(xyz_tile->getZ()) + s3d::String{ U":" } + s3d::ToString(xyz_tile->getZNum())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 500), s3d::Palette::Black);
 			//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
 			//font(s3d::String{ U"B" } + s3d::ToString(xyz_tile_pos.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
 			pin_font(map_license_name).draw(
