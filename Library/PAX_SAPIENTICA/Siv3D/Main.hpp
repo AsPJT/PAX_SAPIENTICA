@@ -272,6 +272,7 @@ namespace paxs {
 			//	map_view_height, map_view_movement_size, map_view_expansion_size);
 
 			// タイルを更新
+			xyz_tile->update(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY());
 			//paxs::updateXYZTiles(
 			//	xyz_tile_z,
 			//	xyz_tile_z_num,

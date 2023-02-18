@@ -145,7 +145,7 @@ namespace paxs {
 		const s3d::String map_url_name = U"https://tile.mierune.co.jp/mierune"; // URL
 		const s3d::String map_name = U"mierune"; // マップの名前
 
-		double current_map_view_width = 20.0;
+		double current_map_view_width = 0;
 	};
 
 	// 後にクラス化する
