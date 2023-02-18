@@ -272,3 +272,4 @@ build*/
 TestMap/
 SavedMap/
 *.exe
+AS_DEBUG/
