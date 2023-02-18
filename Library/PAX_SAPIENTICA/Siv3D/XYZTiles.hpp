@@ -22,18 +22,24 @@ namespace paxs {
 	
 	class XYZTile {
 	public:
-		std::vector<MapVec2D> xyz_tile_pos_list; // 角タイルの始点座標
-		std::vector<s3d::Texture> xyz_tile_texture_list; // タイルの画像データ
+		// XYZ タイルの 1 つのセルのメルカトル座標を保持
+		// 基本的に Z = 19 は無い
+		std::vector<MapVec2D> xyz_tile_pos_list;
+		// XYZ タイルの画像の情報を保持
+		std::vector<s3d::Texture> xyz_tile_texture_list;
 
 		XYZTile(const double map_view_width,
 			const double map_view_height,
 			const double map_view_center_x,
 			const double map_view_center_y) {
-			xyz_tile_start_cell = { int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * xyz_tile_z_num),
-			int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * xyz_tile_z_num) };
-
-			xyz_tile_end_cell = { int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * xyz_tile_z_num),
-			int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * xyz_tile_z_num) };
+			xyz_tile_start_cell = {
+				int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * xyz_tile_z_num),
+				int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * xyz_tile_z_num)
+			};
+			xyz_tile_end_cell = {
+				int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * xyz_tile_z_num),
+				int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * xyz_tile_z_num)
+			};
 
 			xyz_tile_cell_num = {
 			(xyz_tile_end_cell.x - xyz_tile_start_cell.x),
@@ -42,6 +48,7 @@ namespace paxs {
 
 			xyz_tile_cell_all_num = (xyz_tile_cell_num.x + 1) * (xyz_tile_cell_num.y + 1);
 
+			// 画面上の XYZ タイルのメルカトル座標を初期化
 			xyz_tile_pos_list.resize(xyz_tile_cell_all_num);
 			xyz_tile_texture_list.resize(xyz_tile_cell_all_num);
 			for (int i = xyz_tile_start_cell.y, k = 0; i <= xyz_tile_end_cell.y; ++i) {
@@ -53,6 +60,7 @@ namespace paxs {
 				}
 			}
 		}
+		// タイルを更新
 		void update(const double map_view_width,
 			const double map_view_height,
 			const double map_view_center_x,
@@ -135,16 +143,22 @@ namespace paxs {
 			return xyz_tile_z_num;
 		}
 	private:
-		int xyz_tile_z = 2; // Windowの幅に適応するzの数値
-		int xyz_tile_z_num = int(std::pow(2, xyz_tile_z)); // 2^xyz_tile_z
-		MapVec2 xyz_tile_start_cell; // タイル上の開始地点
-		MapVec2 xyz_tile_end_cell; // タイル上の終了地点
-		MapVec2 xyz_tile_cell_num; // xyz_tile_end_cell - xyz_tile_start_cell
-		int xyz_tile_cell_all_num; // xyz_tile_cell_num.x * xyz_tile_cell_num.y
+		// 画面の幅に最適な XYZ タイルの Z を格納
+		int xyz_tile_z = 2;
+		// 2 の xyz_tile_z 乗
+		int xyz_tile_z_num = int(std::pow(2, xyz_tile_z));
+		// XYZ タイルの画面上の始点セル
+		MapVec2 xyz_tile_start_cell;
+		// XYZ タイルの画面上の終点セル
+		MapVec2 xyz_tile_end_cell;
+		// XYZ タイルの画面上のセルの数
+		MapVec2 xyz_tile_cell_num;
+		// XYZ タイルの画面上のセルの総数
+		int xyz_tile_cell_all_num;
 
 		const s3d::String map_url_name = U"https://tile.mierune.co.jp/mierune"; // URL
-		const s3d::String map_name = U"mierune"; // マップの名前
-
+		const s3d::String map_name = U"mierune";
+		// 1フレーム前のマップの幅
 		double current_map_view_width = 0;
 	};
 
