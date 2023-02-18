@@ -21,25 +21,34 @@
 #include<new>
 
 namespace paxs {
+
 	struct BaseKey {
 	public:
-		virtual void update() = 0;
-		virtual bool getKey() const = 0;
+		virtual bool pressed() const = 0;
 		virtual ~BaseKey() {}
 	};
 
 	class Key : BaseKey {
 	public:
 		explicit Key(s3d::Input key) : key(key) {}
-		void update() {
-			is_pressed = key.pressed();
-		}
-		bool getKey() const {
-			return is_pressed;
+		bool pressed() const {
+			return key.pressed();
 		}
 	private:
 		s3d::Input key;
-		bool is_pressed = false;
+	};
+
+	enum class KeyCode {
+		A,
+		Left,
+		D,
+		Right,
+		S,
+		Down,
+		W,
+		Up,
+		Q,
+		E
 	};
 
 	class Input {
@@ -50,10 +59,8 @@ namespace paxs {
 				keys[i].reset((BaseKey*)(new(std::nothrow) Key(s3d_keys[i])));
 			}
 		}
-		void update() {
-			for (auto& key : keys) {
-				key->update();
-			}
+		bool getKey(const KeyCode key_code) const {
+			return keys[(int)key_code]->pressed();
 		}
 	private:
 		std::array<std::unique_ptr<BaseKey>, 10> keys;
