@@ -363,13 +363,13 @@ namespace paxs {
 				int xyz_tile_z_num = xyz_tile->getZNum();
 				for (int i = xyz_tile_start_cell.y, k = 0; i <= xyz_tile_end_cell.y; ++i) {
 					for (int j = xyz_tile_start_cell.x; j <= xyz_tile_end_cell.x; ++j, ++k) {
-						if (xyz_tile->xyz_tile_texture_list[k]) {
-							xyz_tile->xyz_tile_texture_list[k].resized(
+						if (xyz_tile->texture_list[k]) {
+							xyz_tile->texture_list[k].resized(
 								(360.0 / xyz_tile_z_num) / map_view->getWidth() * double(s3d::Scene::Width())
 								, (360.0 / xyz_tile_z_num) / map_view->getHeight() * double(s3d::Scene::Height())
 							).draw(
-								(xyz_tile->xyz_tile_pos_list[k].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-								double(s3d::Scene::Height()) - ((xyz_tile->xyz_tile_pos_list[k].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
+								(xyz_tile->pos_list[k].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+								double(s3d::Scene::Height()) - ((xyz_tile->pos_list[k].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
 							);
 						}
 					}
