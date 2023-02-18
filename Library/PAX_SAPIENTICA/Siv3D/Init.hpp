@@ -20,21 +20,9 @@ namespace paxs {
 
 	struct MapVec2 {
 		int x{}, y{};
-		bool operator==(const MapVec2& map_vec_2d)const {
-			return x == map_vec_2d.x && y == map_vec_2d.y;
-		}
-		bool operator!=(const MapVec2& map_vec_2d)const {
-			return x != map_vec_2d.x || y != map_vec_2d.y;
-		}
 	};
 	struct MapVec2D {
 		double x{}, y{};
-		bool operator==(const MapVec2D& map_vec_2d)const {
-			return x == map_vec_2d.x && y == map_vec_2d.y;
-		}
-		bool operator!=(const MapVec2D& map_vec_2d)const {
-			return x != map_vec_2d.x || y != map_vec_2d.y;
-		}
 	};
 }
 
