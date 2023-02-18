@@ -16,47 +16,159 @@
 
 ##########################################################################################*/
 
-#include<array>
 #include<memory>
 #include<new>
+#include<vector>
+
+#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 
 namespace paxs {
+	
+	// abstract class
 	struct BaseKey {
 	public:
-		virtual void update() = 0;
-		virtual bool getKey() const = 0;
+		virtual bool isPressed() const = 0;
 		virtual ~BaseKey() {}
 	};
 
 	class Key : BaseKey {
 	public:
 		explicit Key(s3d::Input key) : key(key) {}
-		void update() {
-			is_pressed = key.pressed();
-		}
-		bool getKey() const {
-			return is_pressed;
+		bool isPressed() const {
+			return key.pressed();
 		}
 	private:
 		s3d::Input key;
-		bool is_pressed = false;
 	};
 
-	class Input {
-	public:
-		explicit Input() {
-			std::array<s3d::Input, 10> s3d_keys = { s3d::KeyA,s3d::KeyLeft,s3d::KeyD,s3d::KeyRight,s3d::KeyS,s3d::KeyDown,s3d::KeyW,s3d::KeyUp,s3d::KeyQ,s3d::KeyE };
-			for (int i = 0; i < s3d_keys.size(); ++i) {
-				keys[i].reset((BaseKey*)(new(std::nothrow) Key(s3d_keys[i])));
-			}
+	enum class KeyCode {
+		A,
+		Left,
+		D,
+		Right,
+		S,
+		Down,
+		W,
+		Up,
+		Q,
+		E
+	};
+
+	bool pressed(const std::vector<std::unique_ptr<BaseKey>>& keys) {
+		for (auto& key : keys) {
+			if (key->isPressed()) return true;
 		}
-		void update() {
-			for (auto& key : keys) {
-				key->update();
-			}
+		return false;
+	}
+
+	class Coordinate {
+	public:
+		double movement_size; // マップの移動量
+
+		Coordinate(double x, double y, double movement_size) : x(x), y(y), movement_size(movement_size) {
+			increase_x_keys.resize(2);
+			increase_x_keys[0].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyA));
+			increase_x_keys[1].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyLeft));
+
+			decrease_x_keys.resize(2);
+			decrease_x_keys[0].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyD));
+			decrease_x_keys[1].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyRight));
+
+			increase_y_keys.resize(2);
+			increase_y_keys[0].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyS));
+			increase_y_keys[1].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyDown));
+
+			decrease_y_keys.resize(2);
+			decrease_y_keys[0].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyW));
+			decrease_y_keys[1].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyUp));
+		}
+		void update(const double width) {
+			if (pressed(increase_x_keys)) increase_coordinate(x, width);
+			if (pressed(decrease_x_keys)) decrease_coordinate(x, width);
+			if (pressed(increase_y_keys)) increase_coordinate(y, width);
+			if (pressed(decrease_y_keys)) decrease_coordinate(y, width);
+		}
+		double getX() const {
+			return x;
+		}
+		double getY() const {
+			return y;
 		}
 	private:
-		std::array<std::unique_ptr<BaseKey>, 10> keys;
+		double x; // マップ座標の中央X
+		double y; // マップ座標の中央Y
+		std::vector<std::unique_ptr<BaseKey>> increase_x_keys;
+		std::vector<std::unique_ptr<BaseKey>> decrease_x_keys;
+		std::vector<std::unique_ptr<BaseKey>> increase_y_keys;
+		std::vector<std::unique_ptr<BaseKey>> decrease_y_keys;
+
+		void increase_coordinate(double& value, const double width) {
+			value -= (width / movement_size);
+			if (value < -180.0) {
+				value += 360.0;
+			}
+		}
+		void decrease_coordinate(double& value, const double width) {
+			value += (width / movement_size);
+			if (value >= 180.0) {
+				value -= 360.0;
+			}
+		}
+	};
+
+	class MapView {
+	public:
+		MapView() {
+			enl_keys.resize(1);
+			enl_keys[0].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyQ));
+
+			esc_keys.resize(1);
+			esc_keys[0].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyE));
+		}
+		void update() {
+			center.update(width);
+			if (pressed(enl_keys)) {
+				if (width > min_width) {
+					width -= (width / expansion_size);
+					height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height());
+				}
+				if (width < min_width) {
+					width = min_width;
+					height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height());
+				}
+			}
+			if (pressed(esc_keys)) {
+				if (width < max_width) {
+					width += (width / expansion_size);
+					height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height());
+				}
+				if (width > max_width) {
+					width = max_width;
+					height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height());
+				}
+			}
+		}
+		double getCenterX() const {
+			return center.getX();
+		}
+		double getCenterY() const {
+			return center.getY();
+		}
+		double getWidth() const {
+			return width;
+		}
+		double getHeight() const {
+			return height;
+		}
+	private:
+		Coordinate center = Coordinate(135.0, getLatitudeToMercatorY(35.0), 200.0); // マップ座標の中央
+		double width = 20.0; // マップの幅
+		double max_width = 160.0; // マップの最大幅
+		double min_width = 0.01; // マップの最小幅
+		double height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height()); // マップの高さ
+		double expansion_size = 200.0; // マップの拡大量
+		std::vector<std::unique_ptr<BaseKey>> enl_keys; // 拡大キー
+		std::vector<std::unique_ptr<BaseKey>> esc_keys; // 縮小キー
 	};
 
 	// キーボード入力を更新（どの入力が必要か未確定なのでまだクラス化前）

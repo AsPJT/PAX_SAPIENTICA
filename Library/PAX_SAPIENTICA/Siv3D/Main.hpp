@@ -37,15 +37,16 @@ namespace paxs {
 		};
 
 		// マップ関連変数
-		double map_view_center_x = 135.0; // マップ座標の中央 X
-		double map_view_center_y = getLatitudeToMercatorY(35.0); // マップ座標の中央 Y
-		double map_view_width = 20.0; // マップの幅
-		double map_view_max_width = 160.0; // マップの最大幅
-		double map_view_min_width = 0.01; // マップの最小幅
-		double map_view_height =
-			(map_view_width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height()); // マップの高さ
-		double map_view_movement_size = 200.0; // マップの移動量
-		double map_view_expansion_size = 200.0; // マップの拡大量
+		//double map_view_center_x = 135.0; // マップ座標の中央 X
+		//double map_view_center_y = getLatitudeToMercatorY(35.0); // マップ座標の中央 Y
+		//double map_view_width = 20.0; // マップの幅
+		//double map_view_max_width = 160.0; // マップの最大幅
+		//double map_view_min_width = 0.01; // マップの最小幅
+		//double map_view_height =
+		//	(map_view_width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height()); // マップの高さ
+		//double map_view_movement_size = 200.0; // マップの移動量
+		//double map_view_expansion_size = 200.0; // マップの拡大量
+		std::unique_ptr<MapView> map_view(new(std::nothrow) MapView);
 
 		// 9 = 3.2
 		// 19 は無い
@@ -74,11 +75,11 @@ namespace paxs {
 		int xyz_tile_z = 2;
 		int xyz_tile_z_num = int(std::pow(2, xyz_tile_z));
 
-		MapVec2 xyz_tile_start_cell = { int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * xyz_tile_z_num),
-			int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * xyz_tile_z_num) };
+		MapVec2 xyz_tile_start_cell = { int((((map_view->getCenterX() - map_view->getWidth() / 2) + 180.0) / 360.0) * xyz_tile_z_num),
+			int(((360.0 - ((map_view->getCenterY() + map_view->getHeight() / 2) + 180.0)) / 360.0)* xyz_tile_z_num)};
 
-		MapVec2 xyz_tile_end_cell = { int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * xyz_tile_z_num),
-			int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * xyz_tile_z_num) };
+		MapVec2 xyz_tile_end_cell = { int((((map_view->getCenterX() + map_view->getWidth() / 2) + 180.0) / 360.0) * xyz_tile_z_num),
+			int(((360.0 - ((map_view->getCenterY() - map_view->getHeight() / 2) + 180.0)) / 360.0)* xyz_tile_z_num)};
 
 		MapVec2 xyz_tile_cell_num = {
 			(xyz_tile_end_cell.x - xyz_tile_start_cell.x),
@@ -198,8 +199,8 @@ namespace paxs {
 		}
 		for (int i = 0; i < route1.size(); ++i) {
 			route2.emplace_back(
-				(route1[i].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-				double(s3d::Scene::Height()) - ((route1[i].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+				(route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+				double(s3d::Scene::Height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
 			);
 		}
 		// 暦を読み込み
@@ -263,19 +264,20 @@ namespace paxs {
 		while (s3d::System::Update()) {
 
 			// キーボード入力を更新
-			paxs::updateKey(
-				map_view_center_x, map_view_center_y,
-				map_view_width, map_view_max_width, map_view_min_width,
-				map_view_height, map_view_movement_size, map_view_expansion_size);
+			map_view->update();
+			//paxs::updateKey(
+			//	map_view_center_x, map_view_center_y,
+			//	map_view_width, map_view_max_width, map_view_min_width,
+			//	map_view_height, map_view_movement_size, map_view_expansion_size);
 
 			// タイルを更新
 			paxs::updateXYZTiles(
 				xyz_tile_z,
 				xyz_tile_z_num,
-				map_view_width,
-				map_view_height,
-				map_view_center_x,
-				map_view_center_y,
+				map_view->getWidth(),
+				map_view->getHeight(),
+				map_view->getCenterX(),
+				map_view->getCenterY(),
 				xyz_tile_start_cell,
 				xyz_tile_end_cell,
 				xyz_tile_cell_num,
@@ -291,16 +293,16 @@ namespace paxs {
 			//texture2.resized(750).drawAt(Scene::Center());
 			for (int i = 0; i < location_range_list.size(); ++i) {
 				auto& jj = location_range_list[i];
-				if (jj.mex > map_view_center_x - map_view_width / 2 &&
-					jj.msx < map_view_center_x + map_view_width / 2 &&
-					jj.mey > map_view_center_y - map_view_height / 2 &&
-					jj.msy < map_view_center_y + map_view_height / 2) {
+				if (jj.mex > map_view->getCenterX() - map_view->getWidth() / 2 &&
+					jj.msx < map_view->getCenterX() + map_view->getWidth() / 2 &&
+					jj.mey > map_view->getCenterX() - map_view->getHeight() / 2 &&
+					jj.msy < map_view->getCenterY() + map_view->getHeight() / 2) {
 					jj.texture.resized(
-						jj.mx / map_view_width * double(s3d::Scene::Width())
-						, jj.my / map_view_height * double(s3d::Scene::Height())// * 1.3
+						jj.mx / map_view->getWidth() * double(s3d::Scene::Width())
+						, jj.my / map_view->getHeight() * double(s3d::Scene::Height())// * 1.3
 					).drawAt(
-						(jj.mcx - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()) - 0,
-						double(s3d::Scene::Height()) - ((jj.mcy - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// + 270
+						(jj.mcx - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()) - 0,
+						double(s3d::Scene::Height()) - ((jj.mcy - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))// + 270
 					);
 				}
 			}
@@ -310,11 +312,11 @@ namespace paxs {
 				for (int j = xyz_tile_start_cell.x; j <= xyz_tile_end_cell.x; ++j, ++k) {
 					if (xyz_tile_texture_list[k]) {
 						xyz_tile_texture_list[k].resized(
-							(360.0 / xyz_tile_z_num) / map_view_width * double(s3d::Scene::Width())
-							, (360.0 / xyz_tile_z_num) / map_view_height * double(s3d::Scene::Height())
+							(360.0 / xyz_tile_z_num) / map_view->getWidth() * double(s3d::Scene::Width())
+							, (360.0 / xyz_tile_z_num) / map_view->getHeight() * double(s3d::Scene::Height())
 						).draw(
-							(xyz_tile_pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((xyz_tile_pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+							(xyz_tile_pos_list[k].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((xyz_tile_pos_list[k].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
 						);
 					}
 				}
@@ -324,8 +326,8 @@ namespace paxs {
 
 			for (int i = 0; i < route2.size(); ++i) {
 				route2[i] = s3d::Vec2(
-					(route1[i].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-					double(s3d::Scene::Height()) - ((route1[i].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+					(route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+					double(s3d::Scene::Height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
 				);
 			}
 			// 航路を描画
@@ -335,38 +337,38 @@ namespace paxs {
 			for (int i = 0; i < location_point_list.size(); ++i) {
 				auto& lli = location_point_list[i];
 				// 範囲外を除去
-				if (lli.x < (map_view_center_x - map_view_width / 1.8)
-					|| lli.x >(map_view_center_x + map_view_width / 1.8)
-					|| lli.y < (map_view_center_y - map_view_height / 1.8)
-					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
+				if (lli.x < (map_view->getCenterX() - map_view->getWidth() / 1.8)
+					|| lli.x >(map_view->getCenterX() + map_view->getWidth() / 1.8)
+					|| lli.y < (map_view->getCenterY() - map_view->getHeight() / 1.8)
+					|| lli.y >(map_view->getCenterY() + map_view->getHeight() / 1.8)) continue;
 
-				if (lli.min_view > map_view_width
-					|| lli.max_view < map_view_width
+				if (lli.min_view > map_view->getWidth()
+					|| lli.max_view < map_view->getWidth()
 					|| lli.min_year > jdn
 					|| lli.max_year < jdn) {
 
 					if (lli.lpe == LocationPointEnum::location_point_place_name) {
 						texture_pn.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) });
 						continue;
 					}
 					if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
 						texture_kofun1.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) });
 						continue;
 					}
 					if (lli.lpe == LocationPointEnum::location_point_zempo_koho_fun) {
 						texture_kofun2.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) });
 						continue;
 					}
 					if (lli.lpe == LocationPointEnum::location_point_hotategai_gata_kofun) {
 						texture_kofun3.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) });
 						continue;
 					}
 				}
@@ -376,13 +378,13 @@ namespace paxs {
 				auto& lli = location_point_list[i];
 
 				// 範囲外を除去
-				if (lli.x < (map_view_center_x - map_view_width / 1.8)
-					|| lli.x >(map_view_center_x + map_view_width / 1.8)
-					|| lli.y < (map_view_center_y - map_view_height / 1.8)
-					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
+				if (lli.x < (map_view->getCenterX() - map_view->getWidth() / 1.8)
+					|| lli.x >(map_view->getCenterX() + map_view->getWidth() / 1.8)
+					|| lli.y < (map_view->getCenterY() - map_view->getHeight() / 1.8)
+					|| lli.y >(map_view->getCenterY() + map_view->getHeight() / 1.8)) continue;
 
-				if (lli.min_view > map_view_width) continue;
-				if (lli.max_view < map_view_width) continue;
+				if (lli.min_view > map_view->getWidth()) continue;
+				if (lli.max_view < map_view->getWidth()) continue;
 				if (lli.min_year > jdn) continue;
 				if (lli.max_year < jdn) continue;
 
@@ -393,58 +395,58 @@ namespace paxs {
 						//
 						font(s3d::Unicode::FromUTF8(lli.name)).drawAt(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
+							(lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))// - 30
 							, s3d::Palette::Black);
 					}
 					else {
 						en_font(s3d::Unicode::FromUTF8(lli.en_name)).draw(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							s3d::Arg::bottomCenter = s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
+							s3d::Arg::bottomCenter = s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))// - 30
 							}
 						, s3d::Palette::Black);
 						font(s3d::Unicode::FromUTF8(lli.name)).draw(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							s3d::Arg::topCenter = s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
+							s3d::Arg::topCenter = s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))// - 30
 							}
 						, s3d::Palette::Black);
 					}
 					if (lli.source == "JP-Kojiki") {
-						texture_ko.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+						texture_ko.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
 							});
 					}
 					else if (lli.source == "JP-WamyoRuijusho") {
-						texture_wam.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+						texture_wam.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
 							});
 					}
 					else if (lli.source == "ZempoKoenFun") {
-						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
 							});
 					}
 					else if (lli.source == "ZempoKohoFun") {
-						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
 							});
 					}
 					else if (lli.source == "HotategaiGataKofun") {
-						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
 							});
 					}
 				}
 				else {
 					pin_font(s3d::Unicode::FromUTF8(lli.name)).drawAt(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-						(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) - 70
+						(lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) - 70
 						, s3d::Palette::Black);
 					texture_pin1.resized(50).draw(
-						s3d::Arg::bottomCenter = s3d::Vec2((lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())))
+						s3d::Arg::bottomCenter = s3d::Vec2((lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())))
 					);
 				}
 				//Circle{{(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(Scene::Width()),
@@ -556,8 +558,8 @@ namespace paxs {
 				jdn = period_jdn[index1];
 			}
 
-			font(s3d::String{ U"拡大率" } + s3d::ToString(map_view_width)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 600), s3d::Palette::Black);
-			font(s3d::String{ U"メルカトル座標" } + s3d::ToString(map_view_center_x) + s3d::String{ U":" } + s3d::ToString(map_view_center_y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 300), s3d::Palette::Black);
+			font(s3d::String{ U"拡大率" } + s3d::ToString(map_view->getWidth())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 600), s3d::Palette::Black);
+			font(s3d::String{ U"メルカトル座標" } + s3d::ToString(map_view->getCenterX()) + s3d::String{ U":" } + s3d::ToString(map_view->getCenterY())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 300), s3d::Palette::Black);
 			font(s3d::String{ U"タイル" } + s3d::ToString(xyz_tile_z) + s3d::String{ U":" } + s3d::ToString(xyz_tile_z_num)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 500), s3d::Palette::Black);
 			//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
 			//font(s3d::String{ U"B" } + s3d::ToString(xyz_tile_pos.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
