@@ -19,6 +19,148 @@
 #include <cmath>
 
 namespace paxs {
+	
+	class XYZTile {
+	public:
+		// XYZ タイルの 1 つのセルのメルカトル座標を保持
+		// 基本的に Z = 19 は無い
+		std::vector<MapVec2D> pos_list;
+		// XYZ タイルの画像の情報を保持
+		std::vector<s3d::Texture> texture_list;
+
+		XYZTile(const double map_view_width,
+			const double map_view_height,
+			const double map_view_center_x,
+			const double map_view_center_y) {
+			start_cell = {
+				int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num),
+				int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num)
+			};
+			end_cell = {
+				int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * z_num),
+				int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * z_num)
+			};
+
+			cell_num = {
+			(end_cell.x - start_cell.x),
+			(end_cell.y - start_cell.y)
+			};
+
+			cell_all_num = (cell_num.x + 1) * (cell_num.y + 1);
+
+			// 画面上の XYZ タイルのメルカトル座標を初期化
+			pos_list.resize(cell_all_num);
+			texture_list.resize(cell_all_num);
+			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+					pos_list[k] =
+						//pos_list[i * cell_num.x + j] =
+						MapVec2D{ j * 360.0 / z_num - 180.0,
+				(360.0 - i * 360.0 / z_num) - 180.0 };
+				}
+			}
+		}
+		// タイルを更新
+		void update(const double map_view_width,
+			const double map_view_height,
+			const double map_view_center_x,
+			const double map_view_center_y) {
+			// 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
+			if (current_map_view_width != map_view_width) {
+				z = int(-std::log2(map_view_width) + 11.0);
+				z_num = int(std::pow(2, z));
+				current_map_view_width = map_view_width;
+			}
+
+			// 画像を更新する必要があるか
+			bool need_update = false;
+
+			const MapVec2 new_start_cell = { int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num), int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num) };
+			if (new_start_cell != start_cell) {
+				start_cell = new_start_cell;
+				need_update = true;
+			}
+			const MapVec2 new_end_cell = MapVec2{ int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * z_num), int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * z_num) };
+			if (new_end_cell != end_cell) {
+				end_cell = new_end_cell;
+				need_update = true;
+			}
+
+			// もしタイルが更新されていたら更新処理
+			if (!need_update) return;
+			cell_num = {
+				(end_cell.x - start_cell.x),
+				(end_cell.y - start_cell.y)
+			};
+			cell_all_num = (cell_num.x + 1) * (cell_num.y + 1);
+			pos_list.resize(cell_all_num);
+			texture_list.resize(cell_all_num);
+
+
+			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+					pos_list[k] =
+						MapVec2D{ j * 360.0 / z_num - 180.0,
+				(360.0 - i * 360.0 / z_num) - 180.0 };
+				}
+			}
+
+
+			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+					const s3d::URL new_url =
+						s3d::String(map_url_name)
+						+ s3d::String(U"/") + s3d::ToString(z)
+						+ s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
+						+ s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
+						+ s3d::String(U".png");
+
+					const s3d::FilePath new_saveFilePath = s3d::String(U"./SavedMap/") + map_name
+						+ s3d::String(U"_") + s3d::ToString(z)
+						+ s3d::String(U"_") + s3d::ToString((j + z_num) % z_num)
+						+ s3d::String(U"_") + s3d::ToString((i + z_num) % z_num)
+						+ s3d::String(U".png");
+
+					// ファイルを同期ダウンロード
+					// ステータスコードが 200 (OK) なら
+					texture_list[k] = s3d::Texture{ new_saveFilePath };
+					if (!texture_list[k] && s3d::SimpleHTTP::Save(new_url, new_saveFilePath).isOK()) {
+						texture_list[k] = s3d::Texture{ new_saveFilePath };
+					}
+				}
+			}
+		}
+		MapVec2 getStartCell()const {
+			return start_cell;
+		}
+		MapVec2 getEndCell()const {
+			return end_cell;
+		}
+		int getZ()const {
+			return z;
+		}
+		int getZNum()const {
+			return z_num;
+		}
+	private:
+		// 画面の幅に最適な XYZ タイルの Z を格納
+		int z = 2;
+		// 2 の z 乗
+		int z_num = int(std::pow(2, z));
+		// XYZ タイルの画面上の始点セル
+		MapVec2 start_cell;
+		// XYZ タイルの画面上の終点セル
+		MapVec2 end_cell;
+		// XYZ タイルの画面上のセルの数
+		MapVec2 cell_num;
+		// XYZ タイルの画面上のセルの総数
+		int cell_all_num;
+
+		const s3d::String map_url_name = U"https://tile.mierune.co.jp/mierune"; // URL
+		const s3d::String map_name = U"mierune";
+		// 1フレーム前のマップの幅
+		double current_map_view_width = 0;
+	};
 
 	// 後にクラス化する
 	void updateXYZTiles(
