@@ -258,12 +258,12 @@ namespace paxs {
 		};
 		pin_font.setBufferThickness(3);
 
-		const s3d::Font en_font{ s3d::FontMethod::SDF, 18 /*, Typeface::Bold*/
+		const s3d::Font en_font{ s3d::FontMethod::SDF, 16/*18*/ /*, Typeface::Bold*/
 			, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf")
 		};
 		en_font.setBufferThickness(3);
 
-		const s3d::Font font{ s3d::FontMethod::SDF, 26 /*, Typeface::Bold*/
+		const s3d::Font font{ s3d::FontMethod::SDF, 20/*26*/ /*, Typeface::Bold*/
 			, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf")
 		};
 		font.setBufferThickness(3);
