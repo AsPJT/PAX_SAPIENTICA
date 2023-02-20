@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocatinRange.hpp>
 
 namespace paxs {
 
@@ -70,63 +71,11 @@ namespace paxs {
 		const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.";
 
 
-		// 地図上に描画する画像とその画像の範囲（メルカトル座標）
-		struct LocationRange {
-			s3d::Texture texture; // 地図上に描画する画像
-			double msx, msy; // 始点座標
-			double mex, mey; // 終点座標
-			double mcx, mcy; // 中間座標
-			double mx, my; // 範囲の大きさ（終点座標 - 始点座標）
 
-			LocationRange() = default;
-			LocationRange(const s3d::String& str_, const double msx_, const double msy_, const double mex_, const double mey_)
-				:texture(str_)
-				, msx(msx_), msy(msy_), mex(mex_), mey(mey_)
-				, mcx((mex_ - msx_) / 2 + msx_), mcy((mey_ - msy_) / 2 + msy_)
-				, mx(mex_ - msx_), my(mey_ - msy_) {}
-		};
 		// 地図上に描画する画像の一覧
-		std::vector<LocationRange> location_range_list;
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Japan/North Japan.svg",
-			128.343721, getLatitudeToMercatorY(30.990751), 148.90, getLatitudeToMercatorY(45.55));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Japan/South Japan.svg",
-			122.93, getLatitudeToMercatorY(20.42), 148.90, getLatitudeToMercatorY(30.990751));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Japan/Tsushima.svg",
-			129.166727, getLatitudeToMercatorY(34.083839), 129.497528, getLatitudeToMercatorY(34.727554));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Japan/Okinoshima.svg",
-			130.098193, getLatitudeToMercatorY(34.239688), 130.113008, getLatitudeToMercatorY(34.249891));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Japan/Ikinoshima.svg",
-			129.624166, getLatitudeToMercatorY(33.704071), 129.799450, getLatitudeToMercatorY(33.872968));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Japan/Sakurajima.svg",
-			130.589410, getLatitudeToMercatorY(31.541827), 130.729626, getLatitudeToMercatorY(31.637892));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Japan/Kyushu.svg",
-			128.343721, getLatitudeToMercatorY(30.990751), 132.101509, getLatitudeToMercatorY(33.969858));
-
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Karafuto.svg",
-			141.208503, getLatitudeToMercatorY(45.893137), 144.746825, getLatitudeToMercatorY(54.425405));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/South Korea.svg",
-			124.610143, getLatitudeToMercatorY(33.195652), 130.916883, getLatitudeToMercatorY(38.618049));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/North Korea.svg",
-			124.187817, getLatitudeToMercatorY(/*37.6*/37.673457), 130.696288, getLatitudeToMercatorY(43.011539));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/China.svg",
-			73.499485, getLatitudeToMercatorY(/*18.1*/18.157676), 134.775403, getLatitudeToMercatorY(/*53.5*/53.560947));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Taiwan.svg",
-			119.410639, getLatitudeToMercatorY(21.896833), 122.007173, getLatitudeToMercatorY(25.299653));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Russia.svg",
-			27.347498, getLatitudeToMercatorY(41.287923), 190, getLatitudeToMercatorY(77.709187));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Africa.svg",
-			-25.361057, getLatitudeToMercatorY(-34.833239), 54.534059, getLatitudeToMercatorY(37.348313));
-
-
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/Vietnam.svg",
-			102.144036, getLatitudeToMercatorY(8.563714), 109.458846, getLatitudeToMercatorY(23.392634));
-		location_range_list.emplace_back(U"./../../../../../Data/Map/Asia/India.svg",
-			68.198526, getLatitudeToMercatorY(8.077648), 97.163387, getLatitudeToMercatorY(35.987344));
-
-
-		location_range_list.emplace_back(U"./../../../../../Data/Map/None.svg",
-			30, getLatitudeToMercatorY(41), 129, getLatitudeToMercatorY(62));
-
+		const std::unique_ptr<TextureLocation> texture_location(new(std::nothrow) TextureLocation);
+		//location_range_list.emplace_back(U"./../../../../../Data/Map/TestMap/nara.png",
+			//135.7104, getLatitudeToMercatorY(34.59451), 135.84725, getLatitudeToMercatorY(34.7072));
 
 		//location_range_list.emplace_back(U"./../../../../../Data/Map/TestMap/YodoRiverAndYamatoRiverBasins.svg",
 		//	/*135.291055*/135.45, getLatitudeToMercatorY(/*34.398726*/34.6), 135.853110, getLatitudeToMercatorY(35.010042));
@@ -259,31 +208,12 @@ namespace paxs {
 
 			// タイルを更新
 			xyz_tile->update(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY());
-
+			
 
 /*##########################################################################################
 	地図描画関連
 ##########################################################################################*/
 
-			// 地図上に描画する画像を描画する
-			// 旧コメント：テクスチャを描く | Draw a texture
-			//texture.resized(150).drawAt(Scene::Center());
-			//texture2.resized(750).drawAt(Scene::Center());
-			for (int i = 0; i < location_range_list.size(); ++i) {
-				auto& jj = location_range_list[i];
-				if (jj.mex > map_view->getCenterX() - map_view->getWidth() / 2 &&
-					jj.msx < map_view->getCenterX() + map_view->getWidth() / 2 &&
-					jj.mey > map_view->getCenterX() - map_view->getHeight() / 2 &&
-					jj.msy < map_view->getCenterY() + map_view->getHeight() / 2) {
-					jj.texture.resized(
-						jj.mx / map_view->getWidth() * double(s3d::Scene::Width())
-						, jj.my / map_view->getHeight() * double(s3d::Scene::Height())// * 1.3
-					).drawAt(
-						(jj.mcx - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()) - 0,
-						double(s3d::Scene::Height()) - ((jj.mcy - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))// + 270
-					);
-				}
-			}
 
 			// XYZ タイルの地図の描画
 			{
@@ -305,6 +235,10 @@ namespace paxs {
 				}
 			}
 
+			// 地図上に描画する画像を描画する
+			//texture.resized(150).drawAt(Scene::Center());
+			//texture2.resized(750).drawAt(Scene::Center());
+			texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
 
 			// 線の描画
 			for (int i = 0; i < route2.size(); ++i) {
