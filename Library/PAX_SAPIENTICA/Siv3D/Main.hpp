@@ -41,22 +41,7 @@ namespace paxs {
 		};
 
 		// マップ関連変数
-		//double map_view_center_x = 135.0; // マップ座標の中央 X
-		//double map_view_center_y = getLatitudeToMercatorY(35.0); // マップ座標の中央 Y
-		//double map_view_width = 20.0; // マップの幅
-		//double map_view_max_width = 160.0; // マップの最大幅
-		//double map_view_min_width = 0.01; // マップの最小幅
-		//double map_view_height =
-		//	(map_view_width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height()); // マップの高さ
-		//double map_view_movement_size = 200.0; // マップの移動量
-		//double map_view_expansion_size = 200.0; // マップの拡大量
-		std::unique_ptr<MapView> map_view(new(std::nothrow) MapView);
-
-		// XYZ タイルの 1 つのセルのメルカトル座標を保持
-		// 基本的に Z = 19 は無い
-		//std::vector<MapVec2D> xyz_tile_pos_list;
-		// XYZ タイルの画像の情報を保持
-		//std::vector<s3d::Texture> xyz_tile_texture_list;
+		const std::unique_ptr<MapView> map_view(new(std::nothrow) MapView);
 
 
 /*##########################################################################################
@@ -80,46 +65,10 @@ namespace paxs {
 		//const s3d::String map_url_name = U"https://cyberjapandata.gsi.go.jp/xyz/std";
 		//const s3d::String map_license_name = U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）";
 
-		std::unique_ptr<XYZTile> xyz_tile(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		const std::unique_ptr<XYZTile> xyz_tile(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
 
-		//const s3d::String map_name = U"mierune";
-		//const s3d::String map_url_name = U"https://tile.mierune.co.jp/mierune";
 		const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.";
 
-		// 画面の幅に最適な XYZ タイルの Z を格納
-		//int xyz_tile_z = 2;
-		// 2 の xyz_tile_z 乗
-		//int xyz_tile_z_num = int(std::pow(2, xyz_tile_z));
-
-		// XYZ タイルの画面上の始点セル
-		//MapVec2 xyz_tile_start_cell = { int((((map_view->getCenterX() - map_view->getWidth() / 2) + 180.0) / 360.0) * xyz_tile_z_num),
-		//	int(((360.0 - ((map_view->getCenterY() + map_view->getHeight() / 2) + 180.0)) / 360.0)* xyz_tile_z_num)};
-
-		// XYZ タイルの画面上の終点セル
-		//MapVec2 xyz_tile_end_cell = { int((((map_view->getCenterX() + map_view->getWidth() / 2) + 180.0) / 360.0) * xyz_tile_z_num),
-		//	int(((360.0 - ((map_view->getCenterY() - map_view->getHeight() / 2) + 180.0)) / 360.0)* xyz_tile_z_num)};
-
-		// XYZ タイルの画面上のセルの数
-		//MapVec2 xyz_tile_cell_num = {
-		//	(xyz_tile_end_cell.x - xyz_tile_start_cell.x),
-		//	(xyz_tile_end_cell.y - xyz_tile_start_cell.y)
-		//};
-		// XYZ タイルの画面上のセルの総数
-		//int xyz_tile_cell_all_num = (xyz_tile_cell_num.x + 1) * (xyz_tile_cell_num.y + 1);
-
-		// 動的配列の要素数を初期化
-		//xyz_tile_pos_list.resize(xyz_tile_cell_all_num);
-		//xyz_tile_texture_list.resize(xyz_tile_cell_all_num);
-
-		// 画面上の XYZ タイルのメルカトル座標を初期化
-		//for (int i = xyz_tile_start_cell.y, k = 0; i <= xyz_tile_end_cell.y; ++i) {
-		//	for (int j = xyz_tile_start_cell.x; j <= xyz_tile_end_cell.x; ++j, ++k) {
-		//		xyz_tile_pos_list[k] =
-		//			//xyz_tile_pos_list[i * xyz_tile_cell_num.x + j] =
-		//			MapVec2D{ j * 360.0 / xyz_tile_z_num - 180.0,
-		//	(360.0 - i * 360.0 / xyz_tile_z_num) - 180.0 };
-		//	}
-		//}
 
 		// 地図上に描画する画像とその画像の範囲（メルカトル座標）
 		struct LocationRange {
@@ -307,29 +256,9 @@ namespace paxs {
 
 			// キーボード入力を更新
 			map_view->update();
-			//paxs::updateKey(
-			//	map_view_center_x, map_view_center_y,
-			//	map_view_width, map_view_max_width, map_view_min_width,
-			//	map_view_height, map_view_movement_size, map_view_expansion_size);
 
 			// タイルを更新
 			xyz_tile->update(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY());
-			//paxs::updateXYZTiles(
-			//	xyz_tile_z,
-			//	xyz_tile_z_num,
-			//	map_view->getWidth(),
-			//	map_view->getHeight(),
-			//	map_view->getCenterX(),
-			//	map_view->getCenterY(),
-			//	xyz_tile_start_cell,
-			//	xyz_tile_end_cell,
-			//	xyz_tile_cell_num,
-			//	xyz_tile_cell_all_num,
-			//	xyz_tile_pos_list,
-			//	xyz_tile_texture_list,
-			//	map_url_name,
-			//	map_name
-			//);
 
 
 /*##########################################################################################
