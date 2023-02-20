@@ -20,6 +20,9 @@ namespace paxs {
 
 	struct MapVec2 {
 		int x{}, y{};
+		bool operator!=(const MapVec2& map_vec2)const {
+			return x != map_vec2.x || y != map_vec2.y;
+		}
 	};
 	struct MapVec2D {
 		double x{}, y{};
