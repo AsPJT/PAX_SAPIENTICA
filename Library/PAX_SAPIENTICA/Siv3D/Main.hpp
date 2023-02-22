@@ -94,17 +94,9 @@ namespace paxs {
 			2154234,2209376,2295823,2306626,2403629
 		};
 
-		// 地名リスト
-		std::vector<LocationPoint> location_point_list;
+		// 地名
+		std::unique_ptr<PlaceNameLocation> place_name_location(new(std::nothrow) PlaceNameLocation);
 
-		// 古事記の地名
-		inputPlace("./../../../../../Data/PlaceName/KojikiPlaceName.tsv", location_point_list);
-		// 汎用的な地名
-		inputPlace("./../../../../../Data/PlaceName/PlaceName.tsv", location_point_list);
-		// 倭名類聚抄の地名
-		inputPlace("./../../../../../Data/PlaceName/WamyoRuijushoPlaceName.tsv", location_point_list);
-		// おもろさうしの地名
-		inputPlace("./../../../../../Data/PlaceName/OmoroSoshiPlaceName.tsv", location_point_list);
 		// 古墳名
 		//inputPlace("./../../../../../Data/PlaceName/TestMap/Kofun.tsv", location_point_list, LocationPointEnum::location_point_zempo_koen_fun);
 
@@ -172,18 +164,7 @@ namespace paxs {
 
 		// 画像ファイルからテクスチャを作成 | Create a texture from an image file
 		const s3d::Texture texture{ U"./../../../../../Image/Logo.svg" };
-		const s3d::Texture texture_ko{ U"./../../../../../Data/OldDocumentIcon/JP-Kojiki.svg" };
-		const s3d::Texture texture_wam{ U"./../../../../../Data/OldDocumentIcon/JP-WamyoRuijusho.svg" };
-		const s3d::Texture texture_pin1{ U"./../../../../../Data/Pin/PitDwelling.svg" };
-		const s3d::Texture texture_kofun1{ U"./../../../../../Data/MiniIcon/ZempoKoenFun.svg" };
-		const s3d::Texture texture_kofun2{ U"./../../../../../Data/MiniIcon/ZempoKohoFun.svg" };
-		const s3d::Texture texture_kofun3{ U"./../../../../../Data/MiniIcon/HotategaiGataKofun.svg" };
-		const s3d::Texture texture_pn{ U"./../../../../../Data/MiniIcon/PlaceName.svg" };
 
-		// ユリウス日
-		//int jdn = 1600407;
-		//int jdn = 1808020;
-		int jdn = 1808286;
 
 		// 画像の拡大縮小の方式を設定
 		const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
@@ -240,140 +221,8 @@ namespace paxs {
 			s3d::Spline2D{ route2 }.draw(2, s3d::Color{ 85,145,245 });
 
 			// 地名を描画
-			for (int i = 0; i < location_point_list.size(); ++i) {
-				auto& lli = location_point_list[i];
-				// 範囲外を除去
-				if (lli.x < (map_view_center_x - map_view_width / 1.8)
-					|| lli.x >(map_view_center_x + map_view_width / 1.8)
-					|| lli.y < (map_view_center_y - map_view_height / 1.8)
-					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
-
-				// 範囲内の場合
-				if (lli.min_view > map_view_width
-					|| lli.max_view < map_view_width
-					|| lli.min_year > jdn
-					|| lli.max_year < jdn) {
-
-					// 地名
-					if (lli.lpe == LocationPointEnum::location_point_place_name) {
-						texture_pn.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
-						continue;
-					}
-					// 前方後円墳
-					if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
-						texture_kofun1.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
-						continue;
-					}
-					// 前方後方墳
-					if (lli.lpe == LocationPointEnum::location_point_zempo_koho_fun) {
-						texture_kofun2.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
-						continue;
-					}
-					// 帆立貝型古墳
-					if (lli.lpe == LocationPointEnum::location_point_hotategai_gata_kofun) {
-						texture_kofun3.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
-						continue;
-					}
-				}
-			}
-
-			// 地名を描画
-			for (int i = 0; i < location_point_list.size(); ++i) {
-				auto& lli = location_point_list[i];
-
-				// 範囲外を除去
-				if (lli.x < (map_view_center_x - map_view_width / 1.8)
-					|| lli.x >(map_view_center_x + map_view_width / 1.8)
-					|| lli.y < (map_view_center_y - map_view_height / 1.8)
-					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
-
-				if (lli.min_view > map_view_width) continue;
-				if (lli.max_view < map_view_width) continue;
-				if (lli.min_year > jdn) continue;
-				if (lli.max_year < jdn) continue;
-
-				// 集落遺跡ではない場合
-				//if (lli.lpe == LocationPointEnum::location_point_place_name) {
-				if (lli.lpe != LocationPointEnum::location_point_pit_dwelling) {
-
-					if (lli.en_name.size() == 0) {
-						// 名前を描画
-						font(s3d::Unicode::FromUTF8(lli.name)).drawAt(
-							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
-							, s3d::Palette::Black);
-					}
-					else {
-						// 名前（英語）を描画
-						en_font(s3d::Unicode::FromUTF8(lli.en_name)).draw(
-							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							s3d::Arg::bottomCenter = s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
-							}
-						, s3d::Palette::Black);
-						// 名前を描画
-						font(s3d::Unicode::FromUTF8(lli.name)).draw(
-							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							s3d::Arg::topCenter = s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
-							}
-						, s3d::Palette::Black);
-					}
-					// 古事記のアイコン
-					if (lli.source == "JP-Kojiki") {
-						texture_ko.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
-							});
-					}
-					// 倭名類聚抄のアイコン
-					else if (lli.source == "JP-WamyoRuijusho") {
-						texture_wam.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
-							});
-					}
-					// 前方後円墳のアイコン
-					else if (lli.source == "ZempoKoenFun") {
-						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
-							});
-					}
-					// 前方後方墳のアイコン
-					else if (lli.source == "ZempoKohoFun") {
-						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
-							});
-					}
-					// 帆立貝型古墳のアイコン
-					else if (lli.source == "HotategaiGataKofun") {
-						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
-							});
-					}
-				}
-				// それ以外（集落遺跡）
-				else {
-					pin_font(s3d::Unicode::FromUTF8(lli.name)).drawAt(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-						(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) - 70
-						, s3d::Palette::Black);
-					texture_pin1.resized(50).draw(
-						s3d::Arg::bottomCenter = s3d::Vec2((lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())))
-					);
-				}
-				//Circle{{(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(Scene::Width()),
-				//double(Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(Scene::Height()))},5 }.draw(Palette::Black);
-
-			}
+			place_name_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
+				font, en_font, pin_font);
 
 /*##########################################################################################
 	暦関連
