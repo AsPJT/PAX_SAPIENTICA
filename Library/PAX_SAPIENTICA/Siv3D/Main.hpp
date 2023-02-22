@@ -17,7 +17,8 @@
 ##########################################################################################*/
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
-#include <PAX_SAPIENTICA/Siv3D/LocatinRange.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocatipnRange.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocationPoint.hpp>
 
 namespace paxs {
 
@@ -206,8 +207,13 @@ namespace paxs {
 			// キーボード入力を更新
 			map_view->update();
 
+			const double map_view_width = map_view->getWidth();
+			const double map_view_height = map_view->getHeight();
+			const double map_view_center_x = map_view->getCenterX();
+			const double map_view_center_y = map_view->getCenterY();
+
 			// タイルを更新
-			xyz_tile->update(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY());
+			xyz_tile->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 			
 
 /*##########################################################################################
@@ -216,35 +222,18 @@ namespace paxs {
 
 
 			// XYZ タイルの地図の描画
-			{
-				MapVec2 xyz_tile_start_cell = xyz_tile->getStartCell();
-				MapVec2 xyz_tile_end_cell = xyz_tile->getEndCell();
-				int xyz_tile_z_num = xyz_tile->getZNum();
-				for (int i = xyz_tile_start_cell.y, k = 0; i <= xyz_tile_end_cell.y; ++i) {
-					for (int j = xyz_tile_start_cell.x; j <= xyz_tile_end_cell.x; ++j, ++k) {
-						if (xyz_tile->texture_list[k]) {
-							xyz_tile->texture_list[k].resized(
-								(360.0 / xyz_tile_z_num) / map_view->getWidth() * double(s3d::Scene::Width())
-								, (360.0 / xyz_tile_z_num) / map_view->getHeight() * double(s3d::Scene::Height())
-							).draw(
-								(xyz_tile->pos_list[k].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-								double(s3d::Scene::Height()) - ((xyz_tile->pos_list[k].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
-							);
-						}
-					}
-				}
-			}
+			xyz_tile->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 
 			// 地図上に描画する画像を描画する
 			//texture.resized(150).drawAt(Scene::Center());
 			//texture2.resized(750).drawAt(Scene::Center());
-			texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
+			texture_location->update(map_view_center_x, map_view_center_y, map_view_width, map_view_height);
 
 			// 線の描画
 			for (int i = 0; i < route2.size(); ++i) {
 				route2[i] = s3d::Vec2(
-					(route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-					double(s3d::Scene::Height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
+					(route1[i].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+					double(s3d::Scene::Height()) - ((route1[i].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 				);
 			}
 			// 航路を描画
@@ -254,43 +243,43 @@ namespace paxs {
 			for (int i = 0; i < location_point_list.size(); ++i) {
 				auto& lli = location_point_list[i];
 				// 範囲外を除去
-				if (lli.x < (map_view->getCenterX() - map_view->getWidth() / 1.8)
-					|| lli.x >(map_view->getCenterX() + map_view->getWidth() / 1.8)
-					|| lli.y < (map_view->getCenterY() - map_view->getHeight() / 1.8)
-					|| lli.y >(map_view->getCenterY() + map_view->getHeight() / 1.8)) continue;
+				if (lli.x < (map_view_center_x - map_view_width / 1.8)
+					|| lli.x >(map_view_center_x + map_view_width / 1.8)
+					|| lli.y < (map_view_center_y - map_view_height / 1.8)
+					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
 
 				// 範囲内の場合
-				if (lli.min_view > map_view->getWidth()
-					|| lli.max_view < map_view->getWidth()
+				if (lli.min_view > map_view_width
+					|| lli.max_view < map_view_width
 					|| lli.min_year > jdn
 					|| lli.max_year < jdn) {
 
 					// 地名
 					if (lli.lpe == LocationPointEnum::location_point_place_name) {
 						texture_pn.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 前方後円墳
 					if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
 						texture_kofun1.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 前方後方墳
 					if (lli.lpe == LocationPointEnum::location_point_zempo_koho_fun) {
 						texture_kofun2.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 帆立貝型古墳
 					if (lli.lpe == LocationPointEnum::location_point_hotategai_gata_kofun) {
 						texture_kofun3.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 				}
@@ -301,13 +290,13 @@ namespace paxs {
 				auto& lli = location_point_list[i];
 
 				// 範囲外を除去
-				if (lli.x < (map_view->getCenterX() - map_view->getWidth() / 1.8)
-					|| lli.x >(map_view->getCenterX() + map_view->getWidth() / 1.8)
-					|| lli.y < (map_view->getCenterY() - map_view->getHeight() / 1.8)
-					|| lli.y >(map_view->getCenterY() + map_view->getHeight() / 1.8)) continue;
+				if (lli.x < (map_view_center_x - map_view_width / 1.8)
+					|| lli.x >(map_view_center_x + map_view_width / 1.8)
+					|| lli.y < (map_view_center_y - map_view_height / 1.8)
+					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
 
-				if (lli.min_view > map_view->getWidth()) continue;
-				if (lli.max_view < map_view->getWidth()) continue;
+				if (lli.min_view > map_view_width) continue;
+				if (lli.max_view < map_view_width) continue;
 				if (lli.min_year > jdn) continue;
 				if (lli.max_year < jdn) continue;
 
@@ -319,66 +308,66 @@ namespace paxs {
 						// 名前を描画
 						font(s3d::Unicode::FromUTF8(lli.name)).drawAt(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							(lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))// - 30
+							(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
 							, s3d::Palette::Black);
 					}
 					else {
 						// 名前（英語）を描画
 						en_font(s3d::Unicode::FromUTF8(lli.en_name)).draw(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							s3d::Arg::bottomCenter = s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))// - 30
+							s3d::Arg::bottomCenter = s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
 							}
 						, s3d::Palette::Black);
 						// 名前を描画
 						font(s3d::Unicode::FromUTF8(lli.name)).draw(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							s3d::Arg::topCenter = s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))// - 30
+							s3d::Arg::topCenter = s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
 							}
 						, s3d::Palette::Black);
 					}
 					// 古事記のアイコン
 					if (lli.source == "JP-Kojiki") {
-						texture_ko.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
+						texture_ko.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
 							});
 					}
 					// 倭名類聚抄のアイコン
 					else if (lli.source == "JP-WamyoRuijusho") {
-						texture_wam.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
+						texture_wam.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
 							});
 					}
 					// 前方後円墳のアイコン
 					else if (lli.source == "ZempoKoenFun") {
-						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
+						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
 							});
 					}
 					// 前方後方墳のアイコン
 					else if (lli.source == "ZempoKohoFun") {
-						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
+						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
 							});
 					}
 					// 帆立貝型古墳のアイコン
 					else if (lli.source == "HotategaiGataKofun") {
-						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) + 50
+						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
 							});
 					}
 				}
 				// それ以外（集落遺跡）
 				else {
 					pin_font(s3d::Unicode::FromUTF8(lli.name)).drawAt(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-						(lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())) - 70
+						(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) - 70
 						, s3d::Palette::Black);
 					texture_pin1.resized(50).draw(
-						s3d::Arg::bottomCenter = s3d::Vec2((lli.x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height())))
+						s3d::Arg::bottomCenter = s3d::Vec2((lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())))
 					);
 				}
 				//Circle{{(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(Scene::Width()),
@@ -504,8 +493,8 @@ namespace paxs {
 			}
 
 			// その他のデバッグ用の変数情報の表示
-			font(s3d::String{ U"拡大率" } + s3d::ToString(map_view->getWidth())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 600), s3d::Palette::Black);
-			font(s3d::String{ U"メルカトル座標" } + s3d::ToString(map_view->getCenterX()) + s3d::String{ U":" } + s3d::ToString(map_view->getCenterY())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 300), s3d::Palette::Black);
+			font(s3d::String{ U"拡大率" } + s3d::ToString(map_view_width)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 600), s3d::Palette::Black);
+			font(s3d::String{ U"メルカトル座標" } + s3d::ToString(map_view_center_x) + s3d::String{ U":" } + s3d::ToString(map_view_center_y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 300), s3d::Palette::Black);
 			font(s3d::String{ U"タイル" } + s3d::ToString(xyz_tile->getZ()) + s3d::String{ U":" } + s3d::ToString(xyz_tile->getZNum())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 500), s3d::Palette::Black);
 			//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
 			//font(s3d::String{ U"B" } + s3d::ToString(xyz_tile_pos.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
