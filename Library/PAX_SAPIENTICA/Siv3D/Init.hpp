@@ -62,49 +62,6 @@ namespace paxs {
 		paxs::Date date{};
 		bool is_leap_month = false;
 	};
-
-
-	enum class LocationPointEnum {
-		location_point_place_name, // 地名
-		location_point_pit_dwelling, // 集落遺跡
-		location_point_zempo_koen_fun, // 前方後円墳
-		location_point_zempo_koho_fun, // 前方後方墳
-		location_point_hotategai_gata_kofun // 帆立貝型古墳
-	};
-
-	// 地名
-	struct LocationPoint {
-		std::string name;
-		std::string en_name;
-		double x, y;
-		double min_view, max_view;
-		int min_year, max_year;
-		LocationPointEnum lpe;
-		std::string source{};
-	};
-
-	void inputPlace(const std::string& str_, std::vector<LocationPoint>& location_point_list_, const LocationPointEnum lpe_ = LocationPointEnum::location_point_place_name) {
-		// 地名を読み込み
-		std::ifstream pifs(str_);
-		if (pifs.fail()) return;
-		std::string pline;
-		while (std::getline(pifs, pline)) {
-			std::vector<std::string> strvec = paxs::split(pline, '\t');
-
-			location_point_list_.emplace_back(
-				strvec[0], // 漢字
-				strvec[1], // ローマ字
-				std::stod(strvec[2]), // 経度
-				getLatitudeToMercatorY(std::stod(strvec[3])), // 緯度
-				std::stod(strvec[4]), // 最小サイズ
-				std::stod(strvec[5]), // 最大サイズ
-				std::stod(strvec[6]), // 最小時代
-				std::stod(strvec[7]), // 出典
-				lpe_,
-				strvec[8] // 最大時代
-			);
-		}
-	}
 }
 
 #include <PAX_SAPIENTICA/Siv3D/Key.hpp> // キーボードの入力
