@@ -115,7 +115,7 @@ namespace paxs {
 						+ s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
 						+ s3d::String(U".png");
 
-					const s3d::FilePath new_saveFilePath = s3d::String(U"./SavedMap/") + map_name
+					const s3d::FilePath new_saveFilePath = map_file_path_name + map_name
 						+ s3d::String(U"_") + s3d::ToString(z)
 						+ s3d::String(U"_") + s3d::ToString((j + z_num) % z_num)
 						+ s3d::String(U"_") + s3d::ToString((i + z_num) % z_num)
@@ -124,7 +124,9 @@ namespace paxs {
 					// ファイルを同期ダウンロード
 					// ステータスコードが 200 (OK) なら
 					texture_list[k] = s3d::Texture{ new_saveFilePath };
-					if (!texture_list[k] && s3d::SimpleHTTP::Save(new_url, new_saveFilePath).isOK()) {
+					if (!texture_list[k] &&
+						map_url_name.size() != 0 &&
+						s3d::SimpleHTTP::Save(new_url, new_saveFilePath).isOK()) {
 						texture_list[k] = s3d::Texture{ new_saveFilePath };
 					}
 				}
@@ -157,6 +159,15 @@ namespace paxs {
 		int getZNum()const {
 			return z_num;
 		}
+		void setMapURL(const s3d::String& map_url_name_) {
+			map_url_name = map_url_name_;
+		}
+		void setMapName(const s3d::String& map_name_) {
+			map_name = map_name_;
+		}
+		void setMapFilePath(const s3d::String& map_file_path_name_) {
+			map_file_path_name = map_file_path_name_;
+		}
 	private:
 		// 画面の幅に最適な XYZ タイルの Z を格納
 		int z = 2;
@@ -171,8 +182,9 @@ namespace paxs {
 		// XYZ タイルの画面上のセルの総数
 		int cell_all_num;
 
-		const s3d::String map_url_name = U"https://tile.mierune.co.jp/mierune"; // URL
-		const s3d::String map_name = U"mierune";
+		s3d::String map_url_name = U""; // URL
+		s3d::String map_name = U"";
+		s3d::String map_file_path_name = U"";
 		// 1フレーム前のマップの幅
 		double current_map_view_width = 0;
 	};
