@@ -46,6 +46,9 @@ namespace paxs {
 	class PlaceNameLocation {
 	public:
 		PlaceNameLocation() {
+			// 古墳
+			inputPlace("./../../../../../Data/PlaceName/TestMap/Kofun.tsv", LocationPointEnum::location_point_zempo_koen_fun);
+
 			// 古事記の地名
 			inputPlace("./../../../../../Data/PlaceName/KojikiPlaceName.tsv");
 			// 汎用的な地名

@@ -67,9 +67,21 @@ namespace paxs {
 		//const s3d::String map_url_name = U"https://cyberjapandata.gsi.go.jp/xyz/std";
 		//const s3d::String map_license_name = U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）";
 
-		const std::unique_ptr<XYZTile> xyz_tile(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		const std::unique_ptr<XYZTile> xyz_tile1(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile1->setMapURL(U"https://tile.mierune.co.jp/mierune");
+		xyz_tile1->setMapName(U"mierune");
+		xyz_tile1->setMapFilePath(U"./SavedMap/");
 
-		const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.";
+		const std::unique_ptr<XYZTile> xyz_tile2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile2->setMapName(U"kantorapid");
+		xyz_tile2->setMapFilePath(U"./SavedMap/KantoRapid/");
+
+		const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile3->setMapURL(U"https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
+		xyz_tile3->setMapName(U"water");
+		xyz_tile3->setMapFilePath(U"./SavedMap/");
+
+		const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
 
 
 
@@ -194,7 +206,9 @@ namespace paxs {
 			const double map_view_center_y = map_view->getCenterY();
 
 			// タイルを更新
-			xyz_tile->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			xyz_tile1->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			xyz_tile2->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			xyz_tile3->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 			
 
 /*##########################################################################################
@@ -203,7 +217,9 @@ namespace paxs {
 
 
 			// XYZ タイルの地図の描画
-			xyz_tile->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			xyz_tile1->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			xyz_tile2->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			xyz_tile3->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 
 			// 地図上に描画する画像を描画する
 			//texture.resized(150).drawAt(Scene::Center());
@@ -344,7 +360,7 @@ namespace paxs {
 			// その他のデバッグ用の変数情報の表示
 			font(s3d::String{ U"拡大率" } + s3d::ToString(map_view_width)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 600), s3d::Palette::Black);
 			font(s3d::String{ U"メルカトル座標" } + s3d::ToString(map_view_center_x) + s3d::String{ U":" } + s3d::ToString(map_view_center_y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 300), s3d::Palette::Black);
-			font(s3d::String{ U"タイル" } + s3d::ToString(xyz_tile->getZ()) + s3d::String{ U":" } + s3d::ToString(xyz_tile->getZNum())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 500), s3d::Palette::Black);
+			font(s3d::String{ U"タイル" } + s3d::ToString(xyz_tile1->getZ()) + s3d::String{ U":" } + s3d::ToString(xyz_tile1->getZNum())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 500), s3d::Palette::Black);
 			//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
 			//font(s3d::String{ U"B" } + s3d::ToString(xyz_tile_pos.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
 			pin_font(map_license_name).draw(
