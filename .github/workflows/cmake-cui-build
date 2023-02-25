@@ -1,0 +1,31 @@
+name: CMake-CUI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  BUILD_TYPE: Debug
+  WORK_SPACE: ${{github.workspace}}/Project/Mac/GeographicDataToSimulationGrid
+  TARGET: GeographicDataToSimulationGrid
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      run: |
+        mkdir ${{env.WORK_SPACE}}/build
+        cmake -B ${{env.WORK_SPACE}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - Unix Makefiles" ${{env.WORK_SPACE}}
+
+    - name: Build
+      run: cmake --build ${{env.WORK_SPACE}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
