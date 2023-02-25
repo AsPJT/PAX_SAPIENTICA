@@ -273,3 +273,6 @@ TestMap/
 SavedMap/
 *.exe
 AS_DEBUG/
+
+.DS_Store
+.vscode
