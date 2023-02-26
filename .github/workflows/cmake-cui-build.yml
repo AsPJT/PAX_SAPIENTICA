@@ -8,7 +8,7 @@ on:
 
 env:
   BUILD_TYPE: Debug
-  WORK_SPACE: ${{github.workspace}}/Project/Mac/GeographicDataToSimulationGrid
+  WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
   TARGET: GeographicDataToSimulationGrid
 
 jobs:
