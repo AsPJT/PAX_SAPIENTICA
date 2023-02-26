@@ -6,3 +6,7 @@ set(EXECUTABLE_OUTPUT_PATH ../Project/GeographicDataToSimulationGrid/bin)
 include_directories(../../Library)
 
 add_executable(GeographicDataToSimulationGrid Main.cpp)
+
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+target_link_libraries(GeographicDataToSimulationGrid ${OpenCV_LIBS})

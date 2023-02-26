@@ -22,6 +22,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    -name: Install opencv
+      run: |
+      apt install libopencv-dev
+      sudo apt install cmake
+      sudo apt install g++
+
     - name: Configure CMake
       run: |
         mkdir ${{env.WORK_SPACE}}/build
