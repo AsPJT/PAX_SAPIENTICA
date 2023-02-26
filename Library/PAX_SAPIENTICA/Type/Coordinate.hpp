@@ -42,7 +42,7 @@ namespace paxs {
 			Coordinate<T> end;
 
 			CoordinateRange() = default;
-			CoordinateRange(const T& start_, const T& end_) :start(start_), end(end_) {}
+			CoordinateRange(const Coordinate<T>& start_, const Coordinate<T>& end_) :start(start_), end(end_) {}
 
 		};
 
