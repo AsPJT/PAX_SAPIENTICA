@@ -24,7 +24,7 @@ jobs:
 
     - name: Install opencv
       run: |
-        apt install libopencv-dev
+        sudo apt install libopencv-dev
         sudo apt install cmake
         sudo apt install g++
 
