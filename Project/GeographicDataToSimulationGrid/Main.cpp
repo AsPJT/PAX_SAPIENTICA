@@ -17,9 +17,10 @@
 const std::string xyz_tile_foleder_path = "../../../Data/Map/XYZTile/";
 
 int main(){
-    auto settings = paxs::Helper::readSettings("Settings.txt");
-    std::string path = xyz_tile_foleder_path + settings["source_folder_name"] + "/" + settings["file_prefix"] + settings["z"] + "_" + settings["start_x"] + "_" + settings["start_y"] + "." + settings["type"];
-    std::cout<<path<<std::endl;
+    std::string setting_file_path = "../Settings/" + paxs::Helper::getSettingFileName() + ".txt";
+    auto settings = paxs::Helper::readSettings(setting_file_path);
+    std::string prefix = xyz_tile_foleder_path + settings["source_folder_name"] + "/" + settings["file_prefix"] + settings["z"] + "_";
+    std::string path = prefix + settings["start_x"] + "_" + settings["start_y"] + "." + settings["file_type"];
     
     cv::Mat img = cv::imread(path);
     if(img.empty()){

@@ -16,11 +16,15 @@
 
 ##########################################################################################*/
 
+#include <array>
 #include <fstream>
 #include <iostream>
 #include <map>
 
 namespace paxs {
+    
+    const std::array<const char*, 2> setting_file_names = {"GeologicalFeature", "LandAndSea"};
+
     struct Helper
     {
         static std::string trim(std::string string, const char* trim_character_list = " \t\v\r\n"){
@@ -41,7 +45,7 @@ namespace paxs {
             std::map<std::string, std::string> settings;
             std::ifstream ifs(path);
             if(ifs.fail()){
-                std::cout<<"File not found.\n";
+                std::cout<<"File not found."<<std::endl;
                 return settings;
             }
 
@@ -63,6 +67,22 @@ namespace paxs {
             }
             ifs.close();
             return settings;
+        }
+
+        std::string static getSettingFileName(){
+            int choice = -1;
+            while(choice < 0 || choice >= setting_file_names.size()){
+                std::cout << "choice the number(";
+                for(int i = 0; i < setting_file_names.size(); ++i){
+                    std::cout << i << ":" << setting_file_names[i];
+                    if(i != setting_file_names.size() - 1){
+                        std::cout << ", ";
+                    }
+                }
+                std::cout << ")" << std::endl;
+                std::cin >> choice;
+            }
+            return setting_file_names[choice];
         }
     };
 }
