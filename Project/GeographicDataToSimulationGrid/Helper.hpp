@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <array>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -25,8 +26,29 @@ namespace paxs {
     
     const std::array<const char*, 2> setting_file_names = {"GeologicalFeature", "LandAndSea"};
 
-    struct Helper
+    using Settings = std::map<std::string, std::string>;
+
+    class Helper
     {
+    public:
+        // 設定を取得
+        static Settings getSettings(){
+            std::string setting_file_path = "../Settings/" + paxs::Helper::getSettingFileName() + ".txt";
+            return paxs::Helper::readSettings(setting_file_path);
+        }
+
+        // フォルダを作成
+        static void createFolder(const std::string path){
+            std::filesystem::create_directory(path);
+        }
+
+        // ファイルに書き込む
+        void static writeFile(const std::string filename, const std::string content){
+            std::ofstream ofs;
+            ofs.open(filename, std::ios_base::app);
+            ofs << content << std::endl;
+        }
+    private:
         static std::string trim(std::string string, const char* trim_character_list = " \t\v\r\n"){
             std::string::size_type left = string.find_first_not_of(trim_character_list);
             if (left != std::string::npos) {
@@ -41,7 +63,7 @@ namespace paxs {
             return string;
         }
 
-        static std::map<std::string, std::string> readSettings(const std::string& path){
+        static Settings readSettings(const std::string& path){
             std::map<std::string, std::string> settings;
             std::ifstream ifs(path);
             if(ifs.fail()){

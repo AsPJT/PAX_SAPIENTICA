@@ -14,24 +14,23 @@
 #include <PAX_SAPIENTICA/Simulation/SpaceGrid.hpp>
 #include "Helper.hpp"
 
-const std::string xyz_tile_foleder_path = "../../../Data/Map/XYZTile/";
+const std::string xyz_tile_folder_path = "../../../Data/Map/XYZTile/";
+const std::string simulation_folder_path = "../../../Data/Simulation/";
 
 int main(){
-    std::string setting_file_path = "../Settings/" + paxs::Helper::getSettingFileName() + ".txt";
-    auto settings = paxs::Helper::readSettings(setting_file_path);
-    std::string prefix = xyz_tile_foleder_path + settings["source_folder_name"] + "/" + settings["file_prefix"] + settings["z"] + "_";
+    paxs::Settings settings = paxs::Helper::getSettings();
+    std::string prefix = xyz_tile_folder_path + settings["source_folder_name"] + "/" + settings["file_prefix"] + settings["z"] + "_";
     std::string path = prefix + settings["start_x"] + "_" + settings["start_y"] + "." + settings["file_type"];
     
-    cv::Mat img = cv::imread(path);
-    if(img.empty()){
-        std::cout << settings["source_folder_name"] + " not found." << std::endl;
-        return -1;
-    }
+    // cv::Mat img = cv::imread(path);
+    // if(img.empty()){
+    //     std::cout << settings["source_folder_name"] + " not found." << std::endl;
+    //     return -1;
+    // }
 
-    cv::namedWindow("hogehoge", cv::WINDOW_AUTOSIZE); //Windowのタイトルとサイズ設定
-    cv::imshow("hogehoge", img);
-    cv::waitKey(0);
+    // paxs::Helper::createFolder("../../../Data/Simulation/" + settings["source_folder_name"]);
+    // cv::imwrite("../../../Data/Simulation/" + settings["source_folder_name"] + "/1.png", img);	
 
-    cv::destroyAllWindows();
-    std::cout << "Finish" << std::endl;
+    std::string content = "1\t2\t3";
+    paxs::Helper::writeFile(simulation_folder_path + "sample.tsv", content);
 }
