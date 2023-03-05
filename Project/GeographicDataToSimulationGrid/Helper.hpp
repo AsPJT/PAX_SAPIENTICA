@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <array>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -28,8 +29,7 @@ namespace paxs {
 
     using Settings = std::map<std::string, std::string>;
 
-    class Helper
-    {
+    class Helper{
     public:
         // 設定を取得
         static Settings getSettings(){
@@ -47,6 +47,11 @@ namespace paxs {
             std::ofstream ofs;
             ofs.open(filename, std::ios_base::app);
             ofs << content << std::endl;
+        }
+
+        // 2のn乗
+        int static powOfTwo(const int n){
+            return std::pow(2, n);
         }
     private:
         static std::string trim(std::string string, const char* trim_character_list = " \t\v\r\n"){
