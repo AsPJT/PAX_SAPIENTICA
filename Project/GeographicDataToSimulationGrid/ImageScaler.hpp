@@ -16,8 +16,8 @@
 
 ##########################################################################################*/
 
+#include <cmath>
 #include <iostream>
-#include <string>
 
 #include <PAX_SAPIENTICA/Type/Coordinate.hpp>
 #include "Helper.hpp"
@@ -44,11 +44,23 @@ namespace paxs {
 			img_size = img.cols;
 			z_square = paxs::Helper::powOfTwo(std::stoi(settings["z"]));
 			pixel_sum = img_size * z_square;
+			division_num = std::stoi(settings["division_num"]);
 
 			std::cout << "Init ImageScaler is success" << std::endl;
 		}
-		static void nearestNeighbor(){
 
+		std::vector<std::vector<cv::Vec3b>> nearestNeighbor(){
+			std::vector<std::vector<cv::Vec3b>> result(division_num, std::vector<cv::Vec3b>(division_num));
+			double division_pixel = (double)pixel_sum / division_num;
+			double pixel_deviation = division_pixel * 0.5;
+			for(int y=0;y<division_num;y++){
+				for(int x=0;x<division_num;x++){
+					int x_pixel = std::round(division_pixel * x + pixel_deviation);
+					int y_pixel = std::round(division_pixel * y + pixel_deviation);
+					result[y][x] = getPix(x_pixel / img_size, y_pixel / img_size, cv::Point(x_pixel % img_size, y_pixel % img_size));
+				}
+			}
+			return result;
 		}
     private:
         paxs::Settings settings; // 設定
@@ -58,9 +70,20 @@ namespace paxs {
 		int img_size; // 画像の1方向のピクセル数
 		int z_square; // 画像の1方向の枚数
 		int pixel_sum; // 全画像の1方向のピクセル数
+		int division_num; // 1方向の分割数
 
 		std::string getFilePath(const int x, const int y){
 			return path_prefix + std::to_string(x) + "_" + std::to_string(y) + "." + settings["file_type"];
+		}
+
+    	// 画素値の取得
+		cv::Vec3b getPix(const int x, const int y, cv::Point point){
+			cv::Mat img = cv::imread(getFilePath(start.x, start.y));
+			if(img.empty()){
+				std::cout << "File not found." << std::endl;
+				return cv::Vec3b();
+    		}
+			return img.at<cv::Vec3b>(point);
 		}
     };
 }

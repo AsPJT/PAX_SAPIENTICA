@@ -9,6 +9,7 @@
 
 ##########################################################################################*/
 
+#include <iostream>
 #include <memory>
 
 #include <opencv2/opencv.hpp>
@@ -20,10 +21,9 @@ const std::string simulation_folder_path = "../../../Data/Simulation/";
 
 int main(){
     std::unique_ptr<paxs::ImageScaler> image_scaler(new(std::nothrow) paxs::ImageScaler); 
-    
-    // 画素値の取得
-	//cv::Vec3b pix = img.at<cv::Vec3b>(cv::Point(0, 0));
-    //std:: cout << "img.cols:" << size << "\nz_square:" << z_square << "\npix:" << (int)pix[0] << "\nhorizontal_pixels:" << horizontal_pixels << std::endl;
+    auto result = image_scaler->nearestNeighbor();
+
+    std::cout << "Finish" << std::endl;
 
     // paxs::Helper::createFolder("../../../Data/Simulation/" + settings["source_folder_name"]);
 
