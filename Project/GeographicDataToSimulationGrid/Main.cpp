@@ -23,6 +23,8 @@ int main(){
     std::unique_ptr<paxs::ImageScaler> image_scaler(new(std::nothrow) paxs::ImageScaler); 
     auto result = image_scaler->nearestNeighbor();
 
+    image_scaler->writeFile(result, simulation_folder_path + "sample.png");
+
     std::cout << "Finish" << std::endl;
 
     // paxs::Helper::createFolder("../../../Data/Simulation/" + settings["source_folder_name"]);

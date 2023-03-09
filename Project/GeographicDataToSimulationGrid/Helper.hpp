@@ -97,7 +97,7 @@ namespace paxs {
         }
 
         std::string static getSettingFileName(){
-            int choice = -1;
+            int choice = 1;
             while(choice < 0 || choice >= setting_file_names.size()){
                 std::cout << "choice the number(";
                 for(int i = 0; i < setting_file_names.size(); ++i){
