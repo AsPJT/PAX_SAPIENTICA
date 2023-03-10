@@ -24,6 +24,8 @@
 
 namespace paxs {
 	const std::string xyz_tile_folder_path = "../../../Data/Map/XYZTile/";
+	const cv::Vec3b sea_color(115, 87, 0);
+	const cv::Vec3b land_color(254, 254, 254);
 
     class ImageScaler{
     public:
@@ -63,15 +65,31 @@ namespace paxs {
 			return result;
 		}
 
-		void writeFile(const std::vector<std::vector<cv::Vec3b>>& data, const std::string& path){
+		void cvWriteFile(const std::vector<std::vector<cv::Vec3b>>& data, const std::string& path){
 			cv::Mat image(data[0].size(), data.size(), CV_8UC3);
 			for(int y=0;y<data.size();y++){
 				for(int x=0;x<data[0].size();x++){
-			 		image.at<cv::Vec3b>(x,y) = data[y][x];
+			 		image.at<cv::Vec3b>(y,x) = data[y][x];
 				}
 			}
 			cv::imwrite(path, image);
 		}
+
+        // ファイルに書き込む
+        void static landAndSeaWriteFile(const std::vector<std::vector<cv::Vec3b>>& data, const std::string& path){
+			std::string content;
+			for(int y=0;y<data.size();y++){
+				for(int x=0;x<data[0].size();x++){
+			 		content += data[y][x] == sea_color ? '1' : '0';
+				}
+				content += "\n";
+			}
+
+            std::ofstream ofs;
+            ofs.open(path, std::ios_base::trunc);
+            ofs << content << std::endl;
+        }
+
     private:
         paxs::Settings settings; // 設定
 		std::string path_prefix; // 元データのPathの接頭辞
