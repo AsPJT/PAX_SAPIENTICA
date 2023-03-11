@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <array>
 #include <cmath>
 #include <iostream>
 
@@ -59,7 +60,7 @@ namespace paxs {
 				for(int x=0;x<division_num;x++){
 					int x_pixel = std::round(division_pixel * x + pixel_deviation);
 					int y_pixel = std::round(division_pixel * y + pixel_deviation);
-					result[y][x] = getPix<cv::Vec3b>(x_pixel / img_size, y_pixel / img_size, cv::Point(x_pixel % img_size, y_pixel % img_size));
+					result[y][x] = getColor<cv::Vec3b>(x_pixel / img_size, y_pixel / img_size, cv::Point(x_pixel % img_size, y_pixel % img_size));
 				}
 			}
 			return result;
@@ -106,7 +107,7 @@ namespace paxs {
 
     	// 画素値の取得
 		template<typename T>
-		T getPix(const int x, const int y, cv::Point point){
+		T getColor(const int x, const int y, cv::Point point){
 			std::string path = getFilePath(start.x + x, start.y + y);
 			cv::Mat img = cv::imread(path);
 			if(img.empty()){
@@ -114,6 +115,51 @@ namespace paxs {
 				return T();
     		}
 			return img.at<T>(point);
+		}
+		
+		template<typename T>
+		std::array<T, 4> getAroundColor(const int x, const int y, cv::Point point){
+			std::string path = getFilePath(start.x + x, start.y + y);
+			cv::Mat img1 = cv::imread(path);
+			if(img1.empty()){
+				std::cout << "File not found." << std::endl;
+				return std::array<T, 4>();
+    		}
+			std::array<T, 4> color;
+			color[0] = img1.at<T>(point);
+			if(point.x == img_size - 1){
+				if(point.y == img_size - 1){
+					color[1] = getColor<T>(x + 1, y, cv::Point(0, point.y));
+					color[2] = getColor<T>(x, y + 1, cv::Point(point.x, 0));
+					color[3] = getColor<T>(x + 1, y + 1, cv::Point(0, 0));					
+				}else{
+					std::string path2 = getFilePath(start.x + x + 1, start.y + y);
+					cv::Mat img2 = cv::imread(path);
+					if(img2.empty()){
+						std::cout << "File not found." << std::endl;
+						return std::array<T, 4>();
+					}
+					color[1] = img2.at<T>(cv::Point(0, point.y));
+					color[2] = img1.at<T>(cv::Point(point.x, point.y + 1));
+					color[3] = img2.at<T>(cv::Point(0, point.y + 1));
+				}
+			}else{
+				if(point.y == img_size - 1){
+					std::string path2 = getFilePath(start.x + x, start.y + y + 1);
+					cv::Mat img2 = cv::imread(path);
+					if(img2.empty()){
+						std::cout << "File not found." << std::endl;
+						return std::array<T, 4>();
+					}
+					color[1] = img1.at<T>(cv::Point(point.x + 1, point.y));
+					color[2] = img2.at<T>(cv::Point(point.x, 0));
+					color[3] = img2.at<T>(cv::Point(point.x + 1, 0));
+				}else{
+					color[1] = img1.at<T>(cv::Point(point.x + 1, point.y));
+					color[2] = img1.at<T>(cv::Point(point.x, point.y + 1));
+					color[3] = img1.at<T>(cv::Point(point.x + 1, point.y + 1));
+				}
+			}
 		}
     };
 }
