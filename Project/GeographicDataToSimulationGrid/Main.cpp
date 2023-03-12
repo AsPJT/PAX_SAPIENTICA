@@ -21,10 +21,10 @@ const std::string simulation_folder_path = "../../../Data/Simulation/";
 
 int main(){
     std::unique_ptr<paxs::ImageScaler> image_scaler(new(std::nothrow) paxs::ImageScaler); 
-    auto result = image_scaler->nearestNeighbor();
+    auto result = image_scaler->bilinear();
 
     image_scaler->cvWriteFile(result, simulation_folder_path + "sample.png");
-    paxs::ImageScaler::landAndSeaWriteFile(result, simulation_folder_path + "sample.tsv");
+    //paxs::ImageScaler::landAndSeaWriteFile(result, simulation_folder_path + "sample.tsv");
 
     std::cout << "Finish" << std::endl;
 

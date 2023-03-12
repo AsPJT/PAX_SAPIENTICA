@@ -66,6 +66,24 @@ namespace paxs {
 			return result;
 		}
 
+		std::vector<std::vector<cv::Vec3b>> bilinear(){
+			std::vector<std::vector<cv::Vec3b>> result(division_num, std::vector<cv::Vec3b>(division_num));
+			double division_pixel = (double)pixel_sum / division_num;
+			double pixel_deviation = division_pixel * 0.5;
+			for(int y=0;y<division_num;y++){
+				for(int x=0;x<division_num;x++){
+					double x_pixel_d = division_pixel * x + pixel_deviation;
+					double y_pixel_d = division_pixel * y + pixel_deviation;
+					int x_pixel = std::floor(x_pixel_d);
+					int y_pixel = std::floor(y_pixel_d);
+					auto colors = getAroundColor<cv::Vec3b>(x_pixel / img_size, y_pixel / img_size, cv::Point(x_pixel % img_size, y_pixel % img_size));
+					double p = x_pixel_d  -x_pixel, q = 1 - p, s = y_pixel_d - y_pixel, t = 1 - s;
+					result[y][x] = s * (p * colors[0] + q * colors[1]) + t * (p * colors[2] + q * colors[3]);
+				}
+			}
+			return result;
+		} 
+
 		void cvWriteFile(const std::vector<std::vector<cv::Vec3b>>& data, const std::string& path){
 			cv::Mat image(data[0].size(), data.size(), CV_8UC3);
 			for(int y=0;y<data.size();y++){
@@ -160,6 +178,7 @@ namespace paxs {
 					color[3] = img1.at<T>(cv::Point(point.x + 1, point.y + 1));
 				}
 			}
+			return color;
 		}
     };
 }
