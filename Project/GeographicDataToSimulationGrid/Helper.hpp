@@ -97,19 +97,10 @@ namespace paxs {
         }
 
         std::string static getSettingFileName(){
-            int choice = 1;
-            while(choice < 0 || choice >= setting_file_names.size()){
-                std::cout << "choice the number(";
-                for(int i = 0; i < setting_file_names.size(); ++i){
-                    std::cout << i << ":" << setting_file_names[i];
-                    if(i != setting_file_names.size() - 1){
-                        std::cout << ", ";
-                    }
-                }
-                std::cout << ")" << std::endl;
-                std::cin >> choice;
-            }
-            return setting_file_names[choice];
+            #ifdef LandAndSea
+            return "LandAndSea";
+            #endif // !LandAndSea
+            return "";
         }
     };
 }
