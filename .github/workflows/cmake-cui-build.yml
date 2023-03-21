@@ -9,7 +9,7 @@ on:
 env:
   BUILD_TYPE: Debug
   WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
-  TARGET: GeographicDataToSimulationGrid
+  TARGET: LandAndSea
 
 jobs:
   build:
