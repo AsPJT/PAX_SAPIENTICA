@@ -19,6 +19,7 @@
 
 const std::string simulation_folder_path = "../../../Data/Simulation/";
 
+#ifdef LandAndSea
 int main(){
     std::unique_ptr<paxs::ImageScaler> image_scaler(new(std::nothrow) paxs::ImageScaler); 
     auto result = image_scaler->bilinear();
@@ -33,3 +34,5 @@ int main(){
     // std::string content = "1\t2\t3";
     // paxs::Helper::writeFile(simulation_folder_path + "sample.tsv", content);
 }
+#endif // !LandAndSea
+

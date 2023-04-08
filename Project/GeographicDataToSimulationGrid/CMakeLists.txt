@@ -4,11 +4,11 @@ project(GeographicDataToSimulationGrid)
 set(CMAKE_CXX_STANDARD 17)
 set(EXECUTABLE_OUTPUT_PATH ../Project/GeographicDataToSimulationGrid/bin)
 include_directories(../../Library)
-
-add_definitions(-DLandAndSea)
-
-add_executable(LandAndSea Main.cpp)
-
 find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
+
+# LandAndSea
+add_executable(LandAndSea Main.cpp)
+target_compile_definitions(LandAndSea PRIVATE LandAndSea)
 target_link_libraries(LandAndSea ${OpenCV_LIBS})
+
+include_directories(${OpenCV_INCLUDE_DIRS})

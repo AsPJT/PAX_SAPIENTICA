@@ -6,4 +6,4 @@ end_x = 255
 start_y = 0
 end_y = 255
 file_type = png
-division_num = 1500
+division_num = 500
