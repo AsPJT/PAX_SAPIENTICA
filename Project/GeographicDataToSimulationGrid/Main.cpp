@@ -14,12 +14,13 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <PAX_SAPIENTICA/Simulation/SpaceGrid.hpp>
-#include "ImageScaler.hpp"
-
 const std::string simulation_folder_path = "../../../Data/Simulation/";
 
 #ifdef LandAndSea
+
+#include <PAX_SAPIENTICA/Simulation/SpaceGrid.hpp>
+#include <ImageScaler.hpp>
+
 int main(){
     std::unique_ptr<paxs::ImageScaler> image_scaler(new(std::nothrow) paxs::ImageScaler); 
     auto result = image_scaler->bilinear();
@@ -36,3 +37,12 @@ int main(){
 }
 #endif // !LandAndSea
 
+#ifdef ImageCombine
+
+#include <ImageCombiner.hpp>
+
+int main(){
+    std::unique_ptr<paxs::ImageCombiner> image_combiner(new(std::nothrow) paxs::ImageCombiner); 
+    image_combiner->combine();
+}
+#endif // !ImageCombine

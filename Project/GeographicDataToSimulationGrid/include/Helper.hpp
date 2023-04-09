@@ -100,6 +100,9 @@ namespace paxs {
             #ifdef LandAndSea
             return "LandAndSea";
             #endif // !LandAndSea
+            #ifdef ImageCombine
+            return "ImageCombine";
+            #endif // !ImageCombine
             return "";
         }
     };
