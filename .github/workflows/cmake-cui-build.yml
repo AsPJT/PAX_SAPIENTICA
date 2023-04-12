@@ -8,8 +8,8 @@ on:
 
 env:
   BUILD_TYPE: Debug
-  WORK_SPACE: ${{github.workspace}}/Project/Mac/GeographicDataToSimulationGrid
-  TARGET: GeographicDataToSimulationGrid
+  WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
+  TARGET: LandAndSea
 
 jobs:
   build:
@@ -20,7 +20,13 @@ jobs:
         compiler: [g++, clang++]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+
+    - name: Install opencv
+      run: |
+        sudo apt install libopencv-dev
+        sudo apt install cmake
+        sudo apt install g++
 
     - name: Configure CMake
       run: |

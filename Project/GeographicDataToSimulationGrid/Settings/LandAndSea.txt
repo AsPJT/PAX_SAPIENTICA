@@ -1,0 +1,9 @@
+source_folder_name = LandAndSea_MultiValue_Z8
+file_prefix = mierune_
+z = 8
+start_x = 0
+end_x = 255
+start_y = 0
+end_y = 255
+file_type = png
+division_num = 500
