@@ -67,7 +67,12 @@ namespace paxs {
 			const double map_view_center_y) {
 			// 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
 			if (current_map_view_width != map_view_width) {
-				z = int(-std::log2(map_view_width) + 11.0);
+				if (default_z == 999) {
+					z = int(-std::log2(map_view_width) + 11.0);
+				}
+				else {
+					z = default_z;
+				}
 				z_num = int(std::pow(2, z));
 				current_map_view_width = map_view_width;
 			}
@@ -153,11 +158,17 @@ namespace paxs {
 		MapVec2 getEndCell()const {
 			return end_cell;
 		}
+		int getDefaultZ()const {
+			return default_z;
+		}
 		int getZ()const {
 			return z;
 		}
 		int getZNum()const {
 			return z_num;
+		}
+		void setDefaultZ(const int default_z_) {
+			default_z = default_z_;
 		}
 		void setMapURL(const s3d::String& map_url_name_) {
 			map_url_name = map_url_name_;
@@ -169,6 +180,8 @@ namespace paxs {
 			map_file_path_name = map_file_path_name_;
 		}
 	private:
+		// 固定された Z （ 999 の場合は固定なし ）
+		int default_z = 999;
 		// 画面の幅に最適な XYZ タイルの Z を格納
 		int z = 2;
 		// 2 の z 乗
