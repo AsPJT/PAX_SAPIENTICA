@@ -20,6 +20,13 @@
 
 namespace paxs {
 	
+	enum XYZTileFileName : int {
+		Empty,
+		Default,
+		Original,
+		Z_Original
+	};
+
 	class XYZTile {
 	public:
 		// XYZ タイルの 1 つのセルのメルカトル座標を保持
@@ -64,11 +71,14 @@ namespace paxs {
 		void update(const double map_view_width,
 			const double map_view_height,
 			const double map_view_center_x,
-			const double map_view_center_y) {
+			const double map_view_center_y,
+			const XYZTileFileName file_name_enum = XYZTileFileName::Original) {
 			// 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
 			if (current_map_view_width != map_view_width) {
 				if (default_z == 999) {
 					z = int(-std::log2(map_view_width) + 11.0);
+					if (z < min_z) z = min_z;
+					if (z > max_z) z = max_z;
 				}
 				else {
 					z = default_z;
@@ -113,26 +123,46 @@ namespace paxs {
 
 			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
 				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-					const s3d::URL new_url =
-						s3d::String(map_url_name)
-						+ s3d::String(U"/") + s3d::ToString(z)
-						+ s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
-						+ s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
-						+ s3d::String(U".png");
-
-					const s3d::FilePath new_saveFilePath = map_file_path_name + map_name
-						+ s3d::String(U"_") + s3d::ToString(z)
-						+ s3d::String(U"_") + s3d::ToString((j + z_num) % z_num)
-						+ s3d::String(U"_") + s3d::ToString((i + z_num) % z_num)
-						+ s3d::String(U".png");
+					s3d::FilePath new_saveFilePath = U"";
+					switch (file_name_enum) {
+					case XYZTileFileName::Original:
+						new_saveFilePath = map_file_path_name + map_name
+							+ s3d::String(U"_") + s3d::ToString(z)
+							+ s3d::String(U"_") + s3d::ToString((j + z_num) % z_num)
+							+ s3d::String(U"_") + s3d::ToString((i + z_num) % z_num)
+							+ s3d::String(U".png");
+						break;
+					case XYZTileFileName::Z_Original:
+						new_saveFilePath = map_file_path_name
+							+ s3d::ToString(z) + s3d::String(U"/") + map_name
+							+ s3d::String(U"_") + s3d::ToString(z)
+							+ s3d::String(U"_") + s3d::ToString((j + z_num) % z_num)
+							+ s3d::String(U"_") + s3d::ToString((i + z_num) % z_num)
+							+ s3d::String(U".png");
+						break;
+					case XYZTileFileName::Default:
+						new_saveFilePath = map_file_path_name
+							+ s3d::ToString(z)
+							+ s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
+							+ s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
+							+ s3d::String(U".png");
+						break;
+					}
 
 					// ファイルを同期ダウンロード
 					// ステータスコードが 200 (OK) なら
 					texture_list[k] = s3d::Texture{ new_saveFilePath };
 					if (!texture_list[k] &&
-						map_url_name.size() != 0 &&
-						s3d::SimpleHTTP::Save(new_url, new_saveFilePath).isOK()) {
-						texture_list[k] = s3d::Texture{ new_saveFilePath };
+						map_url_name.size() != 0) {
+						const s3d::URL new_url =
+							s3d::String(map_url_name)
+							+ s3d::String(U"/") + s3d::ToString(z)
+							+ s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
+							+ s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
+							+ s3d::String(U".png");
+						if (s3d::SimpleHTTP::Save(new_url, new_saveFilePath).isOK()) {
+							texture_list[k] = s3d::Texture{ new_saveFilePath };
+						}
 					}
 				}
 			}
@@ -153,7 +183,27 @@ namespace paxs {
 			}
 		}
 		void drawLine(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
-		, const double inner_thickness, const double outer_thickness, const s3d::ColorF& color
+			, const double thickness, const s3d::ColorF& color
+		)const {
+			double pos_x = (pos_list[0].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width());
+			double pos_y = double(s3d::Scene::Height()) - ((pos_list[0].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()));
+			const double move_x = (360.0 / z_num) / map_view_width * double(s3d::Scene::Width());
+			const double move_y = (360.0 / z_num) / map_view_height * double(s3d::Scene::Height());
+
+			for (int i = start_cell.y; i <= end_cell.y; ++i, pos_y += move_y) {
+				s3d::Line(
+					0, pos_y, s3d::Scene::Width(), pos_y
+				).draw(thickness, color);
+			}
+			for (int j = start_cell.x; j <= end_cell.x; ++j, pos_x += move_x) {
+				s3d::Line(
+					pos_x, 0, pos_x, s3d::Scene::Height()
+				).draw(thickness, color);
+			}
+		}
+		// セル単位での枠の描画
+		void drawLineCell(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
+			, const double inner_thickness, const double outer_thickness, const s3d::ColorF& color
 		)const {
 			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
 				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
@@ -184,6 +234,12 @@ namespace paxs {
 		void setDefaultZ(const int default_z_) {
 			default_z = default_z_;
 		}
+		void setMinZ(const int min_z_) {
+			min_z = min_z_;
+		}
+		void setMaxZ(const int max_z_) {
+			max_z = max_z_;
+		}
 		void setMapURL(const s3d::String& map_url_name_) {
 			map_url_name = map_url_name_;
 		}
@@ -196,6 +252,10 @@ namespace paxs {
 	private:
 		// 固定された Z （ 999 の場合は固定なし ）
 		int default_z = 999;
+		// 最小 Z
+		int min_z = 0;
+		// 最大 Z
+		int max_z = 17;
 		// 画面の幅に最適な XYZ タイルの Z を格納
 		int z = 2;
 		// 2 の z 乗
