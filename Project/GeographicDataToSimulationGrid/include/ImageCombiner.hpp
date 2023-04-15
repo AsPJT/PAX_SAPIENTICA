@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 
 #include <Helper.hpp>
@@ -26,8 +27,17 @@ namespace paxs{
 
     class ImageCombiner{
     public:
-        ImageCombiner(){
-			paxs::Settings settings = paxs::Helper::getSettings();
+        bool init(){
+            std::string setting_path = paxs::Helper::getSettingFileName() + ".txt";
+            if(!std::filesystem::exists(setting_path)){
+                std::ofstream writing_file;
+                writing_file.open(setting_path, std::ios::out);
+                std::string writing_text = "name = \nstart_x = \nstart_y = \nx_size = \ny_size = \nz = \nextension = \ninput_path = \noutput_path = ";
+                writing_file << writing_text << std::endl;
+                writing_file.close();
+                return false;
+            }
+			paxs::Settings settings = paxs::Helper::readSettings(setting_path);
 
             start_x = std::stoi(settings["start_x"]);
             start_y = std::stoi(settings["start_y"]);
@@ -48,6 +58,7 @@ namespace paxs{
                     white_img.at<cv::Vec3b>(j, i)[2] = 255; //赤
                 }
             }
+            return true;
         }
         void combine(){
             cv::Mat combined_img = vCombine(start_x);

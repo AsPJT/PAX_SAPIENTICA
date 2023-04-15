@@ -33,39 +33,8 @@ namespace paxs {
     public:
         // 設定を取得
         static Settings getSettings(){
-            std::string setting_file_path = "../Settings/" + paxs::Helper::getSettingFileName() + ".txt";
+            std::string setting_file_path = paxs::Helper::getSettingFileName() + ".txt";
             return paxs::Helper::readSettings(setting_file_path);
-        }
-
-        // フォルダを作成
-        static void createFolder(const std::string path){
-            std::filesystem::create_directory(path);
-        }
-
-        // ファイルに書き込む
-        void static writeFile(const std::string filename, const std::string content){
-            std::ofstream ofs;
-            ofs.open(filename, std::ios_base::app);
-            ofs << content << std::endl;
-        }
-
-        // 2のn乗
-        int static powOfTwo(const int n){
-            return std::pow(2, n);
-        }
-    private:
-        static std::string trim(std::string string, const char* trim_character_list = " \t\v\r\n"){
-            std::string::size_type left = string.find_first_not_of(trim_character_list);
-            if (left != std::string::npos) {
-                string = string.substr(left);
-            }
-
-            std::string::size_type right = string.find_last_not_of(trim_character_list);
-            if (right != std::string::npos) {
-                string = string.substr(0, right + 1);
-            }
-            
-            return string;
         }
 
         static Settings readSettings(const std::string& path){
@@ -104,6 +73,37 @@ namespace paxs {
             return "ImageCombine";
             #endif // !ImageCombine
             return "";
+        }
+
+        // フォルダを作成
+        static void createFolder(const std::string path){
+            std::filesystem::create_directory(path);
+        }
+
+        // ファイルに書き込む
+        void static writeFile(const std::string filename, const std::string content){
+            std::ofstream ofs;
+            ofs.open(filename, std::ios_base::app);
+            ofs << content << std::endl;
+        }
+
+        // 2のn乗
+        int static powOfTwo(const int n){
+            return std::pow(2, n);
+        }
+    private:
+        static std::string trim(std::string string, const char* trim_character_list = " \t\v\r\n"){
+            std::string::size_type left = string.find_first_not_of(trim_character_list);
+            if (left != std::string::npos) {
+                string = string.substr(left);
+            }
+
+            std::string::size_type right = string.find_last_not_of(trim_character_list);
+            if (right != std::string::npos) {
+                string = string.substr(0, right + 1);
+            }
+            
+            return string;
         }
     };
 }

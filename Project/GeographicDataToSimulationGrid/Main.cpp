@@ -42,8 +42,8 @@ int main(){
 #include <ImageCombiner.hpp>
 
 int main(){
-    std::unique_ptr<paxs::ImageCombiner> image_combiner(new(std::nothrow) paxs::ImageCombiner); 
-    image_combiner->combine();
+    std::unique_ptr<paxs::ImageCombiner> image_combiner(new(std::nothrow) paxs::ImageCombiner);
+    if(image_combiner->init()) image_combiner->combine();
 }
 #endif // !ImageCombine
 
