@@ -17,6 +17,11 @@ add_executable(ImageCombine Main.cpp)
 target_compile_definitions(ImageCombine PRIVATE ImageCombine)
 target_link_libraries(ImageCombine ${OpenCV_LIBS})
 
+# ImageSegment
+add_executable(ImageSegment Main.cpp)
+target_compile_definitions(ImageSegment PRIVATE ImageSegment)
+target_link_libraries(ImageSegment ${OpenCV_LIBS})
+
 # CreateSampleImages
 add_executable(CreateSampleImages Main.cpp)
 target_compile_definitions(CreateSampleImages PRIVATE CreateSampleImages)

@@ -72,6 +72,9 @@ namespace paxs {
             #ifdef ImageCombine
             return "ImageCombine";
             #endif // !ImageCombine
+            #ifdef ImageSegment
+            return "ImageSegment";
+            #endif // !ImageSegment
             return "";
         }
 

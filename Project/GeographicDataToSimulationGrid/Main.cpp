@@ -47,6 +47,17 @@ int main(){
 }
 #endif // !ImageCombine
 
+#ifdef ImageSegment
+
+#include <ImageSegmenter.hpp>
+
+int main(){
+    std::unique_ptr<paxs::ImageSegmenter> image_segmenter(new(std::nothrow) paxs::ImageSegmenter);
+    if(image_segmenter->init()) image_segmenter->segment();
+}
+
+#endif // !ImageSegment
+
 #ifdef CreateSampleImages
 
 #include <filesystem>
