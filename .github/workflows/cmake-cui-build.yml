@@ -9,7 +9,7 @@ on:
 env:
   BUILD_TYPE: Debug
   WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
-  TARGET: LandAndSea
+  TARGET: ImageCombine
 
 jobs:
   build:
@@ -20,7 +20,8 @@ jobs:
         compiler: [g++, clang++]
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
     - name: Install opencv
       run: |
@@ -30,8 +31,14 @@ jobs:
 
     - name: Configure CMake
       run: |
-        mkdir ${{env.WORK_SPACE}}/build
-        cmake -B ${{env.WORK_SPACE}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "CodeBlocks - Unix Makefiles" ${{env.WORK_SPACE}}
+        mkdir ${{github.workspace}}/build
+        cmake -B ${{github.workspace}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}} -G "Unix Makefiles"
 
     - name: Build
-      run: cmake --build ${{env.WORK_SPACE}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -- -j 12
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: Build-Results
+        path: ${{env.WORK_SPACE}}/bin
