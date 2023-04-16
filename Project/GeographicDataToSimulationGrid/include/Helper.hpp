@@ -32,8 +32,8 @@ namespace paxs {
     class Helper{
     public:
         // 設定を取得
-        static Settings getSettings(){
-            std::string setting_file_path = paxs::Helper::getSettingFileName() + ".txt";
+        static Settings getSettings(std::string file_name){
+            std::string setting_file_path =  paxs::Helper::getSettingPath(file_name);
             return paxs::Helper::readSettings(setting_file_path);
         }
 
@@ -65,17 +65,8 @@ namespace paxs {
             return settings;
         }
 
-        std::string static getSettingFileName(){
-            #ifdef LandAndSea
-            return "LandAndSea";
-            #endif // !LandAndSea
-            #ifdef ImageCombine
-            return "ImageCombine";
-            #endif // !ImageCombine
-            #ifdef ImageSegment
-            return "ImageSegment";
-            #endif // !ImageSegment
-            return "";
+        std::string static getSettingPath(std::string file_name){
+            return "../Settings/" + file_name + ".txt";;
         }
 
         // フォルダを作成

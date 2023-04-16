@@ -1,0 +1,9 @@
+name = gbank
+start_x = 218
+start_y = 90
+x_size = 16
+y_size = 16
+z = 8
+extension = png
+input_path = ../../../Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/8/
+output_path = ../../../Data/Map/XYZTile/Union/

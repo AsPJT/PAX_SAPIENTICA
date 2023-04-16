@@ -26,7 +26,7 @@ namespace paxs{
     class ImageSegmenter{
      public:
         bool init(){
-            std::string setting_path = paxs::Helper::getSettingFileName() + ".txt";
+            std::string setting_path = paxs::Helper::getSettingPath("ImageSegment");
             if(!std::filesystem::exists(setting_path)){
                 std::ofstream writing_file;
                 writing_file.open(setting_path, std::ios::out);

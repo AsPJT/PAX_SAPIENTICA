@@ -40,9 +40,3 @@ jobs:
 
     - name: Build2
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET2}} -- -j 12
-
-    - name: Upload Build
-      uses: actions/upload-artifact@v3
-      with:
-        name: Build-Results
-        path: ${{env.WORK_SPACE}}/bin

@@ -1,0 +1,45 @@
+name: ImageSegment
+
+on : [ workflow_dispatch ]
+
+env:
+  BUILD_TYPE: Debug
+  WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
+  TARGET: ImageSegment
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install opencv
+      run: |
+        sudo apt install libopencv-dev
+        sudo apt install cmake
+
+    - name: Configure CMake
+      run: |
+        mkdir ${{github.workspace}}/build
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}} -G "Unix Makefiles"
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -j 12
+
+    - name: Execution
+      run: ${{env.WORK_SPACE}}/bin/${{env.TARGET}}
+
+    - name: Push
+      run: |
+        git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+        git config --global user.name "${GITHUB_ACTOR}"
+        git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        if (git diff --shortstat | grep '[0-9]'); then \
+          git add .; \
+          git commit -m "GitHub Actions: ${{env.TARGET}}"; \
+          git push origin HEAD:${GITHUB_REF}; \
+        fi
+

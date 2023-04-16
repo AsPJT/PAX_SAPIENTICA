@@ -31,7 +31,7 @@ namespace paxs {
     class ImageScaler{
     public:
 		ImageScaler(){
-			settings = paxs::Helper::getSettings();
+			settings = paxs::Helper::getSettings("file_name");
 			path_prefix = xyz_tile_folder_path + settings["source_folder_name"] + "/" + settings["file_prefix"] + settings["z"] + "_";
 			
 			start.x = std::stoi(settings["start_x"]);
