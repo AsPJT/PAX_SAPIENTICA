@@ -49,6 +49,7 @@ namespace paxs{
 
             path_prefix = settings["input_path"] + name + '_' + settings["z"] + '_';
             output_path = settings["output_path"] + name + '_' + settings["z"] + '_' + settings["start_x"] + '_' + settings["start_y"] + '_' + settings["x_size"] + '_' + settings["y_size"] + '.' + extension;
+            std::filesystem::create_directory(settings["output_path"]);
 
             white_img = cv::Mat::zeros(img_size, img_size, CV_8UC3);
             for (int j = 0; j < img_size; j++) {
