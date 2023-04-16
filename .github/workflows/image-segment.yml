@@ -10,6 +10,17 @@ env:
 
 jobs:
   build:
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      deployments: write
+      issues: write
+      packages: write
+      pull-requests: write
+      repository-projects: write
+      security-events: write
+      statuses: write
     runs-on: ubuntu-latest
 
     steps:
@@ -30,16 +41,16 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -j 12
 
     - name: Execution
-      run: ${{env.WORK_SPACE}}/bin/${{env.TARGET}}
+      run: |
+        cd ${{env.WORK_SPACE}}/bin/
+        ./${{env.TARGET}}
 
     - name: Push
       run: |
+        cd ${{github.workspace}}
         git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
         git config --global user.name "${GITHUB_ACTOR}"
         git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-        if (git diff --shortstat | grep '[0-9]'); then \
-          git add .; \
-          git commit -m "GitHub Actions: ${{env.TARGET}}"; \
-          git push origin HEAD:${GITHUB_REF}; \
-        fi
-
+        git add .
+        git commit -m "GitHub Actions: ${{env.TARGET}}"
+        git push origin HEAD:${GITHUB_REF}
