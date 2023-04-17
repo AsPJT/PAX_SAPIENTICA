@@ -42,7 +42,43 @@ int main(){
 #include <ImageCombiner.hpp>
 
 int main(){
-    std::unique_ptr<paxs::ImageCombiner> image_combiner(new(std::nothrow) paxs::ImageCombiner); 
-    image_combiner->combine();
+    std::unique_ptr<paxs::ImageCombiner> image_combiner(new(std::nothrow) paxs::ImageCombiner);
+    if(image_combiner->init()) image_combiner->combine();
 }
 #endif // !ImageCombine
+
+#ifdef ImageSegment
+
+#include <ImageSegmenter.hpp>
+
+int main(){
+    std::unique_ptr<paxs::ImageSegmenter> image_segmenter(new(std::nothrow) paxs::ImageSegmenter);
+    if(image_segmenter->init()) image_segmenter->segment();
+}
+
+#endif // !ImageSegment
+
+#ifdef CreateSampleImages
+
+#include <filesystem>
+
+int main(){
+    int num, size;
+    std::string z;
+    std::cout << "Number of images" << std::endl;
+    std::cin >> num;
+    std::cout << "Image size" << std::endl;
+    std::cin >> size;
+    std::cout << "z" << std::endl;
+    std::cin >> z;
+    const std::string path_prefix = "../../../Data/Sample/sample_" + z + "_";
+    std::filesystem::create_directory("../../../Data/Sample");
+    for(int x=0;x<num;x++){
+        for(int y=0;y<num;y++){
+            cv::Mat img(size, size, CV_8UC3);
+			cv::imwrite(path_prefix + std::to_string(x) + '_' + std::to_string(y) + ".png", img);
+        } 
+    }
+}
+
+#endif // !CreateSampleImages

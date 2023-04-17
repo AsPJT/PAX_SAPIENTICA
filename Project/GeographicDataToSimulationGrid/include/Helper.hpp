@@ -32,9 +32,41 @@ namespace paxs {
     class Helper{
     public:
         // 設定を取得
-        static Settings getSettings(){
-            std::string setting_file_path = "../Settings/" + paxs::Helper::getSettingFileName() + ".txt";
+        static Settings getSettings(std::string file_name){
+            std::string setting_file_path =  paxs::Helper::getSettingPath(file_name);
             return paxs::Helper::readSettings(setting_file_path);
+        }
+
+        static Settings readSettings(const std::string& path){
+            std::map<std::string, std::string> settings;
+            std::ifstream ifs(path);
+            if(ifs.fail()){
+                std::cout<<"File not found."<<std::endl;
+                return settings;
+            }
+
+            std::string line;
+            while(getline(ifs, line)){
+                std::string::size_type separator_index = line.find('=');
+                if (separator_index == std::string::npos) {
+                    continue;
+                }
+
+                std::string key = line.substr(0, separator_index);
+                std::string value = line.substr(separator_index);
+
+                if (value.size() > 0) {
+                    value[0] = ' ';
+                }
+
+                settings.insert_or_assign(trim(key), trim(value));
+            }
+            ifs.close();
+            return settings;
+        }
+
+        std::string static getSettingPath(std::string file_name){
+            return "../Settings/" + file_name + ".txt";;
         }
 
         // フォルダを作成
@@ -66,44 +98,6 @@ namespace paxs {
             }
             
             return string;
-        }
-
-        static Settings readSettings(const std::string& path){
-            std::map<std::string, std::string> settings;
-            std::ifstream ifs(path);
-            if(ifs.fail()){
-                std::cout<<"File not found."<<std::endl;
-                return settings;
-            }
-
-            std::string line;
-            while(getline(ifs, line)){
-                std::string::size_type separator_index = line.find('=');
-                if (separator_index == std::string::npos) {
-                    continue;
-                }
-
-                std::string key = line.substr(0, separator_index);
-                std::string value = line.substr(separator_index);
-
-                if (value.size() > 0) {
-                    value[0] = ' ';
-                }
-
-                settings.insert_or_assign(trim(key), trim(value));
-            }
-            ifs.close();
-            return settings;
-        }
-
-        std::string static getSettingFileName(){
-            #ifdef LandAndSea
-            return "LandAndSea";
-            #endif // !LandAndSea
-            #ifdef ImageCombine
-            return "ImageCombine";
-            #endif // !ImageCombine
-            return "";
         }
     };
 }
