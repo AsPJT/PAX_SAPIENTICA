@@ -77,15 +77,20 @@ namespace paxs {
 			if (current_map_view_width != map_view_width) {
 				if (default_z == 999) {
 					z = int(-std::log2(map_view_width) + 11.0);
+					magnification_z = z;
 					if (z < min_z) z = min_z;
 					if (z > max_z) z = max_z;
 				}
 				else {
 					z = default_z;
+					magnification_z = int(-std::log2(map_view_width) + 11.0);
 				}
 				z_num = int(std::pow(2, z));
 				current_map_view_width = map_view_width;
 			}
+			// 拡大率が描画範囲外の場合はここで処理を終了
+			if (magnification_z < draw_min_z) return;
+			if (magnification_z > draw_max_z) return;
 
 			// 画像を更新する必要があるか
 			bool need_update = false;
@@ -168,6 +173,11 @@ namespace paxs {
 			}
 		}
 		void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
+
+			// 拡大率が描画範囲外の場合はここで処理を終了
+			if (magnification_z < draw_min_z) return;
+			if (magnification_z > draw_max_z) return;
+
 			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
 				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					if (texture_list[k]) {
@@ -240,6 +250,12 @@ namespace paxs {
 		void setMaxZ(const int max_z_) {
 			max_z = max_z_;
 		}
+		void setDrawMinZ(const int min_z_) {
+			draw_min_z = min_z_;
+		}
+		void setDrawMaxZ(const int max_z_) {
+			draw_max_z = max_z_;
+		}
 		void setMapURL(const s3d::String& map_url_name_) {
 			map_url_name = map_url_name_;
 		}
@@ -258,6 +274,12 @@ namespace paxs {
 		int max_z = 17;
 		// 画面の幅に最適な XYZ タイルの Z を格納
 		int z = 2;
+		// 画面上の Z の値
+		int magnification_z = z;
+		// 描画最小 Z
+		int draw_min_z = 0;
+		// 描画最大 Z
+		int draw_max_z = 999;
 		// 2 の z 乗
 		int z_num = int(std::pow(2, z));
 		// XYZ タイルの画面上の始点セル
