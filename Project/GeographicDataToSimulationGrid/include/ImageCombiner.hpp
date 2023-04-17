@@ -85,7 +85,7 @@ namespace paxs{
             if(std::filesystem::exists(path)){
 		        combined_img = cv::imread(path);
             }
-            for(int y=0;y<y_size;y++){
+            for(int y=1;y<y_size;y++){
                 std::string path = getFilePath(x, start_y + y);
                 if(std::filesystem::exists(path)){
 			        cv::Mat img = cv::imread(path);
