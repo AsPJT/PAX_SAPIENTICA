@@ -195,6 +195,11 @@ namespace paxs {
 		void drawLine(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
 			, const double thickness, const s3d::ColorF& color
 		)const {
+
+			// 拡大率が描画範囲外の場合はここで処理を終了
+			if (magnification_z < draw_min_z) return;
+			if (magnification_z > draw_max_z) return; 
+			
 			double pos_x = (pos_list[0].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width());
 			double pos_y = double(s3d::Scene::Height()) - ((pos_list[0].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()));
 			const double move_x = (360.0 / z_num) / map_view_width * double(s3d::Scene::Width());
