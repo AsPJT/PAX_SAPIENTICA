@@ -29,6 +29,12 @@ namespace paxs {
 
     using Settings = std::map<std::string, std::string>;
 
+    struct Rgb{
+        uint8_t red;
+        uint8_t green;
+        uint8_t blue;
+    };
+
     class Helper{
     public:
         // 設定を取得
@@ -67,6 +73,47 @@ namespace paxs {
 
         std::string static getSettingPath(std::string file_name){
             return "../Settings/" + file_name + ".txt";;
+        }
+
+        // 文字列を分割する
+        std::vector<std::string> static split(const std::string input,const char delimiter)
+        {
+            std::istringstream stream(input);
+            std::string field;
+            std::vector<std::string> result;
+            while (getline(stream, field, delimiter)) {
+                result.push_back(field);
+            }
+            return result;
+        }
+
+        // Hex→RGB
+        paxs::Rgb static hexToRgb(const uint32_t rgb_int){
+            paxs::Rgb rgb;
+            rgb.red = (rgb_int >> 16) & 0xFF;
+            rgb.green = (rgb_int >> 8) & 0xFF;
+            rgb.blue = (rgb_int >> 0) & 0xFF;
+            return rgb;
+        }
+        paxs::Rgb static hexToRgb(const std::string color){
+            uint32_t rgb_int = (uint32_t)std::stoul(color, nullptr, 16);
+            paxs::Rgb rgb;
+            rgb.red = (rgb_int >> 16) & 0xFF;
+            rgb.green = (rgb_int >> 8) & 0xFF;
+            rgb.blue = (rgb_int >> 0) & 0xFF;
+            return rgb;
+        }
+
+        // tsvを読み込む
+        std::vector<std::vector<std::string>> static readTsv(const std::string file_path){
+            std::vector<std::vector<std::string>> result;
+            std::ifstream ifs(file_path);
+            std::string line;
+            while (std::getline(ifs, line)) {
+                std::vector<std::string> row = split(line, '\t');
+                result.push_back(row);
+            }
+            return result;
         }
 
         // フォルダを作成

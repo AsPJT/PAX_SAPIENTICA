@@ -58,6 +58,28 @@ int main(){
 
 #endif // !ImageSegment
 
+#ifdef ColorCount
+
+#include <Helper.hpp>
+
+#include <ColorCounter.hpp>
+
+int main(){
+    std::unique_ptr<paxs::ColorCounter> color_counter(new(std::nothrow) paxs::ColorCounter);
+    // if(color_counter->init()) color_counter->countColor();
+    // std::vector<std::vector<std::string>> result = paxs::Helper::readTsv("../Settings/rgb.tsv");
+    // for(auto row : result){
+    //     for(auto s : row){
+    //         std::cout<<s<<" ";
+    //     }
+    //     std::cout<<std::endl;
+    // }
+    paxs::Rgb rgb = paxs::Helper::hexToRgb("CD5C5C");
+    std::cout << (int)rgb.red << " " << (int)rgb.green << " " << (int)rgb.blue << std::endl;
+}
+
+#endif // !ColorCount
+
 #ifdef CreateSampleImages
 
 #include <filesystem>
