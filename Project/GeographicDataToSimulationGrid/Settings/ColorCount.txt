@@ -1,0 +1,3 @@
+tsv_path = ../Settings/*.tsv
+input_path = ../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/ColorCodingByProvincesOfJapan_8_218_90_16_16.png
+output_path = ../../../Data/Map/*/*.tsv

@@ -58,6 +58,18 @@ int main(){
 
 #endif // !ImageSegment
 
+#ifdef ColorCount
+
+#include <ColorCounter.hpp>
+
+int main(){
+    std::unique_ptr<paxs::ColorCounter> color_counter(new(std::nothrow) paxs::ColorCounter);
+    if(color_counter->init())
+        color_counter->countColor();
+}
+
+#endif // !ColorCount
+
 #ifdef CreateSampleImages
 
 #include <filesystem>
