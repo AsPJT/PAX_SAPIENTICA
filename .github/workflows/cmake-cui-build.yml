@@ -11,6 +11,7 @@ env:
   WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
   TARGET1: ImageCombine
   TARGET2: ImageSegment
+  TARGET3: ColorCount
 
 jobs:
   build:
@@ -40,3 +41,6 @@ jobs:
 
     - name: Build2
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET2}} -- -j 12
+
+    - name: Build3
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET3}} -- -j 12
