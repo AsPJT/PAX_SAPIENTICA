@@ -78,10 +78,12 @@ namespace paxs {
         // 文字列を分割する
         std::vector<std::string> static split(const std::string input,const char delimiter)
         {
-            std::istringstream stream(input);
+            std::string str = input;
+            str.insert(str.begin(), ' ');
+            std::istringstream stream(str);
             std::string field;
             std::vector<std::string> result;
-            while (getline(stream, field, delimiter)) {
+            while (std::getline(stream, field, delimiter)) {
                 result.push_back(field);
             }
             return result;
@@ -113,6 +115,20 @@ namespace paxs {
                 std::vector<std::string> row = split(line, '\t');
                 result.push_back(row);
             }
+            ifs.close();
+            return result;
+        }
+
+        // csvを読み込む
+        std::vector<std::vector<std::string>> static readCsv(const std::string file_path){
+            std::vector<std::vector<std::string>> result;
+            std::ifstream ifs(file_path);
+            std::string line;
+            while (std::getline(ifs, line)) {
+                std::vector<std::string> row = split(line, ',');
+                result.push_back(row);
+            }
+            ifs.close();
             return result;
         }
 
@@ -122,7 +138,7 @@ namespace paxs {
         }
 
         // ファイルに書き込む
-        void static writeFile(const std::string filename, const std::string content){
+        void static writeFile(const std::string& filename, const std::string& content){
             std::ofstream ofs;
             ofs.open(filename, std::ios_base::app);
             ofs << content << std::endl;
