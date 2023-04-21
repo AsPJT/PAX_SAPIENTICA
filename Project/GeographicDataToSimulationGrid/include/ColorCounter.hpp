@@ -102,13 +102,22 @@ namespace paxs{
             return true;
         }
         void setRgbColor(){
+            int color_num[3];
+            for(int i=2;i<=4;i++){
+                if(tsv[0][i] == "赤" || tsv[0][i] == "red") color_num[0] = i;
+                else if(tsv[0][i] == "緑" || tsv[0][i] == "green") color_num[1] = i;
+                else if(tsv[0][i] == "青" || tsv[0][i] == "blue") color_num[2] = i;
+                else return;
+            }
+            tsv.erase(tsv.begin());
             for(const auto& row : tsv){
                 std::string color;
-                for(int i=2;i<=4;i++){
-                    int size = row.size();
+                for(int i=0;i<3;i++){
+                    std::string tmp_color = row[color_num[i]];
+                    int size = tmp_color.size();
                     for(int j = 0;j < 3 - size;j++)
                          color += '0';
-                    color += row[i];
+                    color += tmp_color;
                 }
                 int n = std::stoi(row[0]);
                 color_map[std::stoi(color)] = n;
