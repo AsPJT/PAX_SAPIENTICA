@@ -1,3 +1,10 @@
+ï»¿/*##########################################################################################
+	PAX SAPIENTICA Library ğŸ’€ğŸŒ¿ğŸŒ
+	[Planning]		2023 As Project
+	[Production]	2023 As Project
+	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+##########################################################################################*/
 
 #include <cmath>
 #include <iostream>
@@ -31,110 +38,143 @@ void dmsToString(std::string& str, const DMS& dms) {
 	str += std::to_string(dms.s);
 }
 
-// w’è‚µ‚½ XYZ ƒ^ƒCƒ‹‚Ì XYZ ‚Ì‹——£•¶š—ñ‚ğZo‚·‚é
-StringXY xyzToDistanceString(int x, int y, int z) {
-	const double pi = 3.1415926535897932384626433832795028841971;
+// ç·¯åº¦ãƒ»çµŒåº¦ã‹ã‚‰è·é›¢æ–‡å­—åˆ—ã‚’ç®—å‡ºã™ã‚‹
+StringXY llToDistanceString(
+	const double s_lon, const double c_lon, const double e_lon,
+	const double s_lat, const double c_lat, const double e_lat) {
+	// çµŒåº¦
+	DMS s_longitude(s_lon);
+	DMS c_longitude(c_lon);
+	DMS e_longitude(e_lon);
+	// ç·¯åº¦
+	DMS s_latitude(s_lat);
+	DMS c_latitude(c_lat);
+	DMS e_latitude(e_lat);
 
-	// 2^z
-	int z_square_of_2 = int(std::pow(2, z));
-	// (2^z)^2
-	int z_square_of_2_squared = z_square_of_2 * z_square_of_2;
-
-	double start_x = 0.0;
-	double center_x = 0.5;
-	double end_x = 1.0;
-	double start_y = 0.0;
-	double center_y = 0.5;
-	double end_y = 1.0;
-
-	double sx_len = (360.0 * (x + start_x) / z_square_of_2) - 180.0;
-	double cx_len = (360.0 * (x + center_x) / z_square_of_2) - 180.0;
-	double ex_len = (360.0 * (x + end_x) / z_square_of_2) - 180.0;
-
-	double sy_len = (360.0 * (y + start_y) / z_square_of_2) - 180.0;
-	double cy_len = (360.0 * (y + center_y) / z_square_of_2) - 180.0;
-	double ey_len = (360.0 * (y + end_y) / z_square_of_2) - 180.0;
-
-	double s_latitude_len = std::asin(std::tanh(sy_len / 180.0 * pi)) / (pi) * 180.0;
-	double c_latitude_len = std::asin(std::tanh(cy_len / 180.0 * pi)) / (pi) * 180.0;
-	double e_latitude_len = std::asin(std::tanh(ey_len / 180.0 * pi)) / (pi) * 180.0;
-
-	// Šm”F—p
-	//std::cout << sx_len << std::endl;
-	//std::cout << cx_len << std::endl;
-	//std::cout << ex_len << std::endl;
-	//std::cout << sy_len << std::endl;
-	//std::cout << cy_len << std::endl;
-	//std::cout << ey_len << std::endl;
-	//std::cout << s_latitude_len << std::endl;
-	//std::cout << c_latitude_len << std::endl;
-	//std::cout << e_latitude_len << std::endl;
-
-	// Œo“x
-	DMS s_longitude(sx_len);
-	DMS c_longitude(cx_len);
-	DMS e_longitude(ex_len);
-	// ˆÜ“x
-	DMS s_latitude(s_latitude_len);
-	DMS c_latitude(c_latitude_len);
-	DMS e_latitude(e_latitude_len);
-
-	StringXY str;
-	// o”­“_ˆÜ“x(dms)
+	StringXY str{};
+	// å‡ºç™ºç‚¹ç·¯åº¦(dms)
 	dmsToString(str.x, c_latitude);
 	str.x.push_back(' ');
-	// o”­“_Œo“x(dms)
+	// å‡ºç™ºç‚¹çµŒåº¦(dms)
 	dmsToString(str.x, s_longitude);
 	str.x.push_back(' ');
-	// “’…“_ˆÜ“x(dms)
+	// åˆ°ç€ç‚¹ç·¯åº¦(dms)
 	dmsToString(str.x, c_latitude);
 	str.x.push_back(' ');
-	// “’…“_Œo“x(dms)
+	// åˆ°ç€ç‚¹çµŒåº¦(dms)
 	dmsToString(str.x, e_longitude);
 
-	// o”­“_ˆÜ“x(dms)
+	// å‡ºç™ºç‚¹ç·¯åº¦(dms)
 	dmsToString(str.y, s_latitude);
 	str.y.push_back(' ');
-	// o”­“_Œo“x(dms)
+	// å‡ºç™ºç‚¹çµŒåº¦(dms)
 	dmsToString(str.y, c_longitude);
 	str.y.push_back(' ');
-	// “’…“_ˆÜ“x(dms)
+	// åˆ°ç€ç‚¹ç·¯åº¦(dms)
 	dmsToString(str.y, e_latitude);
 	str.y.push_back(' ');
-	// “’…“_Œo“x(dms)
+	// åˆ°ç€ç‚¹çµŒåº¦(dms)
 	dmsToString(str.y, c_longitude);
 
 	return str;
 }
 
+// æŒ‡å®šã—ãŸ XYZ ã‚¿ã‚¤ãƒ«ã® XYZ ã®è·é›¢æ–‡å­—åˆ—ã‚’ç®—å‡ºã™ã‚‹
+StringXY xyzToDistanceString(const int x, const int y, const int z) {
+	const double pi = 3.1415926535897932384626433832795028841971;
+
+	// 2^z
+	const int z_square_of_2 = int(std::pow(2, z));
+
+	const double start_x = 0.0;
+	const double center_x = 0.5;
+	const double end_x = 1.0;
+	const double start_y = 0.0;
+	const double center_y = 0.5;
+	const double end_y = 1.0;
+
+	double s_lon = (360.0 * (x + start_x) / z_square_of_2) - 180.0;
+	double c_lon = (360.0 * (x + center_x) / z_square_of_2) - 180.0;
+	double e_lon = (360.0 * (x + end_x) / z_square_of_2) - 180.0;
+
+	double sy_len = (360.0 * (y + start_y) / z_square_of_2) - 180.0;
+	double cy_len = (360.0 * (y + center_y) / z_square_of_2) - 180.0;
+	double ey_len = (360.0 * (y + end_y) / z_square_of_2) - 180.0;
+
+	double s_lat = std::asin(std::tanh(sy_len / 180.0 * pi)) / (pi) * 180.0;
+	double c_lat = std::asin(std::tanh(cy_len / 180.0 * pi)) / (pi) * 180.0;
+	double e_lat = std::asin(std::tanh(ey_len / 180.0 * pi)) / (pi) * 180.0;
+
+	return llToDistanceString(s_lon, c_lon, e_lon, s_lat, c_lat, e_lat);
+}
+
+// æŒ‡å®šã—ãŸ XYZ ã‚¿ã‚¤ãƒ«ã® XYZ ã®è·é›¢æ–‡å­—åˆ—ã‚’ç®—å‡ºã™ã‚‹
+StringXY yzToDistanceString(const double lon, const int y, const int z) {
+	const double pi = 3.1415926535897932384626433832795028841971;
+
+	// 2^z
+	const int z_square_of_2 = int(std::pow(2, z));
+
+	const double start_y = 0.0;
+	const double center_y = 0.5;
+	const double end_y = 1.0;
+
+	double sy_len = (360.0 * (y + start_y) / z_square_of_2) - 180.0;
+	double cy_len = (360.0 * (y + center_y) / z_square_of_2) - 180.0;
+	double ey_len = (360.0 * (y + end_y) / z_square_of_2) - 180.0;
+
+	double s_lat = std::asin(std::tanh(sy_len / 180.0 * pi)) / (pi) * 180.0;
+	double c_lat = std::asin(std::tanh(cy_len / 180.0 * pi)) / (pi) * 180.0;
+	double e_lat = std::asin(std::tanh(ey_len / 180.0 * pi)) / (pi) * 180.0;
+
+	return llToDistanceString(lon, lon, lon, s_lat, c_lat, e_lat);
+}
 #include <fstream>
 
 int main() {
 
+	double sx = (215.0 - 2.0) / 256;
+	double ex = (233.0 + 3.0) / 256;
 
-	for (int z = 9; z < 10; ++z) {
+	double ey = 1.0 - (91.0 - 2.0) / 256;
+	double sy = 1.0 - (110.0 + 3.0) / 256;
+
+
+	for (int z = 16; z < 17; ++z) {
 		int z_square_of_2 = int(std::pow(2, z));
 
-		std::ofstream ofs_x("in/x" + std::to_string(z) + ".in");
-		std::ofstream ofs_y("in/y" + std::to_string(z) + ".in");
-		std::ofstream ofs_x_txt("in/x" + std::to_string(z) + ".txt");
-		std::ofstream ofs_y_txt("in/y" + std::to_string(z) + ".txt");
+		const int zsx = int(sx * z_square_of_2);
+		const int zex = int(ex * z_square_of_2);
+		const int zsy = int(sy * z_square_of_2);
+		const int zey = int(ey * z_square_of_2);
+
+		std::ofstream ofs_x("in_line/x" + std::to_string(z) + ".in");
+		//std::ofstream ofs_y("in_line/y" + std::to_string(z) + ".in");
+		std::ofstream ofs_x_txt("in_line/x" + std::to_string(z) + ".txt");
+		//std::ofstream ofs_y_txt("in_line/y" + std::to_string(z) + ".txt");
 
 		//int x = 127;
 		//int y = 127;
 
 		ofs_x_txt << "Z\tX\tY\tString\n";
-		ofs_y_txt << "Z\tX\tY\tString\n";
+		//ofs_y_txt << "Z\tX\tY\tString\n";
 
-		for (int x = 0; x < z_square_of_2; ++x) {
-			for (int y = 0; y < z_square_of_2; ++y) {
+		//for (int x = zsx; x < z_square_of_2 && x < zex; ++x) {
+		int x = int((135.0 + 180.0)/360.0 * double(z_square_of_2));
+			//for (int y = 0; y < z_square_of_2; ++y) {
+			for (int y = z_square_of_2 / 2; y < z_square_of_2 * 9 /10; ++y) {
+			//for (int y = zsy; y < z_square_of_2 && y < zey; ++y) {
 				StringXY str = xyzToDistanceString(x, y, z);
+
+				const int ry = (z_square_of_2 - 1) - y;
+
+				//StringXY str = xyzToDistanceString(x, y, z);
 				ofs_x << str.x << '\n';
-				ofs_y << str.y << '\n';
-				ofs_x_txt << z << '\t' << x << '\t' << y << '\t' << str.x << '\n';
-				ofs_y_txt << z << '\t' << x << '\t' << y << '\t' << str.x << '\n';
+				//ofs_y << str.y << '\n';
+				ofs_x_txt << z << '\t' << x << '\t' << ry << '\t' << str.x << '\n';
+				//ofs_y_txt << z << '\t' << x << '\t' << ry << '\t' << str.x << '\n';
 			}
-		}
+		//}
 	}
 
 
