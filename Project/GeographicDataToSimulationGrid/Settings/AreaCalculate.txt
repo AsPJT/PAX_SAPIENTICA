@@ -1,0 +1,5 @@
+area_tsv_path = ../../../Data/Map/XYZTile/Distance/Line/135/16.tsv
+color_tsv_path = ../Settings/test.tsv
+input_path = ../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/ColorCodingByProvincesOfJapan_8_218_90_16_16.png
+output_path = ../../../Data/Map/XYZTile/Union/Area.tsv
+start_y = 90

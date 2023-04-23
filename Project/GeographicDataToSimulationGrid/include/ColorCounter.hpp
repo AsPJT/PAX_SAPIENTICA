@@ -83,7 +83,6 @@ namespace paxs{
         std::map<int, int> color_map;
 
         bool setColor(){
-            bool is_rgb;
             if(tsv[0].size() == 5) {
                 setRgbColor();
                 return true;
