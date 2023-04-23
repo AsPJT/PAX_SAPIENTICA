@@ -64,11 +64,21 @@ int main(){
 
 int main(){
     std::unique_ptr<paxs::ColorCounter> color_counter(new(std::nothrow) paxs::ColorCounter);
-    if(color_counter->init())
-        color_counter->countColor();
+    if(color_counter->init()) color_counter->countColor();
 }
 
 #endif // !ColorCount
+
+#ifdef AreaCalculate
+
+#include <AreaCalculater.hpp>
+
+int main(){
+    std::unique_ptr<paxs::AreaCalculater> area_calculater(new(std::nothrow) paxs::AreaCalculater);
+    if(area_calculater->init()) area_calculater->calculateArea();
+}
+
+#endif // !AreaCalculate
 
 #ifdef CreateSampleImages
 

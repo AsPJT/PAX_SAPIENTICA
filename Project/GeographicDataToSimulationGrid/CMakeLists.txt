@@ -27,6 +27,11 @@ add_executable(ColorCount Main.cpp)
 target_compile_definitions(ColorCount PRIVATE ColorCount)
 target_link_libraries(ColorCount ${OpenCV_LIBS})
 
+# AreaCalculate
+add_executable(AreaCalculate Main.cpp)
+target_compile_definitions(AreaCalculate PRIVATE AreaCalculate)
+target_link_libraries(AreaCalculate ${OpenCV_LIBS})
+
 # CreateSampleImages
 add_executable(CreateSampleImages Main.cpp)
 target_compile_definitions(CreateSampleImages PRIVATE CreateSampleImages)
