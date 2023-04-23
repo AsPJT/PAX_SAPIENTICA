@@ -163,10 +163,14 @@ namespace paxs {
 	private:
 		Coordinate center = Coordinate(135.0, getLatitudeToMercatorY(35.0), 200.0); // マップ座標の中央
 		double width = 20.0; // マップの幅
-		double max_width = 160.0; // マップの最大幅
+
+		// 平城京
+		//Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
+		//double width = 0.1; // マップの幅
+		double max_width = 640.0; // マップの最大幅
 		double min_width = 0.01; // マップの最小幅
 		double height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height()); // マップの高さ
-		double expansion_size = 200.0; // マップの拡大量
+		double expansion_size = 50.0; // マップの拡大量
 		std::vector<std::unique_ptr<BaseKey>> enl_keys; // 拡大キー
 		std::vector<std::unique_ptr<BaseKey>> esc_keys; // 縮小キー
 	};
