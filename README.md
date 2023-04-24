@@ -20,17 +20,7 @@ GIS & Archaeological Simulator
 - The main periods registered are from the 1st to the 7th century.
 
 # Screenshot
-## Original Map
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.5%202023_01_19%201_43_40.png)
-## Geospatial Information Authority of Japan Map
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.6%202023_01_20%203_47_56.png)
-## Map of MIERUNE Inc.
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.6%202023_01_20%203_50_32.png)
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.6%202023_01_20%204_19_34.png)
-
-# Demo movie on January 18, 2023
-![Demo movie](https://raw.githubusercontent.com/Asukana/pax-picture/main/PAX-SAPIENTICA-v6.0.0.0.0-2023-01-18-02-28-43.gif)
-
+![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.6%202023_04_25%200_12_27.png)
 
 ---
 
