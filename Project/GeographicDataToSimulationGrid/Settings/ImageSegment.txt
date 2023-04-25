@@ -1,9 +1,9 @@
-name = ColorCodingByProvincesOfJapanWithLakes
+name = Ryoseikoku
 start_x = 872
 start_y = 360
 x_size = 64
 y_size = 64
 z = 10
 extension = png
-input_path = ../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/
-output_path = ../../../Data/Map/XYZTile/ColorCodingByProvincesOfJapan/
+input_path = ../../../Data/Map/XYZTile/Union/
+output_path = ../../../Data/Map/XYZTile/Ryoseikoku/10/
