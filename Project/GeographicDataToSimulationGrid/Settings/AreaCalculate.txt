@@ -3,3 +3,4 @@ color_tsv_path = ../Settings/test.tsv
 input_path = ../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/ColorCodingByProvincesOfJapan_8_218_90_16_16_2.png
 output_path = ../../../Data/Map/XYZTile/Union/Area.tsv
 start_y = 90
+deviation_z = 8
