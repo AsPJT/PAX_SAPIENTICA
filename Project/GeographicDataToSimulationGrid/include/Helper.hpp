@@ -145,7 +145,7 @@ namespace paxs {
         }
 
         // 2のn乗
-        int static powOfTwo(const int n){
+        double static powOfTwo(const int n){
             return std::pow(2, n);
         }
     private:

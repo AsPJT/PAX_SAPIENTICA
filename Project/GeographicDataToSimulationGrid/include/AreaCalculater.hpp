@@ -52,6 +52,9 @@ namespace paxs{
             }
 
             std::vector<double> area_count(color_tsv.size());
+            double y_pow = Helper::powOfTwo(deviation_z);
+            double r_pow = Helper::powOfTwo(deviation_z - 8);
+            double area_pow = r_pow * r_pow;
             for(int r=0;r<img.rows;r++){
                 for(int c=0;c<img.cols;c++){
                     cv::Vec3b vec_color = img.at<cv::Vec3b>(r, c);
@@ -66,7 +69,7 @@ namespace paxs{
                     int num = color_map[std::stoi(color)];
                     if(num == 0) continue;
                     // 面積を取得
-                    int y = Helper::powOfTwo(deviation_z) * start_y + r * Helper::powOfTwo(deviation_z - 8);
+                    int y = y_pow * start_y + r_pow * r;
                     double area = area_map[y];
                     if(area == 0) std::cout << y << " not found" << std::endl;
                     area_count[num - 1] += area;
@@ -74,7 +77,7 @@ namespace paxs{
             }
             std::string content;
             for(int i = 0;i < color_tsv.size();i++){
-                content += std::to_string(i + 1) + '\t' + color_tsv[i][1] + '\t' + std::to_string(area_count[i]) + '\n';
+                content += std::to_string(i + 1) + '\t' + color_tsv[i][1] + '\t' + std::to_string(area_count[i] * area_pow) + '\n';
             }
             
             std::ofstream ofs;
