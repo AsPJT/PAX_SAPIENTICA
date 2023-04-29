@@ -1,0 +1,3 @@
+[submodule "Data/3DModel/KofunOBJ"]
+	path = Data/3DModel/KofunOBJ
+	url = https://github.com/Asukana/KofunOBJ.git
