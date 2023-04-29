@@ -26,7 +26,7 @@ namespace paxs{
             if(!std::filesystem::exists(setting_path)){
                 std::ofstream writing_file;
                 writing_file.open(setting_path, std::ios::out);
-                std::string writing_text = "area_tsv_path = \ncolor_tsv_path = \ninput_path = \noutput_path = \nstart_y = ";
+                std::string writing_text = "area_tsv_path = \ncolor_tsv_path = \ninput_path = \noutput_path = \nstart_y = \ndeviation_z = ";
                 writing_file << writing_text << std::endl;
                 writing_file.close();
                 return false;
@@ -36,6 +36,7 @@ namespace paxs{
             input_path = settings["input_path"];
             output_path = settings["output_path"];
             start_y = std::stoi(settings["start_y"]);
+            deviation_z = std::stoi(settings["deviation_z"]);
 
             std::vector<std::vector<std::string>> area_tsv = paxs::Helper::readTsv(settings["area_tsv_path"]);
             color_tsv = paxs::Helper::readTsv(settings["color_tsv_path"]);
@@ -51,6 +52,9 @@ namespace paxs{
             }
 
             std::vector<double> area_count(color_tsv.size());
+            double y_pow = Helper::powOfTwo(deviation_z);
+            double r_pow = Helper::powOfTwo(deviation_z - 8);
+            double area_pow = r_pow * r_pow;
             for(int r=0;r<img.rows;r++){
                 for(int c=0;c<img.cols;c++){
                     cv::Vec3b vec_color = img.at<cv::Vec3b>(r, c);
@@ -65,7 +69,7 @@ namespace paxs{
                     int num = color_map[std::stoi(color)];
                     if(num == 0) continue;
                     // 面積を取得
-                    int y = 256 * start_y + r;
+                    int y = y_pow * start_y + r_pow * r;
                     double area = area_map[y];
                     if(area == 0) std::cout << y << " not found" << std::endl;
                     area_count[num - 1] += area;
@@ -73,7 +77,7 @@ namespace paxs{
             }
             std::string content;
             for(int i = 0;i < color_tsv.size();i++){
-                content += std::to_string(i + 1) + '\t' + color_tsv[i][1] + '\t' + std::to_string(area_count[i]) + '\n';
+                content += std::to_string(i + 1) + '\t' + color_tsv[i][1] + '\t' + std::to_string(area_count[i] * area_pow) + '\n';
             }
             
             std::ofstream ofs;
@@ -85,6 +89,7 @@ namespace paxs{
         std::string input_path;
         std::string output_path;
         int start_y;
+        int deviation_z;
         std::vector<std::vector<std::string>> color_tsv;
         std::map<int, int> color_map;
         std::map<int, double> area_map;
