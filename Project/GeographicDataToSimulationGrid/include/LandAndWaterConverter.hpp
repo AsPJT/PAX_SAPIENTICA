@@ -41,7 +41,7 @@ namespace paxs{
 
             input_path = settings["input_path"];
             output_path = settings["output_path"];
-            std::filesystem::create_directory(output_path);
+            create_directory_recursive(output_path);
             return true;
         }
         void convert(){
@@ -70,6 +70,12 @@ namespace paxs{
     private:
         std::string input_path;
         std::string output_path;
+        void create_directory_recursive(const std::filesystem::path &path) {
+            if (!std::filesystem::exists(path)) {
+                create_directory_recursive(path.parent_path());
+                std::filesystem::create_directory(path);
+            }
+        }
     };
 }
 
