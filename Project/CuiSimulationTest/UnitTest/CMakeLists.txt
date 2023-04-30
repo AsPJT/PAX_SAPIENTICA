@@ -1,1 +1,1 @@
-add_executable(Main Main.cpp)
+add_executable(AgentTest AgentTest.cpp)
