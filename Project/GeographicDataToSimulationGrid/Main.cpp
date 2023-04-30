@@ -37,6 +37,17 @@ int main(){
 }
 #endif // !LandAndSea
 
+#ifdef LandAndWaterConvert
+
+#include <LandAndWaterConverter.hpp>
+
+int main(){
+    std::unique_ptr<paxs::LandAndWaterConverter> land_and_water_converter(new(std::nothrow) paxs::LandAndWaterConverter);
+    if(land_and_water_converter->init()) land_and_water_converter->convert();
+}
+
+#endif // !LandAndWaterConvert
+
 #ifdef ImageCombine
 
 #include <ImageCombiner.hpp>

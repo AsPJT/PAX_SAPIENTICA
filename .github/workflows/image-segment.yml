@@ -4,7 +4,7 @@ on : [ workflow_dispatch ]
 
 env:
   BUILD_TYPE: Debug
-  WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
+  WORK_SPACE: ${{github.workspace}}/Project
   TARGET: ImageSegment
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -42,7 +42,7 @@ jobs:
 
     - name: Execution
       run: |
-        cd ${{env.WORK_SPACE}}/bin/
+        cd ${{env.WORK_SPACE}}/GeographicDataToSimulationGrid/bin/
         ./${{env.TARGET}}
 
     - name: Push

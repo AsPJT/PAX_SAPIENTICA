@@ -4,7 +4,7 @@ on : [ workflow_dispatch ]
 
 env:
   BUILD_TYPE: Debug
-  WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
+  WORK_SPACE: ${{github.workspace}}/Project
   TARGET: ImageCombine
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -34,7 +34,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        mkdir ${{github.workspace}}/build
+        mkdir ${{github.workspace}}/GeographicDataToSimulationGrid/build
         cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}} -G "Unix Makefiles"
 
     - name: Build

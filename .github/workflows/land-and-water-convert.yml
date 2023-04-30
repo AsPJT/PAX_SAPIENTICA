@@ -1,11 +1,11 @@
-name: ColorCount
+name: LandAndWaterConvert
 
 on : [ workflow_dispatch ]
 
 env:
   BUILD_TYPE: Debug
   WORK_SPACE: ${{github.workspace}}/Project
-  TARGET: ColorCount
+  TARGET: LandAndWaterConvert
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
 
     - name: Execution
       run: |
-        cd ${{env.WORK_SPACE}/GeographicDataToSimulationGrid}/bin/
+        cd ${{env.WORK_SPACE}}/GeographicDataToSimulationGrid/bin/
         ./${{env.TARGET}}
 
     - name: Push
@@ -54,4 +54,3 @@ jobs:
         git add .
         git commit -m "GitHub Actions: ${{env.TARGET}}"
         git push origin HEAD:${GITHUB_REF}
-
