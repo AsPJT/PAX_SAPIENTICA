@@ -41,9 +41,13 @@ public:
         }
     }
     void updateAgents(std::vector<paxs::Agent>& agents) {
-        for (paxs::Agent& agent : agents) {
-            agent.updateAge();
-            if(agent.isDead()) agents.erase(std::remove(agents.begin(), agents.end(), agent), agents.end());
+        for (auto it = agents.begin(); it != agents.end();) {
+            it->updateAge();
+            if (it->isDead()) {
+                it = agents.erase(it);
+            } else {
+                ++it;
+            }
         }
     }
     void reproduceAgents(std::vector<paxs::Agent>& agents, double reproduction_distance, double reproduction_probability) {
