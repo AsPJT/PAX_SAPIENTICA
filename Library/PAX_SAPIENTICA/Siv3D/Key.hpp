@@ -162,7 +162,7 @@ namespace paxs {
 		}
 	private:
 		Coordinate center = Coordinate(135.0, getLatitudeToMercatorY(35.0), 200.0); // マップ座標の中央
-		double width = 20.0; // マップの幅
+		double width = 2.0; // マップの幅
 
 		// 平城京
 		//Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央

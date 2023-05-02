@@ -19,6 +19,8 @@
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Siv3D/LocatipnRange.hpp>
 #include <PAX_SAPIENTICA/Siv3D/LocationPoint.hpp>
+#include <PAX_SAPIENTICA/Siv3D/3DModel.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>
 
 namespace paxs {
 
@@ -27,6 +29,40 @@ namespace paxs {
 		s3d::Window::Resize(1280, 720);
 		// 初期化とロゴの表示
 		paxs::initLogo();
+
+		const s3d::Font font_pulldown{ 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") };
+		const std::vector<s3d::String> items_pulldown = { U"日本語", U"English", U"繁體中文", U"简体中文", U"한국어"};
+		//const std::vector<s3d::String> items_pulldown = { U"日本語", U"English", U"中文", U"Español", U"Français" };
+		paxs::Pulldown pulldown{ items_pulldown, font_pulldown, s3d::Point{ 900, 0 } };
+
+		const std::vector<s3d::String> menu_bar_file_pulldown = { 
+			U"ファイル(F)", 
+			U"新規作成", 
+			U"開く", 
+			U"閉じる", 
+			U"終了" };
+		const std::vector<s3d::String> menu_bar_edit_pulldown = { 
+			U"編集(E)", 
+			U"切り取り", 
+			U"コピー", 
+			U"貼り付け", 
+			U"削除" };
+		const std::vector<s3d::String> menu_bar_view_pulldown = { 
+			U"表示(V)", 
+			U"暦", 
+			U"地図", 
+			U"ライセンス", 
+			U"デバッグ",
+			U"3D"
+		};
+		
+		const s3d::Font font_menu_bar{ 14, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") };
+
+		paxs::Pulldown menu_bar_file{ menu_bar_file_pulldown, font_menu_bar, s3d::Point{ 0, 0 },paxs::PulldownType::One };
+		paxs::Pulldown menu_bar_edit{ menu_bar_edit_pulldown, font_menu_bar, s3d::Point{ 0 + menu_bar_file.getRect().w, 0},paxs::PulldownType::One};
+		paxs::Pulldown menu_bar_view{ menu_bar_view_pulldown, font_menu_bar, s3d::Point{ 0 + menu_bar_file.getRect().w + menu_bar_edit.getRect().w, 0 },paxs::PulldownType::One };
+
+		const s3d::Texture texture_tlt{ U"./../../../../../Image/Logo/TitleLogoText2.svg" };
 
 		// 暦の種類
 		enum class KoyomiEnum {
@@ -46,44 +82,66 @@ namespace paxs {
 		const std::unique_ptr<MapView> map_view(new(std::nothrow) MapView);
 
 
-/*##########################################################################################
-	読み込む XYZ タイルの情報を記載
-	map_name			地図名
-	map_url_name		地図画像を取得する URL
-	map_license_name	ライセンス情報
-##########################################################################################*/
+		/*##########################################################################################
+			読み込む XYZ タイルの情報を記載
+			map_name			地図名
+			map_url_name		地図画像を取得する URL
+			map_license_name	ライセンス情報
+		##########################################################################################*/
 
-		//const s3d::String map_name = U"openstreetmap";
-		//const s3d::String map_url_name = U"http://tiles.wmflabs.org/bw-mapnik";
-		//const s3d::String map_url_name = U"http://tile.openstreetmap.org";
-		//const s3d::String map_url_name = U"http://b.tile.openstreetmap.org";
-		//const s3d::String map_name = U"hot";
-		//const s3d::String map_url_name = U"http://a.tile.openstreetmap.fr/hot";
-		//const s3d::String map_license_name = U"© OpenStreetMap contributors CC BY-SA 2.0";
-
-		//const s3d::String map_name = U"gsi_en";
-		//const s3d::String map_url_name = U"https://cyberjapandata.gsi.go.jp/xyz/english";
-		//const s3d::String map_name = U"gsi";
-		//const s3d::String map_url_name = U"https://cyberjapandata.gsi.go.jp/xyz/std";
-		//const s3d::String map_license_name = U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）";
-
-		const std::unique_ptr<XYZTile> xyz_tile1(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-		xyz_tile1->setMapURL(U"https://tile.mierune.co.jp/mierune");
-		xyz_tile1->setMapName(U"mierune");
-		xyz_tile1->setMapFilePath(U"./SavedMap/");
+		const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile_base->setMapURL(U"");
+		xyz_tile_base->setMapName(U"");
+		xyz_tile_base->setMaxZ(7);
+		xyz_tile_base->setDrawMaxZ(7);
+		xyz_tile_base->setMapFilePath(U"./../../../../../Data/Map/XYZTile/Standard/Image/Land/2023/");
+		//xyz_tile_base->setMapFilePath(U"./../../../../../Data/Map/XYZTile/LandAndSea/Image/GreenAndAlphaBinary/2023/");
 
 		const std::unique_ptr<XYZTile> xyz_tile2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-		xyz_tile2->setMapName(U"kantorapid");
-		xyz_tile2->setMapFilePath(U"./SavedMap/KantoRapid/");
+		xyz_tile2->setMapURL(U"");
+		xyz_tile2->setMapName(U"gbank");
+		xyz_tile2->setMinZ(8);
+		xyz_tile2->setMaxZ(10);
+		xyz_tile2->setDrawMinZ(8);
+		xyz_tile2->setMapFilePath(U"./../../../../../Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/");
+		//xyz_tile2->setMapFilePath(U"./../../../../../Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
+		//xyz_tile2->setMapFilePath(U"./SavedMap/gbank_noblank_reclaimed_land/");
 
 		const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-		xyz_tile3->setMapURL(U"https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
+		xyz_tile3->setMapURL(U"");
+		//xyz_tile3->setMapURL(U"https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
 		xyz_tile3->setMapName(U"water");
-		xyz_tile3->setMapFilePath(U"./SavedMap/");
+		xyz_tile3->setDefaultZ(12);
+		xyz_tile3->setDrawMinZ(11);
+		xyz_tile3->setMapFilePath(U"./SavedMap/BlueRiver/");
 
-		const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
+		const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile4->setMapURL(U"");
+		xyz_tile4->setMapName(U"soil");
+		xyz_tile4->setDefaultZ(12);
+		xyz_tile4->setMapFilePath(U"./SavedMap/Soil/soil/");
 
+		const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile_kuni->setMapURL(U"");
+		xyz_tile_kuni->setMapName(U"ColorCodingByProvincesOfJapanWithLakes");
+		xyz_tile_kuni->setDefaultZ(10);
+		xyz_tile_kuni->setMapFilePath(U"./../../../../../Data/Map/XYZTile/ColorCodingByProvincesOfJapan/");
 
+		const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile_kuni_line->setMapURL(U"");
+		xyz_tile_kuni_line->setMapName(U"Ryoseikoku");
+		xyz_tile_kuni_line->setDefaultZ(10);
+		xyz_tile_kuni_line->setMapFilePath(U"./../../../../../Data/Map/XYZTile/Ryoseikoku/");
+
+		const std::unique_ptr<XYZTile> xyz_tile_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile_line->setDefaultZ(8);
+		xyz_tile_line->setDrawMinZ(5);
+		const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile_line2->setDefaultZ(10);
+		xyz_tile_line2->setDrawMinZ(7);
+
+		const s3d::String map_license_name = U"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.";
+		//const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
 
 		// 地図上に描画する画像の一覧
 		const std::unique_ptr<TextureLocation> texture_location(new(std::nothrow) TextureLocation);
@@ -94,7 +152,7 @@ namespace paxs {
 		//	/*135.291055*/135.45, getLatitudeToMercatorY(/*34.398726*/34.6), 135.853110, getLatitudeToMercatorY(35.010042));
 
 		// 時代区分の文字列
-		const s3d::Array<s3d::String> options = {
+		const std::vector<s3d::String> options = {
 			U"旧石器時代", U"縄文時代", U"弥生時代", U"古墳時代 CE251-",
 			U"飛鳥時代 CE592-", U"奈良時代 CE710-", U"平安時代 CE794-",
 			U"鎌倉時代", U"室町時代", U"安土桃山時代", U"江戸時代", U"明治時代" };
@@ -146,11 +204,12 @@ namespace paxs {
 		paxs::inputJapaneseEra(japanese_era_list, "./../../../../../Data/Calendar/JapaneseEraName.tsv");
 
 		// 暦のフォントサイズ
-		constexpr int koyomi_font_size = 20;
+		constexpr int koyomi_font_size = 18;
 		const int koyomi_font_x = s3d::Scene::Width() - 240;//220;
-		constexpr int koyomi_font_y = 20;
+		constexpr int koyomi_font_y = 120;
 		const int koyomi_font_en_x = s3d::Scene::Width() - 240;//820;
-		constexpr int koyomi_font_en_y = 220;
+		constexpr int koyomi_font_en_y = 20;
+		//constexpr int koyomi_font_en_y = 220;
 
 		// 通常のフォントを作成 | Create a new font
 		const s3d::Font koyomi_font{ s3d::FontMethod::SDF, koyomi_font_size /*, Typeface::Bold*/
@@ -158,17 +217,23 @@ namespace paxs {
 		};
 		koyomi_font.setBufferThickness(3);
 
-		const s3d::Font pin_font{ s3d::FontMethod::SDF, 20 /*, Typeface::Bold*/
+
+		const s3d::Font license_font{ s3d::FontMethod::SDF, 13 /*, Typeface::Bold*/
+			, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf")
+		};
+		license_font.setBufferThickness(3);
+
+		const s3d::Font pin_font{ s3d::FontMethod::SDF, 18 /*, Typeface::Bold*/
 			, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf")
 		};
 		pin_font.setBufferThickness(3);
 
-		const s3d::Font en_font{ s3d::FontMethod::SDF, 16/*18*/ /*, Typeface::Bold*/
+		const s3d::Font en_font{ s3d::FontMethod::SDF, 15/*18*/ /*, Typeface::Bold*/
 			, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf")
 		};
 		en_font.setBufferThickness(3);
 
-		const s3d::Font font{ s3d::FontMethod::SDF, 20/*26*/ /*, Typeface::Bold*/
+		const s3d::Font font{ s3d::FontMethod::SDF, 18/*26*/ /*, Typeface::Bold*/
 			, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf")
 		};
 		font.setBufferThickness(3);
@@ -183,19 +248,25 @@ namespace paxs {
 
 		// 背景色を指定
 		//Scene::SetBackground(Color{ int(184 * 0.7), int(212 * 0.9), int(238) });
-		s3d::Scene::SetBackground(s3d::Color{ 184, 212, 238 });
+		//s3d::Scene::SetBackground(s3d::Color{ 180, 154, 100 });
+		//s3d::Scene::SetBackground(s3d::Color{ 110, 146, 161 });
+		s3d::Scene::SetBackground(s3d::Color{ 140, 180, 250 });
+		//s3d::Scene::SetBackground(s3d::Color{ 255, 255, 255 });
+		jdn += 2000;
+
+		paxs::Graphics3DModel g3d_model;
 
 /*##########################################################################################
-	
+
 	ループ開始
 
 ##########################################################################################*/
 
 		while (s3d::System::Update()) {
 
-/*##########################################################################################
-	更新処理関連
-##########################################################################################*/
+			/*##########################################################################################
+				更新処理関連
+			##########################################################################################*/
 
 			// キーボード入力を更新
 			map_view->update();
@@ -204,50 +275,71 @@ namespace paxs {
 			const double map_view_height = map_view->getHeight();
 			const double map_view_center_x = map_view->getCenterX();
 			const double map_view_center_y = map_view->getCenterY();
+			const double map_view_center_lat = std::asin(std::tanh(map_view_center_y / 180.0 * paxs::pi)) / (paxs::pi) * 180.0;
+
+			// プルダウンを更新
+			pulldown.update();
+
+			menu_bar_file.update();
+			menu_bar_edit.update();
+			menu_bar_view.update();
 
 			// タイルを更新
-			xyz_tile1->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-			xyz_tile2->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			//xyz_tile1->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			xyz_tile_base->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Default);
+			//xyz_tile2->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
 			xyz_tile3->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-			
+			xyz_tile_kuni->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
+			xyz_tile_kuni_line->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
+			//xyz_tile4->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Original);
+			xyz_tile_line->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			xyz_tile_line2->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 
-/*##########################################################################################
-	地図描画関連
-##########################################################################################*/
+			/*##########################################################################################
+				地図描画関連
+			##########################################################################################*/
 
 
-			// XYZ タイルの地図の描画
-			xyz_tile1->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-			xyz_tile2->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-			xyz_tile3->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			if (menu_bar_view.getIsItems(1)) {
+				// XYZ タイルの地図の描画
+				//xyz_tile1->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				xyz_tile_base->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				//xyz_tile2->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				xyz_tile_kuni->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				xyz_tile_kuni_line->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				xyz_tile3->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				//xyz_tile4->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				xyz_tile_line->drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
+				xyz_tile_line2->drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
 
-			// 地図上に描画する画像を描画する
-			//texture.resized(150).drawAt(Scene::Center());
-			//texture2.resized(750).drawAt(Scene::Center());
-			texture_location->update(map_view_center_x, map_view_center_y, map_view_width, map_view_height);
+				// 地図上に描画する画像を描画する
+				//texture.resized(150).drawAt(Scene::Center());
+				//texture2.resized(750).drawAt(Scene::Center());
+				texture_location->update(map_view_center_x, map_view_center_y, map_view_width, map_view_height);
+				//xyz_tile3->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 
-			// 線の描画
-			for (int i = 0; i < route2.size(); ++i) {
-				route2[i] = s3d::Vec2(
-					(route1[i].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-					double(s3d::Scene::Height()) - ((route1[i].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
-				);
+				// 線の描画
+				for (int i = 0; i < route2.size(); ++i) {
+					route2[i] = s3d::Vec2(
+						(route1[i].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((route1[i].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+					);
+				}
+				// 航路を描画
+				s3d::Spline2D{ route2 }.draw(2, s3d::Color{ 85,145,245 });
+
+				// 地名を描画
+				place_name_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
+					font, en_font, pin_font);
 			}
-			// 航路を描画
-			s3d::Spline2D{ route2 }.draw(2, s3d::Color{ 85,145,245 });
+			/*##########################################################################################
+				暦関連
+			##########################################################################################*/
 
-			// 地名を描画
-			place_name_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
-				font, en_font, pin_font);
-
-/*##########################################################################################
-	暦関連
-##########################################################################################*/
-
-			//Rect{ 0,0,50 }.drawFrame(2, ColorF{ 1, 0, 0, 0.5 });
+			//s3d::Rect{ 0,0,50 }.drawFrame(2, ColorF{ 1, 0, 0, 0.5 });
 			//Circle{ Cursor::Pos(), 40 }.drawFrame(2, ColorF{ 1, 0, 0, 0.5 });
 
-			//Circle{ Scene::Center(), 10 }.draw(Palette::Red); // 真ん中の赤い点
+			//Circle{ Scene::Center(), 10 }.draw(s3d::Palette::Red); // 真ん中の赤い点
 
 			// 日付の構造体
 			paxs::Date Date;
@@ -308,71 +400,145 @@ namespace paxs {
 				}
 			}
 
+			//jdn += 20; // ユリウス日を繰り上げ（次の日にする）
+
 			static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 			++count;
 			//jdn += 400;
 			//if (count >= 0) {
 			if (count >= 30) {
 				count = 0;
-				++jdn; // ユリウス日を繰り上げ（次の日にする）
+				//++jdn; // ユリウス日を繰り上げ（次の日にする）
 			}
 
-			// 暦表示の範囲に白背景を追加
-			s3d::Rect{ s3d::Scene::Width() - 400,0,400,s3d::Scene::Height() }.draw(s3d::Palette::White);
-			//Rect{ 0,0,Scene::Width(),150}.draw(Palette::White);
+			if (menu_bar_view.getIsItems(0)) {
 
-			// 暦の表示（日本語）
-			for (int i = 0; i < date_list.size(); ++i) {
-				koyomi_font(date_list[i].calendar_name).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(U"日").draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+				// 暦表示の範囲に白背景を追加
+				s3d::RoundRect{ s3d::Scene::Width() - 375,115,360,110, 10 }.draw(s3d::Palette::White);
+				//s3d::Rect{ s3d::Scene::Width() - 400,0,400,s3d::Scene::Height() }.draw(s3d::Palette::White);
+				//s3d::Rect{ 0,0,Scene::Width(),150}.draw(s3d::Palette::White);
 
-				koyomi_font(s3d::ToString(date_list[i].date.year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(s3d::ToString(date_list[i].date.month)).draw(s3d::Arg::topRight = s3d::Vec2(int(190 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(s3d::ToString(date_list[i].date.day)).draw(s3d::Arg::topRight = s3d::Vec2(int(270 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				if (!date_list[i].is_leap_month) continue;
-				koyomi_font(U"閏").draw(s3d::Arg::topRight = s3d::Vec2((
-					(date_list[i].date.month < 10) ? int(167 * koyomi_font_size / 30.0) + koyomi_font_x : int(152 * koyomi_font_size / 30.0) + koyomi_font_x
-					), koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+				// 暦の表示（日本語）
+
+				if (pulldown.getIndex() == 0) {
+					for (int i = 0; i < date_list.size(); ++i) {
+						koyomi_font(date_list[i].calendar_name).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(U"日").draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+
+						koyomi_font(s3d::ToString(date_list[i].date.year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(s3d::ToString(date_list[i].date.month)).draw(s3d::Arg::topRight = s3d::Vec2(int(190 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(s3d::ToString(date_list[i].date.day)).draw(s3d::Arg::topRight = s3d::Vec2(int(270 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						if (!date_list[i].is_leap_month) continue;
+						koyomi_font(U"閏").draw(s3d::Arg::topRight = s3d::Vec2((
+							(date_list[i].date.month < 10) ? int(167 * koyomi_font_size / 30.0) + koyomi_font_x : int(152 * koyomi_font_size / 30.0) + koyomi_font_x
+							), koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+					}
+				}
+				else if (pulldown.getIndex() == 0) {
+
+					// 暦の表示（英語）
+					for (int i = 0; i < date_list.size(); ++i) {
+						koyomi_font(date_list[i].calendar_en_name).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(U"th").draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+
+						koyomi_font(s3d::ToString(date_list[i].date.year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(month_name[date_list[i].date.month]).draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font(s3d::ToString(date_list[i].date.day)).draw(s3d::Arg::topRight = s3d::Vec2(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						if (!date_list[i].is_leap_month) continue;
+						koyomi_font(U"int.").draw(s3d::Arg::topRight = s3d::Vec2((
+							int(152 * koyomi_font_size / 30.0) + koyomi_font_en_x
+							), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+					}
+				}
+				if (s3d::SimpleGUI::Button(U"-50年", s3d::Vec2{ s3d::Scene::Width() - 375,230 })) {
+					jdn -= (3650 * 5);
+				}
+				if (s3d::SimpleGUI::Button(U"+50年", s3d::Vec2{ s3d::Scene::Width() - 255,230 })) {
+					jdn += (3650 * 5);
+				}
+
 			}
-			// 暦の表示（英語）
-			for (int i = 0; i < date_list.size(); ++i) {
-				koyomi_font(date_list[i].calendar_en_name).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(U"th").draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 
-				koyomi_font(s3d::ToString(date_list[i].date.year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(month_name[date_list[i].date.month]).draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				koyomi_font(s3d::ToString(date_list[i].date.day)).draw(s3d::Arg::topRight = s3d::Vec2(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-				if (!date_list[i].is_leap_month) continue;
-				koyomi_font(U"int.").draw(s3d::Arg::topRight = s3d::Vec2((
-					int(152 * koyomi_font_size / 30.0) + koyomi_font_en_x
-					), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-			}
 			// 時代区分を選択するラジオボタン
-			static size_t index1 = 2;
-			if (s3d::SimpleGUI::RadioButtons(index1, options, s3d::Vec2{ s3d::Scene::Width() - 400, 400 })) {
-				jdn = period_jdn[index1];
+			//static size_t index1 = 2;
+			//if (s3d::SimpleGUI::RadioButtons(index1, options, s3d::Vec2{ s3d::Scene::Width() - 400, 400 })) {
+			//	jdn = period_jdn[index1];
+			//}
+
+			static const std::vector<s3d::String> map_view_width_str = { U"拡大率", U"English", U"繁體中文", U"简体中文", U"한국어" };
+			static const std::vector<s3d::String> map_view_center_x_str = { U"メルカトル経度", U"English", U"繁體中文", U"简体中文", U"한국어" };
+			static const std::vector<s3d::String> map_view_center_y_str = { U"メルカトル緯度", U"English", U"繁體中文", U"简体中文", U"한국어" };
+			static const std::vector<s3d::String> map_view_center_lat_str = { U"緯度", U"English", U"繁體中文", U"简体中文", U"한국어" };
+			static const std::vector<s3d::String> xyz_tile_z_str = { U"XYZタイル Z", U"XYZ Tiles Z", U"繁體中文", U"简体中文", U"한국어" };
+
+			s3d::Rect{ 0,0,s3d::Scene::Width(),30 }.draw(s3d::Color{ 243,243,243 });
+
+			pulldown.draw();
+			menu_bar_file.draw();
+			menu_bar_edit.draw();
+			menu_bar_view.draw();
+
+			// s3d::Arg::topRight = 
+			// その他のデバッグ用の変数情報の表示
+
+			if (menu_bar_view.getIsItems(3)) {
+				font((map_view_center_x_str[pulldown.getIndex()])
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 300), s3d::Palette::Black);
+				font(s3d::ToString(map_view_center_x)
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 300), s3d::Palette::Black);
+
+				// マップ中心座標 Y
+				font((map_view_center_y_str[pulldown.getIndex()])
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 330), s3d::Palette::Black);
+				font(s3d::ToString(map_view_center_y)
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 330), s3d::Palette::Black);
+
+				font((map_view_center_lat_str[pulldown.getIndex()])
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 360), s3d::Palette::Black);
+				font(s3d::ToString(map_view_center_lat)
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 360), s3d::Palette::Black);
+
+				font(map_view_width_str[pulldown.getIndex()]
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 390), s3d::Palette::Black);
+				font(s3d::ToString(map_view_width)
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 390), s3d::Palette::Black);
+
+				font(s3d::String{ xyz_tile_z_str[pulldown.getIndex()] }
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 420), s3d::Palette::Black);
+				font(s3d::ToString(xyz_tile2->getZ())
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 420), s3d::Palette::Black);
+				font(s3d::ToString(xyz_tile2->getZNum())
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 450), s3d::Palette::Black);
+			}
+			if (menu_bar_view.getIsItems(2)) {
+				//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
+				//font(s3d::String{ U"B" } + s3d::ToString(xyz_tile_pos.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
+				license_font(map_license_name).draw(
+					s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
+					s3d::Arg::bottomLeft = s3d::Vec2(10, s3d::Scene::Height() - 10),
+					s3d::Palette::White);
+				license_font(map_license_name).draw(
+					s3d::Arg::bottomLeft = s3d::Vec2(10, s3d::Scene::Height() - 10),
+					s3d::Palette::Black);
+				//pin_font(s3d::String{ U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）" }).draw(s3d::Arg::topLeft = s3d::Vec2(10, 10), s3d::Palette::Black);
+
+				//if (s3d::SimpleGUI::Button(U"GitHub", s3d::Vec2{ s3d::Scene::Width() - 150, 0 })) {
+				//	// Web ページをブラウザで開く
+				//	s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
+				//}
+
+				//s3d::RoundRect{ s3d::Scene::Width() - 205,s3d::Scene::Height() - 45,190,30, 10 }.draw(s3d::Color{ 181, 0, 0 });
+				texture_tlt.resized(180).draw(s3d::Arg::bottomRight = s3d::Vec2(s3d::Scene::Width() - 10, s3d::Scene::Height() - 10));
 			}
 
-			// その他のデバッグ用の変数情報の表示
-			font(s3d::String{ U"拡大率" } + s3d::ToString(map_view_width)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 600), s3d::Palette::Black);
-			font(s3d::String{ U"メルカトル座標" } + s3d::ToString(map_view_center_x) + s3d::String{ U":" } + s3d::ToString(map_view_center_y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 300), s3d::Palette::Black);
-			font(s3d::String{ U"タイル" } + s3d::ToString(xyz_tile1->getZ()) + s3d::String{ U":" } + s3d::ToString(xyz_tile1->getZNum())).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 500), s3d::Palette::Black);
-			//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
-			//font(s3d::String{ U"B" } + s3d::ToString(xyz_tile_pos.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
-			pin_font(map_license_name).draw(
-				s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-				s3d::Arg::topLeft = s3d::Vec2(10, 10),
-				s3d::Palette::Black);
-			//pin_font(s3d::String{ U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）" }).draw(s3d::Arg::topLeft = s3d::Vec2(10, 10), s3d::Palette::Black);
+			if (menu_bar_view.getIsItems(4)) {
+				g3d_model.updateRotation(); // 3D モデルを回転させる
+			}
 
-			//if (SimpleGUI::Button(U"GitHub", Vec2{ 20, 20 })) {
-			//	// Web ページをブラウザで開く
-			//	System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
-			//}
 		}
 
 	}

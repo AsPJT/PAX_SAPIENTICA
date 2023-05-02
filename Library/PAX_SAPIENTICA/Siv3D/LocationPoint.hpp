@@ -75,14 +75,15 @@ namespace paxs {
 					|| lli.max_view < map_view_width
 					|| lli.min_year > jdn
 					|| lli.max_year < jdn) {
-
+					if (lli.min_year > jdn) continue;
+					if (lli.max_year < jdn) continue;
 					// 地名
-					if (lli.lpe == LocationPointEnum::location_point_place_name) {
-						texture_pn.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
-						continue;
-					}
+					//if (lli.lpe == LocationPointEnum::location_point_place_name) {
+					//	texture_pn.resized(14).drawAt(
+					//		s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+					//	double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+					//	continue;
+					//}
 					// 前方後円墳
 					if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
 						texture_kofun1.resized(14).drawAt(
@@ -152,32 +153,32 @@ namespace paxs {
 					}
 					// 古事記のアイコン
 					if (lli.source == "JP-Kojiki") {
-						texture_ko.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+						texture_ko.resized(20).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 					// 倭名類聚抄のアイコン
 					else if (lli.source == "JP-WamyoRuijusho") {
-						texture_wam.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
-							});
+						//texture_wam.resized(20).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						//	double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+						//	});
 					}
 					// 前方後円墳のアイコン
 					else if (lli.source == "ZempoKoenFun") {
 						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 					// 前方後方墳のアイコン
 					else if (lli.source == "ZempoKohoFun") {
 						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 					// 帆立貝型古墳のアイコン
 					else if (lli.source == "HotategaiGataKofun") {
 						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) + 50
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 				}
