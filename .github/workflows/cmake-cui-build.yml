@@ -8,7 +8,7 @@ on:
 
 env:
   BUILD_TYPE: Debug
-  WORK_SPACE: ${{github.workspace}}/Project/GeographicDataToSimulationGrid
+  WORK_SPACE: ${{github.workspace}}/Project
 
 jobs:
   build:
@@ -25,6 +25,7 @@ jobs:
     - name: Install opencv
       run: |
         sudo apt install libopencv-dev
+        sudo apt install libsfml-dev
         sudo apt install cmake
         sudo apt install g++
 

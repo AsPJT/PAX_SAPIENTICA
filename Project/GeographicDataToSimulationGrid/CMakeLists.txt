@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
-project(GeographicDataToSimulationGrid)
 
 set(CMAKE_CXX_STANDARD 17)
-set(EXECUTABLE_OUTPUT_PATH ../Project/GeographicDataToSimulationGrid/bin)
+set(EXECUTABLE_OUTPUT_PATH ../../Project/GeographicDataToSimulationGrid/bin)
 include_directories(../../Library)
 include_directories(include)
 find_package(OpenCV REQUIRED)
@@ -11,6 +10,11 @@ find_package(OpenCV REQUIRED)
 add_executable(LandAndSea Main.cpp)
 target_compile_definitions(LandAndSea PRIVATE LandAndSea)
 target_link_libraries(LandAndSea ${OpenCV_LIBS})
+
+# LandAndWaterConvert
+add_executable(LandAndWaterConvert Main.cpp)
+target_compile_definitions(LandAndWaterConvert PRIVATE LandAndWaterConvert)
+target_link_libraries(LandAndWaterConvert ${OpenCV_LIBS})
 
 # ImageCombine
 add_executable(ImageCombine Main.cpp)
