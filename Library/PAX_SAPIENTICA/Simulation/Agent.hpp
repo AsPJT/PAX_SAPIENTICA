@@ -24,6 +24,8 @@ namespace paxs {
 
         double getX() const { return x; }
         double getY() const { return y; }
+        void setX(const double& x) { this->x = x; }
+        void setY(const double& y) { this->y = y; }
         void move(const double& x, const double& y) { this->x += x; this->y += y; }
         bool isDead() const { return age >= life_expectancy; }
         int getAge() const { return age; }
