@@ -1,3 +1,6 @@
 [submodule "Data/3DModel/KofunOBJ"]
 	path = Data/3DModel/KofunOBJ
 	url = https://github.com/Asukana/KofunOBJ.git
+[submodule "Data/Map/XYZTile/Soil/Image/Soil"]
+	path = Data/Map/XYZTile/Soil/Image/Soil
+	url = https://github.com/Asukana/Soil.git
