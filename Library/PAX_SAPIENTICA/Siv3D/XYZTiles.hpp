@@ -223,10 +223,10 @@ namespace paxs {
 			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
 				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					s3d::Rect(
-						(pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())),
-						(360.0 / z_num) / map_view_width * double(s3d::Scene::Width())
-						, (360.0 / z_num) / map_view_height * double(s3d::Scene::Height())
+						s3d::Rect::value_type((pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width())),
+							s3d::Rect::value_type(double(s3d::Scene::Height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))),
+						s3d::Rect::value_type((360.0 / z_num) / map_view_width * double(s3d::Scene::Width())), 
+						s3d::Rect::value_type((360.0 / z_num) / map_view_height * double(s3d::Scene::Height()))
 					).drawFrame(inner_thickness, outer_thickness, color);
 				}
 			}

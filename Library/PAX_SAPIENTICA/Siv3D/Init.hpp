@@ -68,7 +68,7 @@ namespace paxs {
 #include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp> // タイルの更新
 #include <PAX_SAPIENTICA/Siv3D/InitLogo.hpp> // ロゴを描画
 
-#ifdef SIV3D_PLATFORM(WINDOWS)
+#ifdef SIV3D_PLATFORM_PRIVATE_DEFINITION_WINDOWS
 #ifndef PAXS_S3D_RESOURCE
 #define PAXS_S3D_RESOURCE s3d::Resource
 #endif

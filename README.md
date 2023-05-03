@@ -20,7 +20,7 @@ GIS & Archaeological Simulator
 - The main periods registered are from the 1st to the 7th century.
 
 # Screenshot
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.6%202023_04_25%200_12_27.png)
+![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.6%202023_05_03%2021_57_30.png)
 
 ---
 
