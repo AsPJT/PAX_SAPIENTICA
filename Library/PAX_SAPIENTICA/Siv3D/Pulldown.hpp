@@ -34,19 +34,23 @@ namespace paxs {
 
 		Pulldown(
 			const std::vector<std::vector<s3d::String>>& items_, // 表示するもの
-			const s3d::Font& font_, 
+			const std::size_t start_index_,
+			const std::vector<s3d::Font>& font_,
 			const s3d::Point& pos_ = { 0,0 },
-			PulldownType pdt_ = PulldownType::Zero)
-			: font{ font_ }
+			PulldownType pdt_ = PulldownType::Zero,
+			const bool is_one_font_ = false)
+			: start_index{start_index}
+			, font{ font_ }
 			, items{ items_ }
-			, rect{ pos_, 0, (font.height() + padding.y * 2) }
-			, pdt(pdt_){
+			, rect{ pos_, 0, (font.front().height() + padding.y * 2)}
+			, pdt(pdt_)
+			, is_one_font(is_one_font_){
 			is_items.resize(items_.front().size());
 			for (const auto& is_item : is_items) {
 				is_item = true;
 			}
 			for (const auto& item : items.front()) {
-				rect.w = s3d::Max(rect.w, static_cast<s3d::int32>(font(item).region().w));
+				rect.w = s3d::Max(rect.w, static_cast<s3d::int32>(font.front()(item).region().w));
 			}
 			rect.w += (padding.x * 2 + down_button_size);
 		}
@@ -81,16 +85,17 @@ namespace paxs {
 			if (isEmpty())return;
 			rect.drawFrame(1, 0, is_open ? s3d::Palette::Orange : s3d::Palette::Gray);
 			s3d::Point pos = rect.pos;
-			
+
+			const std::size_t select_index = ((is_one_font) ? index : language_index);
 			switch (pdt) {
 			case paxs::PulldownType::Empty:break;
 			case paxs::PulldownType::Zero:
-				font(
+				font[select_index](
 					(language_index < items.size()) ? items[language_index][index] : items.front()[index]
 				).draw(pos + padding, s3d::Palette::Black);
 				break;
 			case paxs::PulldownType::One:
-				font(
+				font[language_index](
 					(language_index < items.size()) ? items[language_index].front() : items.front().front()
 				).draw(pos + padding, s3d::Palette::Black);
 				break;
@@ -115,7 +120,8 @@ namespace paxs {
 					if (rect_tmp.mouseOver()) {
 						rect_tmp.draw(s3d::Palette::Skyblue);
 					}
-					font(
+					const std::size_t select_index2 = ((is_one_font) ? i : language_index);
+					font[select_index2](
 						(language_index < items.size()) ? items[language_index][i] : items.front()[i]
 					).draw((pos + padding), s3d::Palette::Black);
 					pos.y += rect.h;
@@ -137,8 +143,9 @@ namespace paxs {
 		}
 
 	private:
+		std::size_t start_index = 0;
 		std::size_t language_index = 0;
-		s3d::Font font;
+		std::vector<s3d::Font> font;
 		std::vector<std::vector<s3d::String>> items;
 		std::vector<bool> is_items;
 		size_t index = 0;
@@ -147,6 +154,7 @@ namespace paxs {
 		s3d::int32 down_button_size = 20;
 		bool is_open = false;
 		PulldownType pdt;
+		bool is_one_font = false;
 	};
 
 	class MenuBar
@@ -155,16 +163,18 @@ namespace paxs {
 
 		void add(
 			const std::vector<std::vector<s3d::String>>& menu_bar_pulldown,
-			const s3d::Font& font_menu_bar) {
+			const std::size_t start_index,
+			const std::vector<s3d::Font>& font_menu_bar) {
 
 			if (pdv.size() != 0) {
 				start_x += pdv.back().getRect().w;
 			}
-			pdv.emplace_back(paxs::Pulldown{ 
+			pdv.emplace_back(paxs::Pulldown(
 				menu_bar_pulldown, 
+				start_index,
 				font_menu_bar, 
 				s3d::Point{ start_x, 0 },
-				paxs::PulldownType::One });
+				paxs::PulldownType::One ));
 		}
 
 		void update(std::size_t language_index_) {

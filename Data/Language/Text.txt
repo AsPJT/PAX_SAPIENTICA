@@ -1,0 +1,46 @@
+﻿language_ja_jp	language_en_us	language_zh_tw	language_zh_cn	language_ko_kr
+> language				
+日本語	English	繁體中文	简体中文	한국어
+> menu_bar_file				
+ファイル(F)	File(F)	文件(F)	文件(F)	파일(F)
+新規作成	New	新建	新建	새로 만들기
+開く	Open	打开	打开	열기
+閉じる	Close	关闭	关闭	닫기
+終了	Exit	退出	退出	종료
+> menu_bar_edit				
+編集(E)	Edit(E)	编辑(E)	编辑(E)	편집(E)
+切り取り	Cut	剪切	剪切	잘라내기
+コピー	Copy	复制	复制	복사
+貼り付け	Paste	粘贴	粘贴	붙여넣기
+削除	Delete	删除	删除	삭제
+> menu_bar_view				
+表示(V)	View(V)	显示(V)	显示(V)	표시(V)
+カレンダー	Calendar	日历	日历	달력
+地図	Map	地图	地图	지도
+ライセンス	License	许可	许可	라이선스
+デバッグ	Debug	调试	调试	디버깅
+3D	3D	3D	3D	3D
+> menu_bar_map				
+地図(M)	Map(M)	地図(M)	地図(M)	지도(M)
+通常	Base	通常	通常	보통
+陸海	Land and Sea	陸海	陸海	육해
+陸水	Land and Water	陸水	陸水	육수
+土壌	Soil	土壌	土壌	토양
+土壌温度	Soil Temperature	土壌温度	土壌温度	토양 온도
+令制国	Ryosei Country	令制国	令制国	율령국
+令制国線	Ryosei Line	令制国線	令制国線	율령국선
+線1	Line1	線1	線1	선1
+線2	Line2	線2	線2	선2
+> calendar				
+和暦	Japanese cal.	JP曆	JP历	JP력
+グレゴリオ暦	Gregorian cal.	公曆	公历	그레고리력
+ユリウス暦	Julian cal.	儒略曆	儒略历	율리우스력
+> debug				
+拡大率	Magnification power	放大率	放大率	확대율
+メルカトル経度	Mercator longitude	麥卡托経度	麥卡托经度	메르카토르 경도
+メルカトル緯度	Mercator latitude	麥卡托緯度	麥卡托纬度	메르카토르 위도
+緯度	Latitude	緯度	纬度	위도
+XYZタイル Z	XYZ Tiles Z	XYZ瓦片 Z	XYZ瓦片 Z	XYZ타일 Z
+> sueki				
+須恵器 中村編年(1993)	Sue pottery Nakamura(1993)	須恵器 中村編年(1993)	須恵器 中村編年(1993)	須恵器(수혜기) 나카무라(1993)
+須恵器 田辺編年(1983)	Sue pottery Tanabe(1983)	須恵器 田辺編年(1983)	須恵器 田辺編年(1983)	須恵器(수혜기) 타나베(1983)

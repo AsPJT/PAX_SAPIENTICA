@@ -39,6 +39,7 @@ namespace paxs {
 #include <cmath>
 
 #include <string>
+#include <vector>
 
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp> // 日本の元号
 
@@ -57,8 +58,7 @@ namespace paxs {
 	}
 
 	struct OutputDate {
-		s3d::String calendar_name{};
-		s3d::String calendar_en_name{};
+		std::vector<s3d::String> calendar_name{};
 		paxs::Date date{};
 		bool is_leap_month = false;
 	};
