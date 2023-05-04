@@ -21,15 +21,19 @@
 
 #include <PAX_SAPIENTICA/SFML/AgentGraphics.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs{
+    template <typename T>
     class AgentSimulator{
+        using Agent = paxs::Agent<T>;
+        using Vector2 = paxs::Vector2<T>;
     public:
-        AgentSimulator(const int agent_num) : agents(agent_num, paxs::Agent(0, 0, true, 0, 0)){
-            init();
+        AgentSimulator(const int agent_num) {
+            init(agent_num);
         }
         void simulate(){
-            paxs::AgentGraphics graphics("Agent Simulator");
+            paxs::AgentGraphics<int> graphics("Agent Simulator");
             while (graphics.window.isOpen()) {
                 sf::Event event;
                 while (graphics.window.pollEvent(event)) {
@@ -60,24 +64,24 @@ namespace paxs{
             }
         }
     private:
-        std::vector<paxs::Agent> agents;
+        std::vector<Agent> agents;
         std::mt19937 gen;
-        std::uniform_real_distribution<> x_change{-1.0, 1.0};
-        std::uniform_real_distribution<> y_change{-1.0, 1.0};
+        std::uniform_int_distribution<> x_change{-1, 1};
+        std::uniform_int_distribution<> y_change{-1, 1};
         std::uniform_real_distribution<> dist{0.0, 1.0};
         std::uniform_int_distribution<> gender_dist{0, 1};
         std::uniform_int_distribution<> life_exp_dist{50, 100};
 
-        void init(){
-            std::uniform_real_distribution<> x_dist(0, width);
-            std::uniform_real_distribution<> y_dist(0, height);
+        void init(const int agent_num){
+            std::uniform_int_distribution<> x_dist(0, width);
+            std::uniform_int_distribution<> y_dist(0, height);
             std::uniform_int_distribution<> age_dist(0, 20);
 
-            for (int i = 0; i < agents.size(); ++i) {
-                agents[i] = paxs::Agent(x_dist(gen), y_dist(gen), (bool)gender_dist(gen), age_dist(gen), life_exp_dist(gen));
+            for (int i = 0; i < agent_num; ++i) {
+                agents.push_back(Agent(Vector2(x_dist(gen), y_dist(gen)), (bool)gender_dist(gen), age_dist(gen), life_exp_dist(gen)));
             }
         }
-        void reproduceAgents(std::vector<paxs::Agent>& agents, double reproduction_distance, double reproduction_probability) {
+        void reproduceAgents(std::vector<Agent>& agents, double reproduction_distance, double reproduction_probability) {
             for (size_t i = 0; i < agents.size(); ++i) {
                 for (size_t j = i + 1; j < agents.size(); ++j) {
                     double distance = std::pow(agents[i].getX() - agents[j].getX(), 2) + std::pow(agents[i].getY() - agents[j].getY(), 2);

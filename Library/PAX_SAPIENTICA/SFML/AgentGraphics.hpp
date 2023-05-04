@@ -27,13 +27,14 @@ namespace paxs
     constexpr int width = 800;
     constexpr int height = 600;
 
+    template <typename T>
     class AgentGraphics
     {
     public:
         sf::RenderWindow window;
 
         AgentGraphics(const std::string& window_name) : window(sf::VideoMode(width, height), window_name){}
-        void agentsDraw(const std::vector<Agent>& agents)
+        void agentsDraw(const std::vector<paxs::Agent<T>>& agents)
         {
             window.clear();
             for (auto& agent : agents)

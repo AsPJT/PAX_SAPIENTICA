@@ -14,6 +14,6 @@
 #include "../include/AgentSimulator.hpp"
 
 int main() {
-	std::unique_ptr<paxs::AgentSimulator> simulator = std::make_unique<paxs::AgentSimulator>(100);
+	std::unique_ptr<paxs::AgentSimulator<int>> simulator = std::make_unique<paxs::AgentSimulator<int>>(100);
     simulator->simulate();
 }

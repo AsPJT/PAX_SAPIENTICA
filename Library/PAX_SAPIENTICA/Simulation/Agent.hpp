@@ -16,30 +16,33 @@
 
 ##########################################################################################*/
 
-namespace paxs {
-    class Agent {
-    public:
-        Agent(double x, double y, bool gen, int age, int life_exp)
-            : x(x), y(y), gender(gen), age(age), life_expectancy(life_exp) {}
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
-        double getX() const { return x; }
-        double getY() const { return y; }
-        void setX(const double& x) { this->x = x; }
-        void setY(const double& y) { this->y = y; }
-        void move(const double& x, const double& y) { this->x += x; this->y += y; }
+namespace paxs {
+    template <typename T>
+    class Agent {
+        using Vector2 = paxs::Vector2<T>;
+    public:
+        Agent(Vector2 pos, bool gen, int age, int life_exp)
+            : position(pos), gender(gen), age(age), life_expectancy(life_exp) {}
+
+        T getX() const { return position.x; }
+        T getY() const { return position.y; }
+        void setX(const T& x) { position.x = x; }
+        void setY(const T& y) { position.y = y; }
+        void move(const T& x, const T& y) { position.x += x; position.y += y; }
         bool isDead() const { return age >= life_expectancy; }
         int getAge() const { return age; }
         void updateAge() { ++age; }
         bool getGender() const { return gender; }
         int getLifeExpectancy() const { return life_expectancy; }
 
-        bool operator==(const paxs::Agent& a) {
+        bool operator==(const paxs::Agent<T>& a) {
             return a.getX() == getX() && a.getY() == getY() && a.getGender() == getGender() && a.getAge() == getAge() && a.getLifeExpectancy() == getLifeExpectancy();
         }
 
     private:
-        double x;
-        double y;
+        Vector2 position;
         bool gender; // true: male, false: female
         int age;
         int life_expectancy;
