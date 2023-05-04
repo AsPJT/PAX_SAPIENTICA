@@ -9,14 +9,13 @@
 
 ##########################################################################################*/
 
-#include <string>
+#include <memory>
 
-#include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 
-int main()
-{
+int main() {
 	const std::string file_name = "../../../Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10/";
-	paxs::Vector2<int> start_position(861, 350);
-    paxs::Environment<int> environment(file_name, start_position, 10);
-	std::cout << "geographic_informations size: " << environment.geographic_informations.size() << std::endl;
+    std::unique_ptr<paxs::Simulator<int>> simulator = std::make_unique<paxs::Simulator<int>>(file_name, paxs::Vector2<int>(861, 350), 10);
+    simulator->init();
+	simulator->run(10);
 }

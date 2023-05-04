@@ -52,6 +52,30 @@ namespace paxs {
             }
             return x < v.x;
         }
+        bool operator>(const Vector2<T>& v) const {
+            if (x == v.x) {
+                return y > v.y;
+            }
+            return x > v.x;
+        }
+        bool operator<=(const Vector2<T>& v) const {
+            if (x == v.x) {
+                return y <= v.y;
+            }
+            return x <= v.x;
+        }
+        bool operator>=(const Vector2<T>& v) const {
+            if (x == v.x) {
+                return y >= v.y;
+            }
+            return x >= v.x;
+        }
+        double length() const {
+            return sqrt(x * x + y * y);
+        }
+        double distance(const Vector2<T>& v) const {
+            return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
+        }
     };
 }
 
