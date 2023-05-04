@@ -25,8 +25,32 @@ namespace paxs {
         T x;
         T y;
 
-        bool operator==(const paxs::Vector2<T>& v) {
+        Vector2<T> operator+(const Vector2<T>& v) const {
+            return Vector2<T>(x + v.x, y + v.y);
+        }
+        Vector2<T> operator-(const Vector2<T>& v) const {
+            return Vector2<T>(x - v.x, y - v.y);
+        }
+        Vector2<T> operator*(const Vector2<T>& v) const {
+            return Vector2<T>(x * v.x, y * v.y);
+        }
+        Vector2<T> operator*(const T& t) const {
+            return Vector2<T>(x * t, y * t);
+        }
+        Vector2<T> operator/(const Vector2<T>& v) const {
+            return Vector2<T>(x / v.x, y / v.y);
+        }
+        Vector2<T> operator/(const T& t) const {
+            return Vector2<T>(x / t, y / t);
+        }
+        bool operator==(const Vector2<T>& v) const {
             return v.x == x && v.y == y;
+        }
+        bool operator<(const Vector2<T>& v) const {
+            if (x == v.x) {
+                return y < v.y;
+            }
+            return x < v.x;
         }
     };
 }
