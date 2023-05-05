@@ -25,6 +25,9 @@
 
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 
+// シミュレータを使用する
+//#define PAXS_USING_SIMULATOR
+
 namespace paxs {
 
 	void startMain() {
@@ -81,6 +84,7 @@ namespace paxs {
 			soil_temperature,
 			ryosei_country,
 			ryosei_line,
+			river,
 			line1,
 			line2
 		};
@@ -177,7 +181,14 @@ namespace paxs {
 		xyz_tile_soil->setMapURL(U"");
 		xyz_tile_soil->setMapName(U"soil");
 		xyz_tile_soil->setDefaultZ(12);
+		xyz_tile_soil->setDrawMinZ(12);
 		xyz_tile_soil->setMapFilePath(path + U"Data/Map/XYZTile/Soil/Image/Soil/2023/");
+
+		const std::unique_ptr<XYZTile> xyz_tile_river(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile_river->setMapURL(U"");
+		xyz_tile_river->setMapName(U"water");
+		xyz_tile_river->setDefaultZ(12);
+		xyz_tile_river->setMapFilePath(path + U"Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/");
 
 		const std::unique_ptr<XYZTile> xyz_tile_soil_temperature(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
 		xyz_tile_soil_temperature->setMapURL(U"");
@@ -221,10 +232,11 @@ namespace paxs {
 		std::unique_ptr<PlaceNameLocation> place_name_location(new(std::nothrow) PlaceNameLocation);
 		place_name_location->add();
 
+#ifdef PAXS_USING_SIMULATOR
 		// エージェント
 		std::unique_ptr<PlaceNameLocation> agent_location(new(std::nothrow) PlaceNameLocation);
 		//agent_location->addKofun();
-
+#endif
 		// 古墳名
 		//inputPlace(path8 + "Data/PlaceName/TestMap/Kofun.tsv", location_point_list, LocationPointEnum::location_point_zempo_koen_fun);
 
@@ -354,13 +366,18 @@ namespace paxs {
 			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::soil_temperature)) {
 			xyz_tile_soil_temperature->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
 			}
-			//xyz_tile2->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
+			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::land_and_water)) {
+				xyz_tile2->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
+			}
 			//xyz_tile3->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::ryosei_country)) {
 				xyz_tile_kuni->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
 			}
 			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
 				xyz_tile_kuni_line->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
+			}
+			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::river)) {
+				xyz_tile_river->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
 			}
 				//xyz_tile4->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Original);
 			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
@@ -384,6 +401,9 @@ namespace paxs {
 				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::soil)) {
 					xyz_tile_soil->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 				}
+				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::land_and_water)) {
+					xyz_tile2->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				}
 				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::soil_temperature)) {
 					xyz_tile_soil_temperature->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 				}
@@ -394,6 +414,9 @@ namespace paxs {
 				}
 				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
 					xyz_tile_kuni_line->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				}
+				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::river)) {
+					xyz_tile_river->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 				}
 				//xyz_tile3->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 				//xyz_tile4->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
@@ -423,11 +446,10 @@ namespace paxs {
 				place_name_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
 					font[language], font[language]/*en_font*/, pin_font);
 
+#ifdef PAXS_USING_SIMULATOR
 				// エージェント機能テスト
 				if (is_agent_update) {
-
 					static int step = 0;
-
 					if (step == 0) {
 						s3d::Print(U"Agent Size:", simlator.getAgents().size());
 						for (int i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
@@ -435,7 +457,6 @@ namespace paxs {
 						}
 					}
 					++step;
-
 					if (step >= 300) {
 						step = 0;
 						simlator.step();
@@ -444,6 +465,7 @@ namespace paxs {
 				}
 ;				agent_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
 					font[language], font[language]/*en_font*/, pin_font);
+#endif
 			}
 			/*##########################################################################################
 				暦関連

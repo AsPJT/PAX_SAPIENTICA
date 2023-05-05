@@ -35,6 +35,7 @@
 土壌温度	Soil Temperature	土壌温度	土壌温度	토양 온도
 令制国	Ryosei Country	令制国	令制国	율령국
 令制国線	Ryosei Line	令制国線	令制国線	율령국선
+川	River	川	川	River
 線1	Line1	線1	線1	선1
 線2	Line2	線2	線2	선2
 > calendar				

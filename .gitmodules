@@ -7,3 +7,6 @@
 [submodule "Data/Map/XYZTile/Temperature/Image/SoilTemperature"]
 	path = Data/Map/XYZTile/Temperature/Image/SoilTemperature
 	url = https://github.com/Asukana/SoilTemperature.git
+[submodule "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes"]
+	path = Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes
+	url = https://github.com/Asukana/RiversAndLakes.git
