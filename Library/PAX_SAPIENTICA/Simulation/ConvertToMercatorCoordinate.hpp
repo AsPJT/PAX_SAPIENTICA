@@ -16,6 +16,8 @@
 
 ##########################################################################################*/
 
+#include <cmath>
+
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
