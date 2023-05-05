@@ -1,0 +1,9 @@
+input_path = ../../../Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/12/
+output_path = ../../../Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/10/
+name = water
+start_x = 3432
+start_y = 1456
+x_size = 376
+y_size = 360
+z = 12
+deviation_z = -2

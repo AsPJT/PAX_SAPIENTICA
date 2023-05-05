@@ -69,6 +69,17 @@ int main(){
 
 #endif // !ImageSegment
 
+#ifdef ImageResize
+
+#include <ImageResizer.hpp>
+
+int main(){
+    std::unique_ptr<paxs::ImageResizer> image_resizer(new(std::nothrow) paxs::ImageResizer);
+    if(image_resizer->init()) image_resizer->convertTiles();
+}
+
+#endif // !ImageResize
+
 #ifdef ColorCount
 
 #include <ColorCounter.hpp>

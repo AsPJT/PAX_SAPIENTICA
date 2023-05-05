@@ -42,7 +42,7 @@ jobs:
 
     - name: Execution
       run: |
-        cd ${{env.WORK_SPACE}/GeographicDataToSimulationGrid}/bin/
+        cd ${{env.WORK_SPACE}}/GeographicDataToSimulationGrid/bin/
         ./${{env.TARGET}}
 
     - name: Push
