@@ -6,7 +6,6 @@ env:
   BUILD_TYPE: Debug
   WORK_SPACE: ${{github.workspace}}/Project
   TARGET: ImageResize
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -50,8 +49,10 @@ jobs:
     - name: Commit and push changes to submodule
       run: |
         cd ${{github.workspace}}/Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes
+        git checkout main
         git config user.name "GitHub Actions Bot"
         git config user.email "github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://${{secrets.guinpen98}}@github.com/Asukana/RiversAndLakes.git
         git add .
         git commit -m "Update submodule content"
         git push
