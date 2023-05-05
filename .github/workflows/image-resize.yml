@@ -1,12 +1,11 @@
-name: ImageCombine
+name: ImageResize
 
 on : [ workflow_dispatch ]
 
 env:
   BUILD_TYPE: Debug
   WORK_SPACE: ${{github.workspace}}/Project
-  TARGET: ImageCombine
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TARGET: ImageResize
 
 jobs:
   build:
@@ -26,6 +25,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
 
     - name: Install opencv
       run: |
@@ -45,13 +46,13 @@ jobs:
         cd ${{env.WORK_SPACE}}/GeographicDataToSimulationGrid/bin/
         ./${{env.TARGET}}
 
-    - name: Push
+    - name: Commit and push changes to submodule
       run: |
-        cd ${{github.workspace}}
-        git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
-        git config --global user.name "${GITHUB_ACTOR}"
-        git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        cd ${{github.workspace}}/Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes
+        git checkout main
+        git config user.name "GitHub Actions Bot"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://${{secrets.guinpen98}}@github.com/Asukana/RiversAndLakes.git
         git add .
-        git commit -m "GitHub Actions: ${{env.TARGET}}"
-        git push origin HEAD:${GITHUB_REF}
-
+        git commit -m "Update submodule content"
+        git push

@@ -26,6 +26,11 @@ add_executable(ImageSegment Main.cpp)
 target_compile_definitions(ImageSegment PRIVATE ImageSegment)
 target_link_libraries(ImageSegment ${OpenCV_LIBS})
 
+# ImageResize
+add_executable(ImageResize Main.cpp)
+target_compile_definitions(ImageResize PRIVATE ImageResize)
+target_link_libraries(ImageResize ${OpenCV_LIBS})
+
 # ColorCount
 add_executable(ColorCount Main.cpp)
 target_compile_definitions(ColorCount PRIVATE ColorCount)
