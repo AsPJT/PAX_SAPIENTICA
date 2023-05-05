@@ -36,13 +36,14 @@ namespace paxs {
 
         std::map<Vector2, GeographicInformation> geographic_informations;
 
-        Environment(const std::string& directory_path, const Vector2& start_position, const int z) : start_position(start_position), z(z) {
+        Environment(const std::string& directory_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
             loadIsLand(directory_path);
         }
 
-        void randomizeAgents(const int agent_count, const Vector2& start_position, const Vector2& end_position) {
-            std::uniform_int_distribution<> x_dist(start_position.x, end_position.x);
-            std::uniform_int_distribution<> y_dist(start_position.y, end_position.y);
+        void randomizeAgents(const int agent_count) {
+            const Vector2& offset = end_position - start_position;
+            std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
+            std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
             std::uniform_int_distribution<> age_dist(0, 20);
             std::uniform_int_distribution<> gender_dist{0, 1};
             std::uniform_int_distribution<> life_exp_dist{50, 100};
@@ -58,9 +59,24 @@ namespace paxs {
             displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;
         }
+        void step() {
+            for(auto& agent : agents) {
+                agent.updateAge();
+            }
+            agents.erase(
+                std::remove_if(
+                    agents.begin(), agents.end(),[](const Agent& agent) { return agent.isDead(); }
+                    ),
+                 agents.end());
+        }
+        std::vector<Agent>& getAgents() {
+            return agents;
+        }
     private:
+        const int pixel_size = 256;
         std::vector<Agent> agents;
         Vector2 start_position;
+        Vector2 end_position;
         int z;
         std::mt19937 gen;
 
@@ -69,7 +85,6 @@ namespace paxs {
             const std::vector<std::string> file_names = getFileNames(directory_path);
             std::cout << file_names.size() << " files are found." << std::endl; 
 
-            const int pixel_size = 256;
             unsigned int file_count = 0;
 
             for(const auto& file_name : file_names) {

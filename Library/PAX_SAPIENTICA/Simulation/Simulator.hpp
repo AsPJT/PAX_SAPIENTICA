@@ -24,27 +24,36 @@ namespace paxs {
     public:
         using Environment = paxs::Environment<T>;
         using Vector2 = paxs::Vector2<T>;
+        using Agent = paxs::Agent<T>;
 
-        Simulator(const std::string& directory_path, const Vector2& start_position, const int z) :
-            environment(directory_path, start_position, z) {}
+        Simulator(const std::string& directory_path, const Vector2& start_position, const Vector2& end_position, const int z) :
+            environment(directory_path, start_position, end_position, z) {}
         void init() {
             std::cout << "Initializing..." << std::endl;
 
-            environment.randomizeAgents(100, Vector2(0, 0), Vector2(22784, 25600));
+            environment.randomizeAgents(100);
         }
         void run(const int step_count) {
+            printStatus();
             std::cout << "Running..." << std::endl;
             for(int i = 0; i < step_count; ++i) {
                 step();
             }
             std::cout << "Finished." << std::endl;
+            printStatus();
         }
         void step() {
-            std::cout << "Stepping..." << std::endl;
-
+            environment.step();
+        }
+        std::vector<Agent>& getAgents() {
+            return environment.getAgents();
         }
     private:
         Environment environment;
+        void printStatus() {
+            std::cout << "Status: " << std::endl;
+            std::cout << "  Agent Count: " << environment.getAgents().size() << std::endl;
+        }
     };
 }
 

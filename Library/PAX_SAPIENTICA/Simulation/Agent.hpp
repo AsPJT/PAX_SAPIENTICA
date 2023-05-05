@@ -28,8 +28,11 @@ namespace paxs {
 
         T getX() const { return position.x; }
         T getY() const { return position.y; }
+        Vector2 getPosition() const { return position; }
         void setX(const T& x) { position.x = x; }
         void setY(const T& y) { position.y = y; }
+        void setPosition(const Vector2& pos) { position = pos; }
+        paxs::Vector2<double> getLocation() const { return position.convertToLocation(); }
         void move(const T& x, const T& y) { position.x += x; position.y += y; }
         bool isDead() const { return age >= life_expectancy; }
         int getAge() const { return age; }

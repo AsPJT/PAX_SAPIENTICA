@@ -46,6 +46,9 @@ namespace paxs {
         bool operator==(const Vector2<T>& v) const {
             return v.x == x && v.y == y;
         }
+        bool operator!=(const Vector2<T>& v) const {
+            return v.x != x || v.y != y;
+        }
         bool operator<(const Vector2<T>& v) const {
             if (x == v.x) {
                 return y < v.y;
@@ -75,6 +78,10 @@ namespace paxs {
         }
         double distance(const Vector2<T>& v) const {
             return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
+        }
+        friend std::ostream& operator<<(std::ostream& os, const Vector2<T>& v) {
+            os << "(" << v.x << ", " << v.y << ")";
+            return os;
         }
     };
 }

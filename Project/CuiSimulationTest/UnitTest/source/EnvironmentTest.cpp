@@ -17,6 +17,7 @@ int main()
 {
 	const std::string file_name = "../../../Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10/";
 	paxs::Vector2<int> start_position(861, 350);
-    paxs::Environment<int> environment(file_name, start_position, 10);
+	paxs::Vector2<int> end_position(950, 450);
+    paxs::Environment<int> environment(file_name, start_position, end_position, 10);
 	std::cout << "geographic_informations size: " << environment.geographic_informations.size() << std::endl;
 }
