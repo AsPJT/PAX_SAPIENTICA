@@ -35,7 +35,7 @@ namespace paxs {
         void setPosition(const Vector2& pos) { position = pos; }
         paxs::Vector2<double> getLocation(const int z, const int pixel_size) const {
             return convertToMercatorCoordinate({861, 350}, position, z, pixel_size);
-    }
+        }
         void move(const T& x, const T& y) { position.x += x; position.y += y; }
         bool isDead() const { return age >= life_expectancy; }
         int getAge() const { return age; }

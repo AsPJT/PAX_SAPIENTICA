@@ -36,8 +36,8 @@ namespace paxs {
 
         std::map<Vector2, GeographicInformation> geographic_informations;
 
-        Environment(const std::string& directory_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
-            loadIsLand(directory_path);
+        Environment(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
+            loadIsLand(land_file_path);
         }
 
         void randomizeAgents(const int agent_count) {
@@ -45,8 +45,6 @@ namespace paxs {
             std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
             std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
             std::uniform_int_distribution<> age_dist(0, 20);
-            std::uniform_int_distribution<> gender_dist{0, 1};
-            std::uniform_int_distribution<> life_exp_dist{50, 100};
             std::cout << "Randomizing agents..." << std::endl;
             for(int i = 0;i < agent_count;++i) {
                 displayProgressBar(i, agent_count);
@@ -63,15 +61,10 @@ namespace paxs {
             for(auto& agent : agents) {
                 agent.updateAge();
             }
-            agents.erase(
-                std::remove_if(
-                    agents.begin(), agents.end(),[](const Agent& agent) { return agent.isDead(); }
-                    ),
-                 agents.end());
+
+            agents.erase(std::remove_if(agents.begin(), agents.end(),[](const Agent& agent) { return agent.isDead(); }),agents.end());
         }
-        std::vector<Agent>& getAgents() {
-            return agents;
-        }
+        std::vector<Agent>& getAgents() { return agents; }
     private:
         const int pixel_size = 256;
         std::vector<Agent> agents;
@@ -79,10 +72,12 @@ namespace paxs {
         Vector2 end_position;
         int z;
         std::mt19937 gen;
+        std::uniform_int_distribution<> gender_dist{0, 1};
+        std::uniform_int_distribution<> life_exp_dist{50, 100};
 
-        void loadIsLand(const std::string& directory_path) {
+        void loadIsLand(const std::string& land_file_path) {
             std::cout << "Loading is land..." << std::endl;
-            const std::vector<std::string> file_names = getFileNames(directory_path);
+            const std::vector<std::string> file_names = getFileNames(land_file_path);
             std::cout << file_names.size() << " files are found." << std::endl; 
 
             unsigned int file_count = 0;

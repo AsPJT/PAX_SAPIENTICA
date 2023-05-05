@@ -26,8 +26,8 @@ namespace paxs {
         using Vector2 = paxs::Vector2<T>;
         using Agent = paxs::Agent<T>;
 
-        Simulator(const std::string& directory_path, const Vector2& start_position, const Vector2& end_position, const int z) :
-            environment(directory_path, start_position, end_position, z) {}
+        Simulator(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z) :
+            environment(land_file_path, start_position, end_position, z) {}
         void init() {
             std::cout << "Initializing..." << std::endl;
 
