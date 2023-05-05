@@ -32,6 +32,24 @@ namespace paxs {
 
 		Pulldown() = default;
 
+		void setRectX(const std::size_t x = 0) {
+			rect.x = x;
+		}
+
+		void updateLanguage() {
+			item_size = 0;
+			rect.w = 0;
+			for (std::size_t i = start_index; i < itemsa.size(); ++i) {
+				const auto& item_front = itemsa[i].front();
+				const auto& item = itemsa[i][language_index];
+				if (item_front.size() == 0) break;
+				if (item_front[0] == '>') break;
+				++item_size;
+				rect.w = s3d::Max(rect.w, static_cast<s3d::int32>(font.front()(item).region().w));
+			}
+			rect.w += (padding.x * 2 + down_button_size);
+		}
+
 		Pulldown(
 			const std::vector<std::vector<s3d::String>>& items_, // 表示するもの
 			const std::size_t start_index_,
@@ -39,35 +57,35 @@ namespace paxs {
 			const s3d::Point& pos_ = { 0,0 },
 			PulldownType pdt_ = PulldownType::Zero,
 			const bool is_one_font_ = false)
-			: start_index{start_index}
+			: start_index{start_index_}
 			, font{ font_ }
-			, items{ items_ }
+			, itemsa{ items_ }
 			, rect{ pos_, 0, (font.front().height() + padding.y * 2)}
 			, pdt(pdt_)
 			, is_one_font(is_one_font_){
-			is_items.resize(items_.front().size());
+			updateLanguage();
+			is_items.resize(item_size);
 			for (const auto& is_item : is_items) {
 				is_item = true;
 			}
-			for (const auto& item : items.front()) {
-				rect.w = s3d::Max(rect.w, static_cast<s3d::int32>(font.front()(item).region().w));
-			}
-			rect.w += (padding.x * 2 + down_button_size);
 		}
 
 		bool isEmpty() const {
-			return items.front().empty();
+			return itemsa.empty();
 		}
 
 		void update(std::size_t language_index_) {
 			if (isEmpty()) return;
-			language_index = language_index_;
+			if (language_index != language_index_) {
+				language_index = language_index_;
+				updateLanguage();
+			}
 			if (rect.leftClicked()) {
 				is_open = (not is_open);
 			}
 			s3d::Point pos = rect.pos.movedBy(0, rect.h);
 			if (is_open) {
-				for (auto i : s3d::step(items.front().size())) {
+				for (auto i : s3d::step(itemsa.size())) {
 					const s3d::Rect rect_tmp{ pos, rect.w, rect.h };
 					if (rect_tmp.leftClicked()) {
 						index = i;
@@ -81,22 +99,23 @@ namespace paxs {
 		}
 
 		void draw() const {
+			const std::size_t item_index = index + start_index;
 			rect.draw(s3d::Color{ 243,243,243 });
 			if (isEmpty())return;
 			rect.drawFrame(1, 0, is_open ? s3d::Palette::Orange : s3d::Palette::Gray);
 			s3d::Point pos = rect.pos;
 
-			const std::size_t select_index = ((is_one_font) ? index : language_index);
+			const std::size_t select_index = ((is_one_font) ? item_index : language_index);
 			switch (pdt) {
 			case paxs::PulldownType::Empty:break;
 			case paxs::PulldownType::Zero:
 				font[select_index](
-					(language_index < items.size()) ? items[language_index][index] : items.front()[index]
+					(language_index < itemsa[item_index].size()) ? itemsa[item_index][language_index] : itemsa[item_index].front()
 				).draw(pos + padding, s3d::Palette::Black);
 				break;
 			case paxs::PulldownType::One:
 				font[language_index](
-					(language_index < items.size()) ? items[language_index].front() : items.front().front()
+					(language_index < itemsa[item_index].size()) ? itemsa[start_index][language_index] : itemsa[item_index].front()
 				).draw(pos + padding, s3d::Palette::Black);
 				break;
 			default:break;
@@ -105,24 +124,26 @@ namespace paxs {
 				(down_button_size * 0.5), 3.1416 }.draw(s3d::Palette::Black);
 			pos.y += rect.h;
 			if (is_open) {
-				const s3d::Rect backRect{ pos, rect.w, (rect.h * items.front().size()) };
+				const s3d::Rect backRect{ pos, rect.w, (rect.h * item_size/*itemsa.size()*/)};
 				backRect.drawShadow({ 1, 1 }, 4, 1).draw();
 				//for (const auto& item : items) {
-				std::size_t i = 0;
+				std::size_t i = start_index;
 				switch (pdt) {
 				case paxs::PulldownType::Empty:break;
-				case paxs::PulldownType::Zero:i = 0;break;
-				case paxs::PulldownType::One:i = 1;break;
+				case paxs::PulldownType::Zero:i = start_index;break;
+				case paxs::PulldownType::One:i = start_index + 1;break;
 				default:break;
 				}
-				for (; i < items.front().size(); ++i) {
+				for (; i < itemsa.size(); ++i) {
+					if (itemsa[i].front().size() == 0) break;
+					if (itemsa[i].front()[0] == '>') break;
 					const s3d::Rect rect_tmp{ pos, rect.size };
 					if (rect_tmp.mouseOver()) {
 						rect_tmp.draw(s3d::Palette::Skyblue);
 					}
 					const std::size_t select_index2 = ((is_one_font) ? i : language_index);
 					font[select_index2](
-						(language_index < items.size()) ? items[language_index][i] : items.front()[i]
+						(language_index < itemsa[i].size()) ? itemsa[i][language_index] : itemsa[i].front()
 					).draw((pos + padding), s3d::Palette::Black);
 					pos.y += rect.h;
 				}
@@ -132,21 +153,22 @@ namespace paxs {
 
 		void setPos(const s3d::Point& pos) { rect.setPos(pos); }
 		const s3d::Rect& getRect() const { return rect; }
-		size_t getIndex() const { return index; }
+		size_t getIndex() const { return index + start_index; }
 		bool getIsItems(std::size_t i) const {
 			if(i < is_items.size()) return is_items[i];
 			return is_items.front();
 		}
 		s3d::String getItem() const {
 			if (isEmpty()) return{};
-			return items.front()[index];
+			return itemsa[index + start_index].front();
 		}
 
 	private:
+		std::size_t item_size = 0;
 		std::size_t start_index = 0;
 		std::size_t language_index = 0;
 		std::vector<s3d::Font> font;
-		std::vector<std::vector<s3d::String>> items;
+		std::vector<std::vector<s3d::String>> itemsa;
 		std::vector<bool> is_items;
 		size_t index = 0;
 		s3d::Size padding{ 6, 2 };
@@ -178,8 +200,11 @@ namespace paxs {
 		}
 
 		void update(std::size_t language_index_) {
+			start_x = 0;
 			for (auto& pd : pdv) {
 				pd.update(language_index_);
+				pd.setRectX(start_x);
+				start_x += pd.getRect().w;
 			}
 		}
 		void draw() {

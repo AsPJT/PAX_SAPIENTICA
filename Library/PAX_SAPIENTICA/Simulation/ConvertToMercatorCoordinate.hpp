@@ -20,13 +20,14 @@
 
 namespace paxs {
     template <typename T>
-    Vector2<double> convertToMercatorCoordinate(const Vector2<T>& position, const int z, const int pixel_size) {
-        const int pixel_sum = pixel_size * std::pow(2, z);
-        const double u = (double)position.x / pixel_sum;
-        const double v = (double)position.y / pixel_sum;
+    Vector2<double> convertToMercatorCoordinate(const Vector2<T>& start_position, const Vector2<T>& position, const int z, const int pixel_size) {
+        const double n = std::pow(2, z);
+        const double pixel_sum = pixel_size * n;
+        const double u = (double)position.x / pixel_sum + start_position.x / n;
+        const double v = (double)position.y / pixel_sum + start_position.y / n;
 
         const double lon = u * 360.0 - 180.0;
-        const double lat = v * 360.0 - 180.0;
+        const double lat = -v * 360.0 + 180.0;
 
         return Vector2<double>(lon, lat);
     }

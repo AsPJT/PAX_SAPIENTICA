@@ -20,6 +20,12 @@
 ライセンス	License	许可	许可	라이선스
 デバッグ	Debug	调试	调试	디버깅
 3D	3D	3D	3D	3D
+> menu_bar_calendar				
+カレンダー(C)	Calendar(C)	日曆(C)	日历(C)	캘린더(C)
+和暦	Japanese Calendar	日本曆	日本历	일본 달력
+グレゴリオ暦	Gregorian Calendar	公曆	公历	그레고리력
+ユリウス暦	Julian Calendar	儒略曆	儒略历	율리우스력
+ユリウス通日	Julian day	儒略日	儒略日	율리우스일
 > menu_bar_map				
 地図(M)	Map(M)	地図(M)	地図(M)	지도(M)
 通常	Base	通常	通常	보통

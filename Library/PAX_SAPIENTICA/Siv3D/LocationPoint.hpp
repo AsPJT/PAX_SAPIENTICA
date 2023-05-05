@@ -13,6 +13,7 @@
 #define PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
+#include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 
 /*##########################################################################################
 
@@ -27,6 +28,7 @@ namespace paxs {
 	enum class LocationPointEnum {
 		location_point_place_name, // 地名
 		location_point_pit_dwelling, // 集落遺跡
+		location_point_agent, // エージェント
 		location_point_zempo_koen_fun, // 前方後円墳
 		location_point_zempo_koho_fun, // 前方後方墳
 		location_point_hotategai_gata_kofun // 帆立貝型古墳
@@ -45,7 +47,28 @@ namespace paxs {
 
 	class PlaceNameLocation {
 	public:
-		PlaceNameLocation() {
+		void update(const std::vector<paxs::Agent<int>>& agents) {
+			location_point_list.resize(0);
+			for (int i = 0; i < agents.size(); ++i) {
+				location_point_list.emplace_back(
+					LocationPoint{
+						"","",agents[i].getLocation(10, 256).x,agents[i].getLocation(10, 256).y,
+						100,0,0,99999999,LocationPointEnum::location_point_agent,""
+
+					}
+				);
+			}
+			//for (int i = 0; i < location_point_list.size(); ++i) {
+			//	auto& lli = location_point_list[i];
+			//	lli.x += s3d::Random(-0.001,0.001);
+			//	lli.y += s3d::Random(-0.001, 0.001);
+			//}
+		}
+		void addKofun() {
+			for (int i = 0; i < 10; ++i)
+				inputPlace("./../../../../../Data/PlaceName/TestMap/Kofun.tsv", LocationPointEnum::location_point_agent);
+		}
+		void add() {
 			// 古墳
 			inputPlace("./../../../../../Data/PlaceName/TestMap/Kofun.tsv", LocationPointEnum::location_point_zempo_koen_fun);
 
@@ -57,6 +80,9 @@ namespace paxs {
 			inputPlace("./../../../../../Data/PlaceName/WamyoRuijushoPlaceName.tsv");
 			// おもろさうしの地名
 			inputPlace("./../../../../../Data/PlaceName/OmoroSoshiPlaceName.tsv");
+		}
+
+		PlaceNameLocation() {
 		}
 		void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
 			const s3d::Font& font, const s3d::Font& en_font, const s3d::Font& pin_font)const {
@@ -84,6 +110,16 @@ namespace paxs {
 					//	double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 					//	continue;
 					//}
+					// エージェント
+					if (lli.lpe == LocationPointEnum::location_point_agent) {
+						//s3d::Circle(	s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						//double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
+						//,10).draw();
+						texture_red_circle.resized(15).drawAt(
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+						continue;
+					}
 					// 前方後円墳
 					if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
 						texture_kofun1.resized(14).drawAt(
@@ -203,6 +239,8 @@ namespace paxs {
 		const s3d::Texture texture_ko{ U"./../../../../../Data/OldDocumentIcon/JP-Kojiki.svg" };
 		const s3d::Texture texture_wam{ U"./../../../../../Data/OldDocumentIcon/JP-WamyoRuijusho.svg" };
 		const s3d::Texture texture_pin1{ U"./../../../../../Data/Pin/PitDwelling.svg" };
+		const s3d::Texture texture_blue_circle{ U"./../../../../../Data/MiniIcon/BlueCircle.svg" };
+		const s3d::Texture texture_red_circle{ U"./../../../../../Data/MiniIcon/RedCircle.svg" };
 		const s3d::Texture texture_kofun1{ U"./../../../../../Data/MiniIcon/ZempoKoenFun.svg" };
 		const s3d::Texture texture_kofun2{ U"./../../../../../Data/MiniIcon/ZempoKohoFun.svg" };
 		const s3d::Texture texture_kofun3{ U"./../../../../../Data/MiniIcon/HotategaiGataKofun.svg" };

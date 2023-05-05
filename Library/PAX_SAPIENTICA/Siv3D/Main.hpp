@@ -23,6 +23,8 @@
 #include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Language.hpp>
 
+#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+
 namespace paxs {
 
 	void startMain() {
@@ -49,56 +51,26 @@ namespace paxs {
 		{ 18,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") }
 		};
 		const std::vector<std::vector<s3d::String>> items_pulldown = {
-			{U"日本語", U"English", U"繁體中文", U"简体中文", U"한국어"},
-			{U"日本語", U"English", U"繁體中文", U"简体中文", U"한국어"},
-			{U"日本語", U"English", U"繁體中文", U"简体中文", U"한국어"},
-			{U"日本語", U"English", U"繁體中文", U"简体中文", U"한국어"},
-			{U"日本語", U"English", U"繁體中文", U"简体中文", U"한국어"}
+			{U"日本語"},{U"English"},{U"繁體中文"},{U"简体中文"},{U"한국어"}
 		};
-		//const std::vector<s3d::String> items_pulldown = { U"日本語", U"English", U"中文", U"Español", U"Français" };
+		
+		paxs::Language language_text(path8 + "Data/Language/Text.txt");
+		const std::size_t menu_bar_file_pulldown_index = language_text.findStart("> menu_bar_file");
+		const std::size_t menu_bar_edit_pulldown_index = language_text.findStart("> menu_bar_edit");
+		const std::size_t menu_bar_view_pulldown_index = language_text.findStart("> menu_bar_view");
+		const std::size_t menu_bar_calendar_pulldown_index = language_text.findStart("> menu_bar_calendar");
+		const std::size_t menu_bar_map_pulldown_index = language_text.findStart("> menu_bar_map");
+		//const std::size_t language_pulldown_index = language_text.findStart("> language");
+
 		paxs::Pulldown pulldown(items_pulldown, 0, font_pulldown, s3d::Point{ 3000, 0 }, PulldownType::Zero, true);
 		pulldown.setPos(s3d::Point{ s3d::Scene::Width() - pulldown.getRect().w, 0 });
 
-		paxs::Language language_text(path8 + "Data/Language/Text.txt");
-		const std::size_t menu_bar_file_pulldown_index = language_text.findStart("> menu_bar_file");
 
-		const std::vector<std::vector<s3d::String>> menu_bar_file_pulldown = {
-			{U"ファイル(F)", U"新規作成", U"開く", U"閉じる", U"終了"},
-			{U"File(F)", U"New", U"Open", U"Close", U"Exit"},
-			{U"文件（F）", U"新建", U"打开", U"关闭"/*闭*/, U"退出"},
-			{U"文件（F）", U"新建", U"打开", U"关闭"/*闭*/, U"退出"},
-			{U"파일(F)", U"새로 만들기", U"열기", U"닫기", U"종료"}
-		};
-		const std::vector<std::vector<s3d::String>> menu_bar_edit_pulldown = {
-			//{U"編集(E)",	U"Edit(E)",	U"编辑(E)", U"编辑(E)", U"편집(E)"},
-			//{U"切り取り",	U"Cut",		U"剪切",	U"剪切",	U"잘라내기"},
-			//{U"コピー",		U"Copy",	U"复制",	U"复制",	U"복사"},
-			//{U"貼り付け",	U"Paste",	U"粘贴",	U"粘贴",	U"붙여넣기"},
-			//{U"削除",		U"Delete",	U"删除",	U"删除",	U"삭제"}
-			{U"編集(E)", U"切り取り", U"コピー", U"貼り付け", U"削除"},
-			{U"Edit(E)", U"Cut", U"Copy", U"Paste", U"Delete"},
-			{U"编辑(E)"/*编辑*/, U"剪切", U"复制", U"粘贴"/*贴*/, U"删除"/*删*/},
-			{U"编辑(E)"/*编辑*/, U"剪切", U"复制", U"粘贴"/*贴*/, U"删除"/*删*/},
-			{U"편집(E)", U"잘라내기", U"복사", U"붙여넣기", U"삭제"}
-		};
-		const std::vector<std::vector<s3d::String>> menu_bar_view_pulldown = {
-			{U"表示(V)", U"暦", U"地図", U"ライセンス", U"デバッグ",U"3D"},
-			{U"View(V)", U"Calendar", U"Map", U"License", U"Debug",U"3D"},
-			{U"显示（V）"/*显*/, U"日历"/*日历*/, U"地图"/*地图*/, U"许可"/*许可*/, U"调试"/*调试*/,U"3D"},
-			{U"显示（V）"/*显*/, U"日历"/*日历*/, U"地图"/*地图*/, U"许可"/*许可*/, U"调试"/*调试*/,U"3D"},
-			{U"표시(V)", U"달력", U"지도", U"라이센스", U"디버깅", U"3D"}
-		};
-		const std::vector<std::vector<s3d::String>> menu_bar_map_pulldown = {
-			{U"地図(M)", U"通常", U"陸海", U"陸水", U"土壌", U"土壌温度",U"令制国",U"令制国線",U"線1",U"線2"},
-			{U"Map(M)", U"Base", U"Land and Sea", U"Land and Water", U"Soil", U"Soil Temperature",U"Ryosei Country",U"Ryosei Line", U"Line1", U"Line2"},
-			{U"地図(M)", U"通常", U"陸海", U"陸水", U"土壌", U"土壌温度",U"令制国",U"令制国線",U"線1",U"線2"},
-			{U"地図(M)", U"通常", U"陸海", U"陸水", U"土壌", U"土壌温度",U"令制国",U"令制国線",U"線1",U"線2"},
-			{U"지도(M)", U"보통", U"육해", U"육수", U"토양", U"토양온도", U"율령국", U"율령국선", U"선1", U"선2"}
-		};
 		enum MenuBarType {
 			file,
 			edit,
 			view,
+			calendar,
 			map
 		};
 		enum MapType {
@@ -115,15 +87,12 @@ namespace paxs {
 
 		const std::vector<s3d::Font>& font_menu_bar = font_pulldown;
 
-		//paxs::Pulldown menu_bar_file{ menu_bar_file_pulldown, font_menu_bar, s3d::Point{ 0, 0 },paxs::PulldownType::One };
-		//paxs::Pulldown menu_bar_edit{ menu_bar_edit_pulldown, font_menu_bar, s3d::Point{ 0 + menu_bar_file.getRect().w, 0},paxs::PulldownType::One};
-		//paxs::Pulldown menu_bar_view{ menu_bar_view_pulldown, font_menu_bar, s3d::Point{ 0 + menu_bar_file.getRect().w + menu_bar_edit.getRect().w, 0 },paxs::PulldownType::One };
-
 		paxs::MenuBar menu_bar;
-		menu_bar.add(menu_bar_file_pulldown/*language_text.get()*/, menu_bar_file_pulldown_index + 1, font_menu_bar);
-		menu_bar.add(menu_bar_edit_pulldown,0, font_menu_bar);
-		menu_bar.add(menu_bar_view_pulldown,0, font_menu_bar);
-		menu_bar.add(menu_bar_map_pulldown,0, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_file_pulldown_index + 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_edit_pulldown_index + 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_view_pulldown_index + 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_calendar_pulldown_index + 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_map_pulldown_index + 1, font_menu_bar);
 
 		const s3d::Texture texture_tlt{ path + U"Image/Logo/TitleLogoText2.svg" };
 		const s3d::Texture texture_github{ path + U"Data/MenuIcon/github.svg" };
@@ -250,6 +219,11 @@ namespace paxs {
 
 		// 地名
 		std::unique_ptr<PlaceNameLocation> place_name_location(new(std::nothrow) PlaceNameLocation);
+		place_name_location->add();
+
+		// エージェント
+		std::unique_ptr<PlaceNameLocation> agent_location(new(std::nothrow) PlaceNameLocation);
+		//agent_location->addKofun();
 
 		// 古墳名
 		//inputPlace(path8 + "Data/PlaceName/TestMap/Kofun.tsv", location_point_list, LocationPointEnum::location_point_zempo_koen_fun);
@@ -331,6 +305,13 @@ namespace paxs {
 		paxs::Graphics3DModel g3d_model;
 		bool move_forward_in_time = false;
 
+		bool is_agent_update = true; // エージェントの更新をするか
+		paxs::Simulator<int> simlator(
+			path8 + "Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10",
+			paxs::Vector2<int>{861, 350},
+			paxs::Vector2<int>{950, 450}, 10);
+		simlator.init();
+
 /*##########################################################################################
 
 	ループ開始
@@ -359,6 +340,8 @@ namespace paxs {
 			//menu_bar_file.update();
 			//menu_bar_edit.update();
 			//menu_bar_view.update();
+
+			
 
 			// タイルを更新
 			//xyz_tile1->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
@@ -438,6 +421,28 @@ namespace paxs {
 
 				// 地名を描画
 				place_name_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
+					font[language], font[language]/*en_font*/, pin_font);
+
+				// エージェント機能テスト
+				if (is_agent_update) {
+
+					static int step = 0;
+
+					if (step == 0) {
+						s3d::Print(U"Agent Size:", simlator.getAgents().size());
+						for (int i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
+							s3d::Print(U"Agent[",i,U"]:X" ,simlator.getAgents()[i].getLocation(10,256).x, U", Y", simlator.getAgents()[i].getLocation(10,256).y);
+						}
+					}
+					++step;
+
+					if (step >= 300) {
+						step = 0;
+						simlator.step();
+					}
+					agent_location->update(simlator.getAgents());
+				}
+;				agent_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
 					font[language], font[language]/*en_font*/, pin_font);
 			}
 			/*##########################################################################################
@@ -727,6 +732,15 @@ U"II-1",U"II-2",U"II-2/II-3",U"II-3",U"II-4",U"II-5",U"II-6",U"III-1"
 				font[language](sueki_nakamura
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 					s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 60, 590), s3d::Palette::Black);
+			
+
+				if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ 10,60 })) {
+					is_agent_update = true;
+				}
+				if (s3d::SimpleGUI::Button(U"Stop", s3d::Vec2{ 110,60 })) {
+					is_agent_update = false;
+				}
+			
 			}
 		}
 

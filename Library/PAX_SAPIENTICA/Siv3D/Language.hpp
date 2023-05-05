@@ -33,7 +33,7 @@ namespace paxs {
 			std::string field;
 			std::vector<s3d::String> result;
 			while (std::getline(stream, field, delimiter)) {
-				result.emplace_back(s3d::Unicode::Widen(field));
+				result.emplace_back(s3d::Unicode::FromUTF8(field));
 			}
 			text.emplace_back(result);
 		}
@@ -55,7 +55,7 @@ namespace paxs {
 		// 始点を探す
 		std::size_t findStart(const std::string& str_) {
 			for (std::size_t i = 0; i < text.size(); ++i) {
-				if (text[i].front() == s3d::Unicode::Widen(str_)) return i;
+				if (text[i].front() == s3d::Unicode::FromUTF8(str_)) return i;
 			}
 			return 0;
 		}
