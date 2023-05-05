@@ -16,6 +16,8 @@
 
 ##########################################################################################*/
 
+#include <iostream>
+
 namespace paxs {
     template<typename T>
     class Vector2 {
@@ -28,8 +30,18 @@ namespace paxs {
         Vector2<T> operator+(const Vector2<T>& v) const {
             return Vector2<T>(x + v.x, y + v.y);
         }
+        Vector2<T>& operator+=(const Vector2<T>& v) {
+            x += v.x;
+            y += v.y;
+            return *this;
+        }
         Vector2<T> operator-(const Vector2<T>& v) const {
             return Vector2<T>(x - v.x, y - v.y);
+        }
+        Vector2<T>& operator-=(const Vector2<T>& v) {
+            x -= v.x;
+            y -= v.y;
+            return *this;
         }
         Vector2<T> operator*(const Vector2<T>& v) const {
             return Vector2<T>(x * v.x, y * v.y);
@@ -37,11 +49,21 @@ namespace paxs {
         Vector2<T> operator*(const T& t) const {
             return Vector2<T>(x * t, y * t);
         }
+        Vector2<T>& operator*=(const T& t) {
+            x *= t;
+            y *= t;
+            return *this;
+        }
         Vector2<T> operator/(const Vector2<T>& v) const {
             return Vector2<T>(x / v.x, y / v.y);
         }
         Vector2<T> operator/(const T& t) const {
             return Vector2<T>(x / t, y / t);
+        }
+        Vector2<T>& operator/=(const T& t) {
+            x /= t;
+            y /= t;
+            return *this;
         }
         bool operator==(const Vector2<T>& v) const {
             return v.x == x && v.y == y;

@@ -14,10 +14,10 @@
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 
 int main() {
-	const std::string file_name = "../../../Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10/";
+	const std::string land_file_path = "../../../Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10/";
 	paxs::Vector2<int> start_position(861, 350);
 	paxs::Vector2<int> end_position(950, 450);
-    std::unique_ptr<paxs::Simulator<int>> simulator = std::make_unique<paxs::Simulator<int>>(file_name, start_position, end_position, 10);
+    std::unique_ptr<paxs::Simulator<int>> simulator = std::make_unique<paxs::Simulator<int>>(land_file_path, start_position, end_position, 10);
     simulator->init();
 	simulator->run(50);
 	std::vector<paxs::Agent<int>> agents = simulator->getAgents();

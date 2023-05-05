@@ -23,7 +23,6 @@
 
 #include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
-#include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/GeographicInformation.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
@@ -32,57 +31,31 @@ namespace paxs {
     class Environment {
     public:
         using Vector2 = paxs::Vector2<T>;
-        using Agent = paxs::Agent<T>;
 
+        const int pixel_size = 256;
         std::map<Vector2, GeographicInformation> geographic_informations;
 
-        Environment(const std::string& directory_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
-            loadIsLand(directory_path);
+        Environment(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
+            loadIsLand(land_file_path);
         }
 
-        void randomizeAgents(const int agent_count) {
-            const Vector2& offset = end_position - start_position;
-            std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
-            std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
-            std::uniform_int_distribution<> age_dist(0, 20);
-            std::uniform_int_distribution<> gender_dist{0, 1};
-            std::uniform_int_distribution<> life_exp_dist{50, 100};
-            std::cout << "Randomizing agents..." << std::endl;
-            for(int i = 0;i < agent_count;++i) {
-                displayProgressBar(i, agent_count);
-                Vector2 position = Vector2(x_dist(gen), y_dist(gen));
-                while(!geographic_informations[position].isLand()) {
-                    position = Vector2(x_dist(gen), y_dist(gen));
-                }
-                agents.push_back(Agent(position, (bool)gender_dist(gen), age_dist(gen), life_exp_dist(gen)));
+        Vector2 getStartPosition() const { return start_position; }
+        Vector2 getEndPosition() const { return end_position; }
+        bool isLand(const Vector2& position) const {
+            auto it = geographic_informations.find(position);
+            if (it != geographic_informations.end()) {
+                return it->second.isLand();
             }
-            displayProgressBar(agent_count, agent_count);
-            std::cout << std::endl;
-        }
-        void step() {
-            for(auto& agent : agents) {
-                agent.updateAge();
-            }
-            agents.erase(
-                std::remove_if(
-                    agents.begin(), agents.end(),[](const Agent& agent) { return agent.isDead(); }
-                    ),
-                 agents.end());
-        }
-        std::vector<Agent>& getAgents() {
-            return agents;
+            return false;
         }
     private:
-        const int pixel_size = 256;
-        std::vector<Agent> agents;
         Vector2 start_position;
         Vector2 end_position;
         int z;
-        std::mt19937 gen;
 
-        void loadIsLand(const std::string& directory_path) {
+        void loadIsLand(const std::string& land_file_path) {
             std::cout << "Loading is land..." << std::endl;
-            const std::vector<std::string> file_names = getFileNames(directory_path);
+            const std::vector<std::string> file_names = getFileNames(land_file_path);
             std::cout << file_names.size() << " files are found." << std::endl; 
 
             unsigned int file_count = 0;

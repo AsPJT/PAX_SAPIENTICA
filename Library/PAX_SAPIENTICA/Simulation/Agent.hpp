@@ -18,14 +18,17 @@
 
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Simulation/ConvertToMercatorCoordinate.hpp>
+#include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 
 namespace paxs {
     template <typename T>
     class Agent {
-        using Vector2 = paxs::Vector2<T>;
     public:
-        Agent(Vector2 pos, bool gen, int age, int life_exp)
-            : position(pos), gender(gen), age(age), life_expectancy(life_exp) {}
+        using Environment = paxs::Environment<T>;
+        using Vector2 = paxs::Vector2<T>;
+
+        Agent(const Vector2& pos, const bool gen, const int age, const int life_exp, const Environment* env)
+            : position(pos), gender(gen), age(age), life_expectancy(life_exp), environment(env) {}
 
         T getX() const { return position.x; }
         T getY() const { return position.y; }
@@ -35,8 +38,13 @@ namespace paxs {
         void setPosition(const Vector2& pos) { position = pos; }
         paxs::Vector2<double> getLocation(const int z, const int pixel_size) const {
             return convertToMercatorCoordinate({861, 350}, position, z, pixel_size);
-    }
-        void move(const T& x, const T& y) { position.x += x; position.y += y; }
+        }
+        void move(const Vector2& v) {
+            if (environment->isLand(position + v)) {
+                position += v;
+            }
+        }
+
         bool isDead() const { return age >= life_expectancy; }
         int getAge() const { return age; }
         void updateAge() { ++age; }
@@ -52,6 +60,7 @@ namespace paxs {
         bool gender; // true: male, false: female
         int age;
         int life_expectancy;
+        const Environment* environment;
     };
 }
 
