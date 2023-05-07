@@ -32,9 +32,10 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<T>;
 
-        const int pixel_size = 256;
+        int pixel_size = 256;
         std::map<Vector2, GeographicInformation> geographic_informations;
 
+        Environment() = default;
         Environment(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
             loadIsLand(land_file_path);
         }

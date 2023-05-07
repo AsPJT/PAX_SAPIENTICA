@@ -27,6 +27,7 @@ namespace paxs {
         using Vector2 = paxs::Vector2<T>;
         using Agent = paxs::Agent<T>;
 
+        Simulator() = default;
         Simulator(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z) :
             environment(land_file_path, start_position, end_position, z) {}
         void init() {
@@ -61,7 +62,7 @@ namespace paxs {
         }
     private:
         std::vector<Agent> agents;
-        const Environment environment;
+        Environment environment;
         std::mt19937 gen;
         std::uniform_int_distribution<> gender_dist{0, 1};
         std::uniform_int_distribution<> life_exp_dist{50, 100};

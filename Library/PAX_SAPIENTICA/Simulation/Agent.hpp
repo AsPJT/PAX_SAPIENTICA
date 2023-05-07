@@ -27,7 +27,7 @@ namespace paxs {
         using Environment = paxs::Environment<T>;
         using Vector2 = paxs::Vector2<T>;
 
-        Agent(const Vector2& pos, const bool gen, const int age, const int life_exp, const Environment* env)
+        Agent(const Vector2& pos, const bool gen, const int age, const int life_exp, Environment* env)
             : position(pos), gender(gen), age(age), life_expectancy(life_exp), environment(env) {}
 
         T getX() const { return position.x; }
@@ -36,8 +36,8 @@ namespace paxs {
         void setX(const T& x) { position.x = x; }
         void setY(const T& y) { position.y = y; }
         void setPosition(const Vector2& pos) { position = pos; }
-        paxs::Vector2<double> getLocation(const int z, const int pixel_size) const {
-            return convertToMercatorCoordinate({861, 350}, position, z, pixel_size);
+        paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z, const int pixel_size) const {
+            return convertToMercatorCoordinate(start_position, position, z, pixel_size);
         }
         void move(const Vector2& v) {
             if (environment->isLand(position + v)) {
@@ -60,7 +60,7 @@ namespace paxs {
         bool gender; // true: male, false: female
         int age;
         int life_expectancy;
-        const Environment* environment;
+        Environment* environment;
     };
 }
 
