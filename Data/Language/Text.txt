@@ -35,7 +35,9 @@
 土壌温度	Soil Temperature	土壌温度	土壌温度	토양 온도
 令制国	Ryosei Country	令制国	令制国	율령국
 令制国線	Ryosei Line	令制国線	令制国線	율령국선
-川	River	川	川	River
+傾斜	Slope	坡度	坡度	경사면
+湖川1	Lakes and rivers1	河流和湖泊1	河流和湖泊1	호수와 강1
+湖川2	Lakes and rivers2	河流和湖泊2	河流和湖泊2	호수와 강2
 線1	Line1	線1	線1	선1
 線2	Line2	線2	線2	선2
 > calendar				
@@ -51,3 +53,294 @@ XYZタイル Z	XYZ Tiles Z	XYZ瓦片 Z	XYZ瓦片 Z	XYZ타일 Z
 > sueki				
 須恵器 中村編年(1993)	Sue pottery Nakamura(1993)	須恵器 中村編年(1993)	須恵器 中村編年(1993)	須恵器(수혜기) 나카무라(1993)
 須恵器 田辺編年(1983)	Sue pottery Tanabe(1983)	須恵器 田辺編年(1983)	須恵器 田辺編年(1983)	須恵器(수혜기) 타나베(1983)
+> gengo				
+神武天皇即位前	Before Jimmu	神武天皇即位前	神武天皇即位前	Before Jimmu
+神武天皇	Emperor Jimmu	神武天皇	神武天皇	Emperor Jimmu
+綏靖天皇	Emperor Suizei	綏靖天皇	綏靖天皇	Emperor Suizei
+安寧天皇	Emperor Annei	安寧天皇	安寧天皇	Emperor Annei
+懿徳天皇	Emperor Itoku	懿德天皇	懿德天皇	Emperor Itoku
+孝昭天皇	Emperor Kōshō	孝昭天皇	孝昭天皇	Emperor Kōshō
+孝安天皇	Emperor Kōan	孝安天皇	孝安天皇	Emperor Kōan
+孝霊天皇	Emperor Kōrei	孝靈天皇	孝靈天皇	Emperor Kōrei
+孝元天皇	Emperor Kōgen	孝元天皇	孝元天皇	Emperor Kōgen
+開化天皇	Emperor Kaika	開化天皇	開化天皇	Emperor Kaika
+崇神天皇	Emperor Sujin	崇神天皇	崇神天皇	Emperor Sujin
+垂仁天皇	Emperor Suinin	垂仁天皇	垂仁天皇	Emperor Suinin
+景行天皇	Emperor Keikō	景行天皇	景行天皇	Emperor Keikō
+成務天皇	Emperor Seimu	成務天皇	成務天皇	Emperor Seimu
+仲哀天皇	Emperor Chūai	仲哀天皇	仲哀天皇	Emperor Chūai
+神功皇后	Empress Jingū	神功皇后	神功皇后	Empress Jingū
+応神天皇	Emperor Ōjin	應神天皇	應神天皇	Emperor Ōjin
+仁徳天皇	Emperor Nintoku	仁德天皇	仁德天皇	Emperor Nintoku
+履中天皇	Emperor Richū	履中天皇	履中天皇	Emperor Richū
+反正天皇	Emperor Hanzei	反正天皇	反正天皇	Emperor Hanzei
+允恭天皇	Emperor Ingyō	允恭天皇	允恭天皇	Emperor Ingyō
+安康天皇	Emperor Ankō	安康天皇	安康天皇	Emperor Ankō
+雄略天皇	Emperor Yūryaku	雄略天皇	雄略天皇	Emperor Yūryaku
+清寧天皇	Emperor Seinei	清寧天皇	清寧天皇	Emperor Seinei
+顕宗天皇	Emperor Kenzō	顯宗天皇	顯宗天皇	Emperor Kenzō
+仁賢天皇	Emperor Ninken	仁賢天皇	仁賢天皇	Emperor Ninken
+武烈天皇	Emperor Buretsu	武烈天皇	武烈天皇	Emperor Buretsu
+継体天皇	Emperor Keitai	繼體天皇	繼體天皇	Emperor Keitai
+安閑天皇	Emperor Ankan	安閑天皇	安閑天皇	Emperor Ankan
+宣化天皇	Emperor Senka	宣化天皇	宣化天皇	Emperor Senka
+欽明天皇	Emperor Kinmei	欽明天皇	欽明天皇	Emperor Kinmei
+敏達天皇	Emperor Bidatsu	敏達天皇	敏達天皇	Emperor Bidatsu
+用明天皇	Emperor Yōmei	用明天皇	用明天皇	Emperor Yōmei
+崇峻天皇	Emperor Sushun	崇峻天皇	崇峻天皇	Emperor Sushun
+推古天皇	Empress Suiko	推古天皇	推古天皇	Empress Suiko
+舒明天皇	Emperor Jomei	舒明天皇	舒明天皇	Emperor Jomei
+皇極天皇	Empress Kōgyoku	皇極天皇	皇極天皇	Empress Kōgyoku
+大化	Taika	大化	大化	Taika
+白雉	Hakuchi	白雉	白雉	Hakuchi
+斉明天皇	Empress Saimei	齊明天皇	齊明天皇	Empress Saimei
+天智天皇	Emperor Tenji	天智天皇	天智天皇	Emperor Tenji
+天武天皇	Emperor Tenmu	天武天皇	天武天皇	Emperor Tenmu
+朱鳥	Shuchō	朱鳥	朱鳥	Shuchō
+持統天皇	Empress Jitō	持統天皇	持統天皇	Empress Jitō
+文武天皇	Emperor Monmu	文武天皇	文武天皇	Emperor Monmu
+大宝	Taihō	大寶	大寶	Taihō
+慶雲	Keiun	慶雲	慶雲	Keiun
+和銅	Wadō	和銅	和銅	Wadō
+霊亀	Reiki	靈龜	靈龜	Reiki
+養老	Yōrō	養老	養老	Yōrō
+神亀	Jinki	神龜	神龜	Jinki
+天平	Tenpyō	天平	天平	Tenpyō
+天平感宝	Tenpyō-kanpō	天平感寶	天平感寶	Tenpyō-kanpō
+天平勝宝	Tenpyō-shōhō	天平勝寶	天平勝寶	Tenpyō-shōhō
+天平宝字	Tenpyō-hōji	天平寶字	天平寶字	Tenpyō-hōji
+天平神護	Tenpyō-jingo	天平神護	天平神護	Tenpyō-jingo
+神護景雲	Jingo-keiun	神護景雲	神護景雲	Jingo-keiun
+宝亀	Hōki	寶龜	寶龜	Hōki
+天応	Ten'ō	天應	天應	Ten'ō
+延暦	Enryaku	延曆	延曆	Enryaku
+大同	Daidō	大同	大同	Daidō
+弘仁	Kōnin	弘仁	弘仁	Kōnin
+天長	Tenchō	天長	天長	Tenchō
+承和	Jōwa	承和	承和	Jōwa
+嘉祥	Kashō	嘉祥	嘉祥	Kashō
+仁寿	Ninju	仁壽	仁壽	Ninju
+斉衡	Saikō	齊衡	齊衡	Saikō
+天安	Ten'an	天安	天安	Ten'an
+貞観	Jōgan	貞觀	貞觀	Jōgan
+元慶	Gangyō	元慶	元慶	Gangyō
+仁和	Ninna	仁和	仁和	Ninna
+寛平	Kanpyō	寛平	寛平	Kanpyō
+昌泰	Shōtai	昌泰	昌泰	Shōtai
+延喜	Engi	延喜	延喜	Engi
+延長	Enchō	延長	延長	Enchō
+承平	Jōhei	承平	承平	Jōhei
+天慶	Tengyō	天慶	天慶	Tengyō
+天暦	Tenryaku	天曆	天曆	Tenryaku
+天徳	Tentoku	天德	天德	Tentoku
+応和	Ōwa	應和	應和	Ōwa
+康保	Kōhō	康保	康保	Kōhō
+安和	Anna	安和	安和	Anna
+天禄	Tenroku	天祿	天祿	Tenroku
+天延	Ten'en	天延	天延	Ten'en
+貞元	Jōgen	貞元	貞元	Jōgen
+天元	Tengen	天元	天元	Tengen
+永観	Eikan	永觀	永觀	Eikan
+寛和	Kanna	寛和	寛和	Kanna
+永延	Eien	永延	永延	Eien
+永祚	Eiso	永祚	永祚	Eiso
+正暦	Shōryaku	正曆	正曆	Shōryaku
+長徳	Chōtoku	長德	長德	Chōtoku
+長保	Chōhō	長保	長保	Chōhō
+寛弘	Kankō	寛弘	寛弘	Kankō
+長和	Chōwa	長和	長和	Chōwa
+寛仁	Kannin	寛仁	寛仁	Kannin
+治安	Jian	治安	治安	Jian
+万寿	Manju	萬壽	萬壽	Manju
+長元	Chōgen	長元	長元	Chōgen
+長暦	Chōryaku	長曆	長曆	Chōryaku
+長久	Chōkyū	長久	長久	Chōkyū
+寛徳	Kantoku	寛德	寛德	Kantoku
+永承	Eishō	永承	永承	Eishō
+天喜	Tengi	天喜	天喜	Tengi
+康平	Kōhei	康平	康平	Kōhei
+治暦	Jiryaku	治曆	治曆	Jiryaku
+延久	Enkyū	延久	延久	Enkyū
+承保	Jōhō	承保	承保	Jōhō
+承暦	Jōryaku	承曆	承曆	Jōryaku
+永保	Eihō	永保	永保	Eihō
+応徳	Ōtoku	應德	應德	Ōtoku
+寛治	Kanji	寛治	寛治	Kanji
+嘉保	Kahō	嘉保	嘉保	Kahō
+永長	Eichō	永長	永長	Eichō
+承徳	Jōtoku	承德	承德	Jōtoku
+康和	Kōwa	康和	康和	Kōwa
+長治	Chōji	長治	長治	Chōji
+嘉承	Kajō	嘉承	嘉承	Kajō
+天仁	Tennin	天仁	天仁	Tennin
+天永	Ten'ei	天永	天永	Ten'ei
+永久	Eikyū	永久	永久	Eikyū
+元永	Gen'ei	元永	元永	Gen'ei
+保安	Hōan	保安	保安	Hōan
+天治	Tenji	天治	天治	Tenji
+大治	Daiji	大治	大治	Daiji
+天承	Tenshō	天承	天承	Tenshō
+長承	Chōshō	長承	長承	Chōshō
+保延	Hōen	保延	保延	Hōen
+永治	Eiji	永治	永治	Eiji
+康治	Kōji	康治	康治	Kōji
+天養	Ten'yō	天養	天養	Ten'yō
+久安	Kyūan	久安	久安	Kyūan
+仁平	Ninpei	仁平	仁平	Ninpei
+久寿	Kyūju	久壽	久壽	Kyūju
+保元	Hōgen	保元	保元	Hōgen
+平治	Heiji	平治	平治	Heiji
+永暦	Eiryaku	永曆	永曆	Eiryaku
+応保	Ōhō	應保	應保	Ōhō
+長寛	Chōkan	長寛	長寛	Chōkan
+永万	Eiman	永萬	永萬	Eiman
+仁安	Nin'an	仁安	仁安	Nin'an
+嘉応	Kaō	嘉應	嘉應	Kaō
+承安	Jōan	承安	承安	Jōan
+安元	Angen	安元	安元	Angen
+治承	Jishō	治承	治承	Jishō
+養和	Yōwa	養和	養和	Yōwa
+寿永	Juei	壽永	壽永	Juei
+元暦	Genryaku	元曆	元曆	Genryaku
+文治	Bunji	文治	文治	Bunji
+建久	Kenkyū	建久	建久	Kenkyū
+正治	Shōji	正治	正治	Shōji
+建仁	Kennin	建仁	建仁	Kennin
+元久	Genkyū	元久	元久	Genkyū
+建永	Ken'ei	建永	建永	Ken'ei
+承元	Jōgen	承元	承元	Jōgen
+建暦	Kenryaku	建曆	建曆	Kenryaku
+建保	Kempo	建保	建保	Kempo
+承久	Jōkyū	承久	承久	Jōkyū
+貞応	Jōō	貞應	貞應	Jōō
+元仁	Gennin	元仁	元仁	Gennin
+嘉禄	Karoku	嘉祿	嘉祿	Karoku
+安貞	Antei	安貞	安貞	Antei
+寛喜	Kangi	寛喜	寛喜	Kangi
+貞永	Jōei	貞永	貞永	Jōei
+天福	Tenpuku	天福	天福	Tenpuku
+文暦	Bunryaku	文曆	文曆	Bunryaku
+嘉禎	Katei	嘉禎	嘉禎	Katei
+暦仁	Ryakunin	曆仁	曆仁	Ryakunin
+延応	En'ō	延應	延應	En'ō
+仁治	Ninji	仁治	仁治	Ninji
+寛元	Kangen	寛元	寛元	Kangen
+宝治	Hōji	寶治	寶治	Hōji
+建長	Kenchō	建長	建長	Kenchō
+康元	Kōgen	康元	康元	Kōgen
+正嘉	Shōka	正嘉	正嘉	Shōka
+正元	Shōgen	正元	正元	Shōgen
+文応	Bun'ō	文應	文應	Bun'ō
+弘長	Kōchō	弘長	弘長	Kōchō
+文永	Bun'ei	文永	文永	Bun'ei
+建治	Kenji	建治	建治	Kenji
+弘安	Kōan	弘安	弘安	Kōan
+正応	Shōō	正應	正應	Shōō
+永仁	Einin	永仁	永仁	Einin
+正安	Shōan	正安	正安	Shōan
+乾元	Kengen	乾元	乾元	Kengen
+嘉元	Kagen	嘉元	嘉元	Kagen
+徳治	Tokuji	德治	德治	Tokuji
+延慶	Enkyō	延慶	延慶	Enkyō
+応長	Ōchō	應長	應長	Ōchō
+正和	Shōwa	正和	正和	Shōwa
+文保	Bunpō	文保	文保	Bunpō
+元応	Gen'ō	元應	元應	Gen'ō
+元亨	Genkō	元亨	元亨	Genkō
+正中	Shōchū	正中	正中	Shōchū
+嘉暦	Karyaku	嘉曆	嘉曆	Karyaku
+元徳	Gentoku	元德	元德	Gentoku
+元弘	Genkō	元弘	元弘	Genkō
+正慶	Shōkyō	正慶	正慶	Shōkyō
+建武	Kenmu	建武	建武	Kenmu
+延元	Engen	延元	延元	Engen
+暦応	Ryakuō	曆應	曆應	Ryakuō
+興国	Kōkoku	興國	興國	Kōkoku
+康永	Kōei	康永	康永	Kōei
+貞和	Jōwa	貞和	貞和	Jōwa
+正平	Shōhei	正平	正平	Shōhei
+観応	Kannō	觀應	觀應	Kannō
+文和	Bunna	文和	文和	Bunna
+延文	Enbun	延文	延文	Enbun
+康安	Kōan	康安	康安	Kōan
+貞治	Jōji	貞治	貞治	Jōji
+応安	Ōan	應安	應安	Ōan
+建徳	Kentoku	建德	建德	Kentoku
+文中	Bunchū	文中	文中	Bunchū
+天授	Tenju	天授	天授	Tenju
+永和	Eiwa	永和	永和	Eiwa
+康暦	Kōryaku	康曆	康曆	Kōryaku
+弘和	Kōwa	弘和	弘和	Kōwa
+永徳	Eitoku	永德	永德	Eitoku
+元中	Genchū	元中	元中	Genchū
+至徳	Shitoku	至德	至德	Shitoku
+嘉慶	Kakei	嘉慶	嘉慶	Kakei
+康応	Kōō	康應	康應	Kōō
+明徳	Meitoku	明德	明德	Meitoku
+応永	Ōei	應永	應永	Ōei
+正長	Shōchō	正長	正長	Shōchō
+永享	Eikyō	永享	永享	Eikyō
+嘉吉	Kakitsu	嘉吉	嘉吉	Kakitsu
+文安	Bun'an	文安	文安	Bun'an
+宝徳	Hōtoku	寶德	寶德	Hōtoku
+享徳	Kyōtoku	享德	享德	Kyōtoku
+康正	Kōshō	康正	康正	Kōshō
+長禄	Chōroku	長祿	長祿	Chōroku
+寛正	Kanshō	寛正	寛正	Kanshō
+文正	Bunshō	文正	文正	Bunshō
+応仁	Ōnin	應仁	應仁	Ōnin
+文明	Bunmei	文明	文明	Bunmei
+長享	Chōkyō	長享	長享	Chōkyō
+延徳	Entoku	延德	延德	Entoku
+明応	Meiō	明應	明應	Meiō
+文亀	Bunki	文龜	文龜	Bunki
+永正	Eishō	永正	永正	Eishō
+大永	Daiei	大永	大永	Daiei
+享禄	Kyōroku	享祿	享祿	Kyōroku
+天文	Tenbun	天文	天文	Tenbun
+弘治	Kōji	弘治	弘治	Kōji
+永禄	Eiroku	永祿	永祿	Eiroku
+元亀	Genki	元龜	元龜	Genki
+天正	Tenshō	天正	天正	Tenshō
+文禄	Bunroku	文祿	文祿	Bunroku
+慶長	Keichō	慶長	慶長	Keichō
+元和	Genna	元和	元和	Genna
+寛永	Kan'ei	寛永	寛永	Kan'ei
+正保	Shōhō	正保	正保	Shōhō
+慶安	Keian	慶安	慶安	Keian
+承応	Jōō	承應	承應	Jōō
+明暦	Meireki	明曆	明曆	Meireki
+万治	Manji	萬治	萬治	Manji
+寛文	Kanbun	寛文	寛文	Kanbun
+延宝	Enpō	延寶	延寶	Enpō
+天和	Tenna	天和	天和	Tenna
+貞享	Jōkyō	貞享	貞享	Jōkyō
+元禄	Genroku	元祿	元祿	Genroku
+宝永	Hōei	寶永	寶永	Hōei
+正徳	Shōtoku	正德	正德	Shōtoku
+享保	Kyōhō	享保	享保	Kyōhō
+元文	Genbun	元文	元文	Genbun
+寛保	Kanpō	寛保	寛保	Kanpō
+延享	Enkyō	延享	延享	Enkyō
+寛延	Kan'en	寛延	寛延	Kan'en
+宝暦	Hōreki	寶曆	寶曆	Hōreki
+明和	Meiwa	明和	明和	Meiwa
+安永	An'ei	安永	安永	An'ei
+天明	Tenmei	天明	天明	Tenmei
+寛政	Kansei	寛政	寛政	Kansei
+享和	Kyōwa	享和	享和	Kyōwa
+文化	Bunka	文化	文化	Bunka
+文政	Bunsei	文政	文政	Bunsei
+天保	Tenpō	天保	天保	Tenpō
+弘化	Kōka	弘化	弘化	Kōka
+嘉永	Kaei	嘉永	嘉永	Kaei
+安政	Ansei	安政	安政	Ansei
+万延	Man'en	萬延	萬延	Man'en
+文久	Bunkyū	文久	文久	Bunkyū
+元治	Genji	元治	元治	Genji
+慶応	Keiō	慶應	慶應	Keiō
+明治	Meiji	明治	明治	Meiji
+大正	Taishō	大正	大正	Taishō
+昭和	Shōwa	昭和	昭和	Shōwa
+平成	Heisei	平成	平成	Heisei
+令和	Reiwa	令和	令和	Reiwa

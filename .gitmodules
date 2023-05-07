@@ -10,3 +10,9 @@
 [submodule "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes"]
 	path = Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes
 	url = https://github.com/Asukana/RiversAndLakes.git
+[submodule "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW"]
+	path = Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW
+	url = https://github.com/Asukana/RiversAndLakesBW.git
+[submodule "Data/Map/XYZTile/Slope/Image/Slope"]
+	path = Data/Map/XYZTile/Slope/Image/Slope
+	url = https://github.com/Asukana/Slope.git

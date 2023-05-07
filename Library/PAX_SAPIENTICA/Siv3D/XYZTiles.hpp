@@ -172,6 +172,21 @@ namespace paxs {
 				}
 			}
 		}
+		void drawXYZ(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
+			// 拡大率が描画範囲外の場合はここで処理を終了
+			if (magnification_z < draw_min_z) return;
+			if (magnification_z > draw_max_z) return;
+
+			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+					static s3d::Font tmp_font{ 16 };
+					tmp_font(U"X:", j, U"\nY:", i, U"\nZ:", z).draw(
+						(pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+						, s3d::ColorF{ 0, 0, 0 });
+				}
+			}
+		}
 		void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
 
 			// 拡大率が描画範囲外の場合はここで処理を終了
