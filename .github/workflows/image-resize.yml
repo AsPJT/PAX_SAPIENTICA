@@ -50,9 +50,9 @@ jobs:
       run: |
         cd ${{github.workspace}}/Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes
         git checkout main
-        git config user.name "GitHub Actions Bot"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git remote set-url origin https://${{secrets.guinpen98}}@github.com/Asukana/RiversAndLakes.git
+        git config user.name "wanotaitei"
+        git config user.email "wanotaitei@gmail.com"
+        git remote set-url origin https://${{secrets.ASUKANA3}}@github.com/Asukana/RiversAndLakes.git
         git add .
         git commit -m "Update submodule content"
         git push

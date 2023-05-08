@@ -29,6 +29,7 @@ namespace paxs {
 		location_point_place_name, // 地名
 		location_point_pit_dwelling, // 集落遺跡
 		location_point_agent, // エージェント
+		location_point_agent2, // エージェント
 		location_point_zempo_koen_fun, // 前方後円墳
 		location_point_zempo_koho_fun, // 前方後方墳
 		location_point_hotategai_gata_kofun // 帆立貝型古墳
@@ -45,15 +46,21 @@ namespace paxs {
 		std::string source{};
 	};
 
+
+
 	class PlaceNameLocation {
 	public:
-		void update(const std::vector<paxs::Agent<int>>& agents) {
+		void update(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position) {
 			location_point_list.resize(0);
 			for (int i = 0; i < agents.size(); ++i) {
 				location_point_list.emplace_back(
 					LocationPoint{
-						"","",agents[i].getLocation(10, 256).x,agents[i].getLocation(10, 256).y,
-						100,0,0,99999999,LocationPointEnum::location_point_agent,""
+						"","",agents[i].getLocation(start_position, 10, 256).x,agents[i].getLocation(start_position, 10, 256).y,
+						100,0,0,99999999,
+						(agents[i].getGender())?
+						LocationPointEnum::location_point_agent:
+						LocationPointEnum::location_point_agent2
+						,""
 
 					}
 				);
@@ -112,6 +119,16 @@ namespace paxs {
 					//}
 					// エージェント
 					if (lli.lpe == LocationPointEnum::location_point_agent) {
+						//s3d::Circle(	s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						//double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
+						//,10).draw();
+						texture_blue_circle.resized(15).drawAt(
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+						continue;
+					}
+					// エージェント
+					if (lli.lpe == LocationPointEnum::location_point_agent2) {
 						//s3d::Circle(	s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						//double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
 						//,10).draw();
@@ -268,6 +285,61 @@ namespace paxs {
 			}
 		}
 	};
+
+
+	class AgentLocation {
+	public:
+		const s3d::Texture texture_blue_circle{ U"./../../../../../Data/MiniIcon/BlueCircle.svg" };
+		const s3d::Texture texture_red_circle{ U"./../../../../../Data/MiniIcon/RedCircle.svg" };
+
+		void draw(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position,
+			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
+			const s3d::Font& font, const s3d::Font& en_font, const s3d::Font& pin_font)const {
+
+			// 地名を描画
+			for (int i = 0; i < agents.size(); ++i) {
+				const auto lli = LocationPoint{
+						"","",agents[i].getLocation(start_position, 10, 256).x,agents[i].getLocation(start_position, 10, 256).y,
+						100,0,0,99999999,
+						(agents[i].getGender()) ?
+						LocationPointEnum::location_point_agent :
+						LocationPointEnum::location_point_agent2
+						,""
+				};
+				// 範囲外を除去
+				if (lli.x < (map_view_center_x - map_view_width / 1.8)
+					|| lli.x >(map_view_center_x + map_view_width / 1.8)
+					|| lli.y < (map_view_center_y - map_view_height / 1.8)
+					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
+
+				// 範囲内の場合
+				if (lli.min_view > map_view_width
+					|| lli.max_view < map_view_width
+					|| lli.min_year > jdn
+					|| lli.max_year < jdn) {
+					if (lli.min_year > jdn) continue;
+					if (lli.max_year < jdn) continue;
+
+					// エージェント
+					if (lli.lpe == LocationPointEnum::location_point_agent) {
+						texture_blue_circle.resized(15).drawAt(
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+						continue;
+					}
+					// エージェント
+					if (lli.lpe == LocationPointEnum::location_point_agent2) {
+						texture_red_circle.resized(15).drawAt(
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+						continue;
+					}
+				}
+			}
+		}
+
+	};
+
 }
 
 #endif // !PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP

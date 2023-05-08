@@ -1,10 +1,10 @@
-name = gbank
-start_x = 872
-start_y = 360
-x_size = 64
-y_size = 64
-z = 10
+name = water
+start_x = 1600
+start_y = 3636
+x_size = 16
+y_size = 16
+z = 12
 extension = png
-input_path = ../../../Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/10/
+input_path = ../../../Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/12/
 output_path = ../../../Data/Map/XYZTile/Union/
 alpha = false

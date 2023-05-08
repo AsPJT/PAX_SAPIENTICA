@@ -26,7 +26,7 @@
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 
 // シミュレータを使用する
-//#define PAXS_USING_SIMULATOR
+#define PAXS_USING_SIMULATOR
 
 namespace paxs {
 
@@ -40,18 +40,18 @@ namespace paxs {
 		const std::string path8 = "./../../../../../";
 
 		const std::vector<s3d::Font> font_pulldown = {
-			{16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
-			{16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
-		{ 16,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ 16,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ 16,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") }
+			{s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			{s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
+		{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
+		{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") }
 		};
 		const std::vector<s3d::Font> font = {
-			{18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
-			{18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
-		{ 18,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ 18,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ 18,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") }
+			{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
+		{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
+		{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") }
 		};
 		const std::vector<std::vector<s3d::String>> items_pulldown = {
 			{U"日本語"},{U"English"},{U"繁體中文"},{U"简体中文"},{U"한국어"}
@@ -84,7 +84,9 @@ namespace paxs {
 			soil_temperature,
 			ryosei_country,
 			ryosei_line,
-			river,
+			slope,
+			river1,
+			river2,
 			line1,
 			line2
 		};
@@ -151,30 +153,32 @@ namespace paxs {
 		//xyz_tile2->setMapFilePath(path + U"Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
 		//xyz_tile2->setMapFilePath(U"./SavedMap/gbank_noblank_reclaimed_land/");
 
-		const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-		xyz_tile3->setMapURL(U"");
-		//xyz_tile3->setMapURL(U"https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
-		xyz_tile3->setMapName(U"water");
-		xyz_tile3->setDefaultZ(12);
-		xyz_tile3->setDrawMinZ(11);
-		xyz_tile3->setMapFilePath(U"./SavedMap/BlueRiver/");
+		//const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		//xyz_tile3->setMapURL(U"");
+		////xyz_tile3->setMapURL(U"https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
+		//xyz_tile3->setMapName(U"water");
+		//xyz_tile3->setDefaultZ(12);
+		//xyz_tile3->setDrawMinZ(11);
+		//xyz_tile3->setMapFilePath(U"./SavedMap/BlueRiver/");
 
-		const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-		xyz_tile4->setMapURL(U"");
-		xyz_tile4->setMapName(U"soil");
-		xyz_tile4->setDefaultZ(12);
-		xyz_tile4->setMapFilePath(U"./SavedMap/Soil/soil/");
+		//const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		//xyz_tile4->setMapURL(U"");
+		//xyz_tile4->setMapName(U"soil");
+		//xyz_tile4->setDefaultZ(12);
+		//xyz_tile4->setMapFilePath(U"./SavedMap/Soil/soil/");
 
 		const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
 		xyz_tile_kuni->setMapURL(U"");
 		xyz_tile_kuni->setMapName(U"ColorCodingByProvincesOfJapanWithLakes");
 		xyz_tile_kuni->setDefaultZ(10);
+		xyz_tile_kuni->setDrawMinZ(9);
 		xyz_tile_kuni->setMapFilePath(path + U"Data/Map/XYZTile/ColorCodingByProvincesOfJapan/");
 
 		const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
 		xyz_tile_kuni_line->setMapURL(U"");
 		xyz_tile_kuni_line->setMapName(U"Ryoseikoku");
 		xyz_tile_kuni_line->setDefaultZ(10);
+		xyz_tile_kuni_line->setDrawMinZ(11);
 		xyz_tile_kuni_line->setMapFilePath(path + U"Data/Map/XYZTile/Ryoseikoku/");
 
 		const std::unique_ptr<XYZTile> xyz_tile_soil(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
@@ -184,11 +188,27 @@ namespace paxs {
 		xyz_tile_soil->setDrawMinZ(12);
 		xyz_tile_soil->setMapFilePath(path + U"Data/Map/XYZTile/Soil/Image/Soil/2023/");
 
+		const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile_slope->setMapURL(U"");
+		xyz_tile_slope->setMapName(U"slope");
+		xyz_tile_slope->setMinZ(3);
+		xyz_tile_slope->setMaxZ(12);
+		xyz_tile_slope->setDrawMinZ(3);
+		xyz_tile_slope->setMapFilePath(path + U"Data/Map/XYZTile/Slope/Image/Slope/2023/");
+
 		const std::unique_ptr<XYZTile> xyz_tile_river(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
 		xyz_tile_river->setMapURL(U"");
 		xyz_tile_river->setMapName(U"water");
 		xyz_tile_river->setDefaultZ(12);
+		xyz_tile_river->setDrawMinZ(11);
 		xyz_tile_river->setMapFilePath(path + U"Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/");
+
+		const std::unique_ptr<XYZTile> xyz_tile_river_bw(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		xyz_tile_river_bw->setMapURL(U"");
+		xyz_tile_river_bw->setMapName(U"water");
+		xyz_tile_river_bw->setDefaultZ(12);
+		xyz_tile_river_bw->setDrawMinZ(11);
+		xyz_tile_river_bw->setMapFilePath(path + U"Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW/2023/");
 
 		const std::unique_ptr<XYZTile> xyz_tile_soil_temperature(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
 		xyz_tile_soil_temperature->setMapURL(U"");
@@ -197,12 +217,16 @@ namespace paxs {
 		xyz_tile_soil_temperature->setDrawMaxZ(10);
 		xyz_tile_soil_temperature->setMapFilePath(path + U"Data/Map/XYZTile/Temperature/Image/SoilTemperature/2023/");
 
-		const std::unique_ptr<XYZTile> xyz_tile_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-		xyz_tile_line->setDefaultZ(8);
-		xyz_tile_line->setDrawMinZ(5);
-		const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-		xyz_tile_line2->setDefaultZ(10);
-		xyz_tile_line2->setDrawMinZ(7);
+		//const std::unique_ptr<XYZTile> xyz_tile_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		//xyz_tile_line->setDefaultZ(8);
+		//xyz_tile_line->setDrawMinZ(5);
+		//const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		//xyz_tile_line2->setDefaultZ(10);
+		//xyz_tile_line2->setDrawMinZ(7);
+		const std::unique_ptr<XYZTile> xyz_tile_line3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+		//xyz_tile_line3->setDefaultZ(12);
+		//xyz_tile_line3->setDrawMinZ(12);
+		//xyz_tile_line3->setDrawMaxZ(16);
 
 		const s3d::String map_license_name = U"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.";
 		//const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
@@ -234,7 +258,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
 		// エージェント
-		std::unique_ptr<PlaceNameLocation> agent_location(new(std::nothrow) PlaceNameLocation);
+		std::unique_ptr<AgentLocation> agent_location(new(std::nothrow) AgentLocation);
 		//agent_location->addKofun();
 #endif
 		// 古墳名
@@ -318,12 +342,16 @@ namespace paxs {
 		bool move_forward_in_time = false;
 
 		bool is_agent_update = true; // エージェントの更新をするか
-		paxs::Simulator<int> simlator(
-			path8 + "Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10",
-			paxs::Vector2<int>{861, 350},
-			paxs::Vector2<int>{950, 450}, 10);
-		simlator.init();
-
+#ifdef PAXS_USING_SIMULATOR
+		paxs::Simulator<int> simlator;
+		// 対馬のみ
+		paxs::Vector2<int> start_position = paxs::Vector2<int>{ 879, 406 };
+		paxs::Vector2<int> end_position = paxs::Vector2<int>{ 881, 409 };
+		//paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
+		//paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
+		//simlator.init();
+#endif
+		//return;
 /*##########################################################################################
 
 	ループ開始
@@ -376,15 +404,24 @@ namespace paxs {
 			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
 				xyz_tile_kuni_line->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
 			}
-			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::river)) {
+			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::slope)) {
+				xyz_tile_slope->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
+			}
+			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::river1)) {
 				xyz_tile_river->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
 			}
-				//xyz_tile4->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Original);
-			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
-				xyz_tile_line->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::river2)) {
+				xyz_tile_river_bw->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Z_Original);
 			}
+				//xyz_tile4->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Original);
+			//if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
+			//	xyz_tile_line->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			//}
+			//if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
+			//	xyz_tile_line2->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+			//}
 			if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
-				xyz_tile_line2->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				xyz_tile_line3->update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 			}
 			/*##########################################################################################
 				地図描画関連
@@ -415,16 +452,26 @@ namespace paxs {
 				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
 					xyz_tile_kuni_line->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 				}
-				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::river)) {
+				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::slope)) {
+					xyz_tile_slope->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				}
+				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::river1)) {
 					xyz_tile_river->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+				}
+				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::river2)) {
+					xyz_tile_river_bw->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 				}
 				//xyz_tile3->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 				//xyz_tile4->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
-					xyz_tile_line->drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
-				}
+				//if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
+				//	xyz_tile_line->drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
+				//}
+				//if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
+				//	xyz_tile_line2->drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
+				//}
 				if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
-					xyz_tile_line2->drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
+					xyz_tile_line3->drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
+					xyz_tile_line3->drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 				}
 				// 地図上に描画する画像を描画する
 				//texture.resized(150).drawAt(Scene::Center());
@@ -451,19 +498,20 @@ namespace paxs {
 				if (is_agent_update) {
 					static int step = 0;
 					if (step == 0) {
-						s3d::Print(U"Agent Size:", simlator.getAgents().size());
-						for (int i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
-							s3d::Print(U"Agent[",i,U"]:X" ,simlator.getAgents()[i].getLocation(10,256).x, U", Y", simlator.getAgents()[i].getLocation(10,256).y);
-						}
+						//s3d::Print(U"Agent Size:", simlator.getAgents().size());
+						//for (int i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
+						//	s3d::Print(U"Agent[",i,U"]:X" ,simlator.getAgents()[i].getLocation(10,256).x, U", Y", simlator.getAgents()[i].getLocation(10,256).y);
+						//}
 					}
 					++step;
-					if (step >= 300) {
+					if (step >= 0) {
+					//if (step >= 30) {
 						step = 0;
 						simlator.step();
 					}
-					agent_location->update(simlator.getAgents());
 				}
-;				agent_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
+				//agent_location->update(simlator.getAgents());
+;				agent_location->draw(simlator.getAgents(), start_position, map_view_width, map_view_height, map_view_center_x, map_view_center_y,
 					font[language], font[language]/*en_font*/, pin_font);
 #endif
 			}
@@ -755,13 +803,24 @@ U"II-1",U"II-2",U"II-2/II-3",U"II-3",U"II-4",U"II-5",U"II-6",U"III-1"
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 					s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 60, 590), s3d::Palette::Black);
 			
-
-				if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ 10,60 })) {
+#ifdef PAXS_USING_SIMULATOR
+				if (s3d::SimpleGUI::Button(U"Init", s3d::Vec2{ 10,60 })) {
+					simlator = paxs::Simulator<int>(
+						path8 + "Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10",
+						//paxs::Vector2<int>{861, 350},
+						//paxs::Vector2<int>{950, 450}, 10);
+						start_position,
+						end_position, 10);
+					simlator.init();
+				}
+				if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ 110,60 })) {
 					is_agent_update = true;
 				}
-				if (s3d::SimpleGUI::Button(U"Stop", s3d::Vec2{ 110,60 })) {
+				if (s3d::SimpleGUI::Button(U"Stop", s3d::Vec2{ 210,60 })) {
 					is_agent_update = false;
 				}
+#endif
+
 			
 			}
 		}
