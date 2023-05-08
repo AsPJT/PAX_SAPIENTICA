@@ -42,7 +42,7 @@ enum MapType {
 #include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
 
 // シミュレータを使用する
-#define PAXS_USING_SIMULATOR
+//#define PAXS_USING_SIMULATOR
 
 namespace paxs {
 
@@ -140,7 +140,8 @@ namespace paxs {
 		std::unordered_map<std::string, XYZTile> xyz_tile_list;
 		mapMapInit(xyz_tile_list, path, map_view.get());
 
-		const s3d::String map_license_name = U"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.";
+		const s3d::String map_license_name = U"Maptiles by\n淺野孝利 2023「古墳時代の『常総の内海』水域復原に関する一試論」\n研究代表者 荒井啓汰『埋葬施設からみた常総地域の地域構造』\n特別研究員奨励費報告書 筑波大学大学院 人文社会科学研究科";
+		//const s3d::String map_license_name = U"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.";
 		//const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
 
 		// 地図上に描画する画像の一覧

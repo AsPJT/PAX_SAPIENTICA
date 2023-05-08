@@ -21,6 +21,7 @@ GIS & Archaeological Simulator
 
 # Screenshot
 ![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.6%202023_05_03%2021_57_30.png)
+![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_09%201_00_32.png)
 
 ---
 

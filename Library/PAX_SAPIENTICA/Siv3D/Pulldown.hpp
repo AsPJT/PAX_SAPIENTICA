@@ -179,8 +179,7 @@ namespace paxs {
 		bool is_one_font = false;
 	};
 
-	class MenuBar
-	{
+	class MenuBar {
 	public:
 
 		void add(
