@@ -30,7 +30,7 @@ namespace paxs{
             if(!std::filesystem::exists(setting_path)){
                 std::ofstream writing_file;
                 writing_file.open(setting_path, std::ios::out);
-                std::string writing_text = "name = \nstart_x = \nstart_y = \nx_size = \ny_size = \nz = \nextension = \ninput_path = \noutput_path = ";
+                std::string writing_text = "name = \nstart_x = \nstart_y = \nx_size = \ny_size = \nz = \nextension = \ninput_path = \noutput_path = \nalpha = ";
                 writing_file << writing_text << std::endl;
                 writing_file.close();
                 return false;
@@ -48,15 +48,27 @@ namespace paxs{
             input_path = settings["input_path"] + name + '_' + settings["z"] + '_' + settings["start_x"] + '_' + settings["start_y"] + '_' + settings["x_size"] + '_' + settings["y_size"] + '.' + extension;
             output_path = settings["output_path"];
             path_prefix = output_path + name + '_' + settings["z"] + '_';
+
+            is_alpha = settings["alpha"] == "true";
             return true;
         }
         void segment(){
-            cv::Mat img = cv::imread(input_path);
+            cv::Mat img = cv::imread(input_path, cv::IMREAD_UNCHANGED);
             if(img.empty()){
                 std::cout << "image not found" << std::endl;
                 return;
             }
             std::filesystem::create_directory(output_path);
+            if(is_alpha){
+                for(int x=0;x<x_size;x++){
+                    for(int y=0;y<y_size;y++){
+                        cv::Mat seg = img(cv::Rect(img_size * x, img_size * y, img_size, img_size));
+                        if(isTransparent(seg)) continue;
+                        cv::imwrite(getFilePath(start_x + x, start_y + y), seg);
+                    }
+                }
+                return;
+            }
             for(int x=0;x<x_size;x++){
                 for(int y=0;y<y_size;y++){
                     cv::Mat seg = img(cv::Rect(img_size * x, img_size * y, img_size, img_size));
@@ -69,6 +81,7 @@ namespace paxs{
         int start_y;
         int x_size;
         int y_size;
+        bool is_alpha;
         std::string input_path;
         std::string output_path;
         std::string path_prefix;
@@ -76,6 +89,14 @@ namespace paxs{
 
         std::string getFilePath(int x, int y){
             return path_prefix + std::to_string(x) + '_' + std::to_string(y) + '.' + extension;
+        }
+        bool isTransparent(const cv::Mat& img){
+            for(int y=0;y<img_size;y++){
+                for(int x=0;x<img_size;x++){
+                    if(img.at<cv::Vec4b>(y, x)[3] != 0) return false;
+                }
+            }
+            return true;
         }
     };
 }
