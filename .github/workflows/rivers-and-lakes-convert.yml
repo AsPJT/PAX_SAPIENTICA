@@ -1,0 +1,58 @@
+name: RiversAndLakesConvert
+
+on : [ workflow_dispatch ]
+
+env:
+  BUILD_TYPE: Debug
+  WORK_SPACE: ${{github.workspace}}/Project
+  TARGET: RiversAndLakesConvert
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      deployments: write
+      issues: write
+      packages: write
+      pull-requests: write
+      repository-projects: write
+      security-events: write
+      statuses: write
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+
+    - name: Install opencv
+      run: |
+        sudo apt install libopencv-dev
+        sudo apt install cmake
+
+    - name: Configure CMake
+      run: |
+        mkdir ${{github.workspace}}/build
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}} -G "Unix Makefiles"
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -j 12
+
+    - name: Execution
+      run: |
+        cd ${{env.WORK_SPACE}}/GeographicDataToSimulationGrid/bin/
+        ./${{env.TARGET}}
+
+    - name: Push
+      run: |
+        cd ${{github.workspace}}
+        git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+        git config --global user.name "${GITHUB_ACTOR}"
+        git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        git add .
+        git commit -m "GitHub Actions: ${{env.TARGET}}"
+        git push origin HEAD:${GITHUB_REF}
