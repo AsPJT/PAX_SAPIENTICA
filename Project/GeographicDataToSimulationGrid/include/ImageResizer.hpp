@@ -55,26 +55,15 @@ namespace paxs{
             return true;
         }
         void convertTiles(){
-            if(deviation_z >= 0) return; // TODO: 拡大処理
+            if(deviation_z == 0) return;
             int n = 1 / scale;
             if(start_x % n != 0) start_x -= start_x % n;
             if(start_y % n != 0) start_y -= start_y % n;
 
             for(int y = start_y; y < start_y + y_size; y+=n){
                 for(int x = start_x; x < start_x + x_size; x+=n){
-                    std::vector<std::string> file_paths = getFilePaths(x, y, n);
-                    if(file_paths.empty()) continue;
-                    
-                    std::vector<cv::Mat> input_tiles;
-                    for(const auto& file_path : file_paths){
-                        cv::Mat input_image = cv::imread(file_path, cv::IMREAD_UNCHANGED);
-                        if(input_image.empty()) input_tiles.push_back(cv::Mat(img_size, img_size, CV_8UC4, cv::Scalar(0, 0, 0, 0)));
-                        else input_tiles.push_back(input_image);
-                    }
-
-                    cv::Mat output_image = resizeAndStitchTiles(input_tiles);
-                    std::string output_file_path = output_path + name + '_' + std::to_string(z + deviation_z) + '_' + std::to_string((int)(x * scale)) + '_' + std::to_string((int)(y * scale)) + ".png";
-                    cv::imwrite(output_file_path, output_image);
+                    if(deviation_z > 0) imageEnlargement(x, y, n);
+                    else imageReduction(x, y, n);
                 }
             }
         }
@@ -90,6 +79,44 @@ namespace paxs{
         int deviation_z;
         double scale;
 
+        // 画像拡大
+        void imageEnlargement(const int x, const int y, const int n){
+            std::string file_path = getFilePath(x, y);
+            if(file_path.empty()) return;
+            
+            cv::Mat input_image = cv::imread(file_path, cv::IMREAD_UNCHANGED);
+            if(input_image.empty()) return;
+            
+            cv::Mat resized_image = resizeTile(input_image);
+
+            for(int i=0;i<n;i++){
+                for(int j=0;j<n;j++){
+                    cv::Mat seg = resized_image(cv::Rect(img_size * x, img_size * y, img_size, img_size));
+                    std::string output_file_path = output_path + name + '_' + std::to_string(z + deviation_z) + '_' + std::to_string((int)(x * scale) + i) + '_' + std::to_string((int)(y * scale) + j) + ".png";
+                    cv::imwrite(output_file_path, seg);
+                }
+            }
+        }
+        // 画像縮小
+        void imageReduction(const int x, const int y, const int n){
+            std::vector<std::string> file_paths = getFilePaths(x, y, n);
+            if(file_paths.empty()) return;
+            
+            std::vector<cv::Mat> input_tiles;
+            for(const auto& file_path : file_paths){
+                cv::Mat input_image = cv::imread(file_path, cv::IMREAD_UNCHANGED);
+                if(input_image.empty()) input_tiles.push_back(cv::Mat(img_size, img_size, CV_8UC4, cv::Scalar(0, 0, 0, 0)));
+                else input_tiles.push_back(input_image);
+            }
+            cv::Mat output_image = resizeAndStitchTiles(input_tiles);
+            std::string output_file_path = output_path + name + '_' + std::to_string(z + deviation_z) + '_' + std::to_string((int)(x * scale)) + '_' + std::to_string((int)(y * scale)) + ".png";
+            cv::imwrite(output_file_path, output_image);
+        }
+        std::string getFilePath(const int x, const int y){
+            std::string file_path = input_path + name + '_' + std::to_string(z) + '_' + std::to_string(x) + '_' + std::to_string(y) + ".png";
+            if(!std::filesystem::exists(file_path)) return "";
+            return file_path;
+        }
         std::vector<std::string> getFilePaths(const int x, const int y, const int n) {
             std::vector<std::string> file_paths;
             for (int j = 0; j < n; j++) {
