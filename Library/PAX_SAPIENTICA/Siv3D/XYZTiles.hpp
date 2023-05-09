@@ -35,6 +35,7 @@ namespace paxs {
 		// XYZ タイルの画像の情報を保持
 		std::vector<s3d::Texture> texture_list;
 
+		XYZTile() = default;
 		XYZTile(const double map_view_width,
 			const double map_view_height,
 			const double map_view_center_x,
