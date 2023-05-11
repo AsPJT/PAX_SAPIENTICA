@@ -7,3 +7,4 @@ z = 12
 extension = png
 input_path = ../../../Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/12/
 output_path = ../../../Data/Map/XYZTile/Union/
+alpha = false

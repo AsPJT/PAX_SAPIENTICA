@@ -7,3 +7,4 @@ z = 10
 extension = png
 input_path = ../../../Data/Map/XYZTile/Union/
 output_path = ../../../Data/Map/XYZTile/Ryoseikoku/10/
+alpha = true

@@ -32,7 +32,7 @@ namespace paxs{
             if(!std::filesystem::exists(setting_path)){
                 std::ofstream writing_file;
                 writing_file.open(setting_path, std::ios::out);
-                std::string writing_text = "name = \nstart_x = \nstart_y = \nx_size = \ny_size = \nz = \nextension = \ninput_path = \noutput_path = ";
+                std::string writing_text = "name = \nstart_x = \nstart_y = \nx_size = \ny_size = \nz = \nextension = \ninput_path = \noutput_path = \nalpha = ";
                 writing_file << writing_text << std::endl;
                 writing_file.close();
                 return false;
@@ -51,14 +51,9 @@ namespace paxs{
             output_path = settings["output_path"] + name + '_' + settings["z"] + '_' + settings["start_x"] + '_' + settings["start_y"] + '_' + settings["x_size"] + '_' + settings["y_size"] + '.' + extension;
             std::filesystem::create_directory(settings["output_path"]);
 
-            white_img = cv::Mat::zeros(img_size, img_size, CV_8UC3);
-            for (int j = 0; j < img_size; j++) {
-                for (int i = 0; i < img_size; i++) {
-                    white_img.at<cv::Vec3b>(j, i)[0] = 255; //青
-                    white_img.at<cv::Vec3b>(j, i)[1] = 255; //緑
-                    white_img.at<cv::Vec3b>(j, i)[2] = 255; //赤
-                }
-            }
+            is_alpha = settings["alpha"] == "true";
+
+            zero_img = cv::Mat::zeros(img_size, img_size, is_alpha ?  CV_8UC4 : CV_8UC3);
             return true;
         }
         void combine(){
@@ -74,25 +69,32 @@ namespace paxs{
         int start_y;
         int x_size;
         int y_size;
+        bool is_alpha;
         std::string path_prefix;
         std::string output_path;
         std::string extension;
-        cv::Mat white_img;
+        cv::Mat zero_img;
 
         cv::Mat vCombine(const int x){
-            cv::Mat combined_img = white_img;
+            cv::Mat combined_img = zero_img.clone();
             std::string path = getFilePath(x, start_y);
             if(std::filesystem::exists(path)){
-		        combined_img = cv::imread(path);
+		        combined_img = cv::imread(path, cv::IMREAD_UNCHANGED);
             }
             for(int y=1;y<y_size;y++){
                 std::string path = getFilePath(x, start_y + y);
                 if(std::filesystem::exists(path)){
-			        cv::Mat img = cv::imread(path);
-                    cv::vconcat(combined_img, img, combined_img);
+			        cv::Mat img = cv::imread(path, cv::IMREAD_UNCHANGED);
+                    if(img.size() == zero_img.size() && img.type() == zero_img.type()){
+                        cv::vconcat(combined_img, img, combined_img);
+                    } else {
+                        std::cerr << "Error: Input image size or type does not match at (" << x << ", " << y << "). Skipping this image." << std::endl;
+                        std::cerr << "Expected size: " << zero_img.size() << ", type: " << zero_img.type() << std::endl;
+                        std::cerr << "Actual size: " << img.size() << ", type: " << img.type() << std::endl;
+                    }
                     continue;
                 }
-                cv::vconcat(combined_img, white_img, combined_img);
+                cv::vconcat(combined_img, zero_img, combined_img);
             }
             return combined_img;
         }
