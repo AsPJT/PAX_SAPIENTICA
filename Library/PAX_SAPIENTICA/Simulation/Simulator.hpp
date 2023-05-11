@@ -28,11 +28,11 @@ namespace paxs {
         using Agent = paxs::Agent<T>;
 
         Simulator() = default;
-        Simulator(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z) :
-            environment(land_file_path, start_position, end_position, z) {}
+        Simulator(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+            environment(land_file_path, start_position, end_position, z), gen(seed) {}
         void init() {
             std::cout << "Initializing..." << std::endl;
-
+            clearAgents();
             randomizeAgents(100);
         }
         void run(const int step_count) {
@@ -67,6 +67,10 @@ namespace paxs {
         std::uniform_int_distribution<> gender_dist{0, 1};
         std::uniform_int_distribution<> life_exp_dist{50, 100};
         std::uniform_int_distribution<> rand{-1, 1};
+
+        void clearAgents() {
+            agents.clear();
+        }
 
         void randomizeAgents(const int agent_count) {
             const Vector2& offset = environment.getEndPosition() - environment.getStartPosition();
