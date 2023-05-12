@@ -107,7 +107,7 @@ namespace paxs{
                 if(size < 6)
                     for(int i = 0;i < 6 - size;i++)
                         color.insert(color.begin(), '0');
-                paxs::Rgb rgb = paxs::Helper::hexToRgb("color");
+                paxs::Rgb rgb = paxs::Helper::hexToRgb(color);
                 std::string s_rgb = std::to_string(rgb.red) + ',' + std::to_string(rgb.green) + ',' + std::to_string(rgb.blue);
                 color_map[std::stoi(s_rgb)] = std::stoi(row[0]);
             }
