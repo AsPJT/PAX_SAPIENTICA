@@ -104,6 +104,17 @@ namespace paxs {
 
 		const s3d::Texture texture_tlt{ path + U"Image/Logo/TitleLogoText2.svg" };
 		const s3d::Texture texture_github{ path + U"Data/MenuIcon/github.svg" };
+		const s3d::Texture texture_d_l{ path + U"Data/MenuIcon/d_l.svg" };
+		const s3d::Texture texture_d_r{ path + U"Data/MenuIcon/d_r.svg" };
+		const s3d::Texture texture_m_l{ path + U"Data/MenuIcon/m_l.svg" };
+		const s3d::Texture texture_m_r{ path + U"Data/MenuIcon/m_r.svg" };
+		const s3d::Texture texture_y_l{ path + U"Data/MenuIcon/y_l.svg" };
+		const s3d::Texture texture_y_r{ path + U"Data/MenuIcon/y_r.svg" };
+		const s3d::Texture texture_c_l{ path + U"Data/MenuIcon/c_l.svg" };
+		const s3d::Texture texture_c_r{ path + U"Data/MenuIcon/c_r.svg" };
+		const s3d::Texture texture_stop{ path + U"Data/MenuIcon/stop.svg" };
+		const s3d::Texture texture_playback{ path + U"Data/MenuIcon/playback.svg" };
+		const s3d::Texture texture_reverse_playback{ path + U"Data/MenuIcon/reverse-playback.svg" };
 
 		// 暦の種類
 		enum class KoyomiEnum {
@@ -140,8 +151,8 @@ namespace paxs {
 		std::unordered_map<std::string, XYZTile> xyz_tile_list;
 		mapMapInit(xyz_tile_list, path, map_view.get());
 
-		const s3d::String map_license_name = U"Maptiles by\n淺野孝利 2023「古墳時代の『常総の内海』水域復原に関する一試論」\n研究代表者 荒井啓汰『埋葬施設からみた常総地域の地域構造』\n特別研究員奨励費報告書 筑波大学大学院 人文社会科学研究科";
-		//const s3d::String map_license_name = U"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.";
+		//const s3d::String map_license_name = U"Maptiles by\n淺野孝利 2023「古墳時代の『常総の内海』水域復原に関する一試論」\n研究代表者 荒井啓汰『埋葬施設からみた常総地域の地域構造』\n特別研究員奨励費報告書 筑波大学大学院 人文社会科学研究科";
+		const s3d::String map_license_name = U"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.";
 		//const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
 
 		// 地図上に描画する画像の一覧
@@ -241,6 +252,7 @@ namespace paxs {
 
 		paxs::Graphics3DModel g3d_model;
 		bool move_forward_in_time = false;
+		bool go_back_in_time = false;
 
 		bool is_agent_update = true; // エージェントの更新をするか
 #ifdef PAXS_USING_SIMULATOR
@@ -397,16 +409,18 @@ namespace paxs {
 		static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 		++count;
 			if(move_forward_in_time) jdn += 10;
+			else if(go_back_in_time) jdn -= 10;
 		//if (count >= 0) {
 		if (count >= 30) {
 			count = 0;
 			if (move_forward_in_time) ++jdn; // ユリウス日を繰り上げ（次の日にする）
+			else if (go_back_in_time) ++jdn; // ユリウス日を繰り上げ（次の日にする）
 		}
 
 		if (menu_bar.getPulldown(MenuBarType::view).getIsItems(0)) {
 
 			// 暦表示の範囲に白背景を追加
-				s3d::RoundRect{ s3d::Scene::Width() - 375,koyomi_font_y - 5,360,610, 10 }.draw(s3d::ColorF{1,1,1,0.8}/*s3d::Palette::White*/);
+			s3d::RoundRect{ s3d::Scene::Width() - 375,koyomi_font_y - 5,360,610, 10 }.draw(s3d::ColorF{ 1,1,1,0.8 }/*s3d::Palette::White*/);
 			//s3d::Rect{ s3d::Scene::Width() - 400,0,400,s3d::Scene::Height() }.draw(s3d::Palette::White);
 			//s3d::Rect{ 0,0,Scene::Width(),150}.draw(s3d::Palette::White);
 
@@ -451,30 +465,79 @@ namespace paxs {
 						), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 				}
 			}
-			if (s3d::SimpleGUI::Button(U"-50Y", s3d::Vec2{ s3d::Scene::Width() - 375,koyomi_font_y + 110 })) {
-				jdn -= (3650 * 5);
-			}
-			if (s3d::SimpleGUI::Button(U"+50Y", s3d::Vec2{ s3d::Scene::Width() - 285,koyomi_font_y + 110 })) {
-				jdn += (3650 * 5);
-			}
-			if (s3d::SimpleGUI::Button(U"-10Y", s3d::Vec2{ s3d::Scene::Width() - 195,koyomi_font_y + 110 })) {
-				jdn -= (3650 * 1);
-			}
-			if (s3d::SimpleGUI::Button(U"+10Y", s3d::Vec2{ s3d::Scene::Width() - 105,koyomi_font_y + 110 })) {
-				jdn += (3650 * 1);
-			}
-			if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ s3d::Scene::Width() - 375,koyomi_font_y + 160 })) {
-				move_forward_in_time = true;
-			}
-			if (s3d::SimpleGUI::Button(U"Stop", s3d::Vec2{ s3d::Scene::Width() - 285,koyomi_font_y + 160 })) {
+			const int time_icon_size = 30; // 時間操作アイコンの大きさ
+			const int icon_const_start_x = 350;
+			int icon_start_x = icon_const_start_x;
+			int icon_start_y = 110;
+			const int icon_move_x = int(time_icon_size * 1.5);
+
+			texture_reverse_playback.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
 				move_forward_in_time = false;
+				go_back_in_time = true; // 逆再生
 			}
-			if (s3d::SimpleGUI::Button(U"-2C", s3d::Vec2{ s3d::Scene::Width() - 195,koyomi_font_y + 160 })) {
-				jdn -= (3650 * 20);
+			//if (s3d::SimpleGUI::Button(U"Stop", s3d::Vec2{ s3d::Scene::Width() - 285,koyomi_font_y + icon_start_y })) {
+			icon_start_x -= icon_move_x;
+			texture_stop.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				move_forward_in_time = false; // 一時停止
+				go_back_in_time = false;
 			}
-			if (s3d::SimpleGUI::Button(U"+2C", s3d::Vec2{ s3d::Scene::Width() - 105,koyomi_font_y + 160 })) {
-				jdn += (3650 * 20);
+			//if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ s3d::Scene::Width() - 375,koyomi_font_y + icon_start_y })) {
+			icon_start_x -= icon_move_x;
+			texture_playback.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				move_forward_in_time = true; // 再生
+				go_back_in_time = false;
 			}
+
+			icon_start_y += 50;
+			icon_start_x = icon_const_start_x;
+
+			texture_d_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				jdn -= 1;
+			}
+			icon_start_x -= icon_move_x;
+			texture_m_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				jdn -= 30;
+			}
+			icon_start_x -= icon_move_x;
+			texture_y_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				jdn -= 365;
+			}
+			//if (s3d::SimpleGUI::Button(U"-C", s3d::Vec2{ s3d::Scene::Width() - 195,koyomi_font_y + icon_start_y })) {
+			icon_start_x -= icon_move_x;
+			texture_c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				jdn -= (365 * 100);
+			}
+			icon_start_y += 50;
+			icon_start_x = icon_const_start_x;
+
+			texture_d_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				jdn += 1;
+			}
+			icon_start_x -= icon_move_x;
+			texture_m_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				jdn += 30;
+			}
+			icon_start_x -= icon_move_x;
+			texture_y_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				jdn += 365;
+			}
+			//if (s3d::SimpleGUI::Button(U"+C", s3d::Vec2{ s3d::Scene::Width() - 105,koyomi_font_y + icon_start_y })) {
+			icon_start_x -= icon_move_x;
+			texture_c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+			if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				jdn += (365 * 100);
+			}
+
 		}
 
 		//時代区分を選択するラジオボタン
