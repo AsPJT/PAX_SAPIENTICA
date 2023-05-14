@@ -24,10 +24,10 @@ jobs:
 
     - name: Install opencv
       run: |
-        sudo apt install libopencv-dev
-        sudo apt install libsfml-dev
-        sudo apt install cmake
-        sudo apt install g++
+        sudo apt-get install libopencv-dev
+        sudo apt-get install libsfml-dev
+        sudo apt-get install cmake
+        sudo apt-get install g++
 
     - name: Configure CMake
       run: |
