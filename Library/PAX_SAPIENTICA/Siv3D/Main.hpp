@@ -47,6 +47,7 @@ enum MapType {
 namespace paxs {
 
 	void startMain() {
+		s3d::Window::SetStyle(s3d::WindowStyle::Frameless);
 		// 画面サイズを変更
 		s3d::Window::Resize(1280, 720);
 		// 初期化とロゴの表示
@@ -217,9 +218,9 @@ namespace paxs {
 
 		// 暦のフォントサイズ
 		constexpr int koyomi_font_size = 18;
-		const int koyomi_font_x = s3d::Scene::Width() - 240;//220;
+		int koyomi_font_x = s3d::Scene::Width() - 240;//220;
 		constexpr int koyomi_font_y = 50;
-		const int koyomi_font_en_x = s3d::Scene::Width() - 240;//820;
+		int koyomi_font_en_x = s3d::Scene::Width() - 240;//820;
 		constexpr int koyomi_font_en_y = 50;
 		// 通常のフォントを作成 | Create a new font
 		//const s3d::Font koyomi_font{ s3d::FontMethod::SDF, koyomi_font_size /*, Typeface::Bold*/
@@ -247,7 +248,8 @@ namespace paxs {
 		const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
 
 		// 背景色を指定 (s3d::Color{ 180, 154, 100 }); // 茶色 (s3d::Color{ 110, 146, 161 }); // 濁った青
-		s3d::Scene::SetBackground(s3d::Color{ 140, 180, 250 }); // 青
+		s3d::Scene::SetBackground(s3d::Color{ 255, 255, 255 }); // 青
+		//s3d::Scene::SetBackground(s3d::Color{ 140, 180, 250 }); // 青
 		jdn += 2000;
 
 		paxs::Graphics3DModel g3d_model;
@@ -265,6 +267,15 @@ namespace paxs {
 		paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
 		//simlator.init();
 #endif
+
+		// 画面サイズを戻す（一次的）
+		//s3d::Window::Resize(1280, 720);
+
+		int old_width = s3d::Scene::Width();
+		int old_height = s3d::Scene::Height();
+
+		//s3d::Window::SetStyle(s3d::WindowStyle::Sizable);
+		bool first_update = false;
 		//return;
 /*##########################################################################################
 
@@ -278,6 +289,21 @@ namespace paxs {
 				更新処理関連
 			##########################################################################################*/
 
+			// 画面サイズの変更に合わせて地図の幅を変える
+			if (old_width != s3d::Scene::Width()) {
+				map_view->setWidth(s3d::Scene::Width() * map_view->getWidth() / old_width);
+				map_view->setHeight(map_view->getWidth() / double(s3d::Scene::Width()) * double(s3d::Scene::Height()));
+			}
+			if (old_height != s3d::Scene::Height()) {
+				map_view->setHeight(map_view->getWidth() / double(s3d::Scene::Width()) * double(s3d::Scene::Height()));
+			}
+
+			old_width = s3d::Scene::Width();
+			old_height = s3d::Scene::Height();
+
+			koyomi_font_x = s3d::Scene::Width() - 240;//220;
+			koyomi_font_en_x = s3d::Scene::Width() - 240;//820;
+
 			// キーボード入力を更新
 			map_view->update();
 
@@ -288,6 +314,7 @@ namespace paxs {
 			const double map_view_center_lat = std::asin(std::tanh(map_view_center_y / 180.0 * paxs::pi)) / (paxs::pi) * 180.0;
 
 			// プルダウンを更新
+			pulldown.setPos(s3d::Point{ s3d::Scene::Width() - pulldown.getRect().w, 0 });
 			pulldown.update(0);
 			const std::size_t language = pulldown.getIndex();
 			menu_bar.update(language);
@@ -408,8 +435,8 @@ namespace paxs {
 
 		static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 		++count;
-			if(move_forward_in_time) jdn += 10;
-			else if(go_back_in_time) jdn -= 10;
+			if(move_forward_in_time) jdn += 1000;
+			else if(go_back_in_time) jdn -= 1000;
 		//if (count >= 0) {
 		if (count >= 30) {
 			count = 0;
@@ -588,6 +615,11 @@ namespace paxs {
 			//).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 420), s3d::Palette::Black);
 			//font[language](s3d::ToString(xyz_tile2->getZNum())
 			//).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 450), s3d::Palette::Black);
+			
+			// ユリウス通日
+			font[language](s3d::ToString(jdn)
+				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 190), s3d::Palette::Black);
+
 		}
 		if (menu_bar.getPulldown(MenuBarType::view).getIsItems(2)) {
 			//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
@@ -621,6 +653,7 @@ namespace paxs {
 			s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
 		}
 
+		if (menu_bar.getPulldown(MenuBarType::view).getIsItems(2)) {
 		std::vector<s3d::String> sueki_nakamura_1993 = {
 			U"須恵器 中村編年(1993)",
 			U"Sue pottery Nakamura(1993)",
@@ -647,9 +680,9 @@ namespace paxs {
 			s3d::String sueki_nakamura = U"";
 			s3d::String sueki_tanabe = U"";
 
-				static std::array<int,18> sueki_year = { {
-				380,390,410,430,440,450,460,470,490,500,520,530,550,560,590,620,645,670
-				} };
+			static std::array<int, 18> sueki_year = { {
+			380,390,410,430,440,450,460,470,490,500,520,530,550,560,590,620,645,670
+			} };
 
 			static std::array<s3d::String, 18> sueki_name = { {
 U"",U"TG232",U"TK73",U"TK216",U"ON46",U"ON46/TK208",U"TK208",U"TK23",U"TK23/TK47",U"TK47",
@@ -674,7 +707,7 @@ U"II-1",U"II-2",U"II-2/II-3",U"II-3",U"II-4",U"II-5",U"II-6",U"III-1"
 			font[language](sueki_nakamura
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 					s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 60, 590), s3d::Palette::Black);
-
+		}
 #ifdef PAXS_USING_SIMULATOR
 			if (s3d::SimpleGUI::Button(U"Init", s3d::Vec2{ 10,60 })) {
 				simlator = paxs::Simulator<int>(
@@ -695,7 +728,14 @@ U"II-1",U"II-2",U"II-2/II-3",U"II-3",U"II-4",U"II-5",U"II-6",U"III-1"
 
 
 		}
+		if (!first_update) {
+			first_update = true;
+			s3d::Window::SetStyle(s3d::WindowStyle::Sizable);
+			s3d::Window::Resize(1280, 720);
+		}
 	}
+
+
 
 }
 }
