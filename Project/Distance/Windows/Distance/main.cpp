@@ -131,16 +131,68 @@ StringXY yzToDistanceString(const double lon, const int y, const int z) {
 }
 #include <fstream>
 
+// 昔の main
+//int main() {
+//
+//	double sx = (215.0 - 2.0) / 256;
+//	double ex = (233.0 + 3.0) / 256;
+//
+//	double ey = 1.0 - (91.0 - 2.0) / 256;
+//	double sy = 1.0 - (110.0 + 3.0) / 256;
+//
+//
+//	for (int z = 16; z < 17; ++z) {
+//		int z_square_of_2 = int(std::pow(2, z));
+//
+//		const int zsx = int(sx * z_square_of_2);
+//		const int zex = int(ex * z_square_of_2);
+//		const int zsy = int(sy * z_square_of_2);
+//		const int zey = int(ey * z_square_of_2);
+//
+//		std::ofstream ofs_x("in_line/x" + std::to_string(z) + ".in");
+//		//std::ofstream ofs_y("in_line/y" + std::to_string(z) + ".in");
+//		std::ofstream ofs_x_txt("in_line/x" + std::to_string(z) + ".txt");
+//		//std::ofstream ofs_y_txt("in_line/y" + std::to_string(z) + ".txt");
+//
+//		//int x = 127;
+//		//int y = 127;
+//
+//		ofs_x_txt << "Z\tX\tY\tString\n";
+//		//ofs_y_txt << "Z\tX\tY\tString\n";
+//
+//		//for (int x = zsx; x < z_square_of_2 && x < zex; ++x) {
+//		int x = int((135.0 + 180.0)/360.0 * double(z_square_of_2));
+//			//for (int y = 0; y < z_square_of_2; ++y) {
+//			for (int y = z_square_of_2 / 2; y < z_square_of_2 * 9 /10; ++y) {
+//			//for (int y = zsy; y < z_square_of_2 && y < zey; ++y) {
+//				StringXY str = xyzToDistanceString(x, y, z);
+//
+//				const int ry = (z_square_of_2 - 1) - y;
+//
+//				//StringXY str = xyzToDistanceString(x, y, z);
+//				ofs_x << str.x << '\n';
+//				//ofs_y << str.y << '\n';
+//				ofs_x_txt << z << '\t' << x << '\t' << ry << '\t' << str.x << '\n';
+//				//ofs_y_txt << z << '\t' << x << '\t' << ry << '\t' << str.x << '\n';
+//			}
+//		//}
+//	}
+//
+//
+//}
+
 int main() {
 
-	double sx = (215.0 - 2.0) / 256;
-	double ex = (233.0 + 3.0) / 256;
+	double sx = 0.0 / 256.0;
+	double ex = 256.0 / 256.0;
 
-	double ey = 1.0 - (91.0 - 2.0) / 256;
-	double sy = 1.0 - (110.0 + 3.0) / 256;
+	double ey = 1.0 - 0.0 / 256;
+	double sy = 1.0 - 256.0 / 256;
 
 
-	for (int z = 16; z < 17; ++z) {
+	for (int z = 8; z < 17; ++z) {
+		int num = 0;
+		int count = 0;
 		int z_square_of_2 = int(std::pow(2, z));
 
 		const int zsx = int(sx * z_square_of_2);
@@ -148,34 +200,37 @@ int main() {
 		const int zsy = int(sy * z_square_of_2);
 		const int zey = int(ey * z_square_of_2);
 
-		std::ofstream ofs_x("in_line/x" + std::to_string(z) + ".in");
-		//std::ofstream ofs_y("in_line/y" + std::to_string(z) + ".in");
-		std::ofstream ofs_x_txt("in_line/x" + std::to_string(z) + ".txt");
-		//std::ofstream ofs_y_txt("in_line/y" + std::to_string(z) + ".txt");
+		std::ofstream ofs_x("in/x" + std::to_string(z) + "_" + std::to_string(num) + ".in");
+		std::ofstream ofs_y("in/y" + std::to_string(z) + "_" + std::to_string(num) + ".in");
+		std::ofstream ofs_x_txt("in_txt/x" + std::to_string(z) + ".txt");
+		std::ofstream ofs_y_txt("in_txt/y" + std::to_string(z) + ".txt");
 
 		//int x = 127;
 		//int y = 127;
 
 		ofs_x_txt << "Z\tX\tY\tString\n";
-		//ofs_y_txt << "Z\tX\tY\tString\n";
+		ofs_y_txt << "Z\tX\tY\tString\n";
 
 		//for (int x = zsx; x < z_square_of_2 && x < zex; ++x) {
 		int x = int((135.0 + 180.0)/360.0 * double(z_square_of_2));
 			//for (int y = 0; y < z_square_of_2; ++y) {
-			for (int y = z_square_of_2 / 2; y < z_square_of_2 * 9 /10; ++y) {
-			//for (int y = zsy; y < z_square_of_2 && y < zey; ++y) {
-				StringXY str = xyzToDistanceString(x, y, z);
+		for (int y = zsy; y < z_square_of_2 && y < zey; ++y) {
+			StringXY str = xyzToDistanceString(x, y, z);
 
-				const int ry = (z_square_of_2 - 1) - y;
+			const int ry = (z_square_of_2 - 1) - y;
 
-				//StringXY str = xyzToDistanceString(x, y, z);
-				ofs_x << str.x << '\n';
-				//ofs_y << str.y << '\n';
-				ofs_x_txt << z << '\t' << x << '\t' << ry << '\t' << str.x << '\n';
-				//ofs_y_txt << z << '\t' << x << '\t' << ry << '\t' << str.x << '\n';
+			ofs_x << str.x << '\n';
+			ofs_y << str.y << '\n';
+			ofs_x_txt << z << '\t' << x << '\t' << ry << '\t' << str.x << '\n';
+			ofs_y_txt << z << '\t' << x << '\t' << ry << '\t' << str.x << '\n';
+			++count;
+			if (count >= 16384) {
+				count = 0;
+				++num;
+				ofs_x = std::ofstream("in/x" + std::to_string(z) + "_" + std::to_string(num) + ".in");
+				ofs_y = std::ofstream("in/y" + std::to_string(z) + "_" + std::to_string(num) + ".in");
 			}
+		}
 		//}
 	}
-
-
 }
