@@ -47,9 +47,6 @@ enum MapType {
 namespace paxs {
 
 	void startMain() {
-		s3d::Window::SetStyle(s3d::WindowStyle::Frameless);
-		// 画面サイズを変更
-		s3d::Window::Resize(1280, 720);
 		// 初期化とロゴの表示
 		paxs::initLogo();
 
@@ -57,21 +54,58 @@ namespace paxs {
 		const std::string path8 = "./../../../../../";
 
 		const std::vector<s3d::Font> font_pulldown = {
-			{s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
-			{s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
-		{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") }
+			/* 英語 */{s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* 日本語 */{s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* 中国語 */{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
+			/* 中国語 */{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
+			/* 韓国語 */{ s3d::FontMethod::SDF, 16,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") },
+			/* スペイン語 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* アラビア語 */{ s3d::FontMethod::SDF, 16, (U"engine/font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf") },
+			/* アラビア語 */{ s3d::FontMethod::SDF, 16, (U"engine/font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{ s3d::FontMethod::SDF, 16, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") }
 		};
 		const std::vector<s3d::Font> font = {
-			{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
-			{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
-		{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") }
+			/* 英語 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf")},
+			/* 日本語 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* 中国語 */{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
+			/* 中国語 */{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
+			/* 韓国語 */{ s3d::FontMethod::SDF, 18,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") },
+			/* スペイン語 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* アラビア語 */{s3d::FontMethod::SDF, 18, (U"engine/font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf") },
+			/* アラビア語 */{s3d::FontMethod::SDF, 18, (U"engine/font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") }
 		};
 		const std::vector<std::vector<s3d::String>> items_pulldown = {
-			{U"日本語"},{U"English"},{U"繁體中文"},{U"简体中文"},{U"한국어"}
+			{U"English"},{U"日本語"},{U"繁體中文"},{U"简体中文"},{U"한국어"},
+			{U"Español"},{U"Português"},{U"Deutsch"},{U"Français"},{U"Italiano"},
+			{U"Türkçe"},{U"Język polski"},{U"Ελληνικά"},{U"Nederlands"},{U"Čeština"},{U"Українська"},
+			{U"Русский язык"},{U"Bahasa Indonesia"},{U"فارسی"},  {U"اللغة العربية"}
 		};
 
 		paxs::Language language_text(path8 + "Data/Language/Text.txt");
@@ -80,9 +114,19 @@ namespace paxs {
 		const std::size_t menu_bar_view_pulldown_index = language_text.findStart("> menu_bar_view");
 		const std::size_t menu_bar_calendar_pulldown_index = language_text.findStart("> menu_bar_calendar");
 		const std::size_t menu_bar_map_pulldown_index = language_text.findStart("> menu_bar_map");
+
+		const std::size_t sueki_nakamura_index = language_text.findStart("sueki_nakamura");
+		const std::size_t sueki_tanabe_index = language_text.findStart("sueki_tanabe");
+
+
+		const std::size_t map_view_width_str_index = language_text.findStart("debug_magnification_power");
+		const std::size_t map_view_center_x_str_index = language_text.findStart("debug_mercator_longitude");
+		const std::size_t map_view_center_y_str_index = language_text.findStart("debug_mercator_latitude");
+		const std::size_t map_view_center_lat_str_index = language_text.findStart("debug_latitude");
+		const std::size_t xyz_tile_z_str_index = language_text.findStart("debug_xyz_tiles_z");
 		//const std::size_t language_pulldown_index = language_text.findStart("> language");
 
-		paxs::Pulldown pulldown(items_pulldown, 0, font_pulldown, s3d::Point{ 3000, 0 }, PulldownType::Zero, true);
+		paxs::Pulldown pulldown(items_pulldown, 0, 0, font_pulldown, s3d::Point{ 3000, 0 }, PulldownType::Zero, true);
 		pulldown.setPos(s3d::Point{ s3d::Scene::Width() - pulldown.getRect().w, 0 });
 
 
@@ -97,11 +141,11 @@ namespace paxs {
 		const std::vector<s3d::Font>& font_menu_bar = font_pulldown;
 
 		paxs::MenuBar menu_bar;
-		menu_bar.add(language_text.get(), menu_bar_file_pulldown_index + 1, font_menu_bar);
-		menu_bar.add(language_text.get(), menu_bar_edit_pulldown_index + 1, font_menu_bar);
-		menu_bar.add(language_text.get(), menu_bar_view_pulldown_index + 1, font_menu_bar);
-		menu_bar.add(language_text.get(), menu_bar_calendar_pulldown_index + 1, font_menu_bar);
-		menu_bar.add(language_text.get(), menu_bar_map_pulldown_index + 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_file_pulldown_index + 1, 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_edit_pulldown_index + 1, 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_view_pulldown_index + 1, 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_calendar_pulldown_index + 1, 1, font_menu_bar);
+		menu_bar.add(language_text.get(), menu_bar_map_pulldown_index + 1, 1, font_menu_bar);
 
 		const s3d::Texture texture_tlt{ path + U"Image/Logo/TitleLogoText2.svg" };
 		const s3d::Texture texture_github{ path + U"Data/MenuIcon/github.svg" };
@@ -127,13 +171,13 @@ namespace paxs {
 		// 各暦の日付情報を初期化
 		std::array<OutputDate, 3> date_list = {
 			OutputDate{
-				std::vector<s3d::String>{U"",U"Japanese cal.",U"Japanese cal.",U"Japanese cal.",U"Japanese cal."}
+				language_text.getFindStart("calendar_japan")
 		,paxs::Date(),false},
 			OutputDate{
-			std::vector<s3d::String>{U"グレゴリオ暦",U"Gregorian cal.",U"公曆",U"公历",U"그레고리력"}
+			language_text.getFindStart("calendar_gregorian")
 		,paxs::Date(),false },
 			OutputDate{
-			std::vector<s3d::String>{U"ユリウス暦",U"Julian cal.",U"儒略曆",U"儒略历",U"율리우스력" }
+			language_text.getFindStart("calendar_julian")
 		, paxs::Date(), false
 	}
 		};
@@ -218,9 +262,9 @@ namespace paxs {
 
 		// 暦のフォントサイズ
 		constexpr int koyomi_font_size = 18;
-		int koyomi_font_x = s3d::Scene::Width() - 240;//220;
+		int koyomi_font_x = s3d::Scene::Width() - 200;//220;
 		constexpr int koyomi_font_y = 50;
-		int koyomi_font_en_x = s3d::Scene::Width() - 240;//820;
+		int koyomi_font_en_x = s3d::Scene::Width() - 200;//820;
 		constexpr int koyomi_font_en_y = 50;
 		// 通常のフォントを作成 | Create a new font
 		//const s3d::Font koyomi_font{ s3d::FontMethod::SDF, koyomi_font_size /*, Typeface::Bold*/
@@ -231,7 +275,24 @@ namespace paxs {
 			{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
 		{ koyomi_font_size,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
 		{ koyomi_font_size,(U"engine/font/noto-sans-sc/NotoSansSC-Regular.otf") },
-		{ koyomi_font_size,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") }
+		{ koyomi_font_size,(U"engine/font/noto-sans-kr/NotoSansKR-Regular.otf") },
+		/* スペイン語 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+		/* その他 */{koyomi_font_size, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+		/* その他 */{koyomi_font_size, (U"engine/font/noto-sans/NotoSans-Regular.ttf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* アラビア語 */{koyomi_font_size, (U"engine/font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf") },
+		/* アラビア語 */{koyomi_font_size, (U"engine/font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
+		/* その他 */{koyomi_font_size, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") }
 		};
 
 		const s3d::Font license_font{ s3d::FontMethod::SDF, 14 /*, Typeface::Bold*/
@@ -328,6 +389,11 @@ namespace paxs {
 			texture_location->update(map_view_center_x, map_view_center_y, map_view_width, map_view_height);
 			//xyz_tile3"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 
+#ifdef PAXS_USING_SIMULATOR
+			agent_location->draw(simlator.getAgents(), start_position, map_view_width, map_view_height, map_view_center_x, map_view_center_y,
+				font[language], font[language]/*en_font*/, pin_font);
+#endif
+
 			// 線の描画
 			for (int i = 0; i < route2.size(); ++i) {
 				route2[i] = s3d::Vec2(
@@ -342,27 +408,27 @@ namespace paxs {
 			place_name_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
 				font[language], font[language]/*en_font*/, pin_font);
 
-#ifdef PAXS_USING_SIMULATOR
-			// エージェント機能テスト
-			if (is_agent_update) {
-				static int step = 0;
-				if (step == 0) {
-					//s3d::Print(U"Agent Size:", simlator.getAgents().size());
-					//for (int i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
-					//	s3d::Print(U"Agent[",i,U"]:X" ,simlator.getAgents()[i].getLocation(10,256).x, U", Y", simlator.getAgents()[i].getLocation(10,256).y);
-					//}
-				}
-				++step;
-				if (step >= 0) {
-					//if (step >= 30) {
-					step = 0;
-					simlator.step();
-				}
-			}
-			//agent_location->update(simlator.getAgents());
-			;				agent_location->draw(simlator.getAgents(), start_position, map_view_width, map_view_height, map_view_center_x, map_view_center_y,
-				font[language], font[language]/*en_font*/, pin_font);
-#endif
+//#ifdef PAXS_USING_SIMULATOR
+//			// エージェント機能テスト
+//			if (is_agent_update) {
+//				static int step = 0;
+//				if (step == 0) {
+//					//s3d::Print(U"Agent Size:", simlator.getAgents().size());
+//					//for (int i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
+//					//	s3d::Print(U"Agent[",i,U"]:X" ,simlator.getAgents()[i].getLocation(10,256).x, U", Y", simlator.getAgents()[i].getLocation(10,256).y);
+//					//}
+//				}
+//				++step;
+//				if (step >= 0) {
+//					//if (step >= 30) {
+//					step = 0;
+//					simlator.step();
+//				}
+//			}
+//			//agent_location->update(simlator.getAgents());
+//			;				agent_location->draw(simlator.getAgents(), start_position, map_view_width, map_view_height, map_view_center_x, map_view_center_y,
+//				font[language], font[language]/*en_font*/, pin_font);
+//#endif
 		}
 		/*##########################################################################################
 			暦関連
@@ -386,7 +452,7 @@ namespace paxs {
 		if (jdn >= 1480407) {
 			bool is_break = false;
 			// 元号一覧からその日に合った元号を取得
-			for (int i = 0; i < japanese_era_list.size(); ++i) {
+			for (int i = 0; i < japanese_era_list.size() - 1; ++i) {
 				auto& jeli = japanese_era_list[i];
 				if (jdn >= jeli.start_jdn
 					&& jdn < japanese_era_list[i + 1].start_jdn) {
@@ -394,11 +460,11 @@ namespace paxs {
 					// 改元されている場合
 					if (jeli.kaigen_jdn[0] != 0 &&
 						jdn >= jeli.kaigen_jdn[0]) {
-						date_list[std::size_t(KoyomiEnum::koyomi_japan)].calendar_name[language] = s3d::Unicode::FromUTF8(jeli.gengo[1]);
+						date_list[std::size_t(KoyomiEnum::koyomi_japan)].calendar_name[language + 1 /* 言語位置調整 */] = language_text.getFindStart(jeli.gengo[1])[language + 1 /* 言語位置調整 */];
 						date_list[std::size_t(KoyomiEnum::koyomi_japan)].date.setYear(jeli.gengo_num[1]);
 					}
 					else {
-						date_list[std::size_t(KoyomiEnum::koyomi_japan)].calendar_name[language] = s3d::Unicode::FromUTF8(jeli.gengo[0]);
+						date_list[std::size_t(KoyomiEnum::koyomi_japan)].calendar_name[language + 1 /* 言語位置調整 */] = language_text.getFindStart(jeli.gengo[0])[language + 1 /* 言語位置調整 */];
 						date_list[std::size_t(KoyomiEnum::koyomi_japan)].date.setYear(jeli.gengo_num[0]);
 					}
 				}
@@ -435,13 +501,24 @@ namespace paxs {
 
 		static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 		++count;
-			if(move_forward_in_time) jdn += 1000;
-			else if(go_back_in_time) jdn -= 1000;
+			//if(move_forward_in_time) jdn += 1000;
+			//else if(go_back_in_time) jdn -= 1000;
 		//if (count >= 0) {
 		if (count >= 30) {
 			count = 0;
-			if (move_forward_in_time) ++jdn; // ユリウス日を繰り上げ（次の日にする）
-			else if (go_back_in_time) ++jdn; // ユリウス日を繰り上げ（次の日にする）
+			if (move_forward_in_time) {
+				//++jdn; // ユリウス日を繰り上げ（次の日にする）
+				jdn += 365; // ユリウス日を繰り上げ（次の日にする）
+#ifdef PAXS_USING_SIMULATOR
+				// エージェント機能テスト
+				if (is_agent_update) {
+					simlator.step();
+				}
+#endif
+			}
+			else if (go_back_in_time) {
+				++jdn; // ユリウス日を繰り上げ（次の日にする）
+			}
 		}
 
 		if (menu_bar.getPulldown(MenuBarType::view).getIsItems(0)) {
@@ -454,12 +531,12 @@ namespace paxs {
 			// 暦の表示（日本語）
 
 			if (
-				language == 0
+				language == 1
 				|| language == 2
 				|| language == 3
 				) {
 				for (int i = 0; i < date_list.size(); ++i) {
-					koyomi_font[language](date_list[i].calendar_name[language]).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+					koyomi_font[language](date_list[i].calendar_name[language + 1 /* 言語位置調整 */]).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 					koyomi_font[language](U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 					koyomi_font[language](U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 					koyomi_font[language](U"日").draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
@@ -478,7 +555,7 @@ namespace paxs {
 
 					// 暦の表示（英語）
 				for (int i = 0; i < date_list.size(); ++i) {
-					koyomi_font[language](date_list[i].calendar_name[language]).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+					koyomi_font[language](date_list[i].calendar_name[language + 1 /* 言語位置調整 */]).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 					koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 					koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 					koyomi_font[language](U"th").draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
@@ -573,43 +650,32 @@ namespace paxs {
 	   //	jdn = period_jdn[index1];
 	   //}
 
-		static const std::vector<s3d::String> map_view_width_str = {
-			U"拡大率", U"Magnification power", U"放大率", U"放大率", U"확대율" };
-		static const std::vector<s3d::String> map_view_center_x_str = {
-			U"メルカトル経度", U"Mercator longitude", U"麥卡托経度"/*经度*/, U"麥卡托経度" , U"메르카토르 경도" };
-		static const std::vector<s3d::String> map_view_center_y_str = {
-			U"メルカトル緯度", U"Mercator latitude", U"麥卡托緯度"/*纬度*/, U"麥卡托緯度" , U"메르카토르 위도" };
-		static const std::vector<s3d::String> map_view_center_lat_str = {
-			U"緯度", U"Latitude", U"緯度", U"緯度" , U"위도" };
-		static const std::vector<s3d::String> xyz_tile_z_str = {
-			U"XYZタイル Z", U"XYZ Tiles Z", U"XYZ瓦片 Z", U"XYZ瓦片 Z" , U"XYZ타일 Z" };
-
 		// s3d::Arg::topRight = 
 		// その他のデバッグ用の変数情報の表示
 
 		if (menu_bar.getPulldown(MenuBarType::view).getIsItems(3)) {
-			font[language]((map_view_center_x_str[language])
+			font[language](language_text.get()[map_view_center_x_str_index][language + 1 /* 言語位置調整 */]
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 300), s3d::Palette::Black);
 			font[language](s3d::ToString(map_view_center_x)
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 300), s3d::Palette::Black);
 
 			// マップ中心座標 Y
-			font[language]((map_view_center_y_str[language])
+			font[language](language_text.get()[map_view_center_y_str_index][language + 1 /* 言語位置調整 */]
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 330), s3d::Palette::Black);
 			font[language](s3d::ToString(map_view_center_y)
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 330), s3d::Palette::Black);
 
-			font[language]((map_view_center_lat_str[language])
+			font[language](language_text.get()[map_view_center_lat_str_index][language + 1 /* 言語位置調整 */]
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 360), s3d::Palette::Black);
 			font[language](s3d::ToString(map_view_center_lat)
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 360), s3d::Palette::Black);
 
-			font[language](map_view_width_str[language]
+			font[language](language_text.get()[map_view_width_str_index][language + 1 /* 言語位置調整 */]
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 390), s3d::Palette::Black);
 			font[language](s3d::ToString(map_view_width)
 				).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 390), s3d::Palette::Black);
 
-			font[language](s3d::String{ xyz_tile_z_str[language] }
+			font[language](language_text.get()[xyz_tile_z_str_index][language + 1 /* 言語位置調整 */]
 			).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 420), s3d::Palette::Black);
 			//font[language](s3d::ToString(xyz_tile2->getZ())
 			//).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 420), s3d::Palette::Black);
@@ -646,33 +712,19 @@ namespace paxs {
 		pulldown.draw(); // 言語選択
 		menu_bar.draw(); // 左上メニューバー
 
-			texture_github.resized(24).draw(s3d::Vec2{s3d::Scene::Width() - 150, 3});
-		if (s3d::Rect(s3d::Scene::Width() - 150, 3, 28).leftClicked()) {
+			texture_github.resized(24).draw(s3d::Vec2{s3d::Scene::Width() - 280, 3});
+		if (s3d::Rect(s3d::Scene::Width() - 280, 3, 28).leftClicked()) {
 			//if (s3d::SimpleGUI::Button(U"GitHub", s3d::Vec2{ s3d::Scene::Width() - 250, -5 })) {
 				// Web ページをブラウザで開く
 			s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
 		}
 
 		if (menu_bar.getPulldown(MenuBarType::view).getIsItems(2)) {
-		std::vector<s3d::String> sueki_nakamura_1993 = {
-			U"須恵器 中村編年(1993)",
-			U"Sue pottery Nakamura(1993)",
-			U"須恵器 中村編年(1993)",
-			U"須恵器 中村編年(1993)",
-			U"須恵器(수혜기) 나카무라(1993)"
-		};
-		std::vector<s3d::String> sueki_tanabe_1983 = {
-			U"須恵器 田辺編年(1983)",
-			U"Sue pottery Tanabe(1983)",
-			U"須恵器 田辺編年(1983)",
-			U"須恵器 田辺編年(1983)",
-			U"須恵器(수혜기) 타나베(1983)"
-		};
 
-		font[language](sueki_nakamura_1993[language]
+		font[language](language_text.get()[sueki_nakamura_index][language + 1 /* 言語位置調整 */]
 			).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 				s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 590), s3d::Palette::Black);
-		font[language](sueki_tanabe_1983[language]
+		font[language](language_text.get()[sueki_tanabe_index][language + 1 /* 言語位置調整 */]
 			).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 				s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 620), s3d::Palette::Black);
 		{

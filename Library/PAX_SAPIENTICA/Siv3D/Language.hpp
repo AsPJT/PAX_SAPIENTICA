@@ -21,12 +21,15 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <unordered_map>
 
 namespace paxs {
 
 	class Language {
 	private:
 		std::vector<std::vector<s3d::String>> text{};
+		std::unordered_map<s3d::String, std::size_t> text_map{};
+		std::vector<s3d::String> empty{};
 
 		void split(const std::string& input, const char delimiter) {
 			std::istringstream stream(input);
@@ -35,6 +38,7 @@ namespace paxs {
 			while (std::getline(stream, field, delimiter)) {
 				result.emplace_back(s3d::Unicode::FromUTF8(field));
 			}
+			text_map.emplace(result.front(), text.size());
 			text.emplace_back(result);
 		}
 
@@ -48,16 +52,24 @@ namespace paxs {
 			while (std::getline(ifs, line)) {
 				split(line, '\t');
 			}
+			empty.resize(text.front().size());
 		}
 		Language(const std::string& str_) {
 			add(str_);
 		}
 		// 始点を探す
 		std::size_t findStart(const std::string& str_) {
-			for (std::size_t i = 0; i < text.size(); ++i) {
-				if (text[i].front() == s3d::Unicode::FromUTF8(str_)) return i;
+			if (text_map.find(s3d::Unicode::FromUTF8(str_)) != text_map.end()) {
+				return text_map[s3d::Unicode::FromUTF8(str_)];
 			}
 			return 0;
+		}
+		std::vector<s3d::String>& getFindStart(const std::string& str_) {
+			const std::size_t index = findStart(str_);
+			if (index < text.size()) {
+				return text[index];
+			}
+			return empty;
 		}
 	};
 

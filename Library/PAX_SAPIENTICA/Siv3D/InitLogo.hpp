@@ -21,16 +21,20 @@
 namespace paxs {
 
 	void initLogo() {
+		s3d::Window::SetStyle(s3d::WindowStyle::Frameless);
+		// 画面サイズを変更
+		s3d::Window::Resize(680, 316);
 		s3d::Scene::SetBackground(s3d::Color{ 181, 0, 0 }); // PAX SAPIENTICA 用の背景
 		s3d::System::Update();
 		s3d::Window::SetTitle(s3d::Unicode::FromUTF8("PAX SAPIENTICA v") + s3d::Unicode::FromUTF8(PAX_SAPIENTICA_LIBRARY_VERSION_NAME));
-		const s3d::Texture texture_tl{ U"./../../../../../Image/Logo/TitleLogo2.svg" };
-		const s3d::Texture texture_tm{ U"./../../../../../Image/Logo/TitleMap.svg" };
+		const s3d::Texture texture_tl{ U"./../../../../../Image/Logo/TitleLogo3.svg" };
+		//const s3d::Texture texture_tm{ U"./../../../../../Image/Logo/TitleMap.svg" };
+		//texture_tl.resized(s3d::Scene::Width() * 0.8).drawAt(s3d::Scene::Center()); // タイトルロゴを描画
 		texture_tl.drawAt(s3d::Scene::Center()); // タイトルロゴを描画
-		texture_tm.draw(s3d::Arg::bottomRight = s3d::Vec2(s3d::Scene::Width(), s3d::Scene::Height()));
+		//texture_tm.draw(s3d::Arg::bottomRight = s3d::Vec2(s3d::Scene::Width(), s3d::Scene::Height()));
 		s3d::System::Update();
 		texture_tl.drawAt(s3d::Scene::Center()); // タイトルロゴを描画
-		texture_tm.draw(s3d::Arg::bottomRight = s3d::Vec2(s3d::Scene::Width(), s3d::Scene::Height()));
+		//texture_tm.draw(s3d::Arg::bottomRight = s3d::Vec2(s3d::Scene::Width(), s3d::Scene::Height()));
 	}
 
 }
