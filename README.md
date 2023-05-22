@@ -13,6 +13,31 @@ GIS & Archaeological Simulator
 |✅|Japanese calendar|
 |✅|Julian day number|
 
+## Language
+
+|Available|Name1|Name2|Name3|
+|:---:|:---|:---|:---|
+|✅|English|English|英語|
+|✅|日本語|Japanese|日本語|
+|✅|繁體中文|Chinese|繁体字中国語|
+|✅|简体中文|Chinese|簡体字中国語|
+|✅|한국어|Korean|韓国語|
+|✅|Español|Spanish|スペイン語|
+|✅|Português|Portuguese|ポルトガル語|
+|✅|Deutsch|German|ドイツ語|
+|✅|Français|French|フランス語|
+|✅|Italiano|Italian|イタリア語|
+|✅|Türkçe|Turkish|トルコ語|
+|✅|Język polski|Polish|ポーランド語|
+|✅|Ελληνικά|Greek|ギリシャ語|
+|✅|Nederlands|Dutch|オランダ語|
+|✅|Čeština|Czech|チェコ語|
+|✅|Українська|Ukrainian|ウクライナ語|
+|✅|Русский язык|Russian|ロシア語|
+|✅|Bahasa Indonesia|Indonesian|インドネシア語|
+|✅|فارسی|Persian|ペルシア語|
+|✅|اللغة العربية|Arabic|アラビア語|
+
 ## Place Name
 - The number of registered East Asian place names is high. Place names around the Japanese archipelago have a particularly high number of registrations.
 
