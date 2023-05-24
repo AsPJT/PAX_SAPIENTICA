@@ -71,6 +71,14 @@ namespace paxs {
 			}
 			return empty;
 		}
+		std::vector<std::vector<s3d::String>> getFindStartToVVS(const std::string& str_, const std::size_t start_index) {
+			std::vector<std::vector<s3d::String>> tmp{};
+			const std::vector<s3d::String>& lt = getFindStart(str_);
+			for (std::size_t i = start_index; i < lt.size(); ++i) {
+				tmp.emplace_back(std::vector<s3d::String>{ lt[i] });
+			}
+			return tmp;
+		}
 	};
 
 }

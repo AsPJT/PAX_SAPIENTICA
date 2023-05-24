@@ -101,12 +101,6 @@ namespace paxs {
 			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") },
 			/* その他 */{s3d::FontMethod::SDF, 18, PAXS_S3D_RESOURCE(U"engine/font/noto-sans-jp/NotoSansJP-Regular.otf") }
 		};
-		const std::vector<std::vector<s3d::String>> items_pulldown = {
-			{U"English"},{U"日本語"},{U"繁體中文"},{U"简体中文"},{U"한국어"},
-			{U"Español"},{U"Português"},{U"Deutsch"},{U"Français"},{U"Italiano"},
-			{U"Türkçe"},{U"Język polski"},{U"Ελληνικά"},{U"Nederlands"},{U"Čeština"},{U"Українська"},
-			{U"Русский язык"},{U"Bahasa Indonesia"},{U"فارسی"},  {U"اللغة العربية"}
-		};
 
 		paxs::Language language_text(path8 + "Data/Language/Text.txt");
 		const std::size_t menu_bar_file_pulldown_index = language_text.findStart("> menu_bar_file");
@@ -124,11 +118,10 @@ namespace paxs {
 		const std::size_t map_view_center_y_str_index = language_text.findStart("debug_mercator_latitude");
 		const std::size_t map_view_center_lat_str_index = language_text.findStart("debug_latitude");
 		const std::size_t xyz_tile_z_str_index = language_text.findStart("debug_xyz_tiles_z");
-		//const std::size_t language_pulldown_index = language_text.findStart("> language");
 
+		std::vector<std::vector<s3d::String>> items_pulldown = language_text.getFindStartToVVS("language", 1);
 		paxs::Pulldown pulldown(items_pulldown, 0, 0, font_pulldown, s3d::Point{ 3000, 0 }, PulldownType::Zero, true);
 		pulldown.setPos(s3d::Point{ s3d::Scene::Width() - pulldown.getRect().w, 0 });
-
 
 		std::vector<std::string> map_type_name = {
 			"map_base","map_landand_sea","map_land_and_water",
@@ -709,13 +702,12 @@ namespace paxs {
 
 		// メニューバー
 		s3d::Rect{ 0,0,s3d::Scene::Width(),30 }.draw(s3d::Color{ 243,243,243 });
+		texture_github.resized(24).draw(s3d::Vec2{ s3d::Scene::Width() - 280, 3 });
 		pulldown.draw(); // 言語選択
 		menu_bar.draw(); // 左上メニューバー
 
-			texture_github.resized(24).draw(s3d::Vec2{s3d::Scene::Width() - 280, 3});
 		if (s3d::Rect(s3d::Scene::Width() - 280, 3, 28).leftClicked()) {
-			//if (s3d::SimpleGUI::Button(U"GitHub", s3d::Vec2{ s3d::Scene::Width() - 250, -5 })) {
-				// Web ページをブラウザで開く
+			// Web ページをブラウザで開く
 			s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
 		}
 
