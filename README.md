@@ -1,5 +1,7 @@
 ![PAX SAPIENTICA Logo](./Image/Logo/TitleBanner.svg)
 
+![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%20(Debug%20Build)%20_%20D3D11%20_%2060%20FPS%20_%20F%201920x1111%20_%20V%201536x888%20_%20S%201536x888%202023_05_24%2023_17_49.png)
+
 GIS & Archaeological Simulator
 
 # List of elements supported by this software.
@@ -47,7 +49,6 @@ GIS & Archaeological Simulator
 # Screenshot
 ![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_09%201_00_32.png)
 ![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_11%2023_26_47.png)
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_11%2023_38_32.png)
 
 ---
 
