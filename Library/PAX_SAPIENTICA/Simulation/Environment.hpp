@@ -62,7 +62,7 @@ namespace paxs {
             unsigned int file_count = 0;
 
             for(const auto& file_name : file_names) {
-                displayProgressBar(file_count, file_names.size());
+                displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 default_position = (getXAndYFromFileName(file_name) - start_position) * pixel_size;
                 std::vector<std::string> file = readFile(file_name);
@@ -74,7 +74,7 @@ namespace paxs {
                 }
                 ++file_count;
             }
-            displayProgressBar(file_count, file_names.size());
+            displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading is land is completed." << std::endl;
         }
         void setIsLand(const std::string& file_name, const Vector2& position, const char value) {

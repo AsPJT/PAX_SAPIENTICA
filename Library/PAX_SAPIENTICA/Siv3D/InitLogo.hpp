@@ -22,12 +22,15 @@ namespace paxs {
 
 	void initLogo() {
 		s3d::Window::SetStyle(s3d::WindowStyle::Frameless);
+		// 画像の拡大縮小の方式を設定
+		const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
 		// 画面サイズを変更
-		s3d::Window::Resize(680, 316);
+		s3d::Window::Resize(700, 180);
+		s3d::Scene::SetLetterbox(s3d::Color{ 181, 0, 0 });
 		s3d::Scene::SetBackground(s3d::Color{ 181, 0, 0 }); // PAX SAPIENTICA 用の背景
 		s3d::System::Update();
 		s3d::Window::SetTitle(s3d::Unicode::FromUTF8("PAX SAPIENTICA v") + s3d::Unicode::FromUTF8(PAX_SAPIENTICA_LIBRARY_VERSION_NAME));
-		const s3d::Texture texture_tl{ U"./../../../../../Image/Logo/TitleLogo3.svg" };
+		const s3d::Texture texture_tl{ U"./../../../../../Image/Logo/TitleBanner2.svg" };
 		//const s3d::Texture texture_tm{ U"./../../../../../Image/Logo/TitleMap.svg" };
 		//texture_tl.resized(s3d::Scene::Width() * 0.8).drawAt(s3d::Scene::Center()); // タイトルロゴを描画
 		texture_tl.drawAt(s3d::Scene::Center()); // タイトルロゴを描画

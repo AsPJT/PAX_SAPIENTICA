@@ -311,8 +311,10 @@ namespace paxs {
 		const s3d::Texture texture_red_circle{ U"./../../../../../Data/MiniIcon/RedCircle.svg" };
 
 		void draw(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position,
-			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-			const s3d::Font& font, const s3d::Font& en_font, const s3d::Font& pin_font)const {
+			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
+			/*, const s3d::Font& font*/
+			/*, const s3d::Font& en_font*/
+			/*, const s3d::Font& pin_font*/)const {
 
 			// 地名を描画
 			for (int i = 0; i < agents.size(); ++i) {

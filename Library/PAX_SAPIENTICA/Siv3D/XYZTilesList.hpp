@@ -101,10 +101,13 @@ namespace paxs {
 				const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
 				xyz_tile_slope->setMapURL(U"");
 				xyz_tile_slope->setMapName(U"slope");
-				xyz_tile_slope->setMinZ(3);
-				xyz_tile_slope->setMaxZ(12);
-				xyz_tile_slope->setDrawMinZ(3);
-				xyz_tile_slope->setMapFilePath(path + U"Data/Map/XYZTile/Slope/Image/Slope/2023/");
+				//xyz_tile_slope->setMinZ(3);
+				//xyz_tile_slope->setMaxZ(12);
+				//xyz_tile_slope->setDefaultZ(8);
+				xyz_tile_slope->setMaxZ(8);
+				//xyz_tile_slope->setDrawMinZ(3);
+				//xyz_tile_slope->setMapFilePath(path + U"Data/Map/XYZTile/Slope/Image/Slope/2023/");
+				xyz_tile_slope->setMapFilePath(path + U"Data/Map/XYZTile/Slope/Image/Slope/2010/");
 
 				xyz_tile_list.emplace("map_slope", *xyz_tile_slope);
 			}
@@ -169,7 +172,8 @@ namespace paxs {
 		const double map_view_height = map_view->getHeight();
 		const double map_view_center_x = map_view->getCenterX();
 		const double map_view_center_y = map_view->getCenterY();
-		const double map_view_center_lat = std::asin(std::tanh(map_view_center_y / 180.0 * paxs::pi)) / (paxs::pi) * 180.0;
+		// 未使用
+		//const double map_view_center_lat = std::asin(std::tanh(map_view_center_y / 180.0 * paxs::pi)) / (paxs::pi) * 180.0;
 
 
 		// タイルを更新

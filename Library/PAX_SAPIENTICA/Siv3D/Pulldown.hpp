@@ -33,7 +33,7 @@ namespace paxs {
 		Pulldown() = default;
 
 		void setRectX(const std::size_t x = 0) {
-			rect.x = x;
+			rect.x = s3d::Rect::value_type(x);
 		}
 
 		void updateLanguage() {
