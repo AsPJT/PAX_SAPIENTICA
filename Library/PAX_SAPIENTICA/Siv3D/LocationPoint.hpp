@@ -77,6 +77,8 @@ namespace paxs {
 		}
 		void add() {
 			// 古墳
+			inputPlace("./../../../../../Data/PlaceName/TestMap/Hokkaido.tsv", LocationPointEnum::location_point_zempo_koen_fun);
+			// 古墳
 			inputPlace("./../../../../../Data/PlaceName/TestMap/Kofun.tsv", LocationPointEnum::location_point_zempo_koen_fun);
 
 			// 古事記の地名
@@ -137,22 +139,32 @@ namespace paxs {
 						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
+					// 遺跡
+					if (lli.source == "Iseki") {
+						texture_blue_circle.resized(10).drawAt(
+							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+						continue;
+					}
 					// 前方後円墳
-					if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
+					//if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
+					if (lli.source == "ZempoKoenFun") {
 						texture_kofun1.resized(14).drawAt(
 							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 前方後方墳
-					if (lli.lpe == LocationPointEnum::location_point_zempo_koho_fun) {
+					//if (lli.lpe == LocationPointEnum::location_point_zempo_koho_fun) {
+					if (lli.source == "ZempoKohoFun") {
 						texture_kofun2.resized(14).drawAt(
 							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 帆立貝型古墳
-					if (lli.lpe == LocationPointEnum::location_point_hotategai_gata_kofun) {
+					//if (lli.lpe == LocationPointEnum::location_point_hotategai_gata_kofun) {
+					if (lli.source == "HotategaiGataKofun") {
 						texture_kofun3.resized(14).drawAt(
 							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
@@ -215,6 +227,12 @@ namespace paxs {
 						//texture_wam.resized(20).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						//	double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 						//	});
+					}
+					// 前方後円墳のアイコン
+					else if (lli.source == "Iseki") {
+						texture_blue_circle.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+							});
 					}
 					// 前方後円墳のアイコン
 					else if (lli.source == "ZempoKoenFun") {
@@ -293,8 +311,10 @@ namespace paxs {
 		const s3d::Texture texture_red_circle{ U"./../../../../../Data/MiniIcon/RedCircle.svg" };
 
 		void draw(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position,
-			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-			const s3d::Font& font, const s3d::Font& en_font, const s3d::Font& pin_font)const {
+			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
+			/*, const s3d::Font& font*/
+			/*, const s3d::Font& en_font*/
+			/*, const s3d::Font& pin_font*/)const {
 
 			// 地名を描画
 			for (int i = 0; i < agents.size(); ++i) {

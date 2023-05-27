@@ -117,6 +117,19 @@ namespace paxs {
 	};
 
 	class MapView {
+	private:
+		Coordinate center = Coordinate(135.0, getLatitudeToMercatorY(35.0), 200.0); // マップ座標の中央
+		double width = 2.0; // マップの幅
+
+		// 平城京
+		//Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
+		//double width = 0.1; // マップの幅
+		double max_width = 640.0; // マップの最大幅
+		double min_width = 0.01; // マップの最小幅
+		double height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height()); // マップの高さ
+		double expansion_size = 50.0; // マップの拡大量
+		std::vector<std::unique_ptr<BaseKey>> enl_keys; // 拡大キー
+		std::vector<std::unique_ptr<BaseKey>> esc_keys; // 縮小キー
 	public:
 		MapView() {
 			enl_keys.resize(1);
@@ -148,6 +161,14 @@ namespace paxs {
 				}
 			}
 		}
+
+		void setWidth(const double width_) {
+			width = width_;
+		}
+		void setHeight(const double height_) {
+			height = height_;
+		}
+
 		double getCenterX() const {
 			return center.getX();
 		}
@@ -160,19 +181,6 @@ namespace paxs {
 		double getHeight() const {
 			return height;
 		}
-	private:
-		Coordinate center = Coordinate(135.0, getLatitudeToMercatorY(35.0), 200.0); // マップ座標の中央
-		double width = 2.0; // マップの幅
-
-		// 平城京
-		//Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
-		//double width = 0.1; // マップの幅
-		double max_width = 640.0; // マップの最大幅
-		double min_width = 0.01; // マップの最小幅
-		double height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height()); // マップの高さ
-		double expansion_size = 50.0; // マップの拡大量
-		std::vector<std::unique_ptr<BaseKey>> enl_keys; // 拡大キー
-		std::vector<std::unique_ptr<BaseKey>> esc_keys; // 縮小キー
 	};
 
 	// キーボード入力を更新（どの入力が必要か未確定なのでまだクラス化前）
