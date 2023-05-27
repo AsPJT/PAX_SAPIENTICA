@@ -37,10 +37,10 @@ jobs:
     - name: Configure CMake
       run: |
         mkdir ${{github.workspace}}/build
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}} -G "Unix Makefiles"
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}} -G "Unix Makefiles" -DSUNSHINE_ASSETS_DIR=assets ..
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -j 12
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target ${{env.TARGET}} -j 12 -DSUNSHINE_ASSETS_DIR=assets ..
 
     - name: Execution
       run: |
