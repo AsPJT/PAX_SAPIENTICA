@@ -33,6 +33,13 @@ namespace paxs {
         uint8_t red;
         uint8_t green;
         uint8_t blue;
+        Rgb() = default;
+        Rgb(const uint8_t red, const uint8_t green, const uint8_t blue) : red(red), green(green), blue(blue) {}
+        double colorDistance(const Rgb& color) const {
+            return std::sqrt(std::pow(red - color.red, 2) + 
+                            std::pow(green - color.green, 2) + 
+                            std::pow(blue - color.blue, 2));
+        }
     };
 
     class Helper{

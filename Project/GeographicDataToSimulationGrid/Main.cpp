@@ -138,4 +138,15 @@ int main(){
 
 #endif // !RiversAndLakesConvert
 
+#ifdef SoilTemperatureConvert
+
+#include <SoilTemperatureConverter.hpp>
+
+int main(){
+    std::unique_ptr<paxs::SoilTemperatureConverter> soil_temperature_converter(new(std::nothrow) paxs::SoilTemperatureConverter);
+    if(soil_temperature_converter->init()) soil_temperature_converter->convert();
+}
+
+#endif // !SoilTemperatureConvert
+
 
