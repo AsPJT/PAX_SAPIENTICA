@@ -22,7 +22,9 @@
 #include <regex>
 
 #include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
+#include <PAX_SAPIENTICA/FileRead/Convert.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
+#include <PAX_SAPIENTICA/FileRead/Split.hpp>
 #include <PAX_SAPIENTICA/Simulation/GeographicInformation.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
@@ -36,8 +38,11 @@ namespace paxs {
         std::map<Vector2, GeographicInformation> geographic_informations;
 
         Environment() = default;
-        Environment(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
-            loadIsLand(land_file_path);
+        Environment(const std::string& land_file_path, const std::string& slope_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
+            // TODO: ファイルパスをファイルで管理する
+            // TODO:: z10のslopeファイルを作成する
+            // loadIsLand(land_file_path);
+            loadSlope(slope_file_path);
         }
 
         Vector2 getStartPosition() const { return start_position; }
@@ -89,8 +94,46 @@ namespace paxs {
                 std::exit(1);
             }
         }
+        void loadSlope(const std::string& slope_file_path) {
+            std::cout << "Loading slope..." << std::endl;
+            const std::vector<std::string> file_names = getFileNames(slope_file_path);
+            std::cout << file_names.size() << " files are found." << std::endl; 
+
+            unsigned int file_count = 0;
+
+            for(const auto& file_name : file_names) {
+                displayProgressBar(file_count, int(file_names.size()));
+
+                Vector2 default_position = (getXAndYFromFileName(file_name) - start_position) * pixel_size;
+                std::vector<std::string> file = readFile(file_name);
+                for(std::size_t y = 0;y < file.size();++y) {
+                    // タブ区切り
+                    std::vector<std::string> values = split(file[y], '\t');
+                    for(std::size_t x = 0;x < values.size();++x) {
+                        Vector2 position = default_position + Vector2((int)x, (int)y);
+                        setSlope(file_name, position, values[x]);
+                    }
+                }
+                ++file_count;
+            }
+            displayProgressBar(file_count, int(file_names.size()));
+            std::cout << std::endl << "Loading slope is completed." << std::endl;
+        }
+        void setSlope(const std::string& file_name, const Vector2& position, const std::string value) {
+            auto result = convertString(value);
+            if (std::holds_alternative<double>(result)) {
+                // mapにすでに登録されているかどうか
+                auto it = geographic_informations.find(position);
+                if (it != geographic_informations.end()) {
+                    it->second.setSlope(std::get<double>(result));
+                }
+                // else {
+                //     geographic_informations[position] = GeographicInformation(std::get<double>(result));
+                // }
+            }
+        }
         Vector2 getXAndYFromFileName(const std::string& file_name) {
-            std::regex pattern(R"((\w+)_(\d+)_(\d+)_(\d+)\.txt)");
+            std::regex pattern(R"((\w+)_(\d+)_(\d+)_(\d+)\.(\w+))");
             std::smatch matches;
 
             if(std::regex_search(file_name, matches, pattern)) {
