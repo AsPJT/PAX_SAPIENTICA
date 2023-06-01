@@ -342,8 +342,8 @@ namespace paxs {
 
 			static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 			++count;
-			//if(move_forward_in_time) jdn += 1000;
-			//else if(go_back_in_time) jdn -= 1000;
+			if(move_forward_in_time) jdn += 1000;
+			else if(go_back_in_time) jdn -= 1000;
 		//if (count >= 0) {
 			if (count >= 30) {
 				count = 0;
