@@ -66,8 +66,14 @@ namespace paxs {
 		s3d::Texture texture_m_r;
 		s3d::Texture texture_y_l;
 		s3d::Texture texture_y_r;
+		s3d::Texture texture_10y_l;
+		s3d::Texture texture_10y_r;
 		s3d::Texture texture_c_l;
 		s3d::Texture texture_c_r;
+		s3d::Texture texture_10c_l;
+		s3d::Texture texture_10c_r;
+		s3d::Texture texture_100c_l;
+		s3d::Texture texture_100c_r;
 		s3d::Texture texture_stop;
 		s3d::Texture texture_playback;
 		s3d::Texture texture_reverse_playback;
@@ -191,14 +197,20 @@ namespace paxs {
 
 			texture_tlt = s3d::Texture{ path + U"Image/Logo/TitleLogoText2.svg" };
 			texture_github = s3d::Texture{ path + U"Data/MenuIcon/github.svg" };
-			texture_d_l = s3d::Texture{ path + U"Data/MenuIcon/d_l.svg" };
-			texture_d_r = s3d::Texture{ path + U"Data/MenuIcon/d_r.svg" };
-			texture_m_l = s3d::Texture{ path + U"Data/MenuIcon/m_l.svg" };
-			texture_m_r = s3d::Texture{ path + U"Data/MenuIcon/m_r.svg" };
-			texture_y_l = s3d::Texture{ path + U"Data/MenuIcon/y_l.svg" };
-			texture_y_r = s3d::Texture{ path + U"Data/MenuIcon/y_r.svg" };
-			texture_c_l = s3d::Texture{ path + U"Data/MenuIcon/c_l.svg" };
-			texture_c_r = s3d::Texture{ path + U"Data/MenuIcon/c_r.svg" };
+			texture_d_l = s3d::Texture{ path + U"Data/MenuIcon/DayL.svg" };
+			texture_d_r = s3d::Texture{ path + U"Data/MenuIcon/DayR.svg" };
+			texture_m_l = s3d::Texture{ path + U"Data/MenuIcon/MonthL.svg" };
+			texture_m_r = s3d::Texture{ path + U"Data/MenuIcon/MonthR.svg" };
+			texture_y_l = s3d::Texture{ path + U"Data/MenuIcon/YearL.svg" };
+			texture_y_r = s3d::Texture{ path + U"Data/MenuIcon/YearR.svg" };
+			texture_10y_l = s3d::Texture{ path + U"Data/MenuIcon/10YearL.svg" };
+			texture_10y_r = s3d::Texture{ path + U"Data/MenuIcon/10YearR.svg" };
+			texture_c_l = s3d::Texture{ path + U"Data/MenuIcon/100YearL.svg" };
+			texture_c_r = s3d::Texture{ path + U"Data/MenuIcon/100YearR.svg" };
+			texture_10c_l = s3d::Texture{ path + U"Data/MenuIcon/1kYearL.svg" };
+			texture_10c_r = s3d::Texture{ path + U"Data/MenuIcon/1kYearR.svg" };
+			texture_100c_l = s3d::Texture{ path + U"Data/MenuIcon/10kYearL.svg" };
+			texture_100c_r = s3d::Texture{ path + U"Data/MenuIcon/10kYearR.svg" };
 			texture_stop = s3d::Texture{ path + U"Data/MenuIcon/stop.svg" };
 			texture_playback = s3d::Texture{ path + U"Data/MenuIcon/playback.svg" };
 			texture_reverse_playback = s3d::Texture{ path + U"Data/MenuIcon/reverse-playback.svg" };
@@ -266,6 +278,8 @@ namespace paxs {
 			const paxs::Vector2<int>& end_position,
 			const std::string& path8
 			) {
+			// 画像の拡大縮小の方式を設定
+			const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampLinear };
 
 			const double map_view_width = map_view->getWidth();
 			const double map_view_height = map_view->getHeight();
@@ -425,31 +439,34 @@ namespace paxs {
 							), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 					}
 				}
-				const int time_icon_size = 24; // 時間操作アイコンの大きさ
-				const int icon_const_start_x = 320;
+				const int arrow_time_icon_size = 24; // 時間操作アイコンの大きさ
+				const int time_icon_size = 40; // 時間操作アイコンの大きさ
+				const int icon_const_start_x = 360;
 				int icon_start_x = icon_const_start_x;
 				int icon_start_y = 80;
-				const int icon_move_x = int(time_icon_size * 1.4);
-				const int icon_move_y = 40;
+				const int arrow_icon_move_x = int(arrow_time_icon_size * 1.2);// int(time_icon_size * 1.4);
+				const int icon_move_x = int(time_icon_size * 1.1);// int(time_icon_size * 1.4);
+				const int arrow_icon_move_y = 30;
+				const int icon_move_y = 44;
 
-				texture_reverse_playback.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_reverse_playback.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
 					move_forward_in_time = false;
 					go_back_in_time = true; // 逆再生
 				}
-				icon_start_x -= icon_move_x;
-				texture_stop.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				icon_start_x -= arrow_icon_move_x;
+				texture_stop.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
 					move_forward_in_time = false; // 一時停止
 					go_back_in_time = false;
 				}
-				icon_start_x -= icon_move_x;
-				texture_playback.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				icon_start_x -= arrow_icon_move_x;
+				texture_playback.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
 					move_forward_in_time = true; // 再生
 					go_back_in_time = false;
 				}
-				icon_start_y += icon_move_y;
+				icon_start_y += arrow_icon_move_y;
 				icon_start_x = icon_const_start_x;
 
 				texture_d_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
@@ -467,9 +484,24 @@ namespace paxs {
 					jdn -= 365;
 				}
 				icon_start_x -= icon_move_x;
+				texture_10y_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+					jdn -= 3650;
+				}
+				icon_start_x -= icon_move_x;
 				texture_c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
 					jdn -= (365 * 100);
+				}
+				icon_start_x -= icon_move_x;
+				texture_10c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+					jdn -= (365 * 1000);
+				}
+				icon_start_x -= icon_move_x;
+				texture_100c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+					jdn -= (365 * 10000);
 				}
 				icon_start_y += icon_move_y;
 				icon_start_x = icon_const_start_x;
@@ -489,9 +521,24 @@ namespace paxs {
 					jdn += 365;
 				}
 				icon_start_x -= icon_move_x;
+				texture_10y_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+					jdn += 3650;
+				}
+				icon_start_x -= icon_move_x;
 				texture_c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
 					jdn += (365 * 100);
+				}
+				icon_start_x -= icon_move_x;
+				texture_10c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+					jdn += (365 * 1000);
+				}
+				icon_start_x -= icon_move_x;
+				texture_100c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+					jdn += (365 * 10000);
 				}
 
 			}
@@ -537,7 +584,7 @@ namespace paxs {
 
 				// ユリウス通日
 				font[language](s3d::ToString(jdn)
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 190), s3d::Palette::Black);
+					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 120), s3d::Palette::Black);
 
 			}
 			if (menu_bar.getPulldown(MenuBarType::view).getIsItems(2)) {
