@@ -42,7 +42,7 @@ enum MapType {
 #include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
 
 // シミュレータを使用する
-#define PAXS_USING_SIMULATOR
+//#define PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Siv3D/Calendar.hpp>
 
 namespace paxs {
@@ -85,6 +85,8 @@ namespace paxs {
 
 		while (s3d::System::Update()) {
 
+			// 画像の拡大縮小の方式を設定
+			const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
 			/*##########################################################################################
 				更新処理関連
 			##########################################################################################*/
