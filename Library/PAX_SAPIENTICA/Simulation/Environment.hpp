@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <cmath>
 #include <iostream>
 #include <map>
 #include <random>
@@ -72,11 +73,11 @@ namespace paxs {
                 std::string data_type = settings[i][data_type_column];
                 std::string key = settings[i][key_column];
                 if(data_type == "u8"){
-                    data_map.emplace(key, Data<std::uint_least8_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z));
+                    data_map.emplace(key, Data<std::uint_least8_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::u8));
                 } else if(data_type == "u32"){
-                    data_map.emplace(key, Data<std::uint_least32_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z));
+                    data_map.emplace(key, Data<std::uint_least32_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::u32));
                 } else if(data_type == "f32"){
-                    data_map.emplace(key, Data<float>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z));
+                    data_map.emplace(key, Data<float>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::f32));
                 } else {
                     std::cerr << "Error: data_type is not found." << std::endl;
                     exit(1);

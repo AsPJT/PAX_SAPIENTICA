@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
+#include <PAX_SAPIENTICA/FileRead/Convert.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
@@ -24,11 +25,18 @@
 #include <map>
 
 namespace paxs {
+    enum class DataType {
+        u8,
+        u32,
+        f32
+    };
+
     template <typename T>
     class Data {
     public:
         using Vector2 = paxs::Vector2<int>;
-        Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z) {
+        Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z, const  DataType data_type) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z), data_type(data_type) {
+            z_mag = std::pow(2, default_z - pj_z);
             load(file_path);
         }
         Data(const Data& other)
@@ -51,6 +59,14 @@ namespace paxs {
             }
             return *this;
         }
+
+        T getValue(const Vector2& position) const {
+
+            if(data.find(position) == data.end()) {
+                return default_z;
+            }
+            return data.at(position);
+        }
     private:
         const int pixel_size = 256;
         
@@ -60,6 +76,8 @@ namespace paxs {
         std::map<Vector2, T> data;
         int default_z;
         int pj_z;
+        double z_mag;
+        DataType data_type;
 
         // ファイルのロード
         void load(const std::string& file_path) {
@@ -85,40 +103,63 @@ namespace paxs {
         // 数値TSVファイルのロード
         void loadNumericTSV(const std::vector<std::string>& file_names) {
             unsigned int file_count = 0;
+            int load_count = 0;
 
+            Vector2 converted_start_position = start_position * z_mag;
+            Vector2 converted_end_position = end_position * z_mag;
             for(const auto& file_name : file_names) {
                 displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 xyz_position = getXAndYFromFileName(file_name);
-                if(xyz_position < start_position || end_position < xyz_position) {
+                if(xyz_position.x < converted_start_position.x || xyz_position.x > converted_end_position.x || xyz_position.y < converted_start_position.y || xyz_position.y > converted_end_position.y) {
                     ++file_count;
                     continue;
                 }
-                Vector2 default_position = (xyz_position - start_position) * pixel_size;
+                Vector2 default_position = (xyz_position - converted_start_position) * pixel_size;
                 std::vector<std::string> file = readFile(file_name);
                 for(std::size_t y = 0;y < file.size();++y) {
                     // タブ区切り
                     std::vector<std::string> values = split(file[y], '\t');
                     for(std::size_t x = 0;x < values.size();++x) {
                         Vector2 position = default_position + Vector2((int)x, (int)y);
+                        if(values[x] == "") {
+                            continue;
+                        }
                         // T型に変換
-                        data[position] = static_cast<T>(std::stod(values[x]));
+                        try {
+                            if(data_type == DataType::u8 || data_type == DataType::u32)
+                                data[position] = static_cast<T>(std::stoi(values[x]));
+                            else if(data_type == DataType::f32)
+                                data[position] = static_cast<T>(std::stod(values[x]));
+                        } catch (const std::invalid_argument& ia) {
+                            // str is not convertible to double
+                            continue;
+                        } catch (const std::out_of_range& oor) {
+                            // str is out of range for a double
+                            continue;
+                        }
+                        
                     }
                 }
                 ++file_count;
+                ++load_count;
             }
             displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
+            std::cout << load_count << " files are loaded.\n" << std::endl;
         }
         // 数値ファイルのロード
         void loadNumericText(const std::vector<std::string>& file_names) {
             unsigned int file_count = 0;
+            int load_count = 0;
 
+            Vector2 converted_start_position = start_position * z_mag;
+            Vector2 converted_end_position = end_position * z_mag;
             for(const auto& file_name : file_names) {
                 displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 xyz_position = getXAndYFromFileName(file_name);
-                if(xyz_position < start_position || end_position < xyz_position) {
+                if(xyz_position.x < converted_start_position.x || xyz_position.x > converted_end_position.x || xyz_position.y < converted_start_position.y || xyz_position.y > converted_end_position.y) {
                     ++file_count;
                     continue;
                 }
@@ -132,9 +173,11 @@ namespace paxs {
                     }
                 }
                 ++file_count;
+                ++load_count;
             }
             displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
+            std::cout << load_count << " files are loaded.\n" << std::endl;
         }
 
         // ファイルの名前からX座標とY座標を取得
