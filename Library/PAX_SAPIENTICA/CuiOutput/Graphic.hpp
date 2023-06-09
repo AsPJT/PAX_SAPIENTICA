@@ -20,6 +20,7 @@
 #include <iomanip>
 
 namespace paxs {
+    // プログレスバーの表示
 	void displayProgressBar(unsigned int current, unsigned int total) {
         const int bar_width = 50;
 

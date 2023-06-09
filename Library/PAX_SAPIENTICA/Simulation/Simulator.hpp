@@ -28,8 +28,8 @@ namespace paxs {
         using Agent = paxs::Agent<T>;
 
         Simulator() = default;
-        Simulator(const std::string& land_file_path, const std::string& slope_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
-            environment(land_file_path, slope_file_path, start_position, end_position, z), gen(seed) {}
+        Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+            environment(setting_file_path, start_position, end_position, z), gen(seed) {}
         void init() {
             std::cout << "Initializing..." << std::endl;
             clearAgents();
@@ -81,9 +81,9 @@ namespace paxs {
             for(int i = 0;i < agent_count;++i) {
                 displayProgressBar(i, agent_count);
                 Vector2 position = Vector2(x_dist(gen), y_dist(gen));
-                while(!environment.isLand(position)) {
-                    position = Vector2(x_dist(gen), y_dist(gen));
-                }
+                // while(!environment.isLand(position)) {
+                //     position = Vector2(x_dist(gen), y_dist(gen));
+                // }
                 agents.push_back(Agent(position, (bool)gender_dist(gen), age_dist(gen), life_exp_dist(gen), &environment));
             }
             displayProgressBar(agent_count, agent_count);

@@ -16,6 +16,8 @@
 
 ##########################################################################################*/
 
+#include <PAX_SAPIENTICA/FileRead/Split.hpp>
+
 #include <filesystem>
 #include <fstream>
 #include <vector>
@@ -35,6 +37,22 @@ namespace paxs {
         }
         return result;
 	}
+    std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {
+        std::vector<std::string> contents = readFile(file_path);
+        std::vector<std::vector<std::string>> result;
+        for(auto& content : contents) {
+            result.emplace_back(split(content, ','));
+        }
+        return result;
+    }
+    std::vector<std::vector<std::string>> readTSV(const std::string& file_path) {
+        std::vector<std::string> contents = readFile(file_path);
+        std::vector<std::vector<std::string>> result;
+        for(auto& content : contents) {
+            result.emplace_back(split(content, '\t'));
+        }
+        return result;
+    }
     std::vector<std::string> getFileNames(const std::string& directory_path) {
         std::filesystem::path dir_path(directory_path);
         std::filesystem::directory_iterator dir_iter(dir_path);
