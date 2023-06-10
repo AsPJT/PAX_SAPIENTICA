@@ -36,7 +36,7 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<T>;
 
-        const int pixel_size = 256;
+        int pixel_size = 256;
 
         using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>>;
         std::map<std::string, DataVariant> data_map;
@@ -51,19 +51,19 @@ namespace paxs {
             int z_column = -1;
             for(std::size_t i = 0;i < settings[0].size();++i) {
                 if(settings[0][i] == "key") {
-                    key_column = i;
+                    key_column = int(i);
                 }
                 if(settings[0][i] == "data_type") {
-                    data_type_column = i;
+                    data_type_column = int(i);
                 }
                 if(settings[0][i] == "file_path") {
-                    file_path_column = i;
+                    file_path_column = int(i);
                 }
                 if(settings[0][i] == "z") {
-                    z_column = i;
+                    z_column = int(i);
                 }
             }
-            if(key_column == -1 | data_type_column == -1 | file_path_column == -1 | z_column == -1) {
+            if(key_column == -1 || data_type_column == -1 || file_path_column == -1 || z_column == -1) {
                 std::cerr << "Error: column is not found." << std::endl;
                 exit(1);
             }

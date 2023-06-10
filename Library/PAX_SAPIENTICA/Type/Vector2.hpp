@@ -56,7 +56,7 @@ namespace paxs {
             return *this;
         }
         Vector2<T> operator*(const double& t) const {
-            return Vector2<T>(x * t, y * t);
+            return Vector2<T>(x * T(t), y * T(t));
         }
         Vector2<T>& operator*=(const double& t) {
             x *= t;
