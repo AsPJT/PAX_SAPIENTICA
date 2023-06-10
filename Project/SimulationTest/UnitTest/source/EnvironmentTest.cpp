@@ -15,9 +15,9 @@
 
 int main()
 {
-	const std::string file_name = "../../../Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10/";
+	const std::string setting_file_path = "../../../Data/Simulation/MapList.tsv";
 	paxs::Vector2<int> start_position(861, 350);
 	paxs::Vector2<int> end_position(950, 450);
-    paxs::Environment<int> environment(file_name, start_position, end_position, 10);
-	std::cout << "geographic_informations size: " << environment.geographic_informations.size() << std::endl;
+    paxs::Environment<int> environment(setting_file_path, start_position, end_position, 10);
+	std::cout << "data size: " << environment.data_map.size() << std::endl;
 }

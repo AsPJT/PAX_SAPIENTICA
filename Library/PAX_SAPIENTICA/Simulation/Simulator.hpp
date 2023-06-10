@@ -28,8 +28,8 @@ namespace paxs {
         using Agent = paxs::Agent<T>;
 
         Simulator() = default;
-        Simulator(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
-            environment(land_file_path, start_position, end_position, z), gen(seed) {}
+        Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+            environment(setting_file_path, start_position, end_position, z), gen(seed) {}
         void init() {
             std::cout << "Initializing..." << std::endl;
             clearAgents();

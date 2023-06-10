@@ -26,13 +26,14 @@ namespace paxs {
 			River, // 河川
 		};
 		
-		GeographicInformation(const bool is_land = false, const int elevation = 0, const char tile = 0, const char geology = 0, const char soil = 0, const char soil_temperature = 0, const WaterType water_type = WaterType::Sea) :
-			is_land(is_land), elevation(elevation), tile(tile), geology(geology), soil(soil), soil_temperature(soil_temperature), water_type(water_type) {}
+		GeographicInformation(const bool is_land = false, const int elevation = 0, const double slope = 0, const char geology = 0, const char soil = 0, const char soil_temperature = 0, const WaterType water_type = WaterType::Sea) :
+			is_land(is_land), elevation(elevation), slope(slope), geology(geology), soil(soil), soil_temperature(soil_temperature), water_type(water_type) {}
 		bool isLand() const { return is_land; }
+		void setSlope(const double slope) { this->slope = slope; }
 	private:
 		bool is_land; // 陸地かどうか
 		int elevation; // 標高
-		char tile; // 傾斜
+		double slope; // 傾斜
 		char geology; // 地質
 		char soil; // 土壌
 		char soil_temperature; // 土壌温度

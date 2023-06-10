@@ -16,13 +16,17 @@
 
 ##########################################################################################*/
 
+#include <cmath>
 #include <iostream>
 #include <map>
 #include <random>
 #include <regex>
 
 #include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
+#include <PAX_SAPIENTICA/FileRead/Convert.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
+#include <PAX_SAPIENTICA/FileRead/Split.hpp>
+#include <PAX_SAPIENTICA/Simulation/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/GeographicInformation.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
@@ -32,75 +36,77 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<T>;
 
-        int pixel_size = 256;
-        std::map<Vector2, GeographicInformation> geographic_informations;
+        const int pixel_size = 256;
+
+        using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>>;
+        std::map<std::string, DataVariant> data_map;
 
         Environment() = default;
-        Environment(const std::string& land_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
-            loadIsLand(land_file_path);
+        Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
+            std::vector<std::vector<std::string>> settings = readTSV(setting_file_path);
+            // 1行目からdata_typeのカラム番号を取得
+            int key_column = -1;
+            int data_type_column = -1;
+            int file_path_column = -1;
+            int z_column = -1;
+            for(std::size_t i = 0;i < settings[0].size();++i) {
+                if(settings[0][i] == "key") {
+                    key_column = i;
+                }
+                if(settings[0][i] == "data_type") {
+                    data_type_column = i;
+                }
+                if(settings[0][i] == "file_path") {
+                    file_path_column = i;
+                }
+                if(settings[0][i] == "z") {
+                    z_column = i;
+                }
+            }
+            if(key_column == -1 | data_type_column == -1 | file_path_column == -1 | z_column == -1) {
+                std::cerr << "Error: column is not found." << std::endl;
+                exit(1);
+            }
+
+            for(std::size_t i = 1;i < settings.size();++i) {
+                // 型名をstringからTに変換
+                std::string data_type = settings[i][data_type_column];
+                std::string key = settings[i][key_column];
+                if(data_type == "u8"){
+                    data_map.emplace(key, Data<std::uint_least8_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::u8));
+                } else if(data_type == "u32"){
+                    data_map.emplace(key, Data<std::uint_least32_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::u32));
+                } else if(data_type == "f32"){
+                    data_map.emplace(key, Data<float>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::f32));
+                } else {
+                    std::cerr << "Error: data_type is not found." << std::endl;
+                    exit(1);
+                }
+            }
         }
 
         Vector2 getStartPosition() const { return start_position; }
         Vector2 getEndPosition() const { return end_position; }
-        bool isLand(const Vector2& position) const {
-            auto it = geographic_informations.find(position);
-            if (it != geographic_informations.end()) {
-                return it->second.isLand();
+
+        // keyとpositionを指定してデータを取得
+        template <typename U>
+        U getData(const std::string& key, const Vector2& position) const {
+            if(data_map.count(key) == 0) {
+                std::cerr << "Error: key is not found." << std::endl;
+                exit(1);
             }
-            return false;
+            return std::get<Data<U>>(data_map.at(key)).getValue(position);
+        }
+
+        bool isLand(const Vector2& position) const {
+            auto value = getData<std::uint_least8_t>("gbank", position);
+            return static_cast<int>(value) == 49; // char '1' -> int 49
+
         }
     private:
         Vector2 start_position;
         Vector2 end_position;
         int z;
-
-        void loadIsLand(const std::string& land_file_path) {
-            std::cout << "Loading is land..." << std::endl;
-            const std::vector<std::string> file_names = getFileNames(land_file_path);
-            std::cout << file_names.size() << " files are found." << std::endl; 
-
-            unsigned int file_count = 0;
-
-            for(const auto& file_name : file_names) {
-                displayProgressBar(file_count, int(file_names.size()));
-
-                Vector2 default_position = (getXAndYFromFileName(file_name) - start_position) * pixel_size;
-                std::vector<std::string> file = readFile(file_name);
-                for(std::size_t y = 0;y < file.size();++y) {
-                    for(std::size_t x = 0;x < file[y].size();++x) {
-                        Vector2 position = default_position + Vector2((int)x, (int)y);
-                        setIsLand(file_name, position, file[y][x]);
-                    }
-                }
-                ++file_count;
-            }
-            displayProgressBar(file_count, int(file_names.size()));
-            std::cout << std::endl << "Loading is land is completed." << std::endl;
-        }
-        void setIsLand(const std::string& file_name, const Vector2& position, const char value) {
-            if(value == '1') {
-                geographic_informations[position] = GeographicInformation(true);
-            }
-            else if(value == '0') {
-                geographic_informations[position] = GeographicInformation();
-            }
-            else {
-                std::cerr << "Error: " << file_name << " is not a binary file." << std::endl;
-                std::exit(1);
-            }
-        }
-        Vector2 getXAndYFromFileName(const std::string& file_name) {
-            std::regex pattern(R"((\w+)_(\d+)_(\d+)_(\d+)\.txt)");
-            std::smatch matches;
-
-            if(std::regex_search(file_name, matches, pattern)) {
-                return Vector2(std::stoi(matches[3]), std::stoi(matches[4]));
-            }
-            else {
-                std::cerr << "Error: The format of " << file_name << " is incorrect." << std::endl;
-                std::exit(1);
-            }
-        }
     };
 }
 

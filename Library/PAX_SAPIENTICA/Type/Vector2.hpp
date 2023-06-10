@@ -47,10 +47,18 @@ namespace paxs {
         Vector2<T> operator*(const Vector2<T>& v) const {
             return Vector2<T>(x * v.x, y * v.y);
         }
-        Vector2<T> operator*(const T& t) const {
+        Vector2<T> operator*(const int& t) const {
             return Vector2<T>(x * t, y * t);
         }
-        Vector2<T>& operator*=(const T& t) {
+        Vector2<T>& operator*=(const int& t) {
+            x *= t;
+            y *= t;
+            return *this;
+        }
+        Vector2<T> operator*(const double& t) const {
+            return Vector2<T>(x * t, y * t);
+        }
+        Vector2<T>& operator*=(const double& t) {
             x *= t;
             y *= t;
             return *this;
@@ -58,10 +66,18 @@ namespace paxs {
         Vector2<T> operator/(const Vector2<T>& v) const {
             return Vector2<T>(x / v.x, y / v.y);
         }
-        Vector2<T> operator/(const T& t) const {
+        Vector2<T> operator/(const int& t) const {
             return Vector2<T>(x / t, y / t);
         }
-        Vector2<T>& operator/=(const T& t) {
+        Vector2<T>& operator/=(const int& t) {
+            x /= t;
+            y /= t;
+            return *this;
+        }
+        Vector2<T> operator/(const double& t) const {
+            return Vector2<T>(x / t, y / t);
+        }
+        Vector2<T>& operator/=(const double& t) {
             x /= t;
             y /= t;
             return *this;
