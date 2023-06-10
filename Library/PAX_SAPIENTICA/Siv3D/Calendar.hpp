@@ -18,6 +18,7 @@
 
 #include <PAX_SAPIENTICA/Siv3D/Language.hpp>
 #include <PAX_SAPIENTICA/Type/Date.hpp>
+#include <PAX_SAPIENTICA/TouchManager.hpp>
 
 namespace paxs {
 
@@ -277,12 +278,13 @@ namespace paxs {
 			const paxs::Vector2<int>& start_position,
 			const paxs::Vector2<int>& end_position,
 			const std::string& path8
+			, paxs::TouchManager& tm_
 			) {
 			// 画像の拡大縮小の方式を設定
 			const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampLinear };
 
 			const double map_view_width = map_view->getWidth();
-			const double map_view_height = map_view->getHeight();
+			//const double map_view_height = map_view->getHeight();
 			const double map_view_center_x = map_view->getCenterX();
 			const double map_view_center_y = map_view->getCenterY();
 			const double map_view_center_lat = std::asin(std::tanh(map_view_center_y / 180.0 * paxs::pi)) / (paxs::pi) * 180.0;
@@ -356,14 +358,14 @@ namespace paxs {
 
 			static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 			++count;
-			if(move_forward_in_time) jdn += 1000;
-			else if(go_back_in_time) jdn -= 1000;
+			//if(move_forward_in_time) jdn += 1000;
+			//else if(go_back_in_time) jdn -= 1000;
 		//if (count >= 0) {
 			if (count >= 30) {
 				count = 0;
 				if (move_forward_in_time) {
-					//++jdn; // ユリウス日を繰り上げ（次の日にする）
-					jdn += 365; // ユリウス日を繰り上げ（次の日にする）
+					++jdn; // ユリウス日を繰り上げ（次の日にする）
+					//jdn += 365; // ユリウス日を繰り上げ（次の日にする）
 #ifdef PAXS_USING_SIMULATOR
 					// エージェント機能テスト
 					if (is_agent_update) {
@@ -450,19 +452,19 @@ namespace paxs {
 				const int icon_move_y = 44;
 
 				texture_reverse_playback.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					move_forward_in_time = false;
 					go_back_in_time = true; // 逆再生
 				}
 				icon_start_x -= arrow_icon_move_x;
 				texture_stop.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					move_forward_in_time = false; // 一時停止
 					go_back_in_time = false;
 				}
 				icon_start_x -= arrow_icon_move_x;
 				texture_playback.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					move_forward_in_time = true; // 再生
 					go_back_in_time = false;
 				}
@@ -470,74 +472,74 @@ namespace paxs {
 				icon_start_x = icon_const_start_x;
 
 				texture_d_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn -= 1;
 				}
 				icon_start_x -= icon_move_x;
 				texture_m_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn -= 30;
 				}
 				icon_start_x -= icon_move_x;
 				texture_y_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn -= 365;
 				}
 				icon_start_x -= icon_move_x;
 				texture_10y_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn -= 3650;
 				}
 				icon_start_x -= icon_move_x;
 				texture_c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn -= (365 * 100);
 				}
 				icon_start_x -= icon_move_x;
 				texture_10c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn -= (365 * 1000);
 				}
 				icon_start_x -= icon_move_x;
 				texture_100c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn -= (365 * 10000);
 				}
 				icon_start_y += icon_move_y;
 				icon_start_x = icon_const_start_x;
 
 				texture_d_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn += 1;
 				}
 				icon_start_x -= icon_move_x;
 				texture_m_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn += 30;
 				}
 				icon_start_x -= icon_move_x;
 				texture_y_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn += 365;
 				}
 				icon_start_x -= icon_move_x;
 				texture_10y_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn += 3650;
 				}
 				icon_start_x -= icon_move_x;
 				texture_c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn += (365 * 100);
 				}
 				icon_start_x -= icon_move_x;
 				texture_10c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn += (365 * 1000);
 				}
 				icon_start_x -= icon_move_x;
 				texture_100c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked()) {
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn += (365 * 10000);
 				}
 
@@ -611,7 +613,7 @@ namespace paxs {
 			pulldown.draw(); // 言語選択
 			menu_bar.draw(); // 左上メニューバー
 
-			if (s3d::Rect(s3d::Scene::Width() - 280, 3, 28).leftClicked()) {
+			if (tm_.get(s3d::Rect(s3d::Scene::Width() - 280, 3, 28).leftClicked())) {
 				// Web ページをブラウザで開く
 				s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
 			}
@@ -657,7 +659,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
 				if (s3d::SimpleGUI::Button(U"Init", s3d::Vec2{ 10,60 })) {
 					simulator = paxs::Simulator<int>(
-						path8 + "Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10",
+						path8 + "Data/Simulation/MapList.tsv",
 						//paxs::Vector2<int>{861, 350},
 						//paxs::Vector2<int>{950, 450}, 10);
 						start_position,

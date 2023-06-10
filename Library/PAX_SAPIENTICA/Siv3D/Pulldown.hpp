@@ -19,6 +19,8 @@
 #include <Siv3D.hpp> // OpenSiv3D v0.6.6
 #include <vector>
 
+#include <PAX_SAPIENTICA/TouchManager.hpp>
+
 namespace paxs {
 
 	enum class PulldownType : int {
@@ -77,20 +79,20 @@ namespace paxs {
 			return itemsa.empty();
 		}
 
-		void update(std::size_t language_index_) {
+		void update(std::size_t language_index_, paxs::TouchManager& tm_) {
 			if (isEmpty()) return;
 			if (language_index != language_index_) {
 				language_index = language_index_;
 				updateLanguage();
 			}
-			if (rect.leftClicked()) {
+			if (tm_.get(rect.leftClicked())) {
 				is_open = (not is_open);
 			}
 			s3d::Point pos = rect.pos.movedBy(0, rect.h);
 			if (is_open) {
 				for (auto i : s3d::step(itemsa.size())) {
 					const s3d::Rect rect_tmp{ pos, rect.w, rect.h };
-					if (rect_tmp.leftClicked()) {
+					if (tm_.get(rect_tmp.leftClicked())) {
 						if (i < is_items.size()) {
 							index = i;
 							is_items[i] = !(is_items[i]);
@@ -206,10 +208,10 @@ namespace paxs {
 				paxs::PulldownType::One ));
 		}
 
-		void update(std::size_t language_index_) {
+		void update(std::size_t language_index_, paxs::TouchManager& tm_) {
 			start_x = 0;
 			for (auto& pd : pdv) {
-				pd.update(language_index_);
+				pd.update(language_index_, tm_);
 				pd.setRectX(start_x);
 				start_x += pd.getRect().w;
 			}

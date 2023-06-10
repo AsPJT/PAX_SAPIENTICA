@@ -42,8 +42,10 @@ enum MapType {
 #include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
 
 // シミュレータを使用する
-//#define PAXS_USING_SIMULATOR
+#define PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Siv3D/Calendar.hpp>
+
+#include <PAX_SAPIENTICA/TouchManager.hpp>
 
 namespace paxs {
 
@@ -51,7 +53,9 @@ namespace paxs {
 		// 初期化とロゴの表示
 		paxs::PaxSapienticaInitSiv3D init{};
 		init.firstInit();
-
+		//s3d::Console::Open()
+		s3d::detail::Console_impl ci;
+		ci.open();
 		// フォルダ階層
 		const s3d::String path = U"./../../../../../";
 		const std::string path8 = "./../../../../../";
@@ -77,6 +81,8 @@ namespace paxs {
 		int size_change_count = 0;
 		paxs::KoyomiSiv3D koyomi_siv{};
 		koyomi_siv.init(language_text, path, path8, map_view);
+
+		paxs::TouchManager tm;
 /*##########################################################################################
 
 	ループ開始
@@ -84,7 +90,7 @@ namespace paxs {
 ##########################################################################################*/
 
 		while (s3d::System::Update()) {
-
+			tm.init(); // タッチ判定を初期化
 			// 画像の拡大縮小の方式を設定
 			const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
 			/*##########################################################################################
@@ -128,9 +134,9 @@ namespace paxs {
 
 			// プルダウンを更新
 			koyomi_siv.pulldown.setPos(s3d::Point{ s3d::Scene::Width() - koyomi_siv.pulldown.getRect().w, 0 });
-			koyomi_siv.pulldown.update(0);
+			koyomi_siv.pulldown.update(0, tm);
 			const std::size_t language = koyomi_siv.pulldown.getIndex();
-			koyomi_siv.menu_bar.update(language);
+			koyomi_siv.menu_bar.update(language, tm);
 
 			mapMapUpdate(koyomi_siv.xyz_tile_list, koyomi_siv.menu_bar, map_view.get());
 
@@ -184,7 +190,8 @@ namespace paxs {
 				simlator,
 			start_position,
 			end_position,
-				path8
+				path8,
+				tm
 			);
 			init.secondInit();
 		}
