@@ -87,6 +87,22 @@ namespace paxs {
 
         Vector2 getStartPosition() const { return start_position; }
         Vector2 getEndPosition() const { return end_position; }
+
+        // keyとpositionを指定してデータを取得
+        template <typename U>
+        U getData(const std::string& key, const Vector2& position) const {
+            if(data_map.count(key) == 0) {
+                std::cerr << "Error: key is not found." << std::endl;
+                exit(1);
+            }
+            return std::get<Data<U>>(data_map.at(key)).getValue(position);
+        }
+
+        bool isLand(const Vector2& position) const {
+            auto value = getData<std::uint_least8_t>("gbank", position);
+            return static_cast<int>(value) == 49; // char '1' -> int 49
+
+        }
     private:
         Vector2 start_position;
         Vector2 end_position;

@@ -81,9 +81,9 @@ namespace paxs {
             for(int i = 0;i < agent_count;++i) {
                 displayProgressBar(i, agent_count);
                 Vector2 position = Vector2(x_dist(gen), y_dist(gen));
-                // while(!environment.isLand(position)) {
-                //     position = Vector2(x_dist(gen), y_dist(gen));
-                // }
+                while(!environment.isLand(position)) {
+                    position = Vector2(x_dist(gen), y_dist(gen));
+                }
                 agents.push_back(Agent(position, (bool)gender_dist(gen), age_dist(gen), life_exp_dist(gen), &environment));
             }
             displayProgressBar(agent_count, agent_count);

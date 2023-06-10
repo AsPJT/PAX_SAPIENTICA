@@ -35,6 +35,7 @@ namespace paxs {
         while (std::getline(file, line)) {
             result.emplace_back(line);
         }
+        file.close();
         return result;
 	}
     std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {

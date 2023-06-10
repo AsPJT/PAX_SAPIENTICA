@@ -45,7 +45,9 @@ namespace paxs {
             name(other.name),
             data(other.data),
             default_z(other.default_z),
-            pj_z(other.pj_z) {}
+            pj_z(other.pj_z),
+            z_mag(other.z_mag),
+            data_type(other.data_type) {}
 
         // Copy assignment operator
         Data& operator=(const Data& other) {
@@ -61,11 +63,13 @@ namespace paxs {
         }
 
         T getValue(const Vector2& position) const {
-
-            if(data.find(position) == data.end()) {
-                return default_z;
+            Vector2 converted_position = position * z_mag;
+            auto itr = data.find(converted_position);
+            if(itr == data.end()) {
+                // TODO: この0はT型のデフォルト値にしたい
+                return 0;
             }
-            return data.at(position);
+            return itr->second;
         }
     private:
         const int pixel_size = 256;
@@ -82,7 +86,7 @@ namespace paxs {
         // ファイルのロード
         void load(const std::string& file_path) {
             std::cout << "Loading " << name << " data..." << std::endl;
-            const std::vector<std::string> file_names = getFileNames("../../../"+file_path);
+            const std::vector<std::string> file_names = getFileNames(file_path);
             std::cout << file_names.size() << " files are found." << std::endl; 
 
             if(file_names.size() == 0) {
@@ -105,17 +109,15 @@ namespace paxs {
             unsigned int file_count = 0;
             int load_count = 0;
 
-            Vector2 converted_start_position = start_position * z_mag;
-            Vector2 converted_end_position = end_position * z_mag;
             for(const auto& file_name : file_names) {
                 displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 xyz_position = getXAndYFromFileName(file_name);
-                if(xyz_position.x < converted_start_position.x || xyz_position.x > converted_end_position.x || xyz_position.y < converted_start_position.y || xyz_position.y > converted_end_position.y) {
+                Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size || default_position.y > (end_position.y - start_position.y) * pixel_size) {
                     ++file_count;
                     continue;
                 }
-                Vector2 default_position = (xyz_position - converted_start_position) * pixel_size;
                 std::vector<std::string> file = readFile(file_name);
                 for(std::size_t y = 0;y < file.size();++y) {
                     // タブ区切り
@@ -153,17 +155,15 @@ namespace paxs {
             unsigned int file_count = 0;
             int load_count = 0;
 
-            Vector2 converted_start_position = start_position * z_mag;
-            Vector2 converted_end_position = end_position * z_mag;
             for(const auto& file_name : file_names) {
                 displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 xyz_position = getXAndYFromFileName(file_name);
-                if(xyz_position.x < converted_start_position.x || xyz_position.x > converted_end_position.x || xyz_position.y < converted_start_position.y || xyz_position.y > converted_end_position.y) {
+                Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size || default_position.y > (end_position.y - start_position.y) * pixel_size) {
                     ++file_count;
                     continue;
                 }
-                Vector2 default_position = (xyz_position - start_position) * pixel_size;
                 std::vector<std::string> file = readFile(file_name);
                 for(std::size_t y = 0;y < file.size();++y) {
                     for(std::size_t x = 0;x < file[y].size();++x) {
