@@ -84,18 +84,16 @@ namespace paxs {
                 while(!environment.isLand(position)) {
                     position = Vector2(x_dist(gen), y_dist(gen));
                 }
-                agents.push_back(Agent(position, (bool)gender_dist(gen), age_dist(gen), life_exp_dist(gen), &environment));
+                agents.push_back(Agent( "", "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), &environment));
             }
             displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;
         }
 
-#ifdef PAX_SAPIENTICA_DEBUG
         void printStatus() {
             std::cout << "Status: " << std::endl;
             std::cout << "  Agent Count: " << agents.size() << std::endl;
         }
-#endif
     };
 }
 

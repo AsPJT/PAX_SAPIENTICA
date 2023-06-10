@@ -16,48 +16,38 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Simulation/ConvertToMercatorCoordinate.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/Object.hpp>
 
 namespace paxs {
     template <typename T>
-    class Agent {
+    class Agent : public Object<T> {
     public:
-        using Environment = paxs::Environment<T>;
         using Vector2 = paxs::Vector2<T>;
+        using Environment = paxs::Environment<T>;
 
-        Agent(const Vector2& pos, const bool gen, const int age, const int life_exp, Environment* env)
-            : position(pos), gender(gen), age(age), life_expectancy(life_exp), environment(env) {}
+        Agent(const std::string& id, const std::string& name, const Vector2& pos, const bool gen, const int age, const int life_exp, Environment* env)
+            : Object<T>(id, name, pos), gender(gen), age(age), life_expectancy(life_exp), environment(env) {}
 
-        T getX() const { return position.x; }
-        T getY() const { return position.y; }
-        Vector2 getPosition() const { return position; }
-        void setX(const T& x) { position.x = x; }
-        void setY(const T& y) { position.y = y; }
-        void setPosition(const Vector2& pos) { position = pos; }
-        paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z, const int pixel_size) const {
-            return convertToMercatorCoordinate(start_position, position, z, pixel_size);
-        }
         void move(const Vector2& v) {
-            if (environment->isLand(position + v)) {
-                position += v;
+            if (environment->isLand(this->position + v)) {
+                this->position += v;
             }
         }
 
         bool isDead() const { return age >= life_expectancy; }
-        int getAge() const { return age; }
         void updateAge() { ++age; }
-        bool getGender() const { return gender; }
-        int getLifeExpectancy() const { return life_expectancy; }
+        std::uint_least8_t getGender() const { return gender; }
 
         bool operator==(const paxs::Agent<T>& a) {
-            return a.getX() == getX() && a.getY() == getY() && a.getGender() == getGender() && a.getAge() == getAge() && a.getLifeExpectancy() == getLifeExpectancy();
+            return  Object<T>::operator==(a) && 
+                    gender == a.gender && 
+                    age == a.age &&
+                    life_expectancy == a.life_expectancy &&
+                    environment == a.environment;
         }
-
-    private:
-        Vector2 position;
-        bool gender; // true: male, false: female
+    protected:
+        std::uint_least8_t gender;
         int age;
         int life_expectancy;
         Environment* environment;
