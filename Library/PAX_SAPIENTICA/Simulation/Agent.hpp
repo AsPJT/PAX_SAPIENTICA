@@ -26,8 +26,8 @@ namespace paxs {
         using Vector2 = paxs::Vector2<T>;
         using Environment = paxs::Environment<T>;
 
-        Agent(const std::string& id, const std::string& name, const Vector2& pos, const bool gen, const int age, const int life_exp, Environment* env)
-            : Object<T>(id, name, pos), gender(gen), age(age), life_expectancy(life_exp), environment(env) {}
+        Agent(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least32_t age, const std::uint_least32_t life_span, Environment* env)
+            : Object<T>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
 
         void move(const Vector2& v) {
             if (environment->isLand(this->position + v)) {
@@ -35,7 +35,7 @@ namespace paxs {
             }
         }
 
-        bool isDead() const { return age >= life_expectancy; }
+        bool isDead() const { return age >= life_span; }
         void updateAge() { ++age; }
         std::uint_least8_t getGender() const { return gender; }
 
@@ -43,13 +43,13 @@ namespace paxs {
             return  Object<T>::operator==(a) && 
                     gender == a.gender && 
                     age == a.age &&
-                    life_expectancy == a.life_expectancy &&
+                    life_span == a.life_span &&
                     environment == a.environment;
         }
     protected:
         std::uint_least8_t gender;
-        int age;
-        int life_expectancy;
+        std::uint_least32_t age;
+        std::uint_least32_t life_span;
         Environment* environment;
     };
 }
