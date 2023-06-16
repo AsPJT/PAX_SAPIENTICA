@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.4.33213.308
+VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicalUserInterface", "GraphicalUserInterface\GraphicalUserInterface.vcxproj", "{5AD0FAA9-6845-4470-B233-AA0DB454A98A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicalUserInterface", "GraphicalUserInterface\GraphicalUserInterface.vcxproj", "{B20C4E9F-C478-4679-B3DD-FBBDF6A226E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5AD0FAA9-6845-4470-B233-AA0DB454A98A}.Debug|x64.ActiveCfg = Debug|x64
-		{5AD0FAA9-6845-4470-B233-AA0DB454A98A}.Debug|x64.Build.0 = Debug|x64
-		{5AD0FAA9-6845-4470-B233-AA0DB454A98A}.Release|x64.ActiveCfg = Release|x64
-		{5AD0FAA9-6845-4470-B233-AA0DB454A98A}.Release|x64.Build.0 = Release|x64
+		{B20C4E9F-C478-4679-B3DD-FBBDF6A226E0}.Debug|x64.ActiveCfg = Debug|x64
+		{B20C4E9F-C478-4679-B3DD-FBBDF6A226E0}.Debug|x64.Build.0 = Debug|x64
+		{B20C4E9F-C478-4679-B3DD-FBBDF6A226E0}.Release|x64.ActiveCfg = Release|x64
+		{B20C4E9F-C478-4679-B3DD-FBBDF6A226E0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D58FCC49-CCB0-48EF-8697-AF3C30E173C8}
+		SolutionGuid = {B138DF83-8B26-49EF-BC34-F9708B541021}
 	EndGlobalSection
 EndGlobal
