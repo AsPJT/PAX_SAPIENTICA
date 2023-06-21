@@ -55,7 +55,7 @@ namespace paxs {
 		,	std::string("#CA0020")
 		};
 
-		int getIndex(const RGBA& rgba) {
+		std::size_t getIndex(const RGBA& rgba) {
 			std::size_t index = 0;
 			int diff = 99999999;
 
