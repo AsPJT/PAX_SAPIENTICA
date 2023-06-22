@@ -18,11 +18,12 @@
 
 #include <cmath>
 
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
     template <typename T>
-    Vector2<double> convertToMercatorCoordinate(const Vector2<T>& start_position, const Vector2<T>& position, const int z, const int pixel_size) {
+    Vector2<double> convertToMercatorCoordinate(const Vector2<T>& start_position, const Vector2<T>& position, const int z) {
         const double n = std::pow(2, z);
         const double pixel_sum = pixel_size * n;
         const double u = (double)position.x / pixel_sum + start_position.x / n;

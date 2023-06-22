@@ -19,6 +19,7 @@
 #include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
 #include <PAX_SAPIENTICA/FileRead/Convert.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 #include <iostream>
@@ -72,8 +73,6 @@ namespace paxs {
             return itr->second;
         }
     private:
-        const int pixel_size = 256;
-        
         Vector2 start_position;
         Vector2 end_position;
         std::string name;

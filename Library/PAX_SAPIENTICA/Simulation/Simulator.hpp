@@ -18,6 +18,7 @@
 
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
     template <typename T>
@@ -74,8 +75,8 @@ namespace paxs {
 
         void randomizeAgents(const int agent_count) {
             const Vector2& offset = environment.getEndPosition() - environment.getStartPosition();
-            std::uniform_int_distribution<> x_dist(0, environment.pixel_size * offset.x);
-            std::uniform_int_distribution<> y_dist(0, environment.pixel_size * offset.y);
+            std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
+            std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
             std::uniform_int_distribution<> age_dist(0, 20);
             std::cout << "Randomizing agents..." << std::endl;
             for(int i = 0;i < agent_count;++i) {
@@ -84,18 +85,16 @@ namespace paxs {
                 while(!environment.isLand(position)) {
                     position = Vector2(x_dist(gen), y_dist(gen));
                 }
-                agents.push_back(Agent(position, (bool)gender_dist(gen), age_dist(gen), life_exp_dist(gen), &environment));
+                agents.push_back(Agent( "", "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), &environment));
             }
             displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;
         }
 
-#ifdef PAX_SAPIENTICA_DEBUG
         void printStatus() {
             std::cout << "Status: " << std::endl;
             std::cout << "  Agent Count: " << agents.size() << std::endl;
         }
-#endif
     };
 }
 
