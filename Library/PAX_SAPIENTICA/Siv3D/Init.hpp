@@ -43,18 +43,18 @@ namespace paxs {
 
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp> // 日本の元号
 
-#include <PAX_SAPIENTICA/Constant/Math.hpp> // 数学定数
+#include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 
 namespace paxs {
 
 	// 緯度をメルカトル座標 RadY へ変換する
 	double getLatitudeToMercatorRadY(const double value_) {
-		return (value_ >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::pi / 4.0 - (value_ * paxs::deg_to_rad) / 2.0))));
+		return (value_ >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::MathF64::pi() / 4.0 - paxs::MathF64::degToRad(value_) / 2.0))));
 	}
 
 	// 緯度をメルカトル座標 Y へ変換する
 	double getLatitudeToMercatorY(const double value_) {
-		return paxs::rad_to_deg * getLatitudeToMercatorRadY(value_);
+		return paxs::MathF64::radToDeg(getLatitudeToMercatorRadY(value_));
 	}
 
 	struct OutputDate {
