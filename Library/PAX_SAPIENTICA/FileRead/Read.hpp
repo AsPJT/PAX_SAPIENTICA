@@ -27,7 +27,7 @@ namespace paxs {
         // ファイルの読み込み
         std::ifstream file(file_path);
         if (!file) {
-            std::cout << "File not found." << std::endl;
+            std::cout << "file_path:" << file_path << " not found." << std::endl;
             std::exit(1);
         }
         std::string line;

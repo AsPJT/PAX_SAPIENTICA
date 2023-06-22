@@ -18,9 +18,10 @@
 
 #include <cmath>
 #include <iostream>
-#include <map>
 #include <random>
 #include <regex>
+#include <unordered_map>
+#include <variant>
 
 #include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
 #include <PAX_SAPIENTICA/FileRead/Convert.hpp>
@@ -28,6 +29,7 @@
 #include <PAX_SAPIENTICA/FileRead/Split.hpp>
 #include <PAX_SAPIENTICA/Simulation/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/GeographicInformation.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
@@ -36,10 +38,8 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<T>;
 
-        int pixel_size = 256;
-
         using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>>;
-        std::map<std::string, DataVariant> data_map;
+        std::unordered_map<std::string, DataVariant> data_map;
 
         Environment() = default;
         Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
