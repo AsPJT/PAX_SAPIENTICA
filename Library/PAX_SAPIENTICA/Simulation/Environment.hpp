@@ -29,6 +29,7 @@
 #include <PAX_SAPIENTICA/FileRead/Split.hpp>
 #include <PAX_SAPIENTICA/Simulation/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/GeographicInformation.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
@@ -36,8 +37,6 @@ namespace paxs {
     class Environment {
     public:
         using Vector2 = paxs::Vector2<T>;
-
-        int pixel_size = 256;
 
         using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>>;
         std::unordered_map<std::string, DataVariant> data_map;
