@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/Constant/Version.hpp>
+#include <PAX_SAPIENTICA/Version.hpp>
 
 namespace paxs {
 
