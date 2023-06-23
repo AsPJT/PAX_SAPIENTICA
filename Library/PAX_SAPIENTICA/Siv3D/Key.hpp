@@ -20,7 +20,9 @@
 #include<new>
 #include<vector>
 
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
+#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
 namespace paxs {
 	
@@ -65,7 +67,7 @@ namespace paxs {
 	public:
 		double movement_size; // マップの移動量
 
-		Coordinate(double x, double y, double movement_size) : x(x), y(y), movement_size(movement_size) {
+		Coordinate(const paxs::MercatorDeg& coordinate_, double movement_size) : coordinate(coordinate_), movement_size(movement_size) {
 			increase_x_keys.resize(2);
 			increase_x_keys[0].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyA));
 			increase_x_keys[1].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyLeft));
@@ -83,20 +85,27 @@ namespace paxs {
 			decrease_y_keys[1].reset((BaseKey*)new(std::nothrow) Key(s3d::KeyUp));
 		}
 		void update(const double width) {
-			if (pressed(increase_x_keys)) increase_coordinate(x, width);
-			if (pressed(decrease_x_keys)) decrease_coordinate(x, width);
-			if (pressed(increase_y_keys)) increase_coordinate(y, width);
-			if (pressed(decrease_y_keys)) decrease_coordinate(y, width);
+			if (pressed(increase_x_keys)) increase_coordinate(coordinate.x, width);
+			if (pressed(decrease_x_keys)) decrease_coordinate(coordinate.x, width);
+			if (pressed(increase_y_keys)) increase_coordinate(coordinate.y, width);
+			if (pressed(decrease_y_keys)) decrease_coordinate(coordinate.y, width);
 		}
 		double getX() const {
-			return x;
+			return coordinate.x;
 		}
 		double getY() const {
-			return y;
+			return coordinate.y;
 		}
+
+		double toEquirectangularRadY() const {
+			return coordinate.toEquirectangularRadY();
+		}
+		double toEquirectangularDegY() const {
+			return coordinate.toEquirectangularDegY();
+		}
+
 	private:
-		double x; // マップ座標の中央X
-		double y; // マップ座標の中央Y
+		paxs::MercatorDeg coordinate; // マップ座標の中央
 		std::vector<std::unique_ptr<BaseKey>> increase_x_keys;
 		std::vector<std::unique_ptr<BaseKey>> decrease_x_keys;
 		std::vector<std::unique_ptr<BaseKey>> increase_y_keys;
@@ -118,7 +127,10 @@ namespace paxs {
 
 	class MapView {
 	private:
-		Coordinate center = Coordinate(135.0, getLatitudeToMercatorY(35.0), 200.0); // マップ座標の中央
+		Coordinate center = Coordinate(
+			paxs::EquirectangularDeg(paxs::Vector2<double>(135.0, 35.0)),
+			//paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)), 
+			200.0); // マップ座標の中央
 		double width = 2.0; // マップの幅
 
 		// 平城京
@@ -169,6 +181,9 @@ namespace paxs {
 			height = height_;
 		}
 
+		Coordinate& getCoordinate() {
+			return center;
+		}
 		double getCenterX() const {
 			return center.getX();
 		}

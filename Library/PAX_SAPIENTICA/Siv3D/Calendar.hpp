@@ -20,6 +20,7 @@
 #include <PAX_SAPIENTICA/Type/Date.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数
+#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
 namespace paxs {
 
@@ -285,10 +286,9 @@ namespace paxs {
 			const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampLinear };
 
 			const double map_view_width = map_view->getWidth();
-			//const double map_view_height = map_view->getHeight();
-			const double map_view_center_x = map_view->getCenterX();
-			const double map_view_center_y = map_view->getCenterY();
-			const double map_view_center_lat = paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view_center_y))));
+			const double map_view_center_lat = 
+				//paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view->getCenterY()))));
+				map_view->getCoordinate().toEquirectangularDegY();
 
 			/*##########################################################################################
 	暦関連
@@ -558,13 +558,13 @@ namespace paxs {
 			if (menu_bar.getPulldown(MenuBarType::view).getIsItems(3)) {
 				font[language](language_text.get()[map_view_center_x_str_index][language + 1 /* 言語位置調整 */]
 					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
-				font[language](s3d::ToString(map_view_center_x)
+				font[language](s3d::ToString(map_view->getCenterX())
 					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, debug_start_y), s3d::Palette::Black);
 				debug_start_y += debug_move_y;
 				// マップ中心座標 Y
 				font[language](language_text.get()[map_view_center_y_str_index][language + 1 /* 言語位置調整 */]
 					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
-				font[language](s3d::ToString(map_view_center_y)
+				font[language](s3d::ToString(map_view->getCenterY())
 					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, debug_start_y), s3d::Palette::Black);
 				debug_start_y += debug_move_y;
 				font[language](language_text.get()[map_view_center_lat_str_index][language + 1 /* 言語位置調整 */]
