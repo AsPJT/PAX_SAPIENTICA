@@ -24,16 +24,16 @@ namespace paxs {
 	template<typename T>
 	class Math {
 	public:
-		inline static T pi() { return static_cast<T>(PAX_SAPIENTICA_PI); } // π
-		inline static T pi2() { return static_cast<T>(PAX_SAPIENTICA_PI * 2.0); } // ２π
-		inline static T pi3() { return static_cast<T>(PAX_SAPIENTICA_PI * 3.0); } // ３π
-		inline static T pi4() { return static_cast<T>(PAX_SAPIENTICA_PI * 4.0); } // ４π
-		inline static T piHalf() { return static_cast<T>(PAX_SAPIENTICA_PI * 0.5); } // π／２
+		constexpr inline static T pi() { return static_cast<T>(PAX_SAPIENTICA_PI); } // π
+		constexpr inline static T pi2() { return static_cast<T>(PAX_SAPIENTICA_PI * 2.0); } // ２π
+		constexpr inline static T pi3() { return static_cast<T>(PAX_SAPIENTICA_PI * 3.0); } // ３π
+		constexpr inline static T pi4() { return static_cast<T>(PAX_SAPIENTICA_PI * 4.0); } // ４π
+		constexpr inline static T piHalf() { return static_cast<T>(PAX_SAPIENTICA_PI * 0.5); } // π／２
 
-		inline static T radToDeg() { return static_cast<T>(180.0 / PAX_SAPIENTICA_PI); } // ラジアンから度
-		inline static T degToRad() { return static_cast<T>(PAX_SAPIENTICA_PI / 180.0); } // 度からラジアン
-		inline static T radToDeg(const T value) { return static_cast<T>(value * radToDeg()); } // ラジアンから度
-		inline static T degToRad(const T value) { return static_cast<T>(value * degToRad()); } // 度からラジアン
+		constexpr inline static T radToDeg() { return static_cast<T>(180.0 / PAX_SAPIENTICA_PI); } // ラジアンから度
+		constexpr inline static T degToRad() { return static_cast<T>(PAX_SAPIENTICA_PI / 180.0); } // 度からラジアン
+		constexpr inline static T radToDeg(const T value) { return static_cast<T>(value * radToDeg()); } // ラジアンから度
+		constexpr inline static T degToRad(const T value) { return static_cast<T>(value * degToRad()); } // 度からラジアン
 
 	};
 
