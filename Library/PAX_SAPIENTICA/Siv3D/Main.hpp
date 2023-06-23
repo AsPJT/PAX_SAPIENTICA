@@ -132,7 +132,6 @@ namespace paxs {
 			const double map_view_height = map_view->getHeight();
 			const double map_view_center_x = map_view->getCenterX();
 			const double map_view_center_y = map_view->getCenterY();
-			const double map_view_center_lat = paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view_center_y))));
 
 			// プルダウンを更新
 			koyomi_siv.pulldown.setPos(s3d::Point{ s3d::Scene::Width() - koyomi_siv.pulldown.getRect().w, 0 });

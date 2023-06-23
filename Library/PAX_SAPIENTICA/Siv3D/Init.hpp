@@ -47,16 +47,6 @@ namespace paxs {
 
 namespace paxs {
 
-	// 緯度をメルカトル座標 RadY へ変換する
-	double getLatitudeToMercatorRadY(const double value_) {
-		return (value_ >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::MathF64::pi() / 4.0 - paxs::MathF64::degToRad(value_) / 2.0))));
-	}
-
-	// 緯度をメルカトル座標 Y へ変換する
-	double getLatitudeToMercatorY(const double value_) {
-		return paxs::MathF64::radToDeg(getLatitudeToMercatorRadY(value_));
-	}
-
 	struct OutputDate {
 		std::vector<s3d::String> calendar_name{};
 		paxs::Date date{};

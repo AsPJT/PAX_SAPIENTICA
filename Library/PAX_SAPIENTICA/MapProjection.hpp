@@ -20,9 +20,14 @@
 
 namespace paxs {
 
-	struct MercatorDeg;
-	struct EquirectangularDeg;
+	// 前方宣言
+	// forward declaration
+	struct MercatorDeg; // メルカトル図法（度）
+	//struct MercatorRad; // メルカトル図法（ラジアン）
+	struct EquirectangularDeg; // 正距円筒図法（度）
+	//struct EquirectangularRad; // 正距円筒図法（ラジアン）
 
+	// メルカトル図法（度）
 	struct MercatorDeg : paxs::Vector2<double> {
 	public:
 		double toEquirectangularRadY() const {
@@ -34,6 +39,7 @@ namespace paxs {
 		operator EquirectangularDeg() const;
 	};
 
+	// 正距円筒図法（度）
 	struct EquirectangularDeg : paxs::Vector2<double> {
 	public:
 		double toMercatorRadY() const {

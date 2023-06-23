@@ -33,8 +33,8 @@ namespace paxs {
         void setX(const T& x) { position.x = x; }
         void setY(const T& y) { position.y = y; }
         void setPosition(const Vector2& pos) { position = pos; }
-        paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z, const int pixel_size) const {
-            return convertToMercatorCoordinate(start_position, position, z, pixel_size);
+        paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const {
+            return convertToMercatorCoordinate(start_position, position, z);
         }
 
         bool operator==(const paxs::Object<T>& a) {

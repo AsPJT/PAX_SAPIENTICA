@@ -244,7 +244,10 @@ namespace paxs {
 			while (std::getline(rifs, rline)) {
 				std::vector<std::string> strvec = paxs::split(rline, '\t');
 
-				route1.emplace_back(std::stod(strvec[0]), getLatitudeToMercatorY(std::stod(strvec[1])));
+				const MercatorDeg coordinate = EquirectangularDeg(
+				paxs::Vector2(std::stod(strvec[0]), std::stod(strvec[1]))
+				);
+				route1.emplace_back(coordinate.x, coordinate.y);
 			}
 			for (int i = 0; i < route1.size(); ++i) {
 				route2.emplace_back(

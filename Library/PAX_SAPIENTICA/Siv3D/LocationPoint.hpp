@@ -14,6 +14,7 @@
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
+#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
 /*##########################################################################################
 
@@ -37,12 +38,12 @@ namespace paxs {
 
 	// 地名
 	struct LocationPoint {
-		std::string name;
-		std::string en_name;
-		double x, y;
-		double min_view, max_view;
-		int min_year, max_year;
-		LocationPointEnum lpe;
+		std::string name{};
+		std::string en_name{};
+		paxs::MercatorDeg coordinate{};
+		double min_view{}, max_view{};
+		int min_year{}, max_year{};
+		LocationPointEnum lpe{};
 		std::string source{};
 	};
 
@@ -55,7 +56,8 @@ namespace paxs {
 			for (int i = 0; i < agents.size(); ++i) {
 				location_point_list.emplace_back(
 					LocationPoint{
-						"","",agents[i].getLocation(start_position, 10, 256).x,agents[i].getLocation(start_position, 10, 256).y,
+						"","",
+						paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),
 						100,0,0,99999999,
 						(agents[i].getGender())?
 						LocationPointEnum::location_point_agent:
@@ -67,8 +69,8 @@ namespace paxs {
 			}
 			//for (int i = 0; i < location_point_list.size(); ++i) {
 			//	auto& lli = location_point_list[i];
-			//	lli.x += s3d::Random(-0.001,0.001);
-			//	lli.y += s3d::Random(-0.001, 0.001);
+			//	lli.coordinate.x += s3d::Random(-0.001,0.001);
+			//	lli.coordinate.y += s3d::Random(-0.001, 0.001);
 			//}
 		}
 		void addKofun() {
@@ -100,10 +102,10 @@ namespace paxs {
 			for (int i = 0; i < location_point_list.size(); ++i) {
 				auto& lli = location_point_list[i];
 				// 範囲外を除去
-				if (lli.x < (map_view_center_x - map_view_width / 1.8)
-					|| lli.x >(map_view_center_x + map_view_width / 1.8)
-					|| lli.y < (map_view_center_y - map_view_height / 1.8)
-					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
+				if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.8)
+					|| lli.coordinate.x >(map_view_center_x + map_view_width / 1.8)
+					|| lli.coordinate.y < (map_view_center_y - map_view_height / 1.8)
+					|| lli.coordinate.y >(map_view_center_y + map_view_height / 1.8)) continue;
 
 				// 範囲内の場合
 				if (lli.min_view > map_view_width
@@ -115,59 +117,59 @@ namespace paxs {
 					// 地名
 					//if (lli.lpe == LocationPointEnum::location_point_place_name) {
 					//	texture_pn.resized(14).drawAt(
-					//		s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-					//	double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+					//		s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+					//	double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 					//	continue;
 					//}
 					// エージェント
 					if (lli.lpe == LocationPointEnum::location_point_agent) {
-						//s3d::Circle(	s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						//double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
+						//s3d::Circle(	s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						//double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
 						//,10).draw();
 						texture_blue_circle.resized(15).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// エージェント
 					if (lli.lpe == LocationPointEnum::location_point_agent2) {
-						//s3d::Circle(	s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						//double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
+						//s3d::Circle(	s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						//double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
 						//,10).draw();
 						texture_red_circle.resized(15).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 遺跡
 					if (lli.source == "Iseki") {
 						texture_blue_circle.resized(10).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 前方後円墳
 					//if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
 					if (lli.source == "ZempoKoenFun") {
 						texture_kofun1.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 前方後方墳
 					//if (lli.lpe == LocationPointEnum::location_point_zempo_koho_fun) {
 					if (lli.source == "ZempoKohoFun") {
 						texture_kofun2.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// 帆立貝型古墳
 					//if (lli.lpe == LocationPointEnum::location_point_hotategai_gata_kofun) {
 					if (lli.source == "HotategaiGataKofun") {
 						texture_kofun3.resized(14).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 				}
@@ -178,10 +180,10 @@ namespace paxs {
 				auto& lli = location_point_list[i];
 
 				// 範囲外を除去
-				if (lli.x < (map_view_center_x - map_view_width / 1.8)
-					|| lli.x >(map_view_center_x + map_view_width / 1.8)
-					|| lli.y < (map_view_center_y - map_view_height / 1.8)
-					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
+				if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.8)
+					|| lli.coordinate.x >(map_view_center_x + map_view_width / 1.8)
+					|| lli.coordinate.y < (map_view_center_y - map_view_height / 1.8)
+					|| lli.coordinate.y >(map_view_center_y + map_view_height / 1.8)) continue;
 
 				if (lli.min_view > map_view_width) continue;
 				if (lli.max_view < map_view_width) continue;
@@ -196,81 +198,81 @@ namespace paxs {
 						// 名前を描画
 						font(s3d::Unicode::FromUTF8(lli.name)).drawAt(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
+							(lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
 							, s3d::Palette::Black);
 					}
 					else {
 						// 名前（英語）を描画
 						en_font(s3d::Unicode::FromUTF8(lli.en_name)).draw(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							s3d::Arg::bottomCenter = s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
+							s3d::Arg::bottomCenter = s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
 							}
 						, s3d::Palette::Black);
 						// 名前を描画
 						font(s3d::Unicode::FromUTF8(lli.name)).draw(
 							s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-							s3d::Arg::topCenter = s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
+							s3d::Arg::topCenter = s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// - 30
 							}
 						, s3d::Palette::Black);
 					}
 					// 古事記のアイコン
 					if (lli.source == "JP-Kojiki") {
-						texture_ko.resized(20).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+						texture_ko.resized(20).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 					// 倭名類聚抄のアイコン
 					else if (lli.source == "JP-WamyoRuijusho") {
-						//texture_wam.resized(20).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						//	double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+						//texture_wam.resized(20).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						//	double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 						//	});
 					}
 					// 前方後円墳のアイコン
 					else if (lli.source == "Iseki") {
-						texture_blue_circle.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+						texture_blue_circle.resized(35).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 					// 前方後円墳のアイコン
 					else if (lli.source == "ZempoKoenFun") {
-						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 					// 前方後方墳のアイコン
 					else if (lli.source == "ZempoKohoFun") {
-						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 					// 帆立貝型古墳のアイコン
 					else if (lli.source == "HotategaiGataKofun") {
-						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
+						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 				}
 				// それ以外（集落遺跡）
 				else {
 					pin_font(s3d::Unicode::FromUTF8(lli.name)).drawAt(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-						(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) - 70
+						(lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) - 70
 						, s3d::Palette::Black);
 					texture_pin1.resized(50).draw(
-						s3d::Arg::bottomCenter = s3d::Vec2((lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-							double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())))
+						s3d::Arg::bottomCenter = s3d::Vec2((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())))
 					);
 				}
-				//Circle{{(lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(Scene::Width()),
-				//double(Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(Scene::Height()))},5 }.draw(Palette::Black);
+				//Circle{{(lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(Scene::Width()),
+				//double(Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(Scene::Height()))},5 }.draw(Palette::Black);
 
 			}
 		}
 	private:
-		std::vector<LocationPoint> location_point_list;
+		std::vector<LocationPoint> location_point_list{};
 		const s3d::Texture texture_ko{ U"./../../../../../Data/OldDocumentIcon/JP-Kojiki.svg" };
 		const s3d::Texture texture_wam{ U"./../../../../../Data/OldDocumentIcon/JP-WamyoRuijusho.svg" };
 		const s3d::Texture texture_pin1{ U"./../../../../../Data/Pin/PitDwelling.svg" };
@@ -291,8 +293,11 @@ namespace paxs {
 				location_point_list.emplace_back(
 					strvec[0], // 漢字
 					strvec[1], // ローマ字
-					std::stod(strvec[2]), // 経度
-					getLatitudeToMercatorY(std::stod(strvec[3])), // 緯度
+					paxs::MercatorDeg(
+					paxs::EquirectangularDeg(
+					paxs::Vector2<double>(
+						std::stod(strvec[2]), // 経度
+						std::stod(strvec[3])))), // 緯度
 					std::stod(strvec[4]), // 最小サイズ
 					std::stod(strvec[5]), // 最大サイズ
 					std::stod(strvec[6]), // 最小時代
@@ -319,7 +324,8 @@ namespace paxs {
 			// 地名を描画
 			for (int i = 0; i < agents.size(); ++i) {
 				const auto lli = LocationPoint{
-						"","",agents[i].getLocation(start_position, 10, 256).x,agents[i].getLocation(start_position, 10, 256).y,
+						"","",
+						paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),
 						100,0,0,99999999,
 						(agents[i].getGender()) ?
 						LocationPointEnum::location_point_agent :
@@ -327,10 +333,10 @@ namespace paxs {
 						,""
 				};
 				// 範囲外を除去
-				if (lli.x < (map_view_center_x - map_view_width / 1.8)
-					|| lli.x >(map_view_center_x + map_view_width / 1.8)
-					|| lli.y < (map_view_center_y - map_view_height / 1.8)
-					|| lli.y >(map_view_center_y + map_view_height / 1.8)) continue;
+				if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.8)
+					|| lli.coordinate.x >(map_view_center_x + map_view_width / 1.8)
+					|| lli.coordinate.y < (map_view_center_y - map_view_height / 1.8)
+					|| lli.coordinate.y >(map_view_center_y + map_view_height / 1.8)) continue;
 
 				// 範囲内の場合
 				if (lli.min_view > map_view_width
@@ -343,15 +349,15 @@ namespace paxs {
 					// エージェント
 					if (lli.lpe == LocationPointEnum::location_point_agent) {
 						texture_blue_circle.resized(15).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 					// エージェント
 					if (lli.lpe == LocationPointEnum::location_point_agent2) {
 						texture_red_circle.resized(15).drawAt(
-							s3d::Vec2{ (lli.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((lli.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
+							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
+						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
 				}
