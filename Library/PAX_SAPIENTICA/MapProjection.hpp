@@ -20,6 +20,14 @@
 
 namespace paxs {
 
+	// |	X min 	|	X max 	|	Y min 	|	Y max 	|	MapProjection 地図投影法
+	// |	----	|	----	|	----	|	----	|	------------------
+	// |	-180  	|	180  	|	 -90  	|	  90  	|	EquirectangularDeg 正距円筒図法（度）
+	// |	----	|	----	|	----	|	----	|	------------------
+	// |	-180  	|	180  	|	 -∞  	|	  ∞  	|	MercatorDeg メルカトル図法（度）
+	// |	----	|	----	|	----	|	----	|	------------------
+	// |	-180  	|	180  	|	-180  	|	  180  	|	XYZTiles	XYZ タイル（度）
+
 	// 前方宣言
 	// forward declaration
 	struct MercatorDeg; // メルカトル図法（度）
@@ -30,28 +38,35 @@ namespace paxs {
 	// メルカトル図法（度）
 	struct MercatorDeg : paxs::Vector2<double> {
 	public:
+		// Ｙ軸を正距円筒図法（ラジアン）へ変換した値を返す
 		double toEquirectangularRadY() const {
 			return static_cast<double>(std::asin(std::tanh(paxs::MathF64::degToRad(this->y))));
 		}
+		// Ｙ軸を正距円筒図法（度）へ変換した値を返す
 		double toEquirectangularDegY() const {
 			return static_cast<double>(paxs::MathF64::radToDeg(toEquirectangularRadY()));
 		}
+		// 正距円筒図法（度）へ変換した値を返す
 		operator EquirectangularDeg() const;
 	};
 
 	// 正距円筒図法（度）
 	struct EquirectangularDeg : paxs::Vector2<double> {
 	public:
+		// Ｙ軸をメルカトル図法（ラジアン）へ変換した値を返す
 		double toMercatorRadY() const {
 			return static_cast<double>((y >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::MathF64::pi() / 4.0 - paxs::MathF64::degToRad(y) / 2.0)))));
 		}
+		// Ｙ軸をメルカトル図法（度）へ変換した値を返す
 		double toMercatorDegY() const {
 			return static_cast<double>(paxs::MathF64::radToDeg(toMercatorRadY()));
 		}
+		// メルカトル図法（度）へ変換した値を返す
 		operator MercatorDeg() const {
 			return MercatorDeg(paxs::Vector2<double>(x, toMercatorDegY()));
 		}
 	};
+	// メルカトル図法（度）を正距円筒図法（度）へ変換した値を返す
 	MercatorDeg::operator EquirectangularDeg() const {
 		return EquirectangularDeg(paxs::Vector2<double>(x, toEquirectangularDegY()));
 	}
