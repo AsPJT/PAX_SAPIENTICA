@@ -22,91 +22,91 @@ namespace paxs {
     template<typename T>
     class Vector2 {
     public:
-        Vector2() = default;
-        Vector2(T x, T y) : x(x), y(y) {}
+        constexpr Vector2() = default;
+        constexpr Vector2(T x, T y) : x(x), y(y) {}
 
         T x;
         T y;
 
-        Vector2<T> operator+(const Vector2<T>& v) const {
+        constexpr Vector2<T> operator+(const Vector2<T>& v) const {
             return Vector2<T>(x + v.x, y + v.y);
         }
-        Vector2<T>& operator+=(const Vector2<T>& v) {
+        constexpr Vector2<T>& operator+=(const Vector2<T>& v) {
             x += v.x;
             y += v.y;
             return *this;
         }
-        Vector2<T> operator-(const Vector2<T>& v) const {
+        constexpr Vector2<T> operator-(const Vector2<T>& v) const {
             return Vector2<T>(x - v.x, y - v.y);
         }
-        Vector2<T>& operator-=(const Vector2<T>& v) {
+        constexpr Vector2<T>& operator-=(const Vector2<T>& v) {
             x -= v.x;
             y -= v.y;
             return *this;
         }
-        Vector2<T> operator*(const Vector2<T>& v) const {
+        constexpr Vector2<T> operator*(const Vector2<T>& v) const {
             return Vector2<T>(x * v.x, y * v.y);
         }
-        Vector2<T> operator*(const int& t) const {
+        constexpr Vector2<T> operator*(const int& t) const {
             return Vector2<T>(x * t, y * t);
         }
-        Vector2<T>& operator*=(const int& t) {
+        constexpr Vector2<T>& operator*=(const int& t) {
             x *= t;
             y *= t;
             return *this;
         }
-        Vector2<T> operator*(const double& t) const {
+        constexpr Vector2<T> operator*(const double& t) const {
             return Vector2<T>(x * T(t), y * T(t));
         }
-        Vector2<T>& operator*=(const double& t) {
+        constexpr Vector2<T>& operator*=(const double& t) {
             x *= t;
             y *= t;
             return *this;
         }
-        Vector2<T> operator/(const Vector2<T>& v) const {
+        constexpr Vector2<T> operator/(const Vector2<T>& v) const {
             return Vector2<T>(x / v.x, y / v.y);
         }
-        Vector2<T> operator/(const int& t) const {
+        constexpr Vector2<T> operator/(const int& t) const {
             return Vector2<T>(x / t, y / t);
         }
-        Vector2<T>& operator/=(const int& t) {
+        constexpr Vector2<T>& operator/=(const int& t) {
             x /= t;
             y /= t;
             return *this;
         }
-        Vector2<T> operator/(const double& t) const {
+        constexpr Vector2<T> operator/(const double& t) const {
             return Vector2<T>(x / t, y / t);
         }
-        Vector2<T>& operator/=(const double& t) {
+        constexpr Vector2<T>& operator/=(const double& t) {
             x /= t;
             y /= t;
             return *this;
         }
-        bool operator==(const Vector2<T>& v) const {
+        constexpr bool operator==(const Vector2<T>& v) const {
             return v.x == x && v.y == y;
         }
-        bool operator!=(const Vector2<T>& v) const {
+        constexpr bool operator!=(const Vector2<T>& v) const {
             return v.x != x || v.y != y;
         }
-        bool operator<(const Vector2<T>& v) const {
+        constexpr bool operator<(const Vector2<T>& v) const {
             if (x == v.x) {
                 return y < v.y;
             }
             return x < v.x;
         }
-        bool operator>(const Vector2<T>& v) const {
+        constexpr bool operator>(const Vector2<T>& v) const {
             if (x == v.x) {
                 return y > v.y;
             }
             return x > v.x;
         }
-        bool operator<=(const Vector2<T>& v) const {
+        constexpr bool operator<=(const Vector2<T>& v) const {
             if (x == v.x) {
                 return y <= v.y;
             }
             return x <= v.x;
         }
-        bool operator>=(const Vector2<T>& v) const {
+        constexpr bool operator>=(const Vector2<T>& v) const {
             if (x == v.x) {
                 return y >= v.y;
             }
