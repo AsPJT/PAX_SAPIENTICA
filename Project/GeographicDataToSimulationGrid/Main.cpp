@@ -97,7 +97,6 @@ int main(){
 
 #ifdef LandAndSea
 
-#include <PAX_SAPIENTICA/Simulation/SpaceGrid.hpp>
 #include <ImageScaler.hpp>
 
 int main(){

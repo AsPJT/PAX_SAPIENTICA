@@ -20,7 +20,7 @@
 #include <cmath>
 #include <iostream>
 
-#include <PAX_SAPIENTICA/Type/Coordinate.hpp>
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include "Helper.hpp"
 
 namespace paxs {
@@ -112,8 +112,8 @@ namespace paxs {
     private:
         paxs::Settings settings; // 設定
 		std::string path_prefix; // 元データのPathの接頭辞
-		type::Coordinate<int> start;
-		type::Coordinate<int> end;
+		Vector2<int> start;
+		Vector2<int> end;
 		int img_size; // 画像の1方向のピクセル数
 		int z_square; // 画像の1方向の枚数
 		int pixel_sum; // 全画像の1方向のピクセル数
