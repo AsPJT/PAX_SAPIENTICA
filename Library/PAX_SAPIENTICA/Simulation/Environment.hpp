@@ -23,7 +23,6 @@
 #include <unordered_map>
 #include <variant>
 
-#include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
 #include <PAX_SAPIENTICA/FileRead/Convert.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
 #include <PAX_SAPIENTICA/FileRead/Split.hpp>

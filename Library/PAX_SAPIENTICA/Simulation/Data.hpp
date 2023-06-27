@@ -16,10 +16,10 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
 #include <PAX_SAPIENTICA/FileRead/Convert.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/StatusLogger.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 #include <iostream>
@@ -109,7 +109,7 @@ namespace paxs {
             int load_count = 0;
 
             for(const auto& file_name : file_names) {
-                displayProgressBar(file_count, int(file_names.size()));
+                StatusLogger::displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 xyz_position = getXAndYFromFileName(file_name);
                 Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
@@ -145,7 +145,7 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            displayProgressBar(file_count, int(file_names.size()));
+            StatusLogger::displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
@@ -155,7 +155,7 @@ namespace paxs {
             int load_count = 0;
 
             for(const auto& file_name : file_names) {
-                displayProgressBar(file_count, int(file_names.size()));
+                StatusLogger::displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 xyz_position = getXAndYFromFileName(file_name);
                 Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
@@ -174,7 +174,7 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            displayProgressBar(file_count, int(file_names.size()));
+            StatusLogger::displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
