@@ -26,12 +26,16 @@
 #include <map>
 
 namespace paxs {
+    
+    /// @brief Dataクラスのデータ型
     enum class DataType {
         u8,
         u32,
         f32
     };
 
+    /// @brief シミュレーションに必要なデータを保持するクラス
+    /// @tparam T 読み込むデータの型
     template <typename T>
     class Data {
     public:
@@ -63,7 +67,11 @@ namespace paxs {
             return *this;
         }
 
+        /// @brief 指定した位置の値を取得する
+        /// @param position シミュレーションのZ値に対する座標
+        /// @return 指定した位置の値
         T getValue(const Vector2& position) const {
+            // TODO: シミュレーションのz値からこのデータのz値の座標に変換する
             Vector2 converted_position = position * z_mag;
             auto itr = data.find(converted_position);
             if(itr == data.end()) {
@@ -73,14 +81,14 @@ namespace paxs {
             return itr->second;
         }
     private:
-        Vector2 start_position;
-        Vector2 end_position;
-        std::string name;
-        std::map<Vector2, T> data;
-        int default_z;
-        int pj_z;
-        double z_mag;
-        DataType data_type;
+        Vector2 start_position; // シミュレーションの左上の座標
+        Vector2 end_position; // シミュレーションの右下の座標
+        std::string name; // データの名前
+        std::map<Vector2, T> data; // データ
+        int default_z; // データのz値
+        int pj_z; // シミュレーションのz値
+        double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
+        DataType data_type; // データの型
 
         // ファイルのロード
         void load(const std::string& file_path) {
@@ -149,6 +157,7 @@ namespace paxs {
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
+
         // 数値ファイルのロード
         void loadNumericText(const std::vector<std::string>& file_names) {
             unsigned int file_count = 0;

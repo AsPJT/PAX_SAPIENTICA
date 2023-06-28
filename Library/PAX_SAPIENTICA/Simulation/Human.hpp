@@ -19,6 +19,9 @@
 #include <PAX_SAPIENTICA/Simulation/Human.hpp>
 
 namespace paxs {
+
+    /// @brief 人間を表すクラス
+    /// @tparam T 座標の型
     template <typename T>
     class Human : public Agent<T> {
     public:
