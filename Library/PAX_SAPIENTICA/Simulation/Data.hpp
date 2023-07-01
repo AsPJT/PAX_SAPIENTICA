@@ -16,22 +16,27 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
-#include <PAX_SAPIENTICA/FileRead/Convert.hpp>
-#include <PAX_SAPIENTICA/FileRead/Read.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
-
 #include <iostream>
 #include <map>
+#include <stdexcept>
+
+#include <PAX_SAPIENTICA/File.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/StatusDisplayer.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
+    
+    /// @brief Dataクラスのデータ型
     enum class DataType {
         u8,
         u32,
         f32
     };
 
+    /// @brief シミュレーションに必要なデータを保持するクラス
+    /// @tparam T 読み込むデータの型
     template <typename T>
     class Data {
     public:
@@ -63,6 +68,9 @@ namespace paxs {
             return *this;
         }
 
+        /// @brief 指定した位置の値を取得する
+        /// @param position シミュレーションのZ値に対する座標
+        /// @return 指定した位置の値
         T getValue(const Vector2& position) const {
             Vector2 converted_position = position * z_mag;
             auto itr = data.find(converted_position);
@@ -73,24 +81,23 @@ namespace paxs {
             return itr->second;
         }
     private:
-        Vector2 start_position;
-        Vector2 end_position;
-        std::string name;
-        std::map<Vector2, T> data;
-        int default_z;
-        int pj_z;
-        double z_mag;
-        DataType data_type;
+        Vector2 start_position; // シミュレーションの左上の座標
+        Vector2 end_position; // シミュレーションの右下の座標
+        std::string name; // データの名前
+        std::map<Vector2, T> data; // データ
+        int default_z; // データのz値
+        int pj_z; // シミュレーションのz値
+        double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
+        DataType data_type; // データの型
 
         // ファイルのロード
         void load(const std::string& file_path) {
             std::cout << "Loading " << name << " data..." << std::endl;
-            const std::vector<std::string> file_names = getFileNames(file_path);
+            const std::vector<std::string> file_names = File::getFileNames(file_path);
             std::cout << file_names.size() << " files are found." << std::endl; 
 
             if(file_names.size() == 0) {
-                std::cout << "No files are found." << std::endl;
-                std::exit(1);
+                throw std::runtime_error("File not found: " + file_path);
             }
 
             if(file_names[0].find(".tsv") != std::string::npos) {
@@ -98,8 +105,7 @@ namespace paxs {
             } else if(file_names[0].find(".txt") != std::string::npos) {
                 loadNumericText(file_names);
             } else {
-                std::cout << "File format is not supported." << std::endl;
-                std::exit(1);
+                throw std::runtime_error("File format is not supported: " + file_names[0]);
             }
         }
 
@@ -109,7 +115,7 @@ namespace paxs {
             int load_count = 0;
 
             for(const auto& file_name : file_names) {
-                displayProgressBar(file_count, int(file_names.size()));
+                StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 xyz_position = getXAndYFromFileName(file_name);
                 Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
@@ -117,10 +123,10 @@ namespace paxs {
                     ++file_count;
                     continue;
                 }
-                std::vector<std::string> file = readFile(file_name);
+                std::vector<std::string> file = File::readFile(file_name);
                 for(std::size_t y = 0;y < file.size();++y) {
                     // タブ区切り
-                    std::vector<std::string> values = split(file[y], '\t');
+                    std::vector<std::string> values = StringExtensions::split(file[y], '\t');
                     for(std::size_t x = 0;x < values.size();++x) {
                         Vector2 position = default_position + Vector2((int)x, (int)y);
                         if(values[x] == "") {
@@ -145,17 +151,18 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            displayProgressBar(file_count, int(file_names.size()));
+            StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
+
         // 数値ファイルのロード
         void loadNumericText(const std::vector<std::string>& file_names) {
             unsigned int file_count = 0;
             int load_count = 0;
 
             for(const auto& file_name : file_names) {
-                displayProgressBar(file_count, int(file_names.size()));
+                StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
 
                 Vector2 xyz_position = getXAndYFromFileName(file_name);
                 Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
@@ -163,7 +170,7 @@ namespace paxs {
                     ++file_count;
                     continue;
                 }
-                std::vector<std::string> file = readFile(file_name);
+                std::vector<std::string> file = File::readFile(file_name);
                 for(std::size_t y = 0;y < file.size();++y) {
                     for(std::size_t x = 0;x < file[y].size();++x) {
                         Vector2 position = default_position + Vector2((int)x, (int)y);
@@ -174,7 +181,7 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            displayProgressBar(file_count, int(file_names.size()));
+            StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
@@ -188,8 +195,7 @@ namespace paxs {
                 return Vector2(std::stoi(matches[3]), std::stoi(matches[4]));
             }
             else {
-                std::cerr << "Error: The format of " << file_name << " is incorrect." << std::endl;
-                std::exit(1);
+                throw std::runtime_error("File name is invalid: " + file_name);
             }
         }
     };

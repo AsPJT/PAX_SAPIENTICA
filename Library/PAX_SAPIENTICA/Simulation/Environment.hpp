@@ -23,27 +23,28 @@
 #include <unordered_map>
 #include <variant>
 
-#include <PAX_SAPIENTICA/CuiOutput/Graphic.hpp>
-#include <PAX_SAPIENTICA/FileRead/Convert.hpp>
-#include <PAX_SAPIENTICA/FileRead/Read.hpp>
-#include <PAX_SAPIENTICA/FileRead/Split.hpp>
+#include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Simulation/Data.hpp>
-#include <PAX_SAPIENTICA/Simulation/GeographicInformation.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
+
+    /// @brief シミュレーションに必要なデータを管理するクラス
+    /// @tparam T Vector2の型
     template <typename T>
     class Environment {
     public:
         using Vector2 = paxs::Vector2<T>;
 
         using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>>;
+
+        /// @brief シミュレーションデータのマップ
         std::unordered_map<std::string, DataVariant> data_map;
 
         Environment() = default;
         Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
-            std::vector<std::vector<std::string>> settings = readTSV(setting_file_path);
+            std::vector<std::vector<std::string>> settings = File::readTSV(setting_file_path);
             // 1行目からdata_typeのカラム番号を取得
             int key_column = -1;
             int data_type_column = -1;
@@ -85,10 +86,14 @@ namespace paxs {
             }
         }
 
+        /// @brief シミュレーションの左上の座標の取得
         Vector2 getStartPosition() const { return start_position; }
+        /// @brief シミュレーションの右下の座標の取得
         Vector2 getEndPosition() const { return end_position; }
 
-        // keyとpositionを指定してデータを取得
+        /// @brief データの取得
+        /// @param key データの名前
+        /// @param position 取得したい座標
         template <typename U>
         U getData(const std::string& key, const Vector2& position) const {
             if(data_map.count(key) == 0) {
@@ -98,15 +103,18 @@ namespace paxs {
             return std::get<Data<U>>(data_map.at(key)).getValue(position);
         }
 
+        /// @brief 陸地かどうかの判定
+        /// @param position 判定したい座標
+        /// @return 陸地ならtrue
         bool isLand(const Vector2& position) const {
             auto value = getData<std::uint_least8_t>("gbank", position);
             return static_cast<int>(value) == 49; // char '1' -> int 49
 
         }
     private:
-        Vector2 start_position;
-        Vector2 end_position;
-        int z;
+        Vector2 start_position; // シミュレーションの左上の座標
+        Vector2 end_position; // シミュレーションの右下の座標
+        int z; // シミュレーションのz値
     };
 }
 

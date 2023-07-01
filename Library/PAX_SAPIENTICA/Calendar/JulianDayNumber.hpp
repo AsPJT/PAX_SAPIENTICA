@@ -18,9 +18,11 @@
 ##########################################################################################*/
 
 #include <cmath>
+
 #include <PAX_SAPIENTICA/Type/Date.hpp>
 
 namespace paxs {
+	// TODO:改修必須
 	namespace tmp {
 		double getK(const double month) {
 			return std::floor((14 - month) / 12);

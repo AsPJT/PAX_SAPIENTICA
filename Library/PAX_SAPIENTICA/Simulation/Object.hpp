@@ -20,6 +20,9 @@
 #include <PAX_SAPIENTICA/Simulation/ConvertToMercatorCoordinate.hpp>
 
 namespace paxs {
+
+    /// @brief オブジェクトを表すクラス
+    /// @tparam T 座標の型
     template <typename T>
     class Object {
     public:
@@ -27,12 +30,23 @@ namespace paxs {
 
         Object(const std::string& id, const std::string& name, const Vector2& position) : id(id), name(name), position(position) {}
 
+        /// @brief オブジェクトの座標xを取得
         T getX() const { return position.x; }
+        /// @brief オブジェクトの座標yを取得
         T getY() const { return position.y; }
+        /// @brief オブジェクトの座標を取得
         Vector2 getPosition() const { return position; }
+        /// @brief オブジェクトの座標xをセット
         void setX(const T& x) { position.x = x; }
+        /// @brief オブジェクトの座標yをセット
         void setY(const T& y) { position.y = y; }
+        /// @brief オブジェクトの座標をセット
         void setPosition(const Vector2& pos) { position = pos; }
+
+        /// @brief 座標をメルカトル座標で取得
+        /// @param start_position シミュレーションの左上の座標
+        /// @param z ズームレベル
+        /// @return メルカトル座標
         paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const {
             return convertToMercatorCoordinate(start_position, position, z);
         }
@@ -42,9 +56,9 @@ namespace paxs {
         }
 
     protected:
-        std::string id;
-        std::string name;
-        Vector2 position;
+        std::string id; // オブジェクトのID
+        std::string name; // オブジェクトの名前
+        Vector2 position; // オブジェクトの座標
     };
 }
 

@@ -18,6 +18,8 @@
 
 #include <cmath>
 
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+
 namespace paxs {
 	
 	enum XYZTileFileName : int {
@@ -31,6 +33,9 @@ namespace paxs {
 	public:
 		// XYZ タイルの 1 つのセルのメルカトル座標を保持
 		// 基本的に Z = 19 は無い
+		using MapVec2 = Vector2<int>;
+		using MapVec2D = Vector2<double>;
+		
 		std::vector<MapVec2D> pos_list;
 		// XYZ タイルの画像の情報を保持
 		std::vector<s3d::Texture> texture_list;

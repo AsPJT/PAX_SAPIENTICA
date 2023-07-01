@@ -17,8 +17,11 @@
 ##########################################################################################*/
 
 #include <array>
+#include <cmath>
 #include <string>
 #include <vector> // テンプレートにした後は不要
+
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
 
@@ -46,39 +49,37 @@ namespace paxs {
 			number_of_days_of_leap_month(number_of_days_of_leap_month_),
 			leap_month(leap_month_) {}
 
-	};
+		/// @brief 日本の元号一覧を入力する
+		/// @param japanese_era_list 元号リスト
+		/// @param path 元号一覧のファイルパス
+		static void inputList(std::vector<paxs::JapaneseEra>& japanese_era_list, const std::string& path){
+			std::ifstream ifs(path);
+			if (ifs.fail()) return;
+			std::string line;
+			std::getline(ifs, line); // 最初は破棄
+			while (std::getline(ifs, line)) {
+				std::vector<std::string> strvec = paxs::StringExtensions::split(line, '\t');
 
-	// 暫定的
-	void inputJapaneseEra(std::vector<paxs::JapaneseEra>& japanese_era_list,const std::string& str_) {
-		std::ifstream ifs(str_);
-		if (ifs.fail()) return;
-		std::string line;
-		std::getline(ifs, line); // 最初は破棄
-		while (std::getline(ifs, line)) {
-			std::vector<std::string> strvec = paxs::split(line, '\t');
-
-			japanese_era_list.emplace_back(
-				std::array<std::string, 4>({ strvec[14], strvec[16], strvec[18], strvec[20] }),
-				std::array<int, 4>({
-					((strvec[15].size() == 0) ? 0 : paxs::getUintFromString(strvec[15])),
-					((strvec[17].size() == 0) ? 0 : paxs::getUintFromString(strvec[17])),
-					((strvec[19].size() == 0) ? 0 : paxs::getUintFromString(strvec[19])),
-					((strvec[21].size() == 0) ? 0 : paxs::getUintFromString(strvec[21])) }),
-					((strvec[22].size() == 0) ? 0 : paxs::getUintFromString(strvec[22])),
-					std::array<int, 2>({ ((strvec[23].size() == 0) ? 0 : paxs::getUintFromString(strvec[23])),
-					((strvec[24].size() == 0) ? 0 : paxs::getUintFromString(strvec[24])) }),
-					std::array<int, 12>(
-						{ paxs::getUintFromString(strvec[0]), paxs::getUintFromString(strvec[1]), paxs::getUintFromString(strvec[2]),
-						paxs::getUintFromString(strvec[3]), paxs::getUintFromString(strvec[4]), paxs::getUintFromString(strvec[5]),
-						paxs::getUintFromString(strvec[6]), paxs::getUintFromString(strvec[7]), paxs::getUintFromString(strvec[8]),
-						paxs::getUintFromString(strvec[9]), paxs::getUintFromString(strvec[10]), paxs::getUintFromString(strvec[11]) }),
-				((strvec[12].size() == 0) ? 0 : paxs::getUintFromString(strvec[12])),
-				((strvec[13].size() == 0) ? 0 : paxs::getUintFromString(strvec[13])));
-
+				japanese_era_list.emplace_back(
+					std::array<std::string, 4>({ strvec[14], strvec[16], strvec[18], strvec[20] }),
+					std::array<int, 4>({
+						((strvec[15].size() == 0) ? 0 : std::stoi(strvec[15])),
+						((strvec[17].size() == 0) ? 0 : std::stoi(strvec[17])),
+						((strvec[19].size() == 0) ? 0 : std::stoi(strvec[19])),
+						((strvec[21].size() == 0) ? 0 : std::stoi(strvec[21])) }),
+						((strvec[22].size() == 0) ? 0 : std::stoi(strvec[22])),
+						std::array<int, 2>({ ((strvec[23].size() == 0) ? 0 : std::stoi(strvec[23])),
+						((strvec[24].size() == 0) ? 0 : std::stoi(strvec[24])) }),
+						std::array<int, 12>(
+							{ std::stoi(strvec[0]), std::stoi(strvec[1]), std::stoi(strvec[2]),
+							std::stoi(strvec[3]), std::stoi(strvec[4]), std::stoi(strvec[5]),
+							std::stoi(strvec[6]), std::stoi(strvec[7]), std::stoi(strvec[8]),
+							std::stoi(strvec[9]), std::stoi(strvec[10]), std::stoi(strvec[11]) }),
+					((strvec[12].size() == 0) ? 0 : std::stoi(strvec[12])),
+					((strvec[13].size() == 0) ? 0 : std::stoi(strvec[13])));
+			}
 		}
-	}
-
-
+	};
 }
 
 #endif // !PAX_SAPIENTICA_CALENDAR_JAPANESE_ERA_HPP

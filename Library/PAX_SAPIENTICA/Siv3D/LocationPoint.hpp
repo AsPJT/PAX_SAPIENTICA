@@ -14,6 +14,7 @@
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
 /*##########################################################################################
@@ -288,7 +289,7 @@ namespace paxs {
 			if (pifs.fail()) return;
 			std::string pline;
 			while (std::getline(pifs, pline)) {
-				std::vector<std::string> strvec = paxs::split(pline, '\t');
+				std::vector<std::string> strvec = paxs::StringExtensions::split(pline, '\t');
 
 				location_point_list.emplace_back(
 					strvec[0], // 漢字
