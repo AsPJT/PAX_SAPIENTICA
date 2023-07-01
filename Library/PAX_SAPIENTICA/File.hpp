@@ -21,6 +21,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
@@ -32,7 +33,10 @@ namespace paxs {
         static std::vector<std::string> readFile(const std::string& file_path) {
             std::ifstream file(file_path);
             if (!file) {
-                throw std::runtime_error("File not found: " + file_path);
+                Logger logger("Save/error_log.txt");
+                std::string message = "Failed to read file: " + file_path;
+                logger.log(Logger::Level::ERROR, message);
+                throw std::runtime_error(message);
             }
 
             std::string line;
@@ -46,7 +50,18 @@ namespace paxs {
 
         /// @brief Read CSV file.
         static std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {
-            std::vector<std::string> contents = readFile(file_path);
+            std::vector<std::string> contents;
+            try
+            {
+                contents = readFile(file_path);
+            }
+            catch(const std::exception& e)
+            {
+                Logger logger("Save/error_log.txt");
+                logger.log(Logger::Level::ERROR, "Failed to read CSV file: " + file_path + "\n" + e.what());
+                throw;
+            }
+            
             std::vector<std::vector<std::string>> result;
             for(auto& content : contents) {
                 result.emplace_back(StringExtensions::split(content, ','));
@@ -56,7 +71,18 @@ namespace paxs {
 
         /// @brief Read TSV file.
         static std::vector<std::vector<std::string>> readTSV(const std::string& file_path) {
-            std::vector<std::string> contents = readFile(file_path);
+            std::vector<std::string> contents;
+            try
+            {
+                contents = readFile(file_path);
+            }
+            catch(const std::exception& e)
+            {
+                Logger logger("Save/error_log.txt");
+                logger.log(Logger::Level::ERROR, "Failed to read TSV file: " + file_path + "\n" + e.what());
+                throw;
+            }
+
             std::vector<std::vector<std::string>> result;
             for(auto& content : contents) {
                 result.emplace_back(StringExtensions::split(content, '\t'));
@@ -68,7 +94,10 @@ namespace paxs {
         static std::vector<std::string> getFileNames(const std::string& directory_path) {
             std::filesystem::path dir_path(directory_path);
             if (!std::filesystem::exists(dir_path)) {
-                throw std::runtime_error("Directory not found: " + directory_path);
+                Logger logger("Save/error_log.txt");
+                std::string message = "Failed to get file names: " + directory_path;
+                logger.log(Logger::Level::ERROR, message);
+                throw std::runtime_error(message);
             }
 
             std::filesystem::directory_iterator dir_iter(dir_path), end_iter;
@@ -82,7 +111,9 @@ namespace paxs {
                     ++dir_iter;
                 }
                 catch (const std::exception& ex) {
-                    throw std::runtime_error("Failed to access: " + dir_iter->path().string() + "; " + ex.what());
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::ERROR, "Failed to access: " + dir_iter->path().string() + "\n" + ex.what());
+                    throw;
                 }
             }
 

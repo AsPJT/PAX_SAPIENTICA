@@ -32,38 +32,44 @@ namespace paxs {
             ERROR
         };
 
-        Logger(const std::string& fileName)
-        : logFile(fileName, std::ios::out | std::ios::app) {}
+        explicit Logger(const std::string& filename = "Save/error_log.txt") noexcept {
+            std::string directory = filename.substr(0, filename.find_last_of("/\\"));
+            if (!std::filesystem::exists(directory)) {
+                std::filesystem::create_directories(directory);
+            }
+
+            file.open(filename, std::ios::app);
+        }
 
         ~Logger() {
-            if (logFile.is_open()) {
-                logFile.close();
+            if (file) {
+                file.close();
             }
         }
 
-        void log(Level level, const std::string& message) {
-            if (!logFile.is_open()) {
-                std::cerr << "Log file not open!" << std::endl;
-                return;
-            }
-
+        /// @brief Logs the message.
+        void log(Level level, const std::string& message) noexcept {
+            // TODO: Add time stamp.
+            
             switch(level) {
-                case Level::INFO:
-                    logFile << "[INFO]: ";
+                case Level::INFO: 
+                    file << "[INFO]: " << message << std::endl;
                     break;
-                case Level::WARNING:
-                    logFile << "[WARNING]: ";
+                case Level::WARNING: 
+                    file << "[WARNING]: " << message << std::endl;
                     break;
-                case Level::ERROR:
-                    logFile << "[ERROR]: ";
+                case Level::ERROR: 
+                    file << "[ERROR]: " << message << std::endl;
                     break;
             }
-
-            logFile << message << std::endl;
         }
 
+        /// @brief logging from an exceptions.
+        void handleException(const std::exception& e) noexcept {
+            log(Level::ERROR, "Exception: " + std::string(e.what()));
+        }
     private:
-        std::ofstream logFile;
+        std::ofstream file;
     };
 }
 
