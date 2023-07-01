@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_STATUS_LOGGER_HPP
-#define PAX_SAPIENTICA_STATUS_LOGGER_HPP
+#ifndef PAX_SAPIENTICA_STATUS_DISPLAYER_HPP
+#define PAX_SAPIENTICA_STATUS_DISPLAYER_HPP
 
 /*##########################################################################################
 
@@ -21,7 +21,7 @@
 
 namespace paxs {
     /// @brief A class that displays the progress bar.
-    class StatusLogger {
+    class StatusDisplayer {
     public:
         /// @brief Display the progress bar.
         static void displayProgressBar(unsigned int current, unsigned int total) {
@@ -46,4 +46,4 @@ namespace paxs {
     };
 }
 
-#endif // !PAX_SAPIENTICA_STATUS_LOGGER_HPP
+#endif // !PAX_SAPIENTICA_STATUS_DISPLAYER_HPP
