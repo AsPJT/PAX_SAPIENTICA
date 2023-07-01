@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <map>
+#include <stdexcept>
 
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
@@ -96,8 +97,7 @@ namespace paxs {
             std::cout << file_names.size() << " files are found." << std::endl; 
 
             if(file_names.size() == 0) {
-                std::cout << "No files are found." << std::endl;
-                std::exit(1);
+                throw std::runtime_error("File not found: " + file_path);
             }
 
             if(file_names[0].find(".tsv") != std::string::npos) {
@@ -105,8 +105,7 @@ namespace paxs {
             } else if(file_names[0].find(".txt") != std::string::npos) {
                 loadNumericText(file_names);
             } else {
-                std::cout << "File format is not supported." << std::endl;
-                std::exit(1);
+                throw std::runtime_error("File format is not supported: " + file_names[0]);
             }
         }
 
@@ -196,8 +195,7 @@ namespace paxs {
                 return Vector2(std::stoi(matches[3]), std::stoi(matches[4]));
             }
             else {
-                std::cerr << "Error: The format of " << file_name << " is incorrect." << std::endl;
-                std::exit(1);
+                throw std::runtime_error("File name is invalid: " + file_name);
             }
         }
     };

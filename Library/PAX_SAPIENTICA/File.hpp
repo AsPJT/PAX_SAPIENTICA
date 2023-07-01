@@ -18,6 +18,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <stdexcept>
 #include <vector>
 
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
@@ -31,8 +32,7 @@ namespace paxs {
         static std::vector<std::string> readFile(const std::string& file_path) {
             std::ifstream file(file_path);
             if (!file) {
-                std::cout << "file_path:" << file_path << " not found." << std::endl;
-                std::exit(1);
+                throw std::runtime_error("File not found: " + file_path);
             }
 
             std::string line;
@@ -67,11 +67,25 @@ namespace paxs {
         /// @brief Get the file name in the directory.
         static std::vector<std::string> getFileNames(const std::string& directory_path) {
             std::filesystem::path dir_path(directory_path);
-            std::filesystem::directory_iterator dir_iter(dir_path);
-            std::vector<std::string> result;
-            for (const auto& file : dir_iter) {
-                result.emplace_back(file.path().string());
+            if (!std::filesystem::exists(dir_path)) {
+                throw std::runtime_error("Directory not found: " + directory_path);
             }
+
+            std::filesystem::directory_iterator dir_iter(dir_path), end_iter;
+            std::vector<std::string> result;
+
+            while (dir_iter != end_iter) {
+                try {
+                    if(dir_iter->is_regular_file()) {
+                        result.push_back(dir_iter->path().string());
+                    }
+                    ++dir_iter;
+                }
+                catch (const std::exception& ex) {
+                    throw std::runtime_error("Failed to access: " + dir_iter->path().string() + "; " + ex.what());
+                }
+            }
+
             return result;
         }
     };
