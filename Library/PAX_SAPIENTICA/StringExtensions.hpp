@@ -60,10 +60,10 @@ namespace paxs {
         static std::variant<double, std::string> tryToConvertStringToDouble(const std::string& str) {
 			try {
 				return std::stod(str);
-			} catch (const std::invalid_argument& ia) {
+			} catch (const std::invalid_argument&/*ia*/) {
 				// str is not convertible to double
 				return str;
-			} catch (const std::out_of_range& oor) {
+			} catch (const std::out_of_range&/*oor*/) {
 				// str is out of range for a double
 				return str;
 			}
@@ -73,10 +73,10 @@ namespace paxs {
 		static std::variant<int, std::string> tryToConvertStringToInt(const std::string& str) {
 			try {
 				return std::stoi(str);
-			} catch (const std::invalid_argument& ia) {
+			} catch (const std::invalid_argument&/*ia*/) {
 				// str is not convertible to int
 				return str;
-			} catch (const std::out_of_range& oor) {
+			} catch (const std::out_of_range&/*oor*/) {
 				// str is out of range for a int
 				return str;
 			}

@@ -138,10 +138,10 @@ namespace paxs {
                                 data[position] = static_cast<T>(std::stoi(values[x]));
                             else if(data_type == DataType::f32)
                                 data[position] = static_cast<T>(std::stod(values[x]));
-                        } catch (const std::invalid_argument& ia) {
+                        } catch (const std::invalid_argument&/*ia*/) {
                             // str is not convertible to double
                             continue;
-                        } catch (const std::out_of_range& oor) {
+                        } catch (const std::out_of_range&/*oor*/) {
                             // str is out of range for a double
                             continue;
                         }
