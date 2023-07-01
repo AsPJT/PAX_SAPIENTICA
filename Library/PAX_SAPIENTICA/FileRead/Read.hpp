@@ -16,11 +16,11 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/FileRead/Split.hpp>
-
 #include <filesystem>
 #include <fstream>
 #include <vector>
+
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
 	std::vector<std::string> readFile(const std::string& file_path) {
@@ -42,7 +42,7 @@ namespace paxs {
         std::vector<std::string> contents = readFile(file_path);
         std::vector<std::vector<std::string>> result;
         for(auto& content : contents) {
-            result.emplace_back(split(content, ','));
+            result.emplace_back(StringExtensions::split(content, ','));
         }
         return result;
     }
@@ -50,7 +50,7 @@ namespace paxs {
         std::vector<std::string> contents = readFile(file_path);
         std::vector<std::vector<std::string>> result;
         for(auto& content : contents) {
-            result.emplace_back(split(content, '\t'));
+            result.emplace_back(StringExtensions::split(content, '\t'));
         }
         return result;
     }

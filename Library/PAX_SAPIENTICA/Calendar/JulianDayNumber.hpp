@@ -18,6 +18,7 @@
 ##########################################################################################*/
 
 #include <cmath>
+
 #include <PAX_SAPIENTICA/Type/Date.hpp>
 
 namespace paxs {

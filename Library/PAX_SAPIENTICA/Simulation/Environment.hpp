@@ -23,9 +23,7 @@
 #include <unordered_map>
 #include <variant>
 
-#include <PAX_SAPIENTICA/FileRead/Convert.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
-#include <PAX_SAPIENTICA/FileRead/Split.hpp>
 #include <PAX_SAPIENTICA/Simulation/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>

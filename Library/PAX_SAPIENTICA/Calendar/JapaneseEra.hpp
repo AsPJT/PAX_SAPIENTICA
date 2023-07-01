@@ -20,6 +20,8 @@
 #include <string>
 #include <vector> // テンプレートにした後は不要
 
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
+
 namespace paxs {
 
 	// 日本の元号
@@ -55,7 +57,7 @@ namespace paxs {
 		std::string line;
 		std::getline(ifs, line); // 最初は破棄
 		while (std::getline(ifs, line)) {
-			std::vector<std::string> strvec = paxs::split(line, '\t');
+			std::vector<std::string> strvec = paxs::StringExtensions::split(line, '\t');
 
 			japanese_era_list.emplace_back(
 				std::array<std::string, 4>({ strvec[14], strvec[16], strvec[18], strvec[20] }),

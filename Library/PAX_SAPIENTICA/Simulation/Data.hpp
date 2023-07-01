@@ -16,10 +16,10 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/FileRead/Convert.hpp>
 #include <PAX_SAPIENTICA/FileRead/Read.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusLogger.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 #include <iostream>
@@ -128,7 +128,7 @@ namespace paxs {
                 std::vector<std::string> file = readFile(file_name);
                 for(std::size_t y = 0;y < file.size();++y) {
                     // タブ区切り
-                    std::vector<std::string> values = split(file[y], '\t');
+                    std::vector<std::string> values = StringExtensions::split(file[y], '\t');
                     for(std::size_t x = 0;x < values.size();++x) {
                         Vector2 position = default_position + Vector2((int)x, (int)y);
                         if(values[x] == "") {

@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <PAX_SAPIENTICA/Siv3D/Language.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/Type/Date.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数
@@ -242,7 +243,7 @@ namespace paxs {
 			if (rifs.fail()) return;
 			std::string rline;
 			while (std::getline(rifs, rline)) {
-				std::vector<std::string> strvec = paxs::split(rline, '\t');
+				std::vector<std::string> strvec = paxs::StringExtensions::split(rline, '\t');
 
 				const MercatorDeg coordinate = EquirectangularDeg(
 				paxs::Vector2(std::stod(strvec[0]), std::stod(strvec[1]))

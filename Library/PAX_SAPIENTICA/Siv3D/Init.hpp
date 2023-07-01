@@ -32,7 +32,6 @@ namespace paxs {
 #include <Siv3D.hpp> // OpenSiv3D v0.6.6
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/FileRead/Split.hpp>
 #include <PAX_SAPIENTICA/Math/Stoi.hpp>
 
 #include <array>
