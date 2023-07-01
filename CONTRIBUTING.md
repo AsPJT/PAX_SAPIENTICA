@@ -123,6 +123,14 @@ PAX_SAPIENTICAでは以下の2種類のマクロを使用しています。
 #endif // !PAX_SAPIENTICA_CONSTANT_VERSION_HPP
 ```
 
+## インクルードの順番
+1. C言語の標準ライブラリ
+1. C++の標準ライブラリ
+1. 外部ライブラリ
+1. PAX_SAPIENTICAライブラリ
+
+同じグループのインクルードはアルファベット順に並べる。
+
 # 禁止事項
 
 ## using namespace
