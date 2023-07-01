@@ -1,3 +1,13 @@
+ï»¿/*##########################################################################################
+
+	PAX SAPIENTICA Library ğŸ’€ğŸŒ¿ğŸŒ
+
+	[Planning]		2023 As Project
+	[Production]	2023 As Project
+	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
 #define _CRT_SECURE_NO_WARNINGS
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -15,9 +25,9 @@
 
 #include <PAX_SAPIENTICA/Elevation/Slope.hpp>
 
-// ‰æ‘œ•Û‘¶—p
+// ç”»åƒä¿å­˜ç”¨
 struct RGBA {
-	unsigned char r, g, b, a; //Ô, —Î, Â, “§‰ß
+	unsigned char r, g, b, a; //èµ¤, ç·‘, é’, é€é
 	RGBA() = default;
 	constexpr RGBA(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_) :r(r_), g(g_), b(b_), a(a_) {}
 };
@@ -34,7 +44,7 @@ public:
 	std::vector<std::vector<std::string>> text{};
 
 	void clearTiles() {
-		constexpr std::size_t width{ 256 }, height{ 256 }; //•‚Æ‚‚³
+		constexpr std::size_t width{ 256 }, height{ 256 }; //å¹…ã¨é«˜ã•
 		for (std::size_t row{}; row < height; ++row) {
 			for (std::size_t col{}; col < width; ++col) {
 				sea_tile[row][col].sea = true;
@@ -44,7 +54,7 @@ public:
 	}
 	bool setTiles() {
 		clearTiles();
-		constexpr std::size_t width{ 256 }, height{ 256 }; //•‚Æ‚‚³
+		constexpr std::size_t width{ 256 }, height{ 256 }; //å¹…ã¨é«˜ã•
 		for (std::size_t row{}; row < height && row < text.size(); ++row) {
 			for (std::size_t col{}; col < width && col < text[row].size(); ++col) {
 				if (text[row][col].size() == 0) {
@@ -81,8 +91,8 @@ public:
 	}
 
 	bool getIsAllE() {
-		constexpr std::size_t width{ 256 }, height{ 256 }; //•‚Æ‚‚³
-		if (text.size() == 0) return true; // ‹ó‚Á‚Û
+		constexpr std::size_t width{ 256 }, height{ 256 }; //å¹…ã¨é«˜ã•
+		if (text.size() == 0) return true; // ç©ºã£ã½
 		for (std::size_t row{}; row < height && row < text.size(); ++row) {
 			for (std::size_t col{}; col < width && col < text[row].size(); ++col) {
 				if (text[row][col] != "e") {
@@ -94,8 +104,8 @@ public:
 	}
 
 	void output(const std::string& png_str) {
-		if (getIsAllE()) return; // ‘S‚Äƒf[ƒ^‚È‚µ‚¾‚Á‚½‚ço—Í‚µ‚È‚¢
-		constexpr std::size_t width{ 256 }, height{ 256 }; //•‚Æ‚‚³
+		if (getIsAllE()) return; // å…¨ã¦ãƒ‡ãƒ¼ã‚¿ãªã—ã ã£ãŸã‚‰å‡ºåŠ›ã—ãªã„
+		constexpr std::size_t width{ 256 }, height{ 256 }; //å¹…ã¨é«˜ã•
 
 		std::ofstream ofs(png_str);
 		for (std::size_t row{}; row < height; ++row) {
@@ -120,7 +130,7 @@ public:
 		std::string map_save_name = "./elevation/8/",
 		std::string map_name = "elevation"
 	) {
-		// ƒ}ƒCƒiƒX’l‚ÍÁ‹
+		// ãƒã‚¤ãƒŠã‚¹å€¤ã¯æ¶ˆå»
 		if (xyz_tile_x < 0 || xyz_tile_y < 0) {
 			text.clear();
 			return;
@@ -135,7 +145,7 @@ public:
 			+ std::string("_") + std::to_string(i)
 			+ std::string(".tsv")
 		};
-		if (add(str, '\t')) return; // ¸”s
+		if (add(str, '\t')) return; // å¤±æ•—
 	}
 
 	void inputXYZ(
@@ -156,7 +166,7 @@ public:
 					+ std::string("_") + std::to_string(i)
 					+ std::string(".txt")
 				};
-				if(add(str, ',')) return; // ¸”s
+				if(add(str, ',')) return; // å¤±æ•—
 
 				const std::string output_str = {
 					std::string(map_save2_name) + map_name
@@ -202,7 +212,7 @@ public:
 
 
 	bool getIsAllSea() {
-		constexpr std::size_t width{ 256 }, height{ 256 }; //•‚Æ‚‚³
+		constexpr std::size_t width{ 256 }, height{ 256 }; //å¹…ã¨é«˜ã•
 		for (std::size_t row{}; row < height; ++row) {
 			for (std::size_t col{}; col < width; ++col) {
 				if (slope[row][col] != -1.0) {
@@ -214,11 +224,11 @@ public:
 	}
 
 	void output(const std::string& slope_str,
-		const bool is_png = true // ‰æ‘œ•Û‘¶‚©‚Ç‚¤‚©
+		const bool is_png = true // ç”»åƒä¿å­˜ã‹ã©ã†ã‹
 	) {
-		if (getIsAllSea()) return; // ‘S‚Äƒf[ƒ^‚È‚µ‚¾‚Á‚½‚ço—Í‚µ‚È‚¢
+		if (getIsAllSea()) return; // å…¨ã¦ãƒ‡ãƒ¼ã‚¿ãªã—ã ã£ãŸã‚‰å‡ºåŠ›ã—ãªã„
 
-		constexpr std::size_t width{ 256 }, height{ 256 }; //•‚Æ‚‚³
+		constexpr std::size_t width{ 256 }, height{ 256 }; //å¹…ã¨é«˜ã•
 
 		if (is_png) {
 			std::unique_ptr<RGBA[][width]> rgba(new(std::nothrow) RGBA[height][width]);
@@ -227,90 +237,90 @@ public:
 			for (std::size_t row{}; row < height; ++row)
 				for (std::size_t col{}; col < width; ++col) {
 					const double num = slope[row][col];
-					if (num == -1.0) { // “§–¾
-						rgba[row][col].r = 0; // Ô
+					if (num == -1.0) { // é€æ˜
+						rgba[row][col].r = 0; // èµ¤
 						rgba[row][col].g = 0;
 						rgba[row][col].b = 0;
-						rgba[row][col].a = 0; // “§–¾
+						rgba[row][col].a = 0; // é€æ˜
 					}
 					else {
 						if (num <= 0.0) {
-							rgba[row][col].r = 194; //Ô
+							rgba[row][col].r = 194; //èµ¤
 							rgba[row][col].g = 123;
 							rgba[row][col].b = 160;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 1.0) {
-							rgba[row][col].r = 142; //Ô
+							rgba[row][col].r = 142; //èµ¤
 							rgba[row][col].g = 124;
 							rgba[row][col].b = 195;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 2.0) {
-							rgba[row][col].r = 111; //Ô
+							rgba[row][col].r = 111; //èµ¤
 							rgba[row][col].g = 168;
 							rgba[row][col].b = 220;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 3.0) {
-							rgba[row][col].r = 109; //Ô
+							rgba[row][col].r = 109; //èµ¤
 							rgba[row][col].g = 158;
 							rgba[row][col].b = 235;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 4.0) {
-							rgba[row][col].r = 118; //Ô
+							rgba[row][col].r = 118; //èµ¤
 							rgba[row][col].g = 165;
 							rgba[row][col].b = 175;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 6.0) {
-							rgba[row][col].r = 147; //Ô
+							rgba[row][col].r = 147; //èµ¤
 							rgba[row][col].g = 196;
 							rgba[row][col].b = 125;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 8.0) {
-							rgba[row][col].r = 255; //Ô
+							rgba[row][col].r = 255; //èµ¤
 							rgba[row][col].g = 217;
 							rgba[row][col].b = 102;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 12.0) {
-							rgba[row][col].r = 246; //Ô
+							rgba[row][col].r = 246; //èµ¤
 							rgba[row][col].g = 178;
 							rgba[row][col].b = 107;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 16.0) {
-							rgba[row][col].r = 224; //Ô
+							rgba[row][col].r = 224; //èµ¤
 							rgba[row][col].g = 102;
 							rgba[row][col].b = 102;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 32.0) {
-							rgba[row][col].r = 204; //Ô
+							rgba[row][col].r = 204; //èµ¤
 							rgba[row][col].g = 65;
 							rgba[row][col].b = 37;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 48.0) {
-							rgba[row][col].r = 166; //Ô
+							rgba[row][col].r = 166; //èµ¤
 							rgba[row][col].g = 28;
 							rgba[row][col].b = 0;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else if (num <= 64.0) {
-							rgba[row][col].r = 133; //Ô
+							rgba[row][col].r = 133; //èµ¤
 							rgba[row][col].g = 32;
 							rgba[row][col].b = 12;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 						else {
-							rgba[row][col].r = 0; //Ô
+							rgba[row][col].r = 0; //èµ¤
 							rgba[row][col].g = 0;
 							rgba[row][col].b = 0;
-							rgba[row][col].a = 255; //•s“§‰ß
+							rgba[row][col].a = 255; //ä¸é€é
 						}
 					}
 				}
@@ -332,10 +342,10 @@ public:
 	}
 
 	void setSlope(const int z, const int y) {
-		constexpr std::size_t width{ 256 }, height{ 256 }; //•‚Æ‚‚³
+		constexpr std::size_t width{ 256 }, height{ 256 }; //å¹…ã¨é«˜ã•
 		for (std::size_t row{}; row < height; ++row) {
 			for (std::size_t col{}; col < width; ++col) {
-				// ŠC‚¾‚Á‚½‚çƒXƒ‹[
+				// æµ·ã ã£ãŸã‚‰ã‚¹ãƒ«ãƒ¼
 				if (xyz[row + 1][col + 1].sea) {
 					slope[row][col] = -1.0;
 					continue;
@@ -369,7 +379,7 @@ public:
 	}
 
 	void clearXYZ() {
-		constexpr std::size_t width{ 256 }, height{ 256 }; //•‚Æ‚‚³
+		constexpr std::size_t width{ 256 }, height{ 256 }; //å¹…ã¨é«˜ã•
 		for (std::size_t row{}; row < height; ++row) {
 			for (std::size_t col{}; col < width; ++col) {
 				slope[row][col] = 0.0;
@@ -411,7 +421,7 @@ public:
 		std::string map_save_name = "./elevation_png/8/",
 		std::string map_name = "elevation",
 		std::string map_output_name = "slope",
-		const bool is_png = true // ‰æ‘œ•Û‘¶‚©‚Ç‚¤‚©
+		const bool is_png = true // ç”»åƒä¿å­˜ã‹ã©ã†ã‹
 	) {
 		const std::string dx_str = { std::string(map_d_name) + std::string("x") + std::to_string(z + 8) + std::string(".txt") };
 		const std::string dy_str = { std::string(map_d_name) + std::string("y") + std::to_string(z + 8) + std::string(".txt") };
