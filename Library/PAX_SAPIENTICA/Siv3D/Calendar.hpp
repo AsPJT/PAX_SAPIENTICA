@@ -16,6 +16,9 @@
 
 ##########################################################################################*/
 
+#include <vector>
+
+#include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Language.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/Type/Date.hpp>
@@ -24,6 +27,13 @@
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
 namespace paxs {
+
+	/// @brief 出力に必要な日付の情報
+	struct OutputDate {
+		std::vector<s3d::String> calendar_name{}; // 暦の名前
+		paxs::Date date{}; // 日付
+		bool is_leap_month = false; // 閏月かどうか
+	};
 
 	std::vector<s3d::Font> setFont(const s3d::FontMethod& font_method, const int font_size, const s3d::String& path, const std::string& key, paxs::Language& language_text) {
 		std::vector<s3d::Font> font{};
@@ -258,7 +268,7 @@ namespace paxs {
 			}
 
 			// 暦を読み込み
-			paxs::inputJapaneseEra(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");
+			paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");
 
 			koyomi_font = setFont(s3d::FontMethod::SDF, koyomi_font_size, path, "font_path", language_text);
 

@@ -12,6 +12,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <new>
@@ -23,7 +24,7 @@
 #include <vector>
 #include <cmath>
 
-#include <PAX_SAPIENTICA/Elevation/Slope.hpp>
+#include <PAX_SAPIENTICA/GeographicInformation/Elevation.hpp>
 
 // 画像保存用
 struct RGBA {
@@ -350,7 +351,7 @@ public:
 					slope[row][col] = -1.0;
 					continue;
 				}
-				const double* const grid[9] = {
+				std::array<double, 9> grid = {
 				&(xyz[row][col].tile),
 				&(xyz[row][col + 1].tile),
 				&(xyz[row][col + 2].tile),
@@ -362,18 +363,18 @@ public:
 				&(xyz[row + 2][col + 2].tile),
 				};
 
-				double x_cellsize = 0.0;
-				double y_cellsize = 0.0;
+				double x_cell_size = 0.0;
+				double y_cell_size = 0.0;
 				if (y * 8 + row < distance_x.size()) {
-					x_cellsize = distance_x[y * 8 + row];
+					x_cell_size = distance_x[y * 8 + row];
 				}
 				else std::cout << "DX over" << std::endl;
 				if (y * 8 + row < distance_y.size()) {
-					y_cellsize = distance_y[y * 8 + row];
+					y_cell_size = distance_y[y * 8 + row];
 				}
 				else std::cout << "DY over" << std::endl;
 
-				slope[row][col] = paxs::getSlopeRad(grid, x_cellsize, y_cellsize) * (180.0 / 3.141592653589793);
+				slope[row][col] = paxs::Elevation::getSlopeRad(grid, x_cell_size, y_cell_size) * (180.0 / 3.141592653589793);
 			}
 		}
 	}

@@ -16,46 +16,7 @@
 
 ##########################################################################################*/
 
-namespace paxs {
-
-	struct MapVec2 {
-		int x{}, y{};
-		bool operator!=(const MapVec2& map_vec2)const {
-			return x != map_vec2.x || y != map_vec2.y;
-		}
-	};
-	struct MapVec2D {
-		double x{}, y{};
-	};
-}
-
-#include <Siv3D.hpp> // OpenSiv3D v0.6.6
-
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/Math/Stoi.hpp>
-
-#include <array>
-#include <cmath>
-
-#include <string>
-#include <vector>
-
-#include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp> // 日本の元号
-
-#include <PAX_SAPIENTICA/Math.hpp> // 数学定数
-
-namespace paxs {
-
-	struct OutputDate {
-		std::vector<s3d::String> calendar_name{};
-		paxs::Date date{};
-		bool is_leap_month = false;
-	};
-}
-
-#include <PAX_SAPIENTICA/Siv3D/Key.hpp> // キーボードの入力
-#include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp> // タイルの更新
-#include <PAX_SAPIENTICA/Siv3D/InitLogo.hpp> // ロゴを描画
+#include <Siv3D.hpp> // OpenSiv3D
 
 #ifdef SIV3D_PLATFORM_PRIVATE_DEFINITION_WINDOWS
 #ifndef PAXS_S3D_RESOURCE
