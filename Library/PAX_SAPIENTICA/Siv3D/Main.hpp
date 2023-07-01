@@ -36,7 +36,7 @@ enum MapType {
 #include <PAX_SAPIENTICA/Siv3D/3DModel.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Language.hpp>
-
+#include <PAX_SAPIENTICA/Siv3D/Key.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp>
 #include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
