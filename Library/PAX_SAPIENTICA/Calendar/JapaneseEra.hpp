@@ -48,7 +48,19 @@ namespace paxs {
 			kaigen_jdn(kaigen_jdn_), number_of_days(number_of_days_),
 			number_of_days_of_leap_month(number_of_days_of_leap_month_),
 			leap_month(leap_month_) {}
+	private:
+		constexpr 
+			static int emptyCharSupportStoi(const std::string& str_) {
+				// 例外発生時のデバッグ用
+				//for (auto s : str_) {
+				//	if (s < '0' || s > '9') {
+				//		auto a = str_.size();
+				//	}
+				//}
+			return (str_.size() == 0) ? 0 : std::stoi(str_);
+		}
 
+	public:
 		/// @brief 日本の元号一覧を入力する
 		/// @param japanese_era_list 元号リスト
 		/// @param path 元号一覧のファイルパス
@@ -63,20 +75,20 @@ namespace paxs {
 				japanese_era_list.emplace_back(
 					std::array<std::string, 4>({ strvec[14], strvec[16], strvec[18], strvec[20] }),
 					std::array<int, 4>({
-						((strvec[15].size() == 0) ? 0 : std::stoi(strvec[15])),
-						((strvec[17].size() == 0) ? 0 : std::stoi(strvec[17])),
-						((strvec[19].size() == 0) ? 0 : std::stoi(strvec[19])),
-						((strvec[21].size() == 0) ? 0 : std::stoi(strvec[21])) }),
-						((strvec[22].size() == 0) ? 0 : std::stoi(strvec[22])),
-						std::array<int, 2>({ ((strvec[23].size() == 0) ? 0 : std::stoi(strvec[23])),
-						((strvec[24].size() == 0) ? 0 : std::stoi(strvec[24])) }),
+						((strvec[15].size() == 0) ? 0 : emptyCharSupportStoi(strvec[15])),
+						((strvec[17].size() == 0) ? 0 : emptyCharSupportStoi(strvec[17])),
+						((strvec[19].size() == 0) ? 0 : emptyCharSupportStoi(strvec[19])),
+						((strvec[21].size() == 0) ? 0 : emptyCharSupportStoi(strvec[21])) }),
+						((strvec[22].size() == 0) ? 0 : emptyCharSupportStoi(strvec[22])),
+						std::array<int, 2>({ ((strvec[23].size() == 0) ? 0 : emptyCharSupportStoi(strvec[23])),
+						((strvec[24].size() == 0) ? 0 : emptyCharSupportStoi(strvec[24])) }),
 						std::array<int, 12>(
-							{ std::stoi(strvec[0]), std::stoi(strvec[1]), std::stoi(strvec[2]),
-							std::stoi(strvec[3]), std::stoi(strvec[4]), std::stoi(strvec[5]),
-							std::stoi(strvec[6]), std::stoi(strvec[7]), std::stoi(strvec[8]),
-							std::stoi(strvec[9]), std::stoi(strvec[10]), std::stoi(strvec[11]) }),
-					((strvec[12].size() == 0) ? 0 : std::stoi(strvec[12])),
-					((strvec[13].size() == 0) ? 0 : std::stoi(strvec[13])));
+							{ emptyCharSupportStoi(strvec[0]), emptyCharSupportStoi(strvec[1]), emptyCharSupportStoi(strvec[2]),
+							emptyCharSupportStoi(strvec[3]), emptyCharSupportStoi(strvec[4]), emptyCharSupportStoi(strvec[5]),
+							emptyCharSupportStoi(strvec[6]), emptyCharSupportStoi(strvec[7]), emptyCharSupportStoi(strvec[8]),
+							emptyCharSupportStoi(strvec[9]), emptyCharSupportStoi(strvec[10]), emptyCharSupportStoi(strvec[11]) }),
+					((strvec[12].size() == 0) ? 0 : emptyCharSupportStoi(strvec[12])),
+					((strvec[13].size() == 0) ? 0 : emptyCharSupportStoi(strvec[13])));
 			}
 		}
 	};
