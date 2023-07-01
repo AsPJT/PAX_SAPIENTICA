@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/FileRead/Read.hpp>
+#include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusLogger.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
@@ -93,7 +93,7 @@ namespace paxs {
         // ファイルのロード
         void load(const std::string& file_path) {
             std::cout << "Loading " << name << " data..." << std::endl;
-            const std::vector<std::string> file_names = getFileNames(file_path);
+            const std::vector<std::string> file_names = File::getFileNames(file_path);
             std::cout << file_names.size() << " files are found." << std::endl; 
 
             if(file_names.size() == 0) {
@@ -125,7 +125,7 @@ namespace paxs {
                     ++file_count;
                     continue;
                 }
-                std::vector<std::string> file = readFile(file_name);
+                std::vector<std::string> file = File::readFile(file_name);
                 for(std::size_t y = 0;y < file.size();++y) {
                     // タブ区切り
                     std::vector<std::string> values = StringExtensions::split(file[y], '\t');
@@ -172,7 +172,7 @@ namespace paxs {
                     ++file_count;
                     continue;
                 }
-                std::vector<std::string> file = readFile(file_name);
+                std::vector<std::string> file = File::readFile(file_name);
                 for(std::size_t y = 0;y < file.size();++y) {
                     for(std::size_t x = 0;x < file[y].size();++x) {
                         Vector2 position = default_position + Vector2((int)x, (int)y);

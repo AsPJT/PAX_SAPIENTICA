@@ -23,7 +23,7 @@
 #include <unordered_map>
 #include <variant>
 
-#include <PAX_SAPIENTICA/FileRead/Read.hpp>
+#include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Simulation/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
@@ -44,7 +44,7 @@ namespace paxs {
 
         Environment() = default;
         Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
-            std::vector<std::vector<std::string>> settings = readTSV(setting_file_path);
+            std::vector<std::vector<std::string>> settings = File::readTSV(setting_file_path);
             // 1行目からdata_typeのカラム番号を取得
             int key_column = -1;
             int data_type_column = -1;
