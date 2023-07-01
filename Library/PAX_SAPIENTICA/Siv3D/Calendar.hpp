@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <limits>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
@@ -379,7 +380,9 @@ namespace paxs {
 			if (count >= 30) {
 				count = 0;
 				if (move_forward_in_time) {
-					++jdn; // ユリウス日を繰り上げ（次の日にする）
+					if (jdn != (std::numeric_limits<int>::max)()) {
+						++jdn; // ユリウス日を繰り上げ（次の日にする）
+					}
 					//jdn += 365; // ユリウス日を繰り上げ（次の日にする）
 #ifdef PAXS_USING_SIMULATOR
 					// エージェント機能テスト
@@ -389,7 +392,9 @@ namespace paxs {
 #endif
 				}
 				else if (go_back_in_time) {
-					++jdn; // ユリウス日を繰り上げ（次の日にする）
+					if (jdn != (std::numeric_limits<int>::max)()) {
+						++jdn; // ユリウス日を繰り上げ（次の日にする）
+					}
 				}
 			}
 

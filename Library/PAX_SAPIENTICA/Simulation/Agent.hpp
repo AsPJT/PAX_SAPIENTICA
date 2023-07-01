@@ -16,6 +16,8 @@
 
 ##########################################################################################*/
 
+#include <limits>
+
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Object.hpp>
 
@@ -42,8 +44,14 @@ namespace paxs {
 
         /// @brief エージェントが死んでいるかどうかを返す
         bool isDead() const { return age >= life_span; }
+        
         /// @brief エージェントの年齢を更新する
-        void updateAge() { ++age; }
+        void updateAge() { 
+            if (age != (std::numeric_limits<std::uint_least32_t>::max)()) {
+                ++age;
+            }
+        }
+
         /// @brief エージェントの性別を取得する
         std::uint_least8_t getGender() const { return gender; }
 
