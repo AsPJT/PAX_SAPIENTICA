@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -16,14 +16,14 @@
 
 ##########################################################################################*/
 
+#include <iostream>
+#include <map>
+
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusLogger.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
-
-#include <iostream>
-#include <map>
 
 namespace paxs {
     
@@ -71,7 +71,6 @@ namespace paxs {
         /// @param position シミュレーションのZ値に対する座標
         /// @return 指定した位置の値
         T getValue(const Vector2& position) const {
-            // TODO: シミュレーションのz値からこのデータのz値の座標に変換する
             Vector2 converted_position = position * z_mag;
             auto itr = data.find(converted_position);
             if(itr == data.end()) {

@@ -20,12 +20,10 @@
 #include <iomanip>
 
 namespace paxs {
-    /// @brief 状態を表示するクラス
+    /// @brief A class that displays the progress bar.
     class StatusLogger {
     public:
-        /// @brief プログレスバーを表示する
-        /// @param current 進行度
-        /// @param total 総数
+        /// @brief Display the progress bar.
         static void displayProgressBar(unsigned int current, unsigned int total) {
             const int bar_width = 50;
 

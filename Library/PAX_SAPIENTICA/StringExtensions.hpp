@@ -42,7 +42,7 @@ namespace paxs {
 			if (from.empty()) return;
 			const std::size_t from_len = from.length();
 			const std::size_t to_len = to.length();
-			std::size_t pos = str.find(from);
+			std::size_t pos = 0;
 			while ((pos = str.find(from, pos)) != std::string::npos) {
 				str.replace(pos, from_len, to);
 				pos += to_len;

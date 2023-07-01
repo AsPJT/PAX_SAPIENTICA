@@ -19,6 +19,8 @@
 #include <iostream>
 
 namespace paxs {
+    
+    /// @brief 2D Vector class.
     template<typename T>
     class Vector2 {
     public:
@@ -112,9 +114,14 @@ namespace paxs {
             }
             return x >= v.x;
         }
+
+        /// @brief Get the length of the vector
         double length() const {
             return sqrt(x * x + y * y);
         }
+
+        /// @brief  Get the distance between two vectors
+        /// @param v Another vector
         double distance(const Vector2<T>& v) const {
             return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
         }
