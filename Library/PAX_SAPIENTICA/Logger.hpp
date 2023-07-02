@@ -16,24 +16,32 @@
 
 ##########################################################################################*/
 
+#include <chrono>
+#include <ctime>
 #include <fstream>
-#include <iostream>
+#include <iomanip>
+#include <sstream>
 
 namespace paxs {
 
     /// @brief A class that logs the message.
+    /// @brief メッセージをログするクラス。
     class Logger {
     public:
 
         /// @brief The level of the log.
+        /// @brief ログのレベル。
         enum class Level {
             INFO,
             WARNING,
             ERROR
         };
 
+        /// @brief Constructor.
+        /// @brief コンストラクタ。
+        /// @param filename The name of the file to log. ログを記録するファイルの名前。
         explicit Logger(const std::string& filename = "Save/error_log.txt") noexcept {
-            std::string directory = filename.substr(0, filename.find_last_of("/\\"));
+            const std::string directory = filename.substr(0, filename.find_last_of("/\\"));
             if (!std::filesystem::exists(directory)) {
                 std::filesystem::create_directories(directory);
             }
@@ -41,35 +49,57 @@ namespace paxs {
             file.open(filename, std::ios::app);
         }
 
-        ~Logger() {
-            if (file) {
-                file.close();
-            }
+        /// @brief Destructor.
+        /// @brief デストラクタ。
+        ~Logger() noexcept {
+            file.close();
+        }
+
+        /// @brief Get the current date and time as a string.
+        /// @brief 現在の日時を文字列として取得する。
+        std::string currentDateTime() const noexcept {
+            const auto now = std::chrono::system_clock::now();
+            const auto in_time_t = std::chrono::system_clock::to_time_t(now);
+            std::stringstream ss;
+            ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
+            return ss.str();
         }
 
         /// @brief Logs the message.
-        void log(Level level, const std::string& message) noexcept {
-            // TODO: Add time stamp.
+        /// @brief メッセージをログする。
+        /// @param level The level of the log. ログのレベル。
+        /// @param filename The name of the file to log. ログを記録するファイルの名前。ex) __FILE__
+        /// @param line The line number of the file to log. ログを記録するファイルの行番号。ex) __LINE__
+        /// @param message The message to log. ログするメッセージ。
+        void log(Level level, const std::string& filename, int line, const std::string& message) noexcept {
+            const std::string current_time = currentDateTime();
+            file << "[" << current_time << "] ";
             
             switch(level) {
                 case Level::INFO: 
-                    file << "[INFO]: " << message << std::endl;
+                    file << "[INFO]: ";
                     break;
                 case Level::WARNING: 
-                    file << "[WARNING]: " << message << std::endl;
+                    file << "[WARNING]: ";
                     break;
                 case Level::ERROR: 
-                    file << "[ERROR]: " << message << std::endl;
+                    file << "[ERROR]: ";
                     break;
             }
+
+            file << message << " (" << filename << ":" << line << ")" << std::endl;
         }
 
         /// @brief logging from an exceptions.
-        void handleException(const std::exception& e) noexcept {
-            log(Level::ERROR, "Exception: " + std::string(e.what()));
+        /// @brief 例外からのログ。
+        /// @param e The exception to log. ログする例外。
+        /// @param filename The name of the file to log. ログを記録するファイルの名前。ex) __FILE__
+        /// @param line The line number of the file to log. ログを記録するファイルの行番号。ex) __LINE__
+        constexpr void handleException(const std::exception& e, const std::string& filename, int line) noexcept {
+            log(Level::ERROR, filename, line, "Exception: " + std::string(e.what()));
         }
     private:
-        std::ofstream file;
+        std::ofstream file; // The file to log.
     };
 }
 

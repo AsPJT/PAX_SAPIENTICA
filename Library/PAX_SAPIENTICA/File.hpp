@@ -27,15 +27,17 @@
 namespace paxs {
     
     /// @brief A class that handles files.
+    /// @brief ファイルを扱うクラス。
     class File {
     public:
         /// @brief Read the file.
+        /// @brief ファイルを読み込む。
         static std::vector<std::string> readFile(const std::string& file_path) {
             std::ifstream file(file_path);
             if (!file) {
                 Logger logger("Save/error_log.txt");
-                std::string message = "Failed to read file: " + file_path;
-                logger.log(Logger::Level::ERROR, message);
+                const std::string message = "Failed to read file: " + file_path;
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
 
@@ -49,6 +51,7 @@ namespace paxs {
         }
 
         /// @brief Read CSV file.
+        /// @brief CSVファイルを読み込む。
         static std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {
             std::vector<std::string> contents;
             try
@@ -58,7 +61,7 @@ namespace paxs {
             catch(const std::exception& e)
             {
                 Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::ERROR, "Failed to read CSV file: " + file_path + "\n" + e.what());
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to read CSV file: " + file_path);
                 throw;
             }
             
@@ -70,6 +73,7 @@ namespace paxs {
         }
 
         /// @brief Read TSV file.
+        /// @brief TSVファイルを読み込む。
         static std::vector<std::vector<std::string>> readTSV(const std::string& file_path) {
             std::vector<std::string> contents;
             try
@@ -79,7 +83,7 @@ namespace paxs {
             catch(const std::exception& e)
             {
                 Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::ERROR, "Failed to read TSV file: " + file_path + "\n" + e.what());
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to read TSV file: " + file_path);
                 throw;
             }
 
@@ -91,12 +95,13 @@ namespace paxs {
         }
 
         /// @brief Get the file name in the directory.
+        /// @brief ディレクトリ内のファイル名を取得する。
         static std::vector<std::string> getFileNames(const std::string& directory_path) {
             std::filesystem::path dir_path(directory_path);
             if (!std::filesystem::exists(dir_path)) {
                 Logger logger("Save/error_log.txt");
-                std::string message = "Failed to get file names: " + directory_path;
-                logger.log(Logger::Level::ERROR, message);
+                const std::string message = "Failed to get file names: " + directory_path;
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
 
@@ -112,7 +117,7 @@ namespace paxs {
                 }
                 catch (const std::exception& ex) {
                     Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::ERROR, "Failed to access: " + dir_iter->path().string() + "\n" + ex.what());
+                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to access: " + dir_iter->path().string());
                     throw;
                 }
             }
