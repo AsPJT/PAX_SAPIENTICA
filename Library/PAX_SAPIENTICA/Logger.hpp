@@ -95,7 +95,7 @@ namespace paxs {
         /// @param e The exception to log. ログする例外。
         /// @param filename The name of the file to log. ログを記録するファイルの名前。ex) __FILE__
         /// @param line The line number of the file to log. ログを記録するファイルの行番号。ex) __LINE__
-        constexpr void handleException(const std::exception& e, const std::string& filename, int line) noexcept {
+        void handleException(const std::exception& e, const std::string& filename, int line) noexcept {
             log(Level::ERROR, filename, line, "Exception: " + std::string(e.what()));
         }
     private:
