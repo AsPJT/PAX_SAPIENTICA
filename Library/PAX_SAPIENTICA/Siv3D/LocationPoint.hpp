@@ -54,7 +54,7 @@ namespace paxs {
 	public:
 		void update(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position) {
 			location_point_list.resize(0);
-			for (int i = 0; i < agents.size(); ++i) {
+			for (std::size_t i = 0; i < agents.size(); ++i) {
 				location_point_list.emplace_back(
 					LocationPoint{
 						"","",
@@ -68,7 +68,7 @@ namespace paxs {
 					}
 				);
 			}
-			//for (int i = 0; i < location_point_list.size(); ++i) {
+			//for (std::size_t i = 0; i < location_point_list.size(); ++i) {
 			//	auto& lli = location_point_list[i];
 			//	lli.coordinate.x += s3d::Random(-0.001,0.001);
 			//	lli.coordinate.y += s3d::Random(-0.001, 0.001);
@@ -100,7 +100,7 @@ namespace paxs {
 			const s3d::Font& font, const s3d::Font& en_font, const s3d::Font& pin_font)const {
 
 			// 地名を描画
-			for (int i = 0; i < location_point_list.size(); ++i) {
+			for (std::size_t i = 0; i < location_point_list.size(); ++i) {
 				auto& lli = location_point_list[i];
 				// 範囲外を除去
 				if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.8)
@@ -177,7 +177,7 @@ namespace paxs {
 			}
 
 			// 地名を描画
-			for (int i = 0; i < location_point_list.size(); ++i) {
+			for (std::size_t i = 0; i < location_point_list.size(); ++i) {
 				auto& lli = location_point_list[i];
 
 				// 範囲外を除去
@@ -323,7 +323,7 @@ namespace paxs {
 			/*, const s3d::Font& pin_font*/)const {
 
 			// 地名を描画
-			for (int i = 0; i < agents.size(); ++i) {
+			for (std::size_t i = 0; i < agents.size(); ++i) {
 				const auto lli = LocationPoint{
 						"","",
 						paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),

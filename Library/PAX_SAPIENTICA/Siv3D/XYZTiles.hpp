@@ -64,8 +64,8 @@ namespace paxs {
 			// 画面上の XYZ タイルのメルカトル座標を初期化
 			pos_list.resize(cell_all_num);
 			texture_list.resize(cell_all_num);
-			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+			for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					pos_list[k] =
 						//pos_list[i * cell_num.x + j] =
 						MapVec2D{ j * 360.0 / z_num - 180.0,
@@ -123,8 +123,8 @@ namespace paxs {
 			texture_list.resize(cell_all_num);
 
 
-			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+			for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					pos_list[k] =
 						MapVec2D{ j * 360.0 / z_num - 180.0,
 				(360.0 - i * 360.0 / z_num) - 180.0 };
@@ -132,8 +132,8 @@ namespace paxs {
 			}
 
 
-			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+			for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					s3d::FilePath new_saveFilePath = U"";
 					switch (file_name_enum) {
 					case XYZTileFileName::Original:
@@ -186,8 +186,8 @@ namespace paxs {
 			static s3d::Font tmp_font{ s3d::FontMethod::SDF, 16/*, s3d::Typeface::Bold*/};
 			tmp_font.setBufferThickness(3);
 
-			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+			for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					tmp_font(U"X:", j, U"\nY:", i, U"\nZ:", z).draw(
 						s3d::TextStyle::Outline(0, 0.5, s3d::ColorF{ 1, 1, 1 }),
 						10 + (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
@@ -203,8 +203,8 @@ namespace paxs {
 			if (magnification_z < draw_min_z) return;
 			if (magnification_z > draw_max_z) return;
 
-			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+			for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					if (texture_list[k]) {
 						texture_list[k].resized(
 							(360.0 / z_num) / map_view_width * double(s3d::Scene::Width())
@@ -245,8 +245,8 @@ namespace paxs {
 		void drawLineCell(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
 			, const double inner_thickness, const double outer_thickness, const s3d::ColorF& color
 		)const {
-			for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-				for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+			for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+				for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					s3d::Rect(
 						s3d::Rect::value_type((pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width())),
 							s3d::Rect::value_type(double(s3d::Scene::Height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))),

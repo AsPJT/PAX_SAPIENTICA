@@ -263,7 +263,7 @@ namespace paxs {
 				);
 				route1.emplace_back(coordinate.x, coordinate.y);
 			}
-			for (int i = 0; i < route1.size(); ++i) {
+			for (std::size_t i = 0; i < route1.size(); ++i) {
 				route2.emplace_back(
 					(route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
 					double(s3d::Scene::Height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
@@ -329,7 +329,7 @@ namespace paxs {
 			if (jdn >= 1480407) {
 				bool is_break = false;
 				// 元号一覧からその日に合った元号を取得
-				for (int i = 0; i < japanese_era_list.size() - 1; ++i) {
+				for (std::size_t i = 0; i < japanese_era_list.size() - 1; ++i) {
 					auto& jeli = japanese_era_list[i];
 					if (jdn >= jeli.start_jdn
 						&& jdn < japanese_era_list[i + 1].start_jdn) {
@@ -431,7 +431,7 @@ namespace paxs {
 					|| language == 2
 					|| language == 3
 					) {
-					for (int i = 0; i < date_list.size(); ++i) {
+					for (std::size_t i = 0; i < date_list.size(); ++i) {
 						koyomi_font[language](date_list[i].calendar_name[language + 1 /* 言語位置調整 */]).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
@@ -448,7 +448,7 @@ namespace paxs {
 				}
 				else {
 					// 暦の表示（英語）
-					for (int i = 0; i < date_list.size(); ++i) {
+					for (std::size_t i = 0; i < date_list.size(); ++i) {
 						koyomi_font[language](date_list[i].calendar_name[language + 1 /* 言語位置調整 */]).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
