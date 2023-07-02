@@ -9,6 +9,7 @@
 
 ##########################################################################################*/
 
+#include <Siv3D.hpp> // OpenSiv3D
 #include <PAX_SAPIENTICA/Siv3D/Main.hpp>
 
 void Main() {

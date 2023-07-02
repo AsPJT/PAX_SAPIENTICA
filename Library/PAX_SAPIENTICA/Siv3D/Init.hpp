@@ -16,8 +16,6 @@
 
 ##########################################################################################*/
 
-#include <Siv3D.hpp> // OpenSiv3D
-
 #ifdef SIV3D_PLATFORM_PRIVATE_DEFINITION_WINDOWS
 #ifndef PAXS_S3D_RESOURCE
 #define PAXS_S3D_RESOURCE s3d::Resource

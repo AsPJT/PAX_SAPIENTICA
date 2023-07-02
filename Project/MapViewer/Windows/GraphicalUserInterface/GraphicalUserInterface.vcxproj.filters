@@ -136,6 +136,12 @@
     <Filter Include="Resource Files\engine\font\min">
       <UniqueIdentifier>{1b103960-f11a-4515-b4f1-f59333ce00d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Library">
+      <UniqueIdentifier>{cd36d43c-4839-492f-9453-2c76aa80005f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library\Siv3D">
+      <UniqueIdentifier>{eaa03a46-201c-479f-b8db-8667ac9eb9d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -775,6 +781,42 @@
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\3DModel.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Calendar.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Init.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\InitLogo.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Key.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Language.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationPoint.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocatipnRange.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Main.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Pulldown.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTiles.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTilesList.hpp">
+      <Filter>Library\Siv3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

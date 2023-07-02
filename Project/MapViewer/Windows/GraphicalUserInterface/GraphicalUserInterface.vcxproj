@@ -317,6 +317,18 @@
     <Xml Include="App\example\xml\test.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\3DModel.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Calendar.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Init.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\InitLogo.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Key.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Language.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationPoint.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocatipnRange.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Main.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Pulldown.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTiles.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTilesList.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
