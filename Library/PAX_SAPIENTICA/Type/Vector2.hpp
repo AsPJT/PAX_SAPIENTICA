@@ -24,91 +24,97 @@ namespace paxs {
     template<typename T>
     class Vector2 {
     public:
-        constexpr Vector2() = default;
-        constexpr Vector2(T x, T y) : x(x), y(y) {}
+        constexpr explicit Vector2() noexcept = default;
+        constexpr explicit Vector2(T x, T y) noexcept : x(x), y(y) {}
 
         T x;
         T y;
 
-        constexpr Vector2<T> operator+(const Vector2<T>& v) const {
+        constexpr static Vector2<T> zero() noexcept { return Vector2<T>(0, 0); }
+
+        constexpr Vector2<T> operator-() const noexcept {
+            return Vector2<T>(-x, -y);
+        }
+
+        constexpr Vector2<T> operator+(const Vector2<T>& v) const noexcept {
             return Vector2<T>(x + v.x, y + v.y);
         }
-        constexpr Vector2<T>& operator+=(const Vector2<T>& v) {
+        constexpr Vector2<T>& operator+=(const Vector2<T>& v) noexcept {
             x += v.x;
             y += v.y;
             return *this;
         }
-        constexpr Vector2<T> operator-(const Vector2<T>& v) const {
+        constexpr Vector2<T> operator-(const Vector2<T>& v) const noexcept {
             return Vector2<T>(x - v.x, y - v.y);
         }
-        constexpr Vector2<T>& operator-=(const Vector2<T>& v) {
+        constexpr Vector2<T>& operator-=(const Vector2<T>& v) noexcept {
             x -= v.x;
             y -= v.y;
             return *this;
         }
-        constexpr Vector2<T> operator*(const Vector2<T>& v) const {
+        constexpr Vector2<T> operator*(const Vector2<T>& v) const noexcept {
             return Vector2<T>(x * v.x, y * v.y);
         }
-        constexpr Vector2<T> operator*(const int& t) const {
+        constexpr Vector2<T> operator*(const int& t) const noexcept {
             return Vector2<T>(x * t, y * t);
         }
-        constexpr Vector2<T>& operator*=(const int& t) {
+        constexpr Vector2<T>& operator*=(const int& t) noexcept {
             x *= t;
             y *= t;
             return *this;
         }
-        constexpr Vector2<T> operator*(const double& t) const {
+        constexpr Vector2<T> operator*(const double& t) const noexcept {
             return Vector2<T>(x * T(t), y * T(t));
         }
-        constexpr Vector2<T>& operator*=(const double& t) {
+        constexpr Vector2<T>& operator*=(const double& t) noexcept {
             x *= t;
             y *= t;
             return *this;
         }
-        constexpr Vector2<T> operator/(const Vector2<T>& v) const {
+        constexpr Vector2<T> operator/(const Vector2<T>& v) const noexcept {
             return Vector2<T>(x / v.x, y / v.y);
         }
-        constexpr Vector2<T> operator/(const int& t) const {
+        constexpr Vector2<T> operator/(const int& t) const noexcept {
             return Vector2<T>(x / t, y / t);
         }
-        constexpr Vector2<T>& operator/=(const int& t) {
+        constexpr Vector2<T>& operator/=(const int& t) noexcept {
             x /= t;
             y /= t;
             return *this;
         }
-        constexpr Vector2<T> operator/(const double& t) const {
+        constexpr Vector2<T> operator/(const double& t) const noexcept {
             return Vector2<T>(x / t, y / t);
         }
-        constexpr Vector2<T>& operator/=(const double& t) {
+        constexpr Vector2<T>& operator/=(const double& t) noexcept {
             x /= t;
             y /= t;
             return *this;
         }
-        constexpr bool operator==(const Vector2<T>& v) const {
+        constexpr bool operator==(const Vector2<T>& v) const noexcept {
             return v.x == x && v.y == y;
         }
-        constexpr bool operator!=(const Vector2<T>& v) const {
+        constexpr bool operator!=(const Vector2<T>& v) const noexcept {
             return v.x != x || v.y != y;
         }
-        constexpr bool operator<(const Vector2<T>& v) const {
+        constexpr bool operator<(const Vector2<T>& v) const noexcept {
             if (x == v.x) {
                 return y < v.y;
             }
             return x < v.x;
         }
-        constexpr bool operator>(const Vector2<T>& v) const {
+        constexpr bool operator>(const Vector2<T>& v) const noexcept {
             if (x == v.x) {
                 return y > v.y;
             }
             return x > v.x;
         }
-        constexpr bool operator<=(const Vector2<T>& v) const {
+        constexpr bool operator<=(const Vector2<T>& v) const noexcept {
             if (x == v.x) {
                 return y <= v.y;
             }
             return x <= v.x;
         }
-        constexpr bool operator>=(const Vector2<T>& v) const {
+        constexpr bool operator>=(const Vector2<T>& v) const noexcept {
             if (x == v.x) {
                 return y >= v.y;
             }
@@ -116,16 +122,17 @@ namespace paxs {
         }
 
         /// @brief Get the length of the vector
-        double length() const {
-            return sqrt(x * x + y * y);
+        /// @brief べクトルの長さを取得。
+        double length() const noexcept {
+            return std::sqrt(x * x + y * y);
         }
 
         /// @brief  Get the distance between two vectors
-        /// @param v Another vector
-        double distance(const Vector2<T>& v) const {
-            return sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
+        /// @brief  二つのベクトルの距離を取得。
+        double distance(const Vector2<T>& v) const noexcept {
+            return std::sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
         }
-        friend std::ostream& operator<<(std::ostream& os, const Vector2<T>& v) {
+        friend std::ostream& operator<<(std::ostream& os, const Vector2<T>& v) noexcept {
             os << "(" << v.x << ", " << v.y << ")";
             return os;
         }

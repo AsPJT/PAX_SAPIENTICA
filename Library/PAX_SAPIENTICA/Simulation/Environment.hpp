@@ -20,18 +20,21 @@
 #include <iostream>
 #include <random>
 #include <regex>
+#include <stdexcept>
 #include <unordered_map>
 #include <variant>
 
 #include <PAX_SAPIENTICA/File.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
 
+    /// @brief A class that manages data required for simulation.
     /// @brief シミュレーションに必要なデータを管理するクラス
-    /// @tparam T Vector2の型
+    /// @tparam T Vector2's type. Vector2の型。
     template <typename T>
     class Environment {
     public:
@@ -39,12 +42,22 @@ namespace paxs {
 
         using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>>;
 
+        /// @brief Start position of the simulation.
         /// @brief シミュレーションデータのマップ
         std::unordered_map<std::string, DataVariant> data_map;
 
-        Environment() = default;
-        Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
-            std::vector<std::vector<std::string>> settings = File::readTSV(setting_file_path);
+        constexpr explicit Environment() noexcept = default;
+        explicit Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
+            std::vector<std::vector<std::string>> settings;
+            try {
+                settings = File::readTSV(setting_file_path);
+            } catch (const std::runtime_error& e) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to read setting file: " + setting_file_path;
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+
             // 1行目からdata_typeのカラム番号を取得
             int key_column = -1;
             int data_type_column = -1;
@@ -65,14 +78,16 @@ namespace paxs {
                 }
             }
             if(key_column == -1 || data_type_column == -1 || file_path_column == -1 || z_column == -1) {
-                std::cerr << "Error: column is not found." << std::endl;
-                exit(1);
+                Logger logger("Save/error_log.txt");
+                const std::string message = "key or data_type or file_path or z is not found: " + setting_file_path;
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
 
             for(std::size_t i = 1;i < settings.size();++i) {
                 // 型名をstringからTに変換
-                std::string data_type = settings[i][data_type_column];
-                std::string key = settings[i][key_column];
+                const std::string data_type = settings[i][data_type_column];
+                const std::string key = settings[i][key_column];
                 if(data_type == "u8"){
                     data_map.emplace(key, Data<std::uint_least8_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::u8));
                 } else if(data_type == "u32"){
@@ -80,36 +95,45 @@ namespace paxs {
                 } else if(data_type == "f32"){
                     data_map.emplace(key, Data<float>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::f32));
                 } else {
-                    std::cerr << "Error: data_type is not found." << std::endl;
-                    exit(1);
+                    Logger logger("Save/error_log.txt");
+                    const std::string message = "data_type is not found: " + data_type + " in " + setting_file_path;
+                    logger.log(Logger::Level::WARNING, __FILE__, __LINE__, message);
                 }
             }
         }
 
         /// @brief シミュレーションの左上の座標の取得
-        Vector2 getStartPosition() const { return start_position; }
+        constexpr Vector2 getStartPosition() const noexcept { return start_position; }
         /// @brief シミュレーションの右下の座標の取得
-        Vector2 getEndPosition() const { return end_position; }
+        constexpr Vector2 getEndPosition() const noexcept { return end_position; }
 
+        /// @brief Get data.
         /// @brief データの取得
-        /// @param key データの名前
-        /// @param position 取得したい座標
+        /// @param key Data's key. データのキー
+        /// @param position Position of the data to be acquired. 取得したいデータの座標
         template <typename U>
         U getData(const std::string& key, const Vector2& position) const {
             if(data_map.count(key) == 0) {
-                std::cerr << "Error: key is not found." << std::endl;
-                exit(1);
+                Logger logger("Save/error_log.txt");
+                const std::string message = "key is not found: " + key;
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
             return std::get<Data<U>>(data_map.at(key)).getValue(position);
         }
 
+        /// @brief Get data.
         /// @brief 陸地かどうかの判定
-        /// @param position 判定したい座標
-        /// @return 陸地ならtrue
         bool isLand(const Vector2& position) const {
-            auto value = getData<std::uint_least8_t>("gbank", position);
-            return static_cast<int>(value) == 49; // char '1' -> int 49
-
+            try {
+                auto value = getData<std::uint_least8_t>("gbank", position);
+                return static_cast<int>(value) == static_cast<int>('1');
+            } catch (const std::exception& e) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to get gbank";
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
         }
     private:
         Vector2 start_position; // シミュレーションの左上の座標

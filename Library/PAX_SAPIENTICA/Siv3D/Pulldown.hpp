@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#include <Siv3D.hpp> // OpenSiv3D v0.6.6
+#include <limits>
 #include <vector>
 
 #include <PAX_SAPIENTICA/TouchManager.hpp>
@@ -46,7 +46,9 @@ namespace paxs {
 				const auto& item = itemsa[i][language_index + start_language_index];
 				if (item_front.size() == 0) break;
 				if (item_front[0] == '>') break;
-				++item_size;
+				if (item_size != (std::numeric_limits<std::size_t>::max)())	{
+					++item_size;
+				}
 				rect.w = s3d::Max(rect.w, static_cast<s3d::int32>(font.front()(item).region().w));
 			}
 			rect.w += (padding.x * 2 + down_button_size);

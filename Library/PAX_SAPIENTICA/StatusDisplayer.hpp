@@ -20,15 +20,27 @@
 #include <iomanip>
 
 namespace paxs {
-    /// @brief A class that displays the progress bar.
+    /// @brief A class that displays the progress.
+    /// @brief ステータスを表示するクラス
     class StatusDisplayer {
     public:
         /// @brief Display the progress bar.
-        static void displayProgressBar(unsigned int current, unsigned int total) {
+        /// @brief プログレスバーを表示する
+        static void displayProgressBar(unsigned int current, unsigned int total) noexcept {
             const int bar_width = 50;
 
-            float progress = static_cast<float>(current) / total;
-            int position = static_cast<int>(bar_width * progress);
+            if (total == 0) {
+                std::cout << "[";
+                for (int i = 0; i < bar_width; ++i) {
+                    std::cout << " ";
+                }
+                std::cout << "] " << std::fixed << std::setprecision(1) << 0.0 << "%\r";
+                std::cout.flush();
+                return;
+            }
+
+            const float progress = static_cast<float>(current) / total;
+            const int position = static_cast<int>(bar_width * progress);
 
             std::cout << "[";
             for (int i = 0; i < bar_width; ++i) {

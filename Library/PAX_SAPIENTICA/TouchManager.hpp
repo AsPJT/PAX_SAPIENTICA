@@ -18,15 +18,20 @@
 
 namespace paxs {
 	
+	/// @brief A class that manages touch.
+	/// @brief タッチを管理するクラス
 	struct TouchManager {
 	private:
 		// タッチされているか
 		bool is_touch = false;
 	public:
-		void init() { is_touch = false; }
+		/// @brief Initialize the touch.
+		/// @brief タッチを初期化する
+		constexpr void init() noexcept { is_touch = false; }
 
-		// タッチの処理
-		bool get(const bool is_touch_) {
+		/// @brief Get the touch.
+		/// @brief タッチを取得する
+		constexpr bool get(const bool is_touch_) noexcept {
 
 			// まだタッチされていない場合
 			if (!is_touch) {
