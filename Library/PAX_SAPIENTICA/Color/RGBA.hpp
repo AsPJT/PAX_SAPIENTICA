@@ -66,7 +66,7 @@ namespace paxs {
 
 	public:
 		RGBA() = default;
-		constexpr RGBA(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_) :r(r_), g(g_), b(b_), a(a_) {}
+		constexpr RGBA(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_ = 255) :r(r_), g(g_), b(b_), a(a_) {}
 		RGBA(const std::string& str_) {
 
 			if (str_.size() == 7) {
