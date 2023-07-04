@@ -52,7 +52,7 @@ namespace paxs {
 			//	((1.0 - (90.0 / 256.0)) * 360.0) - 180.0);
 		}
 		void update(const double  map_view_center_x, const double map_view_center_y, const double map_view_width, const double map_view_height) {
-			for (int i = 0; i < location_range_list.size(); ++i) {
+			for (std::size_t i = 0; i < location_range_list.size(); ++i) {
 				auto& jj = location_range_list[i];
 				if (jj.mex > map_view_center_x - map_view_width / 2 &&
 					jj.msx < map_view_center_x + map_view_width / 2 &&

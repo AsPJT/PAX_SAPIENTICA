@@ -152,7 +152,7 @@ namespace paxs {
 #endif
 
 				// 線の描画
-				for (int i = 0; i < koyomi_siv.route2.size(); ++i) {
+				for (std::size_t i = 0; i < koyomi_siv.route2.size(); ++i) {
 					koyomi_siv.route2[i] = s3d::Vec2(
 						(koyomi_siv.route1[i].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						double(s3d::Scene::Height()) - ((koyomi_siv.route1[i].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
@@ -171,7 +171,7 @@ namespace paxs {
 				//				static int step = 0;
 				//				if (step == 0) {
 				//					//s3d::Print(U"Agent Size:", simlator.getAgents().size());
-				//					//for (int i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
+				//					//for (std::size_t i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
 				//					//	s3d::Print(U"Agent[",i,U"]:X" ,simlator.getAgents()[i].getLocation(10,256).x, U", Y", simlator.getAgents()[i].getLocation(10,256).y);
 				//					//}
 				//				}

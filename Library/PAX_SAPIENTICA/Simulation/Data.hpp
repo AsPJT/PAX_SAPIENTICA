@@ -21,6 +21,7 @@
 #include <stdexcept>
 
 #include <PAX_SAPIENTICA/File.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusDisplayer.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
@@ -28,6 +29,7 @@
 
 namespace paxs {
     
+    /// @brief Data class data type
     /// @brief Dataクラスのデータ型
     enum class DataType {
         u8,
@@ -35,17 +37,27 @@ namespace paxs {
         f32
     };
 
+    /// @brief A class that holds data required for simulation.
     /// @brief シミュレーションに必要なデータを保持するクラス
-    /// @tparam T 読み込むデータの型
+    /// @tparam T type of data. データの型
     template <typename T>
     class Data {
     public:
         using Vector2 = paxs::Vector2<int>;
-        Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z, const  DataType data_type) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z), data_type(data_type) {
+        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z, const  DataType data_type) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z), data_type(data_type) {
             z_mag = std::pow(2, default_z - pj_z);
-            load(file_path);
+
+            try {
+                load(file_path);
+            }
+            catch (const std::exception& e) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to load data: " + file_path;
+                logger.log(Logger::Level::WARNING, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
         }
-        Data(const Data& other)
+        Data(const Data& other) noexcept
             : start_position(other.start_position),
             end_position(other.end_position),
             name(other.name),
@@ -56,7 +68,7 @@ namespace paxs {
             data_type(other.data_type) {}
 
         // Copy assignment operator
-        Data& operator=(const Data& other) {
+        constexpr Data& operator=(const Data& other) noexcept {
             if (this != &other) {
                 start_position = other.start_position;
                 end_position = other.end_position;
@@ -68,15 +80,13 @@ namespace paxs {
             return *this;
         }
 
+        /// @brief Get the data of the specified position.
         /// @brief 指定した位置の値を取得する
-        /// @param position シミュレーションのZ値に対する座標
-        /// @return 指定した位置の値
-        T getValue(const Vector2& position) const {
-            Vector2 converted_position = position * z_mag;
+        constexpr T getValue(const Vector2& position) const noexcept {
+            const Vector2 converted_position = position * z_mag;
             auto itr = data.find(converted_position);
             if(itr == data.end()) {
-                // TODO: この0はT型のデフォルト値にしたい
-                return 0;
+                return static_cast<T>(0);
             }
             return itr->second;
         }
@@ -90,14 +100,26 @@ namespace paxs {
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
         DataType data_type; // データの型
 
-        // ファイルのロード
+        /// @brief Load the file.
+        /// @brief ファイルのロード
         void load(const std::string& file_path) {
             std::cout << "Loading " << name << " data..." << std::endl;
-            const std::vector<std::string> file_names = File::getFileNames(file_path);
+            std::vector<std::string> file_names; 
+            try {
+                file_names = File::getFileNames(file_path);
+            } catch (const std::exception& e) {
+                Logger logger("Save/error_log.txt");
+                logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File not found: " + file_path);
+                throw;
+            }
+
             std::cout << file_names.size() << " files are found." << std::endl; 
 
             if(file_names.size() == 0) {
-                throw std::runtime_error("File not found: " + file_path);
+                Logger logger("Save/error_log.txt");
+                const std::string message = "File not found: " + file_path;
+                logger.log(Logger::Level::WARNING, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
 
             if(file_names[0].find(".tsv") != std::string::npos) {
@@ -105,30 +127,53 @@ namespace paxs {
             } else if(file_names[0].find(".txt") != std::string::npos) {
                 loadNumericText(file_names);
             } else {
-                throw std::runtime_error("File format is not supported: " + file_names[0]);
+                Logger logger("Save/error_log.txt");
+                const std::string message = "File type is invalid: " + file_names[0];
+                logger.log(Logger::Level::WARNING, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
         }
 
-        // 数値TSVファイルのロード
-        void loadNumericTSV(const std::vector<std::string>& file_names) {
+        /// @brief Load numeric TSV files.
+        /// @brief 数値TSVファイルのロード
+        void loadNumericTSV(const std::vector<std::string>& file_names) noexcept {
             unsigned int file_count = 0;
             int load_count = 0;
 
             for(const auto& file_name : file_names) {
                 StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
 
-                Vector2 xyz_position = getXAndYFromFileName(file_name);
-                Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
+                Vector2 xyz_position;
+                try {
+                    xyz_position = getXAndYFromFileName(file_name);
+                } catch (const std::exception& e) {
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
+                    ++file_count;
+                    continue;
+                }
+                
+                const Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
                 if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size || default_position.y > (end_position.y - start_position.y) * pixel_size) {
                     ++file_count;
                     continue;
                 }
-                std::vector<std::string> file = File::readFile(file_name);
+
+                std::vector<std::string> file;
+                try {
+                    file = File::readFile(file_name);
+                } catch (const std::exception& e) {
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File is not found: " + file_name);
+                    ++file_count;
+                    continue;
+                }
+
                 for(std::size_t y = 0;y < file.size();++y) {
                     // タブ区切り
-                    std::vector<std::string> values = StringExtensions::split(file[y], '\t');
+                    const std::vector<std::string> values = StringExtensions::split(file[y], '\t');
                     for(std::size_t x = 0;x < values.size();++x) {
-                        Vector2 position = default_position + Vector2((int)x, (int)y);
+                        const Vector2 position = default_position + Vector2((int)x, (int)y);
                         if(values[x] == "") {
                             continue;
                         }
@@ -145,7 +190,6 @@ namespace paxs {
                             // str is out of range for a double
                             continue;
                         }
-                        
                     }
                 }
                 ++file_count;
@@ -156,24 +200,44 @@ namespace paxs {
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
 
-        // 数値ファイルのロード
-        void loadNumericText(const std::vector<std::string>& file_names) {
+        /// @brief Load numeric text file.
+        /// @brief 数値テキストファイルのロード
+        void loadNumericText(const std::vector<std::string>& file_names) noexcept {
             unsigned int file_count = 0;
             int load_count = 0;
 
             for(const auto& file_name : file_names) {
                 StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
 
-                Vector2 xyz_position = getXAndYFromFileName(file_name);
-                Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
+                Vector2 xyz_position;
+                try {
+                    xyz_position = getXAndYFromFileName(file_name);
+                } catch (const std::exception& e) {
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
+                    ++file_count;
+                    continue;
+                }
+
+                const Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
                 if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size || default_position.y > (end_position.y - start_position.y) * pixel_size) {
                     ++file_count;
                     continue;
                 }
-                std::vector<std::string> file = File::readFile(file_name);
+
+                std::vector<std::string> file;
+                try {
+                    file = File::readFile(file_name);
+                } catch (const std::exception& e) {
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File is not found: " + file_name);
+                    ++file_count;
+                    continue;
+                }
+
                 for(std::size_t y = 0;y < file.size();++y) {
                     for(std::size_t x = 0;x < file[y].size();++x) {
-                        Vector2 position = default_position + Vector2((int)x, (int)y);
+                        const Vector2 position = default_position + Vector2((int)x, (int)y);
                         // T型に変換
                         data[position] = static_cast<T>(file[y][x]);
                     }
@@ -186,16 +250,20 @@ namespace paxs {
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
 
-        // ファイルの名前からX座標とY座標を取得
+        /// @brief Get X and Y coordinates from file name.
+        /// @brief ファイルの名前からX座標とY座標を取得
         Vector2 getXAndYFromFileName(const std::string& file_name) {
-            std::regex pattern(R"((\w+)_(\d+)_(\d+)_(\d+)\.(\w+))");
+            const std::regex pattern(R"((\w+)_(\d+)_(\d+)_(\d+)\.(\w+))");
             std::smatch matches;
 
             if(std::regex_search(file_name, matches, pattern)) {
                 return Vector2(std::stoi(matches[3]), std::stoi(matches[4]));
             }
             else {
-                throw std::runtime_error("File name is invalid: " + file_name);
+                Logger logger("Save/error_log.txt");
+                const std::string message = "File name is invalid: " + file_name;
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
         }
     };

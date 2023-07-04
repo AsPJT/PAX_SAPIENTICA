@@ -22,8 +22,9 @@
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
+    // TODO: Math.hppに移動
     template <typename T>
-    Vector2<double> convertToMercatorCoordinate(const Vector2<T>& start_position, const Vector2<T>& position, const int z) {
+    constexpr Vector2<double> convertToMercatorCoordinate(const Vector2<T>& start_position, const Vector2<T>& position, const int z) noexcept {
         const double n = std::pow(2, z);
         const double pixel_sum = pixel_size * n;
         const double u = (double)position.x / pixel_sum + start_position.x / n;

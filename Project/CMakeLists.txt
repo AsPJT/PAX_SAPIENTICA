@@ -9,5 +9,6 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 add_subdirectory(./GeographicDataToSimulationGrid)
+add_subdirectory(./LibraryTest)
 add_subdirectory(./SimulationTest)
 
