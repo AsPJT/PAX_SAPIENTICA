@@ -19,6 +19,7 @@
 #include <limits>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
 namespace paxs {

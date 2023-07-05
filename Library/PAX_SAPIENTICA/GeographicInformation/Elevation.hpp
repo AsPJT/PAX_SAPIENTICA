@@ -19,6 +19,7 @@
 #include <array>
 #include <cmath>
 #include <stdexcept>
+#include <string>
 
 namespace paxs {
 
@@ -26,11 +27,11 @@ namespace paxs {
     struct Grid3x3{
         Grid3x3(const std::array<double, 9>& grid) : grid(grid) {}
         std::array<double, 9> grid;
-        operator[](int i){
+        constexpr const double* operator[](const int i) const {
             if(i < 0 || i > 8){
                 throw std::out_of_range("Grid3x3::operator[] out of range.\n0 <= i <= 8 is required.\ni = " + std::to_string(i));
             }
-            return grid[i];
+            return &grid[std::size_t(i)];
         }
     };
 

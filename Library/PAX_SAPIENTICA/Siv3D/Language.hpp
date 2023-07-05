@@ -16,12 +16,13 @@
 
 ##########################################################################################*/
 
-#include <Siv3D.hpp>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <vector>
 #include <unordered_map>
+
+#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 
 namespace paxs {
 

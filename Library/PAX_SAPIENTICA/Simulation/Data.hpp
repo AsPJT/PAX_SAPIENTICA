@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <map>
+#include <regex>
 #include <stdexcept>
 
 #include <PAX_SAPIENTICA/File.hpp>

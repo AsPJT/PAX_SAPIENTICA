@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>
 
 namespace paxs {

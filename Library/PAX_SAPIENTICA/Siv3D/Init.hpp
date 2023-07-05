@@ -16,7 +16,11 @@
 
 ##########################################################################################*/
 
-#include <Siv3D.hpp> // OpenSiv3D
+#ifdef TEST_ENV
+    #include "MockSiv3D.hpp"
+#else
+    #include "siv3d.hpp"
+#endif
 
 #ifdef SIV3D_PLATFORM_PRIVATE_DEFINITION_WINDOWS
 #ifndef PAXS_S3D_RESOURCE

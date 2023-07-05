@@ -18,6 +18,7 @@
 
 #include <array>
 #include <cmath>
+#include <fstream>
 #include <string>
 #include <vector> // テンプレートにした後は不要
 

@@ -16,7 +16,10 @@
 
 ##########################################################################################*/
 
+#include <cmath>
+
 #include <PAX_SAPIENTICA/Math.hpp>
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
 
@@ -38,6 +41,7 @@ namespace paxs {
 	// メルカトル図法（度）
 	struct MercatorDeg : paxs::Vector2<double> {
 	public:
+   		constexpr explicit MercatorDeg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
 		// Ｙ軸を正距円筒図法（ラジアン）へ変換した値を返す
 		double toEquirectangularRadY() const noexcept {
 			return static_cast<double>(std::asin(std::tanh(paxs::MathF64::degToRad(this->y))));
@@ -53,6 +57,7 @@ namespace paxs {
 	// 正距円筒図法（度）
 	struct EquirectangularDeg : paxs::Vector2<double> {
 	public:
+		constexpr explicit EquirectangularDeg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
 		// Ｙ軸をメルカトル図法（ラジアン）へ変換した値を返す
 		double toMercatorRadY() const noexcept {
 			return static_cast<double>((y >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::MathF64::pi() / 4.0 - paxs::MathF64::degToRad(y) / 2.0)))));
@@ -75,7 +80,6 @@ namespace paxs {
 	template<typename T>
 	class MapProjection {
 	public:
-
 		// 正距円筒図法（ラジアン）からメルカトル図法へ変換（ラジアン）
 		constexpr inline static T equirectangularRadYToMercatorRadY(const T value) noexcept {
 			return static_cast<T>(std::asin(std::tanh(value)));
