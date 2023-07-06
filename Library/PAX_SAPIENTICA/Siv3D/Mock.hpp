@@ -170,7 +170,7 @@ namespace s3d
         static int Width() { return 0; }
         static int Height() { return 0; }
         static Vec2 Center() { return Vec2(); }
-        static Size Size() { return Size(); }
+        static Size Size() { return Vec2(); }
         static void SetBackground(s3d::Color color) {}
         static void SetLetterbox(s3d::Color color) {}
     };
@@ -468,7 +468,7 @@ namespace s3d
     class SimpleGUI
     {
     public:
-        static bool Button(String,Vec2) {}
+        static bool Button(String,Vec2) { return false; }
     };
 
     namespace detail
