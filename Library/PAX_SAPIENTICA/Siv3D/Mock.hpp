@@ -170,7 +170,7 @@ namespace s3d
         static int Width() { return 0; }
         static int Height() { return 0; }
         static Vec2 Center() { return Vec2(); }
-        static Size Size() { return Vec2(); }
+        static s3d::Size Size() { return s3d::Size(); }
         static void SetBackground(s3d::Color color) {}
         static void SetLetterbox(s3d::Color color) {}
     };
