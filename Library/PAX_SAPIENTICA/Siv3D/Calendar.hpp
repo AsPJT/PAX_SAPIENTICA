@@ -19,9 +19,16 @@
 #include <limits>
 #include <vector>
 
-#include <PAX_SAPIENTICA/Siv3D/Key.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
+#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+#include <PAX_SAPIENTICA/Siv3D/3DModel.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Key.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Language.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocationPoint.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocationRange.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>
+#include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp>
+#include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/Type/Date.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>

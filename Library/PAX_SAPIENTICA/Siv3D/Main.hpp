@@ -17,21 +17,9 @@
 ##########################################################################################*/
 
 
-enum MenuBarType {
-	file,edit,view,calendar,map
-};
-enum MapType {
-	base,
-	landand_sea,land_and_water,
-	soil,soil_temperature,
-	ryosei_country,ryosei_line,
-	slope,
-	river1,river2,line1,line2
-};
-
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Siv3D/InitLogo.hpp>
-#include <PAX_SAPIENTICA/Siv3D/LocatipnRange.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocationRange.hpp>
 #include <PAX_SAPIENTICA/Siv3D/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Siv3D/3DModel.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>

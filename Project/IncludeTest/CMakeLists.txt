@@ -3,8 +3,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(EXECUTABLE_OUTPUT_PATH ../../Project/IncludeTest/bin)
 include_directories(../../Library)
 
-# add_definitions(-DTEST_ENV)
-
 file(GLOB_RECURSE LIB_HEADERS RELATIVE "${CMAKE_SOURCE_DIR}/../Library/PAX_SAPIENTICA" "${CMAKE_SOURCE_DIR}/../Library/PAX_SAPIENTICA/*.hpp")
 
 set(TEST_SOURCE_DIR "${CMAKE_SOURCE_DIR}/IncludeTest/source")

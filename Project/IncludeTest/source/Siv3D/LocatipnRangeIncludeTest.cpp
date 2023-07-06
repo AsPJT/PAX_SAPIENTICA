@@ -1,3 +1,3 @@
-#include <PAX_SAPIENTICA/Siv3D/LocatipnRange.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocationRange.hpp>
 
 int main(){}
