@@ -16,6 +16,8 @@
 
 ##########################################################################################*/
 
+#include <string>
+
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 
 namespace paxs {
@@ -29,8 +31,8 @@ namespace paxs {
 		double mx, my; // 範囲の大きさ（終点座標 - 始点座標）
 
 		explicit LocationRange() = default;
-		explicit LocationRange(const s3d::String& str_, const double msx_, const double msy_, const double mex_, const double mey_)
-			:texture(str_)
+		explicit LocationRange(const std::string& str_, const double msx_, const double msy_, const double mex_, const double mey_)
+			:texture(s3d::Unicode::FromUTF8(str_))
 			, msx(msx_), msy(msy_), mex(mex_), mey(mey_)
 			, mcx((mex_ - msx_) / 2 + msx_), mcy((mey_ - msy_) / 2 + msy_)
 			, mx(mex_ - msx_), my(mey_ - msy_) {}

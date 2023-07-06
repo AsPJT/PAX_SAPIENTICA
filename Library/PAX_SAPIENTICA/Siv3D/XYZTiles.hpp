@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <cmath>
+#include <string>
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
@@ -138,26 +139,26 @@ namespace paxs {
 					s3d::FilePath new_saveFilePath = U"";
 					switch (file_name_enum) {
 					case XYZTileFileName::Original:
-						new_saveFilePath = map_file_path_name + map_name
-							+ s3d::String(U"_") + s3d::ToString(z)
-							+ s3d::String(U"_") + s3d::ToString((j + z_num) % z_num)
-							+ s3d::String(U"_") + s3d::ToString((i + z_num) % z_num)
-							+ s3d::String(U".png");
+						new_saveFilePath = s3d::Unicode::FromUTF8(map_file_path_name + map_name
+							+ std::string("_") + std::to_string(z)
+							+ std::string("_") + std::to_string((j + z_num) % z_num)
+							+ std::string("_") + std::to_string((i + z_num) % z_num)
+							+ std::string(".png"));
 						break;
 					case XYZTileFileName::Z_Original:
-						new_saveFilePath = map_file_path_name
-							+ s3d::ToString(z) + s3d::String(U"/") + map_name
-							+ s3d::String(U"_") + s3d::ToString(z)
-							+ s3d::String(U"_") + s3d::ToString((j + z_num) % z_num)
-							+ s3d::String(U"_") + s3d::ToString((i + z_num) % z_num)
-							+ s3d::String(U".png");
+						new_saveFilePath = s3d::Unicode::FromUTF8(map_file_path_name
+							+ std::to_string(z) + std::string("/") + map_name
+							+ std::string("_") + std::to_string(z)
+							+ std::string("_") + std::to_string((j + z_num) % z_num)
+							+ std::string("_") + std::to_string((i + z_num) % z_num)
+							+ std::string(".png"));
 						break;
 					case XYZTileFileName::Default:
-						new_saveFilePath = map_file_path_name
-							+ s3d::ToString(z)
-							+ s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
-							+ s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
-							+ s3d::String(U".png");
+						new_saveFilePath = s3d::Unicode::FromUTF8(map_file_path_name
+							+ std::to_string(z)
+							+ std::string("/") + std::to_string((j + z_num) % z_num)
+							+ std::string("/") + std::to_string((i + z_num) % z_num)
+							+ std::string(".png"));
 						break;
 					default:
 						break;
@@ -169,7 +170,7 @@ namespace paxs {
 					if (!texture_list[k] &&
 						map_url_name.size() != 0) {
 						const s3d::URL new_url =
-							s3d::String(map_url_name)
+							s3d::String(s3d::Unicode::FromUTF8(map_url_name))
 							+ s3d::String(U"/") + s3d::ToString(z)
 							+ s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
 							+ s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
@@ -289,13 +290,13 @@ namespace paxs {
 		void setDrawMaxZ(const int max_z_) {
 			draw_max_z = max_z_;
 		}
-		void setMapURL(const s3d::String& map_url_name_) {
+		void setMapURL(const std::string& map_url_name_) {
 			map_url_name = map_url_name_;
 		}
-		void setMapName(const s3d::String& map_name_) {
+		void setMapName(const std::string& map_name_) {
 			map_name = map_name_;
 		}
-		void setMapFilePath(const s3d::String& map_file_path_name_) {
+		void setMapFilePath(const std::string& map_file_path_name_) {
 			map_file_path_name = map_file_path_name_;
 		}
 	private:
@@ -324,9 +325,9 @@ namespace paxs {
 		// XYZ タイルの画面上のセルの総数
 		int cell_all_num;
 
-		s3d::String map_url_name = U""; // URL
-		s3d::String map_name = U"";
-		s3d::String map_file_path_name = U"";
+		std::string map_url_name = ""; // URL
+		std::string map_name = "";
+		std::string map_file_path_name = "";
 		// 1フレーム前のマップの幅
 		double current_map_view_width = 0;
 	};

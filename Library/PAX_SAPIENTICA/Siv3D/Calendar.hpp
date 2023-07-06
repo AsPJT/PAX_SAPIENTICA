@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <limits>
+#include <string>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
@@ -40,16 +41,16 @@ namespace paxs {
 
 	/// @brief 出力に必要な日付の情報
 	struct OutputDate {
-		std::vector<s3d::String> calendar_name{}; // 暦の名前
+		std::vector<std::string> calendar_name{}; // 暦の名前
 		paxs::Date date{}; // 日付
 		bool is_leap_month = false; // 閏月かどうか
 	};
 
-	std::vector<s3d::Font> setFont(const s3d::FontMethod& font_method, const int font_size, const s3d::String& path, const std::string& key, paxs::Language& language_text) {
+	std::vector<s3d::Font> setFont(const s3d::FontMethod& font_method, const int font_size, const std::string& path, const std::string& key, paxs::Language& language_text) {
 		std::vector<s3d::Font> font{};
-		const std::vector<s3d::String>& vs = language_text.getFindStart(key);
+		const std::vector<std::string>& vs = language_text.getFindStart(key);
 		for (std::size_t i = 1; i < vs.size(); ++i) {
-			font.emplace_back(s3d::Font{ font_method , font_size , path + vs[i] });
+			font.emplace_back(s3d::Font{ font_method , font_size , s3d::Unicode::FromUTF8(path + vs[i]) });
 		}
 		return font;
 	}
@@ -78,7 +79,7 @@ namespace paxs {
 		std::size_t map_view_center_lat_str_index;
 		std::size_t xyz_tile_z_str_index;
 
-		std::vector<std::vector<s3d::String>> items_pulldown;
+		std::vector<std::vector<std::string>> items_pulldown;
 		paxs::Pulldown pulldown;
 
 		paxs::MenuBar menu_bar;
@@ -112,17 +113,17 @@ namespace paxs {
 
 		std::unordered_map<std::string, XYZTile> xyz_tile_list;
 
-		//const s3d::String map_license_name = U"Maptiles by\n淺野孝利 2023「古墳時代の『常総の内海』水域復原に関する一試論」\n研究代表者 荒井啓汰『埋葬施設からみた常総地域の地域構造』\n特別研究員奨励費報告書 筑波大学大学院 人文社会科学研究科";
-		s3d::String map_license_name = U"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.";
-		//const s3d::String map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
+		//const std::string map_license_name = U"Maptiles by\n淺野孝利 2023「古墳時代の『常総の内海』水域復原に関する一試論」\n研究代表者 荒井啓汰『埋葬施設からみた常総地域の地域構造』\n特別研究員奨励費報告書 筑波大学大学院 人文社会科学研究科";
+		std::string map_license_name = "Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.";
+		//const std::string map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
 
 		// 地図上に描画する画像の一覧
 		std::unique_ptr<TextureLocation> texture_location;
 		// 時代区分の文字列
-		std::vector<s3d::String> options = {
-			U"旧石器時代", U"縄文時代", U"弥生時代", U"古墳時代 CE251-",
-			U"飛鳥時代 CE592-", U"奈良時代 CE710-", U"平安時代 CE794-",
-			U"鎌倉時代", U"室町時代", U"安土桃山時代", U"江戸時代", U"明治時代" };
+		std::vector<std::string> options = {
+			"旧石器時代", "縄文時代", "弥生時代", "古墳時代 CE251-",
+			"飛鳥時代 CE592-", "奈良時代 CE710-", "平安時代 CE794-",
+			"鎌倉時代", "室町時代", "安土桃山時代", "江戸時代", "明治時代" };
 		// 時代区分ごとのユリウス日の数値
 		std::array<int, 12> period_jdn = {
 			0,0,1538799,1812736,
@@ -138,10 +139,10 @@ namespace paxs {
 		//agent_location->addKofun();
 //#endif
 		// 月の英語名
-		s3d::String month_name_long[13] = { U"",U"January",U"February",U"March",U"April",U"May",U"June",
-			U"July",U"August",U"September",U"October",U"November",U"December" };
-		s3d::String month_name[13] = { U"",U"Jan.",U"Feb.",U"Mar.",U"Apr.",U"May",U"Jun.",
-			U"Jul.",U"Aug.",U"Sep.",U"Oct.",U"Nov.",U"Dec." };
+		std::string month_name_long[13] = { "","January","February","March","April","May","June",
+			"July","August","September","October","November","December" };
+		std::string month_name[13] = { "","Jan.","Feb.","Mar.","Apr.","May","Jun.",
+			"Jul.","Aug.","Sep.","Oct.","Nov.","Dec." };
 
 		// 線の情報を格納
 		s3d::Array<s3d::Vec2> route1;
@@ -195,8 +196,8 @@ namespace paxs {
 				}
 			};
 
-			font_pulldown = setFont(s3d::FontMethod::SDF, 16, path, "font_path", language_text);
-			font = setFont(s3d::FontMethod::SDF, font_size, path, "font_path", language_text);
+			font_pulldown = setFont(s3d::FontMethod::SDF, 16, path8, "font_path", language_text);
+			font = setFont(s3d::FontMethod::SDF, font_size, path8, "font_path", language_text);
 
 			sueki_nakamura_index = language_text.findStart("sueki_nakamura");
 			sueki_tanabe_index = language_text.findStart("sueki_tanabe");
@@ -246,7 +247,7 @@ namespace paxs {
 		map_license_name	ライセンス情報
 	##########################################################################################*/
 
-			mapMapInit(xyz_tile_list, path, map_view.get());
+			mapMapInit(xyz_tile_list, path8, map_view.get());
 
 			// 地名
 			place_name_location= std::unique_ptr<PlaceNameLocation>(new(std::nothrow) PlaceNameLocation);
@@ -280,7 +281,7 @@ namespace paxs {
 			// 暦を読み込み
 			paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");
 
-			koyomi_font = setFont(s3d::FontMethod::SDF, koyomi_font_size, path, "font_path", language_text);
+			koyomi_font = setFont(s3d::FontMethod::SDF, koyomi_font_size, path8, "font_path", language_text);
 
 			license_font = s3d::Font{ s3d::FontMethod::SDF, 14 /*, Typeface::Bold*/
 				, (path + U"Data/Font/noto-sans-jp/NotoSansJP-Regular.otf")
@@ -439,7 +440,7 @@ namespace paxs {
 					|| language == 3
 					) {
 					for (std::size_t i = 0; i < date_list.size(); ++i) {
-						koyomi_font[language](date_list[i].calendar_name[language + 1 /* 言語位置調整 */]).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U"日").draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
@@ -456,13 +457,13 @@ namespace paxs {
 				else {
 					// 暦の表示（英語）
 					for (std::size_t i = 0; i < date_list.size(); ++i) {
-						koyomi_font[language](date_list[i].calendar_name[language + 1 /* 言語位置調整 */]).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](U"th").draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 
 						koyomi_font[language](s3d::ToString(date_list[i].date.year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](month_name[date_list[i].date.month]).draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+						koyomi_font[language](s3d::Unicode::FromUTF8(month_name[date_list[i].date.month])).draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						koyomi_font[language](s3d::ToString(date_list[i].date.day)).draw(s3d::Arg::topRight = s3d::Vec2(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 						if (!date_list[i].is_leap_month) continue;
 						koyomi_font[language](U"int.").draw(s3d::Arg::topRight = s3d::Vec2((
@@ -584,29 +585,29 @@ namespace paxs {
 			int debug_move_y = 25;
 			// その他のデバッグ用の変数情報の表示
 			if (menu_bar.getPulldown(MenuBarType::view).getIsItems(3)) {
-				font[language](language_text.get()[map_view_center_x_str_index][language + 1 /* 言語位置調整 */]
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
+				font[language](s3d::Unicode::FromUTF8(language_text.get()[map_view_center_x_str_index][language + 1 /* 言語位置調整 */]
+					)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
 				font[language](s3d::ToString(map_view->getCenterX())
 					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, debug_start_y), s3d::Palette::Black);
 				debug_start_y += debug_move_y;
 				// マップ中心座標 Y
-				font[language](language_text.get()[map_view_center_y_str_index][language + 1 /* 言語位置調整 */]
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
+				font[language](s3d::Unicode::FromUTF8(language_text.get()[map_view_center_y_str_index][language + 1 /* 言語位置調整 */]
+					)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
 				font[language](s3d::ToString(map_view->getCenterY())
 					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, debug_start_y), s3d::Palette::Black);
 				debug_start_y += debug_move_y;
-				font[language](language_text.get()[map_view_center_lat_str_index][language + 1 /* 言語位置調整 */]
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
+				font[language](s3d::Unicode::FromUTF8(language_text.get()[map_view_center_lat_str_index][language + 1 /* 言語位置調整 */]
+					)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
 				font[language](s3d::ToString(map_view_center_lat)
 					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, debug_start_y), s3d::Palette::Black);
 				debug_start_y += debug_move_y;
-				font[language](language_text.get()[map_view_width_str_index][language + 1 /* 言語位置調整 */]
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
+				font[language](s3d::Unicode::FromUTF8(language_text.get()[map_view_width_str_index][language + 1 /* 言語位置調整 */]
+					)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
 				font[language](s3d::ToString(map_view_width)
 					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, debug_start_y), s3d::Palette::Black);
 				debug_start_y += debug_move_y;
-				font[language](language_text.get()[xyz_tile_z_str_index][language + 1 /* 言語位置調整 */]
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
+				font[language](s3d::Unicode::FromUTF8(language_text.get()[xyz_tile_z_str_index][language + 1 /* 言語位置調整 */]
+					)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, debug_start_y), s3d::Palette::Black);
 				//font[language](s3d::ToString(xyz_tile2->getZ())
 				//).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, debug_start_y), s3d::Palette::Black);
 				//debug_start_y += debug_move_y;
@@ -619,16 +620,16 @@ namespace paxs {
 
 			}
 			if (menu_bar.getPulldown(MenuBarType::view).getIsItems(2)) {
-				//font(s3d::String{ U"A" } + s3d::ToString(xyz_tile_cell.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
-				//font(s3d::String{ U"B" } + s3d::ToString(xyz_tile_pos.x) + s3d::String{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
-				license_font(map_license_name).draw(
+				//font(std::string{ U"A" } + s3d::ToString(xyz_tile_cell.x) + std::string{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
+				//font(std::string{ U"B" } + s3d::ToString(xyz_tile_pos.x) + std::string{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 450), s3d::Palette::Black);
+				license_font(s3d::Unicode::FromUTF8(map_license_name)).draw(
 					s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 					s3d::Arg::bottomLeft = s3d::Vec2(10, s3d::Scene::Height() - 10),
 					s3d::Palette::White);
-				license_font(map_license_name).draw(
+				license_font(s3d::Unicode::FromUTF8(map_license_name)).draw(
 					s3d::Arg::bottomLeft = s3d::Vec2(10, s3d::Scene::Height() - 10),
 					s3d::Palette::Black);
-				//pin_font(s3d::String{ U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）" }).draw(s3d::Arg::topLeft = s3d::Vec2(10, 10), s3d::Palette::Black);
+				//pin_font(std::string{ U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）" }).draw(s3d::Arg::topLeft = s3d::Vec2(10, 10), s3d::Palette::Black);
 				//texture_tlt.resized(180).draw(s3d::Arg::bottomRight = s3d::Vec2(s3d::Scene::Width() - 10, s3d::Scene::Height() - 10));
 			}
 
@@ -649,27 +650,27 @@ namespace paxs {
 
 			if (menu_bar.getPulldown(MenuBarType::view).getIsItems(2)) {
 
-				font[language](language_text.get()[sueki_nakamura_index][language + 1 /* 言語位置調整 */]
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
+				font[language](s3d::Unicode::FromUTF8(language_text.get()[sueki_nakamura_index][language + 1 /* 言語位置調整 */]
+					)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 						s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 590), s3d::Palette::Black);
-				font[language](language_text.get()[sueki_tanabe_index][language + 1 /* 言語位置調整 */]
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
+				font[language](s3d::Unicode::FromUTF8(language_text.get()[sueki_tanabe_index][language + 1 /* 言語位置調整 */]
+					)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 						s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 160, 620), s3d::Palette::Black);
 				{
 					const int y = int(date_list[1].date.year);
-					s3d::String sueki_nakamura = U"";
-					s3d::String sueki_tanabe = U"";
+					std::string sueki_nakamura = "";
+					std::string sueki_tanabe = "";
 
 					static std::array<int, 18> sueki_year = { {
 					380,390,410,430,440,450,460,470,490,500,520,530,550,560,590,620,645,670
 					} };
-					static std::array<s3d::String, 18> sueki_name = { {
-		U"",U"TG232",U"TK73",U"TK216",U"ON46",U"ON46/TK208",U"TK208",U"TK23",U"TK23/TK47",U"TK47",
-		U"MT15",U"TK10",U"TK10/MT85",U"MT85",U"TK43",U"TK209",U"TK217古",U"TK217新"
+					static std::array<std::string, 18> sueki_name = { {
+		"","TG232","TK73","TK216","ON46","ON46/TK208","TK208","TK23","TK23/TK47","TK47",
+		"MT15","TK10","TK10/MT85","MT85","TK43","TK209","TK217古","TK217新"
 								} };
-					static std::array<s3d::String, 18> sueki_nakamura_name = { {
-		U"",U"I-1前",U"I-1後",U"I-2",U"I-3",U"I-3",U"I-3",U"I-4",U"I-4/I-5",U"I-5",
-		U"II-1",U"II-2",U"II-2/II-3",U"II-3",U"II-4",U"II-5",U"II-6",U"III-1"
+					static std::array<std::string, 18> sueki_nakamura_name = { {
+		"","I-1前","I-1後","I-2","I-3","I-3","I-3","I-4","I-4/I-5","I-5",
+		"II-1","II-2","II-2/II-3","II-3","II-4","II-5","II-6","III-1"
 								} };
 					for (std::size_t i = 0; i < sueki_year.size(); ++i) {
 						if (y < sueki_year[i]) {
@@ -678,11 +679,11 @@ namespace paxs {
 							break;
 						}
 					}
-					font[language](sueki_tanabe
-						).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
+					font[language](s3d::Unicode::FromUTF8(sueki_tanabe
+						)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 							s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 60, 620), s3d::Palette::Black);
-					font[language](sueki_nakamura
-						).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
+					font[language](s3d::Unicode::FromUTF8(sueki_nakamura
+						)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 							s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 60, 590), s3d::Palette::Black);
 				}
 #ifdef PAXS_USING_SIMULATOR

@@ -803,7 +803,7 @@
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationPoint.hpp">
       <Filter>Library\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocatipnRange.hpp">
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationRange.hpp">
       <Filter>Library\Siv3D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Main.hpp">

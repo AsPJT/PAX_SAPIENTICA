@@ -12,6 +12,8 @@
 #ifndef PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP
 #define PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP
 
+#include <string>
+
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>

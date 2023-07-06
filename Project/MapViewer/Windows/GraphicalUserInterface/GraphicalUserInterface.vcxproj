@@ -324,7 +324,7 @@
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Key.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Language.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationPoint.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocatipnRange.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationRange.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Main.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Pulldown.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTiles.hpp" />

@@ -28,23 +28,23 @@ namespace paxs {
 
 	class Language {
 	private:
-		std::vector<std::vector<s3d::String>> text{};
-		std::unordered_map<s3d::String, std::size_t> text_map{};
-		std::vector<s3d::String> empty{};
+		std::vector<std::vector<std::string>> text{};
+		std::unordered_map<std::string, std::size_t> text_map{};
+		std::vector<std::string> empty{};
 
 		void split(const std::string& input, const char delimiter) {
 			std::istringstream stream(input);
 			std::string field;
-			std::vector<s3d::String> result;
+			std::vector<std::string> result;
 			while (std::getline(stream, field, delimiter)) {
-				result.emplace_back(s3d::Unicode::FromUTF8(field));
+				result.emplace_back(field);
 			}
 			text_map.emplace(result.front(), text.size());
 			text.emplace_back(result);
 		}
 
 	public:
-		std::vector<std::vector<s3d::String>>& get() {
+		std::vector<std::vector<std::string>>& get() {
 			return text;
 		}
 		void add(const std::string& str_) {
@@ -60,23 +60,23 @@ namespace paxs {
 		}
 		// 始点を探す
 		std::size_t findStart(const std::string& str_) {
-			if (text_map.find(s3d::Unicode::FromUTF8(str_)) != text_map.end()) {
-				return text_map[s3d::Unicode::FromUTF8(str_)];
+			if (text_map.find(str_) != text_map.end()) {
+				return text_map[str_];
 			}
 			return 0;
 		}
-		std::vector<s3d::String>& getFindStart(const std::string& str_) {
+		std::vector<std::string>& getFindStart(const std::string& str_) {
 			const std::size_t index = findStart(str_);
 			if (index < text.size()) {
 				return text[index];
 			}
 			return empty;
 		}
-		std::vector<std::vector<s3d::String>> getFindStartToVVS(const std::string& str_, const std::size_t start_index) {
-			std::vector<std::vector<s3d::String>> tmp{};
-			const std::vector<s3d::String>& lt = getFindStart(str_);
+		std::vector<std::vector<std::string>> getFindStartToVVS(const std::string& str_, const std::size_t start_index) {
+			std::vector<std::vector<std::string>> tmp{};
+			const std::vector<std::string>& lt = getFindStart(str_);
 			for (std::size_t i = start_index; i < lt.size(); ++i) {
-				tmp.emplace_back(std::vector<s3d::String>{ lt[i] });
+				tmp.emplace_back(std::vector<std::string>{ lt[i] });
 			}
 			return tmp;
 		}

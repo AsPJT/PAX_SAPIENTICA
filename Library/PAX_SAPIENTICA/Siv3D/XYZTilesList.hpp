@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <string>
 #include <unordered_map>
 
 #include <PAX_SAPIENTICA/Siv3D/Key.hpp>
@@ -26,119 +27,119 @@ namespace paxs {
 
 	void mapMapInit(
 		std::unordered_map<std::string, XYZTile>& xyz_tile_list,
-		const s3d::String& path,
+		const std::string& path,
 		MapView* map_view) {
 			{
 				const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile_base->setMapURL(U"");
-				xyz_tile_base->setMapName(U"");
+				xyz_tile_base->setMapURL("");
+				xyz_tile_base->setMapName("");
 				xyz_tile_base->setMaxZ(7);
 				xyz_tile_base->setDrawMaxZ(7);
-				xyz_tile_base->setMapFilePath(path + U"Data/Map/XYZTile/Standard/Image/Land/2023/");
-				//xyz_tile_base->setMapFilePath(path + U"Data/Map/XYZTile/LandAndSea/Image/GreenAndAlphaBinary/2023/");
+				xyz_tile_base->setMapFilePath(path + "Data/Map/XYZTile/Standard/Image/Land/2023/");
+				//xyz_tile_base->setMapFilePath(path + "Data/Map/XYZTile/LandAndSea/Image/GreenAndAlphaBinary/2023/");
 
 				xyz_tile_list.emplace("map_base", *xyz_tile_base);
 			}
 			{
 				const std::unique_ptr<XYZTile> xyz_tile2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile2->setMapURL(U"");
-				xyz_tile2->setMapName(U"gbank");
+				xyz_tile2->setMapURL("");
+				xyz_tile2->setMapName("gbank");
 				xyz_tile2->setMinZ(8);
 				xyz_tile2->setMaxZ(10);
 				xyz_tile2->setDrawMinZ(8);
-				xyz_tile2->setMapFilePath(path + U"Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/");
-				//xyz_tile2->setMapFilePath(path + U"Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
-				//xyz_tile2->setMapFilePath(U"./SavedMap/gbank_noblank_reclaimed_land/");
+				xyz_tile2->setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/");
+				//xyz_tile2->setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
+				//xyz_tile2->setMapFilePath("./SavedMap/gbank_noblank_reclaimed_land/");
 
 				xyz_tile_list.emplace("map_land_and_water", *xyz_tile2);
 			}
 			{
 				//const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				//xyz_tile3->setMapURL(U"");
-				////xyz_tile3->setMapURL(U"https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
-				//xyz_tile3->setMapName(U"water");
+				//xyz_tile3->setMapURL("");
+				////xyz_tile3->setMapURL("https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
+				//xyz_tile3->setMapName("water");
 				//xyz_tile3->setDefaultZ(12);
 				//xyz_tile3->setDrawMinZ(11);
-				//xyz_tile3->setMapFilePath(U"./SavedMap/BlueRiver/");
+				//xyz_tile3->setMapFilePath("./SavedMap/BlueRiver/");
 			}
 			{
 				//const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				//xyz_tile4->setMapURL(U"");
-				//xyz_tile4->setMapName(U"soil");
+				//xyz_tile4->setMapURL("");
+				//xyz_tile4->setMapName("soil");
 				//xyz_tile4->setDefaultZ(12);
-				//xyz_tile4->setMapFilePath(U"./SavedMap/Soil/soil/");
+				//xyz_tile4->setMapFilePath("./SavedMap/Soil/soil/");
 			}
 			{
 				const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile_kuni->setMapURL(U"");
-				xyz_tile_kuni->setMapName(U"ColorCodingByProvincesOfJapanWithLakes");
+				xyz_tile_kuni->setMapURL("");
+				xyz_tile_kuni->setMapName("ColorCodingByProvincesOfJapanWithLakes");
 				xyz_tile_kuni->setDefaultZ(10);
 				xyz_tile_kuni->setDrawMinZ(9);
-				xyz_tile_kuni->setMapFilePath(path + U"Data/Map/XYZTile/ColorCodingByProvincesOfJapan/");
+				xyz_tile_kuni->setMapFilePath(path + "Data/Map/XYZTile/ColorCodingByProvincesOfJapan/");
 
 				xyz_tile_list.emplace("map_ryosei_country", *xyz_tile_kuni);
 			}
 			{
 				const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile_kuni_line->setMapURL(U"");
-				xyz_tile_kuni_line->setMapName(U"Ryoseikoku");
+				xyz_tile_kuni_line->setMapURL("");
+				xyz_tile_kuni_line->setMapName("Ryoseikoku");
 				xyz_tile_kuni_line->setDefaultZ(10);
 				xyz_tile_kuni_line->setDrawMinZ(11);
-				xyz_tile_kuni_line->setMapFilePath(path + U"Data/Map/XYZTile/Ryoseikoku/");
+				xyz_tile_kuni_line->setMapFilePath(path + "Data/Map/XYZTile/Ryoseikoku/");
 
 				xyz_tile_list.emplace("map_ryosei_line", *xyz_tile_kuni_line);
 			}
 			{
 				const std::unique_ptr<XYZTile> xyz_tile_soil(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile_soil->setMapURL(U"");
-				xyz_tile_soil->setMapName(U"soil");
+				xyz_tile_soil->setMapURL("");
+				xyz_tile_soil->setMapName("soil");
 				xyz_tile_soil->setDefaultZ(12);
 				xyz_tile_soil->setDrawMinZ(12);
-				xyz_tile_soil->setMapFilePath(path + U"Data/Map/XYZTile/Soil/Image/Soil/2023/");
+				xyz_tile_soil->setMapFilePath(path + "Data/Map/XYZTile/Soil/Image/Soil/2023/");
 
 				xyz_tile_list.emplace("map_soil", *xyz_tile_soil);
 			}
 			{
 				const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile_slope->setMapURL(U"");
-				xyz_tile_slope->setMapName(U"slope");
+				xyz_tile_slope->setMapURL("");
+				xyz_tile_slope->setMapName("slope");
 				//xyz_tile_slope->setMinZ(3);
 				//xyz_tile_slope->setMaxZ(12);
 				//xyz_tile_slope->setDefaultZ(8);
 				xyz_tile_slope->setMaxZ(8);
 				//xyz_tile_slope->setDrawMinZ(3);
-				//xyz_tile_slope->setMapFilePath(path + U"Data/Map/XYZTile/Slope/Image/Slope/2023/");
-				xyz_tile_slope->setMapFilePath(path + U"Data/Map/XYZTile/Slope/Image/Slope/2010/");
+				//xyz_tile_slope->setMapFilePath(path + "Data/Map/XYZTile/Slope/Image/Slope/2023/");
+				xyz_tile_slope->setMapFilePath(path + "Data/Map/XYZTile/Slope/Image/Slope/2010/");
 
 				xyz_tile_list.emplace("map_slope", *xyz_tile_slope);
 			}
 			{
 				const std::unique_ptr<XYZTile> xyz_tile_river(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile_river->setMapURL(U"");
-				xyz_tile_river->setMapName(U"water");
+				xyz_tile_river->setMapURL("");
+				xyz_tile_river->setMapName("water");
 				xyz_tile_river->setDefaultZ(12);
 				xyz_tile_river->setDrawMinZ(11);
-				xyz_tile_river->setMapFilePath(path + U"Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/");
+				xyz_tile_river->setMapFilePath(path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/");
 
 				xyz_tile_list.emplace("map_river1", *xyz_tile_river);
 			}
 			{
 				const std::unique_ptr<XYZTile> xyz_tile_river_bw(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile_river_bw->setMapURL(U"");
-				xyz_tile_river_bw->setMapName(U"water");
+				xyz_tile_river_bw->setMapURL("");
+				xyz_tile_river_bw->setMapName("water");
 				xyz_tile_river_bw->setDefaultZ(12);
 				xyz_tile_river_bw->setDrawMinZ(11);
-				xyz_tile_river_bw->setMapFilePath(path + U"Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW/2023/");
+				xyz_tile_river_bw->setMapFilePath(path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW/2023/");
 
 				xyz_tile_list.emplace("map_river2", *xyz_tile_river_bw);
 			}
 			{
 				const std::unique_ptr<XYZTile> xyz_tile_soil_temperature(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-				xyz_tile_soil_temperature->setMapURL(U"");
-				xyz_tile_soil_temperature->setMapName(U"soil-tem");
+				xyz_tile_soil_temperature->setMapURL("");
+				xyz_tile_soil_temperature->setMapName("soil-tem");
 				xyz_tile_soil_temperature->setDrawMinZ(8);
 				xyz_tile_soil_temperature->setDrawMaxZ(10);
-				xyz_tile_soil_temperature->setMapFilePath(path + U"Data/Map/XYZTile/Temperature/Image/SoilTemperature/2023/");
+				xyz_tile_soil_temperature->setMapFilePath(path + "Data/Map/XYZTile/Temperature/Image/SoilTemperature/2023/");
 
 				xyz_tile_list.emplace("map_soil_temperature", *xyz_tile_soil_temperature);
 			}
