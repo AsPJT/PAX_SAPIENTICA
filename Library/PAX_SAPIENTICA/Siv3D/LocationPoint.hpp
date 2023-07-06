@@ -39,6 +39,9 @@ namespace paxs {
 
 	// 地名
 	struct LocationPoint {
+		constexpr explicit LocationPoint() noexcept = default;
+		explicit LocationPoint(const std::string& name_, const std::string& en_name_, const paxs::MercatorDeg& coordinate_, const double min_view_, const double max_view_, const int min_year_, const int max_year_, const LocationPointEnum lpe_, const std::string& source_) noexcept
+			: name(name_), en_name(en_name_), coordinate(coordinate_), min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), source(source_) {}
 		std::string name{};
 		std::string en_name{};
 		paxs::MercatorDeg coordinate{};

@@ -19,6 +19,8 @@
 #include <unordered_map>
 
 #include <PAX_SAPIENTICA/Siv3D/Key.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>
+#include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp>
 
 namespace paxs {
 

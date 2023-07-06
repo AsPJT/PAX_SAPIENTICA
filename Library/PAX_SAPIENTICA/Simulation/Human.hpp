@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/Simulation/Human.hpp>
+#include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 
 namespace paxs {
 

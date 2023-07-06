@@ -18,6 +18,7 @@
 
 #include <cmath>
 
+#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
@@ -45,16 +46,16 @@ namespace paxs {
 			const double map_view_height,
 			const double map_view_center_x,
 			const double map_view_center_y) {
-			start_cell = {
+			start_cell = MapVec2{
 				int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num),
 				int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num)
 			};
-			end_cell = {
+			end_cell = MapVec2{
 				int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * z_num),
 				int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * z_num)
 			};
 
-			cell_num = {
+			cell_num = MapVec2{
 			(end_cell.x - start_cell.x),
 			(end_cell.y - start_cell.y)
 			};
@@ -101,7 +102,7 @@ namespace paxs {
 			// 画像を更新する必要があるか
 			bool need_update = false;
 
-			const MapVec2 new_start_cell = { int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num), int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num) };
+			const MapVec2 new_start_cell { int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num), int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num) };
 			if (new_start_cell != start_cell) {
 				start_cell = new_start_cell;
 				need_update = true;
@@ -114,7 +115,7 @@ namespace paxs {
 
 			// もしタイルが更新されていたら更新処理
 			if (!need_update) return;
-			cell_num = {
+			cell_num = MapVec2{
 				(end_cell.x - start_cell.x),
 				(end_cell.y - start_cell.y)
 			};
@@ -157,6 +158,8 @@ namespace paxs {
 							+ s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
 							+ s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
 							+ s3d::String(U".png");
+						break;
+					default:
 						break;
 					}
 

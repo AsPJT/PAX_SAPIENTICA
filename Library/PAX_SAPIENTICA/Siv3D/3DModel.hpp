@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#include <Siv3D.hpp> // OpenSiv3D v0.6.6
+#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 
 namespace paxs {
 

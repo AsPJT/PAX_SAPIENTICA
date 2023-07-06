@@ -19,6 +19,7 @@
 #include <limits>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
 namespace paxs {
@@ -72,7 +73,7 @@ namespace paxs {
 			, is_one_font(is_one_font_){
 			updateLanguage();
 			is_items.resize(item_size);
-			for (const auto& is_item : is_items) {
+			for (auto&& is_item : is_items) {
 				is_item = true;
 			}
 		}
