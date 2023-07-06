@@ -24,18 +24,23 @@
 #include <string>
 
 #include <PAX_SAPIENTICA/Siv3D/Mock.hpp>
+#endif
 
 enum MenuBarType {
-	file,edit,view,calendar,map
+	file, edit, view, calendar, map
 };
 enum MapType {
 	base,
-	landand_sea,land_and_water,
-	soil,soil_temperature,
-	ryosei_country,ryosei_line,
+	landand_sea, land_and_water,
+	soil, soil_temperature,
+	ryosei_country, ryosei_line,
 	slope,
-	river1,river2,line1,line2
+	river1, river2, line1, line2
 };
+
+#ifdef PAXS_USING_SIV3D
+
+#else
 
 // ラップ化するのが望ましいが、まずは s3d 名前空間で使用済みの Siv3D クラス・関数などを自前で定義（中身はから）
 // namespace s3d
