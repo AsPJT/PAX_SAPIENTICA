@@ -238,8 +238,10 @@ namespace s3d
     class FontMethod
     {
     public:
+        FontMethod() {}
         static FontMethod SDF;
     };
+    FontMethod FontMethod::SDF = FontMethod();
 
     class Font
     {
