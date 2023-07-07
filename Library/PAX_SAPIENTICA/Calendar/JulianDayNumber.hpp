@@ -33,7 +33,6 @@ namespace paxs {
 	public:
 		JulianDayNumber() = default;
 
-		JulianDayNumber(const JulianDayNumber<double>& jdn_) { day = static_cast<Day>(jdn_); }
 		template<typename T>
 		JulianDayNumber(const T& jdn_) { day = static_cast<Day>(jdn_); }
 
@@ -42,7 +41,23 @@ namespace paxs {
 			return std::floor((14 - month) / 12);
 		}
 	public:
-		Day& getDay() { return this->day; }
+
+		void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
+		void setYear(const DateYear) {} // 何もしない（ Variant に用いているため定義）
+		void setMonth(const DateMonth) {} // 何もしない（ Variant に用いているため定義）
+		void setDay(const Day day_) { day = day_; }
+		void setLeapMonth(const bool) const {} // 何もしない（ Variant に用いているため定義）
+		DateGengo getGengo() { return 0; }
+		DateYear getYear() { return 0; }
+		DateMonth getMonth() { return 0; }
+		Day& getDay() { return day; }
+		DateGengo cgetGengo() const { return 0; }
+		DateYear cgetYear() const { return 0; }
+		DateMonth cgetMonth() const { return 0; }
+		Day cgetDay() const { return day; }
+		static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
+		static DateOutputType getDateOutputType() { return DateOutputType::name_and_value; } // 暦名＆年月日形式（ Variant に用いているため定義）
+
 		// グレゴリオ暦からユリウス日を取得
 		void fromGregorianCalendar(const double year, const double month, const double day) {
 			const double K = getK(month);
@@ -59,8 +74,8 @@ namespace paxs {
 				+ day - 32113);
 		}
 		// グレゴリオ暦を取得
-		Date toGregorianCalendar() const {
-			Date ymd;
+		GregorianDate toGregorianCalendar() const {
+			GregorianDate ymd;
 			//JDN ⇒ グレゴリオ暦
 			double L = static_cast<double>(this->day) + 68569;
 			const double N = std::floor(4 * L / 146097);
@@ -75,8 +90,8 @@ namespace paxs {
 			return ymd;
 		}
 		// ユリウス暦を取得
-		Date toJulianCalendar() const {
-			Date ymd;
+		JulianDate toJulianCalendar() const {
+			JulianDate ymd;
 			double L = static_cast<double>(this->day) + 1402;
 			const double N = std::floor((L - 1) / 1461);
 			L = L - 1461 * N;
@@ -143,6 +158,18 @@ namespace paxs {
 			}
 
 			return jp_date;
+		}
+		// 較正年代を取得
+		CalBP toCalBP() const {
+			GregorianDate ymd = toGregorianCalendar();
+			int value = int(ymd.cgetYear());
+			if (value >= 1950) {
+				value = 0;
+			}
+			else {
+				value = 1950 - value;
+			}
+			return CalBP{ value };
 		}
 	};
 	using JDN_F64 = JulianDayNumber<double>;

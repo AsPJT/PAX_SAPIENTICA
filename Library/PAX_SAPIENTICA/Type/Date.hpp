@@ -23,20 +23,50 @@
 
 namespace paxs {
 
+	// 暦の出力形式
+	enum class DateOutputType {
+		name_and_ymd // 暦名 & 年月日（例：グレゴリオ暦１年１月１日）
+		,name_and_value // 暦名 & 値
+	};
+
 	using DateGengo = std::int_least32_t;
 	using DateYear = std::int_least32_t;
 	using DateMonth = std::uint_least8_t;
 	using DateDay = std::uint_least8_t;
+	// 較正年代
+	class CalBP {
+	private:
+		std::int_least32_t day{};
+	public:
+		CalBP() = default;
+		CalBP(const std::int_least32_t day_)
+			:day(day_) {}
+		void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
+		void setYear(const DateYear) {} // 何もしない（ Variant に用いているため定義）
+		void setMonth(const DateMonth) {} // 何もしない（ Variant に用いているため定義）
+		void setDay(const std::int_least32_t day_) { day = day_; }
+		void setLeapMonth(const bool) const {} // 何もしない（ Variant に用いているため定義）
+		DateGengo getGengo() { return 0; }
+		DateYear getYear() { return 0; }
+		DateMonth getMonth() { return 0; }
+		std::int_least32_t& getDay() { return day; }
+		DateGengo cgetGengo() const { return 0; }
+		DateYear cgetYear() const { return 0; }
+		DateMonth cgetMonth() const { return 0; }
+		std::int_least32_t cgetDay() const { return day; }
+		static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
+		static DateOutputType getDateOutputType() { return DateOutputType::name_and_value; } // 暦名＆年月日形式（ Variant に用いているため定義）
+	};
 
 	// 年月日
-	class Date {
+	class GregorianDate {
 	private:
 		DateYear year{};
 		DateMonth month{};
 		DateDay day{};
 	public:
-		Date() = default;
-		Date(const DateYear year_, const DateMonth month_, const DateDay day_)
+		GregorianDate() = default;
+		GregorianDate(const DateYear year_, const DateMonth month_, const DateDay day_)
 			:year(year_), month(month_), day(day_) {}
 		void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
 		void setYear(const DateYear year_) { year = year_; }
@@ -51,7 +81,35 @@ namespace paxs {
 		DateYear cgetYear() const { return year; }
 		DateMonth cgetMonth() const { return month; }
 		DateDay cgetDay() const { return day; }
-		bool isLeapMonth() const { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
+		static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
+		static DateOutputType getDateOutputType() { return DateOutputType::name_and_ymd; } // 暦名＆年月日形式（ Variant に用いているため定義）
+	};
+
+	// 年月日
+	class JulianDate {
+	private:
+		DateYear year{};
+		DateMonth month{};
+		DateDay day{};
+	public:
+		JulianDate() = default;
+		JulianDate(const DateYear year_, const DateMonth month_, const DateDay day_)
+			:year(year_), month(month_), day(day_) {}
+		void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
+		void setYear(const DateYear year_) { year = year_; }
+		void setMonth(const DateMonth month_) { month = month_; }
+		void setDay(const DateDay day_) { day = day_; }
+		void setLeapMonth(const bool) const {} // 何もしない（ Variant に用いているため定義）
+		DateGengo getGengo() const { return 0; }
+		DateYear& getYear() { return year; }
+		DateMonth& getMonth() { return month; }
+		DateDay& getDay() { return day; }
+		DateGengo cgetGengo() const { return 0; }
+		DateYear cgetYear() const { return year; }
+		DateMonth cgetMonth() const { return month; }
+		DateDay cgetDay() const { return day; }
+		static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
+		static DateOutputType getDateOutputType() { return DateOutputType::name_and_ymd; } // 暦名＆年月日形式（ Variant に用いているため定義）
 	};
 
 
@@ -81,6 +139,7 @@ namespace paxs {
 		DateMonth cgetMonth() const { return month; }
 		DateDay cgetDay() const { return day; }
 		bool isLeapMonth() const { return is_leap_month; }
+		static DateOutputType getDateOutputType() { return DateOutputType::name_and_ymd; } // 暦名＆年月日形式（ Variant に用いているため定義）
 	};
 
 }

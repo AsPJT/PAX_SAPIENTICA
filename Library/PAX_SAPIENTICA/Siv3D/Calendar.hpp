@@ -40,12 +40,11 @@
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 
 namespace paxs {
-
-	// 暫定
-	struct GDate{ paxs::Date date; };
-	struct JDate{ paxs::Date date; };
-	struct JPDate{ paxs::JapanDate date; };
-	using CalendarVariant = std::variant<GDate, JDate, JPDate>;
+	
+	// 暦
+	using CalendarVariant = std::variant<
+		GregorianDate, JulianDate, JapanDate, JDN_F64, JDN_S32, JDN_S64, CalBP
+	>;
 
 	/// @brief 出力に必要な日付の情報
 	struct OutputDate {
@@ -190,9 +189,11 @@ namespace paxs {
 
 			// 各暦の日付情報を初期化
 		date_list = std::vector<OutputDate>{
-			OutputDate{language_text.getFindStart("calendar_japan"),JPDate() },
-				OutputDate{language_text.getFindStart("calendar_gregorian"),GDate() },
-				OutputDate{language_text.getFindStart("calendar_julian"), JDate() }
+			OutputDate{language_text.getFindStart("calendar_japan"),JapanDate() },
+				OutputDate{language_text.getFindStart("calendar_gregorian"),GregorianDate() },
+				OutputDate{language_text.getFindStart("calendar_julian"), JulianDate() },
+				OutputDate{language_text.getFindStart("calendar_julian_day"), JDN_S64() }, // TODO
+				OutputDate{language_text.getFindStart("calendar_calbp"), CalBP()} // TODO
 		};
 
 			font_pulldown = setFont(s3d::FontMethod::SDF, 16, path8, "font_path", language_text);
@@ -324,14 +325,18 @@ namespace paxs {
 
 // 日付の構造体
 			// グレゴリオ暦を格納
-			date_list[std::size_t(KoyomiEnum::koyomi_g)].date = GDate{ jdn.toGregorianCalendar() };
+			date_list[std::size_t(KoyomiEnum::koyomi_g)].date = jdn.toGregorianCalendar();
 			// ユリウス暦を格納
-			date_list[std::size_t(KoyomiEnum::koyomi_j)].date = JDate{ jdn.toJulianCalendar() };
+			date_list[std::size_t(KoyomiEnum::koyomi_j)].date = jdn.toJulianCalendar();
 			// 和暦を格納
 			paxs::JapanDate jp_date{};
 			jp_date = jdn.toJapaneseCalendar(japanese_era_list);
 			date_list[std::size_t(KoyomiEnum::koyomi_japan)].calendar_name[language + 1 /* 言語位置調整 */] = language_text.getFindStart("gengo_" + std::to_string(jp_date.cgetGengo()))[language + 1 /* 言語位置調整 */];
-			date_list[std::size_t(KoyomiEnum::koyomi_japan)].date = JPDate{ jp_date };
+			date_list[std::size_t(KoyomiEnum::koyomi_japan)].date = jp_date;
+
+			// 格納
+			date_list[3].date = jdn;
+			date_list[4].date = jdn.toCalBP();
 
 			static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 			++count;
@@ -368,7 +373,7 @@ namespace paxs {
 					const s3d::Transformer2D transform{ s3d::Mat3x2::Translate(3, 3) };
 
 					s3d::Rect{ 0,0,s3d::Scene::Width(),30 }.draw(); // メニューバー
-					s3d::RoundRect{ s3d::Scene::Width() - 375,koyomi_font_y - 5,360,210, 10 }.draw();
+					s3d::RoundRect{ s3d::Scene::Width() - 375,koyomi_font_y - 5,360,230, 10 }.draw();
 					s3d::RoundRect{ s3d::Scene::Width() - 375,koyomi_font_y + 235,360,380, 10 }.draw();
 				}
 
@@ -381,7 +386,7 @@ namespace paxs {
 				shadow_texture.draw(s3d::ColorF{ 0.0, 0.5 });
 
 				// 暦表示の範囲に白背景を追加
-				s3d::RoundRect{ s3d::Scene::Width() - 375,koyomi_font_y - 5,360,210, 10 }.draw(s3d::ColorF{ 1,1,1 }/*s3d::Palette::White*/);
+				s3d::RoundRect{ s3d::Scene::Width() - 375,koyomi_font_y - 5,360,230, 10 }.draw(s3d::ColorF{ 1,1,1 }/*s3d::Palette::White*/);
 				s3d::RoundRect{ s3d::Scene::Width() - 375,koyomi_font_y + 235,360,380, 10 }.draw(s3d::ColorF{ 1,1,1 }/*s3d::Palette::White*/);
 
 				// 暦の表示（日本語）
@@ -391,64 +396,103 @@ namespace paxs {
 					|| language == 3
 					) {
 					for (std::size_t i = 0; i < date_list.size(); ++i) {
-						koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](U"日").draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+
+						DateOutputType output_type = DateOutputType::name_and_value;
+						std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, date_list[i].date);
 
 						int date_year = 0;
 						int date_month = 0;
 						int date_day = 0;
 						bool date_lm = false;
-						std::visit([&](const auto& x) {
-							date_year = int(x.date.cgetYear());
-							date_month = int(x.date.cgetMonth());
-							date_day = int(x.date.cgetDay());
-							date_lm = x.date.isLeapMonth();
-							}, date_list[i].date);
+						switch (output_type) {
+						case paxs::DateOutputType::name_and_ymd:
+							koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](U"日").draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 
-						koyomi_font[language](s3d::ToString(date_year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](s3d::ToString(date_month)).draw(s3d::Arg::topRight = s3d::Vec2(int(190 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(270 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						if (!date_lm) continue;
-						koyomi_font[language](U"閏").draw(s3d::Arg::topRight = s3d::Vec2((
-							(date_month < 10) ? int(167 * koyomi_font_size / 30.0) + koyomi_font_x : int(152 * koyomi_font_size / 30.0) + koyomi_font_x
-							), koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							std::visit([&](const auto& x) {
+								date_year = int(x.cgetYear());
+								date_month = int(x.cgetMonth());
+								date_day = int(x.cgetDay());
+								date_lm = x.isLeapMonth();
+								}, date_list[i].date);
+
+							koyomi_font[language](s3d::ToString(date_year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](s3d::ToString(date_month)).draw(s3d::Arg::topRight = s3d::Vec2(int(190 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(270 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							if (date_lm) {
+								koyomi_font[language](U"閏").draw(s3d::Arg::topRight = s3d::Vec2((
+									(date_month < 10) ? int(167 * koyomi_font_size / 30.0) + koyomi_font_x : int(152 * koyomi_font_size / 30.0) + koyomi_font_x
+									), koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							}
+							break;
+						case paxs::DateOutputType::name_and_value:
+							koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							std::visit([&](const auto& x) {
+								date_day = int(x.cgetDay());
+								}, date_list[i].date);
+							koyomi_font[language](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+
+							break;
+						default:
+							break;
+						}
 					}
 				}
 				else {
 					// 暦の表示（英語）
 					for (std::size_t i = 0; i < date_list.size(); ++i) {
-						koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](U"th").draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+
+						DateOutputType output_type = DateOutputType::name_and_value;
+						std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, date_list[i].date);
 
 						int date_year = 0;
 						int date_month = 0;
 						int date_day = 0;
 						bool date_lm = false;
-						std::visit([&](const auto& x) {
-							date_year = int(x.date.cgetYear());
-							date_month = int(x.date.cgetMonth());
-							date_day = int(x.date.cgetDay());
-							date_lm = x.date.isLeapMonth();
-							}, date_list[i].date);
+						switch (output_type) {
+						case paxs::DateOutputType::name_and_ymd:
+							koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](U"th").draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 
-						koyomi_font[language](s3d::ToString(date_year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](s3d::Unicode::FromUTF8(month_name[date_month])).draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						koyomi_font[language](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-						if (!date_lm) continue;
-						koyomi_font[language](U"int.").draw(s3d::Arg::topRight = s3d::Vec2((
-							int(152 * koyomi_font_size / 30.0) + koyomi_font_en_x
-							), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							std::visit([&](const auto& x) {
+								date_year = int(x.cgetYear());
+								date_month = int(x.cgetMonth());
+								date_day = int(x.cgetDay());
+								date_lm = x.isLeapMonth();
+								}, date_list[i].date);
+
+							koyomi_font[language](s3d::ToString(date_year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](s3d::Unicode::FromUTF8(month_name[date_month])).draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							koyomi_font[language](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							if (date_lm) {
+								koyomi_font[language](U"int.").draw(s3d::Arg::topRight = s3d::Vec2((
+									int(152 * koyomi_font_size / 30.0) + koyomi_font_en_x
+									), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							}
+							break;
+						case paxs::DateOutputType::name_and_value:
+							koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							
+							std::visit([&](const auto& x) {
+								date_day = int(x.cgetDay());
+								}, date_list[i].date);
+							koyomi_font[language](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+							
+							break;
+						default:
+							break;
+						}
 					}
 				}
 				const int arrow_time_icon_size = 24; // 時間操作アイコンの大きさ
 				const int time_icon_size = 40; // 時間操作アイコンの大きさ
 				const int icon_const_start_x = 360;
 				int icon_start_x = icon_const_start_x;
-				int icon_start_y = 80;
+				int icon_start_y = 80 + 30;
 				const int arrow_icon_move_x = int(arrow_time_icon_size * 1.2);// int(time_icon_size * 1.4);
 				const int icon_move_x = int(time_icon_size * 1.1);// int(time_icon_size * 1.4);
 				const int arrow_icon_move_y = 30;
@@ -587,10 +631,6 @@ namespace paxs {
 				//font[language](s3d::ToString(xyz_tile2->getZNum())
 				//).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, debug_start_y), s3d::Palette::Black);
 
-				// ユリウス通日
-				font[language](s3d::ToString(jdn.getDay())
-					).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(s3d::Scene::Width() - 110, 120), s3d::Palette::Black);
-
 			}
 			if (menu_bar.getPulldown(MenuBarType::view).getIsItems(2)) {
 				//font(std::string{ U"A" } + s3d::ToString(xyz_tile_cell.x) + std::string{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(s3d::Scene::Width() - 10, 400), s3d::Palette::Black);
@@ -647,7 +687,7 @@ namespace paxs {
 
 					int date_year = 0;
 					std::visit([&](const auto& x) {
-						date_year = int(x.date.cgetYear());
+						date_year = int(x.cgetYear());
 						}, date_list[1].date);
 					for (std::size_t i = 0; i < sueki_year.size(); ++i) {
 						if (date_year < sueki_year[i]) {
