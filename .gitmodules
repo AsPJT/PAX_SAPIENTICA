@@ -1,14 +1,18 @@
+[submodule "ExternalLibrary/stb"]
+	path = ExternalLibrary/stb
+	url = https://github.com/nothings/stb.git
+	branch = main
 [submodule "Data/3DModel/KofunOBJ"]
 	path = Data/3DModel/KofunOBJ
 	url = https://github.com/Asukana/KofunOBJ.git
 	branch = main
-[submodule "Data/Map/XYZTile/Soil/Image/Soil"]
-	path = Data/Map/XYZTile/Soil/Image/Soil
-	url = https://github.com/Asukana/Soil.git
+[submodule "Data/Map/XYZTile/Elevation/Data/Elevation"]
+	path = Data/Map/XYZTile/Elevation/Data/Elevation
+	url = https://github.com/Asukana/Elevation.git
 	branch = main
-[submodule "Data/Map/XYZTile/Temperature/Image/SoilTemperature"]
-	path = Data/Map/XYZTile/Temperature/Image/SoilTemperature
-	url = https://github.com/Asukana/SoilTemperature.git
+[submodule "Data/Map/XYZTile/IPCC/Image/IPCC"]
+	path = Data/Map/XYZTile/IPCC/Image/IPCC
+	url = https://github.com/Asukana/IPCC.git
 	branch = main
 [submodule "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes"]
 	path = Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes
@@ -18,7 +22,23 @@
 	path = Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW
 	url = https://github.com/Asukana/RiversAndLakesBW.git
 	branch = main
+[submodule "Data/Map/XYZTile/RyoseikokuData/Data/RyoseikokuData20230626"]
+	path = Data/Map/XYZTile/RyoseikokuData/Data/RyoseikokuData20230626
+	url = https://github.com/Asukana/RyoseikokuData20230626.git
+	branch = main
 [submodule "Data/Map/XYZTile/Slope/Image/Slope"]
 	path = Data/Map/XYZTile/Slope/Image/Slope
 	url = https://github.com/Asukana/Slope.git
+	branch = main
+[submodule "Data/Map/XYZTile/Slope/Data/SlopeData20230514"]
+	path = Data/Map/XYZTile/Slope/Data/SlopeData20230514
+	url = https://github.com/Asukana/SlopeData20230514.git
+	branch = main
+[submodule "Data/Map/XYZTile/Soil/Image/Soil"]
+	path = Data/Map/XYZTile/Soil/Image/Soil
+	url = https://github.com/Asukana/Soil.git
+	branch = main
+[submodule "Data/Map/XYZTile/Temperature/Image/SoilTemperature"]
+	path = Data/Map/XYZTile/Temperature/Image/SoilTemperature
+	url = https://github.com/Asukana/SoilTemperature.git
 	branch = main
