@@ -55,7 +55,7 @@ namespace paxs {
 
 		/// @brief Replace string list
 		/// @brief 文字列リストを置換する
-		void replaceList(std::string& str, const std::vector<std::string>& from, const std::vector<std::string>& to) noexcept {
+		static void replaceList(std::string& str, const std::vector<std::string>& from, const std::vector<std::string>& to) noexcept {
 			for (std::size_t i = 0; i < from.size() && i < to.size(); ++i) {
 				replace(str, from[i], to[i]);
 			}

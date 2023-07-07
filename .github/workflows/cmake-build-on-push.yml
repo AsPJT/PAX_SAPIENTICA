@@ -1,9 +1,7 @@
-name: CMake-CUI
+name: CMake-Build-On-Push
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 env:
@@ -22,11 +20,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Install opencv
+    - name: Checkout submodules
+      run: git submodule update --init --recursive ExternalLibrary/googletest
+
+    - name: Install dependencies
       run: |
         sudo apt-get clean
         sudo apt-get update
-        sudo apt-get install libopencv-dev
         sudo apt-get install libsfml-dev
         sudo apt-get install cmake
         sudo apt-get install g++

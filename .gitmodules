@@ -1,7 +1,11 @@
+[submodule "ExternalLibrary/googletest"]
+	path = ExternalLibrary/googletest
+	url = https://github.com/google/googletest.git
+	branch = main
 [submodule "ExternalLibrary/stb"]
 	path = ExternalLibrary/stb
 	url = https://github.com/nothings/stb.git
-	branch = main
+	branch = master
 [submodule "Data/3DModel/KofunOBJ"]
 	path = Data/3DModel/KofunOBJ
 	url = https://github.com/Asukana/KofunOBJ.git

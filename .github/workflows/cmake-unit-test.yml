@@ -1,0 +1,54 @@
+name: CMake-Unit-Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  BUILD_TYPE: Debug
+  WORK_SPACE: ${{github.workspace}}/Project
+  TEST_DIR: UnitTest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Checkout submodules
+      run: git submodule update --init --recursive ExternalLibrary/googletest
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get clean
+        sudo apt-get update
+        sudo apt-get install libsfml-dev
+        sudo apt-get install cmake
+        sudo apt-get install g++
+
+    - name: Configure CMake
+      run: |
+        mkdir ${{github.workspace}}/build
+        cmake -B ${{github.workspace}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_SFML_TEST=ON -S ${{env.WORK_SPACE}}/${{env.TEST_DIR}} -G "Unix Makefiles"
+  
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target all -j 12
+
+    - name: Run tests 
+      run: |
+        cd ${{env.WORK_SPACE}}/${{env.TEST_DIR}}/bin/
+        for file in *; do
+          if [[ -x "$file" ]]; then
+            ./"$file"
+          fi
+        done
+
+      
