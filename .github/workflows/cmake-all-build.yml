@@ -2,8 +2,12 @@ name: CMake-All-Build
 
 on:
   pull_request:
-    branches: [ main ]
-
+    branches:
+      - main
+      - develop
+      - feature/*
+      - release/*
+      - hotfix/*
 env:
   BUILD_TYPE: Debug
   WORK_SPACE: ${{github.workspace}}/Project

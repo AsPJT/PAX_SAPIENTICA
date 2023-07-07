@@ -2,7 +2,12 @@ name: CMake-Build-On-Push
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - develop
+      - feature/*
+      - release/*
+      - hotfix/*
 
 env:
   BUILD_TYPE: Debug
