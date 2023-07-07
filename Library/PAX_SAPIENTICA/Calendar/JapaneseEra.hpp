@@ -28,7 +28,7 @@ namespace paxs {
 
 	// 日本の元号
 	struct JapaneseEra {
-		std::array<std::string, 4> gengo{};			// 元号
+		std::array<int, 4> gengo{};			// 元号
 		std::array<int, 4> gengo_num{};				// 年
 		int start_jdn{};							// その元号が開始するユリウス日
 		std::array<int, 2> kaigen_jdn{};			// 改元するユリウス日
@@ -38,7 +38,7 @@ namespace paxs {
 
 		// コンストラクタ
 		JapaneseEra() = default;
-		JapaneseEra(const std::array<std::string, 4>& gengo_,
+		JapaneseEra(const std::array<int, 4>& gengo_,
 			const std::array<int, 4>& gengo_num_,
 			const int start_jdn_,
 			const std::array<int, 2>& kaigen_jdn_,
@@ -73,7 +73,11 @@ namespace paxs {
 				std::vector<std::string> strvec = paxs::StringExtensions::split(line, '\t');
 
 				japanese_era_list.emplace_back(
-					std::array<std::string, 4>({ strvec[14], strvec[16], strvec[18], strvec[20] }),
+					std::array<int, 4>({ 
+						emptyCharSupportStoi(strvec[14]),
+						emptyCharSupportStoi(strvec[16]),
+						emptyCharSupportStoi(strvec[18]),
+						emptyCharSupportStoi(strvec[20]) }),
 					std::array<int, 4>({
 						((strvec[15].size() == 0) ? 0 : emptyCharSupportStoi(strvec[15])),
 						((strvec[17].size() == 0) ? 0 : emptyCharSupportStoi(strvec[17])),
