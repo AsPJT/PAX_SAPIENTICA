@@ -13,6 +13,7 @@ GIS & Archaeological Simulator
 |✅|Julian calendar|
 |✅|Gregorian calendar|
 |✅|Japanese calendar|
+|✅|Islamic calendar|
 |✅|Julian day number|
 
 ## Language

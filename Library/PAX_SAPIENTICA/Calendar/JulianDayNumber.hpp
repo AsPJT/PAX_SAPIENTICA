@@ -171,6 +171,32 @@ namespace paxs {
 			}
 			return CalBP{ value };
 		}
+		private:
+			// ヒジュラ暦の閏年かどうか
+			bool isIslamicLeapYear(const int year) const { return ((((11 * year) + 14) % 30) < 11); }
+			// ヒジュラ暦の月の日数計算
+			int getLastMonthDay(const int year, const int month) const {
+				return (((month % 2) == 1) || ((month == 12) && isIslamicLeapYear(year))) ? 30 : 29;
+			}
+			public:
+				// ヒジュラ暦を取得
+				IslamicDate toIslamicCalendar() {
+					// islamic_day(227014) = jdn(1948439)
+					const int islamic_day = day - 1721425;
+					// ヒジュラ暦以前の日付
+					if (islamic_day <= 227014) {
+						return IslamicDate(0, 0, 0);
+					}
+					IslamicDate ymd{};
+					// おおよその年から1年ずつ前倒しで検索
+					ymd.setYear((islamic_day - 227014) / 355);
+					while (islamic_day >= IslamicDate(ymd.getYear() + 1, 1, 1)) ymd.getYear()++;
+					// ムハッラム（ Muharram ・１月）から月単位で検索
+					ymd.setMonth(1);
+					while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), getLastMonthDay(ymd.getYear(), ymd.getMonth()))) ymd.getMonth()++;
+					ymd.setDay(islamic_day - IslamicDate(ymd.getYear(), ymd.getMonth(), 1) + 1);
+					return ymd;
+				}
 	};
 	using JDN_F64 = JulianDayNumber<double>;
 	using JDN_S32 = JulianDayNumber<std::int_least32_t>;

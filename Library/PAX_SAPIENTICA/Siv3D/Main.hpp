@@ -47,8 +47,8 @@ namespace paxs {
 		s3d::detail::Console_impl ci;
 		ci.open();
 		// フォルダ階層
-		const s3d::String path = U"./../../../../../";
 		const std::string path8 = "./../../../../../";
+		const s3d::String path = s3d::Unicode::FromUTF8(path8);
 
 		paxs::Language language_text(path8 + "Data/Language/Text.txt");
 

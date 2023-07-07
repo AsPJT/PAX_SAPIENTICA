@@ -59,6 +59,41 @@ namespace paxs {
 	};
 
 	// 年月日
+	class IslamicDate {
+	private:
+		DateYear year{};
+		DateMonth month{};
+		DateDay day{};
+	public:
+		// ヒジュラ暦の日付から絶対年代（日付）を計算
+		operator int() {
+			return (day + 29 * (month - 1) + month / 2
+				+ 354 * (year - 1) // 前年の閏日以外の日
+				+ (3 + (11 * year)) / 30 // 前年の閏日
+				+ 227014); // カレンダーの開始日の前日
+		}
+
+		IslamicDate() = default;
+		IslamicDate(const DateYear year_, const DateMonth month_, const DateDay day_)
+			:year(year_), month(month_), day(day_) {}
+		void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
+		void setYear(const DateYear year_) { year = year_; }
+		void setMonth(const DateMonth month_) { month = month_; }
+		void setDay(const DateDay day_) { day = day_; }
+		void setLeapMonth(const bool) const {} // 何もしない（ Variant に用いているため定義）
+		DateGengo getGengo() const { return 0; }
+		DateYear& getYear() { return year; }
+		DateMonth& getMonth() { return month; }
+		DateDay& getDay() { return day; }
+		DateGengo cgetGengo() const { return 0; }
+		DateYear cgetYear() const { return year; }
+		DateMonth cgetMonth() const { return month; }
+		DateDay cgetDay() const { return day; }
+		static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
+		static DateOutputType getDateOutputType() { return DateOutputType::name_and_ymd; } // 暦名＆年月日形式（ Variant に用いているため定義）
+	};
+
+	// 年月日
 	class GregorianDate {
 	private:
 		DateYear year{};

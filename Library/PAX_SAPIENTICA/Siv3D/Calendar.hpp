@@ -43,7 +43,7 @@ namespace paxs {
 	
 	// 暦
 	using CalendarVariant = std::variant<
-		GregorianDate, JulianDate, JapanDate, JDN_F64, JDN_S32, JDN_S64, CalBP
+		GregorianDate, JulianDate, JapanDate, JDN_F64, JDN_S32, JDN_S64, CalBP, IslamicDate
 	>;
 
 	/// @brief 出力に必要な日付の情報
@@ -192,8 +192,9 @@ namespace paxs {
 			OutputDate{language_text.getFindStart("calendar_japan"),JapanDate() },
 				OutputDate{language_text.getFindStart("calendar_gregorian"),GregorianDate() },
 				OutputDate{language_text.getFindStart("calendar_julian"), JulianDate() },
-				OutputDate{language_text.getFindStart("calendar_julian_day"), JDN_S64() }, // TODO
-				OutputDate{language_text.getFindStart("calendar_calbp"), CalBP()} // TODO
+				OutputDate{language_text.getFindStart("calendar_hijri"), IslamicDate() },
+				OutputDate{language_text.getFindStart("calendar_julian_day"), JDN_S64() },
+				OutputDate{language_text.getFindStart("calendar_calbp"), CalBP()}
 		};
 
 			font_pulldown = setFont(s3d::FontMethod::SDF, 16, path8, "font_path", language_text);
@@ -335,8 +336,9 @@ namespace paxs {
 			date_list[std::size_t(KoyomiEnum::koyomi_japan)].date = jp_date;
 
 			// 格納
-			date_list[3].date = jdn;
-			date_list[4].date = jdn.toCalBP();
+			date_list[3].date = jdn.toIslamicCalendar();
+			date_list[4].date = jdn;
+			date_list[5].date = jdn.toCalBP();
 
 			static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 			++count;
