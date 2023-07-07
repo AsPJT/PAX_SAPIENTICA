@@ -134,7 +134,7 @@ namespace paxs {
 				koyomi_siv.texture_location->update(map_view_center_x, map_view_center_y, map_view_width, map_view_height);
 
 #ifdef PAXS_USING_SIMULATOR
-				koyomi_siv.agent_location->draw(simlator.getAgents(), start_position, map_view_width, map_view_height, map_view_center_x, map_view_center_y
+				koyomi_siv.agent_location->draw(koyomi_siv.jdn.getDay(), simlator.getAgents(), start_position, map_view_width, map_view_height, map_view_center_x, map_view_center_y
 					//,font[language], font[language]/*en_font*/, pin_font
 				);
 #endif
@@ -150,7 +150,7 @@ namespace paxs {
 				s3d::Spline2D{ koyomi_siv.route2 }.draw(2, s3d::Color{ 85,145,245 });
 
 				// 地名を描画
-				koyomi_siv.place_name_location->draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y,
+				koyomi_siv.place_name_location->draw(koyomi_siv.jdn.getDay(), map_view_width, map_view_height, map_view_center_x, map_view_center_y,
 					koyomi_siv.font[language], koyomi_siv.font[language]/*en_font*/, koyomi_siv.pin_font);
 
 				//#ifdef PAXS_USING_SIMULATOR

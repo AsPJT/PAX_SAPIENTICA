@@ -27,7 +27,6 @@ namespace paxs {
 	// ユリウス日
 	//int jdn = 1600407;
 	//int jdn = 1808020;
-	int jdn = 1808286;
 
 	enum class LocationPointEnum {
 		location_point_place_name, // 地名
@@ -101,7 +100,8 @@ namespace paxs {
 
 		PlaceNameLocation() {
 		}
-		void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
+		void draw(const double jdn,
+			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
 			const s3d::Font& font, const s3d::Font& en_font, const s3d::Font& pin_font)const {
 
 			// 地名を描画
@@ -321,7 +321,8 @@ namespace paxs {
 		const s3d::Texture texture_blue_circle{ U"./../../../../../Data/MiniIcon/BlueCircle.svg" };
 		const s3d::Texture texture_red_circle{ U"./../../../../../Data/MiniIcon/RedCircle.svg" };
 
-		void draw(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position,
+		void draw(const double jdn,
+			const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position,
 			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
 			/*, const s3d::Font& font*/
 			/*, const s3d::Font& en_font*/
