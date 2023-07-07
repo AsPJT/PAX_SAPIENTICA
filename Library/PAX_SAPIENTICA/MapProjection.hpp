@@ -71,31 +71,35 @@ namespace paxs {
 		operator MercatorDeg() const noexcept {
 			return MercatorDeg(paxs::Vector2<double>(x, toMercatorDegY()));
 		}
+		// メルカトル図法（度）へ変換した値を返す
+		MercatorDeg toMercatorDeg() const noexcept {
+			return MercatorDeg(paxs::Vector2<double>(x, toMercatorDegY()));
+		}
 	};
 	// メルカトル図法（度）を正距円筒図法（度）へ変換した値を返す
 	MercatorDeg::operator EquirectangularDeg() const noexcept {
 		return EquirectangularDeg(paxs::Vector2<double>(x, toEquirectangularDegY()));
 	}
 
-	// 仮実装
+	// 個別の変換
 	template<typename T>
 	class MapProjection {
 	public:
 		// 正距円筒図法（ラジアン）からメルカトル図法へ変換（ラジアン）
 		constexpr inline static T equirectangularRadYToMercatorRadY(const T value) noexcept {
-			return static_cast<T>(std::asin(std::tanh(value)));
+			return static_cast<T>((value >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::MathF64::pi() / 4.0 - double(value) / 2.0)))));
 		}
 		// 正距円筒図法（度）からメルカトル図法へ変換（ラジアン）
 		constexpr inline static T equirectangularDegYToMercatorRadY(const T value) noexcept {
-			return static_cast<T>(std::asin(std::tanh(paxs::Math<T>::degToRad(value))));
+			return static_cast<T>(equirectangularRadYToMercatorRadY(paxs::Math<T>::degToRad(value)));
 		}
 		// 正距円筒図法（ラジアン）からメルカトル図法へ変換（度）
 		constexpr inline static T equirectangularRadYToMercatorDegY(const T value) noexcept {
-			return static_cast<T>(paxs::Math<T>::radToDeg(std::asin(std::tanh(value))));
+			return static_cast<T>(paxs::MathF64::radToDeg(equirectangularRadYToMercatorRadY(value)));
 		}
 		// 正距円筒図法（度）からメルカトル図法へ変換（度）
 		constexpr inline static T equirectangularDegYToMercatorDegY(const T value) noexcept {
-			return static_cast<T>(paxs::Math<T>::radToDeg(std::asin(std::tanh(paxs::Math<T>::degToRad(value)))));
+			return static_cast<T>(paxs::MathF64::radToDeg(equirectangularRadYToMercatorRadY(paxs::Math<T>::degToRad(value))));
 		}
 
 	};

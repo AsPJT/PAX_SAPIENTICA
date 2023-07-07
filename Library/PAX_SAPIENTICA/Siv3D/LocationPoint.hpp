@@ -299,11 +299,10 @@ namespace paxs {
 				location_point_list.emplace_back(
 					strvec[0], // 漢字
 					strvec[1], // ローマ字
-					paxs::MercatorDeg(
 					paxs::EquirectangularDeg(
 					paxs::Vector2<double>(
 						std::stod(strvec[2]), // 経度
-						std::stod(strvec[3])))), // 緯度
+						std::stod(strvec[3]))).toMercatorDeg(), // 緯度
 					std::stod(strvec[4]), // 最小サイズ
 					std::stod(strvec[5]), // 最大サイズ
 					std::stod(strvec[6]), // 最小時代
