@@ -21,6 +21,8 @@
 #include <variant>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
+#include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
@@ -33,25 +35,12 @@
 #include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp>
 #include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/Type/Date.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 
 namespace paxs {
-	
-	// 暦
-	using CalendarVariant = std::variant<
-		GregorianDate, JulianDate, JapanDate, JDN_F64, JDN_S32, JDN_S64, CalBP, IslamicDate
-	>;
-
-	/// @brief 出力に必要な日付の情報
-	struct OutputDate {
-		std::vector<std::string> calendar_name{}; // 暦の名前
-		CalendarVariant date{}; // 日付
-	};
-
 	std::vector<s3d::Font> setFont(const s3d::FontMethod& font_method, const int font_size, const std::string& path, const std::string& key, paxs::Language& language_text) {
 		std::vector<s3d::Font> font{};
 		const std::vector<std::string>& vs = language_text.getFindStart(key);
@@ -61,17 +50,17 @@ namespace paxs {
 		return font;
 	}
 
-	// 暦の種類
-	enum class KoyomiEnum {
-		koyomi_japan, // 和暦
-		koyomi_g, // グレゴリオ暦
-		koyomi_j // ユリウス暦
-	};
-
 	class KoyomiSiv3D {
 	public:
-		JDN_F64 jdn;
-		std::vector<OutputDate> date_list{};
+		/// @brief 出力に必要な日付の情報
+		struct OutputDate {
+			std::vector<std::string> calendar_name{}; // 暦の名前
+			cal::Calendars date{}; // 日付
+		};
+
+		cal::JDN_F64 jdn{}; // ユリウス通日（基準となる暦）
+		std::vector<OutputDate> date_list{}; // 表示する暦レイヤー
+		cal::SimulationSteps steps{}; // シミュレーションのステップ数
 
 		std::vector<s3d::Font> font_pulldown;
 		int font_size = 17;
@@ -90,28 +79,11 @@ namespace paxs {
 		paxs::Pulldown pulldown;
 
 		paxs::MenuBar menu_bar;
-		s3d::Texture texture_tlt;
-		s3d::Texture texture_github;
-		s3d::Texture texture_d_l;
-		s3d::Texture texture_d_r;
-		s3d::Texture texture_m_l;
-		s3d::Texture texture_m_r;
-		s3d::Texture texture_y_l;
-		s3d::Texture texture_y_r;
-		s3d::Texture texture_10y_l;
-		s3d::Texture texture_10y_r;
-		s3d::Texture texture_c_l;
-		s3d::Texture texture_c_r;
-		s3d::Texture texture_10c_l;
-		s3d::Texture texture_10c_r;
-		s3d::Texture texture_100c_l;
-		s3d::Texture texture_100c_r;
-		s3d::Texture texture_stop;
-		s3d::Texture texture_playback;
-		s3d::Texture texture_reverse_playback;
+
+		std::unordered_map<std::string, s3d::Texture> texture_dictionary{};
 
 
-		/*##########################################################################################
+/*##########################################################################################
 	読み込む XYZ タイルの情報を記載
 	map_name			地図名
 	map_url_name		地図画像を取得する URL
@@ -179,6 +151,52 @@ namespace paxs {
 
 		bool is_agent_update = true; // エージェントの更新をするか
 	public:
+
+
+	void calcDate(
+		//std::vector<OutputDate>& date_list,
+		//const JDN_F64& jdn,
+		//const std::vector<paxs::JapaneseEra>& japanese_era_list,
+		const std::size_t language,
+		const paxs::Language& language_text
+	){
+		// 暦データを更新
+		paxs::cal::JapanDate jp_date{};
+		for (auto& dl : date_list) {
+			switch (dl.date.index()) {
+			case cal::gregorian_date_type:
+				// グレゴリオ暦を格納
+				dl.date = jdn.toGregorianCalendar();
+				break;
+			case cal::julian_date_type:
+				// ユリウス暦を格納
+				dl.date = jdn.toJulianCalendar();
+				break;
+			case cal::japan_date_type:
+				// 和暦を格納
+				jp_date = jdn.toJapaneseCalendar(japanese_era_list);
+				dl.calendar_name[language + 1 /* 言語位置調整 */] = language_text.cgetFindStart("gengo_" + std::to_string(jp_date.cgetGengo()))[language + 1 /* 言語位置調整 */];
+				dl.date = jp_date;
+				break;
+			case cal::jdn_f64_type:
+			case cal::jdn_s32_type:
+			case cal::jdn_s64_type:
+				dl.date = jdn;
+				break;
+			case cal::calbp_type:
+				// 格納
+				dl.date = jdn.toCalBP();
+				break;
+			case cal::islamic_date_type:
+				dl.date = jdn.toIslamicCalendar();
+				break;
+			case cal::simulation_steps_type:
+				dl.date = steps;
+				break;
+			}
+		}
+	}
+
 		void init(paxs::Language & language_text
 		, const s3d::String& path,
 		const std::string& path8,
@@ -189,12 +207,13 @@ namespace paxs {
 
 			// 各暦の日付情報を初期化
 		date_list = std::vector<OutputDate>{
-			OutputDate{language_text.getFindStart("calendar_japan"),JapanDate() },
-				OutputDate{language_text.getFindStart("calendar_gregorian"),GregorianDate() },
-				OutputDate{language_text.getFindStart("calendar_julian"), JulianDate() },
-				OutputDate{language_text.getFindStart("calendar_hijri"), IslamicDate() },
-				OutputDate{language_text.getFindStart("calendar_julian_day"), JDN_S64() },
-				OutputDate{language_text.getFindStart("calendar_calbp"), CalBP()}
+			OutputDate{language_text.getFindStart("calendar_japan"),cal::JapanDate() },
+				OutputDate{language_text.getFindStart("calendar_gregorian"),cal::GregorianDate() },
+				OutputDate{language_text.getFindStart("calendar_julian"), cal::JulianDate() },
+				OutputDate{language_text.getFindStart("calendar_hijri"), cal::IslamicDate() },
+				OutputDate{language_text.getFindStart("calendar_julian_day"), cal::JDN_S64() },
+				OutputDate{language_text.getFindStart("calendar_calbp"), cal::CalBP()},
+				OutputDate{language_text.getFindStart("calendar_calbp"), cal::SimulationSteps()}
 		};
 
 			font_pulldown = setFont(s3d::FontMethod::SDF, 16, path8, "font_path", language_text);
@@ -221,25 +240,25 @@ namespace paxs {
 			menu_bar.add(language_text.get(), language_text.findStart("> menu_bar_calendar") + 1, 1, font_menu_bar);
 			menu_bar.add(language_text.get(), language_text.findStart("> menu_bar_map") + 1, 1, font_menu_bar);
 
-			texture_tlt = s3d::Texture{ path + U"Image/Logo/TitleLogoText2.svg" };
-			texture_github = s3d::Texture{ path + U"Data/MenuIcon/github.svg" };
-			texture_d_l = s3d::Texture{ path + U"Data/MenuIcon/DayL.svg" };
-			texture_d_r = s3d::Texture{ path + U"Data/MenuIcon/DayR.svg" };
-			texture_m_l = s3d::Texture{ path + U"Data/MenuIcon/MonthL.svg" };
-			texture_m_r = s3d::Texture{ path + U"Data/MenuIcon/MonthR.svg" };
-			texture_y_l = s3d::Texture{ path + U"Data/MenuIcon/YearL.svg" };
-			texture_y_r = s3d::Texture{ path + U"Data/MenuIcon/YearR.svg" };
-			texture_10y_l = s3d::Texture{ path + U"Data/MenuIcon/10YearL.svg" };
-			texture_10y_r = s3d::Texture{ path + U"Data/MenuIcon/10YearR.svg" };
-			texture_c_l = s3d::Texture{ path + U"Data/MenuIcon/100YearL.svg" };
-			texture_c_r = s3d::Texture{ path + U"Data/MenuIcon/100YearR.svg" };
-			texture_10c_l = s3d::Texture{ path + U"Data/MenuIcon/1kYearL.svg" };
-			texture_10c_r = s3d::Texture{ path + U"Data/MenuIcon/1kYearR.svg" };
-			texture_100c_l = s3d::Texture{ path + U"Data/MenuIcon/10kYearL.svg" };
-			texture_100c_r = s3d::Texture{ path + U"Data/MenuIcon/10kYearR.svg" };
-			texture_stop = s3d::Texture{ path + U"Data/MenuIcon/stop.svg" };
-			texture_playback = s3d::Texture{ path + U"Data/MenuIcon/playback.svg" };
-			texture_reverse_playback = s3d::Texture{ path + U"Data/MenuIcon/reverse-playback.svg" };
+			texture_dictionary.emplace("texture_tlt", s3d::Texture{path + U"Image/Logo/TitleLogoText2.svg"});
+			texture_dictionary.emplace("texture_github", s3d::Texture{ path + U"Data/MenuIcon/github.svg" });
+			texture_dictionary.emplace("texture_d_l", s3d::Texture{ path + U"Data/MenuIcon/DayL.svg" });
+			texture_dictionary.emplace("texture_d_r", s3d::Texture{ path + U"Data/MenuIcon/DayR.svg" });
+			texture_dictionary.emplace("texture_m_l", s3d::Texture{ path + U"Data/MenuIcon/MonthL.svg" });
+			texture_dictionary.emplace("texture_m_r", s3d::Texture{ path + U"Data/MenuIcon/MonthR.svg" });
+			texture_dictionary.emplace("texture_y_l", s3d::Texture{ path + U"Data/MenuIcon/YearL.svg" });
+			texture_dictionary.emplace("texture_y_r", s3d::Texture{ path + U"Data/MenuIcon/YearR.svg" });
+			texture_dictionary.emplace("texture_10y_l", s3d::Texture{ path + U"Data/MenuIcon/10YearL.svg" });
+			texture_dictionary.emplace("texture_10y_r", s3d::Texture{ path + U"Data/MenuIcon/10YearR.svg" });
+			texture_dictionary.emplace("texture_c_l", s3d::Texture{ path + U"Data/MenuIcon/100YearL.svg" });
+			texture_dictionary.emplace("texture_c_r", s3d::Texture{ path + U"Data/MenuIcon/100YearR.svg" });
+			texture_dictionary.emplace("texture_10c_l", s3d::Texture{ path + U"Data/MenuIcon/1kYearL.svg" });
+			texture_dictionary.emplace("texture_10c_r", s3d::Texture{ path + U"Data/MenuIcon/1kYearR.svg" });
+			texture_dictionary.emplace("texture_100c_l", s3d::Texture{ path + U"Data/MenuIcon/10kYearL.svg" });
+			texture_dictionary.emplace("texture_100c_r", s3d::Texture{ path + U"Data/MenuIcon/10kYearR.svg" });
+			texture_dictionary.emplace("texture_stop", s3d::Texture{ path + U"Data/MenuIcon/stop.svg" });
+			texture_dictionary.emplace("texture_playback", s3d::Texture{ path + U"Data/MenuIcon/playback.svg" });
+			texture_dictionary.emplace("texture_reverse_playback", s3d::Texture{ path + U"Data/MenuIcon/reverse-playback.svg" });
 
 			/*##########################################################################################
 		読み込む XYZ タイルの情報を記載
@@ -298,9 +317,13 @@ namespace paxs {
 			shadow_texture= s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
 			internal_texture= s3d::RenderTexture{ shadow_texture.size() };
 
-
+			// 日付計算
+			calcDate(pulldown.getIndex(), language_text);
 		}
-		void update(const std::unique_ptr<MapView>& map_view, const std::size_t language
+
+
+
+		void update(const std::unique_ptr<MapView>& map_view
 		, paxs::Language& language_text,
 			paxs::Simulator<int>& simulator,
 			const paxs::Vector2<int>& start_position,
@@ -310,35 +333,21 @@ namespace paxs {
 			) {
 			// 画像の拡大縮小の方式を設定
 			const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampLinear };
+			// 設定言語
+			const std::size_t language = pulldown.getIndex();
 
 			const double map_view_width = map_view->getWidth();
 			const double map_view_center_lat = 
 				//paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view->getCenterY()))));
 				map_view->getCoordinate().toEquirectangularDegY();
 
-			/*##########################################################################################
+/*##########################################################################################
 	暦関連
 ##########################################################################################*/
 
 //s3d::Rect{ 0,0,50 }.drawFrame(2, ColorF{ 1, 0, 0, 0.5 });
 //Circle{ Cursor::Pos(), 40 }.drawFrame(2, ColorF{ 1, 0, 0, 0.5 });
 //Circle{ Scene::Center(), 10 }.draw(s3d::Palette::Red); // 真ん中の赤い点
-
-// 日付の構造体
-			// グレゴリオ暦を格納
-			date_list[std::size_t(KoyomiEnum::koyomi_g)].date = jdn.toGregorianCalendar();
-			// ユリウス暦を格納
-			date_list[std::size_t(KoyomiEnum::koyomi_j)].date = jdn.toJulianCalendar();
-			// 和暦を格納
-			paxs::JapanDate jp_date{};
-			jp_date = jdn.toJapaneseCalendar(japanese_era_list);
-			date_list[std::size_t(KoyomiEnum::koyomi_japan)].calendar_name[language + 1 /* 言語位置調整 */] = language_text.getFindStart("gengo_" + std::to_string(jp_date.cgetGengo()))[language + 1 /* 言語位置調整 */];
-			date_list[std::size_t(KoyomiEnum::koyomi_japan)].date = jp_date;
-
-			// 格納
-			date_list[3].date = jdn.toIslamicCalendar();
-			date_list[4].date = jdn;
-			date_list[5].date = jdn.toCalBP();
 
 			static int count = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
 			++count;
@@ -350,18 +359,21 @@ namespace paxs {
 				if (move_forward_in_time) {
 					if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
 						jdn.getDay() += 1.0; // ユリウス日を繰り上げ（次の日にする）
+						calcDate(language, language_text);
 					}
 					//jdn += 365; // ユリウス日を繰り上げ（次の日にする）
 #ifdef PAXS_USING_SIMULATOR
 					// エージェント機能テスト
 					if (is_agent_update) {
 						simulator.step();
+						steps.getDay()++; // ステップ数を増やす
 					}
 #endif
 				}
 				else if (go_back_in_time) {
 					if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
 						jdn.getDay() -= 1.0; // ユリウス日を繰り上げ（次の日にする）
+						calcDate(language, language_text);
 					}
 				}
 			}
@@ -399,7 +411,7 @@ namespace paxs {
 					) {
 					for (std::size_t i = 0; i < date_list.size(); ++i) {
 
-						DateOutputType output_type = DateOutputType::name_and_value;
+						cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
 						std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, date_list[i].date);
 
 						int date_year = 0;
@@ -407,7 +419,7 @@ namespace paxs {
 						int date_day = 0;
 						bool date_lm = false;
 						switch (output_type) {
-						case paxs::DateOutputType::name_and_ymd:
+						case paxs::cal::DateOutputType::name_and_ymd:
 							koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 							koyomi_font[language](U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 							koyomi_font[language](U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
@@ -429,7 +441,7 @@ namespace paxs {
 									), koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 							}
 							break;
-						case paxs::DateOutputType::name_and_value:
+						case paxs::cal::DateOutputType::name_and_value:
 							koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 							std::visit([&](const auto& x) {
 								date_day = int(x.cgetDay());
@@ -446,7 +458,7 @@ namespace paxs {
 					// 暦の表示（英語）
 					for (std::size_t i = 0; i < date_list.size(); ++i) {
 
-						DateOutputType output_type = DateOutputType::name_and_value;
+						cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
 						std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, date_list[i].date);
 
 						int date_year = 0;
@@ -454,7 +466,7 @@ namespace paxs {
 						int date_day = 0;
 						bool date_lm = false;
 						switch (output_type) {
-						case paxs::DateOutputType::name_and_ymd:
+						case paxs::cal::DateOutputType::name_and_ymd:
 							koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 							koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 							koyomi_font[language](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
@@ -476,7 +488,7 @@ namespace paxs {
 									), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 							}
 							break;
-						case paxs::DateOutputType::name_and_value:
+						case paxs::cal::DateOutputType::name_and_value:
 							koyomi_font[language](s3d::Unicode::FromUTF8(date_list[i].calendar_name[language + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
 							
 							std::visit([&](const auto& x) {
@@ -500,96 +512,114 @@ namespace paxs {
 				const int arrow_icon_move_y = 30;
 				const int icon_move_y = 44;
 
-				texture_reverse_playback.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
+				// texture_dictionary std::string
+				// icon_size
+				// icon_move_x
+				// icon_move_y
+				texture_dictionary.at("texture_reverse_playback").resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , arrow_time_icon_size, arrow_time_icon_size }.leftClicked())) {
 					move_forward_in_time = false;
 					go_back_in_time = true; // 逆再生
 				}
 				icon_start_x -= arrow_icon_move_x;
-				texture_stop.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
+				texture_dictionary.at("texture_stop").resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , arrow_time_icon_size, arrow_time_icon_size }.leftClicked())) {
 					move_forward_in_time = false; // 一時停止
 					go_back_in_time = false;
 				}
 				icon_start_x -= arrow_icon_move_x;
-				texture_playback.resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
-				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
+				texture_dictionary.at("texture_playback").resized(arrow_time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , arrow_time_icon_size, arrow_time_icon_size }.leftClicked())) {
 					move_forward_in_time = true; // 再生
 					go_back_in_time = false;
 				}
 				icon_start_y += arrow_icon_move_y;
 				icon_start_x = icon_const_start_x;
 
-				texture_d_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_d_l").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn.getDay() -= 1;
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_m_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_m_l").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() -= 30;
+					jdn.getDay() -= (365.2422 / 12.0);
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_y_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_y_l").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() -= 365;
+					jdn.getDay() -= 365.2422;
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_10y_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_10y_l").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() -= 3650;
+					jdn.getDay() -= (365.2422 * 10);
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_c_l").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() -= (365 * 100);
+					jdn.getDay() -= (365.2422 * 100);
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_10c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_10c_l").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() -= (365 * 1000);
+					jdn.getDay() -= (365.2422 * 1000);
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_100c_l.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_100c_l").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() -= (365 * 10000);
+					jdn.getDay() -= (365.2422 * 10000);
+					calcDate(language, language_text);
 				}
 				icon_start_y += icon_move_y;
 				icon_start_x = icon_const_start_x;
 
-				texture_d_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_d_r").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
 					jdn.getDay() += 1;
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_m_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_m_r").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() += 30;
+					jdn.getDay() += (365.2422 / 12.0);
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_y_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_y_r").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() += 365;
+					jdn.getDay() += 365.2422;
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_10y_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_10y_r").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() += 3650;
+					jdn.getDay() += (365.2422 * 10);
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_c_r").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() += (365 * 100);
+					jdn.getDay() += (365.2422 * 100);
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_10c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_10c_r").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() += (365 * 1000);
+					jdn.getDay() += (365.2422 * 1000);
+					calcDate(language, language_text);
 				}
 				icon_start_x -= icon_move_x;
-				texture_100c_r.resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
+				texture_dictionary.at("texture_100c_r").resized(time_icon_size).draw(s3d::Scene::Width() - icon_start_x, koyomi_font_y + icon_start_y);
 				if (tm_.get(s3d::Rect{ s3d::Scene::Width() - icon_start_x,koyomi_font_y + icon_start_y , time_icon_size,time_icon_size }.leftClicked())) {
-					jdn.getDay() += (365 * 10000);
+					jdn.getDay() += (365.2422 * 10000);
+					calcDate(language, language_text);
 				}
 
 			}
@@ -654,7 +684,7 @@ namespace paxs {
 
 			// メニューバー
 			s3d::Rect{ 0,0,s3d::Scene::Width(),30 }.draw(s3d::Color{ 243,243,243 });
-			texture_github.resized(24).draw(s3d::Vec2{ s3d::Scene::Width() - 280, 3 });
+			texture_dictionary.at("texture_github").resized(24).draw(s3d::Vec2{ s3d::Scene::Width() - 280, 3 });
 			pulldown.draw(); // 言語選択
 			menu_bar.draw(); // 左上メニューバー
 
@@ -714,6 +744,7 @@ namespace paxs {
 						start_position,
 						end_position, 10);
 					simulator.init();
+					steps.setDay(0); // ステップ数を 0 にする
 				}
 				if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ 110,60 })) {
 					is_agent_update = true;

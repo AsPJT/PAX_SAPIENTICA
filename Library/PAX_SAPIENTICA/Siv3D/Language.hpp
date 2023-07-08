@@ -59,13 +59,20 @@ namespace paxs {
 			add(str_);
 		}
 		// 始点を探す
-		std::size_t findStart(const std::string& str_) {
+		std::size_t findStart(const std::string& str_) const {
 			if (text_map.find(str_) != text_map.end()) {
-				return text_map[str_];
+				return text_map.at(str_);
 			}
 			return 0;
 		}
 		std::vector<std::string>& getFindStart(const std::string& str_) {
+			const std::size_t index = findStart(str_);
+			if (index < text.size()) {
+				return text[index];
+			}
+			return empty;
+		}
+		const std::vector<std::string>& cgetFindStart(const std::string& str_) const {
 			const std::size_t index = findStart(str_);
 			if (index < text.size()) {
 				return text[index];

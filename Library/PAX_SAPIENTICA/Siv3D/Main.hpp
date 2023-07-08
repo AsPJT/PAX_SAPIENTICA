@@ -175,7 +175,7 @@ namespace paxs {
 				//				font[language], font[language]/*en_font*/, pin_font);
 				//#endif
 			}
-			koyomi_siv.update(map_view, language, language_text, 
+			koyomi_siv.update(map_view, language_text, 
 				simlator,
 			start_position,
 			end_position,

@@ -21,10 +21,10 @@
 #include <cstdint>
 #include <vector>
 
-#include <PAX_SAPIENTICA/Type/Date.hpp>
+#include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 
-namespace paxs {
+namespace paxs::cal {
 
 	template<typename Day>
 	class JulianDayNumber {
@@ -180,7 +180,7 @@ namespace paxs {
 			}
 			public:
 				// ヒジュラ暦を取得
-				IslamicDate toIslamicCalendar() {
+				IslamicDate toIslamicCalendar() const {
 					// islamic_day(227014) = jdn(1948439)
 					const int islamic_day = day - 1721425;
 					// ヒジュラ暦以前の日付
