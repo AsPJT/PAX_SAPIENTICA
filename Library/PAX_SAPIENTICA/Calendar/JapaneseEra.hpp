@@ -50,7 +50,7 @@ namespace paxs {
 			number_of_days_of_leap_month(number_of_days_of_leap_month_),
 			leap_month(leap_month_) {}
 	private:
-		static int emptyCharSupportStoi(const std::string& str_) {
+		constexpr static int emptyCharSupportStoi(const std::string& str_) {
 				// 例外発生時のデバッグ用
 				//for (auto s : str_) {
 				//	if (s < '0' || s > '9') {

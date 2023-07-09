@@ -40,20 +40,15 @@
 namespace paxs {
 
 	void startMain() {
-		// 初期化とロゴの表示
-		paxs::PaxSapienticaInitSiv3D init{};
-		init.firstInit();
-		//s3d::Console::Open()
-		s3d::detail::Console_impl ci;
-		ci.open();
-		// フォルダ階層
-		const std::string path8 = "./../../../../../";
-		const s3d::String path = s3d::Unicode::FromUTF8(path8);
 
-		paxs::Language language_text(path8 + "Data/Language/Text.txt");
+		// 主要な実行時定数・変数
+		const std::string path8 = "./../../../../../"; // フォルダ階層
+		SelectLanguage select_language{}; // 選択言語
 
-		// マップ関連変数
-		const std::unique_ptr<MapView> map_view(new(std::nothrow) MapView);
+		paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
+		s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
+		paxs::Language language_text(path8 + "Data/Language/Text.txt"); // テキストの多言語対応クラス
+		const std::unique_ptr<MapView> map_view(new(std::nothrow) MapView); // マップ関連変数
 
 //#ifdef PAXS_USING_SIMULATOR
 		paxs::Simulator<int> simlator;
@@ -63,14 +58,13 @@ namespace paxs {
 		// 本州
 		paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
 		paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
-		//simlator.init();
 //#endif
 		int old_width = s3d::Scene::Width();
 		int old_height = s3d::Scene::Height();
 
 		int size_change_count = 0;
 		paxs::KoyomiSiv3D koyomi_siv{};
-		koyomi_siv.init(language_text, path, path8, map_view);
+		koyomi_siv.init(select_language, language_text, path8, map_view);
 
 		paxs::TouchManager tm;
 /*##########################################################################################
@@ -123,9 +117,9 @@ namespace paxs {
 
 			// プルダウンを更新
 			koyomi_siv.pulldown.setPos(s3d::Point{ s3d::Scene::Width() - koyomi_siv.pulldown.getRect().w, 0 });
-			koyomi_siv.pulldown.update(0, tm);
-			const std::size_t language = koyomi_siv.pulldown.getIndex();
-			koyomi_siv.menu_bar.update(language, tm);
+			koyomi_siv.pulldown.update(SelectLanguage{}, tm);
+			select_language.set(std::size_t(koyomi_siv.pulldown.getIndex())); // 選択言語を更新
+			koyomi_siv.menu_bar.update(select_language, tm);
 
 			mapMapUpdate(koyomi_siv.xyz_tile_list, koyomi_siv.menu_bar, map_view.get());
 
@@ -151,7 +145,7 @@ namespace paxs {
 
 				// 地名を描画
 				koyomi_siv.place_name_location->draw(koyomi_siv.jdn.getDay(), map_view_width, map_view_height, map_view_center_x, map_view_center_y,
-					koyomi_siv.font[language], koyomi_siv.font[language]/*en_font*/, koyomi_siv.pin_font);
+					koyomi_siv.font[select_language.cget()], koyomi_siv.font[select_language.cget()]/*en_font*/, koyomi_siv.pin_font);
 
 				//#ifdef PAXS_USING_SIMULATOR
 				//			// エージェント機能テスト
@@ -175,14 +169,17 @@ namespace paxs {
 				//				font[language], font[language]/*en_font*/, pin_font);
 				//#endif
 			}
-			koyomi_siv.update(map_view, language_text, 
+			koyomi_siv.update(
+				map_view,
+				select_language,
+				language_text, 
 				simlator,
 			start_position,
 			end_position,
 				path8,
 				tm
 			);
-			init.secondInit();
+			paxs::PaxSapienticaInitSiv3D::secondInit();
 		}
 	}
 }

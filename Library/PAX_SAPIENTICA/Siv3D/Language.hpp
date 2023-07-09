@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <cstddef>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -26,6 +27,15 @@
 
 namespace paxs {
 
+	// 選択言語
+	class SelectLanguage {
+	private:
+		std::size_t select_language = 0;
+	public:
+		constexpr void set(const std::size_t select_language_) { select_language = select_language_; }
+		constexpr std::size_t& get() { return select_language; }
+		constexpr std::size_t cget() const { return select_language; }
+	};
 	class Language {
 	private:
 		std::vector<std::vector<std::string>> text{};
@@ -44,7 +54,7 @@ namespace paxs {
 		}
 
 	public:
-		std::vector<std::vector<std::string>>& get() {
+		constexpr std::vector<std::vector<std::string>>& get() {
 			return text;
 		}
 		void add(const std::string& str_) {
