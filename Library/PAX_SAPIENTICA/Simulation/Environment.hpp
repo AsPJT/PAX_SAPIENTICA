@@ -51,7 +51,7 @@ namespace paxs {
             std::vector<std::vector<std::string>> settings;
             try {
                 settings = File::readTSV(setting_file_path);
-            } catch (const std::runtime_error& e) {
+            } catch (const std::runtime_error&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to read setting file: " + setting_file_path;
                 logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
@@ -128,7 +128,7 @@ namespace paxs {
             try {
                 auto value = getData<std::uint_least8_t>("gbank", position);
                 return static_cast<int>(value) == static_cast<int>('1');
-            } catch (const std::exception& e) {
+            } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get gbank";
                 logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);

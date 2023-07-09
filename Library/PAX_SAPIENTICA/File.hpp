@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -58,7 +58,7 @@ namespace paxs {
             {
                 contents = readFile(file_path);
             }
-            catch(const std::exception& e)
+            catch(const std::exception&)
             {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to read CSV file: " + file_path);
@@ -80,7 +80,7 @@ namespace paxs {
             {
                 contents = readFile(file_path);
             }
-            catch(const std::exception& e)
+            catch(const std::exception&)
             {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to read TSV file: " + file_path);
@@ -115,7 +115,7 @@ namespace paxs {
                     }
                     ++dir_iter;
                 }
-                catch (const std::exception& ex) {
+                catch (const std::exception&) {
                     Logger logger("Save/error_log.txt");
                     logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to access: " + dir_iter->path().string());
                     throw;

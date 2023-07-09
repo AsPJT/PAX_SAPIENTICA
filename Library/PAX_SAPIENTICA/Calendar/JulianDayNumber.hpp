@@ -176,7 +176,7 @@ namespace paxs::cal {
 			// ヒジュラ暦を取得
 			constexpr IslamicDate toIslamicCalendar() const {
 				// islamic_day(227014) = jdn(1948439)
-				const int islamic_day = day - 1721425;
+				const int islamic_day = static_cast<int>(day) - 1721425;
 				// ヒジュラ暦以前の日付
 				if (islamic_day <= 227014) return IslamicDate(0, 0, 0);
 				IslamicDate ymd{};
@@ -185,8 +185,8 @@ namespace paxs::cal {
 				while (islamic_day >= IslamicDate(ymd.getYear() + 1, 1, 1)) ymd.getYear()++;
 				// ムハッラム（ Muharram ・１月）から月単位で検索
 				ymd.setMonth(1);
-				while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), getLastMonthDay(ymd.getYear(), ymd.getMonth()))) ymd.getMonth()++;
-				ymd.setDay(islamic_day - IslamicDate(ymd.getYear(), ymd.getMonth(), 1) + 1);
+				while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(getLastMonthDay(ymd.getYear(), ymd.getMonth())))) ymd.getMonth()++;
+				ymd.setDay(static_cast<DateDay>(islamic_day - static_cast<int>(IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(1))) + 1));
 				return ymd;
 			}
 	};

@@ -53,7 +53,7 @@ namespace paxs {
             try {
                 load(file_path);
             }
-            catch (const std::exception& e) {
+            catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to load data: " + file_path;
                 logger.log(Logger::Level::WARNING, __FILE__, __LINE__, message);
@@ -110,7 +110,7 @@ namespace paxs {
             std::vector<std::string> file_names; 
             try {
                 file_names = File::getFileNames(file_path);
-            } catch (const std::exception& e) {
+            } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File not found: " + file_path);
                 throw;
@@ -149,7 +149,7 @@ namespace paxs {
                 Vector2 xyz_position;
                 try {
                     xyz_position = getXAndYFromFileName(file_name);
-                } catch (const std::exception& e) {
+                } catch (const std::exception&) {
                     Logger logger("Save/error_log.txt");
                     logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
                     ++file_count;
@@ -165,7 +165,7 @@ namespace paxs {
                 std::vector<std::string> file;
                 try {
                     file = File::readFile(file_name);
-                } catch (const std::exception& e) {
+                } catch (const std::exception&) {
                     Logger logger("Save/error_log.txt");
                     logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File is not found: " + file_name);
                     ++file_count;
@@ -215,7 +215,7 @@ namespace paxs {
                 Vector2 xyz_position;
                 try {
                     xyz_position = getXAndYFromFileName(file_name);
-                } catch (const std::exception& e) {
+                } catch (const std::exception&) {
                     Logger logger("Save/error_log.txt");
                     logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
                     ++file_count;
@@ -231,7 +231,7 @@ namespace paxs {
                 std::vector<std::string> file;
                 try {
                     file = File::readFile(file_name);
-                } catch (const std::exception& e) {
+                } catch (const std::exception&) {
                     Logger logger("Save/error_log.txt");
                     logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File is not found: " + file_name);
                     ++file_count;
