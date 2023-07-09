@@ -25,6 +25,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 
   if(NOT EXISTS ${LIBRARY_PATH})
     file(REMOVE ${TEST_SOURCE})
+    continue()
   endif()
 
   string(REPLACE "${TEST_SOURCE_DIR}/" "" TARGET_NAME ${TEST_SOURCE})

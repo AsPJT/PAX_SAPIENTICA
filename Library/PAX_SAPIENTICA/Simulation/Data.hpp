@@ -19,9 +19,9 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include <map>
 #include <regex>
 #include <stdexcept>
+#include <unordered_map>
 
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
@@ -49,6 +49,7 @@ namespace paxs {
         using Vector2 = paxs::Vector2<int>;
         explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z, const  DataType data_type) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z), data_type(data_type) {
             z_mag = std::pow(2, default_z - pj_z);
+            column_size = (end_position.x - start_position.x + 1) * pixel_size * z_mag;
 
             try {
                 load(file_path);
@@ -68,7 +69,8 @@ namespace paxs {
             default_z(other.default_z),
             pj_z(other.pj_z),
             z_mag(other.z_mag),
-            data_type(other.data_type) {}
+            data_type(other.data_type),
+            column_size(other.column_size) {}
 
         // Copy assignment operator
         constexpr Data& operator=(const Data& other) noexcept {
@@ -79,6 +81,9 @@ namespace paxs {
                 data = other.data;
                 default_z = other.default_z;
                 pj_z = other.pj_z;
+                z_mag = other.z_mag;
+                data_type = other.data_type;
+                column_size = other.column_size;
             }
             return *this;
         }
@@ -87,7 +92,7 @@ namespace paxs {
         /// @brief 指定した位置の値を取得する
         constexpr T getValue(const Vector2& position) const noexcept {
             const Vector2 converted_position = position * z_mag;
-            auto itr = data.find(converted_position);
+            auto itr = data.find(convertVector2ToIndex(converted_position));
             if(itr == data.end()) {
                 return static_cast<T>(0);
             }
@@ -97,11 +102,12 @@ namespace paxs {
         Vector2 start_position; // シミュレーションの左上の座標
         Vector2 end_position; // シミュレーションの右下の座標
         std::string name; // データの名前
-        std::map<Vector2, T> data; // データ
+        std::unordered_map<std::uint_least64_t, T> data; // データ
         int default_z; // データのz値
         int pj_z; // シミュレーションのz値
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
         DataType data_type; // データの型
+        int column_size; // シミュレーションの列数
 
         /// @brief Load the file.
         /// @brief ファイルのロード
@@ -157,7 +163,7 @@ namespace paxs {
                 }
                 
                 const Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
-                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size || default_position.y > (end_position.y - start_position.y) * pixel_size) {
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
                     ++file_count;
                     continue;
                 }
@@ -183,9 +189,9 @@ namespace paxs {
                         // T型に変換
                         try {
                             if(data_type == DataType::u8 || data_type == DataType::u32)
-                                data[position] = static_cast<T>(std::stoi(values[x]));
+                                data[convertVector2ToIndex(position)] = static_cast<T>(std::stoi(values[x]));
                             else if(data_type == DataType::f32)
-                                data[position] = static_cast<T>(std::stod(values[x]));
+                                data[convertVector2ToIndex(position)] = static_cast<T>(std::stod(values[x]));
                         } catch (const std::invalid_argument&/*ia*/) {
                             // str is not convertible to double
                             continue;
@@ -223,7 +229,7 @@ namespace paxs {
                 }
 
                 const Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
-                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size || default_position.y > (end_position.y - start_position.y) * pixel_size) {
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
                     ++file_count;
                     continue;
                 }
@@ -242,7 +248,7 @@ namespace paxs {
                     for(std::size_t x = 0;x < file[y].size();++x) {
                         const Vector2 position = default_position + Vector2((int)x, (int)y);
                         // T型に変換
-                        data[position] = static_cast<T>(file[y][x]);
+                        data[convertVector2ToIndex(position)] = static_cast<T>(file[y][x]);
                     }
                 }
                 ++file_count;
@@ -268,6 +274,10 @@ namespace paxs {
                 logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
+        }
+
+        std::uint_least64_t convertVector2ToIndex(const Vector2& position) const noexcept {
+            return position.x + (std::uint_least64_t)position.y * column_size;
         }
     };
 }
