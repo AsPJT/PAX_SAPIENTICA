@@ -21,10 +21,10 @@
 #include <cstdint>
 #include <vector>
 
-#include <PAX_SAPIENTICA/Type/Date.hpp>
+#include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 
-namespace paxs {
+namespace paxs::cal {
 
 	template<typename Day>
 	class JulianDayNumber {
@@ -32,34 +32,33 @@ namespace paxs {
 		Day day{ 1808286 };
 	public:
 		JulianDayNumber() = default;
-
 		template<typename T>
 		JulianDayNumber(const T& jdn_) { day = static_cast<Day>(jdn_); }
 
-	private:
-		static double getK(const double month) {
-			return std::floor((14 - month) / 12);
-		}
 	public:
 
-		void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
-		void setYear(const DateYear) {} // 何もしない（ Variant に用いているため定義）
-		void setMonth(const DateMonth) {} // 何もしない（ Variant に用いているため定義）
-		void setDay(const Day day_) { day = day_; }
-		void setLeapMonth(const bool) const {} // 何もしない（ Variant に用いているため定義）
-		DateGengo getGengo() { return 0; }
-		DateYear getYear() { return 0; }
-		DateMonth getMonth() { return 0; }
-		Day& getDay() { return day; }
-		DateGengo cgetGengo() const { return 0; }
-		DateYear cgetYear() const { return 0; }
-		DateMonth cgetMonth() const { return 0; }
-		Day cgetDay() const { return day; }
-		static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
-		static DateOutputType getDateOutputType() { return DateOutputType::name_and_value; } // 暦名＆年月日形式（ Variant に用いているため定義）
+		constexpr void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
+		constexpr void setYear(const DateYear) const {} // 何もしない（ Variant に用いているため定義）
+		constexpr void setMonth(const DateMonth) const {} // 何もしない（ Variant に用いているため定義）
+		constexpr void setDay(const Day day_) { day = day_; }
+		constexpr void setLeapMonth(const bool) const {} // 何もしない（ Variant に用いているため定義）
+		constexpr DateGengo getGengo() const { return 0; }
+		constexpr DateYear getYear() const { return 0; }
+		constexpr DateMonth getMonth() const { return 0; }
+		constexpr Day& getDay() { return day; }
+		constexpr DateGengo cgetGengo() const { return 0; }
+		constexpr DateYear cgetYear() const { return 0; }
+		constexpr DateMonth cgetMonth() const { return 0; }
+		constexpr Day cgetDay() const { return day; }
+		constexpr static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
+		constexpr static DateOutputType getDateOutputType() { return DateOutputType::name_and_value; } // 暦名＆年月日形式（ Variant に用いているため定義）
 
+	private:
+		// グレゴリオ暦の計算用
+		constexpr static double getK(const double month) { return std::floor((14 - month) / 12); }
+	public:
 		// グレゴリオ暦からユリウス日を取得
-		void fromGregorianCalendar(const double year, const double month, const double day) {
+		constexpr void fromGregorianCalendar(const double year, const double month = 1.0, const double day = 1.0) {
 			const double K = getK(month);
 			this->day = static_cast<Day>(std::floor((-K + year + 4800) * 1461 / 4)
 				+ std::floor((K * 12 + month - 2) * 367 / 12)
@@ -67,14 +66,14 @@ namespace paxs {
 				+ day - 32075);
 		}
 		// ユリウス暦からユリウス日を取得
-		void fromJulianCalendar(const double year, const double month, const double day) {
+		constexpr void fromJulianCalendar(const double year, const double month = 1.0, const double day = 1.0) {
 			const double K = getK(month);
 			this->day = static_cast<Day>(std::floor((-K + year + 4800) * 1461 / 4)
 				+ std::floor((K * 12 + month - 2) * 367 / 12)
 				+ day - 32113);
 		}
 		// グレゴリオ暦を取得
-		GregorianDate toGregorianCalendar() const {
+		constexpr GregorianDate toGregorianCalendar() const {
 			GregorianDate ymd;
 			//JDN ⇒ グレゴリオ暦
 			double L = static_cast<double>(this->day) + 68569;
@@ -90,7 +89,7 @@ namespace paxs {
 			return ymd;
 		}
 		// ユリウス暦を取得
-		JulianDate toJulianCalendar() const {
+		constexpr JulianDate toJulianCalendar() const {
 			JulianDate ymd;
 			double L = static_cast<double>(this->day) + 1402;
 			const double N = std::floor((L - 1) / 1461);
@@ -105,7 +104,7 @@ namespace paxs {
 			return ymd;
 		}
 		// 和暦を取得
-		JapanDate toJapaneseCalendar(const std::vector<paxs::JapaneseEra>& japanese_era_list) const {
+		constexpr JapanDate toJapaneseCalendar(const std::vector<paxs::JapaneseEra>& japanese_era_list) const {
 			JapanDate jp_date{ 0,1,1,1,false };
 
 			// ユリウス日が 1480407 以上（神武 1 年 1 月 1 日以降、グレゴリオ暦 紀元前 660 年 2 月 11 日以降）
@@ -156,47 +155,40 @@ namespace paxs {
 					if (is_break) break;
 				}
 			}
-
 			return jp_date;
 		}
 		// 較正年代を取得
-		CalBP toCalBP() const {
+		constexpr CalBP toCalBP() const {
 			GregorianDate ymd = toGregorianCalendar();
 			int value = int(ymd.cgetYear());
-			if (value >= 1950) {
-				value = 0;
-			}
-			else {
-				value = 1950 - value;
-			}
+			if (value >= 1950) value = 0;
+			else value = 1950 - value;
 			return CalBP{ value };
 		}
 		private:
 			// ヒジュラ暦の閏年かどうか
-			bool isIslamicLeapYear(const int year) const { return ((((11 * year) + 14) % 30) < 11); }
+			constexpr bool isIslamicLeapYear(const int year) const { return ((((11 * year) + 14) % 30) < 11); }
 			// ヒジュラ暦の月の日数計算
-			int getLastMonthDay(const int year, const int month) const {
+			constexpr int getLastMonthDay(const int year, const int month) const {
 				return (((month % 2) == 1) || ((month == 12) && isIslamicLeapYear(year))) ? 30 : 29;
 			}
-			public:
-				// ヒジュラ暦を取得
-				IslamicDate toIslamicCalendar() {
-					// islamic_day(227014) = jdn(1948439)
-					const int islamic_day = day - 1721425;
-					// ヒジュラ暦以前の日付
-					if (islamic_day <= 227014) {
-						return IslamicDate(0, 0, 0);
-					}
-					IslamicDate ymd{};
-					// おおよその年から1年ずつ前倒しで検索
-					ymd.setYear((islamic_day - 227014) / 355);
-					while (islamic_day >= IslamicDate(ymd.getYear() + 1, 1, 1)) ymd.getYear()++;
-					// ムハッラム（ Muharram ・１月）から月単位で検索
-					ymd.setMonth(1);
-					while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), getLastMonthDay(ymd.getYear(), ymd.getMonth()))) ymd.getMonth()++;
-					ymd.setDay(islamic_day - IslamicDate(ymd.getYear(), ymd.getMonth(), 1) + 1);
-					return ymd;
-				}
+		public:
+			// ヒジュラ暦を取得
+			constexpr IslamicDate toIslamicCalendar() const {
+				// islamic_day(227014) = jdn(1948439)
+				const int islamic_day = day - 1721425;
+				// ヒジュラ暦以前の日付
+				if (islamic_day <= 227014) return IslamicDate(0, 0, 0);
+				IslamicDate ymd{};
+				// おおよその年から1年ずつ前倒しで検索
+				ymd.setYear((islamic_day - 227014) / 355);
+				while (islamic_day >= IslamicDate(ymd.getYear() + 1, 1, 1)) ymd.getYear()++;
+				// ムハッラム（ Muharram ・１月）から月単位で検索
+				ymd.setMonth(1);
+				while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), getLastMonthDay(ymd.getYear(), ymd.getMonth()))) ymd.getMonth()++;
+				ymd.setDay(islamic_day - IslamicDate(ymd.getYear(), ymd.getMonth(), 1) + 1);
+				return ymd;
+			}
 	};
 	using JDN_F64 = JulianDayNumber<double>;
 	using JDN_S32 = JulianDayNumber<std::int_least32_t>;

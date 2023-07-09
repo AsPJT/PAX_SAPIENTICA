@@ -21,6 +21,7 @@
 #include <vector>
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Language.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
 namespace paxs {
@@ -83,10 +84,10 @@ namespace paxs {
 			return itemsa.empty();
 		}
 
-		void update(std::size_t language_index_, paxs::TouchManager& tm_) {
+		void update(const SelectLanguage& select_language, paxs::TouchManager& tm_) {
 			if (isEmpty()) return;
-			if (language_index != language_index_) {
-				language_index = language_index_;
+			if (language_index != select_language.cget()) {
+				language_index = select_language.cget();
 				updateLanguage();
 			}
 			if (tm_.get(rect.leftClicked())) {
@@ -212,10 +213,10 @@ namespace paxs {
 				paxs::PulldownType::One ));
 		}
 
-		void update(std::size_t language_index_, paxs::TouchManager& tm_) {
+		void update(const SelectLanguage& select_language, paxs::TouchManager& tm_) {
 			start_x = 0;
 			for (auto& pd : pdv) {
-				pd.update(language_index_, tm_);
+				pd.update(select_language, tm_);
 				pd.setRectX(start_x);
 				start_x += pd.getRect().w;
 			}

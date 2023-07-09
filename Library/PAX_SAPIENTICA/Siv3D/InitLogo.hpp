@@ -23,9 +23,9 @@ namespace paxs {
 
 	class PaxSapienticaInitSiv3D {
 	private:
-		bool first_update = false;
 	public:
-		void firstInit() const {
+		// ソフトウェアを実行した最初のフレームの一番最初に実行
+		static void firstInit() {
 			// ロゴ画像の読み込み
 			const s3d::Texture texture_tl{ U"./../../../../../Image/Logo/TitleBanner2.svg" };
 			// 画面サイズを変更
@@ -48,7 +48,9 @@ namespace paxs {
 			texture_tl.drawAt(s3d::Scene::Center());
 		}
 
-		void secondInit() {
+		// ソフトウェアを実行した最初のフレームの一番最後に実行
+		static void secondInit() {
+			static bool first_update = false;
 			if (!first_update) {
 				first_update = true;
 				s3d::Scene::SetLetterbox(s3d::Color{ 243,243,243 });
