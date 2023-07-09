@@ -86,7 +86,7 @@ namespace paxs {
                 agent.updateAge();
                 try {
                     agent.move(Vector2(rand(gen), rand(gen)));
-                } catch (const std::runtime_error& e) {
+                } catch (const std::runtime_error&) {
                     Logger logger("Save/error_log.txt");
                     logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to move agent. Agent id: " + agent.getId());
                 }
@@ -130,7 +130,7 @@ namespace paxs {
                     while(!environment.isLand(position)) {
                         position = Vector2(x_dist(gen), y_dist(gen));
                     }
-                } catch (const std::runtime_error& e) {
+                } catch (const std::runtime_error&) {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "Failed to randomize agent.";
                     logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
