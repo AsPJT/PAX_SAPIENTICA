@@ -1,6 +1,6 @@
 ![PAX SAPIENTICA Logo](./Image/Logo/TitleBanner3.svg)
 
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%20(Debug%20Build)%20_%20D3D11%20_%2060%20FPS%20_%20F%201920x1111%20_%20V%201536x888%20_%20S%201536x888%202023_05_24%2023_17_49.png)
+![Screenshot](./Image/Screenshot/Best.png)
 
 GIS & Archaeological Simulator
 
@@ -15,6 +15,7 @@ GIS & Archaeological Simulator
 |✅|Japanese calendar|
 |✅|Islamic calendar|
 |✅|Julian day number|
+![Calendar](./Image/Other/Calendar20230709.gif)
 
 ## Language
 
