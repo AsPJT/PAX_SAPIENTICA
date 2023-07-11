@@ -162,7 +162,7 @@ namespace paxs {
                     continue;
                 }
                 
-                const Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
+                const Vector2 default_position = xyz_position * pixel_size - start_position * z_mag * pixel_size;
                 if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
                     ++file_count;
                     continue;
@@ -228,7 +228,7 @@ namespace paxs {
                     continue;
                 }
 
-                const Vector2 default_position = (xyz_position * pixel_size - start_position * (pixel_size * z_mag));
+                const Vector2 default_position = xyz_position * pixel_size - start_position * z_mag * pixel_size;
                 if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
                     ++file_count;
                     continue;

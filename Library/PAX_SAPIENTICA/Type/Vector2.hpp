@@ -65,7 +65,7 @@ namespace paxs {
             return *this;
         }
         constexpr Vector2<T> operator*(const double& t) const noexcept {
-            return Vector2<T>(x * T(t), y * T(t));
+            return Vector2<T>(x * t, y * t);
         }
         constexpr Vector2<T>& operator*=(const double& t) noexcept {
             x *= t;

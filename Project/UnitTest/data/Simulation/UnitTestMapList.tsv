@@ -1,0 +1,4 @@
+key	file_name_type	data_type	file_path	z	min_x	min_y	max_x	max_y	file_name_extension	file_format
+elevation	z_original	f32	../data/Simulation/Elevation/	8	0	0	255	255	.tsv	numeric_tsv
+slope	z_original	f32	../data/Simulation/Slope/	8	0	0	255	255	.tsv	numeric_tsv
+gbank	z_original	u8	../data/Simulation/LandAndWater/	10	861	366	950	441	.txt	numeric
