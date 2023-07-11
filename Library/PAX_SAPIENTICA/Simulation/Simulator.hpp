@@ -56,7 +56,7 @@ namespace paxs {
         /// @brief Initialize the simulator.
         /// @brief エージェントの初期化
         /// @details エージェントをクリアし、指定された数だけランダムに配置する
-        // TODO: とりあえず陸地にランダムに設置しているため、改修必須
+        // TODO: とりあえず傾斜の緩やかな陸地にランダムに設置しているため、改修必須
         void init() {
             std::cout << "Initializing..." << std::endl;
             clearAgents();

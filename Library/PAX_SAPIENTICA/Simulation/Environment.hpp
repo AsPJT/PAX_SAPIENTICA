@@ -150,9 +150,22 @@ namespace paxs {
             }
         }
 
+        /// @brief Get elevation.
+        /// @brief 標高の取得
+        float getElevation(const Vector2& position) const {
+            try {
+                return getData<float>("elevation", position);
+            } catch (const std::exception&) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to get elevation";
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+        }
+
         /// @brief Is it land?
         /// @brief 陸地かどうかの判定
-        bool isLand(const Vector2& position) const {
+        virtual bool isLand(const Vector2& position) const {
             try {
                 auto value = getData<std::uint_least8_t>("gbank", position);
                 return static_cast<int>(value) == static_cast<int>('1');
