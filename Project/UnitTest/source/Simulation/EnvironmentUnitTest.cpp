@@ -17,11 +17,7 @@
 const std::string setting_file_path = "../data/Simulation/MapList.tsv";
 paxs::Vector2<int> start_position(861, 350);
 paxs::Vector2<int> end_position(950, 450);
-paxs::Environment<int> environment{};
-
-TEST (EnvironmentUnitTest, constructor) {
-    environment = paxs::Environment<int>(setting_file_path, start_position, end_position, 10);
-}
+paxs::Environment<int> environment(setting_file_path, start_position, end_position, 10);
 
 TEST (EnvironmentUnitTest, getStartPosition) {
     EXPECT_EQ(environment.getStartPosition(), start_position);

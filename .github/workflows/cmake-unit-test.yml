@@ -34,7 +34,10 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Checkout submodules
-      run: git submodule update --init --recursive ExternalLibrary/googletest
+      run: |
+        git submodule update --init --recursive ExternalLibrary/googletest
+        git submodule update --init --recursive Data/Map/XYZTile/Elevation/Data/Elevation
+        git submodule update --init --recursive Data/Map/XYZTile/Slope/Data/SlopeData20230514
 
     - name: Install dependencies
       run: |
