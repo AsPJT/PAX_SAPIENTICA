@@ -127,7 +127,7 @@ namespace paxs {
                 StatusDisplayer::displayProgressBar(i, agent_count);
                 Vector2 position = Vector2(x_dist(gen), y_dist(gen));
                 try {
-                    while(!environment.isLand(position)) {
+                    while(!environment.isLive(position)) {
                         position = Vector2(x_dist(gen), y_dist(gen));
                     }
                 } catch (const std::runtime_error&) {

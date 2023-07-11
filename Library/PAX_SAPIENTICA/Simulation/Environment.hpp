@@ -122,7 +122,35 @@ namespace paxs {
             return std::get<Data<U>>(data_map.at(key)).getValue(position);
         }
 
-        /// @brief Get data.
+        /// @brief Is it possible to live?
+        /// @brief 居住可能かどうかの判定
+        /// @details It is land and the slope is less than a certain value.
+        /// @details 陸地であるかつ、傾斜が一定以下であること
+        bool isLive(const Vector2& position) const {
+            try {
+                return isLand(position) && getSlope(position) <= 5;
+            } catch (const std::exception&) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to judge live";
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+        }
+
+        /// @brief Get slope.
+        /// @brief 傾斜の取得
+        float getSlope(const Vector2& position) const {
+            try {
+                return getData<float>("slope", position);
+            } catch (const std::exception&) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to get slope";
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+        }
+
+        /// @brief Is it land?
         /// @brief 陸地かどうかの判定
         bool isLand(const Vector2& position) const {
             try {
