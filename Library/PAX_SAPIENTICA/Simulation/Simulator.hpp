@@ -85,7 +85,7 @@ namespace paxs {
             for(auto& agent : agents) {
                 agent.updateAge();
                 try {
-                    agent.move(Vector2(rand(gen), rand(gen)));
+                    agent.move();
                 } catch (const std::runtime_error&) {
                     Logger logger("Save/error_log.txt");
                     logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to move agent. Agent id: " + agent.getId());
@@ -107,7 +107,6 @@ namespace paxs {
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
         std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
-        std::uniform_int_distribution<> rand{-1, 1}; // 移動量の乱数分布
 
         /// @brief Clear the agents.
         /// @brief エージェントをクリアする

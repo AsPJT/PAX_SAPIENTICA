@@ -16,7 +16,9 @@
 
 ##########################################################################################*/
 
+#include <array>
 #include <limits>
+#include <random>
 #include <stdexcept>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
@@ -36,6 +38,37 @@ namespace paxs {
 
         constexpr explicit Agent(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least32_t age, const std::uint_least32_t life_span, Environment* env) noexcept
             : Object<T>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
+
+        /// @brief Move the agent.
+        /// @brief エージェントを移動させる
+        void move() {
+            const std::array<Vector2, 8> move_directions {
+                    Vector2(-1, -1), Vector2(0, -1), Vector2(1, -1),
+                    Vector2(-1, 0), Vector2(1, 0),
+                    Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)
+                };
+            const float current_slope = environment->getSlope(this->position);
+
+            std::random_device seed_gen;
+            std::mt19937 engine(seed_gen());
+            // 傾斜が10度未満の場合は20%の確率で斜面を登る
+            if (current_slope < 10){
+                std::uniform_int_distribution<> dist(0, 4);
+                if (dist(engine) != 0) {
+                    return;
+                }
+            }
+
+            // slopeが小さい場所ほど選ばれやすいようにする
+            std::array<float, 8> probabilities;
+            for (std::size_t i = 0; i < 8; ++i) {
+                float slope = environment->getSlope(this->position + move_directions[i]);
+                probabilities[i] = 1.0f / exp(slope / 4);
+            }
+
+            std::discrete_distribution<> dist(probabilities.begin(), probabilities.end());
+            this->move(move_directions[dist(engine)]);            
+        }
 
         /// @brief Move the agent.
         /// @brief エージェントを移動させる
