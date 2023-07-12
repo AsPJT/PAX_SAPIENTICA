@@ -13,8 +13,10 @@
 
 #include <PAX_SAPIENTICA/File.hpp>
 
+const std::string prefix = "../data/File";
+
 TEST (FileUnitTest, readFile) {
-    const std::string file_path = "../data/test_file.txt";
+    const std::string file_path = prefix + "/test_file.txt";
     const std::vector<std::string> expected = {
         "Test",
         "file"
@@ -24,7 +26,7 @@ TEST (FileUnitTest, readFile) {
 }
 
 TEST (FileUnitTest, readCSV) {
-    const std::string file_path = "../data/test_file.csv";
+    const std::string file_path = prefix + "/test_file.csv";
     const std::vector<std::vector<std::string>> expected = {
         {"Test", "file"},
         {"Test2", "file2"}
@@ -34,7 +36,7 @@ TEST (FileUnitTest, readCSV) {
 }
 
 TEST (FileUnitTest, readTSV) {
-    const std::string file_path = "../data/test_file.tsv";
+    const std::string file_path = prefix + "/test_file.tsv";
     const std::vector<std::vector<std::string>> expected = {
         {"Test", "file"},
         {"Test2", "file2"}
@@ -44,13 +46,12 @@ TEST (FileUnitTest, readTSV) {
 }
 
 TEST (FileUnitTest, getFileNames) {
-    const std::string file_path = "../data";
     const std::vector<std::string> expected = {
-        file_path + "/test_file.csv",
-        file_path + "/test_file.tsv",
-        file_path + "/test_file.txt"
+        prefix + "/test_file.csv",
+        prefix + "/test_file.tsv",
+        prefix + "/test_file.txt"
     };
-    std::vector<std::string> actual = paxs::File::getFileNames(file_path);
+    std::vector<std::string> actual = paxs::File::getFileNames(prefix);
 
     std::sort(actual.begin(), actual.end());
     

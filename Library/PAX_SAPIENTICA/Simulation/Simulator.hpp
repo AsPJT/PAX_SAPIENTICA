@@ -56,7 +56,7 @@ namespace paxs {
         /// @brief Initialize the simulator.
         /// @brief エージェントの初期化
         /// @details エージェントをクリアし、指定された数だけランダムに配置する
-        // TODO: とりあえず陸地にランダムに設置しているため、改修必須
+        // TODO: とりあえず傾斜の緩やかな陸地にランダムに設置しているため、改修必須
         void init() {
             std::cout << "Initializing..." << std::endl;
             clearAgents();
@@ -127,7 +127,7 @@ namespace paxs {
                 StatusDisplayer::displayProgressBar(i, agent_count);
                 Vector2 position = Vector2(x_dist(gen), y_dist(gen));
                 try {
-                    while(!environment.isLand(position)) {
+                    while(!environment.isLive(position)) {
                         position = Vector2(x_dist(gen), y_dist(gen));
                     }
                 } catch (const std::runtime_error&) {

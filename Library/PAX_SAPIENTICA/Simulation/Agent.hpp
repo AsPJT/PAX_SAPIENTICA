@@ -56,6 +56,10 @@ namespace paxs {
         /// @brief エージェントが死んでいるかどうかを返す
         constexpr bool isDead() const noexcept { return age >= life_span; }
         
+        /// @brief Get the agent's age.
+        /// @brief エージェントの年齢を取得する
+        constexpr std::uint_least32_t getAge() const noexcept { return age; }
+
         /// @brief Update the agent's age.
         /// @brief エージェントの年齢を更新する
         constexpr void updateAge() noexcept { 
