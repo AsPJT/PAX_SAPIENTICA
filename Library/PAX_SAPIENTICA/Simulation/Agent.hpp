@@ -50,21 +50,54 @@ namespace paxs {
                 };
             const float current_slope = environment->getSlope(this->position);
 
+            const int th_max_slope = 30;
+            const int th_min_slope = 5;
+
             std::random_device seed_gen;
             std::mt19937 engine(seed_gen());
-            // 傾斜が10度未満の場合は20%の確率で斜面を登る
-            if (current_slope < 10){
-                std::uniform_int_distribution<> dist(0, 4);
+
+            // 0~min_slopeの間の傾斜の場合は10%の確率で移動
+            if (current_slope <= th_min_slope) {
+                std::uniform_int_distribution<> dist(0, 9);
                 if (dist(engine) != 0) {
                     return;
                 }
             }
 
-            // slopeが小さい場所ほど選ばれやすいようにする
-            std::array<float, 8> probabilities;
-            for (std::size_t i = 0; i < 8; ++i) {
-                float slope = environment->getSlope(this->position + move_directions[i]);
-                probabilities[i] = 1.0f / exp(slope / 4);
+            // min_slope~max_slopeの間の傾斜の場合は傾斜が大きいほど移動しやすくする
+            if (current_slope > th_min_slope && current_slope <= th_max_slope) {
+                std::uniform_int_distribution<> dist(0, 9 + (current_slope - th_min_slope) * (90 / (th_max_slope - th_min_slope)));
+                if (dist(engine) != 0) {
+                    return;
+                }
+            }
+
+            bool is_movable = false;
+            std::uniform_int_distribution<> amount(1, 5);
+            std::array<float, 8> probabilities = {};
+            const float elevation = environment->getElevation(this->position);
+            while (!is_movable) {
+                // 移動量は1~5の間でランダムに決定
+                const int move_amount = amount(engine);
+
+                for (std::size_t i = 0; i < 8; ++i) {
+                    Vector2 pos = this->position + move_directions[i] * move_amount;
+                    if (!environment->isLand(pos)) {
+                        continue;
+                    }
+
+                    // slopeが小さい場所ほど選ばれやすいようにする
+                    float slope = environment->getSlope(pos);
+                    probabilities[i] += 1.0f / exp(slope / 4);
+
+                    // 今の標高よりも低い方が選ばれやすいようにする
+                    const float diff = elevation - environment->getElevation(pos);
+                    if (diff > 0) {
+                        probabilities[i] += diff / 10;
+                    }
+
+                    is_movable = true;
+                }
             }
 
             std::discrete_distribution<> dist(probabilities.begin(), probabilities.end());
