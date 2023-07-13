@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <memory>
 #include <stdexcept>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
@@ -38,7 +39,7 @@ namespace paxs {
 
         constexpr explicit Simulator() noexcept = default;
         Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
-            environment(setting_file_path, start_position, end_position, z), gen(seed) {
+            environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
                 if (z <= 0) {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "Z must be greater than 0.";
@@ -103,7 +104,7 @@ namespace paxs {
         }
     private:
         std::vector<Agent> agents; // エージェントのリスト
-        Environment environment; // 環境
+        std::shared_ptr<Environment> environment; // 環境
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
         std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
@@ -117,7 +118,7 @@ namespace paxs {
         /// @brief Randomly place the agents.
         /// @brief エージェントをランダムに配置する
         void randomizeAgents(const int agent_count) {
-            const Vector2& offset = environment.getEndPosition() - environment.getStartPosition();
+            const Vector2& offset = environment->getEndPosition() - environment->getStartPosition();
             std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
             std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
             std::uniform_int_distribution<> age_dist(0, 20);
@@ -126,7 +127,7 @@ namespace paxs {
                 StatusDisplayer::displayProgressBar(i, agent_count);
                 Vector2 position = Vector2(x_dist(gen), y_dist(gen));
                 try {
-                    while(!environment.isLive(position)) {
+                    while(!environment->isLive(position)) {
                         position = Vector2(x_dist(gen), y_dist(gen));
                     }
                 } catch (const std::runtime_error&) {
@@ -136,7 +137,7 @@ namespace paxs {
                     throw std::runtime_error(message);
                 }
                 
-                agents.push_back(Agent( "", "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), &environment));
+                agents.push_back(Agent( "", "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;

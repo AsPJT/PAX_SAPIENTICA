@@ -18,6 +18,7 @@
 
 #include <array>
 #include <limits>
+#include <memory>
 #include <random>
 #include <stdexcept>
 
@@ -36,7 +37,7 @@ namespace paxs {
         using Vector2 = paxs::Vector2<T>;
         using Environment = paxs::Environment<T>;
 
-        constexpr explicit Agent(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least32_t age, const std::uint_least32_t life_span, Environment* env) noexcept
+        constexpr explicit Agent(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
             : Object<T>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
 
         /// @brief Move the agent.
@@ -116,7 +117,7 @@ namespace paxs {
         std::uint_least8_t gender; // 性別
         std::uint_least32_t age; // 年齢
         std::uint_least32_t life_span; // 寿命
-        Environment* environment; // 環境
+        std::shared_ptr<Environment> environment; // 環境
     };
 }
 
