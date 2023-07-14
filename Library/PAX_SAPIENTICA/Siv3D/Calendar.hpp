@@ -41,19 +41,6 @@
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 
 namespace paxs {
-	std::vector<s3d::Font> setFont(
-		const s3d::FontMethod& font_method,
-		const int font_size,
-		const std::string& path,
-		const std::string& key,
-		const paxs::Language& language_text) {
-		std::vector<s3d::Font> font{};
-		const std::vector<std::string>& vs = language_text.cgetFindStart(key);
-		for (std::size_t i = 1; i < vs.size(); ++i) {
-			font.emplace_back(s3d::Font{ font_method , font_size , s3d::Unicode::FromUTF8(path + vs[i]) });
-		}
-		return font;
-	}
 
 	class KoyomiSiv3D {
 	public:
