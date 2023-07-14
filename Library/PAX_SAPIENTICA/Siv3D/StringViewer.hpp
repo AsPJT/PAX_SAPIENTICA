@@ -16,6 +16,30 @@
 
 ##########################################################################################*/
 
+#include <limits>
+#include <string>
+#include <variant>
+#include <vector>
+
+#include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
+#include <PAX_SAPIENTICA/Calendar/Date.hpp>
+#include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
+#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+#include <PAX_SAPIENTICA/Siv3D/3DModel.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Key.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Language.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocationPoint.hpp>
+#include <PAX_SAPIENTICA/Siv3D/LocationRange.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>
+#include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp>
+#include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/TouchManager.hpp>
+#include <PAX_SAPIENTICA/Math.hpp> // 数学定数
+#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
+#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 
 namespace paxs {
