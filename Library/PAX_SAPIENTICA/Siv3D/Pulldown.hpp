@@ -230,6 +230,9 @@ namespace paxs {
 		paxs::Pulldown& getPulldown(const std::size_t i) {
 			return pdv[i];
 		}
+		const paxs::Pulldown& cgetPulldown(const std::size_t i) const {
+			return pdv[i];
+		}
 
 	private:
 		std::vector<paxs::Pulldown> pdv;

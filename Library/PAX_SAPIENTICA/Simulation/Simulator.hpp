@@ -101,6 +101,11 @@ namespace paxs {
         constexpr std::vector<Agent>& getAgents() noexcept {
             return agents;
         }
+        /// @brief Get the agent list.
+        /// @brief エージェントのリストを取得する
+        constexpr const std::vector<Agent>& cgetAgents() const noexcept {
+            return agents;
+        }
     private:
         std::vector<Agent> agents; // エージェントのリスト
         Environment environment; // 環境

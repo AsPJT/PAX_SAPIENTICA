@@ -57,6 +57,9 @@ namespace paxs {
 		constexpr std::vector<std::vector<std::string>>& get() {
 			return text;
 		}
+		constexpr const std::vector<std::vector<std::string>>& cget() const {
+			return text;
+		}
 		void add(const std::string& str_) {
 			std::ifstream ifs(str_);
 			std::string line;
@@ -89,9 +92,9 @@ namespace paxs {
 			}
 			return empty;
 		}
-		std::vector<std::vector<std::string>> getFindStartToVVS(const std::string& str_, const std::size_t start_index) {
+		std::vector<std::vector<std::string>> getFindStartToVVS(const std::string& str_, const std::size_t start_index) const {
 			std::vector<std::vector<std::string>> tmp{};
-			const std::vector<std::string>& lt = getFindStart(str_);
+			const std::vector<std::string>& lt = cgetFindStart(str_);
 			for (std::size_t i = start_index; i < lt.size(); ++i) {
 				tmp.emplace_back(std::vector<std::string>{ lt[i] });
 			}
