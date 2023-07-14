@@ -25,10 +25,10 @@
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 暦にないファイル
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #include <PAX_SAPIENTICA/Siv3D/3DModel.hpp>
-#include <PAX_SAPIENTICA/Siv3D/Caledar.hpp> // 計算時に必要
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 暦にないファイル
+#include <PAX_SAPIENTICA/Siv3D/Calendar.hpp> // 計算時に必要
 #include <PAX_SAPIENTICA/Siv3D/Key.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Language.hpp>
 #include <PAX_SAPIENTICA/Siv3D/LocationPoint.hpp>
