@@ -15,3 +15,7 @@ endif()
 
 add_executable(SimulatorTest source/SimulatorTest.cpp)
 target_compile_definitions(SimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
+
+add_executable(WindowTest source/WindowTest.cpp)
+find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
+target_link_libraries(WindowTest sfml-graphics sfml-window sfml-system)
