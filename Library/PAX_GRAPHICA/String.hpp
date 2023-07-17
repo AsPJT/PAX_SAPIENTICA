@@ -40,8 +40,8 @@ namespace paxg {
 //         operator sf::String() const { return string; }
 #else
         std::string string;
-        constexpr String(const std::string& string) : string(string) {}
-        constexpr operator std::string() const { return string; }
+        String(const std::string& string) : string(string) {}
+        operator std::string() const { return string; }
 #endif
     };
 }
