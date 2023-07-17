@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_GRAPHICA_CIRCLE_HPP
-#define PAX_GRAPHICA_CIRCLE_HPP
+#ifndef PAX_GRAPHICA_TEXTURE_HPP
+#define PAX_GRAPHICA_TEXTURE_HPP
 
 /*##########################################################################################
 
@@ -23,37 +23,40 @@
 #endif
 
 #include <PAX_GRAPHICA/IDrawable.hpp>
+#include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 
-    struct Circle : public IDrawable
+    struct Texture : public paxg::IDrawable
     {
 #ifdef PAXS_USING_SIV3D
-        s3d::Circle circle;
-        Circle(float x, float y, float r) : circle(x, y, r) {}
-        Circle(const Vec2& pos, float r) : circle(pos.x, pos.y, r) {}
-        operator s3d::Circle() const { return circle; }
+        s3d::Texture texture;
+        Texture(const paxg::Image& image) : texture(image) {}
+        Texture(const paxg::String& path) : texture(path) {}
+        operator s3d::Texture() const { return texture; }
 #elif defined(PAXS_USING_SFML)
-        sf::CircleShape circle;
-        Circle(float x, float y, float r) : circle(r) { circle.setPosition(x, y); }
-        Circle(const sf::Vector2i& pos, float r) : circle(r) { circle.setPosition(pos.x, pos.y); }
-        operator sf::CircleShape() const { return circle; }
+        sf::Texture texture;
+        Texture(const paxg::Image& image) { texture.loadFromImage(image); }
+        Texture(const paxg::String& path) { texture.loadFromFile(path); }
+        operator sf::Texture() const { return texture; }
 #else
-        float x, y, r;
-        Circle(float x, float y, float r) : x(x), y(y), r(r) {}
-        Circle(const Vec2& pos, float r) : x(pos.x), y(pos.y), r(r) {}
+        paxg::String path;
+        Texture(const paxg::String& path) : path(path) {}
 #endif
-        void draw() const override {
+        void draw() const override {}
+
+        void drawAt(const paxg::Vec2f& pos) const override
+        {
 #ifdef PAXS_USING_SIV3D
-            circle.draw();
+            texture.draw(pos);
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(circle);
+            sf::Sprite sprite(texture);
+            sprite.setPosition(pos);
+            paxg::Window::window.draw(sprite);
 #endif
         }
-
-        void drawAt(const Vec2f& pos) const override {}
     };
 }
 
-#endif // !PAX_GRAPHICA_CIRCLE_HPP
+#endif // !PAX_GRAPHICA_TEXTURE_HPP

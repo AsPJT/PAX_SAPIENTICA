@@ -1,0 +1,45 @@
+/*##########################################################################################
+
+    PAX SAPIENTICA Library 💀🌿🌏
+
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
+
+#ifndef PAX_GRAPHICA_IMAGE_HPP
+#define PAX_GRAPHICA_IMAGE_HPP
+
+/*##########################################################################################
+
+##########################################################################################*/
+
+#ifdef PAXS_USING_SIV3D
+#include <Siv3D.hpp>
+#elif defined(PAXS_USING_SFML)
+#include <SFML/Graphics.hpp>
+#endif
+
+#include <PAX_GRAPHICA/String.hpp>
+
+namespace paxg {
+
+    struct Image
+    {
+#ifdef PAXS_USING_SIV3D
+        s3d::Image image;
+        Image(const paxg::String& path) : image(path) {}
+        operator s3d::Image() const { return image; }
+#elif defined(PAXS_USING_SFML)
+        sf::Image image;
+        Image(const paxg::String& path) { image.loadFromFile(path); }
+        operator sf::Image() const { return image; }
+#else
+        Image(const paxg::String& path) {}
+#endif
+    };
+}
+
+#endif // !PAX_GRAPHICA_IMAGE_HPP

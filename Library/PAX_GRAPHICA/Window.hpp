@@ -83,6 +83,14 @@ namespace paxg {
 #endif
         }
 
+        void setPosition(const paxg::Vec2& pos){
+#ifdef PAXS_USING_SIV3D
+            s3d::Window::SetPos(pos.x, pos.y);
+#elif defined(PAXS_USING_SFML)
+            window.setPosition(pos);
+#endif
+        }
+
         void setIcon(const std::string path){
 #ifdef PAXS_USING_SIV3D
             s3d::Window::SetIcon(path.s3d());

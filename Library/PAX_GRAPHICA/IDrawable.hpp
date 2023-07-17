@@ -26,7 +26,7 @@ namespace paxg {
 
         virtual void draw() const = 0;
 
-        virtual void drawAt(const paxg::Vec2& pos) const = 0;
+        virtual void drawAt(const Vec2f& pos) const = 0;
     };
 
 }

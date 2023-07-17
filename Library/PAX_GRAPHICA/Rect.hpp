@@ -58,7 +58,7 @@ namespace paxg {
 #endif
         }
 
-        void drawAt(const Vec2& pos) const override {}
+        void drawAt(const Vec2f& pos) const override {}
     };
 }
 
