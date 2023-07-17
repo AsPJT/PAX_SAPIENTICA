@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
@@ -28,7 +28,7 @@ namespace paxg {
 
     struct Image
     {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
         s3d::Image image;
         constexpr Image(const paxg::String& path) : image(path) {}
         constexpr operator s3d::Image() const { return image; }

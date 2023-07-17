@@ -18,7 +18,7 @@
 
 #include <string>
 
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
@@ -35,7 +35,7 @@ namespace paxg {
 #endif // PAXS_USING_SFML
 
         void Init(int width, int height, const std::string title){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Window::Resize(width, height);
             s3d::Window::SetTitle(title.s3d());
 #elif defined(PAXS_USING_SFML)
@@ -44,7 +44,7 @@ namespace paxg {
         }
 
         bool update(){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             return s3d::System::Update();
 #elif defined(PAXS_USING_SFML)
             sf::Event event;
@@ -60,7 +60,7 @@ namespace paxg {
         }
 
         void setTitle(const std::string title){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Window::SetTitle(title.s3d());
 #elif defined(PAXS_USING_SFML)
             window.setTitle(title);
@@ -68,7 +68,7 @@ namespace paxg {
         }
 
         void setSize(int width, int height){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Window::Resize(width, height);
 #elif defined(PAXS_USING_SFML)
             window.setSize(sf::Vector2u(width, height));
@@ -76,7 +76,7 @@ namespace paxg {
         }
 
         void setPosition(int x, int y){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Window::SetPos(x, y);
 #elif defined(PAXS_USING_SFML)
             window.setPosition(sf::Vector2i(x, y));
@@ -84,7 +84,7 @@ namespace paxg {
         }
 
         void setPosition(const paxg::Vec2& pos){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Window::SetPos(pos.x, pos.y);
 #elif defined(PAXS_USING_SFML)
             window.setPosition(pos);
@@ -92,7 +92,7 @@ namespace paxg {
         }
 
         void setIcon(const std::string path){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Window::SetIcon(path.s3d());
 #elif defined(PAXS_USING_SFML)
             sf::Image icon;
@@ -103,7 +103,7 @@ namespace paxg {
         }
 
         void setVisible(bool visible){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Window::SetStyle(visible ? s3d::WindowStyle::Sizable : s3d::WindowStyle::None);
 #elif defined(PAXS_USING_SFML)
             window.setVisible(visible);
@@ -111,7 +111,7 @@ namespace paxg {
         }
 
         void setVSync(bool vsync){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Graphics::SetTargetFrameRate(vsync ? 60 : 0);
 #elif defined(PAXS_USING_SFML)
             window.setVerticalSyncEnabled(vsync);
@@ -119,7 +119,7 @@ namespace paxg {
         }
 
         void setFPS(int fps){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Graphics::SetTargetFrameRate(fps);
 #elif defined(PAXS_USING_SFML)
             window.setFramerateLimit(fps);
@@ -127,7 +127,7 @@ namespace paxg {
         }
 
         void setMouseCursorVisible(bool visible){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Cursor::SetStyle(visible ? s3d::CursorStyle::Default : s3d::CursorStyle::Hidden);
 #elif defined(PAXS_USING_SFML)
             window.setMouseCursorVisible(visible);
@@ -135,7 +135,7 @@ namespace paxg {
         }
 
         void setMouseCursorGrabbed(bool grabbed){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Cursor::SetStyle(grabbed ? s3d::CursorStyle::Hidden : s3d::CursorStyle::Default);
 #elif defined(PAXS_USING_SFML)
             window.setMouseCursorGrabbed(grabbed);
@@ -143,7 +143,7 @@ namespace paxg {
         }
 
         void setMouseCursor(const std::string path){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Cursor::RequestStyle(path.s3d());
 #elif defined(PAXS_USING_SFML)
             sf::Image image;
@@ -157,7 +157,7 @@ namespace paxg {
         }
 
         void setMousePosition(int x, int y){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Cursor::SetPos(x, y);
 #elif defined(PAXS_USING_SFML)
             sf::Mouse::setPosition(sf::Vector2i(x, y), window);
@@ -165,7 +165,7 @@ namespace paxg {
         }
 
         void setMousePosition(const paxg::Vec2 pos){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Cursor::SetPos(pos.x, pos.y);
 #elif defined(PAXS_USING_SFML)
             sf::Mouse::setPosition(pos, window);
@@ -173,7 +173,7 @@ namespace paxg {
         }
 
         paxg::Vec2 getMousePosition(){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             return s3d::Cursor::PosF();
 #elif defined(PAXS_USING_SFML)
             return sf::Mouse::getPosition(window);
@@ -183,7 +183,7 @@ namespace paxg {
         }
 
         void setKeyRepeat(bool repeat){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::System::SetTerminationTriggers(repeat ? s3d::UserAction::CloseButtonClicked : s3d::UserAction::ExitFocusLost);
 #elif defined(PAXS_USING_SFML)
             window.setKeyRepeatEnabled(repeat);
@@ -191,7 +191,7 @@ namespace paxg {
         }
 
         void setBackgroundColor(const paxg::Color color){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Graphics::SetBackground(color);
 #elif defined(PAXS_USING_SFML)
             window.clear(color);
@@ -199,7 +199,7 @@ namespace paxg {
         }
 
         void clear(){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Graphics::Clear();
 #elif defined(PAXS_USING_SFML)
             window.clear();
@@ -207,7 +207,7 @@ namespace paxg {
         }
 
         void display(){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::Graphics::Flush();
 #elif defined(PAXS_USING_SFML)
             window.display();
@@ -215,7 +215,7 @@ namespace paxg {
         }
 
         void close(){
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             s3d::System::Exit();
 #elif defined(PAXS_USING_SFML)
             window.close();

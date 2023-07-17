@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
@@ -30,7 +30,7 @@ namespace paxg {
 
     struct Texture : public paxg::IDrawable
     {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
         s3d::Texture texture;
         constexpr Texture(const paxg::Image& image) : texture(image) {}
         constexpr Texture(const paxg::String& path) : texture(path) {}
@@ -47,7 +47,7 @@ namespace paxg {
 
         void drawAt(const paxg::Vec2f& pos) const override
         {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             texture.draw(pos);
 #elif defined(PAXS_USING_SFML)
             sf::Sprite sprite(texture);

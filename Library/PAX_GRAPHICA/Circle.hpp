@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
@@ -29,7 +29,7 @@ namespace paxg {
 
     struct Circle : public IDrawable
     {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
         s3d::Circle circle;
         constexpr Circle(const float x, const float y, const float r) : circle(x, y, r) {}
         constexpr Circle(const Vec2& pos, const float r) : circle(pos.x, pos.y, r) {}
@@ -45,7 +45,7 @@ namespace paxg {
         constexpr Circle(const Vec2& pos, const float r) : x(pos.x), y(pos.y), r(r) {}
 #endif
         void draw() const override {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
             circle.draw();
 #elif defined(PAXS_USING_SFML)
             Window::window.draw(circle);

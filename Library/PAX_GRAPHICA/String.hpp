@@ -18,7 +18,7 @@
 
 #include <string>
 
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
@@ -28,7 +28,7 @@ namespace paxg {
 
     struct String
     {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
         s3d::String string;
         constexpr String(const s3d::String& string) : string(string) {}
         constexpr String(const std::string& string) : string(string.c_str()) {}

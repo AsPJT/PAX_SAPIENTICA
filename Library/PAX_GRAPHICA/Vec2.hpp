@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
 #include <Siv3D/Vector2D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/System/Vector2.hpp>
@@ -25,7 +25,7 @@
 namespace paxg {
 
     struct Vec2 {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
         s3d::Vec2 vec2;
         constexpr Vec2(const int x, const int y) : vec2(x, y) {}
         constexpr Vec2(const s3d::Vec2& vec2) : vec2(vec2) {}
@@ -42,7 +42,7 @@ namespace paxg {
     };
 
     struct Vec2f {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
         s3d::Vec2 vec2;
         constexpr Vec2f(const float x, const float y) : vec2(x, y) {}
         constexpr Vec2f(const s3d::Vec2& vec2) : vec2(vec2) {}

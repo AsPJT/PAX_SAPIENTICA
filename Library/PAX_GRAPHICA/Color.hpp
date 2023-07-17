@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
 #include <Siv3D/Color.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics/Color.hpp>
@@ -25,7 +25,7 @@
 namespace paxg {
 
     struct Color {
-#ifdef PAXS_USING_SIV3D
+#if defined(PAXS_USING_SIV3D)
         s3d::Color color;
         constexpr Color(const int r, const int g, const int b, const int a) : color(r, g, b, a) {}
         constexpr s3d::Color() const { return color; }
