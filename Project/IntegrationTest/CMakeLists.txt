@@ -5,7 +5,7 @@ include_directories(../../Library)
 
 add_executable(EnvironmentTest source/EnvironmentTest.cpp)
 
-find_package(SFML 2.5 COMPONENTS graphics QUIT)
+find_package(SFML 2.5 COMPONENTS graphics)
 if(SFML_FOUND)
     add_executable(SFMLTest source/SFMLTest.cpp)
     target_link_libraries(SFMLTest sfml-graphics)

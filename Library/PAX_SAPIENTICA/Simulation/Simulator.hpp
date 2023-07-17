@@ -36,7 +36,7 @@ namespace paxs {
         using Vector2 = paxs::Vector2<T>;
         using Agent = paxs::Agent<T>;
 
-        constexpr explicit Simulator() noexcept = default;
+        constexpr explicit Simulator() = default;
         Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
             environment(setting_file_path, start_position, end_position, z), gen(seed) {
                 if (z <= 0) {

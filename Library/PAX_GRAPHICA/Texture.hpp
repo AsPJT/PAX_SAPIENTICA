@@ -41,7 +41,7 @@ namespace paxg {
         Texture(const paxg::String& path) { texture.loadFromFile(path); }
         operator sf::Texture() const { return texture; }
 #else
-        constexpr (const paxg::String&) {}
+        constexpr Texture(const paxg::String&) {}
 #endif
         void draw() const override {}
 
