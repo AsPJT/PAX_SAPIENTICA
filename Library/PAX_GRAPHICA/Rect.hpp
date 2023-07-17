@@ -17,16 +17,18 @@
 ##########################################################################################*/
 
 #ifdef PAXS_USING_SIV3D
-#include <Siv3D/Rect.hpp>
+#include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
-#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics.hpp>
 #endif
 
+#include <PAX_GRAPHICA/IDrawable.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 
-    struct Rect {
+    struct Rect : public paxg::IDrawable {
 #ifdef PAXS_USING_SIV3D
         s3d::RectF rect;
         Rect(float x, float y, float w, float h) : rect(x, y, w, h) {}
@@ -48,6 +50,15 @@ namespace paxg {
         Rect(const Vec2& pos, float w, float h) : x(pos.x), y(pos.y), w(w), h(h) {}
         Rect(float x, float y, const Vec2& size) : x(x), y(y), w(size.x), h(size.y) {}
 #endif
+        void draw() const override {
+#ifdef PAXS_USING_SIV3D
+            rect.draw();
+#elif defined(PAXS_USING_SFML)
+            Window::window.draw(rect);
+#endif
+        }
+
+        void drawAt(const Vec2& pos) const override {}
     };
 }
 

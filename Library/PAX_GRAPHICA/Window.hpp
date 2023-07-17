@@ -25,7 +25,6 @@
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 namespace paxg {
@@ -58,7 +57,6 @@ namespace paxg {
 #else
             return false;
 #endif
-
         }
 
         void setTitle(const std::string title){
@@ -213,14 +211,6 @@ namespace paxg {
             s3d::System::Exit();
 #elif defined(PAXS_USING_SFML)
             window.close();
-#endif
-        }
-
-        void drawRect(const paxg::Rect rect){
-#ifdef PAXS_USING_SIV3D
-            rect.draw();
-#elif defined(PAXS_USING_SFML)
-            window.draw(rect);
 #endif
         }
     };

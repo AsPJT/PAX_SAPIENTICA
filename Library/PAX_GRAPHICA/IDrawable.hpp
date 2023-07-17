@@ -9,15 +9,26 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_GRAPHICA_GRAPHICS_HPP
-#define PAX_GRAPHICA_GRAPHICS_HPP
+#ifndef PAX_GRAPHICA_IDRAWABLE_HPP
+#define PAX_GRAPHICA_IDRAWABLE_HPP
 
 /*##########################################################################################
 
 ##########################################################################################*/
 
-#include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
+#include <PAX_GRAPHICA/Vec2.hpp>
 
-#endif // !PAX_GRAPHICA_GRAPHICS_HPP
+namespace paxg {
+
+    struct IDrawable {
+
+        virtual ~IDrawable() {}
+
+        virtual void draw() const = 0;
+
+        virtual void drawAt(const paxg::Vec2& pos) const = 0;
+    };
+
+}
+
+#endif // !PAX_GRAPHICA_IDRAWABLE_HPP
