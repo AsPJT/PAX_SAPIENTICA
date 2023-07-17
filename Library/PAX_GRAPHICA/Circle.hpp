@@ -31,9 +31,9 @@ namespace paxg {
     {
 #ifdef PAXS_USING_SIV3D
         s3d::Circle circle;
-        Circle(float x, float y, float r) : circle(x, y, r) {}
-        Circle(const Vec2& pos, float r) : circle(pos.x, pos.y, r) {}
-        operator s3d::Circle() const { return circle; }
+        constexpr Circle(const float x, const float y, const float r) : circle(x, y, r) {}
+        constexpr Circle(const Vec2& pos, const float r) : circle(pos.x, pos.y, r) {}
+        constexpr operator s3d::Circle() const { return circle; }
 #elif defined(PAXS_USING_SFML)
         sf::CircleShape circle;
         Circle(float x, float y, float r) : circle(r) { circle.setPosition(x, y); }
@@ -41,8 +41,8 @@ namespace paxg {
         operator sf::CircleShape() const { return circle; }
 #else
         float x, y, r;
-        Circle(float x, float y, float r) : x(x), y(y), r(r) {}
-        Circle(const Vec2& pos, float r) : x(pos.x), y(pos.y), r(r) {}
+        constexpr Circle(const float x, const float y, const float r) : x(x), y(y), r(r) {}
+        constexpr Circle(const Vec2& pos, const float r) : x(pos.x), y(pos.y), r(r) {}
 #endif
         void draw() const override {
 #ifdef PAXS_USING_SIV3D

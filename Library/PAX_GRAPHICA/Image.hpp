@@ -30,14 +30,14 @@ namespace paxg {
     {
 #ifdef PAXS_USING_SIV3D
         s3d::Image image;
-        Image(const paxg::String& path) : image(path) {}
-        operator s3d::Image() const { return image; }
+        constexpr Image(const paxg::String& path) : image(path) {}
+        constexpr operator s3d::Image() const { return image; }
 #elif defined(PAXS_USING_SFML)
         sf::Image image;
         Image(const paxg::String& path) { image.loadFromFile(path); }
         operator sf::Image() const { return image; }
 #else
-        Image(const paxg::String& path) {}
+        constexpr Image(const paxg::String& path) {}
 #endif
     };
 }

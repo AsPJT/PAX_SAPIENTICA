@@ -32,9 +32,9 @@ namespace paxg {
     {
 #ifdef PAXS_USING_SIV3D
         s3d::Texture texture;
-        Texture(const paxg::Image& image) : texture(image) {}
-        Texture(const paxg::String& path) : texture(path) {}
-        operator s3d::Texture() const { return texture; }
+        constexpr Texture(const paxg::Image& image) : texture(image) {}
+        constexpr Texture(const paxg::String& path) : texture(path) {}
+        constexpr operator s3d::Texture() const { return texture; }
 #elif defined(PAXS_USING_SFML)
         sf::Texture texture;
         Texture(const paxg::Image& image) { texture.loadFromImage(image); }
@@ -42,7 +42,7 @@ namespace paxg {
         operator sf::Texture() const { return texture; }
 #else
         paxg::String path;
-        Texture(const paxg::String& path) : path(path) {}
+        constexpr Texture(const paxg::String& path) : path(path) {}
 #endif
         void draw() const override {}
 

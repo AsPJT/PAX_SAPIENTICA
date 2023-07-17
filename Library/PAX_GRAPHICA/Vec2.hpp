@@ -27,34 +27,34 @@ namespace paxg {
     struct Vec2 {
 #ifdef PAXS_USING_SIV3D
         s3d::Vec2 vec2;
-        Vec2(int x, int y) : vec2(x, y) {}
-        Vec2(const s3d::Vec2& vec2) : vec2(vec2) {}
-        operator s3d::Vec2() const { return vec2; }
+        constexpr Vec2(const int x, const int y) : vec2(x, y) {}
+        constexpr Vec2(const s3d::Vec2& vec2) : vec2(vec2) {}
+        constexpr operator s3d::Vec2() const { return vec2; }
 #elif defined(PAXS_USING_SFML)
         sf::Vector2i vec2;
-        Vec2(int x, int y) : vec2(x, y) {}
+        Vec2(const int x, const int y) : vec2(x, y) {}
         Vec2(const sf::Vector2i& vec2) : vec2(vec2) {}
         operator sf::Vector2i() const { return vec2; }
 #else
         int x, y;
-        Vec2(int x, int y) : x(x), y(y) {}
+        constexpr Vec2(const int x, const int y) : x(x), y(y) {}
 #endif
     };
 
     struct Vec2f {
 #ifdef PAXS_USING_SIV3D
         s3d::Vec2 vec2;
-        Vec2f(float x, float y) : vec2(x, y) {}
-        Vec2f(const s3d::Vec2& vec2) : vec2(vec2) {}
-        operator s3d::Vec2() const { return vec2; }
+        constexpr Vec2f(const float x, const float y) : vec2(x, y) {}
+        constexpr Vec2f(const s3d::Vec2& vec2) : vec2(vec2) {}
+        constexpr operator s3d::Vec2() const { return vec2; }
 #elif defined(PAXS_USING_SFML)
         sf::Vector2f vec2;
-        Vec2f(float x, float y) : vec2(x, y) {}
+        Vec2f(const float x, const float y) : vec2(x, y) {}
         Vec2f(const sf::Vector2f& vec2) : vec2(vec2) {}
         operator sf::Vector2f() const { return vec2; }
 #else
         float x, y;
-        Vec2f(float x, float y) : x(x), y(y) {}
+        constexpr Vec2f(const float x, const float y) : x(x), y(y) {}
 #endif
     };
 }

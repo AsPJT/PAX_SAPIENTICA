@@ -16,6 +16,8 @@
 
 ##########################################################################################*/
 
+#include <string>
+
 #ifdef PAXS_USING_SIV3D
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
@@ -28,9 +30,9 @@ namespace paxg {
     {
 #ifdef PAXS_USING_SIV3D
         s3d::String string;
-        String(const s3d::String& string) : string(string) {}
-        String(const std::string& string) : string(string.c_str()) {}
-        operator s3d::String() const { return string; }
+        constexpr String(const s3d::String& string) : string(string) {}
+        constexpr String(const std::string& string) : string(string.c_str()) {}
+        constexpr operator s3d::String() const { return string; }
 // #elif defined(PAXS_USING_SFML)
 //         sf::String string;
 //         String(const sf::String& string) : string(string) {}
@@ -38,8 +40,8 @@ namespace paxg {
 //         operator sf::String() const { return string; }
 #else
         std::string string;
-        String(const std::string& string) : string(string) {}
-        operator std::string() const { return string; }
+        constexpr String(const std::string& string) : string(string) {}
+        constexpr operator std::string() const { return string; }
 #endif
     };
 }

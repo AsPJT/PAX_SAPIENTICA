@@ -27,15 +27,15 @@ namespace paxg {
     struct Color {
 #ifdef PAXS_USING_SIV3D
         s3d::Color color;
-        Color(int r, int g, int b, int a) : color(r, g, b, a) {}
-        s3d::Color() const { return color; }
+        constexpr Color(const int r, const int g, const int b, const int a) : color(r, g, b, a) {}
+        constexpr s3d::Color() const { return color; }
 #elif defined(PAXS_USING_SFML)
         sf::Color color;
-        Color(int r, int g, int b, int a) : color(r, g, b, a) {}
+        Color(const int r, const int g, const int b, const int a) : color(r, g, b, a) {}
         operator sf::Color() const { return color; }
 #else
         int r, g, b, a;
-        Color(int r, int g, int b, int a) : r(r), g(g), b(b), a(a) {}
+        constexpr Color(int r, int g, int b, int a) : r(r), g(g), b(b), a(a) {}
 #endif
     };
 

@@ -5,17 +5,15 @@ include_directories(../../Library)
 
 add_executable(EnvironmentTest source/EnvironmentTest.cpp)
 
-if(BUILD_SFML_TEST)
+find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
+if(SFML_FOUND)
     add_executable(SFMLTest source/SFMLTest.cpp)
-    find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
-    if(SFML_FOUND)
-        target_link_libraries(SFMLTest sfml-graphics)
-    endif()
+    target_link_libraries(SFMLTest sfml-graphics)
+    add_executable(WindowTest source/WindowTest.cpp)
+    target_link_libraries(WindowTest sfml-graphics sfml-window sfml-system)
 endif()
 
 add_executable(SimulatorTest source/SimulatorTest.cpp)
 target_compile_definitions(SimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
 
-add_executable(WindowTest source/WindowTest.cpp)
-find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
-target_link_libraries(WindowTest sfml-graphics sfml-window sfml-system)
+
