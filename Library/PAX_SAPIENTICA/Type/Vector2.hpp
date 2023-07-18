@@ -26,7 +26,7 @@ namespace paxs {
     class Vector2 {
     public:
         constexpr explicit Vector2() noexcept = default;
-        constexpr explicit Vector2(T x, T y) noexcept : x(x), y(y) {}
+        constexpr Vector2(T x, T y) noexcept : x(x), y(y) {}
 
         T x;
         T y;

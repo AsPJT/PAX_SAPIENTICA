@@ -13,7 +13,8 @@
 
 #include <PAX_SAPIENTICA/File.hpp>
 
-const std::string prefix = "../data/File";
+const std::string root = PROJECT_ROOT_PATH;
+const std::string prefix = root + "/Project/UnitTest/data/File";
 
 TEST (FileUnitTest, readFile) {
     const std::string file_path = prefix + "/test_file.txt";

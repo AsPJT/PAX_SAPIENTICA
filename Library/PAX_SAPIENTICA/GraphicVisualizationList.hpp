@@ -26,22 +26,22 @@ namespace paxs {
 	private:
 		std::unordered_map<std::string, bool> visible{};
 
-		public:
+	public:
+		void emplace(const std::string& str_, const bool visible_) {
+			visible.emplace(str_, visible_);
+		}
 
-			void emplace(const std::string& str_, const bool visible_) {
-				visible.emplace(str_, visible_);
-			}
+		void setNot(const std::string& str_) {
+			visible[str_] = !visible[str_];
+		}
 
-			void setNot(const std::string& str_) {
-				visible[str_] = !visible[str_];
-			}
-			void set(const std::string& str_, const bool visible_) {
-				visible[str_] = visible_;
-			}
-
-			bool operator[](const std::string& str_) const {
-				return visible.at(str_);
-			}
+		void set(const std::string& str_, const bool visible_) {
+			visible[str_] = visible_;
+		}
+		
+		bool operator[](const std::string& str_) const {
+			return visible.at(str_);
+		}
 
 
 	};
