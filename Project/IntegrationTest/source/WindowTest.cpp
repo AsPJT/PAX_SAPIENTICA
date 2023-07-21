@@ -9,8 +9,6 @@
 
 ##########################################################################################*/
 
-#define PAXS_USING_SFML
-
 #include <PAX_GRAPHICA/Graphics.hpp>
 
 int main() {
