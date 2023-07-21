@@ -1,5 +1,12 @@
+cmake_minimum_required(VERSION 3.16)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest/googletest/include)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Library
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest/googletest/include
+)
 
 add_executable(EnvironmentTest source/EnvironmentTest.cpp)
 add_executable(WindowTest source/WindowTest.cpp)

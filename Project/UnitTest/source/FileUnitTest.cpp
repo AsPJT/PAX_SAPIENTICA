@@ -9,12 +9,19 @@
 
 ##########################################################################################*/
 
+#include <iostream>
+#include <string>
+
 #include <gtest/gtest.h>
 
 #include <PAX_SAPIENTICA/File.hpp>
 
+#ifdef PROJECT_ROOT_PATH
 const std::string root = PROJECT_ROOT_PATH;
 const std::string prefix = root + "/Project/UnitTest/data/File";
+#else
+const std::string prefix = "../data/File";
+#endif // PROJECT_ROOT_PATH
 
 TEST (FileUnitTest, readFile) {
     const std::string file_path = prefix + "/test_file.txt";

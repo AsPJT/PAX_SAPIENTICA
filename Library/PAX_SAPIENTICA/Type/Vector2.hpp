@@ -91,7 +91,7 @@ namespace paxs {
             y /= t;
             return *this;
         }
-        constexpr auto operator<=>(const Vector2<T>& v) const noexcept = default;
+        auto operator<=>(const Vector2<T>& v) const noexcept = default;
         
         /// @brief Get the length of the vector
         /// @brief べクトルの長さを取得。

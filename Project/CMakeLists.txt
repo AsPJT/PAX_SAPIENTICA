@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(PAX_SAPIENTICA)
 include(CTest)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -27,17 +28,10 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     endif()
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/../Library)
-
-get_filename_component(PARENT_DIR ${CMAKE_SOURCE_DIR} DIRECTORY)
-add_definitions(-DPROJECT_ROOT_PATH=\"${PARENT_DIR}\")
-
 add_subdirectory(GeographicDataToSimulationGrid)
 add_subdirectory(IncludeTest)
 add_subdirectory(IntegrationTest)
 add_subdirectory(UnitTest)
-
-add_subdirectory(../ExternalLibrary/googletest ${CMAKE_BINARY_DIR}/googletest)
 
 enable_testing()
 
