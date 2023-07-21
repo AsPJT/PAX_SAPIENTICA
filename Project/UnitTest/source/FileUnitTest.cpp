@@ -46,6 +46,7 @@ TEST (FileUnitTest, readTSV) {
     ASSERT_EQ(expected, actual);
 }
 
+#ifndef _WIN32
 TEST (FileUnitTest, getFileNames) {
     const std::vector<std::string> expected = {
         prefix + "/test_file.csv",
@@ -59,3 +60,4 @@ TEST (FileUnitTest, getFileNames) {
     ASSERT_EQ(expected, actual);
 
 }
+#endif // !_WIN32

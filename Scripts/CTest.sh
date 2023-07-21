@@ -2,10 +2,10 @@
 
 # Create build directory
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
-cmake -S${SCRIPT_DIR}/../Project -B${SCRIPT_DIR}/../Project/build
+cmake -S${SCRIPT_DIR}/../Project -B${SCRIPT_DIR}/../build
 
 # Build the project
-cmake --build ${SCRIPT_DIR}/../Project/build
+cmake --build ${SCRIPT_DIR}/../build
 
 # Change directory to build and execute ctest
 cd ${SCRIPT_DIR}/../build

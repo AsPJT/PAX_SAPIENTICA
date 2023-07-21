@@ -2,4 +2,4 @@
 
 SET SCRIPT_DIR=%~dp0
 
-cmake -S"%SCRIPT_DIR%..\Project" -B"%SCRIPT_DIR%..\Project\build"
+cmake -S"%SCRIPT_DIR%..\Project" -B"%SCRIPT_DIR%..\build"
