@@ -26,7 +26,7 @@ namespace paxs {
     class Vector2 {
     public:
         constexpr explicit Vector2() noexcept = default;
-        constexpr explicit Vector2(T x, T y) noexcept : x(x), y(y) {}
+        constexpr Vector2(T x, T y) noexcept : x(x), y(y) {}
 
         T x;
         T y;
@@ -91,37 +91,8 @@ namespace paxs {
             y /= t;
             return *this;
         }
-        constexpr bool operator==(const Vector2<T>& v) const noexcept {
-            return v.x == x && v.y == y;
-        }
-        constexpr bool operator!=(const Vector2<T>& v) const noexcept {
-            return v.x != x || v.y != y;
-        }
-        constexpr bool operator<(const Vector2<T>& v) const noexcept {
-            if (x == v.x) {
-                return y < v.y;
-            }
-            return x < v.x;
-        }
-        constexpr bool operator>(const Vector2<T>& v) const noexcept {
-            if (x == v.x) {
-                return y > v.y;
-            }
-            return x > v.x;
-        }
-        constexpr bool operator<=(const Vector2<T>& v) const noexcept {
-            if (x == v.x) {
-                return y <= v.y;
-            }
-            return x <= v.x;
-        }
-        constexpr bool operator>=(const Vector2<T>& v) const noexcept {
-            if (x == v.x) {
-                return y >= v.y;
-            }
-            return x >= v.x;
-        }
-
+        auto operator<=>(const Vector2<T>& v) const noexcept = default;
+        
         /// @brief Get the length of the vector
         /// @brief べクトルの長さを取得。
         double length() const noexcept {

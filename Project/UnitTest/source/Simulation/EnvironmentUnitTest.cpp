@@ -9,47 +9,78 @@
 
 ##########################################################################################*/
 
+#include <iostream>
+
+#if defined(_WIN32) || defined(_WIN64)
+    #include <direct.h>
+    #define CHANGE_DIR _chdir
+#else
+    #include <unistd.h>
+    #define CHANGE_DIR chdir
+#endif
+
 #include <gtest/gtest.h>
 
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 
-const std::string setting_file_path = "../data/Simulation/UnitTestMapList.tsv";
-const paxs::Vector2<int> start_position(861, 350);
-const paxs::Vector2<int> end_position(950, 450);
-const paxs::Vector2<int> test_position(0, 0);
-paxs::Environment<int> environment(setting_file_path, start_position, end_position, 10);
+class EnvironmentUnitTest : public ::testing::Test {
+protected:
+    paxs::Environment<int> environment;
 
-TEST (EnvironmentUnitTest, getStartPosition) {
+    void SetUp() override {
+        if (CHANGE_DIR(PROJECT_ROOT_PATH) != 0) {
+            std::cerr << "Failed to change directory to project root." << std::endl;
+            exit(1);
+        }
+        
+        const std::string root = PROJECT_ROOT_PATH;
+        const std::string setting_file_path = root + "/Project/UnitTest/data/Simulation/UnitTestMapList.tsv";
+
+        const paxs::Vector2<int> start_position(861, 350);
+        const paxs::Vector2<int> end_position(950, 450);
+        
+        environment = paxs::Environment<int>(setting_file_path, start_position, end_position, 10);
+    }
+};
+
+TEST_F (EnvironmentUnitTest, getStartPosition) {
+    const paxs::Vector2<int> start_position(861, 350);
     EXPECT_EQ(environment.getStartPosition(), start_position);
 }
 
-TEST (EnvironmentUnitTest, getEndPosition) {
+TEST_F (EnvironmentUnitTest, getEndPosition) {
+    const paxs::Vector2<int> end_position(950, 450);
     EXPECT_EQ(environment.getEndPosition(), end_position);
 }
 
-TEST (EnvironmentUnitTest, getData) {
+TEST_F (EnvironmentUnitTest, getData) {
+    const paxs::Vector2<int> test_position(0, 0);
     std::uint_least8_t expected = 0;
     std::uint_least8_t actual = environment.getData<std::uint_least8_t>("gbank", test_position);
     EXPECT_EQ(expected, actual);
 }
 
-TEST (EnvironmentUnitTest, isLive) {
+TEST_F (EnvironmentUnitTest, isLive) {
+    const paxs::Vector2<int> test_position(0, 0);
     EXPECT_FALSE(environment.isLive(test_position));
 }
 
-TEST (EnvironmentUnitTest, getSlope) {
+TEST_F (EnvironmentUnitTest, getSlope) {
+    const paxs::Vector2<int> test_position(0, 0);
     float expected = 3.68614f;
     float actual = environment.getSlope(test_position);
     EXPECT_EQ(expected, actual);
 }
 
-TEST (EnvironmentUnitTest, getElevation) {
+TEST_F (EnvironmentUnitTest, getElevation) {
+    const paxs::Vector2<int> test_position(0, 0);
     float expected = 880.0f;
     float actual = environment.getElevation(test_position);
     EXPECT_EQ(expected, actual);
 }
 
-TEST (EnvironmentUnitTest, isLand) {
+TEST_F (EnvironmentUnitTest, isLand) {
+    const paxs::Vector2<int> test_position(0, 0);
     EXPECT_FALSE(environment.isLand(test_position));
 }
