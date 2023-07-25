@@ -28,6 +28,7 @@ namespace paxs {
 	//int jdn = 1600407;
 	//int jdn = 1808020;
 
+	// ロケーションポイントの種類
 	enum class LocationPointEnum {
 		location_point_place_name, // 地名
 		location_point_pit_dwelling, // 集落遺跡
@@ -41,22 +42,32 @@ namespace paxs {
 	// 地名
 	struct LocationPoint {
 		constexpr explicit LocationPoint() = default;
-		explicit LocationPoint(const std::string& name_, const std::string& en_name_, const paxs::MercatorDeg& coordinate_, const double min_view_, const double max_view_, const int min_year_, const int max_year_, const LocationPointEnum lpe_, const std::string& source_) noexcept
+		explicit LocationPoint(
+			const std::string& name_,  // 日本語名
+			const std::string& en_name_,  // 英語名
+			const paxs::MercatorDeg& coordinate_,  // 経緯度
+			const double min_view_,  // 可視化する地図の最小範囲
+			const double max_view_,  // 可視化する地図の最大範囲
+			const int min_year_,  // 可視化する時代（古い年～）
+			const int max_year_,  // 可視化する時代（～新しい年）
+			const LocationPointEnum lpe_,  // 対象となる地物の種別
+			const std::string& source_ // 出典
+		) noexcept
 			: name(name_), en_name(en_name_), coordinate(coordinate_), min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), source(source_) {}
-		std::string name{};
-		std::string en_name{};
-		paxs::MercatorDeg coordinate{};
-		double min_view{}, max_view{};
-		int min_year{}, max_year{};
-		LocationPointEnum lpe{};
-		std::string source{};
+		std::string name{}; // 日本語名
+		std::string en_name{}; // 英語名
+		paxs::MercatorDeg coordinate{}; // 経緯度
+		double min_view{}, max_view{}; // 可視化する地図の拡大縮小範囲
+		int min_year{}, max_year{}; // 可視化する時代（古い年～新しい年）
+		LocationPointEnum lpe{}; // 対象となる地物の種別
+		std::string source{}; // 出典
 	};
 
-
-
+	// GUI に描画する地物の情報を管理・描画するクラス
 	class PlaceNameLocation {
 	public:
 		void update(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position) {
+			// エージェントの設定を更新
 			location_point_list.resize(0);
 			for (std::size_t i = 0; i < agents.size(); ++i) {
 				location_point_list.emplace_back(
@@ -78,6 +89,7 @@ namespace paxs {
 			//	lli.coordinate.y += s3d::Random(-0.001, 0.001);
 			//}
 		}
+		// 古墳を追加（実験用）
 		void addKofun() {
 			for (int i = 0; i < 10; ++i)
 				inputPlace("./../../../../../Data/PlaceName/TestMap/Kofun.tsv", LocationPointEnum::location_point_agent);
@@ -100,6 +112,7 @@ namespace paxs {
 
 		PlaceNameLocation() {
 		}
+		// 描画
 		void draw(const double jdn,
 			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
 			const s3d::Font& font, const s3d::Font& en_font, const s3d::Font& pin_font)const {
@@ -120,14 +133,14 @@ namespace paxs {
 					|| lli.max_year < jdn) {
 					if (lli.min_year > jdn) continue;
 					if (lli.max_year < jdn) continue;
-					// 地名
+					// 地名を描画
 					//if (lli.lpe == LocationPointEnum::location_point_place_name) {
 					//	texture_pn.resized(14).drawAt(
 					//		s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 					//	double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 					//	continue;
 					//}
-					// エージェント
+					// エージェントを描画
 					if (lli.lpe == LocationPointEnum::location_point_agent) {
 						//s3d::Circle(	s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						//double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
@@ -137,7 +150,7 @@ namespace paxs {
 						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
-					// エージェント
+					// エージェントを描画
 					if (lli.lpe == LocationPointEnum::location_point_agent2) {
 						//s3d::Circle(	s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						//double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) }
@@ -147,14 +160,14 @@ namespace paxs {
 						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
-					// 遺跡
+					// 遺跡を描画
 					if (lli.source == "Iseki") {
 						texture_blue_circle.resized(10).drawAt(
 							s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
-					// 前方後円墳
+					// 前方後円墳を描画
 					//if (lli.lpe == LocationPointEnum::location_point_zempo_koen_fun) {
 					if (lli.source == "ZempoKoenFun") {
 						texture_kofun1.resized(14).drawAt(
@@ -162,7 +175,7 @@ namespace paxs {
 						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
-					// 前方後方墳
+					// 前方後方墳を描画
 					//if (lli.lpe == LocationPointEnum::location_point_zempo_koho_fun) {
 					if (lli.source == "ZempoKohoFun") {
 						texture_kofun2.resized(14).drawAt(
@@ -170,7 +183,7 @@ namespace paxs {
 						double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height())) });
 						continue;
 					}
-					// 帆立貝型古墳
+					// 帆立貝型古墳を描画
 					//if (lli.lpe == LocationPointEnum::location_point_hotategai_gata_kofun) {
 					if (lli.source == "HotategaiGataKofun") {
 						texture_kofun3.resized(14).drawAt(
@@ -224,44 +237,44 @@ namespace paxs {
 							}
 						, s3d::Palette::Black);
 					}
-					// 古事記のアイコン
+					// 古事記のアイコンを描画
 					if (lli.source == "JP-Kojiki") {
 						texture_ko.resized(20).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
-					// 倭名類聚抄のアイコン
+					// 倭名類聚抄のアイコンを描画
 					else if (lli.source == "JP-WamyoRuijusho") {
 						//texture_wam.resized(20).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 						//	double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 						//	});
 					}
-					// 前方後円墳のアイコン
+					// 前方後円墳のアイコンを描画
 					else if (lli.source == "Iseki") {
 						texture_blue_circle.resized(35).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
-					// 前方後円墳のアイコン
+					// 前方後円墳のアイコンを描画
 					else if (lli.source == "ZempoKoenFun") {
 						texture_kofun1.resized(35).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
-					// 前方後方墳のアイコン
+					// 前方後方墳のアイコンを描画
 					else if (lli.source == "ZempoKohoFun") {
 						texture_kofun2.resized(35).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
-					// 帆立貝型古墳のアイコン
+					// 帆立貝型古墳のアイコンを描画
 					else if (lli.source == "HotategaiGataKofun") {
 						texture_kofun3.resized(35).drawAt(s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
 							double(s3d::Scene::Height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
 							});
 					}
 				}
-				// それ以外（集落遺跡）
+				// それ以外（集落遺跡）を描画
 				else {
 					pin_font(s3d::Unicode::FromUTF8(lli.name)).drawAt(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
 						(lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
@@ -278,7 +291,8 @@ namespace paxs {
 			}
 		}
 	private:
-		std::vector<LocationPoint> location_point_list{};
+		std::vector<LocationPoint> location_point_list{}; // 地物の一覧
+		// アイコンのテクスチャ
 		const s3d::Texture texture_ko{ U"./../../../../../Data/OldDocumentIcon/JP-Kojiki.svg" };
 		const s3d::Texture texture_wam{ U"./../../../../../Data/OldDocumentIcon/JP-WamyoRuijusho.svg" };
 		const s3d::Texture texture_pin1{ U"./../../../../../Data/Pin/PitDwelling.svg" };
@@ -288,14 +302,17 @@ namespace paxs {
 		const s3d::Texture texture_kofun2{ U"./../../../../../Data/MiniIcon/ZempoKohoFun.svg" };
 		const s3d::Texture texture_kofun3{ U"./../../../../../Data/MiniIcon/HotategaiGataKofun.svg" };
 		const s3d::Texture texture_pn{ U"./../../../../../Data/MiniIcon/PlaceName.svg" };
+
+		// 地名を読み込み
 		void inputPlace(const std::string& str_, const LocationPointEnum lpe_ = LocationPointEnum::location_point_place_name) {
-			// 地名を読み込み
-			std::ifstream pifs(str_);
+			
+			std::ifstream pifs(str_); // 地名を読み込む
 			if (pifs.fail()) return;
 			std::string pline;
+			// 1 行ずつ読み込み（区切りはタブ）
 			while (std::getline(pifs, pline)) {
 				std::vector<std::string> strvec = paxs::StringExtensions::split(pline, '\t');
-
+				// 格納
 				location_point_list.emplace_back(
 					strvec[0], // 漢字
 					strvec[1], // ローマ字
@@ -314,9 +331,10 @@ namespace paxs {
 		}
 	};
 
-
+	// エージェントの位置を管理
 	class AgentLocation {
 	public:
+		// アイコンのテクスチャ
 		const s3d::Texture texture_blue_circle{ U"./../../../../../Data/MiniIcon/BlueCircle.svg" };
 		const s3d::Texture texture_red_circle{ U"./../../../../../Data/MiniIcon/RedCircle.svg" };
 
@@ -329,6 +347,7 @@ namespace paxs {
 
 			// 地名を描画
 			for (std::size_t i = 0; i < agents.size(); ++i) {
+				// エージェントの初期設定を定義
 				const auto lli = LocationPoint{
 						"","",
 						paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),

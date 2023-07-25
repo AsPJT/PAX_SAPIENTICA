@@ -30,7 +30,7 @@ namespace paxs {
 	// 選択言語
 	class SelectLanguage {
 	private:
-		std::size_t select_language = 0;
+		std::size_t select_language = 0; // 選択している言語
 	public:
 		constexpr void set(const std::size_t select_language_) { select_language = select_language_; }
 		constexpr std::size_t& get() { return select_language; }
@@ -38,14 +38,17 @@ namespace paxs {
 	};
 	class Language {
 	private:
-		std::vector<std::vector<std::string>> text{};
-		std::unordered_map<std::string, std::size_t> text_map{};
-		std::vector<std::string> empty{};
+		using Languages = std::vector<std::string>; // 各国の言語の読み方を保持
 
+		std::vector<Languages> text{}; // テキストを二次元配列で管理
+		std::unordered_map<std::string, std::size_t> text_map{}; // テキストを辞書で管理
+		Languages empty{}; // テキストが見つからなかった時に返す変数
+
+		// 文字を指定した区切り文字で分割し、テキストの配列や辞書に格納
 		void split(const std::string& input, const char delimiter) {
 			std::istringstream stream(input);
 			std::string field;
-			std::vector<std::string> result;
+			Languages result;
 			while (std::getline(stream, field, delimiter)) {
 				result.emplace_back(field);
 			}
@@ -54,17 +57,19 @@ namespace paxs {
 		}
 
 	public:
-		constexpr std::vector<std::vector<std::string>>& get() {
+		// テキストの二次元配列を返す
+		constexpr std::vector<Languages>& get() {
 			return text;
 		}
-		constexpr const std::vector<std::vector<std::string>>& cget() const {
+		constexpr const std::vector<Languages>& cget() const {
 			return text;
 		}
+		// 新しいテキストの追加
 		void add(const std::string& str_) {
-			std::ifstream ifs(str_);
+			std::ifstream ifs(str_); // ファイルを読み込む
 			std::string line;
 			while (std::getline(ifs, line)) {
-				split(line, '\t');
+				split(line, '\t'); // 分割し、格納
 			}
 			empty.resize(text.front().size());
 		}
@@ -78,25 +83,28 @@ namespace paxs {
 			}
 			return 0;
 		}
-		std::vector<std::string>& getFindStart(const std::string& str_) {
+		// 見つけたい単語を探す
+		Languages& getFindStart(const std::string& str_) {
 			const std::size_t index = findStart(str_);
 			if (index < text.size()) {
 				return text[index];
 			}
 			return empty;
 		}
-		const std::vector<std::string>& cgetFindStart(const std::string& str_) const {
+		// 見つけたい単語を探す
+		const Languages& cgetFindStart(const std::string& str_) const {
 			const std::size_t index = findStart(str_);
 			if (index < text.size()) {
 				return text[index];
 			}
 			return empty;
 		}
-		std::vector<std::vector<std::string>> getFindStartToVVS(const std::string& str_, const std::size_t start_index) const {
-			std::vector<std::vector<std::string>> tmp{};
-			const std::vector<std::string>& lt = cgetFindStart(str_);
+		// 見つけたい単語を探し、テキストの二次元配列（単語一覧）で返す
+		std::vector<Languages> getFindStartToVVS(const std::string& str_, const std::size_t start_index) const {
+			std::vector<Languages> tmp{};
+			const Languages& lt = cgetFindStart(str_);
 			for (std::size_t i = start_index; i < lt.size(); ++i) {
-				tmp.emplace_back(std::vector<std::string>{ lt[i] });
+				tmp.emplace_back(Languages{ lt[i] });
 			}
 			return tmp;
 		}

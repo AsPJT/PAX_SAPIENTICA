@@ -53,6 +53,7 @@ namespace paxs {
 			static bool first_update = false;
 			if (!first_update) {
 				first_update = true;
+				// ウィンドウの上下左右にできる背景の余白の色を設定
 				s3d::Scene::SetLetterbox(s3d::Color{ 243,243,243 });
 				//s3d::Scene::SetLetterbox(s3d::Color{ 181,0,0 });
 				//s3d::Scene::SetBackground(s3d::Color{ 181, 0, 0 });
@@ -61,8 +62,11 @@ namespace paxs {
 		//s3d::Scene::SetBackground(s3d::Color{ 243, 243, 243 }); // 白
 		//s3d::Scene::SetBackground(s3d::Color{ 156, 192, 249 }); // 薄い青
 		//s3d::Scene::SetBackground(s3d::Color{ 140, 180, 250 }); // 青
+				// 背景色を指定
 				s3d::Scene::SetBackground(s3d::Color{ 243, 243, 243 }); // 白
+				// ウィンドウのサイズを変更可能にする
 				s3d::Window::SetStyle(s3d::WindowStyle::Sizable);
+				// ウィンドウのサイズを変える
 				s3d::Window::Resize(1280, 720);
 			}
 		}

@@ -34,7 +34,7 @@ namespace paxs {
 			std::istringstream stream(input);
 			std::string field;
 			std::vector<std::string> result;
-			while (std::getline(stream, field, delimiter)) {
+			while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
 				result.emplace_back(field);
 			}
 			return result;

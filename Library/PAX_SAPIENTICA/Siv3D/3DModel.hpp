@@ -22,19 +22,22 @@ namespace paxs {
 
 	class Graphics3DModel {
 	private:
-		int rot = 0;
+		int rot = 0; // 回転するための向き（度）
 
-		s3d::ColorF backgroundColor;
+		s3d::ColorF backgroundColor; // 背景の色（透明度あり）
 
-		// モデルデータをロード
+		// 3D モデルデータ
 		s3d::Model sekishitsu_model;
+		// 360 度写真のテクスチャ
 		s3d::Texture sky;
 
+		// 描画するテクスチャの設定
 		s3d::MSRenderTexture renderTexture{ 
-			s3d::Size{800,500}/*s3d::Scene::Size()*/, 
-			s3d::TextureFormat::R8G8B8A8_Unorm_SRGB, 
-			s3d::HasDepth::Yes };
+			s3d::Size{800,500}/*s3d::Scene::Size()*/, // 表示領域
+			s3d::TextureFormat::R8G8B8A8_Unorm_SRGB, // テクスチャのフォーマットを指定
+			s3d::HasDepth::Yes }; // 深度バッファあり
 
+		// カメラ位置を指定
 		s3d::DebugCamera3D camera{ 
 			//s3d::Size{500,300},
 			s3d::Graphics3D::GetRenderTargetSize(), 
@@ -44,12 +47,15 @@ namespace paxs {
 
 	public:
 		Graphics3DModel() {
-
+			// 透明な背景を設定
 			backgroundColor = s3d::ColorF{ 1,1,1,0 }.removeSRGBCurve();
 
-			// モデルデータをロード
+			// 3D モデルデータをロード
 			sekishitsu_model = s3d::Model{ U"./../../../../../Data/3DModel/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj" };
+			
+			// 360 度写真をロード
 			sky = s3d::Texture(s3d::Image{ U"./../../../../../Data/360DegreePhoto/stone2.jpg" }.mirror());
+			
 			// モデルに付随するテクスチャをアセット管理に登録
 			s3d::Model::RegisterDiffuseTextures(sekishitsu_model, s3d::TextureDesc::MippedSRGB);
 
@@ -57,7 +63,7 @@ namespace paxs {
 
 		void updateRotation() {
 			//camera.update(4.0);
-			s3d::Graphics3D::SetCameraTransform(camera);
+			s3d::Graphics3D::SetCameraTransform(camera); // カメラ情報を設定
 
 			// 3D シーンの描画
 			const s3d::ScopedRenderTarget3D target{ renderTexture.clear(backgroundColor) };
@@ -85,6 +91,7 @@ namespace paxs {
 				if (y < 0.0) y += 360.0;
 				if (x >= 360.0) x -= 360.0;
 				if (y >= 360.0) y -= 360.0;
+				// 球体に 360 度写真を貼り付ける
 				s3d::Sphere{ 0, 2, /*-14.2*/-15.5, 2}.draw(
 					//s3d::Quaternion::RotateY(rot / 180.0 * 3.1416) *
 					//s3d::Quaternion::RotateX(rot / 180.0 * 3.1416)
@@ -94,9 +101,9 @@ namespace paxs {
 			}
 			
 			// RenderTexture を 2D シーンに描画
-			s3d::Graphics3D::Flush();
-			renderTexture.resolve();
-			renderTexture.draw(200,200);
+			s3d::Graphics3D::Flush(); // 現在までの 3D 描画を実行
+			renderTexture.resolve(); // テクスチャを描画可能にする
+			renderTexture.draw(200,200); // 指定した大きさで描画
 		}
 
 	};
