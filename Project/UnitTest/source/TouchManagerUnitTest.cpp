@@ -9,19 +9,19 @@
 
 ##########################################################################################*/
 
-#include <PAX_GRAPHICA/Graphics.hpp>
+#include <gtest/gtest.h>
 
-int main() {
-    paxg::Rect rect(0, 0, 100, 100);
-    paxg::Circle circle(100, 100, 50);
-    paxg::String path("../data/sample.png");
-    paxg::Texture texture(path);
-    paxg::Window::Init(800, 600, "PAX SAPIENTICA Library");
-    while (paxg::Window::update()) {
-        paxg::Window::clear();
-        rect.draw();
-        circle.draw();
-        texture.drawAt({200, 200});
-        paxg::Window::display();
-    }
+#include <PAX_SAPIENTICA/TouchManager.hpp>
+
+TEST (TouchManagerUnitTest, init) {
+    paxs::TouchManager touchManager;
+    touchManager.init();
+}
+
+TEST (TouchManagerUnitTest, get) {
+    paxs::TouchManager touchManager;
+    touchManager.init();
+    bool expected = true;
+    bool actual = touchManager.get(true);
+    ASSERT_EQ(expected, actual);
 }

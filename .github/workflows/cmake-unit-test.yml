@@ -43,7 +43,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install libsfml-dev
         sudo apt-get install cmake
-        sudo apt-get install g++
+
+    - name: Check g++ version
+      run: g++ --version
 
     - name: Configure CMake
       run: |

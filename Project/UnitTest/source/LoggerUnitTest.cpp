@@ -34,8 +34,11 @@ TEST (LoggerUnitTest, log) {
     const std::string message = "Test log";
     const std::string expected = "[ERROR]: " + message + " (" + __FILE__ + ":" + "0" +  ")";
 
-    paxs::Logger logger(file_path);
-    logger.log(paxs::Logger::Level::ERROR, __FILE__, 0, message);
+    {
+        paxs::Logger logger(file_path);
+        logger.log(paxs::Logger::Level::ERROR, __FILE__, 0, message);
+    }
+    
     const std::regex e ("\\[.*?\\] "); 
     const std::string actual = std::regex_replace(paxs::File::readFile(file_path).at(0), e, "");
 
