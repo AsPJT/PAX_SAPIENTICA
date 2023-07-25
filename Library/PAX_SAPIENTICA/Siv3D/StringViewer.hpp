@@ -66,12 +66,12 @@ namespace paxs {
 	フォント
 ##########################################################################################*/
 
-		std::vector<s3d::Font> font_pulldown;
-		int font_size = 17;
-		std::vector<s3d::Font> font;
-		// 暦のフォントサイズ
-		int koyomi_font_size = 17;
-		std::vector<s3d::Font> koyomi_font;
+		std::vector<s3d::Font> font_pulldown; // プルダウン用のフォント
+		int font_size = 17; // デフォルトのフォントのサイズ
+		std::vector<s3d::Font> font; // デフォルトのフォント
+		
+		int koyomi_font_size = 17; // 暦のフォントサイズ
+		std::vector<s3d::Font> koyomi_font; // 暦のフォント
 		s3d::Font license_font;
 		s3d::Font pin_font{};
 
@@ -124,7 +124,7 @@ namespace paxs {
 			menu_bar.add(language_text.cget(), language_text.findStart("> menu_bar_map") + 1, 1, font_menu_bar);
 
 			const s3d::String path = s3d::Unicode::FromUTF8(path8);
-			{
+			{ // 暦の時間操作のアイコン
 				texture_dictionary.emplace("texture_tlt", s3d::Texture{path + U"Image/Logo/TitleLogoText2.svg"});
 				texture_dictionary.emplace("texture_github", s3d::Texture{ path + U"Data/MenuIcon/github.svg" });
 				texture_dictionary.emplace("texture_d_l", s3d::Texture{ path + U"Data/MenuIcon/DayL.svg" });

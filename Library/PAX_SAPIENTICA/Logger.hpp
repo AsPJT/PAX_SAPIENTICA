@@ -33,9 +33,9 @@ namespace paxs {
         /// @brief The level of the log.
         /// @brief ログのレベル。
         enum class Level {
-            INFO,
-            WARNING,
-            ERROR
+            INFO, // 情報を示すメッセージ（警告やエラー以外）
+            WARNING, // 警告メッセージ
+            ERROR // エラーメッセージ
         };
 
         /// @brief Constructor.
@@ -47,7 +47,7 @@ namespace paxs {
                 std::filesystem::create_directories(directory);
             }
 
-            file.open(filename, std::ios::app);
+            file.open(filename, std::ios::app); // ファイルを開く
         }
 
         /// @brief Destructor.

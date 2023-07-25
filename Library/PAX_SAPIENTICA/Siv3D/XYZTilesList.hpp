@@ -56,6 +56,8 @@ namespace paxs {
 		const std::string& path,
 		const MapView* const map_view
 	) {
+		// 使用するマップの XYZ タイルの情報を定義
+
 		//mapMapInitOne(xyz_tile_list, path, map_view,
 		//	"map_base", "","", "Data/Map/XYZTile/Standard/Image/Land/2023/", -1, 7, -1, 7);
 			{
@@ -194,7 +196,7 @@ namespace paxs {
 			}
 	}
 
-
+	// 地図の辞書を更新
 	void mapMapUpdate(
 		std::unordered_map<std::string, XYZTile>& xyz_tile_list,
 		const paxs::MenuBar& menu_bar,

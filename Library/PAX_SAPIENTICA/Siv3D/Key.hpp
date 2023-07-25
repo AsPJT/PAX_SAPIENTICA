@@ -124,9 +124,10 @@ namespace paxs {
 			}
 		}
 	};
-
+	// GUI で表示する地図の範囲を管理するクラス
 	class MapView {
 	private:
+		// 中央の座標を指定
 		Coordinate center = Coordinate(
 			paxs::EquirectangularDeg(paxs::Vector2<double>(135.0, 35.0)),
 			//paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)), 
@@ -209,30 +210,35 @@ namespace paxs {
 	double& map_view_movement_size, // マップの移動量
 	double& map_view_expansion_size // マップの拡大量
 	) {
+		// 西へ移動
 		if (s3d::KeyA.pressed() || s3d::KeyLeft.pressed()) {
 			map_view_center_x -= (map_view_width / map_view_movement_size);
 			if (map_view_center_x < -180.0) {
 				map_view_center_x += 360.0;
 			}
 		}
+		// 東へ移動
 		if (s3d::KeyD.pressed() || s3d::KeyRight.pressed()) {
 			map_view_center_x += (map_view_width / map_view_movement_size);
 			if (map_view_center_x >= 180.0) {
 				map_view_center_x -= 360.0;
 			}
 		}
+		// 南へ移動
 		if (s3d::KeyS.pressed() || s3d::KeyDown.pressed()) {
 			map_view_center_y -= (map_view_width / map_view_movement_size);
 			if (map_view_center_y < -180.0) {
 				map_view_center_y = -180.0;
 			}
 		}
+		// 北へ移動
 		if (s3d::KeyW.pressed() || s3d::KeyUp.pressed()) {
 			map_view_center_y += (map_view_width / map_view_movement_size);
 			if (map_view_center_y > 180.0) {
 				map_view_center_y = 180.0;
 			}
 		}
+		// 地図を拡大
 		if (s3d::KeyQ.pressed()) {
 			if (map_view_width > map_view_min_width) {
 				map_view_width -= (map_view_width / map_view_expansion_size);
@@ -243,6 +249,7 @@ namespace paxs {
 				map_view_height = (map_view_width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height());
 			}
 		}
+		// 地図を縮小
 		if (s3d::KeyE.pressed()) {
 			if (map_view_width < map_view_max_width) {
 				map_view_width += (map_view_width / map_view_expansion_size);

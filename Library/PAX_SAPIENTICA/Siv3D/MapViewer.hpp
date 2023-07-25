@@ -59,14 +59,15 @@ namespace paxs {
 			std::ifstream rifs(path8 + "Data/Route/Yamatai.tsv");
 			if (rifs.fail()) return;
 			std::string rline;
-			while (std::getline(rifs, rline)) {
+			while (std::getline(rifs, rline)) { // ファイルを 1 行ずつ読み込む
 				const std::vector<std::string> strvec = paxs::StringExtensions::split(rline, '\t');
 				const MercatorDeg coordinate = EquirectangularDeg(
-					paxs::Vector2(std::stod(strvec[0]), std::stod(strvec[1]))
+					paxs::Vector2(std::stod(strvec[0]), std::stod(strvec[1])) // 経緯度を格納
 				);
 				route1.emplace_back(coordinate.x, coordinate.y);
 			}
 			for (std::size_t i = 0; i < route1.size(); ++i) {
+				// 経路を格納
 				route2.emplace_back(
 					(route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
 					double(s3d::Scene::Height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
@@ -101,7 +102,7 @@ namespace paxs {
 			paxs::GraphicVisualizationList& visible
 		) {
 			map_view->update(); // キーボード入力を更新
-			mapMapUpdate(xyz_tile_list, string_siv.menu_bar, map_view.get());
+			mapMapUpdate(xyz_tile_list, string_siv.menu_bar, map_view.get()); // 地図の辞書を更新
 
 			if (visible["Map"]) {
 				// 地図上に画像を描画する

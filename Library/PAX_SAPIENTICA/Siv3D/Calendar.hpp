@@ -64,8 +64,8 @@ namespace paxs {
 			編年・時代区分（実験）
 		##########################################################################################*/
 
-		std::size_t sueki_nakamura_index;
-		std::size_t sueki_tanabe_index;
+		std::size_t sueki_nakamura_index; // 須恵器の中村編年の配列のインデックス値を格納
+		std::size_t sueki_tanabe_index; // 須恵器の田辺編年の配列のインデックス値を格納
 
 		// 時代区分の文字列
 		std::vector<std::string> options = {
@@ -114,22 +114,25 @@ namespace paxs {
 			case cal::japan_date_type:
 				// 和暦を格納
 				jp_date = jdn.toJapaneseCalendar(japanese_era_list);
+				// 元号を格納
 				dl.calendar_name = (language_text.cgetFindStart("gengo_" + std::to_string(jp_date.cgetGengo())));
 				dl.date = jp_date;
 				break;
 			case cal::jdn_f64_type:
 			case cal::jdn_s32_type:
 			case cal::jdn_s64_type:
-				dl.date = jdn;
+				dl.date = jdn; // ユリウス通日を格納
 				break;
 			case cal::calbp_type:
-				// 格納
+				// BP （年代測定）を格納
 				dl.date = jdn.toCalBP();
 				break;
 			case cal::islamic_date_type:
+				// ヒジュラ暦を格納
 				dl.date = jdn.toIslamicCalendar();
 				break;
 			case cal::simulation_steps_type:
+				// シミュレーションのステップ数を格納
 				dl.date = steps;
 				break;
 			}
@@ -150,7 +153,7 @@ namespace paxs {
 				OutputDate{language_text.cgetFindStart("calendar_calbp"), cal::CalBP()},
 				OutputDate{language_text.cgetFindStart("menu_bar_view_simulation"), cal::SimulationSteps()}
 		};
-
+		// 須恵器編年の文字列を言語テキストファイルから探して格納
 			sueki_nakamura_index = language_text.findStart("sueki_nakamura");
 			sueki_tanabe_index = language_text.findStart("sueki_tanabe");
 
@@ -178,26 +181,28 @@ namespace paxs {
 			//if(move_forward_in_time) jdn += 1000;
 			//else if(go_back_in_time) jdn -= 1000;
 		//if (count >= 0) {
-			if (calendar_update_counter >= 30) {
+			if (calendar_update_counter >= 30) { // カウンタが指定した値を超えたら日付を変える処理を実行
 				calendar_update_counter = 0;
+				// 時間を進めている場合（逆行していない場合）
 				if (move_forward_in_time) {
 					if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
 						jdn.getDay() += 1.0; // ユリウス日を繰り上げ（次の日にする）
-						calcDate(language_text);
+						calcDate(language_text); // 日付計算
 					}
 					//jdn += 365; // ユリウス日を繰り上げ（次の日にする）
 #ifdef PAXS_USING_SIMULATOR
 					// エージェント機能テスト
 					if (is_agent_update) {
-						simulator.step();
+						simulator.step(); // シミュレーションを 1 ステップ実行する
 						steps.getDay()++; // ステップ数を増やす
 					}
 #endif
 				}
+				// 時間を逆行している場合
 				else if (go_back_in_time) {
 					if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
 						jdn.getDay() -= 1.0; // ユリウス日を繰り上げ（次の日にする）
-						calcDate(language_text);
+						calcDate(language_text); // 日付計算
 					}
 				}
 			}

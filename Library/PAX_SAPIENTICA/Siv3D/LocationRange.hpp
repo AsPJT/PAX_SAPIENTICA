@@ -42,6 +42,8 @@ namespace paxs {
 	class TextureLocation {
 	public:
 		TextureLocation() {
+			// ここに実験用のテクスチャを定義する
+			
 			//location_range_list.emplace_back("./../../../../../Data/Map/TestMap/nara.png",
 			//	135.7104, 
 			//	MapProjectionF64::equirectangularDegYToMercatorDegY(34.59451),
@@ -68,10 +70,11 @@ namespace paxs {
 					jj.msx < map_view_center_x + map_view_width / 2 &&
 					jj.mey > map_view_center_y - map_view_height / 2 &&
 					jj.msy < map_view_center_y + map_view_height / 2) {
-					jj.texture.resized(
+					// テクスチャを描画する
+					jj.texture.resized( // 描画時に指定した画像サイズへ変換
 						jj.mx / map_view_width * double(s3d::Scene::Width())
 						, jj.my / map_view_height * double(s3d::Scene::Height())// * 1.3
-					).drawAt(
+					).drawAt( // 指定位置を画像の中心として描画
 						(jj.mcx - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()) - 0,
 						double(s3d::Scene::Height()) - ((jj.mcy - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))// + 270
 					);
@@ -79,7 +82,7 @@ namespace paxs {
 			}
 		}
 	private:
-		std::vector<LocationRange> location_range_list;
+		std::vector<LocationRange> location_range_list; // 地物の範囲の一覧
 	};
 
 }

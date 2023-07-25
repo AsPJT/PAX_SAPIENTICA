@@ -69,10 +69,10 @@ namespace paxs {
 		paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
 		paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
 //#endif
-		int old_width = s3d::Scene::Width();
-		int old_height = s3d::Scene::Height();
+		int old_width = s3d::Scene::Width(); // 1 フレーム前の幅
+		int old_height = s3d::Scene::Height(); // 1 フレーム前の高さ
 
-		int size_change_count = 0;
+		int size_change_count = 0; // サイズを更新するカウンタ
 
 		paxs::MapViewerSiv3D map_siv{}; // 地図を管理する
 		map_siv.init(path8);
@@ -83,7 +83,7 @@ namespace paxs {
 		paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
 		string_siv.init(language_text, path8);
 
-		paxs::TouchManager tm;
+		paxs::TouchManager tm; // 画面のクリック・タッチを管理する
 
 /*##########################################################################################
 	ループ開始
@@ -105,7 +105,7 @@ namespace paxs {
 			}
 			if (old_width != s3d::Scene::Width() ||
 				old_height != s3d::Scene::Height()) {
-				// 影
+				// 影を定義
 				if (size_change_count < 1) {
 					string_siv.shadow_texture = s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
 					string_siv.internal_texture = s3d::RenderTexture{ string_siv.shadow_texture.size() };

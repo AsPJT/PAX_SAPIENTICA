@@ -21,28 +21,28 @@
 
 namespace paxs {
 
-	// 
+	// GUI 上で可視化する項目を管理
 	class GraphicVisualizationList {
 	private:
-		std::unordered_map<std::string, bool> visible{};
+		std::unordered_map<std::string, bool> visible{}; // 可視化するかしないかを持つ辞書
 
 	public:
+    // 新しい項目を追加
 		void emplace(const std::string& str_, const bool visible_) {
 			visible.emplace(str_, visible_);
 		}
-
+    // 指定した要素の符号を反転
 		void setNot(const std::string& str_) {
 			visible[str_] = !visible[str_];
 		}
-
+    // 指定した要素の符号を設定
 		void set(const std::string& str_, const bool visible_) {
 			visible[str_] = visible_;
 		}
-		
+		// 指定した要素の符号を取得
 		bool operator[](const std::string& str_) const {
 			return visible.at(str_);
 		}
-
 
 	};
 

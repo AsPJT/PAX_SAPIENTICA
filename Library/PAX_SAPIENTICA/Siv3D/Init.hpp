@@ -26,9 +26,11 @@
 #include <PAX_SAPIENTICA/Siv3D/Mock.hpp>
 #endif
 
+// GUI で画面上部にあるメニューバーの種類
 enum MenuBarType {
 	file, edit, view, calendar, map
 };
+// マップの種類（暫定的な地図）
 enum MapType {
 	base,
 	landand_sea, land_and_water,

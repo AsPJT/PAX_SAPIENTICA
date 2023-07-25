@@ -24,6 +24,7 @@
 
 namespace paxs {
 	
+	// XYZ タイルの種別
 	enum XYZTileFileName : int {
 		Empty,
 		Default,
@@ -133,7 +134,7 @@ namespace paxs {
 				}
 			}
 
-
+			// ファイルを保存
 			for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
 				for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 					s3d::FilePath new_saveFilePath = U"";
