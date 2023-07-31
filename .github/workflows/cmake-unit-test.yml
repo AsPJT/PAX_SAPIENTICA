@@ -35,6 +35,7 @@ jobs:
 
     - name: Checkout submodules
       run: |
+        git submodule update --init --recursive ExternalLibrary/cpp-httplib
         git submodule update --init --recursive ExternalLibrary/googletest
 
     - name: Install dependencies

@@ -1,3 +1,7 @@
+[submodule "ExternalLibrary/cpp-httplib"]
+	path = ExternalLibrary/cpp-httplib
+	url = https://github.com/yhirose/cpp-httplib.git
+	branch = master
 [submodule "ExternalLibrary/googletest"]
 	path = ExternalLibrary/googletest
 	url = https://github.com/google/googletest.git
