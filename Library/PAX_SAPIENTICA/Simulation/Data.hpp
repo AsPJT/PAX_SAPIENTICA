@@ -248,6 +248,7 @@ namespace paxs {
                     for(std::size_t x = 0;x < file[y].size();++x) {
                         const Vector2 position = default_position + Vector2((int)x, (int)y);
                         // T型に変換
+                        if (file[y][x] == '0') continue;
                         data[convertVector2ToIndex(position)] = static_cast<T>(file[y][x]);
                     }
                 }
