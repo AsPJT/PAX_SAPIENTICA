@@ -84,3 +84,8 @@ TEST_F (EnvironmentUnitTest, isLand) {
     const paxs::Vector2<int> test_position(0, 0);
     EXPECT_FALSE(environment.isLand(test_position));
 }
+
+TEST_F (EnvironmentUnitTest, isWater) {
+    const paxs::Vector2<int> test_position(0, 0);
+    EXPECT_FALSE(environment.isWater(test_position));
+}
