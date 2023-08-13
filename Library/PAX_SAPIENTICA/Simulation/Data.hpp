@@ -134,7 +134,8 @@ namespace paxs {
             if(file_names[0].find(".tsv") != std::string::npos) {
                 loadNumericTSV(file_names);
             } else if(file_names[0].find(".txt") != std::string::npos) {
-                loadNumericText(file_names);
+                if (default_z > pj_z) loadNumericTextAndCompress(file_names);
+                else loadNumericText(file_names);
             } else {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "File type is invalid: " + file_names[0];
@@ -248,12 +249,77 @@ namespace paxs {
                     for(std::size_t x = 0;x < file[y].size();++x) {
                         const Vector2 position = default_position + Vector2((int)x, (int)y);
                         // T型に変換
+                        if (file[y][x] == '0') continue;
                         data[convertVector2ToIndex(position)] = static_cast<T>(file[y][x]);
                     }
                 }
                 ++file_count;
                 ++load_count;
             }
+            StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
+            std::cout << load_count << " files are loaded.\n" << std::endl;
+        }
+
+        /// @brief Load numeric text files and compress the data.
+        /// @brief 数値テキストファイルのロードしてデータを圧縮する
+        void loadNumericTextAndCompress(const std::vector<std::string>& file_names) noexcept {
+            unsigned int file_count = 0;
+            int load_count = 0;
+
+            for(const auto& file_name : file_names) {
+                StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+
+                Vector2 xyz_position;
+                try {
+                    xyz_position = getXAndYFromFileName(file_name);
+                } catch (const std::exception&) {
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
+                    ++file_count;
+                    continue;
+                }
+
+                const Vector2 default_position = xyz_position * pixel_size / z_mag - start_position * pixel_size;
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
+                    ++file_count;
+                    continue;
+                }
+
+                std::vector<std::string> file;
+                try {
+                    file = File::readFile(file_name);
+                } catch (const std::exception&) {
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::WARNING, __FILE__, __LINE__, "File is not found: " + file_name);
+                    ++file_count;
+                    continue;
+                }
+
+                for(std::size_t y = 0;y < file.size();y += z_mag) {
+                    for(std::size_t x = 0;x < file[y].size();x += z_mag) {
+                        const Vector2 position = default_position + Vector2((int)x / z_mag, (int)y / z_mag);
+                        bool is_contain_one = false;
+                        for(std::size_t y_diff = 0;y_diff < z_mag;++y_diff) {
+                            for(std::size_t x_diff = 0;x_diff < z_mag;++x_diff) {
+                                if(file[y + y_diff][x + x_diff] == '1') {
+                                    is_contain_one = true;
+                                    break;
+                                }
+                            }
+                            if(is_contain_one) break;
+                        }
+                        if(!is_contain_one) continue;
+                        data[convertVector2ToIndex(position)] = static_cast<T>('1');
+                    }
+                }
+                ++file_count;
+                ++load_count;
+            }
+
+            z_mag = 1;
+            default_z = pj_z;
+
             StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;

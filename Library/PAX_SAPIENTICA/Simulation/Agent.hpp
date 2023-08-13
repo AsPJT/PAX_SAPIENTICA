@@ -16,7 +16,10 @@
 
 ##########################################################################################*/
 
+#include <array>
 #include <limits>
+#include <memory>
+#include <random>
 #include <stdexcept>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
@@ -34,8 +37,72 @@ namespace paxs {
         using Vector2 = paxs::Vector2<T>;
         using Environment = paxs::Environment<T>;
 
-        constexpr explicit Agent(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least32_t age, const std::uint_least32_t life_span, Environment* env) noexcept
+        constexpr explicit Agent(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
             : Object<T>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
+
+        /// @brief Move the agent.
+        /// @brief エージェントを移動させる
+        void move() {
+            const std::array<Vector2, 8> move_directions {
+                    Vector2(-1, -1), Vector2(0, -1), Vector2(1, -1),
+                    Vector2(-1, 0), Vector2(1, 0),
+                    Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)
+                };
+            const float current_slope = environment->getSlope(this->position);
+
+            const int th_max_slope = 30;
+            const int th_min_slope = 5;
+
+            std::random_device seed_gen;
+            std::mt19937 engine(seed_gen());
+
+            // 0~min_slopeの間の傾斜の場合は10%の確率で移動
+            if (current_slope <= th_min_slope) {
+                std::uniform_int_distribution<> dist(0, 9);
+                if (dist(engine) != 0) {
+                    return;
+                }
+            }
+
+            // min_slope~max_slopeの間の傾斜の場合は傾斜が大きいほど移動しやすくする
+            if (current_slope > th_min_slope && current_slope <= th_max_slope) {
+                std::uniform_int_distribution<> dist(0, 9 + (current_slope - th_min_slope) * (90 / (th_max_slope - th_min_slope)));
+                if (dist(engine) != 0) {
+                    return;
+                }
+            }
+
+            bool is_movable = false;
+            std::uniform_int_distribution<> amount(1, 5);
+            std::array<float, 8> probabilities = {};
+            const float elevation = environment->getElevation(this->position);
+            while (!is_movable) {
+                // 移動量は1~5の間でランダムに決定
+                const int move_amount = amount(engine);
+
+                for (std::size_t i = 0; i < 8; ++i) {
+                    Vector2 pos = this->position + move_directions[i] * move_amount;
+                    if (!environment->isLand(pos)) {
+                        continue;
+                    }
+
+                    // slopeが小さい場所ほど選ばれやすいようにする
+                    float slope = environment->getSlope(pos);
+                    probabilities[i] += 1.0f / exp(slope / 4);
+
+                    // 今の標高よりも低い方が選ばれやすいようにする
+                    const float diff = elevation - environment->getElevation(pos);
+                    if (diff > 0) {
+                        probabilities[i] += diff / 10;
+                    }
+
+                    is_movable = true;
+                }
+            }
+
+            std::discrete_distribution<> dist(probabilities.begin(), probabilities.end());
+            this->move(move_directions[dist(engine)]);            
+        }
 
         /// @brief Move the agent.
         /// @brief エージェントを移動させる
@@ -83,7 +150,7 @@ namespace paxs {
         std::uint_least8_t gender; // 性別
         std::uint_least32_t age; // 年齢
         std::uint_least32_t life_span; // 寿命
-        Environment* environment; // 環境
+        std::shared_ptr<Environment> environment; // 環境
     };
 }
 

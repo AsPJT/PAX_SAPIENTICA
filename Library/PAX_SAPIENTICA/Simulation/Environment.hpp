@@ -176,6 +176,20 @@ namespace paxs {
                 throw std::runtime_error(message);
             }
         }
+
+        /// @brief Is it water?
+        /// @brief 淡水かどうかの判定
+        virtual bool isWater(const Vector2& position) const {
+            try {
+                auto value = getData<std::uint_least8_t>("water", position);
+                return static_cast<int>(value) == static_cast<int>('1');
+            } catch (const std::exception&) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to get water";
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+        }
     private:
         Vector2 start_position; // シミュレーションの左上の座標
         Vector2 end_position; // シミュレーションの右下の座標
