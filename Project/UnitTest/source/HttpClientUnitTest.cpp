@@ -22,3 +22,13 @@ TEST (HttpClientUnitTest, get) {
 
     ASSERT_NE(actual, no_expected);
 }
+
+TEST (HttpClientUnitTest, get_with_port) {
+    const std::string url = "http://example.com:80";
+    
+    const std::string no_expected = "error";
+
+    const std::string actual = paxs::HttpClient::get(url, "/");
+
+    ASSERT_NE(actual, no_expected);
+}
