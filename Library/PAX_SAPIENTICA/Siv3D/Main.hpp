@@ -31,7 +31,10 @@
 
 // シミュレータを使用する
 #define PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Siv3D/Calendar.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Calendar.hpp> // 暦
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 可視化一覧
+#include <PAX_SAPIENTICA/Siv3D/MapViewer.hpp> // 地図
+#include <PAX_SAPIENTICA/Siv3D/StringViewer.hpp> // 文字
 
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
@@ -48,7 +51,14 @@ namespace paxs {
 		paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
 		s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
 		paxs::Language language_text(path8 + "Data/Language/Text.txt"); // テキストの多言語対応クラス
-		const std::unique_ptr<MapView> map_view(new(std::nothrow) MapView); // マップ関連変数
+		
+		// 可視化一覧
+		GraphicVisualizationList visible{};
+		visible.emplace("Calendar", true); // 暦
+		visible.emplace("Map", true); // 地図
+		visible.emplace("UI", true); // UI
+		visible.emplace("License", false); // ライセンス
+		visible.emplace("3D", false); // 3D
 
 //#ifdef PAXS_USING_SIMULATOR
 		paxs::Simulator<int> simlator;
@@ -59,42 +69,46 @@ namespace paxs {
 		paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
 		paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
 //#endif
-		int old_width = s3d::Scene::Width();
-		int old_height = s3d::Scene::Height();
+		int old_width = s3d::Scene::Width(); // 1 フレーム前の幅
+		int old_height = s3d::Scene::Height(); // 1 フレーム前の高さ
 
-		int size_change_count = 0;
-		paxs::KoyomiSiv3D koyomi_siv{};
-		koyomi_siv.init(select_language, language_text, path8, map_view);
+		int size_change_count = 0; // サイズを更新するカウンタ
 
-		paxs::TouchManager tm;
+		paxs::MapViewerSiv3D map_siv{}; // 地図を管理する
+		map_siv.init(path8);
+
+		paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
+		koyomi_siv.init(language_text, path8);
+
+		paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
+		string_siv.init(language_text, path8);
+
+		paxs::TouchManager tm; // 画面のクリック・タッチを管理する
+
 /*##########################################################################################
-
 	ループ開始
-
 ##########################################################################################*/
-
 		while (s3d::System::Update()) {
 			tm.init(); // タッチ判定を初期化
-			// 画像の拡大縮小の方式を設定
-			const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
+			const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
 			/*##########################################################################################
 				更新処理関連
 			##########################################################################################*/
 
 			// 画面サイズの変更に合わせて地図の幅を変える
 			if (old_width != s3d::Scene::Width()) {
-				map_view->setWidth(s3d::Scene::Width() * map_view->getWidth() / old_width);
-				map_view->setHeight(map_view->getWidth() / double(s3d::Scene::Width()) * double(s3d::Scene::Height()));
+				map_siv.map_view->setWidth(s3d::Scene::Width() * map_siv.map_view->getWidth() / old_width);
+				map_siv.map_view->setHeight(map_siv.map_view->getWidth() / double(s3d::Scene::Width()) * double(s3d::Scene::Height()));
 			}
 			if (old_height != s3d::Scene::Height()) {
-				map_view->setHeight(map_view->getWidth() / double(s3d::Scene::Width()) * double(s3d::Scene::Height()));
+				map_siv.map_view->setHeight(map_siv.map_view->getWidth() / double(s3d::Scene::Width()) * double(s3d::Scene::Height()));
 			}
 			if (old_width != s3d::Scene::Width() ||
 				old_height != s3d::Scene::Height()) {
-				// 影
+				// 影を定義
 				if (size_change_count < 1) {
-					koyomi_siv.shadow_texture = s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
-					koyomi_siv.internal_texture = s3d::RenderTexture{ koyomi_siv.shadow_texture.size() };
+					string_siv.shadow_texture = s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
+					string_siv.internal_texture = s3d::RenderTexture{ string_siv.shadow_texture.size() };
 				}
 				if (size_change_count >= 100) size_change_count = 100;
 				++size_change_count;
@@ -104,82 +118,50 @@ namespace paxs {
 			old_width = s3d::Scene::Width();
 			old_height = s3d::Scene::Height();
 
-			koyomi_siv.koyomi_font_x = s3d::Scene::Width() - 220;
-			koyomi_siv.koyomi_font_en_x = s3d::Scene::Width() - 220;
-
-			// キーボード入力を更新
-			map_view->update();
-
-			const double map_view_width = map_view->getWidth();
-			const double map_view_height = map_view->getHeight();
-			const double map_view_center_x = map_view->getCenterX();
-			const double map_view_center_y = map_view->getCenterY();
-
 			// プルダウンを更新
-			koyomi_siv.pulldown.setPos(s3d::Point{ s3d::Scene::Width() - koyomi_siv.pulldown.getRect().w, 0 });
-			koyomi_siv.pulldown.update(SelectLanguage{}, tm);
-			select_language.set(std::size_t(koyomi_siv.pulldown.getIndex())); // 選択言語を更新
-			koyomi_siv.menu_bar.update(select_language, tm);
+			string_siv.pulldown.setPos(s3d::Point{ s3d::Scene::Width() - string_siv.pulldown.getRect().w, 0 });
+			string_siv.pulldown.update(SelectLanguage{}, tm);
+			select_language.set(std::size_t(string_siv.pulldown.getIndex())); // 選択言語を更新
+			string_siv.menu_bar.update(select_language, tm);
 
-			mapMapUpdate(koyomi_siv.xyz_tile_list, koyomi_siv.menu_bar, map_view.get());
+			// 表示の可視化を更新
+			//Calendar Map UI Simulation License Debug 3D
+			visible.set("Calendar", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(0));
+			visible.set("Map", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(1));
+			visible.set("UI", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(2));
+			visible.set("Simulation", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(3));
+			visible.set("License", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(4));
+			visible.set("Debug", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(5));
+			visible.set("3D", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(6));
 
-			if (koyomi_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(1)) {
-				// 地図上に画像を描画する
-				koyomi_siv.texture_location->update(map_view_center_x, map_view_center_y, map_view_width, map_view_height);
-
-#ifdef PAXS_USING_SIMULATOR
-				koyomi_siv.agent_location->draw(koyomi_siv.jdn.getDay(), simlator.getAgents(), start_position, map_view_width, map_view_height, map_view_center_x, map_view_center_y
-					//,font[language], font[language]/*en_font*/, pin_font
-				);
-#endif
-
-				// 線の描画
-				for (std::size_t i = 0; i < koyomi_siv.route2.size(); ++i) {
-					koyomi_siv.route2[i] = s3d::Vec2(
-						(koyomi_siv.route1[i].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-						double(s3d::Scene::Height()) - ((koyomi_siv.route1[i].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
-					);
-				}
-				// 航路を描画
-				s3d::Spline2D{ koyomi_siv.route2 }.draw(2, s3d::Color{ 85,145,245 });
-
-				// 地名を描画
-				koyomi_siv.place_name_location->draw(koyomi_siv.jdn.getDay(), map_view_width, map_view_height, map_view_center_x, map_view_center_y,
-					koyomi_siv.font[select_language.cget()], koyomi_siv.font[select_language.cget()]/*en_font*/, koyomi_siv.pin_font);
-
-				//#ifdef PAXS_USING_SIMULATOR
-				//			// エージェント機能テスト
-				//			if (is_agent_update) {
-				//				static int step = 0;
-				//				if (step == 0) {
-				//					//s3d::Print(U"Agent Size:", simlator.getAgents().size());
-				//					//for (std::size_t i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
-				//					//	s3d::Print(U"Agent[",i,U"]:X" ,simlator.getAgents()[i].getLocation(10,256).x, U", Y", simlator.getAgents()[i].getLocation(10,256).y);
-				//					//}
-				//				}
-				//				++step;
-				//				if (step >= 0) {
-				//					//if (step >= 30) {
-				//					step = 0;
-				//					simlator.step();
-				//				}
-				//			}
-				//			//agent_location->update(simlator.getAgents());
-				//			;				agent_location->draw(simlator.getAgents(), start_position, map_view_width, map_view_height, map_view_center_x, map_view_center_y,
-				//				font[language], font[language]/*en_font*/, pin_font);
-				//#endif
-			}
-			koyomi_siv.update(
-				map_view,
+			// 地図を更新
+			map_siv.update(
 				select_language,
-				language_text, 
+				koyomi_siv,
+				string_siv,
 				simlator,
-			start_position,
-			end_position,
-				path8,
-				tm
+				start_position,
+				visible
 			);
-			paxs::PaxSapienticaInitSiv3D::secondInit();
+			// 暦を更新
+			koyomi_siv.update(
+				language_text, 
+				simlator
+			);
+			// 文字を更新
+			string_siv.update(
+				map_siv.map_view,
+				select_language,
+				language_text,
+				simlator,
+				start_position,
+				end_position,
+				path8,
+				tm,
+				koyomi_siv,
+				visible
+			);
+			paxs::PaxSapienticaInitSiv3D::secondInit(); // ソフトウェアを実行した最初のフレームの一番最後に実行
 		}
 	}
 }

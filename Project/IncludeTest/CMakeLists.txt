@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 20)
-set(EXECUTABLE_OUTPUT_PATH ../../Project/IncludeTest/bin)
-include_directories(../../Library)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB_RECURSE LIB_HEADERS RELATIVE "${CMAKE_SOURCE_DIR}/../Library/PAX_SAPIENTICA" "${CMAKE_SOURCE_DIR}/../Library/PAX_SAPIENTICA/*.hpp")
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../Library)
+
+file(GLOB_RECURSE LIB_HEADERS RELATIVE "${CMAKE_SOURCE_DIR}/../Library" "${CMAKE_SOURCE_DIR}/../Library/*.hpp")
 
 set(TEST_SOURCE_DIR "${CMAKE_SOURCE_DIR}/IncludeTest/source")
 
@@ -12,7 +14,7 @@ foreach(HEADER ${LIB_HEADERS})
   set(TEST_PATH "${TEST_SOURCE_DIR}/${TEST_NAME}")
 
   if(NOT EXISTS ${TEST_PATH})
-    file(WRITE ${TEST_PATH} "#include <PAX_SAPIENTICA/${HEADER}>\n\nint main(){}\n")
+    file(WRITE ${TEST_PATH} "#include <${HEADER}>\n\nint main(){}\n")
   endif()
 endforeach()
 
@@ -21,7 +23,7 @@ file(GLOB_RECURSE TEST_SOURCES "${TEST_SOURCE_DIR}/*.cpp")
 foreach(TEST_SOURCE ${TEST_SOURCES})
 
   string(REPLACE "IncludeTest.cpp" ".hpp" LIBRARY_PATH ${TEST_SOURCE})
-  string(REPLACE "${TEST_SOURCE_DIR}/" "${CMAKE_SOURCE_DIR}/../Library/PAX_SAPIENTICA/" LIBRARY_PATH ${LIBRARY_PATH})
+  string(REPLACE "${TEST_SOURCE_DIR}/" "${CMAKE_SOURCE_DIR}/../Library/" LIBRARY_PATH ${LIBRARY_PATH})
 
   if(NOT EXISTS ${LIBRARY_PATH})
     file(REMOVE ${TEST_SOURCE})

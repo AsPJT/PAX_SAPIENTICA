@@ -33,14 +33,14 @@ namespace paxs {
         /// @brief Read the file.
         /// @brief ファイルを読み込む。
         static std::vector<std::string> readFile(const std::string& file_path) {
-            std::ifstream file(file_path);
-            if (!file) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to read file: " + file_path;
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+            std::ifstream file(file_path); // ファイルパスにあるファイルを読み込む
+            if (!file) { // もしファイルが無い場合はエラーを出す
+                Logger logger("Save/error_log.txt"); // ログ管理クラス
+                const std::string message = "Failed to read file: " + file_path; // エラーメッセージ
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message); // ログを出力
                 throw std::runtime_error(message);
             }
-
+            // 1 行ごとに文字列を分離し vector へ格納
             std::string line;
             std::vector<std::string> result;
             while (std::getline(file, line)) {
@@ -56,7 +56,7 @@ namespace paxs {
             std::vector<std::string> contents;
             try
             {
-                contents = readFile(file_path);
+                contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
             }
             catch(const std::exception&)
             {
@@ -78,7 +78,7 @@ namespace paxs {
             std::vector<std::string> contents;
             try
             {
-                contents = readFile(file_path);
+                contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
             }
             catch(const std::exception&)
             {

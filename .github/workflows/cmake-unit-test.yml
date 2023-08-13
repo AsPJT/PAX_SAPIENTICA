@@ -43,12 +43,14 @@ jobs:
         sudo apt-get update
         sudo apt-get install libsfml-dev
         sudo apt-get install cmake
-        sudo apt-get install g++
+
+    - name: Check g++ version
+      run: g++ --version
 
     - name: Configure CMake
       run: |
         mkdir ${{github.workspace}}/build
-        cmake -B ${{github.workspace}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DBUILD_SFML_TEST=ON -S ${{env.WORK_SPACE}}/${{env.TEST_DIR}} -G "Unix Makefiles"
+        cmake -B ${{github.workspace}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}}/${{env.TEST_DIR}} -G "Unix Makefiles"
   
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target all -j 12

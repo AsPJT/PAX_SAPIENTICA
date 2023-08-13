@@ -27,6 +27,18 @@
 
 namespace paxs::cal {
 
+	enum CalendarsType : std::size_t {
+		jdn_s32_type		// ユリウス通日 (S32)
+		, jdn_s64_type		// ユリウス通日 (S64)
+		, jdn_f64_type		// ユリウス通日 (F64)
+		, julian_date_type	// ユリウス暦
+		, gregorian_date_type// グレゴリオ暦
+		, islamic_date_type	// ヒジュラ暦
+		, japan_date_type	// 和暦
+		, calbp_type		// 較正年代
+		, simulation_steps_type// シミュレーションのステップ数
+	};
+
 	// 暦
 	using Calendars = std::variant<
 		JDN_S32		// ユリウス通日 (S32)
@@ -40,17 +52,6 @@ namespace paxs::cal {
 		, SimulationSteps// シミュレーションのステップ数
 	>;
 
-	enum CalendarsType : std::size_t {
-		jdn_s32_type		// ユリウス通日 (S32)
-		, jdn_s64_type		// ユリウス通日 (S64)
-		, jdn_f64_type		// ユリウス通日 (F64)
-		, julian_date_type	// ユリウス暦
-		, gregorian_date_type// グレゴリオ暦
-		, islamic_date_type	// ヒジュラ暦
-		, japan_date_type	// 和暦
-		, calbp_type		// 較正年代
-		, simulation_steps_type// シミュレーションのステップ数
-	};
 
 }
 
