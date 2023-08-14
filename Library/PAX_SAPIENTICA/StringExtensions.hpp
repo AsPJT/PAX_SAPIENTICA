@@ -25,12 +25,11 @@ namespace paxs {
 	
     /// @brief Extensions for std::string
 	/// @brief std::string の拡張
-    class StringExtensions {
-    public:
+    namespace StringExtensions {
 
 		/// @brief Split string by delimiter
 		/// @brief デリミタで文字列を分割する
-		static std::vector<std::string> split(const std::string& input, const char delimiter) noexcept {
+		std::vector<std::string> split(const std::string& input, const char delimiter) noexcept {
 			std::istringstream stream(input);
 			std::string field;
 			std::vector<std::string> result;
@@ -42,7 +41,7 @@ namespace paxs {
 
 		/// @brief Replace string
 		/// @brief 文字列を置換する
-		static void replace(std::string& str, const std::string& from, const std::string& to) noexcept {
+		void replace(std::string& str, const std::string& from, const std::string& to) noexcept {
 			if (from.empty()) return;
 			const std::size_t from_len = from.length();
 			const std::size_t to_len = to.length();
@@ -55,7 +54,7 @@ namespace paxs {
 
 		/// @brief Replace string list
 		/// @brief 文字列リストを置換する
-		static void replaceList(std::string& str, const std::vector<std::string>& from, const std::vector<std::string>& to) noexcept {
+		void replaceList(std::string& str, const std::vector<std::string>& from, const std::vector<std::string>& to) noexcept {
 			for (std::size_t i = 0; i < from.size() && i < to.size(); ++i) {
 				replace(str, from[i], to[i]);
 			}
@@ -63,7 +62,7 @@ namespace paxs {
 
 		/// @brief Convert string to double
 		/// @brief 文字列を double に変換する
-        static std::variant<double, std::string> tryToConvertStringToDouble(const std::string& str) noexcept {
+        std::variant<double, std::string> tryToConvertStringToDouble(const std::string& str) noexcept {
 			try {
 				return std::stod(str);
 			} catch (const std::invalid_argument&/*ia*/) {
@@ -77,7 +76,7 @@ namespace paxs {
 
 		/// @brief Convert string to int
 		/// @brief 文字列を int に変換する
-		static std::variant<int, std::string> tryToConvertStringToInt(const std::string& str) noexcept {
+		std::variant<int, std::string> tryToConvertStringToInt(const std::string& str) noexcept {
 			try {
 				return std::stoi(str);
 			} catch (const std::invalid_argument&/*ia*/) {

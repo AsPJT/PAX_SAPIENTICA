@@ -23,8 +23,7 @@ namespace paxs {
     
     /// @brief 2D Vector class.
     template<typename T>
-    class Vector2 {
-    public:
+    struct Vector2 {
         constexpr explicit Vector2() noexcept = default;
         constexpr Vector2(T x, T y) noexcept : x(x), y(y) {}
 
@@ -56,41 +55,35 @@ namespace paxs {
         constexpr Vector2<T> operator*(const Vector2<T>& v) const noexcept {
             return Vector2<T>(x * v.x, y * v.y);
         }
-        constexpr Vector2<T> operator*(const int& t) const noexcept {
+
+        template<typename U>
+        constexpr Vector2<T> operator*(const U& t) const noexcept {
             return Vector2<T>(x * t, y * t);
         }
-        constexpr Vector2<T>& operator*=(const int& t) noexcept {
+
+        template<typename U>
+        constexpr Vector2<T>& operator*=(const U& t) noexcept {
             x *= t;
             y *= t;
             return *this;
         }
-        constexpr Vector2<T> operator*(const double& t) const noexcept {
-            return Vector2<T>(x * t, y * t);
-        }
-        constexpr Vector2<T>& operator*=(const double& t) noexcept {
-            x *= t;
-            y *= t;
-            return *this;
-        }
+
         constexpr Vector2<T> operator/(const Vector2<T>& v) const noexcept {
             return Vector2<T>(x / v.x, y / v.y);
         }
-        constexpr Vector2<T> operator/(const int& t) const noexcept {
+
+        template<typename U>
+        constexpr Vector2<T> operator/(const U& t) const noexcept {
             return Vector2<T>(x / t, y / t);
         }
-        constexpr Vector2<T>& operator/=(const int& t) noexcept {
+
+        template<typename U>
+        constexpr Vector2<T>& operator/=(const U& t) noexcept {
             x /= t;
             y /= t;
             return *this;
         }
-        constexpr Vector2<T> operator/(const double& t) const noexcept {
-            return Vector2<T>(x / t, y / t);
-        }
-        constexpr Vector2<T>& operator/=(const double& t) noexcept {
-            x /= t;
-            y /= t;
-            return *this;
-        }
+
         auto operator<=>(const Vector2<T>& v) const noexcept = default;
         
         /// @brief Get the length of the vector

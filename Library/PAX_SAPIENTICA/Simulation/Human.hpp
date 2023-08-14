@@ -22,18 +22,17 @@ namespace paxs {
 
     /// @brief A class that represents a human.
     /// @brief 人間を表すクラス
-    /// @tparam T A type of the coordinate value. 座標値の型
-    template <typename T>
-    class Human : public Agent<T> {
+    template <typename GridType>
+    class Human : public Agent<GridType> {
     public:
-        using Vector2 = paxs::Vector2<T>;
-        using Environment = paxs::Environment<T>;
+        using Vector2 = paxs::Vector2<GridType>;
+        using Environment = paxs::Environment<GridType>;
 
         constexpr explicit Human(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least8_t age, const std::uint_least8_t life_exp, Environment* env) noexcept
-            : Agent<T>(id, name, pos, gen, age, life_exp, env) {}
+            : Agent<GridType>(id, name, pos, gen, age, life_exp, env) {}
 
-        constexpr bool operator==(const paxs::Human<T>& a) const noexcept {
-            return  Agent<T>::operator==(a);
+        constexpr bool operator==(const paxs::Human<GridType>& a) const noexcept {
+            return  Agent<GridType>::operator==(a);
         }
     protected:
 

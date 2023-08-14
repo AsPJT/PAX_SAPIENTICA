@@ -34,11 +34,10 @@ namespace paxs {
 
     /// @brief A class that manages data required for simulation.
     /// @brief シミュレーションに必要なデータを管理するクラス
-    /// @tparam T Vector2's type. Vector2の型。
-    template <typename T>
+    template <typename GridType>
     class Environment {
     public:
-        using Vector2 = paxs::Vector2<T>;
+        using Vector2 = paxs::Vector2<GridType>;
 
         using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>>;
 

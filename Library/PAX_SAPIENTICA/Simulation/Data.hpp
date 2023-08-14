@@ -42,8 +42,7 @@ namespace paxs {
 
     /// @brief A class that holds data required for simulation.
     /// @brief シミュレーションに必要なデータを保持するクラス
-    /// @tparam T type of data. データの型
-    template <typename T>
+    template <typename GridType>
     class Data {
     public:
         using Vector2 = paxs::Vector2<int>;
@@ -90,11 +89,11 @@ namespace paxs {
 
         /// @brief Get the data of the specified position.
         /// @brief 指定した位置の値を取得する
-        constexpr T getValue(const Vector2& position) const noexcept {
+        constexpr GridType getValue(const Vector2& position) const noexcept {
             const Vector2 converted_position = position * z_mag;
             auto itr = data.find(convertVector2ToIndex(converted_position));
             if(itr == data.end()) {
-                return static_cast<T>(0);
+                return static_cast<GridType>(0);
             }
             return itr->second;
         }
@@ -102,7 +101,7 @@ namespace paxs {
         Vector2 start_position; // シミュレーションの左上の座標
         Vector2 end_position; // シミュレーションの右下の座標
         std::string name; // データの名前
-        std::unordered_map<std::uint_least64_t, T> data; // データ
+        std::unordered_map<std::uint_least64_t, GridType> data; // データ
         int default_z; // データのz値
         int pj_z; // シミュレーションのz値
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
@@ -190,9 +189,9 @@ namespace paxs {
                         // T型に変換
                         try {
                             if(data_type == DataType::u8 || data_type == DataType::u32)
-                                data[convertVector2ToIndex(position)] = static_cast<T>(std::stoi(values[x]));
+                                data[convertVector2ToIndex(position)] = static_cast<GridType>(std::stoi(values[x]));
                             else if(data_type == DataType::f32)
-                                data[convertVector2ToIndex(position)] = static_cast<T>(std::stod(values[x]));
+                                data[convertVector2ToIndex(position)] = static_cast<GridType>(std::stod(values[x]));
                         } catch (const std::invalid_argument&/*ia*/) {
                             // str is not convertible to double
                             continue;
@@ -250,7 +249,7 @@ namespace paxs {
                         const Vector2 position = default_position + Vector2((int)x, (int)y);
                         // T型に変換
                         if (file[y][x] == '0') continue;
-                        data[convertVector2ToIndex(position)] = static_cast<T>(file[y][x]);
+                        data[convertVector2ToIndex(position)] = static_cast<GridType>(file[y][x]);
                     }
                 }
                 ++file_count;
@@ -310,7 +309,7 @@ namespace paxs {
                             if(is_contain_one) break;
                         }
                         if(!is_contain_one) continue;
-                        data[convertVector2ToIndex(position)] = static_cast<T>('1');
+                        data[convertVector2ToIndex(position)] = static_cast<GridType>('1');
                     }
                 }
                 ++file_count;

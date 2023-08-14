@@ -29,16 +29,15 @@ namespace paxs {
 
     /// @brief Class that performs simulation.
     /// @brief シミュレーションを行うクラス
-    /// @tparam T Type of the coordinate value. Vector2の座標の型。
-    template <typename T>
+    template <typename GridType>
     class Simulator {
     public:
-        using Environment = paxs::Environment<T>;
-        using Vector2 = paxs::Vector2<T>;
-        using Agent = paxs::Agent<T>;
+        using Environment = paxs::Environment<GridType>;
+        using Vector2 = paxs::Vector2<GridType>;
+        using Agent = paxs::Agent<GridType>;
 
         constexpr explicit Simulator() = default;
-        Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+        explicit Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
             environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
                 if (z <= 0) {
                     Logger logger("Save/error_log.txt");
@@ -84,7 +83,7 @@ namespace paxs {
         /// @brief シミュレーションを1ステップ実行する
         void step() noexcept {
             for(auto& agent : agents) {
-                agent.updateAge();
+                agent.incrementAge();
                 try {
                     agent.move();
                 } catch (const std::runtime_error&) {
@@ -111,7 +110,7 @@ namespace paxs {
         std::vector<Agent> agents; // エージェントのリスト
         std::shared_ptr<Environment> environment; // 環境
         std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
+        std::uniform_int_distribution<std::uint_least8_t> gender_dist{0, 1}; // 性別の乱数分布
         std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
 
         /// @brief Clear the agents.
@@ -142,7 +141,7 @@ namespace paxs {
                     throw std::runtime_error(message);
                 }
                 
-                agents.push_back(Agent( "", "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
+                agents.push_back(Agent( "", "", position, gender_dist(gen), age_dist(gen), life_exp_dist(gen), environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;

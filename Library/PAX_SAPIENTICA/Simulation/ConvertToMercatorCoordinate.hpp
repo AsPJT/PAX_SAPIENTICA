@@ -23,8 +23,8 @@
 
 namespace paxs {
     // TODO: Math.hppに移動
-    template <typename T>
-    constexpr Vector2<double> convertToMercatorCoordinate(const Vector2<T>& start_position, const Vector2<T>& position, const int z) noexcept {
+    template <typename GridType>
+    constexpr Vector2<double> convertToMercatorCoordinate(const Vector2<GridType>& start_position, const Vector2<GridType>& position, const int z) noexcept {
         const double n = std::pow(2, z);
         const double pixel_sum = pixel_size * n;
         const double u = (double)position.x / pixel_sum + start_position.x / n;
