@@ -34,7 +34,7 @@ namespace paxs {
     
     /// @brief Data class data type
     /// @brief Dataクラスのデータ型
-    enum class DataType {
+    enum class DataTypeEnum {
         u8,
         u32,
         f32
@@ -42,14 +42,13 @@ namespace paxs {
 
     /// @brief A class that holds data required for simulation.
     /// @brief シミュレーションに必要なデータを保持するクラス
-    /// @tparam T type of data. データの型
-    template <typename T>
+    template <typename DataType, typename GridType>
     class Data {
     public:
-        using Vector2 = paxs::Vector2<int>;
-        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z, const  DataType data_type) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z), data_type(data_type) {
+        using Vector2 = paxs::Vector2<GridType>;
+        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z, const  DataTypeEnum data_type) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z), data_type(data_type) {
             z_mag = std::pow(2, default_z - pj_z);
-            column_size = (end_position.x - start_position.x + 1) * pixel_size * z_mag;
+            column_size = static_cast<int>((end_position.x - start_position.x + 1) * pixel_size * z_mag);
 
             try {
                 load(file_path);
@@ -90,11 +89,11 @@ namespace paxs {
 
         /// @brief Get the data of the specified position.
         /// @brief 指定した位置の値を取得する
-        constexpr T getValue(const Vector2& position) const noexcept {
+        constexpr DataType getValue(const Vector2& position) const noexcept {
             const Vector2 converted_position = position * z_mag;
             auto itr = data.find(convertVector2ToIndex(converted_position));
             if(itr == data.end()) {
-                return static_cast<T>(0);
+                return static_cast<DataType>(0);
             }
             return itr->second;
         }
@@ -102,11 +101,11 @@ namespace paxs {
         Vector2 start_position; // シミュレーションの左上の座標
         Vector2 end_position; // シミュレーションの右下の座標
         std::string name; // データの名前
-        std::unordered_map<std::uint_least64_t, T> data; // データ
+        std::unordered_map<std::uint_least64_t, DataType> data; // データ
         int default_z; // データのz値
         int pj_z; // シミュレーションのz値
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
-        DataType data_type; // データの型
+        DataTypeEnum data_type; // データの型
         int column_size; // シミュレーションの列数
 
         /// @brief Load the file.
@@ -163,7 +162,7 @@ namespace paxs {
                     continue;
                 }
                 
-                const Vector2 default_position = xyz_position * pixel_size - start_position * z_mag * pixel_size;
+                const Vector2 default_position = xyz_position * pixel_size - start_position * pixel_size * z_mag;
                 if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
                     ++file_count;
                     continue;
@@ -183,16 +182,16 @@ namespace paxs {
                     // タブ区切り
                     const std::vector<std::string> values = StringExtensions::split(file[y], '\t');
                     for(std::size_t x = 0;x < values.size();++x) {
-                        const Vector2 position = default_position + Vector2((int)x, (int)y);
+                        const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
                         if(values[x] == "") {
                             continue;
                         }
                         // T型に変換
                         try {
-                            if(data_type == DataType::u8 || data_type == DataType::u32)
-                                data[convertVector2ToIndex(position)] = static_cast<T>(std::stoi(values[x]));
-                            else if(data_type == DataType::f32)
-                                data[convertVector2ToIndex(position)] = static_cast<T>(std::stod(values[x]));
+                            if(data_type == DataTypeEnum::u8 || data_type == DataTypeEnum::u32)
+                                data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stoi(values[x]));
+                            else if(data_type == DataTypeEnum::f32)
+                                data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stod(values[x]));
                         } catch (const std::invalid_argument&/*ia*/) {
                             // str is not convertible to double
                             continue;
@@ -229,7 +228,7 @@ namespace paxs {
                     continue;
                 }
 
-                const Vector2 default_position = xyz_position * pixel_size - start_position * z_mag * pixel_size;
+                const Vector2 default_position = xyz_position * pixel_size - start_position * pixel_size * z_mag;
                 if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
                     ++file_count;
                     continue;
@@ -247,10 +246,10 @@ namespace paxs {
 
                 for(std::size_t y = 0;y < file.size();++y) {
                     for(std::size_t x = 0;x < file[y].size();++x) {
-                        const Vector2 position = default_position + Vector2((int)x, (int)y);
+                        const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
                         // T型に変換
                         if (file[y][x] == '0') continue;
-                        data[convertVector2ToIndex(position)] = static_cast<T>(file[y][x]);
+                        data[convertVector2ToIndex(position)] = static_cast<DataType>(file[y][x]);
                     }
                 }
                 ++file_count;
@@ -296,9 +295,10 @@ namespace paxs {
                     continue;
                 }
 
-                for(std::size_t y = 0;y < file.size();y += z_mag) {
-                    for(std::size_t x = 0;x < file[y].size();x += z_mag) {
-                        const Vector2 position = default_position + Vector2((int)x / z_mag, (int)y / z_mag);
+                std::size_t z_mag_t = static_cast<std::size_t>(z_mag);
+                for(std::size_t y = 0;y < file.size();y += z_mag_t) {
+                    for(std::size_t x = 0;x < file[y].size();x += z_mag_t) {
+                        const Vector2 position = default_position + Vector2(static_cast<GridType>(x / z_mag), static_cast<GridType>(y / z_mag));
                         bool is_contain_one = false;
                         for(std::size_t y_diff = 0;y_diff < z_mag;++y_diff) {
                             for(std::size_t x_diff = 0;x_diff < z_mag;++x_diff) {
@@ -310,7 +310,7 @@ namespace paxs {
                             if(is_contain_one) break;
                         }
                         if(!is_contain_one) continue;
-                        data[convertVector2ToIndex(position)] = static_cast<T>('1');
+                        data[convertVector2ToIndex(position)] = static_cast<DataType>('1');
                     }
                 }
                 ++file_count;

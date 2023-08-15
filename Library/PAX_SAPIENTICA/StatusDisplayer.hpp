@@ -20,13 +20,13 @@
 #include <iomanip>
 
 namespace paxs {
-    /// @brief A class that displays the progress.
-    /// @brief ステータスを表示するクラス
-    class StatusDisplayer {
-    public:
+    /// @brief Display the status.
+    /// @brief ステータスを表示する
+    namespace StatusDisplayer {
+
         /// @brief Display the progress bar.
         /// @brief プログレスバーを表示する
-        static void displayProgressBar(unsigned int current, unsigned int total) noexcept {
+        void displayProgressBar(unsigned int current, unsigned int total) noexcept {
             const int bar_width = 50;
 
             if (total == 0) {

@@ -29,16 +29,15 @@ namespace paxs {
 
     /// @brief Class that performs simulation.
     /// @brief シミュレーションを行うクラス
-    /// @tparam T Type of the coordinate value. Vector2の座標の型。
-    template <typename T>
+    template <typename GridType>
     class Simulator {
     public:
-        using Environment = paxs::Environment<T>;
-        using Vector2 = paxs::Vector2<T>;
-        using Agent = paxs::Agent<T>;
+        using Environment = paxs::Environment<GridType>;
+        using Vector2 = paxs::Vector2<GridType>;
+        using Agent = paxs::Agent<GridType>;
 
         constexpr explicit Simulator() = default;
-        Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+        explicit Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
             environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
                 if (z <= 0) {
                     Logger logger("Save/error_log.txt");
@@ -84,7 +83,7 @@ namespace paxs {
         /// @brief シミュレーションを1ステップ実行する
         void step() noexcept {
             for(auto& agent : agents) {
-                agent.updateAge();
+                agent.incrementAge();
                 try {
                     agent.move();
                 } catch (const std::runtime_error&) {

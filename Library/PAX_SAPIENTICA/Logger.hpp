@@ -72,7 +72,7 @@ namespace paxs {
         /// @param filename The name of the file to log. ログを記録するファイルの名前。ex) __FILE__
         /// @param line The line number of the file to log. ログを記録するファイルの行番号。ex) __LINE__
         /// @param message The message to log. ログするメッセージ。
-        void log(Level level, const std::string& filename, int line, const std::string& message) noexcept {
+        void log(const Level level, const std::string& filename, const int line, const std::string& message) noexcept {
             const std::string current_time = currentDateTime();
             file << "[" << current_time << "] ";
             
@@ -96,7 +96,7 @@ namespace paxs {
         /// @param e The exception to log. ログする例外。
         /// @param filename The name of the file to log. ログを記録するファイルの名前。ex) __FILE__
         /// @param line The line number of the file to log. ログを記録するファイルの行番号。ex) __LINE__
-        void handleException(const std::exception& e, const std::string& filename, int line) noexcept {
+        void handleException(const std::exception& e, const std::string& filename, const int line) noexcept {
             log(Level::ERROR, filename, line, "Exception: " + std::string(e.what()));
         }
     private:

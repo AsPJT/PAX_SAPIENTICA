@@ -17,7 +17,7 @@
 ##########################################################################################*/
 
 namespace paxs {
-    static const int pixel_size = 256; // 1画像あたりの縦横のピクセル数
+    constexpr int pixel_size = 256; // 1画像あたりの縦横のピクセル数
 }
 
 #endif // !PAX_SAPIENTICA_SIMULATION_SIMULATION_CONST_HPP
