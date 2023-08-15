@@ -58,7 +58,7 @@ namespace paxs {
 
         template<typename U>
         constexpr Vector2<T> operator*(const U& t) const noexcept {
-            return Vector2<T>(x * t, y * t);
+            return Vector2<T>(static_cast<T>(x * t), static_cast<T>(y * t));
         }
 
         template<typename U>
@@ -74,7 +74,7 @@ namespace paxs {
 
         template<typename U>
         constexpr Vector2<T> operator/(const U& t) const noexcept {
-            return Vector2<T>(x / t, y / t);
+            return Vector2<T>(static_cast<T>(x / t), static_cast<T>(y / t));
         }
 
         template<typename U>

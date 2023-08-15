@@ -65,7 +65,7 @@ namespace paxs {
 
             // min_slope~max_slopeの間の傾斜の場合は傾斜が大きいほど移動しやすくする
             if (current_slope > th_min_slope && current_slope <= th_max_slope) {
-                std::uniform_int_distribution<> dist(0, 9 + (current_slope - th_min_slope) * (90 / (th_max_slope - th_min_slope)));
+                std::uniform_int_distribution<> dist(static_cast<int>(0, 9 + (current_slope - th_min_slope) * (90 / (th_max_slope - th_min_slope))));
                 if (dist(engine) != 0) {
                     return;
                 }
