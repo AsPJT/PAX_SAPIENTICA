@@ -194,7 +194,7 @@ namespace paxs {
 
 			int rect_start_x = s3d::Scene::Width() - 375;
 
-			int koyomi_height = koyomi_siv.date_list.size() * (koyomi_font_size * 4 / 3); // 暦の縦の幅
+			int koyomi_height = static_cast<int>(koyomi_siv.date_list.size()) * (koyomi_font_size * 4 / 3); // 暦の縦の幅
 
 
 			const int arrow_time_icon_size = 24; // 時間操作アイコンの大きさ

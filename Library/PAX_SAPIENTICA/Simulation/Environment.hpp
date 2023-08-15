@@ -39,7 +39,7 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
-        using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>>;
+        using DataVariant = std::variant<Data<std::uint_least8_t, GridType>, Data<std::uint_least32_t, GridType>, Data<float, GridType>>;
 
         /// @brief Start position of the simulation.
         /// @brief シミュレーションデータのマップ
@@ -88,11 +88,11 @@ namespace paxs {
                 const std::string data_type = settings[i][data_type_column];
                 const std::string key = settings[i][key_column];
                 if(data_type == "u8"){
-                    data_map.emplace(key, Data<std::uint_least8_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::u8));
+                    data_map.emplace(key, Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataTypeEnum::u8));
                 } else if(data_type == "u32"){
-                    data_map.emplace(key, Data<std::uint_least32_t>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::u32));
+                    data_map.emplace(key, Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataTypeEnum::u32));
                 } else if(data_type == "f32"){
-                    data_map.emplace(key, Data<float>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataType::f32));
+                    data_map.emplace(key, Data<float, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataTypeEnum::f32));
                 } else {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "data_type is not found: " + data_type + " in " + setting_file_path;
@@ -118,7 +118,7 @@ namespace paxs {
                 logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
-            return std::get<Data<U>>(data_map.at(key)).getValue(position);
+            return std::get<Data<U, GridType>>(data_map.at(key)).getValue(position);
         }
 
         /// @brief Is it possible to live?

@@ -110,7 +110,7 @@ namespace paxs {
         std::vector<Agent> agents; // エージェントのリスト
         std::shared_ptr<Environment> environment; // 環境
         std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<std::uint_least8_t> gender_dist{0, 1}; // 性別の乱数分布
+        std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
         std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
 
         /// @brief Clear the agents.
@@ -141,7 +141,7 @@ namespace paxs {
                     throw std::runtime_error(message);
                 }
                 
-                agents.push_back(Agent( "", "", position, gender_dist(gen), age_dist(gen), life_exp_dist(gen), environment));
+                agents.push_back(Agent( "", "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;
