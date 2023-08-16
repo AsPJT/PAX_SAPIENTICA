@@ -88,11 +88,11 @@ namespace paxs {
                 const std::string data_type = settings[i][data_type_column];
                 const std::string key = settings[i][key_column];
                 if(data_type == "u8"){
-                    data_map.emplace(key, Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataTypeEnum::u8));
+                    data_map.emplace(key, Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z));
                 } else if(data_type == "u32"){
-                    data_map.emplace(key, Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataTypeEnum::u32));
+                    data_map.emplace(key, Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z));
                 } else if(data_type == "f32"){
-                    data_map.emplace(key, Data<float, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z, DataTypeEnum::f32));
+                    data_map.emplace(key, Data<float, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z));
                 } else {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "data_type is not found: " + data_type + " in " + setting_file_path;

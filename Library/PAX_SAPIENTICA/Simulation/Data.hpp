@@ -31,14 +31,6 @@
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
-    
-    /// @brief Data class data type
-    /// @brief Dataクラスのデータ型
-    enum class DataTypeEnum {
-        u8,
-        u32,
-        f32
-    };
 
     /// @brief A class that holds data required for simulation.
     /// @brief シミュレーションに必要なデータを保持するクラス
@@ -46,7 +38,7 @@ namespace paxs {
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z, const  DataTypeEnum data_type) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z), data_type(data_type) {
+        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z) {
             z_mag = std::pow(2, default_z - pj_z);
             column_size = static_cast<int>((end_position.x - start_position.x + 1) * pixel_size * z_mag);
 
@@ -68,7 +60,6 @@ namespace paxs {
             default_z(other.default_z),
             pj_z(other.pj_z),
             z_mag(other.z_mag),
-            data_type(other.data_type),
             column_size(other.column_size) {}
 
         // Copy assignment operator
@@ -81,7 +72,6 @@ namespace paxs {
                 default_z = other.default_z;
                 pj_z = other.pj_z;
                 z_mag = other.z_mag;
-                data_type = other.data_type;
                 column_size = other.column_size;
             }
             return *this;
@@ -105,7 +95,6 @@ namespace paxs {
         int default_z; // データのz値
         int pj_z; // シミュレーションのz値
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
-        DataTypeEnum data_type; // データの型
         int column_size; // シミュレーションの列数
 
         /// @brief Load the file.
@@ -188,9 +177,9 @@ namespace paxs {
                         }
                         // T型に変換
                         try {
-                            if(data_type == DataTypeEnum::u8 || data_type == DataTypeEnum::u32)
+                            if(std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value)
                                 data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stoi(values[x]));
-                            else if(data_type == DataTypeEnum::f32)
+                            else if(std::is_same<DataType, float>::value)
                                 data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stod(values[x]));
                         } catch (const std::invalid_argument&/*ia*/) {
                             // str is not convertible to double
