@@ -235,9 +235,9 @@ namespace paxs {
 
                 for(std::size_t y = 0;y < file.size();++y) {
                     for(std::size_t x = 0;x < file[y].size();++x) {
-                        const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
                         // T型に変換
                         if (file[y][x] == '0') continue;
+                        const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
                         data[convertVector2ToIndex(position)] = static_cast<DataType>(file[y][x]);
                     }
                 }
@@ -287,7 +287,6 @@ namespace paxs {
                 std::size_t z_mag_t = static_cast<std::size_t>(z_mag);
                 for(std::size_t y = 0;y < file.size();y += z_mag_t) {
                     for(std::size_t x = 0;x < file[y].size();x += z_mag_t) {
-                        const Vector2 position = default_position + Vector2(static_cast<GridType>(x / z_mag), static_cast<GridType>(y / z_mag));
                         bool is_contain_one = false;
                         for(std::size_t y_diff = 0;y_diff < z_mag;++y_diff) {
                             for(std::size_t x_diff = 0;x_diff < z_mag;++x_diff) {
@@ -299,6 +298,7 @@ namespace paxs {
                             if(is_contain_one) break;
                         }
                         if(!is_contain_one) continue;
+                        const Vector2 position = default_position + Vector2(static_cast<GridType>(x / z_mag), static_cast<GridType>(y / z_mag));
                         data[convertVector2ToIndex(position)] = static_cast<DataType>('1');
                     }
                 }

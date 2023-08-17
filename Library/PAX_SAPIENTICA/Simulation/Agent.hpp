@@ -42,7 +42,7 @@ namespace paxs {
         /// @brief Move the agent.
         /// @brief エージェントを移動させる
         void move() {
-            const std::array<Vector2, 8> move_directions {
+            constexpr std::array<Vector2, 8> move_directions {
                     Vector2(-1, -1), Vector2(0, -1), Vector2(1, -1),
                     Vector2(-1, 0), Vector2(1, 0),
                     Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)
@@ -71,11 +71,10 @@ namespace paxs {
                 }
             }
 
-            bool is_movable = false;
             std::uniform_int_distribution<> amount(1, 5);
             std::array<float, 8> probabilities = {};
             const float elevation = environment->getElevation(this->position);
-            while (!is_movable) {
+            for (bool is_movable = false; !is_movable;) {
                 // 移動量は1~5の間でランダムに決定
                 const int move_amount = amount(engine);
 
