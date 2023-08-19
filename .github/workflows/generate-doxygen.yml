@@ -1,0 +1,28 @@
+name: Generate Doxygen
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Doxygen and Graphviz
+      run: sudo apt-get install doxygen graphviz
+
+    - name: Generate Documentation
+      run: |
+        cd ${{github.workspace}}/Document/Doxygen
+        doxygen Doxyfile
+
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4.4.3
+      with:
+        branch: gh-pages
+        folder: ./html
