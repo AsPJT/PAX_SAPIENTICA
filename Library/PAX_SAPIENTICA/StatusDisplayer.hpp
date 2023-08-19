@@ -22,11 +22,11 @@
 namespace paxs {
     /// @brief Display the status.
     /// @brief ステータスを表示する
-    namespace StatusDisplayer {
+    struct StatusDisplayer {
 
         /// @brief Display the progress bar.
         /// @brief プログレスバーを表示する
-        void displayProgressBar(unsigned int current, unsigned int total) noexcept {
+        static void displayProgressBar(unsigned int current, unsigned int total) noexcept {
             const int bar_width = 50;
 
             if (total == 0) {

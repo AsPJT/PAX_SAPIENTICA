@@ -28,11 +28,11 @@ namespace paxs {
     
     /// @brief Handle files.
     /// @brief ファイルを扱う
-    namespace File {
+    struct File {
 
         /// @brief Read the file.
         /// @brief ファイルを読み込む。
-        std::vector<std::string> readFile(const std::string& file_path) {
+        static std::vector<std::string> readFile(const std::string& file_path) {
             std::ifstream file(file_path); // ファイルパスにあるファイルを読み込む
             if (!file) { // もしファイルが無い場合はエラーを出す
                 Logger logger("Save/error_log.txt"); // ログ管理クラス
@@ -52,7 +52,7 @@ namespace paxs {
 
         /// @brief Read CSV file.
         /// @brief CSVファイルを読み込む。
-        std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {
+        static std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {
             std::vector<std::string> contents;
             try {
                 contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
@@ -72,7 +72,7 @@ namespace paxs {
 
         /// @brief Read TSV file.
         /// @brief TSVファイルを読み込む。
-        std::vector<std::vector<std::string>> readTSV(const std::string& file_path) {
+        static std::vector<std::vector<std::string>> readTSV(const std::string& file_path) {
             std::vector<std::string> contents;
             try {
                 contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
@@ -92,7 +92,7 @@ namespace paxs {
 
         /// @brief Get the file name in the directory.
         /// @brief ディレクトリ内のファイル名を取得する。
-        std::vector<std::string> getFileNames(const std::string& directory_path) {
+        static std::vector<std::string> getFileNames(const std::string& directory_path) {
             std::filesystem::path dir_path(directory_path);
             if (!std::filesystem::exists(dir_path)) {
                 Logger logger("Save/error_log.txt");

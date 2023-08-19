@@ -16,8 +16,8 @@
 
 ##########################################################################################*/
 
+#include <PAX_SAPIENTICA/MapUtility.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Simulation/ConvertToMercatorCoordinate.hpp>
 
 namespace paxs {
 
@@ -54,7 +54,7 @@ namespace paxs {
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
         /// @brief 座標をメルカトル座標で取得
         constexpr paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const noexcept {
-            return convertToMercatorCoordinate(start_position, position, z);
+            return MapUtility::convertToMercatorCoordinate(start_position, position, z);
         }
 
         constexpr bool operator==(const paxs::Object<GridType>& a) const noexcept {
