@@ -1,11 +1,9 @@
 name: Generate Doxygen
 
-# on:
-#   push:
-#     branches:
-#       - main
-
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - develop
 
 jobs:
   build:
