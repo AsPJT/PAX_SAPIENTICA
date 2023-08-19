@@ -278,3 +278,5 @@ AS_DEBUG/
 .vscode
 
 2010/
+
+Document/Doxygen/*/
