@@ -24,16 +24,16 @@
 
 namespace paxs {
 	
-	// XYZ タイルの種別
-	enum XYZTileFileName : int {
-		Empty,
-		Default,
-		Original,
-		Z_Original
-	};
-
 	class XYZTile {
 	public:
+		// XYZ タイルの種別
+		enum XYZTileFileName : int {
+			Empty,
+			Default,
+			Original,
+			Z_Original
+		};
+
 		// XYZ タイルの 1 つのセルのメルカトル座標を保持
 		// 基本的に Z = 19 は無い
 		using MapVec2 = Vector2<int>;

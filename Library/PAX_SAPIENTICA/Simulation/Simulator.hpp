@@ -98,14 +98,10 @@ namespace paxs {
 
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr std::vector<Agent>& getAgents() noexcept {
-            return agents;
-        }
+        constexpr std::vector<Agent>& getAgents() noexcept { return agents; }
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr const std::vector<Agent>& cgetAgents() const noexcept {
-            return agents;
-        }
+        constexpr const std::vector<Agent>& cgetAgents() const noexcept { return agents; }
     private:
         std::vector<Agent> agents; // エージェントのリスト
         std::shared_ptr<Environment> environment; // 環境
@@ -115,9 +111,7 @@ namespace paxs {
 
         /// @brief Clear the agents.
         /// @brief エージェントをクリアする
-        void clearAgents() noexcept {
-            agents.clear();
-        }
+        void clearAgents() noexcept { agents.clear(); }
 
         /// @brief Randomly place the agents.
         /// @brief エージェントをランダムに配置する
