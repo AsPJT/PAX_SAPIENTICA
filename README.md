@@ -4,7 +4,15 @@
 
 ![Screenshot](./Image/Screenshot/Best.png)
 
-GIS & Archaeological Simulator
+# Overview
+
+This software and library supports calendars, maps, and simulations.
+
+# How to Install
+
+This software uses OpenSiv3D (v0.6.10).
+
+To try this library, build cmake.
 
 # Code Documentation
 
@@ -23,12 +31,6 @@ https://aspjt.github.io/PAX_SAPIENTICA/
 |✅|Julian day number|
 
 ![Calendar](./Image/Other/Calendar20230709.gif)
-
-## Place Name
-- The number of registered East Asian place names is high. Place names around the Japanese archipelago have a particularly high number of registrations.
-
-## Historical Period
-- The main periods registered are from the 1st to the 7th century.
 
 # Screenshot
 
