@@ -25,6 +25,9 @@
 var NAVTREE =
 [
   [ "PAX_SAPIENTICA", "index.html", [
+    [ "API Reference", "index.html", [
+      [ "Overview", "index.html#overview", null ]
+    ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -68,7 +71,7 @@ var NAVTREEINDEX =
 "Window_8hpp.html#adaf6d351e44b0d41a85bef0a154f098e",
 "classpaxs_1_1XYZTile.html#ae4fde3d6392efc89a39806b787b63357",
 "classs3d_1_1Texture.html#a3f34c6ed0f131ea685b18689805cf365",
-"structpaxg_1_1Color.html#a281e77e5a2095271752df2a55add8872"
+"structpaxg_1_1Color.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
