@@ -24,13 +24,13 @@
 namespace paxs {
 
     template <typename GridType>
-    class BaseGroup : public Object<GridType> {
+    class BaseGroup {
     public:
         using Vector2 = paxs::Vector2<GridType>;
         using Object = paxs::Object<GridType>;
         using Agent = paxs::Agent<GridType>;
 
-        constexpr explicit BaseGroup(const std::string& id, const std::string& name, const Vector2& pos) noexcept : Object(id, name, pos) {}
+        constexpr explicit BaseGroup(const std::uint_least32_t id) noexcept : id(id) {}
 
         /// @brief Add an agent to the settlement.
         /// @brief 集落にエージェントを追加
@@ -51,6 +51,8 @@ namespace paxs {
     private:
         /// @brief エージェントの配列
         std::vector<Agent> agents;
+        /// @brief 集落id
+        std::uint_least32_t id;
     };
 
 }
