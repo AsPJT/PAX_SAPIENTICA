@@ -34,7 +34,7 @@ namespace paxs {
 
         /// @brief Add an agent to the settlement.
         /// @brief 集落にエージェントを追加
-        void addAgent(const Agent& agent) { agents.push_back(agent); }
+        virtual void addAgent(const Agent& agent) { agents.push_back(agent); }
 
         /// @brief Get the agent.
         /// @brief エージェントを取得
@@ -48,9 +48,11 @@ namespace paxs {
             throw std::runtime_error("Agent not found.");
         }
 
-    private:
+    protected:
         /// @brief エージェントの配列
         std::vector<Agent> agents;
+
+    private:
         /// @brief 集落id
         std::uint_least32_t id;
     };

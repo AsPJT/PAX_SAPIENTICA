@@ -9,40 +9,41 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_UNIT_HPP
-#define PAX_SAPIENTICA_UNIT_HPP
+#ifndef PAX_SAPIENTICA_BASIC_GROUP_HPP
+#define PAX_SAPIENTICA_BASIC_GROUP_HPP
 
 /*##########################################################################################
 
 ##########################################################################################*/
 
+#include <vector>
+
 #include <PAX_SAPIENTICA/Simulation/BaseGroup.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
 
-    /// @brief A class that represents a unit group.
-    /// @brief 単位集団を表すクラス
+    /// @brief A class that represents a basic group.
+    /// @brief 基礎集団を表すクラス
     template <typename GridType>
-    class UnitGroup : public BaseGroup<GridType>
+    class BasicGroup : public BaseGroup<GridType>
     {
     public:
         using Agent = paxs::Agent<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
-        constexpr explicit UnitGroup(const std::string& id, const Vector2& position) noexcept : BaseGroup<GridType>(id), position(position) {}
+        constexpr explicit BasicGroup(const std::string& id, const std::vector<Vector2>& positions) noexcept : BaseGroup<GridType>(id), positions(positions) {}
         void addAgent(const Agent& agent) override {
-            if (this->agents.size() + 1 < unit_group_max) {
+            if (this->agents.size() + 1 < basic_group_max) {
                 this->agents.push_back(agent);
             } else {
-                throw std::runtime_error("The number of agents in the unit group has reached the limit.");
+                throw std::runtime_error("The number of agents in the basic group has reached the limit.");
             }
         }
-
     private:
-        /// @brief 単位集団の位置
-        Vector2 position;
+        /// @brief 基礎集団の位置
+        std::vector<Vector2> positions;
+
     };
 
 }
 
-#endif // !PAX_SAPIENTICA_UNIT_HPP
+#endif // !PAX_SAPIENTICA_BASIC_GROUP_HPP
