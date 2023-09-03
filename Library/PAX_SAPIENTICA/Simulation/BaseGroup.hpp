@@ -32,6 +32,10 @@ namespace paxs {
 
         constexpr explicit BaseGroup(const std::uint_least32_t id) noexcept : id(id) {}
 
+        /// @brief Get the uuid.
+        /// @brief idを取得
+        constexpr std::uint_least32_t getId() const noexcept { return id; }
+
         /// @brief Add an agent to the settlement.
         /// @brief 集落にエージェントを追加
         virtual void addAgent(const Agent& agent) { agents.push_back(agent); }
