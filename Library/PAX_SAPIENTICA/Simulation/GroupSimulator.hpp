@@ -27,12 +27,11 @@ namespace paxs {
     {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        using UnitGroup = paxs::UnitGroup<GridType>;
+        using Environment = paxs::Environment<GridType>;
         using Agent = paxs::Agent<GridType>;
 
         constexpr explicit GroupSimulator() = default;
-        explicit GroupSimulator
-        explicit Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+        explicit GroupSimulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
             environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
                 if (z <= 0) {
                     Logger logger("Save/error_log.txt");
@@ -49,7 +48,7 @@ namespace paxs {
             }
 
     private:
-        std::vector<BaseGroup> groups; // グループ
+        std::vector<BaseGroup<GridType>> groups; // グループ
         std::shared_ptr<Environment> environment; // 環境
         std::mt19937 gen; // 乱数生成器
 
