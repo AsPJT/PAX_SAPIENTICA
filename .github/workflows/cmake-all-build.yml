@@ -2,12 +2,7 @@ name: CMake-All-Build
 
 on:
   pull_request:
-    branches:
-      - main
-      - develop
-      - feature/*
-      - release/*
-      - hotfix/*
+
 env:
   BUILD_TYPE: Debug
   WORK_SPACE: ${{github.workspace}}/Project
@@ -43,4 +38,3 @@ jobs:
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target all -j 12
-
