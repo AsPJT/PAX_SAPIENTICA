@@ -22,7 +22,7 @@ jobs:
       run: cppcheck --enable=all --output-file=cppcheck-result.txt --force --quiet -I ${{ env.WORKSPACE }}/Library ${{ env.WORKSPACE }}/Project
     
     - name: Setup reviewdog
-      uses: reviewdog/action-setup@v1
+      uses: reviewdog/action-setup@80a06617492b461a66508e2dedf16233f0506804
 
     - name: Comment GitHub Pull Request
       env:
