@@ -28,6 +28,6 @@ jobs:
       env:
         REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        cat cppcheck_warning_temp.txt | grep "\bwarning: " | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-warning"
-        cat cppcheck_warning_temp.txt | grep "\berror: "   | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-error"
-        cat cppcheck_warning_temp.txt | grep "\bnote: "    | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-note"
+        cat cppcheck-result.txt | grep "\bwarning: " | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-warning"
+        cat cppcheck-result.txt | grep "\berror: "   | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-error"
+        cat cppcheck-result.txt | grep "\bnote: "    | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-note"
