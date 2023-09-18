@@ -45,20 +45,6 @@
 
 namespace paxs {
 
-	std::vector<s3d::Font> setFont(
-		const s3d::FontMethod& font_method,
-		const int font_size,
-		const std::string& path,
-		const std::string& key,
-		const paxs::Language& language_text) {
-		std::vector<s3d::Font> font{};
-		const std::vector<std::string>& vs = language_text.cgetFindStart(key);
-		for (std::size_t i = 1; i < vs.size(); ++i) {
-			font.emplace_back(s3d::Font{ font_method, font_size, s3d::Unicode::FromUTF8(path + vs[i]) });
-		}
-		return font;
-	}
-
 	class StringViewerSiv3D {
 	public:
 
@@ -194,7 +180,7 @@ namespace paxs {
 
 			int rect_start_x = s3d::Scene::Width() - 375;
 
-			int koyomi_height = koyomi_siv.date_list.size() * (koyomi_font_size * 4 / 3); // 暦の縦の幅
+			int koyomi_height = static_cast<int>(koyomi_siv.date_list.size()) * (koyomi_font_size * 4 / 3); // 暦の縦の幅
 
 
 			const int arrow_time_icon_size = 24; // 時間操作アイコンの大きさ
@@ -578,6 +564,20 @@ namespace paxs {
 #endif
 			}
 
+		}
+	private:
+		std::vector<s3d::Font> setFont(
+			const s3d::FontMethod& font_method,
+			const int font_size,
+			const std::string& path,
+			const std::string& key,
+			const paxs::Language& language_text) const {
+			std::vector<s3d::Font> font{};
+			const std::vector<std::string>& vs = language_text.cgetFindStart(key);
+			for (std::size_t i = 1; i < vs.size(); ++i) {
+				font.emplace_back(s3d::Font{ font_method, font_size, s3d::Unicode::FromUTF8(path + vs[i]) });
+			}
+			return font;
 		}
 
 	};

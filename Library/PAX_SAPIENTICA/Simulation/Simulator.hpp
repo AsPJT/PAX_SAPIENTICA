@@ -29,16 +29,15 @@ namespace paxs {
 
     /// @brief Class that performs simulation.
     /// @brief シミュレーションを行うクラス
-    /// @tparam T Type of the coordinate value. Vector2の座標の型。
-    template <typename T>
+    template <typename GridType>
     class Simulator {
     public:
-        using Environment = paxs::Environment<T>;
-        using Vector2 = paxs::Vector2<T>;
-        using Agent = paxs::Agent<T>;
+        using Environment = paxs::Environment<GridType>;
+        using Vector2 = paxs::Vector2<GridType>;
+        using Agent = paxs::Agent<GridType>;
 
         constexpr explicit Simulator() = default;
-        Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+        explicit Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
             environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
                 if (z <= 0) {
                     Logger logger("Save/error_log.txt");
@@ -84,29 +83,25 @@ namespace paxs {
         /// @brief シミュレーションを1ステップ実行する
         void step() noexcept {
             for(auto& agent : agents) {
-                agent.updateAge();
+                agent.incrementAge();
                 try {
                     agent.move();
                 } catch (const std::runtime_error&) {
                     Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to move agent. Agent id: " + agent.getId());
+                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to move agent. Agent id: " + std::to_string(agent.getId()));
                 }
             }
 
-            agents.erase(std::remove_if(agents.begin(), agents.end(),[](const Agent& agent) { return agent.isDead(); }),agents.end());
+            agents.erase(std::remove_if(agents.begin(), agents.end(), [](const Agent& agent) { return agent.isDead(); }), agents.end());
 
         }
 
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr std::vector<Agent>& getAgents() noexcept {
-            return agents;
-        }
+        constexpr std::vector<Agent>& getAgents() noexcept { return agents; }
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr const std::vector<Agent>& cgetAgents() const noexcept {
-            return agents;
-        }
+        constexpr const std::vector<Agent>& cgetAgents() const noexcept { return agents; }
     private:
         std::vector<Agent> agents; // エージェントのリスト
         std::shared_ptr<Environment> environment; // 環境
@@ -116,9 +111,7 @@ namespace paxs {
 
         /// @brief Clear the agents.
         /// @brief エージェントをクリアする
-        void clearAgents() noexcept {
-            agents.clear();
-        }
+        void clearAgents() noexcept { agents.clear(); }
 
         /// @brief Randomly place the agents.
         /// @brief エージェントをランダムに配置する
@@ -142,7 +135,8 @@ namespace paxs {
                     throw std::runtime_error(message);
                 }
                 
-                agents.push_back(Agent( "", "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
+                // TODO: uuidの生成
+                agents.push_back(Agent( 0, "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;

@@ -30,20 +30,20 @@ namespace paxs {
 
     /// @brief A class that represents an agent.
     /// @brief エージェントを表すクラス
-    /// @tparam T A type that represents a coordinate value. 座標値を表す型
-    template <typename T>
-    class Agent : public Object<T> {
+    template <typename GridType>
+    class Agent : public Object<GridType> {
     public:
-        using Vector2 = paxs::Vector2<T>;
-        using Environment = paxs::Environment<T>;
+        using Vector2 = paxs::Vector2<GridType>;
+        using Environment = paxs::Environment<GridType>;
 
-        constexpr explicit Agent(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
-            : Object<T>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
+        constexpr explicit Agent(const std::uint_least32_t id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen,
+        const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
+        : Object<GridType>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
 
         /// @brief Move the agent.
         /// @brief エージェントを移動させる
         void move() {
-            const std::array<Vector2, 8> move_directions {
+            constexpr std::array<Vector2, 8> move_directions {
                     Vector2(-1, -1), Vector2(0, -1), Vector2(1, -1),
                     Vector2(-1, 0), Vector2(1, 0),
                     Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)
@@ -66,17 +66,16 @@ namespace paxs {
 
             // min_slope~max_slopeの間の傾斜の場合は傾斜が大きいほど移動しやすくする
             if (current_slope > th_min_slope && current_slope <= th_max_slope) {
-                std::uniform_int_distribution<> dist(0, 9 + (current_slope - th_min_slope) * (90 / (th_max_slope - th_min_slope)));
+                std::uniform_int_distribution<> dist(0, static_cast<int>(9 + (current_slope - th_min_slope) * (90 / (th_max_slope - th_min_slope))));
                 if (dist(engine) != 0) {
                     return;
                 }
             }
 
-            bool is_movable = false;
             std::uniform_int_distribution<> amount(1, 5);
             std::array<float, 8> probabilities = {};
             const float elevation = environment->getElevation(this->position);
-            while (!is_movable) {
+            for (bool is_movable = false; !is_movable;) {
                 // 移動量は1~5の間でランダムに決定
                 const int move_amount = amount(engine);
 
@@ -127,20 +126,24 @@ namespace paxs {
         /// @brief エージェントの年齢を取得する
         constexpr std::uint_least32_t getAge() const noexcept { return age; }
 
-        /// @brief Update the agent's age.
-        /// @brief エージェントの年齢を更新する
-        constexpr void updateAge() noexcept { 
+        /// @brief Increment the agent's age.
+        /// @brief エージェントの年齢をインクリメントする
+        constexpr void incrementAge() noexcept { 
             if (age != (std::numeric_limits<std::uint_least32_t>::max)()) {
                 ++age;
             }
         }
 
+        /// @brief Increment the agent's age.
+        /// @brief エージェントの年齢をインクリメントする
+        constexpr void incrementAge(const std::uint_least32_t n) noexcept { age += n; }
+
         /// @brief Get the agent's sex.
         /// @brief エージェントの性別を取得する
         constexpr std::uint_least8_t getGender() const noexcept { return gender; }
 
-        constexpr bool operator==(const paxs::Agent<T>& a) const noexcept {
-            return  Object<T>::operator==(a) && 
+        constexpr bool operator==(const Agent& a) const noexcept {
+            return  Object<GridType>::operator==(a) && 
                     gender == a.gender && 
                     age == a.age &&
                     life_span == a.life_span &&

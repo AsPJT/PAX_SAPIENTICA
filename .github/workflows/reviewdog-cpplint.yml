@@ -1,0 +1,35 @@
+name: Reviewdog-cpplint
+
+on: [pull_request]
+
+jobs:
+  cpplint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: cpplint
+      uses: reviewdog/action-cpplint@b6c13159b10435813edfddea9e1cd02157544f45
+      with:
+        github_token: ${{ secrets.github_token }}
+        reporter: github-pr-review
+        flags: --linelength=150
+        filter: "build/include_alpha\
+          ,build/include_what_you_use\
+          ,build/storage_class\
+          ,readability/braces\
+          ,readability/casting\
+          ,readability/fn_size\
+          ,whitespace/braces\
+          ,whitespace/comma\
+          ,whitespace/comments\
+          ,whitespace/end_of_line\
+          ,whitespace/ending_newline\
+          ,whitespace/indent\
+          ,whitespace/newline\
+          ,whitespace/operators\
+          ,whitespace/parens\
+          ,whitespace/line_length\
+          "

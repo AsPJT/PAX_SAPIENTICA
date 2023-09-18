@@ -25,8 +25,7 @@ namespace paxs {
 	
     /// @brief Extensions for std::string
 	/// @brief std::string の拡張
-    class StringExtensions {
-    public:
+    struct StringExtensions {
 
 		/// @brief Split string by delimiter
 		/// @brief デリミタで文字列を分割する

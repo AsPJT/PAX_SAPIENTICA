@@ -1,20 +1,7 @@
 name: CMake-Unit-Test
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - feature/*
-      - release/*
-      - hotfix/*
   pull_request:
-    branches:
-      - main
-      - develop
-      - feature/*
-      - release/*
-      - hotfix/*
 
 env:
   BUILD_TYPE: Debug
@@ -24,18 +11,13 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        compiler: [g++, clang++]
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
 
     - name: Checkout submodules
-      run: |
-        git submodule update --init --recursive ExternalLibrary/googletest
+      run: git submodule update --init --recursive ExternalLibrary/googletest
 
     - name: Install dependencies
       run: |
@@ -44,14 +26,11 @@ jobs:
         sudo apt-get install libsfml-dev
         sudo apt-get install cmake
 
-    - name: Check g++ version
-      run: g++ --version
-
     - name: Configure CMake
       run: |
         mkdir ${{github.workspace}}/build
-        cmake -B ${{github.workspace}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}}/${{env.TEST_DIR}} -G "Unix Makefiles"
-  
+        cmake -B ${{github.workspace}}/build -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}}/${{env.TEST_DIR}} -G "Unix Makefiles"
+
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target all -j 12
 
@@ -63,5 +42,3 @@ jobs:
             ./"$file"
           fi
         done
-
-      

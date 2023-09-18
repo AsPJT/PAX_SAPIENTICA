@@ -26,10 +26,10 @@
 
 namespace paxs {
     
-    /// @brief A class that handles files.
-    /// @brief ファイルを扱うクラス。
-    class File {
-    public:
+    /// @brief Handle files.
+    /// @brief ファイルを扱う
+    struct File {
+
         /// @brief Read the file.
         /// @brief ファイルを読み込む。
         static std::vector<std::string> readFile(const std::string& file_path) {
@@ -54,12 +54,10 @@ namespace paxs {
         /// @brief CSVファイルを読み込む。
         static std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {
             std::vector<std::string> contents;
-            try
-            {
+            try {
                 contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
             }
-            catch(const std::exception&)
-            {
+            catch(const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to read CSV file: " + file_path);
                 throw;
@@ -76,12 +74,10 @@ namespace paxs {
         /// @brief TSVファイルを読み込む。
         static std::vector<std::vector<std::string>> readTSV(const std::string& file_path) {
             std::vector<std::string> contents;
-            try
-            {
+            try {
                 contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
             }
-            catch(const std::exception&)
-            {
+            catch(const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to read TSV file: " + file_path);
                 throw;
