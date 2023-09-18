@@ -1,11 +1,11 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -28,16 +28,16 @@
 
 // GUI で画面上部にあるメニューバーの種類
 enum MenuBarType {
-	file, edit, view, calendar, map
+    file, edit, view, calendar, map
 };
 // マップの種類（暫定的な地図）
 enum MapType {
-	base,
-	landand_sea, land_and_water,
-	soil, soil_temperature,
-	ryosei_country, ryosei_line,
-	slope,
-	river1, river2, line1, line2
+    base,
+    landand_sea, land_and_water,
+    soil, soil_temperature,
+    ryosei_country, ryosei_line,
+    slope,
+    river1, river2, line1, line2
 };
 
 #ifdef PAXS_USING_SIV3D

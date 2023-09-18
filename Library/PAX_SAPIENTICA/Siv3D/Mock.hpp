@@ -44,7 +44,7 @@ namespace s3d
     {
         double x, y;
         Vec2() {}
-        Vec2(int,int) {}
+        Vec2(int, int) {}
         Vec2(double _x, double _y) : x(_x), y(_y) {}
         Vec2 operator*(double d) const { return Vec2(); }
         Point movedBy(int x, int y) const { return Point(); }
@@ -53,7 +53,7 @@ namespace s3d
 
     std::array<std::size_t, 1> step(std::size_t v) { return std::array<std::size_t, 1>{v}; }
 
-    namespace Arg{
+    namespace Arg {
         Vec2 bottomCenter;
         Vec2 topCenter;
         Vec2 topRight;
@@ -259,7 +259,7 @@ namespace s3d
         void draw(Vec2 p, Palette pa) const {}
         void draw(Point p, Palette pa) const {}
         void draw(Vec2 p, double a, double b, ColorF c) const {}
-        void setBufferThickness(int n){}
+        void setBufferThickness(int n) {}
         Font operator ()(String s1, std::size_t n1, String s2, std::size_t n2, String s3, std::size_t n3) const { return Font(); }
     };
 
@@ -430,7 +430,7 @@ namespace s3d
     {
     public:
         Type& operator [](int n) { return dummyData; }  // non-const version
-        const Type& operator [](int n) const { return dummyData; } 
+        const Type& operator [](int n) const { return dummyData; }
         int size() const { return 0; }
         template <class... Args>
         void emplace_back(Args&&... args) {}
@@ -442,7 +442,7 @@ namespace s3d
     class Mat3x2
     {
     public:
-        static Mat3x2 Translate(int,int) { return Mat3x2(); }
+        static Mat3x2 Translate(int, int) { return Mat3x2(); }
     };
 
     class Transformer2D
@@ -456,7 +456,7 @@ namespace s3d
     {
     public:
         RoundRect() {}
-        RoundRect(int,int,int,int,int) {}
+        RoundRect(int, int, int, int, int) {}
         void draw(ColorF) {}
         void draw() {}
     };
@@ -470,7 +470,7 @@ namespace s3d
     class SimpleGUI
     {
     public:
-        static bool Button(String,Vec2) { return false; }
+        static bool Button(String, Vec2) { return false; }
     };
 
     namespace detail
