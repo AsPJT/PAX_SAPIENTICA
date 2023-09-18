@@ -16,19 +16,20 @@ jobs:
         github_token: ${{ secrets.github_token }}
         reporter: github-pr-review
         flags: --linelength=150
-        filter: "-build/include_alpha\
-          ,-build/include_what_you_use\
-          ,-build/storage_class\
-          ,-readability/braces\
-          ,-readability/casting\
-          ,-readability/fn_size\
-          ,-whitespace/braces\
-          ,-whitespace/comma\
-          ,-whitespace/comments\
-          ,-whitespace/end_of_line\
-          ,-whitespace/ending_newline\
-          ,-whitespace/indent\
-          ,-whitespace/newline\
-          ,-whitespace/operators\
-          ,-whitespace/parens\
+        filter: "build/include_alpha\
+          ,build/include_what_you_use\
+          ,build/storage_class\
+          ,readability/braces\
+          ,readability/casting\
+          ,readability/fn_size\
+          ,whitespace/braces\
+          ,whitespace/comma\
+          ,whitespace/comments\
+          ,whitespace/end_of_line\
+          ,whitespace/ending_newline\
+          ,whitespace/indent\
+          ,whitespace/newline\
+          ,whitespace/operators\
+          ,whitespace/parens\
+          ,whitespace/line_length\
           "
