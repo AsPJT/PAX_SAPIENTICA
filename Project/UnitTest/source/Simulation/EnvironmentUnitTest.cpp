@@ -33,19 +33,19 @@ protected:
             std::cerr << "Failed to change directory to project root." << std::endl;
             exit(1);
         }
-        
+
         const std::string root = PROJECT_ROOT_PATH;
         const std::string setting_file_path = root + "/Project/UnitTest/data/Simulation/UnitTestMapList.tsv";
 
-        const paxs::Vector2<int> start_position(861, 350);
+        const paxs::Vector2<int> start_position(850, 340);
         const paxs::Vector2<int> end_position(950, 450);
-        
+
         environment = paxs::Environment<int>(setting_file_path, start_position, end_position, 10);
     }
 };
 
 TEST_F (EnvironmentUnitTest, getStartPosition) {
-    const paxs::Vector2<int> start_position(861, 350);
+    const paxs::Vector2<int> start_position(850, 340);
     EXPECT_EQ(environment.getStartPosition(), start_position);
 }
 

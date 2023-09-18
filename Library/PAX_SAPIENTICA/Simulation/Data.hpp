@@ -101,7 +101,7 @@ namespace paxs {
         /// @brief ファイルのロード
         void load(const std::string& file_path) {
             std::cout << "Loading " << name << " data..." << std::endl;
-            std::vector<std::string> file_names; 
+            std::vector<std::string> file_names;
             try {
                 file_names = File::getFileNames(file_path);
             } catch (const std::exception&) {
@@ -110,7 +110,7 @@ namespace paxs {
                 throw;
             }
 
-            std::cout << file_names.size() << " files are found." << std::endl; 
+            std::cout << file_names.size() << " files are found." << std::endl;
 
             if(file_names.size() == 0) {
                 Logger logger("Save/error_log.txt");
@@ -150,7 +150,7 @@ namespace paxs {
                     ++file_count;
                     continue;
                 }
-                
+
                 const Vector2 default_position = xyz_position * pixel_size - start_position * pixel_size * z_mag;
                 if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
                     ++file_count;
@@ -177,9 +177,9 @@ namespace paxs {
                         }
                         // T型に変換
                         try {
-                            if(std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value)
+                            if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value)
                                 data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stoi(values[x]));
-                            else if(std::is_same<DataType, float>::value)
+                            else if constexpr (std::is_same<DataType, float>::value)
                                 data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stod(values[x]));
                         } catch (const std::invalid_argument&/*ia*/) {
                             // str is not convertible to double
