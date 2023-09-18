@@ -31,21 +31,22 @@ namespace paxs {
         using Agent = paxs::Agent<GridType>;
 
         constexpr explicit GroupSimulator() = default;
-        explicit GroupSimulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
-            environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
-                if (z <= 0) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Z must be greater than 0.";
-                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
-                    throw std::runtime_error(message);
-                }
-                if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Start position and end position must be greater than or equal to 0.";
-                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
-                    throw std::runtime_error(message);
-                }
+        explicit GroupSimulator(const std::string& setting_file_path,
+        const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0)
+        : environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
+            if (z <= 0) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Z must be greater than 0.";
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
+            if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Start position and end position must be greater than or equal to 0.";
+                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+        }
 
     private:
         std::vector<BaseGroup<GridType>> groups; // グループ

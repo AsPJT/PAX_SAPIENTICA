@@ -28,7 +28,8 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
-        constexpr explicit Object(const std::uint_least32_t id, const std::string& name, const Vector2& position) noexcept : id(id), name(name), position(position) {}
+        constexpr explicit Object(const std::uint_least32_t id, const std::string& name, const Vector2& position) noexcept
+        : id(id), name(name), position(position) {}
 
         /// @brief Get the object's id. オブジェクトのIDを取得
         std::uint_least32_t getId() const noexcept { return id; }

@@ -30,7 +30,10 @@ namespace paxs {
     public:
         using Agent = paxs::Agent<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
-        constexpr explicit BasicGroup(const std::string& id, const std::vector<Vector2>& positions) noexcept : BaseGroup<GridType>(id), positions(positions) {}
+
+        constexpr explicit BasicGroup(const std::string& id, const std::vector<Vector2>& positions) noexcept
+        : BaseGroup<GridType>(id), positions(positions) {}
+
         void addAgent(const Agent& agent) override {
             if (this->agents.size() + 1 < basic_group_max) {
                 this->agents.push_back(agent);
