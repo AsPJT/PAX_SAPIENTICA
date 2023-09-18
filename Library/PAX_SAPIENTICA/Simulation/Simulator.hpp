@@ -88,11 +88,11 @@ namespace paxs {
                     agent.move();
                 } catch (const std::runtime_error&) {
                     Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to move agent. Agent id: " + agent.getId());
+                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to move agent. Agent id: " + std::to_string(agent.getId()));
                 }
             }
 
-            agents.erase(std::remove_if(agents.begin(), agents.end(),[](const Agent& agent) { return agent.isDead(); }),agents.end());
+            agents.erase(std::remove_if(agents.begin(), agents.end(), [](const Agent& agent) { return agent.isDead(); }), agents.end());
 
         }
 
@@ -135,7 +135,8 @@ namespace paxs {
                     throw std::runtime_error(message);
                 }
                 
-                agents.push_back(Agent( "", "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
+                // TODO: uuidの生成
+                agents.push_back(Agent( 0, "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;
