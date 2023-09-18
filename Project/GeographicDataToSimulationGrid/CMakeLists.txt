@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_CXX_STANDARD 20)
-set(EXECUTABLE_OUTPUT_PATH ../../Project/GeographicDataToSimulationGrid/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 include_directories(../../Library)
 include_directories(include)
 
