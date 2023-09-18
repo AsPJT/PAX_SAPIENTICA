@@ -36,8 +36,9 @@ namespace paxs {
         using Vector2 = paxs::Vector2<GridType>;
         using Environment = paxs::Environment<GridType>;
 
-        constexpr explicit Agent(const std::string& id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen, const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
-            : Object<GridType>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
+        constexpr explicit Agent(const std::uint_least32_t id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen,
+        const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
+        : Object<GridType>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
 
         /// @brief Move the agent.
         /// @brief エージェントを移動させる

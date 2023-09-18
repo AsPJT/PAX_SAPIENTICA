@@ -28,10 +28,11 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
-        constexpr explicit Object(const std::string& id, const std::string& name, const Vector2& position) noexcept : id(id), name(name), position(position) {}
+        constexpr explicit Object(const std::uint_least32_t id, const std::string& name, const Vector2& position) noexcept
+        : id(id), name(name), position(position) {}
 
         /// @brief Get the object's id. オブジェクトのIDを取得
-        std::string getId() const noexcept { return id; }
+        std::uint_least32_t getId() const noexcept { return id; }
 
         /// @brief Get the coordinate x. オブジェクトの座標xを取得
         constexpr GridType getX() const noexcept { return position.x; }
@@ -62,7 +63,7 @@ namespace paxs {
         }
 
     protected:
-        std::string id; // オブジェクトのID
+        std::uint_least32_t id; // オブジェクトのID
         std::string name; // オブジェクトの名前
         Vector2 position; // オブジェクトの座標
     };
