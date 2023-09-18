@@ -43,6 +43,9 @@ namespace paxs {
             column_size = static_cast<int>((end_position.x - start_position.x + 1) * pixel_size * z_mag);
 
             try {
+                // 試験的にmapの十分なメモリを確保
+                // data.reserve(z_mag == 8 ? 1250000 : 20000000);
+
                 load(file_path);
             }
             catch (const std::exception&) {
@@ -177,10 +180,13 @@ namespace paxs {
                         }
                         // T型に変換
                         try {
-                            if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value)
-                                data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stoi(values[x]));
-                            else if constexpr (std::is_same<DataType, float>::value)
+                            if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
+                                int value = std::stoi(values[x]);
+                                if(value == 0) continue;
+                                data[convertVector2ToIndex(position)] = static_cast<DataType>(value);
+                            } else if constexpr (std::is_same<DataType, float>::value) {
                                 data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stod(values[x]));
+                            }
                         } catch (const std::invalid_argument&/*ia*/) {
                             // str is not convertible to double
                             continue;
