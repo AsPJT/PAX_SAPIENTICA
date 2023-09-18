@@ -22,71 +22,71 @@
 #include <vector>
 
 namespace paxs {
-	
+
     /// @brief Extensions for std::string
-	/// @brief std::string の拡張
+    /// @brief std::string の拡張
     struct StringExtensions {
 
-		/// @brief Split string by delimiter
-		/// @brief デリミタで文字列を分割する
-		static std::vector<std::string> split(const std::string& input, const char delimiter) noexcept {
-			std::istringstream stream(input);
-			std::string field;
-			std::vector<std::string> result;
-			while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
-				result.emplace_back(field);
-			}
-			return result;
-		}
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する
+        static std::vector<std::string> split(const std::string& input, const char delimiter) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::vector<std::string> result;
+            while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
+                result.emplace_back(field);
+            }
+            return result;
+        }
 
-		/// @brief Replace string
-		/// @brief 文字列を置換する
-		static void replace(std::string& str, const std::string& from, const std::string& to) noexcept {
-			if (from.empty()) return;
-			const std::size_t from_len = from.length();
-			const std::size_t to_len = to.length();
-			std::size_t pos = 0;
-			while ((pos = str.find(from, pos)) != std::string::npos) {
-				str.replace(pos, from_len, to);
-				pos += to_len;
-			}
-		}
+        /// @brief Replace string
+        /// @brief 文字列を置換する
+        static void replace(std::string& str, const std::string& from, const std::string& to) noexcept {
+            if (from.empty()) return;
+            const std::size_t from_len = from.length();
+            const std::size_t to_len = to.length();
+            std::size_t pos = 0;
+            while ((pos = str.find(from, pos)) != std::string::npos) {
+                str.replace(pos, from_len, to);
+                pos += to_len;
+            }
+        }
 
-		/// @brief Replace string list
-		/// @brief 文字列リストを置換する
-		static void replaceList(std::string& str, const std::vector<std::string>& from, const std::vector<std::string>& to) noexcept {
-			for (std::size_t i = 0; i < from.size() && i < to.size(); ++i) {
-				replace(str, from[i], to[i]);
-			}
-		}
+        /// @brief Replace string list
+        /// @brief 文字列リストを置換する
+        static void replaceList(std::string& str, const std::vector<std::string>& from, const std::vector<std::string>& to) noexcept {
+            for (std::size_t i = 0; i < from.size() && i < to.size(); ++i) {
+                replace(str, from[i], to[i]);
+            }
+        }
 
-		/// @brief Convert string to double
-		/// @brief 文字列を double に変換する
+        /// @brief Convert string to double
+        /// @brief 文字列を double に変換する
         static std::variant<double, std::string> tryToConvertStringToDouble(const std::string& str) noexcept {
-			try {
-				return std::stod(str);
-			} catch (const std::invalid_argument&/*ia*/) {
-				// str is not convertible to double
-				return str;
-			} catch (const std::out_of_range&/*oor*/) {
-				// str is out of range for a double
-				return str;
-			}
-		}
+            try {
+                return std::stod(str);
+            } catch (const std::invalid_argument&/*ia*/) {
+                // str is not convertible to double
+                return str;
+            } catch (const std::out_of_range&/*oor*/) {
+                // str is out of range for a double
+                return str;
+            }
+        }
 
-		/// @brief Convert string to int
-		/// @brief 文字列を int に変換する
-		static std::variant<int, std::string> tryToConvertStringToInt(const std::string& str) noexcept {
-			try {
-				return std::stoi(str);
-			} catch (const std::invalid_argument&/*ia*/) {
-				// str is not convertible to int
-				return str;
-			} catch (const std::out_of_range&/*oor*/) {
-				// str is out of range for a int
-				return str;
-			}
-		}
+        /// @brief Convert string to int
+        /// @brief 文字列を int に変換する
+        static std::variant<int, std::string> tryToConvertStringToInt(const std::string& str) noexcept {
+            try {
+                return std::stoi(str);
+            } catch (const std::invalid_argument&/*ia*/) {
+                // str is not convertible to int
+                return str;
+            } catch (const std::out_of_range&/*oor*/) {
+                // str is out of range for a int
+                return str;
+            }
+        }
     };
 }
 

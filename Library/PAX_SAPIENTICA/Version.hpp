@@ -112,15 +112,15 @@
 
 namespace PAX_SAPIENTICA {
 
-	namespace Version {
-		// using 定義
-		constexpr long pax_sapientica_library_version				= (PAX_SAPIENTICA_LIBRARY_VERSION);
-		constexpr int  pax_sapientica_library_generation			= (PAX_SAPIENTICA_LIBRARY_GENERATION);
-		constexpr int  pax_sapientica_library_generation_patchlevel	= (PAX_SAPIENTICA_LIBRARY_GENERATION_PATCHLEVEL);
-		constexpr int  pax_sapientica_library_major					= (PAX_SAPIENTICA_LIBRARY_MAJOR);
-		constexpr int  pax_sapientica_library_minor					= (PAX_SAPIENTICA_LIBRARY_MINOR);
-		constexpr int  pax_sapientica_library_patchlevel			= (PAX_SAPIENTICA_LIBRARY_PATCHLEVEL);
-	}
+    namespace Version {
+        // using 定義
+        constexpr long pax_sapientica_library_version				= (PAX_SAPIENTICA_LIBRARY_VERSION);
+        constexpr int  pax_sapientica_library_generation			= (PAX_SAPIENTICA_LIBRARY_GENERATION);
+        constexpr int  pax_sapientica_library_generation_patchlevel	= (PAX_SAPIENTICA_LIBRARY_GENERATION_PATCHLEVEL);
+        constexpr int  pax_sapientica_library_major					= (PAX_SAPIENTICA_LIBRARY_MAJOR);
+        constexpr int  pax_sapientica_library_minor					= (PAX_SAPIENTICA_LIBRARY_MINOR);
+        constexpr int  pax_sapientica_library_patchlevel			= (PAX_SAPIENTICA_LIBRARY_PATCHLEVEL);
+    }
 
 }
 
