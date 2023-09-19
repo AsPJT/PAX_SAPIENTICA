@@ -168,7 +168,7 @@ namespace paxs {
         virtual bool isLand(const Vector2& position) const {
             try {
                 auto value = getData<std::uint_least8_t>("gbank", position);
-                return static_cast<int>(value) == static_cast<int>('1');
+                return static_cast<int>(value) >= static_cast<int>(1);
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get gbank";

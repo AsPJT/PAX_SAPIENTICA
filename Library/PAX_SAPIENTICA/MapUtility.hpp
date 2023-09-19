@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -25,8 +25,8 @@ namespace paxs {
      * @brief Map Utility
      * @brief 地図のユーティリティ
     */
-   struct MapUtility
-   {
+    struct MapUtility
+    {
         /**
          * @brief Convert to Mercator Coordinate
          * @brief メルカトル座標に変換
@@ -44,8 +44,8 @@ namespace paxs {
 
             return paxs::Vector2<double>(lon, lat);
         }
-   };
-   
+    };
+
 
 }
 

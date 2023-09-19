@@ -60,7 +60,7 @@ namespace paxs {
         void init() {
             std::cout << "Initializing..." << std::endl;
             clearAgents();
-            randomizeAgents(100);
+            randomizeAgents(10000);
         }
 
         /// @brief Run the simulation for the specified number of steps.

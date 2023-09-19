@@ -142,6 +142,9 @@
     <Filter Include="Library\Siv3D">
       <UniqueIdentifier>{eaa03a46-201c-479f-b8db-8667ac9eb9d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Library\Graphica">
+      <UniqueIdentifier>{edb7759c-19ba-4fb9-b50b-ee4b55e7658a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -817,6 +820,45 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTilesList.hpp">
       <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\MapViewer.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Mock.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\StringViewer.hpp">
+      <Filter>Library\Siv3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Circle.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Color.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Graphics.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\IDrawable.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Image.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Rect.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\String.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Texture.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Vec2.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Window.hpp">
+      <Filter>Library\Graphica</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
