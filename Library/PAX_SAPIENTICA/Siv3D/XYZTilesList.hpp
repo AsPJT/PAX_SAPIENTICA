@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -182,9 +182,11 @@ namespace paxs {
             //xyz_tile_line->setDrawMinZ(5);
         }
         {
-            //const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
             //xyz_tile_line2->setDefaultZ(10);
             //xyz_tile_line2->setDrawMinZ(7);
+
+            xyz_tile_list.emplace("map_line2", *xyz_tile_line2);
         }
         {
             const std::unique_ptr<XYZTile> xyz_tile_line3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
@@ -193,6 +195,14 @@ namespace paxs {
             //xyz_tile_line3->setDrawMaxZ(16);
 
             xyz_tile_list.emplace("map_line3", *xyz_tile_line3);
+        }
+        {
+            const std::unique_ptr<XYZTile> xyz_tile_line4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            xyz_tile_line4->setDefaultZ(18);
+            //xyz_tile_line4->setDrawMinZ(12);
+            //xyz_tile_line4->setDrawMaxZ(16);
+
+            xyz_tile_list.emplace("map_line4", *xyz_tile_line4);
         }
     }
 
@@ -293,11 +303,15 @@ namespace paxs {
             //	xyz_tile_list.at("map_line").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
             //}
             //if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
-            //	xyz_tile_list.at("map_line2").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
+            xyz_tile_list.at("map_line2").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
             //}
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
                 xyz_tile_list.at("map_line3").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
-                xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+                //xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            }
+            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
+                //xyz_tile_list.at("map_line4").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
+                //xyz_tile_list.at("map_line4").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
         }
 
