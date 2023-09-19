@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -58,8 +58,8 @@ namespace paxs {
     ) {
         // 使用するマップの XYZ タイルの情報を定義
 
-        //mapMapInitOne(xyz_tile_list, path, map_view,
-        //	"map_base", "","", "Data/Map/XYZTile/Standard/Image/Land/2023/", -1, 7, -1, 7);
+        // mapMapInitOne(xyz_tile_list, path, map_view,
+        // "map_base", "","", "Data/Map/XYZTile/Standard/Image/Land/2023/", -1, 7, -1, 7);
         {
             const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
             xyz_tile_base->setMapURL("");
@@ -67,7 +67,7 @@ namespace paxs {
             xyz_tile_base->setMaxZ(7);
             xyz_tile_base->setDrawMaxZ(7);
             xyz_tile_base->setMapFilePath(path + "Data/Map/XYZTile/Standard/Image/Land/2023/");
-            //xyz_tile_base->setMapFilePath(path + "Data/Map/XYZTile/LandAndSea/Image/GreenAndAlphaBinary/2023/");
+            // xyz_tile_base->setMapFilePath(path + "Data/Map/XYZTile/LandAndSea/Image/GreenAndAlphaBinary/2023/");
 
             xyz_tile_list.emplace("map_base", *xyz_tile_base);
         }
@@ -79,26 +79,26 @@ namespace paxs {
             xyz_tile2->setMaxZ(10);
             xyz_tile2->setDrawMinZ(8);
             xyz_tile2->setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/");
-            //xyz_tile2->setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
-            //xyz_tile2->setMapFilePath("./SavedMap/gbank_noblank_reclaimed_land/");
+            // xyz_tile2->setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
+            // xyz_tile2->setMapFilePath("./SavedMap/gbank_noblank_reclaimed_land/");
 
             xyz_tile_list.emplace("map_land_and_water", *xyz_tile2);
         }
         {
-            //const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-            //xyz_tile3->setMapURL("");
-            ////xyz_tile3->setMapURL("https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
-            //xyz_tile3->setMapName("water");
-            //xyz_tile3->setDefaultZ(12);
-            //xyz_tile3->setDrawMinZ(11);
-            //xyz_tile3->setMapFilePath("./SavedMap/BlueRiver/");
+            // const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            // xyz_tile3->setMapURL("");
+            // // xyz_tile3->setMapURL("https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
+            // xyz_tile3->setMapName("water");
+            // xyz_tile3->setDefaultZ(12);
+            // xyz_tile3->setDrawMinZ(11);
+            // xyz_tile3->setMapFilePath("./SavedMap/BlueRiver/");
         }
         {
-            //const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-            //xyz_tile4->setMapURL("");
-            //xyz_tile4->setMapName("soil");
-            //xyz_tile4->setDefaultZ(12);
-            //xyz_tile4->setMapFilePath("./SavedMap/Soil/soil/");
+            // const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            // xyz_tile4->setMapURL("");
+            // xyz_tile4->setMapName("soil");
+            // xyz_tile4->setDefaultZ(12);
+            // xyz_tile4->setMapFilePath("./SavedMap/Soil/soil/");
         }
         {
             const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
@@ -115,7 +115,7 @@ namespace paxs {
             xyz_tile_kuni_line->setMapURL("");
             xyz_tile_kuni_line->setMapName("Ryoseikoku");
             xyz_tile_kuni_line->setDefaultZ(10);
-            xyz_tile_kuni_line->setDrawMinZ(11);
+            xyz_tile_kuni_line->setDrawMinZ(8);
             xyz_tile_kuni_line->setMapFilePath(path + "Data/Map/XYZTile/Ryoseikoku/");
 
             xyz_tile_list.emplace("map_ryosei_line", *xyz_tile_kuni_line);
@@ -130,20 +130,20 @@ namespace paxs {
 
             xyz_tile_list.emplace("map_soil", *xyz_tile_soil);
         }
-        //{
-        //	const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-        //	xyz_tile_slope->setMapURL("");
-        //	xyz_tile_slope->setMapName("slope");
-        //	//xyz_tile_slope->setMinZ(3);
-        //	//xyz_tile_slope->setMaxZ(12);
-        //	//xyz_tile_slope->setDefaultZ(8);
-        //	xyz_tile_slope->setMaxZ(8);
-        //	//xyz_tile_slope->setDrawMinZ(3);
-        //	//xyz_tile_slope->setMapFilePath(path + "Data/Map/XYZTile/Slope/Image/Slope/2023/");
-        //	xyz_tile_slope->setMapFilePath(path + "Data/Map/XYZTile/Slope/Image/Slope/2010/");
+        // {
+        // const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+        // xyz_tile_slope->setMapURL("");
+        // xyz_tile_slope->setMapName("slope");
+        // // xyz_tile_slope->setMinZ(3);
+        // // xyz_tile_slope->setMaxZ(12);
+        // // xyz_tile_slope->setDefaultZ(8);
+        // xyz_tile_slope->setMaxZ(8);
+        // // xyz_tile_slope->setDrawMinZ(3);
+        // // xyz_tile_slope->setMapFilePath(path + "Data/Map/XYZTile/Slope/Image/Slope/2023/");
+        // xyz_tile_slope->setMapFilePath(path + "Data/Map/XYZTile/Slope/Image/Slope/2010/");
 
-        //	xyz_tile_list.emplace("map_slope", *xyz_tile_slope);
-        //}
+        // xyz_tile_list.emplace("map_slope", *xyz_tile_slope);
+        // }
         mapMapInitOne(xyz_tile_list, path, map_view,
             "map_slope", "", "slope", "Data/Map/XYZTile/Slope/Image/Slope/2010/", -1, 8, -1, -1);
         {
@@ -178,21 +178,31 @@ namespace paxs {
         }
         {
             //const std::unique_ptr<XYZTile> xyz_tile_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-            //xyz_tile_line->setDefaultZ(8);
-            //xyz_tile_line->setDrawMinZ(5);
+            // xyz_tile_line->setDefaultZ(8);
+            // xyz_tile_line->setDrawMinZ(5);
         }
         {
-            //const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-            //xyz_tile_line2->setDefaultZ(10);
-            //xyz_tile_line2->setDrawMinZ(7);
+            const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            // xyz_tile_line2->setDefaultZ(10);
+            // xyz_tile_line2->setDrawMinZ(7);
+
+            xyz_tile_list.emplace("map_line2", *xyz_tile_line2);
         }
         {
             const std::unique_ptr<XYZTile> xyz_tile_line3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
-            //xyz_tile_line3->setDefaultZ(12);
-            //xyz_tile_line3->setDrawMinZ(12);
-            //xyz_tile_line3->setDrawMaxZ(16);
+            // xyz_tile_line3->setDefaultZ(12);
+            // xyz_tile_line3->setDrawMinZ(12);
+            // xyz_tile_line3->setDrawMaxZ(16);
 
             xyz_tile_list.emplace("map_line3", *xyz_tile_line3);
+        }
+        {
+            const std::unique_ptr<XYZTile> xyz_tile_line4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            xyz_tile_line4->setDefaultZ(18);
+            // xyz_tile_line4->setDrawMinZ(12);
+            // xyz_tile_line4->setDrawMaxZ(16);
+
+            xyz_tile_list.emplace("map_line4", *xyz_tile_line4);
         }
     }
 
@@ -207,10 +217,10 @@ namespace paxs {
         const double map_view_center_x = map_view->getCenterX();
         const double map_view_center_y = map_view->getCenterY();
         // 未使用
-        //const double map_view_center_lat = std::asin(std::tanh(map_view_center_y / 180.0 * paxs::pi)) / (paxs::pi) * 180.0;
+        // const double map_view_center_lat = std::asin(std::tanh(map_view_center_y / 180.0 * paxs::pi)) / (paxs::pi) * 180.0;
 
         // タイルを更新
-        //xyz_tile1"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        // xyz_tile1"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::base)) {
             xyz_tile_list["map_base"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Default);
         }
@@ -223,12 +233,12 @@ namespace paxs {
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::land_and_water)) {
             xyz_tile_list["map_land_and_water"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
         }
-        //xyz_tile3"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        // xyz_tile3"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_country)) {
-            xyz_tile_list["map_kuni"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_ryosei"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-            xyz_tile_list["map_kuni_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_ryosei_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::slope)) {
             xyz_tile_list["map_slope"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
@@ -239,13 +249,13 @@ namespace paxs {
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::river2)) {
             xyz_tile_list["map_river_bw"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
         }
-        //xyz_tile4"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Original);
-    //if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
-    //	xyz_tile_list["map_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-    //}
-    //if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
-    //	xyz_tile_list["map_line2"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-    //}
+        // xyz_tile4"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Original);
+    // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
+    // xyz_tile_list["map_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+    // }
+    // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
+    // xyz_tile_list["map_line2"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+    // }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
             xyz_tile_list["map_line3"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
@@ -254,10 +264,10 @@ namespace paxs {
         ##########################################################################################*/
 
 
-        //if (menu_bar_view.getIsItems(1)) {
+        // if (menu_bar_view.getIsItems(1)) {
         if (menu_bar.cgetPulldown(MenuBarType::view).getIsItems(1)) {
             // XYZ タイルの地図の描画
-            //xyz_tile1"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            // xyz_tile1"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::base)) {
                 xyz_tile_list.at("map_base").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
@@ -270,13 +280,13 @@ namespace paxs {
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::soil_temperature)) {
                 xyz_tile_list.at("map_soil_temperature").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
-            //xyz_tile2"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            // xyz_tile2"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
 
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_country)) {
-                xyz_tile_list.at("map_kuni").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+                xyz_tile_list.at("map_ryosei").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-                xyz_tile_list.at("map_kuni_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+                xyz_tile_list.at("map_ryosei_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::slope)) {
                 xyz_tile_list.at("map_slope").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
@@ -287,17 +297,21 @@ namespace paxs {
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::river2)) {
                 xyz_tile_list.at("map_river_bw").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
-            //xyz_tile3"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-            //xyz_tile4"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-            //if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
-            //	xyz_tile_list.at("map_line").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
-            //}
-            //if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
-            //	xyz_tile_list.at("map_line2").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
-            //}
+            // xyz_tile3"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            // xyz_tile4"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
+            // xyz_tile_list.at("map_line").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
+            // }
+            // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
+            xyz_tile_list.at("map_line2").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
+            // }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
                 xyz_tile_list.at("map_line3").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
-                xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+                // xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            }
+            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
+                // xyz_tile_list.at("map_line4").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
+                // xyz_tile_list.at("map_line4").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
         }
 
