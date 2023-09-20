@@ -19,18 +19,18 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Simulation/ProvincesJapan.hpp>
+#include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 
-TEST (ProvincesJapanUnitTest, constructor) {
+TEST (JapanProvincesUnitTest, constructor) {
     const std::string root = PROJECT_ROOT_PATH;
     const std::string japan_region_tsv_path = root + "/Project/UnitTest/data/Simulation/JapanRegion.tsv";
     const std::string ryoseikoku_tsv_path = root + "/Project/UnitTest/data/Simulation/Ryoseikoku.tsv";
 
-    paxs::ProvincesJapan provinces_japan(japan_region_tsv_path, ryoseikoku_tsv_path);
+    paxs::JapanProvinces japan_provinces(japan_region_tsv_path, ryoseikoku_tsv_path);
 
-    EXPECT_EQ(provinces_japan.getJapanRegionPopulation(0), 0);
-    EXPECT_EQ(provinces_japan.getJapanRegionPopulation(2), 64600);
+    EXPECT_EQ(japan_provinces.getJapanRegionPopulation(0), 0);
+    EXPECT_EQ(japan_provinces.getJapanRegionPopulation(2), 64600);
 
-    EXPECT_EQ(provinces_japan.getRyoseikokuPopulation(0), 0);
-    EXPECT_EQ(provinces_japan.getRyoseikokuPopulation(2), 40600);
+    EXPECT_EQ(japan_provinces.getRyoseikokuPopulation(0), 0);
+    EXPECT_EQ(japan_provinces.getRyoseikokuPopulation(2), 40600);
 }

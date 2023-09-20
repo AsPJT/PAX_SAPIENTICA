@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_JAPAN_REGION_HPP
-#define PAX_SAPIENTICA_JAPAN_REGION_HPP
+#ifndef PAX_SAPIENTICA_PROVINCES_JAPAN_HPP
+#define PAX_SAPIENTICA_PROVINCES_JAPAN_HPP
 
 /*##########################################################################################
 
@@ -25,9 +25,9 @@ namespace paxs {
 
     /// @brief A class that represents a prefecture in Japan.
     /// @brief 日本の州を表すクラス
-    class ProvincesJapan {
+    class JapanProvinces {
     public:
-        explicit ProvincesJapan(const std::string& japan_region_tsv_path, const std::string& ryoseikoku_tsv_path) {
+        explicit JapanProvinces(const std::string& japan_region_tsv_path, const std::string& ryoseikoku_tsv_path) {
             std::vector<std::vector<std::string>> japan_region_tsv;
             try {
                 japan_region_tsv = File::readTSV(japan_region_tsv_path);
@@ -152,4 +152,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_JAPAN_REGION_HPP
+#endif // !PAX_SAPIENTICA_PROVINCES_JAPAN_HPP
