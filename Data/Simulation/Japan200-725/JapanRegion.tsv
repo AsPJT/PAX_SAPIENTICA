@@ -1,18 +1,17 @@
-value	key	ryoseikoku0	ryoseikoku1	ryoseikoku2	ryoseikoku3	ryoseikoku4	ryoseikoku5	ryoseikoku6	ryoseikoku7	population_ad200
-0	null									0
-1	southern_islands	88	89	90						0
-2	south_kyushu	1	2	3	4					64600
-3	north_kyushu	5	6	7	8	9	10	11		40500
-4	shikoku	28	29	30	31					30100
-5	sanyo	12	13	14	15	16	17	18		48900
-6	sanin	20	21	22	23	24	25	26		17700
-7	around_kinai	19	27	32	33	46	47	48	61	70300
-8	kinai	34	35	36	37	38				30200
-9	tokai	49	50	51	52	53	62			54400
-10	tosan	54	63	64						85100
-11	hokuriku	39	40	41	42	43	44	45		20700
-12	south_kanto	55	56	57	58	59				59700
-13	north_kanto	60	65	66						39300
-14	dewa	68								4700
-15	mutsu	67	69							28700
-16	hokkaido	70	71	72						0
+value	key	population_ad200
+1	southern_islands	0
+2	south_kyushu	64600
+3	north_kyushu	40500
+4	shikoku	30100
+5	sanyo	48900
+6	sanin	17700
+7	around_kinai	70300
+8	kinai	30200
+9	tokai	54400
+10	tosan	85100
+11	hokuriku	20700
+12	south_kanto	59700
+13	north_kanto	39300
+14	dewa	4700
+15	mutsu	28700
+16	hokkaido	0
