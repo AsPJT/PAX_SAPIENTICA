@@ -1,10 +1,10 @@
 name = Line
-start_x = 109
-start_y = 45
-x_size = 8
-y_size = 8
-z = 7
+start_x = 218
+start_y = 90
+x_size = 16
+y_size = 16
+z = 8
 extension = png
 input_path = ../../../Data/Map/XYZTile/Union/
-output_path = ../../../Data/Map/XYZTile/RyoseikokuLine/7/
+output_path = ../../../Data/Map/XYZTile/RyoseikokuLine/8/
 alpha = true
