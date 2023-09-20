@@ -61,9 +61,9 @@ namespace paxs {
         //s3d::Scene::SetBackground(s3d::Color{ 255, 255, 255 }); // 白
         //s3d::Scene::SetBackground(s3d::Color{ 243, 243, 243 }); // 白
         //s3d::Scene::SetBackground(s3d::Color{ 156, 192, 249 }); // 薄い青
-        //s3d::Scene::SetBackground(s3d::Color{ 140, 180, 250 }); // 青
+        s3d::Scene::SetBackground(s3d::Color{ 140, 180, 250 }); // 青
                 // 背景色を指定
-                s3d::Scene::SetBackground(s3d::Color{ 243, 243, 243 }); // 白
+                // s3d::Scene::SetBackground(s3d::Color{ 243, 243, 243 }); // 白
                 // ウィンドウのサイズを変更可能にする
                 s3d::Window::SetStyle(s3d::WindowStyle::Sizable);
                 // ウィンドウのサイズを変える

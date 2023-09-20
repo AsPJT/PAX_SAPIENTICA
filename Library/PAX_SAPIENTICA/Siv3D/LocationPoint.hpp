@@ -104,8 +104,12 @@ namespace paxs {
             inputPlace("./../../../../../Data/PlaceName/KojikiPlaceName.tsv");
             // 汎用的な地名
             inputPlace("./../../../../../Data/PlaceName/PlaceName.tsv");
+            // 令制国名
+            inputPlace("./../../../../../Data/PlaceName/Ryoseikoku.tsv");
             // 倭名類聚抄の地名
             inputPlace("./../../../../../Data/PlaceName/WamyoRuijushoPlaceName.tsv");
+            // 倭名類聚抄の地名
+            inputPlace("./../../../../../Data/PlaceName/WamyoRuijushoKori.tsv");
             // おもろさうしの地名
             inputPlace("./../../../../../Data/PlaceName/OmoroSoshiPlaceName.tsv");
         }
