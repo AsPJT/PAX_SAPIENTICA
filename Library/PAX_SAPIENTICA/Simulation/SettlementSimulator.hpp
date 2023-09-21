@@ -22,6 +22,7 @@
 
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>
 
 namespace paxs {
@@ -36,8 +37,8 @@ namespace paxs {
 
         constexpr explicit SettlementSimulator() = default;
 
-        explicit SettlementSimulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
-            environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
+        explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+            environment(std::make_unique<Environment>(map_list_path, start_position, end_position, z)), gen(seed) {
                 if (z <= 0) {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "Z must be greater than 0.";
@@ -50,6 +51,16 @@ namespace paxs {
                     logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
                     throw std::runtime_error(message);
                 }
+
+                try {
+                    japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
+                } catch (const std::runtime_error&) {
+                    Logger logger("Save/error_log.txt");
+                    const std::string message = "Failed to read Japan provinces TSV file: " + japan_provinces_path;
+                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                    throw std::runtime_error(message);
+                }
+
             }
 
         /// @brief Initialize the simulator.
@@ -86,6 +97,7 @@ namespace paxs {
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
         std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
+        std::unique_ptr<paxs::JapanProvinces> japan_provinces;
 
         /// @brief Randomly place settlements.
         /// @brief 集落をランダムに配置する
