@@ -138,7 +138,7 @@ namespace paxs {
         //Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
         //double width = 0.1; // マップの幅
         double max_width = 640.0; // マップの最大幅
-        double min_width = 0.01; // マップの最小幅
+        double min_width = 0.00005; // マップの最小幅
         double height = (width) / double(s3d::Scene::Width()) * double(s3d::Scene::Height()); // マップの高さ
         double expansion_size = 50.0; // マップの拡大量
         std::vector<std::unique_ptr<BaseKey>> enl_keys; // 拡大キー

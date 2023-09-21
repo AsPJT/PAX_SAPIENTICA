@@ -114,12 +114,23 @@ namespace paxs {
             const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
             xyz_tile_kuni_line->setMapURL("");
             xyz_tile_kuni_line->setMapName("Line");
-            xyz_tile_kuni_line->setMinZ(7);
+            xyz_tile_kuni_line->setMinZ(6);
             xyz_tile_kuni_line->setMaxZ(9);
-            xyz_tile_kuni_line->setDrawMinZ(7);
+            xyz_tile_kuni_line->setDrawMinZ(6);
             xyz_tile_kuni_line->setMapFilePath(path + "Data/Map/XYZTile/RyoseikokuLine/");
 
             xyz_tile_list.emplace("map_ryosei_line", *xyz_tile_kuni_line);
+        }
+        {
+            const std::unique_ptr<XYZTile> xyz_tile_kuni_korean_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            xyz_tile_kuni_korean_line->setMapURL("");
+            xyz_tile_kuni_korean_line->setMapName("Line");
+            xyz_tile_kuni_korean_line->setMinZ(7);
+            xyz_tile_kuni_korean_line->setMaxZ(8);
+            xyz_tile_kuni_korean_line->setDrawMinZ(6);
+            xyz_tile_kuni_korean_line->setMapFilePath(path + "Data/Map/XYZTile/KoreanLine/");
+
+            xyz_tile_list.emplace("map_korean_line", *xyz_tile_kuni_korean_line);
         }
         {
             const std::unique_ptr<XYZTile> xyz_tile_soil(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
@@ -241,6 +252,9 @@ namespace paxs {
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
             xyz_tile_list["map_ryosei_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
         }
+        if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+            xyz_tile_list["map_korean_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+        }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::slope)) {
             xyz_tile_list["map_slope"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
         }
@@ -298,6 +312,9 @@ namespace paxs {
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
                 xyz_tile_list.at("map_ryosei_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
+            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+                xyz_tile_list.at("map_korean_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            }
             // xyz_tile3"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             // xyz_tile4"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
@@ -308,7 +325,7 @@ namespace paxs {
             // }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
                 xyz_tile_list.at("map_line3").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
-                // xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+                xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
                 // xyz_tile_list.at("map_line4").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
