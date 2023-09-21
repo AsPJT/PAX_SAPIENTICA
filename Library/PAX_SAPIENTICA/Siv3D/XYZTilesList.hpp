@@ -114,9 +114,9 @@ namespace paxs {
             const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
             xyz_tile_kuni_line->setMapURL("");
             xyz_tile_kuni_line->setMapName("Line");
-            xyz_tile_kuni_line->setMinZ(6);
+            xyz_tile_kuni_line->setMinZ(5);
             xyz_tile_kuni_line->setMaxZ(9);
-            xyz_tile_kuni_line->setDrawMinZ(6);
+            xyz_tile_kuni_line->setDrawMinZ(5);
             xyz_tile_kuni_line->setMapFilePath(path + "Data/Map/XYZTile/RyoseikokuLine/");
 
             xyz_tile_list.emplace("map_ryosei_line", *xyz_tile_kuni_line);

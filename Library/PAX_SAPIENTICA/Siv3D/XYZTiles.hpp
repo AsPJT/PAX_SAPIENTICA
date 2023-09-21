@@ -193,7 +193,7 @@ namespace paxs {
 
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    tmp_font(U"X:", j, U"\nY:", i, U"\nZ:", z).draw(
+                    tmp_font(U"X:", j, U"\nY:", i, U"\nZ:", z, U"\nL:", static_cast<std::size_t>(40075016.68 / std::pow(2, z) * 10) / 10.0).draw(
                         s3d::TextStyle::Outline(0, 0.5, s3d::ColorF{ 1, 1, 1 }),
                         10 + (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
                         5 + double(s3d::Scene::Height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
@@ -306,7 +306,7 @@ namespace paxs {
         // 最小 Z
         int min_z = 0;
         // 最大 Z
-        int max_z = 17;
+        int max_z = 25;
         // 画面の幅に最適な XYZ タイルの Z を格納
         int z = 2;
         // 画面上の Z の値
