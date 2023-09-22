@@ -39,7 +39,9 @@ namespace paxs {
         const int draw_min_z = -1,
         const int draw_max_z = -1
     ) {
-        const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+        const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(
+            map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+            paxs::XYZTile::XYZTileFileName::Z_Original));
         if (map_url.size() != 0) xyz_tile_base->setMapURL(map_url);
         if (map_name.size() != 0) xyz_tile_base->setMapName(map_name);
         if (min_z >= 0) xyz_tile_base->setMinZ(min_z);
@@ -61,7 +63,9 @@ namespace paxs {
         // mapMapInitOne(xyz_tile_list, path, map_view,
         // "map_base", "","", "Data/Map/XYZTile/Standard/Image/Land/2023/", -1, 7, -1, 7);
         {
-            const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_base->setMapURL("");
             xyz_tile_base->setMapName("");
             xyz_tile_base->setMaxZ(7);
@@ -72,7 +76,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_base", *xyz_tile_base);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile2(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile2->setMapURL("");
             xyz_tile2->setMapName("gbank");
             xyz_tile2->setMinZ(8);
@@ -85,7 +91,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_land_and_water", *xyz_tile2);
         }
         {
-            // const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            // const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(
+            // map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+            // paxs::XYZTile::XYZTileFileName::Z_Original));
             // xyz_tile3->setMapURL("");
             // // xyz_tile3->setMapURL("https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
             // xyz_tile3->setMapName("water");
@@ -94,14 +102,18 @@ namespace paxs {
             // xyz_tile3->setMapFilePath("./SavedMap/BlueRiver/");
         }
         {
-            // const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            // const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(
+            // map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+            // paxs::XYZTile::XYZTileFileName::Z_Original));
             // xyz_tile4->setMapURL("");
             // xyz_tile4->setMapName("soil");
             // xyz_tile4->setDefaultZ(12);
             // xyz_tile4->setMapFilePath("./SavedMap/Soil/soil/");
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_kuni->setMapURL("");
             xyz_tile_kuni->setMapName("ColorCodingByProvincesOfJapanWithLakes");
             xyz_tile_kuni->setDefaultZ(10);
@@ -111,7 +123,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_ryosei_country", *xyz_tile_kuni);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_kuni_line->setMapURL("");
             xyz_tile_kuni_line->setMapName("Line");
             xyz_tile_kuni_line->setMinZ(5);
@@ -122,7 +136,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_ryosei_line", *xyz_tile_kuni_line);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_kuni_korean_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_kuni_korean_line(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_kuni_korean_line->setMapURL("");
             xyz_tile_kuni_korean_line->setMapName("Line");
             xyz_tile_kuni_korean_line->setMinZ(7);
@@ -133,7 +149,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_korean_line", *xyz_tile_kuni_korean_line);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_soil(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_soil(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_soil->setMapURL("");
             xyz_tile_soil->setMapName("soil");
             xyz_tile_soil->setDefaultZ(12);
@@ -143,7 +161,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_soil", *xyz_tile_soil);
         }
         // {
-        // const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+        // const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(
+        // map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+        // paxs::XYZTile::XYZTileFileName::Z_Original));
         // xyz_tile_slope->setMapURL("");
         // xyz_tile_slope->setMapName("slope");
         // // xyz_tile_slope->setMinZ(3);
@@ -159,7 +179,9 @@ namespace paxs {
         mapMapInitOne(xyz_tile_list, path, map_view,
             "map_slope", "", "slope_pale", "Data/Map/XYZTile/Slope/Image/SlopePale20230920/2010/", -1, 8, -1, -1);
         {
-            const std::unique_ptr<XYZTile> xyz_tile_river(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_river(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_river->setMapURL("");
             xyz_tile_river->setMapName("water");
             xyz_tile_river->setDefaultZ(12);
@@ -169,7 +191,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_river1", *xyz_tile_river);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_river_bw(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_river_bw(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_river_bw->setMapURL("");
             xyz_tile_river_bw->setMapName("water");
             xyz_tile_river_bw->setDefaultZ(12);
@@ -179,7 +203,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_river2", *xyz_tile_river_bw);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_soil_temperature(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_soil_temperature(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_soil_temperature->setMapURL("");
             xyz_tile_soil_temperature->setMapName("soil-tem");
             xyz_tile_soil_temperature->setDrawMinZ(8);
@@ -189,19 +215,23 @@ namespace paxs {
             xyz_tile_list.emplace("map_soil_temperature", *xyz_tile_soil_temperature);
         }
         {
-            //const std::unique_ptr<XYZTile> xyz_tile_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            //const std::unique_ptr<XYZTile> xyz_tile_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(), paxs::XYZTile::XYZTileFileName::Z_Original));
             // xyz_tile_line->setDefaultZ(8);
             // xyz_tile_line->setDrawMinZ(5);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             // xyz_tile_line2->setDefaultZ(10);
             // xyz_tile_line2->setDrawMinZ(7);
 
             xyz_tile_list.emplace("map_line2", *xyz_tile_line2);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_line3(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_line3(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             // xyz_tile_line3->setDefaultZ(12);
             // xyz_tile_line3->setDrawMinZ(12);
             // xyz_tile_line3->setDrawMaxZ(16);
@@ -209,7 +239,9 @@ namespace paxs {
             xyz_tile_list.emplace("map_line3", *xyz_tile_line3);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_line4(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()));
+            const std::unique_ptr<XYZTile> xyz_tile_line4(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
             xyz_tile_line4->setDefaultZ(18);
             // xyz_tile_line4->setDrawMinZ(12);
             // xyz_tile_line4->setDrawMaxZ(16);
@@ -234,37 +266,37 @@ namespace paxs {
         // タイルを更新
         // xyz_tile1"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::base)) {
-            xyz_tile_list["map_base"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Default);
+            xyz_tile_list["map_base"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::soil)) {
-            xyz_tile_list["map_soil"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_soil"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::soil_temperature)) {
-            xyz_tile_list["map_soil_temperature"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_soil_temperature"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::land_and_water)) {
-            xyz_tile_list["map_land_and_water"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_land_and_water"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         // xyz_tile3"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_country)) {
-            xyz_tile_list["map_ryosei"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_ryosei"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-            xyz_tile_list["map_ryosei_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_ryosei_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-            xyz_tile_list["map_korean_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_korean_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::slope)) {
-            xyz_tile_list["map_slope"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_slope"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::river1)) {
-            xyz_tile_list["map_river"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_river"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::river2)) {
-            xyz_tile_list["map_river_bw"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list["map_river_bw"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
-        // xyz_tile4"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y, paxs::XYZTileFileName::Original);
+        // xyz_tile4"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
     // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
     // xyz_tile_list["map_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
     // }

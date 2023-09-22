@@ -67,7 +67,7 @@ namespace paxg {
             outline = s3d::TextStyle::Outline(inner, outer, color.color);
         }
 
-        void drawBottomLeft(const std::string& str, const paxg::Vec2i pos, const paxg::Color& color) const {
+        void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
@@ -80,7 +80,7 @@ namespace paxg {
                     color.color);
             }
         }
-        void drawTopRight(const std::string& str, const paxg::Vec2i pos, const paxg::Color& color) const {
+        void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
@@ -93,7 +93,7 @@ namespace paxg {
                     color.color);
             }
         }
-        void draw(const std::string& str, const paxg::Vec2i pos, const paxg::Color& color) const {
+        void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
@@ -106,7 +106,7 @@ namespace paxg {
                     color.color);
             }
         }
-        void drawBottomCenter(const std::string& str, const paxg::Vec2i pos, const paxg::Color& color) const {
+        void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
@@ -119,7 +119,7 @@ namespace paxg {
                     color.color);
             }
         }
-        void drawTopCenter(const std::string& str, const paxg::Vec2i pos, const paxg::Color& color) const {
+        void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
@@ -132,7 +132,7 @@ namespace paxg {
                     color.color);
             }
         }
-        void drawAt(const std::string& str, const paxg::Vec2i pos, const paxg::Color& color) const {
+        void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).drawAt(
                     outline,

@@ -39,8 +39,8 @@ namespace paxg {
         constexpr operator s3d::Circle() const { return circle; }
 #elif defined(PAXS_USING_SFML)
         sf::CircleShape circle;
-        Circle(float x, float y, float r) : circle(r) { circle.setPosition(x, y); }
-        Circle(const sf::Vector2i& pos, float r) : circle(r) { circle.setPosition(pos.x, pos.y); }
+        Circle(const float x, const float y, const float r) : circle(r) { circle.setPosition(x, y); }
+        Circle(const sf::Vector2i& pos, const float r) : circle(r) { circle.setPosition(pos.x, pos.y); }
         operator sf::CircleShape() const { return circle; }
 #else
         float x, y, r;

@@ -78,15 +78,15 @@ namespace s3d
 
     struct Rect
     {
+        std::size_t x{}, y{}, w{}, h{};
         Rect() {}
-        Rect([[maybe_unused]] int x_, [[maybe_unused]] int y_, [[maybe_unused]] int w_, [[maybe_unused]] int h_) {}
+        Rect(int, int, int, int) {}
         Rect(Point, int, double) {}
         Rect(int, int, int) {}
         Rect(Point, std::size_t, std::size_t) {}
         Rect(Point, Size) {}
         Point pos;
         Size size;
-        std::size_t x, y, w, h;
         static int value_type([[maybe_unused]] std::size_t x_) { return 0; }
         bool leftClicked() const { return false; }
         void draw() const {}

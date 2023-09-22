@@ -20,6 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (DxLib::DxLib_Init() == -1) return -1;
     DxLib::SetDrawScreen(DX_SCREEN_BACK);
     DxLib::SetWaitVSyncFlag(TRUE);
+    DxLib::SetUseASyncLoadFlag(TRUE);
     paxs::startMain("./../../../../");
     return DxLib::DxLib_End();
 }

@@ -58,11 +58,11 @@ namespace paxg {
             rect.w = w_;
             rect.h = h_;
         }
-        void setPos(const Vec2i pos_) {
+        void setPos(const Vec2i& pos_) {
             rect.x = pos_.x();
             rect.y = pos_.y();
         }
-        void setSize(const Vec2i size_) {
+        void setSize(const Vec2i& size_) {
             rect.w = size_.x();
             rect.h = size_.y();
         }
@@ -93,11 +93,11 @@ namespace paxg {
             rect.w = w_;
             rect.h = h_;
         }
-        void setPos(const Vec2i pos_) {
+        void setPos(const Vec2i& pos_) {
             rect.x = pos_.x();
             rect.y = pos_.y();
         }
-        void setSize(const Vec2i size_) {
+        void setSize(const Vec2i& size_) {
             rect.w = size_.x();
             rect.h = size_.y();
         }
@@ -131,11 +131,11 @@ namespace paxg {
             w0 = w_;
             h0 = h_;
         }
-        void setPos(const Vec2i pos_) {
+        void setPos(const Vec2i& pos_) {
             x0 = static_cast<float>(pos_.x());
             y0 = static_cast<float>(pos_.y());
         }
-        void setSize(const Vec2i size_) {
+        void setSize(const Vec2i& size_) {
             w0 = static_cast<float>(size_.x());
             h0 = static_cast<float>(size_.y());
         }

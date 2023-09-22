@@ -18,6 +18,8 @@
 
 #include <cmath>
 #include <string>
+#include <unordered_map>
+#include <utility>
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
@@ -44,43 +46,23 @@ namespace paxs {
         // 基本的に Z = 19 は無い
         using MapVec2 = Vector2<int>;
         using MapVec2D = Vector2<double>;
+        struct MapVec4D {
+            // std::uint_least64_t layer{};
+            std::uint_least64_t z{};
+            std::uint_least64_t x{};
+            std::uint_least64_t y{};
+        };
 
-        std::vector<MapVec2D> pos_list{};
+        std::vector<MapVec2D> pos_list1{};
+        std::vector<MapVec4D> pos_list2{};
         // XYZ タイルの画像の情報を保持
-        std::vector<paxg::Texture> texture_list{};
+        // std::vector<paxg::Texture> texture_list{};
+        std::unordered_map<std::uint_least64_t, paxg::Texture> texture{};
 
-        XYZTile(const double map_view_width,
-            const double map_view_height,
-            const double map_view_center_x,
-            const double map_view_center_y) {
-            start_cell = MapVec2{
-                int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num),
-                int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num)
-            };
-            end_cell = MapVec2{
-                int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * z_num),
-                int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * z_num)
-            };
-
-            cell_num = MapVec2{
-            (end_cell.x - start_cell.x),
-            (end_cell.y - start_cell.y)
-            };
-
-            cell_all_num = (cell_num.x + 1) * (cell_num.y + 1);
-
-            // 画面上の XYZ タイルのメルカトル座標を初期化
-            pos_list.resize(cell_all_num);
-            texture_list.resize(cell_all_num);
-            for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-                for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    pos_list[k] =
-                        //pos_list[i * cell_num.x + j] =
-                        MapVec2D{ j * 360.0 / z_num - 180.0,
-                (360.0 - i * 360.0 / z_num) - 180.0 };
-                }
-            }
+        std::uint_least64_t textureIndex(const MapVec4D& m_) const {
+            return (m_.y) + (m_.x << 24) + (m_.z << 48);// +(m_.layer << 53);
         }
+
         XYZTile()
             : start_cell(MapVec2{}), end_cell(MapVec2{}), cell_num(MapVec2{}), cell_all_num(0) {
         }
@@ -88,8 +70,7 @@ namespace paxs {
         void update(const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
-            const double map_view_center_y,
-            const XYZTileFileName file_name_enum = XYZTileFileName::Original) {
+            const double map_view_center_y) {
             // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
             if (current_map_view_width != map_view_width) {
                 if (default_z == 999) {
@@ -130,17 +111,26 @@ namespace paxs {
                 (end_cell.y - start_cell.y)
             };
             cell_all_num = (cell_num.x + 1) * (cell_num.y + 1);
-            pos_list.resize(cell_all_num);
-            texture_list.resize(cell_all_num);
+            pos_list1.resize(cell_all_num);
+            pos_list2.resize(cell_all_num);
+            // texture_list.resize(cell_all_num);
 
 
-            for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-                for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    pos_list[k] =
+            for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+                for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+                    pos_list1[k] =
                         MapVec2D{ j * 360.0 / z_num - 180.0,
                 (360.0 - i * 360.0 / z_num) - 180.0 };
+
+                    pos_list2[k] = {
+    static_cast<std::uint_least64_t>(z),
+    static_cast<std::uint_least64_t>((j + z_num) % z_num),
+    static_cast<std::uint_least64_t>((i + z_num) % z_num)
+                    };
+
                 }
             }
+            if (map_name.size() == 0) return;
 
             // ファイルを保存
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
@@ -175,24 +165,71 @@ namespace paxs {
 
                     // ファイルを同期ダウンロード
                     // ステータスコードが 200 (OK) なら
-                    texture_list[k] = paxg::Texture{ new_saveFilePath };
-                    if (!texture_list[k] &&
-                        map_url_name.size() != 0) {
+                    const std::uint_least64_t index = textureIndex(pos_list2[k]);
+
+                    // texture_list[k] = paxg::Texture{ new_saveFilePath };
+
+                    // 新しいテクスチャ
+                    paxg::Texture new_tex(new_saveFilePath);
+
+                    // もし種類が規定されていない場合は無視
+                    // if (pos_list2[k].layer == 0) {}
+
+                    // 新しいテクスチャが読み込めなかった場合
+                    if (!new_tex) {
 #if defined(PAXS_USING_SIV3D)
-                        const s3d::URL new_url =
-                            s3d::String(s3d::Unicode::FromUTF8(map_url_name))
-                            + s3d::String(U"/") + s3d::ToString(z)
-                            + s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
-                            + s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
-                            + s3d::String(U".png");
-                        if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(new_saveFilePath)).isOK()) {
-                            texture_list[k] = paxg::Texture{ new_saveFilePath };
+                        // URL の記載がある場合
+                        if (map_url_name.size() != 0) {
+                            const s3d::URL new_url =
+                                s3d::String(s3d::Unicode::FromUTF8(map_url_name))
+                                + s3d::String(U"/") + s3d::ToString(z)
+                                + s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
+                                + s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
+                                + s3d::String(U".png");
+                            if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(new_saveFilePath)).isOK()) {
+                                // texture_list[k] = paxg::Texture{ new_saveFilePath };
+
+                                paxg::Texture new_url_tex{ new_saveFilePath };
+                                if (!new_url_tex) {
+                                    // 何もしない
+                                }
+                                else {
+                                    // URL から取得した新しい地図へ更新
+                                    texture.insert({ index, std::move(new_url_tex) });
+                                }
+                            }
                         }
 #endif
+                    }
+                    // テクスチャが読み込めた場合
+                    else {
+                        texture.insert({ index, std::move(new_tex) });
                     }
                 }
             }
         }
+
+
+        XYZTile(
+            // const int min_z_, const int max_z_,
+            const double map_view_width,
+            const double map_view_height,
+            const double map_view_center_x,
+            const double map_view_center_y,
+            const XYZTileFileName file_name_enum_)
+            :
+            // min_z(min_z_), max_z(max_z_),
+            file_name_enum(file_name_enum_)
+        {
+
+            //update(
+            //    map_view_width,
+            //    map_view_height,
+            //    map_view_center_x,
+            //    map_view_center_y
+            //);
+        }
+
         void drawXYZ(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
             // 拡大率が描画範囲外の場合はここで処理を終了
             if (magnification_z < draw_min_z) return;
@@ -204,30 +241,40 @@ namespace paxs {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
                     tmp_font.draw(
                         std::string("X:" + std::to_string(j) + "\nY:" + std::to_string(i) + "\nZ:" + std::to_string(z) + "\nL:" + std::to_string(static_cast<std::size_t>(40075016.68 / std::pow(2, z) * 10) / 10.0)),
-                        paxg::Vec2i(static_cast<int>(10 + (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                            static_cast<int>(5 + double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))))
+                        paxg::Vec2i(static_cast<int>(10 + (pos_list1[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                            static_cast<int>(5 + double(paxg::Window::height()) - ((pos_list1[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))))
                         , paxg::Color{ 0, 0, 0 }
                     );
                 }
             }
         }
-        void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
+        void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
+        )const {
 
             // 拡大率が描画範囲外の場合はここで処理を終了
             if (magnification_z < draw_min_z) return;
             if (magnification_z > draw_max_z) return;
+            // 描画する場所がない場合は無視
+            if (pos_list2.size() == 0) return;
 
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    if (texture_list[k]) {
-                        texture_list[k].resizedDraw(
+                    // 場所の該当なし
+                    if (k >= pos_list2.size()) continue;
+
+                    const std::uint_least64_t index = textureIndex(pos_list2[k]);
+
+                    //if (texture_list[k]) {
+                    if (texture.contains(index)) {
+                        //texture_list[k].resizedDraw(
+                        texture.at(index).resizedDraw(
                             paxg::Vec2i(
                                 static_cast<int>((360.0 / z_num) / map_view_width * double(paxg::Window::width()))
                                 , static_cast<int>((360.0 / z_num) / map_view_height * double(paxg::Window::height()))
                             ),
                             paxg::Vec2i(
-                                static_cast<int>((pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                            static_cast<int>(double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                static_cast<int>((pos_list1[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                static_cast<int>(double(paxg::Window::height()) - ((pos_list1[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                             ));
                     }
                 }
@@ -240,9 +287,11 @@ namespace paxs {
             // 拡大率が描画範囲外の場合はここで処理を終了
             if (magnification_z < draw_min_z) return;
             if (magnification_z > draw_max_z) return;
+            // 描画するものが無い場合
+            if (pos_list1.size() == 0) return;
 
-            double pos_x = (pos_list[0].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width());
-            double pos_y = double(paxg::Window::height()) - ((pos_list[0].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()));
+            double pos_x = (pos_list1[0].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width());
+            double pos_y = double(paxg::Window::height()) - ((pos_list1[0].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()));
             const double move_x = (360.0 / z_num) / map_view_width * double(paxg::Window::width());
             const double move_y = (360.0 / z_num) / map_view_height * double(paxg::Window::height());
 
@@ -264,8 +313,8 @@ namespace paxs {
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
                     paxg::Rect(
-                        static_cast<float>((pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                        static_cast<float>(double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))),
+                        static_cast<float>((pos_list1[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                        static_cast<float>(double(paxg::Window::height()) - ((pos_list1[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))),
                         static_cast<float>((360.0 / z_num) / map_view_width * double(paxg::Window::width())),
                         static_cast<float>((360.0 / z_num) / map_view_height * double(paxg::Window::height()))
                     ).drawFrame(inner_thickness, outer_thickness, color);
@@ -341,7 +390,9 @@ namespace paxs {
         std::string map_name = "";
         std::string map_file_path_name = "";
         // 1フレーム前のマップの幅
-        double current_map_view_width = 0;
+        double current_map_view_width = -1.0;
+
+        const XYZTileFileName file_name_enum = XYZTileFileName::Original;
     };
 }
 
