@@ -52,14 +52,14 @@ namespace paxs {
             フォント
         ##########################################################################################*/
 
-        std::vector<s3d::Font> font_pulldown; // プルダウン用のフォント
+        std::vector<paxg::Font> font_pulldown; // プルダウン用のフォント
         int font_size = 17; // デフォルトのフォントのサイズ
-        std::vector<s3d::Font> font; // デフォルトのフォント
+        std::vector<paxg::Font> font; // デフォルトのフォント
 
         int koyomi_font_size = 17; // 暦のフォントサイズ
-        std::vector<s3d::Font> koyomi_font; // 暦のフォント
-        s3d::Font license_font;
-        s3d::Font pin_font{};
+        std::vector<paxg::Font> koyomi_font; // 暦のフォント
+        paxg::Font license_font;
+        paxg::Font pin_font{};
 
         std::size_t map_view_width_str_index;
         std::size_t map_view_center_x_str_index;
@@ -87,8 +87,8 @@ namespace paxs {
             const paxs::Language& language_text,
             const std::string& path8
         ) {
-            font_pulldown = setFont(s3d::FontMethod::SDF, 16, path8, "font_path", language_text);
-            font = setFont(s3d::FontMethod::SDF, font_size, path8, "font_path", language_text);
+            font_pulldown = setFont(16, path8, 3, "font_path", language_text);
+            font = setFont(font_size, path8, 3, "font_path", language_text);
 
             map_view_width_str_index = language_text.findStart("debug_magnification_power");
             map_view_center_x_str_index = language_text.findStart("debug_mercator_longitude");
@@ -101,7 +101,7 @@ namespace paxs {
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
 
 
-            const std::vector<s3d::Font>& font_menu_bar = font_pulldown;
+            const std::vector<paxg::Font>& font_menu_bar = font_pulldown;
 
             menu_bar.add(language_text.cget(), language_text.findStart("> menu_bar_file") + 1, 1, font_menu_bar);
             menu_bar.add(language_text.cget(), language_text.findStart("> menu_bar_edit") + 1, 1, font_menu_bar);
@@ -133,15 +133,13 @@ namespace paxs {
             }
 
 
-            koyomi_font = setFont(s3d::FontMethod::SDF, koyomi_font_size, path8, "font_path", language_text);
+            koyomi_font = setFont(koyomi_font_size, path8, 3, "font_path", language_text);
 
-            license_font = s3d::Font{ s3d::FontMethod::SDF, 14 /*, Typeface::Bold*/
-                , s3d::Unicode::FromUTF8(path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf") };
-            license_font.setBufferThickness(3);
+            license_font = paxg::Font{ 14 /*, Typeface::Bold*/
+                , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 3 };
 
-            pin_font = s3d::Font{ s3d::FontMethod::SDF, 18 /*, Typeface::Bold*/
-                , s3d::Unicode::FromUTF8(path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf") };
-            pin_font.setBufferThickness(3);
+            pin_font = paxg::Font{ 18 /*, Typeface::Bold*/
+                , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 3 };
 #ifdef PAXS_USING_SIV3D
             // 影
             shadow_texture = s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
@@ -242,10 +240,11 @@ namespace paxs {
                         bool date_lm = false;
                         switch (output_type) {
                         case paxs::cal::DateOutputType::name_and_ymd:
-                            koyomi_font[select_language.cget()](s3d::Unicode::FromUTF8(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](U"年").draw(s3d::Arg::topRight = s3d::Vec2(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](U"月").draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](U"日").draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                            koyomi_font[select_language.cget()].drawTopRight(std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */]),
+                                paxg::Vec2i(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight("年", paxg::Vec2i(int(120 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight("月", paxg::Vec2i(int(220 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight("日", paxg::Vec2i(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
 
                             std::visit([&](const auto& x) {
                                 date_year = int(x.cgetYear());
@@ -254,21 +253,21 @@ namespace paxs {
                                 date_lm = x.isLeapMonth();
                                 }, koyomi_siv.date_list[i].date);
 
-                            koyomi_font[select_language.cget()](s3d::ToString(date_year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](s3d::ToString(date_month)).draw(s3d::Arg::topRight = s3d::Vec2(int(190 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(270 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                            koyomi_font[select_language.cget()].drawTopRight(std::to_string(date_year), paxg::Vec2i(int(85 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight(std::to_string(date_month), paxg::Vec2i(int(190 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight(std::to_string(date_day), paxg::Vec2i(int(270 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
                             if (date_lm) {
-                                koyomi_font[select_language.cget()](U"閏").draw(s3d::Arg::topRight = s3d::Vec2((
+                                koyomi_font[select_language.cget()].drawTopRight("閏", paxg::Vec2i((
                                     (date_month < 10) ? int(167 * koyomi_font_size / 30.0) + koyomi_font_x : int(152 * koyomi_font_size / 30.0) + koyomi_font_x
-                                    ), koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                                    ), koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
                             }
                             break;
                         case paxs::cal::DateOutputType::name_and_value:
-                            koyomi_font[select_language.cget()](s3d::Unicode::FromUTF8(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                            koyomi_font[select_language.cget()].drawTopRight(std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */]), paxg::Vec2i(koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
                             std::visit([&](const auto& x) {
                                 date_day = int(x.cgetDay());
                                 }, koyomi_siv.date_list[i].date);
-                            koyomi_font[select_language.cget()](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                            koyomi_font[select_language.cget()].drawTopRight(std::to_string(date_day), paxg::Vec2i(int(300 * koyomi_font_size / 30.0) + koyomi_font_x, koyomi_font_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
 
                             break;
                         default:
@@ -289,10 +288,10 @@ namespace paxs {
                         bool date_lm = false;
                         switch (output_type) {
                         case paxs::cal::DateOutputType::name_and_ymd:
-                            koyomi_font[select_language.cget()](s3d::Unicode::FromUTF8(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](U",").draw(s3d::Arg::topRight = s3d::Vec2(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](U"th").draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                            koyomi_font[select_language.cget()].drawTopRight(std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */]), paxg::Vec2i(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight(",", paxg::Vec2i(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight(",", paxg::Vec2i(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight("th", paxg::Vec2i(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
 
                             std::visit([&](const auto& x) {
                                 date_year = int(x.cgetYear());
@@ -301,22 +300,23 @@ namespace paxs {
                                 date_lm = x.isLeapMonth();
                                 }, koyomi_siv.date_list[i].date);
 
-                            koyomi_font[select_language.cget()](s3d::ToString(date_year)).draw(s3d::Arg::topRight = s3d::Vec2(int(85 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](s3d::Unicode::FromUTF8(koyomi_siv.month_name[date_month])).draw(s3d::Arg::topRight = s3d::Vec2(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
-                            koyomi_font[select_language.cget()](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                            koyomi_font[select_language.cget()].drawTopRight(std::to_string(date_year), paxg::Vec2i(int(85 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight(std::string(koyomi_siv.month_name[date_month]), paxg::Vec2i(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
+                            koyomi_font[select_language.cget()].drawTopRight(std::to_string(date_day), paxg::Vec2i(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
                             if (date_lm) {
-                                koyomi_font[select_language.cget()](U"int.").draw(s3d::Arg::topRight = s3d::Vec2((
+                                koyomi_font[select_language.cget()].drawTopRight("int.", paxg::Vec2i((
                                     int(152 * koyomi_font_size / 30.0) + koyomi_font_en_x
-                                    ), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                                    ), koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
                             }
                             break;
                         case paxs::cal::DateOutputType::name_and_value:
-                            koyomi_font[select_language.cget()](s3d::Unicode::FromUTF8(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])).draw(s3d::Arg::topRight = s3d::Vec2(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                            koyomi_font[select_language.cget()].drawTopRight(std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */]),
+                                paxg::Vec2i(koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
 
                             std::visit([&](const auto& x) {
                                 date_day = int(x.cgetDay());
                                 }, koyomi_siv.date_list[i].date);
-                            koyomi_font[select_language.cget()](s3d::ToString(date_day)).draw(s3d::Arg::topRight = s3d::Vec2(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), s3d::Palette::Black);
+                            koyomi_font[select_language.cget()].drawTopRight(std::to_string(date_day), paxg::Vec2i(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x, koyomi_font_en_y + i * (koyomi_font_size * 4 / 3)), paxg::Color(0, 0, 0));
 
                             break;
                         default:
@@ -446,29 +446,32 @@ namespace paxs {
                 int debug_move_y = 25;
                 // その他のデバッグ用の変数情報の表示
                 if (visible["UI"]) {
-                    font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_center_x_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                    )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-                    font[select_language.cget()](s3d::ToString(map_view->getCenterX())
-                        ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
-                    debug_start_y += debug_move_y;
-                    // マップ中心座標 Y
-                    font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_center_y_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                    )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-                    font[select_language.cget()](s3d::ToString(map_view->getCenterY())
-                        ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
-                    debug_start_y += debug_move_y;
-                    font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_center_lat_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                    )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-                    font[select_language.cget()](s3d::ToString(map_view_center_lat)
-                        ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
-                    debug_start_y += debug_move_y;
-                    font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_width_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                    )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-                    font[select_language.cget()](s3d::ToString(map_view_width)
-                        ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
-                    debug_start_y += debug_move_y;
-                    font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                    )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
+                    //font[select_language.cget()].
+
+                    //font[select_language.cget()](std::string(language_text.cget()[map_view_center_x_str_index][select_language.cget() + 1 /* 言語位置調整 */]
+                    //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
+                    //font[select_language.cget()](s3d::ToString(map_view->getCenterX())
+                    //    ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
+                    //debug_start_y += debug_move_y;
+                    //// マップ中心座標 Y
+                    //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_center_y_str_index][select_language.cget() + 1 /* 言語位置調整 */]
+                    //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
+                    //font[select_language.cget()](s3d::ToString(map_view->getCenterY())
+                    //    ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
+                    //debug_start_y += debug_move_y;
+                    //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_center_lat_str_index][select_language.cget() + 1 /* 言語位置調整 */]
+                    //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
+                    //font[select_language.cget()](s3d::ToString(map_view_center_lat)
+                    //    ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
+                    //debug_start_y += debug_move_y;
+                    //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_width_str_index][select_language.cget() + 1 /* 言語位置調整 */]
+                    //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
+                    //font[select_language.cget()](s3d::ToString(map_view_width)
+                    //    ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
+                    //debug_start_y += debug_move_y;
+                    //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
+                    //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
+
                     //font[language](s3d::ToString(xyz_tile2->getZ())
                     //).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
                     //debug_start_y += debug_move_y;
@@ -479,13 +482,13 @@ namespace paxs {
             if (visible["License"]) {
                 //font(std::string{ U"A" } + s3d::ToString(xyz_tile_cell.x) + std::string{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 10, 400), s3d::Palette::Black);
                 //font(std::string{ U"B" } + s3d::ToString(xyz_tile_pos.x) + std::string{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 10, 450), s3d::Palette::Black);
-                license_font(s3d::Unicode::FromUTF8(map_license_name)).draw(
-                    s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                    s3d::Arg::bottomLeft = s3d::Vec2(10, paxg::Window::height() - 10),
-                    s3d::Palette::White);
-                license_font(s3d::Unicode::FromUTF8(map_license_name)).draw(
-                    s3d::Arg::bottomLeft = s3d::Vec2(10, paxg::Window::height() - 10),
-                    s3d::Palette::Black);
+                license_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                license_font.drawBottomLeft(std::string(map_license_name),
+                    paxg::Vec2i(10, paxg::Window::height() - 10),
+                    paxg::Color(255, 255, 255));
+                license_font.drawBottomLeft(std::string(map_license_name),
+                    paxg::Vec2i(10, paxg::Window::height() - 10),
+                    paxg::Color(0, 0, 0));
                 //pin_font(std::string{ U"国土地理院（https://maps.gsi.go.jp/development/ichiran.html）" }).draw(s3d::Arg::topLeft = s3d::Vec2(10, 10), s3d::Palette::Black);
                 //texture_tlt.resized(180).draw(s3d::Arg::bottomRight = s3d::Vec2(paxg::Window::width() - 10, paxg::Window::height() - 10));
             }
@@ -506,13 +509,11 @@ namespace paxs {
             }
 
             if (visible["UI"]) {
-
-                font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[koyomi_siv.sueki_nakamura_index][select_language.cget() + 1 /* 言語位置調整 */]
-                )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                    s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, 590), s3d::Palette::Black);
-                font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[koyomi_siv.sueki_tanabe_index][select_language.cget() + 1 /* 言語位置調整 */]
-                )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                    s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, 620), s3d::Palette::Black);
+                font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                font[select_language.cget()].drawTopRight(std::string(language_text.cget()[koyomi_siv.sueki_nakamura_index][select_language.cget() + 1 /* 言語位置調整 */]),
+                    paxg::Vec2i(paxg::Window::width() - 160, 590), paxg::Color(0, 0, 0));
+                font[select_language.cget()].drawTopRight(std::string(language_text.cget()[koyomi_siv.sueki_tanabe_index][select_language.cget() + 1 /* 言語位置調整 */]),
+                    paxg::Vec2i(paxg::Window::width() - 160, 620), paxg::Color(0, 0, 0));
                 {
                     std::string sueki_nakamura = "";
                     std::string sueki_tanabe = "";
@@ -539,12 +540,13 @@ namespace paxs {
                             }
                         }
                     }
-                    font[select_language.cget()](s3d::Unicode::FromUTF8(sueki_tanabe
-                    )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                        s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 60, 620), s3d::Palette::Black);
-                    font[select_language.cget()](s3d::Unicode::FromUTF8(sueki_nakamura
-                    )).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                        s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 60, 590), s3d::Palette::Black);
+                    font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                    font[select_language.cget()].drawTopRight(
+                        std::string(sueki_tanabe),
+                        paxg::Vec2i(paxg::Window::width() - 60, 620), paxg::Color(0, 0, 0));
+                    font[select_language.cget()].drawTopRight(
+                        std::string(sueki_nakamura),
+                        paxg::Vec2i(paxg::Window::width() - 60, 590), paxg::Color(0, 0, 0));
                 }
             }
             // シミュレーションのボタン
@@ -565,16 +567,16 @@ namespace paxs {
 
         }
     private:
-        std::vector<s3d::Font> setFont(
-            const s3d::FontMethod& font_method,
+        std::vector<paxg::Font> setFont(
             const int font_size_,
             const std::string& path,
+            const int buffer_thickness,
             const std::string& key,
             const paxs::Language& language_text) const {
-            std::vector<s3d::Font> return_font{};
+            std::vector<paxg::Font> return_font{};
             const std::vector<std::string>& vs = language_text.cgetFindStart(key);
             for (std::size_t i = 1; i < vs.size(); ++i) {
-                return_font.emplace_back(s3d::Font{ font_method, font_size_, s3d::Unicode::FromUTF8(path + vs[i]) });
+                return_font.emplace_back(paxg::Font{ font_size_, (path + vs[i]), buffer_thickness});
             }
             return return_font;
         }

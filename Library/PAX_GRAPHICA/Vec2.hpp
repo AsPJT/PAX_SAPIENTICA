@@ -20,6 +20,8 @@
 #include <Siv3D/Vector2D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/System/Vector2.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
 #endif
 
 namespace paxg {

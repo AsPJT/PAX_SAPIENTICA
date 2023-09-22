@@ -20,6 +20,8 @@
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
 #endif
 
 #include <PAX_GRAPHICA/IDrawable.hpp>
@@ -240,6 +242,13 @@ namespace paxg {
         bool leftClicked() const {
 #if defined(PAXS_USING_SIV3D)
             return rect.leftClicked();
+#elif defined(PAXS_USING_DXLIB)
+            int mx = 0, my = 0;
+            if ((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) != 0) {
+                DxLib::GetMousePoint(&mx, &my);
+                return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
+            }
+            return false;
 #else
             return false;
 #endif

@@ -45,7 +45,7 @@ namespace paxs {
     void startMain(const std::string& path8) { // フォルダ階層
         SelectLanguage select_language{}; // 選択言語
 
-        paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
+        paxs::PaxSapienticaInitSiv3D::firstInit(path8); // 初期化とロゴの表示
 #ifdef PAXS_USING_SIV3D
         s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
 #endif

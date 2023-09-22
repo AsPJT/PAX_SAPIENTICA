@@ -20,6 +20,8 @@
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
 #endif
 
 #include <PAX_GRAPHICA/String.hpp>

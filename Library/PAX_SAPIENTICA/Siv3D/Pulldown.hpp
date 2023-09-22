@@ -58,7 +58,7 @@ namespace paxs {
                 }
                 // 最大の文字数からプルダウンの各項目の幅を定義
                 rect.setW(
-                    static_cast<float>((std::max)(static_cast<s3d::int32>(rect.w()), static_cast<s3d::int32>(font.front()(s3d::Unicode::FromUTF8(item)).region().w)))
+                    static_cast<float>((std::max)(static_cast<s3d::int32>(rect.w()), static_cast<s3d::int32>(font.front().width(item))))
                 );
             }
             // プルダウンの
@@ -69,7 +69,7 @@ namespace paxs {
             const std::vector<Languages>& items_, // 表示するもの
             const std::size_t start_index_, // 単語の要素番号
             const std::size_t start_language_index_, // 言語の要素番号
-            const std::vector<s3d::Font>& font_,
+            const std::vector<paxg::Font>& font_,
             const paxg::Vec2i& pos_ = { 0,0 },
             PulldownType pdt_ = PulldownType::Zero, // プルダウンの種別
             const bool is_one_font_ = false)
@@ -145,20 +145,18 @@ namespace paxs {
             switch (pdt) {
             case paxs::PulldownType::Empty:break;
             case paxs::PulldownType::Zero:
-#ifdef PAXS_USING_SIV3D
                 // 文字を描画
-                font[select_index](s3d::Unicode::FromUTF8(
-                    (language_index + start_language_index < itemsa[item_index].size()) ? itemsa[item_index][language_index + start_language_index] : itemsa[item_index][start_language_index]
-                )).draw(pos.x() + padding.x(), pos.y() + padding.y(), s3d::Palette::Black);
-#endif
+                font[select_index].draw(
+                    std::string(
+                        (language_index + start_language_index < itemsa[item_index].size()) ? itemsa[item_index][language_index + start_language_index] : itemsa[item_index][start_language_index]
+                    ), paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{0, 0, 0});
                 break;
             case paxs::PulldownType::One:
-#ifdef PAXS_USING_SIV3D
                 // 文字を描画
-                font[language_index](s3d::Unicode::FromUTF8(
-                    (language_index + start_language_index < itemsa[item_index].size()) ? itemsa[start_index][language_index + start_language_index] : itemsa[item_index][start_language_index]
-                )).draw(pos.x() + padding.x(), pos.y() + padding.y(), s3d::Palette::Black);
-#endif
+                font[language_index].draw(
+                    std::string(
+                        (language_index + start_language_index < itemsa[item_index].size()) ? itemsa[start_index][language_index + start_language_index] : itemsa[item_index][start_language_index]
+                    ), paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{0, 0, 0});
                 break;
             default:break;
             }
@@ -192,12 +190,10 @@ namespace paxs {
                         rect_tmp.draw(paxg::Color{ 135, 206, 235 });
                     }
                     const std::size_t select_index2 = ((is_one_font) ? i : language_index);
-#ifdef PAXS_USING_SIV3D
                     // 文字を描画
-                    font[select_index2](s3d::Unicode::FromUTF8(
-                        (language_index + start_language_index < itemsa[i].size()) ? itemsa[i][language_index + start_language_index] : itemsa[i][start_language_index]
-                    )).draw(pos.x() + padding.x(), pos.y() + padding.y(), s3d::Palette::Black);
-#endif
+                    font[select_index2].draw(
+                        std::string((language_index + start_language_index < itemsa[i].size()) ? itemsa[i][language_index + start_language_index] : itemsa[i][start_language_index]),
+                        paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{0, 0, 0});
                     pos.setY(static_cast<int>(pos.y() + rect.h()));
                 }
                 // ふちを描画
@@ -222,7 +218,7 @@ namespace paxs {
         std::size_t start_index = 0; // 単語の要素番号の開始地点
         std::size_t start_language_index = 0; // 言語の要素番号の開始地点
         std::size_t language_index = 0; // 言語の要素番号
-        std::vector<s3d::Font> font{};
+        std::vector<paxg::Font> font{};
         std::vector<Languages> itemsa{}; // プルダウンに使用されている単語一覧
         std::vector<bool> is_items{};
         size_t index = 0;
@@ -243,7 +239,7 @@ namespace paxs {
             const std::vector<Languages>& menu_bar_pulldown,
             const std::size_t start_index,
             const std::size_t start_language_index,
-            const std::vector<s3d::Font>& font_menu_bar) {
+            const std::vector<paxg::Font>& font_menu_bar) {
 
             if (pdv.size() != 0) {
                 start_x += static_cast<std::size_t>(pdv.back().getRect().w());

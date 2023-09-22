@@ -20,6 +20,8 @@
 #include <Siv3D/Color.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics/Color.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
 #endif
 
 namespace paxg {

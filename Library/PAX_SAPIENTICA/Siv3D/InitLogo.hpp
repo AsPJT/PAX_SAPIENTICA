@@ -29,9 +29,9 @@ namespace paxs {
     private:
     public:
         // ソフトウェアを実行した最初のフレームの一番最初に実行
-        static void firstInit() {
+        static void firstInit(const std::string& path8) {
             // ロゴ画像の読み込み
-            const paxg::Texture texture_tl{ "./../../../../../Image/Logo/TitleBanner2.svg" };
+            const paxg::Texture texture_tl{ path8 + "Image/Logo/TitleBanner2.png" };
             // 画面サイズを変更
             paxg::Window::setSize(
                 (!texture_tl) ? 700 : texture_tl.width(), (!texture_tl) ? 180 : texture_tl.height());

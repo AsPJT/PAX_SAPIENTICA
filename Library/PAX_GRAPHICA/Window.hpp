@@ -22,6 +22,8 @@
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -165,7 +167,6 @@ namespace paxg {
         void setVisible(bool visible) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Window::SetStyle(visible ? s3d::WindowStyle::Sizable : s3d::WindowStyle::None);
-            visible;
 #elif defined(PAXS_USING_SFML)
             window.setVisible(visible);
 #endif
@@ -174,7 +175,6 @@ namespace paxg {
         void setVSync(bool vsync) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Graphics::SetTargetFrameRate(vsync ? 60 : 0);
-            vsync;
 #elif defined(PAXS_USING_SFML)
             window.setVerticalSyncEnabled(vsync);
 #endif
@@ -183,7 +183,6 @@ namespace paxg {
         void setFPS(int fps) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Graphics::SetTargetFrameRate(fps);
-            fps;
 #elif defined(PAXS_USING_SFML)
             window.setFramerateLimit(fps);
 #endif
@@ -192,7 +191,6 @@ namespace paxg {
         void setMouseCursorVisible(bool visible) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Cursor::SetStyle(visible ? s3d::CursorStyle::Default : s3d::CursorStyle::Hidden);
-            visible;
 #elif defined(PAXS_USING_SFML)
             window.setMouseCursorVisible(visible);
 #endif
@@ -201,7 +199,6 @@ namespace paxg {
         void setMouseCursorGrabbed(bool grabbed) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Cursor::SetStyle(grabbed ? s3d::CursorStyle::Hidden : s3d::CursorStyle::Default);
-            grabbed;
 #elif defined(PAXS_USING_SFML)
             window.setMouseCursorGrabbed(grabbed);
 #endif
@@ -250,7 +247,6 @@ namespace paxg {
         void setKeyRepeat(bool repeat) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::System::SetTerminationTriggers(repeat ? s3d::UserAction::CloseButtonClicked : s3d::UserAction::ExitFocusLost);
-            repeat;
 #elif defined(PAXS_USING_SFML)
             window.setKeyRepeatEnabled(repeat);
 #endif

@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -17,29 +17,29 @@
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 
-TEST (LoggerUnitTest, currentDateTime) {
-    const std::regex  e ("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+TEST(LoggerUnitTest, currentDateTime) {
+    const std::regex  e("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
     const std::string actual = paxs::Logger().currentDateTime();
-    
+
     ASSERT_TRUE(std::regex_match(actual, e));
 }
 
-TEST (LoggerUnitTest, log) {
+TEST(LoggerUnitTest, log) {
     const std::string file_path = "../data/test_log.txt";
-    
+
     if (std::filesystem::exists(file_path)) {
         std::filesystem::remove(file_path);
     }
 
     const std::string message = "Test log";
-    const std::string expected = "[ERROR]: " + message + " (" + __FILE__ + ":" + "0" +  ")";
+    const std::string expected = "[ERROR]: " + message + " (" + __FILE__ + ":" + "0" + ")";
 
     {
         paxs::Logger logger(file_path);
-        logger.log(paxs::Logger::Level::ERROR, __FILE__, 0, message);
+        logger.log(paxs::Logger::Level::ERRORa, __FILE__, 0, message);
     }
-    
-    const std::regex e ("\\[.*?\\] "); 
+
+    const std::regex e("\\[.*?\\] ");
     const std::string actual = std::regex_replace(paxs::File::readFile(file_path).at(0), e, "");
 
     std::filesystem::remove(file_path);

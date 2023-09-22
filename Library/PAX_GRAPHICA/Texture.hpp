@@ -20,6 +20,8 @@
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
 #endif
 
 #include <PAX_GRAPHICA/IDrawable.hpp>
@@ -44,7 +46,7 @@ namespace paxg {
         Texture(const paxg::Image& image) { texture.loadFromImage(image); }
         Texture(const paxg::String& path) { texture.loadFromFile(path); }
         Texture(const std::string& path) {
-            texture.loadFromFile(static_cast<paxg::String>(path);
+            texture.loadFromFile(static_cast<paxg::String>(path));
         }
         operator sf::Texture() const { return texture; }
 #elif defined(PAXS_USING_DXLIB)
