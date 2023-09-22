@@ -37,7 +37,7 @@ namespace paxs {
             if (!file) { // もしファイルが無い場合はエラーを出す
                 Logger logger("Save/error_log.txt"); // ログ管理クラス
                 const std::string message = "Failed to read file: " + file_path; // エラーメッセージ
-                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message); // ログを出力
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message); // ログを出力
                 throw std::runtime_error(message);
             }
             // 1 行ごとに文字列を分離し vector へ格納
@@ -59,7 +59,7 @@ namespace paxs {
             }
             catch(const std::exception&) {
                 Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, "Failed to read CSV file: " + file_path);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to read CSV file: " + file_path);
                 throw;
             }
             
@@ -79,7 +79,7 @@ namespace paxs {
             }
             catch(const std::exception&) {
                 Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, "Failed to read TSV file: " + file_path);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to read TSV file: " + file_path);
                 throw;
             }
 
@@ -97,7 +97,7 @@ namespace paxs {
             if (!std::filesystem::exists(dir_path)) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get file names: " + directory_path;
-                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
 
@@ -113,7 +113,7 @@ namespace paxs {
                 }
                 catch (const std::exception&) {
                     Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, "Failed to access: " + dir_iter->path().string());
+                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to access: " + dir_iter->path().string());
                     throw;
                 }
             }

@@ -36,7 +36,7 @@ TEST(LoggerUnitTest, log) {
 
     {
         paxs::Logger logger(file_path);
-        logger.log(paxs::Logger::Level::ERRORa, __FILE__, 0, message);
+        logger.log(paxs::Logger::Level::PAX_ERROR, __FILE__, 0, message);
     }
 
     const std::regex e("\\[.*?\\] ");

@@ -35,7 +35,7 @@ namespace paxs {
         enum class Level {
             INFO, // 情報を示すメッセージ（警告やエラー以外）
             WARNING, // 警告メッセージ
-            ERRORa // エラーメッセージ
+            PAX_ERROR // エラーメッセージ
         };
 
         /// @brief Constructor.
@@ -83,7 +83,7 @@ namespace paxs {
                 case Level::WARNING: 
                     file << "[WARNING]: ";
                     break;
-                case Level::ERRORa: 
+                case Level::PAX_ERROR: 
                     file << "[ERROR]: ";
                     break;
             }
@@ -97,7 +97,7 @@ namespace paxs {
         /// @param filename The name of the file to log. ログを記録するファイルの名前。ex) __FILE__
         /// @param line The line number of the file to log. ログを記録するファイルの行番号。ex) __LINE__
         void handleException(const std::exception& e, const std::string& filename, const int line) noexcept {
-            log(Level::ERRORa, filename, line, "Exception: " + std::string(e.what()));
+            log(Level::PAX_ERROR, filename, line, "Exception: " + std::string(e.what()));
         }
     private:
         std::ofstream file; // The file to log.

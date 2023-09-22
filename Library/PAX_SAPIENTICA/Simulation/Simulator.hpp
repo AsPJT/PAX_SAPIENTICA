@@ -42,13 +42,13 @@ namespace paxs {
                 if (z <= 0) {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "Z must be greater than 0.";
-                    logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
+                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                     throw std::runtime_error(message);
                 }
                 if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "Start position and end position must be greater than or equal to 0.";
-                    logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
+                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                     throw std::runtime_error(message);
                 }
             }
@@ -88,7 +88,7 @@ namespace paxs {
                     agent.move();
                 } catch (const std::runtime_error&) {
                     Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, "Failed to move agent. Agent id: " + std::to_string(agent.getId()));
+                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to move agent. Agent id: " + std::to_string(agent.getId()));
                 }
             }
 
@@ -131,7 +131,7 @@ namespace paxs {
                 } catch (const std::runtime_error&) {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "Failed to randomize agent.";
-                    logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
+                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                     throw std::runtime_error(message);
                 }
                 

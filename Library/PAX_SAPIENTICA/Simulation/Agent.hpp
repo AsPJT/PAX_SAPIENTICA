@@ -113,7 +113,7 @@ namespace paxs {
                 }
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, "Failed to move agent to " + std::to_string(this->position.x) + ", " + std::to_string(this->position.y) + ".");
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to move agent to " + std::to_string(this->position.x) + ", " + std::to_string(this->position.y) + ".");
                 throw;
             }
         }

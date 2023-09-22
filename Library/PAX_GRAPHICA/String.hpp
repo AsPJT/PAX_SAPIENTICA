@@ -143,7 +143,24 @@ namespace paxg {
             // return str_.size() * h;
         }
 #else
-        Font(const int size_, const std::string& path, const int buffer_thickness) {}
+        Font(const int size_, const std::string& path, const int buffer_thickness) {
+        }
+        void setOutline(const double inner, const double outer, const paxg::Color& color) {
+        }
+
+        void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        }
+        void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        }
+        void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        }
+
+        int height() const {
+            return 0;
+        }
+        int width(const std::string& str_) {
+            return 0;
+        }
 #endif
     };
 
