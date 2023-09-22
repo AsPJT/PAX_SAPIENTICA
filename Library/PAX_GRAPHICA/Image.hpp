@@ -39,7 +39,7 @@ namespace paxg {
         Image(const paxg::String& path) { image.loadFromFile(path); }
         operator sf::Image() const { return image; }
 #else
-        constexpr Image(const paxg::String& path) {}
+        constexpr Image([[maybe_unused]] const paxg::String& path) {}
 #endif
     };
 }

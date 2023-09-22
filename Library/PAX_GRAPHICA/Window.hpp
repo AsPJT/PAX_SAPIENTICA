@@ -94,11 +94,11 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             return s3d::Scene::Width();
 #elif defined(PAXS_USING_DXLIB)
-            int width = 0, height = 0;
+            int width = 1, height = 1; // 0 除算を防ぐために 1 を指定
             DxLib::GetWindowSize(&width, &height);
             return static_cast<int>(width);
 #else
-            return 0;
+            return 1;
 #endif
         }
         // ウィンドウの高さを取得
@@ -106,11 +106,11 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             return s3d::Scene::Height();
 #elif defined(PAXS_USING_DXLIB)
-            int width = 0, height = 0;
+            int width = 1, height = 1; // 0 除算を防ぐために 1 を指定
             DxLib::GetWindowSize(&width, &height);
             return static_cast<int>(height);
 #else
-            return 0;
+            return 1;
 #endif
         }
 

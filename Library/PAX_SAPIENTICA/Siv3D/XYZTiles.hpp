@@ -22,6 +22,7 @@
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
+#include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -196,21 +197,19 @@ namespace paxs {
             // 拡大率が描画範囲外の場合はここで処理を終了
             if (magnification_z < draw_min_z) return;
             if (magnification_z > draw_max_z) return;
-#if defined(PAXS_USING_SIV3D)
-            static s3d::Font tmp_font{ s3d::FontMethod::SDF, 16/*, s3d::Typeface::Bold*/};
-            tmp_font.setBufferThickness(3);
 
+            static paxg::Font tmp_font{16, "", 3};
+            tmp_font.setOutline(0, 0.5, paxg::Color{ 255, 255, 255 });
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    tmp_font(U"X:", j, U"\nY:", i, U"\nZ:", z, U"\nL:", static_cast<std::size_t>(40075016.68 / std::pow(2, z) * 10) / 10.0).draw(
-                        s3d::TextStyle::Outline(0, 0.5, paxg::Color{ 255, 255, 255 }.color),
-                        10 + (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
-                        5 + double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))
-                        , paxg::Color{ 0, 0, 0 }.color
+                    tmp_font.draw(
+                        std::string("X:" + std::to_string(j) + "\nY:" + std::to_string(i) + "\nZ:" + std::to_string(z) + "\nL:" + std::to_string(static_cast<std::size_t>(40075016.68 / std::pow(2, z) * 10) / 10.0)),
+                        paxg::Vec2i(static_cast<int>(10 + (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                            static_cast<int>(5 + double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))))
+                        , paxg::Color{ 0, 0, 0 }
                     );
                 }
             }
-#endif
         }
         void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
 
@@ -223,12 +222,12 @@ namespace paxs {
                     if (texture_list[k]) {
                         texture_list[k].resizedDraw(
                             paxg::Vec2i(
-                                (360.0 / z_num) / map_view_width * double(paxg::Window::width())
-                                , (360.0 / z_num) / map_view_height * double(paxg::Window::height())
+                                static_cast<int>((360.0 / z_num) / map_view_width * double(paxg::Window::width()))
+                                , static_cast<int>((360.0 / z_num) / map_view_height * double(paxg::Window::height()))
                             ),
                             paxg::Vec2i(
-                                (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
-                                double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))
+                                static_cast<int>((pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                            static_cast<int>(double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                             ));
                     }
                 }
@@ -249,12 +248,12 @@ namespace paxs {
 
             for (int i = start_cell.y; i <= end_cell.y; ++i, pos_y += move_y) {
                 paxg::Line(
-                    0, pos_y, paxg::Window::width(), pos_y
+                    0, static_cast<float>(pos_y), static_cast<float>(paxg::Window::width()), static_cast<float>(pos_y)
                 ).draw(thickness, color);
             }
             for (int j = start_cell.x; j <= end_cell.x; ++j, pos_x += move_x) {
                 paxg::Line(
-                    pos_x, 0, pos_x, paxg::Window::height()
+                    static_cast<float>(pos_x), 0, static_cast<float>(pos_x), static_cast<float>(paxg::Window::height())
                 ).draw(thickness, color);
             }
         }

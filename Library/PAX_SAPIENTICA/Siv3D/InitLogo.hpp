@@ -47,6 +47,9 @@ namespace paxs {
             // 画像の拡大縮小の方式を設定
             const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
 #endif
+#ifdef PAXS_USING_DXLIB
+            DxLib::SetDrawScreen(DX_SCREEN_BACK);
+#endif // PAXS_USING_DXLIB
             // タイトルを変更する前に 1 回更新
             paxg::Window::update();
             // タイトルを変更

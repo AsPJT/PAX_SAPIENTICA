@@ -322,6 +322,7 @@
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Graphics.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\IDrawable.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Image.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Line.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Rect.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\String.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Texture.hpp" />

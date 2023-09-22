@@ -45,7 +45,7 @@ namespace paxg {
 #else
         float x, y, r;
         constexpr Circle(const float x, const float y, const float r) : x(x), y(y), r(r) {}
-        constexpr Circle(const paxg::Vec2i& pos, const float r) : x(pos.x()), y(pos.y()), r(r) {}
+        constexpr Circle(const paxg::Vec2i& pos, const float r) : x(static_cast<float>(pos.x())), y(static_cast<float>(pos.y())), r(r) {}
 #endif
         void draw() const override {
 #if defined(PAXS_USING_SIV3D)
@@ -55,7 +55,7 @@ namespace paxg {
 #endif
         }
 
-        void drawAt(const Vec2f& pos) const override {}
+        void drawAt([[maybe_unused]] const Vec2f& pos) const override {}
     };
 }
 

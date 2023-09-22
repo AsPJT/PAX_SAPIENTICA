@@ -100,9 +100,9 @@ namespace paxs {
         void update(
             const SelectLanguage& select_language,
             const paxs::KoyomiSiv3D& koyomi_siv,
-            const paxs::StringViewerSiv3D& string_siv,
-            const paxs::Simulator<int>& simlator,
-            const paxs::Vector2<int>& start_position,
+            paxs::StringViewerSiv3D& string_siv,
+            const paxs::Simulator<int>& simlator, // コンパイル時の分岐により使わない場合あり
+            const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
             paxs::GraphicVisualizationList& visible
         ) {
             map_view->update(); // キーボード入力を更新

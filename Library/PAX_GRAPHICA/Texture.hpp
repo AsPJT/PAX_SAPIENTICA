@@ -61,7 +61,7 @@ namespace paxg {
         operator bool() const { return (texture != -1); }
 #else
         constexpr Texture(const paxg::String&) {}
-        Texture(const std::string& path) {}
+        Texture([[maybe_unused]] const std::string& path) {}
         operator bool() const { return false; }
 #endif
         void draw() const override {
@@ -109,7 +109,9 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             texture.drawAt(pos.x(), pos.y());
 #elif defined(PAXS_USING_DXLIB)
-            DxLib::DrawGraph(pos.x() - (width() / 2), pos.y() - (height() / 2), texture, TRUE);
+            DxLib::DrawGraph(
+                static_cast<int>(pos.x() - (width() / 2)),
+                static_cast<int>(pos.y() - (height() / 2)), texture, TRUE);
 #elif defined(PAXS_USING_SFML)
             sf::Sprite sprite(texture);
             sprite.setPosition(pos);

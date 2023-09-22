@@ -16,12 +16,12 @@ namespace s3d
         std::size_t x, y;
         Point() : x(0), y(0) {}
         Point(std::size_t _x, std::size_t _y) : x(_x), y(_y) {}
-        Point operator+(const Point& p) const { return Point(); }
-        Point operator-(const Point& p) const { return Point(); }
-        Point operator*(double d) const { return Point(); }
-        Point movedBy(int x, int y) const { return Point(); }
-        Point movedBy(const Point& p) const { return Point(); }
-        Point operator +(const Vec2& p) const { return Point(); }
+        Point operator+([[maybe_unused]] const Point& p) const { return Point(); }
+        Point operator-([[maybe_unused]] const Point& p) const { return Point(); }
+        Point operator*([[maybe_unused]] double d) const { return Point(); }
+        Point movedBy([[maybe_unused]] int x_,[[maybe_unused]]  int y_) const { return Point(); }
+        Point movedBy([[maybe_unused]] const Point& p) const { return Point(); }
+        Point operator +([[maybe_unused]] const Vec2& p) const { return Point(); }
     };
 
     enum class Palette
@@ -46,9 +46,9 @@ namespace s3d
         Vec2() {}
         Vec2(int, int) {}
         Vec2(double _x, double _y) : x(_x), y(_y) {}
-        Vec2 operator*(double d) const { return Vec2(); }
-        Point movedBy(int x, int y) const { return Point(); }
-        Vec2 operator +(const Size& p) const { return Vec2(); }
+        Vec2 operator*([[maybe_unused]] double d) const { return Vec2(); }
+        Point movedBy([[maybe_unused]] int x_, [[maybe_unused]] int y_) const { return Point(); }
+        Vec2 operator +([[maybe_unused]] const Size& p) const { return Vec2(); }
     };
 
     std::array<std::size_t, 1> step(std::size_t v) { return std::array<std::size_t, 1>{v}; }
@@ -79,7 +79,7 @@ namespace s3d
     struct Rect
     {
         Rect() {}
-        Rect(int _x, int _y, int _w, int _h) {}
+        Rect([[maybe_unused]] int x_, [[maybe_unused]] int y_, [[maybe_unused]] int w_, [[maybe_unused]] int h_) {}
         Rect(Point, int, double) {}
         Rect(int, int, int) {}
         Rect(Point, std::size_t, std::size_t) {}
@@ -87,16 +87,16 @@ namespace s3d
         Point pos;
         Size size;
         std::size_t x, y, w, h;
-        static int value_type(std::size_t x) { return 0; }
+        static int value_type([[maybe_unused]] std::size_t x_) { return 0; }
         bool leftClicked() const { return false; }
         void draw() const {}
-        void draw(Palette p) const {}
-        void draw(const Color& color) const {}
-        void drawFrame(int x, int y, Palette p) const {}
-        void drawFrame(int x, int y, ColorF p) const {}
+        void draw([[maybe_unused]] Palette p) const {}
+        void draw([[maybe_unused]] const Color& color) const {}
+        void drawFrame([[maybe_unused]] int x_, [[maybe_unused]] int y_, [[maybe_unused]] Palette p) const {}
+        void drawFrame([[maybe_unused]] int x_, [[maybe_unused]] int y_, [[maybe_unused]] ColorF p) const {}
         bool mouseOver() const { return false; }
-        Rect drawShadow(Point p, int x, int y) const { return Rect(); }
-        void setPos(Point p) {}
+        Rect drawShadow([[maybe_unused]] Point p, [[maybe_unused]] int x_, [[maybe_unused]] int y_) const { return Rect(); }
+        void setPos([[maybe_unused]] Point p) {}
     };
 
     class Line
@@ -104,8 +104,8 @@ namespace s3d
     public:
         int x, y, w, h;
         Line() : x(0), y(0), w(0), h(0) {}
-        Line(int _x, int _y, int _w, int _h) : x(_x), y(_y), w(_w), h(_h) {}
-        void draw(double w, ColorF c) const {}
+        Line(int x_, int y_, int w_, int h_) : x(x_), y(y_), w(w_), h(h_) {}
+        void draw([[maybe_unused]] double w_, [[maybe_unused]] ColorF c_) const {}
     };
 
     enum class TextureDesc
@@ -118,8 +118,8 @@ namespace s3d
     public:
         String path;
         Model() {}
-        Model(const String& path) {}
-        static void RegisterDiffuseTextures(Model model, TextureDesc t) {}
+        Model([[maybe_unused]] const String& path_) {}
+        static void RegisterDiffuseTextures([[maybe_unused]] Model model, [[maybe_unused]] TextureDesc t) {}
     };
 
     class Image
@@ -127,14 +127,14 @@ namespace s3d
     public:
         String path;
         Image() {}
-        Image(const String& path) {}
+        Image([[maybe_unused]] const String& path) {}
         String mirror() const { return path; }
     };
 
     class Graphics
     {
     public:
-        static void SetBackground(const ColorF& color) {}
+        static void SetBackground([[maybe_unused]] const ColorF& color) {}
         static void Set3DRenderState() {}
     };
 
@@ -157,9 +157,9 @@ namespace s3d
     class Graphics3D
     {
     public:
-        static void SetGlobalAmbientColor(const ColorF& color) {}
-        static void SetSunColor(const ColorF& color) {}
-        static void SetCameraTransform(DebugCamera3D camera) {}
+        static void SetGlobalAmbientColor([[maybe_unused]] const ColorF& color) {}
+        static void SetSunColor([[maybe_unused]] const ColorF& color) {}
+        static void SetCameraTransform([[maybe_unused]] DebugCamera3D camera) {}
         static Size GetRenderTargetSize() { return Size(); }
         static void Flush() {}
     };
@@ -171,8 +171,8 @@ namespace s3d
         static int Height() { return 0; }
         static Vec2 Center() { return Vec2(); }
         static s3d::Size Size() { return s3d::Size(); }
-        static void SetBackground(s3d::Color color) {}
-        static void SetLetterbox(s3d::Color color) {}
+        static void SetBackground([[maybe_unused]] s3d::Color color) {}
+        static void SetLetterbox([[maybe_unused]] s3d::Color color) {}
     };
 
     class Key
@@ -191,7 +191,7 @@ namespace s3d
 
     Input input;
 
-    String ToString(int n) { return String(); }
+    String ToString([[maybe_unused]] int n) { return String(); }
 
     Input KeyW = Input();
     Input KeyA = Input();
@@ -213,9 +213,9 @@ namespace s3d
     class Window
     {
     public:
-        static void SetTitle(const String& title) {}
-        static void Resize(const int w, const int h) {}
-        static void SetStyle(const WindowStyle style) {}
+        static void SetTitle([[maybe_unused]] const String& title) {}
+        static void Resize([[maybe_unused]] const int w, [[maybe_unused]] const int h) {}
+        static void SetStyle([[maybe_unused]] const WindowStyle style) {}
     };
 
     class System
@@ -233,7 +233,7 @@ namespace s3d
         Circle(Vec2 _center, int _radius) : center(_center), radius(_radius) {}
     };
 
-    int Max(int a, int b) { return 0; }
+    int Max([[maybe_unused]] int a, [[maybe_unused]] int b) { return 0; }
 
     class FontMethod
     {
@@ -249,18 +249,20 @@ namespace s3d
         FontMethod method;
         int w;
         String path;
-        Font operator()(String path) const { return Font(); }
+        Font operator()([[maybe_unused]] String path_) const { return Font(); }
         Font region() const { return Font(); }
         int height() const { return 0; }
-        void drawAt(Vec2 p, String s) const {}
-        void drawAt(Vec2 p, double a, double b, Palette pa) const {}
-        void draw(Vec2 p, String s, Palette pa) const {}
-        void draw(Vec2 p, Vec2 s, Palette pa) const {}
-        void draw(Vec2 p, Palette pa) const {}
-        void draw(Point p, Palette pa) const {}
-        void draw(Vec2 p, double a, double b, ColorF c) const {}
-        void setBufferThickness(int n) {}
-        Font operator ()(String s1, std::size_t n1, String s2, std::size_t n2, String s3, std::size_t n3) const { return Font(); }
+        void drawAt([[maybe_unused]] Vec2 p, [[maybe_unused]] String s) const {}
+        void drawAt([[maybe_unused]] Vec2 p, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] Palette pa) const {}
+        void draw([[maybe_unused]] Vec2 p, [[maybe_unused]] String s, [[maybe_unused]] Palette pa) const {}
+        void draw([[maybe_unused]] Vec2 p, [[maybe_unused]] Vec2 s, [[maybe_unused]] Palette pa) const {}
+        void draw([[maybe_unused]] Vec2 p, [[maybe_unused]] Palette pa) const {}
+        void draw([[maybe_unused]] Point p, [[maybe_unused]] Palette pa) const {}
+        void draw([[maybe_unused]] Vec2 p, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] ColorF c) const {}
+        void setBufferThickness([[maybe_unused]] int n) {}
+        Font operator ()([[maybe_unused]] String s1, [[maybe_unused]] std::size_t n1,
+        [[maybe_unused]] String s2, [[maybe_unused]] std::size_t n2,
+        [[maybe_unused]] String s3, [[maybe_unused]] std::size_t n3) const { return Font(); }
     };
 
     class Mouse
@@ -272,15 +274,15 @@ namespace s3d
     class Texture
     {
     public:
-        String path;
+        [[maybe_unused]] String path;
         Texture() {}
-        Texture(const String& path) {}
-        Texture resized(const int w, const int h) const { return Texture(); }
-        Texture resized(const double s) const { return Texture(); }
-        void draw(Vec2 p) const {}
-        void draw(int n, double d) const {}
-        void drawAt(Vec2 p) const {}
-        void drawAt(double x, double y) const {}
+        Texture([[maybe_unused]] const String& path_) {}
+        Texture resized([[maybe_unused]] const int w, [[maybe_unused]] const int h) const { return Texture(); }
+        Texture resized([[maybe_unused]] const double s) const { return Texture(); }
+        void draw([[maybe_unused]] Vec2 p) const {}
+        void draw([[maybe_unused]] int n, [[maybe_unused]] double d) const {}
+        void drawAt([[maybe_unused]] Vec2 p) const {}
+        void drawAt([[maybe_unused]] double x, [[maybe_unused]] double y) const {}
         int width() const { return 0; }
         int height() const { return 0; }
         bool operator !() const { return true; }
@@ -291,11 +293,11 @@ namespace s3d
 
     struct Triangle
     {
-        double p1;
-        double p2;
-        double p3;
-        double p4;
-        void draw(Palette p) const {}
+        [[maybe_unused]] double p1;
+        [[maybe_unused]] double p2;
+        [[maybe_unused]] double p3;
+        [[maybe_unused]] double p4;
+        void draw([[maybe_unused]] Palette p) const {}
     };
 
     struct Ellipse
@@ -311,7 +313,7 @@ namespace s3d
     {
     public:
         Sound() {}
-        Sound(const std::string& path) {}
+        Sound([[maybe_unused]] const std::string& path) {}
         bool play() { return true; }
         bool stop() { return true; }
         bool isPlaying() { return false; }
@@ -320,7 +322,7 @@ namespace s3d
     class Unicode
     {
     public:
-        static String FromUTF8(const std::string& utf8) { return String(); }
+        static String FromUTF8([[maybe_unused]] const std::string& utf8) { return String(); }
     };
 
     enum class TextureFormat
@@ -337,16 +339,16 @@ namespace s3d
     {
     public:
         double x, y, z, w;
-        static Quaternion RotateX(double angle) { return Quaternion(); }
-        static Quaternion RotateY(double angle) { return Quaternion(); }
-        Quaternion operator *(const Quaternion& q) const { return Quaternion(); }
+        static Quaternion RotateX([[maybe_unused]] double angle) { return Quaternion(); }
+        static Quaternion RotateY([[maybe_unused]] double angle) { return Quaternion(); }
+        Quaternion operator *([[maybe_unused]] const Quaternion& q) const { return Quaternion(); }
     };
 
     class Sphere
     {
     public:
         double x, y, z, r;
-        void draw(Quaternion q, Texture t) {}
+        void draw([[maybe_unused]] Quaternion q, [[maybe_unused]] Texture t) {}
     };
 
     class MSRenderTexture
@@ -356,9 +358,9 @@ namespace s3d
         TextureFormat format;
         HasDepth hasDepth;
 
-        MSRenderTexture clear(const ColorF& color) const { return MSRenderTexture(); }
+        MSRenderTexture clear([[maybe_unused]] const ColorF& color) const { return MSRenderTexture(); }
         void resolve() {}
-        void draw(double x, double y) {}
+        void draw([[maybe_unused]] double x, [[maybe_unused]] double y) {}
     };
 
     class ScopedRenderTarget3D
@@ -414,8 +416,8 @@ namespace s3d
     class TextStyle
     {
     public:
-        static Vec2 Outline(int n, double d, Palette p) { return Vec2(); }
-        static Vec2 Outline(int n, double d, ColorF p) { return Vec2(); }
+        static Vec2 Outline([[maybe_unused]] int n, [[maybe_unused]] double d, [[maybe_unused]] Palette p) { return Vec2(); }
+        static Vec2 Outline([[maybe_unused]] int n, [[maybe_unused]] double d, [[maybe_unused]] ColorF p) { return Vec2(); }
     };
 
     class SimpleHTTP

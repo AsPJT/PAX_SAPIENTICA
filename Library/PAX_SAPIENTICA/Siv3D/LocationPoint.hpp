@@ -118,7 +118,7 @@ namespace paxs {
         // 描画
         void draw(const double jdn,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-            const paxg::Font& font, const paxg::Font& en_font, const paxg::Font& pin_font)const {
+            paxg::Font& font, paxg::Font& en_font, paxg::Font& pin_font)const {
 
             // 地名を描画
             for (std::size_t i = 0; i < location_point_list.size(); ++i) {
@@ -212,28 +212,28 @@ namespace paxs {
                 if (lli.lpe != LocationPointEnum::location_point_pit_dwelling) {
 
                     if (lli.en_name.size() == 0) {
-                        //// 名前を描画
-                        //font(s3d::Unicode::FromUTF8(lli.name)).drawAt(
-                        //    s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                        //    (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
-                        //    double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))// - 30
-                        //    , s3d::Palette::Black);
+                        // 名前を描画
+                        font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        font.drawAt(std::string(lli.name),
+                            paxg::Vec2i(static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))))// - 30
+                            , paxg::Color(0, 0, 0));
                     }
                     else {
-                        //// 名前（英語）を描画
-                        //en_font(s3d::Unicode::FromUTF8(lli.en_name)).draw(
-                        //    s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                        //    s3d::Arg::bottomCenter = s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
-                        //    double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))// - 30
-                        //    }
-                        //, s3d::Palette::Black);
-                        //// 名前を描画
-                        //font(s3d::Unicode::FromUTF8(lli.name)).draw(
-                        //    s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                        //    s3d::Arg::topCenter = s3d::Vec2{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
-                        //    double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))// - 30
-                        //    }
-                        //, s3d::Palette::Black);
+                        // 名前（英語）を描画
+                        en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        en_font.drawBottomCenter(std::string(lli.en_name),
+                            paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                            static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))// - 30
+                            }
+                        , paxg::Color(0, 0, 0));
+                        // 名前を描画
+                        font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        font.drawTopCenter(std::string(lli.name),
+                            paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))// - 30
+                            }
+                        , paxg::Color(0, 0, 0));
                     }
                     // 古事記のアイコンを描画
                     if (lli.source == "JP-Kojiki") {
@@ -285,16 +285,17 @@ namespace paxs {
                 }
                 // それ以外（集落遺跡）を描画
                 else {
-                    //pin_font(s3d::Unicode::FromUTF8(lli.name)).drawAt(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White),
-                    //    (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
-                    //    double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())) - 70
-                    //    , s3d::Palette::Black);
-                    //texture_pin1.resizedDrawAt(50, // 元々は resizedDraw
-                    //    // s3d::Arg::bottomCenter = // 位置指定できるようにしていない
-                    //    paxg::Vec2i(
-                    //        static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                    //        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))))
-                    //);
+                    pin_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                    pin_font.drawAt(std::string(lli.name),
+                        paxg::Vec2i(static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())) - 70))
+                        , paxg::Color(0, 0, 0));
+                    texture_pin1.resizedDrawAt(50, // 元々は resizedDraw
+                        // s3d::Arg::bottomCenter = // 位置指定できるようにしていない
+                        paxg::Vec2i(
+                            static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                            static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))))
+                    );
                 }
             }
         }
