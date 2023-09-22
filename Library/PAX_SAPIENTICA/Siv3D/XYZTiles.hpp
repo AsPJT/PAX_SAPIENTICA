@@ -39,11 +39,10 @@ namespace paxs {
         using MapVec2 = Vector2<int>;
         using MapVec2D = Vector2<double>;
 
-        std::vector<MapVec2D> pos_list;
+        std::vector<MapVec2D> pos_list{};
         // XYZ タイルの画像の情報を保持
-        std::vector<s3d::Texture> texture_list;
+        std::vector<paxg::Texture> texture_list{};
 
-        XYZTile() = default;
         XYZTile(const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
@@ -75,6 +74,9 @@ namespace paxs {
                 (360.0 - i * 360.0 / z_num) - 180.0 };
                 }
             }
+        }
+        XYZTile()
+            : start_cell(MapVec2{}), end_cell(MapVec2{}), cell_num(MapVec2{}), cell_all_num(0) {
         }
         // タイルを更新
         void update(const double map_view_width,
@@ -137,17 +139,17 @@ namespace paxs {
             // ファイルを保存
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    s3d::FilePath new_saveFilePath = U"";
+                    std::string new_saveFilePath = "";
                     switch (file_name_enum) {
                     case XYZTileFileName::Original:
-                        new_saveFilePath = s3d::Unicode::FromUTF8(map_file_path_name + map_name
+                        new_saveFilePath = (map_file_path_name + map_name
                             + std::string("_") + std::to_string(z)
                             + std::string("_") + std::to_string((j + z_num) % z_num)
                             + std::string("_") + std::to_string((i + z_num) % z_num)
                             + std::string(".png"));
                         break;
                     case XYZTileFileName::Z_Original:
-                        new_saveFilePath = s3d::Unicode::FromUTF8(map_file_path_name
+                        new_saveFilePath = (map_file_path_name
                             + std::to_string(z) + std::string("/") + map_name
                             + std::string("_") + std::to_string(z)
                             + std::string("_") + std::to_string((j + z_num) % z_num)
@@ -155,7 +157,7 @@ namespace paxs {
                             + std::string(".png"));
                         break;
                     case XYZTileFileName::Default:
-                        new_saveFilePath = s3d::Unicode::FromUTF8(map_file_path_name
+                        new_saveFilePath = (map_file_path_name
                             + std::to_string(z)
                             + std::string("/") + std::to_string((j + z_num) % z_num)
                             + std::string("/") + std::to_string((i + z_num) % z_num)
@@ -167,18 +169,20 @@ namespace paxs {
 
                     // ファイルを同期ダウンロード
                     // ステータスコードが 200 (OK) なら
-                    texture_list[k] = s3d::Texture{ new_saveFilePath };
+                    texture_list[k] = paxg::Texture{ new_saveFilePath };
                     if (!texture_list[k] &&
                         map_url_name.size() != 0) {
+#if defined(PAXS_USING_SIV3D)
                         const s3d::URL new_url =
                             s3d::String(s3d::Unicode::FromUTF8(map_url_name))
                             + s3d::String(U"/") + s3d::ToString(z)
                             + s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
                             + s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
                             + s3d::String(U".png");
-                        if (s3d::SimpleHTTP::Save(new_url, new_saveFilePath).isOK()) {
-                            texture_list[k] = s3d::Texture{ new_saveFilePath };
+                        if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(new_saveFilePath)).isOK()) {
+                            texture_list[k] = paxg::Texture{ new_saveFilePath };
                         }
+#endif
                     }
                 }
             }
@@ -187,20 +191,21 @@ namespace paxs {
             // 拡大率が描画範囲外の場合はここで処理を終了
             if (magnification_z < draw_min_z) return;
             if (magnification_z > draw_max_z) return;
-
+#if defined(PAXS_USING_SIV3D)
             static s3d::Font tmp_font{ s3d::FontMethod::SDF, 16/*, s3d::Typeface::Bold*/};
             tmp_font.setBufferThickness(3);
 
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
                     tmp_font(U"X:", j, U"\nY:", i, U"\nZ:", z, U"\nL:", static_cast<std::size_t>(40075016.68 / std::pow(2, z) * 10) / 10.0).draw(
-                        s3d::TextStyle::Outline(0, 0.5, s3d::ColorF{ 1, 1, 1 }),
-                        10 + (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-                        5 + double(s3d::Scene::Height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
-                        , s3d::ColorF{ 0, 0, 0 }
+                        s3d::TextStyle::Outline(0, 0.5, paxg::Color{ 255, 255, 255 }.color),
+                        10 + (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
+                        5 + double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))
+                        , paxg::Color{ 0, 0, 0 }.color
                     );
                 }
             }
+#endif
         }
         void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
 
@@ -211,52 +216,54 @@ namespace paxs {
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
                     if (texture_list[k]) {
-                        texture_list[k].resized(
-                            (360.0 / z_num) / map_view_width * double(s3d::Scene::Width())
-                            , (360.0 / z_num) / map_view_height * double(s3d::Scene::Height())
-                        ).draw(
-                            (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width()),
-                            double(s3d::Scene::Height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))
-                        );
+                        texture_list[k].resizedDraw(
+                            paxg::Vec2i(
+                                (360.0 / z_num) / map_view_width * double(paxg::Window::width())
+                                , (360.0 / z_num) / map_view_height * double(paxg::Window::height())
+                            ),
+                            paxg::Vec2i(
+                                (pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
+                                double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))
+                            ));
                     }
                 }
             }
         }
         void drawLine(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
-            , const double thickness, const s3d::ColorF& color
+            , const double thickness, const paxg::Color& color
         )const {
 
             // 拡大率が描画範囲外の場合はここで処理を終了
             if (magnification_z < draw_min_z) return;
             if (magnification_z > draw_max_z) return;
 
-            double pos_x = (pos_list[0].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width());
-            double pos_y = double(s3d::Scene::Height()) - ((pos_list[0].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()));
-            const double move_x = (360.0 / z_num) / map_view_width * double(s3d::Scene::Width());
-            const double move_y = (360.0 / z_num) / map_view_height * double(s3d::Scene::Height());
+            double pos_x = (pos_list[0].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width());
+            double pos_y = double(paxg::Window::height()) - ((pos_list[0].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()));
+            const double move_x = (360.0 / z_num) / map_view_width * double(paxg::Window::width());
+            const double move_y = (360.0 / z_num) / map_view_height * double(paxg::Window::height());
 
             for (int i = start_cell.y; i <= end_cell.y; ++i, pos_y += move_y) {
-                s3d::Line(
-                    0, pos_y, s3d::Scene::Width(), pos_y
+                paxg::Line(
+                    0, pos_y, paxg::Window::width(), pos_y
                 ).draw(thickness, color);
             }
             for (int j = start_cell.x; j <= end_cell.x; ++j, pos_x += move_x) {
-                s3d::Line(
-                    pos_x, 0, pos_x, s3d::Scene::Height()
+                paxg::Line(
+                    pos_x, 0, pos_x, paxg::Window::height()
                 ).draw(thickness, color);
             }
         }
         // セル単位での枠の描画
         void drawLineCell(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
-            , const double inner_thickness, const double outer_thickness, const s3d::ColorF& color
+            , const double inner_thickness, const double outer_thickness, const paxg::Color& color
         )const {
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    s3d::Rect(
-                        s3d::Rect::value_type((pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(s3d::Scene::Width())),
-                        s3d::Rect::value_type(double(s3d::Scene::Height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(s3d::Scene::Height()))),
-                        s3d::Rect::value_type((360.0 / z_num) / map_view_width * double(s3d::Scene::Width())),
-                        s3d::Rect::value_type((360.0 / z_num) / map_view_height * double(s3d::Scene::Height()))
+                    paxg::Rect(
+                        static_cast<float>((pos_list[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                        static_cast<float>(double(paxg::Window::height()) - ((pos_list[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))),
+                        static_cast<float>((360.0 / z_num) / map_view_width * double(paxg::Window::width())),
+                        static_cast<float>((360.0 / z_num) / map_view_height * double(paxg::Window::height()))
                     ).drawFrame(inner_thickness, outer_thickness, color);
                 }
             }
@@ -318,13 +325,13 @@ namespace paxs {
         // 2 の z 乗
         int z_num = int(std::pow(2, z));
         // XYZ タイルの画面上の始点セル
-        MapVec2 start_cell;
+        MapVec2 start_cell{};
         // XYZ タイルの画面上の終点セル
-        MapVec2 end_cell;
+        MapVec2 end_cell{};
         // XYZ タイルの画面上のセルの数
-        MapVec2 cell_num;
+        MapVec2 cell_num{};
         // XYZ タイルの画面上のセルの総数
-        int cell_all_num;
+        int cell_all_num{};
 
         std::string map_url_name = ""; // URL
         std::string map_name = "";

@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -30,7 +30,7 @@ namespace paxg {
     {
 #if defined(PAXS_USING_SIV3D)
         s3d::Image image;
-        constexpr Image(const paxg::String& path) : image(path) {}
+        Image(const paxg::String& path) : image(path.string) {}
         constexpr operator s3d::Image() const { return image; }
 #elif defined(PAXS_USING_SFML)
         sf::Image image;

@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -42,7 +42,7 @@ namespace paxg {
 #else
         float x, y, r;
         constexpr Circle(const float x, const float y, const float r) : x(x), y(y), r(r) {}
-        constexpr Circle(const Vec2& pos, const float r) : x(pos.x), y(pos.y), r(r) {}
+        constexpr Circle(const Vec2& pos, const float r) : x(pos.x()), y(pos.y()), r(r) {}
 #endif
         void draw() const override {
 #if defined(PAXS_USING_SIV3D)

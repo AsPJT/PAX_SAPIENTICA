@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -30,14 +30,14 @@ namespace paxg {
     {
 #if defined(PAXS_USING_SIV3D)
         s3d::String string;
-        constexpr String(const s3d::String& string) : string(string) {}
-        constexpr String(const std::string& string) : string(string.c_str()) {}
-        constexpr operator s3d::String() const { return string; }
-// #elif defined(PAXS_USING_SFML)
-//         sf::String string;
-//         String(const sf::String& string) : string(string) {}
-//         String(const std::string& string) : string(string.c_str()) {}
-//         operator sf::String() const { return string; }
+        String(const s3d::String& string) : string(string) {}
+        String(const std::string& string) : string(s3d::Unicode::FromUTF8((string))) {}
+        operator s3d::String() const { return string; }
+        // #elif defined(PAXS_USING_SFML)
+        //         sf::String string;
+        //         String(const sf::String& string) : string(string) {}
+        //         String(const std::string& string) : string(string.c_str()) {}
+        //         operator sf::String() const { return string; }
 #else
         std::string string;
         String(const std::string& string) : string(string) {}

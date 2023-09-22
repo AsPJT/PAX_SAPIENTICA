@@ -30,7 +30,9 @@ namespace paxs {
 
         std::unique_ptr<MapView> map_view;
         std::unique_ptr<TextureLocation> texture_location; // 地図上に描画する画像の一覧
+#ifdef PAXS_USING_SIV3D
         s3d::Array<s3d::Vec2> route1, route2; // 線の情報を格納
+#endif
         std::unique_ptr<PlaceNameLocation> place_name_location{}; // 地名
 
         //#ifdef PAXS_USING_SIMULATOR
@@ -55,6 +57,7 @@ namespace paxs {
         void init(
             const std::string& path8
         ) {
+#ifdef PAXS_USING_SIV3D
             // 航路を読み込み
             std::ifstream rifs(path8 + "Data/Route/Yamatai.tsv");
             if (rifs.fail()) return;
@@ -69,10 +72,11 @@ namespace paxs {
             for (std::size_t i = 0; i < route1.size(); ++i) {
                 // 経路を格納
                 route2.emplace_back(
-                    (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-                    double(s3d::Scene::Height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
+                    (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(paxg::Window::width()),
+                    double(paxg::Window::height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(paxg::Window::height()))
                 );
             }
+#endif
 
             /*##########################################################################################
                 読み込む XYZ タイルの情報を記載
@@ -112,16 +116,18 @@ namespace paxs {
                     //,font[language], font[language]/*en_font*/, pin_font
                 );
 #endif
+
+#ifdef PAXS_USING_SIV3D
                 // 線の描画
                 for (std::size_t i = 0; i < route2.size(); ++i) {
                     route2[i] = s3d::Vec2(
-                        (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(s3d::Scene::Width()),
-                        double(s3d::Scene::Height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(s3d::Scene::Height()))
+                        (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(paxg::Window::width()),
+                        double(paxg::Window::height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(paxg::Window::height()))
                     );
                 }
                 // 航路を描画
                 s3d::Spline2D{ route2 }.draw(2, s3d::Color{ 85, 145, 245 });
-
+#endif
                 // 地名を描画
                 place_name_location->draw(koyomi_siv.jdn.cgetDay(), map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
                     string_siv.font[select_language.cget()], string_siv.font[select_language.cget()]/*en_font*/, string_siv.pin_font);

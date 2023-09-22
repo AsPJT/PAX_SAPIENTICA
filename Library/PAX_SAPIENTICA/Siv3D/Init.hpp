@@ -83,6 +83,7 @@ enum MapType {
 
 #endif
 
+#ifdef PAXS_USING_SIV3D
 #ifdef SIV3D_PLATFORM_PRIVATE_DEFINITION_WINDOWS
 #ifndef PAXS_S3D_RESOURCE
 #define PAXS_S3D_RESOURCE s3d::Resource
@@ -90,6 +91,7 @@ enum MapType {
 #else
 #ifndef PAXS_S3D_RESOURCE
 #define PAXS_S3D_RESOURCE
+#endif
 #endif
 #endif
 

@@ -22,6 +22,7 @@ namespace paxs {
 
     class Graphics3DModel {
     private:
+#ifdef PAXS_USING_SIV3D
         int rot = 0; // 回転するための向き（度）
 
         s3d::ColorF backgroundColor; // 背景の色（透明度あり）
@@ -43,10 +44,11 @@ namespace paxs {
             s3d::Graphics3D::GetRenderTargetSize(),
                 40.0 / 180.0 * 3.1416,
                 s3d::Vec3{ 0, 3, -16 } };
-
+#endif
 
     public:
         Graphics3DModel() {
+#ifdef PAXS_USING_SIV3D
             // 透明な背景を設定
             backgroundColor = s3d::ColorF{ 1,1,1,0 }.removeSRGBCurve();
 
@@ -58,10 +60,11 @@ namespace paxs {
 
             // モデルに付随するテクスチャをアセット管理に登録
             s3d::Model::RegisterDiffuseTextures(sekishitsu_model, s3d::TextureDesc::MippedSRGB);
-
+#endif
         }
 
         void updateRotation() {
+#ifdef PAXS_USING_SIV3D
             //camera.update(4.0);
             s3d::Graphics3D::SetCameraTransform(camera); // カメラ情報を設定
 
@@ -104,6 +107,7 @@ namespace paxs {
             s3d::Graphics3D::Flush(); // 現在までの 3D 描画を実行
             renderTexture.resolve(); // テクスチャを描画可能にする
             renderTexture.draw(200, 200); // 指定した大きさで描画
+#endif
         }
 
     };

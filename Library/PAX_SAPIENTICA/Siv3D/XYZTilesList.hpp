@@ -318,17 +318,17 @@ namespace paxs {
             // xyz_tile3"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             // xyz_tile4"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
-            // xyz_tile_list.at("map_line").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95,99,104 }/*s3d::Palette::Black*/);
+            // xyz_tile_list.at("map_line").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, paxg::Color{ 95,99,104 });
             // }
             // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
-            xyz_tile_list.at("map_line2").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
+            xyz_tile_list.at("map_line2").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, paxg::Color{ 95, 99, 104 });
             // }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
-                xyz_tile_list.at("map_line3").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
+                xyz_tile_list.at("map_line3").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, paxg::Color{ 95, 99, 104 });
                 xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
-                // xyz_tile_list.at("map_line4").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, s3d::Color{ 95, 99, 104 }/*s3d::Palette::Black*/);
+                // xyz_tile_list.at("map_line4").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, paxg::Color{ 95, 99, 104 });
                 // xyz_tile_list.at("map_line4").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
         }

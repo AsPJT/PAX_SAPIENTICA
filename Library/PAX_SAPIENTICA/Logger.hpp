@@ -35,7 +35,7 @@ namespace paxs {
         enum class Level {
             INFO, // 情報を示すメッセージ（警告やエラー以外）
             WARNING, // 警告メッセージ
-            ERROR // エラーメッセージ
+            ERRORa // エラーメッセージ
         };
 
         /// @brief Constructor.
@@ -62,7 +62,7 @@ namespace paxs {
             const auto now = std::chrono::system_clock::now();
             const auto in_time_t = std::chrono::system_clock::to_time_t(now);
             std::stringstream ss;
-            ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
+            ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X"); // localtime の非推奨
             return ss.str();
         }
 
@@ -83,7 +83,7 @@ namespace paxs {
                 case Level::WARNING: 
                     file << "[WARNING]: ";
                     break;
-                case Level::ERROR: 
+                case Level::ERRORa: 
                     file << "[ERROR]: ";
                     break;
             }
@@ -97,7 +97,7 @@ namespace paxs {
         /// @param filename The name of the file to log. ログを記録するファイルの名前。ex) __FILE__
         /// @param line The line number of the file to log. ログを記録するファイルの行番号。ex) __LINE__
         void handleException(const std::exception& e, const std::string& filename, const int line) noexcept {
-            log(Level::ERROR, filename, line, "Exception: " + std::string(e.what()));
+            log(Level::ERRORa, filename, line, "Exception: " + std::string(e.what()));
         }
     private:
         std::ofstream file; // The file to log.

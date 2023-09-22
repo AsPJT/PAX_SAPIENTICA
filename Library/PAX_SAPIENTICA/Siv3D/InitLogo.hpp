@@ -19,6 +19,10 @@
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>
 
+#include <PAX_GRAPHICA/Color.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
+
 namespace paxs {
 
     class PaxSapienticaInitSiv3D {
@@ -27,25 +31,32 @@ namespace paxs {
         // ソフトウェアを実行した最初のフレームの一番最初に実行
         static void firstInit() {
             // ロゴ画像の読み込み
-            const s3d::Texture texture_tl{ U"./../../../../../Image/Logo/TitleBanner2.svg" };
+            const paxg::Texture texture_tl{ "./../../../../../Image/Logo/TitleBanner2.svg" };
             // 画面サイズを変更
-            s3d::Window::Resize((!texture_tl) ? 700 : texture_tl.width(), (!texture_tl) ? 180 : texture_tl.height());
+            paxg::Window::setSize(
+                (!texture_tl) ? 700 : texture_tl.width(), (!texture_tl) ? 180 : texture_tl.height());
+#ifdef PAXS_USING_SIV3D
             // ウィンドウの上部のフレームを消す
             s3d::Window::SetStyle(s3d::WindowStyle::Frameless);
+#endif
             // PAX SAPIENTICA 用の背景
-            s3d::Scene::SetBackground(s3d::Color{ 181, 0, 0 });
-            s3d::Scene::SetLetterbox(s3d::Color{ 181, 0, 0 });
+            const paxg::Color paxs_color = paxg::Color(181, 0, 0); // 濃い赤
+            paxg::Window::setBackgroundColor(paxs_color);
+            paxg::Window::setLetterbox(paxs_color);
+#ifdef PAXS_USING_SIV3D
             // 画像の拡大縮小の方式を設定
             const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
+#endif
             // タイトルを変更する前に 1 回更新
-            s3d::System::Update();
+            paxg::Window::update();
             // タイトルを変更
-            s3d::Window::SetTitle(s3d::Unicode::FromUTF8("PAX SAPIENTICA v") + s3d::Unicode::FromUTF8(PAX_SAPIENTICA_LIBRARY_VERSION_NAME));
+            paxg::Window::setTitle(
+                std::string("PAX SAPIENTICA v") + std::string(PAX_SAPIENTICA_LIBRARY_VERSION_NAME));
             // タイトルロゴを描画
-            texture_tl.drawAt(s3d::Scene::Center());
-            s3d::System::Update();
+            texture_tl.drawAt(paxg::Window::center());
+            paxg::Window::update();
             // タイトルロゴを描画
-            texture_tl.drawAt(s3d::Scene::Center());
+            texture_tl.drawAt(paxg::Window::center());
         }
 
         // ソフトウェアを実行した最初のフレームの一番最後に実行
@@ -53,21 +64,33 @@ namespace paxs {
             static bool first_update = false;
             if (!first_update) {
                 first_update = true;
+
+                // 背景色
+                const paxg::Color color =
+                    paxg::Color(140, 180, 250); // 青
+                // paxg::Color(255, 255, 255); // 白
+                // paxg::Color(243, 243, 243); // 白
+                // paxg::Color(181,0,0);
+                // paxg::Color(180, 154, 100); // 茶色
+                // paxg::Color(110, 146, 161); // 濁った青
+                // paxg::Color(156, 192, 249); // 薄い青
+                // paxg::Color();
+
+            // 背景色を指定
+                paxg::Window::setBackgroundColor(color);
                 // ウィンドウの上下左右にできる背景の余白の色を設定
-                s3d::Scene::SetLetterbox(s3d::Color{ 243, 243, 243 });
-                //s3d::Scene::SetLetterbox(s3d::Color{ 181,0,0 });
-                //s3d::Scene::SetBackground(s3d::Color{ 181, 0, 0 });
-                        // 背景色を指定 (s3d::Color{ 180, 154, 100 }); // 茶色 (s3d::Color{ 110, 146, 161 }); // 濁った青
-        //s3d::Scene::SetBackground(s3d::Color{ 255, 255, 255 }); // 白
-        //s3d::Scene::SetBackground(s3d::Color{ 243, 243, 243 }); // 白
-        //s3d::Scene::SetBackground(s3d::Color{ 156, 192, 249 }); // 薄い青
-        s3d::Scene::SetBackground(s3d::Color{ 140, 180, 250 }); // 青
-                // 背景色を指定
-                // s3d::Scene::SetBackground(s3d::Color{ 243, 243, 243 }); // 白
+                paxg::Window::setLetterbox(color);
+#ifdef PAXS_USING_SIV3D
                 // ウィンドウのサイズを変更可能にする
                 s3d::Window::SetStyle(s3d::WindowStyle::Sizable);
+#endif
                 // ウィンドウのサイズを変える
-                s3d::Window::Resize(1280, 720);
+                paxg::Window::setSize(1280, 720);
+#ifdef PAXS_USING_DXLIB
+                DxLib::SetDrawScreen(DX_SCREEN_BACK);
+#endif // PAXS_USING_DXLIB
+
+
             }
         }
 

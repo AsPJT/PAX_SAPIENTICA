@@ -332,7 +332,7 @@ namespace paxs {
             else {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "File name is invalid: " + file_name;
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
         }

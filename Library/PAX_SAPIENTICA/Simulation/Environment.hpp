@@ -54,7 +54,7 @@ namespace paxs {
             } catch (const std::runtime_error&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to read setting file: " + setting_file_path;
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
 
@@ -80,7 +80,7 @@ namespace paxs {
             if(key_column == -1 || data_type_column == -1 || file_path_column == -1 || z_column == -1) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "key or data_type or file_path or z is not found: " + setting_file_path;
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
 
@@ -116,7 +116,7 @@ namespace paxs {
             if(data_map.count(key) == 0) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "key is not found: " + key;
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
             return std::get<Data<U, GridType>>(*data_map.at(key)).getValue(position);
@@ -132,7 +132,7 @@ namespace paxs {
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to judge live";
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
         }
@@ -145,7 +145,7 @@ namespace paxs {
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get slope";
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
         }
@@ -158,7 +158,7 @@ namespace paxs {
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get elevation";
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
         }
@@ -172,7 +172,7 @@ namespace paxs {
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get gbank";
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
         }
@@ -186,7 +186,7 @@ namespace paxs {
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get water";
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::ERRORa, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
         }
