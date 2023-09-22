@@ -22,6 +22,11 @@
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
+#include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_GRAPHICA/Vec2.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
+
 namespace paxs {
 
     class XYZTile {

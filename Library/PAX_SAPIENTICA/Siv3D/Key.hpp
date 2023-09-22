@@ -24,6 +24,8 @@
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
+#include <PAX_GRAPHICA/Window.hpp>
+
 namespace paxs {
 
     struct InputStruct {

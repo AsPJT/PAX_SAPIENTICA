@@ -26,6 +26,7 @@
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
 #include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/String.hpp>
 
 namespace paxs {
 

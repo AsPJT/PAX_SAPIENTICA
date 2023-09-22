@@ -19,6 +19,10 @@
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
+#include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
+
 /*##########################################################################################
 
 ##########################################################################################*/

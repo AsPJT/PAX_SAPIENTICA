@@ -26,6 +26,9 @@
 #include <DxLib.h>
 #endif
 
+#include <PAX_GRAPHICA/Color.hpp>
+#include <PAX_GRAPHICA/Vec2.hpp>
+
 namespace paxg {
 
     struct String
