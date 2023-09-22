@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -37,13 +37,13 @@ namespace paxs {
             if (z <= 0) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Z must be greater than 0.";
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
             if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Start position and end position must be greater than or equal to 0.";
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
         }
