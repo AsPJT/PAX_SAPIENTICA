@@ -157,6 +157,32 @@ namespace paxg {
             drawAt(pos);
 #endif
         }
+        void resizedDrawAt(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const
+        {
+#if defined(PAXS_USING_SIV3D)
+            texture.resized(resize.x(), resize.y()).drawAt(pos.x(), pos.y());
+#elif defined(PAXS_USING_DXLIB)
+            DxLib::DrawExtendGraph(
+                pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2),
+                pos.x() + (resize.x() / 2), pos.y() + (resize.y() / 2),
+                texture, TRUE);
+#elif defined(PAXS_USING_SFML)
+            drawAt(pos);
+#endif
+        }
+        void resizedDrawAt(const int resize, const paxg::Vec2f& pos) const
+        {
+#if defined(PAXS_USING_SIV3D)
+            texture.resized(resize).drawAt(pos.x(), pos.y());
+#elif defined(PAXS_USING_DXLIB)
+            DxLib::DrawExtendGraph(
+                pos.x() - (resize / 2), pos.y() - (resize / 2),
+                pos.x() + (resize / 2), pos.y() + (resize / 2),
+                texture, TRUE);
+#elif defined(PAXS_USING_SFML)
+            drawAt(pos);
+#endif
+        }
         void resizedDraw(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const
         {
 #if defined(PAXS_USING_SIV3D)
@@ -171,6 +197,32 @@ namespace paxg {
 #endif
         }
         void resizedDraw(const int resize, const paxg::Vec2i& pos) const
+        {
+#if defined(PAXS_USING_SIV3D)
+            texture.resized(resize).draw(pos.x(), pos.y());
+#elif defined(PAXS_USING_DXLIB)
+            DxLib::DrawExtendGraph(
+                pos.x(), pos.y(),
+                pos.x() + resize, pos.y() + resize,
+                texture, TRUE);
+#elif defined(PAXS_USING_SFML)
+            draw(pos);
+#endif
+        }
+        void resizedDraw(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const
+        {
+#if defined(PAXS_USING_SIV3D)
+            texture.resized(resize.x(), resize.y()).draw(pos.x(), pos.y());
+#elif defined(PAXS_USING_DXLIB)
+            DxLib::DrawExtendGraph(
+                pos.x(), pos.y(),
+                pos.x() + resize.x(), pos.y() + resize.y(),
+                texture, TRUE);
+#elif defined(PAXS_USING_SFML)
+            draw(pos);
+#endif
+        }
+        void resizedDraw(const int resize, const paxg::Vec2f& pos) const
         {
 #if defined(PAXS_USING_SIV3D)
             texture.resized(resize).draw(pos.x(), pos.y());

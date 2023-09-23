@@ -44,7 +44,16 @@ namespace paxg {
             window.create(sf::VideoMode(width, height), title);
 #elif defined(PAXS_USING_DXLIB)
             DxLib::SetGraphMode(width, height, 32);
+#if defined(__ANDROID__)
+            // Android 専用処理
+#elif defined(__APPLE__)
+            // iOS 専用処理
+#elif defined(__LINUX__)
+            // Linux 専用処理
+#else
+            // その他の処理 (Windows)
             DxLib::SetMainWindowText(title.c_str());
+#endif
 #endif
         }
 
@@ -74,7 +83,16 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
             window.setTitle(title);
 #elif defined(PAXS_USING_DXLIB)
+#if defined(__ANDROID__)
+            // Android 専用処理
+#elif defined(__APPLE__)
+            // iOS 専用処理
+#elif defined(__LINUX__)
+            // Linux 専用処理
+#else
+            // その他の処理 (Windows)
             DxLib::SetMainWindowText(title.c_str());
+#endif
 #endif
         }
         // ウィンドウの中心を取得
@@ -83,7 +101,17 @@ namespace paxg {
             return Vec2i(s3d::Scene::Center().x, s3d::Scene::Center().y);
 #elif defined(PAXS_USING_DXLIB)
             int width = 0, height = 0;
+#if defined(__ANDROID__)
+            // Android 専用処理
+            DxLib::GetAndroidDisplayResolution(&width, &height);
+#elif defined(__APPLE__)
+            // iOS 専用処理
+#elif defined(__LINUX__)
+            // Linux 専用処理
+#else
+            // その他の処理 (Windows)
             DxLib::GetWindowSize(&width, &height);
+#endif
             return Vec2i{ static_cast<int>(width / 2) ,static_cast<int>(height / 2) };
 #else
             return Vec2i{};
@@ -95,7 +123,17 @@ namespace paxg {
             return s3d::Scene::Width();
 #elif defined(PAXS_USING_DXLIB)
             int width = 1, height = 1; // 0 除算を防ぐために 1 を指定
+#if defined(__ANDROID__)
+            // Android 専用処理
+            DxLib::GetAndroidDisplayResolution(&width, &height);
+#elif defined(__APPLE__)
+            // iOS 専用処理
+#elif defined(__LINUX__)
+            // Linux 専用処理
+#else
+            // その他の処理 (Windows)
             DxLib::GetWindowSize(&width, &height);
+#endif
             return static_cast<int>(width);
 #else
             return 1;
@@ -107,7 +145,17 @@ namespace paxg {
             return s3d::Scene::Height();
 #elif defined(PAXS_USING_DXLIB)
             int width = 1, height = 1; // 0 除算を防ぐために 1 を指定
+#if defined(__ANDROID__)
+            // Android 専用処理
+            DxLib::GetAndroidDisplayResolution(&width, &height);
+#elif defined(__APPLE__)
+            // iOS 専用処理
+#elif defined(__LINUX__)
+            // Linux 専用処理
+#else
+            // その他の処理 (Windows)
             DxLib::GetWindowSize(&width, &height);
+#endif
             return static_cast<int>(height);
 #else
             return 1;
@@ -120,7 +168,17 @@ namespace paxg {
             return paxg::Vec2i(s3d::Scene::Width(), s3d::Scene::Height());
 #elif defined(PAXS_USING_DXLIB)
             int width = 0, height = 0;
+#if defined(__ANDROID__)
+            // Android 専用処理
+            DxLib::GetAndroidDisplayResolution(&width, &height);
+#elif defined(__APPLE__)
+            // iOS 専用処理
+#elif defined(__LINUX__)
+            // Linux 専用処理
+#else
+            // その他の処理 (Windows)
             DxLib::GetWindowSize(&width, &height);
+#endif
             return Vec2i{ static_cast<int>(width) ,static_cast<int>(height) };
 #else
             return paxg::Vec2i{};

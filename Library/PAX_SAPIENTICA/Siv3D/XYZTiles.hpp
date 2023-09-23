@@ -265,16 +265,17 @@ namespace paxs {
                     const std::uint_least64_t index = textureIndex(pos_list2[k]);
 
                     //if (texture_list[k]) {
-                    if (texture.contains(index)) {
+                    if(texture.find(index) != texture.end()) {
+                    // if (texture.contains(index)) { // C++20
                         //texture_list[k].resizedDraw(
                         texture.at(index).resizedDraw(
-                            paxg::Vec2i(
-                                static_cast<int>((360.0 / z_num) / map_view_width * double(paxg::Window::width()))
-                                , static_cast<int>((360.0 / z_num) / map_view_height * double(paxg::Window::height()))
+                            paxg::Vec2f(
+                                static_cast<float>((360.0 / z_num) / map_view_width * double(paxg::Window::width()))
+                                , static_cast<float>((360.0 / z_num) / map_view_height * double(paxg::Window::height()))
                             ),
-                            paxg::Vec2i(
-                                static_cast<int>((pos_list1[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                                static_cast<int>(double(paxg::Window::height()) - ((pos_list1[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            paxg::Vec2f(
+                                static_cast<float>((pos_list1[k].x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                static_cast<float>(double(paxg::Window::height()) - ((pos_list1[k].y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                             ));
                     }
                 }

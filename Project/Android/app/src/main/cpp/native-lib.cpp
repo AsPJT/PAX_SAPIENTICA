@@ -9,30 +9,29 @@
 
 ##########################################################################################*/
 
-#define _CRT_SECURE_NO_WARNINGS
 #define PAXS_USING_DXLIB
-#include <DxLib.h> // DxLib
-#include <PAX_SAPIENTICA/Siv3D/Main.hpp>
+#include <DxLib.h>
 
-#if defined(__ANDROID__)
-// Android 専用処理
+#include <PAX_GRAPHICA/Window.hpp>
+#include <PAX_SAPIENTICA/Siv3D/Main.hpp>
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+
 int android_main() {
-#elif defined(__APPLE__)
-// iOS 専用処理
-int ios_main() {
-#elif defined(__LINUX__)
-// Linux 専用処理
-int linux_main() {
-#else
-// その他の処理 (Windows)
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-#endif
-    DxLib::SetOutApplicationLogValidFlag(FALSE);
-    DxLib::ChangeWindowMode(TRUE);
     if (DxLib::DxLib_Init() == -1) return -1;
+
+    int w{640},h{360};
+    DxLib::GetAndroidDisplayResolution(&w, &h);
+    DxLib::SetGraphMode(w, h, 32);
+
+    // 背景色を指定
+    const paxg::Color color = paxg::Color(140, 180, 250); // 青
+    paxg::Window::setBackgroundColor(color);
+
     DxLib::SetDrawScreen(DX_SCREEN_BACK);
-    DxLib::SetWaitVSyncFlag(TRUE);
-    DxLib::SetUseASyncLoadFlag(TRUE);
-    paxs::startMain("./../../../../");
-    return DxLib::DxLib_End();
+    while (paxg::Window::update()) {
+        DrawBox(0, 0, 300, 100, GetColor(230, 230, 240), TRUE);    // 四角形を描画する
+    }
+    // paxs::startMain("./../../../../");
+
+    return DxLib_End();
 }
