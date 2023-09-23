@@ -41,8 +41,9 @@ namespace paxs {
     // メルカトル図法（度）
     struct MercatorDeg : paxs::Vector2<double> {
     public:
-        constexpr explicit MercatorDeg() {}
-        constexpr explicit MercatorDeg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
+        explicit MercatorDeg() {}
+        // C++20 より前は constexpr にならない
+        explicit MercatorDeg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
         // Ｙ軸を正距円筒図法（ラジアン）へ変換した値を返す
         double toEquirectangularRadY() const noexcept {
             return static_cast<double>(std::asin(std::tanh(paxs::MathF64::degToRad(this->y))));

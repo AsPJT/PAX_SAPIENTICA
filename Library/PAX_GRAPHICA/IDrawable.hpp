@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -27,6 +27,7 @@ namespace paxg {
         virtual void draw() const = 0;
 
         virtual void drawAt(const Vec2f& pos) const = 0;
+        virtual void drawAt(const Vec2i& pos) const = 0;
     };
 
 }

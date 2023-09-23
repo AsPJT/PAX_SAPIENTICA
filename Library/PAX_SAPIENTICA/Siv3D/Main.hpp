@@ -41,15 +41,14 @@
 #include <PAX_SAPIENTICA/Math.hpp>
 
 namespace paxs {
-
-    void startMain() {
-
-        // 主要な実行時定数・変数
-        const std::string path8 = "./../../../../../"; // フォルダ階層
+    // 主要な実行時定数・変数
+    void startMain(const std::string& path8) { // フォルダ階層
         SelectLanguage select_language{}; // 選択言語
 
-        paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
+        paxs::PaxSapienticaInitSiv3D::firstInit(path8); // 初期化とロゴの表示
+#ifdef PAXS_USING_SIV3D
         s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
+#endif
         paxs::Language language_text(path8 + "Data/Language/Text.txt"); // テキストの多言語対応クラス
 
         // 可視化一覧
@@ -69,8 +68,8 @@ namespace paxs {
         paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
         paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
         //#endif
-        int old_width = s3d::Scene::Width(); // 1 フレーム前の幅
-        int old_height = s3d::Scene::Height(); // 1 フレーム前の高さ
+        int old_width = paxg::Window::width(); // 1 フレーム前の幅
+        int old_height = paxg::Window::height(); // 1 フレーム前の高さ
 
         int size_change_count = 0; // サイズを更新するカウンタ
 
@@ -88,38 +87,42 @@ namespace paxs {
         /*##########################################################################################
             ループ開始
         ##########################################################################################*/
-        while (s3d::System::Update()) {
+        while (paxg::Window::update()) {
             tm.init(); // タッチ判定を初期化
+#ifdef PAXS_USING_SIV3D
             const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
+#endif
             /*##########################################################################################
                 更新処理関連
             ##########################################################################################*/
 
             // 画面サイズの変更に合わせて地図の幅を変える
-            if (old_width != s3d::Scene::Width()) {
-                map_siv.map_view->setWidth(s3d::Scene::Width() * map_siv.map_view->getWidth() / old_width);
-                map_siv.map_view->setHeight(map_siv.map_view->getWidth() / double(s3d::Scene::Width()) * double(s3d::Scene::Height()));
+            if (old_width != paxg::Window::width()) {
+                map_siv.map_view->setWidth(paxg::Window::width() * map_siv.map_view->getWidth() / old_width);
+                map_siv.map_view->setHeight(map_siv.map_view->getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
             }
-            if (old_height != s3d::Scene::Height()) {
-                map_siv.map_view->setHeight(map_siv.map_view->getWidth() / double(s3d::Scene::Width()) * double(s3d::Scene::Height()));
+            if (old_height != paxg::Window::height()) {
+                map_siv.map_view->setHeight(map_siv.map_view->getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
             }
-            if (old_width != s3d::Scene::Width() ||
-                old_height != s3d::Scene::Height()) {
+            if (old_width != paxg::Window::width() ||
+                old_height != paxg::Window::height()) {
                 // 影を定義
                 if (size_change_count < 1) {
+#ifdef PAXS_USING_SIV3D
                     string_siv.shadow_texture = s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
                     string_siv.internal_texture = s3d::RenderTexture{ string_siv.shadow_texture.size() };
+#endif
                 }
                 if (size_change_count >= 100) size_change_count = 100;
                 ++size_change_count;
             }
             else size_change_count = 0;
 
-            old_width = s3d::Scene::Width();
-            old_height = s3d::Scene::Height();
+            old_width = paxg::Window::width();
+            old_height = paxg::Window::height();
 
             // プルダウンを更新
-            string_siv.pulldown.setPos(s3d::Point{ s3d::Scene::Width() - string_siv.pulldown.getRect().w, 0 });
+            string_siv.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.pulldown.getRect().w()), 0 });
             string_siv.pulldown.update(SelectLanguage{}, tm);
             select_language.set(std::size_t(string_siv.pulldown.getIndex())); // 選択言語を更新
             string_siv.menu_bar.update(select_language, tm);

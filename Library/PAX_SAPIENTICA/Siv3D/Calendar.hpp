@@ -169,7 +169,7 @@ namespace paxs {
 
         void update(
             const paxs::Language& language_text,
-            paxs::Simulator<int>& simulator
+            paxs::Simulator<int>& simulator // コンパイル時の分岐により使わない場合あり
         ) {
 
             /*##########################################################################################

@@ -71,7 +71,12 @@ namespace paxs {
             while (std::getline(ifs, line)) {
                 split(line, '\t'); // 分割し、格納
             }
-            empty.resize(text.front().size());
+            if (text.size() == 0) {
+                empty.resize(0);
+            }
+            else {
+                empty.resize(text.front().size());
+            }
         }
         Language(const std::string& str_) {
             add(str_);

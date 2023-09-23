@@ -14,5 +14,5 @@
 #include <PAX_SAPIENTICA/Siv3D/Main.hpp>
 
 void Main() {
-	paxs::startMain();
+	paxs::startMain("./../../../../../");
 }
