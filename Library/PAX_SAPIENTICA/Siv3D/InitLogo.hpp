@@ -90,6 +90,11 @@ namespace paxs {
                 // ウィンドウのサイズを変える
                 paxg::Window::setSize(1280, 720);
 #ifdef PAXS_USING_DXLIB
+#ifdef __ANDROID__
+                int w{ 1280 }, h{ 720 };
+                DxLib::GetAndroidDisplayResolution(&w, &h);
+                DxLib::SetGraphMode(w, h, 32);
+#endif
                 DxLib::SetDrawScreen(DX_SCREEN_BACK);
 #endif // PAXS_USING_DXLIB
 

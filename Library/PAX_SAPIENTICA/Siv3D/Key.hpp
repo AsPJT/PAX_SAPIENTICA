@@ -16,9 +16,11 @@
 
 ##########################################################################################*/
 
-#include<memory>
-#include<new>
-#include<vector>
+#include <array>
+#include <cmath>
+#include <memory>
+#include <new>
+#include <vector>
 
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
@@ -167,6 +169,12 @@ namespace paxs {
         double getY() const {
             return coordinate.y;
         }
+        void setX(const double x_) {
+            coordinate.x = x_;
+        }
+        void setY(const double y_) {
+            coordinate.y = y_;
+        }
 
         double toEquirectangularRadY() const {
             return coordinate.toEquirectangularRadY();
@@ -201,9 +209,9 @@ namespace paxs {
         // 中央の座標を指定
         Coordinate center = Coordinate(
             paxs::EquirectangularDeg(paxs::Vector2<double>(135.0, 35.0)),
-            //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)), 
+            //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)),
             200.0); // マップ座標の中央
-        double width = 2.0; // マップの幅
+        double width = 180.0; // マップの幅
 
         // 平城京
         //Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
@@ -214,6 +222,15 @@ namespace paxs {
         double expansion_size = 50.0; // マップの拡大量
         std::vector<std::unique_ptr<BaseKey>> enl_keys; // 拡大キー
         std::vector<std::unique_ptr<BaseKey>> esc_keys; // 縮小キー
+
+#ifdef __ANDROID__
+        int touch_num = 0;
+        int old_touch_num = 0;
+        std::array<paxs::Vector2<int>, 3> pos;
+        std::array<paxs::Vector2<int>, 3> old_pos;
+#endif
+
+
     public:
         MapView() {
             enl_keys.resize(1);
@@ -223,6 +240,84 @@ namespace paxs {
             esc_keys[0].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_E));
         }
         void update() {
+
+#ifdef __ANDROID__
+            static int old_touch_num = 0;
+            static int touch_num=0;
+            static std::array<paxs::Vector2<int>, 3> pos = {paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0}};
+            static std::array<paxs::Vector2<int>, 3> old_pos = {paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0}};
+#endif
+
+#ifdef __ANDROID__
+            old_touch_num = touch_num;
+            old_pos = pos;
+
+            touch_num = DxLib::GetTouchInputNum();
+
+
+            for (int i = 0; i < touch_num; i++) {
+                if (i >= 3) break;
+                int pos_x = 0, pos_y = 0;
+
+                DxLib::GetTouchInput(i, &pos_x, &pos_y, NULL, NULL);
+                pos[i] = Vector2<int>(pos_x, pos_y);
+
+                DxLib::DrawCircle(pos_x, pos_y, 40, GetColor(230, 230, 240), TRUE);
+            }
+
+
+            // std::array<Vector2D<int>, 10>{};
+
+            if (old_touch_num == 1 && touch_num == 1) {
+                center.setX(center.getX() + (width / expansion_size/*movement*/) * (old_pos[0].x - pos[0].x)/24);
+                center.setY(center.getY() + ((width / expansion_size/*movement*/) * (pos[0].y - old_pos[0].y)/24));
+
+                if (center.getX() < -180.0) {
+                    center.setX(center.getX() + 360.0);
+                }
+                if (center.getX() >= 180.0) {
+                    center.setX(center.getX() - 360.0);
+                }
+                if (center.getY() < -180.0) {
+                    center.setY(center.getY()  -180.0);
+                }
+                if (center.getY() > 180.0) {
+                    center.setY(center.getY()  + 180.0);
+                }
+
+            }
+            else if (old_touch_num == 2 && touch_num == 2) {
+
+                const int len = (pos[0].x - pos[1].x) * (pos[0].x - pos[1].x) + (pos[0].y - pos[1].y) * (pos[0].y - pos[1].y);
+                const int old_len = (old_pos[0].x - old_pos[1].x) * (old_pos[0].x - old_pos[1].x) + (old_pos[0].y - old_pos[1].y) * (old_pos[0].y - old_pos[1].y);
+                const int sub = std::abs(len - old_len);
+
+                if (len > old_len) {
+                    if (width > min_width) {
+                        width -= ((width * (1.0 + (sub / 6000.0))) / expansion_size);
+                        height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                    }
+                    if (width < min_width) {
+                        width = min_width;
+                        height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                    }
+                }
+                else if (len < old_len) {
+                    // 画面広く
+                    if (width < max_width) {
+                        width += ((width * (1.0 + (sub / 6000.0))) / expansion_size);
+                        height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                    }
+                    if (width > max_width) {
+                        width = max_width;
+                        height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                    }
+                }
+
+            }
+#endif
+
+
             center.update(width);
             if (pressed(enl_keys)) {
                 if (width > min_width) {

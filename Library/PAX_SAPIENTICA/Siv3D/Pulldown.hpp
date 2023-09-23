@@ -206,6 +206,7 @@ namespace paxs {
         const paxg::Rect& getRect() const { return rect; }
         size_t getIndex() const { return index + start_index; }
         bool getIsItems(std::size_t i) const {
+            if (is_items.size() == 0) return true; // データがない場合
             if (i < is_items.size()) return is_items[i];
             return is_items.front();
         }

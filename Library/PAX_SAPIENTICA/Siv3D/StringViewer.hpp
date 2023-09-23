@@ -288,6 +288,7 @@ namespace paxs {
                         bool date_lm = false;
                         switch (output_type) {
                         case paxs::cal::DateOutputType::name_and_ymd:
+                            if (select_language.cget() + 1 >= koyomi_font.size()) break;
                             koyomi_font[select_language.cget()].drawTopRight(std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */]), paxg::Vec2i(static_cast<int>(koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             koyomi_font[select_language.cget()].drawTopRight(",", paxg::Vec2i(static_cast<int>(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             koyomi_font[select_language.cget()].drawTopRight(",", paxg::Vec2i(static_cast<int>(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
@@ -310,6 +311,7 @@ namespace paxs {
                             }
                             break;
                         case paxs::cal::DateOutputType::name_and_value:
+                            if (select_language.cget() + 1 >= koyomi_font.size()) break;
                             koyomi_font[select_language.cget()].drawTopRight(std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */]),
                                 paxg::Vec2i(static_cast<int>(koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
 
@@ -509,11 +511,13 @@ namespace paxs {
             }
 
             if (visible["UI"]) {
-                font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                font[select_language.cget()].drawTopRight(std::string(language_text.cget()[koyomi_siv.sueki_nakamura_index][select_language.cget() + 1 /* 言語位置調整 */]),
-                    paxg::Vec2i(paxg::Window::width() - 160, 590), paxg::Color(0, 0, 0));
-                font[select_language.cget()].drawTopRight(std::string(language_text.cget()[koyomi_siv.sueki_tanabe_index][select_language.cget() + 1 /* 言語位置調整 */]),
-                    paxg::Vec2i(paxg::Window::width() - 160, 620), paxg::Color(0, 0, 0));
+                if (select_language.cget() + 1 < font.size()) {
+                    font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                    font[select_language.cget()].drawTopRight(std::string(language_text.cget()[koyomi_siv.sueki_nakamura_index][select_language.cget() + 1 /* 言語位置調整 */]),
+                        paxg::Vec2i(paxg::Window::width() - 160, 590), paxg::Color(0, 0, 0));
+                    font[select_language.cget()].drawTopRight(std::string(language_text.cget()[koyomi_siv.sueki_tanabe_index][select_language.cget() + 1 /* 言語位置調整 */]),
+                        paxg::Vec2i(paxg::Window::width() - 160, 620), paxg::Color(0, 0, 0));
+                }
                 {
                     std::string sueki_nakamura = "";
                     std::string sueki_tanabe = "";
@@ -540,13 +544,15 @@ namespace paxs {
                             }
                         }
                     }
-                    font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    font[select_language.cget()].drawTopRight(
-                        std::string(sueki_tanabe),
-                        paxg::Vec2i(paxg::Window::width() - 60, 620), paxg::Color(0, 0, 0));
-                    font[select_language.cget()].drawTopRight(
-                        std::string(sueki_nakamura),
-                        paxg::Vec2i(paxg::Window::width() - 60, 590), paxg::Color(0, 0, 0));
+                    if (select_language.cget() + 1 < font.size()) {
+                        font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        font[select_language.cget()].drawTopRight(
+                            std::string(sueki_tanabe),
+                            paxg::Vec2i(paxg::Window::width() - 60, 620), paxg::Color(0, 0, 0));
+                        font[select_language.cget()].drawTopRight(
+                            std::string(sueki_nakamura),
+                            paxg::Vec2i(paxg::Window::width() - 60, 590), paxg::Color(0, 0, 0));
+                    }
                 }
             }
             // シミュレーションのボタン

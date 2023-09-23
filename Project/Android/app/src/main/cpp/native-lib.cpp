@@ -27,11 +27,14 @@ int android_main() {
     const paxg::Color color = paxg::Color(140, 180, 250); // 青
     paxg::Window::setBackgroundColor(color);
 
+    int m = DxLib::LoadGraph("./Data/Map/XYZTile/Slope/Image/SlopePale20230920/2010/0/slope_pale_0_0_0.png");
+
     DxLib::SetDrawScreen(DX_SCREEN_BACK);
-    while (paxg::Window::update()) {
+    // while (paxg::Window::update()) {
         DrawBox(0, 0, 300, 100, GetColor(230, 230, 240), TRUE);    // 四角形を描画する
-    }
-    // paxs::startMain("./../../../../");
+        DrawGraph(0,0,m,TRUE);
+    // }
+    paxs::startMain("./");
 
     return DxLib_End();
 }

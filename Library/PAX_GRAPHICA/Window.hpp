@@ -185,7 +185,7 @@ namespace paxg {
 #endif
         }
 
-        void setSize(int width, int height) {
+        void setSize(const int width, const int height) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Window::Resize(width, height);
 #elif defined(PAXS_USING_SFML)
