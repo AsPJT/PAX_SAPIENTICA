@@ -163,7 +163,7 @@ namespace paxg {
         }
 
         void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            DxLib::DrawFormatString(pos.x(), pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            DxLib::DrawFormatString(pos.x(), pos.y() - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             // DxLib::DrawStringToHandle(pos.x(), pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
         }
         void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -171,7 +171,8 @@ namespace paxg {
             int dswth = DxLib::GetDrawStringWidthToHandle(str.c_str(), int(str.size()), font);
             int dsw = DxLib::GetDrawStringWidth(str.c_str(), int(str.size()));
             // printfDx("dswth:%d, dsw:%d\n", dswth, dsw);
-            DxLib::DrawFormatString(pos.x() - 300, pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            DxLib::DrawFormatString(pos.x(), pos.y() + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            // DxLib::DrawFormatString(pos.x() - 300, pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
 
         }
         void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -179,7 +180,7 @@ namespace paxg {
             // DxLib::DrawStringToHandle(pos.x(), pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
         }
         void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            DxLib::DrawFormatString(pos.x(), pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            DxLib::DrawFormatString(pos.x(), pos.y() - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             // DxLib::DrawStringToHandle(pos.x(), pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
         }
         void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -187,7 +188,8 @@ namespace paxg {
             int dswth = DxLib::GetDrawStringWidthToHandle(str.c_str(), int(str.size()), font);
             int dsw = DxLib::GetDrawStringWidth(str.c_str(), int(str.size()));
             // printfDx("dswth:%d, dsw:%d\n", dswth, dsw);
-            DxLib::DrawFormatString(pos.x() - 300, pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            DxLib::DrawFormatString(pos.x(), pos.y() + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            // DxLib::DrawFormatString(pos.x() - 300, pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
 
         }
         void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {

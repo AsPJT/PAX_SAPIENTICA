@@ -10,9 +10,10 @@
 ##########################################################################################*/
 
 #define _CRT_SECURE_NO_WARNINGS
+#define PAXS_PATH "./../../../../"
 #include <PAX_SAPIENTICA/Siv3D/Main.hpp>
 
 int main() {
-    paxs::startMain("./../../../../");
+    paxs::startMain(PAXS_PATH);
     return 0;
 }
