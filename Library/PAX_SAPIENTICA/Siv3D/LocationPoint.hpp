@@ -12,6 +12,10 @@
 #ifndef PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP
 #define PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP
 
+#ifndef PAXS_PATH
+#define PAXS_PATH ""
+#endif
+
 #include <string>
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
@@ -21,6 +25,7 @@
 
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 /*##########################################################################################
@@ -91,30 +96,43 @@ namespace paxs {
         // 古墳を追加（実験用）
         void addKofun() {
             for (int i = 0; i < 10; ++i)
-                inputPlace("./../../../../../Data/PlaceName/TestMap/Kofun.tsv", LocationPointEnum::location_point_agent);
+                inputPlace(std::string("Data/PlaceName/TestMap/Kofun.tsv"), LocationPointEnum::location_point_agent);
         }
         void add() {
             // 古墳
-            inputPlace("./../../../../../Data/PlaceName/TestMap/Hokkaido.tsv", LocationPointEnum::location_point_zempo_koen_fun);
+            inputPlace(std::string("Data/PlaceName/TestMap/Hokkaido.tsv"), LocationPointEnum::location_point_zempo_koen_fun);
             // 古墳
-            inputPlace("./../../../../../Data/PlaceName/TestMap/Kofun.tsv", LocationPointEnum::location_point_zempo_koen_fun);
+            inputPlace(std::string("Data/PlaceName/TestMap/Kofun.tsv"), LocationPointEnum::location_point_zempo_koen_fun);
 
             // 古事記の地名
-            inputPlace("./../../../../../Data/PlaceName/KojikiPlaceName.tsv");
+            inputPlace(std::string("Data/PlaceName/KojikiPlaceName.tsv"));
             // 汎用的な地名
-            inputPlace("./../../../../../Data/PlaceName/PlaceName.tsv");
+            inputPlace(std::string("Data/PlaceName/PlaceName.tsv"));
             // 令制国名
-            inputPlace("./../../../../../Data/PlaceName/Ryoseikoku.tsv");
+            inputPlace(std::string("Data/PlaceName/Ryoseikoku.tsv"));
             // 倭名類聚抄の地名
-            inputPlace("./../../../../../Data/PlaceName/WamyoRuijushoPlaceName.tsv");
+            inputPlace(std::string("Data/PlaceName/WamyoRuijushoPlaceName.tsv"));
             // 倭名類聚抄の地名
-            inputPlace("./../../../../../Data/PlaceName/WamyoRuijushoKori.tsv");
+            inputPlace(std::string("Data/PlaceName/WamyoRuijushoKori.tsv"));
             // おもろさうしの地名
-            inputPlace("./../../../../../Data/PlaceName/OmoroSoshiPlaceName.tsv");
+            inputPlace(std::string("Data/PlaceName/OmoroSoshiPlaceName.tsv"));
         }
 
         PlaceNameLocation() {
-        }
+
+            // アイコンのテクスチャ
+            texture_ko = paxg::Texture{ PAXS_PATH + std::string("Data/OldDocumentIcon/JP-Kojiki.svg") };
+            texture_wam = paxg::Texture{ PAXS_PATH + std::string("Data/OldDocumentIcon/JP-WamyoRuijusho.svg") };
+            texture_pin1 = paxg::Texture{ PAXS_PATH + std::string("Data/Pin/PitDwelling.svg") };
+            texture_blue_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/BlueCircle.svg") };
+            texture_red_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/RedCircle.svg") };
+            texture_kofun1 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/ZempoKoenFun.png") };
+            texture_kofun2 = paxg::Texture{PAXS_PATH + std::string("Data/MiniIcon/ZempoKohoFun.png")
+        };
+        texture_kofun3 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/HotategaiGataKofun.png") };
+        texture_pn = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/PlaceName.svg") };
+
+    }
         // 描画
         void draw(const double jdn,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
@@ -165,6 +183,16 @@ namespace paxs {
                     }
                     // 前方後円墳を描画
                     if (lli.source == "ZempoKoenFun") {
+#ifdef PAXS_USING_DXLIB
+                        paxg::Rect(paxg::Vec2i{
+                            static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                        }, paxg::Vec2i{14, 14}).drawAt(paxg::Color{255, 255, 255});
+                            paxg::Rect(paxg::Vec2i{
+                                static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            }, paxg::Vec2i{10, 10}).drawAt(paxg::Color{37, 158, 78});
+#endif
                         texture_kofun1.resizedDrawAt(14,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -246,8 +274,8 @@ namespace paxs {
                     // 倭名類聚抄のアイコンを描画
                     else if (lli.source == "JP-WamyoRuijusho") {
                         //texture_wam.resizedDrawAt(20,
-                        // paxg::Vec2i{ (lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width()),
-                        //	double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))
+                        // paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                        //    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                         //	});
                     }
                     // 前方後円墳のアイコンを描画
@@ -302,25 +330,63 @@ namespace paxs {
     private:
         std::vector<LocationPoint> location_point_list{}; // 地物の一覧
         // アイコンのテクスチャ
-        const paxg::Texture texture_ko{ "./../../../../../Data/OldDocumentIcon/JP-Kojiki.svg" };
-        const paxg::Texture texture_wam{ "./../../../../../Data/OldDocumentIcon/JP-WamyoRuijusho.svg" };
-        const paxg::Texture texture_pin1{ "./../../../../../Data/Pin/PitDwelling.svg" };
-        const paxg::Texture texture_blue_circle{ "./../../../../../Data/MiniIcon/BlueCircle.svg" };
-        const paxg::Texture texture_red_circle{ "./../../../../../Data/MiniIcon/RedCircle.svg" };
-        const paxg::Texture texture_kofun1{ "./../../../../../Data/MiniIcon/ZempoKoenFun.svg" };
-        const paxg::Texture texture_kofun2{ "./../../../../../Data/MiniIcon/ZempoKohoFun.svg" };
-        const paxg::Texture texture_kofun3{ "./../../../../../Data/MiniIcon/HotategaiGataKofun.svg" };
-        const paxg::Texture texture_pn{ "./../../../../../Data/MiniIcon/PlaceName.svg" };
+         paxg::Texture texture_ko{};
+         paxg::Texture texture_wam{};
+         paxg::Texture texture_pin1{};
+         paxg::Texture texture_blue_circle{};
+         paxg::Texture texture_red_circle{};
+         paxg::Texture texture_kofun1{};
+         paxg::Texture texture_kofun2{};
+         paxg::Texture texture_kofun3{};
+         paxg::Texture texture_pn{};
 
         // 地名を読み込み
         void inputPlace(const std::string& str_, const LocationPointEnum lpe_ = LocationPointEnum::location_point_place_name) {
 
-            std::ifstream pifs(str_); // 地名を読み込む
+#ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
+#ifdef __ANDROID__
+            const int file_handle = DxLib::FileRead_open(str_.c_str());
+#else
+            const int file_handle = DxLib::FileRead_open(std::string(PAXS_PATH + str_).c_str());
+#endif // __ANDROID__
+            DxLib::FileRead_set_format(file_handle, DX_CHARCODEFORMAT_UTF8);
+            if (file_handle == 0) return;
+            std::string pline{};
+            pline.resize(4096);
+            std::string pline_tmp{};
+            pline_tmp.resize(4096);
+#else
+            std::ifstream pifs(PAXS_PATH + str_); // 地名を読み込む
             if (pifs.fail()) return;
             std::string pline;
+#endif
+#ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
+            while (true) {
+                const int dline = DxLib::FileRead_gets(&(pline[0]), 4096, file_handle);
+
+                if (dline == -1) break;
+                if (dline == 0) break;
+
+                // const std::string pline = std::string(pline0.c_str());
+                std::vector<std::string> strvec{};
+
+                std::string str_p{};
+                for (int i = 0, pi = 0; i <= dline; ++i) {
+                    if (pline[i] == '\0') continue;
+                    if (pline[i] == '\t' || i == dline) {
+                        strvec.emplace_back(str_p);
+                        str_p.clear();
+                    }
+                    else {
+                        str_p.push_back(pline[i]);
+                    }
+                }
+                strvec.emplace_back(str_p);
+#else
             // 1 行ずつ読み込み（区切りはタブ）
             while (std::getline(pifs, pline)) {
                 std::vector<std::string> strvec = paxs::StringExtensions::split(pline, '\t');
+#endif
                 // 格納
                 location_point_list.emplace_back(
                     strvec[0], // 漢字
@@ -344,8 +410,8 @@ namespace paxs {
     class AgentLocation {
     public:
         // アイコンのテクスチャ
-        const paxg::Texture texture_blue_circle{ "./../../../../../Data/MiniIcon/BlueCircle.svg" };
-        const paxg::Texture texture_red_circle{ "./../../../../../Data/MiniIcon/RedCircle.svg" };
+        const paxg::Texture texture_blue_circle{ PAXS_PATH + std::string("Data/MiniIcon/BlueCircle.svg") };
+        const paxg::Texture texture_red_circle{ PAXS_PATH + std::string("Data/MiniIcon/RedCircle.svg") };
 
         void draw(const double jdn,
             const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position,

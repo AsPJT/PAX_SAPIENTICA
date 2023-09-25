@@ -162,6 +162,28 @@ namespace paxg {
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
 #endif
         }
+        void drawAt() const {
+#if defined(PAXS_USING_SIV3D)
+            // rect.draw();
+#elif defined(PAXS_USING_SFML)
+            Window::window.draw(rect);
+#elif defined(PAXS_USING_DXLIB)
+            DxLib::DrawBox(
+                static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
+                DxLib::GetColor(255, 255, 255), TRUE);
+#endif
+        }
+        void drawAt(const paxg::Color& c_) const {
+#if defined(PAXS_USING_SIV3D)
+            // rect.draw(c_.color);
+#elif defined(PAXS_USING_SFML)
+            Window::window.draw(c_);
+#elif defined(PAXS_USING_DXLIB)
+            DxLib::DrawBox(
+                static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
+                DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
+#endif
+        }
 
         void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& color_) const {
 #if defined(PAXS_USING_SIV3D)

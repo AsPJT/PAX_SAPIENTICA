@@ -54,7 +54,7 @@ namespace paxs {
         };
 
         std::vector<MapVec2D> pos_list1{};
-        std::vector<MapVec4D> pos_list2{};
+        std::vector<std::uint_least64_t> pos_list2{};
         // XYZ タイルの画像の情報を保持
         // std::vector<paxg::Texture> texture_list{};
         std::unordered_map<std::uint_least64_t, paxg::Texture> texture{};
@@ -122,11 +122,12 @@ namespace paxs {
                         MapVec2D{ j * 360.0 / z_num - 180.0,
                 (360.0 - i * 360.0 / z_num) - 180.0 };
 
-                    pos_list2[k] = {
+                    // 画像を格納する index を生成
+                    pos_list2[k] = textureIndex(MapVec4D{
     static_cast<std::uint_least64_t>(z),
     static_cast<std::uint_least64_t>((j + z_num) % z_num),
     static_cast<std::uint_least64_t>((i + z_num) % z_num)
-                    };
+                        });
 
                 }
             }
@@ -135,6 +136,12 @@ namespace paxs {
             // ファイルを保存
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
+
+                    // 画像が既にある場合は終了
+                    if (texture.find(pos_list2[k]) != texture.end()) {
+                        continue;
+                    }
+
                     std::string new_saveFilePath = "";
                     switch (file_name_enum) {
                     case XYZTileFileName::Original:
@@ -165,7 +172,6 @@ namespace paxs {
 
                     // ファイルを同期ダウンロード
                     // ステータスコードが 200 (OK) なら
-                    const std::uint_least64_t index = textureIndex(pos_list2[k]);
 
                     // texture_list[k] = paxg::Texture{ new_saveFilePath };
 
@@ -195,7 +201,7 @@ namespace paxs {
                                 }
                                 else {
                                     // URL から取得した新しい地図へ更新
-                                    texture.insert({ index, std::move(new_url_tex) });
+                                    texture.insert({ pos_list2[k], std::move(new_url_tex) });
                                 }
                             }
                         }
@@ -203,7 +209,7 @@ namespace paxs {
                     }
                     // テクスチャが読み込めた場合
                     else {
-                        texture.insert({ index, std::move(new_tex) });
+                        texture.insert({ pos_list2[k], std::move(new_tex) });
                     }
                 }
             }
@@ -262,13 +268,11 @@ namespace paxs {
                     // 場所の該当なし
                     if (k >= pos_list2.size()) continue;
 
-                    const std::uint_least64_t index = textureIndex(pos_list2[k]);
-
                     //if (texture_list[k]) {
-                    if(texture.find(index) != texture.end()) {
+                    if(texture.find(pos_list2[k]) != texture.end()) {
                     // if (texture.contains(index)) { // C++20
                         //texture_list[k].resizedDraw(
-                        texture.at(index).resizedDraw(
+                        texture.at(pos_list2[k]).resizedDraw(
                             paxg::Vec2f(
                                 static_cast<float>((360.0 / z_num) / map_view_width * double(paxg::Window::width()))
                                 , static_cast<float>((360.0 / z_num) / map_view_height * double(paxg::Window::height()))

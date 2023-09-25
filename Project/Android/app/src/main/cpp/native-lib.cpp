@@ -9,6 +9,7 @@
 
 ##########################################################################################*/
 
+#define PAXS_PATH "./"
 #define PAXS_USING_DXLIB
 #include <DxLib.h>
 
@@ -17,6 +18,7 @@
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 int android_main() {
+    DxLib::SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
     if (DxLib::DxLib_Init() == -1) return -1;
 
     int w{640},h{360};
@@ -34,7 +36,7 @@ int android_main() {
         DrawBox(0, 0, 300, 100, GetColor(230, 230, 240), TRUE);    // 四角形を描画する
         DrawGraph(0,0,m,TRUE);
     // }
-    paxs::startMain("./");
+    paxs::startMain(PAXS_PATH);
 
     return DxLib_End();
 }

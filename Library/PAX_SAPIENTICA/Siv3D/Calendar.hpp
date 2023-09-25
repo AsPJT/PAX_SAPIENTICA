@@ -85,7 +85,7 @@ namespace paxs {
             "Jul.","Aug.","Sep.","Oct.","Nov.","Dec." };
 
 
-        bool move_forward_in_time = false; // 時間を進めるか
+        bool move_forward_in_time = true; // デバッグ false; // 時間を進めるか
         bool go_back_in_time = false; // 時間を戻すか
         bool is_agent_update = true; // エージェントの更新をするか
 
@@ -178,7 +178,7 @@ namespace paxs {
 
             static int calendar_update_counter = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
             ++calendar_update_counter;
-            //if(move_forward_in_time) jdn += 1000;
+            if (move_forward_in_time) jdn.getDay() += 1.0; // デバッグ
             //else if(go_back_in_time) jdn -= 1000;
         //if (count >= 0) {
             if (calendar_update_counter >= 30) { // カウンタが指定した値を超えたら日付を変える処理を実行

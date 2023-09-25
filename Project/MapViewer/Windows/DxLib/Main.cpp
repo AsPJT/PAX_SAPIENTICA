@@ -10,6 +10,7 @@
 ##########################################################################################*/
 
 #define _CRT_SECURE_NO_WARNINGS
+#define PAXS_PATH "./../../../../"
 #define PAXS_USING_DXLIB
 #include <DxLib.h> // DxLib
 #include <PAX_SAPIENTICA/Siv3D/Main.hpp>
@@ -29,10 +30,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #endif
     DxLib::SetOutApplicationLogValidFlag(FALSE);
     DxLib::ChangeWindowMode(TRUE);
+    DxLib::SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
     if (DxLib::DxLib_Init() == -1) return -1;
     DxLib::SetDrawScreen(DX_SCREEN_BACK);
     DxLib::SetWaitVSyncFlag(TRUE);
-    DxLib::SetUseASyncLoadFlag(TRUE);
-    paxs::startMain("./../../../../");
+    // DxLib::SetUseASyncLoadFlag(TRUE);
+    paxs::startMain(PAXS_PATH);
     return DxLib::DxLib_End();
 }
