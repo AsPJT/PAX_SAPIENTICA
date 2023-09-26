@@ -97,7 +97,7 @@ namespace paxs {
                 } else {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "data_type is not found: " + data_type + " in " + setting_file_path;
-                    logger.log(Logger::Level::WARNING, __FILE__, __LINE__, message);
+                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 }
             }
         }
