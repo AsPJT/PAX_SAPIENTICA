@@ -60,7 +60,7 @@ namespace paxs {
         visible.emplace("3D", false); // 3D
 
         //#ifdef PAXS_USING_SIMULATOR
-        paxs::Simulator<int> simlator;
+        paxs::Simulator<int> simulator;
         // 対馬のみ
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 879, 406 };
         //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 881, 409 };
@@ -91,6 +91,8 @@ namespace paxs {
             tm.init(); // タッチ判定を初期化
 #ifdef PAXS_USING_SIV3D
             const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
+#elif defined(PAXS_USING_SFML)
+            paxg::Window::clear();
 #endif
             /*##########################################################################################
                 更新処理関連
@@ -142,21 +144,21 @@ namespace paxs {
                 select_language,
                 koyomi_siv,
                 string_siv,
-                simlator,
+                simulator,
                 start_position,
                 visible
             );
             // 暦を更新
             koyomi_siv.update(
                 language_text,
-                simlator
+                simulator
             );
             // 文字を更新
             string_siv.update(
                 map_siv.map_view,
                 select_language,
                 language_text,
-                simlator,
+                simulator,
                 start_position,
                 end_position,
                 path8,
@@ -165,6 +167,9 @@ namespace paxs {
                 visible
             );
             paxs::PaxSapienticaInitSiv3D::secondInit(); // ソフトウェアを実行した最初のフレームの一番最後に実行
+#ifdef PAXS_USING_SFML
+            paxg::Window::display();
+#endif
         }
     }
 }

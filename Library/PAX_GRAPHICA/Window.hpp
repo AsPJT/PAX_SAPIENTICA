@@ -33,7 +33,7 @@ namespace paxg {
 
     namespace Window {
 #ifdef PAXS_USING_SFML
-        sf::RenderWindow window;
+        sf::RenderWindow window(sf::VideoMode(1920, 1080), "PAX SAPIENTICA Library");
 #endif // PAXS_USING_SFML
 
         void Init(int width, int height, const std::string& title) {

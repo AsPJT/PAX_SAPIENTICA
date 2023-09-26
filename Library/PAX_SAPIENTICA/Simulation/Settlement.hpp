@@ -54,7 +54,7 @@ namespace paxs {
             if (it == agents.end()) {
                 paxs::Logger logger("Save/error_log.txt");
                 const std::string message = "Agent not found.";
-                logger.log(Logger::Level::WARNING, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
             return *it;

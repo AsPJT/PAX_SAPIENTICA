@@ -33,8 +33,8 @@ namespace paxs {
         /// @brief The level of the log.
         /// @brief ログのレベル。
         enum class Level {
-            INFO, // 情報を示すメッセージ（警告やエラー以外）
-            WARNING, // 警告メッセージ
+            PAX_INFO, // 情報を示すメッセージ（警告やエラー以外）
+            PAX_WARNING, // 警告メッセージ
             PAX_ERROR // エラーメッセージ
         };
 
@@ -75,15 +75,15 @@ namespace paxs {
         void log(const Level level, const std::string& filename, const int line, const std::string& message) noexcept {
             const std::string current_time = currentDateTime();
             file << "[" << current_time << "] ";
-            
+
             switch(level) {
-                case Level::INFO: 
+                case Level::PAX_INFO:
                     file << "[INFO]: ";
                     break;
-                case Level::WARNING: 
+                case Level::PAX_WARNING:
                     file << "[WARNING]: ";
                     break;
-                case Level::PAX_ERROR: 
+                case Level::PAX_ERROR:
                     file << "[ERROR]: ";
                     break;
             }

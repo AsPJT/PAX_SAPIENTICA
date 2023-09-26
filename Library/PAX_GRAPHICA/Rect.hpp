@@ -75,32 +75,20 @@ namespace paxg {
         Rect(const sf::Vector2i& pos, const float w, const float h) : rect(sf::Vector2f(w, h)) { rect.setPosition(pos.x, pos.y); }
         Rect(const float x, const float y, const sf::Vector2i& size) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition(x, y); }
         operator sf::RectangleShape() const { return rect; }
-        void setX(const float x_) { rect.x = x_; }
-        void setY(const float y_) { rect.y = y_; }
-        void setW(const float w_) { rect.w = w_; }
-        void setH(const float h_) { rect.h = h_; }
-        float x() const { return rect.x; }
-        float y() const { return rect.y; }
-        float w() const { return rect.w; }
-        float h() const { return rect.h; }
-        Vec2i pos() const { return Vec2i(rect.x, rect.y); }
-        Vec2i size() const { return Vec2i(rect.w, rect.h); }
-        void setPos(const float x_, const float y_) {
-            rect.x = x_;
-            rect.y = y_;
-        }
-        void setSize(const float w_, const float h_) {
-            rect.w = w_;
-            rect.h = h_;
-        }
-        void setPos(const Vec2i& pos_) {
-            rect.x = pos_.x();
-            rect.y = pos_.y();
-        }
-        void setSize(const Vec2i& size_) {
-            rect.w = size_.x();
-            rect.h = size_.y();
-        }
+        void setX(const float x_) { rect.setPosition(x_, rect.getPosition().y); }
+        void setY(const float y_) { rect.setPosition(rect.getPosition().x, y_); }
+        void setW(const float w_) { rect.setSize(sf::Vector2f(w_, rect.getSize().y)); }
+        void setH(const float h_) { rect.setSize(sf::Vector2f(rect.getSize().x, h_)); }
+        float x() const { return rect.getPosition().x; }
+        float y() const { return rect.getPosition().y; }
+        float w() const { return rect.getSize().x; }
+        float h() const { return rect.getSize().y; }
+        Vec2i pos() const { return Vec2i(static_cast<int>(rect.getPosition().x), static_cast<int>(rect.getPosition().y)); }
+        Vec2i size() const { return Vec2i(static_cast<int>(rect.getSize().x), static_cast<int>(rect.getSize().y)); }
+        void setPos(const float x_, const float y_) { rect.setPosition(x_, y_); }
+        void setSize(const float w_, const float h_) { rect.setSize(sf::Vector2f(w_, h_)); }
+        void setPos(const Vec2i& pos_) { rect.setPosition(pos_.x(), pos_.y()); }
+        void setSize(const Vec2i& size_) { rect.setSize(sf::Vector2f(size_.x(), size_.y())); }
 #else
         float x0{}, y0{}, w0{}, h0{};
         constexpr Rect() = default;
@@ -155,7 +143,7 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             rect.draw(c_.color);
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(c_);
+            Window::window.draw(rect);
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
                 static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
@@ -177,7 +165,7 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             // rect.draw(c_.color);
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(c_);
+            Window::window.draw(rect);
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
                 static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
@@ -189,7 +177,7 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             rect.drawFrame(inner_thickness, outer_thickness, color_.color);
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(color_);
+            Window::window.draw(rect);
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
                 static_cast<int>(x0 - outer_thickness), static_cast<int>(y0 - outer_thickness),
