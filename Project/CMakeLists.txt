@@ -31,6 +31,7 @@ endif()
 add_subdirectory(GeographicDataToSimulationGrid)
 add_subdirectory(IncludeTest)
 add_subdirectory(IntegrationTest)
+add_subdirectory(MapViewer)
 add_subdirectory(UnitTest)
 
 enable_testing()
