@@ -91,6 +91,8 @@ namespace paxs {
             tm.init(); // タッチ判定を初期化
 #ifdef PAXS_USING_SIV3D
             const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
+#elif defined(PAXS_USING_SFML)
+            paxg::Window::clear();
 #endif
             /*##########################################################################################
                 更新処理関連
@@ -165,6 +167,9 @@ namespace paxs {
                 visible
             );
             paxs::PaxSapienticaInitSiv3D::secondInit(); // ソフトウェアを実行した最初のフレームの一番最後に実行
+#ifdef PAXS_USING_SFML
+            paxg::Window::display();
+#endif
         }
     }
 }

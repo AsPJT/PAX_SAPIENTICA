@@ -27,6 +27,8 @@
 #include <PAX_GRAPHICA/IDrawable.hpp>
 #include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxg {
 
@@ -44,9 +46,24 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
         sf::Texture texture{};
         Texture(const paxg::Image& image) { texture.loadFromImage(image); }
-        Texture(const paxg::String& path) { texture.loadFromFile(path); }
-        Texture(const std::string& path) {
-            texture.loadFromFile(static_cast<paxg::String>(path));
+        Texture(const paxg::String& path) {
+            // svgの場合は読み込めないので、pngに拡張子を変換する
+            std::string path_str = path.string;
+            paxs::StringExtensions::replace(path_str, ".svg", ".png");
+
+            if(!texture.loadFromFile(path_str)) {
+                paxs::Logger logger("Save/warning_log.txt");
+                logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load texture: " + path.string);
+            }
+        }
+        Texture(std::string path) {
+            // svgの場合は読み込めないので、pngに拡張子を変換する
+            paxs::StringExtensions::replace(path, ".svg", ".png");
+
+            if(!texture.loadFromFile(static_cast<paxg::String>(path))) {
+                paxs::Logger logger("Save/warning_log.txt");
+                logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load texture: " + path);
+            }
         }
         operator sf::Texture() const { return texture; }
 #elif defined(PAXS_USING_DXLIB)
@@ -126,7 +143,7 @@ namespace paxg {
             DxLib::DrawGraph(pos.x() - (width() / 2), pos.y() - (height() / 2), texture, TRUE);
 #elif defined(PAXS_USING_SFML)
             sf::Sprite sprite(texture);
-            sprite.setPosition(pos);
+            sprite.setPosition(static_cast<float>(pos.x()), static_cast<float>(pos.y()));
             paxg::Window::window.draw(sprite);
 #endif
         }
@@ -193,7 +210,7 @@ namespace paxg {
                 pos.x() + resize.x(), pos.y() + resize.y(),
                 texture, TRUE);
 #elif defined(PAXS_USING_SFML)
-            draw(pos);
+            drawAt(pos);
 #endif
         }
         void resizedDraw(const int resize, const paxg::Vec2i& pos) const
@@ -206,7 +223,7 @@ namespace paxg {
                 pos.x() + resize, pos.y() + resize,
                 texture, TRUE);
 #elif defined(PAXS_USING_SFML)
-            draw(pos);
+            drawAt(pos);
 #endif
         }
         void resizedDraw(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const
@@ -219,7 +236,7 @@ namespace paxg {
                 pos.x() + resize.x(), pos.y() + resize.y(),
                 texture, TRUE);
 #elif defined(PAXS_USING_SFML)
-            draw(pos);
+            drawAt(pos);
 #endif
         }
         void resizedDraw(const int resize, const paxg::Vec2f& pos) const
@@ -232,7 +249,7 @@ namespace paxg {
                 pos.x() + resize, pos.y() + resize,
                 texture, TRUE);
 #elif defined(PAXS_USING_SFML)
-            draw(pos);
+            drawAt(pos);
 #endif
         }
     };
