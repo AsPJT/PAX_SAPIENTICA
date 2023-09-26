@@ -60,7 +60,7 @@ namespace paxs {
         visible.emplace("3D", false); // 3D
 
         //#ifdef PAXS_USING_SIMULATOR
-        paxs::Simulator<int> simlator;
+        paxs::Simulator<int> simulator;
         // 対馬のみ
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 879, 406 };
         //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 881, 409 };
@@ -142,21 +142,21 @@ namespace paxs {
                 select_language,
                 koyomi_siv,
                 string_siv,
-                simlator,
+                simulator,
                 start_position,
                 visible
             );
             // 暦を更新
             koyomi_siv.update(
                 language_text,
-                simlator
+                simulator
             );
             // 文字を更新
             string_siv.update(
                 map_siv.map_view,
                 select_language,
                 language_text,
-                simlator,
+                simulator,
                 start_position,
                 end_position,
                 path8,
