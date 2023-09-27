@@ -28,6 +28,7 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 
@@ -152,6 +153,86 @@ namespace paxg {
         int width(const std::string& str_) {
             return static_cast<int>(font(s3d::Unicode::FromUTF8(str_)).region().w);
         }
+
+#elif defined(PAXS_USING_SFML)
+        sf::Font font{};
+        int size = 0;
+        Font(const int size_, const std::string& path, const int buffer_thickness) {
+            font.loadFromFile(path);
+        }
+
+        void setOutline(const double inner, const double outer, const paxg::Color& color) {
+
+        }
+
+        void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+            sf::Text text;
+            text.setFont(font);
+            text.setString(str);
+            text.setCharacterSize(size);
+            text.setFillColor(color.color);
+            text.setPosition(pos.x(), pos.y());
+            paxg::Window::window.draw(text);
+        }
+
+        void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+            sf::Text text;
+            text.setFont(font);
+            text.setString(str);
+            text.setCharacterSize(size);
+            text.setFillColor(color.color);
+            text.setPosition(pos.x(), pos.y());
+            paxg::Window::window.draw(text);
+        }
+
+        void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+            sf::Text text;
+            text.setFont(font);
+            text.setString(str);
+            text.setCharacterSize(size);
+            text.setFillColor(color.color);
+            text.setPosition(pos.x(), pos.y());
+            paxg::Window::window.draw(text);
+        }
+
+        void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+            sf::Text text;
+            text.setFont(font);
+            text.setString(str);
+            text.setCharacterSize(size);
+            text.setFillColor(color.color);
+            text.setPosition(pos.x(), pos.y());
+            paxg::Window::window.draw(text);
+        }
+
+        void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+            sf::Text text;
+            text.setFont(font);
+            text.setString(str);
+            text.setCharacterSize(size);
+            text.setFillColor(color.color);
+            text.setPosition(pos.x(), pos.y());
+            paxg::Window::window.draw(text);
+        }
+
+        void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+            sf::Text text;
+            text.setFont(font);
+            text.setString(str);
+            text.setCharacterSize(size);
+            text.setFillColor(color.color);
+            text.setPosition(pos.x(), pos.y());
+            paxg::Window::window.draw(text);
+        }
+
+        int height() const {
+            return 0;
+        }
+
+        int width(const std::string& str_) {
+            return 0;
+        }
+
 #elif defined(PAXS_USING_DXLIB)
         int font{}; int h{ 0 };
         Font(const int size_, const std::string& path, const int buffer_thickness) {
