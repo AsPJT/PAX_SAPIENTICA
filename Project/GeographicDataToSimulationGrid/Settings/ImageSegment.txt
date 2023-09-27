@@ -1,10 +1,10 @@
 name = balhae_line
-start_x = 26
-start_y = 10
-x_size = 3
-y_size = 3
-z = 5
+start_x = 52
+start_y = 20
+x_size = 6
+y_size = 6
+z = 6
 extension = png
 input_path = ../../../Data/Map/XYZTile/Union/Balhae/
-output_path = ../../../Data/Map/XYZTile/BalhaeLine/5/
+output_path = ../../../Data/Map/XYZTile/BalhaeLine/6/
 alpha = true
