@@ -128,6 +128,7 @@ namespace paxg {
             h0 = static_cast<float>(size_.y());
         }
 #endif
+
         void draw() const override {
 #if defined(PAXS_USING_SIV3D)
             rect.draw();
@@ -139,6 +140,7 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 #endif
         }
+
         void draw(const paxg::Color& c_) const {
 #if defined(PAXS_USING_SIV3D)
             rect.draw(c_.color);
@@ -150,6 +152,7 @@ namespace paxg {
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
 #endif
         }
+
         void drawAt() const {
 #if defined(PAXS_USING_SIV3D)
             // rect.draw();
@@ -161,6 +164,7 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 #endif
         }
+
         void drawAt(const paxg::Color& c_) const {
 #if defined(PAXS_USING_SIV3D)
             // rect.draw(c_.color);
@@ -212,6 +216,7 @@ namespace paxg {
             return false;
 #endif
         }
+
         bool mouseOver() const {
 #if defined(PAXS_USING_SIV3D)
             return rect.mouseOver();

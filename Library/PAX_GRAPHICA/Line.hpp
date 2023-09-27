@@ -45,6 +45,26 @@ namespace paxg {
         void draw(const double thickness, const paxg::Color& color) const {
             line.draw(thickness, color.color);
         }
+#elif defined(PAXS_USING_SFML)
+        sf::Vertex line[2]{};
+        Line(const float sx, const float sy, const float ex, const float ey) {
+            line[0].position = sf::Vector2f(sx, sy);
+            line[1].position = sf::Vector2f(ex, ey);
+        }
+        Line(const float sx, const float sy, const Vec2i& e) {
+            line[0].position = sf::Vector2f(sx, sy);
+            line[1].position = sf::Vector2f(e.x(), e.y());
+        }
+        Line(const Vec2i& s, const Vec2i& e) {
+            line[0].position = sf::Vector2f(s.x(), s.y());
+            line[1].position = sf::Vector2f(e.x(), e.y());
+        }
+
+        void draw(const double thickness, const paxg::Color& color) {
+            line[0].color = color;
+            line[1].color = color;
+            Window::window.draw(line, 2, sf::Lines);
+        }
 #elif defined(PAXS_USING_DXLIB)
         float x0{}, y0{}, w0{}, h0{};
         constexpr Line(const float x, const float y, const float w, const float h) :
