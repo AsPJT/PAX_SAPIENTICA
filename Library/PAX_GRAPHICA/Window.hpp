@@ -33,7 +33,8 @@ namespace paxg {
 
     namespace Window {
 #ifdef PAXS_USING_SFML
-        sf::RenderWindow window(sf::VideoMode(1920, 1080), "PAX SAPIENTICA Library");
+        sf::RenderWindow window(sf::VideoMode(1280, 720), "PAX SAPIENTICA Library");
+        paxg::Color backgroundColor = paxg::Color(0, 0, 0);
 #endif // PAXS_USING_SFML
 
         void Init(int width, int height, const std::string& title) {
@@ -95,10 +96,13 @@ namespace paxg {
 #endif
 #endif
         }
+
         // ウィンドウの中心を取得
         Vec2i center() {
 #if defined(PAXS_USING_SIV3D)
             return Vec2i(s3d::Scene::Center().x, s3d::Scene::Center().y);
+#elif defined(PAXS_USING_SFML)
+            return Vec2i{ static_cast<int>(window.getSize().x / 2) ,static_cast<int>(window.getSize().y / 2) };
 #elif defined(PAXS_USING_DXLIB)
             int width = 0, height = 0;
 #if defined(__ANDROID__)
@@ -117,10 +121,13 @@ namespace paxg {
             return Vec2i{};
 #endif
         }
+
         // ウィンドウの幅を取得
         int width() {
 #if defined(PAXS_USING_SIV3D)
             return s3d::Scene::Width();
+#elif defined(PAXS_USING_SFML)
+            return static_cast<int>(window.getSize().x);
 #elif defined(PAXS_USING_DXLIB)
             int width = 1, height = 1; // 0 除算を防ぐために 1 を指定
 #if defined(__ANDROID__)
@@ -139,10 +146,13 @@ namespace paxg {
             return 1;
 #endif
         }
+
         // ウィンドウの高さを取得
         int height() {
 #if defined(PAXS_USING_SIV3D)
             return s3d::Scene::Height();
+#elif defined(PAXS_USING_SFML)
+            return static_cast<int>(window.getSize().y);
 #elif defined(PAXS_USING_DXLIB)
             int width = 1, height = 1; // 0 除算を防ぐために 1 を指定
 #if defined(__ANDROID__)
@@ -166,6 +176,8 @@ namespace paxg {
         paxg::Vec2i size() {
 #if defined(PAXS_USING_SIV3D)
             return paxg::Vec2i(s3d::Scene::Width(), s3d::Scene::Height());
+#elif defined(PAXS_USING_SFML)
+            return paxg::Vec2i{ static_cast<int>(window.getSize().x) ,static_cast<int>(window.getSize().y) };
 #elif defined(PAXS_USING_DXLIB)
             int width = 0, height = 0;
 #if defined(__ANDROID__)
@@ -315,11 +327,12 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             s3d::Scene::SetBackground(color.color);
 #elif defined(PAXS_USING_SFML)
-            window.clear(color);
+            backgroundColor = color;
 #elif defined(PAXS_USING_DXLIB)
             DxLib::SetBackgroundColor(color.r, color.g, color.b);
 #endif
         }
+
         // ウィンドウの上下左右にできる背景の余白の色を設定
         void setLetterbox(const paxg::Color color) {
 #if defined(PAXS_USING_SIV3D)
@@ -333,7 +346,7 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Graphics::Clear();
 #elif defined(PAXS_USING_SFML)
-            window.clear();
+            window.clear(backgroundColor.color);
 #endif
         }
 
