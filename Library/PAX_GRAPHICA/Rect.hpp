@@ -18,10 +18,10 @@
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
-#elif defined(PAXS_USING_SFML)
-#include <SFML/Graphics.hpp>
 #elif defined(PAXS_USING_DXLIB)
 #include <DxLib.h>
+#elif defined(PAXS_USING_SFML)
+#include <SFML/Graphics.hpp>
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -132,56 +132,67 @@ namespace paxg {
         void draw() const override {
 #if defined(PAXS_USING_SIV3D)
             rect.draw();
-#elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
                 static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
                 DxLib::GetColor(255, 255, 255), TRUE);
+
+#elif defined(PAXS_USING_SFML)
+            Window::window.draw(rect);
+
 #endif
         }
 
         void draw(const paxg::Color& c_) const {
 #if defined(PAXS_USING_SIV3D)
             rect.draw(c_.color);
-#elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
                 static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
+
+#elif defined(PAXS_USING_SFML)
+            Window::window.draw(rect);
+
 #endif
         }
 
         void drawAt() const {
 #if defined(PAXS_USING_SIV3D)
             // rect.draw();
-#elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
                 static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
                 DxLib::GetColor(255, 255, 255), TRUE);
+
+#elif defined(PAXS_USING_SFML)
+            Window::window.draw(rect);
+
 #endif
         }
 
         void drawAt(const paxg::Color& c_) const {
 #if defined(PAXS_USING_SIV3D)
             // rect.draw(c_.color);
-#elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
                 static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
+
+#elif defined(PAXS_USING_SFML)
+            Window::window.draw(rect);
+
 #endif
         }
 
         void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& color_) const {
 #if defined(PAXS_USING_SIV3D)
             rect.drawFrame(inner_thickness, outer_thickness, color_.color);
-#elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
                 static_cast<int>(x0 - outer_thickness), static_cast<int>(y0 - outer_thickness),
@@ -199,12 +210,17 @@ namespace paxg {
                 static_cast<int>(x0 + w0 - inner_thickness), static_cast<int>(y0 - outer_thickness),
                 static_cast<int>(x0 + w0 + outer_thickness), static_cast<int>(y0 + h0 + outer_thickness),
                 DxLib::GetColor(color_.r, color_.g, color_.b), TRUE);
+
+#elif defined(PAXS_USING_SFML)
+            Window::window.draw(rect);
+
 #endif
         }
 
         bool leftClicked() const {
 #if defined(PAXS_USING_SIV3D)
             return rect.leftClicked();
+
 #elif defined(PAXS_USING_DXLIB)
             int mx = 0, my = 0;
             if ((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) != 0) {
@@ -220,6 +236,7 @@ namespace paxg {
         bool mouseOver() const {
 #if defined(PAXS_USING_SIV3D)
             return rect.mouseOver();
+
 #elif defined(PAXS_USING_DXLIB)
             int mx = 0, my = 0;
             DxLib::GetMousePoint(&mx, &my);

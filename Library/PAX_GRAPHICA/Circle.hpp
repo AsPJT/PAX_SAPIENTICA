@@ -18,10 +18,10 @@
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
-#elif defined(PAXS_USING_SFML)
-#include <SFML/Graphics.hpp>
 #elif defined(PAXS_USING_DXLIB)
 #include <DxLib.h>
+#elif defined(PAXS_USING_SFML)
+#include <SFML/Graphics.hpp>
 #endif
 
 #include <PAX_GRAPHICA/IDrawable.hpp>
@@ -37,6 +37,7 @@ namespace paxg {
         constexpr Circle(const float x, const float y, const float r) : circle(x, y, r) {}
         constexpr Circle(const paxg::Vec2i& pos, const float r) : circle(pos.x(), pos.y(), r) {}
         constexpr operator s3d::Circle() const { return circle; }
+
 #elif defined(PAXS_USING_SFML)
         sf::CircleShape circle;
         Circle(const float x, const float y, const float r) : circle(r) { circle.setPosition(x, y); }
@@ -50,6 +51,7 @@ namespace paxg {
         void draw() const override {
 #if defined(PAXS_USING_SIV3D)
             circle.draw();
+
 #elif defined(PAXS_USING_SFML)
             Window::window.draw(circle);
 #endif

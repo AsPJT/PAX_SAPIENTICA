@@ -18,10 +18,10 @@
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
-#elif defined(PAXS_USING_SFML)
-#include <SFML/Graphics.hpp>
 #elif defined(PAXS_USING_DXLIB)
 #include <DxLib.h>
+#elif defined(PAXS_USING_SFML)
+#include <SFML/Graphics.hpp>
 #endif
 
 #include <PAX_GRAPHICA/String.hpp>
@@ -34,6 +34,7 @@ namespace paxg {
         s3d::Image image;
         Image(const paxg::String& path) : image(path.string) {}
         constexpr operator s3d::Image() const { return image; }
+
 #elif defined(PAXS_USING_SFML)
         sf::Image image;
         Image(const paxg::String& path) { image.loadFromFile(path); }
