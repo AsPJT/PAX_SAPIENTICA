@@ -18,10 +18,10 @@
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D/Color.hpp>
-#elif defined(PAXS_USING_SFML)
-#include <SFML/Graphics.hpp>
 #elif defined(PAXS_USING_DXLIB)
 #include <DxLib.h>
+#elif defined(PAXS_USING_SFML)
+#include <SFML/Graphics.hpp>
 #endif
 
 namespace paxg {
@@ -39,6 +39,7 @@ namespace paxg {
                 static_cast<s3d::Color::value_type>(b),
                 static_cast<s3d::Color::value_type>(a)) {}
         operator s3d::Color() const { return color; }
+
 #elif defined(PAXS_USING_SFML)
         sf::Color color;
         Color(const int r, const int g, const int b, const int a = 255) : color(r, g, b, a) {}

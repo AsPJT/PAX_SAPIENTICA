@@ -20,10 +20,10 @@
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
-#elif defined(PAXS_USING_SFML)
-#include <SFML/Graphics.hpp>
 #elif defined(PAXS_USING_DXLIB)
 #include <DxLib.h>
+#elif defined(PAXS_USING_SFML)
+#include <SFML/Graphics.hpp>
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -41,8 +41,7 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             s3d::Window::Resize(width, height);
             s3d::Window::SetTitle(s3d::Unicode::FromUTF8(title));
-#elif defined(PAXS_USING_SFML)
-            window.create(sf::VideoMode(width, height), title);
+
 #elif defined(PAXS_USING_DXLIB)
             DxLib::SetGraphMode(width, height, 32);
 #if defined(__ANDROID__)
@@ -55,12 +54,22 @@ namespace paxg {
             // その他の処理 (Windows)
             DxLib::SetMainWindowText(title.c_str());
 #endif
+
+#elif defined(PAXS_USING_SFML)
+            window.create(sf::VideoMode(width, height), title);
+
 #endif
         }
 
         bool update() {
 #if defined(PAXS_USING_SIV3D)
             return s3d::System::Update();
+
+#elif defined(PAXS_USING_DXLIB)
+            return (DxLib::ScreenFlip() != -1 &&
+                DxLib::ClearDrawScreen() != -1 &&
+                DxLib::ProcessMessage() != -1);
+
 #elif defined(PAXS_USING_SFML)
             sf::Event event;
             while (window.pollEvent(event))
@@ -77,10 +86,7 @@ namespace paxg {
             }
 
             return true;
-#elif defined(PAXS_USING_DXLIB)
-            return (DxLib::ScreenFlip() != -1 &&
-                DxLib::ClearDrawScreen() != -1 &&
-                DxLib::ProcessMessage() != -1);
+
 #else
             return false;
 #endif
@@ -89,8 +95,7 @@ namespace paxg {
         void setTitle(const std::string title) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Window::SetTitle(s3d::Unicode::FromUTF8(title));
-#elif defined(PAXS_USING_SFML)
-            window.setTitle(title);
+
 #elif defined(PAXS_USING_DXLIB)
 #if defined(__ANDROID__)
             // Android 専用処理
@@ -102,6 +107,10 @@ namespace paxg {
             // その他の処理 (Windows)
             DxLib::SetMainWindowText(title.c_str());
 #endif
+
+#elif defined(PAXS_USING_SFML)
+            window.setTitle(title);
+
 #endif
         }
 
@@ -109,8 +118,7 @@ namespace paxg {
         Vec2i center() {
 #if defined(PAXS_USING_SIV3D)
             return Vec2i(s3d::Scene::Center().x, s3d::Scene::Center().y);
-#elif defined(PAXS_USING_SFML)
-            return Vec2i{ static_cast<int>(window.getSize().x / 2) ,static_cast<int>(window.getSize().y / 2) };
+
 #elif defined(PAXS_USING_DXLIB)
             int width = 0, height = 0;
 #if defined(__ANDROID__)
@@ -125,6 +133,10 @@ namespace paxg {
             DxLib::GetWindowSize(&width, &height);
 #endif
             return Vec2i{ static_cast<int>(width / 2) ,static_cast<int>(height / 2) };
+
+#elif defined(PAXS_USING_SFML)
+            return Vec2i{ static_cast<int>(window.getSize().x / 2) ,static_cast<int>(window.getSize().y / 2) };
+
 #else
             return Vec2i{};
 #endif
@@ -134,10 +146,10 @@ namespace paxg {
         int width() {
 #if defined(PAXS_USING_SIV3D)
             return s3d::Scene::Width();
-#elif defined(PAXS_USING_SFML)
-            return static_cast<int>(window.getSize().x);
+
 #elif defined(PAXS_USING_DXLIB)
             int width = 1, height = 1; // 0 除算を防ぐために 1 を指定
+
 #if defined(__ANDROID__)
             // Android 専用処理
             DxLib::GetAndroidDisplayResolution(&width, &height);
@@ -150,6 +162,10 @@ namespace paxg {
             DxLib::GetWindowSize(&width, &height);
 #endif
             return static_cast<int>(width);
+
+#elif defined(PAXS_USING_SFML)
+            return static_cast<int>(window.getSize().x);
+
 #else
             return 1;
 #endif
@@ -159,8 +175,7 @@ namespace paxg {
         int height() {
 #if defined(PAXS_USING_SIV3D)
             return s3d::Scene::Height();
-#elif defined(PAXS_USING_SFML)
-            return static_cast<int>(window.getSize().y);
+
 #elif defined(PAXS_USING_DXLIB)
             int width = 1, height = 1; // 0 除算を防ぐために 1 を指定
 #if defined(__ANDROID__)
@@ -175,6 +190,10 @@ namespace paxg {
             DxLib::GetWindowSize(&width, &height);
 #endif
             return static_cast<int>(height);
+
+#elif defined(PAXS_USING_SFML)
+            return static_cast<int>(window.getSize().y);
+
 #else
             return 1;
 #endif
@@ -184,8 +203,7 @@ namespace paxg {
         paxg::Vec2i size() {
 #if defined(PAXS_USING_SIV3D)
             return paxg::Vec2i(s3d::Scene::Width(), s3d::Scene::Height());
-#elif defined(PAXS_USING_SFML)
-            return paxg::Vec2i{ static_cast<int>(window.getSize().x) ,static_cast<int>(window.getSize().y) };
+
 #elif defined(PAXS_USING_DXLIB)
             int width = 0, height = 0;
 #if defined(__ANDROID__)
@@ -200,6 +218,10 @@ namespace paxg {
             DxLib::GetWindowSize(&width, &height);
 #endif
             return Vec2i{ static_cast<int>(width) ,static_cast<int>(height) };
+
+#elif defined(PAXS_USING_SFML)
+            return paxg::Vec2i{ static_cast<int>(window.getSize().x) ,static_cast<int>(window.getSize().y) };
+
 #else
             return paxg::Vec2i{};
 #endif
@@ -208,16 +230,20 @@ namespace paxg {
         void setSize(const int width, const int height) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Window::Resize(width, height);
-#elif defined(PAXS_USING_SFML)
-            window.setSize(sf::Vector2u(width, height));
+
 #elif defined(PAXS_USING_DXLIB)
             DxLib::SetGraphMode(width, height, 32);
+
+#elif defined(PAXS_USING_SFML)
+            window.setSize(sf::Vector2u(width, height));
+
 #endif
         }
 
         void setPosition(int x, int y) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Window::SetPos(x, y);
+
 #elif defined(PAXS_USING_SFML)
             window.setPosition(sf::Vector2i(x, y));
 #endif
@@ -226,6 +252,7 @@ namespace paxg {
         void setPosition(const paxg::Vec2i& pos) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Window::SetPos(static_cast<s3d::int32>(pos.x()), static_cast<s3d::int32>(pos.y()));
+
 #elif defined(PAXS_USING_SFML)
             window.setPosition(pos);
 #endif
@@ -234,6 +261,7 @@ namespace paxg {
         void setIcon(const std::string path) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Window::SetIcon(s3d::Unicode::FromUTF8(path));
+
 #elif defined(PAXS_USING_SFML)
             sf::Image icon;
             if (!icon.loadFromFile(path))
@@ -245,6 +273,7 @@ namespace paxg {
         void setVisible(bool visible) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Window::SetStyle(visible ? s3d::WindowStyle::Sizable : s3d::WindowStyle::None);
+
 #elif defined(PAXS_USING_SFML)
             window.setVisible(visible);
 #endif
@@ -253,6 +282,7 @@ namespace paxg {
         void setVSync(bool vsync) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Graphics::SetTargetFrameRate(vsync ? 60 : 0);
+
 #elif defined(PAXS_USING_SFML)
             window.setVerticalSyncEnabled(vsync);
 #endif
@@ -261,6 +291,7 @@ namespace paxg {
         void setFPS(int fps) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Graphics::SetTargetFrameRate(fps);
+
 #elif defined(PAXS_USING_SFML)
             window.setFramerateLimit(fps);
 #endif
@@ -269,6 +300,7 @@ namespace paxg {
         void setMouseCursorVisible(bool visible) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Cursor::SetStyle(visible ? s3d::CursorStyle::Default : s3d::CursorStyle::Hidden);
+
 #elif defined(PAXS_USING_SFML)
             window.setMouseCursorVisible(visible);
 #endif
@@ -277,6 +309,7 @@ namespace paxg {
         void setMouseCursorGrabbed(bool grabbed) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Cursor::SetStyle(grabbed ? s3d::CursorStyle::Hidden : s3d::CursorStyle::Default);
+
 #elif defined(PAXS_USING_SFML)
             window.setMouseCursorGrabbed(grabbed);
 #endif
@@ -285,6 +318,7 @@ namespace paxg {
         void setMouseCursor(const std::string path) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Cursor::RequestStyle(s3d::Unicode::FromUTF8(path));
+
 #elif defined(PAXS_USING_SFML)
             sf::Image image;
             if (!image.loadFromFile(path))
@@ -299,6 +333,7 @@ namespace paxg {
         void setMousePosition(int x, int y) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Cursor::SetPos(x, y);
+
 #elif defined(PAXS_USING_SFML)
             sf::Mouse::setPosition(sf::Vector2i(x, y), window);
 #endif
@@ -307,6 +342,7 @@ namespace paxg {
         void setMousePosition(const paxg::Vec2i pos) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Cursor::SetPos(static_cast<s3d::int32>(pos.x()), static_cast<s3d::int32>(pos.y()));
+
 #elif defined(PAXS_USING_SFML)
             sf::Mouse::setPosition(pos, window);
 #endif
@@ -315,6 +351,7 @@ namespace paxg {
         paxg::Vec2i getMousePosition() {
 #if defined(PAXS_USING_SIV3D)
             return paxg::Vec2i(static_cast<std::int_least32_t>(s3d::Cursor::PosF().x), static_cast<std::int_least32_t>(s3d::Cursor::PosF().y));
+
 #elif defined(PAXS_USING_SFML)
             return sf::Mouse::getPosition(window);
 #else
@@ -325,6 +362,7 @@ namespace paxg {
         void setKeyRepeat(bool repeat) {
 #if defined(PAXS_USING_SIV3D)
             // s3d::System::SetTerminationTriggers(repeat ? s3d::UserAction::CloseButtonClicked : s3d::UserAction::ExitFocusLost);
+
 #elif defined(PAXS_USING_SFML)
             window.setKeyRepeatEnabled(repeat);
 #endif
@@ -334,10 +372,13 @@ namespace paxg {
         void setBackgroundColor(const paxg::Color color) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Scene::SetBackground(color.color);
-#elif defined(PAXS_USING_SFML)
-            backgroundColor = color;
+
 #elif defined(PAXS_USING_DXLIB)
             DxLib::SetBackgroundColor(color.r, color.g, color.b);
+
+#elif defined(PAXS_USING_SFML)
+            backgroundColor = color;
+
 #endif
         }
 
@@ -345,6 +386,7 @@ namespace paxg {
         void setLetterbox(const paxg::Color color) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Scene::SetLetterbox(color.color);
+
 #elif defined(PAXS_USING_SFML)
 
 #endif
@@ -353,6 +395,7 @@ namespace paxg {
         void clear() {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Graphics::Clear();
+
 #elif defined(PAXS_USING_SFML)
             window.clear(backgroundColor.color);
 #endif
@@ -361,6 +404,7 @@ namespace paxg {
         void display() {
 #if defined(PAXS_USING_SIV3D)
             // s3d::Graphics::Flush();
+
 #elif defined(PAXS_USING_SFML)
             window.display();
 #endif
@@ -369,8 +413,10 @@ namespace paxg {
         void close() {
 #if defined(PAXS_USING_SIV3D)
             s3d::System::Exit();
+
 #elif defined(PAXS_USING_SFML)
             window.close();
+
 #endif
         }
     };

@@ -18,10 +18,10 @@
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D/Vector2D.hpp>
-#elif defined(PAXS_USING_SFML)
-#include <SFML/System/Vector2.hpp>
 #elif defined(PAXS_USING_DXLIB)
 #include <DxLib.h>
+#elif defined(PAXS_USING_SFML)
+#include <SFML/System/Vector2.hpp>
 #endif
 
 namespace paxg {
