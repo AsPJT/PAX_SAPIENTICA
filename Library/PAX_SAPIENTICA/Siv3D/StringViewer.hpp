@@ -159,7 +159,7 @@ namespace paxs {
             paxs::KoyomiSiv3D& koyomi_siv,
             paxs::GraphicVisualizationList& visible
         ) {
-            // const double map_view_width = map_view->getWidth();
+            const double map_view_width = map_view->getWidth();
             // const double map_view_center_lat =
                 //paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view->getCenterY()))));
                 map_view->getCoordinate().toEquirectangularDegY();
@@ -444,8 +444,8 @@ namespace paxs {
             // jdn = period_jdn[index1];
             // }
             {
-                // int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
-                // int debug_move_y = 25;
+                int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
+                int debug_move_y = 25;
                 // その他のデバッグ用の変数情報の表示
                 if (visible["UI"]) {
                     //font[select_language.cget()].
@@ -468,8 +468,9 @@ namespace paxs {
                     //debug_start_y += debug_move_y;
                     //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_width_str_index][select_language.cget() + 1 /* 言語位置調整 */]
                     //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-                    //font[select_language.cget()](s3d::ToString(map_view_width)
-                    //    ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
+                    font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                    font[select_language.cget()].draw(std::to_string(map_view_width),
+                            paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
                     //debug_start_y += debug_move_y;
                     //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
                     //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
@@ -477,8 +478,9 @@ namespace paxs {
                     //font[language](s3d::ToString(xyz_tile2->getZ())
                     //).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
                     //debug_start_y += debug_move_y;
-                    //font[language](s3d::ToString(xyz_tile2->getZNum())
-                    //).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
+                    // font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                    // font[select_language.cget()].draw(std::to_string(xyz_tile2->getZNum()),
+                    //    paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
                 }
             }
             if (visible["License"]) {

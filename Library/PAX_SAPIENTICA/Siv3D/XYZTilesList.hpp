@@ -149,6 +149,19 @@ namespace paxs {
             xyz_tile_list.emplace("map_korean_line", *xyz_tile_kuni_korean_line);
         }
         {
+            const std::unique_ptr<XYZTile> xyz_tile_kuni_balhae_line(new(std::nothrow) XYZTile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original));
+            xyz_tile_kuni_balhae_line->setMapURL("");
+            xyz_tile_kuni_balhae_line->setMapName("balhae_line");
+            xyz_tile_kuni_balhae_line->setMinZ(5);
+            xyz_tile_kuni_balhae_line->setMaxZ(8);
+            xyz_tile_kuni_balhae_line->setDrawMinZ(3);
+            xyz_tile_kuni_balhae_line->setMapFilePath(path + "Data/Map/XYZTile/BalhaeLine/");
+
+            xyz_tile_list.emplace("map_balhae_line", *xyz_tile_kuni_balhae_line);
+        }
+        {
             const std::unique_ptr<XYZTile> xyz_tile_soil(new(std::nothrow) XYZTile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
                 paxs::XYZTile::XYZTileFileName::Z_Original));
@@ -287,6 +300,9 @@ namespace paxs {
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
             xyz_tile_list["map_korean_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
+        if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+            xyz_tile_list["map_balhae_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::slope)) {
             xyz_tile_list["map_slope"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
@@ -347,6 +363,9 @@ namespace paxs {
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
                 if (xyz_tile_list.find("map_korean_line") != xyz_tile_list.end()) xyz_tile_list.at("map_korean_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
+            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+                if (xyz_tile_list.find("map_balhae_line") != xyz_tile_list.end()) xyz_tile_list.at("map_balhae_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            }
             // xyz_tile3"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             // xyz_tile4"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line1)) {
@@ -355,7 +374,7 @@ namespace paxs {
             // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
             if (xyz_tile_list.find("map_line2") != xyz_tile_list.end()) xyz_tile_list.at("map_line2").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, paxg::Color{ 95, 99, 104 });
             // }
-            if (!menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
+            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
                 if (xyz_tile_list.find("map_line3") != xyz_tile_list.end()) xyz_tile_list.at("map_line3").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, paxg::Color{ 95, 99, 104 });
                 if (xyz_tile_list.find("map_line3") != xyz_tile_list.end()) xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
