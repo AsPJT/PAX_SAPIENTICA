@@ -797,9 +797,6 @@
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\InitLogo.hpp">
       <Filter>Library\Siv3D</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Key.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Language.hpp">
       <Filter>Library\Siv3D</Filter>
     </ClInclude>
@@ -861,6 +858,9 @@
       <Filter>Library\Graphica</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Line.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Key.hpp">
       <Filter>Library\Graphica</Filter>
     </ClInclude>
   </ItemGroup>

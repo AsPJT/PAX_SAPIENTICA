@@ -19,9 +19,10 @@
 #include <memory>
 #include <new>
 
-#include <PAX_SAPIENTICA/Siv3D/Key.hpp> // MapView
 #include <PAX_SAPIENTICA/Siv3D/LocationRange.hpp> // TextureLocation
 #include <PAX_SAPIENTICA/Siv3D/StringViewer.hpp> // 文字
+
+#include <PAX_GRAPHICA/Key.hpp>
 
 namespace paxs {
 

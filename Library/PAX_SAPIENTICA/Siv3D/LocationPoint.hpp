@@ -110,6 +110,10 @@ namespace paxs {
             inputPlace(std::string("Data/PlaceName/PlaceName.tsv"));
             // 令制国名
             inputPlace(std::string("Data/PlaceName/Ryoseikoku.tsv"));
+            // 東北アイヌ
+            inputPlace(std::string("Data/PlaceName/TohokuAynu.tsv"));
+            // 渤海
+            inputPlace(std::string("Data/PlaceName/Balhae.tsv"));
             // 倭名類聚抄の地名
             inputPlace(std::string("Data/PlaceName/WamyoRuijushoPlaceName.tsv"));
             // 倭名類聚抄の地名
