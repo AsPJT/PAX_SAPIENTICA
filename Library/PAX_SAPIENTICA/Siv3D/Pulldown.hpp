@@ -27,6 +27,7 @@
 
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxs {
 
@@ -136,7 +137,7 @@ namespace paxs {
         void draw() const {
             const std::size_t item_index = index + start_index;
             rect.draw(paxg::Color{ 243, 243, 243 }); // プルダウンの背景を描画
-            if (isEmpty())return;
+            if (isEmpty()) return;
             // プルダウンのふちを描画
             rect.drawFrame(1, 0, is_open ? paxg::Color{ 255, 165, 0 } : paxg::Color{ 128, 128, 128 });
             paxg::Vec2i pos = rect.pos();
@@ -165,6 +166,18 @@ namespace paxs {
             // 三角形を描画
             s3d::Triangle{ (rect.x() + rect.w() - down_button_size / 2.0 - padding.x()), (rect.y() + rect.h() / 2.0),
                 (down_button_size * 0.5), 3.1416 }.draw(s3d::Palette::Black);
+
+#elif defined(PAXS_USING_SFML)
+            // 三角形を描画
+            sf::ConvexShape triangle;
+            triangle.setPointCount(3);
+            triangle.setPoint(0, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x(), rect.y() + rect.h() / 2.0 + down_button_size * 0.25));
+            triangle.setPoint(1, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5, rect.y() + rect.h() / 2.0 - down_button_size * 0.5 + down_button_size * 0.25));
+            triangle.setPoint(2, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5, rect.y() + rect.h() / 2.0 + down_button_size * 0.5 + down_button_size * 0.25));
+            triangle.setFillColor(sf::Color::Black);
+            triangle.setOutlineColor(sf::Color::Black);
+            triangle.setOutlineThickness(0);
+            paxg::Window::window.draw(triangle);
 #endif
             pos.setY(static_cast<int>(pos.y() + rect.h()));
             if (is_open) {

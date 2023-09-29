@@ -386,9 +386,6 @@ namespace paxg {
         void setLetterbox(const paxg::Color color) {
 #if defined(PAXS_USING_SIV3D)
             s3d::Scene::SetLetterbox(color.color);
-
-#elif defined(PAXS_USING_SFML)
-
 #endif
         }
 

@@ -103,8 +103,6 @@ namespace paxs {
 #endif
                 DxLib::SetDrawScreen(DX_SCREEN_BACK);
 #endif // PAXS_USING_DXLIB
-
-
             }
         }
 
