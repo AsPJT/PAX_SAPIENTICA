@@ -196,6 +196,15 @@ namespace paxs {
                                 static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                     static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                             }, paxg::Vec2i{10, 10}).drawAt(paxg::Color{37, 158, 78});
+#elif defined(PAXS_USING_SFML)
+                        paxg::Rect(paxg::Vec2i{
+                            static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                        }, paxg::Vec2i{14, 14}).drawAt(paxg::Color{255, 255, 255});
+                            paxg::Rect(paxg::Vec2i{
+                                static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            }, paxg::Vec2i{10, 10}).drawAt(paxg::Color{37, 158, 78});
 #endif
                         texture_kofun1.resizedDrawAt(14,
                             paxg::Vec2i{
