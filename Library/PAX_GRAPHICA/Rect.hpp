@@ -223,10 +223,14 @@ namespace paxg {
 
 #elif defined(PAXS_USING_DXLIB)
             int mx = 0, my = 0;
-            if ((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) != 0) {
-                DxLib::GetMousePoint(&mx, &my);
-                return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
+            if (old_left_mouse) {
+                // 1 フレーム前にタッチされている
+                if ((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) == 0) {
+                    DxLib::GetMousePoint(&mx, &my);
+                    return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
+                }
             }
+
             return false;
 #else
             return false;

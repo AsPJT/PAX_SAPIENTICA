@@ -59,7 +59,7 @@ namespace paxs {
                 }
                 // 最大の文字数からプルダウンの各項目の幅を定義
                 rect.setW(
-                    static_cast<float>((std::max)(static_cast<s3d::int32>(rect.w()), static_cast<s3d::int32>(font.front().width(item))))
+                    static_cast<float>((std::max)(static_cast<int>(rect.w()), static_cast<int>(font.front().width(item))))
                 );
             }
             // プルダウンの
@@ -173,6 +173,8 @@ namespace paxs {
 #ifdef PAXS_USING_SIV3D
                 // 影を描画
                 back_rect.rect.drawShadow({ 1, 1 }, 4, 1).draw();
+#else
+                back_rect.draw();
 #endif
                 //for (const auto& item : items) {
                 std::size_t i = start_index;
@@ -226,7 +228,7 @@ namespace paxs {
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
         paxg::Rect rect{};
-        s3d::int32 down_button_size = 20;
+        int down_button_size = 20;
         bool is_open = false;
         PulldownType pdt{};
         bool is_one_font = false;

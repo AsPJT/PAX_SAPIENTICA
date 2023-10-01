@@ -16,6 +16,9 @@
 
 ##########################################################################################*/
 
+#ifdef PAXS_USING_DXLIB
+static bool old_left_mouse = false;
+#endif
 
 #include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/Siv3D/InitLogo.hpp>
@@ -42,6 +45,7 @@
 #include <PAX_GRAPHICA/Key.hpp>
 
 namespace paxs {
+
     // 主要な実行時定数・変数
     void startMain(const std::string& path8) { // フォルダ階層
         SelectLanguage select_language{}; // 選択言語
@@ -167,7 +171,12 @@ namespace paxs {
                 koyomi_siv,
                 visible
             );
+#ifndef PAXS_USING_DXLIB
             paxs::PaxSapienticaInitSiv3D::secondInit(); // ソフトウェアを実行した最初のフレームの一番最後に実行
+#endif // PAXS_USING_DXLIB
+#ifdef PAXS_USING_DXLIB
+            old_left_mouse = !((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) == 0);
+#endif
 #ifdef PAXS_USING_SFML
             paxg::Window::display();
 #endif
