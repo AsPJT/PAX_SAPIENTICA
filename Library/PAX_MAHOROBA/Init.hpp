@@ -23,7 +23,7 @@
 #else
 #include <string>
 
-#include <PAX_SAPIENTICA/Siv3D/Mock.hpp>
+#include <PAX_MAHOROBA/Mock.hpp>
 #endif
 
 // GUI で画面上部にあるメニューバーの種類

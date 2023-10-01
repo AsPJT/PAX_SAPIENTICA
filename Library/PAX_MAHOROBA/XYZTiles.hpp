@@ -21,7 +21,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
+#include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 #include <PAX_GRAPHICA/Line.hpp>

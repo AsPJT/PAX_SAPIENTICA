@@ -21,8 +21,8 @@
 #include <string>
 #include <vector>
 
-#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
-#include <PAX_SAPIENTICA/Siv3D/Language.hpp>
+#include <PAX_MAHOROBA/Init.hpp>
+#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
 #include <PAX_GRAPHICA/Rect.hpp>
