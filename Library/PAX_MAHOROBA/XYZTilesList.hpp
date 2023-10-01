@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_XYZ_TILES_LIST_HPP
-#define PAX_SAPIENTICA_SIV3D_XYZ_TILES_LIST_HPP
+#ifndef PAX_MAHOROBA_XYZ_TILES_LIST_HPP
+#define PAX_MAHOROBA_XYZ_TILES_LIST_HPP
 
 /*##########################################################################################
 
@@ -388,4 +388,4 @@ namespace paxs {
     }
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_XYZ_TILES_LIST_HPP
+#endif // !PAX_MAHOROBA_XYZ_TILES_LIST_HPP

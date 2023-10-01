@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP
-#define PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP
+#ifndef PAX_MAHOROBA_LOCATION_POINT_HPP
+#define PAX_MAHOROBA_LOCATION_POINT_HPP
 
 #ifndef PAXS_PATH
 #define PAXS_PATH ""
@@ -474,4 +474,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_LOCATION_POINT_HPP
+#endif // !PAX_MAHOROBA_LOCATION_POINT_HPP

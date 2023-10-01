@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_LOCATION_RANGE_HPP
-#define PAX_SAPIENTICA_SIV3D_LOCATION_RANGE_HPP
+#ifndef PAX_MAHOROBA_LOCATION_RANGE_HPP
+#define PAX_MAHOROBA_LOCATION_RANGE_HPP
 
 /*##########################################################################################
 
@@ -92,4 +92,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_LOCATION_RANGE_HPP
+#endif // !PAX_MAHOROBA_LOCATION_RANGE_HPP

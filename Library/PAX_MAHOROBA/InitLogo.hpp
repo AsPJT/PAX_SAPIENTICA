@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_INIT_LOGO_HPP
-#define PAX_SAPIENTICA_SIV3D_INIT_LOGO_HPP
+#ifndef PAX_MAHOROBA_INIT_LOGO_HPP
+#define PAX_MAHOROBA_INIT_LOGO_HPP
 
 /*##########################################################################################
 
@@ -127,4 +127,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_INIT_LOGO_HPP
+#endif // !PAX_MAHOROBA_INIT_LOGO_HPP

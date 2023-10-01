@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_CALENDAR_HPP
-#define PAX_SAPIENTICA_SIV3D_CALENDAR_HPP
+#ifndef PAX_MAHOROBA_CALENDAR_HPP
+#define PAX_MAHOROBA_CALENDAR_HPP
 
 /*##########################################################################################
 
@@ -214,4 +214,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_CALENDAR_HPP
+#endif // !PAX_MAHOROBA_CALENDAR_HPP

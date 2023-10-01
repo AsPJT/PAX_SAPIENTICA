@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_INIT_HPP
-#define PAX_SAPIENTICA_SIV3D_INIT_HPP
+#ifndef PAX_MAHOROBA_INIT_HPP
+#define PAX_MAHOROBA_INIT_HPP
 
 /*##########################################################################################
 
@@ -95,4 +95,4 @@ enum MapType {
 #endif
 #endif
 
-#endif // !PAX_SAPIENTICA_SIV3D_INIT_HPP
+#endif // !PAX_MAHOROBA_INIT_HPP

@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_MAP_VIEWER_HPP
-#define PAX_SAPIENTICA_SIV3D_MAP_VIEWER_HPP
+#ifndef PAX_MAHOROBA_MAP_VIEWER_HPP
+#define PAX_MAHOROBA_MAP_VIEWER_HPP
 
 /*##########################################################################################
 
@@ -180,4 +180,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_MAP_VIEWER_HPP
+#endif // !PAX_MAHOROBA_MAP_VIEWER_HPP
