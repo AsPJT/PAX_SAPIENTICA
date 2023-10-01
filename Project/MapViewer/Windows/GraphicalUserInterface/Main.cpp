@@ -12,7 +12,7 @@
 #define PAXS_USING_SIV3D
 #define PAXS_PATH "./../../../../../"
 #include <Siv3D.hpp> // OpenSiv3D
-#include <PAX_SAPIENTICA/Siv3D/Main.hpp>
+#include <PAX_MAHOROBA/Main.hpp>
 
 void Main() {
 	paxs::startMain(PAXS_PATH);

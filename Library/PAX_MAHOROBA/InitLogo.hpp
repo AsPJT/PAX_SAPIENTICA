@@ -16,7 +16,7 @@
 
 ##########################################################################################*/
 
-#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
+#include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>
 
 #include <PAX_GRAPHICA/Color.hpp>

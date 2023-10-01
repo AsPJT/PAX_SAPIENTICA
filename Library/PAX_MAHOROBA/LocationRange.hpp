@@ -18,7 +18,7 @@
 
 #include <string>
 
-#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
+#include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
 #include <PAX_GRAPHICA/Texture.hpp>

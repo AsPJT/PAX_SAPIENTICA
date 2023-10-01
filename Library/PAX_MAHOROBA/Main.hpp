@@ -16,27 +16,31 @@
 
 ##########################################################################################*/
 
+#include <PAX_GRAPHICA/Vec2.hpp>
+
 #ifdef PAXS_USING_DXLIB
 static bool old_left_mouse = false;
+static int old_left_touch = 0;
+static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #endif
 
-#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
-#include <PAX_SAPIENTICA/Siv3D/InitLogo.hpp>
-#include <PAX_SAPIENTICA/Siv3D/LocationRange.hpp>
-#include <PAX_SAPIENTICA/Siv3D/LocationPoint.hpp>
-#include <PAX_SAPIENTICA/Siv3D/3DModel.hpp>
-#include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>
-#include <PAX_SAPIENTICA/Siv3D/Language.hpp>
+#include <PAX_MAHOROBA/Init.hpp>
+#include <PAX_MAHOROBA/InitLogo.hpp>
+#include <PAX_MAHOROBA/LocationRange.hpp>
+#include <PAX_MAHOROBA/LocationPoint.hpp>
+#include <PAX_MAHOROBA/3DModel.hpp>
+#include <PAX_MAHOROBA/Pulldown.hpp>
+#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
-#include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp>
-#include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
+#include <PAX_MAHOROBA/XYZTiles.hpp>
+#include <PAX_MAHOROBA/XYZTilesList.hpp>
 
 // シミュレータを使用する
 #define PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Siv3D/Calendar.hpp> // 暦
+#include <PAX_MAHOROBA/Calendar.hpp> // 暦
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 可視化一覧
-#include <PAX_SAPIENTICA/Siv3D/MapViewer.hpp> // 地図
-#include <PAX_SAPIENTICA/Siv3D/StringViewer.hpp> // 文字
+#include <PAX_MAHOROBA/MapViewer.hpp> // 地図
+#include <PAX_MAHOROBA/StringViewer.hpp> // 文字
 
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
@@ -176,6 +180,12 @@ namespace paxs {
 #endif // PAXS_USING_DXLIB
 #ifdef PAXS_USING_DXLIB
             old_left_mouse = !((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) == 0);
+            old_left_touch = DxLib::GetTouchInputNum();
+            if (old_left_touch >= 1) {
+                int pos_x = 0, pos_y = 0;
+                DxLib::GetTouchInput(0, &pos_x, &pos_y, NULL, NULL);
+                old_left_touch_pos = paxg::Vec2i(pos_x, pos_y);
+            }
 #endif
 #ifdef PAXS_USING_SFML
             paxg::Window::display();

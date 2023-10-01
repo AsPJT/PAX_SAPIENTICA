@@ -14,7 +14,7 @@
 #include <DxLib.h>
 
 #include <PAX_GRAPHICA/Window.hpp>
-#include <PAX_SAPIENTICA/Siv3D/Main.hpp>
+#include <PAX_MAHOROBA/Main.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 int android_main() {

@@ -13,7 +13,7 @@
 #define PAXS_PATH "./../../../../"
 #define PAXS_USING_DXLIB
 #include <DxLib.h> // DxLib
-#include <PAX_SAPIENTICA/Siv3D/Main.hpp>
+#include <PAX_MAHOROBA/Main.hpp>
 
 #if defined(__ANDROID__)
 // Android 専用処理

@@ -26,13 +26,13 @@
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
-#include <PAX_SAPIENTICA/Siv3D/3DModel.hpp>
-#include <PAX_SAPIENTICA/Siv3D/Language.hpp>
-#include <PAX_SAPIENTICA/Siv3D/LocationPoint.hpp>
-#include <PAX_SAPIENTICA/Siv3D/LocationRange.hpp>
-#include <PAX_SAPIENTICA/Siv3D/Pulldown.hpp>
-#include <PAX_SAPIENTICA/Siv3D/XYZTiles.hpp>
-#include <PAX_SAPIENTICA/Siv3D/XYZTilesList.hpp>
+#include <PAX_MAHOROBA/3DModel.hpp>
+#include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_MAHOROBA/LocationPoint.hpp>
+#include <PAX_MAHOROBA/LocationRange.hpp>
+#include <PAX_MAHOROBA/Pulldown.hpp>
+#include <PAX_MAHOROBA/XYZTiles.hpp>
+#include <PAX_MAHOROBA/XYZTilesList.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数

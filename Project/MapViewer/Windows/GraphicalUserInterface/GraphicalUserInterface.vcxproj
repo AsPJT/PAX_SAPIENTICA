@@ -329,20 +329,19 @@
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Texture.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Vec2.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Window.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\3DModel.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Calendar.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Init.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\InitLogo.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Language.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationPoint.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationRange.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Main.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\MapViewer.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Mock.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Pulldown.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\StringViewer.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTiles.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTilesList.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\3DModel.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Calendar.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Init.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\InitLogo.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\LocationPoint.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\LocationRange.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Main.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\MapViewer.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Mock.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Pulldown.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\StringViewer.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTiles.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTilesList.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

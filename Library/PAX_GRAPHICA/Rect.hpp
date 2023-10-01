@@ -222,15 +222,23 @@ namespace paxg {
             return rect.leftClicked();
 
 #elif defined(PAXS_USING_DXLIB)
-            int mx = 0, my = 0;
+            if (old_left_touch == 1) {
+                const int touch_num = DxLib::GetTouchInputNum();
+                // 1 フレーム前にタッチされている
+                if (touch_num == 0) {
+                    const auto& mx = old_left_touch_pos.x();
+                    const auto& my = old_left_touch_pos.y();
+                    return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
+                }
+            }
             if (old_left_mouse) {
                 // 1 フレーム前にタッチされている
                 if ((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) == 0) {
+                    int mx = 0, my = 0;
                     DxLib::GetMousePoint(&mx, &my);
                     return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
                 }
             }
-
             return false;
 #else
             return false;

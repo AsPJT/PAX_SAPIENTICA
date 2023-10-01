@@ -23,8 +23,6 @@
 #include <vector>
 #include <unordered_map>
 
-#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
-
 namespace paxs {
 
     // 選択言語
@@ -66,10 +64,29 @@ namespace paxs {
         }
         // 新しいテキストの追加
         void add(const std::string& str_) {
-            std::ifstream ifs(str_); // ファイルを読み込む
-            std::string line;
-            while (std::getline(ifs, line)) {
-                split(line, '\t'); // 分割し、格納
+#ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
+            const int file_handle = DxLib::FileRead_open(str_.c_str());
+            DxLib::FileRead_set_format(file_handle, DX_CHARCODEFORMAT_UTF8);
+            if (file_handle == 0) return;
+            std::string pline{};
+            pline.resize(4096);
+            std::string pline_tmp{};
+            pline_tmp.resize(4096);
+#else
+            std::ifstream pifs(str_); // テキストを読み込む
+            if (pifs.fail()) return;
+            std::string pline;
+#endif
+#ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
+            while (true) {
+                const int dline = DxLib::FileRead_gets(&(pline[0]), 4096, file_handle);
+                if (dline == -1) break;
+                if (dline == 0) break;
+#else
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (std::getline(pifs, pline)) {
+#endif
+                split(pline, '\t');
             }
             if (text.size() == 0) {
                 empty.resize(0);
