@@ -131,12 +131,12 @@ namespace paxs {
             texture_blue_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/BlueCircle.svg") };
             texture_red_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/RedCircle.svg") };
             texture_kofun1 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/ZempoKoenFun.png") };
-            texture_kofun2 = paxg::Texture{PAXS_PATH + std::string("Data/MiniIcon/ZempoKohoFun.png")
-        };
-        texture_kofun3 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/HotategaiGataKofun.png") };
-        texture_pn = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/PlaceName.svg") };
+            texture_kofun2 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/ZempoKohoFun.png")
+            };
+            texture_kofun3 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/HotategaiGataKofun.png") };
+            texture_pn = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/PlaceName.svg") };
 
-    }
+        }
         // 描画
         void draw(const double jdn,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
@@ -187,16 +187,16 @@ namespace paxs {
                     }
                     // 前方後円墳を描画
                     if (lli.source == "ZempoKoenFun") {
-#ifdef PAXS_USING_DXLIB
-                        paxg::Rect(paxg::Vec2i{
-                            static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                                static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        }, paxg::Vec2i{14, 14}).drawAt(paxg::Color{255, 255, 255});
-                            paxg::Rect(paxg::Vec2i{
-                                static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                                    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                            }, paxg::Vec2i{10, 10}).drawAt(paxg::Color{37, 158, 78});
-#endif
+                        //#ifdef PAXS_USING_DXLIB
+                        //                        paxg::Rect(paxg::Vec2i{
+                        //                            static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                        //                                static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                        //                        }, paxg::Vec2i{14, 14}).drawAt(paxg::Color{255, 255, 255});
+                        //                            paxg::Rect(paxg::Vec2i{
+                        //                                static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                        //                                    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                        //                            }, paxg::Vec2i{10, 10}).drawAt(paxg::Color{37, 158, 78});
+                        //#endif
                         texture_kofun1.resizedDrawAt(14,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -257,14 +257,14 @@ namespace paxs {
                         en_font.drawBottomCenter(std::string(lli.en_name),
                             paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                             static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))// - 30
-                            }
+                        }
                         , paxg::Color(0, 0, 0));
                         // 名前を描画
                         font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
                         font.drawTopCenter(std::string(lli.name),
                             paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                                static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))// - 30
-                            }
+                            static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))// - 30
+                        }
                         , paxg::Color(0, 0, 0));
                     }
                     // 古事記のアイコンを描画
@@ -320,7 +320,7 @@ namespace paxs {
                     pin_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
                     pin_font.drawAt(std::string(lli.name),
                         paxg::Vec2i(static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())) - 70))
+                            static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())) - 70))
                         , paxg::Color(0, 0, 0));
                     texture_pin1.resizedDrawAt(50, // 元々は resizedDraw
                         // s3d::Arg::bottomCenter = // 位置指定できるようにしていない
@@ -334,15 +334,15 @@ namespace paxs {
     private:
         std::vector<LocationPoint> location_point_list{}; // 地物の一覧
         // アイコンのテクスチャ
-         paxg::Texture texture_ko{};
-         paxg::Texture texture_wam{};
-         paxg::Texture texture_pin1{};
-         paxg::Texture texture_blue_circle{};
-         paxg::Texture texture_red_circle{};
-         paxg::Texture texture_kofun1{};
-         paxg::Texture texture_kofun2{};
-         paxg::Texture texture_kofun3{};
-         paxg::Texture texture_pn{};
+        paxg::Texture texture_ko{};
+        paxg::Texture texture_wam{};
+        paxg::Texture texture_pin1{};
+        paxg::Texture texture_blue_circle{};
+        paxg::Texture texture_red_circle{};
+        paxg::Texture texture_kofun1{};
+        paxg::Texture texture_kofun2{};
+        paxg::Texture texture_kofun3{};
+        paxg::Texture texture_pn{};
 
         // 地名を読み込み
         void inputPlace(const std::string& str_, const LocationPointEnum lpe_ = LocationPointEnum::location_point_place_name) {

@@ -179,7 +179,7 @@ namespace paxs {
 
             static int calendar_update_counter = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
             ++calendar_update_counter;
-            if (move_forward_in_time) jdn.getDay() += 1.0; // デバッグ
+            // if (move_forward_in_time) jdn.getDay() += 1.0; // デバッグ
             //else if(go_back_in_time) jdn -= 1000;
         //if (count >= 0) {
             if (calendar_update_counter >= 30) { // カウンタが指定した値を超えたら日付を変える処理を実行

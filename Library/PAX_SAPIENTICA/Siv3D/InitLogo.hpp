@@ -39,14 +39,29 @@ namespace paxs {
 #endif
             };
             // 画面サイズを変更
+#ifdef PAXS_USING_DXLIB
+            // paxg::Window::setSize(1280, 720);
+#ifdef __ANDROID__
+            int w{ 1280 }, h{ 720 };
+            DxLib::GetAndroidDisplayResolution(&w, &h);
+            DxLib::SetGraphMode(w, h, 32);
+#else
+            paxg::Window::setSize(1400, 800);
+#endif
+#else
             paxg::Window::setSize(
                 (!texture_tl) ? 700 : texture_tl.width(), (!texture_tl) ? 180 : texture_tl.height());
+#endif
 #ifdef PAXS_USING_SIV3D
             // ウィンドウの上部のフレームを消す
             s3d::Window::SetStyle(s3d::WindowStyle::Frameless);
 #endif
             // PAX SAPIENTICA 用の背景
+#ifdef PAXS_USING_DXLIB
+            const paxg::Color paxs_color = paxg::Color(140, 180, 250); // 青
+#else
             const paxg::Color paxs_color = paxg::Color(181, 0, 0); // 濃い赤
+#endif
             paxg::Window::setBackgroundColor(paxs_color);
             paxg::Window::setLetterbox(paxs_color);
 #ifdef PAXS_USING_SIV3D

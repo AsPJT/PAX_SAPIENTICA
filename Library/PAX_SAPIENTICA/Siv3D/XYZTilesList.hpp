@@ -375,7 +375,7 @@ namespace paxs {
             // if (menu_bar.getPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
             if (xyz_tile_list.find("map_line2") != xyz_tile_list.end()) xyz_tile_list.at("map_line2").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.4, paxg::Color{ 95, 99, 104 });
             // }
-            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
+            if (!menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::line2)) {
                 if (xyz_tile_list.find("map_line3") != xyz_tile_list.end()) xyz_tile_list.at("map_line3").drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, paxg::Color{ 95, 99, 104 });
                 if (xyz_tile_list.find("map_line3") != xyz_tile_list.end()) xyz_tile_list.at("map_line3").drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }

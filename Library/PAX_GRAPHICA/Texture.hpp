@@ -47,10 +47,18 @@ namespace paxg {
         int texture = -1;
 
         Texture(const paxg::String& path) {
-            texture = DxLib::LoadGraph(path.string.c_str());
+            // svgの場合は読み込めないので、pngに拡張子を変換する
+            std::string path_str = path.string;
+            paxs::StringExtensions::replace(path_str, ".svg", ".png");
+
+            texture = DxLib::LoadGraph(path_str.c_str());
         }
         Texture(const std::string& path) {
-            texture = DxLib::LoadGraph(static_cast<paxg::String>(path).string.c_str());
+            // svgの場合は読み込めないので、pngに拡張子を変換する
+            std::string path_str = path;
+            paxs::StringExtensions::replace(path_str, ".svg", ".png");
+
+            texture = DxLib::LoadGraph(path_str.c_str());
         }
         operator bool() const { return (texture != -1); }
 
@@ -64,7 +72,7 @@ namespace paxg {
             std::string path_str = path.string;
             paxs::StringExtensions::replace(path_str, ".svg", ".png");
 
-            if(!texture.loadFromFile(path_str)) {
+            if (!texture.loadFromFile(path_str)) {
                 paxs::Logger logger("Save/warning_log.txt");
                 logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load texture: " + path.string);
             }
@@ -73,7 +81,7 @@ namespace paxg {
             // svgの場合は読み込めないので、pngに拡張子を変換する
             paxs::StringExtensions::replace(path, ".svg", ".png");
 
-            if(!texture.loadFromFile(static_cast<paxg::String>(path))) {
+            if (!texture.loadFromFile(static_cast<paxg::String>(path))) {
                 paxs::Logger logger("Save/warning_log.txt");
                 logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load texture: " + path);
             }
