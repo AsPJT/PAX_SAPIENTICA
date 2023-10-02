@@ -23,6 +23,7 @@
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
+#include <PAX_GRAPHICA/InputFile.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
@@ -114,6 +115,8 @@ namespace paxs {
             inputPlace(std::string("Data/PlaceName/TohokuAynu.tsv"));
             // 渤海
             inputPlace(std::string("Data/PlaceName/Balhae.tsv"));
+            // 統一新羅
+            inputPlace(std::string("Data/PlaceName/UnifiedSilla.tsv"));
             // 倭名類聚抄の地名
             inputPlace(std::string("Data/PlaceName/WamyoRuijushoPlaceName.tsv"));
             // 倭名類聚抄の地名
@@ -347,50 +350,13 @@ namespace paxs {
         // 地名を読み込み
         void inputPlace(const std::string& str_, const LocationPointEnum lpe_ = LocationPointEnum::location_point_place_name) {
 
-#ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
-#ifdef __ANDROID__
-            const int file_handle = DxLib::FileRead_open(str_.c_str());
-#else
-            const int file_handle = DxLib::FileRead_open(std::string(PAXS_PATH + str_).c_str());
-#endif // __ANDROID__
-            DxLib::FileRead_set_format(file_handle, DX_CHARCODEFORMAT_UTF8);
-            if (file_handle == 0) return;
-            std::string pline{};
-            pline.resize(4096);
-            std::string pline_tmp{};
-            pline_tmp.resize(4096);
-#else
-            std::ifstream pifs(PAXS_PATH + str_); // 地名を読み込む
+            paxg::InputFile pifs(str_, PAXS_PATH);
             if (pifs.fail()) return;
-            std::string pline;
-#endif
-#ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
-            while (true) {
-                const int dline = DxLib::FileRead_gets(&(pline[0]), 4096, file_handle);
 
-                if (dline == -1) break;
-                if (dline == 0) break;
-
-                // const std::string pline = std::string(pline0.c_str());
-                std::vector<std::string> strvec{};
-
-                std::string str_p{};
-                for (int i = 0, pi = 0; i <= dline; ++i) {
-                    if (pline[i] == '\0') continue;
-                    if (pline[i] == '\t' || i == dline) {
-                        strvec.emplace_back(str_p);
-                        str_p.clear();
-                    }
-                    else {
-                        str_p.push_back(pline[i]);
-                    }
-                }
-                strvec.emplace_back(str_p);
-#else
             // 1 行ずつ読み込み（区切りはタブ）
-            while (std::getline(pifs, pline)) {
-                std::vector<std::string> strvec = paxs::StringExtensions::split(pline, '\t');
-#endif
+            while (pifs.getLine()) {
+                std::vector<std::string> strvec = pifs.split('\t');
+
                 // 格納
                 location_point_list.emplace_back(
                     strvec[0], // 漢字

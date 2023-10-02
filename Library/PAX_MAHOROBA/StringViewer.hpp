@@ -210,7 +210,11 @@ namespace paxs {
 
             if (visible["Calendar"]) {
 #ifdef PAXS_USING_DXLIB
-                paxg::Rect{ paxg::Vec2i(rect_start_x, koyomi_font_y - 5), paxg::Vec2i(360, next_rect_start_y) }.draw();
+                DxLib::DrawRoundRect(rect_start_x, koyomi_font_y - 5,
+                    rect_start_x + 360, koyomi_font_y - 5 + next_rect_start_y,
+                    10, 10, DxLib::GetColor(255, 255, 255), TRUE);
+
+                // paxg::Rect{ paxg::Vec2i(rect_start_x, koyomi_font_y - 5), paxg::Vec2i(360, next_rect_start_y) }.draw();
                 // paxg::Rect{ paxg::Vec2i(rect_start_x, koyomi_font_y + next_rect_start_y + 5), paxg::Vec2i(360, next_rect_end_y) }.draw();
 #endif // PAXS_USING_DXLIB
 
@@ -257,11 +261,9 @@ namespace paxs {
                         case paxs::cal::DateOutputType::name_and_ymd:
                             koyomi_font[select_language.cget()].drawTopRight(std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */]),
                                 paxg::Vec2i(static_cast<int>(koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
-#ifndef PAXS_USING_DXLIBa
                             koyomi_font[select_language.cget()].drawTopRight(reinterpret_cast<const char*>(u8"年"), paxg::Vec2i(static_cast<int>(int(120 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             koyomi_font[select_language.cget()].drawTopRight(reinterpret_cast<const char*>(u8"月"), paxg::Vec2i(static_cast<int>(int(220 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             koyomi_font[select_language.cget()].drawTopRight(reinterpret_cast<const char*>(u8"日"), paxg::Vec2i(static_cast<int>(int(300 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
-#endif
                             std::visit([&](const auto& x) {
                                 date_year = int(x.cgetYear());
                                 date_month = int(x.cgetMonth());

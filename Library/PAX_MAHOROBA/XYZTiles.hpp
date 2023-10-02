@@ -30,6 +30,9 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
+
 namespace paxs {
 
     class XYZTile {
@@ -60,7 +63,7 @@ namespace paxs {
         std::unordered_map<std::uint_least64_t, paxg::Texture> texture{};
 
         std::uint_least64_t textureIndex(const MapVec4D& m_) const {
-            return (m_.y) + (m_.x << 24) + (m_.z << 48);// +(m_.layer << 53);
+            return (m_.y) + (m_.x << 24) + (m_.z << 48); // +(m_.layer << 53);
         }
 
         XYZTile()
@@ -152,6 +155,7 @@ namespace paxs {
                             + std::string(".png"));
                         break;
                     case XYZTileFileName::Z_Original:
+                        new_saveFilePath = map_file_path_name;
                         new_saveFilePath = (map_file_path_name
                             + std::to_string(z) + std::string("/") + map_name
                             + std::string("_") + std::to_string(z)
@@ -186,12 +190,17 @@ namespace paxs {
 #if defined(PAXS_USING_SIV3D)
                         // URL の記載がある場合
                         if (map_url_name.size() != 0) {
-                            const s3d::URL new_url =
-                                s3d::String(s3d::Unicode::FromUTF8(map_url_name))
-                                + s3d::String(U"/") + s3d::ToString(z)
-                                + s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
-                                + s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
-                                + s3d::String(U".png");
+                            std::string new_path = map_url_name;
+                            paxs::StringExtensions::replace(new_path, "{x}", std::to_string((j + z_num) % z_num));
+                            paxs::StringExtensions::replace(new_path, "{y}", std::to_string((i + z_num) % z_num));
+                            paxs::StringExtensions::replace(new_path, "{z}", std::to_string(z));
+                            const s3d::URL new_url = s3d::Unicode::FromUTF8(new_path);
+                            //const s3d::URL new_url =
+                            //    s3d::String(s3d::Unicode::FromUTF8(map_url_name))
+                            //    + s3d::String(U"/") + s3d::ToString(z)
+                            //    + s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
+                            //    + s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
+                            //    + s3d::String(U".png");
                             if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(new_saveFilePath)).isOK()) {
                                 // texture_list[k] = paxg::Texture{ new_saveFilePath };
 
@@ -254,12 +263,15 @@ namespace paxs {
                 }
             }
         }
-        void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
+        void draw(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y, const int date
         )const {
 
             // 拡大率が描画範囲外の場合はここで処理を終了
             if (magnification_z < draw_min_z) return;
             if (magnification_z > draw_max_z) return;
+            // 描画する期間じゃない場合はここで処理を終了
+            if (min_date != 99999999 && min_date > date) return;
+            if (max_date != 99999999 && max_date < date) return;
             // 描画する場所がない場合は無視
             if (pos_list2.size() == 0) return;
 
@@ -356,6 +368,12 @@ namespace paxs {
         void setDrawMaxZ(const int max_z_) {
             draw_max_z = max_z_;
         }
+        void setMinDate(const int min_date_) {
+            min_date = min_date_;
+        }
+        void setMaxDate(const int max_date_) {
+            max_date = max_date_;
+        }
         void setMapURL(const std::string& map_url_name_) {
             map_url_name = map_url_name_;
         }
@@ -366,6 +384,10 @@ namespace paxs {
             map_file_path_name = map_file_path_name_;
         }
     private:
+        // 99999999 の場合は固定なし
+        int min_date = 99999999;
+        int max_date = 99999999;
+
         // 固定された Z （ 999 の場合は固定なし ）
         int default_z = 999;
         // 最小 Z
