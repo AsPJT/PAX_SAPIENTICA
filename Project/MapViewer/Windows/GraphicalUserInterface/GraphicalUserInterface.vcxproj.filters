@@ -860,5 +860,8 @@
     <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTilesList.hpp">
       <Filter>Library\Mahoroba</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\InputFile.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

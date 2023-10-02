@@ -46,6 +46,13 @@ namespace paxs {
         TextureLocation() {
             // ここに実験用のテクスチャを定義する
 
+            //// 統一新羅 朝鮮半島
+            //location_range_list.emplace_back("./../../../../../Data/Map/TestMap/a.png",
+            //    124.6,
+            //	MapProjectionF64::equirectangularDegYToMercatorDegY(34.25),
+            //    129.65,
+            //	MapProjectionF64::equirectangularDegYToMercatorDegY(39.4));
+
             //location_range_list.emplace_back("./../../../../../Data/Map/TestMap/nara.png",
             //	135.7104, 
             //	MapProjectionF64::equirectangularDegYToMercatorDegY(34.59451),

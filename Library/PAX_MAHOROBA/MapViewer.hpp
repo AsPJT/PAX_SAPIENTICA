@@ -105,7 +105,7 @@ namespace paxs {
             paxs::GraphicVisualizationList& visible
         ) {
             map_view->update(); // キーボード入力を更新
-            mapMapUpdate(xyz_tile_list, string_siv.menu_bar, map_view.get()); // 地図の辞書を更新
+            mapMapUpdate(xyz_tile_list, string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
             if (visible["Map"]) {
                 // 地図上に画像を描画する
