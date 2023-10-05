@@ -117,6 +117,8 @@ namespace paxs {
             inputPlace(std::string("Data/PlaceName/Balhae.tsv"));
             // 統一新羅
             inputPlace(std::string("Data/PlaceName/UnifiedSilla.tsv"));
+            // 三国史記
+            inputPlace(std::string("Data/PlaceName/SamgukSagi.tsv"));
             // 倭名類聚抄の地名
             inputPlace(std::string("Data/PlaceName/WamyoRuijushoPlaceName.tsv"));
             // 倭名類聚抄の地名
