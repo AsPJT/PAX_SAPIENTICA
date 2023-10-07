@@ -1,10 +1,10 @@
-name = silla_line
-start_x = 864
-start_y = 384
+name = balhae_line
+start_x = 208
+start_y = 80
 x_size = 24
 y_size = 24
-z = 10
+z = 8
 extension = png
-input_path = ../../../Data/Map/XYZTile/Union/Silla/
-output_path = ../../../Data/Map/XYZTile/SillaLine/10/
+input_path = ../../../Data/Map/XYZTile/Union/Balhae/
+output_path = ../../../Data/Map/XYZTile/SillaLine/8/
 alpha = true
