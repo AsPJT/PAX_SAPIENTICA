@@ -1,10 +1,10 @@
 name = silla_line
-start_x = 216
-start_y = 96
-x_size = 6
-y_size = 6
-z = 8
+start_x = 864
+start_y = 384
+x_size = 24
+y_size = 24
+z = 10
 extension = png
 input_path = ../../../Data/Map/XYZTile/Union/Silla/
-output_path = ../../../Data/Map/XYZTile/SillaLine/8/
+output_path = ../../../Data/Map/XYZTile/SillaLine/10/
 alpha = true
