@@ -1,10 +1,10 @@
 name = zxy
-start_x = 216
-start_y = 94
-x_size = 14
-y_size = 12
-z = 8
+start_x = 3588
+start_y = 1620
+x_size = 6
+y_size = 10
+z = 12
 extension = png
-input_path = ../../../Data/Map/XYZTile/Union/EastAsia/
-output_path = ../../../Data/Map/XYZTile/Gokishichido/8/
+input_path = ../../../Data/Map/XYZTile/Union/Kinai/
+output_path = ../../../Data/Map/XYZTile/Kinai/12/
 alpha = true
