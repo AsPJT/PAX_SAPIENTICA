@@ -117,15 +117,15 @@ namespace paxs {
 #endif
 
 #ifdef PAXS_USING_SIV3D
-                // 線の描画
-                for (std::size_t i = 0; i < route2.size(); ++i) {
-                    route2[i] = s3d::Vec2(
-                        (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(paxg::Window::width()),
-                        double(paxg::Window::height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(paxg::Window::height()))
-                    );
-                }
-                // 航路を描画
-                s3d::Spline2D{ route2 }.draw(2, s3d::Color{ 85, 145, 245 });
+                //// 線の描画
+                //for (std::size_t i = 0; i < route2.size(); ++i) {
+                //    route2[i] = s3d::Vec2(
+                //        (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(paxg::Window::width()),
+                //        double(paxg::Window::height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(paxg::Window::height()))
+                //    );
+                //}
+                //// 航路を描画
+                //s3d::Spline2D{ route2 }.draw(2, s3d::Color{ 85, 145, 245 });
 #endif
                 // 地名を描画
                 if (select_language.cget() + 1 >= string_siv.font.size()) {

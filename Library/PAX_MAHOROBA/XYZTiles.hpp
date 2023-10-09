@@ -77,14 +77,14 @@ namespace paxs {
             // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
             if (current_map_view_width != map_view_width) {
                 if (default_z == 999) {
-                    z = int(-std::log2(map_view_width) + 11.0);
+                    z = int(-std::log2(map_view_width) + 12.0);
                     magnification_z = z;
                     if (z < min_z) z = min_z;
                     if (z > max_z) z = max_z;
                 }
                 else {
                     z = default_z;
-                    magnification_z = int(-std::log2(map_view_width) + 11.0);
+                    magnification_z = int(-std::log2(map_view_width) + 12.0);
                 }
                 z_num = int(std::pow(2, z));
                 current_map_view_width = map_view_width;

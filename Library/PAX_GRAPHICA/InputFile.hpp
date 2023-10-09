@@ -19,6 +19,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
@@ -82,6 +83,10 @@ namespace paxg {
             // 区切り文字で分割する
             std::vector<std::string> split(const char delimiter) const {
                 return paxs::StringExtensions::split(pline, delimiter);
+            }
+            // 区切り文字で分割する
+            std::unordered_map<std::string, std::size_t> splitHashMap(const char delimiter) const {
+                return paxs::StringExtensions::splitHashMap(pline, delimiter);
             }
 
             std::string& lineString() {

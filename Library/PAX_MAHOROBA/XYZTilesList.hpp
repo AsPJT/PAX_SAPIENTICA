@@ -40,17 +40,17 @@ namespace paxs {
         const int draw_min_z = -1,
         const int draw_max_z = -1
     ) {
-        const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(
+        XYZTile xyz_tile(
             map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-            paxs::XYZTile::XYZTileFileName::Z_Original));
-        if (map_url.size() != 0) xyz_tile_base->setMapURL(map_url);
-        if (map_name.size() != 0) xyz_tile_base->setMapName(map_name);
-        if (min_z >= 0) xyz_tile_base->setMinZ(min_z);
-        if (max_z >= 0) xyz_tile_base->setMaxZ(max_z);
-        if (draw_min_z >= 0) xyz_tile_base->setDrawMinZ(draw_min_z);
-        if (draw_max_z >= 0) xyz_tile_base->setDrawMaxZ(draw_max_z);
-        xyz_tile_base->setMapFilePath(path + map_file_path);
-        xyz_tile_list.emplace(map_key, *xyz_tile_base);
+            paxs::XYZTile::XYZTileFileName::Z_Original);
+        if (map_url.size() != 0) xyz_tile.setMapURL(map_url);
+        if (map_name.size() != 0) xyz_tile.setMapName(map_name);
+        if (min_z >= 0) xyz_tile.setMinZ(min_z);
+        if (max_z >= 0) xyz_tile.setMaxZ(max_z);
+        if (draw_min_z >= 0) xyz_tile.setDrawMinZ(draw_min_z);
+        if (draw_max_z >= 0) xyz_tile.setDrawMaxZ(draw_max_z);
+        xyz_tile.setMapFilePath(path + map_file_path);
+        xyz_tile_list.emplace(map_key, xyz_tile);
     }
 
     // 複数
@@ -64,32 +64,31 @@ namespace paxs {
         // mapMapInitOne(xyz_tile_list, path, map_view,
         // "map_base", "","", "Data/Map/XYZTile/Standard/Image/Land/2023/", -1, 7, -1, 7);
         {
-            const std::unique_ptr<XYZTile> xyz_tile_base(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_base->setMapURL("");
-            xyz_tile_base->setMapName("");
-            xyz_tile_base->setMaxZ(7);
-            xyz_tile_base->setDrawMaxZ(7);
-            xyz_tile_base->setMapFilePath(path + "Data/Map/XYZTile/Standard/Image/Land/2023/");
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("");
+            xyz_tile.setMaxZ(7);
+            xyz_tile.setDrawMaxZ(7);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Standard/Image/Land/2023/");
             // xyz_tile_base->setMapFilePath(path + "Data/Map/XYZTile/LandAndSea/Image/GreenAndAlphaBinary/2023/");
 
-            xyz_tile_list.emplace("map_base", *xyz_tile_base);
+            xyz_tile_list.emplace("map_base", xyz_tile);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile2(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile2->setMapURL("");
-            xyz_tile2->setMapName("gbank");
-            xyz_tile2->setMinZ(8);
-            xyz_tile2->setMaxZ(10);
-            xyz_tile2->setDrawMinZ(8);
-            xyz_tile2->setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/");
-            // xyz_tile2->setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
-            // xyz_tile2->setMapFilePath("./SavedMap/gbank_noblank_reclaimed_land/");
-
-            xyz_tile_list.emplace("map_land_and_water", *xyz_tile2);
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("gbank");
+            xyz_tile.setMinZ(8);
+            xyz_tile.setMaxZ(10);
+            xyz_tile.setDrawMinZ(8);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/");
+            // xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
+            // xyz_tile.setMapFilePath("./SavedMap/gbank_noblank_reclaimed_land/");
+            xyz_tile_list.emplace("map_land_and_water", xyz_tile);
         }
         //{
         //     const std::unique_ptr<XYZTile> xyz_tile_gmaps(new(std::nothrow) XYZTile(
@@ -124,72 +123,123 @@ namespace paxs {
             // xyz_tile4->setDefaultZ(12);
             // xyz_tile4->setMapFilePath("./SavedMap/Soil/soil/");
         }
-        {
-            const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_kuni->setMapURL("");
-            xyz_tile_kuni->setMapName("ColorCodingByProvincesOfJapanWithLakes");
-            xyz_tile_kuni->setDefaultZ(10);
-            xyz_tile_kuni->setDrawMinZ(9);
-            xyz_tile_kuni->setMapFilePath(path + "Data/Map/XYZTile/ColorCodingByProvincesOfJapan/");
+        //{
+        //    const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(
+        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+        //        paxs::XYZTile::XYZTileFileName::Z_Original));
+        //    xyz_tile_kuni->setMapURL("");
+        //    xyz_tile_kuni->setMapName("ColorCodingByProvincesOfJapanWithLakes");
+        //    xyz_tile_kuni->setDefaultZ(10);
+        //    xyz_tile_kuni->setDrawMinZ(9);
+        //    xyz_tile_kuni->setMapFilePath(path + "Data/Map/XYZTile/ColorCodingByProvincesOfJapan/");
 
-            xyz_tile_list.emplace("map_ryosei_country", *xyz_tile_kuni);
+        //    xyz_tile_list.emplace("map_ryosei_country", *xyz_tile_kuni);
+        //}
+        //{
+        //    const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(
+        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+        //        paxs::XYZTile::XYZTileFileName::Z_Original));
+        //    xyz_tile_kuni_line->setMapURL("");
+        //    xyz_tile_kuni_line->setMapName("Line");
+        //    xyz_tile_kuni_line->setMinZ(5);
+        //    xyz_tile_kuni_line->setMaxZ(9);
+        //    xyz_tile_kuni_line->setDrawMinZ(5);
+        //    xyz_tile_kuni_line->setMapFilePath(path + "Data/Map/XYZTile/RyoseikokuLine/");
+
+        //    xyz_tile_list.emplace("map_ryosei_line", *xyz_tile_kuni_line);
+        //}
+        //{
+        //    const std::unique_ptr<XYZTile> xyz_tile_kuni_korean_line(new(std::nothrow) XYZTile(
+        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+        //        paxs::XYZTile::XYZTileFileName::Z_Original));
+        //    xyz_tile_kuni_korean_line->setMapURL("");
+        //    xyz_tile_kuni_korean_line->setMapName("Line");
+        //    xyz_tile_kuni_korean_line->setMinZ(7);
+        //    xyz_tile_kuni_korean_line->setMaxZ(8);
+        //    xyz_tile_kuni_korean_line->setDrawMinZ(6);
+        //    xyz_tile_kuni_korean_line->setMinDate(1872272); // J 414-01-01
+        //    xyz_tile_kuni_korean_line->setMaxDate(1915370); // J 532-01-01 - 1
+        //    xyz_tile_kuni_korean_line->setMapFilePath(path + "Data/Map/XYZTile/KoreanLine/");
+
+        //    xyz_tile_list.emplace("map_korean_line", *xyz_tile_kuni_korean_line);
+        //}
+        //{
+        //    const std::unique_ptr<XYZTile> xyz_tile_kuni_balhae_line(new(std::nothrow) XYZTile(
+        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+        //        paxs::XYZTile::XYZTileFileName::Z_Original));
+        //    xyz_tile_kuni_balhae_line->setMapURL("");
+        //    xyz_tile_kuni_balhae_line->setMapName("balhae_line");
+        //    xyz_tile_kuni_balhae_line->setMinZ(7);
+        //    xyz_tile_kuni_balhae_line->setMaxZ(8);
+        //    xyz_tile_kuni_balhae_line->setDrawMinZ(3);
+        //    xyz_tile_kuni_balhae_line->setMinDate(1976003); // J 698-01-01
+        //    xyz_tile_kuni_balhae_line->setMaxDate(2059279); // J 926-01-01 - 1
+        //    xyz_tile_kuni_balhae_line->setMapFilePath(path + "Data/Map/XYZTile/BalhaeLine/");
+
+        //    xyz_tile_list.emplace("map_balhae_line", *xyz_tile_kuni_balhae_line);
+        //}
+        //{
+        //    const std::unique_ptr<XYZTile> xyz_tile_kuni_silla_line(new(std::nothrow) XYZTile(
+        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+        //        paxs::XYZTile::XYZTileFileName::Z_Original));
+        //    xyz_tile_kuni_silla_line->setMapURL("");
+        //    xyz_tile_kuni_silla_line->setMapName("silla_line");
+        //    xyz_tile_kuni_silla_line->setMinZ(7);
+        //    xyz_tile_kuni_silla_line->setMaxZ(10);
+        //    xyz_tile_kuni_silla_line->setDrawMinZ(3);
+        //    xyz_tile_kuni_silla_line->setMinDate(1915371); // J 532-01-01
+        //    xyz_tile_kuni_silla_line->setMaxDate(2059279); // J 926-01-01 - 1 // 暫定の値
+        //    xyz_tile_kuni_silla_line->setMapFilePath(path + "Data/Map/XYZTile/SillaLine/");
+
+        //    xyz_tile_list.emplace("map_silla_line", *xyz_tile_kuni_silla_line);
+        //}
+        {
+            XYZTile xyz_tile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("zxy");
+            xyz_tile.setMinZ(8);
+            xyz_tile.setMaxZ(8);
+            xyz_tile.setDrawMinZ(7);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Gokishichido/");
+
+            xyz_tile_list.emplace("map_east_asia_line", xyz_tile);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_kuni_line->setMapURL("");
-            xyz_tile_kuni_line->setMapName("Line");
-            xyz_tile_kuni_line->setMinZ(5);
-            xyz_tile_kuni_line->setMaxZ(9);
-            xyz_tile_kuni_line->setDrawMinZ(5);
-            xyz_tile_kuni_line->setMapFilePath(path + "Data/Map/XYZTile/RyoseikokuLine/");
-
-            xyz_tile_list.emplace("map_ryosei_line", *xyz_tile_kuni_line);
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("zxy");
+            xyz_tile.setMinZ(12);
+            xyz_tile.setMaxZ(12);
+            xyz_tile.setDrawMinZ(11);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Kinai/");
+            xyz_tile_list.emplace("map_kinai", xyz_tile);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_kuni_korean_line(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_kuni_korean_line->setMapURL("");
-            xyz_tile_kuni_korean_line->setMapName("Line");
-            xyz_tile_kuni_korean_line->setMinZ(7);
-            xyz_tile_kuni_korean_line->setMaxZ(8);
-            xyz_tile_kuni_korean_line->setDrawMinZ(6);
-            xyz_tile_kuni_korean_line->setMinDate(1872272); // J 414-01-01
-            xyz_tile_kuni_korean_line->setMaxDate(1915370); // J 532-01-01 - 1
-            xyz_tile_kuni_korean_line->setMapFilePath(path + "Data/Map/XYZTile/KoreanLine/");
-
-            xyz_tile_list.emplace("map_korean_line", *xyz_tile_kuni_korean_line);
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("zxy");
+            xyz_tile.setMinZ(16);
+            xyz_tile.setMaxZ(16);
+            xyz_tile.setDrawMinZ(15);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Heijokyo/");
+            xyz_tile_list.emplace("map_heijokyo", xyz_tile);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_kuni_balhae_line(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_kuni_balhae_line->setMapURL("");
-            xyz_tile_kuni_balhae_line->setMapName("balhae_line");
-            xyz_tile_kuni_balhae_line->setMinZ(5);
-            xyz_tile_kuni_balhae_line->setMaxZ(8);
-            xyz_tile_kuni_balhae_line->setDrawMinZ(3);
-            xyz_tile_kuni_balhae_line->setMinDate(1976003); // J 698-01-01
-            xyz_tile_kuni_balhae_line->setMaxDate(2059279); // J 926-01-01 - 1
-            xyz_tile_kuni_balhae_line->setMapFilePath(path + "Data/Map/XYZTile/BalhaeLine/");
-
-            xyz_tile_list.emplace("map_balhae_line", *xyz_tile_kuni_balhae_line);
-        }
-        {
-            const std::unique_ptr<XYZTile> xyz_tile_soil(new(std::nothrow) XYZTile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_soil->setMapURL("");
-            xyz_tile_soil->setMapName("soil");
-            xyz_tile_soil->setDefaultZ(12);
-            xyz_tile_soil->setDrawMinZ(12);
-            xyz_tile_soil->setMapFilePath(path + "Data/Map/XYZTile/Soil/Image/Soil/2023/");
-
-            xyz_tile_list.emplace("map_soil", *xyz_tile_soil);
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("soil");
+            xyz_tile.setDefaultZ(12);
+            xyz_tile.setDrawMinZ(12);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Soil/Image/Soil/2023/");
+            xyz_tile_list.emplace("map_soil", xyz_tile);
         }
         // {
         // const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(
@@ -210,74 +260,58 @@ namespace paxs {
         mapMapInitOne(xyz_tile_list, path, map_view,
             "map_slope", "", "slope_pale", "Data/Map/XYZTile/Slope/Image/SlopePale20230920/2010/", -1, 8, -1, -1);
         {
-            const std::unique_ptr<XYZTile> xyz_tile_river(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_river->setMapURL("");
-            xyz_tile_river->setMapName("water");
-            xyz_tile_river->setDefaultZ(12);
-            xyz_tile_river->setDrawMinZ(11);
-            xyz_tile_river->setMapFilePath(path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/");
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("water");
+            xyz_tile.setDefaultZ(12);
+            xyz_tile.setDrawMinZ(11);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/");
 
-            xyz_tile_list.emplace("map_river1", *xyz_tile_river);
+            xyz_tile_list.emplace("map_river1", xyz_tile);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_river_bw(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_river_bw->setMapURL("");
-            xyz_tile_river_bw->setMapName("water");
-            xyz_tile_river_bw->setDefaultZ(12);
-            xyz_tile_river_bw->setDrawMinZ(11);
-            xyz_tile_river_bw->setMapFilePath(path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW/2023/");
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("water");
+            xyz_tile.setDefaultZ(12);
+            xyz_tile.setDrawMinZ(11);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW/2023/");
 
-            xyz_tile_list.emplace("map_river2", *xyz_tile_river_bw);
+            xyz_tile_list.emplace("map_river2", xyz_tile);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_soil_temperature(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_soil_temperature->setMapURL("");
-            xyz_tile_soil_temperature->setMapName("soil-tem");
-            xyz_tile_soil_temperature->setDrawMinZ(8);
-            xyz_tile_soil_temperature->setDrawMaxZ(10);
-            xyz_tile_soil_temperature->setMapFilePath(path + "Data/Map/XYZTile/Temperature/Image/SoilTemperature/2023/");
-
-            xyz_tile_list.emplace("map_soil_temperature", *xyz_tile_soil_temperature);
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setMapURL("");
+            xyz_tile.setMapName("soil-tem");
+            xyz_tile.setDrawMinZ(8);
+            xyz_tile.setDrawMaxZ(10);
+            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Temperature/Image/SoilTemperature/2023/");
+            xyz_tile_list.emplace("map_soil_temperature", xyz_tile);
         }
         {
-            //const std::unique_ptr<XYZTile> xyz_tile_line(new(std::nothrow) XYZTile(map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(), paxs::XYZTile::XYZTileFileName::Z_Original));
-            // xyz_tile_line->setDefaultZ(8);
-            // xyz_tile_line->setDrawMinZ(5);
+            XYZTile xyz_tile(
+                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list.emplace("map_line2", xyz_tile);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_line2(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            // xyz_tile_line2->setDefaultZ(10);
-            // xyz_tile_line2->setDrawMinZ(7);
-
-            xyz_tile_list.emplace("map_line2", *xyz_tile_line2);
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile_list.emplace("map_line3", xyz_tile);
         }
         {
-            const std::unique_ptr<XYZTile> xyz_tile_line3(new(std::nothrow) XYZTile(
+            XYZTile xyz_tile(
                 map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            // xyz_tile_line3->setDefaultZ(12);
-            // xyz_tile_line3->setDrawMinZ(12);
-            // xyz_tile_line3->setDrawMaxZ(16);
-
-            xyz_tile_list.emplace("map_line3", *xyz_tile_line3);
-        }
-        {
-            const std::unique_ptr<XYZTile> xyz_tile_line4(new(std::nothrow) XYZTile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                paxs::XYZTile::XYZTileFileName::Z_Original));
-            xyz_tile_line4->setDefaultZ(18);
-            // xyz_tile_line4->setDrawMinZ(12);
-            // xyz_tile_line4->setDrawMaxZ(16);
-
-            xyz_tile_list.emplace("map_line4", *xyz_tile_line4);
+                paxs::XYZTile::XYZTileFileName::Z_Original);
+            xyz_tile.setDefaultZ(18);
+            xyz_tile_list.emplace("map_line4", xyz_tile);
         }
     }
 
@@ -310,17 +344,29 @@ namespace paxs {
             xyz_tile_list["map_land_and_water"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         // xyz_tile3"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-        if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_country)) {
-            xyz_tile_list["map_ryosei"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_country)) {
+        //    xyz_tile_list["map_ryosei"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        //}
+        //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+        //    xyz_tile_list["map_ryosei_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        //}
+        //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+        //    xyz_tile_list["map_korean_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        //}
+        //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+        //    xyz_tile_list["map_balhae_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        //}
+        //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+        //    xyz_tile_list["map_silla_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+        //}
+        if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+            xyz_tile_list["map_east_asia_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-            xyz_tile_list["map_ryosei_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            xyz_tile_list["map_kinai"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-            xyz_tile_list["map_korean_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
-        }
-        if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-            xyz_tile_list["map_balhae_line"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+            xyz_tile_list["map_heijokyo"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
         }
         if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::slope)) {
             xyz_tile_list["map_slope"].update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
@@ -382,17 +428,29 @@ namespace paxs {
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::river2)) {
                 if (xyz_tile_list.find("map_river_bw") != xyz_tile_list.end()) xyz_tile_list.at("map_river_bw").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
             }
-            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_country)) {
-                if (xyz_tile_list.find("map_ryosei") != xyz_tile_list.end()) xyz_tile_list.at("map_ryosei").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+            //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_country)) {
+            //    if (xyz_tile_list.find("map_ryosei") != xyz_tile_list.end()) xyz_tile_list.at("map_ryosei").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+            //}
+            //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+            //    if (xyz_tile_list.find("map_ryosei_line") != xyz_tile_list.end()) xyz_tile_list.at("map_ryosei_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+            //}
+            //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+            //    if (xyz_tile_list.find("map_korean_line") != xyz_tile_list.end()) xyz_tile_list.at("map_korean_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+            //}
+            //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+            //    if (xyz_tile_list.find("map_balhae_line") != xyz_tile_list.end()) xyz_tile_list.at("map_balhae_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+            //}
+            //if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+            //    if (xyz_tile_list.find("map_silla_line") != xyz_tile_list.end()) xyz_tile_list.at("map_silla_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+            //}
+            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
+                if (xyz_tile_list.find("map_east_asia_line") != xyz_tile_list.end()) xyz_tile_list.at("map_east_asia_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
             }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-                if (xyz_tile_list.find("map_ryosei_line") != xyz_tile_list.end()) xyz_tile_list.at("map_ryosei_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+                if (xyz_tile_list.find("map_kinai") != xyz_tile_list.end()) xyz_tile_list.at("map_kinai").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
             }
             if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-                if (xyz_tile_list.find("map_korean_line") != xyz_tile_list.end()) xyz_tile_list.at("map_korean_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
-            }
-            if (menu_bar.cgetPulldown(MenuBarType::map).getIsItems(MapType::ryosei_line)) {
-                if (xyz_tile_list.find("map_balhae_line") != xyz_tile_list.end()) xyz_tile_list.at("map_balhae_line").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+                if (xyz_tile_list.find("map_heijokyo") != xyz_tile_list.end()) xyz_tile_list.at("map_heijokyo").draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
             }
             // xyz_tile3"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
             // xyz_tile4"].draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
