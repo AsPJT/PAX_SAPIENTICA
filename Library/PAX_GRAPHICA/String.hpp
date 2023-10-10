@@ -236,7 +236,8 @@ namespace paxg {
 #elif defined(PAXS_USING_DXLIB)
         int font{ -1 }; int h{ 0 };
         Font(const int size_, const std::string& path, const int buffer_thickness) {
-            font = DxLib::CreateFontToHandle(NULL, size_, buffer_thickness);
+            font = DxLib::CreateFontToHandle(NULL, size_, -1,
+                (buffer_thickness <= 0) ? DX_FONTTYPE_NORMAL :DX_FONTTYPE_EDGE);
             h = size_;
         }
         void setOutline(const double inner, const double outer, const paxg::Color& color) const {
@@ -278,26 +279,26 @@ namespace paxg {
 
         void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
-            else DxLib::DrawStringToHandle(pos.x(), pos.y() - 10, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
+            else DxLib::DrawStringToHandle(pos.x(), pos.y() - 10, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
         }
         void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), str.size(), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x() - size_x, pos.y() + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
+                DxLib::DrawStringToHandle(pos.x() - size_x, pos.y() + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
         void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
-            else DxLib::DrawStringToHandle(pos.x(), pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
+            else DxLib::DrawStringToHandle(pos.x(), pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
         }
         void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), str.size(), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() - size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
+                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() - size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
         void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -305,7 +306,7 @@ namespace paxg {
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), str.size(), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
+                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
         void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -313,7 +314,7 @@ namespace paxg {
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), str.size(), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font);
+                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
 

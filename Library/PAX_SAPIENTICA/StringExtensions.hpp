@@ -20,6 +20,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <unordered_map>
 
 namespace paxs {
 
@@ -35,6 +36,20 @@ namespace paxs {
             std::vector<std::string> result;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 result.emplace_back(field);
+            }
+            return result;
+        }
+
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ std::unordered_map 版）
+        static std::unordered_map<std::string, std::size_t> splitHashMap(const std::string& input, const char delimiter) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::unordered_map<std::string, std::size_t> result;
+            std::size_t index = 0;
+            while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
+                result.emplace(field, index);
+                ++index;
             }
             return result;
         }

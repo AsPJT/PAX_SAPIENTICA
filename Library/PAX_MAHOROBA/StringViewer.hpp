@@ -486,10 +486,10 @@ namespace paxs {
                     //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[map_view_width_str_index][select_language.cget() + 1 /* 言語位置調整 */]
                     //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
 
-                    //// マップの幅
-                    // font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    // font[select_language.cget()].draw(std::to_string(map_view_width),
-                    //     paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
+                    // マップの幅
+                     font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                     font[select_language.cget()].draw(std::to_string(map_view_width),
+                         paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
 
                     //debug_start_y += debug_move_y;
                     //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]

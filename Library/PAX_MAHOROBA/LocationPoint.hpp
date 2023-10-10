@@ -16,7 +16,9 @@
 #define PAXS_PATH ""
 #endif
 
+#include <cstdint>
 #include <string>
+#include <unordered_map>
 
 #include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
@@ -115,8 +117,6 @@ namespace paxs {
             inputPlace(std::string("Data/PlaceName/TohokuAynu.tsv"));
             // 渤海
             inputPlace(std::string("Data/PlaceName/Balhae.tsv"));
-            // 統一新羅
-            inputPlace(std::string("Data/PlaceName/UnifiedSilla.tsv"));
             // 三国史記
             inputPlace(std::string("Data/PlaceName/SamgukSagi.tsv"));
             // 倭名類聚抄の地名
@@ -135,10 +135,10 @@ namespace paxs {
             texture_pin1 = paxg::Texture{ PAXS_PATH + std::string("Data/Pin/PitDwelling.svg") };
             texture_blue_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/BlueCircle.svg") };
             texture_red_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/RedCircle.svg") };
-            texture_kofun1 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/ZempoKoenFun.png") };
-            texture_kofun2 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/ZempoKohoFun.png")
+            texture_kofun1 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/ZempoKoenFun.svg") };
+            texture_kofun2 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/ZempoKohoFun.svg")
             };
-            texture_kofun3 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/HotategaiGataKofun.png") };
+            texture_kofun3 = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/HotategaiGataKofun.svg") };
             texture_pn = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/PlaceName.svg") };
 
         }
@@ -349,11 +349,35 @@ namespace paxs {
         paxg::Texture texture_kofun3{};
         paxg::Texture texture_pn{};
 
+        // 項目の ID を返す
+        std::size_t getMenuIndex(const std::unordered_map<std::string, std::size_t>& menu, const std::string& str_) {
+            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
+        }
+
         // 地名を読み込み
         void inputPlace(const std::string& str_, const LocationPointEnum lpe_ = LocationPointEnum::location_point_place_name) {
 
             paxg::InputFile pifs(str_, PAXS_PATH);
             if (pifs.fail()) return;
+
+            if (!(pifs.getLine())) {
+                return; // 何もない場合
+            }
+            // 1 行目を読み込む
+            std::unordered_map<std::string, std::size_t> menu = pifs.splitHashMap('\t');
+
+            const std::size_t longitude = getMenuIndex(menu, "Longitude");
+            if (longitude == SIZE_MAX) return; // 経度がないのはデータにならない
+            const std::size_t latitude = getMenuIndex(menu, "Latitude");
+            if (latitude == SIZE_MAX) return; // 緯度がないのはデータにならない
+
+            const std::size_t local_language = getMenuIndex(menu, "Local language");
+            const std::size_t english = getMenuIndex(menu, "English");
+            const std::size_t minimum_size = getMenuIndex(menu, "Minimum size");
+            const std::size_t maximum_size = getMenuIndex(menu, "Maximum size");
+            const std::size_t first_julian_day = getMenuIndex(menu, "First Julian day");
+            const std::size_t last_julian_day = getMenuIndex(menu, "Last Julian day");
+            const std::size_t source = getMenuIndex(menu, "Source");
 
             // 1 行ずつ読み込み（区切りはタブ）
             while (pifs.getLine()) {
@@ -361,18 +385,18 @@ namespace paxs {
 
                 // 格納
                 location_point_list.emplace_back(
-                    strvec[0], // 漢字
-                    strvec[1], // ローマ字
+                    (local_language == SIZE_MAX) ? "" : strvec[local_language], // 漢字
+                    (english == SIZE_MAX) ? "" : strvec[1], // ローマ字
                     paxs::EquirectangularDeg(
                         paxs::Vector2<double>(
-                            std::stod(strvec[2]), // 経度
-                            std::stod(strvec[3]))).toMercatorDeg(), // 緯度
-                    std::stod(strvec[4]), // 最小サイズ
-                    std::stod(strvec[5]), // 最大サイズ
-                    std::stod(strvec[6]), // 最小時代
-                    std::stod(strvec[7]), // 出典
+                            std::stod(strvec[longitude]), // 経度
+                            std::stod(strvec[latitude]))).toMercatorDeg(), // 緯度
+                    (minimum_size == SIZE_MAX) ? 0.0 : std::stod(strvec[minimum_size]), // 最小サイズ
+                    (maximum_size == SIZE_MAX) ? 9999.0 : std::stod(strvec[maximum_size]), // 最大サイズ
+                    (first_julian_day == SIZE_MAX) ? -99999999 : std::stod(strvec[first_julian_day]), // 最小時代
+                    (last_julian_day == SIZE_MAX) ? 99999999 : std::stod(strvec[last_julian_day]), // 出典
                     lpe_,
-                    strvec[8] // 最大時代
+                    (source == SIZE_MAX) ? "" : strvec[source] // 最大時代
                 );
             }
         }
