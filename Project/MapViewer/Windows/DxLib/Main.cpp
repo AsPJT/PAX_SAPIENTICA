@@ -13,7 +13,7 @@
 #define PAXS_PATH "./../../../../"
 #define PAXS_USING_DXLIB
 #include <DxLib.h> // DxLib
-#include <PAX_SAPIENTICA/Siv3D/Main.hpp>
+#include <PAX_MAHOROBA/Main.hpp>
 
 #if defined(__ANDROID__)
 // Android 専用処理
@@ -34,6 +34,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (DxLib::DxLib_Init() == -1) return -1;
     DxLib::SetDrawScreen(DX_SCREEN_BACK);
     DxLib::SetWaitVSyncFlag(TRUE);
+    // DxLib::SetWindowSizeChangeEnableFlag(TRUE, FALSE);
     // DxLib::SetUseASyncLoadFlag(TRUE);
     paxs::startMain(PAXS_PATH);
     return DxLib::DxLib_End();

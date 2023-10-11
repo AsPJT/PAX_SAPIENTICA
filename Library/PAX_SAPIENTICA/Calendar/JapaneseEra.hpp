@@ -24,6 +24,8 @@
 
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
+#include <PAX_GRAPHICA/InputFile.hpp>
+
 namespace paxs {
 
     // 日本の元号
@@ -65,12 +67,14 @@ namespace paxs {
         /// @param japanese_era_list 元号リスト
         /// @param path 元号一覧のファイルパス
         static void inputList(std::vector<paxs::JapaneseEra>& japanese_era_list, const std::string& path){
-            std::ifstream ifs(path);
-            if (ifs.fail()) return;
-            std::string line;
-            std::getline(ifs, line); // 最初は破棄
-            while (std::getline(ifs, line)) {
-                std::vector<std::string> strvec = paxs::StringExtensions::split(line, '\t');
+
+            paxg::InputFile pifs(path);
+            if (pifs.fail()) return;
+            pifs.getLine(); // 最初は破棄
+
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (pifs.getLine()) {
+                std::vector<std::string> strvec = pifs.split('\t');
 
                 japanese_era_list.emplace_back(
                     std::array<int, 4>({ 

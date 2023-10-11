@@ -13,7 +13,7 @@
 #define PAXS_PATH "./../../../"
 #define PAXS_USING_SFML
 
-#include <PAX_SAPIENTICA/Siv3D/Main.hpp>
+#include <PAX_MAHOROBA/Main.hpp>
 
 int main() {
     paxs::startMain(PAXS_PATH);

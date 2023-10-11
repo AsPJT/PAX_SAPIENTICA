@@ -23,7 +23,6 @@
 #include <vector>
 
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Siv3D/Init.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
 #include <PAX_GRAPHICA/Window.hpp>
@@ -233,10 +232,10 @@ namespace paxs {
     private:
         // 中央の座標を指定
         Coordinate center = Coordinate(
-            paxs::EquirectangularDeg(paxs::Vector2<double>(135.0, 35.0)),
+            paxs::EquirectangularDeg(paxs::Vector2<double>(/*135.0, 35.0*/128,37)),
             //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)),
             200.0); // マップ座標の中央
-        double width = 180.0; // マップの幅
+        double width = 12.0; // マップの幅
 
         // 平城京
         //Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央

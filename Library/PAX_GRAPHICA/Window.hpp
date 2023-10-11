@@ -131,6 +131,7 @@ namespace paxg {
 #else
             // その他の処理 (Windows)
             DxLib::GetWindowSize(&width, &height);
+            // DxLib::GetWindowSize(&width, &height);
 #endif
             return Vec2i{ static_cast<int>(width / 2) ,static_cast<int>(height / 2) };
 
@@ -160,6 +161,7 @@ namespace paxg {
 #else
             // その他の処理 (Windows)
             DxLib::GetWindowSize(&width, &height);
+            // DxLib::GetWindowSize(&width, &height);
 #endif
             return static_cast<int>(width);
 
@@ -188,6 +190,7 @@ namespace paxg {
 #else
             // その他の処理 (Windows)
             DxLib::GetWindowSize(&width, &height);
+            // DxLib::GetWindowSize(&width, &height);
 #endif
             return static_cast<int>(height);
 
@@ -216,6 +219,7 @@ namespace paxg {
 #else
             // その他の処理 (Windows)
             DxLib::GetWindowSize(&width, &height);
+            // DxLib::GetWindowSize(&width, &height);
 #endif
             return Vec2i{ static_cast<int>(width) ,static_cast<int>(height) };
 
