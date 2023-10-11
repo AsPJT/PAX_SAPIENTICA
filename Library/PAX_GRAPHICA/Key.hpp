@@ -34,15 +34,26 @@ namespace paxs {
 #if defined(PAXS_USING_SIV3D)
         s3d::Input input{};
         InputStruct(s3d::Input& key) :input(key) {}
+
 #elif defined(PAXS_USING_DXLIB)
         int input{ -1 };
         InputStruct(int key) :input(key) {}
+
+#elif defined(PAXS_USING_SFML)
+        int input{ -1 };
+        InputStruct(int key) :input(key) {}
+
 #endif
         bool pressed() const {
 #if defined(PAXS_USING_SIV3D)
             return input.pressed();
+
 #elif defined(PAXS_USING_DXLIB)
             return DxLib::CheckHitKey(input) == 1;
+
+#elif defined(PAXS_USING_SFML)
+            return sf::Keyboard::isKeyPressed((sf::Keyboard::Key)input);
+
 #else
             return false;
 #endif
@@ -81,6 +92,20 @@ namespace paxs {
 #define SIV3D_KEY_RIGHT InputKey{KEY_INPUT_RIGHT}
 #define SIV3D_KEY_DOWN InputKey{KEY_INPUT_DOWN}
 #define SIV3D_KEY_UP InputKey{KEY_INPUT_UP}
+
+#elif defined(PAXS_USING_SFML)
+    using InputKey = InputStruct;
+
+#define SIV3D_KEY_E InputKey{sf::Keyboard::E}
+#define SIV3D_KEY_Q InputKey{sf::Keyboard::Q}
+#define SIV3D_KEY_A InputKey{sf::Keyboard::A}
+#define SIV3D_KEY_D InputKey{sf::Keyboard::D}
+#define SIV3D_KEY_S InputKey{sf::Keyboard::S}
+#define SIV3D_KEY_W InputKey{sf::Keyboard::W}
+#define SIV3D_KEY_LEFT InputKey{sf::Keyboard::Left}
+#define SIV3D_KEY_RIGHT InputKey{sf::Keyboard::Right}
+#define SIV3D_KEY_DOWN InputKey{sf::Keyboard::Down}
+#define SIV3D_KEY_UP InputKey{sf::Keyboard::Up}
 
 #else
     using InputKey = InputStruct;
@@ -315,7 +340,6 @@ namespace paxs {
 
             }
 #endif
-
 
             center.update(width);
             if (pressed(enl_keys)) {

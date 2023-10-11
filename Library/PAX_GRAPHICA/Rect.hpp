@@ -240,6 +240,10 @@ namespace paxg {
                 }
             }
             return false;
+
+#elif defined(PAXS_USING_SFML)
+            return rect.getGlobalBounds().contains(sf::Mouse::getPosition(Window::window).x, sf::Mouse::getPosition(Window::window).y);
+
 #else
             return false;
 #endif
@@ -253,6 +257,10 @@ namespace paxg {
             int mx = 0, my = 0;
             DxLib::GetMousePoint(&mx, &my);
             return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
+
+#elif defined(PAXS_USING_SFML)
+            return rect.getGlobalBounds().contains(sf::Mouse::getPosition(Window::window).x, sf::Mouse::getPosition(Window::window).y);
+
 #else
             return false;
 #endif
