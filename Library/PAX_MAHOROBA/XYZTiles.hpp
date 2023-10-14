@@ -250,7 +250,7 @@ namespace paxs {
             if (magnification_z < draw_min_z) return;
             if (magnification_z > draw_max_z) return;
 
-            static paxg::Font tmp_font{16, "", 3};
+            static paxg::Font tmp_font{ 16, "", 3 };
             tmp_font.setOutline(0, 0.5, paxg::Color{ 255, 255, 255 });
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
@@ -281,9 +281,9 @@ namespace paxs {
                     if (k >= pos_list2.size()) continue;
 
                     //if (texture_list[k]) {
-                    if(texture.find(pos_list2[k]) != texture.end()) {
-                    // if (texture.contains(index)) { // C++20
-                        //texture_list[k].resizedDraw(
+                    if (texture.find(pos_list2[k]) != texture.end()) {
+                        // if (texture.contains(index)) { // C++20
+                            //texture_list[k].resizedDraw(
                         texture.at(pos_list2[k]).resizedDraw(
                             paxg::Vec2f(
                                 static_cast<float>((360.0 / z_num) / map_view_width * double(paxg::Window::width()))

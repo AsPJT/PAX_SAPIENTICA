@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
+#include <PAX_SAPIENTICA/Calendar/ChineseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
@@ -38,6 +39,7 @@
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Key.hpp>
 
@@ -60,6 +62,7 @@ namespace paxs {
         std::vector<OutputDate> date_list{}; // 表示する暦レイヤー
 
         std::vector<paxs::JapaneseEra> japanese_era_list; // 日本の元号の一覧
+        std::vector<paxs::ChineseEra> chinese_era_list; // 中国大陸の元号の一覧
 
         /*##########################################################################################
             編年・時代区分（実験）
@@ -102,6 +105,7 @@ namespace paxs {
         ) {
             // 暦データを更新
             paxs::cal::JapanDate jp_date{};
+            paxs::cal::ChinaDate cn_date{};
             for (auto& dl : date_list) {
                 switch (dl.date.index()) {
                 case cal::gregorian_date_type:
@@ -116,8 +120,15 @@ namespace paxs {
                     // 和暦を格納
                     jp_date = jdn.toJapaneseCalendar(japanese_era_list);
                     // 元号を格納
-                    dl.calendar_name = (language_text.cgetFindStart("gengo_" + std::to_string(jp_date.cgetGengo())));
+                    dl.calendar_name = (language_text.cgetFindStart(murmur3(std::string("gengo_" + std::to_string(jp_date.cgetGengo())).c_str())));
                     dl.date = jp_date;
+                    break;
+                case cal::china_date_type:
+                    // 和暦を格納
+                    cn_date = jdn.toChineseCalendar(chinese_era_list);
+                    // 元号を格納
+                    dl.calendar_name = (language_text.cgetFindStart(murmur3(std::string("chinese_calendar_" + std::to_string(cn_date.cgetGengo())).c_str())));
+                    dl.date = cn_date;
                     break;
                 case cal::jdn_f64_type:
                 case cal::jdn_s32_type:
@@ -146,22 +157,24 @@ namespace paxs {
         ) {
             // 各暦の日付情報を初期化
             date_list = std::vector<OutputDate>{
-                OutputDate{language_text.cgetFindStart("calendar_japan"),cal::JapanDate() },
-                    OutputDate{language_text.cgetFindStart("calendar_gregorian"),cal::GregorianDate() },
-                    OutputDate{language_text.cgetFindStart("calendar_julian"), cal::JulianDate() },
-                    OutputDate{language_text.cgetFindStart("calendar_hijri"), cal::IslamicDate() },
-                    OutputDate{language_text.cgetFindStart("calendar_julian_day"), cal::JDN_S64() },
-                    OutputDate{language_text.cgetFindStart("calendar_calbp"), cal::CalBP()},
-                    OutputDate{language_text.cgetFindStart("menu_bar_view_simulation"), cal::SimulationSteps()}
+                OutputDate{language_text.cgetFindStart(murmur3("calendar_japan",14)),cal::JapanDate() },
+                    OutputDate{language_text.cgetFindStart(murmur3("calendar_gregorian",18)),cal::GregorianDate() },
+                    OutputDate{language_text.cgetFindStart(murmur3("calendar_julian",15)), cal::JulianDate() },
+                    OutputDate{language_text.cgetFindStart(murmur3("calendar_hijri",14)), cal::IslamicDate() },
+                    OutputDate{language_text.cgetFindStart(murmur3("calendar_chinese",16)), cal::ChinaDate() },
+                    OutputDate{language_text.cgetFindStart(murmur3("calendar_julian_day",19)), cal::JDN_S64() },
+                    OutputDate{language_text.cgetFindStart(murmur3("calendar_calbp",14)), cal::CalBP()},
+                    OutputDate{language_text.cgetFindStart(murmur3("menu_bar_view_simulation",24)), cal::SimulationSteps()}
             };
             // 須恵器編年の文字列を言語テキストファイルから探して格納
-            sueki_nakamura_index = language_text.findStart("sueki_nakamura");
-            sueki_tanabe_index = language_text.findStart("sueki_tanabe");
+            sueki_nakamura_index = language_text.findStart(murmur3("sueki_nakamura", 14));
+            sueki_tanabe_index = language_text.findStart(murmur3("sueki_tanabe", 12));
 
 
 
             // 暦を読み込み
             paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");
+            paxs::ChineseEra::inputList(chinese_era_list, path8 + "Data/Calendar/ChineseEraName.tsv");
             // 日付計算
             calcDate(language_text);
         }

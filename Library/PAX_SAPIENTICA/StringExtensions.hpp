@@ -1,11 +1,11 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -21,6 +21,8 @@
 #include <variant>
 #include <vector>
 #include <unordered_map>
+
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
 
@@ -54,6 +56,20 @@ namespace paxs {
             return result;
         }
 
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ std::unordered_map 版）
+        static std::unordered_map<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const std::string& input, const char delimiter) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::unordered_map<std::uint_least32_t, std::size_t> result;
+            std::size_t index = 0;
+            while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
+                result.emplace(murmur3(field), index);
+                ++index;
+            }
+            return result;
+        }
+
         /// @brief Replace string
         /// @brief 文字列を置換する
         static void replace(std::string& str, const std::string& from, const std::string& to) noexcept {
@@ -80,10 +96,12 @@ namespace paxs {
         static std::variant<double, std::string> tryToConvertStringToDouble(const std::string& str) noexcept {
             try {
                 return std::stod(str);
-            } catch (const std::invalid_argument&/*ia*/) {
+            }
+            catch (const std::invalid_argument&/*ia*/) {
                 // str is not convertible to double
                 return str;
-            } catch (const std::out_of_range&/*oor*/) {
+            }
+            catch (const std::out_of_range&/*oor*/) {
                 // str is out of range for a double
                 return str;
             }
@@ -94,10 +112,12 @@ namespace paxs {
         static std::variant<int, std::string> tryToConvertStringToInt(const std::string& str) noexcept {
             try {
                 return std::stoi(str);
-            } catch (const std::invalid_argument&/*ia*/) {
+            }
+            catch (const std::invalid_argument&/*ia*/) {
                 // str is not convertible to int
                 return str;
-            } catch (const std::out_of_range&/*oor*/) {
+            }
+            catch (const std::out_of_range&/*oor*/) {
                 // str is out of range for a int
                 return str;
             }

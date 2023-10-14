@@ -24,6 +24,7 @@
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/InputFile.hpp>
 #include <PAX_GRAPHICA/String.hpp>
@@ -63,7 +64,7 @@ namespace paxs {
             const int min_year_,  // 可視化する時代（古い年～）
             const int max_year_,  // 可視化する時代（～新しい年）
             const LocationPointEnum lpe_,  // 対象となる地物の種別
-            const std::string& source_ // 出典
+            const std::uint_least32_t& source_ // 出典
         ) noexcept
             : name(name_), en_name(en_name_), coordinate(coordinate_), min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), source(source_) {}
         std::string name{}; // 日本語名
@@ -72,7 +73,7 @@ namespace paxs {
         double min_view{}, max_view{}; // 可視化する地図の拡大縮小範囲
         int min_year{}, max_year{}; // 可視化する時代（古い年～新しい年）
         LocationPointEnum lpe{}; // 対象となる地物の種別
-        std::string source{}; // 出典
+        std::uint_least32_t source{}; // 出典
     };
 
     // GUI に描画する地物の情報を管理・描画するクラス
@@ -90,7 +91,7 @@ namespace paxs {
                         (agents[i].getGender()) ?
                         LocationPointEnum::location_point_agent :
                         LocationPointEnum::location_point_agent2
-                        ,""
+                        ,0 /*出典無し*/
 
                     }
                 );
@@ -169,7 +170,7 @@ namespace paxs {
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                         continue;
                     }
                     // エージェントを描画
@@ -178,20 +179,20 @@ namespace paxs {
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                         continue;
                     }
                     // 遺跡を描画
-                    if (lli.source == "Iseki") {
+                    if (lli.source == murmur3("Iseki", 5)) {
                         texture_blue_circle.resizedDrawAt(10,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                         continue;
                     }
                     // 前方後円墳を描画
-                    if (lli.source == "ZempoKoenFun") {
+                    if (lli.source == murmur3("ZempoKoenFun", 12)) {
                         //#ifdef PAXS_USING_DXLIB
                         //                        paxg::Rect(paxg::Vec2i{
                         //                            static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -205,36 +206,36 @@ namespace paxs {
                         paxg::Rect(paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        }, paxg::Vec2i{14, 14}).drawAt(paxg::Color{255, 255, 255});
-                            paxg::Rect(paxg::Vec2i{
-                                static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                                    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                            }, paxg::Vec2i{10, 10}).drawAt(paxg::Color{37, 158, 78});
+                            }, paxg::Vec2i{ 14, 14 }).drawAt(paxg::Color{ 255, 255, 255 });
+                        paxg::Rect(paxg::Vec2i{
+                            static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                                static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            }, paxg::Vec2i{ 10, 10 }).drawAt(paxg::Color{ 37, 158, 78 });
 #endif
 
                         texture_kofun1.resizedDrawAt(14,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                         continue;
                     }
                     // 前方後方墳を描画
-                    if (lli.source == "ZempoKohoFun") {
+                    if (lli.source == murmur3("ZempoKohoFun", 12)) {
                         texture_kofun2.resizedDrawAt(14,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                         continue;
                     }
                     // 帆立貝型古墳を描画
-                    if (lli.source == "HotategaiGataKofun") {
+                    if (lli.source == murmur3("HotategaiGataKofun", 18)) {
                         texture_kofun3.resizedDrawAt(14,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                         continue;
                     }
                 }
@@ -272,62 +273,62 @@ namespace paxs {
                         en_font.drawBottomCenter(std::string(lli.en_name),
                             paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                             static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))// - 30
-                        }
+                            }
                         , paxg::Color(0, 0, 0));
                         // 名前を描画
                         font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
                         font.drawTopCenter(std::string(lli.name),
                             paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                             static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))// - 30
-                        }
+                            }
                         , paxg::Color(0, 0, 0));
                     }
                     // 古事記のアイコンを描画
-                    if (lli.source == "JP-Kojiki") {
+                    if (lli.source == murmur3("JP-Kojiki", 9)) {
                         texture_ko.resizedDrawAt(20,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                     }
                     // 倭名類聚抄のアイコンを描画
-                    else if (lli.source == "JP-WamyoRuijusho") {
+                    else if (lli.source == murmur3("JP-WamyoRuijusho", 16)) {
                         //texture_wam.resizedDrawAt(20,
                         // paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                         //    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                         //	});
                     }
                     // 前方後円墳のアイコンを描画
-                    else if (lli.source == "Iseki") {
+                    else if (lli.source == murmur3("Iseki", 5)) {
                         texture_blue_circle.resizedDrawAt(35,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                     }
                     // 前方後円墳のアイコンを描画
-                    else if (lli.source == "ZempoKoenFun") {
+                    else if (lli.source == murmur3("ZempoKoenFun", 12)) {
                         texture_kofun1.resizedDrawAt(35,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                     }
                     // 前方後方墳のアイコンを描画
-                    else if (lli.source == "ZempoKohoFun") {
+                    else if (lli.source == murmur3("ZempoKohoFun", 12)) {
                         texture_kofun2.resizedDrawAt(35,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                     }
                     // 帆立貝型古墳のアイコンを描画
-                    else if (lli.source == "HotategaiGataKofun") {
+                    else if (lli.source == murmur3("HotategaiGataKofun", 18)) {
                         texture_kofun3.resizedDrawAt(35,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                     }
                 }
                 // それ以外（集落遺跡）を描画
@@ -360,7 +361,7 @@ namespace paxs {
         paxg::Texture texture_pn{};
 
         // 項目の ID を返す
-        std::size_t getMenuIndex(const std::unordered_map<std::string, std::size_t>& menu, const std::string& str_) {
+        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
         }
 
@@ -374,20 +375,20 @@ namespace paxs {
                 return; // 何もない場合
             }
             // 1 行目を読み込む
-            std::unordered_map<std::string, std::size_t> menu = pifs.splitHashMap('\t');
+            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
-            const std::size_t longitude = getMenuIndex(menu, "Longitude");
+            const std::size_t longitude = getMenuIndex(menu, murmur3("Longitude", 9));
             if (longitude == SIZE_MAX) return; // 経度がないのはデータにならない
-            const std::size_t latitude = getMenuIndex(menu, "Latitude");
+            const std::size_t latitude = getMenuIndex(menu, murmur3("Latitude", 8));
             if (latitude == SIZE_MAX) return; // 緯度がないのはデータにならない
 
-            const std::size_t local_language = getMenuIndex(menu, "Local language");
-            const std::size_t english = getMenuIndex(menu, "English");
-            const std::size_t minimum_size = getMenuIndex(menu, "Minimum size");
-            const std::size_t maximum_size = getMenuIndex(menu, "Maximum size");
-            const std::size_t first_julian_day = getMenuIndex(menu, "First Julian day");
-            const std::size_t last_julian_day = getMenuIndex(menu, "Last Julian day");
-            const std::size_t source = getMenuIndex(menu, "Source");
+            const std::size_t local_language = getMenuIndex(menu, murmur3("Local language", 14));
+            const std::size_t english = getMenuIndex(menu, murmur3("English", 7));
+            const std::size_t minimum_size = getMenuIndex(menu, murmur3("Minimum size", 12));
+            const std::size_t maximum_size = getMenuIndex(menu, murmur3("Maximum size", 12));
+            const std::size_t first_julian_day = getMenuIndex(menu, murmur3("First Julian day", 16));
+            const std::size_t last_julian_day = getMenuIndex(menu, murmur3("Last Julian day", 15));
+            const std::size_t source = getMenuIndex(menu, murmur3("Source", 6));
 
             // 1 行ずつ読み込み（区切りはタブ）
             while (pifs.getLine()) {
@@ -406,7 +407,7 @@ namespace paxs {
                     (first_julian_day == SIZE_MAX) ? -99999999 : std::stod(strvec[first_julian_day]), // 最小時代
                     (last_julian_day == SIZE_MAX) ? 99999999 : std::stod(strvec[last_julian_day]), // 出典
                     lpe_,
-                    (source == SIZE_MAX) ? "" : strvec[source] // 最大時代
+                    (source == SIZE_MAX) ? 0 : murmur3(strvec[source].c_str()) // 最大時代
                 );
             }
         }
@@ -434,7 +435,7 @@ namespace paxs {
                         (agents[i].getGender()) ?
                         LocationPointEnum::location_point_agent :
                         LocationPointEnum::location_point_agent2
-                        ,""
+                        ,0 /* 出典なし */
                 };
                 // 範囲外を除去
                 if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.8)
@@ -456,7 +457,7 @@ namespace paxs {
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                         continue;
                     }
                     // エージェント
@@ -465,7 +466,7 @@ namespace paxs {
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                                 static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        });
+                            });
                         continue;
                     }
                 }

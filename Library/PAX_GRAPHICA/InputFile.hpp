@@ -69,29 +69,33 @@ namespace paxg {
             pifs = std::ifstream((default_path_.size() == 0) ? str_ : default_path_ + str_); // ファイルを読み込む
 #endif
         }
-            // 1 行読み込む
-            bool getLine() {
+        // 1 行読み込む
+        bool getLine() {
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
-                const int dline = DxLib::FileRead_gets(&(pline[0]), 4096, file_handle);
-                if (dline == -1) return false;
-                if (dline == 0) return false;
-                return true;
+            const int dline = DxLib::FileRead_gets(&(pline[0]), 4096, file_handle);
+            if (dline == -1) return false;
+            if (dline == 0) return false;
+            return true;
 #else
-                return static_cast<bool>(std::getline(pifs, pline));
+            return static_cast<bool>(std::getline(pifs, pline));
 #endif // PAXS_USING_DXLIB
-            }
-            // 区切り文字で分割する
-            std::vector<std::string> split(const char delimiter) const {
-                return paxs::StringExtensions::split(pline, delimiter);
-            }
-            // 区切り文字で分割する
-            std::unordered_map<std::string, std::size_t> splitHashMap(const char delimiter) const {
-                return paxs::StringExtensions::splitHashMap(pline, delimiter);
-            }
+        }
+        // 区切り文字で分割する
+        std::vector<std::string> split(const char delimiter) const {
+            return paxs::StringExtensions::split(pline, delimiter);
+        }
+        // 区切り文字で分割する
+        std::unordered_map<std::string, std::size_t> splitHashMap(const char delimiter) const {
+            return paxs::StringExtensions::splitHashMap(pline, delimiter);
+        }
+        // 区切り文字で分割する
+        std::unordered_map<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const char delimiter) const {
+            return paxs::StringExtensions::splitHashMapMurMur3(pline, delimiter);
+        }
 
-            std::string& lineString() {
-                return pline;
-            }
+        std::string& lineString() {
+            return pline;
+        }
 
     };
 

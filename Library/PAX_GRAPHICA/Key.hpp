@@ -232,7 +232,7 @@ namespace paxs {
     private:
         // 中央の座標を指定
         Coordinate center = Coordinate(
-            paxs::EquirectangularDeg(paxs::Vector2<double>(/*135.0, 35.0*/128,37)),
+            paxs::EquirectangularDeg(paxs::Vector2<double>(/*135.0, 35.0*/128, 37)),
             //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)),
             200.0); // マップ座標の中央
         double width = 12.0; // マップの幅
@@ -267,9 +267,9 @@ namespace paxs {
 
 #ifdef __ANDROID__
             static int old_touch_num = 0;
-            static int touch_num=0;
-            static std::array<paxs::Vector2<int>, 3> pos = {paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0}};
-            static std::array<paxs::Vector2<int>, 3> old_pos = {paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0}};
+            static int touch_num = 0;
+            static std::array<paxs::Vector2<int>, 3> pos = { paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0} };
+            static std::array<paxs::Vector2<int>, 3> old_pos = { paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0} };
 #endif
 
 #ifdef __ANDROID__
@@ -293,8 +293,8 @@ namespace paxs {
             // std::array<Vector2D<int>, 10>{};
 
             if (old_touch_num == 1 && touch_num == 1) {
-                center.setX(center.getX() + (width / expansion_size/*movement*/) * (old_pos[0].x - pos[0].x)/24);
-                center.setY(center.getY() + ((width / expansion_size/*movement*/) * (pos[0].y - old_pos[0].y)/24));
+                center.setX(center.getX() + (width / expansion_size/*movement*/) * (old_pos[0].x - pos[0].x) / 24);
+                center.setY(center.getY() + ((width / expansion_size/*movement*/) * (pos[0].y - old_pos[0].y) / 24));
 
                 if (center.getX() < -180.0) {
                     center.setX(center.getX() + 360.0);
@@ -303,10 +303,10 @@ namespace paxs {
                     center.setX(center.getX() - 360.0);
                 }
                 if (center.getY() < -180.0) {
-                    center.setY(center.getY()  -180.0);
+                    center.setY(center.getY() - 180.0);
                 }
                 if (center.getY() > 180.0) {
-                    center.setY(center.getY()  + 180.0);
+                    center.setY(center.getY() + 180.0);
                 }
 
             }

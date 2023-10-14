@@ -24,6 +24,8 @@
 
 #include <PAX_GRAPHICA/Key.hpp>
 
+#include <PAX_SAPIENTICA/MurMur3.hpp>
+
 namespace paxs {
 
     class MapViewerSiv3D {
@@ -90,10 +92,10 @@ namespace paxs {
             // 地名
             place_name_location.add();
 
-//#ifdef PAXS_USING_SIMULATOR
-//            agent_location = std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation); // エージェント
-//            agent_location->addKofun();
-//#endif
+            //#ifdef PAXS_USING_SIMULATOR
+            //            agent_location = std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation); // エージェント
+            //            agent_location->addKofun();
+            //#endif
         }
 
         void update(
@@ -107,7 +109,7 @@ namespace paxs {
             map_view->update(); // キーボード入力を更新
             mapMapUpdate(xyz_tile_list, string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
-            if (visible["Map"]) {
+            if (visible[murmur3("Map", 3)]) {
                 // 地図上に画像を描画する
                 texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
 #ifdef PAXS_USING_SIMULATOR
@@ -136,7 +138,7 @@ namespace paxs {
                         map_view->getCenterX(),
                         map_view->getCenterY(),
                         string_siv.pin_font,
-                        string_siv.pin_font,
+                        string_siv.en_font,
                         string_siv.pin_font);
                 }
                 else {
@@ -147,7 +149,7 @@ namespace paxs {
                         map_view->getCenterX(),
                         map_view->getCenterY(),
                         string_siv.font[select_language.cget()],
-                        string_siv.font[select_language.cget()]/*en_font*/,
+                        string_siv.en_font, // string_siv.font[select_language.cget()]/*en_font*/,
                         string_siv.pin_font);
                 }
                 //#ifdef PAXS_USING_SIMULATOR

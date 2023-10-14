@@ -40,6 +40,7 @@
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Key.hpp>
 
@@ -61,6 +62,7 @@ namespace paxs {
         std::vector<paxg::Font> koyomi_font; // 暦のフォント
         paxg::Font license_font;
         paxg::Font pin_font{};
+        paxg::Font en_font{};
 
         std::size_t map_view_width_str_index;
         std::size_t map_view_center_x_str_index;
@@ -91,28 +93,28 @@ namespace paxs {
             font_pulldown = setFont(16, path8, 3, "font_path", language_text);
             font = setFont(font_size, path8, 3, "font_path", language_text);
 
-            map_view_width_str_index = language_text.findStart("debug_magnification_power");
-            map_view_center_x_str_index = language_text.findStart("debug_mercator_longitude");
-            map_view_center_y_str_index = language_text.findStart("debug_mercator_latitude");
-            map_view_center_lat_str_index = language_text.findStart("debug_latitude");
-            xyz_tile_z_str_index = language_text.findStart("debug_xyz_tiles_z");
+            map_view_width_str_index = language_text.findStart(murmur3("debug_magnification_power", 25));
+            map_view_center_x_str_index = language_text.findStart(murmur3("debug_mercator_longitude", 24));
+            map_view_center_y_str_index = language_text.findStart(murmur3("debug_mercator_latitude", 23));
+            map_view_center_lat_str_index = language_text.findStart(murmur3("debug_latitude", 14));
+            xyz_tile_z_str_index = language_text.findStart(murmur3("debug_xyz_tiles_z", 17));
 
-            items_pulldown = language_text.getFindStartToVVS("language", 1);
+            items_pulldown = language_text.getFindStartToVVS(murmur3("language", 8), 1);
             pulldown = paxs::Pulldown(items_pulldown, 0, 0, font_pulldown, paxg::Vec2i{ 3000, 0 }, PulldownType::Zero, true);
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
 
 
             const std::vector<paxg::Font>& font_menu_bar = font_pulldown;
 
-            menu_bar.add(language_text.cget(), language_text.findStart("> menu_bar_file") + 1, 1, font_menu_bar);
-            menu_bar.add(language_text.cget(), language_text.findStart("> menu_bar_edit") + 1, 1, font_menu_bar);
-            menu_bar.add(language_text.cget(), language_text.findStart("> menu_bar_view") + 1, 1, font_menu_bar);
-            menu_bar.add(language_text.cget(), language_text.findStart("> menu_bar_calendar") + 1, 1, font_menu_bar);
-            menu_bar.add(language_text.cget(), language_text.findStart("> menu_bar_map") + 1, 1, font_menu_bar);
+            menu_bar.add(language_text.cget(), language_text.findStart(murmur3("> menu_bar_file", 15)) + 1, 1, font_menu_bar);
+            menu_bar.add(language_text.cget(), language_text.findStart(murmur3("> menu_bar_edit", 15)) + 1, 1, font_menu_bar);
+            menu_bar.add(language_text.cget(), language_text.findStart(murmur3("> menu_bar_view", 15)) + 1, 1, font_menu_bar);
+            menu_bar.add(language_text.cget(), language_text.findStart(murmur3("> menu_bar_calendar", 19)) + 1, 1, font_menu_bar);
+            menu_bar.add(language_text.cget(), language_text.findStart(murmur3("> menu_bar_map", 14)) + 1, 1, font_menu_bar);
 
             const std::string path = (path8);
             { // 暦の時間操作のアイコン
-                texture_dictionary.emplace("texture_tlt", paxg::Texture{ path + "Image/Logo/TitleLogoText2.svg"});
+                texture_dictionary.emplace("texture_tlt", paxg::Texture{ path + "Image/Logo/TitleLogoText2.svg" });
                 texture_dictionary.emplace("texture_github", paxg::Texture{ path + "Data/MenuIcon/github.svg" });
                 texture_dictionary.emplace("texture_d_l", paxg::Texture{ path + "Data/MenuIcon/DayL.svg" });
                 texture_dictionary.emplace("texture_d_r", paxg::Texture{ path + "Data/MenuIcon/DayR.svg" });
@@ -134,13 +136,18 @@ namespace paxs {
             }
 
 
-            koyomi_font = setFont(koyomi_font_size, path8, 3, "font_path", language_text);
+            koyomi_font = setFont(koyomi_font_size, path8, 2, "font_path", language_text);
 
             license_font = paxg::Font{ 14 /*, Typeface::Bold*/
-                , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 3 };
+                , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
 
             pin_font = paxg::Font{ 18 /*, Typeface::Bold*/
-                , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 3 };
+                , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
+
+            // 英語用フォント
+            en_font = paxg::Font{ 16 /*, Typeface::Bold*/
+    , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
+
 #ifdef PAXS_USING_SIV3D
             // 影
             shadow_texture = s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
@@ -208,7 +215,7 @@ namespace paxs {
             int next_rect_start_y = icon_start_y + sum_icon_height + 20;//230;
             int next_rect_end_y = 150;//380;
 
-            if (visible["Calendar"]) {
+            if (visible[murmur3("Calendar", 8)]) {
 #ifdef PAXS_USING_DXLIB
                 DxLib::DrawRoundRect(rect_start_x, koyomi_font_y - 5,
                     rect_start_x + 360, koyomi_font_y - 5 + next_rect_start_y,
@@ -225,7 +232,7 @@ namespace paxs {
                     const s3d::ScopedRenderStates2D blend{ s3d::BlendState::MaxAlpha };
                     const s3d::Transformer2D transform{ s3d::Mat3x2::Translate(3, 3) };
 
-                    s3d::Rect{ 0, 0, paxg::Window::width(), 30 }.draw(); // メニューバー
+                    s3d::Rect{ 0, 0, paxg::Window::width(), static_cast<int>(pulldown.getRect().h()) }.draw(); // メニューバー
                     s3d::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw();
                     s3d::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw();
                 }
@@ -241,7 +248,7 @@ namespace paxs {
                 s3d::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw(s3d::ColorF{ 1, 1, 1 }/*s3d::Palette::White*/);
                 s3d::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw(s3d::ColorF{ 1, 1, 1 }/*s3d::Palette::White*/);
             }
-            if (visible["Calendar"] && visible["UI"]) {
+            if (visible[murmur3("Calendar", 8)] && visible[murmur3("UI", 2)]) {
                 // 暦の表示（日本語）
                 if (
                     select_language.cget() == 1
@@ -299,7 +306,7 @@ namespace paxs {
 
                         cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
                         std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi_siv.date_list[i].date);
-                        
+
                         int date_year = 0;
                         int date_month = 0;
                         int date_day = 0;
@@ -464,7 +471,7 @@ namespace paxs {
                 int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
                 int debug_move_y = 25;
                 // その他のデバッグ用の変数情報の表示
-                if (visible["UI"]) {
+                if (visible[murmur3("UI", 2)]) {
                     //font[select_language.cget()].
 
                     //font[select_language.cget()](std::string(language_text.cget()[map_view_center_x_str_index][select_language.cget() + 1 /* 言語位置調整 */]
@@ -487,9 +494,9 @@ namespace paxs {
                     //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
 
                     // マップの幅
-                     font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                     font[select_language.cget()].draw(std::to_string(map_view_width),
-                         paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
+                    font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                    font[select_language.cget()].draw(std::to_string(map_view_width),
+                        paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
 
                     //debug_start_y += debug_move_y;
                     //font[select_language.cget()](s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
@@ -503,7 +510,7 @@ namespace paxs {
                     //    paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
                 }
             }
-            if (visible["License"]) {
+            if (visible[murmur3("License", 7)]) {
                 //font(std::string{ U"A" } + s3d::ToString(xyz_tile_cell.x) + std::string{ U":" } + s3d::ToString(xyz_tile_cell.y)).draw(s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 10, 400), s3d::Palette::Black);
                 //font(std::string{ U"B" } + s3d::ToString(xyz_tile_pos.x) + std::string{ U":" } + s3d::ToString(xyz_tile_pos.y)).draw(s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 10, 450), s3d::Palette::Black);
                 license_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
@@ -517,12 +524,12 @@ namespace paxs {
                 //texture_tlt.resized(180).draw(s3d::Arg::bottomRight = s3d::Vec2(paxg::Window::width() - 10, paxg::Window::height() - 10));
             }
 
-            if (!visible["3D"]) {
+            if (!visible[murmur3("3D", 2)]) {
                 g3d_model.updateRotation(); // 3D モデルを回転させる
             }
 
             // メニューバー
-            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), 30 }.draw(paxg::Color{ 243, 243, 243 });
+            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
             texture_dictionary.at("texture_github").resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
             pulldown.draw(); // 言語選択
             menu_bar.draw(); // 左上メニューバー
@@ -532,7 +539,7 @@ namespace paxs {
                 s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
             }
 
-            if (visible["UI"]) {
+            if (visible[murmur3("UI", 2)]) {
                 if (select_language.cget() + 1 < font.size()) {
                     font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
                     font[select_language.cget()].drawTopRight(std::string(language_text.cget()[koyomi_siv.sueki_nakamura_index][select_language.cget() + 1 /* 言語位置調整 */]),
@@ -578,7 +585,7 @@ namespace paxs {
                 }
             }
             // シミュレーションのボタン
-            if (visible["Simulation"] && visible["UI"]) {
+            if (visible[murmur3("Simulation", 10)] && visible[murmur3("UI", 2)]) {
 #ifdef PAXS_USING_SIMULATOR
                 if (s3d::SimpleGUI::Button(U"Init", s3d::Vec2{ 10, 60 })) {
                     simulator = paxs::Simulator<int>(
@@ -602,9 +609,9 @@ namespace paxs {
             const std::string& key,
             const paxs::Language& language_text) const {
             std::vector<paxg::Font> return_font{};
-            const std::vector<std::string>& vs = language_text.cgetFindStart(key);
+            const std::vector<std::string>& vs = language_text.cgetFindStart(murmur3((key.c_str())));
             for (std::size_t i = 1; i < vs.size(); ++i) {
-                return_font.emplace_back(paxg::Font{ font_size_, (path + vs[i]), buffer_thickness});
+                return_font.emplace_back(paxg::Font{ font_size_, (path + vs[i]), buffer_thickness });
             }
             return return_font;
         }
