@@ -15,26 +15,26 @@
 
 TEST (GraphicVisualizationListUnitTest, emplace) {
     paxs::GraphicVisualizationList gvl;
-    gvl.emplace("test", true);
-    ASSERT_TRUE(gvl["test"]);
+    gvl.emplace(0, true);
+    ASSERT_TRUE(gvl[0]);
 }
     
 TEST (GraphicVisualizationListUnitTest, setNot) {
     paxs::GraphicVisualizationList gvl;
-    gvl.emplace("test", true);
-    gvl.setNot("test");
-    ASSERT_FALSE(gvl["test"]);
+    gvl.emplace(0, true);
+    gvl.setNot(0);
+    ASSERT_FALSE(gvl[0]);
 }
 
 TEST (GraphicVisualizationListUnitTest, set) {
     paxs::GraphicVisualizationList gvl;
-    gvl.emplace("test", true);
-    gvl.set("test", false);
-    ASSERT_FALSE(gvl["test"]);
+    gvl.emplace(0, true);
+    gvl.set(0, false);
+    ASSERT_FALSE(gvl[0]);
 }
 
 TEST (GraphicVisualizationListUnitTest, operator) {
     paxs::GraphicVisualizationList gvl;
-    gvl.emplace("test", true);
-    ASSERT_TRUE(gvl["test"]);
+    gvl.emplace(0, true);
+    ASSERT_TRUE(gvl[0]);
 }

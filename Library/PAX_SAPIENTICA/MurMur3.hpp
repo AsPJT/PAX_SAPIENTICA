@@ -94,7 +94,7 @@ namespace paxs {
             return murmur3c_1(h ^ (h >> 16));
         }
         constexpr std::uint_least32_t murmur3c(const std::uint_least32_t h, const std::size_t len) {
-            return murmur3c_0(h ^ len);
+            return murmur3c_0(h ^ static_cast<std::uint_least32_t>(len));
         }
 
     }
