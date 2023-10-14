@@ -109,7 +109,7 @@ namespace paxs {
             map_view->update(); // キーボード入力を更新
             mapMapUpdate(xyz_tile_list, string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
-            if (visible[murmur3("Map", 3)]) {
+            if (visible[murmur3("Map", 3)]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する
                 texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
 #ifdef PAXS_USING_SIMULATOR

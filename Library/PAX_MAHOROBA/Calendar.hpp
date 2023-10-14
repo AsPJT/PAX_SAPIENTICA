@@ -170,16 +170,12 @@ namespace paxs {
             sueki_nakamura_index = language_text.findStart(murmur3("sueki_nakamura", 14));
             sueki_tanabe_index = language_text.findStart(murmur3("sueki_tanabe", 12));
 
-
-
             // 暦を読み込み
             paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");
             paxs::ChineseEra::inputList(chinese_era_list, path8 + "Data/Calendar/ChineseEraName.tsv");
             // 日付計算
             calcDate(language_text);
         }
-
-
 
         void update(
             const paxs::Language& language_text,

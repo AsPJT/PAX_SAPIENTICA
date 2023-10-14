@@ -22,6 +22,7 @@
 #include <string>
 
 namespace paxs {
+    // MurMur3 ハッシュ計算関数
     namespace mm3 {
 
         constexpr std::uint_least32_t seed = 0;
@@ -98,7 +99,7 @@ namespace paxs {
         }
 
     }
-
+    // コンパイル時に文字列の MurMur3 ハッシュを計算
     constexpr std::uint_least32_t murmur3(const char* const str, const std::size_t len) {
         return mm3::murmur3c(
             mm3::murmur3b(
@@ -106,6 +107,7 @@ namespace paxs {
             )
             , len);
     }
+    // 実行時に文字列の MurMur3 ハッシュを計算
     std::uint_least32_t murmur3(const std::string& str) {
         return murmur3(str.c_str(), str.size());
     }

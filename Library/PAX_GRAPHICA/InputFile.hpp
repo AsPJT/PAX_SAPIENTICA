@@ -88,7 +88,7 @@ namespace paxg {
         std::unordered_map<std::string, std::size_t> splitHashMap(const char delimiter) const {
             return paxs::StringExtensions::splitHashMap(pline, delimiter);
         }
-        // 区切り文字で分割する
+        // 区切り文字で分割する（ 32bit ハッシュ値で管理）
         std::unordered_map<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const char delimiter) const {
             return paxs::StringExtensions::splitHashMapMurMur3(pline, delimiter);
         }

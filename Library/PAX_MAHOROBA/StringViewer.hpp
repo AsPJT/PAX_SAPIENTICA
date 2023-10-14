@@ -77,7 +77,7 @@ namespace paxs {
         std::vector<std::vector<std::string>> items_pulldown;
         paxs::Pulldown pulldown;
         paxs::MenuBar menu_bar;
-        std::unordered_map<std::string, paxg::Texture> texture_dictionary{};
+        std::unordered_map<std::uint_least32_t, paxg::Texture> texture_dictionary{};
 
         //const std::string map_license_name = U"Maptiles by\n淺野孝利 2023「古墳時代の『常総の内海』水域復原に関する一試論」\n研究代表者 荒井啓汰『埋葬施設からみた常総地域の地域構造』\n特別研究員奨励費報告書 筑波大学大学院 人文社会科学研究科";
         std::string map_license_name = reinterpret_cast<const char*>(u8"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.");
@@ -114,25 +114,25 @@ namespace paxs {
 
             const std::string path = (path8);
             { // 暦の時間操作のアイコン
-                texture_dictionary.emplace("texture_tlt", paxg::Texture{ path + "Image/Logo/TitleLogoText2.svg" });
-                texture_dictionary.emplace("texture_github", paxg::Texture{ path + "Data/MenuIcon/github.svg" });
-                texture_dictionary.emplace("texture_d_l", paxg::Texture{ path + "Data/MenuIcon/DayL.svg" });
-                texture_dictionary.emplace("texture_d_r", paxg::Texture{ path + "Data/MenuIcon/DayR.svg" });
-                texture_dictionary.emplace("texture_m_l", paxg::Texture{ path + "Data/MenuIcon/MonthL.svg" });
-                texture_dictionary.emplace("texture_m_r", paxg::Texture{ path + "Data/MenuIcon/MonthR.svg" });
-                texture_dictionary.emplace("texture_y_l", paxg::Texture{ path + "Data/MenuIcon/YearL.svg" });
-                texture_dictionary.emplace("texture_y_r", paxg::Texture{ path + "Data/MenuIcon/YearR.svg" });
-                texture_dictionary.emplace("texture_10y_l", paxg::Texture{ path + "Data/MenuIcon/10YearL.svg" });
-                texture_dictionary.emplace("texture_10y_r", paxg::Texture{ path + "Data/MenuIcon/10YearR.svg" });
-                texture_dictionary.emplace("texture_c_l", paxg::Texture{ path + "Data/MenuIcon/100YearL.svg" });
-                texture_dictionary.emplace("texture_c_r", paxg::Texture{ path + "Data/MenuIcon/100YearR.svg" });
-                texture_dictionary.emplace("texture_10c_l", paxg::Texture{ path + "Data/MenuIcon/1kYearL.svg" });
-                texture_dictionary.emplace("texture_10c_r", paxg::Texture{ path + "Data/MenuIcon/1kYearR.svg" });
-                texture_dictionary.emplace("texture_100c_l", paxg::Texture{ path + "Data/MenuIcon/10kYearL.svg" });
-                texture_dictionary.emplace("texture_100c_r", paxg::Texture{ path + "Data/MenuIcon/10kYearR.svg" });
-                texture_dictionary.emplace("texture_stop", paxg::Texture{ path + "Data/MenuIcon/stop.svg" });
-                texture_dictionary.emplace("texture_playback", paxg::Texture{ path + "Data/MenuIcon/playback.svg" });
-                texture_dictionary.emplace("texture_reverse_playback", paxg::Texture{ path + "Data/MenuIcon/reverse-playback.svg" });
+                texture_dictionary.emplace(murmur3("texture_tlt", 11), paxg::Texture{ path + "Image/Logo/TitleLogoText2.svg" });
+                texture_dictionary.emplace(murmur3("texture_github", 14), paxg::Texture{ path + "Data/MenuIcon/github.svg" });
+                texture_dictionary.emplace(murmur3("texture_d_l", 11), paxg::Texture{ path + "Data/MenuIcon/DayL.svg" });
+                texture_dictionary.emplace(murmur3("texture_d_r", 11), paxg::Texture{ path + "Data/MenuIcon/DayR.svg" });
+                texture_dictionary.emplace(murmur3("texture_m_l", 11), paxg::Texture{ path + "Data/MenuIcon/MonthL.svg" });
+                texture_dictionary.emplace(murmur3("texture_m_r", 11), paxg::Texture{ path + "Data/MenuIcon/MonthR.svg" });
+                texture_dictionary.emplace(murmur3("texture_y_l", 11), paxg::Texture{ path + "Data/MenuIcon/YearL.svg" });
+                texture_dictionary.emplace(murmur3("texture_y_r", 11), paxg::Texture{ path + "Data/MenuIcon/YearR.svg" });
+                texture_dictionary.emplace(murmur3("texture_10y_l", 13), paxg::Texture{ path + "Data/MenuIcon/10YearL.svg" });
+                texture_dictionary.emplace(murmur3("texture_10y_r", 13), paxg::Texture{ path + "Data/MenuIcon/10YearR.svg" });
+                texture_dictionary.emplace(murmur3("texture_c_l", 11), paxg::Texture{ path + "Data/MenuIcon/100YearL.svg" });
+                texture_dictionary.emplace(murmur3("texture_c_r", 11), paxg::Texture{ path + "Data/MenuIcon/100YearR.svg" });
+                texture_dictionary.emplace(murmur3("texture_10c_l", 13), paxg::Texture{ path + "Data/MenuIcon/1kYearL.svg" });
+                texture_dictionary.emplace(murmur3("texture_10c_r", 13), paxg::Texture{ path + "Data/MenuIcon/1kYearR.svg" });
+                texture_dictionary.emplace(murmur3("texture_100c_l", 14), paxg::Texture{ path + "Data/MenuIcon/10kYearL.svg" });
+                texture_dictionary.emplace(murmur3("texture_100c_r", 14), paxg::Texture{ path + "Data/MenuIcon/10kYearR.svg" });
+                texture_dictionary.emplace(murmur3("texture_stop", 12), paxg::Texture{ path + "Data/MenuIcon/stop.svg" });
+                texture_dictionary.emplace(murmur3("texture_playback", 16), paxg::Texture{ path + "Data/MenuIcon/playback.svg" });
+                texture_dictionary.emplace(murmur3("texture_reverse_playback", 24), paxg::Texture{ path + "Data/MenuIcon/reverse-playback.svg" });
             }
 
 
@@ -355,19 +355,19 @@ namespace paxs {
                         }
                     }
                 }
-                texture_dictionary.at("texture_reverse_playback").resizedDraw(arrow_time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_reverse_playback", 24)).resizedDraw(arrow_time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
                     koyomi_siv.move_forward_in_time = false;
                     koyomi_siv.go_back_in_time = true; // 逆再生
                 }
                 icon_start_x -= arrow_icon_move_x;
-                texture_dictionary.at("texture_stop").resizedDraw(arrow_time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_stop", 12)).resizedDraw(arrow_time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
                     koyomi_siv.move_forward_in_time = false; // 一時停止
                     koyomi_siv.go_back_in_time = false;
                 }
                 icon_start_x -= arrow_icon_move_x;
-                texture_dictionary.at("texture_playback").resizedDraw(arrow_time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_playback", 16)).resizedDraw(arrow_time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
                     koyomi_siv.move_forward_in_time = true; // 再生
                     koyomi_siv.go_back_in_time = false;
@@ -375,43 +375,43 @@ namespace paxs {
                 icon_start_y += arrow_icon_move_y;
                 icon_start_x = icon_const_start_x;
 
-                texture_dictionary.at("texture_d_l").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_d_l", 11)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() -= 1;
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_m_l").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_m_l", 11)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() -= (365.2422 / 12.0);
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_y_l").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_y_l", 11)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() -= 365.2422;
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_10y_l").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_10y_l", 13)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() -= (365.2422 * 10);
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_c_l").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_c_l", 11)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() -= (365.2422 * 100);
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_10c_l").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_10c_l", 13)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() -= (365.2422 * 1000);
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_100c_l").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_100c_l", 14)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() -= (365.2422 * 10000);
                     koyomi_siv.calcDate(language_text);
@@ -419,43 +419,43 @@ namespace paxs {
                 icon_start_y += icon_move_y;
                 icon_start_x = icon_const_start_x;
 
-                texture_dictionary.at("texture_d_r").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_d_r", 11)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() += 1;
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_m_r").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_m_r", 11)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() += (365.2422 / 12.0);
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_y_r").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_y_r", 11)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() += 365.2422;
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_10y_r").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_10y_r", 13)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() += (365.2422 * 10);
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_c_r").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_c_r", 11)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() += (365.2422 * 100);
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_10c_r").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_10c_r", 13)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() += (365.2422 * 1000);
                     koyomi_siv.calcDate(language_text);
                 }
                 icon_start_x -= icon_move_x;
-                texture_dictionary.at("texture_100c_r").resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
+                texture_dictionary.at(murmur3("texture_100c_r", 14)).resizedDraw(time_icon_size, paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y));
                 if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - icon_start_x, koyomi_font_y + icon_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_siv.jdn.getDay() += (365.2422 * 10000);
                     koyomi_siv.calcDate(language_text);
@@ -530,7 +530,7 @@ namespace paxs {
 
             // メニューバー
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
-            texture_dictionary.at("texture_github").resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
+            texture_dictionary.at(murmur3("texture_github", 14)).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
             pulldown.draw(); // 言語選択
             menu_bar.draw(); // 左上メニューバー
 
