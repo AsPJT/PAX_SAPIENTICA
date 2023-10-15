@@ -57,7 +57,7 @@ namespace paxs {
                 } catch (const std::runtime_error&) {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "Failed to read Japan provinces TSV file: " + japan_provinces_path;
-                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
+                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                     throw std::runtime_error(message);
                 }
 
