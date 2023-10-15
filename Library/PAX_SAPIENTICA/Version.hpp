@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20230505L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20230924L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 ) [v6.0.X.a.a]
@@ -29,17 +29,17 @@
 
 // PAX_SAPIENTICA 補助バージョン  [v6.0.a.X.a]
 #ifndef PAX_SAPIENTICA_LIBRARY_MINOR
-#define PAX_SAPIENTICA_LIBRARY_MINOR (2)
+#define PAX_SAPIENTICA_LIBRARY_MINOR (3)
 #endif
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (4)
 #endif
 
 // 正式バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.2.0"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.3.4"
 #endif
 
 //char name[
@@ -50,7 +50,31 @@
 /*##########################################################################################
 	更新履歴
 	バージョン	| 更新日		| 概要
-	6.0.0.0.X	| 2023/0X/XX	| コピペ用
+	6.0.0.3.X	| 2023/0X/XX	| コピペ用
+    6.0.0.3.4	| 2023/09/23	| Android Studioによるアプリ開発機能をサポート
+    6.0.0.3.3	| 2023/09/22	| PAXS_GRAPHICA のマルチプラットフォーム対応
+    6.0.0.3.2	| 2023/09/20	| 日本の令制国を大幅に追加
+    6.0.0.3.1	| 2023/09/18	| 日本の令制国の国境線を追加
+    6.0.0.3.0	| 2023/09/18	| 集落エージェントを追加
+    6.0.0.2.18	| 2023/08/19	| Doxygen のドキュメントを生成する workflow を追加
+    6.0.0.2.17	| 2023/08/13	| シミュレーションの機能を更新
+    6.0.0.2.16	| 2023/07/22	| CMake や Test の更新
+    6.0.0.2.15	| 2023/07/17	| PAXS_GRAPHICA の基本機能を追加
+    6.0.0.2.14	| 2023/07/14	| シミュレーションのデータ構造の見直し
+    6.0.0.2.13	| 2023/07/10	| 暦クラスの分割
+    6.0.0.2.12	| 2023/07/09	| GUI 関連のファイルを細分化
+    6.0.0.2.11	| 2023/07/08	| ヒジュラ暦を追加
+    6.0.0.2.10	| 2023/07/01	| ライブラリのコードを整理
+    6.0.0.2.9	| 2023/06/27	| 進行状態を記録する出力バーを追加
+    6.0.0.2.8	| 2023/06/24	| 地図投影法クラスを追加
+    6.0.0.2.7	| 2023/06/22	| 人間エージェントクラスを追加
+    6.0.0.2.6	| 2023/06/10	| シミュレーション用の地図のデータ構造を変更
+    6.0.0.2.5	| 2023/05/29	| 360 度写真を表示する機能を追加
+    6.0.0.2.4	| 2023/05/15	| 傾斜と緯度ごとのセルの大きさのデータを追加
+    6.0.0.2.3	| 2023/05/13	| 仮の時間管理アイコンを追加
+    6.0.0.2.2	| 2023/05/09	| XYZ タイル管理クラスを追加
+    6.0.0.2.1	| 2023/05/08	| エージェントの描画を追加
+    6.0.0.2.0	| 2023/05/05	| ImageResize の追加
 	6.0.0.2.0	| 2023/05/05	| シミュレータの機能が追加
 	6.0.0.1.14	| 2023/05/04	| Environment を追加
 	6.0.0.1.13	| 2023/05/02	| AgentSimulator を追加

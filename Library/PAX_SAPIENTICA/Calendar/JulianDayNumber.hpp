@@ -110,6 +110,7 @@ namespace paxs::cal {
             // ユリウス日が 1480407 以上（神武 1 年 1 月 1 日以降、グレゴリオ暦 紀元前 660 年 2 月 11 日以降）
             if (day >= 1480407) {
                 bool is_break = false;
+                if (japanese_era_list.size() == 0) return JapanDate{};
                 // 元号一覧からその日に合った元号を取得
                 for (std::size_t i = 0; i < japanese_era_list.size() - 1; ++i) {
                     auto& jeli = japanese_era_list[i];

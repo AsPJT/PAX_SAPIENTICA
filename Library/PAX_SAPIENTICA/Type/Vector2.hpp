@@ -83,9 +83,16 @@ namespace paxs {
             y /= t;
             return *this;
         }
-
+#ifdef USING_CPP20
         auto operator<=>(const Vector2<T>& v) const noexcept = default;
-        
+#else
+        bool operator!=(const Vector2<T>& v) const noexcept {
+            return !(v.x == x && v.y == y);
+        }
+        bool operator==(const Vector2<T>& v) const noexcept {
+            return (v.x == x && v.y == y);
+        }
+#endif // USING_CPP20      
         /// @brief Get the length of the vector
         /// @brief べクトルの長さを取得。
         double length() const noexcept {

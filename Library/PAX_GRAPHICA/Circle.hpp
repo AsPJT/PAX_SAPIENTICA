@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -18,11 +18,14 @@
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
 #endif
 
 #include <PAX_GRAPHICA/IDrawable.hpp>
+#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
@@ -32,27 +35,29 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
         s3d::Circle circle;
         constexpr Circle(const float x, const float y, const float r) : circle(x, y, r) {}
-        constexpr Circle(const Vec2& pos, const float r) : circle(pos.x, pos.y, r) {}
+        constexpr Circle(const paxg::Vec2i& pos, const float r) : circle(pos.x(), pos.y(), r) {}
         constexpr operator s3d::Circle() const { return circle; }
+
 #elif defined(PAXS_USING_SFML)
         sf::CircleShape circle;
-        Circle(float x, float y, float r) : circle(r) { circle.setPosition(x, y); }
-        Circle(const sf::Vector2i& pos, float r) : circle(r) { circle.setPosition(pos.x, pos.y); }
+        Circle(const float x, const float y, const float r) : circle(r) { circle.setPosition(x, y); }
+        Circle(const sf::Vector2i& pos, const float r) : circle(r) { circle.setPosition(pos.x, pos.y); }
         operator sf::CircleShape() const { return circle; }
 #else
         float x, y, r;
         constexpr Circle(const float x, const float y, const float r) : x(x), y(y), r(r) {}
-        constexpr Circle(const Vec2& pos, const float r) : x(pos.x), y(pos.y), r(r) {}
+        constexpr Circle(const paxg::Vec2i& pos, const float r) : x(static_cast<float>(pos.x())), y(static_cast<float>(pos.y())), r(r) {}
 #endif
         void draw() const override {
 #if defined(PAXS_USING_SIV3D)
             circle.draw();
+
 #elif defined(PAXS_USING_SFML)
             Window::window.draw(circle);
 #endif
         }
 
-        void drawAt(const Vec2f& pos) const override {}
+        void drawAt([[maybe_unused]] const Vec2f& pos) const override {}
     };
 }
 

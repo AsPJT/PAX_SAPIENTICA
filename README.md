@@ -32,6 +32,20 @@ https://aspjt.github.io/PAX_SAPIENTICA/
 
 ![Calendar](./Image/Other/Calendar20230709.gif)
 
+---
+
+# Supported Environment
+
+* CMake (e.g. Visual Studio Code)
+* .sln / Microsoft Visual Studio
+* Android Studio
+
+### Android Studio
+
+This library has been tested to work in a mobile environment.
+
+![Android Studio](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Image/Screenshot/PAX%20SAPIENTICA%202023-09-23%2020.54.32.png)
+
 # Screenshot
 
 |![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_09%201_00_32.png)|![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_11%2023_26_47.png)|

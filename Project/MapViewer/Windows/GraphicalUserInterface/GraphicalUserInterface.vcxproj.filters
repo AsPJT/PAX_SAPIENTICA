@@ -139,11 +139,11 @@
     <Filter Include="Library">
       <UniqueIdentifier>{cd36d43c-4839-492f-9453-2c76aa80005f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Library\Siv3D">
-      <UniqueIdentifier>{eaa03a46-201c-479f-b8db-8667ac9eb9d4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Library\Graphica">
       <UniqueIdentifier>{edb7759c-19ba-4fb9-b50b-ee4b55e7658a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library\Mahoroba">
+      <UniqueIdentifier>{eaa03a46-201c-479f-b8db-8667ac9eb9d4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -785,51 +785,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\3DModel.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Calendar.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Init.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\InitLogo.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Key.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Language.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationPoint.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\LocationRange.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Main.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Pulldown.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTiles.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\XYZTilesList.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\MapViewer.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\Mock.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Siv3D\StringViewer.hpp">
-      <Filter>Library\Siv3D</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Circle.hpp">
       <Filter>Library\Graphica</Filter>
     </ClInclude>
@@ -858,6 +813,54 @@
       <Filter>Library\Graphica</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Window.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Line.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Key.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\3DModel.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Calendar.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Init.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\InitLogo.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\LocationPoint.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\LocationRange.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Main.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\MapViewer.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Mock.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Pulldown.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\StringViewer.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTiles.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTilesList.hpp">
+      <Filter>Library\Mahoroba</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\InputFile.hpp">
       <Filter>Library\Graphica</Filter>
     </ClInclude>
   </ItemGroup>

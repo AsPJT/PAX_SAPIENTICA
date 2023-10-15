@@ -33,9 +33,9 @@ namespace paxs {
         /// @brief The level of the log.
         /// @brief ログのレベル。
         enum class Level {
-            INFO, // 情報を示すメッセージ（警告やエラー以外）
-            WARNING, // 警告メッセージ
-            ERROR // エラーメッセージ
+            PAX_INFO, // 情報を示すメッセージ（警告やエラー以外）
+            PAX_WARNING, // 警告メッセージ
+            PAX_ERROR // エラーメッセージ
         };
 
         /// @brief Constructor.
@@ -62,7 +62,7 @@ namespace paxs {
             const auto now = std::chrono::system_clock::now();
             const auto in_time_t = std::chrono::system_clock::to_time_t(now);
             std::stringstream ss;
-            ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X");
+            ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X"); // localtime の非推奨
             return ss.str();
         }
 
@@ -75,15 +75,15 @@ namespace paxs {
         void log(const Level level, const std::string& filename, const int line, const std::string& message) noexcept {
             const std::string current_time = currentDateTime();
             file << "[" << current_time << "] ";
-            
+
             switch(level) {
-                case Level::INFO: 
+                case Level::PAX_INFO:
                     file << "[INFO]: ";
                     break;
-                case Level::WARNING: 
+                case Level::PAX_WARNING:
                     file << "[WARNING]: ";
                     break;
-                case Level::ERROR: 
+                case Level::PAX_ERROR:
                     file << "[ERROR]: ";
                     break;
             }
@@ -97,7 +97,7 @@ namespace paxs {
         /// @param filename The name of the file to log. ログを記録するファイルの名前。ex) __FILE__
         /// @param line The line number of the file to log. ログを記録するファイルの行番号。ex) __LINE__
         void handleException(const std::exception& e, const std::string& filename, const int line) noexcept {
-            log(Level::ERROR, filename, line, "Exception: " + std::string(e.what()));
+            log(Level::PAX_ERROR, filename, line, "Exception: " + std::string(e.what()));
         }
     private:
         std::ofstream file; // The file to log.

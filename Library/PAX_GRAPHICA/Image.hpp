@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -18,6 +18,8 @@
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
 #endif
@@ -30,14 +32,15 @@ namespace paxg {
     {
 #if defined(PAXS_USING_SIV3D)
         s3d::Image image;
-        constexpr Image(const paxg::String& path) : image(path) {}
+        Image(const paxg::String& path) : image(path.string) {}
         constexpr operator s3d::Image() const { return image; }
+
 #elif defined(PAXS_USING_SFML)
         sf::Image image;
         Image(const paxg::String& path) { image.loadFromFile(path); }
         operator sf::Image() const { return image; }
 #else
-        constexpr Image(const paxg::String& path) {}
+        constexpr Image([[maybe_unused]] const paxg::String& path) {}
 #endif
     };
 }
