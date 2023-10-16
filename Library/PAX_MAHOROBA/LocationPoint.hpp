@@ -183,7 +183,7 @@ namespace paxs {
                         continue;
                     }
                     // 遺跡を描画
-                    if (lli.source == murmur3("Iseki", 5)) {
+                    if (lli.source == MurMur3::calcHash(5, "Iseki")) {
                         texture_blue_circle.resizedDrawAt(10,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -192,7 +192,7 @@ namespace paxs {
                         continue;
                     }
                     // 前方後円墳を描画
-                    if (lli.source == murmur3("ZempoKoenFun", 12)) {
+                    if (lli.source == MurMur3::calcHash(12, "ZempoKoenFun")) {
                         //#ifdef PAXS_USING_DXLIB
                         //                        paxg::Rect(paxg::Vec2i{
                         //                            static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -221,7 +221,7 @@ namespace paxs {
                         continue;
                     }
                     // 前方後方墳を描画
-                    if (lli.source == murmur3("ZempoKohoFun", 12)) {
+                    if (lli.source == MurMur3::calcHash(12, "ZempoKohoFun")) {
                         texture_kofun2.resizedDrawAt(14,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -230,7 +230,7 @@ namespace paxs {
                         continue;
                     }
                     // 帆立貝型古墳を描画
-                    if (lli.source == murmur3("HotategaiGataKofun", 18)) {
+                    if (lli.source == MurMur3::calcHash(18, "HotategaiGataKofun")) {
                         texture_kofun3.resizedDrawAt(14,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -284,7 +284,7 @@ namespace paxs {
                         , paxg::Color(0, 0, 0));
                     }
                     // 古事記のアイコンを描画
-                    if (lli.source == murmur3("JP-Kojiki", 9)) {
+                    if (lli.source == MurMur3::calcHash(9, "JP-Kojiki")) {
                         texture_ko.resizedDrawAt(20,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -292,14 +292,14 @@ namespace paxs {
                             });
                     }
                     // 倭名類聚抄のアイコンを描画
-                    else if (lli.source == murmur3("JP-WamyoRuijusho", 16)) {
+                    else if (lli.source == MurMur3::calcHash(16, "JP-WamyoRuijusho")) {
                         //texture_wam.resizedDrawAt(20,
                         // paxg::Vec2i{ static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
                         //    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                         //	});
                     }
                     // 前方後円墳のアイコンを描画
-                    else if (lli.source == murmur3("Iseki", 5)) {
+                    else if (lli.source == MurMur3::calcHash(5, "Iseki")) {
                         texture_blue_circle.resizedDrawAt(35,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -307,7 +307,7 @@ namespace paxs {
                             });
                     }
                     // 前方後円墳のアイコンを描画
-                    else if (lli.source == murmur3("ZempoKoenFun", 12)) {
+                    else if (lli.source == MurMur3::calcHash(12, "ZempoKoenFun")) {
                         texture_kofun1.resizedDrawAt(35,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -315,7 +315,7 @@ namespace paxs {
                             });
                     }
                     // 前方後方墳のアイコンを描画
-                    else if (lli.source == murmur3("ZempoKohoFun", 12)) {
+                    else if (lli.source == MurMur3::calcHash(12, "ZempoKohoFun")) {
                         texture_kofun2.resizedDrawAt(35,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -323,7 +323,7 @@ namespace paxs {
                             });
                     }
                     // 帆立貝型古墳のアイコンを描画
-                    else if (lli.source == murmur3("HotategaiGataKofun", 18)) {
+                    else if (lli.source == MurMur3::calcHash(18, "HotategaiGataKofun")) {
                         texture_kofun3.resizedDrawAt(35,
                             paxg::Vec2i{
                             static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
@@ -377,18 +377,18 @@ namespace paxs {
             // 1 行目を読み込む
             std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
-            const std::size_t longitude = getMenuIndex(menu, murmur3("Longitude", 9));
+            const std::size_t longitude = getMenuIndex(menu, MurMur3::calcHash(9, "Longitude"));
             if (longitude == SIZE_MAX) return; // 経度がないのはデータにならない
-            const std::size_t latitude = getMenuIndex(menu, murmur3("Latitude", 8));
+            const std::size_t latitude = getMenuIndex(menu, MurMur3::calcHash(8, "Latitude"));
             if (latitude == SIZE_MAX) return; // 緯度がないのはデータにならない
 
-            const std::size_t local_language = getMenuIndex(menu, murmur3("Local language", 14));
-            const std::size_t english = getMenuIndex(menu, murmur3("English", 7));
-            const std::size_t minimum_size = getMenuIndex(menu, murmur3("Minimum size", 12));
-            const std::size_t maximum_size = getMenuIndex(menu, murmur3("Maximum size", 12));
-            const std::size_t first_julian_day = getMenuIndex(menu, murmur3("First Julian day", 16));
-            const std::size_t last_julian_day = getMenuIndex(menu, murmur3("Last Julian day", 15));
-            const std::size_t source = getMenuIndex(menu, murmur3("Source", 6));
+            const std::size_t local_language = getMenuIndex(menu, MurMur3::calcHash(14, "Local language"));
+            const std::size_t english = getMenuIndex(menu, MurMur3::calcHash(7, "English"));
+            const std::size_t minimum_size = getMenuIndex(menu, MurMur3::calcHash(12, "Minimum size"));
+            const std::size_t maximum_size = getMenuIndex(menu, MurMur3::calcHash(12, "Maximum size"));
+            const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash(16, "First Julian day"));
+            const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash(15, "Last Julian day"));
+            const std::size_t source = getMenuIndex(menu, MurMur3::calcHash(6, "Source"));
 
             // 1 行ずつ読み込み（区切りはタブ）
             while (pifs.getLine()) {
@@ -407,7 +407,7 @@ namespace paxs {
                     (first_julian_day == SIZE_MAX) ? -99999999 : std::stod(strvec[first_julian_day]), // 最小時代
                     (last_julian_day == SIZE_MAX) ? 99999999 : std::stod(strvec[last_julian_day]), // 出典
                     lpe_,
-                    (source == SIZE_MAX) ? 0 : murmur3(strvec[source].c_str()) // 最大時代
+                    (source == SIZE_MAX) ? 0 : MurMur3::calcHash(strvec[source].size(), strvec[source].c_str()) // 最大時代
                 );
             }
         }

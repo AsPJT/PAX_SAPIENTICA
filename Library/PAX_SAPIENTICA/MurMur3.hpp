@@ -19,98 +19,138 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <string>
-
 namespace paxs {
-    // MurMur3 ハッシュ計算関数
+
     namespace mm3 {
-
-        constexpr std::uint_least32_t seed = 0;
         constexpr std::uint_least32_t size4u = 4U;
-
-        constexpr std::uint_least32_t to_uint32(
+    }
+    // MurMur3 ハッシュ計算クラス
+    class MurMur3 {
+    private:
+        static constexpr std::uint_least32_t to_uint32(
             const char* const key,
-            const std::size_t i = size4u,
+            const std::size_t i = mm3::size4u,
             const std::uint_least32_t u32 = 0) {
             return i ? to_uint32(key, i - 1, (u32 << 8) | key[i - 1]) : u32;
         }
 
-        constexpr std::uint_least32_t murmur3a_5(const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3a_5(const std::uint_least32_t h) {
             return h * 5 + 0xe6546b64;
         }
-        constexpr std::uint_least32_t murmur3a_4(const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3a_4(const std::uint_least32_t h) {
             return murmur3a_5((h << 13) | (h >> 19));
         }
-        constexpr std::uint_least32_t murmur3a_3(const std::uint_least32_t k, const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3a_3(const std::uint_least32_t k, const std::uint_least32_t h) {
             return murmur3a_4(h ^ k);
         }
-        constexpr std::uint_least32_t murmur3a_2(const std::uint_least32_t k, const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3a_2(const std::uint_least32_t k, const std::uint_least32_t h) {
             return murmur3a_3(k * 0x1b873593, h);
         }
-        constexpr std::uint_least32_t murmur3a_1(const std::uint_least32_t k, const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3a_1(const std::uint_least32_t k, const std::uint_least32_t h) {
             return murmur3a_2((k << 15) | (k >> 17), h);
         }
-        constexpr std::uint_least32_t murmur3a_0(const std::uint_least32_t k, const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3a_0(const std::uint_least32_t k, const std::uint_least32_t h) {
             return murmur3a_1(k * 0xcc9e2d51, h);
         }
-        constexpr std::uint_least32_t murmur3a(
+        static constexpr std::uint_least32_t murmur3a(
             const char* const key,
             const std::size_t i,
-            const std::uint_least32_t h = seed) {
-            return i ? murmur3a(key + size4u, i - 1, murmur3a_0(to_uint32(key), h)) : h;
+            const std::uint_least32_t h /*seed*/) {
+            return i ? murmur3a(key + mm3::size4u, i - 1, murmur3a_0(to_uint32(key), h)) : h;
         }
 
-        constexpr std::uint_least32_t murmur3b_3(const std::uint_least32_t k, const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3b_3(const std::uint_least32_t k, const std::uint_least32_t h) {
             return h ^ k;
         }
-        constexpr std::uint_least32_t murmur3b_2(const std::uint_least32_t k, const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3b_2(const std::uint_least32_t k, const std::uint_least32_t h) {
             return murmur3b_3(k * 0x1b873593, h);
         }
-        constexpr std::uint_least32_t murmur3b_1(const std::uint_least32_t k, const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3b_1(const std::uint_least32_t k, const std::uint_least32_t h) {
             return murmur3b_2((k << 15) | (k >> 17), h);
         }
-        constexpr std::uint_least32_t murmur3b_0(const std::uint_least32_t k, const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3b_0(const std::uint_least32_t k, const std::uint_least32_t h) {
             return murmur3b_1(k * 0xcc9e2d51, h);
         }
-        constexpr std::uint_least32_t murmur3b(
+        static constexpr std::uint_least32_t murmur3b(
             const char* const key,
             const std::size_t i,
             const std::uint_least32_t h) {
             return i ? murmur3b_0(to_uint32(key, i), h) : h;
         }
 
-        constexpr std::uint_least32_t murmur3c_4(const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3c_4(const std::uint_least32_t h) {
             return h ^ (h >> 16);
         }
-        constexpr std::uint_least32_t murmur3c_3(const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3c_3(const std::uint_least32_t h) {
             return murmur3c_4(h * 0xc2b2ae35);
         }
-        constexpr std::uint_least32_t murmur3c_2(const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3c_2(const std::uint_least32_t h) {
             return murmur3c_3(h ^ (h >> 13));
         }
-        constexpr std::uint_least32_t murmur3c_1(const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3c_1(const std::uint_least32_t h) {
             return murmur3c_2(h * 0x85ebca6b);
         }
-        constexpr std::uint_least32_t murmur3c_0(const std::uint_least32_t h) {
+        static constexpr std::uint_least32_t murmur3c_0(const std::uint_least32_t h) {
             return murmur3c_1(h ^ (h >> 16));
         }
-        constexpr std::uint_least32_t murmur3c(const std::uint_least32_t h, const std::size_t len) {
+        static constexpr std::uint_least32_t murmur3c(const std::uint_least32_t h, const std::size_t len) {
             return murmur3c_0(h ^ static_cast<std::uint_least32_t>(len));
         }
 
-    }
-    // コンパイル時に文字列の MurMur3 ハッシュを計算
-    constexpr std::uint_least32_t murmur3(const char* const str, const std::size_t len) {
-        return mm3::murmur3c(
-            mm3::murmur3b(
-                str + ((len >> 2) * mm3::size4u), len & 3, mm3::murmur3a(str, len >> 2)
-            )
-            , len);
-    }
-    // 実行時に文字列の MurMur3 ハッシュを計算
-    std::uint_least32_t murmur3(const std::string& str) {
-        return murmur3(str.c_str(), str.size());
-    }
+        static constexpr std::uint_least32_t murmur3_Rotate(std::uint_least32_t value, std::size_t r) {
+            return (value << r) | (value >> (32 - r));
+        }
+        static constexpr std::uint_least32_t murmur3_Chunk(const char* const str, std::uint_least32_t h) {
+            return murmur3a_5(murmur3_Rotate(murmur3b(str, 4, h), 13));
+        }
+        static constexpr std::uint_least32_t calcHashStack(
+            const char* const str, const std::uint_least32_t h, const std::size_t count) {
+            return ((str[0] == '\0') ? murmur3c(h, count) :
+                ((str[1] == '\0') ? murmur3c(murmur3b(str, 1, h), count + 1) :
+                    ((str[2] == '\0') ? murmur3c(murmur3b(str, 2, h), count + 2) :
+                        ((str[3] == '\0') ? murmur3c(murmur3b(str, 3, h), count + 3)
+                            : calcHashStack(str + 4, murmur3_Chunk(str, h), count + 4)))));
+        }
+
+    public:
+        // コンパイル時に文字列の MurMur3 ハッシュを計算
+        static constexpr std::uint_least32_t calcHash(const std::size_t len, const char* const str, const std::uint_least32_t seed = 0) {
+            return murmur3c(
+                murmur3b(
+                    str + ((len >> 2) * mm3::size4u), len & 3, murmur3a(str, len >> 2, seed)
+                )
+                , len);
+        }
+        // 文字列の長さを計算する（スタックによる実装）
+        static constexpr std::uint_least32_t calcHashStack(const char* const str, const std::uint_least32_t seed = 0) {
+            return calcHashStack(str, seed, 0);
+        }
+        // 文字列の長さを計算する
+        static constexpr std::uint_least32_t calcHash(const char* const str, const std::uint_least32_t seed = 0) {
+            std::uint_least32_t h = seed; std::size_t len = 0;
+            for (;; len += 4) {
+                if (str[len] == '\0') break;
+                else if (str[len + 1] == '\0') {
+                    h = murmur3b(str + len, 1, h);
+                    len += 1;
+                    break;
+                }
+                else if (str[len + 2] == '\0') {
+                    h = murmur3b(str + len, 2, h);
+                    len += 2;
+                    break;
+                }
+                else if (str[len + 3] == '\0') {
+                    h = murmur3b(str + len, 3, h);
+                    len += 3;
+                    break;
+                }
+                else h = murmur3_Chunk(str + len, h);
+            }
+            return murmur3c(h, len);
+        }
+
+    };
 
 }
 

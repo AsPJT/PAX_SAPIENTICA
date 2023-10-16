@@ -54,7 +54,7 @@ namespace paxs {
             while (std::getline(stream, field, delimiter)) {
                 result.emplace_back(field);
             }
-            text_map.emplace(murmur3(result.front().c_str()), text.size());
+            text_map.emplace(MurMur3::calcHash(result.front().size(), result.front().c_str()), text.size());
             text.emplace_back(result);
         }
 

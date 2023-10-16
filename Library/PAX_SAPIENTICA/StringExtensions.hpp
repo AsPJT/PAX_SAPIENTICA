@@ -60,11 +60,11 @@ namespace paxs {
         /// @brief デリミタで文字列を分割する（ std::unordered_map 版）
         static std::unordered_map<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const std::string& input, const char delimiter) noexcept {
             std::istringstream stream(input);
-            std::string field;
+            std::string field{};
             std::unordered_map<std::uint_least32_t, std::size_t> result;
             std::size_t index = 0;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
-                result.emplace(murmur3(field), index);
+                result.emplace(MurMur3::calcHash(field.size(), field.c_str()), index);
                 ++index;
             }
             return result;
