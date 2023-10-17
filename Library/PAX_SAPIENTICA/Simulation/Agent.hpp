@@ -100,7 +100,7 @@ namespace paxs {
             }
 
             std::discrete_distribution<> dist(probabilities.begin(), probabilities.end());
-            this->move(move_directions[dist(engine)]);            
+            this->move(move_directions[dist(engine)]);
         }
 
         /// @brief Move the agent.
@@ -121,14 +121,14 @@ namespace paxs {
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す
         constexpr bool isDead() const noexcept { return age >= life_span; }
-        
+
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
         constexpr std::uint_least32_t getAge() const noexcept { return age; }
 
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする
-        constexpr void incrementAge() noexcept { 
+        constexpr void incrementAge() noexcept {
             if (age != (std::numeric_limits<std::uint_least32_t>::max)()) {
                 ++age;
             }
@@ -143,17 +143,21 @@ namespace paxs {
         constexpr std::uint_least8_t getGender() const noexcept { return gender; }
 
         constexpr bool operator==(const Agent& a) const noexcept {
-            return  Object<GridType>::operator==(a) && 
-                    gender == a.gender && 
+            return  Object<GridType>::operator==(a) &&
+                    gender == a.gender &&
                     age == a.age &&
                     life_span == a.life_span &&
                     environment == a.environment;
         }
+
+        bool isMarried() const noexcept { return _isMarried; }
     protected:
         std::uint_least8_t gender; // 性別
         std::uint_least32_t age; // 年齢
         std::uint_least32_t life_span; // 寿命
         std::shared_ptr<Environment> environment; // 環境
+        bool _isMarried = false; // 結婚しているかどうか
+        std::uint_least32_t partnerId = 0; // 結婚相手のID
     };
 }
 

@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <cstdint>
 #include <memory>
 #include <random>
 #include <vector>
@@ -24,6 +25,7 @@
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>
+#include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
 namespace paxs {
 
@@ -82,14 +84,26 @@ namespace paxs {
         /// @brief Execute the simulation for the one step.
         /// @brief シミュレーションを1ステップ実行する
         void step() noexcept {
-            for (auto& settlement : settlements) {
-                settlement.preUpdate();
+            for (Settlement& settlement : settlements) {
+                settlement.preUpdate(gen);
             }
 
-            for (auto& settlement : settlements) {
+            for (Settlement& settlement : settlements) {
+                settlement.marriage(settlements);
+            }
+
+            for (Settlement& settlement : settlements) {
                 settlement.onUpdate();
             }
         }
+
+        /// @brief Get the settlements.
+        /// @brief 集落を取得
+        const std::vector<Settlement>& cgetSettlements() const noexcept { return settlements; }
+
+        /// @brief Get the settlements.
+        /// @brief 集落を取得
+        std::vector<Settlement>& getSettlements() noexcept { return settlements; }
 
     private:
         std::vector<Settlement> settlements;
@@ -102,7 +116,8 @@ namespace paxs {
         /// @brief Randomly place settlements.
         /// @brief 集落をランダムに配置する
         void randomizeSettlements() noexcept {
-            // TODO: 未実装
+            // TODO: 日本の地方区分の人口数をもとに、集落をランダムに配置する
+
         }
 
     };
