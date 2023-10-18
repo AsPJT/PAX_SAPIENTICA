@@ -1,11 +1,11 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -13,8 +13,8 @@
 #define PAX_SAPIENTICA_CALENDAR_JULIAN_DAY_NUMBER_HPP
 
 /*##########################################################################################
-	Deals with calculations related to the Julian calendar, the Gregorian calendar, and the Julian day.
-	ユリウス暦、グレゴリオ暦、ユリウス日に関する計算を扱う。
+    Deals with calculations related to the Julian calendar, the Gregorian calendar, and the Julian day.
+    ユリウス暦、グレゴリオ暦、ユリウス日に関する計算を扱う。
 ##########################################################################################*/
 
 #include <cmath>
@@ -23,6 +23,7 @@
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
+#include <PAX_SAPIENTICA/Calendar/ChineseEra.hpp>
 
 namespace paxs::cal {
 
@@ -158,6 +159,63 @@ namespace paxs::cal {
             }
             return jp_date;
         }
+
+        // 中国大陸の暦を取得
+        constexpr ChinaDate toChineseCalendar(const std::vector<paxs::ChineseEra>& japanese_era_list) const {
+            ChinaDate jp_date{ 0,1,1,1,false };
+
+            // ユリウス日が 1480407 以上（神武 1 年 1 月 1 日以降、グレゴリオ暦 紀元前 660 年 2 月 11 日以降）
+            if (day >= 1480407) {
+                bool is_break = false;
+                if (japanese_era_list.size() == 0) return ChinaDate{};
+                // 元号一覧からその日に合った元号を取得
+                for (std::size_t i = 0; i < japanese_era_list.size() - 1; ++i) {
+                    auto& jeli = japanese_era_list[i];
+                    if (day >= jeli.start_jdn
+                        && day < japanese_era_list[i + 1].start_jdn) {
+                        is_break = true; // 元号一覧からその日に合った元号が見つかったのでループを抜ける
+                        // 改元されている場合
+                        if (jeli.kaigen_jdn[0] != 0 &&
+                            day >= jeli.kaigen_jdn[0]) {
+                            jp_date.setGengo(jeli.gengo[1]);
+                            jp_date.setYear(jeli.gengo_num[1]);
+                        }
+                        else {
+                            jp_date.setGengo(jeli.gengo[0]);
+                            jp_date.setYear(jeli.gengo_num[0]);
+                        }
+                    }
+                    // 元号一覧からその日に合った元号が見つかった場合
+                    if (is_break) {
+                        int lm = ((jeli.leap_month == 0) ? 999 : jeli.leap_month - 1);
+
+                        int calc_day = int(day) - jeli.start_jdn; // １月１日
+                        // 月と日の計算
+                        for (int j = 0; j < 12; ++j) {
+                            if (calc_day < jeli.number_of_days[j]) {
+                                jp_date.setMonth(DateMonth(j + 1));
+                                jp_date.setDay(DateDay(calc_day + 1));
+                                jp_date.setLeapMonth(false);
+                                break;
+                            }
+                            calc_day -= jeli.number_of_days[j];
+                            if (j == lm) {
+                                if (calc_day < jeli.number_of_days_of_leap_month) {
+                                    jp_date.setMonth(DateMonth(j + 1));
+                                    jp_date.setDay(DateDay(calc_day + 1));
+                                    jp_date.setLeapMonth(true);
+                                    break;
+                                }
+                                calc_day -= jeli.number_of_days_of_leap_month;
+                            }
+                        }
+                    }
+                    if (is_break) break;
+                }
+            }
+            return jp_date;
+        }
+
         // 較正年代を取得
         constexpr CalBP toCalBP() const {
             GregorianDate ymd = toGregorianCalendar();
@@ -166,30 +224,30 @@ namespace paxs::cal {
             else value = 1950 - value;
             return CalBP{ value };
         }
-        private:
-            // ヒジュラ暦の閏年かどうか
-            constexpr bool isIslamicLeapYear(const int year) const { return ((((11 * year) + 14) % 30) < 11); }
-            // ヒジュラ暦の月の日数計算
-            constexpr int getLastMonthDay(const int year, const int month) const {
-                return (((month % 2) == 1) || ((month == 12) && isIslamicLeapYear(year))) ? 30 : 29;
-            }
-        public:
-            // ヒジュラ暦を取得
-            constexpr IslamicDate toIslamicCalendar() const {
-                // islamic_day(227014) = jdn(1948439)
-                const int islamic_day = static_cast<int>(day) - 1721425;
-                // ヒジュラ暦以前の日付
-                if (islamic_day <= 227014) return IslamicDate(0, 0, 0);
-                IslamicDate ymd{};
-                // おおよその年から1年ずつ前倒しで検索
-                ymd.setYear((islamic_day - 227014) / 355);
-                while (islamic_day >= IslamicDate(ymd.getYear() + 1, 1, 1)) ymd.getYear()++;
-                // ムハッラム（ Muharram ・１月）から月単位で検索
-                ymd.setMonth(1);
-                while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(getLastMonthDay(ymd.getYear(), ymd.getMonth())))) ymd.getMonth()++;
-                ymd.setDay(static_cast<DateDay>(islamic_day - static_cast<int>(IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(1))) + 1));
-                return ymd;
-            }
+    private:
+        // ヒジュラ暦の閏年かどうか
+        constexpr bool isIslamicLeapYear(const int year) const { return ((((11 * year) + 14) % 30) < 11); }
+        // ヒジュラ暦の月の日数計算
+        constexpr int getLastMonthDay(const int year, const int month) const {
+            return (((month % 2) == 1) || ((month == 12) && isIslamicLeapYear(year))) ? 30 : 29;
+        }
+    public:
+        // ヒジュラ暦を取得
+        constexpr IslamicDate toIslamicCalendar() const {
+            // islamic_day(227014) = jdn(1948439)
+            const int islamic_day = static_cast<int>(day) - 1721425;
+            // ヒジュラ暦以前の日付
+            if (islamic_day <= 227014) return IslamicDate(0, 0, 0);
+            IslamicDate ymd{};
+            // おおよその年から1年ずつ前倒しで検索
+            ymd.setYear((islamic_day - 227014) / 355);
+            while (islamic_day >= IslamicDate(ymd.getYear() + 1, 1, 1)) ymd.getYear()++;
+            // ムハッラム（ Muharram ・１月）から月単位で検索
+            ymd.setMonth(1);
+            while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(getLastMonthDay(ymd.getYear(), ymd.getMonth())))) ymd.getMonth()++;
+            ymd.setDay(static_cast<DateDay>(islamic_day - static_cast<int>(IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(1))) + 1));
+            return ymd;
+        }
     };
 
     using JDN_F64 = JulianDayNumber<double>;

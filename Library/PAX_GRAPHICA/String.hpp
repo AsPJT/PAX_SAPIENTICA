@@ -160,7 +160,13 @@ namespace paxg {
         int font{ -1 }; int h{ 0 };
         Font(const int size_, const std::string& path, const int buffer_thickness) {
             font = DxLib::CreateFontToHandle(NULL, size_, -1,
-                (buffer_thickness <= 0) ? DX_FONTTYPE_NORMAL :DX_FONTTYPE_EDGE);
+                (buffer_thickness <= 0) ? DX_FONTTYPE_NORMAL :
+#ifdef __ANDROID__
+                DX_FONTTYPE_EDGE
+#else
+                DX_FONTTYPE_ANTIALIASING_EDGE_4X4
+#endif
+            );
             h = size_;
         }
         void setOutline(const double inner, const double outer, const paxg::Color& color) const {

@@ -151,14 +151,14 @@ namespace paxs {
                 font[select_index].draw(
                     std::string(
                         (language_index + start_language_index < itemsa[item_index].size()) ? itemsa[item_index][language_index + start_language_index] : itemsa[item_index][start_language_index]
-                    ), paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{0, 0, 0});
+                    ), paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{ 0, 0, 0 });
                 break;
             case paxs::PulldownType::One:
                 // 文字を描画
                 font[language_index].draw(
                     std::string(
                         (language_index + start_language_index < itemsa[item_index].size()) ? itemsa[start_index][language_index + start_language_index] : itemsa[item_index][start_language_index]
-                    ), paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{0, 0, 0});
+                    ), paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{ 0, 0, 0 });
                 break;
             default:break;
             }
@@ -182,7 +182,7 @@ namespace paxs {
             pos.setY(static_cast<int>(pos.y() + rect.h()));
             if (is_open) {
                 // 四角形を描画
-                const paxg::Rect back_rect{ pos, rect.w(), (rect.h()* item_size/*itemsa.size()*/)};
+                const paxg::Rect back_rect{ pos, rect.w(), (rect.h() * item_size/*itemsa.size()*/) };
 #ifdef PAXS_USING_SIV3D
                 // 影を描画
                 back_rect.rect.drawShadow({ 1, 1 }, 4, 1).draw();
@@ -209,7 +209,7 @@ namespace paxs {
                     // 文字を描画
                     font[select_index2].draw(
                         std::string((language_index + start_language_index < itemsa[i].size()) ? itemsa[i][language_index + start_language_index] : itemsa[i][start_language_index]),
-                        paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{0, 0, 0});
+                        paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{ 0, 0, 0 });
                     pos.setY(static_cast<int>(pos.y() + rect.h()));
                 }
                 // ふちを描画

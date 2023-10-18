@@ -37,7 +37,7 @@ namespace s3d
         Point operator+([[maybe_unused]] const Point& p) const { return Point(); }
         Point operator-([[maybe_unused]] const Point& p) const { return Point(); }
         Point operator*([[maybe_unused]] double d) const { return Point(); }
-        Point movedBy([[maybe_unused]] int x_,[[maybe_unused]]  int y_) const { return Point(); }
+        Point movedBy([[maybe_unused]] int x_, [[maybe_unused]] int y_) const { return Point(); }
         Point movedBy([[maybe_unused]] const Point& p) const { return Point(); }
         Point operator +([[maybe_unused]] const Vec2& p) const { return Point(); }
     };
@@ -279,8 +279,10 @@ namespace s3d
         void draw([[maybe_unused]] Vec2 p, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] ColorF c) const {}
         void setBufferThickness([[maybe_unused]] int n) {}
         Font operator ()([[maybe_unused]] String s1, [[maybe_unused]] std::size_t n1,
-        [[maybe_unused]] String s2, [[maybe_unused]] std::size_t n2,
-        [[maybe_unused]] String s3, [[maybe_unused]] std::size_t n3) const { return Font(); }
+            [[maybe_unused]] String s2, [[maybe_unused]] std::size_t n2,
+            [[maybe_unused]] String s3, [[maybe_unused]] std::size_t n3) const {
+            return Font();
+        }
     };
 
     class Mouse

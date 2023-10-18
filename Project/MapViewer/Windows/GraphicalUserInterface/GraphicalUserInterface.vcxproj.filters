@@ -863,5 +863,8 @@
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\InputFile.hpp">
       <Filter>Library\Graphica</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\InputFileKeyMatrix.hpp">
+      <Filter>Library\Graphica</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

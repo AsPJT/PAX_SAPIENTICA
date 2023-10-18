@@ -1,11 +1,11 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -13,8 +13,8 @@
 #define PAX_SAPIENTICA_CALENDAR_CALENDARS_HPP
 
 /*##########################################################################################
-	Define a structure that handles the year, month, and day.
-	年月日を扱う構造体を定義する。
+    Define a structure that handles the year, month, and day.
+    年月日を扱う構造体を定義する。
 ##########################################################################################*/
 
 // TODO:改修必須
@@ -35,6 +35,7 @@ namespace paxs::cal {
         , gregorian_date_type// グレゴリオ暦
         , islamic_date_type	// ヒジュラ暦
         , japan_date_type	// 和暦
+        , china_date_type	// 中国大陸の暦
         , calbp_type		// 較正年代
         , simulation_steps_type// シミュレーションのステップ数
     };
@@ -48,6 +49,7 @@ namespace paxs::cal {
         , GregorianDate	// グレゴリオ暦
         , IslamicDate	// ヒジュラ暦
         , JapanDate		// 和暦
+        , ChinaDate		// 中国大陸の暦
         , CalBP			// 較正年代
         , SimulationSteps// シミュレーションのステップ数
     >;

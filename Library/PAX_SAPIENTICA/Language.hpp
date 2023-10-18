@@ -23,6 +23,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include <PAX_SAPIENTICA/MurMur3.hpp>
+
 #include <PAX_GRAPHICA/InputFile.hpp>
 
 namespace paxs {
@@ -41,7 +43,7 @@ namespace paxs {
         using Languages = std::vector<std::string>; // 各国の言語の読み方を保持
 
         std::vector<Languages> text{}; // テキストを二次元配列で管理
-        std::unordered_map<std::string, std::size_t> text_map{}; // テキストを辞書で管理
+        std::unordered_map<std::uint_least32_t, std::size_t> text_map{}; // テキストを辞書で管理
         Languages empty{}; // テキストが見つからなかった時に返す変数
 
         // 文字を指定した区切り文字で分割し、テキストの配列や辞書に格納
@@ -52,7 +54,7 @@ namespace paxs {
             while (std::getline(stream, field, delimiter)) {
                 result.emplace_back(field);
             }
-            text_map.emplace(result.front(), text.size());
+            text_map.emplace(MurMur3::calcHash(result.front().size(), result.front().c_str()), text.size());
             text.emplace_back(result);
         }
 
@@ -83,14 +85,14 @@ namespace paxs {
             add(str_);
         }
         // 始点を探す
-        std::size_t findStart(const std::string& str_) const {
+        std::size_t findStart(const std::uint_least32_t& str_) const {
             if (text_map.find(str_) != text_map.end()) {
                 return text_map.at(str_);
             }
             return 0;
         }
         // 見つけたい単語を探す
-        Languages& getFindStart(const std::string& str_) {
+        Languages& getFindStart(const std::uint_least32_t& str_) {
             const std::size_t index = findStart(str_);
             if (index < text.size()) {
                 return text[index];
@@ -98,7 +100,7 @@ namespace paxs {
             return empty;
         }
         // 見つけたい単語を探す
-        const Languages& cgetFindStart(const std::string& str_) const {
+        const Languages& cgetFindStart(const std::uint_least32_t& str_) const {
             const std::size_t index = findStart(str_);
             if (index < text.size()) {
                 return text[index];
@@ -106,7 +108,7 @@ namespace paxs {
             return empty;
         }
         // 見つけたい単語を探し、テキストの二次元配列（単語一覧）で返す
-        std::vector<Languages> getFindStartToVVS(const std::string& str_, const std::size_t start_index) const {
+        std::vector<Languages> getFindStartToVVS(const std::uint_least32_t& str_, const std::size_t start_index) const {
             std::vector<Languages> tmp{};
             const Languages& lt = cgetFindStart(str_);
             for (std::size_t i = start_index; i < lt.size(); ++i) {

@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_CALENDAR_JAPANESE_ERA_HPP
-#define PAX_SAPIENTICA_CALENDAR_JAPANESE_ERA_HPP
+#ifndef PAX_SAPIENTICA_CALENDAR_CHINESE_ERA_HPP
+#define PAX_SAPIENTICA_CALENDAR_CHINESE_ERA_HPP
 
 /*##########################################################################################
 
@@ -29,7 +29,7 @@
 namespace paxs {
 
     // 日本の元号
-    struct JapaneseEra {
+    struct ChineseEra {
         std::array<int, 4> gengo{};			// 元号
         std::array<int, 4> gengo_num{};				// 年
         int start_jdn{};							// その元号が開始するユリウス日
@@ -39,8 +39,8 @@ namespace paxs {
         int leap_month{};							// 閏月
 
         // コンストラクタ
-        JapaneseEra() = default;
-        JapaneseEra(const std::array<int, 4>& gengo_,
+        ChineseEra() = default;
+        ChineseEra(const std::array<int, 4>& gengo_,
             const std::array<int, 4>& gengo_num_,
             const int start_jdn_,
             const std::array<int, 2>& kaigen_jdn_,
@@ -66,7 +66,7 @@ namespace paxs {
         /// @brief 日本の元号一覧を入力する
         /// @param japanese_era_list 元号リスト
         /// @param path 元号一覧のファイルパス
-        static void inputList(std::vector<paxs::JapaneseEra>& japanese_era_list, const std::string& path) {
+        static void inputList(std::vector<paxs::ChineseEra>& japanese_era_list, const std::string& path) {
 
             paxg::InputFile pifs(path);
             if (pifs.fail()) return;
@@ -102,4 +102,4 @@ namespace paxs {
     };
 }
 
-#endif // !PAX_SAPIENTICA_CALENDAR_JAPANESE_ERA_HPP
+#endif // !PAX_SAPIENTICA_CALENDAR_CHINESE_ERA_HPP

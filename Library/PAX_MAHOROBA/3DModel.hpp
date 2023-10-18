@@ -95,7 +95,7 @@ namespace paxs {
                 if (x >= 360.0) x -= 360.0;
                 if (y >= 360.0) y -= 360.0;
                 // 球体に 360 度写真を貼り付ける
-                s3d::Sphere{ 0, 2, /*-14.2*/-15.5, 2}.draw(
+                s3d::Sphere{ 0, 2, /*-14.2*/-15.5, 2 }.draw(
                     //s3d::Quaternion::RotateY(rot / 180.0 * 3.1416) *
                     //s3d::Quaternion::RotateX(rot / 180.0 * 3.1416)
                     s3d::Quaternion::RotateY(x / 180.0 * 3.1416) *

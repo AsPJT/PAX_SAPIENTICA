@@ -48,6 +48,8 @@ static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 
 #include <PAX_GRAPHICA/Key.hpp>
 
+#include <PAX_SAPIENTICA/MurMur3.hpp>
+
 namespace paxs {
 
     // 主要な実行時定数・変数
@@ -62,11 +64,11 @@ namespace paxs {
 
         // 可視化一覧
         GraphicVisualizationList visible{};
-        visible.emplace("Calendar", true); // 暦
-        visible.emplace("Map", true); // 地図
-        visible.emplace("UI", true); // UI
-        visible.emplace("License", false); // ライセンス
-        visible.emplace("3D", false); // 3D
+        visible.emplace(MurMur3::calcHash(8, "Calendar"), true); // 暦
+        visible.emplace(MurMur3::calcHash(3, "Map"), true); // 地図
+        visible.emplace(MurMur3::calcHash(2, "UI"), true); // UI
+        visible.emplace(MurMur3::calcHash(7, "License"), false); // ライセンス
+        visible.emplace(MurMur3::calcHash(2, "3D"), false); // 3D
 
         //#ifdef PAXS_USING_SIMULATOR
         paxs::Simulator<int> simulator;
@@ -144,13 +146,13 @@ namespace paxs {
 
             // 表示の可視化を更新
             //Calendar Map UI Simulation License Debug 3D
-            visible.set("Calendar", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(0));
-            visible.set("Map", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(1));
-            visible.set("UI", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(2));
-            visible.set("Simulation", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(3));
-            visible.set("License", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(4));
-            visible.set("Debug", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(5));
-            visible.set("3D", string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(6));
+            visible.set(MurMur3::calcHash(8, "Calendar"), string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(0));
+            visible.set(MurMur3::calcHash(3, "Map"), string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(1));
+            visible.set(MurMur3::calcHash(2, "UI"), string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(2));
+            visible.set(MurMur3::calcHash(10, "Simulation"), string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(3));
+            visible.set(MurMur3::calcHash(7, "License"), string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(4));
+            visible.set(MurMur3::calcHash(5, "Debug"), string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(5));
+            visible.set(MurMur3::calcHash(2, "3D"), string_siv.menu_bar.getPulldown(MenuBarType::view).getIsItems(6));
 
             // 地図を更新
             map_siv.update(
