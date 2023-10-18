@@ -126,6 +126,8 @@ namespace paxs {
             inputPlace(std::string("Data/PlaceName/WamyoRuijushoKori.tsv"));
             // おもろさうしの地名
             inputPlace(std::string("Data/PlaceName/OmoroSoshiPlaceName.tsv"));
+            // 中国大陸の地名
+            inputPlace(std::string("Data/PlaceName/China.tsv"));
         }
 
         PlaceNameLocation() {
