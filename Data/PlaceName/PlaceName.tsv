@@ -1,4 +1,4 @@
-Local language	English	Longitude	Latitude	Minimum size	Maximum size	First Julian day	Last Julian day	Source
+language_ja_jp	language_en_us	longitude	latitude	min_size	max_size	first_julian_day	last_julian_day	texture
 州胡	Zhouhu	126.544687	33.378782	0.1	40	1721424	1894917	None
 耽羅國	Tamna	126.544687	33.378782	0.1	40	1894917	2130504	None
 濟州	Jeju	126.544687	33.378782	0.1	40	2130504	9999999	None

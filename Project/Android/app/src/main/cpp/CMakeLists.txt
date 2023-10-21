@@ -29,6 +29,7 @@ project("paxsapientica")
 # System.loadLibrary() and pass the name of the library defined here;
 # for GameActivity/NativeActivity derived applications, the same library name must be
 # used in the AndroidManifest.xml file.
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 add_library( # Sets the name of the library.
         native-lib
 
@@ -54,6 +55,7 @@ target_link_libraries( # Specifies the target library.
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib}
+        -static-openmp
         android
         GLESv1_CM
         EGL
