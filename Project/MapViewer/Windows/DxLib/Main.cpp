@@ -13,6 +13,7 @@
 #define PAXS_PATH "./../../../../"
 #define PAXS_USING_DXLIB
 #include <DxLib.h> // DxLib
+#include <omp.h>
 #include <PAX_MAHOROBA/Main.hpp>
 
 #if defined(__ANDROID__)

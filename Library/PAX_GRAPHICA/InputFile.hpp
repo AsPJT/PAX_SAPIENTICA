@@ -34,8 +34,8 @@ namespace paxg {
 
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
         int file_handle{ 0 };
-        std::string pline{};
-        std::string pline_tmp{};
+        std::string pline0{}; // ファイル読み込み用の文字列 (char*) として扱う
+        std::string pline{}; // std::string として用いる文字列
 #else
         std::ifstream pifs{};
         std::string pline{};
@@ -62,8 +62,7 @@ namespace paxg {
 #endif // __ANDROID__
             DxLib::FileRead_set_format(file_handle, DX_CHARCODEFORMAT_UTF8); // UTF-8 を読み込む
             if (file_handle != 0) {
-                pline.resize(4096);
-                pline_tmp.resize(4096);
+                pline0.resize(4096);
             }
 #else
             pifs = std::ifstream((default_path_.size() == 0) ? str_ : default_path_ + str_); // ファイルを読み込む
@@ -72,9 +71,12 @@ namespace paxg {
         // 1 行読み込む
         bool getLine() {
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
-            const int dline = DxLib::FileRead_gets(&(pline[0]), 4096, file_handle);
-            if (dline == -1) return false;
-            if (dline == 0) return false;
+            const int dline = DxLib::FileRead_gets(&(pline0[0]), 4096, file_handle);
+            if (dline == -1 || dline == 0) {
+                pline.clear();
+                return false;
+            }
+            pline = std::string(pline0.c_str()); // std::string 型に変える
             return true;
 #else
             return static_cast<bool>(std::getline(pifs, pline));
