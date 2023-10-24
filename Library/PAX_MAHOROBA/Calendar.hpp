@@ -160,18 +160,18 @@ namespace paxs {
         ) {
             // 各暦の日付情報を初期化
             date_list = std::vector<OutputDate>{
-                OutputDate{language_text.cgetFindStart(MurMur3::calcHash(14, "calendar_japan")),cal::JapanDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash(18, "calendar_gregorian")),cal::GregorianDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash(15, "calendar_julian")), cal::JulianDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash(14, "calendar_hijri")), cal::IslamicDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash(16, "calendar_chinese")), cal::ChinaDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash(19, "calendar_julian_day")), cal::JDN_S64() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash(14, "calendar_calbp")), cal::CalBP()},
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash(24, "menu_bar_view_simulation")), cal::SimulationSteps()}
+                OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_japan")),cal::JapanDate() },
+                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_gregorian")),cal::GregorianDate() },
+                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_julian")), cal::JulianDate() },
+                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_hijri")), cal::IslamicDate() },
+                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_chinese")), cal::ChinaDate() },
+                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_julian_day")), cal::JDN_S64() },
+                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_calbp")), cal::CalBP()},
+                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("menu_bar_view_simulation")), cal::SimulationSteps()}
             };
             // 須恵器編年の文字列を言語テキストファイルから探して格納
-            sueki_nakamura_index = language_text.findStart(MurMur3::calcHash(14, "sueki_nakamura"));
-            sueki_tanabe_index = language_text.findStart(MurMur3::calcHash(12, "sueki_tanabe"));
+            sueki_nakamura_index = language_text.findStart(MurMur3::calcHash("sueki_nakamura"));
+            sueki_tanabe_index = language_text.findStart(MurMur3::calcHash("sueki_tanabe"));
 
             // 暦を読み込み
             paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");

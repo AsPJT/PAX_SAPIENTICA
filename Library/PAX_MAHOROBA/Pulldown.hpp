@@ -19,6 +19,7 @@
 #include <algorithm> // std::max
 #include <limits>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <PAX_MAHOROBA/Init.hpp>
@@ -90,6 +91,12 @@ namespace paxs {
             is_items.resize(item_size);
             for (auto&& is_item : is_items) {
                 is_item = true;
+            }
+            // Key List を作成
+            for (std::size_t i = 1; i < item_size; ++i) {
+                const auto& item = items_[start_index_ + i];
+                if (item.size() == 0) continue;
+                item_index_key.emplace(MurMur3::calcHash(item.front().size(), item.front().c_str()), i - 1);
             }
         }
         // からか判定
@@ -220,10 +227,17 @@ namespace paxs {
         void setPos(const paxg::Vec2i& pos) { rect.setPos(pos); }
         const paxg::Rect& getRect() const { return rect; }
         size_t getIndex() const { return index + start_index; }
-        bool getIsItems(std::size_t i) const {
+        // 引数の添え字番号の項目が TRUE か FALSE になっているか調べる
+        bool getIsItems(const std::size_t i) const {
             if (is_items.size() == 0) return true; // データがない場合
             if (i < is_items.size()) return is_items[i];
             return is_items.front();
+        }
+        // 引数の Key の項目が TRUE か FALSE になっているか調べる
+        bool getIsItemsKey(const std::uint_least32_t key) const {
+            if (is_items.size() == 0) return true; // データがない場合
+            if (item_index_key.find(key) == item_index_key.end()) return true; // 引数の Key が存在しない場合
+            return getIsItems(item_index_key.at(key));
         }
         std::string getItem() const {
             if (isEmpty()) return{};
@@ -237,7 +251,8 @@ namespace paxs {
         std::size_t language_index = 0; // 言語の要素番号
         std::vector<paxg::Font> font{};
         std::vector<Languages> itemsa{}; // プルダウンに使用されている単語一覧
-        std::vector<bool> is_items{};
+        std::vector<bool> is_items{}; // 項目が TRUE か FALSE になっているか格納
+        std::unordered_map<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
         paxg::Rect rect{};
@@ -256,11 +271,13 @@ namespace paxs {
             const std::vector<Languages>& menu_bar_pulldown,
             const std::size_t start_index,
             const std::size_t start_language_index,
-            const std::vector<paxg::Font>& font_menu_bar) {
+            const std::vector<paxg::Font>& font_menu_bar,
+            const std::uint_least32_t pulldown_key_) {
 
             if (pdv.size() != 0) {
                 start_x += static_cast<std::size_t>(pdv.back().getRect().w());
             }
+            pulldown_key.emplace(pulldown_key_, pdv.size());
             pdv.emplace_back(paxs::Pulldown(
                 menu_bar_pulldown,
                 start_index,
@@ -284,15 +301,22 @@ namespace paxs {
             }
         }
 
-        paxs::Pulldown& getPulldown(const std::size_t i) {
-            return pdv[i];
+        paxs::Pulldown& getPulldown(const std::uint_least32_t key) {
+            return (pulldown_key.find(key) != pulldown_key.end()) ? pdv[pulldown_key.at(key)] : empty;
         }
-        const paxs::Pulldown& cgetPulldown(const std::size_t i) const {
-            return pdv[i];
+        const paxs::Pulldown& cgetPulldown(const std::uint_least32_t key) const {
+            return (pulldown_key.find(key) != pulldown_key.end()) ? pdv[pulldown_key.at(key)] : empty;
         }
 
     private:
+        // メニューバーに付属するプルダウンが左から順番に格納されている
+        // 例） | ファイル | 編集 | 表示 |
         std::vector<paxs::Pulldown> pdv;
+        paxs::Pulldown empty{};
+
+        // 各プルダウンに紐づけられた Key (Hash)
+        std::unordered_map<std::uint_least32_t, std::size_t> pulldown_key{};
+
         std::size_t start_x = 0;
     };
 
