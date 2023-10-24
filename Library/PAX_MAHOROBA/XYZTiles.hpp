@@ -33,18 +33,12 @@
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
+#include <PAX_SAPIENTICA/MurMur3.hpp>
+
 namespace paxs {
 
     class XYZTile {
     public:
-        // XYZ タイルの種別
-        enum XYZTileFileName : int {
-            Empty,
-            Default,
-            Original,
-            Z_Original
-        };
-
         // XYZ タイルの 1 つのセルのメルカトル座標を保持
         // 基本的に Z = 19 は無い
         using MapVec2 = Vector2<int>;
@@ -116,8 +110,6 @@ namespace paxs {
             cell_all_num = (cell_num.x + 1) * (cell_num.y + 1);
             pos_list1.resize(cell_all_num);
             pos_list2.resize(cell_all_num);
-            // texture_list.resize(cell_all_num);
-
 
             for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
                 for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
@@ -136,8 +128,10 @@ namespace paxs {
             }
             if (map_name.size() == 0) return;
 
+            const std::string z_value = std::to_string(z); // Z の値
             // ファイルを保存
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+                const std::string y_value = std::to_string((i + z_num) % z_num); // Y の値
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 
                     // 画像が既にある場合は終了
@@ -145,45 +139,46 @@ namespace paxs {
                         continue;
                     }
 
+                    const std::string x_value = std::to_string((j + z_num) % z_num); // X の値
+
                     std::string new_saveFilePath = "";
                     switch (file_name_enum) {
-                    case XYZTileFileName::Original:
+                    case MurMur3::calcHash("{n}_{z}_{x}_{y}"):
                         new_saveFilePath = (map_file_path_name + map_name
-                            + std::string("_") + std::to_string(z)
-                            + std::string("_") + std::to_string((j + z_num) % z_num)
-                            + std::string("_") + std::to_string((i + z_num) % z_num)
+                            + std::string("_") + z_value
+                            + std::string("_") + x_value
+                            + std::string("_") + y_value
                             + std::string(".png"));
                         break;
-                    case XYZTileFileName::Z_Original:
+                    case MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"):
                         new_saveFilePath = map_file_path_name;
                         new_saveFilePath = (map_file_path_name
-                            + std::to_string(z) + std::string("/") + map_name
-                            + std::string("_") + std::to_string(z)
-                            + std::string("_") + std::to_string((j + z_num) % z_num)
-                            + std::string("_") + std::to_string((i + z_num) % z_num)
+                            + z_value + std::string("/") + map_name
+                            + std::string("_") + z_value
+                            + std::string("_") + x_value
+                            + std::string("_") + y_value
                             + std::string(".png"));
                         break;
-                    case XYZTileFileName::Default:
+                    case MurMur3::calcHash("{z}/{x}/{y}"):
                         new_saveFilePath = (map_file_path_name
-                            + std::to_string(z)
-                            + std::string("/") + std::to_string((j + z_num) % z_num)
-                            + std::string("/") + std::to_string((i + z_num) % z_num)
+                            + z_value
+                            + std::string("/") + x_value
+                            + std::string("/") + y_value
+                            + std::string(".png"));
+                        break;
+                    case MurMur3::calcHash("{z}/{y}/{x}"):
+                        new_saveFilePath = (map_file_path_name
+                            + z_value
+                            + std::string("/") + y_value
+                            + std::string("/") + x_value
                             + std::string(".png"));
                         break;
                     default:
                         break;
                     }
 
-                    // ファイルを同期ダウンロード
-                    // ステータスコードが 200 (OK) なら
-
-                    // texture_list[k] = paxg::Texture{ new_saveFilePath };
-
                     // 新しいテクスチャ
                     paxg::Texture new_tex(new_saveFilePath);
-
-                    // もし種類が規定されていない場合は無視
-                    // if (pos_list2[k].layer == 0) {}
 
                     // 新しいテクスチャが読み込めなかった場合
                     if (!new_tex) {
@@ -191,18 +186,11 @@ namespace paxs {
                         // URL の記載がある場合
                         if (map_url_name.size() != 0) {
                             std::string new_path = map_url_name;
-                            paxs::StringExtensions::replace(new_path, "{x}", std::to_string((j + z_num) % z_num));
-                            paxs::StringExtensions::replace(new_path, "{y}", std::to_string((i + z_num) % z_num));
-                            paxs::StringExtensions::replace(new_path, "{z}", std::to_string(z));
+                            paxs::StringExtensions::replace(new_path, "{x}", x_value);
+                            paxs::StringExtensions::replace(new_path, "{y}", y_value);
+                            paxs::StringExtensions::replace(new_path, "{z}", z_value);
                             const s3d::URL new_url = s3d::Unicode::FromUTF8(new_path);
-                            //const s3d::URL new_url =
-                            //    s3d::String(s3d::Unicode::FromUTF8(map_url_name))
-                            //    + s3d::String(U"/") + s3d::ToString(z)
-                            //    + s3d::String(U"/") + s3d::ToString((j + z_num) % z_num)
-                            //    + s3d::String(U"/") + s3d::ToString((i + z_num) % z_num)
-                            //    + s3d::String(U".png");
                             if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(new_saveFilePath)).isOK()) {
-                                // texture_list[k] = paxg::Texture{ new_saveFilePath };
 
                                 paxg::Texture new_url_tex{ new_saveFilePath };
                                 if (!new_url_tex) {
@@ -220,8 +208,8 @@ namespace paxs {
                     else {
                         texture.insert({ pos_list2[k], std::move(new_tex) });
                     }
-                }
-            }
+                } // for (j)
+            } // for (i)
         }
 
 
@@ -231,7 +219,7 @@ namespace paxs {
             const double map_view_height,
             const double map_view_center_x,
             const double map_view_center_y,
-            const XYZTileFileName file_name_enum_)
+            const std::uint_least32_t file_name_enum_)
             :
             // min_z(min_z_), max_z(max_z_),
             file_name_enum(file_name_enum_)
@@ -282,8 +270,6 @@ namespace paxs {
 
                     //if (texture_list[k]) {
                     if (texture.find(pos_list2[k]) != texture.end()) {
-                        // if (texture.contains(index)) { // C++20
-                            //texture_list[k].resizedDraw(
                         texture.at(pos_list2[k]).resizedDraw(
                             paxg::Vec2f(
                                 static_cast<float>((360.0 / z_num) / map_view_width * double(paxg::Window::width()))
@@ -419,7 +405,7 @@ namespace paxs {
         // 1フレーム前のマップの幅
         double current_map_view_width = -1.0;
 
-        const XYZTileFileName file_name_enum = XYZTileFileName::Original;
+        const std::uint_least32_t file_name_enum = MurMur3::calcHash("{z}/{x}/{y}");
     };
 }
 

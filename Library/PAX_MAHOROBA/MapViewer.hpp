@@ -48,7 +48,7 @@ namespace paxs {
             map_url_name		地図画像を取得する URL
             map_license_name	ライセンス情報
         ##########################################################################################*/
-        std::unordered_map<std::string, XYZTile> xyz_tile_list;
+        std::unordered_map<std::uint_least32_t, XYZTile> xyz_tile_list;
 
     public:
 
@@ -109,7 +109,7 @@ namespace paxs {
             map_view->update(); // キーボード入力を更新
             mapMapUpdate(xyz_tile_list, string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
-            if (visible[MurMur3::calcHash(3, "Map")]) { // 地図が「可視」の場合は描画する
+            if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する
                 texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
 #ifdef PAXS_USING_SIMULATOR
