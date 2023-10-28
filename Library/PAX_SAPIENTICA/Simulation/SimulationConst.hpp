@@ -16,6 +16,8 @@
 
 ##########################################################################################*/
 
+#include <cstdint>
+
 namespace paxs {
     constexpr int pixel_size = 256; // 1画像あたりの縦横のピクセル数
 
@@ -24,6 +26,8 @@ namespace paxs {
     constexpr int basic_group_min = 41; // 基礎集団の最小人数
     constexpr int basic_group_max = 240; // 基礎集団の最大人数
     constexpr int composite_settlement_min = 82; // 複合集落の最小人数
+
+    constexpr std::uint_least32_t marriageable_age_min = 18; // 結婚可能年齢
 }
 
 #endif // !PAX_SAPIENTICA_SIMULATION_SIMULATION_CONST_HPP
