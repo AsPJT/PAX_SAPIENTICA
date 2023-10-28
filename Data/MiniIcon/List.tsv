@@ -23,12 +23,12 @@ Data/MiniIcon/Kofun/Zempokoho/Zempokoho2.svg	ZKohoFun2
 Data/MiniIcon/Kofun/Zempokoho/ZempokohoF2.svg	ZKohoFunF2
 Data/MiniIcon/Kofun/Zempokoho/Zempokoho3.svg	ZKohoFun3
 Data/MiniIcon/Kofun/Zempokoho/ZempokohoF3.svg	ZKohoFunF3
-Data/MiniIcon/Kofun/Hotate/HotateSgt.svg	HotateFSgtunSgt
-Data/MiniIcon/Kofun/Hotate/HotateFSgt.svg	HotateFSgtunFSgt
-Data/MiniIcon/Kofun/Hotate/HotateSgt2.svg	HotateFSgtunSgt2
-Data/MiniIcon/Kofun/Hotate/HotateFSgt2.svg	HotateFSgtunFSgt2
-Data/MiniIcon/Kofun/Hotate/HotateSgt3.svg	HotateFSgtunSgt3
-Data/MiniIcon/Kofun/Hotate/HotateFSgt3.svg	HotateFSgtunFSgt3
+Data/MiniIcon/Kofun/Hotate/HotateSgt.svg	HotateFunSgt
+Data/MiniIcon/Kofun/Hotate/HotateFSgt.svg	HotateFunFSgt
+Data/MiniIcon/Kofun/Hotate/HotateSgt2.svg	HotateFunSgt2
+Data/MiniIcon/Kofun/Hotate/HotateFSgt2.svg	HotateFunFSgt2
+Data/MiniIcon/Kofun/Hotate/HotateSgt3.svg	HotateFunSgt3
+Data/MiniIcon/Kofun/Hotate/HotateFSgt3.svg	HotateFunFSgt3
 Data/MiniIcon/Kofun/Zempokoen/ZempokoenSgt.svg	ZKoenFunSgt
 Data/MiniIcon/Kofun/Zempokoen/ZempokoenFSgt.svg	ZKoenFunFSgt
 Data/MiniIcon/Kofun/Zempokoen/ZempokoenSgt2.svg	ZKoenFunSgt2
@@ -57,3 +57,5 @@ Data/MiniIcon/Kofun/Tatetsuki.svg	TatetsukiIseki
 Data/MiniIcon/Kofun/Makimuku.svg	Makimuku
 Data/MiniIcon/Kofun/MakimukuF.svg	MakimukuF
 Data/MiniIcon/PlaceName.svg	PlaceName
+Data/MiniIcon/Tomb/Korea/HwangnamDaechong.svg	HwangnamDaechong
+Data/MiniIcon/Tomb/China/MausoleumOfTheFirstQinEmperor.svg	MausoleumOfTheFirstQinEmperor
