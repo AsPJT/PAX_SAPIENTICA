@@ -124,7 +124,7 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
-        constexpr std::uint_least32_t getAge() const noexcept { return age; }
+        constexpr float getAge() const noexcept { return age / static_cast<float>(steps_per_year); }
 
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする
@@ -150,6 +150,8 @@ namespace paxs {
                     environment == a.environment;
         }
 
+        /// @brief Is the agent married?
+        /// @brief エージェントが結婚しているかどうかを返す
         bool isMarried() const noexcept { return _isMarried; }
     protected:
         std::uint_least8_t gender; // 性別

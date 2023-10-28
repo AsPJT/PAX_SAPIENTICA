@@ -21,7 +21,6 @@
 #include <random>
 #include <vector>
 
-#include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>
@@ -32,7 +31,7 @@ namespace paxs {
     template <typename GridType>
     class SettlementSimulator {
     public:
-        using Agent = paxs::Agent<GridType>;
+        using Agent = paxs::SettlementAgent<GridType>;
         using Environment = paxs::Environment<GridType>;
         using Settlement = paxs::Settlement<GridType>;
         using Vector2 = paxs::Vector2<GridType>;

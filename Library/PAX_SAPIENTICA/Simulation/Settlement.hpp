@@ -21,20 +21,23 @@
 #include <random>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/Simulation/Agent.hpp>
+#include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Object.hpp>
+#include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
 namespace paxs {
 
     template <typename GridType>
     class Settlement {
     public:
+        using Environment = paxs::Environment<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
         using Object = paxs::Object<GridType>;
-        using Agent = paxs::Agent<GridType>;
+        using Agent = paxs::SettlementAgent<GridType>;
 
-        constexpr explicit Settlement(const std::uint_least32_t id) noexcept : id(id) {}
+        constexpr explicit Settlement(const std::uint_least32_t id, const unsigned seed, const std::shared_ptr<Environment> env) noexcept : id(id), gen(seed), environment(env) {}
 
         /// @brief Get the uuid.
         /// @brief idを取得
@@ -72,7 +75,17 @@ namespace paxs {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_agents_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
-                if (agents[i].getAge() >= marriageable_age_min && !agents[i].isMarried()) marriageable_agents_index.push_back(i);
+                // 結婚可能かどうか
+                float age = agents[i].getAge();
+                if (age >= marriageable_age_min &&
+                    age < marriageable_age_max &&
+                    !agents[i].isMarried()
+                )
+                {
+                    if (!isMarried(age)) continue;
+
+                    marriageable_agents_index.push_back(i);
+                }
             }
 
             // 結婚の条件を満たすエージェントがいない
@@ -119,12 +132,17 @@ namespace paxs {
         }
 
     private:
+        std::shared_ptr<Environment> environment; // 環境
         /// @brief 集落id
         std::uint_least32_t id;
         /// @brief エージェントの配列
         std::vector<Agent> agents;
         /// @brief 集落の座標
         std::vector<Vector2> positions;
+
+        std::mt19937 gen; // 乱数生成器
+        std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
+        std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
 
         /// @brief Move.
         /// @brief 移動
@@ -141,7 +159,22 @@ namespace paxs {
         /// @brief Birth.
         /// @brief 出産
         void birth() noexcept {
-            // TODO: 出産
+            for (Agent& agent : agents) {
+                // 出産可能かどうか
+                if (!agent.isAbleToGiveBirth() || !isAbleToGiveBirth(agent.getAge())) continue;
+
+                // TODO: 出産処理
+                Agent child = Agent(
+                    UniqueIdentification<std::uint_least32_t>::generate(),
+                    0, // TODO: 名前ID
+                    static_cast<std::uint_least8_t>(gender_dist(gen)),
+                    0,
+                    static_cast<std::uint_least8_t>(life_exp_dist(gen)),
+                    environment
+                );
+
+                agents.push_back(child);
+            }
         }
 
         /// @brief Emigration.
@@ -164,6 +197,31 @@ namespace paxs {
             agents.erase(std::remove_if(agents.begin(), agents.end(), [](const Agent& agent) { return agent.isDead(); }), agents.end());
         }
 
+        /// @brief Is the agent married?
+        /// @brief 確率で結婚するかどうかを返す
+        bool isMarried(float age) const noexcept {
+            const float sigma = 0.25f;
+            auto x = [](std::uint_least32_t age) { return (age - 13) / 8.5f; };
+            auto weight = [=](std::uint_least32_t age)
+            {
+                return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
+            };
+
+            return 0.98 * weight(age) / 101.8f;
+        }
+
+        /// @brief Is able to give birth?
+        /// @brief 確率で出産するかどうかを返す
+        bool isAbleToGiveBirth(float age) const noexcept {
+            const float sigma = 0.25f;
+            auto x = [](std::uint_least32_t age) { return (age - 14) / 8.5f; };
+            auto weight = [=](std::uint_least32_t age)
+            {
+                return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
+            };
+
+            return 16 * weight(age) / 101.8;
+        }
     };
 
 }
