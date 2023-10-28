@@ -1,4 +1,4 @@
-﻿file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture
+file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture
 Data/PlaceName/TestMap/Hokkaido.tsv	site	北海道の遺跡名	0	0.5			
 Data/PlaceName/TestMap/Kofun.tsv	tomb	日本の古墳	0	0.1
 Data/PlaceName/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1			

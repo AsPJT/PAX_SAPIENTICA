@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>16.0</VCProjectVersion>
+    <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{521F80AC-5CDB-4C69-BA70-2E5D5B8C99C0}</ProjectGuid>
-    <RootNamespace>ElevationCSVtoTSV</RootNamespace>
+    <ProjectGuid>{c0da8bda-4eae-456a-ac5d-4fd9ca30dda7}</ProjectGuid>
+    <RootNamespace>XYZTilesTSVtoBinary</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
