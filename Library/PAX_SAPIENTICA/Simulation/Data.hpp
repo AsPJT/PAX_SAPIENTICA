@@ -338,7 +338,7 @@ namespace paxs {
         }
 
         std::uint_least64_t convertVector2ToIndex(const Vector2& position) const noexcept {
-            return position.x + (std::uint_least64_t)position.y * column_size;
+            return (position.x) + ((std::uint_least64_t)position.y << 32);
         }
     };
 }
