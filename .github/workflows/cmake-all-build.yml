@@ -28,8 +28,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install libopencv-dev
         sudo apt-get install cmake
-        sudo apt-get install g++
-        sudo apt-get install clang
 
     - name: Configure CMake
       run: |
