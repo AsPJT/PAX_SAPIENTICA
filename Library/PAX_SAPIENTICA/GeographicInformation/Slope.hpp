@@ -16,13 +16,15 @@
 
 ##########################################################################################*/
 
+// C ライブラリ
 #include <cmath>
 #include <cstddef>
-#include <array>
-#include <limits>
 
-#include <string>
+// C++ ライブラリ
+#include <array>
 #include <fstream>
+#include <limits>
+#include <string>
 
 #include <PAX_GRAPHICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>

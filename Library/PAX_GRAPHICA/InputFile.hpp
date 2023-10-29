@@ -21,8 +21,8 @@
 #include <vector>
 #include <unordered_map>
 
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxg {
 
