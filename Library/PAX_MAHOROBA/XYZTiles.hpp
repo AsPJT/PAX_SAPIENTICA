@@ -55,6 +55,7 @@ namespace paxs {
         // XYZ タイルの画像の情報を保持
         // std::vector<paxg::Texture> texture_list{};
         std::unordered_map<std::uint_least64_t, paxg::Texture> texture{};
+        std::unordered_map<std::uint_least64_t, unsigned char> is_texture{}; // テクスチャが読み込まれているか
 
         std::uint_least64_t textureIndex(const MapVec4D& m_) const {
             return (m_.y) + (m_.x << 24) + (m_.z << 48); // +(m_.layer << 53);
@@ -64,23 +65,23 @@ namespace paxs {
             : start_cell(MapVec2{}), end_cell(MapVec2{}), cell_num(MapVec2{}), cell_all_num(0) {
         }
         // タイルを更新
-        void update(const double map_view_width,
-            const double map_view_height,
-            const double map_view_center_x,
-            const double map_view_center_y) {
+        void update(const double map_view_width, // 描画される地図の経度幅
+            const double map_view_height, // 描画される地図の緯度幅
+            const double map_view_center_x, // 描画される地図の中心経度
+            const double map_view_center_y // 描画される地図の中心緯度
+        ) {
             // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
             if (current_map_view_width != map_view_width) {
+                magnification_z = int(-std::log2(map_view_width) + 12.0);
                 if (default_z == 999) {
-                    z = int(-std::log2(map_view_width) + 12.0);
-                    magnification_z = z;
+                    z = magnification_z;
                     if (z < min_z) z = min_z;
-                    if (z > max_z) z = max_z;
+                    else if (z > max_z) z = max_z;
                 }
                 else {
                     z = default_z;
-                    magnification_z = int(-std::log2(map_view_width) + 12.0);
                 }
-                z_num = int(std::pow(2, z));
+                z_num = (1 << z); // std::pow(2, z) と等価
                 current_map_view_width = map_view_width;
             }
             // 拡大率が描画範囲外の場合はここで処理を終了
@@ -101,8 +102,9 @@ namespace paxs {
                 need_update = true;
             }
 
+            if (!need_update) return; // 地図が前回と同じ場所の場合は更新処理をしない
             // もしタイルが更新されていたら更新処理
-            if (!need_update) return;
+
             cell_num = MapVec2{
                 (end_cell.x - start_cell.x),
                 (end_cell.y - start_cell.y)
@@ -129,56 +131,31 @@ namespace paxs {
             if (map_name.size() == 0) return;
 
             const std::string z_value = std::to_string(z); // Z の値
+            std::string local_file_path_zn = file_name_enum;
+            paxs::StringExtensions::replace(local_file_path_zn, "{z}", z_value);
+            paxs::StringExtensions::replace(local_file_path_zn, "{n}", map_name);
+
             // ファイルを保存
             for (std::size_t i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
+
                 const std::string y_value = std::to_string((i + z_num) % z_num); // Y の値
+                std::string local_file_path_zny = local_file_path_zn;
+                paxs::StringExtensions::replace(local_file_path_zny, "{y}", y_value);
+
                 for (std::size_t j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 
-                    // 画像が既にある場合は終了
-                    if (texture.find(pos_list2[k]) != texture.end()) {
+                    // 画像が 1 度でも読み込みに試行した場合は終了
+                    if (is_texture.find(pos_list2[k]) != is_texture.end()) {
                         continue;
                     }
 
                     const std::string x_value = std::to_string((j + z_num) % z_num); // X の値
 
-                    std::string new_saveFilePath = "";
-                    switch (file_name_enum) {
-                    case MurMur3::calcHash("{n}_{z}_{x}_{y}"):
-                        new_saveFilePath = (map_file_path_name + map_name
-                            + std::string("_") + z_value
-                            + std::string("_") + x_value
-                            + std::string("_") + y_value
-                            + std::string(".png"));
-                        break;
-                    case MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"):
-                        new_saveFilePath = map_file_path_name;
-                        new_saveFilePath = (map_file_path_name
-                            + z_value + std::string("/") + map_name
-                            + std::string("_") + z_value
-                            + std::string("_") + x_value
-                            + std::string("_") + y_value
-                            + std::string(".png"));
-                        break;
-                    case MurMur3::calcHash("{z}/{x}/{y}"):
-                        new_saveFilePath = (map_file_path_name
-                            + z_value
-                            + std::string("/") + x_value
-                            + std::string("/") + y_value
-                            + std::string(".png"));
-                        break;
-                    case MurMur3::calcHash("{z}/{y}/{x}"):
-                        new_saveFilePath = (map_file_path_name
-                            + z_value
-                            + std::string("/") + y_value
-                            + std::string("/") + x_value
-                            + std::string(".png"));
-                        break;
-                    default:
-                        break;
-                    }
+                    std::string local_file_path = local_file_path_zny;
+                    paxs::StringExtensions::replace(local_file_path, "{x}", x_value);
 
                     // 新しいテクスチャ
-                    paxg::Texture new_tex(new_saveFilePath);
+                    paxg::Texture new_tex(local_file_path);
 
                     // 新しいテクスチャが読み込めなかった場合
                     if (!new_tex) {
@@ -190,23 +167,31 @@ namespace paxs {
                             paxs::StringExtensions::replace(new_path, "{y}", y_value);
                             paxs::StringExtensions::replace(new_path, "{z}", z_value);
                             const s3d::URL new_url = s3d::Unicode::FromUTF8(new_path);
-                            if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(new_saveFilePath)).isOK()) {
 
-                                paxg::Texture new_url_tex{ new_saveFilePath };
+                            std::string new_save_file_path{};
+                            if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(new_save_file_path)).isOK()) {
+
+                                paxg::Texture new_url_tex{ new_save_file_path };
                                 if (!new_url_tex) {
-                                    // 何もしない
+                                    is_texture.insert({ pos_list2[k], 1 }); // 読み込み失敗
                                 }
                                 else {
                                     // URL から取得した新しい地図へ更新
                                     texture.insert({ pos_list2[k], std::move(new_url_tex) });
+                                    is_texture.insert({ pos_list2[k], 0 }); // 読み込み成功
                                 }
                             }
                         }
+                        else
 #endif
+                        {
+                            is_texture.insert({ pos_list2[k], 1 }); // 読み込み失敗
+                        }
                     }
                     // テクスチャが読み込めた場合
                     else {
                         texture.insert({ pos_list2[k], std::move(new_tex) });
+                        is_texture.insert({ pos_list2[k], 0 }); // 読み込み成功
                     }
                 } // for (j)
             } // for (i)
@@ -215,22 +200,11 @@ namespace paxs {
 
         XYZTile(
             // const int min_z_, const int max_z_,
-            const double map_view_width,
-            const double map_view_height,
-            const double map_view_center_x,
-            const double map_view_center_y,
-            const std::uint_least32_t file_name_enum_)
-            :
-            // min_z(min_z_), max_z(max_z_),
-            file_name_enum(file_name_enum_)
+            const std::string& map_file_path_name_,
+            const std::string& file_name_enum_)
         {
-
-            //update(
-            //    map_view_width,
-            //    map_view_height,
-            //    map_view_center_x,
-            //    map_view_center_y
-            //);
+            map_file_path_name = map_file_path_name_;
+            file_name_enum = map_file_path_name_ + file_name_enum_ + std::string(".png");
         }
 
         void drawXYZ(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
@@ -366,9 +340,9 @@ namespace paxs {
         void setMapName(const std::string& map_name_) {
             map_name = map_name_;
         }
-        void setMapFilePath(const std::string& map_file_path_name_) {
-            map_file_path_name = map_file_path_name_;
-        }
+        //void setMapFilePath(const std::string& map_file_path_name_) {
+        //    map_file_path_name = map_file_path_name_;
+        //}
     private:
         // 99999999 の場合は固定なし
         int min_date = 99999999;
@@ -389,7 +363,7 @@ namespace paxs {
         // 描画最大 Z
         int draw_max_z = 999;
         // 2 の z 乗
-        int z_num = int(std::pow(2, z));
+        int z_num = (1 << z); // std::pow(2, z) と等価
         // XYZ タイルの画面上の始点セル
         MapVec2 start_cell{};
         // XYZ タイルの画面上の終点セル
@@ -405,7 +379,7 @@ namespace paxs {
         // 1フレーム前のマップの幅
         double current_map_view_width = -1.0;
 
-        const std::uint_least32_t file_name_enum = MurMur3::calcHash("{z}/{x}/{y}");
+        std::string file_name_enum = ("{z}/{x}/{y}");
     };
 }
 

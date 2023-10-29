@@ -1,11 +1,11 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -24,11 +24,11 @@
 namespace paxs {
 
     /// @brief A class that handles elevation.
-    struct Grid3x3{
+    struct Grid3x3 {
         Grid3x3(const std::array<double, 9>& grid) : grid(grid) {}
         std::array<double, 9> grid;
         constexpr const double* operator[](const int i) const {
-            if(i < 0 || i > 8){
+            if (i < 0 || i > 8) {
                 throw std::out_of_range("Grid3x3::operator[] out of range.\n0 <= i <= 8 is required.\ni = " + std::to_string(i));
             }
             return &grid[std::size_t(i)];

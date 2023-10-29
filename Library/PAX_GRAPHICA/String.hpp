@@ -180,7 +180,7 @@ namespace paxg {
             if (align > 2) align = 2;
             std::size_t str_len = str_.size(); // 全体の文字数を得る
             int sizex; int sizey; int line_count; // 描画した時のサイズと行数を調べる
-            DxLib::GetDrawStringSizeToHandle(&sizex, &sizey, &line_count, str_.c_str(), str_len, font, FALSE);
+            DxLib::GetDrawStringSizeToHandle(&sizex, &sizey, &line_count, str_.c_str(), static_cast<int>(str_len), font, FALSE);
             const char* last = &(str_[0]) + str_len; // 終端を得る
             const char* next; // 次の改行ポイント
             int line_space = DxLib::GetFontLineSpaceToHandle(font); // 一行の縦幅を得る
@@ -214,7 +214,7 @@ namespace paxg {
             if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
-                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), str.size(), font, FALSE);
+                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
                 DxLib::DrawStringToHandle(pos.x() - size_x, pos.y() + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
@@ -226,7 +226,7 @@ namespace paxg {
             if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
-                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), str.size(), font, FALSE);
+                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
                 DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() - size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
@@ -234,7 +234,7 @@ namespace paxg {
             if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
-                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), str.size(), font, FALSE);
+                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
                 DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
@@ -242,7 +242,7 @@ namespace paxg {
             if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
-                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), str.size(), font, FALSE);
+                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
                 DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }

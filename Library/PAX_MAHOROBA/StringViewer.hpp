@@ -248,7 +248,7 @@ namespace paxs {
                 // 暦表示の範囲に白背景を追加
                 s3d::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw(s3d::ColorF{ 1, 1, 1 }/*s3d::Palette::White*/);
                 s3d::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw(s3d::ColorF{ 1, 1, 1 }/*s3d::Palette::White*/);
-        }
+            }
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦の表示（日本語）
                 if (
@@ -470,7 +470,7 @@ namespace paxs {
             // }
             {
                 int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
-                int debug_move_y = 25;
+                //int debug_move_y = 25;
                 // その他のデバッグ用の変数情報の表示
                 if (visible[MurMur3::calcHash(2, "UI")]) {
                     //font[select_language.cget()].
@@ -602,7 +602,7 @@ namespace paxs {
 #endif
             }
 
-    }
+        }
     private:
         std::vector<paxg::Font> setFont(
             const int font_size_,
@@ -618,7 +618,7 @@ namespace paxs {
             return return_font;
         }
 
-};
+    };
 
 }
 

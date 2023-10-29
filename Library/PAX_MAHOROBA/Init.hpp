@@ -26,16 +26,6 @@
 #include <PAX_MAHOROBA/Mock.hpp>
 #endif
 
-// マップの種類（暫定的な地図）
-enum MapType {
-    base,
-    landand_sea, land_and_water,
-    soil, soil_temperature,
-    ryosei_country, ryosei_line,
-    slope,
-    river1, river2, line1, line2
-};
-
 #ifdef PAXS_USING_SIV3D
 #ifdef SIV3D_PLATFORM_PRIVATE_DEFINITION_WINDOWS
 #ifndef PAXS_S3D_RESOURCE
