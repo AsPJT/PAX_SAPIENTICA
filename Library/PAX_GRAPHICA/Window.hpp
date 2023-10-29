@@ -37,12 +37,13 @@ namespace paxg {
         paxg::Color backgroundColor = paxg::Color(0, 0, 0);
 #endif // PAXS_USING_SFML
 
-        void Init(int width, int height, const std::string& title) {
 #if defined(PAXS_USING_SIV3D)
+        void Init(int width, int height, const std::string& title) {
             s3d::Window::Resize(width, height);
             s3d::Window::SetTitle(s3d::Unicode::FromUTF8(title));
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void Init(int width, int height, const std::string& title) {
             DxLib::SetGraphMode(width, height, 32);
 #if defined(__ANDROID__)
             // Android 専用処理
@@ -54,12 +55,14 @@ namespace paxg {
             // その他の処理 (Windows)
             DxLib::SetMainWindowText(title.c_str());
 #endif
-
-#elif defined(PAXS_USING_SFML)
-            window.create(sf::VideoMode(width, height), title);
-
-#endif
         }
+#elif defined(PAXS_USING_SFML)
+        void Init(int width, int height, const std::string& title) {
+            window.create(sf::VideoMode(width, height), title);
+        }
+#else
+        void Init(int, int, const std::string&) {}
+#endif
 
         bool update() {
 #if defined(PAXS_USING_SIV3D)
@@ -92,11 +95,14 @@ namespace paxg {
 #endif
         }
 
-        void setTitle(const std::string title) {
+        // タイトルを設定
 #if defined(PAXS_USING_SIV3D)
+        void setTitle(const std::string& title) {
             s3d::Window::SetTitle(s3d::Unicode::FromUTF8(title));
+        }
 
 #elif defined(PAXS_USING_DXLIB)
+        void setTitle(const std::string& title) {
 #if defined(__ANDROID__)
             // Android 専用処理
 #elif defined(__APPLE__)
@@ -107,12 +113,14 @@ namespace paxg {
             // その他の処理 (Windows)
             DxLib::SetMainWindowText(title.c_str());
 #endif
-
-#elif defined(PAXS_USING_SFML)
-            window.setTitle(title);
-
-#endif
         }
+#elif defined(PAXS_USING_SFML)
+        void setTitle(const std::string& title) {
+            window.setTitle(title);
+        }
+#else
+        void setTitle(const std::string&) {}
+#endif
 
         // ウィンドウの中心を取得
         Vec2i center() {
@@ -231,99 +239,111 @@ namespace paxg {
 #endif
         }
 
-        void setSize(const int width, const int height) {
+        // 画面サイズを変更
 #if defined(PAXS_USING_SIV3D)
+        void setSize(const int width, const int height) {
             s3d::Window::Resize(width, height);
+        }
 
 #elif defined(PAXS_USING_DXLIB)
+        void setSize(const int width, const int height) {
             DxLib::SetGraphMode(width, height, 32);
+        }
 
 #elif defined(PAXS_USING_SFML)
+        void setSize(const int width, const int height) {
             window.setSize(sf::Vector2u(width, height));
-
-#endif
         }
+#else
+        void setSize(const int, const int) {}
+#endif
 
+#if defined(PAXS_USING_SIV3D)
         void setPosition(int x, int y) {
-#if defined(PAXS_USING_SIV3D)
             s3d::Window::SetPos(x, y);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void setPosition(int x, int y) {
             window.setPosition(sf::Vector2i(x, y));
-#endif
         }
+#else
+        void setPosition(int, int) {}
+#endif
 
+#if defined(PAXS_USING_SIV3D)
         void setPosition(const paxg::Vec2i& pos) {
-#if defined(PAXS_USING_SIV3D)
             s3d::Window::SetPos(static_cast<s3d::int32>(pos.x()), static_cast<s3d::int32>(pos.y()));
-
-#elif defined(PAXS_USING_SFML)
-            window.setPosition(pos);
-#endif
         }
-
-        void setIcon(const std::string path) {
-#if defined(PAXS_USING_SIV3D)
-            // s3d::Window::SetIcon(s3d::Unicode::FromUTF8(path));
-
 #elif defined(PAXS_USING_SFML)
+        void setPosition(const paxg::Vec2i& pos) {
+            window.setPosition(pos);
+        }
+#else
+        void setPosition(const paxg::Vec2i&) {}
+#endif
+
+#if defined(PAXS_USING_SIV3D)
+        void setIcon(const std::string& /*path*/) {
+            // s3d::Window::SetIcon(s3d::Unicode::FromUTF8(path));
+        }
+#elif defined(PAXS_USING_SFML)
+        void setIcon(const std::string& path) {
             sf::Image icon;
             if (!icon.loadFromFile(path))
                 return;
             window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-#endif
         }
+#else
+        void setIcon(const std::string&) {}
+#endif
 
+#if defined(PAXS_USING_SFML)
         void setVisible(bool visible) {
-#if defined(PAXS_USING_SIV3D)
-            // s3d::Window::SetStyle(visible ? s3d::WindowStyle::Sizable : s3d::WindowStyle::None);
-
-#elif defined(PAXS_USING_SFML)
             window.setVisible(visible);
-#endif
         }
+#else
+        void setVisible(bool) {}
+#endif
 
+#if defined(PAXS_USING_SFML)
         void setVSync(bool vsync) {
-#if defined(PAXS_USING_SIV3D)
-            // s3d::Graphics::SetTargetFrameRate(vsync ? 60 : 0);
-
-#elif defined(PAXS_USING_SFML)
             window.setVerticalSyncEnabled(vsync);
-#endif
         }
+#else
+        void setVSync(bool) {}
+#endif
 
+#if defined(PAXS_USING_SFML)
         void setFPS(int fps) {
-#if defined(PAXS_USING_SIV3D)
-            // s3d::Graphics::SetTargetFrameRate(fps);
-
-#elif defined(PAXS_USING_SFML)
             window.setFramerateLimit(fps);
-#endif
         }
+#else
+        void setFPS(int) {}
+#endif
 
+#if defined(PAXS_USING_SFML)
         void setMouseCursorVisible(bool visible) {
-#if defined(PAXS_USING_SIV3D)
-            // s3d::Cursor::SetStyle(visible ? s3d::CursorStyle::Default : s3d::CursorStyle::Hidden);
-
-#elif defined(PAXS_USING_SFML)
             window.setMouseCursorVisible(visible);
-#endif
         }
+#else
+        void setMouseCursorVisible(bool) {}
+#endif
 
+#if defined(PAXS_USING_SFML)
         void setMouseCursorGrabbed(bool grabbed) {
-#if defined(PAXS_USING_SIV3D)
-            // s3d::Cursor::SetStyle(grabbed ? s3d::CursorStyle::Hidden : s3d::CursorStyle::Default);
-
-#elif defined(PAXS_USING_SFML)
             window.setMouseCursorGrabbed(grabbed);
-#endif
         }
+#else
+        void setMouseCursorGrabbed(bool) {}
+#endif
 
-        void setMouseCursor(const std::string path) {
+
 #if defined(PAXS_USING_SIV3D)
+        void setMouseCursor(const std::string& path) {
             s3d::Cursor::RequestStyle(s3d::Unicode::FromUTF8(path));
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void setMouseCursor(const std::string& path) {
             sf::Image image;
             if (!image.loadFromFile(path))
                 return;
@@ -331,27 +351,38 @@ namespace paxg {
             sf::Cursor cursor;
             cursor.loadFromPixels(image.getPixelsPtr(), image.getSize(), sf::Vector2u(0, 0));
             window.setMouseCursor(cursor);
-#endif
         }
+#else
+        void setMouseCursor(const std::string&) {}
+#endif
 
+        // マウスの位置を設定
+#if defined(PAXS_USING_SIV3D)
         void setMousePosition(int x, int y) {
-#if defined(PAXS_USING_SIV3D)
             s3d::Cursor::SetPos(x, y);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void setMousePosition(int x, int y) {
             sf::Mouse::setPosition(sf::Vector2i(x, y), window);
-#endif
         }
+#else
+        void setMousePosition(int, int) {}
+#endif
 
-        void setMousePosition(const paxg::Vec2i pos) {
+        // マウスの位置を設定
 #if defined(PAXS_USING_SIV3D)
+        void setMousePosition(const paxg::Vec2i& pos) {
             s3d::Cursor::SetPos(static_cast<s3d::int32>(pos.x()), static_cast<s3d::int32>(pos.y()));
-
-#elif defined(PAXS_USING_SFML)
-            sf::Mouse::setPosition(pos, window);
-#endif
         }
+#elif defined(PAXS_USING_SFML)
+        void setMousePosition(const paxg::Vec2i& pos) {
+            sf::Mouse::setPosition(pos, window);
+        }
+#else
+        void setMousePosition(const paxg::Vec2i&) {}
+#endif
 
+        // マウスの位置を取得
         paxg::Vec2i getMousePosition() {
 #if defined(PAXS_USING_SIV3D)
             return paxg::Vec2i(static_cast<std::int_least32_t>(s3d::Cursor::PosF().x), static_cast<std::int_least32_t>(s3d::Cursor::PosF().y));
@@ -363,35 +394,39 @@ namespace paxg {
 #endif
         }
 
+#if defined(PAXS_USING_SFML)
         void setKeyRepeat(bool repeat) {
-#if defined(PAXS_USING_SIV3D)
-            // s3d::System::SetTerminationTriggers(repeat ? s3d::UserAction::CloseButtonClicked : s3d::UserAction::ExitFocusLost);
-
-#elif defined(PAXS_USING_SFML)
             window.setKeyRepeatEnabled(repeat);
-#endif
         }
+#else
+        void setKeyRepeat(bool) {}
+#endif
 
         // 背景色を指定
-        void setBackgroundColor(const paxg::Color color) {
 #if defined(PAXS_USING_SIV3D)
+        void setBackgroundColor(const paxg::Color color) {
             s3d::Scene::SetBackground(color.color);
-
-#elif defined(PAXS_USING_DXLIB)
-            DxLib::SetBackgroundColor(color.r, color.g, color.b);
-
-#elif defined(PAXS_USING_SFML)
-            backgroundColor = color;
-
-#endif
         }
+#elif defined(PAXS_USING_DXLIB)
+        void setBackgroundColor(const paxg::Color color) {
+            DxLib::SetBackgroundColor(color.r, color.g, color.b);
+        }
+#elif defined(PAXS_USING_SFML)
+        void setBackgroundColor(const paxg::Color color) {
+            backgroundColor = color;
+        }
+#else
+        void setBackgroundColor(const paxg::Color) {}
+#endif
 
         // ウィンドウの上下左右にできる背景の余白の色を設定
-        void setLetterbox(const paxg::Color color) {
 #if defined(PAXS_USING_SIV3D)
+        void setLetterbox(const paxg::Color color) {
             s3d::Scene::SetLetterbox(color.color);
-#endif
         }
+#else
+        void setLetterbox(const paxg::Color) {}
+#endif
 
         void clear() {
 #if defined(PAXS_USING_SIV3D)

@@ -208,9 +208,11 @@ namespace paxs {
                 if (strvec[place_texture].size() == 0) continue;
 
                 // 画像
-                const std::uint_least32_t place_texture_hash = (place_texture >= strvec.size()) ?
-                    0 : ((strvec[place_texture].size() == 0) ?
-                        0 : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()));
+                const std::uint_least32_t place_texture_hash =
+                    (place_texture >= strvec.size()) ? 0 : // テクスチャがない場合
+                    ((strvec[place_texture].size() == 0) ? 0 : // テクスチャ名がない場合
+                        MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()));
+                if (place_texture_hash == 0) continue; // ハッシュが 0 の場合は追加しない
 
                 // テクスチャを追加
                 texture.emplace(MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()), paxg::Texture{ PAXS_PATH + strvec[file_path] });
@@ -219,7 +221,7 @@ namespace paxs {
         // 描画
         void draw(const double jdn,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-            paxg::Font& font, paxg::Font& en_font, paxg::Font& pin_font)const {
+            paxg::Font& font, paxg::Font& en_font, paxg::Font& /*pin_font*/)const {
 
             const std::uint_least32_t first_language = MurMur3::calcHash("language_ja_jp");
             const std::uint_least32_t second_language = MurMur3::calcHash("language_en_us");
@@ -293,8 +295,8 @@ namespace paxs {
 
                     const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                     // 描画
-                    if (texture.find(lli.place_texture) != texture.end()) {
-                        texture.at(lli.place_texture).resizedDrawAt(35, draw_pos);
+                    if (texture.find(place_tex) != texture.end()) {
+                        texture.at(place_tex).resizedDrawAt(35, draw_pos);
                     }
                     // 英語名がない場合
                     if (lli.place_name.find(second_language) == lli.place_name.end()) {
@@ -364,8 +366,6 @@ namespace paxs {
             double end_latitude = -90.0; // 終点の緯度
 
             // 配列の添え字番号
-            const std::size_t local_language = getMenuIndex(menu, MurMur3::calcHash("language_ja_jp"));
-            const std::size_t english = getMenuIndex(menu, MurMur3::calcHash("language_en_us"));
             const std::size_t overall_length = getMenuIndex(menu, MurMur3::calcHash("overall_length"));
             const std::size_t minimum_size = getMenuIndex(menu, MurMur3::calcHash("min_size"));
             const std::size_t maximum_size = getMenuIndex(menu, MurMur3::calcHash("max_size"));

@@ -30,7 +30,7 @@ namespace paxs {
     void mapMapInitOne(
         std::unordered_map<std::uint_least32_t, XYZTile>& xyz_tile_list,
         const std::string& path,
-        const MapView* const map_view,
+        const MapView* const /*map_view*/,
         const std::uint_least32_t map_key,
         const std::string& map_url,
         const std::string& map_name,
@@ -41,15 +41,14 @@ namespace paxs {
         const int draw_max_z = -1
     ) {
         XYZTile xyz_tile(
-            map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-            MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+            path + map_file_path,
+            ("{z}/{n}_{z}_{x}_{y}"));
         if (map_url.size() != 0) xyz_tile.setMapURL(map_url);
         if (map_name.size() != 0) xyz_tile.setMapName(map_name);
         if (min_z >= 0) xyz_tile.setMinZ(min_z);
         if (max_z >= 0) xyz_tile.setMaxZ(max_z);
         if (draw_min_z >= 0) xyz_tile.setDrawMinZ(draw_min_z);
         if (draw_max_z >= 0) xyz_tile.setDrawMaxZ(draw_max_z);
-        xyz_tile.setMapFilePath(path + map_file_path);
         xyz_tile_list.emplace(map_key, xyz_tile);
     }
 
@@ -65,35 +64,32 @@ namespace paxs {
         // "map_base", "","", "Data/Map/XYZTile/Standard/Image/Land/2023/", -1, 7, -1, 7);
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/Standard/Image/Land/2023/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("");
             xyz_tile.setMaxZ(7);
             xyz_tile.setDrawMaxZ(7);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Standard/Image/Land/2023/");
             // xyz_tile_base->setMapFilePath(path + "Data/Map/XYZTile/LandAndSea/Image/GreenAndAlphaBinary/2023/");
 
             xyz_tile_list.emplace(MurMur3::calcHash("map_base"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("gbank");
             xyz_tile.setMinZ(8);
             xyz_tile.setMaxZ(10);
             xyz_tile.setDrawMinZ(8);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/");
             // xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/");
             // xyz_tile.setMapFilePath("./SavedMap/gbank_noblank_reclaimed_land/");
             xyz_tile_list.emplace(MurMur3::calcHash("map_land_and_water"), xyz_tile);
         }
         //{
         //     const std::unique_ptr<XYZTile> xyz_tile_gmaps(new(std::nothrow) XYZTile(
-        //     map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-        //     MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+        //     ("{z}/{n}_{z}_{x}_{y}")));
         //     //xyz_tile_gmaps->setMapURL("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}");
         //     xyz_tile_gmaps->setMapURL("http://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png");
         //     xyz_tile_gmaps->setMapName("map");
@@ -105,8 +101,7 @@ namespace paxs {
         //}
         {
             // const std::unique_ptr<XYZTile> xyz_tile3(new(std::nothrow) XYZTile(
-            // map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-            // MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+            // ("{z}/{n}_{z}_{x}_{y}")));
             // xyz_tile3->setMapURL("");
             // // xyz_tile3->setMapURL("https://aginfo.cgk.affrc.go.jp/ws/tmc/1.0.0/KSJ_Water-900913-L");
             // xyz_tile3->setMapName("water");
@@ -116,8 +111,7 @@ namespace paxs {
         }
         {
             // const std::unique_ptr<XYZTile> xyz_tile4(new(std::nothrow) XYZTile(
-            // map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-            // MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+            // ("{z}/{n}_{z}_{x}_{y}")));
             // xyz_tile4->setMapURL("");
             // xyz_tile4->setMapName("soil");
             // xyz_tile4->setDefaultZ(12);
@@ -125,8 +119,7 @@ namespace paxs {
         }
         //{
         //    const std::unique_ptr<XYZTile> xyz_tile_kuni(new(std::nothrow) XYZTile(
-        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-        //        MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+        //        ("{z}/{n}_{z}_{x}_{y}")));
         //    xyz_tile_kuni->setMapURL("");
         //    xyz_tile_kuni->setMapName("ColorCodingByProvincesOfJapanWithLakes");
         //    xyz_tile_kuni->setDefaultZ(10);
@@ -137,8 +130,7 @@ namespace paxs {
         //}
         //{
         //    const std::unique_ptr<XYZTile> xyz_tile_kuni_line(new(std::nothrow) XYZTile(
-        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-        //        MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+        //        ("{z}/{n}_{z}_{x}_{y}")));
         //    xyz_tile_kuni_line->setMapURL("");
         //    xyz_tile_kuni_line->setMapName("Line");
         //    xyz_tile_kuni_line->setMinZ(5);
@@ -150,8 +142,7 @@ namespace paxs {
         //}
         //{
         //    const std::unique_ptr<XYZTile> xyz_tile_kuni_korean_line(new(std::nothrow) XYZTile(
-        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-        //        MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+        //        ("{z}/{n}_{z}_{x}_{y}")));
         //    xyz_tile_kuni_korean_line->setMapURL("");
         //    xyz_tile_kuni_korean_line->setMapName("Line");
         //    xyz_tile_kuni_korean_line->setMinZ(7);
@@ -165,8 +156,7 @@ namespace paxs {
         //}
         //{
         //    const std::unique_ptr<XYZTile> xyz_tile_kuni_balhae_line(new(std::nothrow) XYZTile(
-        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-        //        MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+        //        ("{z}/{n}_{z}_{x}_{y}")));
         //    xyz_tile_kuni_balhae_line->setMapURL("");
         //    xyz_tile_kuni_balhae_line->setMapName("balhae_line");
         //    xyz_tile_kuni_balhae_line->setMinZ(7);
@@ -180,8 +170,7 @@ namespace paxs {
         //}
         //{
         //    const std::unique_ptr<XYZTile> xyz_tile_kuni_silla_line(new(std::nothrow) XYZTile(
-        //        map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-        //        MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+        //        ("{z}/{n}_{z}_{x}_{y}")));
         //    xyz_tile_kuni_silla_line->setMapURL("");
         //    xyz_tile_kuni_silla_line->setMapName("silla_line");
         //    xyz_tile_kuni_silla_line->setMinZ(7);
@@ -195,56 +184,51 @@ namespace paxs {
         //}
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/Gokishichido/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("zxy");
             xyz_tile.setMinZ(8);
             xyz_tile.setMaxZ(8);
             xyz_tile.setDrawMinZ(7);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Gokishichido/");
 
             xyz_tile_list.emplace(MurMur3::calcHash("map_east_asia_line"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/Kinai/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("zxy");
             xyz_tile.setMinZ(12);
             xyz_tile.setMaxZ(12);
             xyz_tile.setDrawMinZ(11);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Kinai/");
             xyz_tile_list.emplace(MurMur3::calcHash("map_kinai"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/Heijokyo/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("zxy");
             xyz_tile.setMinZ(16);
             xyz_tile.setMaxZ(16);
             xyz_tile.setDrawMinZ(15);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Heijokyo/");
             xyz_tile_list.emplace(MurMur3::calcHash("map_heijokyo"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/Soil/Image/Soil/2023/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("soil");
             xyz_tile.setDefaultZ(12);
             xyz_tile.setDrawMinZ(12);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Soil/Image/Soil/2023/");
             xyz_tile_list.emplace(MurMur3::calcHash("map_soil"), xyz_tile);
         }
         // {
         // const std::unique_ptr<XYZTile> xyz_tile_slope(new(std::nothrow) XYZTile(
-        // map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-        // MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}")));
+        // ("{z}/{n}_{z}_{x}_{y}")));
         // xyz_tile_slope->setMapURL("");
         // xyz_tile_slope->setMapName("slope");
         // // xyz_tile_slope->setMinZ(3);
@@ -261,55 +245,52 @@ namespace paxs {
             MurMur3::calcHash("map_slope"), "", "slope_pale", "Data/Map/XYZTile/Slope/Image/SlopePale20230920/2010/", -1, 8, -1, -1);
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("water");
             xyz_tile.setDefaultZ(12);
             xyz_tile.setDrawMinZ(11);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/");
 
             xyz_tile_list.emplace(MurMur3::calcHash("map_river1"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW/2023/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("water");
             xyz_tile.setDefaultZ(12);
             xyz_tile.setDrawMinZ(11);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW/2023/");
 
             xyz_tile_list.emplace(MurMur3::calcHash("map_river2"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                path + "Data/Map/XYZTile/Temperature/Image/SoilTemperature/2023/",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setMapURL("");
             xyz_tile.setMapName("soil-tem");
             xyz_tile.setDrawMinZ(8);
             xyz_tile.setDrawMaxZ(10);
-            xyz_tile.setMapFilePath(path + "Data/Map/XYZTile/Temperature/Image/SoilTemperature/2023/");
             xyz_tile_list.emplace(MurMur3::calcHash("map_soil_temperature"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                "",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile_list.emplace(MurMur3::calcHash("map_line2"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                "",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile_list.emplace(MurMur3::calcHash("map_line3"), xyz_tile);
         }
         {
             XYZTile xyz_tile(
-                map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                MurMur3::calcHash("{z}/{n}_{z}_{x}_{y}"));
+                "",
+                ("{z}/{n}_{z}_{x}_{y}"));
             xyz_tile.setDefaultZ(18);
             xyz_tile_list.emplace(MurMur3::calcHash("map_line4"), xyz_tile);
         }
