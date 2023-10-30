@@ -101,6 +101,25 @@ namespace paxs {
         }
 
         /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ ElevationDegF64ToU0To250 版）
+        static void splitElevationS16(const std::string& input, const char delimiter, std::int_least16_t* const result, const std::size_t size) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::size_t counter = 0u;
+            while (std::getline(stream, field, delimiter) && counter < size) { // 1 行ごとに文字列を分割
+                if (field.size() == 0) result[counter] = 32761; // 文字列が空の時は NaN(32761) を入れる
+                else {
+                    result[counter] = paxs::elevationS16(std::stod(field)); // 文字列を数値に変換する
+                }
+
+                ++counter;
+            }
+            if (field.size() == 0 && counter < size) { // 最後に空文字がある場合の処理
+                result[counter] = 32761; // 文字列が空の時は NaN(32761) を入れる
+            }
+        }
+
+        /// @brief Split string by delimiter
         /// @brief デリミタで文字列を分割する（ std::unordered_map 版）
         static std::unordered_map<std::string, std::size_t> splitHashMap(const std::string& input, const char delimiter) noexcept {
             std::istringstream stream(input);

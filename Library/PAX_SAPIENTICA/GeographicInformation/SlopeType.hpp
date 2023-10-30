@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <cmath>
+#include <cstdint>
 #include <limits>
 
 namespace paxs {
@@ -36,6 +37,25 @@ namespace paxs {
             return 0u;
         }
         return static_cast<unsigned char>(std::ceil(std::log2(float_value_ + 1.0) * 38.4154715724661/* 250 / log2(91) */));
+    }
+
+    // 標高 (m) を double から int16 へ変換
+    std::int_least16_t elevationS16(const double float_value_) {
+        // NaN は 32761
+        if (float_value_ == std::numeric_limits<double>::quiet_NaN()) {
+            return 32761;
+        }
+        // 11,000 m 以上は 32760
+        else if (float_value_ >= 11000.0) {
+            return 32760;
+        }
+        // -11,000 m 以下は -32760
+        else if (float_value_ <= -11000.0) {
+            return -32760;
+        }
+        return (float_value_ < 0) ?
+            static_cast<std::int_least16_t>(-std::ceil(std::log2(-float_value_ + 1.0) * 2440.16038278159/* 32760 / log2(11000 + 1) */)) :
+            static_cast<std::int_least16_t>(std::ceil(std::log2(float_value_ + 1.0) * 2440.16038278159/* 32760 / log2(11000 + 1) */));
     }
 
 }
