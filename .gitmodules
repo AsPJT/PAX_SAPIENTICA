@@ -58,3 +58,6 @@
     path = Data/Map/XYZTile/Temperature/Image/SoilTemperature
     url = https://github.com/Asukana/SoilTemperature.git
     branch = main
+[submodule "Data/Map/XYZTile/Elevation/Data/ElevationData20231030"]
+	path = Data/Map/XYZTile/Elevation/Data/ElevationData20231030
+	url = https://github.com/Asukana/ElevationData20231030.git
