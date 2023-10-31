@@ -148,9 +148,13 @@ namespace paxg {
         void splitStod(const char delimiter, double* const result, const std::size_t size) const {
             paxs::StringExtensions::splitStod(pline, delimiter, result, size);
         }
-        // 区切り文字で分割する (SlopeDegF64ToU0To250)
-        void splitSlopeDegF64ToU0To250(const char delimiter, unsigned char* const result, const std::size_t size) const {
-            paxs::StringExtensions::splitSlopeDegF64ToU0To250(pline, delimiter, result, size);
+        // 区切り文字で分割する (SlopeDegU8)
+        void splitSlopeDegU8(const char delimiter, unsigned char* const result, const std::size_t size) const {
+            paxs::StringExtensions::splitSlopeDegU8(pline, delimiter, result, size);
+        }
+        // 区切り文字で分割する (ElevationS16)
+        void splitElevationS16(const char delimiter, std::int_least16_t* const result, const std::size_t size) const {
+            paxs::StringExtensions::splitElevationS16(pline, delimiter, result, size);
         }
         // 区切り文字で分割する
         std::unordered_map<std::string, std::size_t> splitHashMap(const char delimiter) const {
@@ -165,8 +169,8 @@ namespace paxg {
             return pline;
         }
 
-        // バイナリ分割 (SlopeDegF64ToU0To250)
-        std::size_t splitSlopeDegF64ToU0To250Binary(char* const result, const std::size_t size) {
+        // バイナリ分割
+        std::size_t splitBinary(char* const result, const std::size_t size) {
             pifs.seekg(0, std::ios::end);
             const std::size_t read_max_size = static_cast<std::size_t>(pifs.tellg()); // 最大サイズ
             pifs.seekg(0);
