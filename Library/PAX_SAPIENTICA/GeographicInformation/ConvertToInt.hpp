@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_SLOPE_TYPE_HPP
-#define PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_SLOPE_TYPE_HPP
+#ifndef PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_CONVERT_TO_INT_HPP
+#define PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_CONVERT_TO_INT_HPP
 
 /*##########################################################################################
 
@@ -23,7 +23,7 @@
 namespace paxs {
 
     // 傾斜（度）を double から uint8 (0-250) へ変換
-    unsigned char slopeDegF64ToU0To250(const double float_value_) {
+    unsigned char slopeF64ToLog2U8(const double float_value_) {
         // NaN は 251
         if (float_value_ == std::numeric_limits<double>::quiet_NaN()) {
             return 251u;
@@ -40,7 +40,7 @@ namespace paxs {
     }
 
     // 標高 (m) を double から int16 へ変換
-    std::int_least16_t elevationS16(const double float_value_) {
+    std::int_least16_t elevationF64ToLog2S16(const double float_value_) {
         // NaN は 32761
         if (float_value_ == std::numeric_limits<double>::quiet_NaN()) {
             return 32761;
@@ -60,4 +60,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_SLOPE_TYPE_HPP
+#endif // !PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_CONVERT_TO_INT_HPP

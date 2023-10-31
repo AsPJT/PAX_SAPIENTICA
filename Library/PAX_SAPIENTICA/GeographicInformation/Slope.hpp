@@ -269,7 +269,7 @@ namespace paxs {
             unsigned char pre_value = 252; // 1 つ前の値
             std::array<unsigned char, 256> xyz_one_line{};
             while (ifs.getLine()) {
-                ifs.splitSlopeDegF64ToU0To250(delimiter, xyz_one_line.data(), 256);
+                ifs.splitSlopeDegU8(delimiter, xyz_one_line.data(), 256);
                 for (std::size_t i = 0; i < 256; ++i) {
                     sd.calc(pre_value, xyz_one_line[i]);
                     pre_value = xyz_one_line[i];

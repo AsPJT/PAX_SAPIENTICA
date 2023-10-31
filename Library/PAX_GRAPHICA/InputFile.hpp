@@ -148,9 +148,9 @@ namespace paxg {
         void splitStod(const char delimiter, double* const result, const std::size_t size) const {
             paxs::StringExtensions::splitStod(pline, delimiter, result, size);
         }
-        // 区切り文字で分割する (SlopeDegF64ToU0To250)
-        void splitSlopeDegF64ToU0To250(const char delimiter, unsigned char* const result, const std::size_t size) const {
-            paxs::StringExtensions::splitSlopeDegF64ToU0To250(pline, delimiter, result, size);
+        // 区切り文字で分割する (SlopeDegU8)
+        void splitSlopeDegU8(const char delimiter, unsigned char* const result, const std::size_t size) const {
+            paxs::StringExtensions::splitSlopeDegU8(pline, delimiter, result, size);
         }
         // 区切り文字で分割する (ElevationS16)
         void splitElevationS16(const char delimiter, std::int_least16_t* const result, const std::size_t size) const {

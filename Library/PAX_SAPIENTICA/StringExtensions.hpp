@@ -24,7 +24,7 @@
 #include <vector>
 
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/GeographicInformation/SlopeType.hpp>
+#include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
 
 namespace paxs {
 
@@ -72,14 +72,14 @@ namespace paxs {
 
         /// @brief Split string by delimiter
         /// @brief デリミタで文字列を分割する（ SlopeDegF64ToU0To250 版）
-        static void splitSlopeDegF64ToU0To250(const std::string& input, const char delimiter, unsigned char* const result, const std::size_t size) noexcept {
+        static void splitSlopeDegU8(const std::string& input, const char delimiter, unsigned char* const result, const std::size_t size) noexcept {
             std::istringstream stream(input);
             std::string field;
             std::size_t counter = 0u;
             while (std::getline(stream, field, delimiter) && counter < size) { // 1 行ごとに文字列を分割
                 if (field.size() == 0) result[counter] = 251; // 文字列が空の時は NaN(251) を入れる
                 else {
-                    result[counter] = paxs::slopeDegF64ToU0To250(std::stod(field)); // 文字列を数値に変換する
+                    result[counter] = paxs::slopeF64ToLog2U8(std::stod(field)); // 文字列を数値に変換する
 
                     /* バイナリデータをより小さくするための実験 */
                     //if (result[counter] > 181) result[counter] = 181;
@@ -109,7 +109,7 @@ namespace paxs {
             while (std::getline(stream, field, delimiter) && counter < size) { // 1 行ごとに文字列を分割
                 if (field.size() == 0) result[counter] = 32761; // 文字列が空の時は NaN(32761) を入れる
                 else {
-                    result[counter] = paxs::elevationS16(std::stod(field)); // 文字列を数値に変換する
+                    result[counter] = paxs::elevationF64ToLog2S16(std::stod(field)); // 文字列を数値に変換する
                 }
 
                 ++counter;
