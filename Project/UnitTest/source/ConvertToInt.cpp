@@ -13,14 +13,38 @@
 
 #include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
 
-TEST(ConvertToIntUnitTest, slope) {
-    unsigned char expected = 100u;
-    unsigned char actual = paxs::slopeF64ToLog2U8(5.07598309582116);
+TEST(ConvertToIntUnitTest, slope1) {
+    unsigned char expected = 90u;
+    unsigned char actual = paxs::slopeDegF64ToLog2U8(4.0);
     ASSERT_EQ(expected, actual);
 }
 
-TEST(ConvertToIntUnitTest, elevation) {
+TEST(ConvertToIntUnitTest, slope2) {
+    unsigned char expected = 100u;
+    unsigned char actual = paxs::slopeDegF64ToLog2U8(5.0);
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(ConvertToIntUnitTest, elevation1) {
     std::int_least16_t expected = -10000;
-    std::int_least16_t actual = paxs::elevationF64ToLog2S16(-16.1257027576632);
+    std::int_least16_t actual = paxs::elevationF64ToLog2S16(-16.125);
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(ConvertToIntUnitTest, elevation2) {
+    std::int_least16_t expected = 5000;
+    std::int_least16_t actual = paxs::elevationF64ToLog2S16(3.138);
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(ConvertToIntUnitTest, slope3) {
+    unsigned char expected = 100u;
+    unsigned char actual = paxs::slopeDegF64ToLog2U8(paxs::slopeDegLog2U8ToF64(100));
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(ConvertToIntUnitTest, elevation3) {
+    std::int_least16_t expected = -20000;
+    std::int_least16_t actual = paxs::elevationF64ToLog2S16(paxs::elevationLog2S16ToF64(-20000));
     ASSERT_EQ(expected, actual);
 }

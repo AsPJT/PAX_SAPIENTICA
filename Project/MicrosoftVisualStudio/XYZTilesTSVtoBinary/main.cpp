@@ -14,6 +14,13 @@
 
 #include <iostream>
 
+int main() {
+    std::cout << paxs::elevationF64ToLog2S16(paxs::elevationLog2S16ToF64(-20000)) << '\n';
+    //std::cout << (paxs::slopeDegLog2U8ToF64(7)) << '\n';
+    //std::cout << (int)paxs::slopeDegF64ToLog2U8(55);
+    //std::cout << paxs::elevationF64ToLog2S16(3.138);
+}
+
 //// 標高版 : TSV から バイナリデータを出力
 //int  main() {
 //    //std::cout << paxs::elevationS16(-10996.0) << '\n';
@@ -53,26 +60,26 @@
 //    return 0;
 //}
 
-// 標高のバイナリデータをコンソール上で表示
-int main() {
-    // 標高のバイナリデータを読み込む
-    const std::string input_name = "test8/1/zxy_1_0_0.bin";
-    paxs::Input16BitBinary i16bbe(input_name, "./");
-
-    std::int_least16_t xyz_tiles[256 * 256]{};
-
-    for (std::size_t i = 0; i < 256 * 256; ++i) {
-        xyz_tiles[i] = 22; // エラー値を入れ、エラー値が出ないか確認する
-    }
-
-    i16bbe.calc(xyz_tiles);
-
-
-    for (std::size_t i = 0; i < 256 * 256; ++i) {
-        std::cout << xyz_tiles[i] << ",";
-        if ((i & 255) == 255) std::cout << "\n";
-    }
-}
+//// 標高のバイナリデータをコンソール上で表示
+//int main() {
+//    // 標高のバイナリデータを読み込む
+//    const std::string input_name = "test8/1/zxy_1_0_0.bin";
+//    paxs::Input16BitBinary i16bbe(input_name, "./");
+//
+//    std::int_least16_t xyz_tiles[256 * 256]{};
+//
+//    for (std::size_t i = 0; i < 256 * 256; ++i) {
+//        xyz_tiles[i] = 22; // エラー値を入れ、エラー値が出ないか確認する
+//    }
+//
+//    i16bbe.calc(xyz_tiles);
+//
+//
+//    for (std::size_t i = 0; i < 256 * 256; ++i) {
+//        std::cout << xyz_tiles[i] << ",";
+//        if ((i & 255) == 255) std::cout << "\n";
+//    }
+//}
 
 // 傾斜のバイナリデータをコンソール上で表示
 //int main() {

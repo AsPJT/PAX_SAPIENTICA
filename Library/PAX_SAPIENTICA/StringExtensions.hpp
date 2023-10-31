@@ -79,7 +79,7 @@ namespace paxs {
             while (std::getline(stream, field, delimiter) && counter < size) { // 1 行ごとに文字列を分割
                 if (field.size() == 0) result[counter] = 251; // 文字列が空の時は NaN(251) を入れる
                 else {
-                    result[counter] = paxs::slopeF64ToLog2U8(std::stod(field)); // 文字列を数値に変換する
+                    result[counter] = paxs::slopeDegF64ToLog2U8(std::stod(field)); // 文字列を数値に変換する
 
                     /* バイナリデータをより小さくするための実験 */
                     //if (result[counter] > 181) result[counter] = 181;
