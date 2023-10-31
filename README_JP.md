@@ -1,6 +1,10 @@
-![PAX SAPIENTICA Logo](./Image/Logo/TitleBanner.svg)
+![PAX SAPIENTICA Logo](./Image/Logo/TitleBanner4.svg)
 
 GIS & Archaeological Simulator
+
+このソフトウェアはPAX SAPIENTICA（略称はPAXS）。
+PAXSは文献学、考古学、人類学のデータを扱うGISです。
+各時代の各地域の暦を表示する機能やエージェントベースシミュレーションの機能が備わっています。
 
 # List of elements supported by this software.
 
