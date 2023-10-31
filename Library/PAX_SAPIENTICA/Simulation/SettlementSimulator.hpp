@@ -17,13 +17,16 @@
 ##########################################################################################*/
 
 #include <cstdint>
+
 #include <memory>
 #include <random>
+#include <unordered_map>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>
+#include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
 namespace paxs {
@@ -34,6 +37,7 @@ namespace paxs {
         using Agent = paxs::SettlementAgent<GridType>;
         using Environment = paxs::Environment<GridType>;
         using Settlement = paxs::Settlement<GridType>;
+        using SettlementGrid = paxs::SettlementGrid<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
 
         constexpr explicit SettlementSimulator() = default;
@@ -68,7 +72,7 @@ namespace paxs {
         /// @brief 集落の初期化
         /// @details 集落をクリアし、地域ごとに指定されたエージェント数になるようにランダムに配置する
         void init() {
-            settlements.clear();
+            settlement_grids.clear();
             randomizeSettlements();
         }
 
@@ -83,29 +87,35 @@ namespace paxs {
         /// @brief Execute the simulation for the one step.
         /// @brief シミュレーションを1ステップ実行する
         void step() noexcept {
-            for (Settlement& settlement : settlements) {
-                settlement.preUpdate(gen);
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid.second->getSettlements()) {
+                    settlement->move(gen);
+                }
             }
 
-            for (Settlement& settlement : settlements) {
-                settlement.marriage(settlements);
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid.second->getSettlements()) {
+                    settlement->preUpdate();
+                }
             }
 
-            for (Settlement& settlement : settlements) {
-                settlement.onUpdate();
+            for (auto& settlement_grid : settlement_grids) {
+                // TODO: 近隣8グリッドの集落を取得
+                std::vector<std::shared_ptr<Settlement>> settlements;
+                for (auto& settlement : settlement_grid.second->getSettlements()) {
+                    settlement->marriage(settlements);
+                }
+            }
+
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid.second->getSettlements()) {
+                    settlement->onUpdate();
+                }
             }
         }
 
-        /// @brief Get the settlements.
-        /// @brief 集落を取得
-        const std::vector<Settlement>& cgetSettlements() const noexcept { return settlements; }
-
-        /// @brief Get the settlements.
-        /// @brief 集落を取得
-        std::vector<Settlement>& getSettlements() noexcept { return settlements; }
-
     private:
-        std::vector<Settlement> settlements;
+        std::unordered_map<std::uint_fast32_t, std::shared_ptr<SettlementGrid>> settlement_grids;
         std::shared_ptr<Environment> environment;
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布

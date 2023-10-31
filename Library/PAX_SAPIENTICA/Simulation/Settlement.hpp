@@ -71,7 +71,7 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<Settlement>& settlements) noexcept {
+        void marriage(std::vector<std::shared_ptr<Settlement>>& settlements) noexcept {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_agents_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
@@ -96,7 +96,7 @@ namespace paxs {
             // 結婚相手を探す
             std::vector<std::size_t> close_settlements_index;
             for (std::size_t i = 0; i < settlements.size(); ++i) {
-                if (settlements[i].getPosition().distance(positions[0]) < 10.0f) close_settlements_index.push_back(i);
+                if (settlements[i]->getPosition().distance(positions[0]) < 10.0f) close_settlements_index.push_back(i);
             }
 
             // 自分の集落を含めて、近くに集落がない
@@ -118,8 +118,7 @@ namespace paxs {
 
         /// @brief Pre update.
         /// @brief 事前更新
-        void preUpdate(std::mt19937& engine) noexcept {
-            move(engine);
+        void preUpdate() noexcept {
             birth();
             emigration();
         }
@@ -129,6 +128,18 @@ namespace paxs {
         void onUpdate() noexcept {
             ageUpdate();
             death();
+        }
+
+        /// @brief Move.
+        /// @brief 移動
+        void move(std::mt19937& engine) noexcept {
+            // 0.1%の確率で移動
+            std::uniform_int_distribution<> dist(0, 1000);
+            if (dist(engine) != 0) return;
+
+            // 座標を移動
+            // TODO: 移動先の座標を決定
+
         }
 
     private:
@@ -143,18 +154,6 @@ namespace paxs {
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
         std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
-
-        /// @brief Move.
-        /// @brief 移動
-        void move(std::mt19937& engine) noexcept {
-            // 0.1%の確率で移動
-            std::uniform_int_distribution<> dist(0, 1000);
-            if (dist(engine) != 0) return;
-
-            // 座標を移動
-            // TODO: 移動先の座標を決定
-
-        }
 
         /// @brief Birth.
         /// @brief 出産
