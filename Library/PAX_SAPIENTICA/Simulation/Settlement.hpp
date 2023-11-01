@@ -21,6 +21,7 @@
 #include <random>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/RandomSelector.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Object.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
@@ -69,6 +70,14 @@ namespace paxs {
             return *it;
         }
 
+        /// @brief Get the agents.
+        /// @brief エージェントを取得
+        std::vector<Agent>& getAgents() noexcept { return agents; }
+
+        /// @brief Get the agents.
+        /// @brief エージェントを取得
+        const std::vector<Agent>& cgetAgents() const noexcept { return agents; }
+
         /// @brief Marriage.
         /// @brief 婚姻
         void marriage(std::vector<std::shared_ptr<Settlement>>& settlements) noexcept {
@@ -76,13 +85,10 @@ namespace paxs {
             std::vector<std::size_t> marriageable_agents_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
-                float age = agents[i].getAge();
-                if (age >= marriageable_age_min &&
-                    age < marriageable_age_max &&
-                    !agents[i].isMarried()
-                )
+                if (agents[i].isAbleToMarriage() && agents[i].getGender() == female)
                 {
-                    if (!isMarried(age)) continue;
+
+                    if (!isMarried(agents[i].getAge())) continue;
 
                     marriageable_agents_index.push_back(i);
                 }
@@ -94,26 +100,55 @@ namespace paxs {
             }
 
             // 結婚相手を探す
-            std::vector<std::size_t> close_settlements_index;
+            std::vector<std::size_t> close_settlements_index_list;
             for (std::size_t i = 0; i < settlements.size(); ++i) {
-                if (settlements[i]->getPosition().distance(positions[0]) < 10.0f) close_settlements_index.push_back(i);
+                if (settlements[i]->getPosition().distance(positions[0]) < 10.0f) close_settlements_index_list.push_back(i);
             }
 
             // 自分の集落を含めて、近くに集落がない
-            if (close_settlements_index.empty()) {
+            if (close_settlements_index_list.empty()) {
                 Logger logger("Save/warning_log.txt");
                 const std::string message = "No close settlements.";
                 logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 return;
             }
 
-            // TODO: 結婚対象者一人ずつについて、結婚相手を探す
-            // 近くの集落をランダムに選択して、条件を満たすエージェントを探す
-            for (std::size_t agent_index : marriageable_agents_index) {
-
+            // エージェントIDと集落IDのペアを作成
+            std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>> agent_settlement_pair;
+            for (std::size_t close_settlement_index : close_settlements_index_list) {
+                for (const Agent& agent : settlements[close_settlement_index]->cgetAgents()) {
+                    if (agent.isAbleToMarriage() && agent.getGender() == male){
+                        agent_settlement_pair.emplace_back(agent.getId(), settlements[close_settlement_index]->getId());
+                    }
+                }
             }
 
+            // 女性と男性の組み合わせをランダムに選択
+            RandomSelector selector;
 
+            // first: 女性のインデックス, second: 男性のインデックス
+            const auto marriageable_agents_index_pair = selector.select(marriageable_agents_index.size(), agent_settlement_pair.size());
+
+            // TODO: 各ペアのエージェントの結婚処理
+            // シミュレーションの設定で母方に移住するか父方に移住するかを決める
+            // 母方の場合
+            // if (isMatrilocality()) {
+            if (true) {
+                for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
+                    std::pair<std::size_t, std::size_t> pair = marriageable_agents_index_pair[i];
+                    std::uint_least32_t male_id = marriageable_agents_index_pair[pair.second].first;
+                    std::uint_least32_t settlement_id = marriageable_agents_index_pair[pair.second].second;
+
+                    for (std::size_t j = 0; j < settlements.size(); ++j) {
+                        if (settlements[j]->getId() == settlement_id) {
+                            // TODO: この集落にエージェントを追加
+
+
+                            // TODO: 集落からエージェントを削除
+                        }
+                    }
+                }
+            }
         }
 
         /// @brief Pre update.

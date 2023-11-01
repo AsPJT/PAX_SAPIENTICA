@@ -29,8 +29,12 @@ namespace paxs {
 
     constexpr int steps_per_year = 12; // 1年あたりのステップ数
 
-    // 結婚可能年齢：13歳以上60歳未満
-    constexpr std::uint_least32_t marriageable_age_min = 13;
+    constexpr std::uint_least8_t female = 0; // 女性
+    constexpr std::uint_least8_t male = 1; // 男性
+
+    // 女性の結婚可能年齢：13歳以上60歳未満, 男性の結婚可能年齢：17歳以上60歳未満
+    constexpr std::uint_least32_t female_marriageable_age_min = 13;
+    constexpr std::uint_least32_t male_marriageable_age_min = 17;
     constexpr std::uint_least32_t marriageable_age_max = 60;
     // 出産可能：15歳以上50歳未満
     constexpr std::uint_least32_t birthable_age_min = 15;

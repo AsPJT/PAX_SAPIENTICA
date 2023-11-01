@@ -40,6 +40,10 @@ namespace paxs {
         const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
         : id(id) , name_id(name_id), gender(gen), age(age), life_span(life_span), environment(env) {}
 
+        /// @brief Get the id.
+        /// @brief idを取得
+        constexpr std::uint_least32_t getId() const noexcept { return id; }
+
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す
         constexpr bool isDead() const noexcept { return age >= life_span; }
@@ -47,6 +51,10 @@ namespace paxs {
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
         constexpr float getAge() const noexcept { return age / static_cast<float>(steps_per_year); }
+
+        /// @brief Get the agent's age.
+        /// @brief エージェントの性別を取得する
+        constexpr std::uint_least8_t getGender() const noexcept { return gender; }
 
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする
@@ -59,10 +67,6 @@ namespace paxs {
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする
         constexpr void incrementAge(const std::uint_least32_t n) noexcept { age += n; }
-
-        /// @brief Get the agent's sex.
-        /// @brief エージェントの性別を取得する
-        constexpr std::uint_least8_t getGender() const noexcept { return gender; }
 
         constexpr bool operator==(const SettlementAgent& a) const noexcept {
             return  id == a.id &&
@@ -77,6 +81,14 @@ namespace paxs {
         /// @brief エージェントが結婚しているかどうかを返す
         bool isMarried() const noexcept { return _isMarried; }
 
+        /// @brief Is the agent able to marry?
+        /// @brief エージェントが結婚可能かどうかを返す
+        bool isAbleToMarriage() const noexcept {
+            return age >= (gender ? male_marriageable_age_min : female_marriageable_age_min) &&
+                    age < marriageable_age_max && // TODO: 確認
+                    !_isMarried;
+        }
+
         /// @brief Is able to give birth?
         /// @brief 出産可能かどうか
         bool isAbleToGiveBirth() const noexcept { return age >= birthable_age_min && age < birthable_age_max && _isMarried; }
@@ -84,7 +96,7 @@ namespace paxs {
     protected:
         std::uint_least32_t id; // ID
         std::uint_least32_t name_id; // 名前のID
-        std::uint_least8_t gender; // 性別
+        std::uint_least8_t gender; // 性別: 0 -> 女性, 1 -> 男性
         std::uint_least32_t age; // 年齢
         std::uint_least32_t life_span; // 寿命
         std::shared_ptr<Environment> environment; // 環境

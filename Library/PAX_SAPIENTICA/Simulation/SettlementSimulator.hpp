@@ -27,6 +27,7 @@
 #include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
 namespace paxs {
@@ -100,8 +101,21 @@ namespace paxs {
             }
 
             for (auto& settlement_grid : settlement_grids) {
-                // TODO: 近隣8グリッドの集落を取得
+                // 近隣8グリッドの集落を取得
                 std::vector<std::shared_ptr<Settlement>> settlements;
+                Vector2 grid_position = settlement_grid.second->getGridPosition();
+                grid_position /= grid_length;
+                for (int i = -1; i <= 1; ++i) {
+                    for (int j = -1; j <= 1; ++j) {
+                        auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
+                        if (it != settlement_grids.end()) {
+                            for (auto& settlement : it->second->getSettlements()) {
+                                settlements.push_back(settlement);
+                            }
+                        }
+                    }
+                }
+
                 for (auto& settlement : settlement_grid.second->getSettlements()) {
                     settlement->marriage(settlements);
                 }
@@ -115,7 +129,7 @@ namespace paxs {
         }
 
     private:
-        std::unordered_map<std::uint_fast32_t, std::shared_ptr<SettlementGrid>> settlement_grids;
+        std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>> settlement_grids;
         std::shared_ptr<Environment> environment;
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布

@@ -84,7 +84,7 @@ namespace paxs {
         /// @brief 指定した位置の値を取得する
         constexpr DataType getValue(const Vector2& position) const noexcept {
             const Vector2 converted_position = position * z_mag;
-            auto itr = data.find(convertVector2ToIndex(converted_position));
+            auto itr = data.find(converted_position.toU64());
             if(itr == data.end()) {
                 return static_cast<DataType>(0);
             }
@@ -183,9 +183,9 @@ namespace paxs {
                             if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
                                 int value = std::stoi(values[x]);
                                 if(value == 0) continue;
-                                data[convertVector2ToIndex(position)] = static_cast<DataType>(value);
+                                data[position.toU64()] = static_cast<DataType>(value);
                             } else if constexpr (std::is_same<DataType, float>::value) {
-                                data[convertVector2ToIndex(position)] = static_cast<DataType>(std::stod(values[x]));
+                                data[position.toU64()] = static_cast<DataType>(std::stod(values[x]));
                             }
                         } catch (const std::invalid_argument&/*ia*/) {
                             // str is not convertible to double
@@ -244,7 +244,7 @@ namespace paxs {
                         // T型に変換
                         if (file[y][x] == '0') continue;
                         const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                        data[convertVector2ToIndex(position)] = static_cast<DataType>(file[y][x]);
+                        data[position.toU64()] = static_cast<DataType>(file[y][x]);
                     }
                 }
                 ++file_count;
@@ -305,7 +305,7 @@ namespace paxs {
                         }
                         if(!is_contain_one) continue;
                         const Vector2 position = default_position + Vector2(static_cast<GridType>(x / z_mag), static_cast<GridType>(y / z_mag));
-                        data[convertVector2ToIndex(position)] = static_cast<DataType>('1');
+                        data[position.toU64()] = static_cast<DataType>('1');
                     }
                 }
                 ++file_count;
@@ -335,10 +335,6 @@ namespace paxs {
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
-        }
-
-        std::uint_least64_t convertVector2ToIndex(const Vector2& position) const noexcept {
-            return (position.x) + ((std::uint_least64_t)position.y << 32);
         }
     };
 }
