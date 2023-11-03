@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 3.22.1)
 # build script scope).
 
 include_directories( ./../../../../../../Library/ )
+include_directories( ./../../../../../../ExternalLibrary/ )
 include_directories( C:/Lib_AndroidStudio/${ANDROID_ABI} )
 link_directories( C:/Lib_AndroidStudio/${ANDROID_ABI} )
 
