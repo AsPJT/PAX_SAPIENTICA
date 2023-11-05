@@ -34,6 +34,7 @@ namespace paxg {
         std::string pline{}; // std::string として用いる文字列
         std::ifstream pifs{}; // assets 以外の読み込み時に用いる
         std::uint_least32_t type{};
+        int file_size = 0; // ファイルの大きさ
 #else
         std::ifstream pifs{};
         std::string pline{};
@@ -75,6 +76,7 @@ namespace paxg {
             switch (type) {
             case paxs::MurMur3::calcHash("asset_file"):
 #ifdef __ANDROID__
+                file_size = DxLib::FileRead_size(str_.c_str());
                 file_handle = DxLib::FileRead_open(str_.c_str());
 #else // Android 以外の場合の処理も記載
                 file_handle = DxLib::FileRead_open(std::string(default_path_ + str_).c_str());
@@ -171,6 +173,24 @@ namespace paxg {
 
         // バイナリ分割
         std::size_t splitBinary(char* const result, const std::size_t size) {
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            if (type == paxs::MurMur3::calcHash("asset_file")) {
+                const std::size_t read_size = (std::min)(static_cast<std::size_t>(file_size), size); // 読み込むサイズ
+                DxLib::FileRead_read(result, static_cast<int>(read_size), file_handle);
+                return read_size;
+            }
+            else {
+                pifs.seekg(0, std::ios::end);
+                const std::size_t read_max_size = static_cast<std::size_t>(pifs.tellg()); // 最大サイズ
+                pifs.seekg(0);
+
+                const std::size_t read_size = (std::min)(read_max_size, size); // 読み込むサイズ
+
+                //読み込んだデータを char に出力
+                pifs.read(result, read_size);
+                return read_size;
+            }
+#else
             pifs.seekg(0, std::ios::end);
             const std::size_t read_max_size = static_cast<std::size_t>(pifs.tellg()); // 最大サイズ
             pifs.seekg(0);
@@ -180,6 +200,7 @@ namespace paxg {
             //読み込んだデータを char に出力
             pifs.read(result, read_size);
             return read_size;
+#endif
         }
 
     };
