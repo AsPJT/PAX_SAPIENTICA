@@ -52,13 +52,55 @@
 namespace paxs {
 
     class XYZTile {
-    public:
+    private:
         // XYZ タイルの 1 つのセルのメルカトル座標を保持
         // 基本的に Z = 19 は無い
         using MapVec2 = Vector2<int>;
         using MapVec2D = Vector2<double>;
 
+        // XYZ タイルの画像の情報を保持
+        std::unordered_map<std::uint_least64_t, paxg::Texture> texture_list{};
+        std::unordered_map<std::uint_least64_t, unsigned char> is_texture_list{}; // テクスチャが読み込まれているか
 
+        std::string texture_url = ""; // URL
+        std::string binary_file_name_format = ""; // バイナリデータ
+        std::string map_name = ""; // 地図名
+        std::string map_file_path_name = ""; // パス名 例） "Data/Map/XYZTile/Standard/Image/Land/2023/"
+        std::string file_name_format = ("{z}/{x}/{y}");
+        std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
+
+        const std::string* p_root_path = nullptr; // 初めのパス名 例） root_path
+
+        // 1フレーム前のマップの幅
+        double current_map_view_width = -1.0;
+
+        // XYZ タイルの画面上の始点セル
+        MapVec2 start_cell{};
+        // XYZ タイルの画面上の終点セル
+        MapVec2 end_cell{};
+
+        // 99999999 の場合は固定なし
+        int min_date = 99999999;
+        int max_date = 99999999;
+
+        unsigned int default_z = 999; // 固定された Z （ 999 の場合は固定なし ）
+        unsigned int min_z = 0; // 最小 Z
+        unsigned int max_z = 25; // 最大 Z
+        unsigned int z = 2; // 画面の幅に最適な XYZ タイルの Z を格納
+        unsigned int magnification_z = z; // 画面上の Z の値
+        unsigned int draw_min_z = 0; // 描画最小 Z
+        unsigned int draw_max_z = 999; // 描画最大 Z
+        unsigned int z_num = (1 << z); // 2 の z 乗 // std::pow(2, z) と等価
+
+        std::uint_least32_t draw_type = paxs::MurMur3::calcHash("texture");
+
+        std::uint_least32_t texture_root_path_type = paxs::MurMur3::calcHash("asset_file");
+        std::uint_least32_t binary_root_path_type = paxs::MurMur3::calcHash("asset_file");
+
+        std::uint_least32_t menu_bar_map = 0;
+        bool menu_bar_map_bool = true;
+
+    private:
         // テクスチャ unordered_map の添え字を XYZ から生成
         constexpr std::uint_least64_t textureIndex(std::uint_least64_t z_, std::uint_least64_t y_, std::uint_least64_t x_) const {
             return (z_ << 48) + (y_ << 24) + (x_);
@@ -73,9 +115,8 @@ namespace paxs {
             return (y_ << 24);
         }
 
-        XYZTile() = default;
-
-        void createTextureFolder(const std::string& x_value, const std::string& y_value, const std::string& z_value) {
+        // Ｘ、Ｙ、Ｚの３つの文字列に変換された数値を入れ、画像を保存するフォルダを作成する
+        void createTextureFolder(const std::string& x_value, const std::string& y_value, const std::string& z_value) const {
             std::string new_folder_path = texture_full_path_folder;
             paxs::StringExtensions::replace(new_folder_path, "{x}", x_value);
             paxs::StringExtensions::replace(new_folder_path, "{y}", y_value);
@@ -83,6 +124,27 @@ namespace paxs {
             if (map_name.size() != 0) paxs::StringExtensions::replace(new_folder_path, "{n}", map_name);
             std::filesystem::create_directories(new_folder_path);
         }
+
+        // フルパスのフォルダまでのパスを返す
+        std::string setFullPathFolder() const {
+            std::size_t slash_index = 99999999;
+            for (std::size_t i = 0; i < file_name_format.size(); ++i) {
+                if (file_name_format[i] == '/') {
+                    slash_index = i;
+                }
+            }
+            // スラッシュがない場合は空文字を返す
+            if (slash_index == 99999999) {
+                return "";
+            }
+            // スラッシュがある場合は最後のスラッシュまでのフォルダパスを返す
+            std::string str = file_name_format;
+            str[slash_index] = 0; // 終端文字を入れる
+            return std::string(str.c_str());
+        }
+
+    public:
+        XYZTile() = default;
 
         // タイルを更新
         void update(const double map_view_width, // 描画される地図の経度幅
@@ -274,27 +336,6 @@ namespace paxs {
                 } // for (j)
             } // for (i)
         }
-
-        // フルパスのフォルダまでのパスを返す
-        std::string setFullPathFolder() const {
-            std::size_t slash_index = 99999999;
-            for (std::size_t i = 0; i < file_name_format.size(); ++i) {
-                if (file_name_format[i] == '/') {
-                    slash_index = i;
-                }
-            }
-            // スラッシュがない場合は空文字を返す
-            if (slash_index == 99999999) {
-                return "";
-            }
-            // スラッシュがある場合は最後のスラッシュまでのフォルダパスを返す
-            else {
-                std::string str = file_name_format;
-                str[slash_index] = 0; // 終端文字を入れる
-                return std::string(str.c_str());
-            }
-        }
-
 
         XYZTile(
             const std::uint_least32_t menu_bar_map_,
@@ -513,50 +554,6 @@ namespace paxs {
         void setMapName(const std::string& map_name_) {
             map_name = map_name_;
         }
-    private:
-
-        // XYZ タイルの画像の情報を保持
-        std::unordered_map<std::uint_least64_t, paxg::Texture> texture_list{};
-        std::unordered_map<std::uint_least64_t, unsigned char> is_texture_list{}; // テクスチャが読み込まれているか
-
-        std::string texture_url = ""; // URL
-        std::string binary_file_name_format = ""; // バイナリデータ
-        std::string map_name = ""; // 地図名
-        std::string map_file_path_name = ""; // パス名 例） "Data/Map/XYZTile/Standard/Image/Land/2023/"
-        std::string file_name_format = ("{z}/{x}/{y}");
-        std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
-
-        const std::string* p_root_path = nullptr; // 初めのパス名 例） root_path
-
-        // 1フレーム前のマップの幅
-        double current_map_view_width = -1.0;
-
-        // XYZ タイルの画面上の始点セル
-        MapVec2 start_cell{};
-        // XYZ タイルの画面上の終点セル
-        MapVec2 end_cell{};
-
-        // 99999999 の場合は固定なし
-        int min_date = 99999999;
-        int max_date = 99999999;
-
-        unsigned int default_z = 999; // 固定された Z （ 999 の場合は固定なし ）
-        unsigned int min_z = 0; // 最小 Z
-        unsigned int max_z = 25; // 最大 Z
-        unsigned int z = 2; // 画面の幅に最適な XYZ タイルの Z を格納
-        unsigned int magnification_z = z; // 画面上の Z の値
-        unsigned int draw_min_z = 0; // 描画最小 Z
-        unsigned int draw_max_z = 999; // 描画最大 Z
-        unsigned int z_num = (1 << z); // 2 の z 乗 // std::pow(2, z) と等価
-
-        std::uint_least32_t draw_type = paxs::MurMur3::calcHash("texture");
-
-        std::uint_least32_t texture_root_path_type = paxs::MurMur3::calcHash("asset_file");
-        std::uint_least32_t binary_root_path_type = paxs::MurMur3::calcHash("asset_file");
-
-        std::uint_least32_t menu_bar_map = 0;
-        bool menu_bar_map_bool = true;
-
     };
 }
 
