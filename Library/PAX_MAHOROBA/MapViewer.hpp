@@ -42,13 +42,8 @@ namespace paxs {
         std::unique_ptr<AgentLocation> agent_location; // エージェント
         //#endif
 
-        /*##########################################################################################
-            読み込む XYZ タイルの情報を記載
-            map_name			地図名
-            map_url_name		地図画像を取得する URL
-            map_license_name	ライセンス情報
-        ##########################################################################################*/
-        std::unordered_map<std::uint_least32_t, XYZTile> xyz_tile_list;
+        // 描画する XYZ タイルを管理
+        XYZTilesList xyz_tile_list;
 
     public:
 
@@ -80,14 +75,9 @@ namespace paxs {
                 );
             }
 #endif
-
-            /*##########################################################################################
-                読み込む XYZ タイルの情報を記載
-                map_name			地図名
-                map_url_name		地図画像を取得する URL
-                map_license_name	ライセンス情報
-            ##########################################################################################*/
-            mapMapInit(xyz_tile_list, path8, map_view.get());
+            // XYZ タイルを初期化
+            xyz_tile_list.add(path8, "Data/Map/XYZTile/List.tsv");
+            xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
 
             // 地名
             place_name_location.add();
@@ -107,7 +97,7 @@ namespace paxs {
             paxs::GraphicVisualizationList& visible
         ) {
             map_view->update(); // キーボード入力を更新
-            mapMapUpdate(xyz_tile_list, string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+            xyz_tile_list.update(string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する

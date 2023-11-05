@@ -14,12 +14,44 @@
 
 #include <iostream>
 
-int main() {
-    std::cout << paxs::elevationF64ToLog2S16(paxs::elevationLog2S16ToF64(-20000)) << '\n';
-    //std::cout << (paxs::slopeDegLog2U8ToF64(7)) << '\n';
-    //std::cout << (int)paxs::slopeDegF64ToLog2U8(55);
-    //std::cout << paxs::elevationF64ToLog2S16(3.138);
+// 令制国 : TSV から バイナリデータを出力
+int  main() {
+
+    const std::string input_name = "Data/Map/XYZTile/RyoseikokuData/Data/JapanRegionData20230918/1868/{z}/region_{z}_{x}_{y}.tsv";
+    const std::string output_name = "test_region/{z}/zxy_{z}_{x}_{y}.bin";
+    //for (std::size_t z = 10; z < 11; ++z)
+    std::size_t z = 10;
+    {
+        for (std::size_t x = 870; x < 940; ++x) {
+            for (std::size_t y = 360; y < 430; ++y) {
+
+                std::string input_name_zxy = input_name;
+                paxs::StringExtensions::replace(input_name_zxy, "{z}", std::to_string(z));
+                paxs::StringExtensions::replace(input_name_zxy, "{x}", std::to_string(x));
+                paxs::StringExtensions::replace(input_name_zxy, "{y}", std::to_string(y));
+                std::string output_name_zxy = output_name;
+                paxs::StringExtensions::replace(output_name_zxy, "{z}", std::to_string(z));
+                paxs::StringExtensions::replace(output_name_zxy, "{x}", std::to_string(x));
+                paxs::StringExtensions::replace(output_name_zxy, "{y}", std::to_string(y));
+
+                paxs::SlopeDegU0To250AllOutput sda(
+                    input_name_zxy, "./../../../",
+                    output_name_zxy, "./", '\t'
+                );
+                sda.calc();
+            }
+        }
+        //std::cout << z << ", ";
+    }
+    return 0;
 }
+
+//int main() {
+//    std::cout << paxs::elevationF64ToLog2S16(paxs::elevationLog2S16ToF64(-20000)) << '\n';
+//    //std::cout << (paxs::slopeDegLog2U8ToF64(7)) << '\n';
+//    //std::cout << (int)paxs::slopeDegF64ToLog2U8(55);
+//    //std::cout << paxs::elevationF64ToLog2S16(3.138);
+//}
 
 //// 標高版 : TSV から バイナリデータを出力
 //int  main() {
