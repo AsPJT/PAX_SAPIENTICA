@@ -306,7 +306,7 @@ namespace paxs {
             const std::string& map_file_path_name_,
             const std::string& file_name_format_,
             const std::uint_least32_t draw_type_,
-            const const std::string& texture_url_
+            const std::string& texture_url_
         )
             : texture_root_path_type(texture_root_path_type_), binary_root_path_type(binary_root_path_type_)
             , menu_bar_map(menu_bar_map_)
