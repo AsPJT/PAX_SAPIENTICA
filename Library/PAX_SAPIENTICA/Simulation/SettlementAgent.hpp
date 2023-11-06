@@ -81,6 +81,13 @@ namespace paxs {
         /// @brief エージェントが結婚しているかどうかを返す
         bool isMarried() const noexcept { return _isMarried; }
 
+        /// @brief Set the agent's marriage status.
+        /// @brief 結婚する
+        void marry(std::uint32_t) noexcept {
+            _isMarried = true;
+            partnerId = id;
+        }
+
         /// @brief Is the agent able to marry?
         /// @brief エージェントが結婚可能かどうかを返す
         bool isAbleToMarriage() const noexcept {
