@@ -79,12 +79,12 @@ namespace paxs {
 
         /// @brief Is the agent married?
         /// @brief エージェントが結婚しているかどうかを返す
-        bool isMarried() const noexcept { return _isMarried; }
+        bool isMarried() const noexcept { return is_married; }
 
         /// @brief Set the agent's marriage status.
         /// @brief 結婚する
         void marry(std::uint32_t) noexcept {
-            _isMarried = true;
+            is_married = true;
             partnerId = id;
         }
 
@@ -93,12 +93,12 @@ namespace paxs {
         bool isAbleToMarriage() const noexcept {
             return age >= (gender ? male_marriageable_age_min : female_marriageable_age_min) &&
                     age < marriageable_age_max && // TODO: 確認
-                    !_isMarried;
+                    !is_married;
         }
 
         /// @brief Is able to give birth?
         /// @brief 出産可能かどうか
-        bool isAbleToGiveBirth() const noexcept { return age >= birthable_age_min && age < birthable_age_max && _isMarried; }
+        bool isAbleToGiveBirth() const noexcept { return age >= birthable_age_min && age < birthable_age_max && is_married; }
 
     protected:
         std::uint_least32_t id; // ID
@@ -107,7 +107,7 @@ namespace paxs {
         std::uint_least32_t age; // 年齢
         std::uint_least32_t life_span; // 寿命
         std::shared_ptr<Environment> environment; // 環境
-        bool _isMarried = false; // 結婚しているかどうか
+        bool is_married = false; // 結婚しているかどうか
         std::uint_least32_t partnerId = 0; // 結婚相手のID
     };
 }

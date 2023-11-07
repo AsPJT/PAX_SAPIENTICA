@@ -58,7 +58,9 @@ namespace paxs {
 
         /// @brief Set the position of the settlement.
         /// @brief 集落の座標を設定
-        void setPosition(const Vector2& position) noexcept { positions.push_back(position); }
+        void setPosition(const Vector2& position) noexcept {
+            positions = { position };
+        }
 
         /// @brief Get the position of the settlement.
         /// @brief 集落の座標を取得
@@ -85,11 +87,11 @@ namespace paxs {
         /// @brief Get the agents.
         /// @brief エージェントを取得
         std::vector<std::shared_ptr<const Agent>> cgetAgents() const noexcept {
-            std::vector<std::shared_ptr<const Agent>> constAgents;
+            std::vector<std::shared_ptr<const Agent>> const_agents;
             for (const auto& agent : agents) {
-                constAgents.push_back(agent);
+                const_agents.push_back(agent);
             }
-            return constAgents;
+            return const_agents;
         }
 
         /// @brief Marriage.
@@ -221,14 +223,28 @@ namespace paxs {
 
         /// @brief Move.
         /// @brief 移動
-        void move(std::mt19937& engine) noexcept {
-            // 0.1%の確率で移動
-            std::uniform_int_distribution<> dist(0, 1000);
-            if (dist(engine) != 0) return;
+        void move(std::mt19937& engine, int move_probability, std::function<void (const Vector2 current_key, const Vector2 target_key, const std::uint_least32_t id)> settlement_grid_update) noexcept {
+            // 確率で移動
+            std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
+            if (dist(engine) > move_probability) return;
 
             // 座標を移動
-            // TODO: 移動先の座標を決定
+            // 移動距離0~max_move_distance
+            std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
 
+            Vector2 current_position = positions.front();
+            Vector2 target_position = current_position;
+
+            while (target_position == current_position || !environment->isLive(target_position)) {
+                float theta = std::uniform_real_distribution<float>(0.0f, 2.0f * M_PI)(engine);
+                float distance = move_dist(engine);
+                target_position = current_position + Vector2(std::cos(theta) * distance, std::sin(theta) * distance);
+            }
+
+            Vector2 current_key = current_position / grid_length;
+            Vector2 target_key = target_position / grid_length;
+
+            settlement_grid_update(current_key, target_key, id);
         }
 
     private:

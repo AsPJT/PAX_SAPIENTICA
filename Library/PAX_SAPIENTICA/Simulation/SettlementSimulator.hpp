@@ -67,6 +67,9 @@ namespace paxs {
                     throw std::runtime_error(message);
                 }
 
+                // ランダムに移動確率を設定
+                std::uniform_int_distribution<> move_probability_dist{min_move_probability, max_move_probability};
+                move_probability = move_probability_dist(gen);
             }
 
         /// @brief Initialize the simulator.
@@ -89,8 +92,23 @@ namespace paxs {
         /// @brief シミュレーションを1ステップ実行する
         void step() noexcept {
             for (auto& settlement_grid : settlement_grids) {
+                auto settlement_grid_update = [this](const Vector2 current_key, const Vector2 target_key, std::uint_least32_t id)
+                {
+                    // 集落グリッドの移動
+                    if (current_key != target_key) {
+                        auto it = settlement_grids.find(target_key.toU64());
+                        if (it != settlement_grids.end()) {
+                            it->second->addSettlement(settlement_grids[current_key.toU64()]->getSettlement(id));
+                        } else {
+                            settlement_grids[target_key.toU64()] = std::make_shared<SettlementGrid>(target_key * grid_length, environment, gen());
+                            settlement_grids[target_key.toU64()]->moveSettlementToThis(settlement_grids[current_key.toU64()]->getSettlement(id));
+                        }
+                        settlement_grids[current_key.toU64()]->deleteSettlement(id);
+                    }
+                };
+
                 for (auto& settlement : settlement_grid.second->getSettlements()) {
-                    settlement->move(gen);
+                    settlement->move(gen, move_probability, settlement_grid_update);
                 }
             }
 
@@ -135,6 +153,7 @@ namespace paxs {
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
         std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
         std::unique_ptr<paxs::JapanProvinces> japan_provinces;
+        int move_probability = 0; // 移動確率
 
         /// @brief Randomly place settlements.
         /// @brief 集落をランダムに配置する

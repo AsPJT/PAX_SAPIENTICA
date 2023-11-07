@@ -45,6 +45,17 @@ namespace paxs {
 
     // 集落をグループ分けする際の1グリッド辺の長さ
     constexpr std::uint_least32_t grid_length = 64;
+
+    // 最小移動距離
+    constexpr std::uint_least32_t min_move_distance = 800;
+    // 最大移動距離
+    constexpr std::uint_least32_t max_move_distance = 8000;
+    // 移動確率下限
+    constexpr int min_move_probability = 1;
+    // 移動確率上限
+    constexpr int max_move_probability = 100;
+    // 移動確率の正規化係数
+    constexpr int move_probability_normalization_coefficient = 1000;
 }
 
 #endif // !PAX_SAPIENTICA_SIMULATION_SIMULATION_CONST_HPP
