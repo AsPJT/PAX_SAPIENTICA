@@ -223,8 +223,8 @@ namespace paxs {
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
             paxg::Font& font, paxg::Font& en_font, paxg::Font& /*pin_font*/)const {
 
-            const std::uint_least32_t first_language = MurMur3::calcHash("language_ja_jp");
-            const std::uint_least32_t second_language = MurMur3::calcHash("language_en_us");
+            const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
+            const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
 
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& location_point_list = location_point_list_list[h].location_point_list;
@@ -374,8 +374,8 @@ namespace paxs {
             const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
 
             // 地名
-            const std::size_t language_ja_jp = getMenuIndex(menu, MurMur3::calcHash("language_ja_jp"));
-            const std::size_t language_en_us = getMenuIndex(menu, MurMur3::calcHash("language_en_us"));
+            const std::size_t language_ja_jp = getMenuIndex(menu, MurMur3::calcHash("ja-JP"));
+            const std::size_t language_en_us = getMenuIndex(menu, MurMur3::calcHash("en-US"));
 
             // 1 行ずつ読み込み（区切りはタブ）
             while (pifs.getLine()) {
@@ -389,10 +389,10 @@ namespace paxs {
                 // 地名
                 std::unordered_map<std::uint_least32_t, std::string> place_name{};
                 if (language_ja_jp < strvec.size() && strvec[language_ja_jp].size() != 0) {
-                    place_name.emplace(MurMur3::calcHash("language_ja_jp"), strvec[language_ja_jp]);
+                    place_name.emplace(MurMur3::calcHash("ja-JP"), strvec[language_ja_jp]);
                 }
                 if (language_en_us < strvec.size() && strvec[language_en_us].size() != 0) {
-                    place_name.emplace(MurMur3::calcHash("language_en_us"), strvec[language_en_us]);
+                    place_name.emplace(MurMur3::calcHash("en-US"), strvec[language_en_us]);
                 }
                 bool is_overall_length = false;
                 if (overall_length < strvec.size()) {
