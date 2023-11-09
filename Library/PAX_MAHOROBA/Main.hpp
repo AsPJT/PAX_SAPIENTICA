@@ -91,7 +91,7 @@ namespace paxs {
         koyomi_siv.init(language_text, path8);
 
         paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
-        string_siv.init(language_text, path8);
+        string_siv.init(select_language, language_text, path8);
 
         paxs::TouchManager tm; // 画面のクリック・タッチを管理する
 
@@ -140,9 +140,10 @@ namespace paxs {
 
             // プルダウンを更新
             string_siv.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.pulldown.getRect().w()), 0 });
-            string_siv.pulldown.update(SelectLanguage{}, tm);
+            string_siv.pulldown.update(tm);
             select_language.set(std::size_t(string_siv.pulldown.getIndex())); // 選択言語を更新
-            string_siv.menu_bar.update(select_language, tm);
+            select_language.setKey(std::uint_least32_t(string_siv.pulldown.getKey())); // 選択言語を更新
+            string_siv.menu_bar.update(tm);
 
             // 表示の可視化を更新
             //Calendar Map UI Simulation License Debug 3D
@@ -165,7 +166,6 @@ namespace paxs {
             );
             // 暦を更新
             koyomi_siv.update(
-                language_text,
                 simulator
             );
             // 文字を更新
