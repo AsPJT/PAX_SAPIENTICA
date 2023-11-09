@@ -53,7 +53,7 @@ namespace paxs {
 
         /// @brief 出力に必要な日付の情報
         struct OutputDate {
-            std::vector<std::string> calendar_name; // 暦の名前
+            std::uint_least32_t calendar_name_key; // 暦の名前
             cal::Calendars date{}; // 日付
         };
 
@@ -97,12 +97,7 @@ namespace paxs {
         /*##########################################################################################
             日付データの更新
         ##########################################################################################*/
-        void calcDate(
-            //std::vector<OutputDate>& date_list,
-            //const JDN_F64& jdn,
-            //const std::vector<paxs::JapaneseEra>& japanese_era_list,
-            const paxs::Language& language_text
-        ) {
+        void calcDate() {
             // 暦データを更新
             paxs::cal::JapanDate jp_date{};
             paxs::cal::ChinaDate cn_date{};
@@ -122,7 +117,7 @@ namespace paxs {
                     jp_date = jdn.toJapaneseCalendar(japanese_era_list);
                     // 元号を格納
                     gengo = std::string("gengo_" + std::to_string(jp_date.cgetGengo()));
-                    dl.calendar_name = (language_text.cgetFindStart(MurMur3::calcHash(gengo.size(), gengo.c_str())));
+                    dl.calendar_name_key = ((MurMur3::calcHash(gengo.size(), gengo.c_str())));
                     dl.date = jp_date;
                     break;
                 case cal::china_date_type:
@@ -130,7 +125,7 @@ namespace paxs {
                     cn_date = jdn.toChineseCalendar(chinese_era_list);
                     // 元号を格納
                     gengo = std::string("chinese_calendar_" + std::to_string(cn_date.cgetGengo()));
-                    dl.calendar_name = (language_text.cgetFindStart(MurMur3::calcHash(gengo.size(), gengo.c_str())));
+                    dl.calendar_name_key = ((MurMur3::calcHash(gengo.size(), gengo.c_str())));
                     dl.date = cn_date;
                     break;
                 case cal::jdn_f64_type:
@@ -160,14 +155,14 @@ namespace paxs {
         ) {
             // 各暦の日付情報を初期化
             date_list = std::vector<OutputDate>{
-                OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_japan")),cal::JapanDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_gregorian")),cal::GregorianDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_julian")), cal::JulianDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_hijri")), cal::IslamicDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_chinese")), cal::ChinaDate() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_julian_day")), cal::JDN_S64() },
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("calendar_calbp")), cal::CalBP()},
-                    OutputDate{language_text.cgetFindStart(MurMur3::calcHash("menu_bar_view_simulation")), cal::SimulationSteps()}
+                OutputDate{(MurMur3::calcHash("calendar_japan")),cal::JapanDate() },
+                    OutputDate{(MurMur3::calcHash("calendar_gregorian")),cal::GregorianDate() },
+                    OutputDate{(MurMur3::calcHash("calendar_julian")), cal::JulianDate() },
+                    OutputDate{(MurMur3::calcHash("calendar_hijri")), cal::IslamicDate() },
+                    OutputDate{(MurMur3::calcHash("calendar_chinese")), cal::ChinaDate() },
+                    OutputDate{(MurMur3::calcHash("calendar_julian_day")), cal::JDN_S64() },
+                    OutputDate{(MurMur3::calcHash("calendar_calbp")), cal::CalBP()},
+                    OutputDate{(MurMur3::calcHash("menu_bar_view_simulation")), cal::SimulationSteps()}
             };
             // 須恵器編年の文字列を言語テキストファイルから探して格納
             sueki_nakamura_index = language_text.findStart(MurMur3::calcHash("sueki_nakamura"));
@@ -177,11 +172,10 @@ namespace paxs {
             paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");
             paxs::ChineseEra::inputList(chinese_era_list, path8 + "Data/Calendar/ChineseEraName.tsv");
             // 日付計算
-            calcDate(language_text);
+            calcDate();
         }
 
         void update(
-            const paxs::Language& language_text,
             paxs::Simulator<int>& simulator // コンパイル時の分岐により使わない場合あり
         ) {
 
@@ -200,7 +194,7 @@ namespace paxs {
                 if (move_forward_in_time) {
                     if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
                         jdn.getDay() += 1.0; // ユリウス日を繰り上げ（次の日にする）
-                        calcDate(language_text); // 日付計算
+                        calcDate(); // 日付計算
                     }
                     //jdn += 365; // ユリウス日を繰り上げ（次の日にする）
 #ifdef PAXS_USING_SIMULATOR
@@ -215,7 +209,7 @@ namespace paxs {
                 else if (go_back_in_time) {
                     if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
                         jdn.getDay() -= 1.0; // ユリウス日を繰り上げ（次の日にする）
-                        calcDate(language_text); // 日付計算
+                        calcDate(); // 日付計算
                     }
                 }
             }

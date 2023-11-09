@@ -166,6 +166,10 @@ namespace paxg {
         std::unordered_map<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const char delimiter) const {
             return paxs::StringExtensions::splitHashMapMurMur3(pline, delimiter);
         }
+        // 区切り文字で分割する（ 32bit ハッシュ値で管理）
+        std::vector<std::uint_least32_t> splitHashMapMurMur3Vector(const char delimiter) const {
+            return paxs::StringExtensions::splitHashMapMurMur3Vector(pline, delimiter);
+        }
 
         std::string& lineString() {
             return pline;

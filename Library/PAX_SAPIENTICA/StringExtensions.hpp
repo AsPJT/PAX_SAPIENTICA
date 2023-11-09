@@ -147,6 +147,20 @@ namespace paxs {
             return result;
         }
 
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ std::vector 版）
+        static std::vector<std::uint_least32_t> splitHashMapMurMur3Vector(const std::string& input, const char delimiter) noexcept {
+            std::istringstream stream(input);
+            std::string field{};
+            std::vector<std::uint_least32_t> result;
+            std::size_t index = 0;
+            while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
+                result.emplace_back(MurMur3::calcHash(field.size(), field.c_str()));
+                ++index;
+            }
+            return result;
+        }
+
         /// @brief Replace string
         /// @brief 文字列を置換する
         static void replace(std::string& str, const std::string& from, const std::string& to) noexcept {
