@@ -1,4 +1,25 @@
-key	en-US	ja-JP	language_zh_tw	language_zh_cn	language_ko_kr	language_es	language_pt	language_de	language_fr	language_it	language_tr	language_pl	language_el	language_nl	language_cs	language_uk	language_ru	language_id	language_fa	language_ar	language_null
+key	en-US	ja-JP	zh-TW	zh-CN	ko-KR	es-ES	language_pt	language_de	language_fr	language_it	language_tr	language_pl	language_el	language_nl	language_cs	language_uk	language_ru	language_id	language_fa	language_ar	language_null
+en-US	English	English	English	English	English	English	English	English	English	English	English	English	English	English	English	English	English	English	English	English	English
+ja-JP	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語	日本語
+zh-TW	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文	繁體中文
+zh-CN	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文	简体中文
+ko-KR	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어	한국어
+es-ES	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español	Español
+language_pt	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português	Português
+language_de	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch	Deutsch
+language_fr	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français	Français
+language_it	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano	Italiano
+language_tr	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe	Türkçe
+language_pl	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski	Język polski
+language_el	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά	Ελληνικά
+language_nl	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands	Nederlands
+language_cs	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština	Čeština
+language_uk	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська	Українська
+language_ru	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык	Русский язык
+language_id	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia	Bahasa Indonesia
+language_fa	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی	فارسی
+language_ar	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية	اللغة العربية
+language_null	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL	NULL
 > language																					
 language	English	日本語	繁體中文	简体中文	한국어	Español	Português	Deutsch	Français	Italiano	Türkçe	Język polski	Ελληνικά	Nederlands	Čeština	Українська	Русский язык	Bahasa Indonesia	فارسی	اللغة العربية	
 language_en	English	Japanese	Chinese	Chinese	Korean	Spanish	Portuguese	German	French	Italian	Turkish	Polish	Greek	Dutch	Czech	Ukrainian	Russian	Indonesian	Persian	Arabic	
