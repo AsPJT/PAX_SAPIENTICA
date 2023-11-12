@@ -28,6 +28,7 @@
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/StatusDisplayer.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
 namespace paxs {
@@ -158,10 +159,184 @@ namespace paxs {
         /// @brief Randomly place settlements.
         /// @brief 集落をランダムに配置する
         void randomizeSettlements() noexcept {
-            // TODO: 日本の地方区分の人口数をもとに、集落をランダムに配置する
+            std::cout << "Randomize settlements..." << std::endl;
 
+            // 陸の位置のリストを取得
+            std::vector<std::uint64_t> land_positions;
+            environment->getLandPositions(land_positions);
+
+            // 可住地重みリスト
+            std::vector<int> live_probabilities;
+            // 可住地の位置
+            std::vector<std::uint64_t> habitable_land_positions;
+            for (const std::uint64_t land_position : land_positions) {
+                // 可住地かどうかを判定
+                Vector2 position = Vector2::fromU64(land_position);
+                if (!environment->isLive(position)) {
+                    continue;
+                }
+
+                // 各陸地の可住地重みを計算
+                float slope = environment->getSlope(position);
+                int live_probability = 0;
+                if (slope < 4) {
+                    live_probability += 9;
+                } else if (slope < 9.09) {
+                    live_probability += 10;
+                } else if (slope < 17.745) {
+                    live_probability += 4;
+                } else {
+                    continue;
+                }
+
+                live_probabilities.push_back(live_probability);
+                habitable_land_positions.push_back(land_position);
+            }
+
+            // 令制国と人口のマップ
+            std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
+            for (auto& ryoseikoku : japan_provinces->cgetRyoseikokuList()) {
+                if (ryoseikoku.population == 0) {
+                    continue;
+                }
+                ryoseikoku_population_map[ryoseikoku.id] = ryoseikoku.population;
+            }
+
+            int all_population = 0;
+            for (auto& ryoseikoku_population : ryoseikoku_population_map) {
+                all_population += ryoseikoku_population.second;
+            }
+            std::cout << "All population: " << all_population << std::endl;
+            int population_sum = 0;
+            // 集落配置
+            while (live_probabilities.size() > 0 && // 集落を配置し切るまで
+                ryoseikoku_population_map.size() > 0 // 令制国が残っている間
+                ) {
+                StatusDisplayer::displayProgressBar(population_sum, all_population);
+                if (ryoseikoku_population_map.size() <= 10) {
+                    // 残っている令制国を表示
+                    std::cout << "Ryoseikoku: ";
+                    for (auto& ryoseikoku_population : ryoseikoku_population_map) {
+                        std::cout << ryoseikoku_population.first << " ";
+                    }
+                }
+
+                // 重みからインデックスを取得するための分布
+                std::discrete_distribution<> live_probability_dist(live_probabilities.begin(), live_probabilities.end());
+
+                int live_probability_index = live_probability_dist(gen);
+                Vector2 live_position = Vector2::fromU64(habitable_land_positions[live_probability_index]);
+
+                // 令制国ごとに人口が決められているので、人口に空きがあるかどうかを判定
+                std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>("gbank", live_position);
+
+                auto ryoseikoku_population_it = ryoseikoku_population_map.find(ryoseikoku_id);
+                if (ryoseikoku_population_it == ryoseikoku_population_map.end()) {
+                    live_probabilities.erase(live_probabilities.begin() + live_probability_index);
+                    habitable_land_positions.erase(habitable_land_positions.begin() + live_probability_index);
+                    continue;
+                }
+
+                // TODO: 配置する集落の人口を決定
+                int settlement_population = 50;
+                settlement_population = std::min(settlement_population, static_cast<int>(ryoseikoku_population_it->second));
+
+                // 集落をグリッドに配置
+                std::uint64_t key = (live_position / grid_length).toU64();
+                // グリッドが存在しない場合は作成
+                if (settlement_grids.find(key) == settlement_grids.end()) {
+                    settlement_grids[key] = std::make_shared<SettlementGrid>(live_position, environment, gen());
+                }
+                // 集落を作成
+                std::shared_ptr<Settlement> settlement = std::make_shared<Settlement>(
+                    UniqueIdentification<std::uint_least32_t>::generate(),
+                    gen(),
+                    environment
+                );
+                settlement->setPosition(live_position);
+
+                std::vector<std::shared_ptr<Agent>> agents;
+                agents.reserve(settlement_population);
+                for (int i = 0; i < settlement_population; ++i) {
+                    std::shared_ptr<Agent> agent = std::make_shared<Agent>(
+                        UniqueIdentification<std::uint_least64_t>::generate(),
+                    0, // TODO: 名前ID
+                    static_cast<std::uint_least8_t>(gender_dist(gen)),
+                    0,
+                    static_cast<std::uint_least8_t>(life_exp_dist(gen)),
+                    environment
+                    );
+                    agents.push_back(agent);
+                }
+                settlement->setAgents(agents);
+
+                // 令制国の人口を減らす
+                ryoseikoku_population_it->second -= settlement_population;
+                if (ryoseikoku_population_it->second == 0) {
+                    ryoseikoku_population_map.erase(ryoseikoku_population_it);
+                }
+                population_sum += settlement_population;
+
+                // 集落をグリッドに配置
+                settlement_grids[key]->addSettlement(settlement);
+                settlement_grids[key]->addRyoseikokuId(ryoseikoku_id);
+
+                live_probabilities.erase(live_probabilities.begin() + live_probability_index);
+                habitable_land_positions.erase(habitable_land_positions.begin() + live_probability_index);
+            }
+
+            StatusDisplayer::displayProgressBar(all_population, all_population);
+            std::cout << std::endl;
+
+            // 令制国の人口が残っている場合は、ランダムに配置
+            for (auto& ryoseikoku_population : ryoseikoku_population_map) {
+                std::uint_least8_t ryoseikoku_id = ryoseikoku_population.first;
+                int population = ryoseikoku_population.second;
+                std::vector<std::shared_ptr<Settlement>> settlements;
+                getSettlements(settlements, ryoseikoku_id);
+
+                int add_population = population / settlements.size();
+
+                for (auto& settlement : settlements) {
+                    std::vector<std::shared_ptr<Agent>> agents;
+                    for (int i = 0; i < add_population; ++i) {
+                        std::shared_ptr<Agent> agent = std::make_shared<Agent>(
+                            UniqueIdentification<std::uint_least64_t>::generate(),
+                        0, // TODO: 名前ID
+                        static_cast<std::uint_least8_t>(gender_dist(gen)),
+                        0,
+                        static_cast<std::uint_least8_t>(life_exp_dist(gen)),
+                        environment
+                        );
+                        agents.push_back(agent);
+                    }
+                    settlement->addAgents(agents);
+                }
+            }
         }
 
+        /// @brief 指定した令制国のIDの集落グリッドを取得
+        void getSettlementGrids(std::vector<std::shared_ptr<SettlementGrid>>& settlement_grids, const std::uint_least8_t ryoseikoku_id) noexcept {
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto id : settlement_grid->getRyoseikokuIds()) {
+                    if (id == ryoseikoku_id) {
+                        settlement_grids.push_back(settlement_grid);
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// @brief 指定した令制国のIDの集落を取得
+        void getSettlements(std::vector<std::shared_ptr<Settlement>>& settlements, const std::uint_least8_t ryoseikoku_id) noexcept {
+            std::vector<std::shared_ptr<SettlementGrid>> settlement_grids;
+            getSettlementGrids(settlement_grids, ryoseikoku_id);
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid->getSettlements()) {
+                    settlements.push_back(settlement);
+                }
+            }
+        }
     };
 }
 

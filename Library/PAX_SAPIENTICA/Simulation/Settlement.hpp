@@ -50,9 +50,21 @@ namespace paxs {
         /// @brief 集落にエージェントを追加
         void addAgent(const std::shared_ptr<Agent>& agent) noexcept { agents.push_back(agent); }
 
+        /// @brief Add agents to the settlement.
+        /// @brief 集落にエージェントを追加
+        void addAgents(const std::vector<std::shared_ptr<Agent>>& agents) noexcept {
+            this->agents.insert(this->agents.end(), agents.begin(), agents.end());
+        }
+
+        /// @brief Set the agents.
+        /// @brief エージェントを設定
+        void setAgents(const std::vector<std::shared_ptr<Agent>>& agents) noexcept {
+            this->agents = agents;
+        }
+
         /// @brief Delete the agent.
         /// @brief エージェントを削除する
-        void deleteAgent(const std::uint_least32_t id) noexcept {
+        void deleteAgent(const std::uint_least64_t id) noexcept {
             agents.erase(std::remove_if(agents.begin(), agents.end(), [id](const std::shared_ptr<Agent>& agent) { return agent->getId() == id; }), agents.end());
         }
 
@@ -69,7 +81,7 @@ namespace paxs {
         /// @brief Get the agent.
         /// @brief エージェントを取得
         /// @param id The agent's id. エージェントのID
-        std::shared_ptr<Agent> getAgent(const std::uint_least32_t id) const {
+        std::shared_ptr<Agent> getAgent(const std::uint_least64_t id) const {
             auto it = std::find_if(agents.begin(), agents.end(), [id](const std::shared_ptr<Agent>& agent) { return agent->getId() == id; });
             if (it == agents.end()) {
                 paxs::Logger logger("Save/error_log.txt");
@@ -130,7 +142,7 @@ namespace paxs {
             }
 
             // エージェントIDと集落IDのペアを作成
-            std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>> agent_settlement_pair;
+            std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> agent_settlement_pair;
             for (std::size_t close_settlement_index : close_settlements_index_list) {
                 for (auto& agent : settlements[close_settlement_index]->cgetAgents()) {
                     if (agent->isAbleToMarriage() && agent->getGender() == male){
@@ -151,14 +163,14 @@ namespace paxs {
             if (true) {
                 for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
                     std::pair<std::size_t, std::size_t> pair = marriageable_agents_index_pair[i];
-                    std::uint_least32_t male_id = marriageable_agents_index_pair[pair.second].first;
+                    std::uint_least64_t male_id = marriageable_agents_index_pair[pair.second].first;
                     std::uint_least32_t settlement_id = marriageable_agents_index_pair[pair.second].second;
 
                     bool is_found = false;
                     for (std::size_t j = 0; j < settlements.size(); ++j) {
                         if (settlements[j]->getId() == settlement_id) {
                             agents[marriageable_agents_index_pair[pair.first].first]->marry(male_id);
-                            const std::uint_least32_t female_id = agents[marriageable_agents_index_pair[pair.first].first]->getId();
+                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first]->getId();
 
                             std::shared_ptr<Agent> male = settlements[j]->getAgent(male_id);
                             male->marry(female_id);
@@ -180,14 +192,14 @@ namespace paxs {
                 // 父方の場合
                 for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
                     std::pair<std::size_t, std::size_t> pair = marriageable_agents_index_pair[i];
-                    std::uint_least32_t male_id = marriageable_agents_index_pair[pair.second].first;
+                    std::uint_least64_t male_id = marriageable_agents_index_pair[pair.second].first;
                     std::uint_least32_t settlement_id = marriageable_agents_index_pair[pair.second].second;
 
                     bool is_found = false;
                     for (std::size_t j = 0; j < settlements.size(); ++j) {
                         if (settlements[j]->getId() == settlement_id) {
                             agents[marriageable_agents_index_pair[pair.first].first]->marry(male_id);
-                            const std::uint_least32_t female_id = agents[marriageable_agents_index_pair[pair.first].first]->getId();
+                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first]->getId();
                             settlements[j]->getAgent(male_id)->marry(female_id);
 
                             settlements[j]->addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
@@ -223,7 +235,7 @@ namespace paxs {
 
         /// @brief Move.
         /// @brief 移動
-        void move(std::mt19937& engine, int move_probability, std::function<void (const Vector2 current_key, const Vector2 target_key, const std::uint_least32_t id)> settlement_grid_update) noexcept {
+        void move(std::mt19937& engine, int move_probability, std::function<void (const Vector2 current_key, const Vector2 target_key, const std::uint_least64_t id)> settlement_grid_update) noexcept {
             // 確率で移動
             std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
             if (dist(engine) > move_probability) return;
@@ -268,7 +280,7 @@ namespace paxs {
                 if (!agent->isAbleToGiveBirth() || !isAbleToGiveBirth(agent->getAge())) continue;
 
                 agents.push_back(std::make_shared<Agent>(
-                    UniqueIdentification<std::uint_least32_t>::generate(),
+                    UniqueIdentification<std::uint_least64_t>::generate(),
                     0, // TODO: 名前ID
                     static_cast<std::uint_least8_t>(gender_dist(gen)),
                     0,

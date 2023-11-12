@@ -118,12 +118,26 @@ namespace paxs {
             }
         }
 
+        /// @brief Add a Ryoseikoku ID to the list.
+        /// @brief 令制国のIDをリストに追加
+        void addRyoseikokuId(const std::uint_least8_t id) noexcept {
+            // 重複チェック
+            if (std::find(ryoseikoku_list.begin(), ryoseikoku_list.end(), id) == ryoseikoku_list.end()) {
+                ryoseikoku_list.push_back(id);
+            }
+        }
+
+        /// @brief Get the Ryoseikoku list.
+        /// @brief 令制国のリストを取得
+        std::vector<std::uint_least8_t>& getRyoseikokuIds() noexcept { return ryoseikoku_list; }
+        const std::vector<std::uint_least8_t>& cgetRyoseikokuIds() const noexcept { return ryoseikoku_list; }
+
     private:
         std::vector<std::shared_ptr<Settlement>> settlements;
         std::shared_ptr<Environment> environment;
         Vector2 grid_position;
         std::mt19937 gen; // 乱数生成器
-
+        std::vector<std::uint_least8_t> ryoseikoku_list;
     };
 
 }

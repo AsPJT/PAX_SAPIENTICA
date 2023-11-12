@@ -36,13 +36,13 @@ namespace paxs {
         using Vector2 = paxs::Vector2<GridType>;
         using Environment = paxs::Environment<GridType>;
 
-        constexpr explicit SettlementAgent(const std::uint_least32_t id, const std::uint_least32_t& name_id,const std::uint_least8_t gen,
+        constexpr explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id,const std::uint_least8_t gen,
         const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
         : id(id) , name_id(name_id), gender(gen), age(age), life_span(life_span), environment(env) {}
 
         /// @brief Get the id.
         /// @brief idを取得
-        constexpr std::uint_least32_t getId() const noexcept { return id; }
+        constexpr std::uint_least64_t getId() const noexcept { return id; }
 
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す
@@ -101,7 +101,7 @@ namespace paxs {
         bool isAbleToGiveBirth() const noexcept { return age >= birthable_age_min && age < birthable_age_max && is_married; }
 
     protected:
-        std::uint_least32_t id; // ID
+        std::uint_least64_t id; // ID
         std::uint_least32_t name_id; // 名前のID
         std::uint_least8_t gender; // 性別: 0 -> 女性, 1 -> 男性
         std::uint_least32_t age; // 年齢

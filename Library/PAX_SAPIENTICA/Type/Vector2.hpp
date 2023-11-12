@@ -112,6 +112,10 @@ namespace paxs {
         std::uint_least64_t toU64() const noexcept {
             return static_cast<std::uint_least64_t>(x) << 32 | static_cast<std::uint_least64_t>(y);
         }
+
+        static Vector2<T> fromU64(const std::uint_least64_t u64) noexcept {
+            return Vector2<T>(static_cast<T>(u64 >> 32), static_cast<T>(u64 & 0x00000000ffffffff));
+        }
     };
 }
 

@@ -23,6 +23,23 @@
 
 namespace paxs {
 
+        /// @brief A struct that represents a region in Japan.
+        /// @brief 日本の地方区分を表す構造体
+        struct JapanRegion {
+            std::uint_least8_t id;
+            std::string name;
+            std::uint_least32_t population; // 人口
+        };
+
+        /// @brief A struct that represents a prefecture in Japan.
+        /// @brief 日本の令制国を表す構造体
+        struct Ryoseikoku {
+            std::uint_least8_t id;
+            std::string name;
+            std::uint_least8_t region_id; // 対応する地方区分ID
+            std::uint_least32_t population; // 人口
+        };
+
     /// @brief A class that represents a prefecture in Japan.
     /// @brief 日本の州を表すクラス
     class JapanProvinces {
@@ -127,24 +144,16 @@ namespace paxs {
 
             return 0;
         }
+
+        /// @brief Get a list of Ryoseikoku
+        /// @brief 令制国のリストを取得する
+        std::vector<Ryoseikoku>& getRyoseikokuList() noexcept {
+            return ryoseikoku_list;
+        }
+        const std::vector<Ryoseikoku>& cgetRyoseikokuList() const noexcept {
+            return ryoseikoku_list;
+        }
     private:
-        /// @brief A struct that represents a region in Japan.
-        /// @brief 日本の地方区分を表す構造体
-        struct JapanRegion {
-            std::uint_least8_t id;
-            std::string name;
-            std::uint_least32_t population; // 人口
-        };
-
-        /// @brief A struct that represents a prefecture in Japan.
-        /// @brief 日本の令制国を表す構造体
-        struct Ryoseikoku {
-            std::uint_least8_t id;
-            std::string name;
-            std::uint_least8_t region_id; // 対応する地方区分ID
-            std::uint_least32_t population; // 人口
-        };
-
         std::vector<JapanRegion> japan_regions; // 日本の地方区分
         std::vector<Ryoseikoku> ryoseikoku_list; // 日本の令制国
 

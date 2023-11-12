@@ -122,6 +122,12 @@ namespace paxs {
             return std::get<Data<U, GridType>>(*data_map.at(key)).getValue(position);
         }
 
+        /// @brief Get the land position list.
+        /// @brief 陸の位置リストの取得
+        constexpr void getLandPositions(std::vector<std::uint64_t>& keys) const {
+            std::get<Data<std::uint_least8_t, GridType>>(*data_map.at("gbank")).getKeys(keys);
+        }
+
         /// @brief Is it possible to live?
         /// @brief 居住可能かどうかの判定
         /// @details It is land and the slope is less than a certain value.

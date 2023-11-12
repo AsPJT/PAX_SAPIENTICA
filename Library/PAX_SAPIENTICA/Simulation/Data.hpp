@@ -90,6 +90,17 @@ namespace paxs {
             }
             return itr->second;
         }
+
+        /// @brief Get the data of the key.
+        /// @brief キーをvectorで取得
+        /// @return keyのvector
+        constexpr void getKeys(std::vector<std::uint64_t>& keys) const noexcept {
+            keys.reserve(data.size());
+            for (const auto& [key, value] : data) {
+                keys.push_back(key);
+            }
+        }
+
     private:
         Vector2 start_position; // シミュレーションの左上の座標
         Vector2 end_position; // シミュレーションの右下の座標
