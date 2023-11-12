@@ -6,6 +6,7 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Library
     ${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest/googletest/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest ${CMAKE_BINARY_DIR}/googletest)
@@ -23,7 +24,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
     add_executable(${TARGET_NAME} ${TEST_SOURCE})
     target_link_libraries(${TARGET_NAME} gtest_main)
     add_test(
-        NAME ${TARGET_NAME} 
+        NAME ${TARGET_NAME}
         COMMAND ${TARGET_NAME}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
     )

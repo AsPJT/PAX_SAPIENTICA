@@ -38,6 +38,10 @@
     path = Data/Map/XYZTile/Slope/Data/SlopeData20230514
     url = https://github.com/Asukana/SlopeData20230514.git
     branch = main
+[submodule "Data/Map/XYZTile/Slope/Data/SlopeData20231029"]
+    path = Data/Map/XYZTile/Slope/Data/SlopeData20231029
+    url = https://github.com/Asukana/SlopeData20231029.git
+    branch = main
 [submodule "Data/Map/XYZTile/Slope/Image/Slope"]
     path = Data/Map/XYZTile/Slope/Image/Slope
     url = https://github.com/Asukana/Slope.git
@@ -54,3 +58,9 @@
     path = Data/Map/XYZTile/Temperature/Image/SoilTemperature
     url = https://github.com/Asukana/SoilTemperature.git
     branch = main
+[submodule "Data/Map/XYZTile/Elevation/Data/ElevationData20231030"]
+	path = Data/Map/XYZTile/Elevation/Data/ElevationData20231030
+	url = https://github.com/Asukana/ElevationData20231030.git
+[submodule "Data/Map/XYZTile/JapanProvinces/Data/JapanProvincesData20231107"]
+	path = Data/Map/XYZTile/JapanProvinces/Data/JapanProvincesData20231107
+	url = https://github.com/Asukana/JapanProvincesData20231107.git

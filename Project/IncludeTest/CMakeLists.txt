@@ -3,7 +3,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../Library)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../Library
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary
+)
 
 file(GLOB_RECURSE LIB_HEADERS RELATIVE "${CMAKE_SOURCE_DIR}/../Library" "${CMAKE_SOURCE_DIR}/../Library/*.hpp")
 

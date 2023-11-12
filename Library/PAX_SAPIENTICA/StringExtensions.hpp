@@ -16,13 +16,15 @@
 
 ##########################################################################################*/
 
+#include <limits>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <variant>
 #include <vector>
-#include <unordered_map>
 
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
 
 namespace paxs {
 
@@ -40,6 +42,81 @@ namespace paxs {
                 result.emplace_back(field);
             }
             return result;
+        }
+
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ double 版）
+        static std::vector<double> splitStod(const std::string& input, const char delimiter) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::vector<double> result;
+            while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
+                if (field.size() == 0) result.emplace_back(std::numeric_limits<double>::quiet_NaN()); // 文字列が空の時は NaN を入れる
+                else result.emplace_back(std::stod(field)); // 文字列を数値に変換する
+            }
+            return result;
+        }
+
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ double 版）
+        static void splitStod(const std::string& input, const char delimiter, double* const result, const std::size_t size) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::size_t counter = 0u;
+            while (std::getline(stream, field, delimiter) && counter < size) { // 1 行ごとに文字列を分割
+                if (field.size() == 0) result[counter] = (std::numeric_limits<double>::quiet_NaN()); // 文字列が空の時は NaN を入れる
+                else result[counter] = (std::stod(field)); // 文字列を数値に変換する
+                ++counter;
+            }
+        }
+
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ SlopeDegF64ToU0To250 版）
+        static void splitSlopeDegU8(const std::string& input, const char delimiter, unsigned char* const result, const std::size_t size) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::size_t counter = 0u;
+            while (std::getline(stream, field, delimiter) && counter < size) { // 1 行ごとに文字列を分割
+                if (field.size() == 0) result[counter] = 251; // 文字列が空の時は NaN(251) を入れる
+                else {
+                    result[counter] = paxs::slopeDegF64ToLog2U8(std::stod(field)); // 文字列を数値に変換する
+
+                    /* バイナリデータをより小さくするための実験 */
+                    //if (result[counter] > 181) result[counter] = 181;
+                    //else if (result[counter] > 162) result[counter] = 162;
+                    //else if (result[counter] > 127) result[counter] = 127;
+                    //else if (result[counter] > 0) result[counter] = 1;
+
+                    //if ((result[counter] & 1) == 1) ++result[counter]; // 実験：奇数を削除
+                    //const unsigned int b = 16;
+                    //result[counter] = unsigned char(b * ((result[counter] + (b - 1)) / b)); // 倍数を削除
+                    //if (result[counter] > 250) result[counter] = 250;
+                }
+
+                ++counter;
+            }
+            if (field.size() == 0 && counter < size) { // 最後に空文字がある場合の処理
+                result[counter] = 251; // 文字列が空の時は NaN(251) を入れる
+            }
+        }
+
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ ElevationDegF64ToU0To250 版）
+        static void splitElevationS16(const std::string& input, const char delimiter, std::int_least16_t* const result, const std::size_t size) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::size_t counter = 0u;
+            while (std::getline(stream, field, delimiter) && counter < size) { // 1 行ごとに文字列を分割
+                if (field.size() == 0) result[counter] = 32761; // 文字列が空の時は NaN(32761) を入れる
+                else {
+                    result[counter] = paxs::elevationF64ToLog2S16(std::stod(field)); // 文字列を数値に変換する
+                }
+
+                ++counter;
+            }
+            if (field.size() == 0 && counter < size) { // 最後に空文字がある場合の処理
+                result[counter] = 32761; // 文字列が空の時は NaN(32761) を入れる
+            }
         }
 
         /// @brief Split string by delimiter
@@ -65,6 +142,20 @@ namespace paxs {
             std::size_t index = 0;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 result.emplace(MurMur3::calcHash(field.size(), field.c_str()), index);
+                ++index;
+            }
+            return result;
+        }
+
+        /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する（ std::vector 版）
+        static std::vector<std::uint_least32_t> splitHashMapMurMur3Vector(const std::string& input, const char delimiter) noexcept {
+            std::istringstream stream(input);
+            std::string field{};
+            std::vector<std::uint_least32_t> result;
+            std::size_t index = 0;
+            while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
+                result.emplace_back(MurMur3::calcHash(field.size(), field.c_str()));
                 ++index;
             }
             return result;

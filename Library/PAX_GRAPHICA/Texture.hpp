@@ -240,8 +240,8 @@ namespace paxg {
 
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawExtendGraph(
-                pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2),
-                pos.x() + (resize.x() / 2), pos.y() + (resize.y() / 2),
+                static_cast<int>(pos.x() - (resize.x() / 2)), static_cast<int>(pos.y() - (resize.y() / 2)),
+                static_cast<int>(pos.x() + (resize.x() / 2)), static_cast<int>(pos.y() + (resize.y() / 2)),
                 texture, TRUE);
 
 #elif defined(PAXS_USING_SFML)
@@ -260,8 +260,8 @@ namespace paxg {
 
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawExtendGraph(
-                pos.x() - (resize / 2), pos.y() - (resize / 2),
-                pos.x() + (resize / 2), pos.y() + (resize / 2),
+                static_cast<int>(pos.x() - (resize / 2)), static_cast<int>(pos.y() - (resize / 2)),
+                static_cast<int>(pos.x() + (resize / 2)), static_cast<int>(pos.y() + (resize / 2)),
                 texture, TRUE);
 
 #elif defined(PAXS_USING_SFML)
@@ -320,8 +320,8 @@ namespace paxg {
 
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawExtendGraph(
-                pos.x(), pos.y(),
-                pos.x() + resize.x(), pos.y() + resize.y(),
+                static_cast<int>(pos.x()), static_cast<int>(pos.y()),
+                static_cast<int>(pos.x() + resize.x()), static_cast<int>(pos.y() + resize.y()),
                 texture, TRUE);
 
 #elif defined(PAXS_USING_SFML)
@@ -340,8 +340,8 @@ namespace paxg {
 
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawExtendGraph(
-                pos.x(), pos.y(),
-                pos.x() + resize, pos.y() + resize,
+                static_cast<int>(pos.x()), static_cast<int>(pos.y()),
+                static_cast<int>(pos.x() + resize), static_cast<int>(pos.y() + resize),
                 texture, TRUE);
 
 #elif defined(PAXS_USING_SFML)

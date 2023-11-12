@@ -1,12 +1,14 @@
 [![CMake-All-Build](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml) [![CMake-Unit-Test](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml)
 
-![PAX SAPIENTICA Logo](./Image/Logo/TitleBanner3.svg)
+![PAX SAPIENTICA Logo](./Image/Logo/TitleBanner4.svg)
 
 ![Screenshot](./Image/Screenshot/Best.png)
 
 # Overview
 
-This software and library supports calendars, maps, and simulations.
+This software is PAX SAPIENTICA (abbreviated PAXS).
+PAXS is a GIS for philological, archaeological, and anthropological data.
+It has the ability to display calendars for each region in each time period and agent-based simulation.
 
 # How to Install
 
