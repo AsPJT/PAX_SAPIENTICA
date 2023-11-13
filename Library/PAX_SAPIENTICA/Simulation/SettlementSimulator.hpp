@@ -196,10 +196,10 @@ namespace paxs {
             // 令制国と人口のマップ
             std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
             for (auto& ryoseikoku : japan_provinces->cgetRyoseikokuList()) {
-                if (ryoseikoku.population == 0) {
+                if (ryoseikoku.population_ad200 == 0) {
                     continue;
                 }
-                ryoseikoku_population_map[ryoseikoku.id] = ryoseikoku.population;
+                ryoseikoku_population_map[ryoseikoku.id] = ryoseikoku.population_ad200;
             }
 
             int all_population = 0;
@@ -213,13 +213,6 @@ namespace paxs {
                 ryoseikoku_population_map.size() > 0 // 令制国が残っている間
                 ) {
                 StatusDisplayer::displayProgressBar(population_sum, all_population);
-                if (ryoseikoku_population_map.size() <= 10) {
-                    // 残っている令制国を表示
-                    std::cout << "Ryoseikoku: ";
-                    for (auto& ryoseikoku_population : ryoseikoku_population_map) {
-                        std::cout << ryoseikoku_population.first << " ";
-                    }
-                }
 
                 // 重みからインデックスを取得するための分布
                 std::discrete_distribution<> live_probability_dist(live_probabilities.begin(), live_probabilities.end());
@@ -237,8 +230,9 @@ namespace paxs {
                     continue;
                 }
 
-                // TODO: 配置する集落の人口を決定
-                int settlement_population = 50;
+                // 配置する集落の人口を決定
+                paxs::Ryoseikoku ryoseikoku = japan_provinces->cgetRyoseikoku(ryoseikoku_id);
+                int settlement_population = std::uniform_int_distribution<>(ryoseikoku.settlement_population_min_ad200, ryoseikoku.settlement_population_max_ad200)(gen);
                 settlement_population = std::min(settlement_population, static_cast<int>(ryoseikoku_population_it->second));
 
                 // 集落をグリッドに配置
@@ -313,6 +307,8 @@ namespace paxs {
                     settlement->addAgents(agents);
                 }
             }
+
+            std::cout << "Done." << std::endl;
         }
 
         /// @brief 指定した令制国のIDの集落グリッドを取得
