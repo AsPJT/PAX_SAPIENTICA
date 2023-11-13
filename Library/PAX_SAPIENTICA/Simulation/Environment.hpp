@@ -40,7 +40,7 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
-        using DataVariant = std::variant<Data<std::uint_least8_t, GridType>, Data<std::uint_least32_t, GridType>, Data<float, GridType>>;
+        using DataVariant = std::variant<Data<std::uint_least8_t, GridType>, Data<std::uint_least32_t, GridType>, Data<float, GridType>, Data<std::int_least16_t, GridType>>;
 
         /// @brief Start position of the simulation.
         /// @brief シミュレーションデータのマップ
@@ -94,6 +94,8 @@ namespace paxs {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 } else if(data_type == "f32"){
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                } else if(data_type == "s16"){
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 } else {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "data_type is not found: " + data_type + " in " + setting_file_path;
@@ -134,7 +136,7 @@ namespace paxs {
         /// @details 陸地であるかつ、傾斜が一定以下であること
         bool isLive(const Vector2& position) const {
             try {
-                return isLand(position) && getSlope(position) <= 5;
+                return isLand(position) && getSlope(position) <= 162;
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to judge live";
@@ -145,9 +147,9 @@ namespace paxs {
 
         /// @brief Get slope.
         /// @brief 傾斜の取得
-        float getSlope(const Vector2& position) const {
+        std::uint_least8_t getSlope(const Vector2& position) const {
             try {
-                return getData<float>("slope", position);
+                return getData<std::uint_least8_t>("slope", position);
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get slope";
@@ -158,9 +160,9 @@ namespace paxs {
 
         /// @brief Get elevation.
         /// @brief 標高の取得
-        float getElevation(const Vector2& position) const {
+        std::int_least16_t getElevation(const Vector2& position) const {
             try {
-                return getData<float>("elevation", position);
+                return getData<std::int_least16_t>("elevation", position);
             } catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get elevation";

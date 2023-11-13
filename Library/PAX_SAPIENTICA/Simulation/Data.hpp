@@ -24,6 +24,7 @@
 #include <unordered_map>
 
 #include <PAX_SAPIENTICA/File.hpp>
+#include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusDisplayer.hpp>
@@ -43,9 +44,6 @@ namespace paxs {
             column_size = static_cast<int>((end_position.x - start_position.x + 1) * pixel_size * z_mag);
 
             try {
-                // 試験的にmapの十分なメモリを確保
-                // data.reserve(z_mag == 8 ? 1250000 : 20000000);
-
                 load(file_path);
             }
             catch (const std::exception&) {
@@ -138,12 +136,64 @@ namespace paxs {
             } else if(file_names[0].find(".txt") != std::string::npos) {
                 if (default_z > pj_z) loadNumericTextAndCompress(file_names);
                 else loadNumericText(file_names);
+            } else if(file_names[0].find(".bin") != std::string::npos) {
+                if constexpr (std::is_same<DataType, std::uint_least8_t>::value) {
+                    loadBinary<paxs::Input8BitBinary>(file_names);
+                } else if constexpr (std::is_same<DataType, std::int_least16_t>::value) {
+                    loadBinary<paxs::Input16BitBinary>(file_names);
+                }
             } else {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "File type is invalid: " + file_names[0];
                 logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
+        }
+
+        /// @brief Load binary files.
+        /// @brief バイナリファイルのロード
+        template <typename BinaryDataType>
+        void loadBinary(const std::vector<std::string>& file_names) noexcept {
+            unsigned int file_count = 0;
+            int load_count = 0;
+
+            DataType tmp_data[pixel_size * pixel_size]{};
+
+            for(const auto& file_name : file_names) {
+                StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+
+                Vector2 xyz_position;
+                try {
+                    xyz_position = getXAndYFromFileName(file_name);
+                } catch (const std::exception&) {
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
+                    ++file_count;
+                    continue;
+                }
+
+                const Vector2 default_position = xyz_position * pixel_size - start_position * pixel_size * z_mag;
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
+                    ++file_count;
+                    continue;
+                }
+
+                BinaryDataType bi(file_name, "");
+                bi.calc(tmp_data);
+
+                for(std::size_t y = 0;y < pixel_size;++y) {
+                    for(std::size_t x = 0;x < pixel_size;++x) {
+                        const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
+                        data[position.toU64()] = static_cast<DataType>(tmp_data[y * pixel_size + x]);
+                    }
+                }
+
+                ++file_count;
+                ++load_count;
+            }
+            StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
+            std::cout << load_count << " files are loaded.\n" << std::endl;
         }
 
         /// @brief Load numeric TSV files.

@@ -68,15 +68,15 @@ TEST_F (EnvironmentUnitTest, isLive) {
 
 TEST_F (EnvironmentUnitTest, getSlope) {
     const paxs::Vector2<int> test_position(0, 0);
-    float expected = 0.0f;
-    float actual = environment.getSlope(test_position);
+    std::uint8_t expected = 0;
+    std::uint8_t actual = environment.getSlope(test_position);
     EXPECT_EQ(expected, actual);
 }
 
 TEST_F (EnvironmentUnitTest, getElevation) {
     const paxs::Vector2<int> test_position(0, 0);
-    float expected = 0.0f;
-    float actual = environment.getElevation(test_position);
+    std::int_least16_t expected = 0;
+    std::int_least16_t actual = environment.getElevation(test_position);
     EXPECT_EQ(expected, actual);
 }
 

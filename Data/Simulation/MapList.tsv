@@ -1,5 +1,5 @@
 key	file_name_type	data_type	file_path	z	min_x	min_y	max_x	max_y	file_name_extension	file_format
-elevation	z_original	f32	../../../Data/Map/XYZTile/Elevation/Data/Elevation/2010/8/	8	0	0	255	255	.tsv	numeric_tsv
-slope	z_original	f32	../../../Data/Map/XYZTile/Slope/Data/SlopeData20230514/2010/8/	8	0	0	255	255	.tsv	numeric_tsv
-gbank	z_original	u8	../../../Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10/	10	861	366	950	441	.txt	numeric
+elevation	z_original	s16	../../../Data/Map/XYZTile/Elevation/Data/ElevationData20231030/2010/8/	8	0	0	255	255	.bin	binary
+slope	z_original	u8	../../../Data/Map/XYZTile/Slope/Data/SlopeData20231029/2010/8/	8	0	0	255	255	.bin	binary
+gbank	z_original	u8	../../../Data/Map/XYZTile/RyoseikokuData/Data/RyoseikokuData20230626/1868/10/	10	861	366	950	441	.tsv	numeric_tsv
 water	z_original	u8	../../../Data/Map/XYZTile/RiversAndLakes/Data/RiversAndLakes/2023/12/	12	3511	1465	3691	1712	.txt	numeric
