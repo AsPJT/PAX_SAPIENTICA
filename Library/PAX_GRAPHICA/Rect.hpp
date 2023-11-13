@@ -144,20 +144,23 @@ namespace paxg {
 #endif
         }
 
-        void draw(const paxg::Color& c_) const {
 #if defined(PAXS_USING_SIV3D)
+        void draw(const paxg::Color& c_) const {
             rect.draw(c_.color);
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void draw(const paxg::Color& c_) const {
             DxLib::DrawBox(
                 static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
-
-#elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
-
-#endif
         }
+#elif defined(PAXS_USING_SFML)
+        void draw(const paxg::Color&) const {
+            Window::window.draw(rect);
+        }
+#else
+        void draw(const paxg::Color&) const {}
+#endif
 
         void drawAt() const {
 #if defined(PAXS_USING_SIV3D)
@@ -174,26 +177,31 @@ namespace paxg {
 #endif
         }
 
-        void drawAt(const paxg::Color& c_) const {
 #if defined(PAXS_USING_SIV3D)
+        void drawAt(const paxg::Color&) const {
             // rect.draw(c_.color);
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void drawAt(const paxg::Color& c_) const {
             DxLib::DrawBox(
                 static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
-
-#elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
-
-#endif
         }
+#elif defined(PAXS_USING_SFML)
+        void drawAt(const paxg::Color&) const {
+            Window::window.draw(rect);
+        }
+#else
+        void drawAt(const paxg::Color&) const {}
+#endif
 
-        void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& color_) const {
 #if defined(PAXS_USING_SIV3D)
+        void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& color_) const {
             rect.drawFrame(inner_thickness, outer_thickness, color_.color);
 
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& color_) const {
             DxLib::DrawBox(
                 static_cast<int>(x0 - outer_thickness), static_cast<int>(y0 - outer_thickness),
                 static_cast<int>(x0 + w0 + outer_thickness), static_cast<int>(y0 + inner_thickness),
@@ -211,11 +219,14 @@ namespace paxg {
                 static_cast<int>(x0 + w0 + outer_thickness), static_cast<int>(y0 + h0 + outer_thickness),
                 DxLib::GetColor(color_.r, color_.g, color_.b), TRUE);
 
-#elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
-
-#endif
         }
+#elif defined(PAXS_USING_SFML)
+        void drawFrame(const double, const double, const paxg::Color&) const {
+            Window::window.draw(rect);
+        }
+#else
+        void drawFrame(const double, const double, const paxg::Color&) const {}
+#endif
 
         bool leftClicked() const {
 #if defined(PAXS_USING_SIV3D)
