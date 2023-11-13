@@ -57,10 +57,14 @@ namespace paxs {
         SelectLanguage select_language{}; // 選択言語
 
         paxs::PaxSapienticaInitSiv3D::firstInit(path8); // 初期化とロゴの表示
+#ifndef PAXS_USING_DXLIB
+        paxs::PaxSapienticaInitSiv3D::secondInit(); // ソフトウェアを実行した最初のフレームの一番最後に実行
+#endif // PAXS_USING_DXLIB
 #ifdef PAXS_USING_SIV3D
         s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
 #endif
-        paxs::Language language_text(path8 + "Data/Language/Text.txt"); // テキストの多言語対応クラス
+        paxs::Language language_text;
+        language_text.add(path8 + "Data/Language/Text.txt"); // テキストの多言語対応クラス
 
         // 可視化一覧
         GraphicVisualizationList visible{};
@@ -88,7 +92,7 @@ namespace paxs {
         map_siv.init(path8);
 
         paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
-        koyomi_siv.init(language_text, path8);
+        koyomi_siv.init(path8);
 
         paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
         string_siv.init(select_language, language_text, path8);
@@ -181,9 +185,7 @@ namespace paxs {
                 koyomi_siv,
                 visible
             );
-#ifndef PAXS_USING_DXLIB
-            paxs::PaxSapienticaInitSiv3D::secondInit(); // ソフトウェアを実行した最初のフレームの一番最後に実行
-#endif // PAXS_USING_DXLIB
+
 #ifdef PAXS_USING_DXLIB
             old_left_mouse = !((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) == 0);
             old_left_touch = DxLib::GetTouchInputNum();

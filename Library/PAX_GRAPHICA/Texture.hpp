@@ -158,200 +158,216 @@ namespace paxg {
 #endif
         }
 
-        void drawAt(const paxg::Vec2f& pos) const override
-        {
 #if defined(PAXS_USING_SIV3D)
+        void drawAt(const paxg::Vec2f& pos) const override {
             texture.drawAt(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void drawAt(const paxg::Vec2f& pos) const override {
             DxLib::DrawGraph(
                 static_cast<int>(pos.x() - (width() / 2)),
                 static_cast<int>(pos.y() - (height() / 2)), texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void drawAt(const paxg::Vec2f& pos) const override {
             sf::Sprite sprite(texture);
             sprite.setPosition(pos);
             paxg::Window::window.draw(sprite);
-
-#endif
         }
-
-        void drawAt(const paxg::Vec2i& pos) const override
-        {
+#else
+        void drawAt(const paxg::Vec2f&) const override {}
+#endif
 
 #if defined(PAXS_USING_SIV3D)
+        void drawAt(const paxg::Vec2i& pos) const override {
             texture.drawAt(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void drawAt(const paxg::Vec2i& pos) const override {
             DxLib::DrawGraph(pos.x() - (width() / 2), pos.y() - (height() / 2), texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void drawAt(const paxg::Vec2i& pos) const override {
             sf::Sprite sprite(texture);
             sprite.setPosition(static_cast<float>(pos.x()), static_cast<float>(pos.y()));
             paxg::Window::window.draw(sprite);
-
-#endif
         }
+#else
+        void drawAt(const paxg::Vec2i&) const override {}
+#endif
 
-        void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const
-        {
 #if defined(PAXS_USING_SIV3D)
+        void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const {
             texture.resized(resize.x(), resize.y()).drawAt(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const {
             DxLib::DrawExtendGraph(
                 pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2),
                 pos.x() + (resize.x() / 2), pos.y() + (resize.y() / 2),
                 texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize.x()) / texture.getSize().x, static_cast<float>(resize.y()) / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
-
+#else
+        void resizedDrawAt(const paxg::Vec2i&, const paxg::Vec2i&) const {}
 #endif
-        }
 
-        void resizedDrawAt(const int resize, const paxg::Vec2i& pos) const
-        {
 #if defined(PAXS_USING_SIV3D)
+        void resizedDrawAt(const int resize, const paxg::Vec2i & pos) const {
             texture.resized(resize).drawAt(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void resizedDrawAt(const int resize, const paxg::Vec2i & pos) const {
             DxLib::DrawExtendGraph(
                 pos.x() - (resize / 2), pos.y() - (resize / 2),
                 pos.x() + (resize / 2), pos.y() + (resize / 2),
                 texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void resizedDrawAt(const int resize, const paxg::Vec2i & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
-
-#endif
         }
+#else
+        void resizedDrawAt(const int, const paxg::Vec2i&) const {}
+#endif
 
-        void resizedDrawAt(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const
-        {
 #if defined(PAXS_USING_SIV3D)
+        void resizedDrawAt(const paxg::Vec2f & resize, const paxg::Vec2f & pos) const {
             texture.resized(resize.x(), resize.y()).drawAt(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void resizedDrawAt(const paxg::Vec2f & resize, const paxg::Vec2f & pos) const {
             DxLib::DrawExtendGraph(
                 static_cast<int>(pos.x() - (resize.x() / 2)), static_cast<int>(pos.y() - (resize.y() / 2)),
                 static_cast<int>(pos.x() + (resize.x() / 2)), static_cast<int>(pos.y() + (resize.y() / 2)),
                 texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void resizedDrawAt(const paxg::Vec2f & resize, const paxg::Vec2f & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(resize.x() / texture.getSize().x, resize.y() / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
-
+#else
+        void resizedDrawAt(const paxg::Vec2f&, const paxg::Vec2f&) const {}
 #endif
-        }
 
-        void resizedDrawAt(const int resize, const paxg::Vec2f& pos) const
-        {
 #if defined(PAXS_USING_SIV3D)
+        void resizedDrawAt(const int resize, const paxg::Vec2f & pos) const {
             texture.resized(resize).drawAt(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void resizedDrawAt(const int resize, const paxg::Vec2f & pos) const {
             DxLib::DrawExtendGraph(
                 static_cast<int>(pos.x() - (resize / 2)), static_cast<int>(pos.y() - (resize / 2)),
                 static_cast<int>(pos.x() + (resize / 2)), static_cast<int>(pos.y() + (resize / 2)),
                 texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void resizedDrawAt(const int resize, const paxg::Vec2f & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
-
-#endif
         }
+#else
+        void resizedDrawAt(const int, const paxg::Vec2f&) const {}
+#endif
 
-        void resizedDraw(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const
-        {
 #if defined(PAXS_USING_SIV3D)
+        void resizedDraw(const paxg::Vec2i & resize, const paxg::Vec2i & pos) const {
             texture.resized(resize.x(), resize.y()).draw(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void resizedDraw(const paxg::Vec2i & resize, const paxg::Vec2i & pos) const {
             DxLib::DrawExtendGraph(
                 pos.x(), pos.y(),
                 pos.x() + resize.x(), pos.y() + resize.y(),
                 texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void resizedDraw(const paxg::Vec2i & resize, const paxg::Vec2i & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize.x()) / texture.getSize().x, static_cast<float>(resize.y()) / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
-
+#else
+        void resizedDraw(const paxg::Vec2i&, const paxg::Vec2i&) const {}
 #endif
-        }
 
-        void resizedDraw(const int resize, const paxg::Vec2i& pos) const
-        {
 #if defined(PAXS_USING_SIV3D)
+        void resizedDraw(const int resize, const paxg::Vec2i & pos) const {
             texture.resized(resize).draw(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void resizedDraw(const int resize, const paxg::Vec2i & pos) const {
             DxLib::DrawExtendGraph(
                 pos.x(), pos.y(),
                 pos.x() + resize, pos.y() + resize,
                 texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void resizedDraw(const int resize, const paxg::Vec2i & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
-
-#endif
         }
+#else
+        void resizedDraw(const int, const paxg::Vec2i&) const {}
+#endif
 
-        void resizedDraw(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const
-        {
 #if defined(PAXS_USING_SIV3D)
+        void resizedDraw(const paxg::Vec2f & resize, const paxg::Vec2f & pos) const {
             texture.resized(resize.x(), resize.y()).draw(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void resizedDraw(const paxg::Vec2f & resize, const paxg::Vec2f & pos) const {
             DxLib::DrawExtendGraph(
                 static_cast<int>(pos.x()), static_cast<int>(pos.y()),
                 static_cast<int>(pos.x() + resize.x()), static_cast<int>(pos.y() + resize.y()),
                 texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void resizedDraw(const paxg::Vec2f & resize, const paxg::Vec2f & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(resize.x() / texture.getSize().x, resize.y() / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
-
-#endif
         }
+#else
+        void resizedDraw(const paxg::Vec2f&, const paxg::Vec2f&) const {}
+#endif
 
-        void resizedDraw(const int resize, const paxg::Vec2f& pos) const
-        {
 #if defined(PAXS_USING_SIV3D)
+        void resizedDraw(const int resize, const paxg::Vec2f & pos) const {
             texture.resized(resize).draw(pos.x(), pos.y());
-
+        }
 #elif defined(PAXS_USING_DXLIB)
+        void resizedDraw(const int resize, const paxg::Vec2f & pos) const {
             DxLib::DrawExtendGraph(
                 static_cast<int>(pos.x()), static_cast<int>(pos.y()),
                 static_cast<int>(pos.x() + resize), static_cast<int>(pos.y() + resize),
                 texture, TRUE);
-
+        }
 #elif defined(PAXS_USING_SFML)
+        void resizedDraw(const int resize, const paxg::Vec2f & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
-
-#endif
         }
+#else
+        void resizedDraw(const int, const paxg::Vec2f&) const {}
+#endif
     };
 
 }

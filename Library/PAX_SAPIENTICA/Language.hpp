@@ -38,20 +38,24 @@ namespace paxs {
         constexpr void set(const std::size_t select_language_) { select_language = select_language_; }
         constexpr void setKey(const std::uint_least32_t select_key_) { select_key = select_key_; }
         constexpr std::size_t cget() const { return select_language; }
-        constexpr std::size_t cgetKey() const { return select_key; }
+        constexpr std::uint_least32_t cgetKey() const { return select_key; }
     };
     class Language {
     private:
 
     private:
-        std::string null_str{};
         std::vector<std::uint_least32_t> ordered_languages{}; // 登録順の言語
         std::unordered_map<std::uint_least32_t, std::size_t> unordered_languages{}; // 非順序の言語
         std::unordered_map<std::uint_least64_t, std::string> texts_and_languages{}; // テキストを辞書で管理
+        std::unordered_map<std::uint_least32_t, std::uint_least64_t> text_key{}; // テキストを辞書で管理 (１つの言語のみ)
     public:
         // key が存在しているか
-        std::size_t isIndex(const std::uint_least64_t key) const {
+        bool isIndex(const std::uint_least64_t key) const {
             return  (texts_and_languages.find(key) != texts_and_languages.end());
+        }
+        // key が存在しているか
+        bool isIndex32(const std::uint_least32_t key) const {
+            return  (text_key.find(key) != text_key.end());
         }
 
         // 64bit Key を返す
@@ -64,29 +68,18 @@ namespace paxs {
 
             // 指定した Key が存在しない場合
             if (key_language == 0 || !isIndex(key_language)) {
-                return &null_str; // 単語名がない場合は描画しない
+                if (!isIndex32(key_)) { // 入力の Key が 1 つも登録されていない場合
+                    return nullptr; // 単語名がない場合は描画しない
+                }
+                if (!isIndex(text_key.at(key_))) { // 入力の Key が 1 つも登録されていない場合
+                    return nullptr; // 単語名がない場合は描画しない
+                }
+                return &(texts_and_languages.at(text_key.at(key_)));
             }
             return &(texts_and_languages.at(key_language));
         }
 
     private:
-        using Languages = std::vector<std::string>; // 各国の言語の読み方を保持
-
-        std::vector<Languages> text{}; // テキストを二次元配列で管理
-        std::unordered_map<std::uint_least32_t, std::size_t> text_map{}; // テキストを辞書で管理
-        Languages empty{}; // テキストが見つからなかった時に返す変数
-
-        // 文字を指定した区切り文字で分割し、テキストの配列や辞書に格納
-        void split(const std::string& input, const char delimiter) {
-            std::istringstream stream(input);
-            std::string field;
-            Languages result;
-            while (std::getline(stream, field, delimiter)) {
-                result.emplace_back(field);
-            }
-            text_map.emplace(MurMur3::calcHash(result.front().size(), result.front().c_str()), text.size());
-            text.emplace_back(result);
-        }
 
         // 項目の ID を返す
         std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
@@ -94,13 +87,6 @@ namespace paxs {
         }
 
     public:
-        // テキストの二次元配列を返す
-        constexpr std::vector<Languages>& get() {
-            return text;
-        }
-        constexpr const std::vector<Languages>& cget() const {
-            return text;
-        }
         // 新しいテキストの追加
         void add(const std::string& str_) {
             paxg::InputFile pifs(str_);
@@ -129,65 +115,27 @@ namespace paxs {
             }
             // unordered_languages
 
-            split(pifs.lineString(), '\t'); // 旧仕様の分割方法
-
             // 1 行ずつ読み込み（区切りはタブ）
             while (pifs.getLine()) {
-                split(pifs.lineString(), '\t');
-
                 std::vector<std::string> sub_menu_v = pifs.split('\t');
                 if (key >= sub_menu_v.size()) continue; // Key がない場合は処理しない
                 for (std::size_t i = 0; i < sub_menu_v.size() && i < menu_v.size(); ++i) {
                     if (i == key) continue; // key と key の場合は無視
-                    texts_and_languages.emplace(
-                        (static_cast<std::uint_least64_t>(MurMur3::calcHash(sub_menu_v[key].size(), sub_menu_v[key].c_str())) << 32)
-                        + static_cast<std::uint_least64_t>(menu_v[i]), // key と language
-                        sub_menu_v[i] // 単語
-                    );
+                    if (sub_menu_v[i].size() == 0) continue; // 文字がない場合は処理しない
+
+                    const std::uint_least64_t hash64 = (static_cast<std::uint_least64_t>(MurMur3::calcHash(sub_menu_v[key].size(), sub_menu_v[key].c_str())) << 32)
+                        + static_cast<std::uint_least64_t>(menu_v[i]); // key と language
+                    if (!isIndex(hash64)) {
+                        texts_and_languages.emplace(hash64, sub_menu_v[i]);
+                    }
+                    const std::uint_least32_t hash32 = MurMur3::calcHash(sub_menu_v[key].size(), sub_menu_v[key].c_str());
+                    if (!isIndex32(hash32)) {
+                        text_key.emplace(hash32, hash64);
+                    }
                 }
             }
-            if (text.size() == 0) {
-                empty.resize(0);
-            }
-            else {
-                empty.resize(text.front().size());
-            }
         }
-        Language(const std::string& str_) {
-            add(str_);
-        }
-        // 始点を探す
-        std::size_t findStart(const std::uint_least32_t& str_) const {
-            if (text_map.find(str_) != text_map.end()) {
-                return text_map.at(str_);
-            }
-            return 0;
-        }
-        // 見つけたい単語を探す
-        Languages& getFindStart(const std::uint_least32_t& str_) {
-            const std::size_t index = findStart(str_);
-            if (index < text.size()) {
-                return text[index];
-            }
-            return empty;
-        }
-        // 見つけたい単語を探す
-        const Languages& cgetFindStart(const std::uint_least32_t& str_) const {
-            const std::size_t index = findStart(str_);
-            if (index < text.size()) {
-                return text[index];
-            }
-            return empty;
-        }
-        // 見つけたい単語を探し、テキストの二次元配列（単語一覧）で返す
-        std::vector<Languages> getFindStartToVVS(const std::uint_least32_t& str_, const std::size_t start_index) const {
-            std::vector<Languages> tmp{};
-            const Languages& lt = cgetFindStart(str_);
-            for (std::size_t i = start_index; i < lt.size(); ++i) {
-                tmp.emplace_back(Languages{ lt[i] });
-            }
-            return tmp;
-        }
+        Language() = default;
     };
 
 }

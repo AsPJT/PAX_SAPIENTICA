@@ -36,11 +36,11 @@ int android_main() {
 
     std::filesystem::create_directories(str);
     std::ofstream ofs(str + "/Test.txt");
-    if (!ofs) printfDx("False");
-    else{
-        printfDx("%s",str.c_str());
-        ofs << "Test" << std::endl;
-    }
+    // if (!ofs) printfDx("False");
+    // else{
+        // printfDx("%s",str.c_str());
+        // ofs << "Test" << std::endl;
+    // }
 
     // 背景色を指定
     const paxg::Color color = paxg::Color(140, 180, 250); // 青

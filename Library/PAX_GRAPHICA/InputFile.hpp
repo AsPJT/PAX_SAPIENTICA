@@ -63,7 +63,11 @@ namespace paxg {
             //    asset_file    // アセットファイル (読み込みのみ)
             //    internal_file // 内部
             //    external_file // 外部
+#ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
             const std::uint_least32_t type_ = paxs::MurMur3::calcHash("asset_file"),
+#else
+            [[maybe_unused]] const std::uint_least32_t type_ = paxs::MurMur3::calcHash("asset_file"),
+#endif
             // 【フォーマットの種類】
             //    string // 文字列
             //    binary // バイナリ
