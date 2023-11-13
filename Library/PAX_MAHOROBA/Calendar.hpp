@@ -68,8 +68,8 @@ namespace paxs {
             編年・時代区分（実験）
         ##########################################################################################*/
 
-        std::size_t sueki_nakamura_index; // 須恵器の中村編年の配列のインデックス値を格納
-        std::size_t sueki_tanabe_index; // 須恵器の田辺編年の配列のインデックス値を格納
+        std::uint_least32_t sueki_nakamura_key; // 須恵器の中村編年の配列のインデックス値を格納
+        std::uint_least32_t sueki_tanabe_key; // 須恵器の田辺編年の配列のインデックス値を格納
 
         // 時代区分の文字列
         std::vector<std::string> options = {
@@ -150,7 +150,6 @@ namespace paxs {
         }
 
         void init(
-            const paxs::Language& language_text,
             const std::string& path8
         ) {
             // 各暦の日付情報を初期化
@@ -165,8 +164,8 @@ namespace paxs {
                     OutputDate{(MurMur3::calcHash("menu_bar_view_simulation")), cal::SimulationSteps()}
             };
             // 須恵器編年の文字列を言語テキストファイルから探して格納
-            sueki_nakamura_index = language_text.findStart(MurMur3::calcHash("sueki_nakamura"));
-            sueki_tanabe_index = language_text.findStart(MurMur3::calcHash("sueki_tanabe"));
+            sueki_nakamura_key = (MurMur3::calcHash("sueki_nakamura"));
+            sueki_tanabe_key = (MurMur3::calcHash("sueki_tanabe"));
 
             // 暦を読み込み
             paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");
@@ -176,6 +175,9 @@ namespace paxs {
         }
 
         void update(
+#ifndef PAXS_USING_SIMULATOR
+[[maybe_unused]]
+#endif
             paxs::Simulator<int>& simulator // コンパイル時の分岐により使わない場合あり
         ) {
 

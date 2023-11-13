@@ -38,9 +38,7 @@ namespace paxs {
 #endif
         PlaceNameLocation place_name_location{}; // 地名
 
-        //#ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<AgentLocation> agent_location; // エージェント
-        //#endif
 
         // 描画する XYZ タイルを管理
         XYZTilesList xyz_tile_list;
@@ -81,18 +79,19 @@ namespace paxs {
 
             // 地名
             place_name_location.add();
-
-            //#ifdef PAXS_USING_SIMULATOR
-            //            agent_location = std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation); // エージェント
-            //            agent_location->addKofun();
-            //#endif
         }
 
         void update(
             const SelectLanguage& select_language,
             const paxs::KoyomiSiv3D& koyomi_siv,
             paxs::StringViewerSiv3D& string_siv,
+#ifndef PAXS_USING_SIMULATOR
+[[maybe_unused]]
+#endif
             const paxs::Simulator<int>& simlator, // コンパイル時の分岐により使わない場合あり
+#ifndef PAXS_USING_SIMULATOR
+[[maybe_unused]]
+#endif
             const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
             paxs::GraphicVisualizationList& visible
         ) {
@@ -104,7 +103,6 @@ namespace paxs {
                 texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
 #ifdef PAXS_USING_SIMULATOR
                 agent_location->draw(koyomi_siv.jdn.cgetDay(), simlator.cgetAgents(), start_position, map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()
-                    //,font[language], font[language]/*en_font*/, pin_font
                 );
 #endif
 
@@ -119,50 +117,20 @@ namespace paxs {
                 //// 航路を描画
                 //s3d::Spline2D{ route2 }.draw(2, s3d::Color{ 85, 145, 245 });
 #endif
-                // 地名を描画
-                if (select_language.cget() + 1 >= string_siv.font.size()) {
-                    place_name_location.draw(
-                        koyomi_siv.jdn.cgetDay(),
-                        map_view->getWidth(),
-                        map_view->getHeight(),
-                        map_view->getCenterX(),
-                        map_view->getCenterY(),
-                        string_siv.pin_font,
-                        string_siv.en_font,
-                        string_siv.pin_font);
-                }
-                else {
-                    place_name_location.draw(
-                        koyomi_siv.jdn.cgetDay(),
-                        map_view->getWidth(),
-                        map_view->getHeight(),
-                        map_view->getCenterX(),
-                        map_view->getCenterY(),
-                        string_siv.font[select_language.cget()],
-                        string_siv.en_font, // string_siv.font[select_language.cget()]/*en_font*/,
-                        string_siv.pin_font);
-                }
-                //#ifdef PAXS_USING_SIMULATOR
-                //			// エージェント機能テスト
-                //			if (is_agent_update) {
-                //				static int step = 0;
-                //				if (step == 0) {
-                //					//s3d::Print(U"Agent Size:", simlator.getAgents().size());
-                //					//for (std::size_t i = 0; i < 10 && i < simlator.getAgents().size(); ++i) {
-                //					//	s3d::Print(U"Agent[",i,U"]:X" ,simlator.getAgents()[i].getLocation(10,256).x, U", Y", simlator.getAgents()[i].getLocation(10,256).y);
-                //					//}
-                //				}
-                //				++step;
-                //				if (step >= 0) {
-                //					//if (step >= 30) {
-                //					step = 0;
-                //					simlator.step();
-                //				}
-                //			}
-                //			//agent_location->update(simlator.getAgents());
-                //			;				agent_location->draw(simlator.getAgents(), start_position, map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
-                //				font[language], font[language]/*en_font*/, pin_font);
-                //#endif
+
+                // フォントを指定
+                paxg::Font* one_font = string_siv.language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(string_siv.koyomi_font_size), static_cast<std::uint_least8_t>(string_siv.koyomi_font_buffer_thickness_size));
+
+                place_name_location.draw(
+                    koyomi_siv.jdn.cgetDay(),
+                    map_view->getWidth(),
+                    map_view->getHeight(),
+                    map_view->getCenterX(),
+                    map_view->getCenterY(),
+                    (one_font == nullptr) ? string_siv.pin_font : (*one_font),
+                    string_siv.en_font,
+                    string_siv.pin_font);
+
             }
 
         }
