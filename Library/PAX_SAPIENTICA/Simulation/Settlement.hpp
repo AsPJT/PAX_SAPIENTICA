@@ -231,34 +231,49 @@ namespace paxs {
         void onUpdate() noexcept {
             ageUpdate();
             death();
+            is_moved = false;
         }
 
         /// @brief Move.
         /// @brief 移動
-        void move(std::mt19937& engine, int move_probability, std::function<void (const Vector2 current_key, const Vector2 target_key, const std::uint_least64_t id)> settlement_grid_update) noexcept {
-            // 確率で移動
-            std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
-            if (dist(engine) > move_probability) return;
+        /// @return 集落グリッドを移動したかどうか
+        void move(std::mt19937& engine, int move_probability, std::function<void (const Vector2 current_key, const Vector2 target_key, const std::uint_least64_t id)> settlement_grid_update) {
+            try {
+                // 確率で移動
+                std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
+                if (dist(engine) > move_probability) return;
 
-            // 座標を移動
-            // 移動距離0~max_move_distance
-            std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
+                // 座標を移動
+                // 移動距離0~max_move_distance
+                std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
 
-            Vector2 current_position = positions.front();
-            Vector2 target_position = current_position;
+                Vector2 current_position = positions.front();
+                Vector2 target_position = current_position;
 
-            while (target_position == current_position || !environment->isLive(target_position)) {
-                float theta = std::uniform_real_distribution<float>(0.0f, 2.0f * M_PI)(engine);
-                float distance = move_dist(engine);
-                target_position = current_position + Vector2(std::cos(theta) * distance, std::sin(theta) * distance);
+                while (target_position == current_position || !environment->isLive(target_position)) {
+                    float theta = std::uniform_real_distribution<float>(0.0f, 2.0f * M_PI)(engine);
+                    float distance = move_dist(engine);
+                    target_position = current_position + Vector2(std::cos(theta) * distance, std::sin(theta) * distance);
+                }
+
+                Vector2 current_key = current_position / grid_length;
+                Vector2 target_key = target_position / grid_length;
+
+                if (current_key == target_key) return;
+
+                is_moved = true;
+                positions = { target_position };
+                settlement_grid_update(current_key, target_key, id);
+            } catch (const std::exception& e) {
+                Logger logger("Save/error_log.txt");
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
+                throw e;
             }
-
-            Vector2 current_key = current_position / grid_length;
-            Vector2 target_key = target_position / grid_length;
-
-            settlement_grid_update(current_key, target_key, id);
         }
 
+        /// @brief Get the is_moved.
+        /// @brief 移動したかどうかを取得
+        bool isMoved() const noexcept { return is_moved; }
     private:
         std::shared_ptr<Environment> environment; // 環境
         /// @brief 集落id
@@ -267,6 +282,8 @@ namespace paxs {
         std::vector<std::shared_ptr<Agent>> agents;
         /// @brief 集落の座標
         std::vector<Vector2> positions;
+        /// @brief 既に移動したかどうか
+        bool is_moved = false;
 
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
@@ -315,8 +332,7 @@ namespace paxs {
         bool isMarried(float age) const noexcept {
             const float sigma = 0.25f;
             auto x = [](std::uint_least32_t age) { return (age - 13) / 8.5f; };
-            auto weight = [=](std::uint_least32_t age)
-            {
+            auto weight = [=](std::uint_least32_t age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
             };
 
@@ -328,8 +344,7 @@ namespace paxs {
         bool isAbleToGiveBirth(float age) const noexcept {
             const float sigma = 0.25f;
             auto x = [](std::uint_least32_t age) { return (age - 14) / 8.5f; };
-            auto weight = [=](std::uint_least32_t age)
-            {
+            auto weight = [=](std::uint_least32_t age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
             };
 

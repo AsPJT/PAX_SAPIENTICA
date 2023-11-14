@@ -97,7 +97,7 @@ namespace paxs {
             }
             Logger logger("Save/error_log.txt");
             const std::string message = "Settlement not found. ID: " + std::to_string(id);
-            logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+            logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
             throw std::runtime_error(message);
         }
 
@@ -107,14 +107,15 @@ namespace paxs {
 
         /// @brief Delete the settlement.
         /// @brief 集落を削除
-        void deleteSettlement(const std::uint_least32_t id) noexcept {
+        void deleteSettlement(const std::uint_least32_t id) {
             auto it = std::find_if(settlements.begin(), settlements.end(), [id](const std::shared_ptr<Settlement>& settlement) { return settlement->getId() == id; });
             if (it != settlements.end()) {
                 settlements.erase(it);
             } else {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Settlement not found. ID: " + std::to_string(id);
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
         }
 

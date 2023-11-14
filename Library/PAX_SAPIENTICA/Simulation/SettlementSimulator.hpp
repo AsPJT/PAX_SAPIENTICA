@@ -83,67 +83,94 @@ namespace paxs {
 
         /// @brief Run the simulation for the specified number of steps.
         /// @brief シミュレーションを指定されたステップ数だけ実行する
-        void run(const int step_count) noexcept {
+        void run(const int step_count) {
             for(int i = 0; i < step_count; ++i) {
-                step();
+                std::cout << "Step: " << i + 1 << std::endl;
+                try {
+                    step();
+                } catch (const std::exception& e) {
+                    Logger logger("Save/error_log.txt");
+                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
+                    throw e;
+                }
             }
         }
 
         /// @brief Execute the simulation for the one step.
         /// @brief シミュレーションを1ステップ実行する
-        void step() noexcept {
-            for (auto& settlement_grid : settlement_grids) {
-                auto settlement_grid_update = [this](const Vector2 current_key, const Vector2 target_key, std::uint_least32_t id)
-                {
-                    // 集落グリッドの移動
-                    if (current_key != target_key) {
-                        auto it = settlement_grids.find(target_key.toU64());
-                        if (it != settlement_grids.end()) {
-                            it->second->addSettlement(settlement_grids[current_key.toU64()]->getSettlement(id));
-                        } else {
-                            settlement_grids[target_key.toU64()] = std::make_shared<SettlementGrid>(target_key * grid_length, environment, gen());
-                            settlement_grids[target_key.toU64()]->moveSettlementToThis(settlement_grids[current_key.toU64()]->getSettlement(id));
+        void step() {
+            try {
+                std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>> pre_settlement_grids = settlement_grids;
+                for (auto& settlement_grid : pre_settlement_grids) {
+                    auto settlement_grid_update = [this](const Vector2 current_key, const Vector2 target_key, std::uint_least32_t id) {
+                        try {
+                            // 集落グリッドの移動
+                            auto it = settlement_grids.find(target_key.toU64());
+                            if (it != settlement_grids.end()) {
+                                it->second->addSettlement(settlement_grids[current_key.toU64()]->getSettlement(id));
+                            } else {
+                                settlement_grids[target_key.toU64()] = std::make_shared<SettlementGrid>(target_key * grid_length, environment, gen());
+                                settlement_grids[target_key.toU64()]->moveSettlementToThis(settlement_grids[current_key.toU64()]->getSettlement(id));
+                            }
+                            settlement_grids[current_key.toU64()]->deleteSettlement(id);
+                        } catch (const std::exception& e) {
+                            Logger logger("Save/error_log.txt");
+                            logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
+                            throw e;
                         }
-                        settlement_grids[current_key.toU64()]->deleteSettlement(id);
+                    };
+
+                    auto settlements = settlement_grid.second->getSettlements();
+                    for (std::size_t i = 0; i < settlements.size(); ++i) {
+                        if (settlements[i]->isMoved()) {
+                            continue;
+                        }
+
+                        std::size_t settlement_count = settlements.size();
+                        settlements[i]->move(gen, move_probability, settlement_grid_update);
+
+                        if (settlement_count != settlements.size()) {
+                            --i;
+                        }
                     }
-                };
-
-                for (auto& settlement : settlement_grid.second->getSettlements()) {
-                    settlement->move(gen, move_probability, settlement_grid_update);
                 }
-            }
 
-            for (auto& settlement_grid : settlement_grids) {
-                for (auto& settlement : settlement_grid.second->getSettlements()) {
-                    settlement->preUpdate();
+                for (auto& settlement_grid : settlement_grids) {
+                    for (auto& settlement : settlement_grid.second->getSettlements()) {
+                        settlement->preUpdate();
+                    }
                 }
-            }
 
-            for (auto& settlement_grid : settlement_grids) {
-                // 近隣8グリッドの集落を取得
-                std::vector<std::shared_ptr<Settlement>> settlements;
-                Vector2 grid_position = settlement_grid.second->getGridPosition();
-                grid_position /= grid_length;
-                for (int i = -1; i <= 1; ++i) {
-                    for (int j = -1; j <= 1; ++j) {
-                        auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
-                        if (it != settlement_grids.end()) {
-                            for (auto& settlement : it->second->getSettlements()) {
-                                settlements.push_back(settlement);
+                for (auto& settlement_grid : settlement_grids) {
+                    // 近隣8グリッドの集落を取得
+                    std::vector<std::shared_ptr<Settlement>> settlements;
+                    Vector2 grid_position = settlement_grid.second->getGridPosition();
+                    grid_position /= grid_length;
+                    for (int i = -1; i <= 1; ++i) {
+                        for (int j = -1; j <= 1; ++j) {
+                            auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
+                            if (it != settlement_grids.end()) {
+                                for (auto& settlement : it->second->getSettlements()) {
+                                    settlements.push_back(settlement);
+                                }
                             }
                         }
                     }
+
+                    for (auto& settlement : settlement_grid.second->getSettlements()) {
+                        settlement->marriage(settlements);
+                    }
                 }
 
-                for (auto& settlement : settlement_grid.second->getSettlements()) {
-                    settlement->marriage(settlements);
+                for (auto& settlement_grid : settlement_grids) {
+                    for (auto& settlement : settlement_grid.second->getSettlements()) {
+                        settlement->onUpdate();
+                    }
                 }
-            }
-
-            for (auto& settlement_grid : settlement_grids) {
-                for (auto& settlement : settlement_grid.second->getSettlements()) {
-                    settlement->onUpdate();
-                }
+            } catch (const std::exception& e) {
+                Logger logger("Save/error_log.txt");
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
+                throw e;
             }
         }
 
