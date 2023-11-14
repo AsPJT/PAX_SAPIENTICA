@@ -113,9 +113,7 @@ namespace paxs {
             std::vector<std::size_t> marriageable_agents_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
-                if (agents[i]->isAbleToMarriage() && agents[i]->getGender() == female)
-                {
-
+                if (agents[i]->isAbleToMarriage() && agents[i]->getGender() == female) {
                     if (!isMarried(agents[i]->getAge())) continue;
 
                     marriageable_agents_index.push_back(i);
@@ -292,11 +290,12 @@ namespace paxs {
         /// @brief Birth.
         /// @brief 出産
         void birth() noexcept {
-            for (auto& agent : agents) {
+            std::vector<std::shared_ptr<Agent>> children;
+            for (const auto& agent : agents) {
                 // 出産可能かどうか
                 if (!agent->isAbleToGiveBirth() || !isAbleToGiveBirth(agent->getAge())) continue;
 
-                agents.push_back(std::make_shared<Agent>(
+                children.push_back(std::make_shared<Agent>(
                     UniqueIdentification<std::uint_least64_t>::generate(),
                     0, // TODO: 名前ID
                     static_cast<std::uint_least8_t>(gender_dist(gen)),
@@ -305,6 +304,7 @@ namespace paxs {
                     environment
                 ));
             }
+            agents.insert(agents.end(), children.begin(), children.end());
         }
 
         /// @brief Emigration.
