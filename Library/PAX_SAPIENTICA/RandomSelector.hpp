@@ -25,10 +25,17 @@
 
 namespace paxs {
 
+    /// @brief Randomly select elements from a vector.
+    /// @brief ランダムにベクトルから要素を選択
     class RandomSelector {
     public:
         explicit RandomSelector() noexcept : gen(rd()) {}
 
+        /// @brief Randomly select elements from a vector.
+        /// @brief ベクトルから要素をランダムに選択
+        /// @param vec A vector to select elements from.
+        /// @param num_elements The number of elements to select.
+        /// @return A vector of selected elements.
         template <typename T>
         std::vector<T> select(const std::vector<T>& vec, std::size_t num_elements) {
             if (num_elements > vec.size()) {
@@ -46,6 +53,11 @@ namespace paxs {
             return result;
         }
 
+        /// @brief Randomly select pairs of elements from two vectors.
+        /// @brief 二つの要素数が異なるベクトルからペアをランダムに選択
+        /// @param num_elements_1 The number of elements to select from the first vector.
+        /// @param num_elements_2 The number of elements to select from the second vector.
+        /// @return A vector of selected elements.
         std::vector<std::pair<std::size_t, std::size_t>> select(const std::size_t num_elements_1, const std::size_t num_elements_2) {
             const std::size_t num_elements = std::min(num_elements_1, num_elements_2);
 
