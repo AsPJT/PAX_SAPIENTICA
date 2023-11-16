@@ -20,7 +20,7 @@
 #include <iostream>
 
 namespace paxs {
-    
+
     /// @brief 2D Vector class.
     template<typename T>
     struct Vector2 {
@@ -92,7 +92,7 @@ namespace paxs {
         bool operator==(const Vector2<T>& v) const noexcept {
             return (v.x == x && v.y == y);
         }
-#endif // USING_CPP20      
+#endif // USING_CPP20
         /// @brief Get the length of the vector
         /// @brief べクトルの長さを取得。
         double length() const noexcept {
@@ -107,6 +107,14 @@ namespace paxs {
         friend std::ostream& operator<<(std::ostream& os, const Vector2<T>& v) noexcept {
             os << "(" << v.x << ", " << v.y << ")";
             return os;
+        }
+
+        std::uint_least64_t toU64() const noexcept {
+            return static_cast<std::uint_least64_t>(x) << 32 | static_cast<std::uint_least64_t>(y);
+        }
+
+        static Vector2<T> fromU64(const std::uint_least64_t u64) noexcept {
+            return Vector2<T>(static_cast<T>(u64 >> 32), static_cast<T>(u64 & 0x00000000ffffffff));
         }
     };
 }

@@ -14,6 +14,7 @@
 #include <gtest/gtest.h>
 
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 template <typename T>
 class EnvironmentMock : public paxs::Environment<T> {
@@ -50,7 +51,7 @@ TEST (AgentUnitTest, updateAge) {
     std::shared_ptr<EnvironmentMock<int>> env = std::make_shared<EnvironmentMock<int>>();
     paxs::Agent<int> agent(0, "test", paxs::Vector2<int>(0, 0), 0, 0, 0, env);
     agent.incrementAge();
-    EXPECT_EQ(agent.getAge(), 1);
+    EXPECT_EQ(agent.getAge(), 1 / static_cast<float>(paxs::steps_per_year));
 }
 
 TEST (AgentUnitTest, getGender) {

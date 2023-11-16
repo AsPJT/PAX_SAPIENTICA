@@ -23,6 +23,26 @@
 
 namespace paxs {
 
+        /// @brief A struct that represents a region in Japan.
+        /// @brief 日本の地方区分を表す構造体
+        struct JapanRegion {
+            std::uint_least8_t id;
+            std::string name;
+            std::uint_least32_t population; // 人口
+        };
+
+        /// @brief A struct that represents a prefecture in Japan.
+        /// @brief 日本の令制国を表す構造体
+        struct Ryoseikoku {
+            std::uint_least8_t id;
+            std::string name;
+            std::uint_least8_t region_id; // 対応する地方区分ID
+            std::uint_least32_t settlement_population_min_ad200;
+            std::uint_least32_t settlement_population_max_ad200;
+            std::uint_least32_t population_ad200;
+            std::uint_least32_t population_ad725;
+        };
+
     /// @brief A class that represents a prefecture in Japan.
     /// @brief 日本の州を表すクラス
     class JapanProvinces {
@@ -67,7 +87,10 @@ namespace paxs {
                     ryoseikoku.id = std::stoi(ryoseikoku_tsv[i][0]);
                     ryoseikoku.name = ryoseikoku_tsv[i][1];
                     ryoseikoku.region_id = std::stoi(ryoseikoku_tsv[i][2]);
-                    ryoseikoku.population = std::stoi(ryoseikoku_tsv[i][3]);
+                    ryoseikoku.settlement_population_min_ad200 = std::stoi(ryoseikoku_tsv[i][3]);
+                    ryoseikoku.settlement_population_max_ad200 = std::stoi(ryoseikoku_tsv[i][4]);
+                    ryoseikoku.population_ad200 = std::stoi(ryoseikoku_tsv[i][5]);
+                    ryoseikoku.population_ad725 = std::stoi(ryoseikoku_tsv[i][6]);
                     ryoseikoku_list.emplace_back(ryoseikoku);
                 } catch (const std::invalid_argument&) {
                     Logger logger("Save/warning_log.txt");
@@ -94,14 +117,41 @@ namespace paxs {
             return 0;
         }
 
+        /// @brief Get a ryoseikoku from the ID of the ryoseikoku in Japan.
+        /// @brief 日本の令制国のIDから令制国を取得する
+        Ryoseikoku& getRyoseikoku(const std::uint_least8_t id) noexcept {
+            for (auto& ryoseikoku : ryoseikoku_list) {
+                if (ryoseikoku.id == id) {
+                    return ryoseikoku;
+                }
+            }
+            Logger logger("Save/warning_log.txt");
+            const std::string message = "Failed to get Ryoseikoku: " + std::to_string(id);
+            logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+
+            return ryoseikoku_list[0];
+        }
+        const Ryoseikoku& cgetRyoseikoku(const std::uint_least8_t id) const noexcept {
+            for (const auto& ryoseikoku : ryoseikoku_list) {
+                if (ryoseikoku.id == id) {
+                    return ryoseikoku;
+                }
+            }
+            Logger logger("Save/warning_log.txt");
+            const std::string message = "Failed to get Ryoseikoku: " + std::to_string(id);
+            logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+
+            return ryoseikoku_list[0];
+        }
+
         /// @brief 日本の令制国のIDから人口を取得する
         /// @param id 日本の令制国のID
         /// @return 人口
         /// @note IDが不正な場合は0を返す
-        std::uint_least32_t getRyoseikokuPopulation(const std::uint_least8_t id) const noexcept {
+        std::uint_least32_t getRyoseikokuPopulationAd200(const std::uint_least8_t id) const noexcept {
             for (const auto& ryoseikoku : ryoseikoku_list) {
                 if (ryoseikoku.id == id) {
-                    return ryoseikoku.population;
+                    return ryoseikoku.population_ad200;
                 }
             }
             Logger logger("Save/warning_log.txt");
@@ -127,24 +177,16 @@ namespace paxs {
 
             return 0;
         }
+
+        /// @brief Get a list of Ryoseikoku
+        /// @brief 令制国のリストを取得する
+        std::vector<Ryoseikoku>& getRyoseikokuList() noexcept {
+            return ryoseikoku_list;
+        }
+        const std::vector<Ryoseikoku>& cgetRyoseikokuList() const noexcept {
+            return ryoseikoku_list;
+        }
     private:
-        /// @brief A struct that represents a region in Japan.
-        /// @brief 日本の地方区分を表す構造体
-        struct JapanRegion {
-            std::uint_least8_t id;
-            std::string name;
-            std::uint_least32_t population; // 人口
-        };
-
-        /// @brief A struct that represents a prefecture in Japan.
-        /// @brief 日本の令制国を表す構造体
-        struct Ryoseikoku {
-            std::uint_least8_t id;
-            std::string name;
-            std::uint_least8_t region_id; // 対応する地方区分ID
-            std::uint_least32_t population; // 人口
-        };
-
         std::vector<JapanRegion> japan_regions; // 日本の地方区分
         std::vector<Ryoseikoku> ryoseikoku_list; // 日本の令制国
 

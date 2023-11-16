@@ -22,4 +22,7 @@ endif()
 add_executable(SimulatorTest source/SimulatorTest.cpp)
 target_compile_definitions(SimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
 
+add_executable(SettlementSimulatorTest source/SettlementSimulatorTest.cpp)
+target_compile_definitions(SettlementSimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
+
 
