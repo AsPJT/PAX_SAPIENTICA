@@ -10,6 +10,8 @@ Data/PlaceName/EastAsia/Yaponesia/KojikiPlaceName.tsv	place_name	古事記の地
 Data/PlaceName/PlaceName.tsv	place_name	汎用的な地名					
 Data/PlaceName/EastAsia/Yaponesia/Ryoseikoku.tsv	place_name	令制国名	1				
 Data/PlaceName/EastAsia/Yaponesia/TohokuAynu.tsv	place_name	東北アイヌ	1		1721424	9999999	
+Data/PlaceName/EastAsia/Yaponesia/HokkaidoAynu.tsv	place_name	北海道アイヌ	1		1721424	9999999	
+Data/PlaceName/EastAsia/Siberia/KamchatkaAynu.tsv	place_name	カムサスカアイヌ	1		1721424	9999999	
 Data/PlaceName/EastAsia/Manchuria/Balhae.tsv	place_name	渤海国	1		1976003	2059279	
 Data/PlaceName/EastAsia/Korea/SamgukSagi.tsv	place_name	三国史記	0.1				
 Data/PlaceName/EastAsia/Yaponesia/WamyoRuijushoPlaceName.tsv	place_name	倭名類聚抄の地名	0	0.4	1721424	9999999	
