@@ -19,3 +19,4 @@ Data/PlaceName/EastAsia/Yaponesia/WamyoRuijushoKori.tsv	place_name	倭名類聚�
 Data/PlaceName/EastAsia/Yaponesia/OmoroSoshiPlaceName.tsv	place_name	おもろさうしの地名	0	1	1721424	9999999	
 Data/PlaceName/EastAsia/China/China.tsv	place_name	中国大陸の地名	0.1	24	0	9999999	
 Data/PlaceName/EastAsia/Yaponesia/Geoshape/NRCT.tsv	place_name	『日本歴史地名大系』地名項目データセット	0	0.1	1721424	9999999	
+Data/PlaceName/Europe/Roma.tsv	place_name	ローマ帝国	1			9999999	
