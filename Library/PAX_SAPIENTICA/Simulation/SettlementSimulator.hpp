@@ -338,20 +338,15 @@ namespace paxs {
                 );
                 settlement.setPosition(live_position);
 
-                std::vector<std::shared_ptr<Agent>> agents;
-                agents.reserve(settlement_population);
+                settlement.resizeAgents(settlement_population);
                 for (int i = 0; i < settlement_population; ++i) {
-                    std::shared_ptr<Agent> agent = std::make_shared<Agent>(
-                        UniqueIdentification<std::uint_least64_t>::generate(),
+                    settlement.setAgent(Agent(UniqueIdentification<std::uint_least64_t>::generate(),
                         0, // TODO: 名前ID
                         static_cast<std::uint_least8_t>(gender_dist(gen)),
                         0,
                         static_cast<std::uint_least8_t>(life_exp_dist(gen)),
-                        environment
-                    );
-                    agents.emplace_back(agent);
+                        environment), static_cast<std::size_t>(i));
                 }
-                settlement.setAgents(agents);
 
                 // 令制国の人口を減らす
                 ryoseikoku_population_it->second -= settlement_population;
@@ -381,9 +376,9 @@ namespace paxs {
                 int add_population = population / settlements.size();
 
                 for (auto& settlement : settlements) {
-                    std::vector<std::shared_ptr<Agent>> agents;
+                    std::vector<Agent> agents;
                     for (int i = 0; i < add_population; ++i) {
-                        std::shared_ptr<Agent> agent = std::make_shared<Agent>(
+                        Agent agent = Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
                             static_cast<std::uint_least8_t>(gender_dist(gen)),
