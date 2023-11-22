@@ -57,7 +57,26 @@ namespace paxg {
 #endif
         }
 
-        void drawAt([[maybe_unused]] const Vec2f& pos) const override {}
+#if defined(PAXS_USING_SIV3D)
+        void draw(const paxg::Color& c_) const {
+            circle.draw(c_.color);
+        }
+#elif defined(PAXS_USING_DXLIB)
+        void draw(const paxg::Color& c_) const {
+            //DxLib::DrawBox(
+            //    static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
+            //    DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
+        }
+#elif defined(PAXS_USING_SFML)
+        void draw(const paxg::Color&) const {
+            Window::window.draw(circle);
+        }
+#else
+        void draw(const paxg::Color&) const {}
+#endif
+
+        void drawAt(const Vec2f& pos) const override {}
+        void drawAt(const Vec2i& pos) const override {}
     };
 }
 
