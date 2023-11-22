@@ -141,7 +141,7 @@ namespace paxs {
         /// @details 陸地であるかつ、傾斜が一定以下であること
         bool isLive(const Vector2& position) const {
             try {
-                return isLand(position) && getSlope(position) <= 162;
+                return isLand(position) && static_cast<int>(getSlope(position)) <= 163;
             }
             catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");

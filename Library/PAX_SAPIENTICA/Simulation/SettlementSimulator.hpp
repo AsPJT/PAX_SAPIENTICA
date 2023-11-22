@@ -188,6 +188,51 @@ namespace paxs {
         constexpr const std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>>&
             cgetSettlementGrids() const noexcept { return settlement_grids; }
 
+        /// @brief Export the simulation result to a file.
+        /// @brief シミュレーション結果をファイルに出力する
+        void exportResult(const std::string& path) const {
+            // 各令制国の人口を計算
+            std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid.second->getSettlements()) {
+                    std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>("gbank", settlement->getPosition());
+                    auto it = ryoseikoku_population_map.find(ryoseikoku_id);
+                    if (it != ryoseikoku_population_map.end()) {
+                        it->second += settlement->getPopulation();
+                    } else {
+                        ryoseikoku_population_map[ryoseikoku_id] = settlement->getPopulation();
+                    }
+                }
+            }
+
+            // 令制国id順にソート
+            std::vector<std::pair<std::uint_least8_t, std::uint_least32_t>> ryoseikoku_population_list;
+            ryoseikoku_population_list.reserve(ryoseikoku_population_map.size());
+            for (auto& ryoseikoku_population : ryoseikoku_population_map) {
+                ryoseikoku_population_list.push_back(ryoseikoku_population);
+            }
+
+            std::sort(ryoseikoku_population_list.begin(), ryoseikoku_population_list.end(), [](const std::pair<std::uint_least8_t, std::uint_least32_t>& a, const std::pair<std::uint_least8_t, std::uint_least32_t>& b) {
+                return a.first < b.first;
+            });
+
+            // 計算した結果をファイルに出力
+            std::ofstream ofs(path);
+            if (!ofs) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to open file: " + path;
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+
+            ofs << "ID\tName\tPopulation" << std::endl;
+            for (auto& ryoseikoku_population : ryoseikoku_population_map) {
+                ofs << static_cast<int>(ryoseikoku_population.first) << "\t" << japan_provinces->cgetRyoseikoku(ryoseikoku_population.first).name << "\t" << ryoseikoku_population.second << std::endl;
+            }
+
+            ofs.close();
+        }
+
     private:
         std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>> settlement_grids;
         std::shared_ptr<Environment> environment;
@@ -218,15 +263,15 @@ namespace paxs {
                 }
 
                 // 各陸地の可住地重みを計算
-                float slope = environment->getSlope(position);
+                std::uint_least8_t slope = environment->getSlope(position);
                 int live_probability = 0;
-                if (slope < 4) {
+                if (slope <= 90) {
                     live_probability += 9;
                 }
-                else if (slope < 9.09) {
+                else if (slope <= 129) {
                     live_probability += 10;
                 }
-                else if (slope < 17.745) {
+                else if (slope <= 163) {
                     live_probability += 4;
                 }
                 else {
