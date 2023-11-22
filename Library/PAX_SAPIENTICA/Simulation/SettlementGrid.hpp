@@ -37,18 +37,18 @@ namespace paxs {
 
         /// @brief Add a settlement to the grid.
         /// @brief 集落をグリッドに追加
-        void addSettlement(const std::shared_ptr<Settlement>& settlement) noexcept { settlements.emplace_back(settlement); }
+        void addSettlement(const Settlement& settlement) noexcept { settlements.emplace_back(settlement); }
 
         /// @brief Move a settlement to this grid.
         /// @brief 集落をこのグリッドに移動
-        void moveSettlementToThis(const std::shared_ptr<Settlement>& settlement) noexcept {
+        void moveSettlementToThis(Settlement& settlement) noexcept {
             settlements.emplace_back(settlement);
 
             // 他の集落とかぶらない位置を探す
             // ブラックリスト
             std::vector<Vector2> black_list(settlements.size());
             for (std::size_t i = 0; i < settlements.size(); ++i) {
-                black_list[i] = settlements[i]->getPosition();
+                black_list[i] = settlements[i].getPosition();
             }
 
             // ランダムな位置を探す
@@ -78,22 +78,22 @@ namespace paxs {
                 logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
             }
 
-            settlement->setPosition(position);
+            settlement.setPosition(position);
         }
 
         /// @brief Get the settlements.
         /// @brief 集落を取得
-        std::vector<std::shared_ptr<Settlement>>& getSettlements() noexcept { return settlements; }
+        std::vector<Settlement>& getSettlements() noexcept { return settlements; }
 
         /// @brief Get the settlements.
         /// @brief 集落を取得
-        const std::vector<std::shared_ptr<Settlement>>& cgetSettlements() const noexcept { return settlements; }
+        const std::vector<Settlement>& cgetSettlements() const noexcept { return settlements; }
 
         /// @brief Get the settlements.
         /// @brief 集落を取得
-        std::shared_ptr<Settlement>& getSettlement(const std::uint_least32_t id) {
+        Settlement& getSettlement(const std::uint_least32_t id) {
             for (auto& settlement : settlements) {
-                if (settlement->getId() == id) {
+                if (settlement.getId() == id) {
                     return settlement;
                 }
             }
@@ -110,7 +110,7 @@ namespace paxs {
         /// @brief Delete the settlement.
         /// @brief 集落を削除
         void deleteSettlement(const std::uint_least32_t id) {
-            auto it = std::find_if(settlements.begin(), settlements.end(), [id](const std::shared_ptr<Settlement>& settlement) { return settlement->getId() == id; });
+            auto it = std::find_if(settlements.begin(), settlements.end(), [id](const Settlement& settlement) { return settlement.getId() == id; });
             if (it != settlements.end()) {
                 settlements.erase(it);
             } else {
@@ -136,7 +136,7 @@ namespace paxs {
         const std::vector<std::uint_least8_t>& cgetRyoseikokuIds() const noexcept { return ryoseikoku_list; }
 
     private:
-        std::vector<std::shared_ptr<Settlement>> settlements;
+        std::vector<Settlement> settlements;
         std::shared_ptr<Environment> environment;
         Vector2 grid_position;
         std::mt19937 gen; // 乱数生成器

@@ -126,12 +126,12 @@ namespace paxs {
 
                     auto settlements = settlement_grid.second.getSettlements();
                     for (std::size_t i = 0; i < settlements.size(); ++i) {
-                        if (settlements[i]->isMoved()) {
+                        if (settlements[i].isMoved()) {
                             continue;
                         }
 
                         std::size_t settlement_count = settlements.size();
-                        settlements[i]->move(gen, move_probability, settlement_grid_update);
+                        settlements[i].move(gen, move_probability, settlement_grid_update);
 
                         if (settlement_count != settlements.size()) {
                             --i;
@@ -141,13 +141,13 @@ namespace paxs {
 
                 for (auto& settlement_grid : settlement_grids) {
                     for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement->preUpdate();
+                        settlement.preUpdate();
                     }
                 }
 
                 for (auto& settlement_grid : settlement_grids) {
                     // 近隣8グリッドの集落を取得
-                    std::vector<std::shared_ptr<Settlement>> settlements;
+                    std::vector<Settlement> settlements;
                     Vector2 grid_position = settlement_grid.second.getGridPosition();
                     grid_position /= grid_length;
                     for (int i = -1; i <= 1; ++i) {
@@ -162,13 +162,13 @@ namespace paxs {
                     }
 
                     for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement->marriage(settlements);
+                        settlement.marriage(settlements);
                     }
                 }
 
                 for (auto& settlement_grid : settlement_grids) {
                     for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement->onUpdate();
+                        settlement.onUpdate();
                     }
                 }
             }
@@ -195,12 +195,12 @@ namespace paxs {
             std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second->getSettlements()) {
-                    std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>("gbank", settlement->getPosition());
+                    std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>("gbank", settlement.getPosition());
                     auto it = ryoseikoku_population_map.find(ryoseikoku_id);
                     if (it != ryoseikoku_population_map.end()) {
-                        it->second += settlement->getPopulation();
+                        it->second += settlement.getPopulation();
                     } else {
-                        ryoseikoku_population_map[ryoseikoku_id] = settlement->getPopulation();
+                        ryoseikoku_population_map[ryoseikoku_id] = settlement.getPopulation();
                     }
                 }
             }
@@ -331,12 +331,12 @@ namespace paxs {
                     settlement_grids[key] = SettlementGrid(live_position, environment, gen());
                 }
                 // 集落を作成
-                std::shared_ptr<Settlement> settlement = std::make_shared<Settlement>(
+                Settlement settlement = Settlement(
                     UniqueIdentification<std::uint_least32_t>::generate(),
                     gen(),
                     environment
                 );
-                settlement->setPosition(live_position);
+                settlement.setPosition(live_position);
 
                 std::vector<std::shared_ptr<Agent>> agents;
                 agents.reserve(settlement_population);
@@ -351,7 +351,7 @@ namespace paxs {
                     );
                     agents.emplace_back(agent);
                 }
-                settlement->setAgents(agents);
+                settlement.setAgents(agents);
 
                 // 令制国の人口を減らす
                 ryoseikoku_population_it->second -= settlement_population;
@@ -375,7 +375,7 @@ namespace paxs {
             for (auto& ryoseikoku_population : ryoseikoku_population_map) {
                 std::uint_least8_t ryoseikoku_id = ryoseikoku_population.first;
                 int population = ryoseikoku_population.second;
-                std::vector<std::shared_ptr<Settlement>> settlements;
+                std::vector<Settlement> settlements;
                 getSettlements(settlements, ryoseikoku_id);
 
                 int add_population = population / settlements.size();
@@ -393,7 +393,7 @@ namespace paxs {
                         );
                         agents.emplace_back(agent);
                     }
-                    settlement->addAgents(agents);
+                    settlement.addAgents(agents);
                 }
             }
 
@@ -414,7 +414,7 @@ namespace paxs {
         }
 
         /// @brief 指定した令制国のIDの集落を取得
-        void getSettlements(std::vector<std::shared_ptr<Settlement>>& settlements, const std::uint_least8_t ryoseikoku_id_) noexcept {
+        void getSettlements(std::vector<Settlement>& settlements, const std::uint_least8_t ryoseikoku_id_) noexcept {
             std::vector<SettlementGrid> settlement_grids_;
             getSettlementGrids(settlement_grids_, ryoseikoku_id_);
             for (auto& settlement_grid : settlement_grids_) {

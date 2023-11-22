@@ -484,8 +484,8 @@ namespace paxs {
                         std::unordered_map < std::uint_least32_t, std::string>(),
                             paxs::MercatorDeg(getLocation(start_position,
                             paxs::Vector2<int>(
-                    settlement->getPosition().x,
-                        settlement->getPosition().y
+                    settlement.getPosition().x,
+                        settlement.getPosition().y
                             )
                             , 10)),
                             10, 100,0,0,99999999,
@@ -520,7 +520,7 @@ namespace paxs {
                         // エージェント
                         if (lli.lpe == MurMur3::calcHash("agent1")) {
 
-                            const std::size_t pop = settlement->getPopulation();
+                            const std::size_t pop = settlement.getPopulation();
 
                             paxg::Color pop_color =
                                 (pop == 0) ? paxg::Color(255, 255, 255) :
