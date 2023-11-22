@@ -52,6 +52,8 @@ namespace paxs {
         /// @brief エージェントの年齢を取得する
         constexpr float getAge() const noexcept { return age / static_cast<float>(steps_per_year); }
 
+        constexpr std::uint_least32_t getAgeInt() const noexcept { return age; }
+
         /// @brief Get the agent's age.
         /// @brief エージェントの性別を取得する
         constexpr std::uint_least8_t getGender() const noexcept { return gender; }

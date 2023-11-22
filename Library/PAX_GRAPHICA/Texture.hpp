@@ -213,6 +213,7 @@ namespace paxg {
             sprite.setScale(static_cast<float>(resize.x()) / texture.getSize().x, static_cast<float>(resize.y()) / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
+        }
 #else
         void resizedDrawAt(const paxg::Vec2i&, const paxg::Vec2i&) const {}
 #endif
@@ -256,6 +257,7 @@ namespace paxg {
             sprite.setScale(resize.x() / texture.getSize().x, resize.y() / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
+        }
 #else
         void resizedDrawAt(const paxg::Vec2f&, const paxg::Vec2f&) const {}
 #endif
@@ -299,6 +301,7 @@ namespace paxg {
             sprite.setScale(static_cast<float>(resize.x()) / texture.getSize().x, static_cast<float>(resize.y()) / texture.getSize().y);
             sprite.setPosition(pos.x(), pos.y());
             paxg::Window::window.draw(sprite);
+        }
 #else
         void resizedDraw(const paxg::Vec2i&, const paxg::Vec2i&) const {}
 #endif

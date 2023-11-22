@@ -358,9 +358,10 @@ namespace paxs {
         /// @brief 指定した令制国のIDの集落グリッドを取得
         void getSettlementGrids(std::vector<std::shared_ptr<SettlementGrid>>& settlement_grids_, const std::uint_least8_t ryoseikoku_id_) noexcept {
             for (auto& settlement_grid : settlement_grids) {
-                for (auto id : settlement_grid.second()->getRyoseikokuIds()) {
+                std::vector<std::uint_least8_t> ryoseikoku_ids = settlement_grid.second->getRyoseikokuIds();
+                for (auto id : ryoseikoku_ids) {
                     if (id == ryoseikoku_id_) {
-                        settlement_grids_.emplace_back(settlement_grid);
+                        settlement_grids_.emplace_back(settlement_grid.second);
                         break;
                     }
                 }

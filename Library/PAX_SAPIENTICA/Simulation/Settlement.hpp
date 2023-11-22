@@ -120,7 +120,7 @@ namespace paxs {
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
                 if (agents[i]->isAbleToMarriage() && agents[i]->getGender() == female) {
-                    if (!isMarried(agents[i]->getAge())) continue;
+                    if (!isMarried(agents[i]->getAgeInt())) continue;
 
                     marriageable_agents_index.emplace_back(i);
                 }
@@ -280,6 +280,10 @@ namespace paxs {
         /// @brief Get the is_moved.
         /// @brief 移動したかどうかを取得
         bool isMoved() const noexcept { return is_moved; }
+
+        /// @brief Get the population.
+        /// @brief 人口を取得
+        std::size_t getPopulation() const noexcept { return agents.size(); }
     private:
         std::shared_ptr<Environment> environment; // 環境
         /// @brief 集落id
@@ -293,6 +297,7 @@ namespace paxs {
 
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
+        std::uniform_real_distribution<> random_dist{ 0.0f, 1.0f }; // 乱数分布
         std::uniform_int_distribution<> life_exp_dist{ 50, 100 }; // 寿命の乱数分布
 
         /// @brief Birth.
@@ -301,7 +306,7 @@ namespace paxs {
             std::vector<std::shared_ptr<Agent>> children;
             for (const auto& agent : agents) {
                 // 出産可能かどうか
-                if (!agent->isAbleToGiveBirth() || !isAbleToGiveBirth(agent->getAge())) continue;
+                if (!agent->isAbleToGiveBirth() || !isAbleToGiveBirth(agent->getAgeInt())) continue;
 
                 children.emplace_back(std::make_shared<Agent>(
                     UniqueIdentification<std::uint_least64_t>::generate(),
@@ -337,26 +342,30 @@ namespace paxs {
 
         /// @brief Is the agent married?
         /// @brief 確率で結婚するかどうかを返す
-        bool isMarried(float age) const noexcept { // 手直しの必要あり
+        bool isMarried(std::uint_least32_t age) noexcept {
             const float sigma = 0.25f;
             auto x = [](std::uint_least32_t age) { return (age - 13) / 8.5f; };
             auto weight = [=](std::uint_least32_t age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
                 };
 
-            return 0.98 * weight(age) / 101.8f;
+            float threshold = 0.98 * weight(age) / 101.8f;
+
+            return random_dist(gen) < threshold;
         }
 
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
-        bool isAbleToGiveBirth(float age) const noexcept { // 手直しの必要あり
+        bool isAbleToGiveBirth(std::uint_least32_t age) noexcept {
             const float sigma = 0.25f;
             auto x = [](std::uint_least32_t age) { return (age - 14) / 8.5f; };
             auto weight = [=](std::uint_least32_t age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
                 };
 
-            return 16 * weight(age) / 101.8;
+            float threshold = 16 * weight(age) / 101.8;
+
+            return random_dist(gen) < threshold;
         }
     };
 
