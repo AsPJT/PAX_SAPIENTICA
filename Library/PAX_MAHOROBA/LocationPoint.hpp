@@ -464,7 +464,7 @@ namespace paxs {
         }
 
         void draw(const double jdn,
-            std::unordered_map<std::uint_least64_t, std::shared_ptr<paxs::SettlementGrid<int>>>& agents,
+            std::unordered_map<std::uint_least64_t, paxs::SettlementGrid<int>>& agents,
             const paxs::Vector2<int>& start_position,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
         )const {
@@ -473,10 +473,10 @@ namespace paxs {
             // 地名を描画
             for (const auto& agent : agents) {
 
-                if (agent.second.get() == nullptr) continue;
+                //if (agent.second == nullptr) continue;
 
-                for (const auto& settlement : agent.second->cgetSettlements()) {
-                    if (settlement.get() == nullptr) continue;
+                for (const auto& settlement : agent.second.cgetSettlements()) {
+                    //if (settlement.get() == nullptr) continue;
 
 
                     // エージェントの初期設定を定義

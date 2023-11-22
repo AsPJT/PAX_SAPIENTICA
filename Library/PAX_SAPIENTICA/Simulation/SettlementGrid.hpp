@@ -30,6 +30,8 @@ namespace paxs {
         using Vector2 = paxs::Vector2<GridType>;
         using Settlement = paxs::Settlement<GridType>;
 
+        SettlementGrid() = default;
+
         explicit SettlementGrid(const Vector2& grid_position, std::shared_ptr<Environment> environment,
          const unsigned seed = 0) noexcept : grid_position(grid_position), environment(environment), gen(seed) {}
 

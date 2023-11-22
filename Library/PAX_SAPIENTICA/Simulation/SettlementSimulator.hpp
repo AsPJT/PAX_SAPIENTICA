@@ -102,20 +102,20 @@ namespace paxs {
         /// @brief シミュレーションを1ステップ実行する
         void step() {
             try {
-                std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>> pre_settlement_grids = settlement_grids;
+                std::unordered_map<std::uint_least64_t, SettlementGrid> pre_settlement_grids = settlement_grids;
                 for (auto& settlement_grid : pre_settlement_grids) {
                     auto settlement_grid_update = [this](const Vector2 current_key, const Vector2 target_key, std::uint_least32_t id) {
                         try {
                             // 集落グリッドの移動
                             auto it = settlement_grids.find(target_key.toU64());
                             if (it != settlement_grids.end()) {
-                                it->second->addSettlement(settlement_grids[current_key.toU64()]->getSettlement(id));
+                                it->second.addSettlement(settlement_grids[current_key.toU64()].getSettlement(id));
                             }
                             else {
-                                settlement_grids[target_key.toU64()] = std::make_shared<SettlementGrid>(target_key * grid_length, environment, gen());
-                                settlement_grids[target_key.toU64()]->moveSettlementToThis(settlement_grids[current_key.toU64()]->getSettlement(id));
+                                settlement_grids[target_key.toU64()] = SettlementGrid(target_key * grid_length, environment, gen());
+                                settlement_grids[target_key.toU64()].moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
                             }
-                            settlement_grids[current_key.toU64()]->deleteSettlement(id);
+                            settlement_grids[current_key.toU64()].deleteSettlement(id);
                         }
                         catch (const std::exception& e) {
                             Logger logger("Save/error_log.txt");
@@ -124,7 +124,7 @@ namespace paxs {
                         }
                         };
 
-                    auto settlements = settlement_grid.second->getSettlements();
+                    auto settlements = settlement_grid.second.getSettlements();
                     for (std::size_t i = 0; i < settlements.size(); ++i) {
                         if (settlements[i]->isMoved()) {
                             continue;
@@ -140,7 +140,7 @@ namespace paxs {
                 }
 
                 for (auto& settlement_grid : settlement_grids) {
-                    for (auto& settlement : settlement_grid.second->getSettlements()) {
+                    for (auto& settlement : settlement_grid.second.getSettlements()) {
                         settlement->preUpdate();
                     }
                 }
@@ -148,26 +148,26 @@ namespace paxs {
                 for (auto& settlement_grid : settlement_grids) {
                     // 近隣8グリッドの集落を取得
                     std::vector<std::shared_ptr<Settlement>> settlements;
-                    Vector2 grid_position = settlement_grid.second->getGridPosition();
+                    Vector2 grid_position = settlement_grid.second.getGridPosition();
                     grid_position /= grid_length;
                     for (int i = -1; i <= 1; ++i) {
                         for (int j = -1; j <= 1; ++j) {
                             auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
                             if (it != settlement_grids.end()) {
-                                for (auto& settlement : it->second->getSettlements()) {
+                                for (auto& settlement : it->second.getSettlements()) {
                                     settlements.emplace_back(settlement);
                                 }
                             }
                         }
                     }
 
-                    for (auto& settlement : settlement_grid.second->getSettlements()) {
+                    for (auto& settlement : settlement_grid.second.getSettlements()) {
                         settlement->marriage(settlements);
                     }
                 }
 
                 for (auto& settlement_grid : settlement_grids) {
-                    for (auto& settlement : settlement_grid.second->getSettlements()) {
+                    for (auto& settlement : settlement_grid.second.getSettlements()) {
                         settlement->onUpdate();
                     }
                 }
@@ -181,11 +181,11 @@ namespace paxs {
 
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>>&
+        constexpr std::unordered_map<std::uint_least64_t, SettlementGrid>&
             getSettlementGrids() noexcept { return settlement_grids; }
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr const std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>>&
+        constexpr const std::unordered_map<std::uint_least64_t, SettlementGrid>&
             cgetSettlementGrids() const noexcept { return settlement_grids; }
 
         /// @brief Export the simulation result to a file.
@@ -234,7 +234,7 @@ namespace paxs {
         }
 
     private:
-        std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>> settlement_grids;
+        std::unordered_map<std::uint_least64_t, SettlementGrid> settlement_grids;
         std::shared_ptr<Environment> environment;
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
@@ -328,7 +328,7 @@ namespace paxs {
                 std::uint64_t key = (live_position / grid_length).toU64();
                 // グリッドが存在しない場合は作成
                 if (settlement_grids.find(key) == settlement_grids.end()) {
-                    settlement_grids[key] = std::make_shared<SettlementGrid>(live_position, environment, gen());
+                    settlement_grids[key] = SettlementGrid(live_position, environment, gen());
                 }
                 // 集落を作成
                 std::shared_ptr<Settlement> settlement = std::make_shared<Settlement>(
@@ -361,8 +361,8 @@ namespace paxs {
                 population_sum += settlement_population;
 
                 // 集落をグリッドに配置
-                settlement_grids[key]->addSettlement(settlement);
-                settlement_grids[key]->addRyoseikokuId(ryoseikoku_id);
+                settlement_grids[key].addSettlement(settlement);
+                settlement_grids[key].addRyoseikokuId(ryoseikoku_id);
 
                 live_probabilities.erase(live_probabilities.begin() + live_probability_index);
                 habitable_land_positions.erase(habitable_land_positions.begin() + live_probability_index);
@@ -401,9 +401,9 @@ namespace paxs {
         }
 
         /// @brief 指定した令制国のIDの集落グリッドを取得
-        void getSettlementGrids(std::vector<std::shared_ptr<SettlementGrid>>& settlement_grids_, const std::uint_least8_t ryoseikoku_id_) noexcept {
+        void getSettlementGrids(std::vector<SettlementGrid>& settlement_grids_, const std::uint_least8_t ryoseikoku_id_) noexcept {
             for (auto& settlement_grid : settlement_grids) {
-                std::vector<std::uint_least8_t> ryoseikoku_ids = settlement_grid.second->getRyoseikokuIds();
+                std::vector<std::uint_least8_t> ryoseikoku_ids = settlement_grid.second.getRyoseikokuIds();
                 for (auto id : ryoseikoku_ids) {
                     if (id == ryoseikoku_id_) {
                         settlement_grids_.emplace_back(settlement_grid.second);
@@ -415,10 +415,10 @@ namespace paxs {
 
         /// @brief 指定した令制国のIDの集落を取得
         void getSettlements(std::vector<std::shared_ptr<Settlement>>& settlements, const std::uint_least8_t ryoseikoku_id_) noexcept {
-            std::vector<std::shared_ptr<SettlementGrid>> settlement_grids_;
+            std::vector<SettlementGrid> settlement_grids_;
             getSettlementGrids(settlement_grids_, ryoseikoku_id_);
             for (auto& settlement_grid : settlement_grids_) {
-                for (auto& settlement : settlement_grid->getSettlements()) {
+                for (auto& settlement : settlement_grid.getSettlements()) {
                     settlements.emplace_back(settlement);
                 }
             }

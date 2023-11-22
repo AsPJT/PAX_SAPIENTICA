@@ -711,6 +711,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                     //    start_position, end_position, 10);
                     //simulator_.init();
                     koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
+                    koyomi_siv.is_agent_update = false;
                 }
                 if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ 110, 60 })) {
                     koyomi_siv.is_agent_update = true;
