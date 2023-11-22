@@ -29,6 +29,7 @@
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
+#include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/InputFile.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
@@ -519,9 +520,22 @@ namespace paxs {
                         // エージェント
                         if (lli.lpe == MurMur3::calcHash("agent1")) {
 
-                            //settlement->getP
+                            const std::size_t pop = settlement->getPopulation();
 
-                            texture_blue_circle.resizedDrawAt(15, draw_pos);
+                            paxg::Color pop_color =
+                                (pop == 0) ? paxg::Color(255, 255, 255) :
+                                (pop <= 200) ? paxg::Color(230 - pop, 230 - pop, 230 - pop) :
+                                (pop <= 400) ? paxg::Color(0, 200 - (pop - 200), 200 - (pop - 200)) :
+                                (pop <= 600) ? paxg::Color(200 - (pop - 400), 0, 200 - (pop - 400)) :
+                                (pop <= 800) ? paxg::Color(200 - (pop - 600), 200 - (pop - 600), 0) :
+
+                                paxg::Color(0, 0, 0)
+                                ;
+
+                            paxg::Circle(draw_pos, 5.0f).draw(pop_color);
+
+
+                            //texture_blue_circle.resizedDrawAt(15, draw_pos);
                             continue;
                         }
                         // エージェント
