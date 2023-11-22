@@ -138,7 +138,7 @@ namespace paxs {
 
                 // idの生成
                 std::uint_least32_t id = UniqueIdentification<std::uint_least32_t>::generate();
-                agents.push_back(Agent( id, "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
+                agents.emplace_back(Agent( id, "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;

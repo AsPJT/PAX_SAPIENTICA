@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -38,7 +38,7 @@ namespace paxs {
 
         /// @brief Add an agent to the settlement.
         /// @brief 集落にエージェントを追加
-        virtual void addAgent(const Agent& agent) { agents.push_back(agent); }
+        virtual void addAgent(const Agent& agent) { agents.emplace_back(agent); }
 
         /// @brief Get the agent.
         /// @brief エージェントを取得

@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -35,12 +35,12 @@ namespace paxs {
 
         /// @brief Add a settlement to the grid.
         /// @brief 集落をグリッドに追加
-        void addSettlement(const std::shared_ptr<Settlement>& settlement) noexcept { settlements.push_back(settlement); }
+        void addSettlement(const std::shared_ptr<Settlement>& settlement) noexcept { settlements.emplace_back(settlement); }
 
         /// @brief Move a settlement to this grid.
         /// @brief 集落をこのグリッドに移動
         void moveSettlementToThis(const std::shared_ptr<Settlement>& settlement) noexcept {
-            settlements.push_back(settlement);
+            settlements.emplace_back(settlement);
 
             // 他の集落とかぶらない位置を探す
             // ブラックリスト
@@ -63,7 +63,7 @@ namespace paxs {
                         break;
                     } else {
                         // 居住不可
-                        black_list.push_back(position);
+                        black_list.emplace_back(position);
                     }
                 }
             }
@@ -124,7 +124,7 @@ namespace paxs {
         void addRyoseikokuId(const std::uint_least8_t id) noexcept {
             // 重複チェック
             if (std::find(ryoseikoku_list.begin(), ryoseikoku_list.end(), id) == ryoseikoku_list.end()) {
-                ryoseikoku_list.push_back(id);
+                ryoseikoku_list.emplace_back(id);
             }
         }
 

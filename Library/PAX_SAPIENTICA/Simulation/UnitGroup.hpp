@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -32,7 +32,7 @@ namespace paxs {
         constexpr explicit UnitGroup(const std::uint_least32_t& id, const Vector2& position) noexcept : BaseGroup<GridType>(id), position(position) {}
         void addAgent(const Agent& agent) override {
             if (this->agents.size() + 1 < unit_group_max) {
-                this->agents.push_back(agent);
+                this->agents.emplace_back(agent);
             } else {
                 throw std::runtime_error("The number of agents in the unit group has reached the limit.");
             }

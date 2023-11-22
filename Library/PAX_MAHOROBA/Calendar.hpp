@@ -40,6 +40,7 @@
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 
 #include <PAX_GRAPHICA/Key.hpp>
 
@@ -175,10 +176,7 @@ namespace paxs {
         }
 
         void update(
-#ifndef PAXS_USING_SIMULATOR
-[[maybe_unused]]
-#endif
-            paxs::Simulator<int>& simulator // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator // コンパイル時の分岐により使わない場合あり
         ) {
 
             /*##########################################################################################
@@ -201,8 +199,8 @@ namespace paxs {
                     //jdn += 365; // ユリウス日を繰り上げ（次の日にする）
 #ifdef PAXS_USING_SIMULATOR
                     // エージェント機能テスト
-                    if (is_agent_update) {
-                        simulator.step(); // シミュレーションを 1 ステップ実行する
+                    if (is_agent_update && simulator.get() != nullptr) {
+                        simulator->step(); // シミュレーションを 1 ステップ実行する
                         steps.getDay()++; // ステップ数を増やす
                     }
 #endif

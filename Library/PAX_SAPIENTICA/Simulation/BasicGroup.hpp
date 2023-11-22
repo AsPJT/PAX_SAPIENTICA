@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -36,7 +36,7 @@ namespace paxs {
 
         void addAgent(const Agent& agent) override {
             if (this->agents.size() + 1 < basic_group_max) {
-                this->agents.push_back(agent);
+                this->agents.emplace_back(agent);
             } else {
                 throw std::runtime_error("The number of agents in the basic group has reached the limit.");
             }

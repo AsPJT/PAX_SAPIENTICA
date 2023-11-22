@@ -25,6 +25,7 @@
 #include <PAX_GRAPHICA/Key.hpp>
 
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 
 namespace paxs {
 
@@ -38,16 +39,18 @@ namespace paxs {
 #endif
         PlaceNameLocation place_name_location{}; // 地名
 
-        std::unique_ptr<AgentLocation> agent_location; // エージェント
-
         // 描画する XYZ タイルを管理
         XYZTilesList xyz_tile_list;
+
+    private:
+        std::unique_ptr<AgentLocation> agent_location; // エージェント
 
     public:
 
         MapViewerSiv3D()
             :map_view(new(std::nothrow) MapView),
-            texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation))
+            texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation)),
+            agent_location(std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation))
         {}
 
         void init(
@@ -79,31 +82,34 @@ namespace paxs {
 
             // 地名
             place_name_location.add();
+
+            if (agent_location.get() != nullptr) {
+                agent_location->init();
+            }
         }
 
         void update(
             const SelectLanguage& select_language,
             const paxs::KoyomiSiv3D& koyomi_siv,
             paxs::StringViewerSiv3D& string_siv,
+            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
 #ifndef PAXS_USING_SIMULATOR
-[[maybe_unused]]
+            [[maybe_unused]]
 #endif
-            const paxs::Simulator<int>& simlator, // コンパイル時の分岐により使わない場合あり
-#ifndef PAXS_USING_SIMULATOR
-[[maybe_unused]]
-#endif
-            const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
+        const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
             paxs::GraphicVisualizationList& visible
-        ) {
-            map_view->update(); // キーボード入力を更新
-            xyz_tile_list.update(string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
-
+            ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
+                map_view->update(); // キーボード入力を更新
+                xyz_tile_list.update(string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+
                 // 地図上に画像を描画する
                 texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
 #ifdef PAXS_USING_SIMULATOR
-                agent_location->draw(koyomi_siv.jdn.cgetDay(), simlator.cgetAgents(), start_position, map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()
-                );
+                if (agent_location.get() != nullptr && simulator.get() != nullptr) {
+                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), start_position, map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()
+                    );
+                }
 #endif
 
 #ifdef PAXS_USING_SIV3D

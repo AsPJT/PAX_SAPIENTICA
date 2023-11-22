@@ -23,6 +23,8 @@
 
 #include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
+#include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
+#include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -441,56 +443,95 @@ namespace paxs {
     class AgentLocation {
     public:
         // アイコンのテクスチャ
-        const paxg::Texture texture_blue_circle{ PAXS_PATH + std::string("Data/MiniIcon/BlueCircle.svg") };
-        const paxg::Texture texture_red_circle{ PAXS_PATH + std::string("Data/MiniIcon/RedCircle.svg") };
+        paxg::Texture texture_blue_circle{};
+        paxg::Texture texture_red_circle{};
+
+
+        /// @brief Get the mercator coordinate from the XYZTile coordinate.
+        /// @brief 座標をメルカトル座標で取得
+        paxs::Vector2<double> getLocation(
+            const paxs::Vector2<int>& start_position,
+            const paxs::Vector2<int>& position,
+            const int z) const noexcept {
+            return MapUtility::convertToMercatorCoordinate(start_position, position, z);
+        }
+
+        // テクスチャ生成
+        void init() {
+            texture_blue_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/BlueCircle.svg") };
+            texture_red_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/RedCircle.svg") };
+        }
 
         void draw(const double jdn,
-            const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position,
+            std::unordered_map<std::uint_least64_t, std::shared_ptr<paxs::SettlementGrid<int>>>& agents,
+            const paxs::Vector2<int>& start_position,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
         )const {
 
+            //agents.at(0)->getGridPosition().x;
             // 地名を描画
-            for (std::size_t i = 0; i < agents.size(); ++i) {
-                // エージェントの初期設定を定義
-                const auto lli = LocationPoint{
-                    std::unordered_map < std::uint_least32_t, std::string>(),
-                        paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),
-                        10, 100,0,0,99999999,
-                        (agents[i].getGender()) ?
-                        MurMur3::calcHash("agent1") :
-                        MurMur3::calcHash("agent2")
+            for (const auto& agent : agents) {
+
+                if (agent.second.get() == nullptr) continue;
+
+                for (const auto& settlement : agent.second->cgetSettlements()) {
+                    if (settlement.get() == nullptr) continue;
+
+
+                    // エージェントの初期設定を定義
+                    const auto lli = LocationPoint{
+                        std::unordered_map < std::uint_least32_t, std::string>(),
+                            paxs::MercatorDeg(getLocation(start_position,
+                            paxs::Vector2<int>(
+                    settlement->getPosition().x,
+                        settlement->getPosition().y
+                            )
+                            , 10)),
+                            10, 100,0,0,99999999,
+                        //(agent.getGender()) ?
+                        MurMur3::calcHash("agent1")// :
+                        //MurMur3::calcHash("agent2")
                         ,0 /* 出典なし */
-                };
-                // 経緯度の範囲外を除去
-                if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                    || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
-                    || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                    || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
-
-                // 範囲内の場合
-                if (lli.min_view > map_view_width
-                    || lli.max_view < map_view_width
-                    || lli.min_year > jdn
-                    || lli.max_year < jdn) {
-                    if (lli.min_year > jdn) continue;
-                    if (lli.max_year < jdn) continue;
-
-                    // 描画位置
-                    const paxg::Vec2i draw_pos = paxg::Vec2i{
-static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                     };
 
-                    // エージェント
-                    if (lli.lpe == MurMur3::calcHash("agent1")) {
-                        texture_blue_circle.resizedDrawAt(15, draw_pos);
-                        continue;
+                    // 経緯度の範囲外を除去
+                    if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
+                        || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
+                        || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
+                        || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+
+                    // 範囲内の場合
+                    if (lli.min_view > map_view_width
+                        || lli.max_view < map_view_width
+                        || lli.min_year > jdn
+                        || lli.max_year < jdn) {
+                        if (lli.min_year > jdn) continue;
+                        if (lli.max_year < jdn) continue;
+
+                        // 描画位置
+                        const paxg::Vec2i draw_pos = paxg::Vec2i{
+    static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                        };
+
+                        //paxs::Circle
+
+                        // エージェント
+                        if (lli.lpe == MurMur3::calcHash("agent1")) {
+
+                            //settlement->getP
+
+                            texture_blue_circle.resizedDrawAt(15, draw_pos);
+                            continue;
+                        }
+                        // エージェント
+                        if (lli.lpe == MurMur3::calcHash("agent2")) {
+                            texture_red_circle.resizedDrawAt(15, draw_pos);
+                            continue;
+                        }
+
                     }
-                    // エージェント
-                    if (lli.lpe == MurMur3::calcHash("agent2")) {
-                        texture_red_circle.resizedDrawAt(15, draw_pos);
-                        continue;
-                    }
+
                 }
             }
         }

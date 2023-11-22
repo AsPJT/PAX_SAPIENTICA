@@ -1,11 +1,11 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -51,7 +51,8 @@ namespace paxs {
             std::vector<std::vector<std::string>> settings;
             try {
                 settings = File::readTSV(setting_file_path);
-            } catch (const std::runtime_error&) {
+            }
+            catch (const std::runtime_error&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to read setting file: " + setting_file_path;
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
@@ -63,40 +64,44 @@ namespace paxs {
             int data_type_column = -1;
             int file_path_column = -1;
             int z_column = -1;
-            for(std::size_t i = 0;i < settings[0].size();++i) {
-                if(settings[0][i] == "key") {
+            for (std::size_t i = 0; i < settings[0].size(); ++i) {
+                if (settings[0][i] == "key") {
                     key_column = int(i);
                 }
-                if(settings[0][i] == "data_type") {
+                if (settings[0][i] == "data_type") {
                     data_type_column = int(i);
                 }
-                if(settings[0][i] == "file_path") {
+                if (settings[0][i] == "file_path") {
                     file_path_column = int(i);
                 }
-                if(settings[0][i] == "z") {
+                if (settings[0][i] == "z") {
                     z_column = int(i);
                 }
             }
-            if(key_column == -1 || data_type_column == -1 || file_path_column == -1 || z_column == -1) {
+            if (key_column == -1 || data_type_column == -1 || file_path_column == -1 || z_column == -1) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "key or data_type or file_path or z is not found: " + setting_file_path;
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
 
-            for(std::size_t i = 1;i < settings.size();++i) {
+            for (std::size_t i = 1; i < settings.size(); ++i) {
                 // 型名をstringからTに変換
                 const std::string data_type = settings[i][data_type_column];
                 const std::string key = settings[i][key_column];
-                if(data_type == "u8"){
+                if (data_type == "u8") {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
-                } else if(data_type == "u32"){
+                }
+                else if (data_type == "u32") {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
-                } else if(data_type == "f32"){
+                }
+                else if (data_type == "f32") {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
-                } else if(data_type == "s16"){
+                }
+                else if (data_type == "s16") {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
-                } else {
+                }
+                else {
                     Logger logger("Save/error_log.txt");
                     const std::string message = "data_type is not found: " + data_type + " in " + setting_file_path;
                     logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
@@ -115,7 +120,7 @@ namespace paxs {
         /// @param position Position of the data to be acquired. 取得したいデータの座標
         template <typename U>
         U getData(const std::string& key, const Vector2& position) const {
-            if(data_map.count(key) == 0) {
+            if (data_map.count(key) == 0) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "key is not found: " + key;
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
@@ -137,7 +142,8 @@ namespace paxs {
         bool isLive(const Vector2& position) const {
             try {
                 return isLand(position) && getSlope(position) <= 162;
-            } catch (const std::exception&) {
+            }
+            catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to judge live";
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
@@ -150,7 +156,8 @@ namespace paxs {
         std::uint_least8_t getSlope(const Vector2& position) const {
             try {
                 return getData<std::uint_least8_t>("slope", position);
-            } catch (const std::exception&) {
+            }
+            catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get slope";
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
@@ -163,7 +170,8 @@ namespace paxs {
         std::int_least16_t getElevation(const Vector2& position) const {
             try {
                 return getData<std::int_least16_t>("elevation", position);
-            } catch (const std::exception&) {
+            }
+            catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get elevation";
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
@@ -177,7 +185,8 @@ namespace paxs {
             try {
                 auto value = getData<std::uint_least8_t>("gbank", position);
                 return static_cast<int>(value) >= static_cast<int>(1);
-            } catch (const std::exception&) {
+            }
+            catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get gbank";
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
@@ -191,7 +200,8 @@ namespace paxs {
             try {
                 auto value = getData<std::uint_least8_t>("water", position);
                 return static_cast<int>(value) == static_cast<int>('1');
-            } catch (const std::exception&) {
+            }
+            catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Failed to get water";
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);

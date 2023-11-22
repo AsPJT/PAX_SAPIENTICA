@@ -46,32 +46,33 @@ namespace paxs {
 
         explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
             environment(std::make_unique<Environment>(map_list_path, start_position, end_position, z)), gen(seed) {
-                if (z <= 0) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Z must be greater than 0.";
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                    throw std::runtime_error(message);
-                }
-                if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Start position and end position must be greater than or equal to 0.";
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                    throw std::runtime_error(message);
-                }
-
-                try {
-                    japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
-                } catch (const std::runtime_error&) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Failed to read Japan provinces TSV file: " + japan_provinces_path;
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                    throw std::runtime_error(message);
-                }
-
-                // ランダムに移動確率を設定
-                std::uniform_int_distribution<> move_probability_dist{min_move_probability, max_move_probability};
-                move_probability = move_probability_dist(gen);
+            if (z <= 0) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Z must be greater than 0.";
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
+            if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Start position and end position must be greater than or equal to 0.";
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+
+            try {
+                japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
+            }
+            catch (const std::runtime_error&) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to read Japan provinces TSV file: " + japan_provinces_path;
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+
+            // ランダムに移動確率を設定
+            std::uniform_int_distribution<> move_probability_dist{ min_move_probability, max_move_probability };
+            move_probability = move_probability_dist(gen);
+        }
 
         /// @brief Initialize the simulator.
         /// @brief 集落の初期化
@@ -84,11 +85,12 @@ namespace paxs {
         /// @brief Run the simulation for the specified number of steps.
         /// @brief シミュレーションを指定されたステップ数だけ実行する
         void run(const int step_count) {
-            for(int i = 0; i < step_count; ++i) {
+            for (int i = 0; i < step_count; ++i) {
                 std::cout << "Step: " << i + 1 << std::endl;
                 try {
                     step();
-                } catch (const std::exception& e) {
+                }
+                catch (const std::exception& e) {
                     Logger logger("Save/error_log.txt");
                     logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
                     throw e;
@@ -108,17 +110,19 @@ namespace paxs {
                             auto it = settlement_grids.find(target_key.toU64());
                             if (it != settlement_grids.end()) {
                                 it->second->addSettlement(settlement_grids[current_key.toU64()]->getSettlement(id));
-                            } else {
+                            }
+                            else {
                                 settlement_grids[target_key.toU64()] = std::make_shared<SettlementGrid>(target_key * grid_length, environment, gen());
                                 settlement_grids[target_key.toU64()]->moveSettlementToThis(settlement_grids[current_key.toU64()]->getSettlement(id));
                             }
                             settlement_grids[current_key.toU64()]->deleteSettlement(id);
-                        } catch (const std::exception& e) {
+                        }
+                        catch (const std::exception& e) {
                             Logger logger("Save/error_log.txt");
                             logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
                             throw e;
                         }
-                    };
+                        };
 
                     auto settlements = settlement_grid.second->getSettlements();
                     for (std::size_t i = 0; i < settlements.size(); ++i) {
@@ -151,7 +155,7 @@ namespace paxs {
                             auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
                             if (it != settlement_grids.end()) {
                                 for (auto& settlement : it->second->getSettlements()) {
-                                    settlements.push_back(settlement);
+                                    settlements.emplace_back(settlement);
                                 }
                             }
                         }
@@ -167,19 +171,29 @@ namespace paxs {
                         settlement->onUpdate();
                     }
                 }
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception& e) {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
                 throw e;
             }
         }
 
+        /// @brief Get the agent list.
+        /// @brief エージェントのリストを取得する
+        constexpr std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>>&
+            getSettlementGrids() noexcept { return settlement_grids; }
+        /// @brief Get the agent list.
+        /// @brief エージェントのリストを取得する
+        constexpr const std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>>&
+            cgetSettlementGrids() const noexcept { return settlement_grids; }
+
     private:
         std::unordered_map<std::uint_least64_t, std::shared_ptr<SettlementGrid>> settlement_grids;
         std::shared_ptr<Environment> environment;
         std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
-        std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
+        std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
+        std::uniform_int_distribution<> life_exp_dist{ 50, 100 }; // 寿命の乱数分布
         std::unique_ptr<paxs::JapanProvinces> japan_provinces;
         int move_probability = 0; // 移動確率
 
@@ -208,16 +222,19 @@ namespace paxs {
                 int live_probability = 0;
                 if (slope < 4) {
                     live_probability += 9;
-                } else if (slope < 9.09) {
+                }
+                else if (slope < 9.09) {
                     live_probability += 10;
-                } else if (slope < 17.745) {
+                }
+                else if (slope < 17.745) {
                     live_probability += 4;
-                } else {
+                }
+                else {
                     continue;
                 }
 
-                live_probabilities.push_back(live_probability);
-                habitable_land_positions.push_back(land_position);
+                live_probabilities.emplace_back(live_probability);
+                habitable_land_positions.emplace_back(land_position);
             }
 
             // 令制国と人口のマップ
@@ -281,13 +298,13 @@ namespace paxs {
                 for (int i = 0; i < settlement_population; ++i) {
                     std::shared_ptr<Agent> agent = std::make_shared<Agent>(
                         UniqueIdentification<std::uint_least64_t>::generate(),
-                    0, // TODO: 名前ID
-                    static_cast<std::uint_least8_t>(gender_dist(gen)),
-                    0,
-                    static_cast<std::uint_least8_t>(life_exp_dist(gen)),
-                    environment
+                        0, // TODO: 名前ID
+                        static_cast<std::uint_least8_t>(gender_dist(gen)),
+                        0,
+                        static_cast<std::uint_least8_t>(life_exp_dist(gen)),
+                        environment
                     );
-                    agents.push_back(agent);
+                    agents.emplace_back(agent);
                 }
                 settlement->setAgents(agents);
 
@@ -323,13 +340,13 @@ namespace paxs {
                     for (int i = 0; i < add_population; ++i) {
                         std::shared_ptr<Agent> agent = std::make_shared<Agent>(
                             UniqueIdentification<std::uint_least64_t>::generate(),
-                        0, // TODO: 名前ID
-                        static_cast<std::uint_least8_t>(gender_dist(gen)),
-                        0,
-                        static_cast<std::uint_least8_t>(life_exp_dist(gen)),
-                        environment
+                            0, // TODO: 名前ID
+                            static_cast<std::uint_least8_t>(gender_dist(gen)),
+                            0,
+                            static_cast<std::uint_least8_t>(life_exp_dist(gen)),
+                            environment
                         );
-                        agents.push_back(agent);
+                        agents.emplace_back(agent);
                     }
                     settlement->addAgents(agents);
                 }
@@ -339,11 +356,11 @@ namespace paxs {
         }
 
         /// @brief 指定した令制国のIDの集落グリッドを取得
-        void getSettlementGrids(std::vector<std::shared_ptr<SettlementGrid>>& settlement_grids, const std::uint_least8_t ryoseikoku_id) noexcept {
+        void getSettlementGrids(std::vector<std::shared_ptr<SettlementGrid>>& settlement_grids_, const std::uint_least8_t ryoseikoku_id_) noexcept {
             for (auto& settlement_grid : settlement_grids) {
-                for (auto id : settlement_grid->getRyoseikokuIds()) {
-                    if (id == ryoseikoku_id) {
-                        settlement_grids.push_back(settlement_grid);
+                for (auto id : settlement_grid.second()->getRyoseikokuIds()) {
+                    if (id == ryoseikoku_id_) {
+                        settlement_grids_.emplace_back(settlement_grid);
                         break;
                     }
                 }
@@ -351,12 +368,12 @@ namespace paxs {
         }
 
         /// @brief 指定した令制国のIDの集落を取得
-        void getSettlements(std::vector<std::shared_ptr<Settlement>>& settlements, const std::uint_least8_t ryoseikoku_id) noexcept {
-            std::vector<std::shared_ptr<SettlementGrid>> settlement_grids;
-            getSettlementGrids(settlement_grids, ryoseikoku_id);
-            for (auto& settlement_grid : settlement_grids) {
+        void getSettlements(std::vector<std::shared_ptr<Settlement>>& settlements, const std::uint_least8_t ryoseikoku_id_) noexcept {
+            std::vector<std::shared_ptr<SettlementGrid>> settlement_grids_;
+            getSettlementGrids(settlement_grids_, ryoseikoku_id_);
+            for (auto& settlement_grid : settlement_grids_) {
                 for (auto& settlement : settlement_grid->getSettlements()) {
-                    settlements.push_back(settlement);
+                    settlements.emplace_back(settlement);
                 }
             }
         }
