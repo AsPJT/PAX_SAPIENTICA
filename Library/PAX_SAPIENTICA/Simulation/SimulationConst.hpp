@@ -35,7 +35,8 @@ namespace paxs {
     // 女性の結婚可能年齢：13歳以上60歳未満, 男性の結婚可能年齢：17歳以上60歳未満
     constexpr std::uint_least32_t female_marriageable_age_min = 13;
     constexpr std::uint_least32_t male_marriageable_age_min = 17;
-    constexpr std::uint_least32_t marriageable_age_max = 60;
+    constexpr std::uint_least32_t female_marriageable_age_max = 60;
+    constexpr std::uint_least32_t male_marriageable_age_max = 70;
     // 出産可能：15歳以上50歳未満
     constexpr std::uint_least32_t birthable_age_min = 15;
     constexpr std::uint_least32_t birthable_age_max = 50;

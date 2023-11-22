@@ -93,8 +93,9 @@ namespace paxs {
         /// @brief Is the agent able to marry?
         /// @brief エージェントが結婚可能かどうかを返す
         bool isAbleToMarriage() const noexcept {
-            return age >= (gender ? male_marriageable_age_min : female_marriageable_age_min) &&
-                age < marriageable_age_max && // TODO: 確認
+            float age_f = age / static_cast<float>(steps_per_year);
+            return age_f > (gender ? male_marriageable_age_min : female_marriageable_age_min) &&
+                age_f < (gender ? male_marriageable_age_max : male_marriageable_age_max) &&
                 !is_married;
         }
 

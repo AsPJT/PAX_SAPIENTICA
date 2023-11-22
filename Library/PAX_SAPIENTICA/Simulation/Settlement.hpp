@@ -92,7 +92,7 @@ namespace paxs {
             if (it == agents.end()) {
                 paxs::Logger logger("Save/error_log.txt");
                 const std::string message = "Agent not found.";
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
             return *it;
@@ -120,7 +120,7 @@ namespace paxs {
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
                 if (agents[i]->isAbleToMarriage() && agents[i]->getGender() == female) {
-                    if (!isMarried(agents[i]->getAgeInt())) continue;
+                    if (!isMarried(agents[i]->getAge())) continue;
 
                     marriageable_agents_index.emplace_back(i);
                 }
@@ -139,7 +139,7 @@ namespace paxs {
 
             // 自分の集落を含めて、近くに集落がない
             if (close_settlements_index_list.empty()) {
-                Logger logger("Save/warning_log.txt");
+                Logger logger("Save/error_log.txt");
                 const std::string message = "No close settlements.";
                 logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 return;
@@ -187,9 +187,11 @@ namespace paxs {
                     }
 
                     if (!is_found) {
-                        Logger logger("Save/warning_log.txt");
+                        Logger logger("Save/error_log.txt");
                         const std::string message = "Settlement not found.";
                         logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                    } else {
+                        std::cout << "marriage " << agents[marriageable_agents_index_pair[pair.first].first]->getId() << std::endl;
                     }
                 }
             }
@@ -216,7 +218,7 @@ namespace paxs {
                     }
 
                     if (!is_found) {
-                        Logger logger("Save/warning_log.txt");
+                        Logger logger("Save/error_log.txt");
                         const std::string message = "Settlement not found.";
                         logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                     }
@@ -306,7 +308,7 @@ namespace paxs {
             std::vector<std::shared_ptr<Agent>> children;
             for (const auto& agent : agents) {
                 // 出産可能かどうか
-                if (!agent->isAbleToGiveBirth() || !isAbleToGiveBirth(agent->getAgeInt())) continue;
+                if (!agent->isAbleToGiveBirth() || !isAbleToGiveBirth(agent->getAge())) continue;
 
                 children.emplace_back(std::make_shared<Agent>(
                     UniqueIdentification<std::uint_least64_t>::generate(),
@@ -342,10 +344,10 @@ namespace paxs {
 
         /// @brief Is the agent married?
         /// @brief 確率で結婚するかどうかを返す
-        bool isMarried(std::uint_least32_t age) noexcept {
+        bool isMarried(float age) noexcept {
             const float sigma = 0.25f;
-            auto x = [](std::uint_least32_t age) { return (age - 13) / 8.5f; };
-            auto weight = [=](std::uint_least32_t age) {
+            auto x = [](float age) { return (age - 13) / 8.5f; };
+            auto weight = [=](float age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
                 };
 
@@ -356,10 +358,10 @@ namespace paxs {
 
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
-        bool isAbleToGiveBirth(std::uint_least32_t age) noexcept {
+        bool isAbleToGiveBirth(float age) noexcept {
             const float sigma = 0.25f;
-            auto x = [](std::uint_least32_t age) { return (age - 14) / 8.5f; };
-            auto weight = [=](std::uint_least32_t age) {
+            auto x = [](float age) { return (age - 14) / 8.5f; };
+            auto weight = [=](float age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
                 };
 
