@@ -34,12 +34,12 @@ namespace paxs {
         /// @brief Reset the counter.
         /// @brief カウンターをリセットする。
         static void reset() {
-            counter = 0;
+            counter = 1;
         }
     };
 
     template <typename IdType>
-    IdType UniqueIdentification<IdType>::counter = 0;
+    IdType UniqueIdentification<IdType>::counter = 1;
 
 }
 

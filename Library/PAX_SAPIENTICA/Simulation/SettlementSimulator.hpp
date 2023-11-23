@@ -98,45 +98,48 @@ namespace paxs {
             }
         }
 
+        void moveSettlement(const std::uint_least32_t id, const Vector2 current_key, const Vector2 target_key) {
+            try {
+                // 集落グリッドの移動
+                auto it = settlement_grids.find(target_key.toU64());
+                if (it != settlement_grids.end()) {
+                    it->second.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
+                }
+                else {
+                    settlement_grids[target_key.toU64()] = SettlementGrid(target_key * grid_length, environment, gen());
+                    settlement_grids[target_key.toU64()].moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
+                }
+                settlement_grids[current_key.toU64()].deleteSettlement(id);
+            }
+            catch (const std::exception& e) {
+                Logger logger("Save/error_log.txt");
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
+                throw e;
+            }
+        }
+
         /// @brief Execute the simulation for the one step.
         /// @brief シミュレーションを1ステップ実行する
         void step() {
             try {
-                std::unordered_map<std::uint_least64_t, SettlementGrid> pre_settlement_grids = settlement_grids;
-                for (auto& settlement_grid : pre_settlement_grids) {
-                    auto settlement_grid_update = [this](const Vector2 current_key, const Vector2 target_key, std::uint_least32_t id) {
-                        try {
-                            // 集落グリッドの移動
-                            auto it = settlement_grids.find(target_key.toU64());
-                            if (it != settlement_grids.end()) {
-                                it->second.addSettlement(settlement_grids[current_key.toU64()].getSettlement(id));
-                            }
-                            else {
-                                settlement_grids[target_key.toU64()] = SettlementGrid(target_key * grid_length, environment, gen());
-                                settlement_grids[target_key.toU64()].moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
-                            }
-                            settlement_grids[current_key.toU64()].deleteSettlement(id);
-                        }
-                        catch (const std::exception& e) {
-                            Logger logger("Save/error_log.txt");
-                            logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
-                            throw e;
-                        }
-                        };
-
-                    auto settlements = settlement_grid.second.getSettlements();
+                std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
+                for (auto& settlement_grid  : settlement_grids) {
+                    std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
                     for (std::size_t i = 0; i < settlements.size(); ++i) {
                         if (settlements[i].isMoved()) {
                             continue;
                         }
 
-                        std::size_t settlement_count = settlements.size();
-                        settlements[i].move(gen, move_probability, settlement_grid_update);
+                        auto [target_id, current_key, target_key] = settlements[i].move(gen, move_probability);
 
-                        if (settlement_count != settlements.size()) {
-                            --i;
+                        if (target_id != 0) {
+                            move_list.emplace_back(target_id, current_key, target_key);
                         }
                     }
+                }
+
+                for (auto& move : move_list) {
+                    moveSettlement(std::get<0>(move), std::get<1>(move), std::get<2>(move));
                 }
 
                 for (auto& settlement_grid : settlement_grids) {
@@ -372,6 +375,13 @@ namespace paxs {
                 int population = ryoseikoku_population.second;
                 std::vector<Settlement> settlements;
                 getSettlements(settlements, ryoseikoku_id);
+
+                if (settlements.size() == 0) {
+                    Logger logger("Save/error_log.txt");
+                    const std::string message = "No settlement in ryoseikoku: " + std::to_string(ryoseikoku_id);
+                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                    continue;
+                }
 
                 int add_population = population / settlements.size();
 

@@ -73,7 +73,7 @@ namespace paxg {
             paxs::StringExtensions::replace(path_str, ".svg", ".png");
 
             if (!texture.loadFromFile(path_str)) {
-                paxs::Logger logger("Save/warning_log.txt");
+                paxs::Logger logger("Save/error_log.txt");
                 logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load texture: " + path.string);
             }
         }
@@ -82,7 +82,7 @@ namespace paxg {
             paxs::StringExtensions::replace(path, ".svg", ".png");
 
             if (!texture.loadFromFile(static_cast<paxg::String>(path))) {
-                paxs::Logger logger("Save/warning_log.txt");
+                paxs::Logger logger("Save/error_log.txt");
                 logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load texture: " + path);
             }
         }

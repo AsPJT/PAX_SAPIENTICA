@@ -262,11 +262,13 @@ namespace paxs {
         /// @brief Move.
         /// @brief 移動
         /// @return 集落グリッドを移動したかどうか
-        void move(std::mt19937& engine, int move_probability, std::function<void(const Vector2 current_key, const Vector2 target_key, const std::uint_least64_t id)> settlement_grid_update) {
+        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, int move_probability) {
+            Vector2 current_key;
+            Vector2 target_key;
             try {
                 // 確率で移動
                 std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
-                if (dist(engine) > move_probability) return;
+                if (dist(engine) > move_probability) return { 0, Vector2(), Vector2() };
 
                 // 座標を移動
                 // 移動距離0~max_move_distance
@@ -281,20 +283,20 @@ namespace paxs {
                     target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
                 }
 
-                Vector2 current_key = current_position / grid_length;
-                Vector2 target_key = target_position / grid_length;
+                current_key = current_position / grid_length;
+                target_key = target_position / grid_length;
 
-                if (current_key == target_key) return;
+                if (current_key == target_key) return { 0, Vector2(), Vector2() };
 
                 is_moved = true;
                 positions = { target_position };
-                settlement_grid_update(current_key, target_key, id);
             }
             catch (const std::exception& e) {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
                 throw e;
             }
+            return { id, current_key, target_key };
         }
 
         /// @brief Get the is_moved.
