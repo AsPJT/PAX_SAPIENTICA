@@ -174,6 +174,10 @@ namespace paxs {
                         settlement.onUpdate();
                     }
                 }
+
+                for (auto& settlement_grid : settlement_grids) {
+                    settlement_grid.second.checkSettlements();
+                }
             }
             catch (const std::exception& e) {
                 Logger logger("Save/error_log.txt");

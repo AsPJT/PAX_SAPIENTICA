@@ -135,6 +135,19 @@ namespace paxs {
         std::vector<std::uint_least8_t>& getRyoseikokuIds() noexcept { return ryoseikoku_list; }
         const std::vector<std::uint_least8_t>& cgetRyoseikokuIds() const noexcept { return ryoseikoku_list; }
 
+        /// @brief Check if the settlement exists and delete it if it does not.
+        /// @brief 集落が存在するかどうかをチェックし、存在しない場合は削除する
+        void checkSettlements() {
+            settlements.erase(
+                std::remove_if(
+                    settlements.begin(),
+                    settlements.end(),
+                    [](const auto& settlement) { return settlement.getPopulation() == 0; }
+                ),
+                settlements.end()
+            );
+        }
+
     private:
         std::vector<Settlement> settlements;
         std::shared_ptr<Environment> environment;

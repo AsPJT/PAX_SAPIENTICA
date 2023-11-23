@@ -105,7 +105,20 @@ namespace paxs {
         /// @brief Get the agent.
         /// @brief エージェントを取得
         /// @param id The agent's id. エージェントのID
-        Agent getAgent(const std::uint_least64_t id_) const {
+        Agent& getAgent(const std::uint_least64_t id_) {
+            auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
+            if (it == agents.end()) {
+                paxs::Logger logger("Save/error_log.txt");
+                const std::string message = "Agent not found.";
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+            return *it;
+        }
+
+        /// @brief Get the agent.
+        /// @brief エージェントを取得
+        Agent cgetAgent(const std::uint_least64_t id_) const {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 paxs::Logger logger("Save/error_log.txt");
@@ -132,7 +145,7 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<Settlement>& settlements) noexcept {
+        void marriage(const std::vector<Settlement>& settlements) noexcept {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_agents_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
@@ -194,10 +207,9 @@ namespace paxs {
                             agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
                             const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
 
-                            Agent male_ = settlements[j].getAgent(male_id);
+                            Agent male_ = settlements[j].cgetAgent(male_id);
                             male_.marry(female_id);
                             agents.emplace_back(male_);
-                            settlements[j].deleteAgent(male_id);
 
                             is_found = true;
                             break;
@@ -225,9 +237,9 @@ namespace paxs {
                         if (settlements[j].getId() == settlement_id) {
                             agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
                             const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
-                            settlements[j].getAgent(male_id).marry(female_id);
-
-                            settlements[j].addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
+                            // TODO:
+                            // settlements[j].getAgent(male_id).marry(female_id);
+                            // settlements[j].addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
                             deleteAgent(marriageable_agents_index_pair[pair.first].first);
 
                             is_found = true;
