@@ -20,6 +20,7 @@
 #include <new>
 
 #include <PAX_MAHOROBA/LocationRange.hpp> // TextureLocation
+#include <PAX_MAHOROBA/PersonLocation.hpp> // PersonLocation 人物を描画
 #include <PAX_MAHOROBA/StringViewer.hpp> // 文字
 
 #include <PAX_GRAPHICA/Key.hpp>
@@ -38,6 +39,7 @@ namespace paxs {
         s3d::Array<s3d::Vec2> route1, route2; // 線の情報を格納
 #endif
         PlaceNameLocation place_name_location{}; // 地名
+        PersonNameLocation person_name_location{}; // 人名
 
         // 描画する XYZ タイルを管理
         XYZTilesList xyz_tile_list;
@@ -82,6 +84,7 @@ namespace paxs {
 
             // 地名
             place_name_location.add();
+            person_name_location.add();
 
             if (agent_location.get() != nullptr) {
                 agent_location->init();
@@ -128,6 +131,15 @@ namespace paxs {
                 paxg::Font* one_font = string_siv.language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(string_siv.koyomi_font_size), static_cast<std::uint_least8_t>(string_siv.koyomi_font_buffer_thickness_size));
 
                 place_name_location.draw(
+                    koyomi_siv.jdn.cgetDay(),
+                    map_view->getWidth(),
+                    map_view->getHeight(),
+                    map_view->getCenterX(),
+                    map_view->getCenterY(),
+                    (one_font == nullptr) ? string_siv.pin_font : (*one_font),
+                    string_siv.en_font,
+                    string_siv.pin_font);
+                person_name_location.draw(
                     koyomi_siv.jdn.cgetDay(),
                     map_view->getWidth(),
                     map_view->getHeight(),
