@@ -396,11 +396,16 @@ namespace paxs {
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
+                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(set_gender, gen);
+
+                        if (set_lifespan == 0) continue;
+                        std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
+
                         settlement.setAgent(Agent(UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
                             set_gender,
-                            0,
-                            kanakuma_life_span.setLifeSpan(set_gender, gen),
+                            lifespan_dist(gen),
+                            set_lifespan,
                             environment), static_cast<std::size_t>(i));
                     }
 
@@ -442,12 +447,17 @@ namespace paxs {
                     std::vector<Agent> agents;
                     for (int i = 0; i < add_population; ++i) {
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
+                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(set_gender, gen);
+
+                        if (set_lifespan == 0) continue;
+                        std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
+
                         Agent agent = Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
                             set_gender,
-                            0,
-                            kanakuma_life_span.setLifeSpan(set_gender, gen),
+                            lifespan_dist(gen),
+                            set_lifespan,
                             environment
                         );
                         agents.emplace_back(agent);
