@@ -24,6 +24,7 @@
 #include <vector>
 
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp>
 #include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
@@ -265,11 +266,14 @@ namespace paxs {
     private:
         std::unordered_map<std::uint_least64_t, SettlementGrid> settlement_grids;
         std::shared_ptr<Environment> environment;
-        std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
-        std::uniform_int_distribution<> life_exp_dist{ 50, 100 }; // 寿命の乱数分布
+
         std::unique_ptr<paxs::JapanProvinces> japan_provinces;
         int move_probability = 0; // 移動確率
+
+        std::mt19937 gen; // 乱数生成器
+        std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
+
+        KanakumaLifeSpan kanakuma_life_span;
 
         /// @brief Randomly place settlements.
         /// @brief 集落をランダムに配置する
@@ -369,11 +373,12 @@ namespace paxs {
 
                 settlement.resizeAgents(settlement_population);
                 for (int i = 0; i < settlement_population; ++i) {
+                    const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
                     settlement.setAgent(Agent(UniqueIdentification<std::uint_least64_t>::generate(),
                         0, // TODO: 名前ID
-                        static_cast<std::uint_least8_t>(gender_dist(gen)),
+                        set_gender,
                         0,
-                        static_cast<std::uint_least8_t>(life_exp_dist(gen)),
+                        kanakuma_life_span.setLifeSpan(set_gender, gen),
                         environment), static_cast<std::size_t>(i));
                 }
 
@@ -414,12 +419,13 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents;
                     for (int i = 0; i < add_population; ++i) {
+                        const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
                         Agent agent = Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
-                            static_cast<std::uint_least8_t>(gender_dist(gen)),
+                            set_gender,
                             0,
-                            static_cast<std::uint_least8_t>(life_exp_dist(gen)),
+                            kanakuma_life_span.setLifeSpan(set_gender, gen),
                             environment
                         );
                         agents.emplace_back(agent);

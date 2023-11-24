@@ -188,12 +188,12 @@ namespace paxs {
             // if (move_forward_in_time) jdn.getDay() += 1.0; // デバッグ
             //else if(go_back_in_time) jdn -= 1000;
         //if (count >= 0) {
-            if (calendar_update_counter >= 0/*30*/) { // カウンタが指定した値を超えたら日付を変える処理を実行
+            if (calendar_update_counter >= /*0*/30) { // カウンタが指定した値を超えたら日付を変える処理を実行
                 calendar_update_counter = 0;
                 // 時間を進めている場合（逆行していない場合）
                 if (move_forward_in_time) {
                     if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
-                        jdn.getDay() += (0.8 / 30.0); // ユリウス日を繰り上げ（次の日にする）
+                        jdn.getDay() += (365.2425 / 12.0);//1.0;//(0.8 / 30.0); // ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                     //jdn += 365; // ユリウス日を繰り上げ（次の日にする）
@@ -208,7 +208,7 @@ namespace paxs {
                 // 時間を逆行している場合
                 else if (go_back_in_time) {
                     if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
-                        jdn.getDay() -= (0.8 / 30.0); // ユリウス日を繰り上げ（次の日にする）
+                        jdn.getDay() -= (365.2425 / 12.0);//1.0;//(0.8 / 30.0); // ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                 }

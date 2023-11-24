@@ -100,7 +100,9 @@ namespace paxs {
             [[maybe_unused]]
 #endif
         const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
-            paxs::GraphicVisualizationList& visible
+            paxs::GraphicVisualizationList& visible,
+            std::size_t& pop_num, // 人口数
+            std::size_t& sat_num // 集落数
             ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 map_view->update(); // キーボード入力を更新
@@ -110,7 +112,9 @@ namespace paxs {
                 texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
 #ifdef PAXS_USING_SIMULATOR
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
-                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), start_position, map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY()
+                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), start_position, map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                        pop_num,
+                        sat_num
                     );
                 }
 #endif

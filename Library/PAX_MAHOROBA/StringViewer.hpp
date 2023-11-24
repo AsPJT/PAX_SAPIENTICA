@@ -222,6 +222,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator<int>>& old_simulator, // コンパイル時の分岐により使わない場合あり
 #ifndef PAXS_USING_SIMULATOR
             [[maybe_unused]]
 #endif
@@ -236,7 +237,9 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
         const std::string& path8, // コンパイル時の分岐により使わない場合あり
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
-            paxs::GraphicVisualizationList& visible
+            paxs::GraphicVisualizationList& visible,
+            std::size_t& pop_num, // 人口数
+            std::size_t& sat_num // 集落数
             ) {
             const double map_view_width = map_view->getWidth();
             // const double map_view_center_lat =
@@ -598,6 +601,15 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                         (*one_font).draw(std::to_string(map_view_width),
                             paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
+
+                        (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        (*one_font).draw("pop " + std::to_string(pop_num),
+                            paxg::Vec2i(paxg::Window::width() - 160, debug_start_y + 50), paxg::Color(0, 0, 0));
+
+                        (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        (*one_font).draw("set " + std::to_string(sat_num),
+                            paxg::Vec2i(paxg::Window::width() - 160, debug_start_y + 100), paxg::Color(0, 0, 0));
+
                         //debug_start_y += debug_move_y;
                         // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
                         //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
@@ -697,7 +709,18 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             // シミュレーションのボタン
             if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")]) {
 #ifdef PAXS_USING_SIMULATOR
+
+
+                //if (s3d::SimpleGUI::Button(U"Restart", s3d::Vec2{ 10, 120 })) {
+                //    simulator = old_simulator;
+                //}
+
                 if (s3d::SimpleGUI::Button(U"Init", s3d::Vec2{ 10, 60 })) {
+
+#ifdef PAXS_USING_SIV3D
+                        const s3d::Audio audio{ U"ojigi.mid" };
+#endif
+
                     const std::string map_list_path = path8 + "Data/Simulation/MapList.tsv";
                     const std::string japan_provinces_path = path8 + "Data/Simulation/Japan200-725";
                     paxs::Vector2<int> start_position(861, 350);
@@ -705,6 +728,13 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                     std::random_device seed_gen;
                     simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());
                     simulator->init();
+
+                    //*simulator = *old_simulator;
+
+#ifdef PAXS_USING_SIV3D
+                        audio.play(); // オーディオを再生
+#endif
+
                     //simulator_ = paxs::Simulator<int>(
                     //    path8 + "Data/Simulation/MapList.tsv",
                     //    //paxs::Vector2<int>{861, 350}, paxs::Vector2<int>{950, 450}, 10);

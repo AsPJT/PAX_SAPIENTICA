@@ -76,6 +76,7 @@ namespace paxs {
 
         //#ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator<int>> simulator{};
+        std::unique_ptr<paxs::SettlementSimulator<int>> old_simulator{};
         // 対馬のみ
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 879, 406 };
         //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 881, 409 };
@@ -100,6 +101,9 @@ namespace paxs {
         string_siv.init(select_language, language_text, path8);
 
         paxs::TouchManager tm; // 画面のクリック・タッチを管理する
+
+        std::size_t pop_num = 0; // 人口数
+        std::size_t sat_num = 0; // 集落数
 
 #ifdef PAXS_USING_SFML
         paxg::Window::window.setFramerateLimit(60);
@@ -168,7 +172,9 @@ namespace paxs {
                 string_siv,
                 simulator,
                 start_position,
-                visible
+                visible,
+                pop_num, // 人口数
+                sat_num // 集落数
             );
             // 暦を更新
             koyomi_siv.update(
@@ -180,12 +186,15 @@ namespace paxs {
                 select_language,
                 language_text,
                 simulator,
+                old_simulator,
                 start_position,
                 end_position,
                 path8,
                 tm,
                 koyomi_siv,
-                visible
+                visible,
+                pop_num, // 人口数
+                sat_num // 集落数
             );
 
 #ifdef PAXS_USING_DXLIB

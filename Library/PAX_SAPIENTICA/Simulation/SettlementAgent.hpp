@@ -48,7 +48,7 @@ namespace paxs {
 
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す
-        constexpr bool isDead() const noexcept { return static_cast<float>(age) / steps_per_year > life_span; }
+        constexpr bool isDead() const noexcept { return age > life_span; }
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
