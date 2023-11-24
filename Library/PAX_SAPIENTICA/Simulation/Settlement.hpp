@@ -183,7 +183,7 @@ namespace paxs {
             // 自分の集落を含めて、近くに集落がない
             if (close_settlements.empty()) {
                 Logger logger("Save/error_log.txt");
-                const std::string message = "No close settlements.";
+                const std::string message = "No close settlements. Position: " + positions[0].toString();
                 logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 return;
             }
@@ -216,8 +216,8 @@ namespace paxs {
                     bool is_found = false;
                     for (std::size_t j = 0; j < close_settlements.size(); ++j) {
                         if (close_settlements[j].getId() == male_settlement_id) {
-                            agents[marriageable_agents_index_pair[index_pair.first].first].marry(male_id);
-                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[index_pair.first].first].getId();
+                            agents[marriageable_female_index[index_pair.first]].marry(male_id);
+                            const std::uint_least64_t female_id = agents[marriageable_female_index[index_pair.first]].getId();
 
                             Agent male_ = close_settlements[j].getAgentCopy(male_id);
                             male_.marry(female_id);
