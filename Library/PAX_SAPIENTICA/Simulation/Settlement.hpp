@@ -118,7 +118,7 @@ namespace paxs {
 
         /// @brief Get the agent.
         /// @brief エージェントを取得
-        Agent cgetAgent(const std::uint_least64_t id_) const {
+        const Agent& cgetAgent(const std::uint_least64_t id_) const {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 paxs::Logger logger("Save/error_log.txt");
@@ -129,47 +129,57 @@ namespace paxs {
             return *it;
         }
 
+        /// @brief Get the agent copy.
+        /// @brief エージェントを取得
+        Agent getAgentCopy(const std::uint_least64_t id_) const {
+            auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
+            if (it == agents.end()) {
+                paxs::Logger logger("Save/error_log.txt");
+                const std::string message = "Agent not found.";
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+            return *it;
+        }
+
+
         /// @brief Get the agents.
         /// @brief エージェントを取得
         std::vector<Agent>& getAgents() const noexcept { return agents; }
 
         /// @brief Get the agents.
         /// @brief エージェントを取得
-        std::vector<Agent> cgetAgents() const noexcept {
-            std::vector<Agent> const_agents;
-            for (const auto& agent : agents) {
-                const_agents.emplace_back(agent);
-            }
-            return const_agents;
-        }
+        constexpr const std::vector<Agent> cgetAgents() const noexcept { return agents; }
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(const std::vector<Settlement>& settlements) noexcept {
+        void marriage(std::vector<Settlement>& close_settlements) noexcept {
             // 結婚の条件を満たすエージェントを取得
-            std::vector<std::size_t> marriageable_agents_index;
+            std::vector<std::size_t> marriageable_female_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
                 if (agents[i].isAbleToMarriage() && agents[i].getGender() == female) {
                     if (!isMarried(agents[i].getAge())) continue;
 
-                    marriageable_agents_index.emplace_back(i);
+                    marriageable_female_index.emplace_back(i);
                 }
             }
 
             // 結婚の条件を満たすエージェントがいない
-            if (marriageable_agents_index.empty()) {
+            if (marriageable_female_index.empty()) {
                 return;
             }
 
-            // 結婚相手を探す
-            std::vector<std::size_t> close_settlements_index_list;
-            for (std::size_t i = 0; i < settlements.size(); ++i) {
-                if (settlements[i].getPosition().distance(positions[0]) < 10.0f) close_settlements_index_list.emplace_back(i);
+            // 近隣の集落を探す
+            for (std::size_t i = 0; i < close_settlements.size(); ++i) {
+                if (close_settlements[i].getPosition().distance(positions[0]) > marriage_search_range) {
+                    close_settlements.erase(close_settlements.begin() + i);
+                    --i;
+                }
             }
 
             // 自分の集落を含めて、近くに集落がない
-            if (close_settlements_index_list.empty()) {
+            if (close_settlements.empty()) {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "No close settlements.";
                 logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
@@ -177,11 +187,11 @@ namespace paxs {
             }
 
             // エージェントIDと集落IDのペアを作成
-            std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> agent_settlement_pair;
-            for (std::size_t close_settlement_index : close_settlements_index_list) {
-                for (auto& agent : settlements[close_settlement_index].cgetAgents()) {
+            std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> male_settlement_pair;
+            for (auto& close_settlement : close_settlements) {
+                for (auto& agent : close_settlement.cgetAgents()) {
                     if (agent.isAbleToMarriage() && agent.getGender() == male) {
-                        agent_settlement_pair.emplace_back(agent.getId(), settlements[close_settlement_index].getId());
+                        male_settlement_pair.emplace_back(agent.getId(), close_settlement.getId());
                     }
                 }
             }
@@ -190,24 +200,24 @@ namespace paxs {
             RandomSelector selector;
 
             // first: 女性のインデックス, second: 男性のインデックス
-            const auto marriageable_agents_index_pair = selector.select(marriageable_agents_index.size(), agent_settlement_pair.size());
+            const auto marriageable_agents_index_pair = selector.select(marriageable_female_index.size(), male_settlement_pair.size());
 
             // シミュレーションの設定で母方に移住するか父方に移住するかを決める
             // 母方の場合
             // if (isMatrilocality()) {
             if (true) {
                 for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
-                    std::pair<std::size_t, std::size_t> pair = marriageable_agents_index_pair[i];
-                    std::uint_least64_t male_id = marriageable_agents_index_pair[pair.second].first;
-                    std::uint_least32_t settlement_id = static_cast<std::uint_least32_t>(marriageable_agents_index_pair[pair.second].second);
+                    std::pair<std::size_t, std::size_t> index_pair = marriageable_agents_index_pair[i];
+                    std::uint_least64_t male_id = male_settlement_pair[index_pair.second].first;
+                    std::uint_least32_t male_settlement_id = male_settlement_pair[index_pair.second].second;
 
                     bool is_found = false;
-                    for (std::size_t j = 0; j < settlements.size(); ++j) {
-                        if (settlements[j].getId() == settlement_id) {
-                            agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
-                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
+                    for (std::size_t j = 0; j < close_settlements.size(); ++j) {
+                        if (close_settlements[j].getId() == male_settlement_id) {
+                            agents[marriageable_agents_index_pair[index_pair.first].first].marry(male_id);
+                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[index_pair.first].first].getId();
 
-                            Agent male_ = settlements[j].cgetAgent(male_id);
+                            Agent male_ = close_settlements[j].getAgentCopy(male_id);
                             male_.marry(female_id);
                             agents.emplace_back(male_);
 
@@ -221,7 +231,7 @@ namespace paxs {
                         const std::string message = "Settlement not found.";
                         logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                     } else {
-                        std::cout << "marriage " << agents[marriageable_agents_index_pair[pair.first].first].getId() << std::endl;
+                        std::cout << "marriage " << agents[marriageable_agents_index_pair[index_pair.first].first].getId() << std::endl;
                     }
                 }
             }
@@ -233,8 +243,8 @@ namespace paxs {
                     std::uint_least32_t settlement_id = static_cast<std::uint_least32_t>(marriageable_agents_index_pair[pair.second].second);
 
                     bool is_found = false;
-                    for (std::size_t j = 0; j < settlements.size(); ++j) {
-                        if (settlements[j].getId() == settlement_id) {
+                    for (std::size_t j = 0; j < close_settlements.size(); ++j) {
+                        if (close_settlements[j].getId() == settlement_id) {
                             agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
                             const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
                             // TODO:

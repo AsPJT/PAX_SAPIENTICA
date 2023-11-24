@@ -48,7 +48,7 @@ namespace paxs {
 
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す
-        constexpr bool isDead() const noexcept { return age >= life_span; }
+        constexpr bool isDead() const noexcept { return static_cast<float>(age) / steps_per_year > life_span; }
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
@@ -95,7 +95,7 @@ namespace paxs {
         /// @brief Is the agent able to marry?
         /// @brief エージェントが結婚可能かどうかを返す
         bool isAbleToMarriage() const noexcept {
-            float age_f = age / static_cast<float>(steps_per_year);
+            float age_f = static_cast<float>(age) / steps_per_year;
             return age_f > (gender ? male_marriageable_age_min : female_marriageable_age_min) &&
                 age_f < (gender ? male_marriageable_age_max : male_marriageable_age_max) &&
                 !is_married;
@@ -103,7 +103,10 @@ namespace paxs {
 
         /// @brief Is able to give birth?
         /// @brief 出産可能かどうか
-        bool isAbleToGiveBirth() const noexcept { return age >= birthable_age_min && age < birthable_age_max && is_married; }
+        bool isAbleToGiveBirth() const noexcept {
+            float age_f = static_cast<float>(age) / steps_per_year;
+            return age_f > birthable_age_min && age_f < birthable_age_max && is_married;
+        }
 
     protected:
         std::uint_least64_t id; // ID

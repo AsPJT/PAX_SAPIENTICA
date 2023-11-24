@@ -197,7 +197,7 @@ namespace paxs {
 
         /// @brief Export the simulation result to a file.
         /// @brief シミュレーション結果をファイルに出力する
-        void exportResult(const std::string& path) const {
+        void exportResult(const std::string path) const {
             // 各令制国の人口を計算
             std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
             for (auto& settlement_grid : settlement_grids) {
@@ -235,6 +235,28 @@ namespace paxs {
             ofs << "ID\tName\tPopulation" << std::endl;
             for (auto& ryoseikoku_population : ryoseikoku_population_map) {
                 ofs << static_cast<int>(ryoseikoku_population.first) << "\t" << japan_provinces->cgetRyoseikoku(ryoseikoku_population.first).name << "\t" << ryoseikoku_population.second << std::endl;
+            }
+
+            ofs.close();
+        }
+
+        /// @brief Export the simulation initialization result to a file.
+        /// @brief シミュレーションの初期化結果をファイルに出力する
+        void exportInitResult(const std::string path) const {
+            // ID, 座標, 人口をファイルに出力
+            std::ofstream ofs(path);
+            if (!ofs) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Failed to open file: " + path;
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+
+            ofs << "ID\tX\tY\tPopulation" << std::endl;
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid.second.getSettlements()) {
+                    ofs << settlement.getId() << "\t" << settlement.getPosition().x << "\t" << settlement.getPosition().y << "\t" << settlement.getPopulation() << std::endl;
+                }
             }
 
             ofs.close();

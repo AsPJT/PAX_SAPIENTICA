@@ -42,7 +42,7 @@ namespace paxs {
     constexpr std::uint_least32_t birthable_age_max = 50;
 
     //　結婚時に近くの集落からエージェントを探す際の探索範囲
-    constexpr std::uint_least32_t search_range = 60;
+    constexpr std::uint_least32_t marriage_search_range = 60;
 
     // 集落をグループ分けする際の1グリッド辺の長さ
     constexpr std::uint_least32_t grid_length = 64;
