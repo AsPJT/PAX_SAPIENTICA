@@ -231,8 +231,6 @@ namespace paxs {
                         Logger logger("Save/error_log.txt");
                         const std::string message = "Settlement not found.";
                         logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
-                    } else {
-                        std::cout << "marriage " << agents[marriageable_agents_index_pair[index_pair.first].first].getId() << std::endl;
                     }
                 }
             }
@@ -383,7 +381,18 @@ namespace paxs {
         /// @brief Death.
         /// @brief 死亡
         void death() noexcept {
-            agents.erase(std::remove_if(agents.begin(), agents.end(), [](const Agent& agent) { return agent.isDead(); }), agents.end());
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                if (!agents[i].isDead()) continue;
+                std::uint_least64_t partner_id = agents[i].getPartnerId();
+                if (partner_id != 0) {
+                    auto it = std::find_if(agents.begin(), agents.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
+                    if (it != agents.end()) {
+                        it->divorce();
+                    }
+                }
+                agents.erase(agents.begin() + i);
+                --i;
+            }
         }
 
         /// @brief Is the agent married?

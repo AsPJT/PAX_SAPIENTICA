@@ -108,6 +108,17 @@ namespace paxs {
             return age_f > birthable_age_min && age_f < birthable_age_max && is_married;
         }
 
+        /// @brief Get the partner's ID.
+        /// @brief 結婚相手のIDを取得
+        std::uint_least64_t getPartnerId() const noexcept { return partner_id; }
+
+        /// @brief Divorce.
+        /// @brief 離婚
+        void divorce() noexcept {
+            is_married = false;
+            partner_id = 0;
+        }
+
     protected:
         std::uint_least64_t id; // ID
         std::uint_least32_t name_id; // 名前のID
@@ -116,7 +127,7 @@ namespace paxs {
         std::uint_least32_t life_span; // 寿命
         std::shared_ptr<Environment> environment; // 環境
         bool is_married = false; // 結婚しているかどうか
-        std::uint_least32_t partner_id = 0; // 結婚相手のID
+        std::uint_least64_t partner_id = 0; // 結婚相手のID
     };
 }
 
