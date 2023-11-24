@@ -172,10 +172,11 @@ namespace paxs {
             }
 
             // 近隣の集落を探す
-            for (std::size_t i = 0; i < close_settlements.size(); ++i) {
-                if (close_settlements[i].getPosition().distance(positions[0]) > marriage_search_range) {
-                    close_settlements.erase(close_settlements.begin() + i);
-                    --i;
+            for (auto it = close_settlements.begin(); it != close_settlements.end();) {
+                if (it->getPosition().distance(positions[0]) > marriage_search_range) {
+                    it = close_settlements.erase(it);
+                } else {
+                    ++it;
                 }
             }
 
@@ -381,17 +382,21 @@ namespace paxs {
         /// @brief Death.
         /// @brief 死亡
         void death() noexcept {
-            for (std::size_t i = 0; i < agents.size(); ++i) {
-                if (!agents[i].isDead()) continue;
-                std::uint_least64_t partner_id = agents[i].getPartnerId();
+            for (auto it = agents.begin(); it != agents.end();) {
+                if (!it->isDead()) {
+                    ++it;
+                    continue;
+                }
+
+                std::uint_least64_t partner_id = it->getPartnerId();
                 if (partner_id != 0) {
-                    auto it = std::find_if(agents.begin(), agents.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
-                    if (it != agents.end()) {
-                        it->divorce();
+                    auto partnerIt = std::find_if(agents.begin(), agents.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
+                    if (partnerIt != agents.end()) {
+                        partnerIt->divorce();
                     }
                 }
-                agents.erase(agents.begin() + i);
-                --i;
+
+                it = agents.erase(it);
             }
         }
 
