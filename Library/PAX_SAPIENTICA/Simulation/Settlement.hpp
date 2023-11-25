@@ -351,8 +351,8 @@ namespace paxs {
             agents.erase(agents.begin() + agents.size() / 2, agents.end());
 
             // パートナー同士は同じ集落に振り分ける
-            for (auto& agent : agents) {
-                if (agent.isMarried()) {
+            for (Agent& agent : agents) {
+                if (agent.isMarried() && agent.getGender() == female) {
                     auto it = std::find_if(new_settlement_agents.begin(), new_settlement_agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
                     if (it != new_settlement_agents.end()) {
                         agents.emplace_back(*it);
@@ -361,8 +361,8 @@ namespace paxs {
                 }
             }
 
-            for (auto& agent : new_settlement_agents) {
-                if (agent.isMarried()) {
+            for (Agent& agent : new_settlement_agents) {
+                if (agent.isMarried() && agent.getGender() == female) {
                     auto it = std::find_if(agents.begin(), agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
                     if (it != agents.end()) {
                         new_settlement_agents.emplace_back(*it);
