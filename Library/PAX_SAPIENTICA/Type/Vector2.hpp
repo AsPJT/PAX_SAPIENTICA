@@ -109,6 +109,10 @@ namespace paxs {
             return os;
         }
 
+        std::string toString() const noexcept {
+            return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+        }
+
         std::uint_least64_t toU64() const noexcept {
             return static_cast<std::uint_least64_t>(x) << 32 | static_cast<std::uint_least64_t>(y);
         }

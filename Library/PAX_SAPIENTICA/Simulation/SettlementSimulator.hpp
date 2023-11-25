@@ -108,8 +108,9 @@ namespace paxs {
                     it->second.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
                 }
                 else {
-                    settlement_grids[target_key.toU64()] = SettlementGrid(target_key * grid_length, environment, gen());
-                    settlement_grids[target_key.toU64()].moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
+                    SettlementGrid settlement_grid = SettlementGrid(target_key * grid_length, environment, gen());
+                    settlement_grid.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
+                    settlement_grids[target_key.toU64()] = settlement_grid;
                 }
                 settlement_grids[current_key.toU64()].deleteSettlement(id);
             }
@@ -151,8 +152,13 @@ namespace paxs {
                 }
 
                 for (auto& settlement_grid : settlement_grids) {
+                    std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
+                    if (settlements.size() == 0) {
+                        continue;
+                    }
+
                     // 近隣8グリッドの集落を取得
-                    std::vector<Settlement> settlements;
+                    std::vector<Settlement> close_settlements;
                     Vector2 grid_position = settlement_grid.second.getGridPosition();
                     grid_position /= grid_length;
                     for (int i = -1; i <= 1; ++i) {
@@ -160,14 +166,14 @@ namespace paxs {
                             auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
                             if (it != settlement_grids.end()) {
                                 for (auto& settlement : it->second.getSettlements()) {
-                                    settlements.emplace_back(settlement);
+                                    close_settlements.emplace_back(settlement);
                                 }
                             }
                         }
                     }
 
-                    for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement.marriage(settlements);
+                    for (auto& settlement : settlements) {
+                        settlement.marriage(close_settlements);
                     }
                 }
 
@@ -380,10 +386,11 @@ namespace paxs {
                     settlement_population = std::min(settlement_population, static_cast<int>(ryoseikoku_population_it->second));
 
                     // 集落をグリッドに配置
-                    std::uint64_t key = (live_position / grid_length).toU64();
+                    Vector2 grid_position = live_position / grid_length;
+                    std::uint64_t key = grid_position.toU64();
                     // グリッドが存在しない場合は作成
                     if (settlement_grids.find(key) == settlement_grids.end()) {
-                        settlement_grids[key] = SettlementGrid(live_position, environment, gen());
+                        settlement_grids[key] = SettlementGrid(grid_position * grid_length, environment, gen());
                     }
                     // 集落を作成
                     Settlement settlement = Settlement(

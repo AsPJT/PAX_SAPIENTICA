@@ -95,13 +95,13 @@ namespace paxs {
 
         /// @brief Set the position of the settlement.
         /// @brief 集落の座標を設定
-        void setPosition(const Vector2& position) noexcept {
-            positions = { position };
+        void setPosition(const Vector2& position_) noexcept {
+            position = position_;
         }
 
         /// @brief Get the position of the settlement.
         /// @brief 集落の座標を取得
-        Vector2 getPosition() const noexcept { return positions.back(); }
+        Vector2 getPosition() const noexcept { return position; }
 
         /// @brief Get the agent.
         /// @brief エージェントを取得
@@ -154,7 +154,7 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<Settlement>& close_settlements) noexcept {
+        void marriage(std::vector<Settlement> close_settlements) noexcept {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
@@ -173,7 +173,7 @@ namespace paxs {
 
             // 近隣の集落を探す
             for (auto it = close_settlements.begin(); it != close_settlements.end();) {
-                if (it->getPosition().distance(positions[0]) > marriage_search_range) {
+                if (it->getPosition().distance(position) > marriage_search_range) {
                     it = close_settlements.erase(it);
                 } else {
                     ++it;
@@ -183,9 +183,18 @@ namespace paxs {
             // 自分の集落を含めて、近くに集落がない
             if (close_settlements.empty()) {
                 Logger logger("Save/error_log.txt");
-                const std::string message = "No close settlements. Position: " + positions[0].toString();
+                const std::string message = "No close settlements. Position: " + position.toString();
                 logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 return;
+            }
+
+            // idで自分を探してなかったら、エラー
+            auto it = std::find_if(close_settlements.begin(), close_settlements.end(), [this](const Settlement& settlement) { return settlement.getId() == id; });
+            if (it == close_settlements.end()) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Settlement not found.";
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
             }
 
             // エージェントIDと集落IDのペアを作成
@@ -295,12 +304,13 @@ namespace paxs {
                 // 座標を移動
                 // 移動距離0~max_move_distance
                 std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
+                std::uniform_real_distribution<float> theta_dist(0.0f, 2.0f * M_PI);
 
-                Vector2 current_position = positions.front();
+                Vector2 current_position = position;
                 Vector2 target_position = current_position;
 
                 while (target_position == current_position || !environment->isLive(target_position)) {
-                    float theta = std::uniform_real_distribution<float>(0.0f, 2.0f * M_PI)(engine);
+                    float theta = theta_dist(engine);
                     int distance = move_dist(engine);
                     target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
                 }
@@ -311,7 +321,6 @@ namespace paxs {
                 if (current_key == target_key) return { 0, Vector2(), Vector2() };
 
                 is_moved = true;
-                positions = { target_position };
             }
             catch (const std::exception& e) {
                 Logger logger("Save/error_log.txt");
@@ -335,7 +344,7 @@ namespace paxs {
         /// @brief エージェントの配列
         std::vector<Agent> agents;
         /// @brief 集落の座標
-        std::vector<Vector2> positions;
+        Vector2 position;
         /// @brief 既に移動したかどうか
         bool is_moved = false;
 

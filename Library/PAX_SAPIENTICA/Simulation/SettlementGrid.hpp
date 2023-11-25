@@ -42,8 +42,6 @@ namespace paxs {
         /// @brief Move a settlement to this grid.
         /// @brief 集落をこのグリッドに移動
         void moveSettlementToThis(Settlement& settlement) noexcept {
-            settlements.emplace_back(settlement);
-
             // 他の集落とかぶらない位置を探す
             // ブラックリスト
             std::vector<Vector2> black_list(settlements.size());
@@ -79,6 +77,7 @@ namespace paxs {
             }
 
             settlement.setPosition(position);
+            settlements.emplace_back(settlement);
         }
 
         /// @brief Get the settlements.
