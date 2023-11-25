@@ -154,7 +154,7 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<Settlement> close_settlements) noexcept {
+        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) noexcept {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
@@ -223,6 +223,7 @@ namespace paxs {
                     std::uint_least32_t male_settlement_id = male_settlement_pair[index_pair.second].second;
 
                     bool is_found = false;
+                    Vector2 male_settlement_position;
                     for (std::size_t j = 0; j < close_settlements.size(); ++j) {
                         if (close_settlements[j].getId() == male_settlement_id) {
                             agents[marriageable_female_index[index_pair.first]].marry(male_id);
@@ -233,6 +234,7 @@ namespace paxs {
                             agents.emplace_back(male_);
 
                             is_found = true;
+                            male_settlement_position = close_settlements[j].getPosition();
                             break;
                         }
                     }
@@ -242,6 +244,9 @@ namespace paxs {
                         const std::string message = "Settlement not found.";
                         logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                     }
+
+                    male_settlement_position /= grid_length;
+                    delete_agent(male_id, male_settlement_id, male_settlement_position);
                 }
             }
             else {

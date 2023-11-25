@@ -147,6 +147,20 @@ namespace paxs {
             );
         }
 
+        /// @brief Delete the agent.
+        /// @brief エージェントを削除
+        void deleteAgent(const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id) {
+            auto it = std::find_if(settlements.begin(), settlements.end(), [settlement_id](const Settlement& settlement) { return settlement.getId() == settlement_id; });
+            if (it != settlements.end()) {
+                it->deleteAgent(agent_id);
+            } else {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Settlement not found. ID: " + std::to_string(settlement_id);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+        }
+
     private:
         std::vector<Settlement> settlements;
         std::shared_ptr<Environment> environment;

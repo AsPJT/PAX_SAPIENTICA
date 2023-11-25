@@ -151,6 +151,19 @@ namespace paxs {
                     }
                 }
 
+                auto delete_agent = [this](const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
+                    auto it = settlement_grids.find(key.toU64());
+                    if (it != settlement_grids.end()) {
+                        it->second.deleteAgent(agent_id, settlement_id);
+                    }
+                    else {
+                        Logger logger("Save/error_log.txt");
+                        const std::string message = "Settlement grid not found. Key: " + std::to_string(key.x) + ", " + std::to_string(key.y);
+                        logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                        throw std::runtime_error(message);
+                    }
+                };
+
                 for (auto& settlement_grid : settlement_grids) {
                     std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
                     if (settlements.size() == 0) {
@@ -173,7 +186,7 @@ namespace paxs {
                     }
 
                     for (auto& settlement : settlements) {
-                        settlement.marriage(close_settlements);
+                        settlement.marriage(close_settlements, delete_agent);
                     }
                 }
 
