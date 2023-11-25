@@ -27,6 +27,7 @@
 
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
@@ -44,7 +45,7 @@ namespace paxs {
 
         /// @brief Start position of the simulation.
         /// @brief シミュレーションデータのマップ
-        std::unordered_map<std::string, std::unique_ptr<DataVariant>> data_map;
+        std::unordered_map<std::uint_least32_t, std::unique_ptr<DataVariant>> data_map;
 
         constexpr explicit Environment() noexcept = default;
         explicit Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
@@ -87,23 +88,23 @@ namespace paxs {
 
             for (std::size_t i = 1; i < settings.size(); ++i) {
                 // 型名をstringからTに変換
-                const std::string data_type = settings[i][data_type_column];
-                const std::string key = settings[i][key_column];
-                if (data_type == "u8") {
+                const std::uint_least32_t data_type = MurMur3::calcHash(settings[i][data_type_column].size(), settings[i][data_type_column].c_str());
+                const std::uint_least32_t key = MurMur3::calcHash(settings[i][key_column].size(), settings[i][key_column].c_str());
+                if (data_type == MurMur3::calcHash("u8")) {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
-                else if (data_type == "u32") {
+                else if (data_type == MurMur3::calcHash("u32")) {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
-                else if (data_type == "f32") {
+                else if (data_type == MurMur3::calcHash("f32")) {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
-                else if (data_type == "s16") {
+                else if (data_type == MurMur3::calcHash("s16")) {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
                 else {
                     Logger logger("Save/error_log.txt");
-                    const std::string message = "data_type is not found: " + data_type + " in " + setting_file_path;
+                    const std::string message = "data_type is not found: " + std::to_string(data_type) + " in " + setting_file_path;
                     logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 }
             }
@@ -119,10 +120,10 @@ namespace paxs {
         /// @param key Data's key. データのキー
         /// @param position Position of the data to be acquired. 取得したいデータの座標
         template <typename U>
-        U getData(const std::string& key, const Vector2& position) const {
+        U getData(const std::uint_least32_t key, const Vector2& position) const {
             if (data_map.count(key) == 0) {
                 Logger logger("Save/error_log.txt");
-                const std::string message = "key is not found: " + key;
+                const std::string message = "key is not found: " + std::to_string(key);
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
@@ -132,7 +133,7 @@ namespace paxs {
         /// @brief Get the land position list.
         /// @brief 陸の位置リストの取得
         constexpr void getLandPositions(std::vector<std::uint64_t>& keys) const {
-            std::get<Data<std::uint_least8_t, GridType>>(*data_map.at("gbank")).getKeys(keys);
+            std::get<Data<std::uint_least8_t, GridType>>(*data_map.at(MurMur3::calcHash("gbank"))).getKeys(keys);
         }
 
         /// @brief Is it possible to live?
@@ -155,7 +156,7 @@ namespace paxs {
         /// @brief 傾斜の取得
         std::uint_least8_t getSlope(const Vector2& position) const {
             try {
-                return getData<std::uint_least8_t>("slope", position);
+                return getData<std::uint_least8_t>(MurMur3::calcHash("slope"), position);
             }
             catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
@@ -169,7 +170,7 @@ namespace paxs {
         /// @brief 標高の取得
         std::int_least16_t getElevation(const Vector2& position) const {
             try {
-                return getData<std::int_least16_t>("elevation", position);
+                return getData<std::int_least16_t>(MurMur3::calcHash("elevation"), position);
             }
             catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
@@ -183,7 +184,7 @@ namespace paxs {
         /// @brief 陸地かどうかの判定
         virtual bool isLand(const Vector2& position) const {
             try {
-                auto value = getData<std::uint_least8_t>("gbank", position);
+                auto value = getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), position);
                 return static_cast<int>(value) >= static_cast<int>(1);
             }
             catch (const std::exception&) {
@@ -198,7 +199,7 @@ namespace paxs {
         /// @brief 淡水かどうかの判定
         virtual bool isWater(const Vector2& position) const {
             try {
-                auto value = getData<std::uint_least8_t>("water", position);
+                auto value = getData<std::uint_least8_t>(MurMur3::calcHash("water"), position);
                 return static_cast<int>(value) == static_cast<int>('1');
             }
             catch (const std::exception&) {

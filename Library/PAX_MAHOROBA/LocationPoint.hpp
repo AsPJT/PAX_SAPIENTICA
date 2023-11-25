@@ -463,6 +463,97 @@ namespace paxs {
             texture_red_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/RedCircle.svg") };
         }
 
+    private:
+
+        paxg::Color getColor(const std::uint_least8_t pop_) const {
+            switch (pop_) {
+            case 0: return paxg::Color(45, 87, 154);
+            case 1: return paxg::Color(36, 92, 156);
+            case 2: return paxg::Color(27, 96, 158);
+            case 3: return paxg::Color(18, 101, 161);
+            case 4: return paxg::Color(9, 105, 163);
+            case 5: return paxg::Color(0, 110, 165);
+            case 6: return paxg::Color(0, 111, 164);
+            case 7: return paxg::Color(0, 112, 163);
+            case 8: return paxg::Color(0, 112, 161);
+            case 9: return paxg::Color(0, 113, 160);
+            case 10: return paxg::Color(0, 114, 159);
+            case 11: return paxg::Color(0, 115, 158);
+            case 12: return paxg::Color(0, 117, 157);
+            case 13: return paxg::Color(0, 118, 156);
+            case 14: return paxg::Color(0, 120, 155);
+            case 15: return paxg::Color(0, 121, 154);
+            case 16: return paxg::Color(0, 125, 148);
+            case 17: return paxg::Color(0, 130, 143);
+            case 18: return paxg::Color(0, 134, 137);
+            case 19: return paxg::Color(0, 139, 132);
+            case 20: return paxg::Color(0, 143, 126);
+            case 21: return paxg::Color(0, 141, 115);
+            case 22: return paxg::Color(0, 138, 104);
+            case 23: return paxg::Color(0, 136, 94);
+            case 24: return paxg::Color(0, 133, 83);
+            case 25: return paxg::Color(0, 131, 72);
+            case 26: return paxg::Color(6, 136, 60);
+            case 27: return paxg::Color(13, 141, 48);
+            case 28: return paxg::Color(19, 145, 37);
+            case 29: return paxg::Color(26, 150, 25);
+            case 30: return paxg::Color(32, 155, 13);
+            case 31: return paxg::Color(55, 159, 16);
+            case 32: return paxg::Color(78, 164, 19);
+            case 33: return paxg::Color(101, 168, 23);
+            case 34: return paxg::Color(124, 173, 26);
+            case 35: return paxg::Color(147, 177, 29);
+            case 36: return paxg::Color(156, 182, 26);
+            case 37: return paxg::Color(166, 187, 24);
+            case 38: return paxg::Color(175, 193, 21);
+            case 39: return paxg::Color(185, 198, 19);
+            case 40: return paxg::Color(194, 203, 16);
+            case 41: return paxg::Color(201, 204, 13);
+            case 42: return paxg::Color(208, 205, 10);
+            case 43: return paxg::Color(216, 205, 6);
+            case 44: return paxg::Color(223, 206, 3);
+            case 45: return paxg::Color(230, 207, 0);
+            case 46: return paxg::Color(228, 202, 1);
+            case 47: return paxg::Color(226, 197, 2);
+            case 48: return paxg::Color(225, 191, 3);
+            case 49: return paxg::Color(223, 186, 4);
+            case 50: return paxg::Color(221, 181, 5);
+            case 51: return paxg::Color(219, 176, 6);
+            case 52: return paxg::Color(218, 171, 7);
+            case 53: return paxg::Color(216, 165, 8);
+            case 54: return paxg::Color(215, 160, 9);
+            case 55: return paxg::Color(213, 155, 10);
+            case 56: return paxg::Color(210, 138, 12);
+            case 57: return paxg::Color(206, 122, 15);
+            case 58: return paxg::Color(203, 105, 17);
+            case 59: return paxg::Color(199, 89, 20);
+            case 60: return paxg::Color(196, 72, 22);
+            case 61: return paxg::Color(193, 64, 28);
+            case 62: return paxg::Color(189, 56, 34);
+            case 63: return paxg::Color(186, 48, 40);
+            case 64: return paxg::Color(182, 40, 46);
+            case 65: return paxg::Color(179, 32, 52);
+            case 66: return paxg::Color(178, 31, 57);
+            case 67: return paxg::Color(176, 30, 62);
+            case 68: return paxg::Color(175, 29, 68);
+            case 69: return paxg::Color(173, 28, 73);
+            case 70: return paxg::Color(172, 27, 78);
+            case 71: return paxg::Color(170, 26, 83);
+            case 72: return paxg::Color(169, 25, 88);
+            case 73: return paxg::Color(167, 24, 92);
+            case 74: return paxg::Color(166, 23, 97);
+            case 75: return paxg::Color(164, 22, 102);
+            case 76: return paxg::Color(131, 18, 82);
+            case 77: return paxg::Color(98, 13, 61);
+            case 78: return paxg::Color(66, 9, 41);
+            case 79: return paxg::Color(33, 4, 20);
+            case 80: return paxg::Color(0, 0, 0);
+            }
+            return paxg::Color(255, 255, 255);
+        }
+
+    public:
+
         void draw(const double jdn,
             std::unordered_map<std::uint_least64_t, paxs::SettlementGrid<int>>& agents,
             const paxs::Vector2<int>& start_position,
@@ -498,8 +589,7 @@ namespace paxs {
                             , 10)),
                             10, 100,0,0,99999999,
                         //(agent.getGender()) ?
-                        MurMur3::calcHash("agent1")// :
-                        //MurMur3::calcHash("agent2")
+                        MurMur3::calcHash("agent1")
                         ,0 /* 出典なし */
                     };
 
@@ -523,33 +613,12 @@ namespace paxs {
         static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                         };
 
-                        //paxs::Circle
-
                         // エージェント
-                        if (lli.lpe == MurMur3::calcHash("agent1")) {
-
-                            const std::size_t pop = settlement.getPopulation();
-
-                            paxg::Color pop_color =
-                                (pop == 0) ? paxg::Color(255, 255, 255) :
-                                (pop <= 200) ? paxg::Color(230 - pop, 230 - pop, 230 - pop) :
-                                (pop <= 400) ? paxg::Color(0, 200 - (pop - 200), 200 - (pop - 200)) :
-                                (pop <= 600) ? paxg::Color(200 - (pop - 400), 0, 200 - (pop - 400)) :
-                                (pop <= 800) ? paxg::Color(200 - (pop - 600), 200 - (pop - 600), 0) :
-
-                                paxg::Color(0, 0, 0)
-                                ;
-
-                            paxg::Circle(draw_pos, 2.0f).draw(pop_color);
-
-
-                            //texture_blue_circle.resizedDrawAt(15, draw_pos);
-                            continue;
-                        }
-                        // エージェント
-                        if (lli.lpe == MurMur3::calcHash("agent2")) {
-                            texture_red_circle.resizedDrawAt(15, draw_pos);
-                            continue;
+                        // if (lli.lpe == MurMur3::calcHash("agent1"))
+                        {
+                            const std::size_t pop_original = settlement.getPopulation();
+                            const std::uint_least8_t pop = (pop_original >= 80) ? 80 : static_cast<std::uint_least8_t>(pop_original);
+                            paxg::Circle(draw_pos, 2.0f).draw(getColor(pop));
                         }
 
                     }

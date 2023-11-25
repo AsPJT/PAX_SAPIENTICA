@@ -39,7 +39,7 @@ namespace paxs {
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z) {
+        explicit Data(const std::string& file_path, const std::uint_least32_t name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z) {
             z_mag = std::pow(2, default_z - pj_z);
             column_size = static_cast<int>((end_position.x - start_position.x + 1) * pixel_size * z_mag);
 
@@ -102,7 +102,7 @@ namespace paxs {
     private:
         Vector2 start_position; // シミュレーションの左上の座標
         Vector2 end_position; // シミュレーションの右下の座標
-        std::string name; // データの名前
+        std::uint_least32_t name; // データの名前
         std::unordered_map<std::uint_least64_t, DataType> data; // データ
         int default_z; // データのz値
         int pj_z; // シミュレーションのz値

@@ -33,7 +33,7 @@ namespace paxs {
         SettlementGrid() = default;
 
         explicit SettlementGrid(const Vector2& grid_position, std::shared_ptr<Environment> environment,
-         const unsigned seed = 0) noexcept : grid_position(grid_position), environment(environment), gen(seed) {}
+            std::mt19937& gen_) noexcept : grid_position(grid_position), environment(environment), gen(&gen_) {}
 
         /// @brief Add a settlement to the grid.
         /// @brief 集落をグリッドに追加
@@ -55,8 +55,8 @@ namespace paxs {
             Vector2 position;
 
             while (black_list.size() < grid_length * grid_length) {
-                position.x = dis_x(gen);
-                position.y = dis_y(gen);
+                position.x = dis_x(*gen);
+                position.y = dis_y(*gen);
                 if (std::find(black_list.begin(), black_list.end(), position) == black_list.end()) {
                     if (environment->isLive(position)) {
                         // 居住可能
@@ -178,7 +178,7 @@ namespace paxs {
         std::vector<Settlement> settlements;
         std::shared_ptr<Environment> environment;
         Vector2 grid_position;
-        std::mt19937 gen; // 乱数生成器
+        std::mt19937* gen; // 乱数生成器
         std::vector<std::uint_least8_t> ryoseikoku_list;
     };
 

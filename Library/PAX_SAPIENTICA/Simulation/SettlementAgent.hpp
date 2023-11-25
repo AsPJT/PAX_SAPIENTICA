@@ -33,14 +33,12 @@ namespace paxs {
     template <typename GridType>
     class SettlementAgent {
     public:
-        using Vector2 = paxs::Vector2<GridType>;
-        using Environment = paxs::Environment<GridType>;
 
         SettlementAgent() = default;
 
         constexpr explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id, const std::uint_least8_t gen,
-            const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
-            : id(id), name_id(name_id), gender(gen), age(age), life_span(life_span), environment(env) {}
+            const std::uint_least32_t age, const std::uint_least32_t life_span) noexcept
+            : id(id), name_id(name_id), gender(gen), age(age), life_span(life_span) {}
 
         /// @brief Get the id.
         /// @brief idを取得
@@ -77,8 +75,7 @@ namespace paxs {
                 name_id == a.name_id &&
                 gender == a.gender &&
                 age == a.age &&
-                life_span == a.life_span &&
-                environment == a.environment;
+                life_span == a.life_span;
         }
 
         /// @brief Is the agent married?
@@ -124,15 +121,16 @@ namespace paxs {
         std::uint_least8_t decrementBirthIntervalCount() noexcept { return --birth_interval_count; }
 
     protected:
-        std::uint_least64_t id; // ID
-        std::uint_least32_t name_id; // 名前のID
+        bool is_married = false; // 結婚しているかどうか
         std::uint_least8_t gender; // 性別: 0 -> 女性, 1 -> 男性
+        std::uint_least8_t birth_interval_count = 0; // 出産の間隔のカウント
+
         std::uint_least32_t age; // 年齢
         std::uint_least32_t life_span; // 寿命
-        std::shared_ptr<Environment> environment; // 環境
-        bool is_married = false; // 結婚しているかどうか
+        std::uint_least32_t name_id; // 名前のID
+
+        std::uint_least64_t id; // ID
         std::uint_least64_t partner_id = 0; // 結婚相手のID
-        std::uint_least8_t birth_interval_count = 0; // 出産の間隔のカウント
     };
 }
 

@@ -59,7 +59,7 @@ namespace paxs {
     // 移動確率下限
     constexpr int min_move_probability = 1;
     // 移動確率上限
-    constexpr int max_move_probability = 100;
+    constexpr int max_move_probability = 10;
     // 移動確率の正規化係数
     constexpr int move_probability_normalization_coefficient = 1000;
 }
