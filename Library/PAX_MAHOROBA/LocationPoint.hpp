@@ -540,7 +540,7 @@ namespace paxs {
                                 paxg::Color(0, 0, 0)
                                 ;
 
-                            paxg::Circle(draw_pos, 5.0f).draw(pop_color);
+                            paxg::Circle(draw_pos, 2.0f).draw(pop_color);
 
 
                             //texture_blue_circle.resizedDrawAt(15, draw_pos);

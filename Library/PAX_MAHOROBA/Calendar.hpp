@@ -175,10 +175,10 @@ namespace paxs {
             calcDate();
         }
 
-        void update(
+        bool update(
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator // コンパイル時の分岐により使わない場合あり
         ) {
-
+            bool return_bool = false;
             /*##########################################################################################
                 暦関連
             ##########################################################################################*/
@@ -188,7 +188,7 @@ namespace paxs {
             // if (move_forward_in_time) jdn.getDay() += 1.0; // デバッグ
             //else if(go_back_in_time) jdn -= 1000;
         //if (count >= 0) {
-            if (calendar_update_counter >= /*0*/30) { // カウンタが指定した値を超えたら日付を変える処理を実行
+            if (calendar_update_counter >= /*30*/0) { // カウンタが指定した値を超えたら日付を変える処理を実行
                 calendar_update_counter = 0;
                 // 時間を進めている場合（逆行していない場合）
                 if (move_forward_in_time) {
@@ -202,6 +202,7 @@ namespace paxs {
                     if (is_agent_update && simulator.get() != nullptr) {
                         simulator->step(); // シミュレーションを 1 ステップ実行する
                         steps.getDay()++; // ステップ数を増やす
+                        return_bool = true;
                     }
 #endif
                 }
@@ -213,7 +214,7 @@ namespace paxs {
                     }
                 }
             }
-
+            return return_bool;
         }
 
     };

@@ -81,7 +81,7 @@ namespace paxs {
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 879, 406 };
         //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 881, 409 };
         // 本州
-        paxs::Vector2<int> start_position = paxs::Vector2<int>{ 861, 350 };
+        paxs::Vector2<int> start_position = paxs::Vector2<int>{ 861, 381 };
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
         //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
         paxs::Vector2<int> end_position = paxs::Vector2<int>{ 950, 450 };
@@ -104,6 +104,8 @@ namespace paxs {
 
         std::size_t pop_num = 0; // 人口数
         std::size_t sat_num = 0; // 集落数
+
+        std::ofstream pop_ofs("pop.txt");
 
 #ifdef PAXS_USING_SFML
         paxg::Window::window.setFramerateLimit(60);
@@ -177,9 +179,10 @@ namespace paxs {
                 sat_num // 集落数
             );
             // 暦を更新
-            koyomi_siv.update(
+            bool is_sim = koyomi_siv.update(
                 simulator
             );
+
             // 文字を更新
             string_siv.update(
                 map_siv.map_view,
@@ -196,6 +199,9 @@ namespace paxs {
                 pop_num, // 人口数
                 sat_num // 集落数
             );
+            if (is_sim) {
+                pop_ofs << pop_num << '\t' << sat_num << '\n';
+            }
 
 #ifdef PAXS_USING_DXLIB
             old_left_mouse = !((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) == 0);

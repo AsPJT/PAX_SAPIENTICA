@@ -401,6 +401,8 @@ namespace paxs {
                 if (agent.getBirthIntervalCount() > 0) {
                     std::uint_least8_t count = agent.decrementBirthIntervalCount();
                     if (count == 0) {
+                        // 死産
+                        if (random_dist(gen) < 0.1f) continue;
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
                         children.emplace_back(Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),

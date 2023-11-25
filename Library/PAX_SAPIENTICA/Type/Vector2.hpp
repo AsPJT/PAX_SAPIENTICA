@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <string>
 
 namespace paxs {
 
