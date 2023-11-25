@@ -41,6 +41,7 @@
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
@@ -220,26 +221,26 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const std::unique_ptr<MapView>& map_view,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
+            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator<int>>& old_simulator, // コンパイル時の分岐により使わない場合あり
 #ifndef PAXS_USING_SIMULATOR
-[[maybe_unused]]
+            [[maybe_unused]]
 #endif
-            paxs::Simulator<int>& simulator, // コンパイル時の分岐により使わない場合あり
+        const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
 #ifndef PAXS_USING_SIMULATOR
-[[maybe_unused]]
+            [[maybe_unused]]
 #endif
-            const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
+        const paxs::Vector2<int>& end_position, // コンパイル時の分岐により使わない場合あり
 #ifndef PAXS_USING_SIMULATOR
-[[maybe_unused]]
+            [[maybe_unused]]
 #endif
-            const paxs::Vector2<int>& end_position, // コンパイル時の分岐により使わない場合あり
-#ifndef PAXS_USING_SIMULATOR
-[[maybe_unused]]
-#endif
-            const std::string& path8, // コンパイル時の分岐により使わない場合あり
+        const std::string& path8, // コンパイル時の分岐により使わない場合あり
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
-            paxs::GraphicVisualizationList& visible
-        ) {
+            paxs::GraphicVisualizationList& visible,
+            std::size_t& pop_num, // 人口数
+            std::size_t& sat_num // 集落数
+            ) {
             const double map_view_width = map_view->getWidth();
             // const double map_view_center_lat =
                 //paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view->getCenterY()))));
@@ -288,7 +289,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             int next_rect_start_y = icon_start_y + sum_icon_height + 20;//230;
             int next_rect_end_y = 150;//380;
 
-            if (visible[MurMur3::calcHash(8, "Calendar")]) {
+            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
 #ifdef PAXS_USING_DXLIB
                 DxLib::DrawRoundRect(rect_start_x, koyomi_font_y - 5,
                     rect_start_x + 360, koyomi_font_y - 5 + next_rect_start_y,
@@ -565,11 +566,13 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             // if (s3d::SimpleGUI::RadioButtons(index1, options, s3d::Vec2{ paxg::Window::width() - 400, 400 })) {
             // jdn = period_jdn[index1];
             // }
-            {
+
+            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
                 //int debug_move_y = 25;
                 // その他のデバッグ用の変数情報の表示
-                if (visible[MurMur3::calcHash(2, "UI")]) {
+                //if (visible[MurMur3::calcHash(2, "UI")])
+                {
 
                     // 暦描画フォントを指定
                     paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
@@ -598,6 +601,15 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                         (*one_font).draw(std::to_string(map_view_width),
                             paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
+
+                        (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        (*one_font).draw("pop " + std::to_string(pop_num),
+                            paxg::Vec2i(paxg::Window::width() - 160, debug_start_y + 50), paxg::Color(0, 0, 0));
+
+                        (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        (*one_font).draw("set " + std::to_string(sat_num),
+                            paxg::Vec2i(paxg::Window::width() - 160, debug_start_y + 100), paxg::Color(0, 0, 0));
+
                         //debug_start_y += debug_move_y;
                         // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
                         //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
@@ -639,7 +651,9 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 // Web ページをブラウザで開く
                 s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
             }
-            if (visible[MurMur3::calcHash(2, "UI")]) {
+            //if (visible[MurMur3::calcHash("UI")])
+
+            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦描画フォントを指定
                 paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                 if (one_font != nullptr) {
@@ -695,16 +709,50 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             // シミュレーションのボタン
             if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")]) {
 #ifdef PAXS_USING_SIMULATOR
+
+
+                //if (s3d::SimpleGUI::Button(U"Restart", s3d::Vec2{ 10, 120 })) {
+                //    simulator = old_simulator;
+                //}
+
                 if (s3d::SimpleGUI::Button(U"Init", s3d::Vec2{ 10, 60 })) {
-                    simulator = paxs::Simulator<int>(
-                        path8 + "Data/Simulation/MapList.tsv",
-                        //paxs::Vector2<int>{861, 350}, paxs::Vector2<int>{950, 450}, 10);
-                        start_position, end_position, 10);
-                    simulator.init();
+
+#ifdef PAXS_USING_SIV3D
+                        const s3d::Audio audio{ U"ojigi.mid" };
+#endif
+
+                    const std::string map_list_path = path8 + "Data/Simulation/MapList.tsv";
+                    const std::string japan_provinces_path = path8 + "Data/Simulation/Japan200-725";
+                    paxs::Vector2<int> start_position(861, 381);
+                    paxs::Vector2<int> end_position(950, 450);
+                    //std::random_device seed_gen;
+                    //simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());
+                    simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, 1);
+                    simulator->init();
+                    koyomi_siv.jdn.setDay(1794474); // シミュレーション初期時の日付に設定
+                    //*simulator = *old_simulator;
+
+#ifdef PAXS_USING_SIV3D
+                        audio.play(); // オーディオを再生
+#endif
+
+                    //simulator_ = paxs::Simulator<int>(
+                    //    path8 + "Data/Simulation/MapList.tsv",
+                    //    //paxs::Vector2<int>{861, 350}, paxs::Vector2<int>{950, 450}, 10);
+                    //    start_position, end_position, 10);
+                    //simulator_.init();
                     koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
+                    koyomi_siv.is_agent_update = false;
                 }
-                if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ 110, 60 })) koyomi_siv.is_agent_update = true;
-                if (s3d::SimpleGUI::Button(U"Stop", s3d::Vec2{ 210, 60 })) koyomi_siv.is_agent_update = false;
+                if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ 110, 60 })) {
+                    koyomi_siv.is_agent_update = true;
+                }
+                if (s3d::SimpleGUI::Button(U"Stop", s3d::Vec2{ 210, 60 })) {
+                    koyomi_siv.is_agent_update = false;
+                }
+                //if (koyomi_siv.is_agent_update && simulator.get() != nullptr) {
+                //    simulator->run(1);
+                //}
 #endif
             }
 

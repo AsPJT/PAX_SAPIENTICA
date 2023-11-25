@@ -95,7 +95,7 @@ namespace paxs {
         constexpr void getKeys(std::vector<std::uint64_t>& keys) const noexcept {
             keys.reserve(data.size());
             for (const auto& [key, value] : data) {
-                keys.push_back(key);
+                keys.emplace_back(key);
             }
         }
 

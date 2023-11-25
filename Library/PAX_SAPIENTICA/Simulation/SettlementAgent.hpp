@@ -1,11 +1,11 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -31,14 +31,16 @@ namespace paxs {
     /// @brief A class that represents an agent.
     /// @brief エージェントを表すクラス
     template <typename GridType>
-    class SettlementAgent{
+    class SettlementAgent {
     public:
         using Vector2 = paxs::Vector2<GridType>;
         using Environment = paxs::Environment<GridType>;
 
-        constexpr explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id,const std::uint_least8_t gen,
-        const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
-        : id(id) , name_id(name_id), gender(gen), age(age), life_span(life_span), environment(env) {}
+        SettlementAgent() = default;
+
+        constexpr explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id, const std::uint_least8_t gen,
+            const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
+            : id(id), name_id(name_id), gender(gen), age(age), life_span(life_span), environment(env) {}
 
         /// @brief Get the id.
         /// @brief idを取得
@@ -46,11 +48,13 @@ namespace paxs {
 
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す
-        constexpr bool isDead() const noexcept { return age >= life_span; }
+        constexpr bool isDead() const noexcept { return age > life_span; }
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
         constexpr float getAge() const noexcept { return age / static_cast<float>(steps_per_year); }
+
+        constexpr std::uint_least32_t getAgeInt() const noexcept { return age; }
 
         /// @brief Get the agent's age.
         /// @brief エージェントの性別を取得する
@@ -70,11 +74,11 @@ namespace paxs {
 
         constexpr bool operator==(const SettlementAgent& a) const noexcept {
             return  id == a.id &&
-                    name_id == a.name_id &&
-                    gender == a.gender &&
-                    age == a.age &&
-                    life_span == a.life_span &&
-                    environment == a.environment;
+                name_id == a.name_id &&
+                gender == a.gender &&
+                age == a.age &&
+                life_span == a.life_span &&
+                environment == a.environment;
         }
 
         /// @brief Is the agent married?
@@ -83,22 +87,41 @@ namespace paxs {
 
         /// @brief Set the agent's marriage status.
         /// @brief 結婚する
-        void marry(std::uint32_t) noexcept {
+        void marry(const std::uint_least64_t partner_id_) noexcept {
             is_married = true;
-            partnerId = id;
+            partner_id = partner_id_;
         }
 
         /// @brief Is the agent able to marry?
         /// @brief エージェントが結婚可能かどうかを返す
         bool isAbleToMarriage() const noexcept {
-            return age >= (gender ? male_marriageable_age_min : female_marriageable_age_min) &&
-                    age < marriageable_age_max && // TODO: 確認
-                    !is_married;
+            float age_f = static_cast<float>(age) / steps_per_year;
+            return age_f > (gender ? male_marriageable_age_min : female_marriageable_age_min) &&
+                age_f < (gender ? male_marriageable_age_max : male_marriageable_age_max) &&
+                !is_married;
         }
 
         /// @brief Is able to give birth?
         /// @brief 出産可能かどうか
-        bool isAbleToGiveBirth() const noexcept { return age >= birthable_age_min && age < birthable_age_max && is_married; }
+        bool isAbleToGiveBirth() const noexcept {
+            float age_f = static_cast<float>(age) / steps_per_year;
+            return age_f > birthable_age_min && age_f < birthable_age_max && is_married;
+        }
+
+        /// @brief Get the partner's ID.
+        /// @brief 結婚相手のIDを取得
+        std::uint_least64_t getPartnerId() const noexcept { return partner_id; }
+
+        /// @brief Divorce.
+        /// @brief 離婚
+        void divorce() noexcept {
+            is_married = false;
+            partner_id = 0;
+        }
+
+        std::uint_least8_t getBirthIntervalCount() const noexcept { return birth_interval_count; }
+        void setBirthIntervalCount(const std::uint_least8_t count) noexcept { birth_interval_count = count; }
+        std::uint_least8_t decrementBirthIntervalCount() noexcept { return --birth_interval_count; }
 
     protected:
         std::uint_least64_t id; // ID
@@ -108,7 +131,8 @@ namespace paxs {
         std::uint_least32_t life_span; // 寿命
         std::shared_ptr<Environment> environment; // 環境
         bool is_married = false; // 結婚しているかどうか
-        std::uint_least32_t partnerId = 0; // 結婚相手のID
+        std::uint_least64_t partner_id = 0; // 結婚相手のID
+        std::uint_least8_t birth_interval_count = 0; // 出産の間隔のカウント
     };
 }
 
