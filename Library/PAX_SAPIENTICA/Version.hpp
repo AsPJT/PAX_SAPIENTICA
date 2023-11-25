@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20230924L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20231125L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 ) [v6.0.X.a.a]
@@ -29,17 +29,17 @@
 
 // PAX_SAPIENTICA 補助バージョン  [v6.0.a.X.a]
 #ifndef PAX_SAPIENTICA_LIBRARY_MINOR
-#define PAX_SAPIENTICA_LIBRARY_MINOR (3)
+#define PAX_SAPIENTICA_LIBRARY_MINOR (4)
 #endif
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (4)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
 #endif
 
 // 正式バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.3.4"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.4.0"
 #endif
 
 //char name[
@@ -50,7 +50,27 @@
 /*##########################################################################################
 	更新履歴
 	バージョン	| 更新日		| 概要
-	6.0.0.3.X	| 2023/0X/XX	| コピペ用
+	6.0.0.4.X	| 2023/0X/XX	| コピペ用
+	6.0.0.4.0	| 2023/11/25	| 渡来を除くAgent-based Simulationの修正と改善
+	6.0.0.3.23	| 2023/11/16	| 集落によるシミュレーションを追加
+	6.0.0.3.22	| 2023/11/13	| Font管理クラスを改善
+	6.0.0.3.21	| 2023/11/09	| プルダウンメニューをunordered_mapでの管理へ変更
+	6.0.0.3.20	| 2023/11/05	| XYZタイルをText Fileから読み込みできるように改善
+	6.0.0.3.19	| 2023/10/31	| 地理情報のバイナリデータの入出力機能を追加
+	6.0.0.3.18	| 2023/10/29	| XYZタイルデータ：傾斜のバイナリ入出力に対応
+	6.0.0.3.17	| 2023/10/28	| 地方区分追加
+	6.0.0.3.16	| 2023/10/24	| enumをunordered_mapに置き換え
+	6.0.0.3.15	| 2023/10/21	| 地名表示の改良/File読み込み不具合修正/OpenMP有効化
+	6.0.0.3.14	| 2023/10/18	| MurMur3の追加及び既存の文字列比較の置換対応
+	6.0.0.3.13	| 2023/10/11	| SFMLのUI表示を改善
+	6.0.0.3.12	| 2023/10/09	| 主にGUIにおけるデータ読み込みの安全性と汎用性を向上
+	6.0.0.3.11	| 2023/10/02	| 入力ファイルを読み込むクラスを作成
+	6.0.0.3.10	| 2023/10/01	| GUI描画ライブラリ「まほろば」を作成
+	6.0.0.3.9	| 2023/10/01	| DxLibで今まで未対応だった描画機能を追加
+	6.0.0.3.8	| 2023/09/28	| upd: 描画ライブラリの順番を統一
+	6.0.0.3.7	| 2023/09/27	| upd: SFMLでのMapviewerの表示を修正
+	6.0.0.3.6	| 2023/09/26	| fix: SFML関連のエラーを修正
+	6.0.0.3.5	| 2023/09/25	| テクスチャの読み込み速度の向上
     6.0.0.3.4	| 2023/09/23	| Android Studioによるアプリ開発機能をサポート
     6.0.0.3.3	| 2023/09/22	| PAXS_GRAPHICA のマルチプラットフォーム対応
     6.0.0.3.2	| 2023/09/20	| 日本の令制国を大幅に追加
