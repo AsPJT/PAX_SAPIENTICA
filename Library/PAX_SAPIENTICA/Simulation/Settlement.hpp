@@ -342,6 +342,40 @@ namespace paxs {
         /// @brief Get the population.
         /// @brief 人口を取得
         std::size_t getPopulation() const noexcept { return agents.size(); }
+
+        /// @brief Divide the settlement.
+        /// @brief 集落を分割
+        Settlement divide() {
+            //　とりあえず、エージェントを半分に分ける
+            std::vector<Agent> new_settlement_agents = std::vector<Agent>(agents.begin() + agents.size() / 2, agents.end());
+            agents.erase(agents.begin() + agents.size() / 2, agents.end());
+
+            // パートナー同士は同じ集落に振り分ける
+            for (auto& agent : agents) {
+                if (agent.isMarried()) {
+                    auto it = std::find_if(new_settlement_agents.begin(), new_settlement_agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
+                    if (it != new_settlement_agents.end()) {
+                        agents.emplace_back(*it);
+                        new_settlement_agents.erase(it);
+                    }
+                }
+            }
+
+            for (auto& agent : new_settlement_agents) {
+                if (agent.isMarried()) {
+                    auto it = std::find_if(agents.begin(), agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
+                    if (it != agents.end()) {
+                        new_settlement_agents.emplace_back(*it);
+                        agents.erase(it);
+                    }
+                }
+            }
+
+            // 新しい集落を作成
+            Settlement new_settlement = Settlement(UniqueIdentification<std::uint_least32_t>::generate(), gen(), environment);
+            new_settlement.setAgents(new_settlement_agents);
+            return new_settlement;
+        }
     private:
         std::shared_ptr<Environment> environment; // 環境
         /// @brief 集落id

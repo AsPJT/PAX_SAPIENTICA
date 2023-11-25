@@ -161,6 +161,19 @@ namespace paxs {
             }
         }
 
+        /// @brief Divide the settlement.
+        /// @brief 集落を分割する
+        void divideSettlements() {
+            // 人口が最大人口を超えている集落を複数探し、分割する
+            for (auto& settlement : settlements) {
+                if (settlement.getPopulation() > max_settlement_population) {
+                    // 分割
+                    Settlement divided_settlement = settlement.divide();
+                    moveSettlementToThis(divided_settlement);
+                }
+            }
+        }
+
     private:
         std::vector<Settlement> settlements;
         std::shared_ptr<Environment> environment;

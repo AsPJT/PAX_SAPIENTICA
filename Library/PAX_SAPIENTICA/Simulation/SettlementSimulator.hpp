@@ -199,6 +199,10 @@ namespace paxs {
                 for (auto& settlement_grid : settlement_grids) {
                     settlement_grid.second.checkSettlements();
                 }
+
+                for (auto& settlement_grid : settlement_grids) {
+                    settlement_grid.second.divideSettlements();
+                }
             }
             catch (const std::exception& e) {
                 Logger logger("Save/error_log.txt");
