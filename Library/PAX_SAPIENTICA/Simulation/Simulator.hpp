@@ -22,6 +22,7 @@
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusDisplayer.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
@@ -57,7 +58,6 @@ namespace paxs {
         /// @brief Initialize the simulator.
         /// @brief エージェントの初期化
         /// @details エージェントをクリアし、指定された数だけランダムに配置する
-        // TODO: とりあえず傾斜の緩やかな陸地にランダムに設置しているため、改修必須
         void init() {
             std::cout << "Initializing..." << std::endl;
             clearAgents();
@@ -108,7 +108,8 @@ namespace paxs {
         std::shared_ptr<Environment> environment; // 環境
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
-        std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
+
+        KanakumaLifeSpan kanakuma_life_span;
 
         /// @brief Clear the agents.
         /// @brief エージェントをクリアする
@@ -138,7 +139,12 @@ namespace paxs {
 
                 // idの生成
                 std::uint_least32_t id = UniqueIdentification<std::uint_least32_t>::generate();
-                agents.push_back(Agent( id, "", position, static_cast<std::uint_least8_t>(gender_dist(gen)), age_dist(gen), life_exp_dist(gen), environment));
+                const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
+                agents.emplace_back(Agent( id, "", position,
+                    set_gender,
+                    age_dist(gen),
+                    kanakuma_life_span.setLifeSpan(set_gender, gen),
+                    environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);
             std::cout << std::endl;

@@ -18,6 +18,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <string>
 
 namespace paxs {
 
@@ -107,6 +108,10 @@ namespace paxs {
         friend std::ostream& operator<<(std::ostream& os, const Vector2<T>& v) noexcept {
             os << "(" << v.x << ", " << v.y << ")";
             return os;
+        }
+
+        std::string toString() const noexcept {
+            return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
         }
 
         std::uint_least64_t toU64() const noexcept {

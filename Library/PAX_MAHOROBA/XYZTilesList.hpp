@@ -164,8 +164,6 @@ namespace paxs {
         // 地図の辞書を更新
         void update(const paxs::MenuBar& menu_bar, const MapView* const map_view, cal::JDN_F64 jdn) {
             if (map_view == nullptr) return; // null の場合は処理しない
-            // 地図を表示しない場合はここで終わり
-            if (!menu_bar.cgetPulldown(MurMur3::calcHash("view")).getIsItemsKey(MurMur3::calcHash("menu_bar_view_map"))) return;
 
             const double map_view_width = map_view->getWidth();
             const double map_view_height = map_view->getHeight();

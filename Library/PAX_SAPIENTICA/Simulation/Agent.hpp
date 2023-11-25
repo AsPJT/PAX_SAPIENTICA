@@ -1,11 +1,11 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023 As Project
+    [Production]	2023 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -37,17 +37,17 @@ namespace paxs {
         using Environment = paxs::Environment<GridType>;
 
         constexpr explicit Agent(const std::uint_least32_t id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen,
-        const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
-        : Object<GridType>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
+            const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
+            : Object<GridType>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
 
         /// @brief Move the agent.
         /// @brief エージェントを移動させる
         void move() {
-            constexpr std::array<Vector2, 8> move_directions {
+            constexpr std::array<Vector2, 8> move_directions{
                     Vector2(-1, -1), Vector2(0, -1), Vector2(1, -1),
                     Vector2(-1, 0), Vector2(1, 0),
                     Vector2(-1, 1), Vector2(0, 1), Vector2(1, 1)
-                };
+            };
             const float current_slope = environment->getSlope(this->position);
 
             const int th_max_slope = 30;
@@ -111,7 +111,8 @@ namespace paxs {
                 if (environment->isLand(this->position + v)) {
                     this->position += v;
                 }
-            } catch (const std::exception&) {
+            }
+            catch (const std::exception&) {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to move agent to " + std::to_string(this->position.x) + ", " + std::to_string(this->position.y) + ".");
                 throw;
@@ -144,10 +145,10 @@ namespace paxs {
 
         constexpr bool operator==(const Agent& a) const noexcept {
             return  Object<GridType>::operator==(a) &&
-                    gender == a.gender &&
-                    age == a.age &&
-                    life_span == a.life_span &&
-                    environment == a.environment;
+                gender == a.gender &&
+                age == a.age &&
+                life_span == a.life_span &&
+                environment == a.environment;
         }
 
         /// @brief Is the agent married?

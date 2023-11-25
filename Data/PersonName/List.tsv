@@ -1,0 +1,3 @@
+file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture	ja-JP
+Data/PersonName/Japan/AsukaPeriod/OnoNoImoko.tsv	place_name	小野妹子	0	1000	1930749	1948341	OnoNoImoko	小野妹子
+Data/PersonName/Japan/AsukaPeriod/SuikoTenno.tsv	place_name	推古天皇	0	1000	1923547	1950540	SuikoTenno	推古天皇

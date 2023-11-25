@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -19,16 +19,23 @@
 #include <cstdint>
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <random>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/RandomSelector.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp>
 #include <PAX_SAPIENTICA/Simulation/Object.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
+
+// M_PI が定義されていない場合
+#ifndef M_PI
+#define M_PI 3.141592653589
+#endif
 
 namespace paxs {
 
@@ -48,103 +55,154 @@ namespace paxs {
 
         /// @brief Add an agent to the settlement.
         /// @brief 集落にエージェントを追加
-        void addAgent(const std::shared_ptr<Agent>& agent) noexcept { agents.push_back(agent); }
+        void addAgent(const Agent& agent) noexcept { agents.emplace_back(agent); }
 
         /// @brief Add agents to the settlement.
         /// @brief 集落にエージェントを追加
-        void addAgents(const std::vector<std::shared_ptr<Agent>>& agents) noexcept {
-            this->agents.insert(this->agents.end(), agents.begin(), agents.end());
+        void addAgents(const std::vector<Agent>& agents_) noexcept {
+            this->agents.insert(this->agents.end(), agents_.begin(), agents_.end());
+        }
+
+        /// @brief Set the agents.
+        /// @brief エージェントを消去
+        void clearAgents() noexcept {
+            this->agents.clear();
+        }
+
+        /// @brief Set the agents.
+        /// @brief エージェントを消去
+        void resizeAgents(const std::size_t size_) noexcept {
+            this->agents.resize(size_);
         }
 
         /// @brief Set the agents.
         /// @brief エージェントを設定
-        void setAgents(const std::vector<std::shared_ptr<Agent>>& agents) noexcept {
-            this->agents = agents;
+        void setAgents(const std::vector<Agent>& agents_) noexcept {
+            this->agents = agents_;
+        }
+
+        /// @brief Set the agents.
+        /// @brief エージェントを設定
+        void setAgent(const Agent& agent_, const std::size_t index_) noexcept {
+            this->agents[index_] = agent_;
         }
 
         /// @brief Delete the agent.
         /// @brief エージェントを削除する
-        void deleteAgent(const std::uint_least64_t id) noexcept {
-            agents.erase(std::remove_if(agents.begin(), agents.end(), [id](const std::shared_ptr<Agent>& agent) { return agent->getId() == id; }), agents.end());
+        void deleteAgent(const std::uint_least64_t id_) noexcept {
+            agents.erase(std::remove_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; }), agents.end());
         }
 
         /// @brief Set the position of the settlement.
         /// @brief 集落の座標を設定
-        void setPosition(const Vector2& position) noexcept {
-            positions = { position };
+        void setPosition(const Vector2& position_) noexcept {
+            position = position_;
         }
 
         /// @brief Get the position of the settlement.
         /// @brief 集落の座標を取得
-        Vector2 getPosition() const noexcept { return positions.back(); }
+        Vector2 getPosition() const noexcept { return position; }
 
         /// @brief Get the agent.
         /// @brief エージェントを取得
         /// @param id The agent's id. エージェントのID
-        std::shared_ptr<Agent> getAgent(const std::uint_least64_t id) const {
-            auto it = std::find_if(agents.begin(), agents.end(), [id](const std::shared_ptr<Agent>& agent) { return agent->getId() == id; });
+        Agent& getAgent(const std::uint_least64_t id_) {
+            auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 paxs::Logger logger("Save/error_log.txt");
                 const std::string message = "Agent not found.";
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
                 throw std::runtime_error(message);
             }
             return *it;
         }
 
-        /// @brief Get the agents.
+        /// @brief Get the agent.
         /// @brief エージェントを取得
-        std::vector<std::shared_ptr<Agent>>& getAgents() const noexcept { return agents; }
+        const Agent& cgetAgent(const std::uint_least64_t id_) const {
+            auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
+            if (it == agents.end()) {
+                paxs::Logger logger("Save/error_log.txt");
+                const std::string message = "Agent not found.";
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+            return *it;
+        }
+
+        /// @brief Get the agent copy.
+        /// @brief エージェントを取得
+        Agent getAgentCopy(const std::uint_least64_t id_) const {
+            auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
+            if (it == agents.end()) {
+                paxs::Logger logger("Save/error_log.txt");
+                const std::string message = "Agent not found.";
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+            return *it;
+        }
+
 
         /// @brief Get the agents.
         /// @brief エージェントを取得
-        std::vector<std::shared_ptr<const Agent>> cgetAgents() const noexcept {
-            std::vector<std::shared_ptr<const Agent>> const_agents;
-            for (const auto& agent : agents) {
-                const_agents.push_back(agent);
-            }
-            return const_agents;
-        }
+        std::vector<Agent>& getAgents() const noexcept { return agents; }
+
+        /// @brief Get the agents.
+        /// @brief エージェントを取得
+        constexpr const std::vector<Agent> cgetAgents() const noexcept { return agents; }
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<std::shared_ptr<Settlement>>& settlements) noexcept {
+        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) {
             // 結婚の条件を満たすエージェントを取得
-            std::vector<std::size_t> marriageable_agents_index;
+            std::vector<std::size_t> marriageable_female_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
-                if (agents[i]->isAbleToMarriage() && agents[i]->getGender() == female) {
-                    if (!isMarried(agents[i]->getAge())) continue;
+                if (agents[i].isAbleToMarriage() && agents[i].getGender() == female) {
+                    if (!isMarried(agents[i].getAge())) continue;
 
-                    marriageable_agents_index.push_back(i);
+                    marriageable_female_index.emplace_back(i);
                 }
             }
 
             // 結婚の条件を満たすエージェントがいない
-            if (marriageable_agents_index.empty()) {
+            if (marriageable_female_index.empty()) {
                 return;
             }
 
-            // 結婚相手を探す
-            std::vector<std::size_t> close_settlements_index_list;
-            for (std::size_t i = 0; i < settlements.size(); ++i) {
-                if (settlements[i]->getPosition().distance(positions[0]) < 10.0f) close_settlements_index_list.push_back(i);
+            // 近隣の集落を探す
+            for (auto it = close_settlements.begin(); it != close_settlements.end();) {
+                if (it->getPosition().distance(position) > marriage_search_range) {
+                    it = close_settlements.erase(it);
+                } else {
+                    ++it;
+                }
             }
 
             // 自分の集落を含めて、近くに集落がない
-            if (close_settlements_index_list.empty()) {
-                Logger logger("Save/warning_log.txt");
-                const std::string message = "No close settlements.";
+            if (close_settlements.empty()) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "No close settlements. Position: " + position.toString();
                 logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                 return;
             }
 
+            // idで自分を探してなかったら、エラー
+            auto it = std::find_if(close_settlements.begin(), close_settlements.end(), [this](const Settlement& settlement) { return settlement.getId() == id; });
+            if (it == close_settlements.end()) {
+                Logger logger("Save/error_log.txt");
+                const std::string message = "Settlement not found.";
+                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                throw std::runtime_error(message);
+            }
+
             // エージェントIDと集落IDのペアを作成
-            std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> agent_settlement_pair;
-            for (std::size_t close_settlement_index : close_settlements_index_list) {
-                for (auto& agent : settlements[close_settlement_index]->cgetAgents()) {
-                    if (agent->isAbleToMarriage() && agent->getGender() == male){
-                        agent_settlement_pair.emplace_back(agent->getId(), settlements[close_settlement_index]->getId());
+            std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> male_settlement_pair;
+            for (auto& close_settlement : close_settlements) {
+                for (auto& agent : close_settlement.cgetAgents()) {
+                    if (agent.isAbleToMarriage() && agent.getGender() == male) {
+                        male_settlement_pair.emplace_back(agent.getId(), close_settlement.getId());
                     }
                 }
             }
@@ -153,54 +211,59 @@ namespace paxs {
             RandomSelector selector;
 
             // first: 女性のインデックス, second: 男性のインデックス
-            const auto marriageable_agents_index_pair = selector.select(marriageable_agents_index.size(), agent_settlement_pair.size());
+            const auto marriageable_agents_index_pair = selector.select(marriageable_female_index.size(), male_settlement_pair.size());
 
             // シミュレーションの設定で母方に移住するか父方に移住するかを決める
             // 母方の場合
             // if (isMatrilocality()) {
             if (true) {
                 for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
-                    std::pair<std::size_t, std::size_t> pair = marriageable_agents_index_pair[i];
-                    std::uint_least64_t male_id = marriageable_agents_index_pair[pair.second].first;
-                    std::uint_least32_t settlement_id = marriageable_agents_index_pair[pair.second].second;
+                    std::pair<std::size_t, std::size_t> index_pair = marriageable_agents_index_pair[i];
+                    std::uint_least64_t male_id = male_settlement_pair[index_pair.second].first;
+                    std::uint_least32_t male_settlement_id = male_settlement_pair[index_pair.second].second;
 
                     bool is_found = false;
-                    for (std::size_t j = 0; j < settlements.size(); ++j) {
-                        if (settlements[j]->getId() == settlement_id) {
-                            agents[marriageable_agents_index_pair[pair.first].first]->marry(male_id);
-                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first]->getId();
+                    Vector2 male_settlement_position;
+                    for (std::size_t j = 0; j < close_settlements.size(); ++j) {
+                        if (close_settlements[j].getId() == male_settlement_id) {
+                            agents[marriageable_female_index[index_pair.first]].marry(male_id);
+                            const std::uint_least64_t female_id = agents[marriageable_female_index[index_pair.first]].getId();
 
-                            std::shared_ptr<Agent> male = settlements[j]->getAgent(male_id);
-                            male->marry(female_id);
-                            agents.push_back(male);
-                            settlements[j]->deleteAgent(male_id);
+                            Agent male_ = close_settlements[j].getAgentCopy(male_id);
+                            male_.marry(female_id);
+                            agents.emplace_back(male_);
 
                             is_found = true;
+                            male_settlement_position = close_settlements[j].getPosition();
                             break;
                         }
                     }
 
                     if (!is_found) {
-                        Logger logger("Save/warning_log.txt");
+                        Logger logger("Save/error_log.txt");
                         const std::string message = "Settlement not found.";
                         logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                     }
+
+                    male_settlement_position /= grid_length;
+                    delete_agent(male_id, male_settlement_id, male_settlement_position);
                 }
-            } else {
+            }
+            else {
                 // 父方の場合
                 for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
                     std::pair<std::size_t, std::size_t> pair = marriageable_agents_index_pair[i];
                     std::uint_least64_t male_id = marriageable_agents_index_pair[pair.second].first;
-                    std::uint_least32_t settlement_id = marriageable_agents_index_pair[pair.second].second;
+                    std::uint_least32_t settlement_id = static_cast<std::uint_least32_t>(marriageable_agents_index_pair[pair.second].second);
 
                     bool is_found = false;
-                    for (std::size_t j = 0; j < settlements.size(); ++j) {
-                        if (settlements[j]->getId() == settlement_id) {
-                            agents[marriageable_agents_index_pair[pair.first].first]->marry(male_id);
-                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first]->getId();
-                            settlements[j]->getAgent(male_id)->marry(female_id);
-
-                            settlements[j]->addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
+                    for (std::size_t j = 0; j < close_settlements.size(); ++j) {
+                        if (close_settlements[j].getId() == settlement_id) {
+                            agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
+                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
+                            // TODO:
+                            // settlements[j].getAgent(male_id).marry(female_id);
+                            // settlements[j].addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
                             deleteAgent(marriageable_agents_index_pair[pair.first].first);
 
                             is_found = true;
@@ -209,7 +272,7 @@ namespace paxs {
                     }
 
                     if (!is_found) {
-                        Logger logger("Save/warning_log.txt");
+                        Logger logger("Save/error_log.txt");
                         const std::string message = "Settlement not found.";
                         logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
                     }
@@ -235,74 +298,127 @@ namespace paxs {
         /// @brief Move.
         /// @brief 移動
         /// @return 集落グリッドを移動したかどうか
-        void move(std::mt19937& engine, int move_probability, std::function<void (const Vector2 current_key, const Vector2 target_key, const std::uint_least64_t id)> settlement_grid_update) {
+        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, int move_probability) {
+            Vector2 current_key;
+            Vector2 target_key;
             try {
                 // 確率で移動
                 std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
-                if (dist(engine) > move_probability) return;
+                if (dist(engine) > move_probability) return { 0, Vector2(), Vector2() };
 
                 // 座標を移動
                 // 移動距離0~max_move_distance
                 std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
+                std::uniform_real_distribution<float> theta_dist(0.0f, 2.0f * M_PI);
 
-                Vector2 current_position = positions.front();
+                Vector2 current_position = position;
                 Vector2 target_position = current_position;
 
                 while (target_position == current_position || !environment->isLive(target_position)) {
-                    float theta = std::uniform_real_distribution<float>(0.0f, 2.0f * M_PI)(engine);
-                    float distance = move_dist(engine);
-                    target_position = current_position + Vector2(std::cos(theta) * distance, std::sin(theta) * distance);
+                    float theta = theta_dist(engine);
+                    int distance = move_dist(engine);
+                    target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
                 }
 
-                Vector2 current_key = current_position / grid_length;
-                Vector2 target_key = target_position / grid_length;
+                current_key = current_position / grid_length;
+                target_key = target_position / grid_length;
 
-                if (current_key == target_key) return;
+                if (current_key == target_key) return { 0, Vector2(), Vector2() };
 
                 is_moved = true;
-                positions = { target_position };
-                settlement_grid_update(current_key, target_key, id);
-            } catch (const std::exception& e) {
+            }
+            catch (const std::exception& e) {
                 Logger logger("Save/error_log.txt");
                 logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
                 throw e;
             }
+            return { id, current_key, target_key };
         }
 
         /// @brief Get the is_moved.
         /// @brief 移動したかどうかを取得
         bool isMoved() const noexcept { return is_moved; }
+
+        /// @brief Get the population.
+        /// @brief 人口を取得
+        std::size_t getPopulation() const noexcept { return agents.size(); }
+
+        /// @brief Divide the settlement.
+        /// @brief 集落を分割
+        Settlement divide() {
+            //　とりあえず、エージェントを半分に分ける
+            std::vector<Agent> new_settlement_agents = std::vector<Agent>(agents.begin() + agents.size() / 2, agents.end());
+            agents.erase(agents.begin() + agents.size() / 2, agents.end());
+
+            // パートナー同士は同じ集落に振り分ける
+            for (Agent& agent : agents) {
+                if (agent.isMarried() && agent.getGender() == female) {
+                    auto it = std::find_if(new_settlement_agents.begin(), new_settlement_agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
+                    if (it != new_settlement_agents.end()) {
+                        agents.emplace_back(*it);
+                        new_settlement_agents.erase(it);
+                    }
+                }
+            }
+
+            for (Agent& agent : new_settlement_agents) {
+                if (agent.isMarried() && agent.getGender() == female) {
+                    auto it = std::find_if(agents.begin(), agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
+                    if (it != agents.end()) {
+                        new_settlement_agents.emplace_back(*it);
+                        agents.erase(it);
+                    }
+                }
+            }
+
+            // 新しい集落を作成
+            Settlement new_settlement = Settlement(UniqueIdentification<std::uint_least32_t>::generate(), gen(), environment);
+            new_settlement.setAgents(new_settlement_agents);
+            return new_settlement;
+        }
     private:
         std::shared_ptr<Environment> environment; // 環境
         /// @brief 集落id
         std::uint_least32_t id;
         /// @brief エージェントの配列
-        std::vector<std::shared_ptr<Agent>> agents;
+        std::vector<Agent> agents;
         /// @brief 集落の座標
-        std::vector<Vector2> positions;
+        Vector2 position;
         /// @brief 既に移動したかどうか
         bool is_moved = false;
 
         std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
-        std::uniform_int_distribution<> life_exp_dist{50, 100}; // 寿命の乱数分布
+        std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
+        std::uniform_real_distribution<> random_dist{ 0.0f, 1.0f }; // 乱数分布
+
+        KanakumaLifeSpan kanakuma_life_span;
 
         /// @brief Birth.
         /// @brief 出産
         void birth() noexcept {
-            std::vector<std::shared_ptr<Agent>> children;
-            for (const auto& agent : agents) {
+            std::vector<Agent> children;
+            for (auto& agent : agents) {
+                if (agent.getBirthIntervalCount() > 0) {
+                    std::uint_least8_t count = agent.decrementBirthIntervalCount();
+                    if (count == 0) {
+                        // 死産
+                        if (random_dist(gen) < 0.1f) continue;
+                        const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
+                        children.emplace_back(Agent(
+                            UniqueIdentification<std::uint_least64_t>::generate(),
+                            0, // TODO: 名前ID
+                            set_gender,
+                            0,
+                            kanakuma_life_span.setLifeSpan(set_gender, gen),
+                            environment
+                        ));
+                    }
+                }
                 // 出産可能かどうか
-                if (!agent->isAbleToGiveBirth() || !isAbleToGiveBirth(agent->getAge())) continue;
+                else if (agent.isAbleToGiveBirth() && isAbleToGiveBirth(agent.getAge())) {
+                    agent.setBirthIntervalCount(birth_interval);
+                }
 
-                children.push_back(std::make_shared<Agent>(
-                    UniqueIdentification<std::uint_least64_t>::generate(),
-                    0, // TODO: 名前ID
-                    static_cast<std::uint_least8_t>(gender_dist(gen)),
-                    0,
-                    static_cast<std::uint_least8_t>(life_exp_dist(gen)),
-                    environment
-                ));
             }
             agents.insert(agents.end(), children.begin(), children.end());
         }
@@ -317,38 +433,57 @@ namespace paxs {
         /// @brief 年齢更新
         void ageUpdate() noexcept {
             for (auto& agent : agents) {
-                agent->incrementAge();
+                agent.incrementAge();
             }
         }
 
         /// @brief Death.
         /// @brief 死亡
         void death() noexcept {
-            agents.erase(std::remove_if(agents.begin(), agents.end(), [](const std::shared_ptr<Agent>& agent) { return agent->isDead(); }), agents.end());
+            for (auto it = agents.begin(); it != agents.end();) {
+                if (!it->isDead()) {
+                    ++it;
+                    continue;
+                }
+
+                std::uint_least64_t partner_id = it->getPartnerId();
+                if (partner_id != 0) {
+                    auto partnerIt = std::find_if(agents.begin(), agents.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
+                    if (partnerIt != agents.end()) {
+                        partnerIt->divorce();
+                    }
+                }
+
+                it = agents.erase(it);
+            }
         }
 
         /// @brief Is the agent married?
         /// @brief 確率で結婚するかどうかを返す
-        bool isMarried(float age) const noexcept {
+        bool isMarried(float age) noexcept {
             const float sigma = 0.25f;
-            auto x = [](std::uint_least32_t age) { return (age - 13) / 8.5f; };
-            auto weight = [=](std::uint_least32_t age) {
+            auto x = [](float age) { return (age - 13) / 8.5f; };
+            auto weight = [=](float age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
-            };
+                };
 
-            return 0.98 * weight(age) / 101.8f;
+            float threshold = 0.98 * weight(age) / 101.8f;
+
+            return random_dist(gen) < threshold;
         }
 
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
-        bool isAbleToGiveBirth(float age) const noexcept {
+        bool isAbleToGiveBirth(float age) noexcept {
             const float sigma = 0.25f;
-            auto x = [](std::uint_least32_t age) { return (age - 14) / 8.5f; };
-            auto weight = [=](std::uint_least32_t age) {
+            auto x = [](float age) { return (age - 14) / 8.5f; };
+            auto weight = [=](float age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
-            };
+                };
 
-            return 16 * weight(age) / 101.8;
+            float threshold = 16 * weight(age) / 101.8;
+
+            return random_dist(gen) < threshold;
         }
     };
 

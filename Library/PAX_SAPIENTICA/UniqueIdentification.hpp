@@ -16,6 +16,8 @@
 
 ##########################################################################################*/
 
+#include <PAX_SAPIENTICA/Logger.hpp>
+
 namespace paxs {
 
     /// @brief A class that generates a unique id.
@@ -28,18 +30,24 @@ namespace paxs {
         /// @brief Generate a unique id.
         /// @brief ユニークなIDを生成する。
         static IdType generate() {
+            if (counter == std::numeric_limits<IdType>::max()) {
+                Logger logger("Save/error_log.txt");
+                std::string message = "The id has reached the maximum value of the type.";
+                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                reset();
+            }
             return counter++;
         }
 
         /// @brief Reset the counter.
         /// @brief カウンターをリセットする。
         static void reset() {
-            counter = 0;
+            counter = 1;
         }
     };
 
     template <typename IdType>
-    IdType UniqueIdentification<IdType>::counter = 0;
+    IdType UniqueIdentification<IdType>::counter = 1;
 
 }
 

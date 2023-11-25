@@ -35,16 +35,22 @@ namespace paxs {
     // 女性の結婚可能年齢：13歳以上60歳未満, 男性の結婚可能年齢：17歳以上60歳未満
     constexpr std::uint_least32_t female_marriageable_age_min = 13;
     constexpr std::uint_least32_t male_marriageable_age_min = 17;
-    constexpr std::uint_least32_t marriageable_age_max = 60;
+    constexpr std::uint_least32_t female_marriageable_age_max = 60;
+    constexpr std::uint_least32_t male_marriageable_age_max = 70;
     // 出産可能：15歳以上50歳未満
     constexpr std::uint_least32_t birthable_age_min = 15;
     constexpr std::uint_least32_t birthable_age_max = 50;
+    // 出産の間隔：10ヶ月
+    constexpr std::uint_least8_t birth_interval = 10;
 
     //　結婚時に近くの集落からエージェントを探す際の探索範囲
-    constexpr std::uint_least32_t search_range = 60;
+    constexpr std::uint_least32_t marriage_search_range = 60;
 
     // 集落をグループ分けする際の1グリッド辺の長さ
     constexpr std::uint_least32_t grid_length = 64;
+
+    // 集落の最大人数
+    constexpr std::uint_least8_t max_settlement_population = 80;
 
     // 最小移動距離
     constexpr std::uint_least32_t min_move_distance = 800;

@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_LOCATION_POINT_HPP
-#define PAX_MAHOROBA_LOCATION_POINT_HPP
+#ifndef PAX_MAHOROBA_PERSON_LOCATION_HPP
+#define PAX_MAHOROBA_PERSON_LOCATION_HPP
 
 #ifndef PAXS_PATH
 #define PAXS_PATH ""
@@ -42,70 +42,78 @@
 
 namespace paxs {
     // 地名
-    struct LocationPoint {
-        constexpr explicit LocationPoint() = default;
-        explicit LocationPoint(
+    struct PersonLocationPoint {
+        constexpr explicit PersonLocationPoint() = default;
+        explicit PersonLocationPoint(
             const std::unordered_map<std::uint_least32_t, std::string>& place_name_,  // 地名
-            const paxs::MercatorDeg& coordinate_,  // 経緯度
+            const paxs::MercatorDeg& start_coordinate_,  // 経緯度
+            const paxs::MercatorDeg& end_coordinate_,  // 経緯度
             const double overall_length_,  // 全長
             const double min_view_,  // 可視化する地図の最小範囲
             const double max_view_,  // 可視化する地図の最大範囲
-            const int min_year_,  // 可視化する時代（古い年～）
-            const int max_year_,  // 可視化する時代（～新しい年）
+            const double min_year_,  // 可視化する時代（古い年～）
+            const double max_year_,  // 可視化する時代（～新しい年）
             const std::uint_least32_t lpe_,  // 対象となる地物の種別
             const std::uint_least32_t place_texture_ // 出典
         ) noexcept
-            : place_name(place_name_), coordinate(coordinate_), overall_length(overall_length_),
+            : place_name(place_name_), start_coordinate(start_coordinate_), end_coordinate(end_coordinate_), overall_length(overall_length_),
             min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_) {}
 
         std::unordered_map<std::uint_least32_t, std::string> place_name{}; // 地名
-        paxs::MercatorDeg coordinate{}; // 経緯度
+        paxs::MercatorDeg start_coordinate{}; // 経緯度
+        paxs::MercatorDeg end_coordinate{}; // 経緯度
         double overall_length = 10; // 全長
         double min_view = 0.0, max_view = 9999.0; // 可視化する地図の拡大縮小範囲
-        int min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
+        double min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t lpe = MurMur3::calcHash("place_name"); // 対象となる地物の種別
         std::uint_least32_t place_texture = 0; // 地物の画像
     };
 
     // 地物の一覧
-    struct LocationPointList {
-        std::vector<LocationPoint> location_point_list{}; // 地物の一覧
+    struct PersonLocationList {
+        std::vector<PersonLocationPoint> person_location_list{}; // 地物の一覧
 
-        paxs::MercatorDeg start_coordinate{}; // 経緯度
-        paxs::MercatorDeg end_coordinate{}; // 経緯度
+        paxs::MercatorDeg start_start_coordinate{}; // 経緯度
+        paxs::MercatorDeg start_end_coordinate{}; // 経緯度
+        paxs::MercatorDeg end_start_coordinate{}; // 経緯度
+        paxs::MercatorDeg end_end_coordinate{}; // 経緯度
         double min_view = 0.0, max_view = 9999.0; // 可視化する地図の拡大縮小範囲
-        int min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
+        double min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t lpe = MurMur3::calcHash("place_name"); // 対象となる地物の種別
         std::uint_least32_t place_texture = 0; // 地物の画像
 
-        constexpr explicit LocationPointList() = default;
-        explicit LocationPointList(
-            const std::vector<LocationPoint>& location_point_list_,  // 地物
-            paxs::MercatorDeg start_coordinate_, // 経緯度
-            paxs::MercatorDeg end_coordinate_, // 経緯度
+        constexpr explicit PersonLocationList() = default;
+        explicit PersonLocationList(
+            const std::vector<PersonLocationPoint>& location_point_list_,  // 地物
+            paxs::MercatorDeg start_start_coordinate_, // 経緯度
+            paxs::MercatorDeg start_end_coordinate_, // 経緯度
+            paxs::MercatorDeg end_start_coordinate_, // 経緯度
+            paxs::MercatorDeg end_end_coordinate_, // 経緯度
             const double min_view_,  // 可視化する地図の最小範囲
             const double max_view_,  // 可視化する地図の最大範囲
-            const int min_year_,  // 可視化する時代（古い年～）
-            const int max_year_,  // 可視化する時代（～新しい年）
+            const double min_year_,  // 可視化する時代（古い年～）
+            const double max_year_,  // 可視化する時代（～新しい年）
             const std::uint_least32_t lpe_,  // 対象となる地物の種別
             const std::uint_least32_t place_texture_ // 出典
         ) noexcept
-            : location_point_list(location_point_list_),
-            start_coordinate(start_coordinate_), end_coordinate(end_coordinate_),
+            : person_location_list(location_point_list_),
+            start_start_coordinate(start_start_coordinate_), start_end_coordinate(start_end_coordinate_),
+            end_start_coordinate(end_start_coordinate_), end_end_coordinate(end_end_coordinate_),
             min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_) {}
 
     };
 
     // GUI に描画する地物の情報を管理・描画するクラス
-    class PlaceNameLocation {
+    class PersonNameLocation {
     public:
         void update(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position) {
             // エージェントの設定を更新
             location_point_list_list.resize(0);
-            std::vector<LocationPoint> location_point_list{}; // 地物の一覧
+            std::vector<PersonLocationPoint> person_location_list{}; // 地物の一覧
             for (std::size_t i = 0; i < agents.size(); ++i) {
-                location_point_list.emplace_back(
+                person_location_list.emplace_back(
                     std::unordered_map < std::uint_least32_t, std::string>(),
+                    paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),
                     paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),
                     10, 100, 0, 0, 99999999,
                     (agents[i].getGender()) ?
@@ -114,7 +122,11 @@ namespace paxs {
                     , 0 /*出典無し*/
                 );
             }
-            location_point_list_list.emplace_back(location_point_list,
+            location_point_list_list.emplace_back(person_location_list,
+                paxs::EquirectangularDeg(
+                    paxs::Vector2<double>(-180/* 経度 */, -90/* 緯度 */)).toMercatorDeg(),
+                paxs::EquirectangularDeg(
+                    paxs::Vector2<double>(180/* 経度 */, 90/* 緯度 */)).toMercatorDeg(),
                 paxs::EquirectangularDeg(
                     paxs::Vector2<double>(-180/* 経度 */, -90/* 緯度 */)).toMercatorDeg(),
                 paxs::EquirectangularDeg(
@@ -123,7 +135,7 @@ namespace paxs {
         }
         // 地物を追加
         void add() {
-            std::string str = "Data/PlaceName/List.tsv";
+            std::string str = "Data/PersonName/List.tsv";
             paxg::InputFile pifs(str, PAXS_PATH);
             if (pifs.fail()) return;
             // 1 行目を読み込む
@@ -184,8 +196,8 @@ namespace paxs {
             }
         }
 
-        PlaceNameLocation() {
-            std::string str = "Data/MiniIcon/List.tsv";
+        PersonNameLocation() {
+            std::string str = "Data/Portrait/List.tsv";
             paxg::InputFile pifs(str, PAXS_PATH);
             if (pifs.fail()) return;
             // 1 行目を読み込む
@@ -230,14 +242,18 @@ namespace paxs {
             const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
 
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
-                const auto& location_point_list = location_point_list_list[h].location_point_list;
+                const auto& person_location_list = location_point_list_list[h].person_location_list;
 
                 auto& lll = location_point_list_list[h];
-                // 空間の範囲外を除去
-                if (lll.end_coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                    || lll.start_coordinate.x >(map_view_center_x + map_view_width / 1.6)
-                    || lll.end_coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                    || lll.start_coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+                //// 空間の範囲外を除去
+                //if (lll.start_end_coordinate.x < (map_view_center_x - map_view_width / 0.6)
+                //    || lll.start_start_coordinate.x >(map_view_center_x + map_view_width / 0.6)
+                //    || lll.start_end_coordinate.y < (map_view_center_y - map_view_height / 0.6)
+                //    || lll.start_start_coordinate.y >(map_view_center_y + map_view_height / 0.6)) continue;
+                //if (lll.end_end_coordinate.x < (map_view_center_x - map_view_width / 0.6)
+                //    || lll.end_start_coordinate.x >(map_view_center_x + map_view_width / 0.6)
+                //    || lll.end_end_coordinate.y < (map_view_center_y - map_view_height / 0.6)
+                //    || lll.end_start_coordinate.y >(map_view_center_y + map_view_height / 0.6)) continue;
                 // 時間の範囲外を除去
                 if (lll.min_year > jdn) continue;
                 if (lll.max_year < jdn) continue;
@@ -245,25 +261,51 @@ namespace paxs {
                 // if (lll.min_view > map_view_width || lll.max_view < map_view_width) continue;
 
                 // 地名を描画
-                for (std::size_t i = 0; i < location_point_list.size(); ++i) {
-                    auto& lli = location_point_list[i];
-                    // 空間の範囲外を除去
-                    if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                        || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
-                        || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                        || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+                for (std::size_t i = 0; i < person_location_list.size(); ++i) {
+                    auto& lli = person_location_list[i];
+                    //// 空間の範囲外を除去
+                    //if (lli.start_coordinate.x < (map_view_center_x - map_view_width / 1.6)
+                    //    || lli.start_coordinate.x >(map_view_center_x + map_view_width / 1.6)
+                    //    || lli.start_coordinate.y < (map_view_center_y - map_view_height / 1.6)
+                    //    || lli.start_coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+                    //if (lli.end_coordinate.x < (map_view_center_x - map_view_width / 1.6)
+                    //    || lli.end_coordinate.x >(map_view_center_x + map_view_width / 1.6)
+                    //    || lli.end_coordinate.y < (map_view_center_y - map_view_height / 1.6)
+                    //    || lli.end_coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
                     // 時間の範囲外を除去
                     if (lli.min_year > jdn) continue;
                     if (lli.max_year < jdn) continue;
+
+                    // 描画する年月日の変位
+                    double view_year_displacement = lli.max_year - lli.min_year;
+                    // 今の年月日の変位
+                    double jdn_displacement = jdn - lli.min_year;
+
+                    // 年月日の正規化
+                    double year_normalization = jdn_displacement / view_year_displacement; // 0.0 から 1.0 の値をとる
+
+                    // 座標の変位
+                    double coordinate_displacement_x = lli.end_coordinate.x - lli.start_coordinate.x;
+                    double coordinate_displacement_y = lli.end_coordinate.y - lli.start_coordinate.y;
+
+                    // 今の座標
+                    double now_coordinate_x = lli.start_coordinate.x + coordinate_displacement_x * year_normalization;
+                    double now_coordinate_y = lli.start_coordinate.y + coordinate_displacement_y * year_normalization;
+
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_width
                         || lli.max_view < map_view_width) {
 
-                        // 描画位置
+                        // -----------------------------------------------------------------------------
+                        // -----------------------------------------------------------------------------
+                        // -----------------------------------------------------------------------------
+                        // -----------------------------------------------------------------------------
+
+                        // 描画位置（後で変える）
                         const paxg::Vec2i draw_pos = paxg::Vec2i{
-    static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+    static_cast<int>((now_coordinate_x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<int>(double(paxg::Window::height()) - ((now_coordinate_y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                         };
 
                         // エージェントを描画
@@ -290,16 +332,27 @@ namespace paxs {
                         continue;
                     }
 
+
+                    // -----------------------------------------------------------------------------
+                    // -----------------------------------------------------------------------------
+                    // -----------------------------------------------------------------------------
+                    // -----------------------------------------------------------------------------
+
+
                     // 描画位置
                     const paxg::Vec2i draw_pos = paxg::Vec2i{
-    static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+    static_cast<int>((now_coordinate_x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<int>(double(paxg::Window::height()) - ((now_coordinate_y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                    };
+
+                    const paxg::Vec2i draw_font_pos = paxg::Vec2i{
+                        draw_pos.x(), draw_pos.y() - 80
                     };
 
                     const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                     // 描画
                     if (texture.find(place_tex) != texture.end()) {
-                        texture.at(place_tex).resizedDrawAt(35, draw_pos);
+                        texture.at(place_tex).resizedDrawAt(300, draw_pos);
                     }
                     // 英語名がない場合
                     if (lli.place_name.find(second_language) == lli.place_name.end()) {
@@ -307,27 +360,27 @@ namespace paxs {
                         if (lli.place_name.find(first_language) != lli.place_name.end()) {
                             font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
                             font.drawAt(lli.place_name.at(first_language)
-                                , draw_pos, paxg::Color(0, 0, 0));
+                                , draw_font_pos, paxg::Color(0, 0, 0));
                         }
                     }
                     // 英語名がある場合
                     else {
                         // 名前（英語）を描画
                         en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                        en_font.drawBottomCenter(lli.place_name.at(second_language), draw_pos
+                        en_font.drawBottomCenter(lli.place_name.at(second_language), draw_font_pos
                             , paxg::Color(0, 0, 0));
                         // 名前を描画
                         if (lli.place_name.find(first_language) != lli.place_name.end()) {
                             font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
                             font.drawTopCenter(lli.place_name.at(first_language)
-                                , draw_pos, paxg::Color(0, 0, 0));
+                                , draw_font_pos, paxg::Color(0, 0, 0));
                         }
                     }
                 }
             }
         }
     private:
-        std::vector<LocationPointList> location_point_list_list{}; // 地物の一覧
+        std::vector<PersonLocationList> location_point_list_list{}; // 地物の一覧
         // アイコンのテクスチャ
         std::unordered_map<std::uint_least32_t, paxg::Texture> texture{};
 
@@ -347,7 +400,7 @@ namespace paxs {
             const std::uint_least32_t place_texture_ // 出典
         ) {
 
-            std::vector<LocationPoint> location_point_list{}; // 地物の一覧
+            std::vector<PersonLocationPoint> person_location_list{}; // 地物の一覧
 
             paxg::InputFile pifs(str_, PAXS_PATH);
             if (pifs.fail()) return;
@@ -358,15 +411,25 @@ namespace paxs {
             // 1 行目を分割する
             std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
-            const std::size_t longitude = getMenuIndex(menu, MurMur3::calcHash("longitude"));
-            if (longitude == SIZE_MAX) return; // 経度がないのはデータにならない
-            const std::size_t latitude = getMenuIndex(menu, MurMur3::calcHash("latitude"));
-            if (latitude == SIZE_MAX) return; // 緯度がないのはデータにならない
+            const std::size_t start_longitude = getMenuIndex(menu, MurMur3::calcHash("start_longitude"));
+            if (start_longitude == SIZE_MAX) return; // 経度がないのはデータにならない
+            const std::size_t start_latitude = getMenuIndex(menu, MurMur3::calcHash("start_latitude"));
+            if (start_latitude == SIZE_MAX) return; // 緯度がないのはデータにならない
 
-            double start_longitude = 180.0; // 始点の経度
-            double end_longitude = -180.0; // 終点の経度
-            double start_latitude = 90.0; // 始点の緯度
-            double end_latitude = -90.0; // 終点の緯度
+            const std::size_t end_longitude = getMenuIndex(menu, MurMur3::calcHash("end_longitude"));
+            if (end_longitude == SIZE_MAX) return; // 経度がないのはデータにならない
+            const std::size_t end_latitude = getMenuIndex(menu, MurMur3::calcHash("end_latitude"));
+            if (end_latitude == SIZE_MAX) return; // 緯度がないのはデータにならない
+
+            double start_start_longitude = 180.0; // 始点の経度
+            double start_end_longitude = -180.0; // 終点の経度
+            double start_start_latitude = 90.0; // 始点の緯度
+            double start_end_latitude = -90.0; // 終点の緯度
+
+            double end_start_longitude = 180.0; // 始点の経度
+            double end_end_longitude = -180.0; // 終点の経度
+            double end_start_latitude = 90.0; // 始点の緯度
+            double end_end_latitude = -90.0; // 終点の緯度
 
             // 配列の添え字番号
             const std::size_t overall_length = getMenuIndex(menu, MurMur3::calcHash("overall_length"));
@@ -385,9 +448,13 @@ namespace paxs {
                 std::vector<std::string> strvec = pifs.split('\t');
 
                 // 経度の文字列が空の場合は読み込まない
-                if (strvec[longitude].size() == 0) continue;
+                if (strvec[start_longitude].size() == 0) continue;
                 // 経度の文字列が空の場合は読み込まない
-                if (strvec[latitude].size() == 0) continue;
+                if (strvec[start_latitude].size() == 0) continue;
+                // 経度の文字列が空の場合は読み込まない
+                if (strvec[end_longitude].size() == 0) continue;
+                // 経度の文字列が空の場合は読み込まない
+                if (strvec[end_latitude].size() == 0) continue;
 
                 // 地名
                 std::unordered_map<std::uint_least32_t, std::string> place_name{};
@@ -402,22 +469,34 @@ namespace paxs {
                     if (strvec[overall_length].size() != 0) is_overall_length = true;
                 }
 
-                double point_longitude = std::stod(strvec[longitude]); // 経度
-                double point_latitude = std::stod(strvec[latitude]); // 緯度
+                double start_point_longitude = std::stod(strvec[start_longitude]); // 経度
+                double start_point_latitude = std::stod(strvec[start_latitude]); // 緯度
                 // 経緯度の範囲を求める
-                start_longitude = (std::min)(start_longitude, point_longitude);
-                start_latitude = (std::min)(start_latitude, point_latitude);
-                end_longitude = (std::max)(end_longitude, point_longitude);
-                end_latitude = (std::max)(end_latitude, point_latitude);
+                start_start_longitude = (std::min)(start_start_longitude, start_point_longitude);
+                start_start_latitude = (std::min)(start_start_latitude, start_point_latitude);
+                start_end_longitude = (std::max)(start_end_longitude, start_point_longitude);
+                start_end_latitude = (std::max)(start_end_latitude, start_point_latitude);
+
+                double end_point_longitude = std::stod(strvec[end_longitude]); // 経度
+                double end_point_latitude = std::stod(strvec[end_latitude]); // 緯度
+                // 経緯度の範囲を求める
+                end_start_longitude = (std::min)(end_start_longitude, end_point_longitude);
+                end_start_latitude = (std::min)(end_start_latitude, end_point_latitude);
+                end_end_longitude = (std::max)(end_end_longitude, end_point_longitude);
+                end_end_latitude = (std::max)(end_end_latitude, end_point_latitude);
 
                 // 格納
-                location_point_list.emplace_back(
+                person_location_list.emplace_back(
                     place_name,
                     paxs::EquirectangularDeg(
                         paxs::Vector2<double>(
-                            point_longitude, // 経度
-                            point_latitude)).toMercatorDeg(), // 緯度
-                    (!is_overall_length) ? 10.0 : std::stod(strvec[overall_length]), // 全長
+                            start_point_longitude, // 経度
+                            start_point_latitude)).toMercatorDeg(), // 緯度
+                    paxs::EquirectangularDeg(
+                    paxs::Vector2<double>(
+                        end_point_longitude, // 経度
+                        end_point_latitude)).toMercatorDeg(), // 緯度
+                    (!is_overall_length) ? 1000.0 : std::stod(strvec[overall_length]), // 全長
                     (minimum_size >= strvec.size()) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
                     (maximum_size >= strvec.size()) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
                     (first_julian_day >= strvec.size()) ? min_year_ : std::stod(strvec[first_julian_day]), // 最小時代
@@ -427,139 +506,23 @@ namespace paxs {
                 );
             }
             // 地物を何も読み込んでいない場合は何もしないで終わる
-            if (location_point_list.size() == 0) return;
+            if (person_location_list.size() == 0) return;
 
             // 読み込んだファイルを格納する
-            location_point_list_list.emplace_back(location_point_list,
+            location_point_list_list.emplace_back(person_location_list,
                 paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(start_longitude/* 経度 */, start_latitude/* 緯度 */)).toMercatorDeg(),
+                    paxs::Vector2<double>(start_start_longitude/* 経度 */, start_start_latitude/* 緯度 */)).toMercatorDeg(),
                 paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(end_longitude/* 経度 */, end_latitude/* 緯度 */)).toMercatorDeg(),
+                    paxs::Vector2<double>(start_end_longitude/* 経度 */, start_end_latitude/* 緯度 */)).toMercatorDeg(),
+                paxs::EquirectangularDeg(
+                    paxs::Vector2<double>(end_start_longitude/* 経度 */, end_start_latitude/* 緯度 */)).toMercatorDeg(),
+                paxs::EquirectangularDeg(
+                    paxs::Vector2<double>(end_end_longitude/* 経度 */, end_end_latitude/* 緯度 */)).toMercatorDeg(),
                 min_view_, max_view_, min_year_, max_year_
                 , lpe_, place_texture_);
         }
     };
 
-    // エージェントの位置を管理
-    class AgentLocation {
-    public:
-        // アイコンのテクスチャ
-        paxg::Texture texture_blue_circle{};
-        paxg::Texture texture_red_circle{};
-
-
-        /// @brief Get the mercator coordinate from the XYZTile coordinate.
-        /// @brief 座標をメルカトル座標で取得
-        paxs::Vector2<double> getLocation(
-            const paxs::Vector2<int>& start_position,
-            const paxs::Vector2<int>& position,
-            const int z) const noexcept {
-            return MapUtility::convertToMercatorCoordinate(start_position, position, z);
-        }
-
-        // テクスチャ生成
-        void init() {
-            texture_blue_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/BlueCircle.svg") };
-            texture_red_circle = paxg::Texture{ PAXS_PATH + std::string("Data/MiniIcon/RedCircle.svg") };
-        }
-
-        void draw(const double jdn,
-            std::unordered_map<std::uint_least64_t, paxs::SettlementGrid<int>>& agents,
-            const paxs::Vector2<int>& start_position,
-            const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-
-            std::size_t& pop_num, // 人口数
-            std::size_t& sat_num // 集落数
-
-        )const {
-
-            pop_num = 0; // 人口を 0 で初期化
-            sat_num = 0; // 集落を 0 で初期化
-
-            //agents.at(0)->getGridPosition().x;
-            // 地名を描画
-            for (const auto& agent : agents) {
-
-                //if (agent.second == nullptr) continue;
-
-                for (const auto& settlement : agent.second.cgetSettlements()) {
-                    ++sat_num; // 集落数を増加させる
-                    pop_num += settlement.getPopulation(); // 人口数を増加させる
-                    //if (settlement.get() == nullptr) continue;
-
-                    // エージェントの初期設定を定義
-                    const auto lli = LocationPoint{
-                        std::unordered_map < std::uint_least32_t, std::string>(),
-                            paxs::MercatorDeg(getLocation(start_position,
-                            paxs::Vector2<int>(
-                    settlement.getPosition().x,
-                        settlement.getPosition().y
-                            )
-                            , 10)),
-                            10, 100,0,0,99999999,
-                        //(agent.getGender()) ?
-                        MurMur3::calcHash("agent1")// :
-                        //MurMur3::calcHash("agent2")
-                        ,0 /* 出典なし */
-                    };
-
-                    // 経緯度の範囲外を除去
-                    if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                        || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
-                        || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                        || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
-
-                    // 範囲内の場合
-                    if (lli.min_view > map_view_width
-                        || lli.max_view < map_view_width
-                        || lli.min_year > jdn
-                        || lli.max_year < jdn) {
-                        if (lli.min_year > jdn) continue;
-                        if (lli.max_year < jdn) continue;
-
-                        // 描画位置
-                        const paxg::Vec2i draw_pos = paxg::Vec2i{
-    static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        };
-
-                        //paxs::Circle
-
-                        // エージェント
-                        if (lli.lpe == MurMur3::calcHash("agent1")) {
-
-                            const std::size_t pop = settlement.getPopulation();
-
-                            paxg::Color pop_color =
-                                (pop == 0) ? paxg::Color(255, 255, 255) :
-                                (pop <= 200) ? paxg::Color(230 - pop, 230 - pop, 230 - pop) :
-                                (pop <= 400) ? paxg::Color(0, 200 - (pop - 200), 200 - (pop - 200)) :
-                                (pop <= 600) ? paxg::Color(200 - (pop - 400), 0, 200 - (pop - 400)) :
-                                (pop <= 800) ? paxg::Color(200 - (pop - 600), 200 - (pop - 600), 0) :
-
-                                paxg::Color(0, 0, 0)
-                                ;
-
-                            paxg::Circle(draw_pos, 2.0f).draw(pop_color);
-
-
-                            //texture_blue_circle.resizedDrawAt(15, draw_pos);
-                            continue;
-                        }
-                        // エージェント
-                        if (lli.lpe == MurMur3::calcHash("agent2")) {
-                            texture_red_circle.resizedDrawAt(15, draw_pos);
-                            continue;
-                        }
-
-                    }
-
-                }
-            }
-        }
-
-    };
-
 }
 
-#endif // !PAX_MAHOROBA_LOCATION_POINT_HPP
+#endif // !PAX_MAHOROBA_PERSON_LOCATION_HPP
