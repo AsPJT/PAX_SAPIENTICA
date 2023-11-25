@@ -119,6 +119,10 @@ namespace paxs {
             partner_id = 0;
         }
 
+        std::uint_least8_t getBirthIntervalCount() const noexcept { return birth_interval_count; }
+        void setBirthIntervalCount(const std::uint_least8_t count) noexcept { birth_interval_count = count; }
+        std::uint_least8_t decrementBirthIntervalCount() noexcept { return --birth_interval_count; }
+
     protected:
         std::uint_least64_t id; // ID
         std::uint_least32_t name_id; // 名前のID
@@ -128,6 +132,7 @@ namespace paxs {
         std::shared_ptr<Environment> environment; // 環境
         bool is_married = false; // 結婚しているかどうか
         std::uint_least64_t partner_id = 0; // 結婚相手のID
+        std::uint_least8_t birth_interval_count = 0; // 出産の間隔のカウント
     };
 }
 

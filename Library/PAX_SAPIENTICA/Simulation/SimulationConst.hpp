@@ -40,6 +40,8 @@ namespace paxs {
     // 出産可能：15歳以上50歳未満
     constexpr std::uint_least32_t birthable_age_min = 15;
     constexpr std::uint_least32_t birthable_age_max = 50;
+    // 出産の間隔：10ヶ月
+    constexpr std::uint_least8_t birth_interval = 10;
 
     //　結婚時に近くの集落からエージェントを探す際の探索範囲
     constexpr std::uint_least32_t marriage_search_range = 60;

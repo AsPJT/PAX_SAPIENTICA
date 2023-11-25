@@ -154,7 +154,7 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) noexcept {
+        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
@@ -363,18 +363,26 @@ namespace paxs {
         /// @brief 出産
         void birth() noexcept {
             std::vector<Agent> children;
-            for (const auto& agent : agents) {
+            for (auto& agent : agents) {
+                if (agent.getBirthIntervalCount() > 0) {
+                    std::uint_least8_t count = agent.decrementBirthIntervalCount();
+                    if (count == 0) {
+                        const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
+                        children.emplace_back(Agent(
+                            UniqueIdentification<std::uint_least64_t>::generate(),
+                            0, // TODO: 名前ID
+                            set_gender,
+                            0,
+                            kanakuma_life_span.setLifeSpan(set_gender, gen),
+                            environment
+                        ));
+                    }
+                }
                 // 出産可能かどうか
-                if (!agent.isAbleToGiveBirth() || !isAbleToGiveBirth(agent.getAge())) continue;
-                const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
-                children.emplace_back(Agent(
-                    UniqueIdentification<std::uint_least64_t>::generate(),
-                    0, // TODO: 名前ID
-                    set_gender,
-                    0,
-                    kanakuma_life_span.setLifeSpan(set_gender, gen),
-                    environment
-                ));
+                else if (agent.isAbleToGiveBirth() && isAbleToGiveBirth(agent.getAge())) {
+                    agent.setBirthIntervalCount(birth_interval);
+                }
+
             }
             agents.insert(agents.end(), children.begin(), children.end());
         }
