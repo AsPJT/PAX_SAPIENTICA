@@ -273,7 +273,7 @@ namespace paxs {
                     for (std::size_t j = 0; j < close_settlements.size(); ++j) {
                         if (close_settlements[j].getId() == settlement_id) {
                             agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
-                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
+                            // const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
                             // TODO:
                             // settlements[j].getAgent(male_id).marry(female_id);
                             // settlements[j].addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
@@ -295,8 +295,8 @@ namespace paxs {
 
         /// @brief Pre update.
         /// @brief 事前更新
-        void preUpdate() noexcept {
-            birth();
+        void preUpdate(KanakumaLifeSpan& kanakuma_life_span) noexcept {
+            birth(kanakuma_life_span);
             emigration();
         }
 
@@ -322,7 +322,7 @@ namespace paxs {
                 // 座標を移動
                 // 移動距離0~max_move_distance
                 std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
-                std::uniform_real_distribution<float> theta_dist(0.0f, 2.0f * M_PI);
+                std::uniform_real_distribution<float> theta_dist(0.0f, static_cast<float>(2.0 * M_PI));
 
                 Vector2 current_position = position;
                 Vector2 target_position = current_position;
@@ -398,10 +398,8 @@ namespace paxs {
         Vector2 position;
 
         std::mt19937* gen; // 乱数生成器
-        std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
-        std::uniform_real_distribution<> random_dist{ 0.0f, 1.0f }; // 乱数分布
-
-        KanakumaLifeSpan kanakuma_life_span;
+        std::uniform_int_distribution<unsigned short> gender_dist{ 0, 1 }; // 性別の乱数分布
+        std::uniform_real_distribution<float> random_dist{ 0.0f, 1.0f }; // 乱数分布
 
         std::shared_ptr<Environment> environment; // 環境
         /// @brief エージェントの配列
@@ -409,14 +407,14 @@ namespace paxs {
 
         /// @brief Birth.
         /// @brief 出産
-        void birth() noexcept {
+        void birth(KanakumaLifeSpan& kanakuma_life_span) noexcept {
             std::vector<Agent> children;
             for (auto& agent : agents) {
                 if (agent.getBirthIntervalCount() > 0) {
                     std::uint_least8_t count = agent.decrementBirthIntervalCount();
                     if (count == 0) {
                         // 死産
-                        if (random_dist(*gen) < 0.1f) continue;
+                        if (random_dist(*gen) < 0.11f) continue;
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
                         children.emplace_back(Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
@@ -433,6 +431,8 @@ namespace paxs {
                 }
 
             }
+            // 新しい赤ちゃんがいない場合はエージェントを追加をしない
+            if (children.size() == 0) return;
             agents.insert(agents.end(), children.begin(), children.end());
         }
 
@@ -445,9 +445,17 @@ namespace paxs {
         /// @brief Age update.
         /// @brief 年齢更新
         void ageUpdate() noexcept {
+#ifdef _OPENMP
+            const int agent_size = static_cast<int>(agents.size());
+#pragma omp parallel for
+            for (int i = 0; i < agent_size; ++i) {
+                agents[i].incrementAge();
+            }
+#else
             for (auto& agent : agents) {
                 agent.incrementAge();
             }
+#endif
         }
 
         /// @brief Death.
@@ -492,7 +500,7 @@ namespace paxs {
                 return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const float threshold = weight(age) * (16.0f / 101.8);
+            const float threshold = weight(age) * (16.0f / 101.8f);
 
             return random_dist(*gen) < threshold;
         }

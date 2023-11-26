@@ -45,9 +45,17 @@ namespace paxs {
             // 他の集落とかぶらない位置を探す
             // ブラックリスト
             std::vector<Vector2> black_list(settlements.size());
+#ifdef _OPENMP
+            const int settlement_size = static_cast<int>(settlements.size());
+#pragma omp parallel for
+            for (int i = 0; i < settlement_size; ++i) {
+                black_list[i] = settlements[i].getPosition();
+            }
+#else
             for (std::size_t i = 0; i < settlements.size(); ++i) {
                 black_list[i] = settlements[i].getPosition();
             }
+#endif
 
             // ランダムな位置を探す
             std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::grid_length - 1);

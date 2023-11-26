@@ -147,7 +147,7 @@ namespace paxs {
 
                 for (auto& settlement_grid : settlement_grids) {
                     for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement.preUpdate();
+                        settlement.preUpdate(kanakuma_life_span);
                     }
                 }
 
@@ -241,7 +241,7 @@ namespace paxs {
             std::vector<std::pair<std::uint_least8_t, std::uint_least32_t>> ryoseikoku_population_list;
             ryoseikoku_population_list.reserve(ryoseikoku_population_map.size());
             for (auto& ryoseikoku_population : ryoseikoku_population_map) {
-                ryoseikoku_population_list.push_back(ryoseikoku_population);
+                ryoseikoku_population_list.emplace_back(ryoseikoku_population);
             }
 
             std::sort(ryoseikoku_population_list.begin(), ryoseikoku_population_list.end(), [](const std::pair<std::uint_least8_t, std::uint_least32_t>& a, const std::pair<std::uint_least8_t, std::uint_least32_t>& b) {
@@ -295,7 +295,7 @@ namespace paxs {
         int move_probability = 0; // 移動確率
 
         std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
+        std::uniform_int_distribution<unsigned short> gender_dist{ 0, 1 }; // 性別の乱数分布
 
         KanakumaLifeSpan kanakuma_life_span;
 
@@ -422,7 +422,6 @@ namespace paxs {
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(set_gender, gen);
 
-                        if (set_lifespan == 0) continue;
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                         settlement.setAgent(Agent(UniqueIdentification<std::uint_least64_t>::generate(),
@@ -464,25 +463,23 @@ namespace paxs {
                     continue;
                 }
 
-                int add_population = population / settlements.size();
+                const int add_population = population / static_cast<int>(settlements.size());
 
                 for (auto& settlement : settlements) {
-                    std::vector<Agent> agents;
+                    std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(set_gender, gen);
 
-                        if (set_lifespan == 0) continue;
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
-                        Agent agent = Agent(
+                        agents[i] = Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
                             set_gender,
                             lifespan_dist(gen),
                             set_lifespan
                         );
-                        agents.emplace_back(agent);
                     }
                     settlement.addAgents(agents);
                 }

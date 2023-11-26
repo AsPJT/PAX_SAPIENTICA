@@ -723,11 +723,11 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
                     const std::string map_list_path = path8 + "Data/Simulation/MapList.tsv";
                     const std::string japan_provinces_path = path8 + "Data/Simulation/Japan200-725";
-                    paxs::Vector2<int> start_position(861, 381);
-                    paxs::Vector2<int> end_position(950, 450);
+                    paxs::Vector2<int> init_start_position(861, 381);
+                    paxs::Vector2<int> init_end_position(950, 450);
                     //std::random_device seed_gen;
                     //simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());
-                    simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, 1);
+                    simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, init_start_position, init_end_position, 10, 1);
                     simulator->init();
                     koyomi_siv.jdn.setDay(1794474); // シミュレーション初期時の日付に設定
                     //*simulator = *old_simulator;

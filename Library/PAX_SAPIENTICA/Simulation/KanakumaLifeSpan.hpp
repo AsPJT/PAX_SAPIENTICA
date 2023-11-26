@@ -35,13 +35,13 @@ namespace paxs {
         std::uniform_int_distribution<> life_male_adult_num{ 1, 38 }; // 金隈遺跡の寿命データによる男性の数
         std::uniform_int_distribution<> life_female_adult_num{ 1, 44 }; // 金隈遺跡の寿命データによる女性の数
 
-        std::uniform_int_distribution<> life_infant_exp_dist{ 0, 1 * steps_per_year - 1 }; // 乳児の寿命の乱数分布
-        std::uniform_int_distribution<> life_toddler_exp_dist{ 1 * steps_per_year, 6 * steps_per_year - 1 }; // 幼児の寿命の乱数分布
-        std::uniform_int_distribution<> life_child_exp_dist{ 6 * steps_per_year, 12 * steps_per_year - 1 }; // 小児の寿命の乱数分布
-        std::uniform_int_distribution<> life_young_exp_dist{ 12 * steps_per_year, 20 * steps_per_year - 1 }; // 若年の寿命の乱数分布
-        std::uniform_int_distribution<> life_adult_exp_dist{ 20 * steps_per_year, 40 * steps_per_year - 1 }; // 成年の寿命の乱数分布
-        std::uniform_int_distribution<> life_mature_exp_dist{ 40 * steps_per_year, 60 * steps_per_year - 1 }; // 熟年の寿命の乱数分布
-        std::uniform_int_distribution<> life_older_exp_dist{ 60 * steps_per_year, 80 * steps_per_year - 1 }; // 老年の寿命の乱数分布
+        std::uniform_int_distribution<> life_infant_exp_dist{ 1, 1 * steps_per_year }; // 乳児の寿命の乱数分布
+        std::uniform_int_distribution<> life_toddler_exp_dist{ 1 * steps_per_year + 1, 6 * steps_per_year }; // 幼児の寿命の乱数分布
+        std::uniform_int_distribution<> life_child_exp_dist{ 6 * steps_per_year + 1, 12 * steps_per_year }; // 小児の寿命の乱数分布
+        std::uniform_int_distribution<> life_young_exp_dist{ 12 * steps_per_year + 1, 20 * steps_per_year }; // 若年の寿命の乱数分布
+        std::uniform_int_distribution<> life_adult_exp_dist{ 20 * steps_per_year + 1, 40 * steps_per_year }; // 成年の寿命の乱数分布
+        std::uniform_int_distribution<> life_mature_exp_dist{ 40 * steps_per_year + 1, 60 * steps_per_year }; // 熟年の寿命の乱数分布
+        std::uniform_int_distribution<> life_older_exp_dist{ 60 * steps_per_year + 1, 80 * steps_per_year }; // 老年の寿命の乱数分布
 
     public:
 

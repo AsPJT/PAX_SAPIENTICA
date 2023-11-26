@@ -90,17 +90,18 @@ namespace paxs {
                 // 型名をstringからTに変換
                 const std::uint_least32_t data_type = MurMur3::calcHash(settings[i][data_type_column].size(), settings[i][data_type_column].c_str());
                 const std::uint_least32_t key = MurMur3::calcHash(settings[i][key_column].size(), settings[i][key_column].c_str());
+                const std::string& key_str = settings[i][key_column];
                 if (data_type == MurMur3::calcHash("u8")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
                 else if (data_type == MurMur3::calcHash("u32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
                 else if (data_type == MurMur3::calcHash("f32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
                 else if (data_type == MurMur3::calcHash("s16")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
                 else {
                     Logger logger("Save/error_log.txt");
