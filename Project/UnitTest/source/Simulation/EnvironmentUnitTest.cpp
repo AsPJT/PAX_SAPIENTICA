@@ -58,7 +58,7 @@ TEST_F (EnvironmentUnitTest, getEndPosition) {
 TEST_F (EnvironmentUnitTest, getData) {
     const paxs::Vector2<int> test_position(0, 0);
     std::uint_least8_t expected = 0;
-    std::uint_least8_t actual = environment.getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), test_position);
+    std::uint_least8_t actual = environment.getData<std::uint_least8_t>(paxs::MurMur3::calcHash("gbank"), test_position);
     EXPECT_EQ(expected, actual);
 }
 
