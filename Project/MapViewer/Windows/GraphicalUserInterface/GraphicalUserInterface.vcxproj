@@ -346,6 +346,19 @@
     <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\StringViewer.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTiles.hpp" />
     <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTilesList.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Agent.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Data.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Environment.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Human.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\JapanProvinces.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\KanakumaLifeSpan.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Object.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Settlement.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementAgent.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementGrid.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementSimulator.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SimulationConst.hpp" />
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Simulator.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

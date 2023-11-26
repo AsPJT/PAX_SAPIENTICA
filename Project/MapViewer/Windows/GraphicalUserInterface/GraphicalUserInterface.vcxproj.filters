@@ -145,6 +145,9 @@
     <Filter Include="Library\Mahoroba">
       <UniqueIdentifier>{eaa03a46-201c-479f-b8db-8667ac9eb9d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Library\Simulation">
+      <UniqueIdentifier>{ebd846c6-1235-454d-9e95-65d26d92ded0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -865,6 +868,45 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\InputFileKeyMatrix.hpp">
       <Filter>Library\Graphica</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Agent.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Data.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Environment.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Human.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\JapanProvinces.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\KanakumaLifeSpan.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Object.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Settlement.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementAgent.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementGrid.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementSimulator.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SimulationConst.hpp">
+      <Filter>Library\Simulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Simulator.hpp">
+      <Filter>Library\Simulation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
