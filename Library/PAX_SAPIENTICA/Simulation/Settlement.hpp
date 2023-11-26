@@ -39,6 +39,20 @@
 
 namespace paxs {
 
+    namespace settlement {
+
+        // std::sqrt(2 * M_PI)
+        constexpr float sqrt_2_x_pi = static_cast<float>(2.506628275);
+
+        // 結婚・出産の定数
+        constexpr float sigma = 0.25f;
+        constexpr float sigma_p_2 = sigma * sigma;
+        constexpr float sigma_p_2_x_2 = (2 * sigma_p_2);
+
+        // sigma * sqrt_2_x_pi
+        constexpr float sigma_x_sqrt_2_x_pi = sigma * sqrt_2_x_pi;
+    }
+
     template <typename GridType>
     class Settlement {
     public:
@@ -47,7 +61,7 @@ namespace paxs {
         using Object = paxs::Object<GridType>;
         using Agent = paxs::SettlementAgent<GridType>;
 
-        constexpr explicit Settlement(const std::uint_least32_t id, const unsigned seed, const std::shared_ptr<Environment> env) noexcept : id(id), gen(seed), environment(env) {}
+        constexpr explicit Settlement(const std::uint_least32_t id, std::mt19937& gen_, const std::shared_ptr<Environment> env) noexcept : id(id), gen(&gen_), environment(env) {}
 
         /// @brief Get the uuid.
         /// @brief idを取得
@@ -142,7 +156,6 @@ namespace paxs {
             }
             return *it;
         }
-
 
         /// @brief Get the agents.
         /// @brief エージェントを取得
@@ -260,7 +273,7 @@ namespace paxs {
                     for (std::size_t j = 0; j < close_settlements.size(); ++j) {
                         if (close_settlements[j].getId() == settlement_id) {
                             agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
-                            const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
+                            // const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
                             // TODO:
                             // settlements[j].getAgent(male_id).marry(female_id);
                             // settlements[j].addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
@@ -282,8 +295,8 @@ namespace paxs {
 
         /// @brief Pre update.
         /// @brief 事前更新
-        void preUpdate() noexcept {
-            birth();
+        void preUpdate(KanakumaLifeSpan& kanakuma_life_span) noexcept {
+            birth(kanakuma_life_span);
             emigration();
         }
 
@@ -309,7 +322,7 @@ namespace paxs {
                 // 座標を移動
                 // 移動距離0~max_move_distance
                 std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
-                std::uniform_real_distribution<float> theta_dist(0.0f, 2.0f * M_PI);
+                std::uniform_real_distribution<float> theta_dist(0.0f, static_cast<float>(2.0 * M_PI));
 
                 Vector2 current_position = position;
                 Vector2 target_position = current_position;
@@ -372,45 +385,43 @@ namespace paxs {
             }
 
             // 新しい集落を作成
-            Settlement new_settlement = Settlement(UniqueIdentification<std::uint_least32_t>::generate(), gen(), environment);
+            Settlement new_settlement = Settlement(UniqueIdentification<std::uint_least32_t>::generate(), *gen, environment);
             new_settlement.setAgents(new_settlement_agents);
             return new_settlement;
         }
     private:
-        std::shared_ptr<Environment> environment; // 環境
-        /// @brief 集落id
-        std::uint_least32_t id;
-        /// @brief エージェントの配列
-        std::vector<Agent> agents;
-        /// @brief 集落の座標
-        Vector2 position;
         /// @brief 既に移動したかどうか
         bool is_moved = false;
+        /// @brief 集落id
+        std::uint_least32_t id;
+        /// @brief 集落の座標
+        Vector2 position;
 
-        std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
-        std::uniform_real_distribution<> random_dist{ 0.0f, 1.0f }; // 乱数分布
+        std::mt19937* gen; // 乱数生成器
+        std::uniform_int_distribution<unsigned short> gender_dist{ 0, 1 }; // 性別の乱数分布
+        std::uniform_real_distribution<float> random_dist{ 0.0f, 1.0f }; // 乱数分布
 
-        KanakumaLifeSpan kanakuma_life_span;
+        std::shared_ptr<Environment> environment; // 環境
+        /// @brief エージェントの配列
+        std::vector<Agent> agents;
 
         /// @brief Birth.
         /// @brief 出産
-        void birth() noexcept {
+        void birth(KanakumaLifeSpan& kanakuma_life_span) noexcept {
             std::vector<Agent> children;
             for (auto& agent : agents) {
                 if (agent.getBirthIntervalCount() > 0) {
                     std::uint_least8_t count = agent.decrementBirthIntervalCount();
                     if (count == 0) {
                         // 死産
-                        if (random_dist(gen) < 0.1f) continue;
-                        const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
+                        if (random_dist(*gen) < 0.11f) continue;
+                        const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
                         children.emplace_back(Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
                             set_gender,
                             0,
-                            kanakuma_life_span.setLifeSpan(set_gender, gen),
-                            environment
+                            kanakuma_life_span.setLifeSpan(set_gender, *gen)
                         ));
                     }
                 }
@@ -420,6 +431,8 @@ namespace paxs {
                 }
 
             }
+            // 新しい赤ちゃんがいない場合はエージェントを追加をしない
+            if (children.size() == 0) return;
             agents.insert(agents.end(), children.begin(), children.end());
         }
 
@@ -432,9 +445,17 @@ namespace paxs {
         /// @brief Age update.
         /// @brief 年齢更新
         void ageUpdate() noexcept {
+#ifdef _OPENMP
+            const int agent_size = static_cast<int>(agents.size());
+#pragma omp parallel for
+            for (int i = 0; i < agent_size; ++i) {
+                agents[i].incrementAge();
+            }
+#else
             for (auto& agent : agents) {
                 agent.incrementAge();
             }
+#endif
         }
 
         /// @brief Death.
@@ -460,30 +481,28 @@ namespace paxs {
 
         /// @brief Is the agent married?
         /// @brief 確率で結婚するかどうかを返す
-        bool isMarried(float age) noexcept {
-            const float sigma = 0.25f;
+        bool isMarried(const float age) noexcept {
             auto x = [](float age) { return (age - 13) / 8.5f; };
             auto weight = [=](float age) {
-                return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
+                return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            float threshold = 0.98 * weight(age) / 101.8f;
+            const float threshold = weight(age) * (0.98f / 101.8f);
 
-            return random_dist(gen) < threshold;
+            return random_dist(*gen) < threshold;
         }
 
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
-        bool isAbleToGiveBirth(float age) noexcept {
-            const float sigma = 0.25f;
+        bool isAbleToGiveBirth(const float age) noexcept {
             auto x = [](float age) { return (age - 14) / 8.5f; };
             auto weight = [=](float age) {
-                return std::exp(-std::pow(std::log(x(age)), 2) / (2 * std::pow(sigma, 2))) / (x(age) * sigma * std::sqrt(2 * M_PI));
+                return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            float threshold = 16 * weight(age) / 101.8;
+            const float threshold = weight(age) * (16.0f / 101.8f);
 
-            return random_dist(gen) < threshold;
+            return random_dist(*gen) < threshold;
         }
     };
 

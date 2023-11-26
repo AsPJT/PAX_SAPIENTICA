@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -70,7 +70,7 @@ namespace paxs {
             for (std::size_t i = 1; i < japan_region_tsv.size(); ++i) {
                 try {
                     JapanRegion japan_region;
-                    japan_region.id = std::stoi(japan_region_tsv[i][0]);
+                    japan_region.id = static_cast<std::uint_least8_t>(std::stoi(japan_region_tsv[i][0]));
                     japan_region.name = japan_region_tsv[i][1];
                     japan_region.population = std::stoi(japan_region_tsv[i][2]);
                     japan_regions.emplace_back(japan_region);
@@ -84,9 +84,9 @@ namespace paxs {
             for (std::size_t i = 1; i < ryoseikoku_tsv.size(); ++i) {
                 try {
                     Ryoseikoku ryoseikoku;
-                    ryoseikoku.id = std::stoi(ryoseikoku_tsv[i][0]);
+                    ryoseikoku.id = static_cast<std::uint_least8_t>(std::stoi(ryoseikoku_tsv[i][0]));
                     ryoseikoku.name = ryoseikoku_tsv[i][1];
-                    ryoseikoku.region_id = std::stoi(ryoseikoku_tsv[i][2]);
+                    ryoseikoku.region_id = static_cast<std::uint_least8_t>(std::stoi(ryoseikoku_tsv[i][2]));
                     ryoseikoku.settlement_population_min_ad200 = std::stoi(ryoseikoku_tsv[i][3]);
                     ryoseikoku.settlement_population_max_ad200 = std::stoi(ryoseikoku_tsv[i][4]);
                     ryoseikoku.population_ad200 = std::stoi(ryoseikoku_tsv[i][5]);

@@ -21,6 +21,7 @@
 
 #include <gtest/gtest.h>
 
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 
@@ -57,7 +58,7 @@ TEST_F (EnvironmentUnitTest, getEndPosition) {
 TEST_F (EnvironmentUnitTest, getData) {
     const paxs::Vector2<int> test_position(0, 0);
     std::uint_least8_t expected = 0;
-    std::uint_least8_t actual = environment.getData<std::uint_least8_t>("gbank", test_position);
+    std::uint_least8_t actual = environment.getData<std::uint_least8_t>(paxs::MurMur3::calcHash("gbank"), test_position);
     EXPECT_EQ(expected, actual);
 }
 

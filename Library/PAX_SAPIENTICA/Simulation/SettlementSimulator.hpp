@@ -108,7 +108,7 @@ namespace paxs {
                     it->second.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
                 }
                 else {
-                    SettlementGrid settlement_grid = SettlementGrid(target_key * grid_length, environment, gen());
+                    SettlementGrid settlement_grid = SettlementGrid(target_key * grid_length, environment, gen);
                     settlement_grid.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
                     settlement_grids[target_key.toU64()] = settlement_grid;
                 }
@@ -147,7 +147,7 @@ namespace paxs {
 
                 for (auto& settlement_grid : settlement_grids) {
                     for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement.preUpdate();
+                        settlement.preUpdate(kanakuma_life_span);
                     }
                 }
 
@@ -227,7 +227,7 @@ namespace paxs {
             std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second->getSettlements()) {
-                    std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>("gbank", settlement.getPosition());
+                    std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), settlement.getPosition());
                     auto it = ryoseikoku_population_map.find(ryoseikoku_id);
                     if (it != ryoseikoku_population_map.end()) {
                         it->second += settlement.getPopulation();
@@ -241,7 +241,7 @@ namespace paxs {
             std::vector<std::pair<std::uint_least8_t, std::uint_least32_t>> ryoseikoku_population_list;
             ryoseikoku_population_list.reserve(ryoseikoku_population_map.size());
             for (auto& ryoseikoku_population : ryoseikoku_population_map) {
-                ryoseikoku_population_list.push_back(ryoseikoku_population);
+                ryoseikoku_population_list.emplace_back(ryoseikoku_population);
             }
 
             std::sort(ryoseikoku_population_list.begin(), ryoseikoku_population_list.end(), [](const std::pair<std::uint_least8_t, std::uint_least32_t>& a, const std::pair<std::uint_least8_t, std::uint_least32_t>& b) {
@@ -295,7 +295,7 @@ namespace paxs {
         int move_probability = 0; // 移動確率
 
         std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<> gender_dist{ 0, 1 }; // 性別の乱数分布
+        std::uniform_int_distribution<unsigned short> gender_dist{ 0, 1 }; // 性別の乱数分布
 
         KanakumaLifeSpan kanakuma_life_span;
 
@@ -350,7 +350,7 @@ namespace paxs {
                 }
 
                 // 令制国ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>("gbank", position);
+                std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), position);
                 if (ryoseikoku_id < 90) {
                     (*live_list)[ryoseikoku_id].emplaceBack(live_probability, land_position);
                 }
@@ -388,7 +388,7 @@ namespace paxs {
                     Vector2 live_position = Vector2::fromU64(live.habitable_land_positions[live_probability_index]);
 
                     // 令制国ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                    // std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>("gbank", live_position);
+                    // std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), live_position);
 
                     auto ryoseikoku_population_it = ryoseikoku_population_map.find(ryoseikoku_id);
                     if (ryoseikoku_population_it == ryoseikoku_population_map.end()) {
@@ -407,12 +407,12 @@ namespace paxs {
                     std::uint64_t key = grid_position.toU64();
                     // グリッドが存在しない場合は作成
                     if (settlement_grids.find(key) == settlement_grids.end()) {
-                        settlement_grids[key] = SettlementGrid(grid_position * grid_length, environment, gen());
+                        settlement_grids[key] = SettlementGrid(grid_position * grid_length, environment, gen);
                     }
                     // 集落を作成
                     Settlement settlement = Settlement(
                         UniqueIdentification<std::uint_least32_t>::generate(),
-                        gen(),
+                        gen,
                         environment
                     );
                     settlement.setPosition(live_position);
@@ -422,15 +422,13 @@ namespace paxs {
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(set_gender, gen);
 
-                        if (set_lifespan == 0) continue;
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                         settlement.setAgent(Agent(UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
                             set_gender,
                             lifespan_dist(gen),
-                            set_lifespan,
-                            environment), static_cast<std::size_t>(i));
+                            set_lifespan), static_cast<std::size_t>(i));
                     }
 
                     // 令制国の人口を減らす
@@ -465,26 +463,23 @@ namespace paxs {
                     continue;
                 }
 
-                int add_population = population / settlements.size();
+                const int add_population = population / static_cast<int>(settlements.size());
 
                 for (auto& settlement : settlements) {
-                    std::vector<Agent> agents;
+                    std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(set_gender, gen);
 
-                        if (set_lifespan == 0) continue;
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
-                        Agent agent = Agent(
+                        agents[i] = Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
                             set_gender,
                             lifespan_dist(gen),
-                            set_lifespan,
-                            environment
+                            set_lifespan
                         );
-                        agents.emplace_back(agent);
                     }
                     settlement.addAgents(agents);
                 }
