@@ -702,6 +702,14 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                             (*one_font).drawTopRight(
                                 std::string(sueki_nakamura),
                                 paxg::Vec2i(paxg::Window::width() - 60, 590), paxg::Color(0, 0, 0));
+
+
+
+                            if (simulator != nullptr) {
+                                (*one_font).drawTopRight(
+                                    "torai: " + std::to_string(simulator->emigrationSize()),
+                                    paxg::Vec2i(paxg::Window::width() - 60, 650), paxg::Color(0, 0, 0));
+                            }
                         }
                     }
                 }
@@ -717,10 +725,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
                 if (s3d::SimpleGUI::Button(U"Init", s3d::Vec2{ 10, 60 })) {
 
-#ifdef PAXS_USING_SIV3D
-                        const s3d::Audio audio{ U"ojigi.mid" };
-#endif
-
                     const std::string map_list_path = path8 + "Data/Simulation/MapList.tsv";
                     const std::string japan_provinces_path = path8 + "Data/Simulation/Japan200-725";
                     paxs::Vector2<int> init_start_position(861, 381);
@@ -729,12 +733,8 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                     //simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());
                     simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, init_start_position, init_end_position, 10, 1);
                     simulator->init();
-                    koyomi_siv.jdn.setDay(1794474); // シミュレーション初期時の日付に設定
+                    koyomi_siv.jdn.setDay(/*1794474 + 15*//*1750661*/1728746); // シミュレーション初期時の日付に設定
                     //*simulator = *old_simulator;
-
-#ifdef PAXS_USING_SIV3D
-                        audio.play(); // オーディオを再生
-#endif
 
                     //simulator_ = paxs::Simulator<int>(
                     //    path8 + "Data/Simulation/MapList.tsv",

@@ -47,23 +47,7 @@ namespace paxs {
 
         /// @brief 英語未翻訳
         /// @brief 寿命を決定する
-        std::uint_least32_t setLifeSpan(const std::uint_least8_t gender_, std::mt19937& gen) {
-
-            if (life_person_num(gen) <= 37) { // もし子供だったら
-                const std::uint_least32_t child_type = static_cast<std::uint_least32_t>(life_child_num(gen));
-
-                if (child_type <= 6) { // 乳児
-                    return static_cast<std::uint_least32_t>(life_infant_exp_dist(gen));
-                }
-                else if (child_type <= (6 + 22)) { // 幼児
-                    return static_cast<std::uint_least32_t>(life_toddler_exp_dist(gen));
-                }
-                else if (child_type <= (6 + 22 + 5)) { // 小児
-                    return static_cast<std::uint_least32_t>(life_child_exp_dist(gen));
-                }
-                // 若年
-                return static_cast<std::uint_least32_t>(life_young_exp_dist(gen));
-            }
+        std::uint_least32_t setAdultLifeSpan(const std::uint_least8_t gender_, std::mt19937& gen) {
             // もし大人だったら
             if (gender_ == 0) { // 女性の場合
                 const std::uint_least32_t adult_type = static_cast<std::uint_least32_t>(life_male_adult_num(gen));
@@ -89,6 +73,29 @@ namespace paxs {
             }
             // 老年
             return static_cast<std::uint_least32_t>(life_older_exp_dist(gen));
+        }
+
+        /// @brief 英語未翻訳
+        /// @brief 寿命を決定する
+        std::uint_least32_t setLifeSpan(const std::uint_least8_t gender_, std::mt19937& gen) {
+
+            if (life_person_num(gen) <= 37) { // もし子供だったら
+                const std::uint_least32_t child_type = static_cast<std::uint_least32_t>(life_child_num(gen));
+
+                if (child_type <= 6) { // 乳児
+                    return static_cast<std::uint_least32_t>(life_infant_exp_dist(gen));
+                }
+                else if (child_type <= (6 + 22)) { // 幼児
+                    return static_cast<std::uint_least32_t>(life_toddler_exp_dist(gen));
+                }
+                else if (child_type <= (6 + 22 + 5)) { // 小児
+                    return static_cast<std::uint_least32_t>(life_child_exp_dist(gen));
+                }
+                // 若年
+                return static_cast<std::uint_least32_t>(life_young_exp_dist(gen));
+            }
+            // もし大人だったら
+            return setAdultLifeSpan(gender_, gen);
         }
 
     };

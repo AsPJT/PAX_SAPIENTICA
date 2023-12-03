@@ -26,23 +26,14 @@
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
-#include <PAX_MAHOROBA/3DModel.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_MAHOROBA/LocationPoint.hpp>
-#include <PAX_MAHOROBA/LocationRange.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
-#include <PAX_MAHOROBA/XYZTiles.hpp>
-#include <PAX_MAHOROBA/XYZTilesList.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/TouchManager.hpp>
-#include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
-
-#include <PAX_GRAPHICA/Key.hpp>
+#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/TouchManager.hpp>
 
 namespace paxs {
 
@@ -192,8 +183,8 @@ namespace paxs {
                 calendar_update_counter = 0;
                 // 時間を進めている場合（逆行していない場合）
                 if (move_forward_in_time) {
-                    if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
-                        jdn.getDay() += (365.2425 / 12.0);//1.0;//(0.8 / 30.0); // ユリウス日を繰り上げ（次の日にする）
+                    if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
+                        jdn += (0.8 / 30.0); //(365.2425 / 12.0);//1.0;// ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                     //jdn += 365; // ユリウス日を繰り上げ（次の日にする）
@@ -208,8 +199,8 @@ namespace paxs {
                 }
                 // 時間を逆行している場合
                 else if (go_back_in_time) {
-                    if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
-                        jdn.getDay() -= (365.2425 / 12.0);//1.0;//(0.8 / 30.0); // ユリウス日を繰り上げ（次の日にする）
+                    if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
+                        jdn -= (0.8 / 30.0); //(365.2425 / 12.0);//1.0;// ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                 }
