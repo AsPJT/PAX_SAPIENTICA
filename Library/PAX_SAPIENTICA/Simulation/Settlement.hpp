@@ -123,9 +123,8 @@ namespace paxs {
         Agent& getAgent(const std::uint_least64_t id_) {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
-                paxs::Logger logger("Save/error_log.txt");
                 const std::string message = "Agent not found.";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                PAXS_ERROR(message);
                 throw std::runtime_error(message);
             }
             return *it;
@@ -136,9 +135,8 @@ namespace paxs {
         const Agent& cgetAgent(const std::uint_least64_t id_) const {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
-                paxs::Logger logger("Save/error_log.txt");
                 const std::string message = "Agent not found.";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                PAXS_ERROR(message);
                 throw std::runtime_error(message);
             }
             return *it;
@@ -149,9 +147,8 @@ namespace paxs {
         Agent getAgentCopy(const std::uint_least64_t id_) const {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
-                paxs::Logger logger("Save/error_log.txt");
                 const std::string message = "Agent not found.";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                PAXS_ERROR(message);
                 throw std::runtime_error(message);
             }
             return *it;
@@ -167,7 +164,7 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) {
+        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) noexcept {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
@@ -196,19 +193,15 @@ namespace paxs {
 
             // 自分の集落を含めて、近くに集落がない
             if (close_settlements.empty()) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "No close settlements. Position: " + position.toString();
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                PAXS_ERROR("Settlement not found.");
                 return;
             }
 
-            // idで自分を探してなかったら、エラー
+            // idで自分を探す
             auto it = std::find_if(close_settlements.begin(), close_settlements.end(), [this](const Settlement& settlement) { return settlement.getId() == id; });
             if (it == close_settlements.end()) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Settlement not found.";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Settlement not found.");
+                return;
             }
 
             // エージェントIDと集落IDのペアを作成
@@ -254,9 +247,8 @@ namespace paxs {
                     }
 
                     if (!is_found) {
-                        Logger logger("Save/error_log.txt");
-                        const std::string message = "Settlement not found.";
-                        logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                        PAXS_ERROR("Settlement not found.");
+                        continue;
                     }
 
                     male_settlement_position /= grid_length;
@@ -286,9 +278,8 @@ namespace paxs {
                     }
 
                     if (!is_found) {
-                        Logger logger("Save/error_log.txt");
-                        const std::string message = "Settlement not found.";
-                        logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                        PAXS_ERROR("Settlement not found.");
+                        continue;
                     }
                 }
             }
@@ -312,40 +303,35 @@ namespace paxs {
         /// @brief Move.
         /// @brief 移動
         /// @return 集落グリッドを移動したかどうか
-        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, int move_probability) {
+        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, int move_probability) noexcept {
             Vector2 current_key;
             Vector2 target_key;
-            try {
-                // 確率で移動
-                std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
-                if (dist(engine) > move_probability) return { 0, Vector2(), Vector2() };
 
-                // 座標を移動
-                // 移動距離0~max_move_distance
-                std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
-                std::uniform_real_distribution<float> theta_dist(0.0f, static_cast<float>(2.0 * M_PI));
+            // 確率で移動
+            std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
+            if (dist(engine) > move_probability) return { 0, Vector2(), Vector2() };
 
-                Vector2 current_position = position;
-                Vector2 target_position = current_position;
+            // 座標を移動
+            // 移動距離0~max_move_distance
+            std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
+            std::uniform_real_distribution<float> theta_dist(0.0f, static_cast<float>(2.0 * M_PI));
 
-                while (target_position == current_position || !environment->isLive(target_position)) {
-                    float theta = theta_dist(engine);
-                    int distance = move_dist(engine);
-                    target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
-                }
+            Vector2 current_position = position;
+            Vector2 target_position = current_position;
 
-                current_key = current_position / grid_length;
-                target_key = target_position / grid_length;
-
-                if (current_key == target_key) return { 0, Vector2(), Vector2() };
-
-                is_moved = true;
+            while (target_position == current_position || !environment->isLive(target_position)) {
+                float theta = theta_dist(engine);
+                int distance = move_dist(engine);
+                target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
             }
-            catch (const std::exception& e) {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
-                throw e;
-            }
+
+            current_key = current_position / grid_length;
+            target_key = target_position / grid_length;
+
+            if (current_key == target_key) return { 0, Vector2(), Vector2() };
+
+            is_moved = true;
+
             return { id, current_key, target_key };
         }
 
@@ -359,7 +345,7 @@ namespace paxs {
 
         /// @brief Divide the settlement.
         /// @brief 集落を分割
-        Settlement divide() {
+        Settlement divide() noexcept {
             //　とりあえず、エージェントを半分に分ける
             std::vector<Agent> new_settlement_agents = std::vector<Agent>(agents.begin() + agents.size() / 2, agents.end());
             agents.resize(agents.size() / 2); // 同義 agents.erase(agents.begin() + agents.size() / 2, agents.end());

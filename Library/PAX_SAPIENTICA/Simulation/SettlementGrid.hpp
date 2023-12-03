@@ -79,9 +79,7 @@ namespace paxs {
             // 集落を移動
             if (black_list.size() == grid_length * grid_length) {
                 // 居住可能な場所がない
-                Logger logger("Save/error_log.txt");
-                const std::string message = "No place to live.";
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                PAXS_WARNING("No place to live.");
             }
 
             settlement.setPosition(position);
@@ -104,9 +102,8 @@ namespace paxs {
                     return settlement;
                 }
             }
-            Logger logger("Save/error_log.txt");
             const std::string message = "Settlement not found. ID: " + std::to_string(id);
-            logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+            PAXS_ERROR(message);
             throw std::runtime_error(message);
         }
 
@@ -116,16 +113,14 @@ namespace paxs {
 
         /// @brief Delete the settlement.
         /// @brief 集落を削除
-        void deleteSettlement(const std::uint_least32_t id) {
+        void deleteSettlement(const std::uint_least32_t id) noexcept {
             auto it = std::find_if(settlements.begin(), settlements.end(), [id](const Settlement& settlement) { return settlement.getId() == id; });
             if (it != settlements.end()) {
                 (*it) = settlements.back(); // 同義 settlements.erase(it);
                 settlements.pop_back();
             } else {
-                Logger logger("Save/error_log.txt");
                 const std::string message = "Settlement not found. ID: " + std::to_string(id);
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR(message);
             }
         }
 
@@ -145,7 +140,7 @@ namespace paxs {
 
         /// @brief Check if the settlement exists and delete it if it does not.
         /// @brief 集落が存在するかどうかをチェックし、存在しない場合は削除する
-        void checkSettlements() {
+        void checkSettlements() noexcept {
             settlements.erase(
                 std::remove_if(
                     settlements.begin(),
@@ -158,21 +153,18 @@ namespace paxs {
 
         /// @brief Delete the agent.
         /// @brief エージェントを削除
-        void deleteAgent(const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id) {
+        void deleteAgent(const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id) noexcept {
             auto it = std::find_if(settlements.begin(), settlements.end(), [settlement_id](const Settlement& settlement) { return settlement.getId() == settlement_id; });
             if (it != settlements.end()) {
                 it->deleteAgent(agent_id);
             } else {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Settlement not found. ID: " + std::to_string(settlement_id);
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Settlement not found. ID: " + std::to_string(settlement_id));
             }
         }
 
         /// @brief Divide the settlement.
         /// @brief 集落を分割する
-        void divideSettlements() {
+        void divideSettlements() noexcept {
             // 人口が最大人口を超えている集落を複数探し、分割する
             for (auto& settlement : settlements) {
                 if (settlement.getPopulation() > max_settlement_population) {

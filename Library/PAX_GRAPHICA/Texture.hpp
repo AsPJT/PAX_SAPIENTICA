@@ -73,8 +73,7 @@ namespace paxg {
             paxs::StringExtensions::replace(path_str, ".svg", ".png");
 
             if (!texture.loadFromFile(path_str)) {
-                paxs::Logger logger("Save/error_log.txt");
-                logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load texture: " + path.string);
+                PAXS_WARNING("Failed to load texture: " + path_str);
             }
         }
         Texture(std::string path) {
@@ -82,8 +81,7 @@ namespace paxg {
             paxs::StringExtensions::replace(path, ".svg", ".png");
 
             if (!texture.loadFromFile(static_cast<paxg::String>(path))) {
-                paxs::Logger logger("Save/error_log.txt");
-                logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load texture: " + path);
+                PAXS_WARNING("Failed to load texture: " + path);
             }
         }
         operator sf::Texture() const { return texture; }

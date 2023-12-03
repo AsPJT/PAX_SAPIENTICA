@@ -25,20 +25,18 @@
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
-    
+
     /// @brief Handle files.
     /// @brief ファイルを扱う
     struct File {
 
         /// @brief Read the file.
         /// @brief ファイルを読み込む。
-        static std::vector<std::string> readFile(const std::string& file_path) {
+        static std::vector<std::string> readFile(const std::string& file_path) noexcept {
             std::ifstream file(file_path); // ファイルパスにあるファイルを読み込む
-            if (!file) { // もしファイルが無い場合はエラーを出す
-                Logger logger("Save/error_log.txt"); // ログ管理クラス
-                const std::string message = "Failed to read file: " + file_path; // エラーメッセージ
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message); // ログを出力
-                throw std::runtime_error(message);
+            if (!file) {
+                PAXS_ERROR("Failed to read file: " + file_path);
+                return {};
             }
             // 1 行ごとに文字列を分離し vector へ格納
             std::string line;
@@ -52,17 +50,16 @@ namespace paxs {
 
         /// @brief Read CSV file.
         /// @brief CSVファイルを読み込む。
-        static std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {
+        static std::vector<std::vector<std::string>> readCSV(const std::string& file_path) noexcept {
             std::vector<std::string> contents;
             try {
                 contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
             }
             catch(const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to read CSV file: " + file_path);
-                throw;
+                PAXS_ERROR("Failed to read CSV file: " + file_path);
+                return {};
             }
-            
+
             std::vector<std::vector<std::string>> result;
             for(auto& content : contents) {
                 result.emplace_back(StringExtensions::split(content, ','));
@@ -72,16 +69,9 @@ namespace paxs {
 
         /// @brief Read TSV file.
         /// @brief TSVファイルを読み込む。
-        static std::vector<std::vector<std::string>> readTSV(const std::string& file_path) {
+        static std::vector<std::vector<std::string>> readTSV(const std::string& file_path) noexcept {
             std::vector<std::string> contents;
-            try {
-                contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
-            }
-            catch(const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to read TSV file: " + file_path);
-                throw;
-            }
+            contents = readFile(file_path);
 
             std::vector<std::vector<std::string>> result;
             for(auto& content : contents) {
@@ -92,13 +82,11 @@ namespace paxs {
 
         /// @brief Get the file name in the directory.
         /// @brief ディレクトリ内のファイル名を取得する。
-        static std::vector<std::string> getFileNames(const std::string& directory_path) {
+        static std::vector<std::string> getFileNames(const std::string& directory_path) noexcept {
             std::filesystem::path dir_path(directory_path);
             if (!std::filesystem::exists(dir_path)) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to get file names: " + directory_path;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Failed to access: " + directory_path);
+                return {};
             }
 
             std::filesystem::directory_iterator dir_iter(dir_path), end_iter;
@@ -112,9 +100,8 @@ namespace paxs {
                     ++dir_iter;
                 }
                 catch (const std::exception&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to access: " + dir_iter->path().string());
-                    throw;
+                    PAXS_ERROR("Failed to access: " + dir_iter->path().string());
+                    ++dir_iter;
                 }
             }
 

@@ -46,30 +46,18 @@ namespace paxs {
 
         constexpr explicit SettlementSimulator() = default;
 
-        explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+        explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) noexcept :
             environment(std::make_unique<Environment>(map_list_path, start_position, end_position, z)), gen(seed) {
             if (z <= 0) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Z must be greater than 0.";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Z must be greater than 0.");
+                return;
             }
             if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Start position and end position must be greater than or equal to 0.";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Start position and end position must be greater than 0.");
+                return;
             }
 
-            try {
-                japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
-            }
-            catch (const std::runtime_error&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to read Japan provinces TSV file: " + japan_provinces_path;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
-            }
+            japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
 
             // ランダムに移動確率を設定
             std::uniform_int_distribution<> move_probability_dist{ min_move_probability, max_move_probability };
@@ -91,128 +79,103 @@ namespace paxs {
 
         /// @brief Run the simulation for the specified number of steps.
         /// @brief シミュレーションを指定されたステップ数だけ実行する
-        void run(const int step_count) {
+        void run(const int step_count) noexcept {
             for (int i = 0; i < step_count; ++i) {
                 std::cout << "Step: " << i + 1 << std::endl;
-                try {
-                    step();
-                }
-                catch (const std::exception& e) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
-                    throw e;
-                }
+                step();
             }
         }
 
-        void moveSettlement(const std::uint_least32_t id, const Vector2 current_key, const Vector2 target_key) {
-            try {
-                // 集落グリッドの移動
-                auto it = settlement_grids.find(target_key.toU64());
-                if (it != settlement_grids.end()) {
-                    it->second.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
-                }
-                else {
-                    SettlementGrid settlement_grid = SettlementGrid(target_key * grid_length, environment, gen);
-                    settlement_grid.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
-                    settlement_grids[target_key.toU64()] = settlement_grid;
-                }
-                settlement_grids[current_key.toU64()].deleteSettlement(id);
+        void moveSettlement(const std::uint_least32_t id, const Vector2 current_key, const Vector2 target_key) noexcept {
+            auto it = settlement_grids.find(target_key.toU64());
+            if (it != settlement_grids.end()) {
+                it->second.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
             }
-            catch (const std::exception& e) {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
-                throw e;
+            else {
+                SettlementGrid settlement_grid = SettlementGrid(target_key * grid_length, environment, gen);
+                settlement_grid.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
+                settlement_grids[target_key.toU64()] = settlement_grid;
             }
+            settlement_grids[current_key.toU64()].deleteSettlement(id);
         }
 
         /// @brief Execute the simulation for the one step.
         /// @brief シミュレーションを1ステップ実行する
-        void step() {
-            try {
-                std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
-                for (auto& settlement_grid  : settlement_grids) {
-                    std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
-                    for (std::size_t i = 0; i < settlements.size(); ++i) {
-                        if (settlements[i].isMoved()) {
-                            continue;
-                        }
-
-                        auto [target_id, current_key, target_key] = settlements[i].move(gen, move_probability);
-
-                        if (target_id != 0) {
-                            move_list.emplace_back(target_id, current_key, target_key);
-                        }
-                    }
-                }
-
-                for (auto& move : move_list) {
-                    moveSettlement(std::get<0>(move), std::get<1>(move), std::get<2>(move));
-                }
-
-                for (auto& settlement_grid : settlement_grids) {
-                    for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement.preUpdate(kanakuma_life_span, emigration_count);
-                    }
-                }
-
-                auto delete_agent = [this](const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
-                    auto it = settlement_grids.find(key.toU64());
-                    if (it != settlement_grids.end()) {
-                        it->second.deleteAgent(agent_id, settlement_id);
-                    }
-                    else {
-                        Logger logger("Save/error_log.txt");
-                        const std::string message = "Settlement grid not found. Key: " + std::to_string(key.x) + ", " + std::to_string(key.y);
-                        logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                        throw std::runtime_error(message);
-                    }
-                };
-
-                for (auto& settlement_grid : settlement_grids) {
-                    std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
-                    if (settlements.size() == 0) {
+        void step() noexcept {
+            std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
+            for (auto& settlement_grid  : settlement_grids) {
+                std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
+                for (std::size_t i = 0; i < settlements.size(); ++i) {
+                    if (settlements[i].isMoved()) {
                         continue;
                     }
 
-                    // 近隣8グリッドの集落を取得
-                    std::vector<Settlement> close_settlements;
-                    Vector2 grid_position = settlement_grid.second.getGridPosition();
-                    grid_position /= grid_length;
-                    for (int i = -1; i <= 1; ++i) {
-                        for (int j = -1; j <= 1; ++j) {
-                            auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
-                            if (it != settlement_grids.end()) {
-                                for (auto& settlement : it->second.getSettlements()) {
-                                    close_settlements.emplace_back(settlement);
-                                }
+                    auto [target_id, current_key, target_key] = settlements[i].move(gen, move_probability);
+
+                    if (target_id != 0) {
+                        move_list.emplace_back(target_id, current_key, target_key);
+                    }
+                }
+            }
+
+            for (auto& move : move_list) {
+                moveSettlement(std::get<0>(move), std::get<1>(move), std::get<2>(move));
+            }
+
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid.second.getSettlements()) {
+                    settlement.preUpdate(kanakuma_life_span, emigration_count);
+                }
+            }
+
+            auto delete_agent = [this](const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
+                auto it = settlement_grids.find(key.toU64());
+                if (it != settlement_grids.end()) {
+                    it->second.deleteAgent(agent_id, settlement_id);
+                }
+                else {
+                    PAXS_ERROR("Settlement grid not found. Key: " + std::to_string(key.x) + ", " + std::to_string(key.y));
+                }
+            };
+
+            for (auto& settlement_grid : settlement_grids) {
+                std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
+                if (settlements.size() == 0) {
+                    continue;
+                }
+
+                // 近隣8グリッドの集落を取得
+                std::vector<Settlement> close_settlements;
+                Vector2 grid_position = settlement_grid.second.getGridPosition();
+                grid_position /= grid_length;
+                for (int i = -1; i <= 1; ++i) {
+                    for (int j = -1; j <= 1; ++j) {
+                        auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
+                        if (it != settlement_grids.end()) {
+                            for (auto& settlement : it->second.getSettlements()) {
+                                close_settlements.emplace_back(settlement);
                             }
                         }
                     }
-
-                    for (auto& settlement : settlements) {
-                        settlement.marriage(close_settlements, delete_agent);
-                    }
                 }
 
-                for (auto& settlement_grid : settlement_grids) {
-                    for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement.onUpdate();
-                    }
-                }
-
-                for (auto& settlement_grid : settlement_grids) {
-                    settlement_grid.second.checkSettlements();
-                }
-
-                for (auto& settlement_grid : settlement_grids) {
-                    settlement_grid.second.divideSettlements();
+                for (auto& settlement : settlements) {
+                    settlement.marriage(close_settlements, delete_agent);
                 }
             }
-            catch (const std::exception& e) {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, e.what());
-                throw e;
+
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid.second.getSettlements()) {
+                    settlement.onUpdate();
+                }
+            }
+
+            for (auto& settlement_grid : settlement_grids) {
+                settlement_grid.second.checkSettlements();
+            }
+
+            for (auto& settlement_grid : settlement_grids) {
+                settlement_grid.second.divideSettlements();
             }
         }
 
@@ -227,7 +190,7 @@ namespace paxs {
 
         /// @brief Export the simulation result to a file.
         /// @brief シミュレーション結果をファイルに出力する
-        void exportResult(const std::string path) const {
+        void exportResult(const std::string path) const noexcept {
             // 各令制国の人口を計算
             std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
             for (auto& settlement_grid : settlement_grids) {
@@ -256,10 +219,8 @@ namespace paxs {
             // 計算した結果をファイルに出力
             std::ofstream ofs(path);
             if (!ofs) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to open file: " + path;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Failed to open file: " + path);
+                return;
             }
 
             ofs << "ID\tName\tPopulation" << std::endl;
@@ -272,14 +233,12 @@ namespace paxs {
 
         /// @brief Export the simulation initialization result to a file.
         /// @brief シミュレーションの初期化結果をファイルに出力する
-        void exportInitResult(const std::string path) const {
+        void exportInitResult(const std::string path) const noexcept {
             // ID, 座標, 人口をファイルに出力
             std::ofstream ofs(path);
             if (!ofs) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to open file: " + path;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Failed to open file: " + path);
+                return;
             }
 
             ofs << "ID\tX\tY\tPopulation" << std::endl;
@@ -468,9 +427,7 @@ namespace paxs {
                 getSettlements(settlements, ryoseikoku_id);
 
                 if (settlements.size() == 0) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "No settlement in ryoseikoku: " + std::to_string(ryoseikoku_id);
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                    PAXS_WARNING("Settlements not found. Ryoseikoku ID: " + std::to_string(ryoseikoku_id));
                     continue;
                 }
 

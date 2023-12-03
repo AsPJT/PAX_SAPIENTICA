@@ -31,9 +31,7 @@ namespace paxs {
         /// @brief ユニークなIDを生成する。
         static IdType generate() {
             if (counter == std::numeric_limits<IdType>::max()) {
-                Logger logger("Save/error_log.txt");
-                std::string message = "The id has reached the maximum value of the type.";
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                PAXS_WARNING("The counter has reached the maximum value. Resetting the counter.");
                 reset();
             }
             return counter++;

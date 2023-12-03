@@ -47,24 +47,15 @@ namespace paxs {
     /// @brief 日本の州を表すクラス
     class JapanProvinces {
     public:
-        explicit JapanProvinces(const std::string& japan_region_tsv_path, const std::string& ryoseikoku_tsv_path) {
-            std::vector<std::vector<std::string>> japan_region_tsv;
-            try {
-                japan_region_tsv = File::readTSV(japan_region_tsv_path);
-            } catch (const std::runtime_error&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to read Japan region TSV file: " + japan_region_tsv_path;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+        explicit JapanProvinces(const std::string& japan_region_tsv_path, const std::string& ryoseikoku_tsv_path) noexcept {
+            std::vector<std::vector<std::string>> japan_region_tsv = File::readTSV(japan_region_tsv_path);
+            if (japan_region_tsv.empty()) {
+                PAXS_WARNING("Failed to read Japan region TSV file: " + japan_region_tsv_path);
             }
-            std::vector<std::vector<std::string>> ryoseikoku_tsv;
-            try {
-                ryoseikoku_tsv = File::readTSV(ryoseikoku_tsv_path);
-            } catch (const std::runtime_error&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to read Ryoseikoku TSV file: " + ryoseikoku_tsv_path;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+
+            std::vector<std::vector<std::string>> ryoseikoku_tsv = File::readTSV(ryoseikoku_tsv_path);
+            if (ryoseikoku_tsv.empty()) {
+                PAXS_WARNING("Failed to read Ryoseikoku TSV file: " + ryoseikoku_tsv_path);
             }
 
             for (std::size_t i = 1; i < japan_region_tsv.size(); ++i) {
@@ -75,9 +66,7 @@ namespace paxs {
                     japan_region.population = std::stoi(japan_region_tsv[i][2]);
                     japan_regions.emplace_back(japan_region);
                 } catch (const std::invalid_argument&) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Failed to read Japan region TSV file: " + japan_region_tsv_path + " at line " + std::to_string(i);
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                    PAXS_WARNING("Failed to read Japan region TSV file: " + japan_region_tsv_path + " at line " + std::to_string(i));
                 }
             }
 
@@ -93,9 +82,7 @@ namespace paxs {
                     ryoseikoku.population_ad725 = std::stoi(ryoseikoku_tsv[i][6]);
                     ryoseikoku_list.emplace_back(ryoseikoku);
                 } catch (const std::invalid_argument&) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Failed to read Ryoseikoku TSV file: " + ryoseikoku_tsv_path + " at line " + std::to_string(i);
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                    PAXS_WARNING("Failed to read Ryoseikoku TSV file: " + ryoseikoku_tsv_path + " at line " + std::to_string(i));
                 }
             }
         }
@@ -110,9 +97,7 @@ namespace paxs {
                     return japan_region.population;
                 }
             }
-            Logger logger("Save/error_log.txt");
-            const std::string message = "Failed to get Japan region population: " + std::to_string(id);
-            logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+            PAXS_WARNING("Failed to get Japan region population: " + std::to_string(id));
 
             return 0;
         }
@@ -125,9 +110,7 @@ namespace paxs {
                     return ryoseikoku;
                 }
             }
-            Logger logger("Save/error_log.txt");
-            const std::string message = "Failed to get Ryoseikoku: " + std::to_string(id);
-            logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+            PAXS_WARNING("Failed to get Ryoseikoku: " + std::to_string(id));
 
             return ryoseikoku_list[0];
         }
@@ -137,9 +120,7 @@ namespace paxs {
                     return ryoseikoku;
                 }
             }
-            Logger logger("Save/error_log.txt");
-            const std::string message = "Failed to get Ryoseikoku: " + std::to_string(id);
-            logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+            PAXS_WARNING("Failed to get Ryoseikoku: " + std::to_string(id));
 
             return ryoseikoku_list[0];
         }
@@ -154,9 +135,7 @@ namespace paxs {
                     return ryoseikoku.population_ad200;
                 }
             }
-            Logger logger("Save/error_log.txt");
-            const std::string message = "Failed to get Ryoseikoku population: " + std::to_string(id);
-            logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+            PAXS_WARNING("Failed to get Ryoseikoku population: " + std::to_string(id));
 
             return 0;
         }
@@ -171,9 +150,7 @@ namespace paxs {
                     return ryoseikoku.region_id;
                 }
             }
-            Logger logger("Save/error_log.txt");
-            const std::string message = "Failed to get Japan region ID: " + std::to_string(id);
-            logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+            PAXS_WARNING("Failed to get Japan region ID: " + std::to_string(id));
 
             return 0;
         }
