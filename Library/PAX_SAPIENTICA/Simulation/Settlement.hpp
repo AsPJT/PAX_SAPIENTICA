@@ -187,7 +187,8 @@ namespace paxs {
             // 近隣の集落を探す
             for (auto it = close_settlements.begin(); it != close_settlements.end();) {
                 if (it->getPosition().distance(position) > marriage_search_range) {
-                    it = close_settlements.erase(it);
+                    (*it) = close_settlements.back(); // 同義 it = close_settlements.erase(it);
+                    close_settlements.pop_back();
                 } else {
                     ++it;
                 }
@@ -295,9 +296,9 @@ namespace paxs {
 
         /// @brief Pre update.
         /// @brief 事前更新
-        void preUpdate(KanakumaLifeSpan& kanakuma_life_span) noexcept {
+        void preUpdate(KanakumaLifeSpan& kanakuma_life_span, std::uint_least64_t& count) noexcept {
             birth(kanakuma_life_span);
-            emigration();
+            emigration(kanakuma_life_span, count);
         }
 
         /// @brief On update.
@@ -361,7 +362,7 @@ namespace paxs {
         Settlement divide() {
             //　とりあえず、エージェントを半分に分ける
             std::vector<Agent> new_settlement_agents = std::vector<Agent>(agents.begin() + agents.size() / 2, agents.end());
-            agents.erase(agents.begin() + agents.size() / 2, agents.end());
+            agents.resize(agents.size() / 2); // 同義 agents.erase(agents.begin() + agents.size() / 2, agents.end());
 
             // パートナー同士は同じ集落に振り分ける
             for (Agent& agent : agents) {
@@ -369,7 +370,8 @@ namespace paxs {
                     auto it = std::find_if(new_settlement_agents.begin(), new_settlement_agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
                     if (it != new_settlement_agents.end()) {
                         agents.emplace_back(*it);
-                        new_settlement_agents.erase(it);
+                        (*it) = new_settlement_agents.back(); // 同義 new_settlement_agents.erase(it);
+                        new_settlement_agents.pop_back();
                     }
                 }
             }
@@ -379,7 +381,8 @@ namespace paxs {
                     auto it = std::find_if(agents.begin(), agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
                     if (it != agents.end()) {
                         new_settlement_agents.emplace_back(*it);
-                        agents.erase(it);
+                        (*it) = agents.back(); // 同義 agents.erase(it);
+                        agents.pop_back();
                     }
                 }
             }
@@ -414,7 +417,7 @@ namespace paxs {
                     std::uint_least8_t count = agent.decrementBirthIntervalCount();
                     if (count == 0) {
                         // 死産
-                        if (random_dist(*gen) < 0.11f) continue;
+                        if (random_dist(*gen) < 0.13f) continue;
                         const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
                         children.emplace_back(Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
@@ -438,14 +441,32 @@ namespace paxs {
 
         /// @brief Emigration.
         /// @brief 渡来
-        void emigration() noexcept {
+        void emigration(KanakumaLifeSpan& kanakuma_life_span, std::uint_least64_t& count) noexcept {
             // TODO: 渡来
+            if (agents.size() >= 60) {
+
+                const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
+                const std::uint_least32_t set_lifespan = kanakuma_life_span.setAdultLifeSpan(set_gender, *gen);
+
+                std::uniform_int_distribution<> lifespan_dist{
+                    std::min(18 * steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
+                    static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
+
+                agents.emplace_back(Agent(
+                    UniqueIdentification<std::uint_least64_t>::generate(),
+                    0, // TODO: 名前ID
+                    set_gender,
+                    lifespan_dist(*gen),
+                    set_lifespan
+                ));
+                ++count;
+            }
         }
 
         /// @brief Age update.
         /// @brief 年齢更新
         void ageUpdate() noexcept {
-#ifdef _OPENMP
+#ifdef _OPENMPa
             const int agent_size = static_cast<int>(agents.size());
 #pragma omp parallel for
             for (int i = 0; i < agent_size; ++i) {
@@ -475,7 +496,8 @@ namespace paxs {
                     }
                 }
 
-                it = agents.erase(it);
+                (*it) = agents.back(); // 同義 it = agents.erase(it);
+                agents.pop_back();
             }
         }
 

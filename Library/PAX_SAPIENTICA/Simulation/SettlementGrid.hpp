@@ -45,7 +45,7 @@ namespace paxs {
             // 他の集落とかぶらない位置を探す
             // ブラックリスト
             std::vector<Vector2> black_list(settlements.size());
-#ifdef _OPENMP
+#ifdef _OPENMPa
             const int settlement_size = static_cast<int>(settlements.size());
 #pragma omp parallel for
             for (int i = 0; i < settlement_size; ++i) {
@@ -119,7 +119,8 @@ namespace paxs {
         void deleteSettlement(const std::uint_least32_t id) {
             auto it = std::find_if(settlements.begin(), settlements.end(), [id](const Settlement& settlement) { return settlement.getId() == id; });
             if (it != settlements.end()) {
-                settlements.erase(it);
+                (*it) = settlements.back(); // 同義 settlements.erase(it);
+                settlements.pop_back();
             } else {
                 Logger logger("Save/error_log.txt");
                 const std::string message = "Settlement not found. ID: " + std::to_string(id);

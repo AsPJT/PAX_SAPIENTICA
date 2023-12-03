@@ -75,6 +75,11 @@ namespace paxs {
             std::uniform_int_distribution<> move_probability_dist{ min_move_probability, max_move_probability };
             move_probability = move_probability_dist(gen);
         }
+        /// @brief
+        /// @brief 渡来数の取得
+        std::uint_least64_t emigrationSize() {
+            return emigration_count;
+        }
 
         /// @brief Initialize the simulator.
         /// @brief 集落の初期化
@@ -147,7 +152,7 @@ namespace paxs {
 
                 for (auto& settlement_grid : settlement_grids) {
                     for (auto& settlement : settlement_grid.second.getSettlements()) {
-                        settlement.preUpdate(kanakuma_life_span);
+                        settlement.preUpdate(kanakuma_life_span, emigration_count);
                     }
                 }
 
@@ -299,6 +304,8 @@ namespace paxs {
 
         KanakumaLifeSpan kanakuma_life_span;
 
+        std::uint_least64_t emigration_count = 0;
+
         /// @brief Randomly place settlements.
         /// @brief 集落をランダムに配置する
         void randomizeSettlements() noexcept {
@@ -392,8 +399,10 @@ namespace paxs {
 
                     auto ryoseikoku_population_it = ryoseikoku_population_map.find(ryoseikoku_id);
                     if (ryoseikoku_population_it == ryoseikoku_population_map.end()) {
-                        live.live_probabilities.erase(live.live_probabilities.begin() + live_probability_index);
-                        live.habitable_land_positions.erase(live.habitable_land_positions.begin() + live_probability_index);
+                        live.live_probabilities[live_probability_index] = live.live_probabilities.back();
+                        live.live_probabilities.pop_back();
+                        live.habitable_land_positions[live_probability_index] = live.habitable_land_positions.back();
+                        live.habitable_land_positions.pop_back();
                         continue;
                     }
 
@@ -442,8 +451,10 @@ namespace paxs {
                     settlement_grids[key].addSettlement(settlement);
                     settlement_grids[key].addRyoseikokuId(ryoseikoku_id);
 
-                    live.live_probabilities.erase(live.live_probabilities.begin() + live_probability_index);
-                    live.habitable_land_positions.erase(live.habitable_land_positions.begin() + live_probability_index);
+                    live.live_probabilities[live_probability_index] = live.live_probabilities.back();
+                    live.live_probabilities.pop_back();
+                    live.habitable_land_positions[live_probability_index] = live.habitable_land_positions.back();
+                    live.habitable_land_positions.pop_back();
                 }
             }
             StatusDisplayer::displayProgressBar(all_population, all_population);

@@ -34,7 +34,7 @@ namespace paxs::cal {
     public:
         JulianDayNumber() = default;
         template<typename T>
-        JulianDayNumber(const T& jdn_) { day = static_cast<Day>(jdn_); }
+        JulianDayNumber(const T jdn_) { day = static_cast<Day>(jdn_); }
 
     public:
 
@@ -54,30 +54,33 @@ namespace paxs::cal {
         constexpr static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
         constexpr static DateOutputType getDateOutputType() { return DateOutputType::name_and_value; } // 暦名＆年月日形式（ Variant に用いているため定義）
 
+        constexpr Day operator+=(const Day day_) { return (day += day_); }
+        constexpr Day operator-=(const Day day_) { return (day -= day_); }
+
     private:
         // グレゴリオ暦の計算用
         constexpr static double getK(const double month) { return std::floor((14 - month) / 12); }
     public:
         // グレゴリオ暦からユリウス日を取得
-        constexpr void fromGregorianCalendar(const double year, const double month = 1.0, const double day = 1.0) {
+        constexpr void fromGregorianCalendar(const double year, const double month = 1.0, const double day_ = 1.0) {
             const double K = getK(month);
             this->day = static_cast<Day>(std::floor((-K + year + 4800) * 1461 / 4)
                 + std::floor((K * 12 + month - 2) * 367 / 12)
                 - std::floor(std::floor((-K + year + 4900) / 100) * 3 / 4)
-                + day - 32075);
+                + day_ - 32075);
         }
         // ユリウス暦からユリウス日を取得
-        constexpr void fromJulianCalendar(const double year, const double month = 1.0, const double day = 1.0) {
+        constexpr void fromJulianCalendar(const double year, const double month = 1.0, const double day_ = 1.0) {
             const double K = getK(month);
             this->day = static_cast<Day>(std::floor((-K + year + 4800) * 1461 / 4)
                 + std::floor((K * 12 + month - 2) * 367 / 12)
-                + day - 32113);
+                + day_ - 32113);
         }
         // グレゴリオ暦を取得
         constexpr GregorianDate toGregorianCalendar() const {
             GregorianDate ymd;
             //JDN ⇒ グレゴリオ暦
-            double L = static_cast<double>(this->day) + 68569;
+            double L = static_cast<double>(static_cast<std::int_least64_t>(day) + 68569);
             const double N = std::floor(4 * L / 146097);
             L = L - std::floor((146097 * N + 3) / 4);
             const double I = std::floor(4000 * (L + 1) / 1461001);
@@ -92,7 +95,7 @@ namespace paxs::cal {
         // ユリウス暦を取得
         constexpr JulianDate toJulianCalendar() const {
             JulianDate ymd;
-            double L = static_cast<double>(this->day) + 1402;
+            double L = static_cast<double>(static_cast<std::int_least64_t>(day) + 1402);
             const double N = std::floor((L - 1) / 1461);
             L = L - 1461 * N;
             const double I = std::floor((L - 1) / 365) - std::floor(L / 1461);
@@ -109,18 +112,18 @@ namespace paxs::cal {
             JapanDate jp_date{ 0,1,1,1,false };
 
             // ユリウス日が 1480407 以上（神武 1 年 1 月 1 日以降、グレゴリオ暦 紀元前 660 年 2 月 11 日以降）
-            if (day >= 1480407) {
+            if (static_cast<int>(day) >= 1480407) {
                 bool is_break = false;
                 if (japanese_era_list.size() == 0) return JapanDate{};
                 // 元号一覧からその日に合った元号を取得
                 for (std::size_t i = 0; i < japanese_era_list.size() - 1; ++i) {
                     auto& jeli = japanese_era_list[i];
-                    if (day >= jeli.start_jdn
-                        && day < japanese_era_list[i + 1].start_jdn) {
+                    if (static_cast<int>(day) >= jeli.start_jdn
+                        && static_cast<int>(day) < japanese_era_list[i + 1].start_jdn) {
                         is_break = true; // 元号一覧からその日に合った元号が見つかったのでループを抜ける
                         // 改元されている場合
                         if (jeli.kaigen_jdn[0] != 0 &&
-                            day >= jeli.kaigen_jdn[0]) {
+                            static_cast<int>(day) >= jeli.kaigen_jdn[0]) {
                             jp_date.setGengo(jeli.gengo[1]);
                             jp_date.setYear(jeli.gengo_num[1]);
                         }
@@ -133,7 +136,7 @@ namespace paxs::cal {
                     if (is_break) {
                         int lm = ((jeli.leap_month == 0) ? 999 : jeli.leap_month - 1);
 
-                        int calc_day = int(day) - jeli.start_jdn; // １月１日
+                        int calc_day = static_cast<int>(day) - jeli.start_jdn; // １月１日
                         // 月と日の計算
                         for (int j = 0; j < 12; ++j) {
                             if (calc_day < jeli.number_of_days[j]) {
@@ -165,18 +168,18 @@ namespace paxs::cal {
             ChinaDate jp_date{ 0,1,1,1,false };
 
             // ユリウス日が 1480407 以上（神武 1 年 1 月 1 日以降、グレゴリオ暦 紀元前 660 年 2 月 11 日以降）
-            if (day >= 1480407) {
+            if (static_cast<int>(day) >= 1480407) {
                 bool is_break = false;
                 if (japanese_era_list.size() == 0) return ChinaDate{};
                 // 元号一覧からその日に合った元号を取得
                 for (std::size_t i = 0; i < japanese_era_list.size() - 1; ++i) {
                     auto& jeli = japanese_era_list[i];
-                    if (day >= jeli.start_jdn
-                        && day < japanese_era_list[i + 1].start_jdn) {
+                    if (static_cast<int>(day) >= jeli.start_jdn
+                        && static_cast<int>(day) < japanese_era_list[i + 1].start_jdn) {
                         is_break = true; // 元号一覧からその日に合った元号が見つかったのでループを抜ける
                         // 改元されている場合
                         if (jeli.kaigen_jdn[0] != 0 &&
-                            day >= jeli.kaigen_jdn[0]) {
+                            static_cast<int>(day) >= jeli.kaigen_jdn[0]) {
                             jp_date.setGengo(jeli.gengo[1]);
                             jp_date.setYear(jeli.gengo_num[1]);
                         }
@@ -189,7 +192,7 @@ namespace paxs::cal {
                     if (is_break) {
                         int lm = ((jeli.leap_month == 0) ? 999 : jeli.leap_month - 1);
 
-                        int calc_day = int(day) - jeli.start_jdn; // １月１日
+                        int calc_day = static_cast<int>(day) - jeli.start_jdn; // １月１日
                         // 月と日の計算
                         for (int j = 0; j < 12; ++j) {
                             if (calc_day < jeli.number_of_days[j]) {
