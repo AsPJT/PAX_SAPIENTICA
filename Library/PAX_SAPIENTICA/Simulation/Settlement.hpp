@@ -120,36 +120,36 @@ namespace paxs {
         /// @brief Get the agent.
         /// @brief エージェントを取得
         /// @param id The agent's id. エージェントのID
-        Agent& getAgent(const std::uint_least64_t id_) {
+        Agent& getAgent(const std::uint_least64_t id_) noexcept {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 const std::string message = "Agent not found.";
                 PAXS_ERROR(message);
-                throw std::runtime_error(message);
+                return *agents.begin();
             }
             return *it;
         }
 
         /// @brief Get the agent.
         /// @brief エージェントを取得
-        const Agent& cgetAgent(const std::uint_least64_t id_) const {
+        const Agent& cgetAgent(const std::uint_least64_t id_) const noexcept {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 const std::string message = "Agent not found.";
                 PAXS_ERROR(message);
-                throw std::runtime_error(message);
+                return *agents.begin();
             }
             return *it;
         }
 
         /// @brief Get the agent copy.
         /// @brief エージェントを取得
-        Agent getAgentCopy(const std::uint_least64_t id_) const {
+        Agent getAgentCopy(const std::uint_least64_t id_) const noexcept {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 const std::string message = "Agent not found.";
                 PAXS_ERROR(message);
-                throw std::runtime_error(message);
+                return *agents.begin();
             }
             return *it;
         }

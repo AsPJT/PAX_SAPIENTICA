@@ -96,7 +96,7 @@ namespace paxs {
 
         /// @brief Get the settlements.
         /// @brief 集落を取得
-        Settlement& getSettlement(const std::uint_least32_t id) {
+        Settlement& getSettlement(const std::uint_least32_t id) noexcept {
             for (auto& settlement : settlements) {
                 if (settlement.getId() == id) {
                     return settlement;
@@ -104,7 +104,7 @@ namespace paxs {
             }
             const std::string message = "Settlement not found. ID: " + std::to_string(id);
             PAXS_ERROR(message);
-            throw std::runtime_error(message);
+            return settlements[0];
         }
 
         /// @brief Get the grid position.
