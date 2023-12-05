@@ -262,8 +262,7 @@ namespace paxg {
             size = size_;
             if (path.size() == 0) return;
             if (!font.loadFromFile(path)) {
-                paxs::Logger logger("Save/error_log.txt");
-                logger.log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, "Failed to load font: " + path);
+                PAXS_WARNING("Font file is not found.");
             }
         }
 

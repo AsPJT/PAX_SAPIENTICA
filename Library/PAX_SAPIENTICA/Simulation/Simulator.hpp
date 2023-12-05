@@ -39,19 +39,15 @@ namespace paxs {
         using Agent = paxs::Agent<GridType>;
 
         constexpr explicit Simulator() = default;
-        explicit Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) :
+        explicit Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) noexcept :
             environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
                 if (z <= 0) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Z must be greater than 0.";
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                    throw std::runtime_error(message);
+                    PAXS_ERROR("Z must be greater than 0.");
+                    return;
                 }
                 if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Start position and end position must be greater than or equal to 0.";
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                    throw std::runtime_error(message);
+                    PAXS_ERROR("Start position and end position must be greater than 0.");
+                    return;
                 }
             }
 
@@ -85,12 +81,7 @@ namespace paxs {
         void step() noexcept {
             for(auto& agent : agents) {
                 agent.incrementAge();
-                try {
-                    agent.move();
-                } catch (const std::runtime_error&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to move agent. Agent id: " + std::to_string(agent.getId()));
-                }
+                agent.move();
             }
 
             agents.erase(std::remove_if(agents.begin(), agents.end(), [](const Agent& agent) { return agent.isDead(); }), agents.end());
@@ -126,15 +117,8 @@ namespace paxs {
             for(int i = 0;i < agent_count;++i) {
                 StatusDisplayer::displayProgressBar(i, agent_count);
                 Vector2 position = Vector2(x_dist(gen), y_dist(gen));
-                try {
-                    while(!environment->isLive(position)) {
-                        position = Vector2(x_dist(gen), y_dist(gen));
-                    }
-                } catch (const std::runtime_error&) {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "Failed to randomize agent.";
-                    logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                    throw std::runtime_error(message);
+                while(!environment->isLive(position)) {
+                    position = Vector2(x_dist(gen), y_dist(gen));
                 }
 
                 // idの生成

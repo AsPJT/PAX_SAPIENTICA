@@ -22,7 +22,7 @@ jobs:
       run: |
         cd ${{ env.WORKSPACE }}
         cppcheck --enable=all --output-file=cppcheck-result.txt --force --quiet -I Library Project
-    
+
     - name: Setup reviewdog
       uses: reviewdog/action-setup@80a06617492b461a66508e2dedf16233f0506804
 
@@ -32,4 +32,3 @@ jobs:
       run: |
         cat cppcheck-result.txt | grep "\bwarning: " | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-warning"
         cat cppcheck-result.txt | grep "\berror: "   | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-error"
-        cat cppcheck-result.txt | grep "\bnote: "    | reviewdog -efm="%f:%l:%c:%m" -reporter=github-pr-review -name="cppcheck-note"

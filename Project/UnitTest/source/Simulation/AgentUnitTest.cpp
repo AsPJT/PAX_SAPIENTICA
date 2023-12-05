@@ -23,7 +23,7 @@ public:
 
     constexpr explicit EnvironmentMock() : paxs::Environment<T>() {}
 
-    bool isLand(const Vector2&) const {
+    bool isLand(const Vector2&) const noexcept override {
         return true;
     }
 };

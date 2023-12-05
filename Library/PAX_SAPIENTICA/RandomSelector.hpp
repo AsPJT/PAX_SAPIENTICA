@@ -23,6 +23,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Logger.hpp>
+
 namespace paxs {
 
     /// @brief Randomly select elements from a vector.
@@ -37,9 +39,10 @@ namespace paxs {
         /// @param num_elements The number of elements to select.
         /// @return A vector of selected elements.
         template <typename T>
-        std::vector<T> select(const std::vector<T>& vec, std::size_t num_elements) {
+        std::vector<T> select(const std::vector<T>& vec, std::size_t num_elements) noexcept {
             if (num_elements > vec.size()) {
-                throw std::invalid_argument("num_elements is greater than the size of vec");
+                PAXS_ERROR("The number of elements to select is greater than the size of the vector.");
+                return {};
             }
 
             std::vector<T> result(vec);

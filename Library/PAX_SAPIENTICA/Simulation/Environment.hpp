@@ -48,16 +48,14 @@ namespace paxs {
         std::unordered_map<std::uint_least32_t, std::unique_ptr<DataVariant>> data_map;
 
         constexpr explicit Environment() noexcept = default;
-        explicit Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) : start_position(start_position), end_position(end_position), z(z) {
+        explicit Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) noexcept : start_position(start_position), end_position(end_position), z(z) {
             std::vector<std::vector<std::string>> settings;
-            try {
-                settings = File::readTSV(setting_file_path);
-            }
-            catch (const std::runtime_error&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to read setting file: " + setting_file_path;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+
+            settings = File::readTSV(setting_file_path);
+
+            if (settings.empty()) {
+                PAXS_ERROR("Failed to read TSV file: " + setting_file_path);
+                return;
             }
 
             // 1行目からdata_typeのカラム番号を取得
@@ -80,10 +78,8 @@ namespace paxs {
                 }
             }
             if (key_column == -1 || data_type_column == -1 || file_path_column == -1 || z_column == -1) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "key or data_type or file_path or z is not found: " + setting_file_path;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_WARNING("key or data_type or file_path or z is not found in " + setting_file_path);
+                return;
             }
 
             for (std::size_t i = 1; i < settings.size(); ++i) {
@@ -104,9 +100,7 @@ namespace paxs {
                     data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
                 }
                 else {
-                    Logger logger("Save/error_log.txt");
-                    const std::string message = "data_type is not found: " + std::to_string(data_type) + " in " + setting_file_path;
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
+                    PAXS_WARNING("data_type is not found in " + setting_file_path);
                 }
             }
         }
@@ -123,9 +117,8 @@ namespace paxs {
         template <typename U>
         U getData(const std::uint_least32_t key, const Vector2& position) const {
             if (data_map.count(key) == 0) {
-                Logger logger("Save/error_log.txt");
                 const std::string message = "key is not found: " + std::to_string(key);
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                PAXS_ERROR(message);
                 throw std::runtime_error(message);
             }
             return std::get<Data<U, GridType>>(*data_map.at(key)).getValue(position);
@@ -142,72 +135,56 @@ namespace paxs {
         /// @details It is land and the slope is less than a certain value.
         /// @details 陸地であるかつ、傾斜が一定以下であること
         bool isLive(const Vector2& position) const {
-            try {
-                return isLand(position) && static_cast<int>(getSlope(position)) <= 163;
-            }
-            catch (const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to judge live";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
-            }
+            return isLand(position) && static_cast<int>(getSlope(position)) <= 163;
         }
 
         /// @brief Get slope.
         /// @brief 傾斜の取得
-        std::uint_least8_t getSlope(const Vector2& position) const {
+        std::uint_least8_t getSlope(const Vector2& position) const noexcept {
             try {
                 return getData<std::uint_least8_t>(MurMur3::calcHash("slope"), position);
             }
             catch (const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to get slope";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Failed to get slope");
+                return 0;
             }
         }
 
         /// @brief Get elevation.
         /// @brief 標高の取得
-        std::int_least16_t getElevation(const Vector2& position) const {
+        std::int_least16_t getElevation(const Vector2& position) const noexcept {
             try {
                 return getData<std::int_least16_t>(MurMur3::calcHash("elevation"), position);
             }
             catch (const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to get elevation";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Failed to get elevation");
+                return 0;
             }
         }
 
         /// @brief Is it land?
         /// @brief 陸地かどうかの判定
-        virtual bool isLand(const Vector2& position) const {
+        virtual bool isLand(const Vector2& position) const noexcept {
             try {
                 auto value = getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), position);
                 return static_cast<int>(value) >= static_cast<int>(1);
             }
             catch (const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to get gbank";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Failed to get land");
+                return false;
             }
         }
 
         /// @brief Is it water?
         /// @brief 淡水かどうかの判定
-        virtual bool isWater(const Vector2& position) const {
+        virtual bool isWater(const Vector2& position) const noexcept {
             try {
                 auto value = getData<std::uint_least8_t>(MurMur3::calcHash("water"), position);
                 return static_cast<int>(value) == static_cast<int>('1');
             }
             catch (const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to get water";
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Failed to get water");
+                return false;
             }
         }
     private:

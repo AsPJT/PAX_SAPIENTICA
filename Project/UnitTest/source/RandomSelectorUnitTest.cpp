@@ -43,9 +43,10 @@ TEST(RandomSelectorUnitTest, select2) {
     }
 }
 
-TEST(RandomSelectorUnitTest, select_exception) {
+TEST(RandomSelectorUnitTest, outOfRange) {
     paxs::RandomSelector selector;
 
     std::vector<int> vec = { 0, 1, 2, 3, 4, 5 };
-    ASSERT_THROW(selector.select(vec, 7), std::invalid_argument);
+    std::vector<int> result = {};
+    ASSERT_EQ(selector.select(vec, 7), result);
 }

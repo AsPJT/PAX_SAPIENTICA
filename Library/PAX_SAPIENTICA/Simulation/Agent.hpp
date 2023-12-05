@@ -22,7 +22,6 @@
 #include <random>
 #include <stdexcept>
 
-#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Object.hpp>
 
@@ -107,15 +106,8 @@ namespace paxs {
         /// @brief エージェントを移動させる
         /// @param v A vector to move the agent. エージェントを移動させるベクトル
         void move(const Vector2& v) {
-            try {
-                if (environment->isLand(this->position + v)) {
-                    this->position += v;
-                }
-            }
-            catch (const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, "Failed to move agent to " + std::to_string(this->position.x) + ", " + std::to_string(this->position.y) + ".");
-                throw;
+            if (environment->isLand(this->position + v)) {
+                this->position += v;
             }
         }
 

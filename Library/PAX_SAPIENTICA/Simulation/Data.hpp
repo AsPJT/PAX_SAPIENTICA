@@ -39,19 +39,11 @@ namespace paxs {
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z) : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z) {
+        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z) noexcept : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z) {
             z_mag = std::pow(2, default_z - pj_z);
             column_size = static_cast<int>((end_position.x - start_position.x + 1) * pixel_size * z_mag);
 
-            try {
-                load(file_path);
-            }
-            catch (const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to load data: " + file_path;
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
-            }
+            load(file_path);
         }
         Data(const Data& other) noexcept
             : start_position(other.start_position),
@@ -111,24 +103,15 @@ namespace paxs {
 
         /// @brief Load the file.
         /// @brief ファイルのロード
-        void load(const std::string& file_path) {
+        void load(const std::string& file_path) noexcept {
             std::cout << "Loading " << name << " data..." << std::endl;
-            std::vector<std::string> file_names;
-            try {
-                file_names = File::getFileNames(file_path);
-            } catch (const std::exception&) {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File not found: " + file_path);
-                throw;
-            }
+            std::vector<std::string> file_names = File::getFileNames(file_path);
 
             std::cout << file_names.size() << " files are found." << std::endl;
 
             if(file_names.size() == 0) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "File not found: " + file_path;
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("No files are found: " + file_path);
+                return;
             }
 
             if(file_names[0].find(".tsv") != std::string::npos) {
@@ -143,10 +126,7 @@ namespace paxs {
                     loadBinary<paxs::Input16BitBinary>(file_names);
                 }
             } else {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "File type is invalid: " + file_names[0];
-                logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_WARNING("File type is invalid: " + file_names[0]);
             }
         }
 
@@ -166,8 +146,7 @@ namespace paxs {
                 try {
                     xyz_position = getXAndYFromFileName(file_name);
                 } catch (const std::exception&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
+                    PAXS_WARNING("File name is invalid: " + file_name);
                     ++file_count;
                     continue;
                 }
@@ -209,8 +188,7 @@ namespace paxs {
                 try {
                     xyz_position = getXAndYFromFileName(file_name);
                 } catch (const std::exception&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
+                    PAXS_WARNING("File name is invalid: " + file_name);
                     ++file_count;
                     continue;
                 }
@@ -221,12 +199,9 @@ namespace paxs {
                     continue;
                 }
 
-                std::vector<std::string> file;
-                try {
-                    file = File::readFile(file_name);
-                } catch (const std::exception&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File is not found: " + file_name);
+                std::vector<std::string> file = File::readFile(file_name);
+                if (file.size() == 0) {
+                    PAXS_WARNING("File is empty: " + file_name);
                     ++file_count;
                     continue;
                 }
@@ -249,10 +224,10 @@ namespace paxs {
                                 data[position.toU64()] = static_cast<DataType>(std::stod(values[x]));
                             }
                         } catch (const std::invalid_argument&/*ia*/) {
-                            // str is not convertible to double
+                            PAXS_WARNING("File contains invalid value: " + file_name);
                             continue;
                         } catch (const std::out_of_range&/*oor*/) {
-                            // str is out of range for a double
+                            PAXS_WARNING("File contains out of range value: " + file_name);
                             continue;
                         }
                     }
@@ -278,8 +253,7 @@ namespace paxs {
                 try {
                     xyz_position = getXAndYFromFileName(file_name);
                 } catch (const std::exception&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
+                    PAXS_WARNING("File name is invalid: " + file_name);
                     ++file_count;
                     continue;
                 }
@@ -290,12 +264,9 @@ namespace paxs {
                     continue;
                 }
 
-                std::vector<std::string> file;
-                try {
-                    file = File::readFile(file_name);
-                } catch (const std::exception&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File is not found: " + file_name);
+                std::vector<std::string> file = File::readFile(file_name);
+                if (file.size() == 0) {
+                    PAXS_WARNING("File is empty: " + file_name);
                     ++file_count;
                     continue;
                 }
@@ -329,8 +300,7 @@ namespace paxs {
                 try {
                     xyz_position = getXAndYFromFileName(file_name);
                 } catch (const std::exception&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File name is invalid: " + file_name);
+                    PAXS_WARNING("File name is invalid: " + file_name);
                     ++file_count;
                     continue;
                 }
@@ -341,12 +311,9 @@ namespace paxs {
                     continue;
                 }
 
-                std::vector<std::string> file;
-                try {
-                    file = File::readFile(file_name);
-                } catch (const std::exception&) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::PAX_WARNING, __FILE__, __LINE__, "File is not found: " + file_name);
+                std::vector<std::string> file = File::readFile(file_name);
+                if (file.size() == 0) {
+                    PAXS_WARNING("File is empty: " + file_name);
                     ++file_count;
                     continue;
                 }
@@ -391,9 +358,8 @@ namespace paxs {
                 return Vector2(std::stoi(matches[3]), std::stoi(matches[4]));
             }
             else {
-                Logger logger("Save/error_log.txt");
                 const std::string message = "File name is invalid: " + file_name;
-                logger.log(Logger::Level::PAX_ERROR, __FILE__, __LINE__, message);
+                PAXS_ERROR(message);
                 throw std::runtime_error(message);
             }
         }
