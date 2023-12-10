@@ -41,6 +41,12 @@ It was presented at the 48th Annual Meeting of the Japan Association for Archaeo
 
 ![PAX SAPIENTICA Simulation](./Image/Animation/ABS01.gif)
 
+## Movement of a person
+
+This software allows you to visualize and move historical figures.
+
+![PAX SAPIENTICA Movement](./Image/Animation/Person01.gif)
+
 ---
 
 # Supported Environment
