@@ -41,6 +41,12 @@ It was presented at the 48th Annual Meeting of the Japan Association for Archaeo
 
 ![PAX SAPIENTICA Simulation](./Image/Animation/ABS01.gif)
 
+## Mitochondrial DNA
+
+This software can handle DNA haplogroup data of ancient human bones.
+
+![PAX SAPIENTICA Mitochondrial DNA](./Image/Animation/mtDNA01.gif)
+
 ## Movement of a person
 
 This software allows you to visualize and move historical figures.
