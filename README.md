@@ -45,7 +45,9 @@ It was presented at the 48th Annual Meeting of the Japan Association for Archaeo
 
 This software can handle DNA haplogroup data of ancient human bones.
 
-![PAX SAPIENTICA Mitochondrial DNA](./Image/Animation/mtDNA01.gif)
+The following GIF animation shows the changes in East Asian mtDNA haplogroups from 1 Julian day (4713 BC) to the present.
+
+![PAX SAPIENTICA Mitochondrial DNA](./Image/Animation/mtDNA02.gif)
 
 ## Movement of a person
 
