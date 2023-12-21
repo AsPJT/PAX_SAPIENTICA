@@ -65,6 +65,10 @@ The following GIF animation shows the changes in East Asian mtDNA haplogroups fr
 
 ![PAX SAPIENTICA Mitochondrial DNA](./Image/Animation/mtDNA02.gif)
 
+Ancient human bone mtDNA data registered as of December 21, 2023.
+
+![PAX SAPIENTICA mtDNA](./Image/Screenshot/Screenshot%202023-12-21%2022.00.17.png)
+
 ## 👤 Movement of a person
 
 This software allows you to visualize and move historical figures.
