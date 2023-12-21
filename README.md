@@ -12,9 +12,24 @@ It has the ability to display calendars for each region in each time period and 
 
 # How to Install
 
-This software uses OpenSiv3D (v0.6.10).
+This software has both a GUI and a CUI.
+
+### GUI
+
+The GUI supports the following libraries
+
+* OpenSiv3D (tested with v0.6.10)
+* DxLib (tested on Windows and Android versions)
+* SFML
+
+Any of the above libraries will launch the GUI software.
+
+### CUI
 
 To try this library, build cmake.
+
+> [!TIP]
+> For example, clone this repository. You can open the cloned directory with VS Code and build it with CMake.
 
 # Code Documentation
 
@@ -22,26 +37,27 @@ https://aspjt.github.io/PAX_SAPIENTICA/
 
 # List of elements supported by this software.
 
-## Calendar
+## 📅 Calendar
 
 |Available|Calendar Name|
 |:---:|:---|
 |✅|Julian calendar|
 |✅|Gregorian calendar|
 |✅|Japanese calendar|
+|✅|Chinese calendar|
 |✅|Islamic calendar|
 |✅|Julian day number|
 
 ![Calendar](./Image/Other/Calendar20230709.gif)
 
-## Agent-Based Simulation
+## 🏠 Agent-Based Simulation
 
 This is an agent-based simulation that estimates settlement and population dynamics in the Japanese archipelago from the 3rd to 7th centuries.
 It was presented at the 48th Annual Meeting of the Japan Association for Archaeoinformatics on December 2, 2023.
 
 ![PAX SAPIENTICA Simulation](./Image/Animation/ABS01.gif)
 
-## Mitochondrial DNA
+## 🧬 DNA haplogroup
 
 This software can handle DNA haplogroup data of ancient human bones.
 
@@ -49,7 +65,7 @@ The following GIF animation shows the changes in East Asian mtDNA haplogroups fr
 
 ![PAX SAPIENTICA Mitochondrial DNA](./Image/Animation/mtDNA02.gif)
 
-## Movement of a person
+## 👤 Movement of a person
 
 This software allows you to visualize and move historical figures.
 
@@ -59,6 +75,18 @@ This software allows you to visualize and move historical figures.
 
 # Supported Environment
 
+### Compilers
+
+* GNU Compiler Collection (GCC)
+* Clang
+* Microsoft Visual C++ (MSVC)
+
+### Language Version
+
+C++17 or later
+
+### Build Tools
+
 * CMake (e.g. Visual Studio Code)
 * .sln / Microsoft Visual Studio
 * Android Studio
@@ -67,12 +95,11 @@ This software allows you to visualize and move historical figures.
 
 This library has been tested to work in a mobile environment.
 
+> [!IMPORTANT]
+> The Android version of DxLib, a wrapper library for drawing APIs, is used.
+> Drawing APIs such as OpenGL and Vulkan are not directly supported.
+
 ![Android Studio](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Image/Screenshot/PAX%20SAPIENTICA%202023-09-23%2020.54.32.png)
-
-# Screenshot
-
-|![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_09%201_00_32.png)|![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_11%2023_26_47.png)|
-|:---:|:---:|
 
 ---
 
