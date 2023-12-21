@@ -1,5 +1,23 @@
 ﻿# Homo sapiens DNA Haplogroup
 
+This directory contains DNA data for Homo sapiens.
+
+> [!IMPORTANT]
+> The DNA data listed is a partial list and not all data is available.
+> Much of the data is from East Asia.
+
+## Images
+
+The following GIF animation shows the changes in East Asian DNA haplogroups from 1 Julian day (4713 BC) to the present.
+
+### For mtDNA
+
+![PAX SAPIENTICA Mitochondrial DNA](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Image/Animation/mtDNA02.gif)
+
+### For Y-DNA
+
+![PAX SAPIENTICA Mitochondrial DNA](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Image/Animation/Y-DNA01.gif)
+
 ## References
 
 * [1] 2020 篠田謙一， 神澤秀明， 角田恒雄…[ 「鳥取県鳥取市青谷上寺地遺跡出土弥生後期人骨の DNA 分析」](https://rekihaku.repo.nii.ac.jp/?action=repository_action_common_download&item_id=2531&item_no=1&attribute_id=22&file_no=1)
