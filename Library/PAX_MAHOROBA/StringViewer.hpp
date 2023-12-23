@@ -176,7 +176,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
             const std::string path = (path8);
             { // 暦の時間操作のアイコン
-                texture_dictionary.emplace(MurMur3::calcHash("texture_tlt"), paxg::Texture{ path + "Image/Logo/TitleLogoText2.svg" });
+                texture_dictionary.emplace(MurMur3::calcHash("texture_tlt"), paxg::Texture{ path + "Images/Logo/TitleLogoText2.svg" });
                 texture_dictionary.emplace(MurMur3::calcHash("texture_github"), paxg::Texture{ path + "Data/MenuIcon/github.svg" });
                 texture_dictionary.emplace(MurMur3::calcHash("texture_d_l"), paxg::Texture{ path + "Data/MenuIcon/DayL.svg" });
                 texture_dictionary.emplace(MurMur3::calcHash("texture_d_r"), paxg::Texture{ path + "Data/MenuIcon/DayR.svg" });

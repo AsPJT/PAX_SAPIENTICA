@@ -1,3 +1,3 @@
-![PAX SAPIENTICA Logo](./../Image/Logo/TitleBanner3.svg)
+![PAX SAPIENTICA Logo](./../Images/Logo/TitleBanner3.svg)
 
-![Screenshot](./../Image/Screenshot/Best.png)
+![Screenshot](./../Images/Screenshot/Best.png)

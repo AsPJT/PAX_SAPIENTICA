@@ -17,4 +17,4 @@
   - 「和名類聚抄」
 
 # Kojiki Place Name 古事記に登場する地名
-![Kojiki](./../Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.4%202023_01_18%200_05_01.png)
+![Kojiki](./../Images/Screenshot/PAX%20SAPIENTICA%20v6.0.0.0.4%202023_01_18%200_05_01.png)

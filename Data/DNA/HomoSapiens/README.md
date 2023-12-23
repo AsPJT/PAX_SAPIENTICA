@@ -12,11 +12,11 @@ The following GIF animation shows the changes in East Asian DNA haplogroups from
 
 ### For mtDNA
 
-![PAX SAPIENTICA Mitochondrial DNA](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Image/Animation/mtDNA02.gif)
+![PAX SAPIENTICA Mitochondrial DNA](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Images/Animation/mtDNA02.gif)
 
 ### For Y-DNA
 
-![PAX SAPIENTICA Mitochondrial DNA](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Image/Animation/Y-DNA01.gif)
+![PAX SAPIENTICA Mitochondrial DNA](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Images/Animation/Y-DNA01.gif)
 
 ## References
 

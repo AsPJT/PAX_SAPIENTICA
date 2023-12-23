@@ -35,7 +35,7 @@ namespace paxs {
 #ifdef __ANDROID__
                 "Logo.png"
 #else
-                path8 + "Image/Logo/TitleBanner2.png"
+                path8 + "Images/Logo/TitleBanner2.png"
 #endif
             };
             // 画面サイズを変更

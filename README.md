@@ -1,8 +1,8 @@
 [![CMake-All-Build](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml) [![CMake-Unit-Test](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml)
 
-![PAX SAPIENTICA Logo](./Image/Logo/TitleBanner4.svg)
+![PAX SAPIENTICA Logo](./Images/Logo/TitleBanner4.svg)
 
-![Screenshot](./Image/Screenshot/Best.png)
+![Screenshot](./Images/Screenshot/Best.png)
 
 # Overview
 
@@ -48,14 +48,14 @@ https://aspjt.github.io/PAX_SAPIENTICA/
 |✅|Islamic calendar|
 |✅|Julian day number|
 
-![Calendar](./Image/Other/Calendar20230709.gif)
+![Calendar](./Images/Other/Calendar20230709.gif)
 
 ## 🏠 Agent-Based Simulation
 
 This is an agent-based simulation that estimates settlement and population dynamics in the Japanese archipelago from the 3rd to 7th centuries.
 It was presented at the 48th Annual Meeting of the Japan Association for Archaeoinformatics on December 2, 2023.
 
-![PAX SAPIENTICA Simulation](./Image/Animation/ABS01.gif)
+![PAX SAPIENTICA Simulation](./Images/Animation/ABS01.gif)
 
 ## 🧬 DNA haplogroup
 
@@ -63,17 +63,17 @@ This software can handle DNA haplogroup data of ancient human bones.
 
 The following GIF animation shows the changes in East Asian mtDNA haplogroups from 1 Julian day (4713 BC) to the present.
 
-![PAX SAPIENTICA Mitochondrial DNA](./Image/Animation/mtDNA02.gif)
+![PAX SAPIENTICA Mitochondrial DNA](./Images/Animation/mtDNA02.gif)
 
 Ancient human bone mtDNA data registered as of December 21, 2023.
 
-![PAX SAPIENTICA mtDNA](./Image/Screenshot/Screenshot%202023-12-21%2022.00.17.png)
+![PAX SAPIENTICA mtDNA](./Images/Screenshot/Screenshot%202023-12-21%2022.00.17.png)
 
 ## 👤 Movement of a person
 
 This software allows you to visualize and move historical figures.
 
-![PAX SAPIENTICA Movement](./Image/Animation/Person01.gif)
+![PAX SAPIENTICA Movement](./Images/Animation/Person01.gif)
 
 ---
 
@@ -103,7 +103,7 @@ This library has been tested to work in a mobile environment.
 > The Android version of DxLib, a wrapper library for drawing APIs, is used.
 > Drawing APIs such as OpenGL and Vulkan are not directly supported.
 
-![Android Studio](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Image/Screenshot/PAX%20SAPIENTICA%202023-09-23%2020.54.32.png)
+![Android Studio](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Images/Screenshot/PAX%20SAPIENTICA%202023-09-23%2020.54.32.png)
 
 ---
 
