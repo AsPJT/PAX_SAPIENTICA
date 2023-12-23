@@ -197,7 +197,7 @@ namespace paxs {
         }
 
         PersonNameLocation() {
-            std::string str = "Data/Portrait/List.tsv";
+            std::string str = "Data/Portraits/List.tsv";
             paxg::InputFile pifs(str, PAXS_PATH);
             if (pifs.fail()) return;
             // 1 行目を読み込む

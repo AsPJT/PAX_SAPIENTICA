@@ -56,7 +56,7 @@ namespace paxs {
             sekishitsu_model = s3d::Model{ U"./../../../../../Data/3DModel/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj" };
 
             // 360 度写真をロード
-            sky = s3d::Texture(s3d::Image{ U"./../../../../../Data/360DegreePhoto/stone2.jpg" }.mirror());
+            sky = s3d::Texture(s3d::Image{ U"./../../../../../Data/360DegreePhotos/stone2.jpg" }.mirror());
 
             // モデルに付随するテクスチャをアセット管理に登録
             s3d::Model::RegisterDiffuseTextures(sekishitsu_model, s3d::TextureDesc::MippedSRGB);

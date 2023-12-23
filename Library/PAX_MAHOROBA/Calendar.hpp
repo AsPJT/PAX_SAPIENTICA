@@ -160,8 +160,8 @@ namespace paxs {
             sueki_tanabe_key = (MurMur3::calcHash("sueki_tanabe"));
 
             // 暦を読み込み
-            paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendar/JapaneseEraName.tsv");
-            paxs::ChineseEra::inputList(chinese_era_list, path8 + "Data/Calendar/ChineseEraName.tsv");
+            paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendars/JapaneseEraName.tsv");
+            paxs::ChineseEra::inputList(chinese_era_list, path8 + "Data/Calendars/ChineseEraName.tsv");
             // 日付計算
             calcDate();
         }
@@ -184,7 +184,7 @@ namespace paxs {
                 // 時間を進めている場合（逆行していない場合）
                 if (move_forward_in_time) {
                     if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
-                        jdn += (0.8 / 30.0); //(365.2425 / 12.0);//1.0;// ユリウス日を繰り上げ（次の日にする）
+                        jdn += 365.2425;//(0.8 / 30.0); //(365.2425 / 12.0);//1.0;// ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                     //jdn += 365; // ユリウス日を繰り上げ（次の日にする）
@@ -200,7 +200,7 @@ namespace paxs {
                 // 時間を逆行している場合
                 else if (go_back_in_time) {
                     if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
-                        jdn -= (0.8 / 30.0); //(365.2425 / 12.0);//1.0;// ユリウス日を繰り上げ（次の日にする）
+                        jdn -= 365.24252;//(0.8 / 30.0); //(365.2425 / 12.0);//1.0;// ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                 }
