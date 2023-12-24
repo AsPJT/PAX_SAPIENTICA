@@ -1,14 +1,19 @@
 ﻿# Homo sapiens DNA Haplogroup
 
-This directory contains DNA data for Homo sapiens.
+* This directory contains DNA data for Homo sapiens.
+* このフォルダには人間のDNAデータが含まれています。
 
 > [!IMPORTANT]
 > The DNA data listed is a partial list and not all data is available.
 > Much of the data is from East Asia.
+> 
+> 掲載されているDNAデータは一部であり、公開されている論文のすべてのデータは含まれていません。
+> 特に東アジアのデータが多く入っています。
 
-## Images
+## 画像 Images
 
-The following GIF animation shows the changes in East Asian DNA haplogroups from 1 Julian day (4713 BC) to the present.
+* The following GIF animation shows the changes in East Asian DNA haplogroups from 1 Julian day (4713 BC) to the present.
+* 以下のGIFはユリウス通日の1日（紀元前4713年）から現在までの東アジアのDNAハプログループの変化を示しています。
 
 ### For mtDNA
 
@@ -18,7 +23,7 @@ The following GIF animation shows the changes in East Asian DNA haplogroups from
 
 ![PAX SAPIENTICA Mitochondrial DNA](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Images/Animation/Y-DNA01.gif)
 
-## References
+## 引用文献 References
 
 * [1] 2020-3-27 篠田, 謙一/神澤, 秀明/角田, 恒雄/安達, 登  「[調査研究活動報告] 鳥取県鳥取市青谷上寺地遺跡出土弥生後期人骨のDNA分析」国立歴史民俗博物館研究報告 219巻 p.163-177 https://rekihaku.repo.nii.ac.jp/records/2531
 * [2] 2021-3-31 神澤, 秀明/角田, 恒雄/安達, 登/篠田, 謙一  「[調査研究活動報告] 鳥取県鳥取市青谷上寺地遺跡出土弥生後期人骨の核DNA分析」国立歴史民俗博物館研究報告 228巻 p.295-307 https://rekihaku.repo.nii.ac.jp/records/2670
