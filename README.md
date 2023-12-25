@@ -42,7 +42,7 @@ The following GIF animation shows the changes in East Asian mtDNA haplogroups fr
 
 Ancient human bone mtDNA data registered as of December 21, 2023.
 
-![PAX SAPIENTICA mtDNA](./Images/Screenshot/Screenshot%202023-12-21%2022.00.17.png)
+![PAX SAPIENTICA mtDNA](./Images/Screenshot/PAX%20SAPIENTICA%20v6.0.0.4.0%202023_12_25%2022_06_43.png)
 
 ## 👤 Movement of a person
 
