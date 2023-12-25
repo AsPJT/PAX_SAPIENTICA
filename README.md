@@ -1,4 +1,4 @@
-[![CMake-All-Build](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml) [![CMake-Unit-Test](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml)
+# PAX SAPIENTICA [![CMake-All-Build](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml) [![CMake-Unit-Test](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml)
 
 ![PAX SAPIENTICA Logo](./Images/Logo/TitleBanner4.svg)
 
@@ -9,31 +9,6 @@
 This software is PAX SAPIENTICA (abbreviated PAXS).
 PAXS is a GIS for philological, archaeological, and anthropological data.
 It has the ability to display calendars for each region in each time period and agent-based simulation.
-
-# How to Install
-
-This software has both a GUI and a CUI.
-
-### GUI
-
-The GUI supports the following libraries
-
-* OpenSiv3D (tested with v0.6.10)
-* DxLib (tested on Windows and Android versions)
-* SFML
-
-Any of the above libraries will launch the GUI software.
-
-### CUI
-
-To try this library, build cmake.
-
-> [!TIP]
-> For example, clone this repository. You can open the cloned directory with VS Code and build it with CMake.
-
-# Code Documentation
-
-https://aspjt.github.io/PAX_SAPIENTICA/
 
 # List of elements supported by this software.
 
@@ -76,6 +51,38 @@ This software allows you to visualize and move historical figures.
 ![PAX SAPIENTICA Movement](./Images/Animation/Person01.gif)
 
 ---
+
+# How to Install
+
+This software has both a GUI and a CUI.
+
+### GUI
+
+The GUI supports the following libraries
+
+* OpenSiv3D (tested with v0.6.10)
+* DxLib (tested on Windows and Android versions)
+* SFML
+
+Any of the above libraries will launch the GUI software.
+
+### CUI
+
+To try this library, build cmake.
+
+> [!TIP]
+> For example, clone this repository. You can open the cloned directory with VS Code and build it with CMake.
+
+# Code Documentation
+
+https://aspjt.github.io/PAX_SAPIENTICA/
+
+# How to Contribute
+
+This project welcomes issues and pull requests.
+Anyone can send issues and pull requests.
+
+You can find out how to contribute [here](CONTRIBUTING.md).
 
 # Supported Environment
 
