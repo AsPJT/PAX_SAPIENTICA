@@ -1,0 +1,42 @@
+Ref.ID	Museum ID	Y haplogroup	Mt haplogroup	Y Haplogroup	Отнесение	BC cal range (95%)	Site	Arch. Period	Context	Sex	Age	Lat	Long
+DA357	LOK_1985.031.02	C-F4015	A+152+16362	C-F4015	Прибайкалье, неолит		Lokomotiv	EN	Grave 31-2	Male	25-30	52.286944	104.249167
+MA2208-09		G2a2b1-M406	H6a1b2e	G2a2b1-M406	Анатолия, бронза		Kalehöyük	Assyrian IIIc	940826, S2 (skeleton 2), North, Sector I, Grid XLV-54 (GG)	nd	nd	39.345805	33.78813
+DA379	6286-38	J		J	Туркмения, энеолит	3369-3077	Kara-Depe	Namazga III	Excavation 1, burial 43	Male	30-35	37.60098	59.328411
+DA381	6286-89	J	J1+16193	J	Туркмения, энеолит	3364-3261	Geoksur	nd	Excavation 2, room 18, near tolos B	Male	50+	37.455728	60.74589
+MA2212		J2a	W5	J2a	Анатолия, бронза		Ovaören	EBA II	G-137, the well of layer V, individual no. 2.	nd	nd	38.629306	34.297718
+MA2200-01		J2a1	K1a+150	J2a1	Анатолия, бронза		Kalehöyük	Old Hittite	HS 89-01, 89 08 17, Sector III, Grid XLI-54 (C), Provisional Layer 48 – IIIb	nd	nd	39.345805	33.78813
+MA2205		J2a1	J2b1	J2a1	Анатолия, бронза		Kalehöyük	Assyrian IIIc	HS 11-1, 110705, North, Sector VIII, Grid XXX-55 (WW), Provisional Layer 75	nd	child?	39.345805	33.78813
+DA247	SHA_2004.051	N-Y6503	C4	N-Y6503	Прибайкалье, неолит		Shamanka II	EN	Grave 51	Male	20-25	51.698333	103.703056
+DA251	SHA_2008.108.03	N	D4j	N	Прибайкалье, неолит		Shamanka II	EN	Grave 108-3	Male	25-35	51.698333	103.703056
+DA359	LOK_1980.016	N1a	D4+195	N1a	Прибайкалье, неолит		Lokomotiv	EN	Grave 16	Male	45-55	52.286944	104.249167
+DA345	UID_1995.056.01	N-TAT>F1419*	D4j	N-TAT>F1419*	Прибайкалье, неолит	3550-2550	Ust'-Ida	LN	Grave 56-1	Male	35-50	53.188889	103.368056
+DA245	SHA_2006.076	N-L666*	G2a1	N-L666*	Прибайкалье, неолит		Shamanka II	EN	Grave 76	Male	40-50	51.698333	103.703056
+DA248	SHA_2005.063.01	N-L666	C4	N-L666	Прибайкалье, неолит		Shamanka II	EN	Grave 63-1	Male	25-29	51.698333	103.703056
+DA362	SHA_2004.049.01	N1a2	D4e1	N1a2	Прибайкалье, неолит		Shamanka II	EN	Grave 49-1	Male?	nd	51.698333	103.703056
+BOT15		N-P189.2*	R1b1	N-P189.2*	Ботайская культура	3327-3094	Botai	EN	Botai Excavation 15	nd	nd	53.305983	67.648166
+DA250	SHA_1998.006	NO	G2a1	NO	Прибайкалье, неолит		Shamanka II	EN	Grave 6	Male?	16-18	51.698333	103.703056
+RISE664	6160-33	Q-L330>Y18330	A8a1	Q-L330>Y18330	Окуневская культура	2459-2206	Okunev Ulus	EBA		Male	Mature	53.547806	91.02565
+RISE719		Q-L330>BZ180	C5c	Q-L330>BZ180	Окуневская культура		Syda 5, Tumen	EBA	IPDN 6/H, Kurgan 4	nd	nd	54.371767	91.506856
+RISE662	6160-32	Q-L330>L332	H6a	Q-L330>L332	Окуневская культура	2290-1949	Okunev Ulus	EBA		Male	Mature	53.547806	91.02565
+RISE718		Q-L330>L332	C5c	Q-L330>L332	Окуневская культура	2573-2348	Syda 5, Tumen	EBA	IPDN 6/H, Kurgan 3	nd	nd	54.371767	91.506856
+DA339	SHA_2008.111	Q-L330>YP1102	G2a1	Q-L330>YP1102	Прибайкалье, бронза		Shamanka II	EBA	Grave 111	Male	18-20	51.698333	103.703056
+DA343	UID_1989.019	Q-L330>YP1102	D4j4	Q-L330>YP1102	Прибайкалье, бронза		Ust'-Ida	EBA	Grave 19	Male	30-35	53.188889	103.368056
+DA356	UID_1994.048	Q-L330>YP1102	C4a1a3	Q-L330>YP1102	Прибайкалье, бронза		Ust'-Ida	EBA	Grave 48	Male	>50	53.188889	103.368056
+DA337	SHA_2000.009	Q-L53	C4a1a3	Q-L53	Прибайкалье, бронза		Shamanka II	EBA	Grave 9	Male?	17-18	51.698333	103.703056
+RISE672	7053-61	Q-L56	H6a1b	Q-L56	Окуневская культура		Verkhni Askiz	EBA	kurgan 2, grave 8, sk.3	nd	nd	53.156486	90.207811
+RISE674	7053-85	Q-L940>Y2679	A+152+16362	Q-L940>Y2679	Окуневская культура	2281-1976	Verkhni Askiz	EBA	kurgan 2, grave 21, sk.1	Male	Adult	53.156486	90.207811
+RISE683	7053-191	Q-L712	H15b1	Q-L712	Окуневская культура	2138-1915	Uybat V	EBA	kurgan 4, grave 4, skull A	Female	Adult	53.708561	90.359808
+RISE670	7053-49	Q-L940>L527	A8a	Q-L940>L527	Окуневская культура	2141-1885	Verkhni Askiz	EBA	kurgan 2, grave 4, scull 7	nd	child	53.156486	90.207811
+RISE673	7053-62	Q-MEH2	A8a	Q-MEH2	Окуневская культура		Verkhni Askiz	EBA	kurgan 2, grave 9	Male	Mature	53.156486	90.207811
+DA334	SHA_2008.107	Q-YP4004	C4a2a1	Q-YP4004	Прибайкалье, бронза		Shamanka II	EBA	Grave 107	Male	20-23	51.698333	103.703056
+DA338	SHA_1998.002	Q-YP4004	C4a2a1	Q-YP4004	Прибайкалье, бронза		Shamanka II	EBA	Grave 2	Male	>50	51.698333	103.703056
+DA353	UID_1989.029	Q-YP4004	H2a2a	Q-YP4004	Прибайкалье, бронза		Ust'-Ida	EBA	Grave 29	Male	>50	53.188889	103.368056
+DA355	UID_1988.014	Q-YP4004	A2	Q-YP4004	Прибайкалье, неолит		Ust'-Ida	LN	Grave 14	Male	18-20	53.188889	103.368056
+DA335	SHA_2000.005	Q-YP4004>BZ2199	F1b1b	Q-YP4004>BZ2199	Прибайкалье, бронза		Shamanka II	EBA	Grave 5	Male	>50	51.698333	103.703056
+DA336	SHA_1998.003	Q-YP4004>BZ2199	C4a2a1	Q-YP4004>BZ2199	Прибайкалье, бронза		Shamanka II	EBA	Grave 3	Male	>50	51.698333	103.703056
+DA354	KUR_2002.015	Q-YP4004>BZ2199	D4	Q-YP4004>BZ2199	Прибайкалье, бронза		Kurma XI	EBA	Grave 15	Male	14-19	53.179167	106.962778
+DA361	UID_1993.045	Q-YP4004>BZ2199	C4a1a3	Q-YP4004>BZ2199	Прибайкалье, бронза		Ust'-Ida	EBA	Grave 45	Male	22-30	53.188889	103.368056
+DA382	1601987	R1a-Z93>FGC82884>KMS149>KMS133>	T2c1a	R1a-Z93>FGC82884>KMS149>KMS133>		911-799	Takhirbai 3	nd	Excavation 1, burial 2	Male	40-50	38.718548	61.692287
+BOT14		R1b-M73	K1b2	R1b-M73	Ботайская культура	3371-3354	Botai	EN	Botai Excavation 14, 1983	Male	nd	53.305983	67.648166
+RISE675	7053-169	R1b-Z2103	D4+195	R1b-Z2103	Окуневская культура	2859-2350	Uybat V	EBA	kurgan 1, grave 1, sk.1	Male	Mature	53.708561	90.359808
+RISE786		R1b-Z2109	R1a1a	R1b-Z2109	Ямная культура	3018-2887	Karagash	EBA	Kurgan 1, 2	Male	nd	49.134217	75.851817
