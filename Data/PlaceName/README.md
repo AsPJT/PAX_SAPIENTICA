@@ -1,10 +1,13 @@
 # 地名の資料 References for place names
+
 ## 新羅の地名 Silla Place Names
 ### 主に地名/改名日 Mainly place names/rename dates
 * [高句麗語の研究を勉強する](https://dai3gen.net/kg0.htm)
 * ※上記資料の補助：[新羅地名一覧](https://ja.wikipedia.org/wiki/%E6%96%B0%E7%BE%85%E5%9C%B0%E5%90%8D%E4%B8%80%E8%A6%A7)
 ### 主に経緯度/比定地 Mainly latitude and longitude
 * [轟博志2020「統一新羅における幹線駅路と行政区画の関係に関する試論」コリア研究 11 15-30, 立命館大学コリア研究センター](https://cir.nii.ac.jp/crid/1390290700401316992)
+
+![East Asia](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Images/Screenshot/PAXS_GIS01.png)
 
 ## 渤海の地名 Balhae Place Names
 ### 主に地名 Mainly place names
