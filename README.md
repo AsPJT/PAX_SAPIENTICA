@@ -32,17 +32,17 @@ It was presented at the 48th Annual Meeting of the Japan Association for Archaeo
 
 ![PAX SAPIENTICA Simulation](./Images/Animation/ABS01.gif)
 
-## 🧬 DNA haplogroup
+## [🧬 DNA haplogroup](Data/Genomes/HomoSapiens)
 
 This software can handle DNA haplogroup data of ancient human bones.
 
 The following GIF animation shows the changes in East Asian mtDNA haplogroups from 1 Julian day (4713 BC) to the present.
 
-![PAX SAPIENTICA Mitochondrial DNA](./Images/Animation/mtDNA02.gif)
+[![PAX SAPIENTICA Mitochondrial DNA](./Images/Animation/mtDNA02.gif)](Data/Genomes/HomoSapiens)
 
 Ancient human bone mtDNA data registered as of December 21, 2023.
 
-![PAX SAPIENTICA mtDNA](./Images/Screenshot/PAX%20SAPIENTICA%20v6.0.0.4.0%202023_12_25%2022_06_43.png)
+[![PAX SAPIENTICA mtDNA](./Images/Screenshot/PAX%20SAPIENTICA%20v6.0.0.4.0%202023_12_25%2022_06_43.png)](Data/Genomes/HomoSapiens)
 
 ## 👤 Movement of a person
 
