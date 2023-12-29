@@ -1,11 +1,3 @@
-[submodule "ExternalLibrary/googletest"]
-    path = ExternalLibrary/googletest
-    url = https://github.com/google/googletest.git
-    branch = main
-[submodule "ExternalLibrary/stb"]
-    path = ExternalLibrary/stb
-    url = https://github.com/nothings/stb.git
-    branch = master
 [submodule "Data/3DModel/KofunOBJ"]
     path = Data/3DModel/KofunOBJ
     url = https://github.com/Asukana/KofunOBJ.git
@@ -14,10 +6,16 @@
     path = Data/Map/XYZTile/Elevation/Data/Elevation
     url = https://github.com/Asukana/Elevation.git
     branch = main
+[submodule "Data/Map/XYZTile/Elevation/Data/ElevationData20231030"]
+    path = Data/Map/XYZTile/Elevation/Data/ElevationData20231030
+    url = https://github.com/Asukana/ElevationData20231030.git
 [submodule "Data/Map/XYZTile/IPCC/Image/IPCC"]
     path = Data/Map/XYZTile/IPCC/Image/IPCC
     url = https://github.com/Asukana/IPCC.git
     branch = main
+[submodule "Data/Map/XYZTile/JapanProvinces/Data/JapanProvincesData20231107"]
+    path = Data/Map/XYZTile/JapanProvinces/Data/JapanProvincesData20231107
+    url = https://github.com/Asukana/JapanProvincesData20231107.git
 [submodule "Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes"]
     path = Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes
     url = https://github.com/Asukana/RiversAndLakes.git
@@ -26,13 +24,13 @@
     path = Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW
     url = https://github.com/Asukana/RiversAndLakesBW.git
     branch = main
-[submodule "Data/Map/XYZTile/RyoseikokuData/Data/RyoseikokuData20230626"]
-    path = Data/Map/XYZTile/RyoseikokuData/Data/RyoseikokuData20230626
-    url = https://github.com/Asukana/RyoseikokuData20230626.git
-    branch = main
 [submodule "Data/Map/XYZTile/RyoseikokuData/Data/JapanRegionData20230918"]
     path = Data/Map/XYZTile/RyoseikokuData/Data/JapanRegionData20230918
     url = https://github.com/Asukana/JapanRegionData20230918.git
+    branch = main
+[submodule "Data/Map/XYZTile/RyoseikokuData/Data/RyoseikokuData20230626"]
+    path = Data/Map/XYZTile/RyoseikokuData/Data/RyoseikokuData20230626
+    url = https://github.com/Asukana/RyoseikokuData20230626.git
     branch = main
 [submodule "Data/Map/XYZTile/Slope/Data/SlopeData20230514"]
     path = Data/Map/XYZTile/Slope/Data/SlopeData20230514
@@ -58,9 +56,11 @@
     path = Data/Map/XYZTile/Temperature/Image/SoilTemperature
     url = https://github.com/Asukana/SoilTemperature.git
     branch = main
-[submodule "Data/Map/XYZTile/Elevation/Data/ElevationData20231030"]
-	path = Data/Map/XYZTile/Elevation/Data/ElevationData20231030
-	url = https://github.com/Asukana/ElevationData20231030.git
-[submodule "Data/Map/XYZTile/JapanProvinces/Data/JapanProvincesData20231107"]
-	path = Data/Map/XYZTile/JapanProvinces/Data/JapanProvincesData20231107
-	url = https://github.com/Asukana/JapanProvincesData20231107.git
+[submodule "ExternalLibrary/googletest"]
+    path = ExternalLibrary/googletest
+    url = https://github.com/google/googletest.git
+    branch = main
+[submodule "ExternalLibrary/stb"]
+    path = ExternalLibrary/stb
+    url = https://github.com/nothings/stb.git
+    branch = master
