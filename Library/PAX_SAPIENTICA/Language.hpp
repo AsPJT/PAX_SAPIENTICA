@@ -95,6 +95,8 @@ namespace paxs {
             if (!(pifs.getLine())) {
                 return; // 何もない場合
             }
+            // BOM を削除
+            pifs.deleteBOM();
             // 1 行目を分割する
             std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
             std::vector<std::uint_least32_t> menu_v = pifs.splitHashMapMurMur3Vector('\t');

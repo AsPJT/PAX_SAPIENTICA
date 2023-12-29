@@ -26,6 +26,13 @@
 
 namespace paxg {
 
+    // UTF-8 BOM
+    constexpr char utf8_bom[4] = {
+        static_cast<char>(static_cast<unsigned char>(0xef)) ,
+        static_cast<char>(static_cast<unsigned char>(0xbb)) ,
+        static_cast<char>(static_cast<unsigned char>(0xbf)) ,
+        0 };
+
     struct InputFile {
 
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
@@ -177,6 +184,18 @@ namespace paxg {
 
         std::string& lineString() {
             return pline;
+        }
+
+        // BOM を削除する
+        void deleteBOM() {
+            if (pline.size() < 3) return;
+            if (
+                pline[0] == utf8_bom[0] &&
+                pline[1] == utf8_bom[1] &&
+                pline[2] == utf8_bom[2]
+                ) {
+                pline = std::string(&(pline[3]));
+            }
         }
 
         // バイナリ分割
