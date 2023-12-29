@@ -222,14 +222,17 @@ namespace paxs {
                     std::string local_file_path = local_file_path_zny;
                     paxs::StringExtensions::replace(local_file_path, "{x}", x_value);
 
-                    // 新しいテクスチャ
-                    paxg::Texture new_tex(local_file_path);
+                    // ファイル読み込みができるかどうか
+                    if (std::filesystem::exists(local_file_path)) {
+                        // 新しいテクスチャ
+                        paxg::Texture new_tex(local_file_path);
 
-                    // テクスチャが読み込めた場合
-                    if (!!new_tex) {
-                        texture_list.insert({ index_zyx, std::move(new_tex) });
-                        is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
-                        continue;
+                        // テクスチャが読み込めた場合
+                        if (!!new_tex) {
+                            texture_list.insert({ index_zyx, std::move(new_tex) });
+                            is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
+                            continue;
+                        }
                     }
                     // 新しいテクスチャが読み込めなかった場合
 #if defined(PAXS_USING_SIV3D)
@@ -244,14 +247,17 @@ namespace paxs {
                         createTextureFolder(x_value, y_value, z_value); // 画像保存用のフォルダを作成
                         if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(local_file_path)).isOK()) {
 
-                            paxg::Texture new_url_tex{ local_file_path };
-                            if (!new_url_tex) {
-                                is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
-                            }
-                            else {
-                                // URL から取得した新しい地図へ更新
-                                texture_list.insert({ index_zyx, std::move(new_url_tex) });
-                                is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
+                            // ファイル読み込みができるかどうか
+                            if (std::filesystem::exists(local_file_path)) {
+                                paxg::Texture new_url_tex{ local_file_path };
+                                if (!new_url_tex) {
+                                    is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
+                                }
+                                else {
+                                    // URL から取得した新しい地図へ更新
+                                    texture_list.insert({ index_zyx, std::move(new_url_tex) });
+                                    is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
+                                }
                             }
                         }
                     }
@@ -316,18 +322,20 @@ namespace paxs {
                             stbi_write_png(local_file_path.c_str(), 256, 256, static_cast<int>(sizeof(RGBAa)), rgba, 0);
                             current_map_view_width = 11111;
 
-                            // 画像として読み込み
+                            // ファイル読み込みができるかどうか
+                            if (std::filesystem::exists(local_file_path)) {
+                                // 画像として読み込み
 
-                            // 新しいテクスチャ
-                            paxg::Texture bin_tex(local_file_path);
-                            if (!bin_tex) {
-                                is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
+                                // 新しいテクスチャ
+                                paxg::Texture bin_tex(local_file_path);
+                                if (!bin_tex) {
+                                    is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
+                                }
+                                else {
+                                    texture_list.insert({ index_zyx, std::move(bin_tex) });
+                                    is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
+                                }
                             }
-                            else {
-                                texture_list.insert({ index_zyx, std::move(bin_tex) });
-                                is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
-                            }
-
                         }
                         else
                         {
