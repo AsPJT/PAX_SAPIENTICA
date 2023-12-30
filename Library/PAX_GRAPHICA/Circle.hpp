@@ -63,9 +63,9 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_DXLIB)
         void draw(const paxg::Color& c_) const {
-            //DxLib::DrawBox(
-            //    static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
-            //    DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
+            DxLib::DrawCircle(
+                static_cast<int>(x), static_cast<int>(y), static_cast<int>(r),
+                DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
         }
 #elif defined(PAXS_USING_SFML)
         void draw(const paxg::Color&) const {

@@ -368,7 +368,7 @@ namespace paxs {
                     // 配置する集落の人口を決定
                     paxs::Ryoseikoku ryoseikoku = japan_provinces->cgetRyoseikoku(ryoseikoku_id);
                     int settlement_population = std::uniform_int_distribution<>(ryoseikoku.settlement_population_min_ad200, ryoseikoku.settlement_population_max_ad200)(gen);
-                    settlement_population = std::min(settlement_population, static_cast<int>(ryoseikoku_population_it->second));
+                    settlement_population = (std::min)(settlement_population, static_cast<int>(ryoseikoku_population_it->second));
 
                     // 集落をグリッドに配置
                     Vector2 grid_position = live_position / grid_length;

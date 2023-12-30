@@ -95,11 +95,8 @@ namespace paxs {
             const SelectLanguage& select_language,
             const paxs::KoyomiSiv3D& koyomi_siv,
             paxs::StringViewerSiv3D& string_siv,
-            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
-#ifndef PAXS_USING_SIMULATOR
-            [[maybe_unused]]
-#endif
-        const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator,
+            const paxs::Vector2<int>& start_position,
             paxs::GraphicVisualizationList& visible,
             std::size_t& pop_num, // 人口数
             std::size_t& sat_num // 集落数
@@ -110,14 +107,12 @@ namespace paxs {
 
                 // 地図上に画像を描画する
                 texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
-#ifdef PAXS_USING_SIMULATOR
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
                     agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), start_position, map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
                         pop_num,
                         sat_num
                     );
                 }
-#endif
 
 #ifdef PAXS_USING_SIV3D
                 //// 線の描画

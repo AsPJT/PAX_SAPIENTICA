@@ -196,6 +196,13 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 texture_dictionary.emplace(MurMur3::calcHash("texture_stop"), paxg::Texture{ path + "Data/MenuIcon/stop.svg" });
                 texture_dictionary.emplace(MurMur3::calcHash("texture_playback"), paxg::Texture{ path + "Data/MenuIcon/playback.svg" });
                 texture_dictionary.emplace(MurMur3::calcHash("texture_reverse_playback"), paxg::Texture{ path + "Data/MenuIcon/reverse-playback.svg" });
+                texture_dictionary.emplace(MurMur3::calcHash("texture_1step"), paxg::Texture{ path + "Data/MenuIcon/1Step.svg" });
+                texture_dictionary.emplace(MurMur3::calcHash("texture_delete_agent_data"), paxg::Texture{ path + "Data/MenuIcon/DeleteAgentData.svg" });
+                texture_dictionary.emplace(MurMur3::calcHash("texture_delete_geographic_data"), paxg::Texture{ path + "Data/MenuIcon/DeleteGeographicData.svg" });
+                texture_dictionary.emplace(MurMur3::calcHash("texture_load_agent_data"), paxg::Texture{ path + "Data/MenuIcon/LoadAgentData.svg" });
+                texture_dictionary.emplace(MurMur3::calcHash("texture_load_agent_data2"), paxg::Texture{ path + "Data/MenuIcon/LoadAgentData2.svg" });
+                texture_dictionary.emplace(MurMur3::calcHash("texture_load_geographic_data"), paxg::Texture{ path + "Data/MenuIcon/LoadGeographicData.svg" });
+                texture_dictionary.emplace(MurMur3::calcHash("texture_load_geographic_data2"), paxg::Texture{ path + "Data/MenuIcon/LoadGeographicData2.svg" });
             }
 
             //koyomi_font = setFont(koyomi_font_size, path8, 2);
@@ -223,18 +230,9 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const paxs::Language& language_text,
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
             std::unique_ptr<paxs::SettlementSimulator<int>>& old_simulator, // コンパイル時の分岐により使わない場合あり
-#ifndef PAXS_USING_SIMULATOR
-            [[maybe_unused]]
-#endif
-        const paxs::Vector2<int>& start_position, // コンパイル時の分岐により使わない場合あり
-#ifndef PAXS_USING_SIMULATOR
-            [[maybe_unused]]
-#endif
-        const paxs::Vector2<int>& end_position, // コンパイル時の分岐により使わない場合あり
-#ifndef PAXS_USING_SIMULATOR
-            [[maybe_unused]]
-#endif
-        const std::string& path8, // コンパイル時の分岐により使わない場合あり
+            const paxs::Vector2<int>& start_position,
+            const paxs::Vector2<int>& end_position,
+            const std::string& path8,
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
             paxs::GraphicVisualizationList& visible,
@@ -264,17 +262,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const int arrow_time_icon_size = 24; // 時間操作アイコンの大きさ
             const int time_icon_size = 40; // 時間操作アイコンの大きさ
             int icon_const_start_x = 360;
-#ifdef PAXS_USING_DXLIB
-#ifndef __ANDROID__
-            const int dx_move_x = 400; // 描画ライブラリごとに位置の調整
-#else
-            const int dx_move_x = 0; // 描画ライブラリごとに位置の調整
-#endif
-            koyomi_font_x -= dx_move_x;
-            koyomi_font_en_x -= dx_move_x;
-            rect_start_x -= dx_move_x;
-            icon_const_start_x += dx_move_x;
-#endif // PAXS_USING_DXLIB
+
             int icon_start_x = icon_const_start_x;
 
             int sum_icon_height = arrow_time_icon_size + time_icon_size * 2;
@@ -723,8 +711,10 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 //    simulator = old_simulator;
                 //}
 
-                if (s3d::SimpleGUI::Button(U"Init", s3d::Vec2{ 10, 60 })) {
-
+                texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
+                    time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, 400));
+                if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                // if (s3d::SimpleGUI::Button(U"Sim Init (CUI)", s3d::Vec2{ 10, 60 })) {
                     const std::string map_list_path = path8 + "Data/Simulation/MapList.tsv";
                     const std::string japan_provinces_path = path8 + "Data/Simulation/Japan200-725";
                     paxs::Vector2<int> init_start_position(861, 381);
@@ -743,12 +733,33 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                     //simulator_.init();
                     koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
                     koyomi_siv.is_agent_update = false;
+
+                    koyomi_siv.move_forward_in_time = false; // 一時停止
+                    koyomi_siv.go_back_in_time = false;
                 }
-                if (s3d::SimpleGUI::Button(U"Start", s3d::Vec2{ 110, 60 })) {
-                    koyomi_siv.is_agent_update = true;
+                if (!koyomi_siv.is_agent_update) {
+                    // シミュレーションを再生
+                    texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
+                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, 400));
+                    if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                        // if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
+                        koyomi_siv.is_agent_update = true;
+
+                        koyomi_siv.move_forward_in_time = true; // 再生
+                        koyomi_siv.go_back_in_time = false;
+                    }
                 }
-                if (s3d::SimpleGUI::Button(U"Stop", s3d::Vec2{ 210, 60 })) {
-                    koyomi_siv.is_agent_update = false;
+                else {
+                    // シミュレーションを停止
+                    texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
+                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, 400));
+                    if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                        // if (s3d::SimpleGUI::Button(U"Sim Stop", s3d::Vec2{ 330, 60 })) {
+                        koyomi_siv.is_agent_update = false;
+
+                        koyomi_siv.move_forward_in_time = false; // 一時停止
+                        koyomi_siv.go_back_in_time = false;
+                    }
                 }
                 //if (koyomi_siv.is_agent_update && simulator.get() != nullptr) {
                 //    simulator->run(1);
