@@ -63,6 +63,21 @@ namespace paxs {
             std::uniform_int_distribution<> move_probability_dist{ min_move_probability, max_move_probability };
             move_probability = move_probability_dist(gen);
         }
+        /// @brief 環境を設定
+        void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) noexcept {
+            environment.reset();
+            environment = std::make_unique<Environment>(map_list_path, start_position, end_position, z);
+
+            gen = std::mt19937(seed);
+
+            japan_provinces.reset();
+            japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
+
+            // ランダムに移動確率を設定
+            std::uniform_int_distribution<> move_probability_dist{ min_move_probability, max_move_probability };
+            move_probability = move_probability_dist(gen);
+        }
+
         /// @brief
         /// @brief 渡来数の取得
         std::uint_least64_t emigrationSize() {
