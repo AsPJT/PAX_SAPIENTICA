@@ -435,7 +435,7 @@ namespace paxs {
                 const std::uint_least32_t set_lifespan = kanakuma_life_span.setAdultLifeSpan(set_gender, *gen);
 
                 std::uniform_int_distribution<> lifespan_dist{
-                    std::min(18 * steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
+                    (std::min)(18 * steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
                     static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                 agents.emplace_back(Agent(

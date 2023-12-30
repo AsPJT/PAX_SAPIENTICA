@@ -30,7 +30,7 @@ namespace paxs {
         /// @brief Generate a unique id.
         /// @brief ユニークなIDを生成する。
         static IdType generate() {
-            if (counter == std::numeric_limits<IdType>::max()) {
+            if (counter == (std::numeric_limits<IdType>::max)()) {
                 PAXS_WARNING("The counter has reached the maximum value. Resetting the counter.");
                 reset();
             }

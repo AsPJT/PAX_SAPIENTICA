@@ -232,7 +232,7 @@ namespace paxs {
     private:
         // 中央の座標を指定
         Coordinate center = Coordinate(
-            paxs::EquirectangularDeg(paxs::Vector2<double>(/*135.0, 35.0*/128, 37)),
+            paxs::EquirectangularDeg(paxs::Vector2<double>(135, 35)), // 韓国 128, 37
             //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)),
             200.0); // マップ座標の中央
         double width = 12.0; // マップの幅

@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -62,7 +62,7 @@ namespace paxs {
         /// @param num_elements_2 The number of elements to select from the second vector.
         /// @return A vector of selected elements.
         std::vector<std::pair<std::size_t, std::size_t>> select(const std::size_t num_elements_1, const std::size_t num_elements_2) {
-            const std::size_t num_elements = std::min(num_elements_1, num_elements_2);
+            const std::size_t num_elements = (std::min)(num_elements_1, num_elements_2);
 
             std::vector<std::pair<std::size_t, std::size_t>> result;
             std::unordered_set<std::size_t> used_indices_1;
