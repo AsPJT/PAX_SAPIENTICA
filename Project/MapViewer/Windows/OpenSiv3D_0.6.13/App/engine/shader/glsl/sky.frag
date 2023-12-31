@@ -1,5 +1,5 @@
-//	Copyright (c) 2008-2022 Ryo Suzuki.
-//	Copyright (c) 2016-2022 OpenSiv3D Project.
+//	Copyright (c) 2008-2023 Ryo Suzuki.
+//	Copyright (c) 2016-2023 OpenSiv3D Project.
 //	Licensed under the MIT License.
 
 //
@@ -47,7 +47,7 @@ layout(location = 0) out vec4 FragColor;
 //
 layout(std140) uniform PSPerFrame
 {
-	vec3 g_gloablAmbientColor;
+	vec3 g_globalAmbientColor;
 	vec3 g_sunColor;
 	vec3 g_sunDirection;
 };

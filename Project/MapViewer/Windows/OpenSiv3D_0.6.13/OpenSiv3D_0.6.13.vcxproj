@@ -12,9 +12,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{b20c4e9f-c478-4679-b3dd-fbbdf6a226e0}</ProjectGuid>
+    <ProjectGuid>{0a3b523a-1c70-4e42-987a-f9eec0a85f7c}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>GraphicalUserInterface</RootNamespace>
+    <RootNamespace>OpenSiv3D_0_6_13</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -22,14 +22,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -49,23 +49,23 @@
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Debug\Intermediate\</IntDir>
     <TargetName>$(ProjectName)(debug)</TargetName>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
-    <IncludePath>$(SIV3D_0_6_10)\include;$(SIV3D_0_6_10)\include\ThirdParty;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SIV3D_0_6_10)\lib\Windows;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SIV3D_0_6_13)\include;$(SIV3D_0_6_13)\include\ThirdParty;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SIV3D_0_6_13)\lib\Windows;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\Release\Intermediate\</IntDir>
     <LocalDebuggerWorkingDirectory>$(ProjectDir)App</LocalDebuggerWorkingDirectory>
-    <IncludePath>$(SIV3D_0_6_10)\include;$(SIV3D_0_6_10)\include\ThirdParty;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SIV3D_0_6_10)\lib\Windows;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SIV3D_0_6_13)\include;$(SIV3D_0_6_13)\include\ThirdParty;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SIV3D_0_6_13)\lib\Windows;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_ENABLE_EXTENDED_ALIGNED_STORAGE;_SILENCE_CXX20_CISO646_REMOVED_WARNING;_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_ENABLE_EXTENDED_ALIGNED_STORAGE;_SILENCE_CXX20_CISO646_REMOVED_WARNING;_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS;_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -76,7 +76,6 @@
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <BuildStlModules>false</BuildStlModules>
       <AdditionalIncludeDirectories>./../../../../Library;./../../../../ExternalLibrary;</AdditionalIncludeDirectories>
-      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -94,7 +93,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_ENABLE_EXTENDED_ALIGNED_STORAGE;_SILENCE_CXX20_CISO646_REMOVED_WARNING;_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_ENABLE_EXTENDED_ALIGNED_STORAGE;_SILENCE_CXX20_CISO646_REMOVED_WARNING;_SILENCE_ALL_CXX23_DEPRECATION_WARNINGS;_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -105,7 +104,6 @@
       <ForcedIncludeFiles>stdafx.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <BuildStlModules>false</BuildStlModules>
       <AdditionalIncludeDirectories>./../../../../Library;./../../../../ExternalLibrary;</AdditionalIncludeDirectories>
-      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -319,46 +317,6 @@
     <Xml Include="App\example\xml\test.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Circle.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Color.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Graphics.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\IDrawable.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Image.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\InputFile.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\InputFileKeyMatrix.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Key.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Line.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Rect.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\String.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Texture.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Vec2.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_GRAPHICA\Window.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\3DModel.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Calendar.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Init.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\InitLogo.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\LocationPoint.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\LocationRange.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Main.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\MapViewer.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Mock.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\Pulldown.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\StringViewer.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTiles.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_MAHOROBA\XYZTilesList.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Agent.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Data.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Environment.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Human.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\JapanProvinces.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\KanakumaLifeSpan.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Object.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Settlement.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementAgent.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementGrid.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SettlementSimulator.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\SimulationConst.hpp" />
-    <ClInclude Include="..\..\..\..\Library\PAX_SAPIENTICA\Simulation\Simulator.hpp" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
