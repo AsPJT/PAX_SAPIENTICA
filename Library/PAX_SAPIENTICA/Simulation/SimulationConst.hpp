@@ -53,9 +53,9 @@ namespace paxs {
     constexpr std::uint_least8_t max_settlement_population = 80;
 
     // 最小移動距離
-    constexpr std::uint_least32_t min_move_distance = 800;
+    constexpr std::uint_least32_t min_move_distance = 10;
     // 最大移動距離
-    constexpr std::uint_least32_t max_move_distance = 8000;
+    constexpr std::uint_least32_t max_move_distance = 800;
     // 移動確率下限
     constexpr int min_move_probability = 1;
     // 移動確率上限

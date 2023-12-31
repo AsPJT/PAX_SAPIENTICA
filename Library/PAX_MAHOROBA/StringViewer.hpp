@@ -49,6 +49,93 @@
 namespace paxs {
 
     class StringViewerSiv3D {
+    private:
+
+        void simulation(
+            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
+            const paxs::Vector2<int>& start_position,
+            const paxs::Vector2<int>& end_position,
+            const std::string& path8,
+            paxs::TouchManager& tm_,
+            paxs::KoyomiSiv3D& koyomi_siv
+        ) {
+
+                const int time_icon_size = 40; // 時間操作アイコンの大きさ
+
+                // シミュレーションが初期化されていない場合
+                if (simulator.get() == nullptr) {
+                    texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
+                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, 400));
+                    if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                        const std::string map_list_path = path8 + "Data/Simulation/MapList.tsv";
+                        const std::string japan_provinces_path = path8 + "Data/Simulation/Japan200-725";
+
+                        std::random_device seed_gen;
+                        simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());
+                        //simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, init_start_position, init_end_position, 10, 1);
+                        simulator->init();
+                        koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
+                        koyomi_siv.jdn.setDay(/*1794474 + 15*//*1750661*/1728746); // シミュレーション初期時の日付に設定
+                        koyomi_siv.calcDate();
+
+                        koyomi_siv.is_agent_update = false;
+
+                        koyomi_siv.move_forward_in_time = false; // 一時停止
+                        koyomi_siv.go_back_in_time = false;
+                    }
+                }
+                // シミュレーションが初期化されている場合
+                else {
+                    // シミュレーションが再生されている場合
+                    if (koyomi_siv.is_agent_update) {
+                        // シミュレーションを停止
+                        texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, 400));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            // if (s3d::SimpleGUI::Button(U"Sim Stop", s3d::Vec2{ 330, 60 })) {
+                            koyomi_siv.is_agent_update = false;
+
+                            koyomi_siv.move_forward_in_time = false; // 一時停止
+                            koyomi_siv.go_back_in_time = false;
+                        }
+                    }
+                    // シミュレーションが再生されていない場合
+                    else {
+                        // 地形データを削除
+                        texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, 400));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            simulator.reset();
+
+                            koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
+                            koyomi_siv.calcDate();
+                        }
+
+                        // シミュレーションを再生
+                        texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, 400));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            // if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
+                            koyomi_siv.is_agent_update = true;
+
+                            koyomi_siv.move_forward_in_time = true; // 再生
+                            koyomi_siv.go_back_in_time = false;
+                        }
+                        // シミュレーションを 1 Step 実行
+                        texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 240, 400));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 240, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            simulator->step(); // シミュレーションを 1 ステップ実行する
+                            koyomi_siv.steps.getDay()++; // ステップ数を増やす
+                            koyomi_siv.calcDate();
+
+                            koyomi_siv.move_forward_in_time = false; // 一時停止
+                            koyomi_siv.go_back_in_time = false;
+                        }
+                    }
+                }
+        }
+
     public:
 
         /*##########################################################################################
@@ -309,7 +396,15 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 // 暦表示の範囲に白背景を追加
                 s3d::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw(s3d::ColorF{ 1, 1, 1 }/*s3d::Palette::White*/);
                 s3d::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw(s3d::ColorF{ 1, 1, 1 }/*s3d::Palette::White*/);
+
             }
+
+
+            // シミュレーションのボタン
+            if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")]) {
+                simulation(simulator, start_position, end_position, path8, tm_, koyomi_siv);
+            }
+
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦の表示（日本語）
                 if (
@@ -702,71 +797,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                     }
                 }
             }
-            // シミュレーションのボタン
-            if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")]) {
-#ifdef PAXS_USING_SIMULATOR
-
-
-                //if (s3d::SimpleGUI::Button(U"Restart", s3d::Vec2{ 10, 120 })) {
-                //    simulator = old_simulator;
-                //}
-
-                texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
-                    time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, 400));
-                if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                // if (s3d::SimpleGUI::Button(U"Sim Init (CUI)", s3d::Vec2{ 10, 60 })) {
-                    const std::string map_list_path = path8 + "Data/Simulation/MapList.tsv";
-                    const std::string japan_provinces_path = path8 + "Data/Simulation/Japan200-725";
-                    paxs::Vector2<int> init_start_position(861, 381);
-                    paxs::Vector2<int> init_end_position(950, 450);
-                    //std::random_device seed_gen;
-                    //simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());
-                    simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, init_start_position, init_end_position, 10, 1);
-                    simulator->init();
-                    koyomi_siv.jdn.setDay(/*1794474 + 15*//*1750661*/1728746); // シミュレーション初期時の日付に設定
-                    //*simulator = *old_simulator;
-
-                    //simulator_ = paxs::Simulator<int>(
-                    //    path8 + "Data/Simulation/MapList.tsv",
-                    //    //paxs::Vector2<int>{861, 350}, paxs::Vector2<int>{950, 450}, 10);
-                    //    start_position, end_position, 10);
-                    //simulator_.init();
-                    koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
-                    koyomi_siv.is_agent_update = false;
-
-                    koyomi_siv.move_forward_in_time = false; // 一時停止
-                    koyomi_siv.go_back_in_time = false;
-                }
-                if (!koyomi_siv.is_agent_update) {
-                    // シミュレーションを再生
-                    texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, 400));
-                    if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        // if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
-                        koyomi_siv.is_agent_update = true;
-
-                        koyomi_siv.move_forward_in_time = true; // 再生
-                        koyomi_siv.go_back_in_time = false;
-                    }
-                }
-                else {
-                    // シミュレーションを停止
-                    texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, 400));
-                    if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        // if (s3d::SimpleGUI::Button(U"Sim Stop", s3d::Vec2{ 330, 60 })) {
-                        koyomi_siv.is_agent_update = false;
-
-                        koyomi_siv.move_forward_in_time = false; // 一時停止
-                        koyomi_siv.go_back_in_time = false;
-                    }
-                }
-                //if (koyomi_siv.is_agent_update && simulator.get() != nullptr) {
-                //    simulator->run(1);
-                //}
-#endif
-            }
-
         }
     private:
         void setLanguageFont(

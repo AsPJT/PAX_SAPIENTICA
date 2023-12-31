@@ -80,11 +80,15 @@ namespace paxs {
         // 対馬のみ
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 879, 406 };
         //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 881, 409 };
+
+        paxs::Vector2<int> start_position(861, 381);
+        paxs::Vector2<int> end_position(950, 450);
+
         // 本州
-        paxs::Vector2<int> start_position = paxs::Vector2<int>{ 861, 381 };
+        //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 861, 381 };
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
         //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
-        paxs::Vector2<int> end_position = paxs::Vector2<int>{ 950, 450 };
+        //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 950, 450 };
         //#endif
         int old_width = paxg::Window::width(); // 1 フレーム前の幅
         int old_height = paxg::Window::height(); // 1 フレーム前の高さ

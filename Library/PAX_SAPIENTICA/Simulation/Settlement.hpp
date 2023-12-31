@@ -182,12 +182,12 @@ namespace paxs {
             }
 
             // 近隣の集落を探す
-            for (auto it = close_settlements.begin(); it != close_settlements.end();) {
-                if (it->getPosition().distance(position) > marriage_search_range) {
-                    (*it) = close_settlements.back(); // 同義 it = close_settlements.erase(it);
+            for (std::size_t i = 0; i < close_settlements.size();) {
+                if (close_settlements[i].getPosition().distance(position) > marriage_search_range) {
+                    close_settlements[i] = close_settlements.back(); // 同義 it = close_settlements.erase(it);
                     close_settlements.pop_back();
                 } else {
-                    ++it;
+                    ++i;
                 }
             }
 
@@ -233,6 +233,16 @@ namespace paxs {
                     Vector2 male_settlement_position;
                     for (std::size_t j = 0; j < close_settlements.size(); ++j) {
                         if (close_settlements[j].getId() == male_settlement_id) {
+
+                            if (index_pair.first >= marriageable_female_index.size()) {
+                                PAXS_ERROR("The FIRST of index_pair is larger than the size of marriageable_female_index.");
+                                continue;
+                            }
+                            if (marriageable_female_index[index_pair.first] >= agents.size()) {
+                                PAXS_ERROR("marriageable_female_index is larger than the size of AGENTS.");
+                                continue;
+                            }
+
                             agents[marriageable_female_index[index_pair.first]].marry(male_id);
                             const std::uint_least64_t female_id = agents[marriageable_female_index[index_pair.first]].getId();
 
@@ -265,6 +275,16 @@ namespace paxs {
                     bool is_found = false;
                     for (std::size_t j = 0; j < close_settlements.size(); ++j) {
                         if (close_settlements[j].getId() == settlement_id) {
+
+                            if (pair.first >= marriageable_agents_index_pair.size()) {
+                                PAXS_ERROR("The FIRST of pair is larger than the size of marriageable_agents_index_pair.");
+                                continue;
+                            }
+                            if (marriageable_agents_index_pair[pair.first].first >= agents.size()) {
+                                PAXS_ERROR("marriageable_agents_pair is larger than the size of AGENTS.");
+                                continue;
+                            }
+
                             agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
                             // const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
                             // TODO:
@@ -319,6 +339,7 @@ namespace paxs {
             Vector2 current_position = position;
             Vector2 target_position = current_position;
 
+            // 小さい領域のシミュレーションでは無限ループする可能性がある
             while (target_position == current_position || !environment->isLive(target_position)) {
                 float theta = theta_dist(engine);
                 int distance = move_dist(engine);
@@ -468,13 +489,13 @@ namespace paxs {
         /// @brief Death.
         /// @brief 死亡
         void death() noexcept {
-            for (auto it = agents.begin(); it != agents.end();) {
-                if (!it->isDead()) {
-                    ++it;
+            for (auto i = 0; i < agents.size();) {
+                if (!(agents[i].isDead())) {
+                    ++i;
                     continue;
                 }
 
-                std::uint_least64_t partner_id = it->getPartnerId();
+                const std::uint_least64_t partner_id = agents[i].getPartnerId();
                 if (partner_id != 0) {
                     auto partnerIt = std::find_if(agents.begin(), agents.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
                     if (partnerIt != agents.end()) {
@@ -482,7 +503,7 @@ namespace paxs {
                     }
                 }
 
-                (*it) = agents.back(); // 同義 it = agents.erase(it);
+                agents[i] = agents.back(); // 同義 it = agents.erase(it);
                 agents.pop_back();
             }
         }
