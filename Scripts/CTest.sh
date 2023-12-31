@@ -2,7 +2,7 @@
 
 # Create build directory
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
-cmake -S${SCRIPT_DIR}/../Project -B${SCRIPT_DIR}/../build
+cmake -S${SCRIPT_DIR}/../Projects -B${SCRIPT_DIR}/../build
 
 # Build the project
 cmake --build ${SCRIPT_DIR}/../build

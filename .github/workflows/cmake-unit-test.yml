@@ -5,7 +5,7 @@ on:
 
 env:
   BUILD_TYPE: Debug
-  WORK_SPACE: ${{github.workspace}}/Project
+  WORK_SPACE: ${{github.workspace}}/Projects
   TEST_DIR: UnitTest
 
 jobs:

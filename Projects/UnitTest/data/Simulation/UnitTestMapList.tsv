@@ -1,0 +1,5 @@
+key	file_name_type	data_type	file_path	z	min_x	min_y	max_x	max_y	file_name_extension	file_format
+elevation	z_original	s16	Projects/UnitTest/data/Simulation/Elevation/	8	0	0	255	255	.bin	binary
+slope	z_original	u8	Projects/UnitTest/data/Simulation/Slope/	8	0	0	255	255	.bin	binary
+gbank	z_original	u8	Projects/UnitTest/data/Simulation/LandAndWater/	10	861	366	950	441	.txt	numeric
+water	z_original	u8	Projects/UnitTest/data/Simulation/RiversAndLakes/	12	3511	1465	3691	1712	.txt	numeric

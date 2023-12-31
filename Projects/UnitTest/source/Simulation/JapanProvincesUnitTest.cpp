@@ -23,8 +23,8 @@
 
 TEST (JapanProvincesUnitTest, constructor) {
     const std::string root = PROJECT_ROOT_PATH;
-    const std::string japan_region_tsv_path = root + "/Project/UnitTest/data/Simulation/JapanRegion.tsv";
-    const std::string ryoseikoku_tsv_path = root + "/Project/UnitTest/data/Simulation/Ryoseikoku.tsv";
+    const std::string japan_region_tsv_path = root + "/Projects/UnitTest/data/Simulation/JapanRegion.tsv";
+    const std::string ryoseikoku_tsv_path = root + "/Projects/UnitTest/data/Simulation/Ryoseikoku.tsv";
 
     paxs::JapanProvinces japan_provinces(japan_region_tsv_path, ryoseikoku_tsv_path);
 

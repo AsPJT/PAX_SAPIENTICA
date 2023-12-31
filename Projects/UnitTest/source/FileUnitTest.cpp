@@ -18,7 +18,7 @@
 
 #ifdef PROJECT_ROOT_PATH
 const std::string root = PROJECT_ROOT_PATH;
-const std::string prefix = root + "/Project/UnitTest/data/File";
+const std::string prefix = root + "/Projects/UnitTest/data/File";
 #else
 const std::string prefix = "../data/File";
 #endif // PROJECT_ROOT_PATH

@@ -36,7 +36,7 @@ protected:
         }
 
         const std::string root = PROJECT_ROOT_PATH;
-        const std::string setting_file_path = root + "/Project/UnitTest/data/Simulation/UnitTestMapList.tsv";
+        const std::string setting_file_path = root + "/Projects/UnitTest/data/Simulation/UnitTestMapList.tsv";
 
         const paxs::Vector2<int> start_position(850, 340);
         const paxs::Vector2<int> end_position(950, 450);
