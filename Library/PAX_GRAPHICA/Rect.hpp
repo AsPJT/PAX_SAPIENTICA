@@ -253,7 +253,19 @@ namespace paxg {
             return false;
 
 #elif defined(PAXS_USING_SFML)
-            return rect.getGlobalBounds().contains(sf::Mouse::getPosition(Window::window).x, sf::Mouse::getPosition(Window::window).y);
+            if (old_left_mouse) {
+                // 1 フレーム前にタッチされている
+                if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+                    int mx = sf::Mouse::getPosition(Window::window).x, my = sf::Mouse::getPosition(Window::window).y;
+                    return (mx >= rect.getPosition().x &&
+                        my >= rect.getPosition().y &&
+                        mx < rect.getPosition().x + rect.getSize().x &&
+                        my < rect.getPosition().y + rect.getSize().y);
+                }
+            }
+
+            return false;
+            // return rect.getGlobalBounds().contains(sf::Mouse::getPosition(Window::window).x, sf::Mouse::getPosition(Window::window).y);
 
 #else
             return false;
