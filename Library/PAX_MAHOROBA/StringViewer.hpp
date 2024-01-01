@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <PAX_GRAPHICA/Key.hpp>
+#include <PAX_GRAPHICA/RoundRect.hpp>
 
 #include <PAX_MAHOROBA/3DModel.hpp>
 #include <PAX_MAHOROBA/Calendar.hpp> // 計算時に必要
@@ -364,39 +365,30 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             int next_rect_start_y = icon_start_y + sum_icon_height + 20;//230;
             int next_rect_end_y = 150;//380;
 
-            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
-#ifdef PAXS_USING_DXLIB
-                DxLib::DrawRoundRect(rect_start_x, koyomi_font_y - 5,
-                    rect_start_x + 360, koyomi_font_y - 5 + next_rect_start_y,
-                    10, 10, DxLib::GetColor(255, 255, 255), TRUE);
-
-                // paxg::Rect{ paxg::Vec2i(rect_start_x, koyomi_font_y - 5), paxg::Vec2i(360, next_rect_start_y) }.draw();
-                // paxg::Rect{ paxg::Vec2i(rect_start_x, koyomi_font_y + next_rect_start_y + 5), paxg::Vec2i(360, next_rect_end_y) }.draw();
-#endif // PAXS_USING_DXLIB
-
 #ifdef PAXS_USING_SIV3D
                 // 影を作る図形を shadow_texture に描く
-                {
-                    const s3d::ScopedRenderTarget2D target{ shadow_texture.clear(s3d::ColorF{ 1.0, 0.0 }) };
-                    const s3d::ScopedRenderStates2D blend{ s3d::BlendState::MaxAlpha };
-                    const s3d::Transformer2D transform{ s3d::Mat3x2::Translate(3, 3) };
+            {
+                const s3d::ScopedRenderTarget2D target{ shadow_texture.clear(s3d::ColorF{ 1.0, 0.0 }) };
+                const s3d::ScopedRenderStates2D blend{ s3d::BlendState::MaxAlpha };
+                const s3d::Transformer2D transform{ s3d::Mat3x2::Translate(3, 3) };
+                paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(); // メニューバー
 
-                    s3d::Rect{ 0, 0, paxg::Window::width(), static_cast<int>(pulldown.getRect().h()) }.draw(); // メニューバー
-                    s3d::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw();
-                    s3d::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw();
+                if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+                    paxg::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw();
+                    paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw();
                 }
+            }
                 // shadow_texture を 2 回ガウスぼかし
-                {
-                    s3d::Shader::GaussianBlur(shadow_texture, internal_texture, shadow_texture);
-                    s3d::Shader::GaussianBlur(shadow_texture, internal_texture, shadow_texture);
-                }
-
-                shadow_texture.draw(s3d::ColorF{ 0.0, 0.5 });
+            {
+                s3d::Shader::GaussianBlur(shadow_texture, internal_texture, shadow_texture);
+                s3d::Shader::GaussianBlur(shadow_texture, internal_texture, shadow_texture);
+            }
+            shadow_texture.draw(s3d::ColorF{ 0.0, 0.5 });
 #endif
+            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦表示の範囲に白背景を追加
-                s3d::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw(s3d::ColorF{ 1, 1, 1 }/*s3d::Palette::White*/);
-                s3d::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw(s3d::ColorF{ 1, 1, 1 }/*s3d::Palette::White*/);
-
+                paxg::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
+                paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
             }
 
 

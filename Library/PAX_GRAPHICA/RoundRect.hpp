@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_GRAPHICA_RECT_HPP
-#define PAX_GRAPHICA_RECT_HPP
+#ifndef PAX_GRAPHICA_ROUND_RECT_HPP
+#define PAX_GRAPHICA_ROUND_RECT_HPP
 
 /*##########################################################################################
 
@@ -35,30 +35,36 @@ static bool old_left_mouse = false;
 
 namespace paxg {
 
-    struct Rect : public paxg::IDrawable {
+    struct RoundRect : public paxg::IDrawable {
 #if defined(PAXS_USING_SIV3D)
-        s3d::RectF rect{};
-        constexpr Rect() = default;
-        constexpr Rect(const float x, const float y, const float w, const float h) : rect(x, y, w, h) {}
-        constexpr Rect(const Vec2i& pos, const Vec2i& size) : rect(pos.x(), pos.y(), size.x(), size.y()) {}
-        constexpr Rect(const Vec2i& pos, const float w, const float h) : rect(pos.x(), pos.y(), w, h) {}
-        constexpr Rect(const float x, const float y, const Vec2i& size) : rect(x, y, size.x(), size.y()) {}
-        constexpr operator s3d::RectF() const { return rect; }
-        void setX(const float x_) { rect.x = x_; }
-        void setY(const float y_) { rect.y = y_; }
-        void setW(const float w_) { rect.w = w_; }
-        void setH(const float h_) { rect.h = h_; }
-        float x() const { return static_cast<float>(rect.x); }
-        float y() const { return static_cast<float>(rect.y); }
-        float w() const { return static_cast<float>(rect.w); }
-        float h() const { return static_cast<float>(rect.h); }
+        s3d::RoundRect rect{};
+        constexpr RoundRect() = default;
+        constexpr RoundRect(const int x, const int y, const int w, const int h) : rect(x, y, w, h, w / 5) {}
+        constexpr RoundRect(const int x, const int y, const int w, const int h, const int r) : rect(x, y, w, h, r) {}
+        constexpr RoundRect(const Vec2i& pos, const Vec2i& size) : rect(pos.x(), pos.y(), size.x(), size.y(), size.x() / 5) {}
+        constexpr RoundRect(const Vec2i& pos, const Vec2i& size, const int r) : rect(pos.x(), pos.y(), size.x(), size.y(), r) {}
+        constexpr RoundRect(const Vec2i& pos, const int w, const int h) : rect(pos.x(), pos.y(), w, h, w / 5) {}
+        constexpr RoundRect(const Vec2i& pos, const int w, const int h, const int r) : rect(pos.x(), pos.y(), w, h, r) {}
+        constexpr RoundRect(const int x, const int y, const Vec2i& size) : rect(x, y, size.x(), size.y(), size.x() / 5) {}
+        constexpr RoundRect(const int x, const int y, const Vec2i& size, const int r) : rect(x, y, size.x(), size.y(), r) {}
+        constexpr operator s3d::RoundRect() const { return rect; }
+        void setX(const int x_) { rect.x = x_; }
+        void setY(const int y_) { rect.y = y_; }
+        void setW(const int w_) { rect.w = w_; }
+        void setH(const int h_) { rect.h = h_; }
+        void setR(const int r_) { rect.r = r_; }
+        int x() const { return static_cast<int>(rect.x); }
+        int y() const { return static_cast<int>(rect.y); }
+        int w() const { return static_cast<int>(rect.w); }
+        int h() const { return static_cast<int>(rect.h); }
+        int r() const { return static_cast<int>(rect.r); }
         Vec2i pos() const { return Vec2i(static_cast<int>(rect.x), static_cast<int>(rect.y)); }
         Vec2i size() const { return Vec2i(static_cast<int>(rect.w), static_cast<int>(rect.h)); }
-        void setPos(const float x_, const float y_) {
+        void setPos(const int x_, const int y_) {
             rect.x = x_;
             rect.y = y_;
         }
-        void setSize(const float w_, const float h_) {
+        void setSize(const int w_, const int h_) {
             rect.w = w_;
             rect.h = h_;
         }
@@ -73,63 +79,80 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
         sf::RectangleShape rect{};
-        constexpr Rect() = default;
-        Rect(const float x, const float y, const float w, const float h) : rect(sf::Vector2f(w, h)) { rect.setPosition(x, y); }
-        Rect(const sf::Vector2i& pos, const sf::Vector2i& size) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition(pos.x, pos.y); }
-        Rect(const sf::Vector2i& pos, const float w, const float h) : rect(sf::Vector2f(w, h)) { rect.setPosition(pos.x, pos.y); }
-        Rect(const float x, const float y, const sf::Vector2i& size) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition(x, y); }
+        constexpr RoundRect() = default;
+        RoundRect(const int x, const int y, const int w, const int h) : rect(sf::Vector2f(w, h)) { rect.setPosition(x, y); }
+        RoundRect(const int x, const int y, const int w, const int h, const int) : rect(sf::Vector2f(w, h)) { rect.setPosition(x, y); }
+        RoundRect(const sf::Vector2i& pos, const sf::Vector2i& size) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition(pos.x, pos.y); }
+        RoundRect(const sf::Vector2i& pos, const sf::Vector2i& size, const int) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition(pos.x, pos.y); }
+        RoundRect(const sf::Vector2i& pos, const int w, const int h) : rect(sf::Vector2f(w, h)) { rect.setPosition(pos.x, pos.y); }
+        RoundRect(const sf::Vector2i& pos, const int w, const int h, const int) : rect(sf::Vector2f(w, h)) { rect.setPosition(pos.x, pos.y); }
+        RoundRect(const int x, const int y, const sf::Vector2i& size) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition(x, y); }
+        RoundRect(const int x, const int y, const sf::Vector2i& size, const int) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition(x, y); }
         operator sf::RectangleShape() const { return rect; }
-        void setX(const float x_) { rect.setPosition(x_, rect.getPosition().y); }
-        void setY(const float y_) { rect.setPosition(rect.getPosition().x, y_); }
-        void setW(const float w_) { rect.setSize(sf::Vector2f(w_, rect.getSize().y)); }
-        void setH(const float h_) { rect.setSize(sf::Vector2f(rect.getSize().x, h_)); }
-        float x() const { return rect.getPosition().x; }
-        float y() const { return rect.getPosition().y; }
-        float w() const { return rect.getSize().x; }
-        float h() const { return rect.getSize().y; }
+        void setX(const int x_) { rect.setPosition(x_, rect.getPosition().y); }
+        void setY(const int y_) { rect.setPosition(rect.getPosition().x, y_); }
+        void setW(const int w_) { rect.setSize(sf::Vector2f(w_, rect.getSize().y)); }
+        void setH(const int h_) { rect.setSize(sf::Vector2f(rect.getSize().x, h_)); }
+        void setR(const int) {}
+        int x() const { return rect.getPosition().x; }
+        int y() const { return rect.getPosition().y; }
+        int w() const { return rect.getSize().x; }
+        int h() const { return rect.getSize().y; }
+        int r() const { return 0; }
         Vec2i pos() const { return Vec2i(static_cast<int>(rect.getPosition().x), static_cast<int>(rect.getPosition().y)); }
         Vec2i size() const { return Vec2i(static_cast<int>(rect.getSize().x), static_cast<int>(rect.getSize().y)); }
-        void setPos(const float x_, const float y_) { rect.setPosition(x_, y_); }
-        void setSize(const float w_, const float h_) { rect.setSize(sf::Vector2f(w_, h_)); }
+        void setPos(const int x_, const int y_) { rect.setPosition(x_, y_); }
+        void setSize(const int w_, const int h_) { rect.setSize(sf::Vector2f(w_, h_)); }
         void setPos(const Vec2i& pos_) { rect.setPosition(pos_.x(), pos_.y()); }
         void setSize(const Vec2i& size_) { rect.setSize(sf::Vector2f(size_.x(), size_.y())); }
 #else
-        float x0{}, y0{}, w0{}, h0{};
-        constexpr Rect() = default;
-        constexpr Rect(const float x, const float y, const float w, const float h) :
-            x0(x), y0(y), w0(w), h0(h) {}
-        constexpr Rect(const Vec2i& pos, const Vec2i& size)
-            : x0(static_cast<float>(pos.x())), y0(static_cast<float>(pos.y())),
-            w0(static_cast<float>(size.x())), h0(static_cast<float>(size.y())) {}
-        constexpr Rect(const Vec2i& pos, const float w, const float h) :
-            x0(static_cast<float>(pos.x())), y0(static_cast<float>(pos.y())), w0(w), h0(h) {}
-        constexpr Rect(const float x, const float y, const Vec2i& size)
-            : x0(x), y0(y), w0(static_cast<float>(size.x())), h0(static_cast<float>(size.y())) {}
-        void setX(const float x_) { x0 = x_; }
-        void setY(const float y_) { y0 = y_; }
-        void setW(const float w_) { w0 = w_; }
-        void setH(const float h_) { h0 = h_; }
-        float x() const { return x0; }
-        float y() const { return y0; }
-        float w() const { return w0; }
-        float h() const { return h0; }
+        int x0{}, y0{}, w0{}, h0{}, r0{};
+        constexpr RoundRect() = default;
+        constexpr RoundRect(const int x, const int y, const int w, const int h) :
+            x0(x), y0(y), w0(w), h0(h), r0(w0 / 5) {}
+        constexpr RoundRect(const int x, const int y, const int w, const int h, const int r) :
+            x0(x), y0(y), w0(w), h0(h), r0(r) {}
+        constexpr RoundRect(const Vec2i& pos, const Vec2i& size)
+            : x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())),
+            w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(w0 / 5) {}
+        constexpr RoundRect(const Vec2i& pos, const Vec2i& size, const int r)
+            : x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())),
+            w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(r) {}
+        constexpr RoundRect(const Vec2i& pos, const int w, const int h) :
+            x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())), w0(w), h0(h), r0(w0 / 5) {}
+        constexpr RoundRect(const Vec2i& pos, const int w, const int h, const int r) :
+            x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())), w0(w), h0(h), r0(r) {}
+        constexpr RoundRect(const int x, const int y, const Vec2i& size)
+            : x0(x), y0(y), w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(w0 / 5) {}
+        constexpr RoundRect(const int x, const int y, const Vec2i& size, const int r)
+            : x0(x), y0(y), w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(r) {}
+        void setX(const int x_) { x0 = x_; }
+        void setY(const int y_) { y0 = y_; }
+        void setW(const int w_) { w0 = w_; }
+        void setH(const int h_) { h0 = h_; }
+        void setR(const int r_) { r0 = r_; }
+        int x() const { return x0; }
+        int y() const { return y0; }
+        int w() const { return w0; }
+        int h() const { return h0; }
+        int r() const { return r0; }
         Vec2i pos() const { return Vec2i(static_cast<int>(x0), static_cast<int>(y0)); }
         Vec2i size() const { return Vec2i(static_cast<int>(w0), static_cast<int>(h0)); }
-        void setPos(const float x_, const float y_) {
+        void setPos(const int x_, const int y_) {
             x0 = x_;
             y0 = y_;
         }
-        void setSize(const float w_, const float h_) {
+        void setSize(const int w_, const int h_) {
             w0 = w_;
             h0 = h_;
         }
         void setPos(const Vec2i& pos_) {
-            x0 = static_cast<float>(pos_.x());
-            y0 = static_cast<float>(pos_.y());
+            x0 = static_cast<int>(pos_.x());
+            y0 = static_cast<int>(pos_.y());
         }
         void setSize(const Vec2i& size_) {
-            w0 = static_cast<float>(size_.x());
-            h0 = static_cast<float>(size_.y());
+            w0 = static_cast<int>(size_.x());
+            h0 = static_cast<int>(size_.y());
         }
 #endif
 
@@ -138,8 +161,8 @@ namespace paxg {
             rect.draw();
 
 #elif defined(PAXS_USING_DXLIB)
-            DxLib::DrawBox(
-                static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
+            DxLib::DrawRoundRect(
+                static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0), r0, r0,
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
@@ -154,8 +177,8 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_DXLIB)
         void draw(const paxg::Color& c_) const {
-            DxLib::DrawBox(
-                static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
+            DxLib::DrawRoundRect(
+                static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0), r0, r0,
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
         }
 #elif defined(PAXS_USING_SFML)
@@ -173,8 +196,8 @@ namespace paxg {
             // rect.draw();
 
 #elif defined(PAXS_USING_DXLIB)
-            DxLib::DrawBox(
-                static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
+            DxLib::DrawRoundRect(
+                static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2), r0, r0,
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
@@ -189,8 +212,8 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_DXLIB)
         void drawAt(const paxg::Color& c_) const {
-            DxLib::DrawBox(
-                static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
+            DxLib::DrawRoundRect(
+                static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2), r0, r0,
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
         }
 #elif defined(PAXS_USING_SFML)
@@ -326,4 +349,4 @@ namespace paxg {
     };
 }
 
-#endif // !PAX_GRAPHICA_RECT_HPP
+#endif // !PAX_GRAPHICA_ROUND_RECT_HPP
