@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout
@@ -36,11 +36,7 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target all -j 12
 
-    - name: Run tests 
+    - name: Run tests
       run: |
-        cd ${{env.WORK_SPACE}}/${{env.TEST_DIR}}/bin/
-        for file in *; do
-          if [[ -x "$file" ]]; then
-            ./"$file"
-          fi
-        done
+        cd ${{github.workspace}}/build
+        ctest
