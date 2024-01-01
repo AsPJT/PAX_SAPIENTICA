@@ -19,7 +19,11 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #if defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
+#ifndef OLD_LEFT_MOUSE
+#define OLD_LEFT_MOUSE
 static bool old_left_mouse = false;
+#endif // !OLD_LEFT_MOUSE
+
 static int old_left_touch = 0;
 static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #endif

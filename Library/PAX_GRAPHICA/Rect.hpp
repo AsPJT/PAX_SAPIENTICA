@@ -21,6 +21,10 @@
 #elif defined(PAXS_USING_DXLIB)
 #include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
+#ifndef OLD_LEFT_MOUSE
+#define OLD_LEFT_MOUSE
+static bool old_left_mouse = false;
+#endif // !OLD_LEFT_MOUSE
 #include <SFML/Graphics.hpp>
 #endif
 
