@@ -14,7 +14,7 @@
 
 #include <opencv2/opencv.hpp>
 
-const std::string simulation_folder_path = "../../../Data/Simulation/";
+const std::string simulation_folder_path = "../../../Data/Simulations/";
 
 #ifdef AreaCalculate
 
@@ -108,7 +108,7 @@ int main(){
 
     std::cout << "Finish" << std::endl;
 
-    // paxs::Helper::createFolder("../../../Data/Simulation/" + settings["source_folder_name"]);
+    // paxs::Helper::createFolder("../../../Data/Simulations/" + settings["source_folder_name"]);
 
     // std::string content = "1\t2\t3";
     // paxs::Helper::writeFile(simulation_folder_path + "sample.tsv", content);

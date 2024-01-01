@@ -14,7 +14,7 @@
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 
 int main() {
-	const std::string setting_file_path = "../../../Data/Simulation/MapList.tsv";
+	const std::string setting_file_path = "../../../Data/Simulations/MapList.tsv";
 	paxs::Vector2<int> start_position(861, 350);
 	paxs::Vector2<int> end_position(950, 450);
     std::unique_ptr<paxs::Simulator<int>> simulator = std::make_unique<paxs::Simulator<int>>(setting_file_path, start_position, end_position, 10);

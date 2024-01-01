@@ -1,0 +1,3 @@
+key	file_name_type	data_type	file_path	z	min_x	min_y	max_x	max_y	file_name_extension	file_format
+slope	z_original	u8	../../../../../Data/Map/XYZTile/Slope/Data/SlopeData20231029/2010/8/	8	0	0	255	255	.bin	binary
+gbank	z_original	u8	../../../../../Data/Map/XYZTile/RyoseikokuData/Data/RyoseikokuData20230626/1868/10/	10	861	366	950	441	.tsv	numeric_tsv
