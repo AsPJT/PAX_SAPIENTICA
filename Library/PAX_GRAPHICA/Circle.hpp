@@ -68,7 +68,8 @@ namespace paxg {
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
         }
 #elif defined(PAXS_USING_SFML)
-        void draw(const paxg::Color&) const {
+        void draw(const paxg::Color& c_) {
+            circle.setFillColor(c_.color);
             Window::window.draw(circle);
         }
 #else
