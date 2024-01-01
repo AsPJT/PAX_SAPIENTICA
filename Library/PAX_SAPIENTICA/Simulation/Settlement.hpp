@@ -164,20 +164,20 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) noexcept {
+        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent, bool isMatrilocality = true) noexcept {
             // 結婚の条件を満たすエージェントを取得
-            std::vector<std::size_t> marriageable_female_index;
+            std::vector<std::size_t> this_settlement_marriageable_agent_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
-                if (agents[i].isAbleToMarriage() && agents[i].getGender() == female) {
+                if (agents[i].isAbleToMarriage() && agents[i].getGender() == (isMatrilocality ? female : male)) {
                     if (!isMarried(agents[i].getAge())) continue;
 
-                    marriageable_female_index.emplace_back(i);
+                    this_settlement_marriageable_agent_index.emplace_back(i);
                 }
             }
 
             // 結婚の条件を満たすエージェントがいない
-            if (marriageable_female_index.empty()) {
+            if (this_settlement_marriageable_agent_index.empty()) {
                 return;
             }
 
@@ -205,11 +205,11 @@ namespace paxs {
             }
 
             // エージェントIDと集落IDのペアを作成
-            std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> male_settlement_pair;
+            std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> agent_settlement_pair;
             for (auto& close_settlement : close_settlements) {
                 for (auto& agent : close_settlement.cgetAgents()) {
-                    if (agent.isAbleToMarriage() && agent.getGender() == male) {
-                        male_settlement_pair.emplace_back(agent.getId(), close_settlement.getId());
+                    if (agent.isAbleToMarriage() && agent.getGender() == isMatrilocality ? male : female) {
+                        agent_settlement_pair.emplace_back(agent.getId(), close_settlement.getId());
                     }
                 }
             }
@@ -217,91 +217,48 @@ namespace paxs {
             // 女性と男性の組み合わせをランダムに選択
             RandomSelector selector;
 
-            // first: 女性のインデックス, second: 男性のインデックス
-            const auto marriageable_agents_index_pair = selector.select(marriageable_female_index.size(), male_settlement_pair.size());
+            // first: この集落の結婚可能なエージェントのインデックス, second: 他の集落の結婚可能なエージェントのインデックス
+            const auto marriageable_agents_index_pair = selector.select(this_settlement_marriageable_agent_index.size(), agent_settlement_pair.size());
 
-            // シミュレーションの設定で母方に移住するか父方に移住するかを決める
-            // 母方の場合
-            // if (isMatrilocality()) {
-            if (true) {
-                for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
-                    std::pair<std::size_t, std::size_t> index_pair = marriageable_agents_index_pair[i];
-                    std::uint_least64_t male_id = male_settlement_pair[index_pair.second].first;
-                    std::uint_least32_t male_settlement_id = male_settlement_pair[index_pair.second].second;
+            for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
+                std::pair<std::size_t, std::size_t> index_pair = marriageable_agents_index_pair[i];
+                std::uint_least64_t pair_second_id = agent_settlement_pair[index_pair.second].first;
+                std::uint_least32_t pair_second_settlement_id = agent_settlement_pair[index_pair.second].second;
 
-                    bool is_found = false;
-                    Vector2 male_settlement_position;
-                    for (std::size_t j = 0; j < close_settlements.size(); ++j) {
-                        if (close_settlements[j].getId() == male_settlement_id) {
+                bool is_found = false;
+                Vector2 pair_second_settlement_position;
+                for (std::size_t j = 0; j < close_settlements.size(); ++j) {
+                    if (close_settlements[j].getId() == pair_second_settlement_id) {
 
-                            if (index_pair.first >= marriageable_female_index.size()) {
-                                PAXS_ERROR("The FIRST of index_pair is larger than the size of marriageable_female_index.");
-                                continue;
-                            }
-                            if (marriageable_female_index[index_pair.first] >= agents.size()) {
-                                PAXS_ERROR("marriageable_female_index is larger than the size of AGENTS.");
-                                continue;
-                            }
-
-                            agents[marriageable_female_index[index_pair.first]].marry(male_id);
-                            const std::uint_least64_t female_id = agents[marriageable_female_index[index_pair.first]].getId();
-
-                            Agent male_ = close_settlements[j].getAgentCopy(male_id);
-                            male_.marry(female_id);
-                            agents.emplace_back(male_);
-
-                            is_found = true;
-                            male_settlement_position = close_settlements[j].getPosition();
-                            break;
+                        if (index_pair.first >= this_settlement_marriageable_agent_index.size()) {
+                            PAXS_ERROR("The FIRST of index_pair is larger than the size of marriageable_female_index.");
+                            continue;
                         }
-                    }
-
-                    if (!is_found) {
-                        PAXS_ERROR("Settlement not found.");
-                        continue;
-                    }
-
-                    male_settlement_position /= grid_length;
-                    delete_agent(male_id, male_settlement_id, male_settlement_position);
-                }
-            }
-            else {
-                // 父方の場合
-                for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
-                    std::pair<std::size_t, std::size_t> pair = marriageable_agents_index_pair[i];
-                    std::uint_least64_t male_id = marriageable_agents_index_pair[pair.second].first;
-                    std::uint_least32_t settlement_id = static_cast<std::uint_least32_t>(marriageable_agents_index_pair[pair.second].second);
-
-                    bool is_found = false;
-                    for (std::size_t j = 0; j < close_settlements.size(); ++j) {
-                        if (close_settlements[j].getId() == settlement_id) {
-
-                            if (pair.first >= marriageable_agents_index_pair.size()) {
-                                PAXS_ERROR("The FIRST of pair is larger than the size of marriageable_agents_index_pair.");
-                                continue;
-                            }
-                            if (marriageable_agents_index_pair[pair.first].first >= agents.size()) {
-                                PAXS_ERROR("marriageable_agents_pair is larger than the size of AGENTS.");
-                                continue;
-                            }
-
-                            agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
-                            // const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
-                            // TODO:
-                            // settlements[j].getAgent(male_id).marry(female_id);
-                            // settlements[j].addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
-                            deleteAgent(marriageable_agents_index_pair[pair.first].first);
-
-                            is_found = true;
-                            break;
+                        if (this_settlement_marriageable_agent_index[index_pair.first] >= agents.size()) {
+                            PAXS_ERROR("marriageable_female_index is larger than the size of AGENTS.");
+                            continue;
                         }
-                    }
 
-                    if (!is_found) {
-                        PAXS_ERROR("Settlement not found.");
-                        continue;
+                        agents[this_settlement_marriageable_agent_index[index_pair.first]].marry(pair_second_id);
+                        const std::uint_least64_t pair_first_id = agents[this_settlement_marriageable_agent_index[index_pair.first]].getId();
+
+                        Agent pair_second = close_settlements[j].getAgentCopy(pair_second_id);
+                        pair_second.marry(pair_first_id);
+                        agents.emplace_back(pair_second);
+
+                        is_found = true;
+                        pair_second_settlement_position = close_settlements[j].getPosition();
+                        break;
                     }
                 }
+
+                if (!is_found) {
+                    PAXS_ERROR("Settlement not found.");
+                    continue;
+                }
+
+                pair_second_settlement_position /= grid_length;
+                delete_agent(pair_second_id, pair_second_settlement_id, pair_second_settlement_position);
             }
         }
 
