@@ -18,8 +18,12 @@
 
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#ifdef PAXS_USING_DXLIB
+#if defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
+#ifndef OLD_LEFT_MOUSE
+#define OLD_LEFT_MOUSE
 static bool old_left_mouse = false;
+#endif // !OLD_LEFT_MOUSE
+
 static int old_left_touch = 0;
 static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #endif
@@ -109,7 +113,7 @@ namespace paxs {
         std::size_t pop_num = 0; // 人口数
         std::size_t sat_num = 0; // 集落数
 
-        std::ofstream pop_ofs("pop.txt");
+        //std::ofstream pop_ofs("pop.txt");
 
 #ifdef PAXS_USING_SFML
         paxg::Window::window.setFramerateLimit(60);
@@ -204,7 +208,7 @@ namespace paxs {
                 sat_num // 集落数
             );
             if (is_sim) {
-                pop_ofs << pop_num << '\t' << sat_num << '\n';
+                //pop_ofs << pop_num << '\t' << sat_num << '\n';
             }
 
 #ifdef PAXS_USING_DXLIB
@@ -217,6 +221,7 @@ namespace paxs {
             }
 #endif
 #ifdef PAXS_USING_SFML
+            old_left_mouse = !sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
             paxg::Window::display();
 #endif
         }

@@ -24,6 +24,7 @@
 #include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Utf.hpp>
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -273,27 +274,33 @@ namespace paxg {
         void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             sf::Text text;
             text.setFont(font);
-            text.setString(str);
+            std::wstring wstr;
+            sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
+            text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(pos.x(), pos.y() - 10);
+            text.setPosition(pos.x(), pos.y() - size / 2);
             paxg::Window::window.draw(text);
         }
 
         void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             sf::Text text;
             text.setFont(font);
-            text.setString(str);
+            std::wstring wstr;
+            sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
+            text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(pos.x(), pos.y() + 10);
+            text.setPosition(pos.x() - text.getGlobalBounds().width, pos.y() + size / 2);
             paxg::Window::window.draw(text);
         }
 
         void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             sf::Text text;
             text.setFont(font);
-            text.setString(str);
+            std::wstring wstr;
+            sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
+            text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
             text.setPosition(pos.x(), pos.y());
@@ -303,30 +310,36 @@ namespace paxg {
         void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             sf::Text text;
             text.setFont(font);
-            text.setString(str);
+            std::wstring wstr;
+            sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
+            text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(pos.x(), pos.y() - 10);
+            text.setPosition(pos.x() - text.getGlobalBounds().width / 2, pos.y() - size / 2);
             paxg::Window::window.draw(text);
         }
 
         void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             sf::Text text;
             text.setFont(font);
-            text.setString(str);
+            std::wstring wstr;
+            sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
+            text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(pos.x(), pos.y() + 10);
+            text.setPosition(pos.x() - text.getGlobalBounds().width / 2, pos.y() + size / 2);
             paxg::Window::window.draw(text);
         }
 
         void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
             sf::Text text;
             text.setFont(font);
-            text.setString(str);
+            std::wstring wstr;
+            sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
+            text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(pos.x(), pos.y());
+            text.setPosition(pos.x() - text.getGlobalBounds().width / 2, pos.y());
             paxg::Window::window.draw(text);
         }
 
@@ -335,7 +348,15 @@ namespace paxg {
         }
 
         int width(const std::string& str_) {
-            return str_.size() * size * 0.5;
+            sf::Text text;
+            text.setFont(font);
+            std::wstring wstr;
+            sf::Utf<8>::toWide(str_.begin(), str_.end(), std::back_inserter(wstr));
+            text.setString(wstr);
+            text.setCharacterSize(size);
+
+            return text.getGlobalBounds().width;
+            // return str_.size() * size * 0.5;
         }
 
 #else
