@@ -38,9 +38,5 @@ jobs:
 
     - name: Run tests
       run: |
-        cd ${{github.workspace}}/build/${{env.TEST_DIR}}/
-        for file in *; do
-          if [[ -x "$file" ]]; then
-            ./"$file"
-          fi
-        done
+        cd ${{github.workspace}}/build
+        ctest
