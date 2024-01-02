@@ -120,7 +120,7 @@ namespace paxs {
         // 地物を追加
         void add(const std::string& path8) {
             std::string str = "Data/PlaceName/List.tsv";
-            paxg::InputFile pifs(str, path8);
+            paxs::InputFile pifs(str, path8);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
@@ -185,7 +185,7 @@ namespace paxs {
         PlaceNameLocation() = default;
          void init(const std::string& path8) {
             std::string str = "Data/MiniIcon/List.tsv";
-            paxg::InputFile pifs(str, path8);
+            paxs::InputFile pifs(str, path8);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
@@ -351,7 +351,7 @@ namespace paxs {
 
             std::vector<LocationPoint> location_point_list{}; // 地物の一覧
 
-            paxg::InputFile pifs(str_, path8);
+            paxs::InputFile pifs(str_, path8);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {

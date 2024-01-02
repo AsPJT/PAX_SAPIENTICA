@@ -134,7 +134,7 @@ namespace paxs {
     // 全ての傾斜度を出力する
     struct ElevationS16AllOutput {
 
-        paxg::InputFile ifs;
+        paxs::InputFile ifs;
 
         paxs::ElevationS16UnitOutput sd;
 
@@ -245,7 +245,7 @@ namespace paxs {
     // 全ての傾斜度を出力する
     struct SlopeDegU0To250AllOutput {
 
-        paxg::InputFile ifs;
+        paxs::InputFile ifs;
 
         paxs::SlopeDegU0To250UnitOutput sd;
 
@@ -283,7 +283,7 @@ namespace paxs {
     // 16bit バイナリデータを読み込む
     struct Input16BitBinary {
 
-        paxg::InputFile ifs;
+        paxs::InputFile ifs;
 
         Input16BitBinary(
             const std::string& ifs_str_,
@@ -351,7 +351,7 @@ namespace paxs {
     // 8bit バイナリデータを読み込む
     struct Input8BitBinary {
 
-        paxg::InputFile ifs;
+        paxs::InputFile ifs;
 
         Input8BitBinary(
             const std::string& ifs_str_,
