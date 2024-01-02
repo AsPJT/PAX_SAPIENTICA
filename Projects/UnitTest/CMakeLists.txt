@@ -32,10 +32,13 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
     set_tests_properties(${TARGET_NAME} PROPERTIES LABELS "Unit")
 endforeach()
 
-set(SOURCE_TSV_FILE "${CMAKE_CURRENT_SOURCE_DIR}/data/Path.tsv")
-set(DESTINATION_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+set(PROJECT_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+set(PATH_TSV_FILE "${CMAKE_CURRENT_BINARY_DIR}/Path.tsv")
+set(TSV_CONTENT "key\tvalue\nasset_file\t${PROJECT_ROOT_PATH}/\n")
 
-add_custom_target(CopyUnitTestTSV ALL
-    COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
+file(WRITE ${PATH_TSV_FILE} ${TSV_CONTENT})
+
+add_custom_target(CreatePathTSV ALL
+    DEPENDS ${PATH_TSV_FILE}
 )
-add_dependencies(Simulations_JapanProvincesUnitTest CopyUnitTestTSV)
+add_dependencies(Simulations_JapanProvincesUnitTest CreatePathTSV)
