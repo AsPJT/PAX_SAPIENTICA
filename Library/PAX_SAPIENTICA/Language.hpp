@@ -23,9 +23,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-
-#include <PAX_GRAPHICA/InputFile.hpp>
 
 namespace paxs {
 

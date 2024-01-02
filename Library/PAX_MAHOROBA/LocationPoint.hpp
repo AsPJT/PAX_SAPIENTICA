@@ -18,6 +18,7 @@
 #include <unordered_map>
 
 #include <PAX_MAHOROBA/Init.hpp>
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
@@ -26,7 +27,6 @@
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/InputFile.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
