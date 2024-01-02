@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_PERSON_LOCATION_HPP
 #define PAX_MAHOROBA_PERSON_LOCATION_HPP
 
-#ifndef PAXS_PATH
-#define PAXS_PATH ""
-#endif
-
 #include <cstdint>
 #include <algorithm>
 #include <string>
@@ -134,9 +130,9 @@ namespace paxs {
                 0, 99999999, -99999999, 99999999, 0, 0);
         }
         // 地物を追加
-        void add() {
+        void add(const std::string& path8) {
             std::string str = "Data/PersonName/List.tsv";
-            paxg::InputFile pifs(str, PAXS_PATH);
+            paxg::InputFile pifs(str, path8);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
@@ -194,13 +190,14 @@ namespace paxs {
                         0 : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()));
 
                 // 地物を追加
-                inputPlace(strvec[file_path], min_view, max_view, min_year, max_year, type, place_texture_hash);
+                inputPlace(path8, strvec[file_path], min_view, max_view, min_year, max_year, type, place_texture_hash);
             }
         }
 
-        PersonNameLocation() {
+        PersonNameLocation() = default;
+        void init(const std::string& path8) {
             std::string str = "Data/Portraits/List.tsv";
-            paxg::InputFile pifs(str, PAXS_PATH);
+            paxg::InputFile pifs(str, path8);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
@@ -234,7 +231,7 @@ namespace paxs {
                 if (place_texture_hash == 0) continue; // ハッシュが 0 の場合は追加しない
 
                 // テクスチャを追加
-                texture.emplace(MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()), paxg::Texture{ PAXS_PATH + strvec[file_path] });
+                texture.emplace(MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()), paxg::Texture{ path8 + strvec[file_path] });
             }
         }
         // 描画
@@ -395,6 +392,7 @@ namespace paxs {
 
         // 地名を読み込み
         void inputPlace(
+            const std::string& path8,
             const std::string& str_,
             const double min_view_,  // 可視化する地図の最小範囲
             const double max_view_,  // 可視化する地図の最大範囲
@@ -406,7 +404,7 @@ namespace paxs {
 
             std::vector<PersonLocationPoint> person_location_list{}; // 地物の一覧
 
-            paxg::InputFile pifs(str_, PAXS_PATH);
+            paxg::InputFile pifs(str_, path8);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {

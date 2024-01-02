@@ -83,11 +83,13 @@ namespace paxs {
             xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
 
             // 地名
-            place_name_location.add();
-            person_name_location.add();
+            place_name_location.init(path8);
+            place_name_location.add(path8);
+            person_name_location.init(path8);
+            person_name_location.add(path8);
 
             if (agent_location.get() != nullptr) {
-                agent_location->init();
+                agent_location->init(path8);
             }
         }
 

@@ -10,7 +10,6 @@
 ##########################################################################################*/
 
 #define _CRT_SECURE_NO_WARNINGS
-#define PAXS_PATH "./../../../../"
 #define PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
 #include <omp.h>
@@ -19,6 +18,6 @@
 // その他の処理 (Windows)
 int main() {
 
-    paxs::startMain(PAXS_PATH);
+    paxs::startMain();
     return 0;
 }

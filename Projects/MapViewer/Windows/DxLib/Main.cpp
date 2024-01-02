@@ -10,7 +10,6 @@
 ##########################################################################################*/
 
 #define _CRT_SECURE_NO_WARNINGS
-#define PAXS_PATH "./../../../../"
 #define PAXS_USING_DXLIB
 #include <DxLib.h> // DxLib
 #include <omp.h>
@@ -37,6 +36,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     DxLib::SetWaitVSyncFlag(TRUE);
     // DxLib::SetWindowSizeChangeEnableFlag(TRUE, FALSE);
     // DxLib::SetUseASyncLoadFlag(TRUE);
-    paxs::startMain(PAXS_PATH);
+    paxs::startMain();
     return DxLib::DxLib_End();
 }
