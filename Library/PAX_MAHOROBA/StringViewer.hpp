@@ -68,8 +68,8 @@ namespace paxs {
                     texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
                         time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, 400));
                     if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        const std::string map_list_path = path8 + "Data/Simulations/MapList.tsv";
-                        const std::string japan_provinces_path = path8 + "Data/Simulations/Japan200-725";
+                        const std::string map_list_path = "Data/Simulations/MapList.tsv";
+                        const std::string japan_provinces_path = "Data/Simulations/Japan200-725";
 
                         std::random_device seed_gen;
                         simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());

@@ -14,8 +14,8 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 
 int main() {
-    const std::string map_list_path = "../../../Data/Simulations/MapList.tsv";
-    const std::string& japan_provinces_path = "../../../Data/Simulations/Japan200-725";
+    const std::string map_list_path = "Data/Simulations/MapList.tsv";
+    const std::string& japan_provinces_path = "Data/Simulations/Japan200-725";
     paxs::Vector2<int> start_position(861, 350);
     paxs::Vector2<int> end_position(950, 450);
     std::random_device seed_gen;

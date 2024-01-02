@@ -21,10 +21,33 @@
 
 #include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 
+// もしPath.tsvが存在しない場合、一時的に作成する
+class PathTSV {
+public:
+    static void generatePathTSV() {
+        std::ofstream ofs("Path.tsv");
+        ofs << "key\tvalue\nasset_file\t../" << std::endl;
+        ofs.close();
+    }
+
+    static void removePathTSV() {
+        const std::string path_tsv_path = "Path.tsv";
+
+        std::remove(path_tsv_path.c_str());
+    }
+};
+
 TEST (JapanProvincesUnitTest, constructor) {
-    const std::string root = PROJECT_ROOT_PATH;
-    const std::string japan_region_tsv_path = root + "/Projects/UnitTest/data/Simulations/JapanRegion.tsv";
-    const std::string ryoseikoku_tsv_path = root + "/Projects/UnitTest/data/Simulations/Ryoseikoku.tsv";
+    // Path.tsvが存在しない場合、一時的に作成する
+    bool is_path_tsv_exist = std::filesystem::exists("Path.tsv");
+    if (!is_path_tsv_exist) {
+        PathTSV::generatePathTSV();
+    }
+
+    std::cout << paxs::AppConfig::getInstance()->getRootPath() << std::endl;
+
+    const std::string japan_region_tsv_path = "Projects/UnitTest/data/Simulations/JapanRegion.tsv";
+    const std::string ryoseikoku_tsv_path = "Projects/UnitTest/data/Simulations/Ryoseikoku.tsv";
 
     paxs::JapanProvinces japan_provinces(japan_region_tsv_path, ryoseikoku_tsv_path);
 
@@ -33,4 +56,8 @@ TEST (JapanProvincesUnitTest, constructor) {
 
     EXPECT_EQ(japan_provinces.getRyoseikokuPopulationAd200(0), 0);
     EXPECT_EQ(japan_provinces.getRyoseikokuPopulationAd200(2), 12003);
+
+    if (!is_path_tsv_exist) {
+        PathTSV::removePathTSV();
+    }
 }

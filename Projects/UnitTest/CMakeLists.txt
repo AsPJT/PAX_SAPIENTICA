@@ -31,3 +31,11 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
     )
     set_tests_properties(${TARGET_NAME} PROPERTIES LABELS "Unit")
 endforeach()
+
+set(SOURCE_TSV_FILE "${CMAKE_CURRENT_SOURCE_DIR}/data/Path.tsv")
+set(DESTINATION_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+
+add_custom_target(CopyUnitTestTSV ALL
+    COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
+)
+add_dependencies(Simulations_JapanProvincesUnitTest CopyUnitTestTSV)
