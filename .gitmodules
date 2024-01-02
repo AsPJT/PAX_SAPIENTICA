@@ -1,5 +1,5 @@
 [submodule "Data/3DModel/KofunOBJ"]
-    path = Data/3DModel/KofunOBJ
+    path = Data/3DModels/KofunOBJ
     url = https://github.com/Asukana/KofunOBJ.git
     branch = main
 [submodule "Data/Map/XYZTile/Elevation/Data/Elevation"]

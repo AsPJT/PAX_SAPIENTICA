@@ -53,7 +53,7 @@ namespace paxs {
             backgroundColor = s3d::ColorF{ 1,1,1,0 }.removeSRGBCurve();
 
             // 3D モデルデータをロード
-            sekishitsu_model = s3d::Model{ U"./../../../../../Data/3DModel/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj" };
+            sekishitsu_model = s3d::Model{ U"./../../../../../Data/3DModels/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj" };
 
             // 360 度写真をロード
             sky = s3d::Texture(s3d::Image{ U"./../../../../../Data/360DegreePhotos/stone2.jpg" }.mirror());
