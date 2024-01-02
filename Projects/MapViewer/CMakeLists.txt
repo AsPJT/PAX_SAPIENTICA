@@ -9,6 +9,14 @@ include_directories(
 
 find_package(SFML 2.5 COMPONENTS graphics)
 if(SFML_FOUND)
-    add_executable(SFMLMapviewer Windows/SFML/Main.cpp)
+    add_executable(SFMLMapviewer CMake/SFML/Main.cpp)
     target_link_libraries(SFMLMapviewer sfml-graphics)
+
+    set(SOURCE_TSV_FILE "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Path.tsv")
+    set(DESTINATION_DIR "${CMAKE_CURRENT_BINARY_DIR}")
+
+    add_custom_command(
+        TARGET SFMLMapviewer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
+    )
 endif()

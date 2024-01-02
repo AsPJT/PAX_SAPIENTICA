@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include <unordered_map>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
@@ -105,7 +106,7 @@ namespace paxs {
         /// @brief ファイルのロード
         void load(const std::string& file_path) noexcept {
             std::cout << "Loading " << name << " data..." << std::endl;
-            std::vector<std::string> file_names = File::getFileNames(file_path);
+            std::vector<std::string> file_names = File::getFileNames(AppConfig::getInstance()->getRootPath() + file_path);
 
             std::cout << file_names.size() << " files are found." << std::endl;
 

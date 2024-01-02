@@ -25,6 +25,7 @@
 #include <unordered_map>
 #include <variant>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -51,7 +52,7 @@ namespace paxs {
         explicit Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) noexcept : start_position(start_position), end_position(end_position), z(z) {
             std::vector<std::vector<std::string>> settings;
 
-            settings = File::readTSV(setting_file_path);
+            settings = File::readTSV(AppConfig::getInstance()->getRootPath() + setting_file_path);
 
             if (settings.empty()) {
                 PAXS_ERROR("Failed to read TSV file: " + setting_file_path);

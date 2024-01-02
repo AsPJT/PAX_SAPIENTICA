@@ -24,4 +24,10 @@ target_compile_definitions(SimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
 add_executable(SettlementSimulatorTest source/SettlementSimulatorTest.cpp)
 target_compile_definitions(SettlementSimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
 
+set(SOURCE_TSV_FILE "${CMAKE_CURRENT_SOURCE_DIR}/data/Path.tsv")
+set(DESTINATION_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
+add_custom_target(CopyTSV ALL
+    COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
+)
+add_dependencies(SettlementSimulatorTest CopyTSV)

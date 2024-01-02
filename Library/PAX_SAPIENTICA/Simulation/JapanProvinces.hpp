@@ -18,6 +18,7 @@
 
 #include <vector>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 
@@ -48,12 +49,12 @@ namespace paxs {
     class JapanProvinces {
     public:
         explicit JapanProvinces(const std::string& japan_region_tsv_path, const std::string& ryoseikoku_tsv_path) noexcept {
-            std::vector<std::vector<std::string>> japan_region_tsv = File::readTSV(japan_region_tsv_path);
+            std::vector<std::vector<std::string>> japan_region_tsv = File::readTSV(AppConfig::getInstance()->getRootPath() + japan_region_tsv_path);
             if (japan_region_tsv.empty()) {
                 PAXS_WARNING("Failed to read Japan region TSV file: " + japan_region_tsv_path);
             }
 
-            std::vector<std::vector<std::string>> ryoseikoku_tsv = File::readTSV(ryoseikoku_tsv_path);
+            std::vector<std::vector<std::string>> ryoseikoku_tsv = File::readTSV(AppConfig::getInstance()->getRootPath() + ryoseikoku_tsv_path);
             if (ryoseikoku_tsv.empty()) {
                 PAXS_WARNING("Failed to read Ryoseikoku TSV file: " + ryoseikoku_tsv_path);
             }
