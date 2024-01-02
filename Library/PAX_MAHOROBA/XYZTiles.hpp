@@ -31,6 +31,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
@@ -69,7 +70,7 @@ namespace paxs {
         std::string file_name_format = ("{z}/{x}/{y}");
         std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
 
-        const std::string* p_root_path = nullptr; // 初めのパス名 例） root_path
+        //const std::string* p_root_path = nullptr; // 初めのパス名 例） root_path
 
         // 1フレーム前のマップの幅
         double current_map_view_width = -1.0;
@@ -272,7 +273,8 @@ namespace paxs {
                             if (map_name.size() != 0) paxs::StringExtensions::replace(new_path, "{n}", map_name);
 
                             paxs::Input8BitBinary i8bbs(new_path,
-                                (p_root_path == nullptr) ? "" : *p_root_path
+                                AppConfig::getInstance()->getRootPath()
+                                //(p_root_path == nullptr) ? "" : *p_root_path
                             );
 
                             static unsigned char xyz_tiles[256 * 256]{};
@@ -350,7 +352,7 @@ namespace paxs {
             const bool menu_bar_map_bool_,
             const std::uint_least32_t texture_root_path_type_,
             const std::uint_least32_t binary_root_path_type_,
-            const std::string* p_root_path_, // 例 "./../../"
+            //const std::string* p_root_path_, // 例 "./../../"
             const std::string& map_binary_name_,
             const std::string& map_file_path_name_,
             const std::string& file_name_format_,
@@ -361,7 +363,7 @@ namespace paxs {
             , menu_bar_map(menu_bar_map_)
             , menu_bar_map_bool(menu_bar_map_bool_)
             , draw_type(draw_type_)
-            , p_root_path(p_root_path_) // ルートパスを指定するための相対パス 例） "./../../"
+            //, p_root_path(p_root_path_) // ルートパスを指定するための相対パス 例） "./../../"
             , map_file_path_name(map_file_path_name_)
             , texture_url(texture_url_)
         {
@@ -397,9 +399,9 @@ namespace paxs {
                     break;
                 }
 #else
-                file_name_format = (p_root_path == nullptr) ?
-                    map_file_path_name_ + file_name_format_ + std::string(".png") :
-                    *p_root_path + map_file_path_name_ + file_name_format_ + std::string(".png");
+                file_name_format = //(p_root_path == nullptr) ?
+                    //map_file_path_name_ + file_name_format_ + std::string(".png") :
+                    AppConfig::getInstance()->getRootPath() + map_file_path_name_ + file_name_format_ + std::string(".png");
 #endif
                 //if (file_name_format.size() != 0) printfDx("2. %s\n", file_name_format.c_str());
             }

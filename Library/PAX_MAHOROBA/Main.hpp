@@ -52,6 +52,7 @@ static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 
 #include <PAX_GRAPHICA/Key.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -63,20 +64,15 @@ namespace paxs {
         s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
 #endif
         
-        KeyValueTSV key_value_tsv;
-        key_value_tsv.input("Path.tsv");
-        // asset_file を探す
-        const std::string path8 = key_value_tsv[MurMur3::calcHash("asset_file")];
-
         SelectLanguage select_language{}; // 選択言語
 
-        paxs::PaxSapienticaInitSiv3D::firstInit(path8); // 初期化とロゴの表示
+        paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
 #ifndef PAXS_USING_DXLIB
         paxs::PaxSapienticaInitSiv3D::secondInit(); // ソフトウェアを実行した最初のフレームの一番最後に実行
 #endif // PAXS_USING_DXLIB
 
         paxs::Language language_text;
-        language_text.add(path8 + "Data/Language/Text.txt"); // テキストの多言語対応クラス
+        language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Language/Text.txt"); // テキストの多言語対応クラス
 
         // 可視化一覧
         GraphicVisualizationList visible{};
@@ -108,13 +104,13 @@ namespace paxs {
         int size_change_count = 0; // サイズを更新するカウンタ
 
         paxs::MapViewerSiv3D map_siv{}; // 地図を管理する
-        map_siv.init(path8);
+        map_siv.init();
 
         paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
-        koyomi_siv.init(path8);
+        koyomi_siv.init();
 
         paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
-        string_siv.init(select_language, language_text, path8);
+        string_siv.init(select_language, language_text);
 
         paxs::TouchManager tm; // 画面のクリック・タッチを管理する
 
@@ -208,7 +204,6 @@ namespace paxs {
                 old_simulator,
                 start_position,
                 end_position,
-                path8,
                 tm,
                 koyomi_siv,
                 visible,

@@ -21,6 +21,7 @@
 #include <variant>
 #include <vector>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
 #include <PAX_SAPIENTICA/Calendar/ChineseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -141,9 +142,7 @@ namespace paxs {
             }
         }
 
-        void init(
-            const std::string& path8
-        ) {
+        void init() {
             // 各暦の日付情報を初期化
             date_list = std::vector<OutputDate>{
                 OutputDate{(MurMur3::calcHash("calendar_japan")),cal::JapanDate() },
@@ -160,8 +159,8 @@ namespace paxs {
             sueki_tanabe_key = (MurMur3::calcHash("sueki_tanabe"));
 
             // 暦を読み込み
-            paxs::JapaneseEra::inputList(japanese_era_list, path8 + "Data/Calendars/JapaneseEraName.tsv");
-            paxs::ChineseEra::inputList(chinese_era_list, path8 + "Data/Calendars/ChineseEraName.tsv");
+            paxs::JapaneseEra::inputList(japanese_era_list, AppConfig::getInstance()->getRootPath() + "Data/Calendars/JapaneseEraName.tsv");
+            paxs::ChineseEra::inputList(chinese_era_list, AppConfig::getInstance()->getRootPath() + "Data/Calendars/ChineseEraName.tsv");
             // 日付計算
             calcDate();
         }

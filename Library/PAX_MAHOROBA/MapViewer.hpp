@@ -25,6 +25,7 @@
 
 #include <PAX_GRAPHICA/Key.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 
@@ -55,12 +56,10 @@ namespace paxs {
             agent_location(std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation))
         {}
 
-        void init(
-            const std::string& path8
-        ) {
+        void init() {
 #ifdef PAXS_USING_SIV3D
             // 航路を読み込み
-            std::ifstream rifs(path8 + "Data/Route/Yamatai.tsv");
+            std::ifstream rifs(AppConfig::getInstance()->getRootPath() + "Data/Route/Yamatai.tsv");
             if (rifs.fail()) return;
             std::string rline;
             while (std::getline(rifs, rline)) { // ファイルを 1 行ずつ読み込む
@@ -79,17 +78,17 @@ namespace paxs {
             }
 #endif
             // XYZ タイルを初期化
-            xyz_tile_list.add(path8, "Data/Map/XYZTile/List.tsv");
+            xyz_tile_list.add("Data/Map/XYZTile/List.tsv");
             xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
 
             // 地名
-            place_name_location.init(path8);
-            place_name_location.add(path8);
-            person_name_location.init(path8);
-            person_name_location.add(path8);
+            place_name_location.init();
+            place_name_location.add();
+            person_name_location.init();
+            person_name_location.add();
 
             if (agent_location.get() != nullptr) {
-                agent_location->init(path8);
+                agent_location->init();
             }
         }
 
