@@ -88,7 +88,7 @@ namespace paxs {
     public:
         // 新しいテキストの追加
         void add(const std::string& str_) {
-            paxg::InputFile pifs(str_);
+            paxs::InputFile pifs(str_);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {

@@ -16,9 +16,6 @@
 
 ##########################################################################################*/
 
-#include <string>
-#include <unordered_map>
-
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #if defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
@@ -55,76 +52,21 @@ static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 
 #include <PAX_GRAPHICA/Key.hpp>
 
+#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
-#define PAXS_DEFAULT_PATH ""
-
 namespace paxs {
-
-    // 項目の ID を返す
-    inline std::size_t inputPathGetMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-        return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
-    }
-
-    // ルートパスを読み込む
-    void inputPath(
-        std::unordered_map<std::uint_least32_t, std::string>& path_list
-    ) {
-        std::string str = "Path.tsv";
-        paxg::InputFile pifs(str);
-        if (pifs.fail()) {
-            PAXS_ERROR("Failed to read root path.");
-            path_list.emplace(MurMur3::calcHash("asset_file"), PAXS_DEFAULT_PATH);
-            return;
-        }
-        // 1 行目を読み込む
-        if (!(pifs.getLine())) {
-            PAXS_ERROR("The first line of the root path file is missing.");
-            path_list.emplace(MurMur3::calcHash("asset_file"), PAXS_DEFAULT_PATH);
-            return; // 何もない場合
-        }
-        // BOM を削除
-        pifs.deleteBOM();
-        // 1 行目を分割する
-        std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
-
-        const std::size_t file_path = inputPathGetMenuIndex(menu, MurMur3::calcHash("path"));
-        if (file_path == SIZE_MAX) return; // パスがないのはデータにならない
-        const std::size_t file_type = inputPathGetMenuIndex(menu, MurMur3::calcHash("type"));
-        if (file_type == SIZE_MAX) return; // テクスチャ名がないのはデータにならない
-
-        // 1 行ずつ読み込み（区切りはタブ）
-        while (pifs.getLine()) {
-            std::vector<std::string> strvec = pifs.split('\t');
-
-            // パスが空の場合は読み込まない
-            if (strvec[file_path].size() == 0) continue;
-            // テクスチャ名が空の場合は読み込まない
-            if (strvec[file_type].size() == 0) continue;
-
-            // テクスチャを追加
-            path_list.emplace(MurMur3::calcHash(strvec[file_type].size(), strvec[file_type].c_str()), strvec[file_path]);
-        }
-        // asset_file がない場合は追加
-        if (path_list.find(MurMur3::calcHash("asset_file")) == path_list.end()) {
-            PAXS_ERROR("There is no asset_file.");
-            path_list.emplace(MurMur3::calcHash("asset_file"), PAXS_DEFAULT_PATH);
-        }
-    }
 
     // 主要な実行時定数・変数
     void startMain() { // フォルダ階層
 #ifdef PAXS_USING_SIV3D
         s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
 #endif
-        std::unordered_map<std::uint_least32_t, std::string> path_list;
-        inputPath(path_list);
-
+        
+        KeyValueTSV key_value_tsv;
+        key_value_tsv.input("Path.tsv");
         // asset_file を探す
-        const std::string path8 =
-            (path_list.find(MurMur3::calcHash("asset_file")) == path_list.end()) ? PAXS_DEFAULT_PATH :
-            path_list.at(MurMur3::calcHash("asset_file"));
-        std::cout << path8;
+        const std::string path8 = key_value_tsv[MurMur3::calcHash("asset_file")];
 
         SelectLanguage select_language{}; // 選択言語
 

@@ -67,7 +67,7 @@ namespace paxs {
         /// @param path 元号一覧のファイルパス
         static void inputList(std::vector<paxs::JapaneseEra>& japanese_era_list, const std::string& path) {
 
-            paxg::InputFile pifs(path);
+            paxs::InputFile pifs(path);
             if (pifs.fail()) return;
             pifs.getLine(); // 最初は破棄
 

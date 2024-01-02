@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_GRAPHICA_INPUT_FILE_HPP
-#define PAX_GRAPHICA_INPUT_FILE_HPP
+#ifndef PAX_SAPIENTICA_INPUT_FILE_HPP
+#define PAX_SAPIENTICA_INPUT_FILE_HPP
 
 /*##########################################################################################
 
@@ -24,7 +24,7 @@
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
-namespace paxg {
+namespace paxs {
 
     // UTF-8 BOM
     constexpr char utf8_bom[4] = {
@@ -234,4 +234,4 @@ namespace paxg {
 
 }
 
-#endif // !PAX_GRAPHICA_INPUT_FILE_HPP
+#endif // !PAX_SAPIENTICA_INPUT_FILE_HPP
