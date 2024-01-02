@@ -26,7 +26,7 @@
 #include <limits>
 #include <string>
 
-#include <PAX_GRAPHICA/InputFile.hpp>
+#include <PAX_SAPIENTICA/InputFile.hpp>
 
 namespace paxs {
 

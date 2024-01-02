@@ -22,9 +22,8 @@
 #include <string>
 #include <vector> // テンプレートにした後は不要
 
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-
-#include <PAX_GRAPHICA/InputFile.hpp>
 
 namespace paxs {
 
