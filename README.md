@@ -60,9 +60,10 @@ This software has both a GUI and a CUI.
 
 The GUI supports the following libraries
 
+* SFML (CMake)
+* [SFML v2.6.1 (.sln / for Windows)](Projects/MapViewer/Windows/SFML_2.6.1) - Available without installation
 * OpenSiv3D (tested with v0.6.13 & Visual Studio Community 2022 v17.8.3)
 * DxLib (tested on Windows and Android versions)
-* SFML
 
 Any of the above libraries will launch the GUI software.
 
