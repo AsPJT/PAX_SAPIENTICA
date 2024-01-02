@@ -25,8 +25,8 @@
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTiles.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-
 
 namespace paxs {
 
@@ -44,8 +44,8 @@ namespace paxs {
 
     public:
         // XYZ Tiles を追加
-        void add(const std::string& path, const std::string& str) {
-            paxs::InputFile pifs(str, path);
+        void add(const std::string& str) {
+            paxs::InputFile pifs(str, AppConfig::getInstance()->getRootPath());
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
@@ -142,7 +142,7 @@ namespace paxs {
                         99999999 : std::stoi(strvec[draw_max_z_index]));
 
                 XYZTile xyz_tile(menu_bar_map, menu_bar_map_bool,
-                    texture_input_type, binary_input_type, &path, binary_path,
+                    texture_input_type, binary_input_type, binary_path,
                     texture_path, format, draw_type, texture_url);
                 if (map_name.size() != 0) xyz_tile.setMapName(map_name);
                 if (min_z != 99999999) xyz_tile.setMinZ(min_z);
@@ -158,7 +158,7 @@ namespace paxs {
         void addGridLine() {
             // XYZ タイルのグリッド線
             XYZTile xyz_tile(MurMur3::calcHash("menu_bar_map_line2"), false,
-                paxs::MurMur3::calcHash("asset_file"), 0, nullptr, "", "",
+                paxs::MurMur3::calcHash("asset_file"), 0, "", "",
                 (""), paxs::MurMur3::calcHash("grid_and_string"), "");
             xyz_tile_list.emplace_back(/*MurMur3::calcHash("map_line3"), */xyz_tile);
         }

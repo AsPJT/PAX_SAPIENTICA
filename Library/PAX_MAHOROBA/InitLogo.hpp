@@ -16,12 +16,14 @@
 
 ##########################################################################################*/
 
-#include <PAX_MAHOROBA/Init.hpp>
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_MAHOROBA/Init.hpp>
 
 namespace paxs {
 
@@ -29,13 +31,13 @@ namespace paxs {
     private:
     public:
         // ソフトウェアを実行した最初のフレームの一番最初に実行
-        static void firstInit(const std::string& path8) {
+        static void firstInit() {
             // ロゴ画像の読み込み
             const paxg::Texture texture_tl{
 #ifdef __ANDROID__
                 "Logo.png"
 #else
-                path8 + "Images/Logo/TitleBanner2.png"
+                AppConfig::getInstance()->getRootPath() + "Images/Logo/TitleBanner2.png"
 #endif
             };
             // 画面サイズを変更

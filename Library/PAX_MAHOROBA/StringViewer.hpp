@@ -33,6 +33,7 @@
 #include <PAX_MAHOROBA/XYZTiles.hpp>
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
@@ -56,7 +57,6 @@ namespace paxs {
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
             const paxs::Vector2<int>& start_position,
             const paxs::Vector2<int>& end_position,
-            const std::string& path8,
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv
         ) {
@@ -183,12 +183,11 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
         void init(
             const SelectLanguage& select_language,
-            const paxs::Language& language_text,
-            const std::string& path8
+            const paxs::Language& language_text
         ) {
             language_fonts.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
-            setLanguageFont(pulldown_font_size, path8, pulldown_font_buffer_thickness_size);
-            //koyomi_font = setFont(koyomi_font_size, path8, koyomi_font_buffer_thickness_size);
+            setLanguageFont(pulldown_font_size, AppConfig::getInstance()->getRootPath(), pulldown_font_buffer_thickness_size);
+            //koyomi_font = setFont(koyomi_font_size, AppConfig::getInstance()->getRootPath(), koyomi_font_buffer_thickness_size);
             map_view_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
             map_view_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
             map_view_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
@@ -262,7 +261,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             menu_bar.add(&select_language, &language_text, list_test4, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("calendar"));
             menu_bar.add(&select_language, &language_text, list_test5, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
 
-            const std::string path = (path8);
+            const std::string path = (AppConfig::getInstance()->getRootPath());
             { // 暦の時間操作のアイコン
                 texture_dictionary.emplace(MurMur3::calcHash("texture_tlt"), paxg::Texture{ path + "Images/Logo/TitleLogoText2.svg" });
                 texture_dictionary.emplace(MurMur3::calcHash("texture_github"), paxg::Texture{ path + "Data/MenuIcon/github.svg" });
@@ -293,7 +292,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 texture_dictionary.emplace(MurMur3::calcHash("texture_load_geographic_data2"), paxg::Texture{ path + "Data/MenuIcon/LoadGeographicData2.svg" });
             }
 
-            //koyomi_font = setFont(koyomi_font_size, path8, 2);
+            //koyomi_font = setFont(koyomi_font_size, AppConfig::getInstance()->getRootPath(), 2);
 
             pin_font = paxg::Font{ 14 /*, Typeface::Bold*/
                 , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
@@ -320,7 +319,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             std::unique_ptr<paxs::SettlementSimulator<int>>& old_simulator, // コンパイル時の分岐により使わない場合あり
             const paxs::Vector2<int>& start_position,
             const paxs::Vector2<int>& end_position,
-            const std::string& path8,
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
             paxs::GraphicVisualizationList& visible,
@@ -394,7 +392,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
             // シミュレーションのボタン
             if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")]) {
-                simulation(simulator, start_position, end_position, path8, tm_, koyomi_siv);
+                simulation(simulator, start_position, end_position, tm_, koyomi_siv);
             }
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
