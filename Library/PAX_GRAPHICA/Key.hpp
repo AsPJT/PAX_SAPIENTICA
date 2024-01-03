@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <memory>
@@ -25,6 +26,7 @@
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 
+#include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxs {
@@ -264,7 +266,12 @@ namespace paxs {
             esc_keys[0].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_E));
         }
         void update() {
-
+            // マウスホイールで地図の拡大・縮小
+            {
+                width *= (1.0 + (paxg::Mouse::getInstance()->getWheelRotVol() / 10.0));
+                width = (std::clamp)(width, min_width, max_width);
+                height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+            }
 #ifdef __ANDROID__
             static int old_touch_num = 0;
             static int touch_num = 0;

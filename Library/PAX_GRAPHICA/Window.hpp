@@ -26,6 +26,10 @@
 #include <SFML/Graphics.hpp>
 #endif
 
+#if defined(PAXS_USING_SFML)
+#include <PAX_GRAPHICA/SFML_Event.hpp>
+#endif
+
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
@@ -74,22 +78,7 @@ namespace paxg {
                 DxLib::ProcessMessage() != -1);
 
 #elif defined(PAXS_USING_SFML)
-            sf::Event event;
-            while (window.pollEvent(event))
-            {
-                if (event.type == sf::Event::Closed)
-                    return false;
-            }
-
-            if (event.type == sf::Event::Resized)
-            {
-                // update the view to the new size of the window
-                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-                window.setView(sf::View(visibleArea));
-            }
-
-            return true;
-
+            return paxg::SFML_Event::getInstance()->update(window);
 #else
             return false;
 #endif
