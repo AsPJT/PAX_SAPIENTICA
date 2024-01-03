@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20231125L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20240103L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 ) [v6.0.X.a.a]
@@ -34,12 +34,12 @@
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (13)
 #endif
 
 // 正式バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.4.0"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.4.13"
 #endif
 
 //char name[
@@ -50,7 +50,20 @@
 /*##########################################################################################
 	更新履歴
 	バージョン	| 更新日		| 概要
-	6.0.0.4.X	| 2023/0X/XX	| コピペ用
+	6.0.0.4.X	| 2024/0X/XX	| コピペ用
+	6.0.0.4.13	| 2024/01/03	| GUIの起動時処理を新しい仕様へ更新 #84
+	6.0.0.4.12	| 2024/01/03	| SFMLリサイズバグ修正・ホイール機能追加・プルダウンメニュー改善 #83
+	6.0.0.4.11	| 2024/01/03	| 旧ルートパスの取得方法を削除 #82
+	6.0.0.4.10	| 2024/01/03	| シミュレーション側のPath.tsv対応 #81
+	6.0.0.4.9	| 2024/01/02	| KeyValue形式のTSV読み込みクラスを追加 #80
+	6.0.0.4.8	| 2024/01/02	| Path.tsvを追加 #79
+	6.0.0.4.7	| 2024/01/01	| SFMLの描画不具合を修正 #76
+	6.0.0.4.6	| 2023/12/31	| シミュレータの例外を修正 #75
+	6.0.0.4.5	| 2023/12/31	| シミュレーションのGUI対応 #74
+	6.0.0.4.4	| 2023/12/29	| BOM付きファイルを問題なく読み込めるように対応 #73
+	6.0.0.4.3	| 2023/12/04	| ログをとるマクロを追加 #72
+	6.0.0.4.2	| 2023/12/04	| シミュレーションの手直し #71
+	6.0.0.4.1	| 2023/11/26	| シミュレーションの高速化 #70
 	6.0.0.4.0	| 2023/11/25	| 渡来を除くAgent-based Simulationの修正と改善
 	6.0.0.3.23	| 2023/11/16	| 集落によるシミュレーションを追加
 	6.0.0.3.22	| 2023/11/13	| Font管理クラスを改善
