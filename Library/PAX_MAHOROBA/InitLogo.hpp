@@ -34,8 +34,14 @@ namespace paxs {
 #ifdef PAXS_USING_SIV3D
             s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
 #endif
+
+            // 画面サイズを変更
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+
+#else
             // ウィンドウのサイズを変える
             paxg::Window::setSize(1280, 720);
+#endif
 
             // PAX SAPIENTICA 用の背景
             const paxg::Color paxs_color = paxg::Color(140, 180, 250); // 青
@@ -52,14 +58,6 @@ namespace paxs {
             // タイトルを変更
             paxg::Window::setTitle(
                 std::string("PAX SAPIENTICA v") + std::string(PAX_SAPIENTICA_LIBRARY_VERSION_NAME));
-            // 画面サイズを変更
-#ifdef PAXS_USING_DXLIB
-#ifdef __ANDROID__
-            int w{ 1280 }, h{ 720 };
-            DxLib::GetAndroidDisplayResolution(&w, &h);
-            DxLib::SetGraphMode(w, h, 32);
-#endif
-#endif
 
 #ifdef PAXS_USING_SIV3D
             // ウィンドウのサイズを変更可能にする
@@ -69,6 +67,14 @@ namespace paxs {
 #endif
 #ifdef PAXS_USING_DXLIB
             DxLib::DxLib_Init();
+#endif // PAXS_USING_DXLIB
+            // 画面サイズを変更
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            int w{ 1280 }, h{ 720 };
+            DxLib::GetAndroidDisplayResolution(&w, &h);
+            DxLib::SetGraphMode(w, h, 32);
+#endif
+#ifdef PAXS_USING_DXLIB
             DxLib::SetDrawScreen(DX_SCREEN_BACK);
 #endif // PAXS_USING_DXLIB
 #ifdef PAXS_USING_SIV3D

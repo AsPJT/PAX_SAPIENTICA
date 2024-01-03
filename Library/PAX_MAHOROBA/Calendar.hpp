@@ -31,8 +31,10 @@
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+#endif
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
@@ -166,7 +168,9 @@ namespace paxs {
         }
 
         bool update(
+#ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator // コンパイル時の分岐により使わない場合あり
+#endif
         ) {
             bool return_bool = false;
             /*##########################################################################################
@@ -188,12 +192,14 @@ namespace paxs {
                     }
                     //jdn += 365; // ユリウス日を繰り上げ（次の日にする）
                     // 
+#ifdef PAXS_USING_SIMULATOR
                     // エージェント機能
                     if (is_agent_update && simulator.get() != nullptr) {
                         simulator->step(); // シミュレーションを 1 ステップ実行する
                         steps.getDay()++; // ステップ数を増やす
                         return_bool = true;
                     }
+#endif
                 }
                 // 時間を逆行している場合
                 else if (go_back_in_time) {

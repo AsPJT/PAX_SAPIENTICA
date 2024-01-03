@@ -20,9 +20,11 @@
 #include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
+#ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
+#endif
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -96,6 +98,7 @@ namespace paxs {
     // GUI に描画する地物の情報を管理・描画するクラス
     class PlaceNameLocation {
     public:
+#ifdef PAXS_USING_SIMULATOR
         void update(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position) {
             // エージェントの設定を更新
             location_point_list_list.resize(0);
@@ -118,6 +121,7 @@ namespace paxs {
                     paxs::Vector2<double>(180/* 経度 */, 90/* 緯度 */)).toMercatorDeg(),
                 0, 99999999, -99999999, 99999999, 0, 0);
         }
+#endif
         // 地物を追加
         void add() {
             std::string str = "Data/PlaceName/List.tsv";
@@ -206,6 +210,9 @@ namespace paxs {
             // 1 行ずつ読み込み（区切りはタブ）
             while (pifs.getLine()) {
                 std::vector<std::string> strvec = pifs.split('\t');
+
+                if (file_path >= strvec.size()) continue;
+                if (place_texture >= strvec.size()) continue;
 
                 // パスが空の場合は読み込まない
                 if (strvec[file_path].size() == 0) continue;
@@ -444,6 +451,7 @@ namespace paxs {
         }
     };
 
+#ifdef PAXS_USING_SIMULATOR
     // エージェントの位置を管理
     class AgentLocation {
     public:
@@ -632,6 +640,7 @@ namespace paxs {
         }
 
     };
+#endif
 
 }
 

@@ -10,8 +10,8 @@ cmake_minimum_required(VERSION 3.22.1)
 # with ${CMAKE_PROJECT_NAME} (both CMake variables are in-sync within the top level
 # build script scope).
 
-include_directories( ./../../../../../../Library/ )
-include_directories( ./../../../../../../ExternalLibrary/ )
+include_directories( ./../../../../../../../../Library/ )
+include_directories( ./../../../../../../../../ExternalLibrary/ )
 include_directories( C:/Lib_AndroidStudio/${ANDROID_ABI} )
 link_directories( C:/Lib_AndroidStudio/${ANDROID_ABI} )
 

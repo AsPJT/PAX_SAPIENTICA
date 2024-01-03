@@ -19,6 +19,7 @@
 #include <memory>
 #include <new>
 
+#include <PAX_MAHOROBA/LocationPoint.hpp>
 #include <PAX_MAHOROBA/LocationRange.hpp> // TextureLocation
 #include <PAX_MAHOROBA/PersonLocation.hpp> // PersonLocation 人物を描画
 #include <PAX_MAHOROBA/StringViewer.hpp> // 文字
@@ -27,7 +28,9 @@
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#endif
 
 namespace paxs {
 
@@ -43,13 +46,16 @@ namespace paxs {
         PersonNameLocation person_name_location{}; // 人名
 
     private:
+#ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<AgentLocation> agent_location; // エージェント
-
+#endif
     public:
 
         MapViewerSiv3D()
-            :texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation)),
-            agent_location(std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation))
+            :texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation))
+#ifdef PAXS_USING_SIMULATOR
+            ,agent_location(std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation))
+#endif
         {}
 
         void init() {
@@ -80,32 +86,38 @@ namespace paxs {
             person_name_location.init();
             person_name_location.add();
 
+#ifdef PAXS_USING_SIMULATOR
             if (agent_location.get() != nullptr) {
                 agent_location->init();
             }
+#endif
         }
 
         void update(
-            std::unique_ptr<MapView>& map_view,
+            MapView& map_view,
             const SelectLanguage& select_language,
             const paxs::KoyomiSiv3D& koyomi_siv,
             paxs::StringViewerSiv3D& string_siv,
+#ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator,
             const paxs::Vector2<int>& start_position,
-            paxs::GraphicVisualizationList& visible,
             std::size_t& pop_num, // 人口数
-            std::size_t& sat_num // 集落数
+            std::size_t& sat_num, // 集落数
+#endif
+            paxs::GraphicVisualizationList& visible
             ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
 
                 // 地図上に画像を描画する
-                texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());
+                texture_location->update(map_view.getCenterX(), map_view.getCenterY(), map_view.getWidth(), map_view.getHeight());
+#ifdef PAXS_USING_SIMULATOR
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
-                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), start_position, map_view->getWidth(), map_view->getHeight(), map_view->getCenterX(), map_view->getCenterY(),
+                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), start_position, map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY(),
                         pop_num,
                         sat_num
                     );
                 }
+#endif
 
 #ifdef PAXS_USING_SIV3D
                 //// 線の描画
@@ -124,19 +136,19 @@ namespace paxs {
 
                 place_name_location.draw(
                     koyomi_siv.jdn.cgetDay(),
-                    map_view->getWidth(),
-                    map_view->getHeight(),
-                    map_view->getCenterX(),
-                    map_view->getCenterY(),
+                    map_view.getWidth(),
+                    map_view.getHeight(),
+                    map_view.getCenterX(),
+                    map_view.getCenterY(),
                     (one_font == nullptr) ? string_siv.pin_font : (*one_font),
                     string_siv.en_font,
                     string_siv.pin_font);
                 person_name_location.draw(
                     koyomi_siv.jdn.cgetDay(),
-                    map_view->getWidth(),
-                    map_view->getHeight(),
-                    map_view->getCenterX(),
-                    map_view->getCenterY(),
+                    map_view.getWidth(),
+                    map_view.getHeight(),
+                    map_view.getCenterX(),
+                    map_view.getCenterY(),
                     (one_font == nullptr) ? string_siv.pin_font : (*one_font),
                     string_siv.en_font,
                     string_siv.pin_font);
