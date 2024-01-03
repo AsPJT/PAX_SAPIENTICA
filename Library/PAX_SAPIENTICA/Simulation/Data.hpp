@@ -135,10 +135,14 @@ namespace paxs {
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
         void loadBinary(const std::vector<std::string>& file_names) noexcept {
-            unsigned int file_count = 0;
-            int load_count = 0;
+            std::uint_least32_t file_count = 0;
+            std::uint_least32_t load_count = 0;
 
             DataType tmp_data[pixel_size * pixel_size]{};
+
+            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
                 StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
@@ -152,8 +156,8 @@ namespace paxs {
                     continue;
                 }
 
-                const Vector2 default_position = xyz_position * pixel_size - start_position * pixel_size * z_mag;
-                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
+                const Vector2 default_position = xyz_position * pixel_size - start_xyz_position;
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > size.x || default_position.y > size.y) {
                     ++file_count;
                     continue;
                 }
@@ -179,8 +183,12 @@ namespace paxs {
         /// @brief Load numeric TSV files.
         /// @brief 数値TSVファイルのロード
         void loadNumericTSV(const std::vector<std::string>& file_names) noexcept {
-            unsigned int file_count = 0;
-            int load_count = 0;
+            std::uint_least32_t file_count = 0;
+            std::uint_least32_t load_count = 0;
+
+            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
                 StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
@@ -194,8 +202,8 @@ namespace paxs {
                     continue;
                 }
 
-                const Vector2 default_position = xyz_position * pixel_size - start_position * pixel_size * z_mag;
-                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
+                const Vector2 default_position = xyz_position * pixel_size - start_xyz_position;
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > size.x || default_position.y > size.y) {
                     ++file_count;
                     continue;
                 }
@@ -244,8 +252,12 @@ namespace paxs {
         /// @brief Load numeric text file.
         /// @brief 数値テキストファイルのロード
         void loadNumericText(const std::vector<std::string>& file_names) noexcept {
-            unsigned int file_count = 0;
-            int load_count = 0;
+            std::uint_least32_t file_count = 0;
+            std::uint_least32_t load_count = 0;
+
+            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
                 StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
@@ -259,8 +271,8 @@ namespace paxs {
                     continue;
                 }
 
-                const Vector2 default_position = xyz_position * pixel_size - start_position * pixel_size * z_mag;
-                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
+                const Vector2 default_position = xyz_position * pixel_size - start_xyz_position;
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > size.x || default_position.y > size.y) {
                     ++file_count;
                     continue;
                 }
@@ -291,8 +303,12 @@ namespace paxs {
         /// @brief Load numeric text files and compress the data.
         /// @brief 数値テキストファイルのロードしてデータを圧縮する
         void loadNumericTextAndCompress(const std::vector<std::string>& file_names) noexcept {
-            unsigned int file_count = 0;
-            int load_count = 0;
+            std::uint_least32_t file_count = 0;
+            std::uint_least32_t load_count = 0;
+
+            const Vector2 start_xyz_position = start_position * pixel_size;
+            const Vector2 end_xyz_position = end_position * pixel_size;
+            const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
                 StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
@@ -306,8 +322,8 @@ namespace paxs {
                     continue;
                 }
 
-                const Vector2 default_position = xyz_position * pixel_size / z_mag - start_position * pixel_size;
-                if(default_position.x < 0 || default_position.y < 0 || default_position.x > (end_position.x - start_position.x) * pixel_size * z_mag || default_position.y > (end_position.y - start_position.y) * pixel_size * z_mag) {
+                const Vector2 default_position = xyz_position * pixel_size / z_mag - start_xyz_position;
+                if(default_position.x < 0 || default_position.y < 0 || default_position.x > size.x || default_position.y > size.y) {
                     ++file_count;
                     continue;
                 }
