@@ -61,6 +61,7 @@ namespace paxs {
             }
 
             rect.setW(0);
+            all_rect_x = 0;
             for (std::size_t i = 0; i < items_key.size(); ++i) {
                 const std::string* str = (*language_ptr).getStringPtr(items_key[i], (*select_language_ptr).cgetKey());
                 if (str == nullptr) continue;
@@ -72,15 +73,30 @@ namespace paxs {
                 if (one_font == nullptr) continue;
 
                 // 最大の文字数からプルダウンの各項目の幅を定義
-                rect.setW(
-                    static_cast<float>((std::max)(static_cast<int>(rect.w()), static_cast<int>((*one_font).width(*str))))
+                //rect.setW
+                all_rect_x = 
+                (
+                    static_cast<float>((std::max)(static_cast<int>(all_rect_x), static_cast<int>((*one_font).width(*str))))
                 );
+                // フォントが１つの場合は１行目も項目と同じ幅にする
+                if (is_one_font) {
+                    rect.setW(all_rect_x);
+                }
+                else {
+                    if (i == 0) {
+                        rect.setW((*one_font).width(*str));
+                    }
+                }
             }
             // プルダウンの幅を設定
             rect.setW(rect.w() + (padding.x() * 2 + down_button_size));
+            all_rect_x += (padding.x() * 2 + down_button_size);
 
 #ifdef PAXS_USING_DXLIB
-            rect.setW(rect.w() * 1.8f);
+            all_rect_x *= 1.6f;
+            rect.setW(rect.w() * 1.6f);
+            rect.setH(rect.h() * 1.2f);
+#else ifdef PAXS_USING_SFML
             rect.setH(rect.h() * 1.2f);
 #endif
         }
@@ -247,7 +263,7 @@ namespace paxs {
             }
 
             // 四角形を描画
-            const paxg::Rect back_rect{ pos, rect.w(), (rect.h() * items_key.size()) };
+            const paxg::Rect back_rect{ pos, all_rect_x, (rect.h() * items_key.size()) };
 #ifdef PAXS_USING_SIV3D
             // 影を描画
             back_rect.rect.drawShadow({ 1, 1 }, 4, 1).draw();
@@ -260,7 +276,7 @@ namespace paxs {
                 if (i_str == nullptr) continue;
                 if (i_str->size() == 0) continue;
 
-                const paxg::Rect rect_tmp{ pos, rect.size() };
+                const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };
                 if (rect_tmp.mouseOver()) { // マウスカーソルが四角形の上にある場合
                     // 四角形の色を変える
                     rect_tmp.draw(paxg::Color{ 135, 206, 235 });
@@ -311,6 +327,7 @@ namespace paxs {
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
         paxg::Rect rect{};
+        float all_rect_x{}; // 全ての項目の文字幅
         int down_button_size = 20;
         bool is_open = false;
         std::size_t pdt{};

@@ -51,6 +51,7 @@ static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #include <PAX_SAPIENTICA/Math.hpp>
 
 #include <PAX_GRAPHICA/Key.hpp>
+#include <PAX_GRAPHICA/Mouse.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
@@ -127,6 +128,8 @@ namespace paxs {
             ループ開始
         ##########################################################################################*/
         while (paxg::Window::update()) {
+            paxg::Mouse::getInstance()->calledFirstEveryFrame(); // 入力を更新
+
             tm.init(); // タッチ判定を初期化
 #ifdef PAXS_USING_SIV3D
             const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
