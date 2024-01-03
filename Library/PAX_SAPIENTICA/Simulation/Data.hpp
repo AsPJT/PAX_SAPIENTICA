@@ -135,7 +135,6 @@ namespace paxs {
         /// @brief Load binary files.
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
-        [[maybe_unused]]
         void loadBinary(const std::string& file_path) noexcept {
             const Vector2 start_position_ = start_position * z_mag;
             const Vector2 end_position_ = end_position * z_mag;
@@ -180,6 +179,7 @@ namespace paxs {
         /// @brief Load binary files.
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
+        [[maybe_unused]]
         void loadBinary(const std::vector<std::string>& file_names) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
