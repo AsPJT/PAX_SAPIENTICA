@@ -43,8 +43,10 @@
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+#endif
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 
@@ -52,7 +54,7 @@ namespace paxs {
 
     class StringViewerSiv3D {
     private:
-
+#ifdef PAXS_USING_SIMULATOR
         void simulation(
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
             const paxs::Vector2<int>& start_position,
@@ -136,6 +138,7 @@ namespace paxs {
                     }
                 }
         }
+#endif
 
     public:
 
@@ -312,22 +315,24 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
         }
 
         void update(
-            const std::unique_ptr<MapView>& map_view,
+            MapView& map_view,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
+#ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
             const paxs::Vector2<int>& start_position,
             const paxs::Vector2<int>& end_position,
+            std::size_t& pop_num, // 人口数
+            std::size_t& sat_num, // 集落数
+#endif
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
-            paxs::GraphicVisualizationList& visible,
-            std::size_t& pop_num, // 人口数
-            std::size_t& sat_num // 集落数
+            paxs::GraphicVisualizationList& visible
             ) {
-            const double map_view_width = map_view->getWidth();
+            const double map_view_width = map_view.getWidth();
             // const double map_view_center_lat =
                 //paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view->getCenterY()))));
-            map_view->getCoordinate().toEquirectangularDegY();
+            map_view.getCoordinate().toEquirectangularDegY();
 
             // 画像の拡大縮小の方式を設定
             const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampLinear };
@@ -388,11 +393,12 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
             }
 
-
+#ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン
-            if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")]) {
+            if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
                 simulation(simulator, start_position, end_position, tm_, koyomi_siv);
             }
+#endif
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦の表示（日本語）
@@ -674,6 +680,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                         (*one_font).draw(std::to_string(map_view_width),
                             paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
 
+#ifdef PAXS_USING_SIMULATOR
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                         (*one_font).draw("pop " + std::to_string(pop_num),
                             paxg::Vec2i(paxg::Window::width() - 160, debug_start_y + 50), paxg::Color(0, 0, 0));
@@ -681,7 +688,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                         (*one_font).draw("set " + std::to_string(sat_num),
                             paxg::Vec2i(paxg::Window::width() - 160, debug_start_y + 100), paxg::Color(0, 0, 0));
-
+#endif
                         //debug_start_y += debug_move_y;
                         // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
                         //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
@@ -776,12 +783,13 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                                 paxg::Vec2i(paxg::Window::width() - 60, 590), paxg::Color(0, 0, 0));
 
 
-
+#ifdef PAXS_USING_SIMULATOR
                             if (simulator != nullptr) {
                                 (*one_font).drawTopRight(
                                     "torai: " + std::to_string(simulator->emigrationSize()),
                                     paxg::Vec2i(paxg::Window::width() - 60, 650), paxg::Color(0, 0, 0));
                             }
+#endif
                         }
                     }
                 }

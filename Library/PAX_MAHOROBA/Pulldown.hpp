@@ -96,7 +96,7 @@ namespace paxs {
             all_rect_x *= 1.6f;
             rect.setW(rect.w() * 1.6f);
             rect.setH(rect.h() * 1.2f);
-#else ifdef PAXS_USING_SFML
+#elif defined(PAXS_USING_SFML)
             rect.setH(rect.h() * 1.2f);
 #endif
         }

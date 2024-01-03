@@ -125,15 +125,9 @@ namespace paxs {
 
 #endif
 
-    // abstract class
-    struct BaseKey {
+    class Key {
     public:
-        virtual bool isPressed() const = 0;
-        virtual ~BaseKey() {}
-    };
-
-    class Key : BaseKey {
-    public:
+        Key() = default;
         explicit Key(InputKey key) : key(key) {}
         bool isPressed() const {
             return key.pressed();
@@ -155,9 +149,9 @@ namespace paxs {
         E
     };
 
-    bool pressed(const std::vector<std::unique_ptr<BaseKey>>& keys) {
+    bool pressed(const std::vector<Key>& keys) {
         for (auto& key : keys) {
-            if (key->isPressed()) return true;
+            if (key.isPressed()) return true;
         }
         return false;
     }
@@ -168,20 +162,20 @@ namespace paxs {
 
         Coordinate(const paxs::MercatorDeg& coordinate_, double movement_size) : coordinate(coordinate_), movement_size(movement_size) {
             increase_x_keys.resize(2);
-            increase_x_keys[0].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_A));
-            increase_x_keys[1].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_LEFT));
+            increase_x_keys[0] = (Key(SIV3D_KEY_A));
+            increase_x_keys[1] = (Key(SIV3D_KEY_LEFT));
 
             decrease_x_keys.resize(2);
-            decrease_x_keys[0].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_D));
-            decrease_x_keys[1].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_RIGHT));
+            decrease_x_keys[0] = (Key(SIV3D_KEY_D));
+            decrease_x_keys[1] = (Key(SIV3D_KEY_RIGHT));
 
             increase_y_keys.resize(2);
-            increase_y_keys[0].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_S));
-            increase_y_keys[1].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_DOWN));
+            increase_y_keys[0] = (Key(SIV3D_KEY_S));
+            increase_y_keys[1] = (Key(SIV3D_KEY_DOWN));
 
             decrease_y_keys.resize(2);
-            decrease_y_keys[0].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_W));
-            decrease_y_keys[1].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_UP));
+            decrease_y_keys[0] = (Key(SIV3D_KEY_W));
+            decrease_y_keys[1] = (Key(SIV3D_KEY_UP));
         }
         void update(const double width) {
             if (pressed(increase_x_keys)) increase_coordinate(coordinate.x, width);
@@ -211,10 +205,10 @@ namespace paxs {
 
     private:
         paxs::MercatorDeg coordinate; // マップ座標の中央
-        std::vector<std::unique_ptr<BaseKey>> increase_x_keys;
-        std::vector<std::unique_ptr<BaseKey>> decrease_x_keys;
-        std::vector<std::unique_ptr<BaseKey>> increase_y_keys;
-        std::vector<std::unique_ptr<BaseKey>> decrease_y_keys;
+        std::vector<Key> increase_x_keys;
+        std::vector<Key> decrease_x_keys;
+        std::vector<Key> increase_y_keys;
+        std::vector<Key> decrease_y_keys;
 
         void increase_coordinate(double& value, const double width) {
             value -= (width / movement_size);
@@ -246,8 +240,8 @@ namespace paxs {
         double min_width = 0.00005; // マップの最小幅
         double height = (width) / double(paxg::Window::width()) * double(paxg::Window::height()); // マップの高さ
         double expansion_size = 50.0; // マップの拡大量
-        std::vector<std::unique_ptr<BaseKey>> enl_keys; // 拡大キー
-        std::vector<std::unique_ptr<BaseKey>> esc_keys; // 縮小キー
+        std::vector<Key> enl_keys; // 拡大キー
+        std::vector<Key> esc_keys; // 縮小キー
 
 #ifdef __ANDROID__
         int touch_num = 0;
@@ -260,10 +254,10 @@ namespace paxs {
     public:
         MapView() {
             enl_keys.resize(1);
-            enl_keys[0].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_Q));
+            enl_keys[0] = (Key(SIV3D_KEY_Q));
 
             esc_keys.resize(1);
-            esc_keys[0].reset((BaseKey*)new(std::nothrow) Key(SIV3D_KEY_E));
+            esc_keys[0] = (Key(SIV3D_KEY_E));
         }
         void update() {
             // マウスホイールで地図の拡大・縮小

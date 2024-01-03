@@ -164,13 +164,12 @@ namespace paxs {
         }
 
         // 地図の辞書を更新
-        void update(const paxs::MenuBar& menu_bar, const MapView* const map_view, cal::JDN_F64 jdn) {
-            if (map_view == nullptr) return; // null の場合は処理しない
+        void update(const paxs::MenuBar& menu_bar, const MapView& map_view, cal::JDN_F64 jdn) {
 
-            const double map_view_width = map_view->getWidth();
-            const double map_view_height = map_view->getHeight();
-            const double map_view_center_x = map_view->getCenterX();
-            const double map_view_center_y = map_view->getCenterY();
+            const double map_view_width = map_view.getWidth();
+            const double map_view_height = map_view.getHeight();
+            const double map_view_center_x = map_view.getCenterX();
+            const double map_view_center_y = map_view.getCenterY();
 
             // 更新処理
             for (auto&& xyzi : xyz_tile_list) {
