@@ -38,7 +38,7 @@ namespace paxg {
     namespace Window {
 #ifdef PAXS_USING_SFML
         sf::RenderWindow window(sf::VideoMode(1280, 720), "PAX SAPIENTICA Library");
-        paxg::Color backgroundColor = paxg::Color(0, 0, 0);
+        paxg::Color backgroundColor = paxg::Color(140, 180, 250);
 #endif // PAXS_USING_SFML
 
 #if defined(PAXS_USING_SIV3D)
@@ -78,7 +78,10 @@ namespace paxg {
                 DxLib::ProcessMessage() != -1);
 
 #elif defined(PAXS_USING_SFML)
-            return paxg::SFML_Event::getInstance()->update(window);
+            window.display();
+            bool upd =  paxg::SFML_Event::getInstance()->update(window);
+            window.clear(backgroundColor.color);
+            return upd;
 #else
             return false;
 #endif

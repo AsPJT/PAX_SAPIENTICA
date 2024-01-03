@@ -31,9 +31,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     DxLib::SetOutApplicationLogValidFlag(FALSE);
     DxLib::ChangeWindowMode(TRUE);
     DxLib::SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
-    if (DxLib::DxLib_Init() == -1) return -1;
-    DxLib::SetDrawScreen(DX_SCREEN_BACK);
-    DxLib::SetWaitVSyncFlag(TRUE);
+    //if (DxLib::DxLib_Init() == -1) return -1;
+    //DxLib::SetWaitVSyncFlag(TRUE);
     // DxLib::SetWindowSizeChangeEnableFlag(TRUE, FALSE);
     // DxLib::SetUseASyncLoadFlag(TRUE);
     paxs::startMain();

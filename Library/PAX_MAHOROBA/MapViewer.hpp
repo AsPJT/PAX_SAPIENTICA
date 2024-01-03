@@ -34,7 +34,7 @@ namespace paxs {
     class MapViewerSiv3D {
     public:
 
-        std::unique_ptr<MapView> map_view;
+        
         std::unique_ptr<TextureLocation> texture_location; // 地図上に描画する画像の一覧
 #ifdef PAXS_USING_SIV3D
         s3d::Array<s3d::Vec2> route1, route2; // 線の情報を格納
@@ -42,44 +42,37 @@ namespace paxs {
         PlaceNameLocation place_name_location{}; // 地名
         PersonNameLocation person_name_location{}; // 人名
 
-        // 描画する XYZ タイルを管理
-        XYZTilesList xyz_tile_list;
-
     private:
         std::unique_ptr<AgentLocation> agent_location; // エージェント
 
     public:
 
         MapViewerSiv3D()
-            :map_view(new(std::nothrow) MapView),
-            texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation)),
+            :texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation)),
             agent_location(std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation))
         {}
 
         void init() {
 #ifdef PAXS_USING_SIV3D
-            // 航路を読み込み
-            std::ifstream rifs(AppConfig::getInstance()->getRootPath() + "Data/Route/Yamatai.tsv");
-            if (rifs.fail()) return;
-            std::string rline;
-            while (std::getline(rifs, rline)) { // ファイルを 1 行ずつ読み込む
-                const std::vector<std::string> strvec = paxs::StringExtensions::split(rline, '\t');
-                const MercatorDeg coordinate = EquirectangularDeg(
-                    paxs::Vector2(std::stod(strvec[0]), std::stod(strvec[1])) // 経緯度を格納
-                );
-                route1.emplace_back(coordinate.x, coordinate.y);
-            }
-            for (std::size_t i = 0; i < route1.size(); ++i) {
-                // 経路を格納
-                route2.emplace_back(
-                    (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(paxg::Window::width()),
-                    double(paxg::Window::height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(paxg::Window::height()))
-                );
-            }
+            //// 航路を読み込み
+            //std::ifstream rifs(AppConfig::getInstance()->getRootPath() + "Data/Route/Yamatai.tsv");
+            //if (rifs.fail()) return;
+            //std::string rline;
+            //while (std::getline(rifs, rline)) { // ファイルを 1 行ずつ読み込む
+            //    const std::vector<std::string> strvec = paxs::StringExtensions::split(rline, '\t');
+            //    const MercatorDeg coordinate = EquirectangularDeg(
+            //        paxs::Vector2(std::stod(strvec[0]), std::stod(strvec[1])) // 経緯度を格納
+            //    );
+            //    route1.emplace_back(coordinate.x, coordinate.y);
+            //}
+            //for (std::size_t i = 0; i < route1.size(); ++i) {
+            //    // 経路を格納
+            //    route2.emplace_back(
+            //        (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(paxg::Window::width()),
+            //        double(paxg::Window::height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(paxg::Window::height()))
+            //    );
+            //}
 #endif
-            // XYZ タイルを初期化
-            xyz_tile_list.add("Data/Map/XYZTile/List.tsv");
-            xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
 
             // 地名
             place_name_location.init();
@@ -93,6 +86,7 @@ namespace paxs {
         }
 
         void update(
+            std::unique_ptr<MapView>& map_view,
             const SelectLanguage& select_language,
             const paxs::KoyomiSiv3D& koyomi_siv,
             paxs::StringViewerSiv3D& string_siv,
@@ -103,8 +97,6 @@ namespace paxs {
             std::size_t& sat_num // 集落数
             ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
-                map_view->update(); // キーボード入力を更新
-                xyz_tile_list.update(string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
                 // 地図上に画像を描画する
                 texture_location->update(map_view->getCenterX(), map_view->getCenterY(), map_view->getWidth(), map_view->getHeight());

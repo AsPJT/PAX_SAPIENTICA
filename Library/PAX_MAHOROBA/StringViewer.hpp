@@ -316,7 +316,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
-            std::unique_ptr<paxs::SettlementSimulator<int>>& old_simulator, // コンパイル時の分岐により使わない場合あり
             const paxs::Vector2<int>& start_position,
             const paxs::Vector2<int>& end_position,
             paxs::TouchManager& tm_,
