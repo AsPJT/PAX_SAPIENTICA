@@ -61,31 +61,28 @@ namespace paxs {
 
     // 主要な実行時定数・変数
     void startMain() { // フォルダ階層
-#ifdef PAXS_USING_SIV3D
-        s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
-#endif
-        
-        SelectLanguage select_language{}; // 選択言語
 
         paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
-#ifndef PAXS_USING_DXLIB
-        paxs::PaxSapienticaInitSiv3D::secondInit(); // ソフトウェアを実行した最初のフレームの一番最後に実行
-#endif // PAXS_USING_DXLIB
 
-        paxs::Language language_text;
-        language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Language/Text.txt"); // テキストの多言語対応クラス
+        std::unique_ptr<MapView> map_view(new(std::nothrow) MapView);
 
-        // 可視化一覧
-        GraphicVisualizationList visible{};
-        visible.emplace(MurMur3::calcHash("Calendar"), true); // 暦
-        visible.emplace(MurMur3::calcHash("Map"), true); // 地図
-        visible.emplace(MurMur3::calcHash("UI"), true); // UI
-        visible.emplace(MurMur3::calcHash("License"), false); // ライセンス
-        visible.emplace(MurMur3::calcHash("3D"), false); // 3D
+        // 描画する XYZ タイルを管理
+        XYZTilesList xyz_tile_list;
+        // XYZ タイルを初期化
+        xyz_tile_list.add("Data/Map/XYZTile/List.tsv");
 
-        //#ifdef PAXS_USING_SIMULATOR
+        paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
+        paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
+
+        xyz_tile_list.update(string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+        paxg::Window::update();
+#ifdef PAXS_USING_SFML
+        xyz_tile_list.update(string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+        paxg::Window::update();
+#endif
+        xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
+
         std::unique_ptr<paxs::SettlementSimulator<int>> simulator{};
-        std::unique_ptr<paxs::SettlementSimulator<int>> old_simulator{};
         // 対馬のみ
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 879, 406 };
         //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 881, 409 };
@@ -107,10 +104,11 @@ namespace paxs {
         paxs::MapViewerSiv3D map_siv{}; // 地図を管理する
         map_siv.init();
 
-        paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
         koyomi_siv.init();
 
-        paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
+        SelectLanguage select_language{}; // 選択言語
+        paxs::Language language_text;
+        language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Language/Text.txt"); // テキストの多言語対応クラス
         string_siv.init(select_language, language_text);
 
         paxs::TouchManager tm; // 画面のクリック・タッチを管理する
@@ -120,9 +118,15 @@ namespace paxs {
 
         //std::ofstream pop_ofs("pop.txt");
 
-#ifdef PAXS_USING_SFML
-        paxg::Window::window.setFramerateLimit(60);
-#endif
+        // 可視化一覧
+        GraphicVisualizationList visible{};
+        visible.emplace(MurMur3::calcHash("Calendar"), true); // 暦
+        visible.emplace(MurMur3::calcHash("Map"), true); // 地図
+        visible.emplace(MurMur3::calcHash("UI"), true); // UI
+        visible.emplace(MurMur3::calcHash("License"), false); // ライセンス
+        visible.emplace(MurMur3::calcHash("3D"), false); // 3D
+
+        xyz_tile_list.update(string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
         /*##########################################################################################
             ループ開始
@@ -132,9 +136,7 @@ namespace paxs {
 
             tm.init(); // タッチ判定を初期化
 #ifdef PAXS_USING_SIV3D
-            const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
-#elif defined(PAXS_USING_SFML)
-            paxg::Window::clear();
+            const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定  
 #endif
             /*##########################################################################################
                 更新処理関連
@@ -142,11 +144,11 @@ namespace paxs {
 
             // 画面サイズの変更に合わせて地図の幅を変える
             if (old_width != paxg::Window::width()) {
-                map_siv.map_view->setWidth(paxg::Window::width() * map_siv.map_view->getWidth() / old_width);
-                map_siv.map_view->setHeight(map_siv.map_view->getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
+                map_view->setWidth(paxg::Window::width() * map_view->getWidth() / old_width);
+                map_view->setHeight(map_view->getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
             }
             if (old_height != paxg::Window::height()) {
-                map_siv.map_view->setHeight(map_siv.map_view->getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
+                map_view->setHeight(map_view->getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
             }
             if (old_width != paxg::Window::width() ||
                 old_height != paxg::Window::height()) {
@@ -182,8 +184,11 @@ namespace paxs {
             visible.set(MurMur3::calcHash("Debug"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
             visible.set(MurMur3::calcHash("3D"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(6));
 
+            map_view->update(); // キーボード入力を更新
+            xyz_tile_list.update(string_siv.menu_bar, map_view.get(), koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
             // 地図を更新
             map_siv.update(
+                map_view,
                 select_language,
                 koyomi_siv,
                 string_siv,
@@ -200,11 +205,10 @@ namespace paxs {
 
             // 文字を更新
             string_siv.update(
-                map_siv.map_view,
+                map_view,
                 select_language,
                 language_text,
                 simulator,
-                old_simulator,
                 start_position,
                 end_position,
                 tm,
@@ -228,7 +232,6 @@ namespace paxs {
 #endif
 #ifdef PAXS_USING_SFML
             old_left_mouse = !sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
-            paxg::Window::display();
 #endif
         }
     }
