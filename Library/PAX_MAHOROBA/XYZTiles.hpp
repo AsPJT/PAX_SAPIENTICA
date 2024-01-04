@@ -223,8 +223,12 @@ namespace paxs {
                     std::string local_file_path = local_file_path_zny;
                     paxs::StringExtensions::replace(local_file_path, "{x}", x_value);
 
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+                    // 何もしない
+#else
                     // ファイル読み込みができるかどうか
                     if (std::filesystem::exists(local_file_path)) {
+#endif
                         // 新しいテクスチャ
                         paxg::Texture new_tex(local_file_path);
 
@@ -234,7 +238,11 @@ namespace paxs {
                             is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
                             continue;
                         }
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+                        // 何もしない
+#else
                     }
+#endif
                     // 新しいテクスチャが読み込めなかった場合
 #if defined(PAXS_USING_SIV3D)
                         // URL の記載がある場合
@@ -395,7 +403,8 @@ namespace paxs {
                         map_file_path_name_ + file_name_format_ + std::string(".png");
                     break;
                 default:
-                    //printfDx("\n[error:%u,%s,%s,%s]", texture_root_path_type_, map_binary_name_.c_str(), map_file_path_name_.c_str(), file_name_format_.c_str());
+                    file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
+                    printfDx("\n[error:%u,%s,%s,%s]", texture_root_path_type_, map_binary_name_.c_str(), map_file_path_name_.c_str(), file_name_format_.c_str());
                     break;
                 }
 #else

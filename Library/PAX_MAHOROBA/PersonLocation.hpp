@@ -201,54 +201,18 @@ namespace paxs {
 
         PersonNameLocation() = default;
         void init() {
-            std::string str = "Data/Portraits/List.tsv";
-            paxs::InputFile pifs(str, AppConfig::getInstance()->getRootPath());
-            if (pifs.fail()) return;
-            // 1 行目を読み込む
-            if (!(pifs.getLine())) {
-                return; // 何もない場合
-            }
-            // BOM を削除
-            pifs.deleteBOM();
-            // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
-
-            const std::size_t file_path = getMenuIndex(menu, MurMur3::calcHash("file_path"));
-            if (file_path == SIZE_MAX) return; // パスがないのはデータにならない
-            const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
-            if (place_texture == SIZE_MAX) return; // テクスチャ名がないのはデータにならない
-
-
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
-
-                if (file_path >= strvec.size()) continue;
-                if (place_texture >= strvec.size()) continue;
-
-                // パスが空の場合は読み込まない
-                if (strvec[file_path].size() == 0) continue;
-                // テクスチャ名が空の場合は読み込まない
-                if (strvec[place_texture].size() == 0) continue;
-
-                // 画像
-                const std::uint_least32_t place_texture_hash =
-                    (place_texture >= strvec.size()) ? 0 : // テクスチャがない場合
-                    ((strvec[place_texture].size() == 0) ? 0 : // テクスチャ名がない場合
-                        MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()));
-                if (place_texture_hash == 0) continue; // ハッシュが 0 の場合は追加しない
-
-                // テクスチャを追加
-                texture.emplace(MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()), paxg::Texture{ AppConfig::getInstance()->getRootPath() + strvec[file_path] });
-            }
+            const std::string path = (AppConfig::getInstance()->getRootPath());
+            key_value_tsv.input(path + "Data/Portraits/List.tsv", [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
         }
         // 描画
         void draw(const double jdn,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-            paxg::Font& font, paxg::Font& en_font, paxg::Font& /*pin_font*/)const {
+            paxg::Font& font, paxg::Font& en_font, paxg::Font& /*pin_font*/) {
 
             const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
+
+            const std::unordered_map<std::uint_least32_t, paxg::Texture> texture = key_value_tsv.get();
 
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& person_location_list = location_point_list_list[h].person_location_list;
@@ -391,7 +355,7 @@ namespace paxs {
     private:
         std::vector<PersonLocationList> location_point_list_list{}; // 地物の一覧
         // アイコンのテクスチャ
-        std::unordered_map<std::uint_least32_t, paxg::Texture> texture{};
+        paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
 
         // 項目の ID を返す
         std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
