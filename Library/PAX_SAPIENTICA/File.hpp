@@ -21,6 +21,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
@@ -33,18 +34,16 @@ namespace paxs {
         /// @brief Read the file.
         /// @brief ファイルを読み込む。
         static std::vector<std::string> readFile(const std::string& file_path) noexcept {
-            std::ifstream file(file_path); // ファイルパスにあるファイルを読み込む
-            if (!file) {
+            InputFile file(file_path);
+            if (file.fail()) {
                 PAXS_ERROR("Failed to read file: " + file_path);
                 return {};
             }
             // 1 行ごとに文字列を分離し vector へ格納
-            std::string line;
             std::vector<std::string> result;
-            while (std::getline(file, line)) {
-                result.emplace_back(line);
+            while (file.getLine()) {
+                result.emplace_back(file.lineString());
             }
-            file.close();
             return result;
         }
 
@@ -83,6 +82,9 @@ namespace paxs {
         /// @brief Get the file name in the directory.
         /// @brief ディレクトリ内のファイル名を取得する。
         static std::vector<std::string> getFileNames(const std::string& directory_path) noexcept {
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            return {}; // std::filesystem が動作しないため何もしない
+#else
             std::filesystem::path dir_path(directory_path);
             if (!std::filesystem::exists(dir_path)) {
                 PAXS_ERROR("Failed to access: " + directory_path);
@@ -95,7 +97,7 @@ namespace paxs {
             while (dir_iter != end_iter) {
                 try {
                     if(dir_iter->is_regular_file()) {
-                        result.push_back(dir_iter->path().string());
+                        result.emplace_back(dir_iter->path().string());
                     }
                     ++dir_iter;
                 }
@@ -106,6 +108,7 @@ namespace paxs {
             }
 
             return result;
+#endif
         }
     };
 }
