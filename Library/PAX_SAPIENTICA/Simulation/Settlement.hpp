@@ -449,7 +449,6 @@ namespace paxs {
         /// @brief Emigration.
         /// @brief 渡来
         void emigration(KanakumaLifeSpan& kanakuma_life_span, std::uint_least64_t& count) noexcept {
-            // TODO: 渡来
             if (agents.size() >= 60) {
 
                 const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
