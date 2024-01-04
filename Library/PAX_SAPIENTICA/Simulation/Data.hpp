@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <cmath>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <regex>
@@ -122,9 +123,9 @@ namespace paxs {
                 else loadNumericText(file_names);
             } else if(file_names[0].find(".bin") != std::string::npos) {
                 if constexpr (std::is_same<DataType, std::uint_least8_t>::value) {
-                    loadBinary<paxs::Input8BitBinary>(file_names);
+                    loadBinary<paxs::Input8BitBinary>(file_path);
                 } else if constexpr (std::is_same<DataType, std::int_least16_t>::value) {
-                    loadBinary<paxs::Input16BitBinary>(file_names);
+                    loadBinary<paxs::Input16BitBinary>(file_path);
                 }
             } else {
                 PAXS_WARNING("File type is invalid: " + file_names[0]);
@@ -134,6 +135,51 @@ namespace paxs {
         /// @brief Load binary files.
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
+        void loadBinary(const std::string& file_path) noexcept {
+            const Vector2 start_position_ = start_position * z_mag;
+            const Vector2 end_position_ = end_position * z_mag;
+
+            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+
+            std::uint_least32_t file_count = (end_position_.x - start_position_.x + 1) * (end_position_.y - start_position_.y + 1);
+            std::uint_least32_t load_count = 0;
+
+            DataType tmp_data[pixel_size * pixel_size]{};
+
+            for (GridType y = start_position_.y; y <= end_position_.y; ++y) {
+                for (GridType x = start_position_.x; x <= end_position_.x; ++x) {
+                    const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".bin";
+
+                    if (!std::filesystem::exists(AppConfig::getInstance()->getRootPath() + file_path + file_name)) {
+                        --file_count;
+                        StatusDisplayer::displayProgressBar(load_count, file_count);
+                        continue;
+                    }
+
+                    BinaryDataType bi(file_path + file_name, AppConfig::getInstance()->getRootPath());
+                    bi.calc(tmp_data);
+
+                    const Vector2 default_position = Vector2(x, y) * pixel_size * z_mag - start_xyz_position;
+                    for(std::size_t y = 0;y < pixel_size;++y) {
+                        for(std::size_t x = 0;x < pixel_size;++x) {
+                            const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
+                            data[position.toU64()] = static_cast<DataType>(data[position.toU64()]);
+                        }
+                    }
+
+                    ++load_count;
+                    StatusDisplayer::displayProgressBar(load_count, file_count);
+                }
+            }
+
+            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
+            std::cout << load_count << " files are loaded.\n" << std::endl;
+        }
+
+        /// @brief Load binary files.
+        /// @brief バイナリファイルのロード
+        template <typename BinaryDataType>
+        [[maybe_unused]]
         void loadBinary(const std::vector<std::string>& file_names) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;

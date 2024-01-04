@@ -350,7 +350,6 @@ namespace paxs {
             for (auto& ryoseikoku_population : ryoseikoku_population_map) {
                 all_population += ryoseikoku_population.second;
             }
-            std::cout << "All population: " << all_population << std::endl;
             int population_sum = 0;
             // 集落配置
             for (std::uint_least8_t ryoseikoku_id = 0; ryoseikoku_id < 90; ++ryoseikoku_id) {
