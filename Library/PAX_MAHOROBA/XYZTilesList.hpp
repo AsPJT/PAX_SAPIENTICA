@@ -45,7 +45,7 @@ namespace paxs {
     public:
         // XYZ Tiles を追加
         void add(const std::string& str) {
-            paxs::InputFile pifs(str, AppConfig::getInstance()->getRootPath());
+            paxs::InputFile pifs(str);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {

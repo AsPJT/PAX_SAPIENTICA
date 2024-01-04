@@ -26,9 +26,10 @@
 
 namespace paxs {
 
+    template<typename Value>
     class KeyValueTSV {
     private:
-        std::unordered_map<std::uint_least32_t, std::string> path_list;
+        std::unordered_map<std::uint_least32_t, Value> path_list;
     private:
         // 項目の ID を返す
         inline std::size_t inputPathGetMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
@@ -36,17 +37,22 @@ namespace paxs {
         }
     public:
 
-        void emplace(const std::uint_least32_t key_, const std::string& value_) {
+        void emplace(const std::uint_least32_t key_, const Value& value_) {
             path_list.emplace(key_, value_);
         }
         bool contains(const std::uint_least32_t key_) {
             return (path_list.find(key_) != path_list.end());
         }
 
-        // ルートパスを読み込む true 成功
-        bool input(const std::string& str_, const std::string& default_path_ = "") {
+        std::unordered_map<std::uint_least32_t, Value>& get() {
+            return path_list;
+        }
 
-            paxs::InputFile pifs(str_, default_path_);
+        // ルートパスを読み込む true 成功
+        template<typename Func>
+        bool input(const std::string& str_, Func&& func) {
+
+            paxs::InputFile pifs(str_);
             if (pifs.fail()) {
                 PAXS_ERROR("Failed to read KeyValueTSV.");
                 return false;
@@ -76,19 +82,24 @@ namespace paxs {
             while (pifs.getLine()) {
                 std::vector<std::string> strvec = pifs.split('\t');
 
-                // パスが空の場合は読み込まない
-                if (strvec[file_path].size() == 0) continue;
+                // 列数が項目より小さい場合は読み込まない
+                if (file_type >= strvec.size()) continue;
+                if (file_path >= strvec.size()) continue;
+
                 // テクスチャ名が空の場合は読み込まない
                 if (strvec[file_type].size() == 0) continue;
 
                 // テクスチャを追加
-                path_list.emplace(MurMur3::calcHash(strvec[file_type].size(), strvec[file_type].c_str()), strvec[file_path]);
+                path_list.emplace(MurMur3::calcHash(strvec[file_type].size(), strvec[file_type].c_str()), func(strvec[file_path]));
             }
             return true;
         }
+        bool input(const std::string& str_) {
+            return input(str_, [](const std::string& value_) { return Value(value_); });
+        }
 
-        std::string operator[](std::uint_least32_t key_) const {
-            return (path_list.find(key_) == path_list.end()) ? "" : path_list.at(key_);
+        Value operator[](std::uint_least32_t key_) const {
+            return (path_list.find(key_) == path_list.end()) ? Value{} : path_list.at(key_);
         }
 
     };

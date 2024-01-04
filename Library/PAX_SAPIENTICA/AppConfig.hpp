@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -41,7 +41,7 @@ namespace paxs {
         std::string root_path = "";
 
         AppConfig() {
-            KeyValueTSV key_value_tsv;
+            KeyValueTSV<std::string> key_value_tsv;
             key_value_tsv.input("Path.tsv");
             root_path = key_value_tsv[MurMur3::calcHash("asset_file")];
         }

@@ -74,17 +74,19 @@ namespace paxs {
         visible.emplace(MurMur3::calcHash("License"), false); // ライセンス
         visible.emplace(MurMur3::calcHash("3D"), false); // 3D
 
-        paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
-
         MapView map_view{};
-
-        // 描画する XYZ タイルを管理
-        XYZTilesList xyz_tile_list;
-        // XYZ タイルを初期化
-        xyz_tile_list.add("Data/Map/XYZTile/List.tsv");
-
+        XYZTilesList xyz_tile_list; // 描画する XYZ タイルを管理
         paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
         paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
+        SelectLanguage select_language{}; // 選択言語
+        paxs::Language language_text;
+        paxs::MapViewerSiv3D map_siv{}; // 地図を管理する
+        paxs::TouchManager tm; // 画面のクリック・タッチを管理する
+
+        paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
+
+        // XYZ タイルを初期化
+        xyz_tile_list.add(AppConfig::getInstance()->getRootPath() + "Data/Map/XYZTile/List.tsv");
         
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
         paxg::Window::update();
@@ -94,8 +96,6 @@ namespace paxs {
 #endif
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
 
-        SelectLanguage select_language{}; // 選択言語
-        paxs::Language language_text;
         language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Language/Text.txt"); // テキストの多言語対応クラス
         string_siv.init(select_language, language_text);
 
@@ -104,13 +104,8 @@ namespace paxs {
 
         int size_change_count = 0; // サイズを更新するカウンタ
 
-        //ここは落ちない
-        paxs::MapViewerSiv3D map_siv{}; // 地図を管理する
         map_siv.init();
-        //ここは落ちる
         koyomi_siv.init();
-
-        paxs::TouchManager tm; // 画面のクリック・タッチを管理する
 
         std::size_t pop_num = 0; // 人口数
         std::size_t sat_num = 0; // 集落数
