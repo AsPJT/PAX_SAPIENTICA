@@ -159,11 +159,11 @@ namespace paxs {
                     BinaryDataType bi(file_path + file_name, AppConfig::getInstance()->getRootPath());
                     bi.calc(tmp_data);
 
-                    const Vector2 default_position = Vector2(x, y) * pixel_size * z_mag - start_xyz_position;
+                    const Vector2 default_position = Vector2(x, y) * pixel_size - start_xyz_position;
                     for(std::size_t y = 0;y < pixel_size;++y) {
                         for(std::size_t x = 0;x < pixel_size;++x) {
                             const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                            data[position.toU64()] = static_cast<DataType>(data[position.toU64()]);
+                            data[position.toU64()] = static_cast<DataType>(tmp_data[y * pixel_size + x]);
                         }
                     }
 
