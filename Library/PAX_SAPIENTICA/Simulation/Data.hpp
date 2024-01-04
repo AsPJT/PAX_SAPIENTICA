@@ -117,7 +117,7 @@ namespace paxs {
             }
 
             if(file_names[0].find(".tsv") != std::string::npos) {
-                loadNumericTSV(file_names);
+                loadNumericTSV(file_path);
             } else if(file_names[0].find(".txt") != std::string::npos) {
                 if (default_z > pj_z) loadNumericTextAndCompress(file_names);
                 else loadNumericText(file_names);
@@ -228,6 +228,73 @@ namespace paxs {
 
         /// @brief Load numeric TSV files.
         /// @brief 数値TSVファイルのロード
+        void loadNumericTSV(const std::string& file_path) noexcept {
+            const Vector2 start_position_ = start_position * z_mag;
+            const Vector2 end_position_ = end_position * z_mag;
+
+            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+
+            std::uint_least32_t file_count = (end_position_.x - start_position_.x + 1) * (end_position_.y - start_position_.y + 1);
+            std::uint_least32_t load_count = 0;
+
+            for (GridType y = start_position_.y; y <= end_position_.y; ++y) {
+                for (GridType x = start_position_.x; x <= end_position_.x; ++x) {
+                    const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".tsv";
+
+                    if (!std::filesystem::exists(AppConfig::getInstance()->getRootPath() + file_path + file_name)) {
+                        --file_count;
+                        StatusDisplayer::displayProgressBar(load_count, file_count);
+                        continue;
+                    }
+
+                    std::vector<std::string> file = File::readFile(AppConfig::getInstance()->getRootPath() + file_path + file_name);
+                    if (file.size() == 0) {
+                        PAXS_WARNING("File is empty: " + file_name);
+                        ++file_count;
+                        continue;
+                    }
+
+
+                    const Vector2 default_position = Vector2(x, y) * pixel_size - start_xyz_position;
+                    for(std::size_t y = 0;y < file.size();++y) {
+                        // タブ区切り
+                        const std::vector<std::string> values = StringExtensions::split(file[y], '\t');
+                        for(std::size_t x = 0;x < values.size();++x) {
+                            const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
+                            if(values[x] == "") {
+                                continue;
+                            }
+                            // T型に変換
+                            try {
+                                if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
+                                    int value = std::stoi(values[x]);
+                                    if(value == 0) continue;
+                                    data[position.toU64()] = static_cast<DataType>(value);
+                                } else if constexpr (std::is_same<DataType, float>::value) {
+                                    data[position.toU64()] = static_cast<DataType>(std::stod(values[x]));
+                                }
+                            } catch (const std::invalid_argument&/*ia*/) {
+                                PAXS_WARNING("File contains invalid value: " + file_name);
+                                continue;
+                            } catch (const std::out_of_range&/*oor*/) {
+                                PAXS_WARNING("File contains out of range value: " + file_name);
+                                continue;
+                            }
+                        }
+                    }
+
+                    ++load_count;
+                    StatusDisplayer::displayProgressBar(load_count, file_count);
+                }
+            }
+
+            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
+            std::cout << load_count << " files are loaded.\n" << std::endl;
+        }
+
+        /// @brief Load numeric TSV files.
+        /// @brief 数値TSVファイルのロード
+        [[maybe_unused]]
         void loadNumericTSV(const std::vector<std::string>& file_names) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
