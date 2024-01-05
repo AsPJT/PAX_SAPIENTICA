@@ -27,6 +27,7 @@
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
+#include <PAX_SAPIENTICA/InputFile/SimulationRange.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusDisplayer.hpp>

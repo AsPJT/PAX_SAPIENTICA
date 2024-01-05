@@ -450,24 +450,24 @@ namespace paxs {
         /// @brief 渡来
         void emigration(KanakumaLifeSpan& kanakuma_life_span, std::uint_least64_t& count) noexcept {
             // TODO: 渡来
-            if (agents.size() >= 60) {
+            //if (agents.size() >= 60) {
 
-                const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
-                const std::uint_least32_t set_lifespan = kanakuma_life_span.setAdultLifeSpan(set_gender, *gen);
+            //    const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
+            //    const std::uint_least32_t set_lifespan = kanakuma_life_span.setAdultLifeSpan(set_gender, *gen);
 
-                std::uniform_int_distribution<> lifespan_dist{
-                    (std::min)(18 * steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
-                    static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
+            //    std::uniform_int_distribution<> lifespan_dist{
+            //        (std::min)(18 * steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
+            //        static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
-                agents.emplace_back(Agent(
-                    UniqueIdentification<std::uint_least64_t>::generate(),
-                    0, // TODO: 名前ID
-                    set_gender,
-                    lifespan_dist(*gen),
-                    set_lifespan
-                ));
-                ++count;
-            }
+            //    agents.emplace_back(Agent(
+            //        UniqueIdentification<std::uint_least64_t>::generate(),
+            //        0, // TODO: 名前ID
+            //        set_gender,
+            //        lifespan_dist(*gen),
+            //        set_lifespan
+            //    ));
+            //    ++count;
+            //}
         }
 
         /// @brief Age update.
