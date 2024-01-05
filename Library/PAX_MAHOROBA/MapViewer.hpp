@@ -86,11 +86,6 @@ namespace paxs {
             person_name_location.init();
             person_name_location.add();
 
-#ifdef PAXS_USING_SIMULATOR
-            if (agent_location.get() != nullptr) {
-                agent_location->init();
-            }
-#endif
         }
 
         void update(

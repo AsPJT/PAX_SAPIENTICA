@@ -72,8 +72,21 @@ namespace paxs {
                     texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
                         time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, 400));
                     if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        const std::string map_list_path = "Data/Simulations/MapList.tsv";
-                        const std::string japan_provinces_path = "Data/Simulations/Japan200-725";
+                        std::string map_list_path = "Data/Simulations/MapList.tsv";
+                        std::string japan_provinces_path = "Data/Simulations/Japan200-725";
+
+                        AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationXYZTiles"),
+                            [&](const std::string& path_) {map_list_path = path_; });
+                        AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationProvincesPath"),
+                            [&](const std::string& path_) {japan_provinces_path = path_; });
+
+#ifdef PAXS_USING_SIV3D
+                        static bool is_console_open = false;
+                        if (!is_console_open) {
+                            s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
+                            is_console_open = true;
+                        }
+#endif
 
                         std::random_device seed_gen;
                         simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());

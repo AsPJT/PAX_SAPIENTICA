@@ -31,9 +31,9 @@ namespace paxs {
     public:
         // ソフトウェアを実行した最初のフレームの一番最初に実行
         static void firstInit() {
-#ifdef PAXS_USING_SIV3D
-            s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
-#endif
+//#ifdef PAXS_USING_SIV3D
+//            s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
+//#endif
 
             // 画面サイズを変更
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
