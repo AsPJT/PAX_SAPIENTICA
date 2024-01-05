@@ -6,6 +6,6 @@ PlaceNames	Data/Settings/PlaceNames.tsv
 MiniIcons	Data/Settings/MiniIcons.tsv
 PersonNames	Data/Settings/PersonNames.tsv
 Portraits	Data/Settings/Portraits.tsv
-SimulationRangeName	shikoku
+SimulationRangeName	japan
 SimulationXYZTiles	Data/Simulations/MapList.tsv
-JapanProvincesPath	Data/Simulations/Japan200-725
+SimulationProvincesPath	Data/Simulations/Japan200-725
