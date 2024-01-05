@@ -67,8 +67,8 @@ id	name	region	settlement_population_min_ad200	settlement_population_max_ad200	p
 66	shimotsuke	13	20	40	8468	76900
 67	mutsu	15	20	40	28700	206500
 68	dewa	14	20	40	4700	78000
-69	ezo_honshu	15	20	40	0	0
-70	ezo_hokkaido	16	20	40	0	0
+69	ezo_honshu	15	20	40	3000	0
+70	ezo_hokkaido	16	20	40	17000	0
 71	ezo_chishima	16	20	40	0	0
 72	ezo_karafuto	16	20	40	0	0
 73	null1	0	20	40	0	0

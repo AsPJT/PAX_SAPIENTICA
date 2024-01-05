@@ -87,6 +87,7 @@ namespace paxs {
 
         // XYZ タイルを初期化
         xyz_tile_list.add(AppConfig::getInstance()->getRootPath() + "Data/Map/XYZTile/List.tsv");
+        xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
         
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
         paxg::Window::update();
@@ -94,7 +95,6 @@ namespace paxs {
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
         paxg::Window::update();
 #endif
-        xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
 
         language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Language/Text.txt"); // テキストの多言語対応クラス
         string_siv.init(select_language, language_text);
@@ -116,13 +116,14 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator<int>> simulator{};
-        // 対馬のみ
-        //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 879, 406 };
-        //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 881, 409 };
 
-        paxs::Vector2<int> start_position(861, 381);
-        paxs::Vector2<int> end_position(950, 450);
+        SimulationRange sr;
+        sr.input(AppConfig::getInstance()->getRootPath() + "Data/Simulations/RangeZ10.tsv");
+        const auto sr_name = MurMur3::calcHash("japan");
+        paxs::Vector2<int> start_position = sr.getStart(sr_name);
+        paxs::Vector2<int> end_position = sr.getEnd(sr_name);
 
+        //paxs::Vector2<int> end_position(950, 450);
         // 本州
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 861, 381 };
         //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
