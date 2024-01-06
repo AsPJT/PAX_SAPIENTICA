@@ -40,6 +40,10 @@
     path = Data/Map/XYZTile/Temperature/Image/SoilTemperature
     url = https://github.com/Asukana/SoilTemperature.git
     branch = main
+[submodule "Data/XYZTiles/Ryoseikoku_20230626_TSV"]
+    path = Data/XYZTiles/Ryoseikoku_20230626_TSV
+    url = https://github.com/Asukana/Ryoseikoku_20230626_TSV.git
+    branch = main
 [submodule "Data/XYZTiles/Slope_GMTED2010_8bit"]
     path = Data/XYZTiles/Slope_GMTED2010_8bit
     url = https://github.com/Asukana/Slope_GMTED2010_8bit.git
