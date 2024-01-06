@@ -51,7 +51,7 @@ TEST (AgentUnitTest, updateAge) {
     std::shared_ptr<EnvironmentMock<int>> env = std::make_shared<EnvironmentMock<int>>();
     paxs::Agent<int> agent(0, "test", paxs::Vector2<int>(0, 0), 0, 0, 0, env);
     agent.incrementAge();
-    EXPECT_EQ(agent.getAge(), 1 / static_cast<float>(paxs::steps_per_year));
+    EXPECT_EQ(agent.getAge(), 1 / static_cast<float>(paxs::SimulationConstants::getInstance()->steps_per_year));
 }
 
 TEST (AgentUnitTest, getGender) {

@@ -95,7 +95,6 @@ namespace paxs {
             paxs::StringViewerSiv3D& string_siv,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator,
-            const paxs::Vector2<int>& start_position,
             std::size_t& pop_num, // 人口数
             std::size_t& sat_num, // 集落数
 #endif
@@ -107,7 +106,7 @@ namespace paxs {
                 texture_location->update(map_view.getCenterX(), map_view.getCenterY(), map_view.getWidth(), map_view.getHeight());
 #ifdef PAXS_USING_SIMULATOR
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
-                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), start_position, map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY(),
+                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY(),
                         pop_num,
                         sat_num
                     );

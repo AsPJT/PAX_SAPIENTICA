@@ -60,7 +60,7 @@ namespace paxs {
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
 
             // ランダムに移動確率を設定
-            std::uniform_int_distribution<> move_probability_dist{ min_move_probability, max_move_probability };
+            std::uniform_int_distribution<> move_probability_dist{ SimulationConstants::getInstance()->min_move_probability, SimulationConstants::getInstance()->max_move_probability };
             move_probability = move_probability_dist(gen);
         }
         /// @brief 環境を設定
@@ -74,7 +74,7 @@ namespace paxs {
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
 
             // ランダムに移動確率を設定
-            std::uniform_int_distribution<> move_probability_dist{ min_move_probability, max_move_probability };
+            std::uniform_int_distribution<> move_probability_dist{ SimulationConstants::getInstance()->min_move_probability, SimulationConstants::getInstance()->max_move_probability };
             move_probability = move_probability_dist(gen);
         }
 
@@ -107,7 +107,7 @@ namespace paxs {
                 it->second.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
             }
             else {
-                SettlementGrid settlement_grid = SettlementGrid(target_key * grid_length, environment, gen);
+                SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance()->grid_length, environment, gen);
                 settlement_grid.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
                 settlement_grids[target_key.toU64()] = settlement_grid;
             }
@@ -162,7 +162,7 @@ namespace paxs {
                 // 近隣8グリッドの集落を取得
                 std::vector<Settlement> close_settlements;
                 Vector2 grid_position = settlement_grid.second.getGridPosition();
-                grid_position /= grid_length;
+                grid_position /= SimulationConstants::getInstance()->grid_length;
                 for (int i = -1; i <= 1; ++i) {
                     for (int j = -1; j <= 1; ++j) {
                         auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
@@ -385,11 +385,11 @@ namespace paxs {
                     settlement_population = (std::min)(settlement_population, static_cast<int>(ryoseikoku_population_it->second));
 
                     // 集落をグリッドに配置
-                    Vector2 grid_position = live_position / grid_length;
+                    Vector2 grid_position = live_position / SimulationConstants::getInstance()->grid_length;
                     std::uint64_t key = grid_position.toU64();
                     // グリッドが存在しない場合は作成
                     if (settlement_grids.find(key) == settlement_grids.end()) {
-                        settlement_grids[key] = SettlementGrid(grid_position * grid_length, environment, gen);
+                        settlement_grids[key] = SettlementGrid(grid_position * SimulationConstants::getInstance()->grid_length, environment, gen);
                     }
                     // 集落を作成
                     Settlement settlement = Settlement(

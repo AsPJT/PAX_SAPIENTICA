@@ -186,25 +186,26 @@ namespace paxs {
                 calendar_update_counter = 0;
                 // 時間を進めている場合（逆行していない場合）
                 if (move_forward_in_time) {
-                    if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
-                        jdn += (365.2425 / 12.0);//365.2425;//(0.8 / 30.0); //1.0;// ユリウス日を繰り上げ（次の日にする）
-                        calcDate(); // 日付計算
-                    }
-                    //jdn += 365; // ユリウス日を繰り上げ（次の日にする）
-                    // 
 #ifdef PAXS_USING_SIMULATOR
                     // エージェント機能
                     if (is_agent_update && simulator.get() != nullptr) {
+                        jdn += (365.2425 / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
+                        calcDate(); // 日付計算
                         simulator->step(); // シミュレーションを 1 ステップ実行する
                         steps.getDay()++; // ステップ数を増やす
                         return_bool = true;
                     }
+                    else
 #endif
+                    if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
+                        jdn += (0.8 / 30.0); //(365.2425 / 12.0);//365.2425;//1.0;// ユリウス日を繰り上げ（次の日にする）
+                        calcDate(); // 日付計算
+                    }
                 }
                 // 時間を逆行している場合
                 else if (go_back_in_time) {
                     if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
-                        jdn -= (365.2425 / 12.0);//365.24252;//(0.8 / 30.0); //1.0;// ユリウス日を繰り上げ（次の日にする）
+                        jdn -= (0.8 / 30.0); //(365.2425 / 12.0);//365.24252;//1.0;// ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                 }

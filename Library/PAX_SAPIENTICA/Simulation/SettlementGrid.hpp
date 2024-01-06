@@ -19,6 +19,7 @@
 #include <memory>
 
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
 
@@ -58,11 +59,11 @@ namespace paxs {
 #endif
 
             // ランダムな位置を探す
-            std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::grid_length - 1);
-            std::uniform_int_distribution<> dis_y(grid_position.y, grid_position.y + paxs::grid_length - 1);
+            std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::SimulationConstants::getInstance()->grid_length - 1);
+            std::uniform_int_distribution<> dis_y(grid_position.y, grid_position.y + paxs::SimulationConstants::getInstance()->grid_length - 1);
             Vector2 position;
 
-            while (black_list.size() < grid_length * grid_length) {
+            while (black_list.size() < SimulationConstants::getInstance()->grid_length * SimulationConstants::getInstance()->grid_length) {
                 position.x = dis_x(*gen);
                 position.y = dis_y(*gen);
                 if (std::find(black_list.begin(), black_list.end(), position) == black_list.end()) {
@@ -77,7 +78,7 @@ namespace paxs {
             }
 
             // 集落を移動
-            if (black_list.size() == grid_length * grid_length) {
+            if (black_list.size() == SimulationConstants::getInstance()->grid_length * SimulationConstants::getInstance()->grid_length) {
                 // 居住可能な場所がない
                 PAXS_WARNING("No place to live.");
             }
@@ -167,7 +168,7 @@ namespace paxs {
         void divideSettlements() noexcept {
             // 人口が最大人口を超えている集落を複数探し、分割する
             for (auto& settlement : settlements) {
-                if (settlement.getPopulation() > max_settlement_population) {
+                if (settlement.getPopulation() > SimulationConstants::getInstance()->max_settlement_population) {
                     // 分割
                     Settlement divided_settlement = settlement.divide();
                     moveSettlementToThis(divided_settlement);

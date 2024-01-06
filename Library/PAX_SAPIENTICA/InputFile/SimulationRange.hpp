@@ -35,6 +35,7 @@ namespace paxs {
         struct StartAndEnd {
             paxs::Vector2<int> start_position{}; // = paxs::Vector2<int>{ 861, 381 };
             paxs::Vector2<int> end_position{}; // = paxs::Vector2<int>{ 950, 450 };
+            int z = 10;
         };
 
         std::unordered_map<std::uint_least32_t, StartAndEnd> path_list;
@@ -49,6 +50,9 @@ namespace paxs {
         }
         paxs::Vector2<int>& getEnd(const std::uint_least32_t key_) {
             return path_list[key_].end_position;
+        }
+        int getZ(const std::uint_least32_t key_) {
+            return path_list[key_].z;
         }
 
 
@@ -81,6 +85,7 @@ namespace paxs {
             const std::size_t start_y = inputPathGetMenuIndex(menu, MurMur3::calcHash("start_y"));
             const std::size_t end_x = inputPathGetMenuIndex(menu, MurMur3::calcHash("end_x"));
             const std::size_t end_y = inputPathGetMenuIndex(menu, MurMur3::calcHash("end_y"));
+            const std::size_t z_index = inputPathGetMenuIndex(menu, MurMur3::calcHash("z"));
             if (start_x == SIZE_MAX || start_y == SIZE_MAX || end_x == SIZE_MAX || end_y == SIZE_MAX) {
                 PAXS_ERROR("SimulationRange is missing a StartAndEnd on the first line.");
                 return false; // StartAndEnd がないのはデータにならない
@@ -101,6 +106,7 @@ namespace paxs {
                 if (start_y >= strvec.size()) continue;
                 if (end_x >= strvec.size()) continue;
                 if (end_y >= strvec.size()) continue;
+                if (z_index >= strvec.size()) continue;
 
                 // テクスチャ名が空の場合は読み込まない
                 if (strvec[file_type].size() == 0) continue;
@@ -115,7 +121,8 @@ namespace paxs {
                         paxs::Vector2<int>(
                             std::stoi(strvec[end_x]),
                             std::stoi(strvec[end_y])
-                        )
+                        ),
+                    std::stoi(strvec[z_index])
                     });
             }
             return true;
