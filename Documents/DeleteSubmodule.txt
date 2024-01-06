@@ -6,3 +6,7 @@
 	path = Data/Map/XYZTile/Slope/Image/SlopePale20230920
 	url = https://github.com/Asukana/SlopePale20230920.git
     branch = main
+[submodule "Data/Map/XYZTile/Slope/Data/SlopeData20231029"]
+    path = Data/Map/XYZTile/Slope/Data/SlopeData20231029
+    url = https://github.com/Asukana/SlopeData20231029.git
+    branch = main
