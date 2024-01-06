@@ -44,6 +44,10 @@
     path = Data/Map/XYZTile/Temperature/Image/SoilTemperature
     url = https://github.com/Asukana/SoilTemperature.git
     branch = main
+[submodule "Data/XYZTiles/Slope_GMTED2010_8bit"]
+    path = Data/XYZTiles/Slope_GMTED2010_8bit
+    url = https://github.com/Asukana/Slope_GMTED2010_8bit.git
+    branch = main
 [submodule "ExternalLibrary/googletest"]
     path = ExternalLibrary/googletest
     url = https://github.com/google/googletest.git
