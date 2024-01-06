@@ -129,8 +129,12 @@ namespace paxs {
 #endif
         // 地物を追加
         void add() {
-            std::string str = "Data/PlaceName/List.tsv";
-            paxs::InputFile pifs(str, AppConfig::getInstance()->getRootPath());
+            std::string str = "";
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("PlaceNames"),
+                [&](const std::string& path_) {str = path_; });
+            if (str.size() == 0) return;
+
+            paxs::InputFile pifs(str);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
@@ -193,8 +197,13 @@ namespace paxs {
         }
 
          void init() {
+             std::string str = "";
+             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("MiniIcons"),
+                 [&](const std::string& path_) {str = path_; });
+             if (str.size() == 0) return;
+
              const std::string path = (AppConfig::getInstance()->getRootPath());
-             key_value_tsv.input(path + "Data/MiniIcon/List.tsv", [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
+             key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
         }
         // 描画
         void draw(const double jdn,
@@ -420,10 +429,6 @@ namespace paxs {
     // エージェントの位置を管理
     class AgentLocation {
     public:
-        // アイコンのテクスチャ
-        paxg::Texture texture_blue_circle{};
-        paxg::Texture texture_red_circle{};
-
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
         /// @brief 座標をメルカトル座標で取得
@@ -432,12 +437,6 @@ namespace paxs {
             const paxs::Vector2<int>& position,
             const int z) const noexcept {
             return MapUtility::convertToMercatorCoordinate(start_position, position, z);
-        }
-
-        // テクスチャ生成
-        void init() {
-            texture_blue_circle = paxg::Texture{ AppConfig::getInstance()->getRootPath() + std::string("Data/MiniIcon/BlueCircle.svg") };
-            texture_red_circle = paxg::Texture{ AppConfig::getInstance()->getRootPath() + std::string("Data/MiniIcon/RedCircle.svg") };
         }
 
     private:

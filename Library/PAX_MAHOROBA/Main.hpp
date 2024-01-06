@@ -86,7 +86,9 @@ namespace paxs {
         paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
 
         // XYZ タイルを初期化
-        xyz_tile_list.add(AppConfig::getInstance()->getRootPath() + "Data/Map/XYZTile/List.tsv");
+        AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
+            [&](const std::string& path_) {xyz_tile_list.add(path_); });
+
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
         
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
@@ -95,8 +97,10 @@ namespace paxs {
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
         paxg::Window::update();
 #endif
-
-        language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Language/Text.txt"); // テキストの多言語対応クラス
+        // 言語を初期化（テキストの多言語対応クラス）
+        AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
+            [&](const std::string& path_) {language_text.add(path_); });
+        //language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Settings/Languages.tsv");
         string_siv.init(select_language, language_text);
 
         int old_width = paxg::Window::width(); // 1 フレーム前の幅
@@ -118,8 +122,14 @@ namespace paxs {
         std::unique_ptr<paxs::SettlementSimulator<int>> simulator{};
 
         SimulationRange sr;
-        sr.input(AppConfig::getInstance()->getRootPath() + "Data/Simulations/RangeZ10.tsv");
-        const auto sr_name = MurMur3::calcHash("japan");
+        // シミュレーションの範囲を設定
+        AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationRange"),
+            [&](const std::string& path_) {sr.input(path_); });
+
+        auto sr_name = MurMur3::calcHash("tsushima");
+        AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationRangeName"),
+            [&](const std::string& path_) {sr_name = MurMur3::calcHash(path_.size(), path_.c_str()); });
+
         paxs::Vector2<int> start_position = sr.getStart(sr_name);
         paxs::Vector2<int> end_position = sr.getEnd(sr_name);
 

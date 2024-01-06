@@ -136,8 +136,12 @@ namespace paxs {
 #endif
         // 地物を追加
         void add() {
-            std::string str = "Data/PersonName/List.tsv";
-            paxs::InputFile pifs(str, AppConfig::getInstance()->getRootPath());
+            std::string str = "";
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("PersonNames"),
+                [&](const std::string& path_) {str = path_; });
+            if (str.size() == 0) return;
+
+            paxs::InputFile pifs(str);
             if (pifs.fail()) return;
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
@@ -201,8 +205,13 @@ namespace paxs {
 
         PersonNameLocation() = default;
         void init() {
+            std::string str = "";
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Portraits"),
+                [&](const std::string& path_) {str = path_; });
+            if (str.size() == 0) return;
+
             const std::string path = (AppConfig::getInstance()->getRootPath());
-            key_value_tsv.input(path + "Data/Portraits/List.tsv", [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
+            key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
         }
         // 描画
         void draw(const double jdn,
