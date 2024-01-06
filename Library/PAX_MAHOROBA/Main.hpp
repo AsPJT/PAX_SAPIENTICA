@@ -91,7 +91,7 @@ namespace paxs {
             [&](const std::string& path_) {xyz_tile_list.add(path_); });
 
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
-        
+        map_view.setHeight(map_view.getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
         paxg::Window::update();
 #ifdef PAXS_USING_SFML

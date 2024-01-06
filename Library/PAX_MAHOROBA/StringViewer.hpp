@@ -229,21 +229,21 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             pulldown = paxs::Pulldown(&select_language, &language_text, list_test0, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
 
-            std::vector<std::uint_least32_t> list_test1 = {
-            MurMur3::calcHash("menu_bar_file"),
-                MurMur3::calcHash("menu_bar_file_new"),
-                MurMur3::calcHash("menu_bar_file_open"),
-                MurMur3::calcHash("menu_bar_file_save"),
-                MurMur3::calcHash("menu_bar_file_close"),
-                MurMur3::calcHash("menu_bar_file_exit")
-            };
-            std::vector<std::uint_least32_t> list_test2 = {
-            MurMur3::calcHash("menu_bar_edit"),
-                MurMur3::calcHash("menu_bar_edit_cut"),
-                MurMur3::calcHash("menu_bar_edit_copy"),
-                MurMur3::calcHash("menu_bar_edit_paste"),
-                MurMur3::calcHash("menu_bar_edit_delete")
-            };
+            //std::vector<std::uint_least32_t> list_test1 = {
+            //MurMur3::calcHash("menu_bar_file"),
+            //    MurMur3::calcHash("menu_bar_file_new"),
+            //    MurMur3::calcHash("menu_bar_file_open"),
+            //    MurMur3::calcHash("menu_bar_file_save"),
+            //    MurMur3::calcHash("menu_bar_file_close"),
+            //    MurMur3::calcHash("menu_bar_file_exit")
+            //};
+            //std::vector<std::uint_least32_t> list_test2 = {
+            //MurMur3::calcHash("menu_bar_edit"),
+            //    MurMur3::calcHash("menu_bar_edit_cut"),
+            //    MurMur3::calcHash("menu_bar_edit_copy"),
+            //    MurMur3::calcHash("menu_bar_edit_paste"),
+            //    MurMur3::calcHash("menu_bar_edit_delete")
+            //};
             std::vector<std::uint_least32_t> list_test3 = {
             MurMur3::calcHash("menu_bar_view"),
                 MurMur3::calcHash("menu_bar_view_calendar"),
@@ -254,14 +254,14 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 MurMur3::calcHash("menu_bar_view_debug"),
                 MurMur3::calcHash("menu_bar_view_3d")
             };
-            std::vector<std::uint_least32_t> list_test4 = {
-            MurMur3::calcHash("menu_bar_calendar"),
-                MurMur3::calcHash("menu_bar_calendar_japan"),
-                MurMur3::calcHash("menu_bar_calendar_gregorian"),
-                MurMur3::calcHash("menu_bar_calendar_julian"),
-                MurMur3::calcHash("menu_bar_calendar_julian_day"),
-                MurMur3::calcHash("menu_bar_calendar_hijri")
-            };
+            //std::vector<std::uint_least32_t> list_test4 = {
+            //MurMur3::calcHash("menu_bar_calendar"),
+            //    MurMur3::calcHash("menu_bar_calendar_japan"),
+            //    MurMur3::calcHash("menu_bar_calendar_gregorian"),
+            //    MurMur3::calcHash("menu_bar_calendar_julian"),
+            //    MurMur3::calcHash("menu_bar_calendar_julian_day"),
+            //    MurMur3::calcHash("menu_bar_calendar_hijri")
+            //};
             std::vector<std::uint_least32_t> list_test5 = {
             MurMur3::calcHash("menu_bar_map"),
                 MurMur3::calcHash("menu_bar_map_base"),
@@ -277,10 +277,10 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 MurMur3::calcHash("menu_bar_map_line1"),
                 MurMur3::calcHash("menu_bar_map_line2")
             };
-            menu_bar.add(&select_language, &language_text, list_test1, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("file"));
-            menu_bar.add(&select_language, &language_text, list_test2, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("edit"));
+            //menu_bar.add(&select_language, &language_text, list_test1, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("file"));
+            //menu_bar.add(&select_language, &language_text, list_test2, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("edit"));
             menu_bar.add(&select_language, &language_text, list_test3, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
-            menu_bar.add(&select_language, &language_text, list_test4, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("calendar"));
+            //menu_bar.add(&select_language, &language_text, list_test4, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("calendar"));
             menu_bar.add(&select_language, &language_text, list_test5, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
 
             const std::string path = (AppConfig::getInstance()->getRootPath());
@@ -355,7 +355,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const int icon_move_y = 44;
 
             int next_rect_start_y = icon_start_y + sum_icon_height + 20;//230;
-            int next_rect_end_y = 150;//380;
+            int next_rect_end_y = 230;//380;
 
 #ifdef PAXS_USING_SIV3D
                 // 影を作る図形を shadow_texture に描く
@@ -420,18 +420,20 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
                         switch (output_type) {
                         case paxs::cal::DateOutputType::name_and_ymd:
-                            (*one_font).drawTopRight(*text_str//std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])
-                                ,
-                                paxg::Vec2i(static_cast<int>(koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
-                            (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"年"), paxg::Vec2i(static_cast<int>(int(120 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
-                            (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"月"), paxg::Vec2i(static_cast<int>(int(220 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
-                            (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"日"), paxg::Vec2i(static_cast<int>(int(300 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             std::visit([&](const auto& x) {
                                 date_year = int(x.cgetYear());
                                 date_month = int(x.cgetMonth());
                                 date_day = int(x.cgetDay());
                                 date_lm = x.isLeapMonth();
                                 }, koyomi_siv.date_list[i].date);
+                            if (date_day <= 0 || date_month <= 0) break;
+
+                            (*one_font).drawTopRight(*text_str//std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])
+                                ,
+                                paxg::Vec2i(static_cast<int>(koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+                            (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"年"), paxg::Vec2i(static_cast<int>(int(120 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+                            (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"月"), paxg::Vec2i(static_cast<int>(int(220 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+                            (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"日"), paxg::Vec2i(static_cast<int>(int(300 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
 
                             (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(85 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::to_string(date_month), paxg::Vec2i(static_cast<int>(int(190 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
@@ -481,6 +483,13 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
                         switch (output_type) {
                         case paxs::cal::DateOutputType::name_and_ymd:
+                            std::visit([&](const auto& x) {
+                                date_year = int(x.cgetYear());
+                                date_month = int(x.cgetMonth());
+                                date_day = int(x.cgetDay());
+                                date_lm = x.isLeapMonth();
+                                }, koyomi_siv.date_list[i].date);
+                            if (date_day <= 0 || date_month <= 0) break;
 
                             if (text_str != nullptr) (*one_font).drawTopRight(*text_str//std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])
                                 , paxg::Vec2i(static_cast<int>(koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
@@ -488,12 +497,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                             (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(235 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight("th", paxg::Vec2i(static_cast<int>(int(315 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
-                            std::visit([&](const auto& x) {
-                                date_year = int(x.cgetYear());
-                                date_month = int(x.cgetMonth());
-                                date_day = int(x.cgetDay());
-                                date_lm = x.isLeapMonth();
-                                }, koyomi_siv.date_list[i].date);
 
                             (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::string(koyomi_siv.month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
@@ -669,17 +672,45 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
                         // マップの幅
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                        (*one_font).draw(std::to_string(map_view_width),
-                            paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                            reinterpret_cast<const char*>(u8"拡大率") :
+                            "Zoom rate"),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(std::to_string(map_view_width),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 30), paxg::Color(0, 0, 0));
 
 #ifdef PAXS_USING_SIMULATOR
+                        if (simulator != nullptr) {
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                        (*one_font).draw("pop " + std::to_string(pop_num),
-                            paxg::Vec2i(paxg::Window::width() - 160, debug_start_y + 50), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP"))?
+                                reinterpret_cast<const char*>(u8"人口数") :
+                                "Population"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 60), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(pop_num),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
 
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                        (*one_font).draw("set " + std::to_string(sat_num),
-                            paxg::Vec2i(paxg::Window::width() - 160, debug_start_y + 100), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                                reinterpret_cast<const char*>(u8"集落数") :
+                                "Settlements"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 90), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(sat_num),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
+
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                                reinterpret_cast<const char*>(u8"渡来数") :
+                                "Immigrants"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 120), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(simulator->emigrationSize()),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 120), paxg::Color(0, 0, 0));
+
+                        }
 #endif
                         //debug_start_y += debug_move_y;
                         // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
@@ -705,31 +736,22 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 
+#ifdef PAXS_USING_SIV3D
             texture_dictionary.at(MurMur3::calcHash(14, "texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
-            pulldown.draw(); // 言語選択
-            menu_bar.draw(); // 左上メニューバー
-
             if (tm_.get(s3d::Rect(paxg::Window::width() - 280, 3, 28).leftClicked())) {
                 // Web ページをブラウザで開く
                 s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
             }
+#endif
+            pulldown.draw(); // 言語選択
+            menu_bar.draw(); // 左上メニューバー
+
             //if (visible[MurMur3::calcHash("UI")])
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦描画フォントを指定
                 paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                 if (one_font != nullptr) {
-                    const std::string* sueki_nakamura_str = language_text.getStringPtr(koyomi_siv.sueki_nakamura_key, select_language.cgetKey());
-                    if (sueki_nakamura_str != nullptr) {
-                        (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                        (*one_font).drawTopRight(*sueki_nakamura_str,
-                            paxg::Vec2i(paxg::Window::width() - 160, 590), paxg::Color(0, 0, 0));
-                    }
-                    const std::string* sueki_tanabe_str = language_text.getStringPtr(koyomi_siv.sueki_tanabe_key, select_language.cgetKey());
-                    if (sueki_nakamura_str != nullptr) {
-                        (*one_font).drawTopRight(*sueki_tanabe_str,
-                            paxg::Vec2i(paxg::Window::width() - 160, 620), paxg::Color(0, 0, 0));
-                    }
                     {
                         std::string sueki_nakamura = "";
                         std::string sueki_tanabe = "";
@@ -756,23 +778,27 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                                 }
                             }
                         }
-                        {
+                        const std::string* sueki_nakamura_str = language_text.getStringPtr(koyomi_siv.sueki_nakamura_key, select_language.cgetKey());
+                        if (sueki_nakamura.size() != 0) {
+                            if (sueki_nakamura_str != nullptr) {
+                                (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                                (*one_font).drawTopRight(*sueki_nakamura_str,
+                                    paxg::Vec2i(paxg::Window::width() - 140, 550), paxg::Color(0, 0, 0));
+                            }
+                            (*one_font).drawTopRight(
+                                std::string(sueki_nakamura),
+                                paxg::Vec2i(paxg::Window::width() - 40, 550), paxg::Color(0, 0, 0));
+                        }
+                        if (sueki_tanabe.size() != 0) {
+                            const std::string* sueki_tanabe_str = language_text.getStringPtr(koyomi_siv.sueki_tanabe_key, select_language.cgetKey());
+                            if (sueki_nakamura_str != nullptr) {
+                                (*one_font).drawTopRight(*sueki_tanabe_str,
+                                    paxg::Vec2i(paxg::Window::width() - 140, 580), paxg::Color(0, 0, 0));
+                            }
                             (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                             (*one_font).drawTopRight(
                                 std::string(sueki_tanabe),
-                                paxg::Vec2i(paxg::Window::width() - 60, 620), paxg::Color(0, 0, 0));
-                            (*one_font).drawTopRight(
-                                std::string(sueki_nakamura),
-                                paxg::Vec2i(paxg::Window::width() - 60, 590), paxg::Color(0, 0, 0));
-
-
-#ifdef PAXS_USING_SIMULATOR
-                            if (simulator != nullptr) {
-                                (*one_font).drawTopRight(
-                                    "torai: " + std::to_string(simulator->emigrationSize()),
-                                    paxg::Vec2i(paxg::Window::width() - 60, 650), paxg::Color(0, 0, 0));
-                            }
-#endif
+                                paxg::Vec2i(paxg::Window::width() - 40, 580), paxg::Color(0, 0, 0));
                         }
                     }
                 }

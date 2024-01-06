@@ -109,7 +109,7 @@ namespace paxs::cal {
         }
         // 和暦を取得
         constexpr JapanDate toJapaneseCalendar(const std::vector<paxs::JapaneseEra>& japanese_era_list) const {
-            JapanDate jp_date{ 0,1,1,1,false };
+            JapanDate jp_date{ 0,1,0,0,false };
 
             // ユリウス日が 1480407 以上（神武 1 年 1 月 1 日以降、グレゴリオ暦 紀元前 660 年 2 月 11 日以降）
             if (static_cast<int>(day) >= 1480407) {
