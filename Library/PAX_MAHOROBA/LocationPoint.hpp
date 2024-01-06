@@ -24,6 +24,7 @@
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #endif
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
@@ -532,7 +533,6 @@ namespace paxs {
 
         void draw(const double jdn,
             std::unordered_map<std::uint_least64_t, paxs::SettlementGrid<int>>& agents,
-            const paxs::Vector2<int>& start_position,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
 
             std::size_t& pop_num, // 人口数
@@ -557,7 +557,7 @@ namespace paxs {
                     // エージェントの初期設定を定義
                     const auto lli = LocationPoint{
                         std::unordered_map < std::uint_least32_t, std::string>(),
-                            paxs::MercatorDeg(getLocation(start_position,
+                            paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
                             paxs::Vector2<int>(
                     settlement.getPosition().x,
                         settlement.getPosition().y

@@ -38,6 +38,7 @@ static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #include <PAX_SAPIENTICA/Language.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
 #include <PAX_MAHOROBA/XYZTiles.hpp>
@@ -125,20 +126,6 @@ namespace paxs {
         // シミュレーションの範囲を設定
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationRange"),
             [&](const std::string& path_) {sr.input(path_); });
-
-        auto sr_name = MurMur3::calcHash("tsushima");
-        AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationRangeName"),
-            [&](const std::string& path_) {sr_name = MurMur3::calcHash(path_.size(), path_.c_str()); });
-
-        paxs::Vector2<int> start_position = sr.getStart(sr_name);
-        paxs::Vector2<int> end_position = sr.getEnd(sr_name);
-
-        //paxs::Vector2<int> end_position(950, 450);
-        // 本州
-        //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 861, 381 };
-        //paxs::Vector2<int> start_position = paxs::Vector2<int>{ 877, 381 };
-        //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 917, 422 };
-        //paxs::Vector2<int> end_position = paxs::Vector2<int>{ 950, 450 };
 #endif
 
         /*##########################################################################################
@@ -207,7 +194,6 @@ namespace paxs {
                 string_siv,
 #ifdef PAXS_USING_SIMULATOR
                 simulator,
-                start_position,
                 pop_num, // 人口数
                 sat_num, // 集落数
 #endif
@@ -227,8 +213,6 @@ namespace paxs {
                 language_text,
 #ifdef PAXS_USING_SIMULATOR
                 simulator,
-                start_position,
-                end_position,
                 pop_num, // 人口数
                 sat_num, // 集落数
 #endif

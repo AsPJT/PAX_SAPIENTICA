@@ -24,6 +24,7 @@
 
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Object.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
 
@@ -117,7 +118,7 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
-        constexpr float getAge() const noexcept { return age / static_cast<float>(steps_per_year); }
+        constexpr float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
 
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする

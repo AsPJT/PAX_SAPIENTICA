@@ -25,6 +25,7 @@
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Object.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
 
@@ -50,7 +51,7 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
-        constexpr float getAge() const noexcept { return age / static_cast<float>(steps_per_year); }
+        constexpr float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
 
         constexpr std::uint_least32_t getAgeInt() const noexcept { return age; }
 
@@ -92,17 +93,22 @@ namespace paxs {
         /// @brief Is the agent able to marry?
         /// @brief エージェントが結婚可能かどうかを返す
         bool isAbleToMarriage() const noexcept {
-            float age_f = static_cast<float>(age) / steps_per_year;
-            return age_f > (gender ? male_marriageable_age_min : female_marriageable_age_min) &&
-                age_f < (gender ? male_marriageable_age_max : male_marriageable_age_max) &&
+            float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
+            return age_f > (gender ?
+                SimulationConstants::getInstance()->male_marriageable_age_min :
+                SimulationConstants::getInstance()->female_marriageable_age_min) &&
+                age_f < (gender ?
+                    SimulationConstants::getInstance()->male_marriageable_age_max :
+                    SimulationConstants::getInstance()->male_marriageable_age_max) &&
                 !is_married;
         }
 
         /// @brief Is able to give birth?
         /// @brief 出産可能かどうか
         bool isAbleToGiveBirth() const noexcept {
-            float age_f = static_cast<float>(age) / steps_per_year;
-            return age_f > birthable_age_min && age_f < birthable_age_max && is_married;
+            float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
+            return age_f > SimulationConstants::getInstance()->birthable_age_min
+                && age_f < SimulationConstants::getInstance()->birthable_age_max && is_married;
         }
 
         /// @brief Get the partner's ID.

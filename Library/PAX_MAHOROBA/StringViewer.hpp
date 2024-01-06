@@ -45,6 +45,7 @@
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
@@ -59,8 +60,6 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
         void simulation(
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
-            const paxs::Vector2<int>& start_position,
-            const paxs::Vector2<int>& end_position,
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv
         ) {
@@ -89,11 +88,15 @@ namespace paxs {
 #endif
 
                         std::random_device seed_gen;
-                        simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, start_position, end_position, 10, seed_gen());
-                        //simulator = std::make_unique<paxs::SettlementSimulator<int>>(map_list_path, japan_provinces_path, init_start_position, init_end_position, 10, 1);
+                        simulator = std::make_unique<paxs::SettlementSimulator<int>>(
+                            map_list_path, japan_provinces_path,
+                            SimulationConstants::getInstance()->getStartArea(),
+                            SimulationConstants::getInstance()->getEndArea(),
+                            SimulationConstants::getInstance()->getZ(),
+                            seed_gen());
                         simulator->init();
                         koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
-                        koyomi_siv.jdn.setDay(/*1794474 + 15*//*1750661*/1728746); // シミュレーション初期時の日付に設定
+                        koyomi_siv.jdn.setDay(static_cast<double>(SimulationConstants::getInstance()->start_julian_day)); // シミュレーション初期時の日付に設定
                         koyomi_siv.calcDate();
 
                         koyomi_siv.is_agent_update = false;
@@ -309,8 +312,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const paxs::Language& language_text,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
-            const paxs::Vector2<int>& start_position,
-            const paxs::Vector2<int>& end_position,
             std::size_t& pop_num, // 人口数
             std::size_t& sat_num, // 集落数
 #endif
@@ -385,7 +386,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン
             if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
-                simulation(simulator, start_position, end_position, tm_, koyomi_siv);
+                simulation(simulator, tm_, koyomi_siv);
             }
 #endif
 

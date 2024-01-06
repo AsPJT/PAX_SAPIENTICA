@@ -169,7 +169,7 @@ namespace paxs {
             std::vector<std::size_t> marriageable_female_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
-                if (agents[i].isAbleToMarriage() && agents[i].getGender() == female) {
+                if (agents[i].isAbleToMarriage() && agents[i].getGender() == SimulationConstants::getInstance()->female) {
                     if (!isMarried(agents[i].getAge())) continue;
 
                     marriageable_female_index.emplace_back(i);
@@ -183,7 +183,7 @@ namespace paxs {
 
             // 近隣の集落を探す
             for (std::size_t i = 0; i < close_settlements.size();) {
-                if (close_settlements[i].getPosition().distance(position) > marriage_search_range) {
+                if (close_settlements[i].getPosition().distance(position) > SimulationConstants::getInstance()->marriage_search_range) {
                     close_settlements[i] = close_settlements.back(); // 同義 it = close_settlements.erase(it);
                     close_settlements.pop_back();
                 } else {
@@ -208,7 +208,7 @@ namespace paxs {
             std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> male_settlement_pair;
             for (auto& close_settlement : close_settlements) {
                 for (auto& agent : close_settlement.cgetAgents()) {
-                    if (agent.isAbleToMarriage() && agent.getGender() == male) {
+                    if (agent.isAbleToMarriage() && agent.getGender() == SimulationConstants::getInstance()->male) {
                         male_settlement_pair.emplace_back(agent.getId(), close_settlement.getId());
                     }
                 }
@@ -261,7 +261,7 @@ namespace paxs {
                         continue;
                     }
 
-                    male_settlement_position /= grid_length;
+                    male_settlement_position /= SimulationConstants::getInstance()->grid_length;
                     delete_agent(male_id, male_settlement_id, male_settlement_position);
                 }
             }
@@ -328,12 +328,12 @@ namespace paxs {
             Vector2 target_key;
 
             // 確率で移動
-            std::uniform_int_distribution<> dist(0, move_probability_normalization_coefficient);
+            std::uniform_int_distribution<> dist(0, SimulationConstants::getInstance()->move_probability_normalization_coefficient);
             if (dist(engine) > move_probability) return { 0, Vector2(), Vector2() };
 
             // 座標を移動
             // 移動距離0~max_move_distance
-            std::uniform_int_distribution<> move_dist(min_move_distance, max_move_distance);
+            std::uniform_int_distribution<> move_dist(SimulationConstants::getInstance()->min_move_distance, SimulationConstants::getInstance()->max_move_distance);
             std::uniform_real_distribution<float> theta_dist(0.0f, static_cast<float>(2.0 * M_PI));
 
             Vector2 current_position = position;
@@ -346,8 +346,8 @@ namespace paxs {
                 target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
             }
 
-            current_key = current_position / grid_length;
-            target_key = target_position / grid_length;
+            current_key = current_position / SimulationConstants::getInstance()->grid_length;
+            target_key = target_position / SimulationConstants::getInstance()->grid_length;
 
             if (current_key == target_key) return { 0, Vector2(), Vector2() };
 
@@ -373,7 +373,7 @@ namespace paxs {
 
             // パートナー同士は同じ集落に振り分ける
             for (Agent& agent : agents) {
-                if (agent.isMarried() && agent.getGender() == female) {
+                if (agent.isMarried() && agent.getGender() == SimulationConstants::getInstance()->female) {
                     auto it = std::find_if(new_settlement_agents.begin(), new_settlement_agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
                     if (it != new_settlement_agents.end()) {
                         agents.emplace_back(*it);
@@ -384,7 +384,7 @@ namespace paxs {
             }
 
             for (Agent& agent : new_settlement_agents) {
-                if (agent.isMarried() && agent.getGender() == female) {
+                if (agent.isMarried() && agent.getGender() == SimulationConstants::getInstance()->female) {
                     auto it = std::find_if(agents.begin(), agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
                     if (it != agents.end()) {
                         new_settlement_agents.emplace_back(*it);
@@ -437,7 +437,7 @@ namespace paxs {
                 }
                 // 出産可能かどうか
                 else if (agent.isAbleToGiveBirth() && isAbleToGiveBirth(agent.getAge())) {
-                    agent.setBirthIntervalCount(birth_interval);
+                    agent.setBirthIntervalCount(SimulationConstants::getInstance()->birth_interval);
                 }
 
             }
@@ -455,7 +455,7 @@ namespace paxs {
                 const std::uint_least32_t set_lifespan = kanakuma_life_span.setAdultLifeSpan(set_gender, *gen);
 
                 std::uniform_int_distribution<> lifespan_dist{
-                    (std::min)(18 * steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
+                    (std::min)(18 * SimulationConstants::getInstance()->steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
                     static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                 agents.emplace_back(Agent(
