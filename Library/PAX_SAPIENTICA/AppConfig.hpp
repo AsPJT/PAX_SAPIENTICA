@@ -69,7 +69,7 @@ namespace paxs {
 
         AppConfig() {
             KeyValueTSV<std::string> key_value_tsv;
-            key_value_tsv.input("Path.tsv");
+            key_value_tsv.input("Config.tsv");
             root_path = key_value_tsv[MurMur3::calcHash("asset_file")];
 
             data_settings.input(root_path + "Data/Settings.tsv");
