@@ -61,7 +61,8 @@ namespace paxs {
         void simulation(
             std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
             paxs::TouchManager& tm_,
-            paxs::KoyomiSiv3D& koyomi_siv
+            paxs::KoyomiSiv3D& koyomi_siv,
+            int debug_start_y
         ) {
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
                 const int time_icon_size = 40; // 時間操作アイコンの大きさ
@@ -69,8 +70,8 @@ namespace paxs {
                 // シミュレーションが初期化されていない場合
                 if (simulator.get() == nullptr) {
                     texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, 400));
-                    if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
+                    if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                         std::string map_list_path = "Data/Simulations/MapList.tsv";
                         std::string japan_provinces_path = "Data/Simulations/Japan200-725";
 
@@ -111,8 +112,8 @@ namespace paxs {
                     if (koyomi_siv.is_agent_update) {
                         // シミュレーションを停止
                         texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
-                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, 400));
-                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                             // if (s3d::SimpleGUI::Button(U"Sim Stop", s3d::Vec2{ 330, 60 })) {
                             koyomi_siv.is_agent_update = false;
 
@@ -124,8 +125,8 @@ namespace paxs {
                     else {
                         // 地形データを削除
                         texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
-                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, 400));
-                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                             simulator.reset();
 
                             koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
@@ -134,8 +135,8 @@ namespace paxs {
 
                         // シミュレーションを再生
                         texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
-                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, 400));
-                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                             // if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
                             koyomi_siv.is_agent_update = true;
 
@@ -144,8 +145,8 @@ namespace paxs {
                         }
                         // シミュレーションを 1 Step 実行
                         texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
-                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 240, 400));
-                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 240, 400), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 240, debug_start_y));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 240, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                             simulator->step(); // シミュレーションを 1 ステップ実行する
                             koyomi_siv.steps.getDay()++; // ステップ数を増やす
                             koyomi_siv.calcDate();
@@ -173,7 +174,14 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf", "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf", "Data/Font/noto-sans-kr/NotoSansKR-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans/NotoSans-Regular.ttf", "Data/Font/noto-sans/NotoSans-Regular.ttf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans/NotoSans-Regular.ttf", "Data/Font/noto-sans/NotoSans-Regular.ttf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf", "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf"
         };
 
-        int pulldown_font_size = 24; // プルダウンのフォントサイズ
+        // プルダウンのフォントサイズ
+        int pulldown_font_size =
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            40;
+#else
+            24;
+#endif
+
         int pulldown_font_buffer_thickness_size = 3; // プルダウンのフォント太さ
 
         int koyomi_font_size = 19; // 暦のフォントサイズ
@@ -329,13 +337,13 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
             // 暦の位置
             int koyomi_font_x = 0;//220;
-            int koyomi_font_y = 50;
+            int koyomi_font_y = pulldown_font_size + 33;
             int koyomi_font_en_x = 0;//820;
-            int koyomi_font_en_y = 50;
+            int koyomi_font_en_y = pulldown_font_size + 33;
 
             koyomi_font_x = paxg::Window::width() - 220;
-            koyomi_font_en_x = paxg::Window::width() - 220;
-            int rect_start_x = paxg::Window::width() - 375;
+            koyomi_font_en_x = paxg::Window::width() - 240;
+            int rect_start_x = paxg::Window::width() - 395;
 
             int koyomi_height = static_cast<int>(koyomi_siv.date_list.size()) * (koyomi_font_size * 4 / 3); // 暦の縦の幅
 
@@ -354,7 +362,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const int arrow_icon_move_y = 30;
             const int icon_move_y = 44;
 
-            int next_rect_start_y = icon_start_y + sum_icon_height + 20;//230;
+            int next_rect_start_y = icon_start_y + sum_icon_height + 30;//230;
             int next_rect_end_y = 230;//380;
 
 #ifdef PAXS_USING_SIV3D
@@ -366,8 +374,8 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(); // メニューバー
 
                 if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
-                    paxg::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw();
-                    paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw();
+                    paxg::RoundRect{ rect_start_x, koyomi_font_y - 5, 380, next_rect_start_y, 10 }.draw();
+                    paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 380, next_rect_end_y, 10 }.draw();
                 }
             }
                 // shadow_texture を 2 回ガウスぼかし
@@ -379,14 +387,14 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 #endif
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦表示の範囲に白背景を追加
-                paxg::RoundRect{ rect_start_x, koyomi_font_y - 5, 360, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
-                paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 360, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
+                paxg::RoundRect{ rect_start_x, koyomi_font_y - 5, 380, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
+                paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 380, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
             }
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン
             if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
-                simulation(simulator, tm_, koyomi_siv);
+                simulation(simulator, tm_, koyomi_siv, koyomi_font_y + next_rect_start_y + 20);
             }
 #endif
 
@@ -749,6 +757,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             //if (visible[MurMur3::calcHash("UI")])
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+                int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
                 // 暦描画フォントを指定
                 paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                 if (one_font != nullptr) {
@@ -783,22 +792,22 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                             if (sueki_nakamura_str != nullptr) {
                                 (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                                 (*one_font).drawTopRight(*sueki_nakamura_str,
-                                    paxg::Vec2i(paxg::Window::width() - 140, 550), paxg::Color(0, 0, 0));
+                                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 150), paxg::Color(0, 0, 0));
                             }
                             (*one_font).drawTopRight(
                                 std::string(sueki_nakamura),
-                                paxg::Vec2i(paxg::Window::width() - 40, 550), paxg::Color(0, 0, 0));
+                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 150), paxg::Color(0, 0, 0));
                         }
                         if (sueki_tanabe.size() != 0) {
                             const std::string* sueki_tanabe_str = language_text.getStringPtr(koyomi_siv.sueki_tanabe_key, select_language.cgetKey());
                             if (sueki_nakamura_str != nullptr) {
                                 (*one_font).drawTopRight(*sueki_tanabe_str,
-                                    paxg::Vec2i(paxg::Window::width() - 140, 580), paxg::Color(0, 0, 0));
+                                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 180), paxg::Color(0, 0, 0));
                             }
                             (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                             (*one_font).drawTopRight(
                                 std::string(sueki_tanabe),
-                                paxg::Vec2i(paxg::Window::width() - 40, 580), paxg::Color(0, 0, 0));
+                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 180), paxg::Color(0, 0, 0));
                         }
                     }
                 }
