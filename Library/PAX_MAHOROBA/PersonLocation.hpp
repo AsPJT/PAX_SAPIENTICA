@@ -328,13 +328,13 @@ namespace paxs {
                     };
 
                     const paxg::Vec2i draw_font_pos = paxg::Vec2i{
-                        draw_pos.x(), draw_pos.y() - 80
+                        draw_pos.x(), draw_pos.y() - 30
                     };
 
                     const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                     // 描画
                     if (texture.find(place_tex) != texture.end()) {
-                        texture.at(place_tex).resizedDrawAt(300, draw_pos);
+                        texture.at(place_tex).resizedDrawAt(100, draw_pos);
                     }
                     // 英語名がない場合
                     if (lli.place_name.find(second_language) == lli.place_name.end()) {

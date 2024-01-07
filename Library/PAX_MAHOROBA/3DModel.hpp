@@ -17,6 +17,7 @@
 ##########################################################################################*/
 
 #include <PAX_MAHOROBA/Init.hpp>
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 
 namespace paxs {
 
@@ -53,10 +54,10 @@ namespace paxs {
             backgroundColor = s3d::ColorF{ 1,1,1,0 }.removeSRGBCurve();
 
             // 3D モデルデータをロード
-            sekishitsu_model = s3d::Model{ U"./../../../../../Data/3DModels/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj" };
+            sekishitsu_model = s3d::Model{ s3d::Unicode::FromUTF8(AppConfig::getInstance()->getRootPath()) + U"Data/3DModels/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj"};
 
             // 360 度写真をロード
-            sky = s3d::Texture(s3d::Image{ U"./../../../../../Data/360DegreePhotos/stone2.jpg" }.mirror());
+            sky = s3d::Texture(s3d::Image{ s3d::Unicode::FromUTF8(AppConfig::getInstance()->getRootPath()) + U"Data/360DegreePhotos/stone2.jpg" }.mirror());
 
             // モデルに付随するテクスチャをアセット管理に登録
             s3d::Model::RegisterDiffuseTextures(sekishitsu_model, s3d::TextureDesc::MippedSRGB);
