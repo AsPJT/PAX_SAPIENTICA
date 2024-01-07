@@ -33,7 +33,7 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
 endforeach()
 
 set(PROJECT_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-set(PATH_TSV_FILE "${CMAKE_CURRENT_BINARY_DIR}/Path.tsv")
+set(PATH_TSV_FILE "${CMAKE_CURRENT_BINARY_DIR}/Config.tsv")
 set(TSV_CONTENT "key\tvalue\nasset_file\t${PROJECT_ROOT_PATH}/\n")
 
 file(WRITE ${PATH_TSV_FILE} ${TSV_CONTENT})

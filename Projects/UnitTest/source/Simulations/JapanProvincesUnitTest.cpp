@@ -21,25 +21,25 @@
 
 #include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 
-// もしPath.tsvが存在しない場合、一時的に作成する
+// もしConfig.tsvが存在しない場合、一時的に作成する
 class PathTSV {
 public:
     static void generatePathTSV() {
-        std::ofstream ofs("Path.tsv");
+        std::ofstream ofs("Config.tsv");
         ofs << "key\tvalue\nasset_file\t../" << std::endl;
         ofs.close();
     }
 
     static void removePathTSV() {
-        const std::string path_tsv_path = "Path.tsv";
+        const std::string path_tsv_path = "Config.tsv";
 
         std::remove(path_tsv_path.c_str());
     }
 };
 
 TEST (JapanProvincesUnitTest, constructor) {
-    // Path.tsvが存在しない場合、一時的に作成する
-    bool is_path_tsv_exist = std::filesystem::exists("Path.tsv");
+    // Config.tsvが存在しない場合、一時的に作成する
+    bool is_path_tsv_exist = std::filesystem::exists("Config.tsv");
     if (!is_path_tsv_exist) {
         PathTSV::generatePathTSV();
     }
