@@ -30,6 +30,7 @@ static bool old_left_mouse = false;
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/IDrawable.hpp>
+#include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -286,7 +287,6 @@ namespace paxg {
         bool leftClicked() const {
 #if defined(PAXS_USING_SIV3D)
             return rect.leftClicked();
-
 #elif defined(PAXS_USING_DXLIB)
             if (old_left_touch == 1) {
                 const int touch_num = DxLib::GetTouchInputNum();
@@ -297,31 +297,23 @@ namespace paxg {
                     return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
                 }
             }
-            if (old_left_mouse) {
-                // 1 フレーム前にタッチされている
-                if ((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) == 0) {
-                    int mx = 0, my = 0;
-                    DxLib::GetMousePoint(&mx, &my);
-                    return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
-                }
+            // 1 フレーム前にタッチされている
+            if (paxg::Mouse::getInstance()->upLeft()) {
+                int mx = 0, my = 0;
+                DxLib::GetMousePoint(&mx, &my);
+                return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
             }
             return false;
-
 #elif defined(PAXS_USING_SFML)
-            if (old_left_mouse) {
-                // 1 フレーム前にタッチされている
-                if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-                    int mx = sf::Mouse::getPosition(Window::window).x, my = sf::Mouse::getPosition(Window::window).y;
-                    return (mx >= rect.getPosition().x &&
-                        my >= rect.getPosition().y &&
-                        mx < rect.getPosition().x + rect.getSize().x &&
-                        my < rect.getPosition().y + rect.getSize().y);
-                }
+            // 1 フレーム前にタッチされている
+            if (paxg::Mouse::getInstance()->upLeft()) {
+                int mx = sf::Mouse::getPosition(Window::window).x, my = sf::Mouse::getPosition(Window::window).y;
+                return (mx >= rect.getPosition().x &&
+                    my >= rect.getPosition().y &&
+                    mx < rect.getPosition().x + rect.getSize().x &&
+                    my < rect.getPosition().y + rect.getSize().y);
             }
-
             return false;
-            // return rect.getGlobalBounds().contains(sf::Mouse::getPosition(Window::window).x, sf::Mouse::getPosition(Window::window).y);
-
 #else
             return false;
 #endif

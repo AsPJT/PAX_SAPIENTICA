@@ -733,7 +733,11 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                     }
                 }
             }
-            if (visible[MurMur3::calcHash(7, "License")]) {}
+//            if (visible[MurMur3::calcHash(7, "License")]) {
+//#ifdef PAXS_USING_SIV3D
+//                //s3d::LicenseManager::ShowInBrowser();
+//#endif
+//            }
 
             if (!visible[MurMur3::calcHash(2, "3D")]) {
                 g3d_model.updateRotation(); // 3D モデルを回転させる

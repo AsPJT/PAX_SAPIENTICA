@@ -101,18 +101,22 @@ namespace paxs {
             paxs::GraphicVisualizationList& visible
             ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
-
                 // 地図上に画像を描画する
                 texture_location->update(map_view.getCenterX(), map_view.getCenterY(), map_view.getWidth(), map_view.getHeight());
+            }
 #ifdef PAXS_USING_SIMULATOR
+            if (visible[MurMur3::calcHash("Simulation")]) {
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
                     agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY(),
                         pop_num,
                         sat_num
                     );
                 }
+            }
 #endif
-
+            if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
+                // 地図上に画像を描画する
+                texture_location->update(map_view.getCenterX(), map_view.getCenterY(), map_view.getWidth(), map_view.getHeight());
 #ifdef PAXS_USING_SIV3D
                 //// 線の描画
                 //for (std::size_t i = 0; i < route2.size(); ++i) {
