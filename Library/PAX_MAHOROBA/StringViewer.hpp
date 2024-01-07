@@ -270,26 +270,26 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             //    MurMur3::calcHash("menu_bar_calendar_julian_day"),
             //    MurMur3::calcHash("menu_bar_calendar_hijri")
             //};
-            std::vector<std::uint_least32_t> list_test5 = {
-            MurMur3::calcHash("menu_bar_map"),
-                MurMur3::calcHash("menu_bar_map_base"),
-                MurMur3::calcHash("menu_bar_map_land_and_sea"),
-                MurMur3::calcHash("menu_bar_map_land_and_water"),
-                MurMur3::calcHash("menu_bar_map_soil"),
-                MurMur3::calcHash("menu_bar_map_soil_temperature"),
-                MurMur3::calcHash("menu_bar_map_ryosei_country"),
-                MurMur3::calcHash("menu_bar_map_ryosei_line"),
-                MurMur3::calcHash("menu_bar_map_slope"),
-                MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
-                MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
-                MurMur3::calcHash("menu_bar_map_line1"),
-                MurMur3::calcHash("menu_bar_map_line2")
-            };
+            //std::vector<std::uint_least32_t> list_test5 = {
+            //MurMur3::calcHash("menu_bar_map"),
+            //    MurMur3::calcHash("menu_bar_map_base"),
+            //    MurMur3::calcHash("menu_bar_map_land_and_sea"),
+            //    MurMur3::calcHash("menu_bar_map_land_and_water"),
+            //    MurMur3::calcHash("menu_bar_map_soil"),
+            //    MurMur3::calcHash("menu_bar_map_soil_temperature"),
+            //    MurMur3::calcHash("menu_bar_map_ryosei_country"),
+            //    MurMur3::calcHash("menu_bar_map_ryosei_line"),
+            //    MurMur3::calcHash("menu_bar_map_slope"),
+            //    MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
+            //    MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
+            //    MurMur3::calcHash("menu_bar_map_line1"),
+            //    MurMur3::calcHash("menu_bar_map_line2")
+            //};
             //menu_bar.add(&select_language, &language_text, list_test1, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("file"));
             //menu_bar.add(&select_language, &language_text, list_test2, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("edit"));
             menu_bar.add(&select_language, &language_text, list_test3, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
             //menu_bar.add(&select_language, &language_text, list_test4, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("calendar"));
-            menu_bar.add(&select_language, &language_text, list_test5, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
+            //menu_bar.add(&select_language, &language_text, list_test5, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
 
             const std::string path = (AppConfig::getInstance()->getRootPath());
             // 暦の時間操作のアイコン
@@ -337,9 +337,9 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
             // 暦の位置
             int koyomi_font_x = 0;//220;
-            int koyomi_font_y = pulldown_font_size + 33;
+            int koyomi_font_y = pulldown_font_size + 43;
             int koyomi_font_en_x = 0;//820;
-            int koyomi_font_en_y = pulldown_font_size + 33;
+            int koyomi_font_en_y = pulldown_font_size + 43;
 
             koyomi_font_x = paxg::Window::width() - 220;
             koyomi_font_en_x = paxg::Window::width() - 240;
@@ -355,14 +355,14 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
             int sum_icon_height = arrow_time_icon_size + time_icon_size * 2;
 
-            int icon_start_y = koyomi_height + 10;// 80 + 30;
+            int icon_start_y = koyomi_height + 40;// 80 + 30;
             const int arrow_icon_move_x = int(arrow_time_icon_size * 1.2);// int(time_icon_size * 1.4);
             const int icon_move_x = int(time_icon_size * 1.1);// int(time_icon_size * 1.4);
 
             const int arrow_icon_move_y = 30;
             const int icon_move_y = 44;
 
-            int next_rect_start_y = icon_start_y + sum_icon_height + 30;//230;
+            int next_rect_start_y = icon_start_y + sum_icon_height + 50;//230;
             int next_rect_end_y = 230;//380;
 
 #ifdef PAXS_USING_SIV3D
@@ -374,7 +374,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(); // メニューバー
 
                 if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
-                    paxg::RoundRect{ rect_start_x, koyomi_font_y - 5, 380, next_rect_start_y, 10 }.draw();
+                    paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, 380, next_rect_start_y, 10 }.draw();
                     paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 380, next_rect_end_y, 10 }.draw();
                 }
             }
@@ -387,7 +387,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 #endif
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦表示の範囲に白背景を追加
-                paxg::RoundRect{ rect_start_x, koyomi_font_y - 5, 380, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
+                paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, 380, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
                 paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 380, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
             }
 

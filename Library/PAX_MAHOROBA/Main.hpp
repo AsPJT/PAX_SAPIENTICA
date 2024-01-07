@@ -16,7 +16,12 @@
 
 ##########################################################################################*/
 
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+// シミュレーションを使用しない
+#else
 #define PAXS_USING_SIMULATOR
+#endif
+
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #if defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
