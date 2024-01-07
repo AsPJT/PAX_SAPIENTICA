@@ -22,6 +22,7 @@
 #include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
+#include <PAX_GRAPHICA/SFML_Circle.hpp>
 #endif
 
 #include <PAX_GRAPHICA/IDrawable.hpp>
@@ -37,12 +38,6 @@ namespace paxg {
         constexpr Circle(const float x, const float y, const float r) : circle(x, y, r) {}
         constexpr Circle(const paxg::Vec2i& pos, const float r) : circle(pos.x(), pos.y(), r) {}
         constexpr operator s3d::Circle() const { return circle; }
-
-#elif defined(PAXS_USING_SFML)
-        sf::CircleShape circle;
-        Circle(const float x, const float y, const float r) : circle(r) { circle.setPosition(x, y); }
-        Circle(const sf::Vector2i& pos, const float r) : circle(r) { circle.setPosition(pos.x, pos.y); }
-        operator sf::CircleShape() const { return circle; }
 #else
         float x, y, r;
         constexpr Circle(const float x, const float y, const float r) : x(x), y(y), r(r) {}
@@ -53,7 +48,9 @@ namespace paxg {
             circle.draw();
 
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(circle);
+            SFML_Circle::getInstance()->circle.setRadius(r);
+            SFML_Circle::getInstance()->circle.setPosition(x, y);
+            Window::window.draw(SFML_Circle::getInstance()->circle);
 #endif
         }
 
@@ -69,9 +66,11 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_SFML)
         void draw(const paxg::Color& c_) const {
-            sf::CircleShape circle2 = circle;
-            circle2.setFillColor(c_.color);
-            Window::window.draw(circle2);
+            SFML_Circle::getInstance()->circle.setRadius(r);
+            SFML_Circle::getInstance()->circle.setPosition(x, y);
+
+            SFML_Circle::getInstance()->circle.setFillColor(c_.color);
+            Window::window.draw(SFML_Circle::getInstance()->circle);
         }
 #else
         void draw(const paxg::Color&) const {}
