@@ -52,20 +52,18 @@ namespace paxg {
             wheel_delta = 0;
             while (window.pollEvent(ev))
             {
-                if (ev.type == sf::Event::Closed) return false;
-
-                if (ev.type == sf::Event::MouseWheelMoved) {
+                switch (ev.type) {
+                case sf::Event::Closed:
+                    return false;
+                case sf::Event::MouseWheelMoved:
                     wheel_delta = ev.mouseWheel.delta;
-                }
-                else if (ev.type == sf::Event::Resized)
-                {
-                    // update the view to the new size of the window
+                    break;
+                case sf::Event::Resized:
                     sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
                     window.setView(sf::View(visibleArea));
+                    break;
                 }
             }
-
-
             return true;
         }
         sf::Event& getEvent() {

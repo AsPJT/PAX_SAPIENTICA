@@ -271,6 +271,31 @@ namespace paxs {
             static int touch_num = 0;
             static std::array<paxs::Vector2<int>, 3> pos = { paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0} };
             static std::array<paxs::Vector2<int>, 3> old_pos = { paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0} };
+#else
+            if (paxg::Mouse::getInstance()->pressedLeft2()) {
+                center.setX(
+                    center.getX() +
+                    width / static_cast<double>(paxg::Window::width()) *
+                    static_cast<double>(paxg::Mouse::getInstance()->getPosXBefore1Frame() - paxg::Mouse::getInstance()->getPosX()));
+                center.setY(
+                    center.getY() +
+                    width / static_cast<double>(paxg::Window::width()) *
+                        static_cast<double>(paxg::Mouse::getInstance()->getPosY() - paxg::Mouse::getInstance()->getPosYBefore1Frame()));
+
+                if (center.getX() < -180.0) {
+                    center.setX(center.getX() + 360.0);
+                }
+                if (center.getX() >= 180.0) {
+                    center.setX(center.getX() - 360.0);
+                }
+                if (center.getY() < -180.0) {
+                    center.setY(center.getY() - 180.0);
+                }
+                if (center.getY() > 180.0) {
+                    center.setY(center.getY() + 180.0);
+                }
+
+            }
 #endif
 
 #ifdef __ANDROID__
@@ -290,12 +315,13 @@ namespace paxs {
                 DxLib::DrawCircle(pos_x, pos_y, 40, GetColor(230, 230, 240), TRUE);
             }
 
-
-            // std::array<Vector2D<int>, 10>{};
-
             if (old_touch_num == 1 && touch_num == 1) {
-                center.setX(center.getX() + (width / expansion_size/*movement*/) * (old_pos[0].x - pos[0].x) / 24);
-                center.setY(center.getY() + ((width / expansion_size/*movement*/) * (pos[0].y - old_pos[0].y) / 24));
+                center.setX(center.getX() +
+                    width / static_cast<double>(paxg::Window::width()) *
+                    static_cast<double>(old_pos[0].x - pos[0].x));
+                center.setY(center.getY() +
+                    width / static_cast<double>(paxg::Window::width()) *
+                    static_cast<double>(pos[0].y - old_pos[0].y));
 
                 if (center.getX() < -180.0) {
                     center.setX(center.getX() + 360.0);

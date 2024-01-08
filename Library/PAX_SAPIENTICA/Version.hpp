@@ -19,27 +19,27 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20240103L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20240108L)
 #endif
 
-// PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版の予定 ) [v6.0.X.a.a]
+// PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [v6.0.X.a.a]
 #ifndef PAX_SAPIENTICA_LIBRARY_MAJOR
-#define PAX_SAPIENTICA_LIBRARY_MAJOR (0)
+#define PAX_SAPIENTICA_LIBRARY_MAJOR (1)
 #endif
 
 // PAX_SAPIENTICA 補助バージョン  [v6.0.a.X.a]
 #ifndef PAX_SAPIENTICA_LIBRARY_MINOR
-#define PAX_SAPIENTICA_LIBRARY_MINOR (4)
+#define PAX_SAPIENTICA_LIBRARY_MINOR (0)
 #endif
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (13)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
 #endif
 
 // 正式バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.0.4.13"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.1.0.0"
 #endif
 
 //char name[
@@ -50,7 +50,15 @@
 /*##########################################################################################
 	更新履歴
 	バージョン	| 更新日		| 概要
-	6.0.0.4.X	| 2024/0X/XX	| コピペ用
+	6.0.1.0.X	| 2024/0X/XX	| コピペ用
+	6.0.1.0.0	| 2024/01/08	| リリース版
+	6.0.0.4.20	| 2024/01/08	| マウス対応
+	6.0.0.4.19	| 2024/01/07	| シミュレーション定数のTSV入力対応 #90
+	6.0.0.4.18	| 2024/01/06	| データの設定ファイルを追加 #89
+	6.0.0.4.17	| 2024/01/06	| シミュレーション対象地域のTSV化 #88
+	6.0.0.4.16	| 2024/01/04	| Androidの地図機能を修正 #87
+	6.0.0.4.15	| 2024/01/04	| バイナリデータの読み込み処理を変更 #86
+	6.0.0.4.14	| 2024/01/04	| Android対応（安定化のための修正※完全ではない） #85
 	6.0.0.4.13	| 2024/01/03	| GUIの起動時処理を新しい仕様へ更新 #84
 	6.0.0.4.12	| 2024/01/03	| SFMLリサイズバグ修正・ホイール機能追加・プルダウンメニュー改善 #83
 	6.0.0.4.11	| 2024/01/03	| 旧ルートパスの取得方法を削除 #82

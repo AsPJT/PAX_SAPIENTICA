@@ -25,11 +25,6 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #if defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
-#ifndef OLD_LEFT_MOUSE
-#define OLD_LEFT_MOUSE
-static bool old_left_mouse = false;
-#endif // !OLD_LEFT_MOUSE
-
 static int old_left_touch = 0;
 static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #endif
@@ -77,7 +72,7 @@ namespace paxs {
         visible.emplace(MurMur3::calcHash("Calendar"), true); // 暦
         visible.emplace(MurMur3::calcHash("Map"), true); // 地図
         visible.emplace(MurMur3::calcHash("UI"), true); // UI
-        visible.emplace(MurMur3::calcHash("License"), false); // ライセンス
+        //visible.emplace(MurMur3::calcHash("License"), false); // ライセンス
         visible.emplace(MurMur3::calcHash("3D"), false); // 3D
 
         MapView map_view{};
@@ -172,6 +167,8 @@ namespace paxs {
             old_width = paxg::Window::width();
             old_height = paxg::Window::height();
 
+            map_view.update(); // キーボード入力を更新
+
             // プルダウンを更新
             string_siv.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.pulldown.getRect().w()), 0 });
             string_siv.pulldown.update(tm);
@@ -185,11 +182,10 @@ namespace paxs {
             visible.set(MurMur3::calcHash("Map"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(1));
             visible.set(MurMur3::calcHash("UI"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(2));
             visible.set(MurMur3::calcHash("Simulation"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(3));
-            visible.set(MurMur3::calcHash("License"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(4));
-            visible.set(MurMur3::calcHash("Debug"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
+            //visible.set(MurMur3::calcHash("License"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(4));
+            //visible.set(MurMur3::calcHash("Debug"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
             visible.set(MurMur3::calcHash("3D"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(6));
 
-            map_view.update(); // キーボード入力を更新
             xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
             // 地図を更新
             map_siv.update(
@@ -231,16 +227,12 @@ namespace paxs {
             //}
 
 #ifdef PAXS_USING_DXLIB
-            old_left_mouse = !((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) == 0);
             old_left_touch = DxLib::GetTouchInputNum();
             if (old_left_touch >= 1) {
                 int pos_x = 0, pos_y = 0;
                 DxLib::GetTouchInput(0, &pos_x, &pos_y, NULL, NULL);
                 old_left_touch_pos = paxg::Vec2i(pos_x, pos_y);
             }
-#endif
-#ifdef PAXS_USING_SFML
-            old_left_mouse = !sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
 #endif
         }
     }
