@@ -22,7 +22,7 @@
 #define PAX_SAPIENTICA_LIBRARY_VERSION (20240108L)
 #endif
 
-// PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [v6.0.X.a.a]
+// PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [vX.a.a]
 #ifndef PAX_SAPIENTICA_LIBRARY_MAJOR
 #define PAX_SAPIENTICA_LIBRARY_MAJOR (1)
 #endif
@@ -37,9 +37,9 @@
 #define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
 #endif
 
-// 正式バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
+// バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "6.0.1.0.0"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.0.0 MESOPOTAMIA"
 #endif
 
 //char name[
