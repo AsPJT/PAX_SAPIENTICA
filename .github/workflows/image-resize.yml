@@ -4,7 +4,7 @@ on : [ workflow_dispatch ]
 
 env:
   BUILD_TYPE: Debug
-  WORK_SPACE: ${{github.workspace}}/Project
+  WORK_SPACE: ${{github.workspace}}/Projects
   TARGET: ImageResize
 
 jobs:

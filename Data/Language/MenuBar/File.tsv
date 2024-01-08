@@ -1,0 +1,7 @@
+key	en-US	ja-JP	language_zh_tw	language_zh_cn	language_ko_kr	language_es	language_pt	language_de	language_fr	language_it	language_tr	language_pl	language_el	language_nl	language_cs	language_uk	language_ru	language_id	language_fa	language_ar	language_null
+menu_bar_file	File(F)	ファイル(F)	文件(F)	文件(F)	파일(F)	Archivo(F)	Ficheiro(F)	Datei(F)	Fichier(F)	File(F)	Dosya(F)	Plik(F)	Αρχείο (F)	Bestand (F)	Soubor(F)	Файл(F)	Файл (F)	File (F)	فایل (F)	ملف (F)	File(F)
+menu_bar_file_new	New	新規作成	新建	新建	새로 만들기	Nuevo	Novo	Neu	Nouveau	Nuovo	Yeni	Nowy	Νέο	Nieuw	Nový	Новий	Новый	Baru	جدید	جديد	New
+menu_bar_file_open	Open	開く	打开	打开	열기	Abrir	Abrir	Öffnen	Ouvrir	Aprire	Açık	Otwórz	Άνοιγμα	Open	Otevřít	Відкрити	Открыть	Buka	باز کن	يفتح	Open
+menu_bar_file_save	Save	保存	保存	保存	저장	Guardar	Guardar	Speichern	Sauvegarder	Salva	Kaydet	Zapisz	Αποθήκευση	Opslaan	Uložit	Зберегти	Сохранить	Simpan	صرفه جویی	يحفظ	Save
+menu_bar_file_close	Close	閉じる	关闭	关闭	닫기	Cerrar	Fechar	Schließen	Fermer	Chiudere	Kapat	Zamknij	Close	Sluiten	Zavřít	Закрити	Закрыть	Tutup	بستن	يغلق	Close
+menu_bar_file_exit	Exit	終了	退出	退出	종료	Salir	Sair	Beenden	Quitter	Esci	Çıkış	Wyjdź	Έξοδος	Exit	Ukončit	Вихід	Выход	Keluar	خروج	مخرج	Exit

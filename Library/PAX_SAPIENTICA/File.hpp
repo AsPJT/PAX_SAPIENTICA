@@ -1,9 +1,9 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
+	[Planning]		2023-2024 As Project
+	[Production]	2023-2024 As Project
 	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
 	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
@@ -21,50 +21,44 @@
 #include <stdexcept>
 #include <vector>
 
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
-    
-    /// @brief A class that handles files.
-    /// @brief ファイルを扱うクラス。
-    class File {
-    public:
+
+    /// @brief Handle files.
+    /// @brief ファイルを扱う
+    struct File {
+
         /// @brief Read the file.
         /// @brief ファイルを読み込む。
-        static std::vector<std::string> readFile(const std::string& file_path) {
-            std::ifstream file(file_path);
-            if (!file) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to read file: " + file_path;
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+        static std::vector<std::string> readFile(const std::string& file_path) noexcept {
+            InputFile file(file_path);
+            if (file.fail()) {
+                PAXS_ERROR("Failed to read file: " + file_path);
+                return {};
             }
-
-            std::string line;
+            // 1 行ごとに文字列を分離し vector へ格納
             std::vector<std::string> result;
-            while (std::getline(file, line)) {
-                result.emplace_back(line);
+            while (file.getLine()) {
+                result.emplace_back(file.lineString());
             }
-            file.close();
             return result;
         }
 
         /// @brief Read CSV file.
         /// @brief CSVファイルを読み込む。
-        static std::vector<std::vector<std::string>> readCSV(const std::string& file_path) {
+        static std::vector<std::vector<std::string>> readCSV(const std::string& file_path) noexcept {
             std::vector<std::string> contents;
-            try
-            {
-                contents = readFile(file_path);
+            try {
+                contents = readFile(file_path); // ファイルパスにあるファイルを読み込む
             }
-            catch(const std::exception& e)
-            {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to read CSV file: " + file_path);
-                throw;
+            catch(const std::exception&) {
+                PAXS_ERROR("Failed to read CSV file: " + file_path);
+                return {};
             }
-            
+
             std::vector<std::vector<std::string>> result;
             for(auto& content : contents) {
                 result.emplace_back(StringExtensions::split(content, ','));
@@ -74,18 +68,9 @@ namespace paxs {
 
         /// @brief Read TSV file.
         /// @brief TSVファイルを読み込む。
-        static std::vector<std::vector<std::string>> readTSV(const std::string& file_path) {
+        static std::vector<std::vector<std::string>> readTSV(const std::string& file_path) noexcept {
             std::vector<std::string> contents;
-            try
-            {
-                contents = readFile(file_path);
-            }
-            catch(const std::exception& e)
-            {
-                Logger logger("Save/error_log.txt");
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to read TSV file: " + file_path);
-                throw;
-            }
+            contents = readFile(file_path);
 
             std::vector<std::vector<std::string>> result;
             for(auto& content : contents) {
@@ -96,13 +81,14 @@ namespace paxs {
 
         /// @brief Get the file name in the directory.
         /// @brief ディレクトリ内のファイル名を取得する。
-        static std::vector<std::string> getFileNames(const std::string& directory_path) {
+        static std::vector<std::string> getFileNames(const std::string& directory_path) noexcept {
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            return {}; // std::filesystem が動作しないため何もしない
+#else
             std::filesystem::path dir_path(directory_path);
             if (!std::filesystem::exists(dir_path)) {
-                Logger logger("Save/error_log.txt");
-                const std::string message = "Failed to get file names: " + directory_path;
-                logger.log(Logger::Level::ERROR, __FILE__, __LINE__, message);
-                throw std::runtime_error(message);
+                PAXS_ERROR("Failed to access: " + directory_path);
+                return {};
             }
 
             std::filesystem::directory_iterator dir_iter(dir_path), end_iter;
@@ -111,18 +97,18 @@ namespace paxs {
             while (dir_iter != end_iter) {
                 try {
                     if(dir_iter->is_regular_file()) {
-                        result.push_back(dir_iter->path().string());
+                        result.emplace_back(dir_iter->path().string());
                     }
                     ++dir_iter;
                 }
-                catch (const std::exception& ex) {
-                    Logger logger("Save/error_log.txt");
-                    logger.log(Logger::Level::ERROR, __FILE__, __LINE__, "Failed to access: " + dir_iter->path().string());
-                    throw;
+                catch (const std::exception&) {
+                    PAXS_ERROR("Failed to access: " + dir_iter->path().string());
+                    ++dir_iter;
                 }
             }
 
             return result;
+#endif
         }
     };
 }

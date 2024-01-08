@@ -1,9 +1,9 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
+	[Planning]		2023-2024 As Project
+	[Production]	2023-2024 As Project
 	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
 	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
@@ -18,15 +18,15 @@
 
 #include <cmath>
 #include <iostream>
+#include <string>
 
 namespace paxs {
-    
+
     /// @brief 2D Vector class.
     template<typename T>
-    class Vector2 {
-    public:
+    struct Vector2 {
         constexpr explicit Vector2() noexcept = default;
-        constexpr explicit Vector2(T x, T y) noexcept : x(x), y(y) {}
+        constexpr Vector2(T x, T y) noexcept : x(x), y(y) {}
 
         T x;
         T y;
@@ -56,72 +56,44 @@ namespace paxs {
         constexpr Vector2<T> operator*(const Vector2<T>& v) const noexcept {
             return Vector2<T>(x * v.x, y * v.y);
         }
-        constexpr Vector2<T> operator*(const int& t) const noexcept {
-            return Vector2<T>(x * t, y * t);
+
+        template<typename U>
+        constexpr Vector2<T> operator*(const U& t) const noexcept {
+            return Vector2<T>(static_cast<T>(x * t), static_cast<T>(y * t));
         }
-        constexpr Vector2<T>& operator*=(const int& t) noexcept {
+
+        template<typename U>
+        constexpr Vector2<T>& operator*=(const U& t) noexcept {
             x *= t;
             y *= t;
             return *this;
         }
-        constexpr Vector2<T> operator*(const double& t) const noexcept {
-            return Vector2<T>(x * T(t), y * T(t));
-        }
-        constexpr Vector2<T>& operator*=(const double& t) noexcept {
-            x *= t;
-            y *= t;
-            return *this;
-        }
+
         constexpr Vector2<T> operator/(const Vector2<T>& v) const noexcept {
             return Vector2<T>(x / v.x, y / v.y);
         }
-        constexpr Vector2<T> operator/(const int& t) const noexcept {
-            return Vector2<T>(x / t, y / t);
-        }
-        constexpr Vector2<T>& operator/=(const int& t) noexcept {
-            x /= t;
-            y /= t;
-            return *this;
-        }
-        constexpr Vector2<T> operator/(const double& t) const noexcept {
-            return Vector2<T>(x / t, y / t);
-        }
-        constexpr Vector2<T>& operator/=(const double& t) noexcept {
-            x /= t;
-            y /= t;
-            return *this;
-        }
-        constexpr bool operator==(const Vector2<T>& v) const noexcept {
-            return v.x == x && v.y == y;
-        }
-        constexpr bool operator!=(const Vector2<T>& v) const noexcept {
-            return v.x != x || v.y != y;
-        }
-        constexpr bool operator<(const Vector2<T>& v) const noexcept {
-            if (x == v.x) {
-                return y < v.y;
-            }
-            return x < v.x;
-        }
-        constexpr bool operator>(const Vector2<T>& v) const noexcept {
-            if (x == v.x) {
-                return y > v.y;
-            }
-            return x > v.x;
-        }
-        constexpr bool operator<=(const Vector2<T>& v) const noexcept {
-            if (x == v.x) {
-                return y <= v.y;
-            }
-            return x <= v.x;
-        }
-        constexpr bool operator>=(const Vector2<T>& v) const noexcept {
-            if (x == v.x) {
-                return y >= v.y;
-            }
-            return x >= v.x;
+
+        template<typename U>
+        constexpr Vector2<T> operator/(const U& t) const noexcept {
+            return Vector2<T>(static_cast<T>(x / t), static_cast<T>(y / t));
         }
 
+        template<typename U>
+        constexpr Vector2<T>& operator/=(const U& t) noexcept {
+            x /= t;
+            y /= t;
+            return *this;
+        }
+#ifdef USING_CPP20
+        auto operator<=>(const Vector2<T>& v) const noexcept = default;
+#else
+        bool operator!=(const Vector2<T>& v) const noexcept {
+            return !(v.x == x && v.y == y);
+        }
+        bool operator==(const Vector2<T>& v) const noexcept {
+            return (v.x == x && v.y == y);
+        }
+#endif // USING_CPP20
         /// @brief Get the length of the vector
         /// @brief べクトルの長さを取得。
         double length() const noexcept {
@@ -136,6 +108,18 @@ namespace paxs {
         friend std::ostream& operator<<(std::ostream& os, const Vector2<T>& v) noexcept {
             os << "(" << v.x << ", " << v.y << ")";
             return os;
+        }
+
+        std::string toString() const noexcept {
+            return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+        }
+
+        std::uint_least64_t toU64() const noexcept {
+            return static_cast<std::uint_least64_t>(x) << 32 | static_cast<std::uint_least64_t>(y);
+        }
+
+        static Vector2<T> fromU64(const std::uint_least64_t u64) noexcept {
+            return Vector2<T>(static_cast<T>(u64 >> 32), static_cast<T>(u64 & 0x00000000ffffffff));
         }
     };
 }

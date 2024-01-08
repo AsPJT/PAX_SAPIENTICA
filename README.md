@@ -1,55 +1,126 @@
-![PAX SAPIENTICA Logo](./Image/Logo/TitleBanner3.svg)
+# PAX SAPIENTICA [![CMake-All-Build](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml) [![CMake-Unit-Test](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml)
 
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%20(Debug%20Build)%20_%20D3D11%20_%2060%20FPS%20_%20F%201920x1111%20_%20V%201536x888%20_%20S%201536x888%202023_05_24%2023_17_49.png)
+![PAX SAPIENTICA Logo](./Images/Logo/TitleBanner4.svg)
 
-GIS & Archaeological Simulator
+![Screenshot](./Images/Screenshot/Best.png)
+
+# Overview
+
+This software is PAX SAPIENTICA (abbreviated PAXS).
+PAXS is a GIS for philological, archaeological, and anthropological data.
+It has the ability to display calendars for each region in each time period and agent-based simulation.
 
 # List of elements supported by this software.
 
-## Calendar
+## 📅 Calendar
 
 |Available|Calendar Name|
 |:---:|:---|
 |✅|Julian calendar|
 |✅|Gregorian calendar|
 |✅|Japanese calendar|
+|✅|Chinese calendar|
 |✅|Islamic calendar|
 |✅|Julian day number|
 
-## Language
+![Calendar](./Images/Other/Calendar20230709.gif)
 
-|Available|Name1|Name2|Name3|
-|:---:|:---|:---|:---|
-|✅|English|English|英語|
-|✅|日本語|Japanese|日本語|
-|✅|繁體中文|Chinese|繁体字中国語|
-|✅|简体中文|Chinese|簡体字中国語|
-|✅|한국어|Korean|韓国語|
-|✅|Español|Spanish|スペイン語|
-|✅|Português|Portuguese|ポルトガル語|
-|✅|Deutsch|German|ドイツ語|
-|✅|Français|French|フランス語|
-|✅|Italiano|Italian|イタリア語|
-|✅|Türkçe|Turkish|トルコ語|
-|✅|Język polski|Polish|ポーランド語|
-|✅|Ελληνικά|Greek|ギリシャ語|
-|✅|Nederlands|Dutch|オランダ語|
-|✅|Čeština|Czech|チェコ語|
-|✅|Українська|Ukrainian|ウクライナ語|
-|✅|Русский язык|Russian|ロシア語|
-|✅|Bahasa Indonesia|Indonesian|インドネシア語|
-|✅|فارسی|Persian|ペルシア語|
-|✅|اللغة العربية|Arabic|アラビア語|
+## 🏠 Agent-Based Simulation
 
-## Place Name
-- The number of registered East Asian place names is high. Place names around the Japanese archipelago have a particularly high number of registrations.
+This is an agent-based simulation that estimates settlement and population dynamics in the Japanese archipelago from the 3rd to 7th centuries.
+It was presented at the 48th Annual Meeting of the Japan Association for Archaeoinformatics on December 2, 2023.
 
-## Historical Period
-- The main periods registered are from the 1st to the 7th century.
+![PAX SAPIENTICA Simulation](./Images/Animation/ABS01.gif)
 
-# Screenshot
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_09%201_00_32.png)
-![Screenshot](./Image/Screenshot/PAX%20SAPIENTICA%20v6.0.0.2.0%202023_05_11%2023_26_47.png)
+## [🧬 DNA haplogroup](Data/Genomes/HomoSapiens)
+
+This software can handle DNA haplogroup data of ancient human bones.
+
+The following GIF animation shows the changes in East Asian mtDNA haplogroups from 1 Julian day (4713 BC) to the present.
+
+[![PAX SAPIENTICA Mitochondrial DNA](./Images/Animation/mtDNA02.gif)](Data/Genomes/HomoSapiens)
+
+Ancient human bone mtDNA data registered as of December 21, 2023.
+
+[![PAX SAPIENTICA mtDNA](./Images/Screenshot/PAX%20SAPIENTICA%20v6.0.0.4.0%202023_12_25%2022_06_43.png)](Data/Genomes/HomoSapiens)
+
+## 👤 Movement of a person
+
+This software allows you to visualize and move historical figures.
+
+![PAX SAPIENTICA Movement](./Images/Animation/Person01.gif)
+
+---
+
+# How to Install
+
+This software has both a GUI and a CUI.
+
+### GUI
+
+The GUI supports the following libraries
+
+* SFML (CMake)
+* [SFML v2.6.1 (.sln / for Windows)](Projects/MapViewer/Windows/SFML_2.6.1) - Available without installation
+* OpenSiv3D (tested with v0.6.13 & Visual Studio Community 2022 v17.8.3)
+* DxLib (tested on Windows and Android versions)
+
+Any of the above libraries will launch the GUI software.
+
+### CUI
+
+To try this library, build cmake.
+
+> [!TIP]
+> For example, clone this repository. You can open the cloned directory with VS Code and build it with CMake.
+
+# Code Documentation
+
+https://aspjt.github.io/PAX_SAPIENTICA/
+
+# How to Contribute
+
+This project welcomes issues and pull requests.
+Anyone can send issues and pull requests.
+
+You can find out how to contribute [here](CONTRIBUTING.md).
+
+# Supported Environment
+
+### Compilers
+
+* GNU Compiler Collection (GCC)
+* Clang
+* Microsoft Visual C++ (MSVC)
+
+### Language Version
+
+C++17 or later
+
+### Build Tools
+
+* CMake (e.g. Visual Studio Code)
+* .sln / Microsoft Visual Studio
+* Android Studio
+
+### Android Studio
+
+This library has been tested to work in a mobile environment.
+
+> [!IMPORTANT]
+> The Android version of DxLib, a wrapper library for drawing APIs, is used.
+> Drawing APIs such as OpenGL and Vulkan are not directly supported.
+
+![Android Studio](https://raw.githubusercontent.com/AsPJT/PAX_SAPIENTICA/develop/Images/Screenshot/PAX%20SAPIENTICA%202023-09-23%2020.54.32.png)
+
+---
+
+# Main Developers
+
+|Icon|Name|Main Work|
+|:---|:---|:---|
+|<a href="https://github.com/AsPJT"><img src="https://avatars.githubusercontent.com/u/30593725" style="width: 96px;"></a>|As Project|● Planning<br>● Design Concepts<br>● Specification Document Preparation|
+|<a href="https://github.com/guinpen98"><img src="https://avatars.githubusercontent.com/u/83969826" style="width: 96px;"></a>|guinpen98|● Programming<br>● Simulation<br>● GitHub Actions / CI&CD|
 
 ---
 

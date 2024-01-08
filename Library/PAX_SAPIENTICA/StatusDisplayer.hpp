@@ -2,8 +2,8 @@
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023 As Project
-	[Production]	2023 As Project
+	[Planning]		2023-2024 As Project
+	[Production]	2023-2024 As Project
 	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
 	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
@@ -20,10 +20,10 @@
 #include <iomanip>
 
 namespace paxs {
-    /// @brief A class that displays the progress.
-    /// @brief ステータスを表示するクラス
-    class StatusDisplayer {
-    public:
+    /// @brief Display the status.
+    /// @brief ステータスを表示する
+    struct StatusDisplayer {
+
         /// @brief Display the progress bar.
         /// @brief プログレスバーを表示する
         static void displayProgressBar(unsigned int current, unsigned int total) noexcept {
