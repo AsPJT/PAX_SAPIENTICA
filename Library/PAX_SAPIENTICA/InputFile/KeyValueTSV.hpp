@@ -54,12 +54,12 @@ namespace paxs {
 
             paxs::InputFile pifs(str_);
             if (pifs.fail()) {
-                PAXS_ERROR("Failed to read KeyValueTSV.");
+                PAXS_ERROR(str_ + " is missing.");
                 return false;
             }
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
-                PAXS_ERROR("The first line of the KeyValueTSV file is missing.");
+                PAXS_ERROR("The first line of " + str_ + " could not be read.");
                 return false;
             }
             // BOM を削除
@@ -69,12 +69,12 @@ namespace paxs {
 
             const std::size_t file_path = inputPathGetMenuIndex(menu, MurMur3::calcHash("value"));
             if (file_path == SIZE_MAX) {
-                PAXS_ERROR("KeyValueTSV is missing a Value on the first line.");
+                PAXS_ERROR(str_ + " is missing a Value on the first line.");
                 return false; // Value がないのはデータにならない
             }
             const std::size_t file_type = inputPathGetMenuIndex(menu, MurMur3::calcHash("key"));
             if (file_type == SIZE_MAX) {
-                PAXS_ERROR("KeyValueTSV is missing a Key on the first line.");
+                PAXS_ERROR(str_ + " is missing a Key on the first line.");
                 return false; // Key がないのはデータにならない
             }
 
