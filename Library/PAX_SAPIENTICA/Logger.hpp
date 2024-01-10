@@ -82,8 +82,18 @@ namespace paxs {
     };
 }
 
+#ifdef PAXS_DEVELOPMENT
+
 #define PAXS_ERROR(message) paxs::Logger::log(paxs::Logger::Level::PAX_ERROR, __FILE__, __LINE__, message)
 #define PAXS_WARNING(message) paxs::Logger::log(paxs::Logger::Level::PAX_WARNING, __FILE__, __LINE__, message)
 #define PAXS_INFO(message) paxs::Logger::log(paxs::Logger::Level::PAX_INFO, __FILE__, __LINE__, message)
+
+#else
+
+#define PAXS_ERROR(message)
+#define PAXS_WARNING(message)
+#define PAXS_INFO(message)
+
+#endif
 
 #endif // !PAX_SAPIENTICA_LOGGER_HPP

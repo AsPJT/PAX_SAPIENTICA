@@ -280,3 +280,6 @@ AS_DEBUG/
 2010/
 
 Document/Doxygen/*/
+
+DevelopmentBuild/
+ProductionBuild/
