@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+    DOXYGEN_DOCS: ${{github.workspace}}/Documents/Doxygen
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -18,11 +21,11 @@ jobs:
 
     - name: Generate Documentation
       run: |
-        cd ${{github.workspace}}/Document/Doxygen
+        cd $DOXYGEN_DOCS
         doxygen Doxyfile
 
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4.4.3
       with:
         branch: gh-pages
-        folder: ${{github.workspace}}/Document/Doxygen/html
+        folder: $DOXYGEN_DOCS/html
