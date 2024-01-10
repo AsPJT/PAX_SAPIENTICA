@@ -1,4 +1,13 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Texture.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Texture.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="10,5,265,61"/>
+<area shape="rect" id="node1" title=" " alt="" coords="518,5,773,61"/>
 <area shape="rect" id="node2" href="$Graphics_8hpp.html" title=" " alt="" coords="5,109,269,165"/>
+<area shape="rect" id="node3" href="$InitLogo_8hpp.html" title=" " alt="" coords="179,317,448,373"/>
+<area shape="rect" id="node5" href="$LocationPoint_8hpp.html" title=" " alt="" coords="682,213,987,269"/>
+<area shape="rect" id="node8" href="$LocationRange_8hpp.html" title=" " alt="" coords="345,213,658,269"/>
+<area shape="rect" id="node9" href="$PersonLocation_8hpp.html" title=" " alt="" coords="681,317,997,373"/>
+<area shape="rect" id="node10" href="$XYZTiles_8hpp.html" title=" " alt="" coords="1093,109,1368,165"/>
+<area shape="rect" id="node4" href="$Main_8hpp.html" title=" " alt="" coords="682,525,931,581"/>
+<area shape="rect" id="node6" href="$MapViewer_8hpp.html" title=" " alt="" coords="662,421,951,477"/>
+<area shape="rect" id="node7" href="$StringViewer_8hpp.html" title=" " alt="" coords="1021,317,1320,373"/>
+<area shape="rect" id="node11" href="$XYZTilesList_8hpp.html" title=" " alt="" coords="1114,213,1411,269"/>
 </map>

@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['x_1223',['x',['../structpaxg_1_1Circle.html#a2097206efc56f9e4812efb051e126817',1,'paxg::Circle::x()'],['../structpaxg_1_1Rect.html#afa870e113a504a60420d9a9a948a3f31',1,'paxg::Rect::x()'],['../structpaxg_1_1Vec2.html#a05b3d2f5f87f3d8f58897efdf97f1084',1,'paxg::Vec2::x()'],['../structpaxg_1_1Vec2f.html#a0295c295524603282ea90e7f130f1ed8',1,'paxg::Vec2f::x()'],['../structs3d_1_1Point.html#a9a86e40c30bdf626967f3b794440c58b',1,'s3d::Point::x()'],['../structs3d_1_1Vec2.html#ad12546f63aa1e46590f707aedd040d4e',1,'s3d::Vec2::x()'],['../structs3d_1_1Rect.html#a7377e7a43069140b58d8d1a900f2307f',1,'s3d::Rect::x()'],['../classs3d_1_1Line.html#ad1f4feea7e278708855878f02d293d03',1,'s3d::Line::x()'],['../classs3d_1_1Vec3.html#a372c9fb37603f7e275d69f5ea636b427',1,'s3d::Vec3::x()'],['../classs3d_1_1Quaternion.html#a2c2c669ae9489003ef6d09fa9ef9b7e7',1,'s3d::Quaternion::x()'],['../classs3d_1_1Sphere.html#a182520c66d984b580d5161ce070640c0',1,'s3d::Sphere::x()'],['../structpaxs_1_1Vector2.html#a0dc97e2a2af586366bb1fd6f98bf821b',1,'paxs::Vector2::x()']]],
-  ['xyz_5ftile_5flist_1224',['xyz_tile_list',['../classpaxs_1_1MapViewerSiv3D.html#a8223e9b5c1505feb0606d64141ec92ca',1,'paxs::MapViewerSiv3D']]],
-  ['xyz_5ftile_5fz_5fstr_5findex_1225',['xyz_tile_z_str_index',['../classpaxs_1_1StringViewerSiv3D.html#a370cf62628df38ee56c3d36d033b3275',1,'paxs::StringViewerSiv3D']]]
+  ['u8_5fmax_5fp_5flog2_5fslope_5fmax_1671',['u8_max_p_log2_slope_max',['../namespacepaxs.html#aadce9acbe852551cfde7724ebd1cb962',1,'paxs']]],
+  ['unit_5fgroup_5fmax_1672',['unit_group_max',['../structpaxs_1_1SimulationConstants.html#adb35f7de735b4f10982e1c8ca43de6dd',1,'paxs::SimulationConstants']]],
+  ['unit_5fgroup_5fmin_1673',['unit_group_min',['../structpaxs_1_1SimulationConstants.html#af5384065d4c120e019bad0789d5ebcb9',1,'paxs::SimulationConstants']]],
+  ['utf8_5fbom_1674',['utf8_bom',['../namespacepaxs.html#ad2aea3041960a2bb45bd733b47c5ec2c',1,'paxs']]]
 ];

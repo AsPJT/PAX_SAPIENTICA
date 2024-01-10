@@ -1,6 +1,7 @@
 <map id="paxg::IDrawable" name="paxg::IDrawable">
-<area shape="rect" id="node1" title=" " alt="" coords="109,5,237,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="177,5,305,32"/>
 <area shape="rect" id="node2" href="$structpaxg_1_1Circle.html" title=" " alt="" coords="5,80,104,107"/>
 <area shape="rect" id="node3" href="$structpaxg_1_1Rect.html" title=" " alt="" coords="128,80,219,107"/>
-<area shape="rect" id="node4" href="$structpaxg_1_1Texture.html" title=" " alt="" coords="243,80,354,107"/>
+<area shape="rect" id="node4" href="$structpaxg_1_1RoundRect.html" title=" " alt="" coords="243,80,375,107"/>
+<area shape="rect" id="node5" href="$structpaxg_1_1Texture.html" title=" " alt="" coords="399,80,510,107"/>
 </map>

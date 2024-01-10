@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['samplerstate_1264',['SamplerState',['../namespaces3d.html#a0f5ae2f56ec08492d537eb3a5fec6be7',1,'s3d']]]
+  ['texturedesc_1718',['TextureDesc',['../namespaces3d.html#a5b42e807576f710e4d777a1b278d68ac',1,'s3d']]],
+  ['textureformat_1719',['TextureFormat',['../namespaces3d.html#ac843bc04b7a921e5ff1aa4fc99a43e7c',1,'s3d']]]
 ];

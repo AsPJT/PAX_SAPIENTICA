@@ -1,15 +1,20 @@
 var searchData=
 [
-  ['pi_974',['pi',['../classpaxs_1_1Math.html#aad1cbbcb3c84fbfe813e09d1b54a9d5c',1,'paxs::Math']]],
-  ['pi2_975',['pi2',['../classpaxs_1_1Math.html#abdca6086592f5924922197ef149f48ed',1,'paxs::Math']]],
-  ['pi3_976',['pi3',['../classpaxs_1_1Math.html#a679a561589aac5802919b9a46950a7ab',1,'paxs::Math']]],
-  ['pi4_977',['pi4',['../classpaxs_1_1Math.html#a14c3c99a58c8cebf3d1d90c72b1e4e87',1,'paxs::Math']]],
-  ['pihalf_978',['piHalf',['../classpaxs_1_1Math.html#ada2a1d04719f1823473a97160df35a37',1,'paxs::Math']]],
-  ['placenamelocation_979',['PlaceNameLocation',['../classpaxs_1_1PlaceNameLocation.html#adc0cfceb16f49379bc3bd73072d52f94',1,'paxs::PlaceNameLocation']]],
-  ['play_980',['play',['../classs3d_1_1Sound.html#ad58314d59d4d32beaf64502cb5fbc7d2',1,'s3d::Sound']]],
-  ['point_981',['Point',['../structs3d_1_1Point.html#a4680fccc87de22f2ea61a5fb07ac6c1a',1,'s3d::Point::Point()'],['../structs3d_1_1Point.html#a92a90b707db1efe7a15018895baaefa3',1,'s3d::Point::Point(std::size_t _x, std::size_t _y)']]],
-  ['pos_982',['Pos',['../classs3d_1_1Mouse.html#abc52ff6304169615832ac1ee5a42c1c3',1,'s3d::Mouse']]],
-  ['press_983',['Press',['../classs3d_1_1Key.html#af971bea608e349e259a61fd19303a232',1,'s3d::Key']]],
-  ['pressed_984',['pressed',['../classs3d_1_1Input.html#a6ce0d72cf552293af4f79b9d7af3ee83',1,'s3d::Input::pressed()'],['../namespacepaxs.html#a935076283cffecf5501e75cfab36d2cb',1,'paxs::pressed()']]],
-  ['pulldown_985',['Pulldown',['../classpaxs_1_1Pulldown.html#a7f412a4b2fcc5eaac1eaca9b50e4f8b6',1,'paxs::Pulldown::Pulldown()=default'],['../classpaxs_1_1Pulldown.html#a59ad844d4e27221febbb77e1fd37d670',1,'paxs::Pulldown::Pulldown(const std::vector&lt; Languages &gt; &amp;items_, const std::size_t start_index_, const std::size_t start_language_index_, const std::vector&lt; s3d::Font &gt; &amp;font_, const s3d::Point &amp;pos_={ 0, 0 }, PulldownType pdt_=PulldownType::Zero, const bool is_one_font_=false)']]]
+  ['personlocationlist_1319',['PersonLocationList',['../structpaxs_1_1PersonLocationList.html#a8f2f9225ae53620daa832ea39261fdd9',1,'paxs::PersonLocationList::PersonLocationList()=default'],['../structpaxs_1_1PersonLocationList.html#a489beabfd70e005497f7c992e60316fd',1,'paxs::PersonLocationList::PersonLocationList(const std::vector&lt; PersonLocationPoint &gt; &amp;location_point_list_, paxs::MercatorDeg start_start_coordinate_, paxs::MercatorDeg start_end_coordinate_, paxs::MercatorDeg end_start_coordinate_, paxs::MercatorDeg end_end_coordinate_, const double min_view_, const double max_view_, const double min_year_, const double max_year_, const std::uint_least32_t lpe_, const std::uint_least32_t place_texture_) noexcept']]],
+  ['personlocationpoint_1320',['PersonLocationPoint',['../structpaxs_1_1PersonLocationPoint.html#af22213bb20210f6c94b9f33e4404daba',1,'paxs::PersonLocationPoint::PersonLocationPoint()=default'],['../structpaxs_1_1PersonLocationPoint.html#adcb4f953da4df66d36de876706ba27e1',1,'paxs::PersonLocationPoint::PersonLocationPoint(const std::unordered_map&lt; std::uint_least32_t, std::string &gt; &amp;place_name_, const paxs::MercatorDeg &amp;start_coordinate_, const paxs::MercatorDeg &amp;end_coordinate_, const double overall_length_, const double min_view_, const double max_view_, const double min_year_, const double max_year_, const std::uint_least32_t lpe_, const std::uint_least32_t place_texture_) noexcept']]],
+  ['personnamelocation_1321',['PersonNameLocation',['../classpaxs_1_1PersonNameLocation.html#a72d6a4c69f515c5f7ee9e60aa92c0454',1,'paxs::PersonNameLocation']]],
+  ['pi_1322',['pi',['../classpaxs_1_1Math.html#aad1cbbcb3c84fbfe813e09d1b54a9d5c',1,'paxs::Math']]],
+  ['pi2_1323',['pi2',['../classpaxs_1_1Math.html#abdca6086592f5924922197ef149f48ed',1,'paxs::Math']]],
+  ['pi3_1324',['pi3',['../classpaxs_1_1Math.html#a679a561589aac5802919b9a46950a7ab',1,'paxs::Math']]],
+  ['pi4_1325',['pi4',['../classpaxs_1_1Math.html#a14c3c99a58c8cebf3d1d90c72b1e4e87',1,'paxs::Math']]],
+  ['pihalf_1326',['piHalf',['../classpaxs_1_1Math.html#ada2a1d04719f1823473a97160df35a37',1,'paxs::Math']]],
+  ['placenamelocation_1327',['PlaceNameLocation',['../classpaxs_1_1PlaceNameLocation.html#a7763c7012f9e26c6b53682e20e361e09',1,'paxs::PlaceNameLocation']]],
+  ['play_1328',['play',['../classs3d_1_1Sound.html#ad58314d59d4d32beaf64502cb5fbc7d2',1,'s3d::Sound']]],
+  ['point_1329',['Point',['../structs3d_1_1Point.html#a4680fccc87de22f2ea61a5fb07ac6c1a',1,'s3d::Point::Point()'],['../structs3d_1_1Point.html#a92a90b707db1efe7a15018895baaefa3',1,'s3d::Point::Point(std::size_t _x, std::size_t _y)']]],
+  ['pos_1330',['pos',['../structpaxg_1_1Rect.html#a8fe90ece2e31faa8e9ab8ac6a2cf0942',1,'paxg::Rect::pos()'],['../structpaxg_1_1RoundRect.html#aa4da1f466325f5ffd22c2fb4454ba2f6',1,'paxg::RoundRect::pos()'],['../classs3d_1_1Mouse.html#abc52ff6304169615832ac1ee5a42c1c3',1,'s3d::Mouse::Pos()']]],
+  ['press_1331',['Press',['../classs3d_1_1Key.html#af971bea608e349e259a61fd19303a232',1,'s3d::Key']]],
+  ['pressed_1332',['pressed',['../structpaxs_1_1InputStruct.html#a81d44dd5be17d555434b2c51efb47017',1,'paxs::InputStruct::pressed()'],['../classs3d_1_1Input.html#a6ce0d72cf552293af4f79b9d7af3ee83',1,'s3d::Input::pressed()'],['../namespacepaxs.html#a5928eab82e8f7913b856dd738a24db39',1,'paxs::pressed()']]],
+  ['pressedleft2_1333',['pressedLeft2',['../classpaxg_1_1Mouse.html#a8178acd3120c343bdad09e4381ee5113',1,'paxg::Mouse']]],
+  ['preupdate_1334',['preUpdate',['../classpaxs_1_1Settlement.html#ac24d90cb0db6e114cd01e1eee0324874',1,'paxs::Settlement']]],
+  ['pulldown_1335',['Pulldown',['../classpaxs_1_1Pulldown.html#a7f412a4b2fcc5eaac1eaca9b50e4f8b6',1,'paxs::Pulldown::Pulldown()=default'],['../classpaxs_1_1Pulldown.html#ac357fa7368d5eb9425a667c56f567769',1,'paxs::Pulldown::Pulldown(const SelectLanguage *select_language_ptr_, const Language *language_ptr_, const std::vector&lt; std::uint_least32_t &gt; &amp;items_key_, LanguageFonts &amp;font_, std::uint_least8_t font_size_, std::uint_least8_t font_buffer_thickness_size_, const paxg::Vec2i &amp;pos_={ 0, 0 }, std::size_t pdt_=0, const bool is_one_font_=false)']]]
 ];

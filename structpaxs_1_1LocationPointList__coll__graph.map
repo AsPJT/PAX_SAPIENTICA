@@ -1,0 +1,5 @@
+<map id="paxs::LocationPointList" name="paxs::LocationPointList">
+<area shape="rect" id="node1" title=" " alt="" coords="11,185,183,212"/>
+<area shape="rect" id="node2" href="$structpaxs_1_1MercatorDeg.html" title=" " alt="" coords="25,81,170,108"/>
+<area shape="rect" id="node3" href="$structpaxs_1_1Vector2.html" title=" " alt="" coords="5,5,189,32"/>
+</map>

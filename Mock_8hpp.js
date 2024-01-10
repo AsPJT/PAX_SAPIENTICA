@@ -79,9 +79,9 @@ var Mock_8hpp =
       [ "Frameless", "Mock_8hpp.html#acd22dbad90e30998f478ecee6b7154d9a3efb260c1d9e3ab6b5d6c4a49a7db171", null ],
       [ "Sizable", "Mock_8hpp.html#acd22dbad90e30998f478ecee6b7154d9a33aaf10f3c62a00f59f9764179dfe2da", null ]
     ] ],
-    [ "Max", "Mock_8hpp.html#a0923f8055c2d2506ea93fa18df7129bf", null ],
+    [ "Max", "Mock_8hpp.html#a1e12fb19c2ad818a23c420058d73723a", null ],
     [ "step", "Mock_8hpp.html#a7ae5c060fb82ceed111e411e8a183389", null ],
-    [ "ToString", "Mock_8hpp.html#a30cca5845ccbbd2f2523621dbc7aacbf", null ],
+    [ "ToString", "Mock_8hpp.html#aebcbc2586baf4cbd125bffb4b76574d5", null ],
     [ "bottomCenter", "Mock_8hpp.html#a78f1e7aac5fee2e348d6d03697c8f4cb", null ],
     [ "bottomLeft", "Mock_8hpp.html#abe2774a9c67d0e7bff7a43aacac4556b", null ],
     [ "input", "Mock_8hpp.html#ad5f8ec33ed8b8efd116c2ae9faa27511", null ],

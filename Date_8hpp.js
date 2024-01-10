@@ -6,6 +6,7 @@ var Date_8hpp =
     [ "GregorianDate", "classpaxs_1_1cal_1_1GregorianDate.html", "classpaxs_1_1cal_1_1GregorianDate" ],
     [ "JulianDate", "classpaxs_1_1cal_1_1JulianDate.html", "classpaxs_1_1cal_1_1JulianDate" ],
     [ "JapanDate", "classpaxs_1_1cal_1_1JapanDate.html", "classpaxs_1_1cal_1_1JapanDate" ],
+    [ "ChinaDate", "classpaxs_1_1cal_1_1ChinaDate.html", "classpaxs_1_1cal_1_1ChinaDate" ],
     [ "DateDay", "Date_8hpp.html#aa89224bde4d2f68a54d06e486bd5bf5b", null ],
     [ "DateGengo", "Date_8hpp.html#a27b0a0d6ba2693a85ea212918345ea5d", null ],
     [ "DateMonth", "Date_8hpp.html#ae1891ac68dc0820edcbde20da8a5462c", null ],

@@ -1,12 +1,15 @@
 var searchData=
 [
-  ['w_623',['w',['../structpaxg_1_1Rect.html#a5efe59de3be6daf2e16376ac1b6880c9',1,'paxg::Rect::w()'],['../structs3d_1_1Rect.html#a874f9b3ab46a6e16b6852482bd1e8f56',1,'s3d::Rect::w()'],['../classs3d_1_1Line.html#a5e1e4235a569e26df1cdb018735ac979',1,'s3d::Line::w()'],['../classs3d_1_1Font.html#a7395acc6644b0f15ae4d8628e1d6fda6',1,'s3d::Font::w()'],['../classs3d_1_1Quaternion.html#ae33f7ceee8176dec2710efc526cab6a9',1,'s3d::Quaternion::w()']]],
-  ['w_624',['W',['../namespacepaxs.html#a46eacacedc98035eed006bd5b6e9345ba61e9c06ea9a85a5088a499df6458d276',1,'paxs']]],
-  ['warning_625',['WARNING',['../classpaxs_1_1Logger.html#a3f15ea26e9fd373842905b844d81152da059e9861e0400dfbe05c98a841f3f96b',1,'paxs::Logger']]],
-  ['white_626',['White',['../namespaces3d.html#ab13ab7b184d808ea55b520b81d316028a25a81701fbfa4a1efdf660a950c1d006',1,'s3d']]],
-  ['width_627',['Width',['../classs3d_1_1Scene.html#a5bb3ddcef181824507a47e24b501bafe',1,'s3d::Scene']]],
-  ['width_628',['width',['../classs3d_1_1Texture.html#a21088f49552341d3fac98f9acaa81ce7',1,'s3d::Texture']]],
-  ['window_629',['Window',['../classs3d_1_1Window.html',1,'s3d']]],
-  ['window_2ehpp_630',['Window.hpp',['../Window_8hpp.html',1,'']]],
-  ['windowstyle_631',['WindowStyle',['../namespaces3d.html#acd22dbad90e30998f478ecee6b7154d9',1,'s3d']]]
+  ['value_5ftype_804',['value_type',['../structs3d_1_1Rect.html#a9d5cf21e541c16896fb1969d6de3ae78',1,'s3d::Rect']]],
+  ['vec2_805',['Vec2',['../structs3d_1_1Vec2.html',1,'s3d::Vec2'],['../structs3d_1_1Vec2.html#af1623267b8f82cd7d168d41d867dffdf',1,'s3d::Vec2::Vec2()'],['../structs3d_1_1Vec2.html#abc9cb8ac3c73f35ba605673a7f3b14c5',1,'s3d::Vec2::Vec2(int, int)'],['../structs3d_1_1Vec2.html#a72d6468ccaba88f0a35da6210da60855',1,'s3d::Vec2::Vec2(double _x, double _y)']]],
+  ['vec2_2ehpp_806',['Vec2.hpp',['../Vec2_8hpp.html',1,'']]],
+  ['vec2f_807',['Vec2f',['../structpaxg_1_1Vec2f.html',1,'paxg::Vec2f'],['../structpaxg_1_1Vec2f.html#a645c220285a71fb4258456e6ee4bfad5',1,'paxg::Vec2f::Vec2f()']]],
+  ['vec2i_808',['Vec2i',['../structpaxg_1_1Vec2i.html',1,'paxg::Vec2i'],['../structpaxg_1_1Vec2i.html#aebb369fcff08f14d955e16fcebe523f1',1,'paxg::Vec2i::Vec2i()=default'],['../structpaxg_1_1Vec2i.html#aa5366ebfaecb54819fd2bf0d8c0177aa',1,'paxg::Vec2i::Vec2i(const int x, const int y)']]],
+  ['vec3_809',['Vec3',['../classs3d_1_1Vec3.html',1,'s3d::Vec3'],['../classs3d_1_1Vec3.html#af66cf91cf644de4bbfb2e784b3115c2b',1,'s3d::Vec3::Vec3()'],['../classs3d_1_1Vec3.html#ad1c893f3490b9a24d66cb9d8b34e1640',1,'s3d::Vec3::Vec3(float _x, float _y, float _z)']]],
+  ['vector2_810',['Vector2',['../structpaxs_1_1Vector2.html',1,'paxs::Vector2&lt; T &gt;'],['../classpaxs_1_1Agent.html#af9b03018a34097f7d9b4d5a903a987cb',1,'paxs::Agent::Vector2()'],['../classpaxs_1_1Data.html#acd41c64d0289b6142783eead8ab3832e',1,'paxs::Data::Vector2()'],['../classpaxs_1_1Environment.html#aa13ee38a50423b2d5b74c5f81d10fcc8',1,'paxs::Environment::Vector2()'],['../classpaxs_1_1Human.html#a5f313593e56f44d1098c40b2bf828653',1,'paxs::Human::Vector2()'],['../classpaxs_1_1Object.html#a574b1076cd6a21e942df78824d58da35',1,'paxs::Object::Vector2()'],['../classpaxs_1_1Settlement.html#aa1517beb45f98c8f9d02d29b405c1645',1,'paxs::Settlement::Vector2()'],['../classpaxs_1_1SettlementGrid.html#a9624067a7fd44a69e0cc34d9854a0285',1,'paxs::SettlementGrid::Vector2()'],['../classpaxs_1_1SettlementSimulator.html#aad1056a1ef218eaa5020df66c8577100',1,'paxs::SettlementSimulator::Vector2()'],['../classpaxs_1_1Simulator.html#a7d8e02d73e5294d893a4e816ada9120e',1,'paxs::Simulator::Vector2()'],['../structpaxs_1_1Vector2.html#afc7290a1017e6945851a59cc403666e4',1,'paxs::Vector2::Vector2() noexcept=default'],['../structpaxs_1_1Vector2.html#a5c60cccf23167d4683f4332cfea4a601',1,'paxs::Vector2::Vector2(T x, T y) noexcept']]],
+  ['vector2_2ehpp_811',['Vector2.hpp',['../Vector2_8hpp.html',1,'']]],
+  ['vector2_3c_20double_20_3e_812',['Vector2&lt; double &gt;',['../structpaxs_1_1Vector2.html',1,'paxs']]],
+  ['vector2_3c_20gridtype_20_3e_813',['Vector2&lt; GridType &gt;',['../structpaxs_1_1Vector2.html',1,'paxs']]],
+  ['vector2_3c_20int_20_3e_814',['Vector2&lt; int &gt;',['../structpaxs_1_1Vector2.html',1,'paxs']]],
+  ['version_2ehpp_815',['Version.hpp',['../Version_8hpp.html',1,'']]]
 ];

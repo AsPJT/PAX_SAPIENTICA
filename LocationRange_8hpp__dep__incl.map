@@ -1,7 +1,6 @@
-<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Siv3D/LocationRange.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Siv3D/LocationRange.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="181,5,408,76"/>
-<area shape="rect" id="node2" href="$Calendar_8hpp.html" title=" " alt="" coords="5,124,232,195"/>
-<area shape="rect" id="node3" href="$Main_8hpp.html" title=" " alt="" coords="31,480,257,551"/>
-<area shape="rect" id="node4" href="$StringViewer_8hpp.html" title=" " alt="" coords="56,243,283,313"/>
-<area shape="rect" id="node5" href="$MapViewer_8hpp.html" title=" " alt="" coords="107,361,333,432"/>
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/LocationRange.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/LocationRange.hpp">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,319,61"/>
+<area shape="rect" id="node2" href="$Main_8hpp.html" title=" " alt="" coords="105,317,355,373"/>
+<area shape="rect" id="node3" href="$MapViewer_8hpp.html" title=" " alt="" coords="85,213,375,269"/>
+<area shape="rect" id="node4" href="$StringViewer_8hpp.html" title=" " alt="" coords="199,109,498,165"/>
 </map>

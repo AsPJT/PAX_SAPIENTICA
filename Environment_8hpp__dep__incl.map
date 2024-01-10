@@ -1,11 +1,11 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Simulation/Environment.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Simulation/Environment.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="404,5,663,76"/>
-<area shape="rect" id="node2" href="$Agent_8hpp.html" title=" " alt="" coords="321,124,580,195"/>
-<area shape="rect" id="node4" href="$Simulator_8hpp.html" title=" " alt="" coords="539,243,797,313"/>
+<area shape="rect" id="node1" title=" " alt="" coords="432,5,691,76"/>
+<area shape="rect" id="node2" href="$Agent_8hpp.html" title=" " alt="" coords="215,124,473,195"/>
+<area shape="rect" id="node4" href="$Simulator_8hpp.html" title=" " alt="" coords="288,243,547,313"/>
+<area shape="rect" id="node6" href="$Settlement_8hpp.html" title=" " alt="" coords="593,243,852,313"/>
+<area shape="rect" id="node8" href="$SettlementSimulator_8hpp.html" title=" " alt="" coords="720,480,979,551"/>
+<area shape="rect" id="node9" href="$SettlementAgent_8hpp.html" title=" " alt="" coords="599,124,857,195"/>
 <area shape="rect" id="node3" href="$Human_8hpp.html" title=" " alt="" coords="5,243,264,313"/>
-<area shape="rect" id="node9" href="$LocationPoint_8hpp.html" title=" " alt="" coords="288,243,515,313"/>
-<area shape="rect" id="node5" href="$Calendar_8hpp.html" title=" " alt="" coords="421,361,648,432"/>
-<area shape="rect" id="node6" href="$Main_8hpp.html" title=" " alt="" coords="521,717,748,788"/>
-<area shape="rect" id="node7" href="$StringViewer_8hpp.html" title=" " alt="" coords="421,480,648,551"/>
-<area shape="rect" id="node8" href="$MapViewer_8hpp.html" title=" " alt="" coords="371,599,597,669"/>
+<area shape="rect" id="node5" href="$Main_8hpp.html" title=" " alt="" coords="281,369,530,425"/>
+<area shape="rect" id="node7" href="$SettlementGrid_8hpp.html" title=" " alt="" coords="553,361,812,432"/>
 </map>

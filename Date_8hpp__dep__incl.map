@@ -1,9 +1,11 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Calendar/Date.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Calendar/Date.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="231,5,478,76"/>
-<area shape="rect" id="node2" href="$Calendars_8hpp.html" title=" " alt="" coords="306,243,553,313"/>
-<area shape="rect" id="node3" href="$Calendar_8hpp.html" title=" " alt="" coords="5,361,232,432"/>
-<area shape="rect" id="node5" href="$StringViewer_8hpp.html" title=" " alt="" coords="231,480,457,551"/>
-<area shape="rect" id="node7" href="$JulianDayNumber_8hpp.html" title=" " alt="" coords="151,124,398,195"/>
-<area shape="rect" id="node4" href="$Main_8hpp.html" title=" " alt="" coords="156,717,383,788"/>
-<area shape="rect" id="node6" href="$MapViewer_8hpp.html" title=" " alt="" coords="156,599,383,669"/>
+<area shape="rect" id="node1" title=" " alt="" coords="529,5,776,76"/>
+<area shape="rect" id="node2" href="$Calendar_8hpp.html" title=" " alt="" coords="551,361,826,417"/>
+<area shape="rect" id="node4" href="$StringViewer_8hpp.html" title=" " alt="" coords="263,465,562,521"/>
+<area shape="rect" id="node6" href="$Calendars_8hpp.html" title=" " alt="" coords="500,243,747,313"/>
+<area shape="rect" id="node7" href="$JulianDayNumber_8hpp.html" title=" " alt="" coords="449,124,696,195"/>
+<area shape="rect" id="node3" href="$Main_8hpp.html" title=" " alt="" coords="105,673,355,729"/>
+<area shape="rect" id="node5" href="$MapViewer_8hpp.html" title=" " alt="" coords="268,569,557,625"/>
+<area shape="rect" id="node8" href="$XYZTiles_8hpp.html" title=" " alt="" coords="70,250,345,306"/>
+<area shape="rect" id="node9" href="$XYZTilesList_8hpp.html" title=" " alt="" coords="27,361,324,417"/>
 </map>

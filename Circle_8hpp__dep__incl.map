@@ -1,4 +1,9 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Circle.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Circle.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="15,5,259,61"/>
+<area shape="rect" id="node1" title=" " alt="" coords="185,5,429,61"/>
 <area shape="rect" id="node2" href="$Graphics_8hpp.html" title=" " alt="" coords="5,109,269,165"/>
+<area shape="rect" id="node3" href="$LocationPoint_8hpp.html" title=" " alt="" coords="441,109,746,165"/>
+<area shape="rect" id="node7" href="$PersonLocation_8hpp.html" title=" " alt="" coords="146,213,462,269"/>
+<area shape="rect" id="node4" href="$Main_8hpp.html" title=" " alt="" coords="562,421,811,477"/>
+<area shape="rect" id="node5" href="$MapViewer_8hpp.html" title=" " alt="" coords="358,317,647,373"/>
+<area shape="rect" id="node6" href="$StringViewer_8hpp.html" title=" " alt="" coords="537,213,836,269"/>
 </map>

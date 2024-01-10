@@ -1,4 +1,5 @@
 <map id="paxs::LocationRange" name="paxs::LocationRange">
-<area shape="rect" id="node1" title=" " alt="" coords="5,95,163,121"/>
-<area shape="rect" id="node2" href="$classs3d_1_1Texture.html" title=" " alt="" coords="33,5,135,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,171,163,197"/>
+<area shape="rect" id="node2" href="$structpaxg_1_1Texture.html" title=" " alt="" coords="29,81,139,108"/>
+<area shape="rect" id="node3" href="$structpaxg_1_1IDrawable.html" title=" " alt="" coords="20,5,148,32"/>
 </map>

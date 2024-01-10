@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['view_1330',['view',['../Init_8hpp.html#a9be7fe8a0fa4203a46e91d05d7629dcaac29e396d151e12a0e2f8ffa62decd2b2',1,'Init.hpp']]]
+  ['up_1756',['Up',['../namespacepaxs.html#a46eacacedc98035eed006bd5b6e9345ba258f49887ef8d14ac268c92b02503aaa',1,'paxs']]]
 ];

@@ -4,6 +4,7 @@ var structpaxs_1_1Vector2 =
     [ "Vector2", "structpaxs_1_1Vector2.html#a5c60cccf23167d4683f4332cfea4a601", null ],
     [ "distance", "structpaxs_1_1Vector2.html#a100ca8bd21ee2bc079159d4d0d877b88", null ],
     [ "length", "structpaxs_1_1Vector2.html#a43802d27fe230005200427dc38a27002", null ],
+    [ "operator!=", "structpaxs_1_1Vector2.html#a9b701b5e7939c6c2252360d3a9e9531a", null ],
     [ "operator*", "structpaxs_1_1Vector2.html#a721b8eacfe5721ad086de45cebe9676a", null ],
     [ "operator*", "structpaxs_1_1Vector2.html#a882abfa0449a4fa0f53c13735a4f09e6", null ],
     [ "operator*=", "structpaxs_1_1Vector2.html#af23eb57a8aed1ed029eb5d6efd3fc195", null ],
@@ -15,7 +16,9 @@ var structpaxs_1_1Vector2 =
     [ "operator/", "structpaxs_1_1Vector2.html#a8a39ff7c2ecc6b21a8121cda3ae33984", null ],
     [ "operator/", "structpaxs_1_1Vector2.html#afa640549235450bb691bc71044f99785", null ],
     [ "operator/=", "structpaxs_1_1Vector2.html#a55f6ac64fcda17fbed423ca832ebbaee", null ],
-    [ "operator<=>", "structpaxs_1_1Vector2.html#a9f1d01691e52504cec1044d114e604bb", null ],
+    [ "operator==", "structpaxs_1_1Vector2.html#aeee96a13cafcdf85d7cd7b640eca1cd3", null ],
+    [ "toString", "structpaxs_1_1Vector2.html#a98ba79b08e50c7a2f6afc0101119ece4", null ],
+    [ "toU64", "structpaxs_1_1Vector2.html#a95f1f8c06e8d4b583e04585cc278f44f", null ],
     [ "operator<<", "structpaxs_1_1Vector2.html#a8207a47e8067ddb51e907bb319926922", null ],
     [ "x", "structpaxs_1_1Vector2.html#a0dc97e2a2af586366bb1fd6f98bf821b", null ],
     [ "y", "structpaxs_1_1Vector2.html#a417cf10919ed9d661ec9346563380a37", null ]

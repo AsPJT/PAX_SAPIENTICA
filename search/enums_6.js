@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['maptype_1259',['MapType',['../Init_8hpp.html#a4c73d8aa04c5b31558f468b95d4748b3',1,'Init.hpp']]],
-  ['menubartype_1260',['MenuBarType',['../Init_8hpp.html#a9be7fe8a0fa4203a46e91d05d7629dca',1,'Init.hpp']]]
+  ['palette_1715',['Palette',['../namespaces3d.html#ab13ab7b184d808ea55b520b81d316028',1,'s3d']]]
 ];
