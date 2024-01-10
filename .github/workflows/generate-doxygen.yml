@@ -21,11 +21,11 @@ jobs:
 
     - name: Generate Documentation
       run: |
-        cd $DOXYGEN_DOCS
+        cd ${{env.DOXYGEN_DOCS}}
         doxygen Doxyfile
 
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4.4.3
       with:
         branch: gh-pages
-        folder: $DOXYGEN_DOCS/html
+        folder: ${{env.DOXYGEN_DOCS}}/html
