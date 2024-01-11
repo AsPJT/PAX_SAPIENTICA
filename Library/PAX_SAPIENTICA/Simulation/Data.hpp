@@ -42,16 +42,15 @@ namespace paxs {
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z) noexcept : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z) {
+        explicit Data(const std::string& file_path, const std::string name, const int default_z, const int pj_z) noexcept : name(name), default_z(default_z), pj_z(pj_z) {
             z_mag = std::pow(2, default_z - pj_z);
-            column_size = static_cast<int>((end_position.x - start_position.x + 1) * pixel_size * z_mag);
+            GridType area_x = SimulationConstants::getInstance()->getEndArea().x - SimulationConstants::getInstance()->getStartArea().x + 1;
+            column_size = static_cast<int>(area_x * pixel_size * z_mag);
 
             load(file_path);
         }
         Data(const Data& other) noexcept
-            : start_position(other.start_position),
-            end_position(other.end_position),
-            name(other.name),
+            : name(other.name),
             data(other.data),
             default_z(other.default_z),
             pj_z(other.pj_z),
@@ -61,8 +60,6 @@ namespace paxs {
         // Copy assignment operator
         constexpr Data& operator=(const Data& other) noexcept {
             if (this != &other) {
-                start_position = other.start_position;
-                end_position = other.end_position;
                 name = other.name;
                 data = other.data;
                 default_z = other.default_z;
@@ -95,8 +92,6 @@ namespace paxs {
         }
 
     private:
-        Vector2 start_position; // シミュレーションの左上の座標
-        Vector2 end_position; // シミュレーションの右下の座標
         std::string name; // データの名前
         std::unordered_map<std::uint_least64_t, DataType> data; // データ
         int default_z; // データのz値
@@ -137,18 +132,18 @@ namespace paxs {
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
         void loadBinary(const std::string& file_path) noexcept {
-            const Vector2 start_position_ = start_position * z_mag;
-            const Vector2 end_position_ = end_position * z_mag;
+            const Vector2 start_position = SimulationConstants::getInstance()->getStartArea() * z_mag;
+            const Vector2 end_position = SimulationConstants::getInstance()->getEndArea() * z_mag;
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
 
-            std::uint_least32_t file_count = (end_position_.x - start_position_.x + 1) * (end_position_.y - start_position_.y + 1);
+            std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
 
             DataType tmp_data[pixel_size * pixel_size]{};
 
-            for (GridType y = start_position_.y; y <= end_position_.y; ++y) {
-                for (GridType x = start_position_.x; x <= end_position_.x; ++x) {
+            for (GridType y = start_position.y; y <= end_position.y; ++y) {
+                for (GridType x = start_position.x; x <= end_position.x; ++x) {
                     const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".bin";
 
                     if (!std::filesystem::exists(AppConfig::getInstance()->getRootPath() + file_path + file_name)) {
@@ -187,8 +182,8 @@ namespace paxs {
 
             DataType tmp_data[pixel_size * pixel_size]{};
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
-            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
@@ -230,16 +225,16 @@ namespace paxs {
         /// @brief Load numeric TSV files.
         /// @brief 数値TSVファイルのロード
         void loadNumericTSV(const std::string& file_path) noexcept {
-            const Vector2 start_position_ = start_position * z_mag;
-            const Vector2 end_position_ = end_position * z_mag;
+            const Vector2 start_position = SimulationConstants::getInstance()->getStartArea() * z_mag;
+            const Vector2 end_position = SimulationConstants::getInstance()->getEndArea() * z_mag;
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
 
-            std::uint_least32_t file_count = (end_position_.x - start_position_.x + 1) * (end_position_.y - start_position_.y + 1);
+            std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
 
-            for (GridType y = start_position_.y; y <= end_position_.y; ++y) {
-                for (GridType x = start_position_.x; x <= end_position_.x; ++x) {
+            for (GridType y = start_position.y; y <= end_position.y; ++y) {
+                for (GridType x = start_position.x; x <= end_position.x; ++x) {
                     const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".tsv";
 
                     if (!std::filesystem::exists(AppConfig::getInstance()->getRootPath() + file_path + file_name)) {
@@ -300,8 +295,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
-            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
@@ -369,8 +364,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
-            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
@@ -420,8 +415,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = start_position * pixel_size;
-            const Vector2 end_xyz_position = end_position * pixel_size;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {

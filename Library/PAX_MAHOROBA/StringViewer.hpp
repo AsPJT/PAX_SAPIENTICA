@@ -91,8 +91,6 @@ namespace paxs {
                         std::random_device seed_gen;
                         simulator = std::make_unique<paxs::SettlementSimulator<int>>(
                             map_list_path, japan_provinces_path,
-                            SimulationConstants::getInstance()->getStartArea(),
-                            SimulationConstants::getInstance()->getEndArea(),
                             SimulationConstants::getInstance()->getZ(),
                             seed_gen());
                         simulator->init();

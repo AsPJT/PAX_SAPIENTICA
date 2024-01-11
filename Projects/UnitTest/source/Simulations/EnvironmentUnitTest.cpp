@@ -38,22 +38,9 @@ protected:
         const std::string root = PROJECT_ROOT_PATH;
         const std::string setting_file_path = root + "/Projects/UnitTest/data/Simulations/UnitTestMapList.tsv";
 
-        const paxs::Vector2<int> start_position(850, 340);
-        const paxs::Vector2<int> end_position(950, 450);
-
-        environment = paxs::Environment<int>(setting_file_path, start_position, end_position, 10);
+        environment = paxs::Environment<int>(setting_file_path, 10);
     }
 };
-
-TEST_F (EnvironmentUnitTest, getStartPosition) {
-    const paxs::Vector2<int> start_position(850, 340);
-    EXPECT_EQ(environment.getStartPosition(), start_position);
-}
-
-TEST_F (EnvironmentUnitTest, getEndPosition) {
-    const paxs::Vector2<int> end_position(950, 450);
-    EXPECT_EQ(environment.getEndPosition(), end_position);
-}
 
 TEST_F (EnvironmentUnitTest, getData) {
     const paxs::Vector2<int> test_position(0, 0);
