@@ -91,7 +91,6 @@ namespace paxs {
                         std::random_device seed_gen;
                         simulator = std::make_unique<paxs::SettlementSimulator<int>>(
                             map_list_path, japan_provinces_path,
-                            SimulationConstants::getInstance()->getZ(),
                             seed_gen());
                         simulator->init();
                         koyomi_siv.steps.setDay(0); // ステップ数を 0 にする

@@ -39,13 +39,8 @@ namespace paxs {
         using Agent = paxs::Agent<GridType>;
 
         constexpr explicit Simulator() = default;
-        explicit Simulator(const std::string& setting_file_path, const int z, const unsigned seed = 0) noexcept :
-            environment(std::make_unique<Environment>(setting_file_path, z)), gen(seed) {
-                if (z <= 0) {
-                    PAXS_ERROR("Z must be greater than 0.");
-                    return;
-                }
-            }
+        explicit Simulator(const std::string& setting_file_path, const unsigned seed = 0) noexcept :
+            environment(std::make_unique<Environment>(setting_file_path)), gen(seed) {}
 
         /// @brief Initialize the simulator.
         /// @brief エージェントの初期化

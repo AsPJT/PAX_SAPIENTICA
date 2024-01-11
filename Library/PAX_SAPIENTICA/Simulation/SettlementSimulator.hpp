@@ -46,13 +46,8 @@ namespace paxs {
 
         constexpr explicit SettlementSimulator() = default;
 
-        explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const int z, const unsigned seed = 0) noexcept :
-            environment(std::make_unique<Environment>(map_list_path, z)), gen(seed) {
-            if (z <= 0) {
-                PAXS_ERROR("Z must be greater than 0.");
-                return;
-            }
-
+        explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const unsigned seed = 0) noexcept :
+            environment(std::make_unique<Environment>(map_list_path)), gen(seed) {
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
 
             // ランダムに移動確率を設定

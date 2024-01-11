@@ -42,8 +42,8 @@ namespace paxs {
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        explicit Data(const std::string& file_path, const std::string name, const int default_z, const int pj_z) noexcept : name(name), default_z(default_z), pj_z(pj_z) {
-            z_mag = std::pow(2, default_z - pj_z);
+        explicit Data(const std::string& file_path, const std::string name, const int default_z) noexcept : name(name), default_z(default_z) {
+            z_mag = std::pow(2, default_z - SimulationConstants::getInstance()->getZ());
             GridType area_x = SimulationConstants::getInstance()->getEndArea().x - SimulationConstants::getInstance()->getStartArea().x + 1;
             column_size = static_cast<int>(area_x * pixel_size * z_mag);
 
@@ -53,7 +53,6 @@ namespace paxs {
             : name(other.name),
             data(other.data),
             default_z(other.default_z),
-            pj_z(other.pj_z),
             z_mag(other.z_mag),
             column_size(other.column_size) {}
 
@@ -63,7 +62,6 @@ namespace paxs {
                 name = other.name;
                 data = other.data;
                 default_z = other.default_z;
-                pj_z = other.pj_z;
                 z_mag = other.z_mag;
                 column_size = other.column_size;
             }
@@ -95,7 +93,6 @@ namespace paxs {
         std::string name; // データの名前
         std::unordered_map<std::uint_least64_t, DataType> data; // データ
         int default_z; // データのz値
-        int pj_z; // シミュレーションのz値
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
         int column_size; // シミュレーションの列数
 
@@ -115,7 +112,7 @@ namespace paxs {
             if(file_names[0].find(".tsv") != std::string::npos) {
                 loadNumericTSV(file_path);
             } else if(file_names[0].find(".txt") != std::string::npos) {
-                if (default_z > pj_z) loadNumericTextAndCompress(file_names);
+                if (z_mag > 1) loadNumericTextAndCompress(file_names);
                 else loadNumericText(file_names);
             } else if(file_names[0].find(".bin") != std::string::npos) {
                 if constexpr (std::is_same<DataType, std::uint_least8_t>::value) {
@@ -467,7 +464,7 @@ namespace paxs {
             }
 
             z_mag = 1;
-            default_z = pj_z;
+            default_z = SimulationConstants::getInstance()->getZ();
 
             StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;

@@ -38,7 +38,7 @@ protected:
         const std::string root = PROJECT_ROOT_PATH;
         const std::string setting_file_path = root + "/Projects/UnitTest/data/Simulations/UnitTestMapList.tsv";
 
-        environment = paxs::Environment<int>(setting_file_path, 10);
+        environment = paxs::Environment<int>(setting_file_path);
     }
 };
 
