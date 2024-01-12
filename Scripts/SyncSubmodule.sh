@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(dirname "$0")
-cd "${SCRIPT_DIR}/.."
+ROOT_PATH=$(dirname $(dirname "$0"))
+cd "${ROOT_PATH}"
 
 git submodule sync
 git submodule update --init --recursive

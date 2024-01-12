@@ -263,7 +263,7 @@ namespace paxg {
             size = size_;
             if (path.size() == 0) return;
             if (!font.loadFromFile(path)) {
-                PAXS_WARNING("Font file is not found.");
+                PAXS_WARNING(path + " is missing.");
             }
         }
 

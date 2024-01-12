@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Create build directory
-SCRIPT_DIR=$(cd $(dirname $0); pwd)
-cmake -S${SCRIPT_DIR}/../Projects -B${SCRIPT_DIR}/../build
+ROOT_PATH=$(dirname $(dirname "$0"))
+cmake -S${ROOT_PATH}/Projects -B${ROOT_PATH}/build
 
 # Build the project
-cmake --build ${SCRIPT_DIR}/../build
+cmake --build ${ROOT_PATH}/build
 
 # Change directory to build and execute ctest
-cd ${SCRIPT_DIR}/../build
+cd ${ROOT_PATH}/build
 ctest
