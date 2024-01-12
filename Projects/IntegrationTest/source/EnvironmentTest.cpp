@@ -16,8 +16,6 @@
 int main()
 {
 	const std::string setting_file_path = "../../../Data/Simulations/MapList.tsv";
-	paxs::Vector2<int> start_position(861, 350);
-	paxs::Vector2<int> end_position(950, 450);
-    paxs::Environment<int> environment(setting_file_path, start_position, end_position, 10);
+    paxs::Environment<int> environment(setting_file_path);
 	std::cout << "data size: " << environment.data_map.size() << std::endl;
 }

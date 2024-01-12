@@ -49,7 +49,7 @@ namespace paxs {
         std::unordered_map<std::uint_least32_t, std::unique_ptr<DataVariant>> data_map;
 
         constexpr explicit Environment() noexcept = default;
-        explicit Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) noexcept : start_position(start_position), end_position(end_position), z(z) {
+        explicit Environment(const std::string& setting_file_path) noexcept {
             std::vector<std::vector<std::string>> settings;
 
             settings = File::readTSV(AppConfig::getInstance()->getRootPath() + setting_file_path);
@@ -89,27 +89,22 @@ namespace paxs {
                 const std::uint_least32_t key = MurMur3::calcHash(settings[i][key_column].size(), settings[i][key_column].c_str());
                 const std::string& key_str = settings[i][key_column];
                 if (data_type == MurMur3::calcHash("u8")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("u32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("f32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("s16")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else {
                     PAXS_WARNING("data_type is not found in " + setting_file_path);
                 }
             }
         }
-
-        /// @brief シミュレーションの左上の座標の取得
-        constexpr Vector2 getStartPosition() const noexcept { return start_position; }
-        /// @brief シミュレーションの右下の座標の取得
-        constexpr Vector2 getEndPosition() const noexcept { return end_position; }
 
         /// @brief Get data.
         /// @brief データの取得
@@ -188,10 +183,6 @@ namespace paxs {
                 return false;
             }
         }
-    private:
-        Vector2 start_position; // シミュレーションの左上の座標
-        Vector2 end_position; // シミュレーションの右下の座標
-        int z; // シミュレーションのz値
     };
 }
 

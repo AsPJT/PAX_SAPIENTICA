@@ -39,17 +39,8 @@ namespace paxs {
         using Agent = paxs::Agent<GridType>;
 
         constexpr explicit Simulator() = default;
-        explicit Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) noexcept :
-            environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
-                if (z <= 0) {
-                    PAXS_ERROR("Z must be greater than 0.");
-                    return;
-                }
-                if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
-                    PAXS_ERROR("Start position and end position must be greater than 0.");
-                    return;
-                }
-            }
+        explicit Simulator(const std::string& setting_file_path, const unsigned seed = 0) noexcept :
+            environment(std::make_unique<Environment>(setting_file_path)), gen(seed) {}
 
         /// @brief Initialize the simulator.
         /// @brief エージェントの初期化
@@ -109,7 +100,7 @@ namespace paxs {
         /// @brief Randomly place the agents.
         /// @brief エージェントをランダムに配置する
         void randomizeAgents(const int agent_count) {
-            const Vector2& offset = environment->getEndPosition() - environment->getStartPosition();
+            const Vector2& offset = SimulationConstants::getInstance()->getEndArea() - SimulationConstants::getInstance()->getStartArea();
             std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
             std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
             std::uniform_int_distribution<> age_dist(0, 20);

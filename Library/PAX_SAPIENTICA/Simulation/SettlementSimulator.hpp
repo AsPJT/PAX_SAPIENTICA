@@ -46,17 +46,8 @@ namespace paxs {
 
         constexpr explicit SettlementSimulator() = default;
 
-        explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) noexcept :
-            environment(std::make_unique<Environment>(map_list_path, start_position, end_position, z)), gen(seed) {
-            if (z <= 0) {
-                PAXS_ERROR("Z must be greater than 0.");
-                return;
-            }
-            if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
-                PAXS_ERROR("Start position and end position must be greater than 0.");
-                return;
-            }
-
+        explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const unsigned seed = 0) noexcept :
+            environment(std::make_unique<Environment>(map_list_path)), gen(seed) {
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/Ryoseikoku.tsv");
 
             // ランダムに移動確率を設定
@@ -64,9 +55,9 @@ namespace paxs {
             move_probability = move_probability_dist(gen);
         }
         /// @brief 環境を設定
-        void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) noexcept {
+        void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, const int z, const unsigned seed = 0) noexcept {
             environment.reset();
-            environment = std::make_unique<Environment>(map_list_path, start_position, end_position, z);
+            environment = std::make_unique<Environment>(map_list_path, z);
 
             gen = std::mt19937(seed);
 
