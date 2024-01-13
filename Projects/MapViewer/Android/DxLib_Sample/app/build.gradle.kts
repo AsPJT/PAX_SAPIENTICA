@@ -3,11 +3,11 @@
 }
 
 android {
-    namespace = "com.example.paxsapientica"
+    namespace = "com.aspjt.paxsapientica"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.example.paxsapientica"
+        applicationId = "com.aspjt.paxsapientica"
         minSdk = 26
         targetSdk = 33
         versionCode = 1

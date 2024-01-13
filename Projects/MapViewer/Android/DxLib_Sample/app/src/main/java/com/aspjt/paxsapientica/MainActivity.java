@@ -1,12 +1,12 @@
 /*  */
-package com.example.paxsapientica;
+package com.aspjt.paxsapientica;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
-// import com.example.paxsapientica.databinding.ActivityMainBinding;
+// import com.aspjt.paxsapientica.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 

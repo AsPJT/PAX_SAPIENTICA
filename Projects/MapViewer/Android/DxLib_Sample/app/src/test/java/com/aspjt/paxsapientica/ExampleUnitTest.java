@@ -1,4 +1,4 @@
-﻿package com.example.paxsapientica;
+﻿package com.aspjt.paxsapientica;
 
 import org.junit.Test;
 
