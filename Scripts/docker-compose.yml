@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  ubuntu-builder:
+    image: ubuntu:20.04
+    volumes:
+      - ../:/workspace
+    working_dir: /workspace
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+    command: ["Scripts/UbuntuBuild.sh"]
