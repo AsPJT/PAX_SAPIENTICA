@@ -4,8 +4,8 @@ services:
   ubuntu-builder:
     image: ubuntu:20.04
     volumes:
-      - ../:/workspace
+      - ../../:/workspace
     working_dir: /workspace
     environment:
       - DEBIAN_FRONTEND=noninteractive
-    command: ["Scripts/UbuntuBuild.sh"]
+    command: ["Scripts/UbuntuBuild/Build.sh"]
