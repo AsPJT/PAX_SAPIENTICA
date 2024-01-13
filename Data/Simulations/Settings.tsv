@@ -1,6 +1,6 @@
 key	value	ja-JP
 start_julian_day	1728746	シミュレーション開始日(ユリウス日)
-area	tsushima	シミュレーションの対象範囲
+area	japan	シミュレーションの対象範囲
 unit_group_min	11	単位集団の最小人数
 unit_group_max	40	単位集団の最大人数
 basic_group_min	41	基礎集団の最小人数

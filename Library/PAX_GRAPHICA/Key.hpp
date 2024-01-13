@@ -236,8 +236,15 @@ namespace paxs {
         // 平城京
         //Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
         //double width = 0.1; // マップの幅
-        double max_width = 640.0; // マップの最大幅
-        double min_width = 0.00005; // マップの最小幅
+        
+        // マップの最大幅
+        double max_width =
+#ifdef PAXS_MAHOROBA
+            30.0;
+#else
+            300.0;
+#endif
+        double min_width = 0.005; // マップの最小幅
         double height = (width) / double(paxg::Window::width()) * double(paxg::Window::height()); // マップの高さ
         double expansion_size = 50.0; // マップの拡大量
         std::vector<Key> enl_keys; // 拡大キー
@@ -389,7 +396,45 @@ namespace paxs {
                     height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
                 }
             }
-        }
+
+            // 位置調整
+            if (width < min_width) {
+                width = min_width;
+                height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+            }
+            if (width > max_width) {
+                width = max_width;
+                height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+            }
+
+#ifdef PAXS_MAHOROBA
+            constexpr double west_max = (208.0 / 256.0) * 360.0 - 180.0;
+            constexpr double east_max = (256.0 / 256.0) * 360.0 - 180.0;
+            // 位置調整
+            if (center.getX() - width / 2 < west_max) {
+                center.setX(west_max + width / 2);
+            }
+            if (center.getX() + width / 2 > east_max) {
+                center.setX(east_max - width / 2);
+            }
+
+            constexpr double north_max = (1.0 - (80.0 / 256.0)) * 360.0 - 180.0;
+            constexpr double south_max = (1.0 - (128.0 / 256.0)) * 360.0 - 180.0;
+#else
+            constexpr double north_max = (1.0 - (0.0 / 256.0)) * 360.0 - 180.0;
+            constexpr double south_max = (1.0 - (256.0 / 256.0)) * 360.0 - 180.0;
+#endif
+            // 位置調整
+            if (center.getY() + height / 2 > north_max) {
+                center.setY(north_max - height / 2);
+            }
+            if (center.getY() - height / 2 < south_max) {
+                center.setY(south_max + height / 2);
+            }
+            
+
+
+        } // Update
 
         void setWidth(const double width_) {
             width = width_;
