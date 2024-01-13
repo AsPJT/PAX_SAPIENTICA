@@ -10,3 +10,7 @@
     - MapViewerの本番ビルドを行うためのスクリプトです
 - SyncSubmodule.*
     - submoduleを同期するためのスクリプトです
+- UbuntuBuild/Build.sh
+    - Ubuntu上でのビルドを行うためのスクリプトです
+- UbuntuBuild/docker-compose.yml
+    - build環境を構築するためのdocker-composeファイルです
