@@ -1,6 +1,8 @@
 ﻿name: CMake-All-Build
 
 on:
+  push:
+    branches: [ main, develop ]
   pull_request:
 
 env:
@@ -10,6 +12,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && !contains(github.event.head_commit.message, '[ci skip]')"
 
     strategy:
       matrix:
