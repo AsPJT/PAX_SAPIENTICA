@@ -28,7 +28,6 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     endif()
 endif()
 
-add_subdirectory(GeographicDataToSimulationGrid)
 add_subdirectory(IncludeTest)
 add_subdirectory(IntegrationTest)
 add_subdirectory(MapViewer)

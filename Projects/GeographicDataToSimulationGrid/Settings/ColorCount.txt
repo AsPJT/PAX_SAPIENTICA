@@ -1,3 +1,0 @@
-tsv_path = ../Settings/test.tsv
-input_path = ../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/ColorCodingByProvincesOfJapan_8_218_90_16_16_2.png
-output_path = ../../../Data/Map/XYZTile/Union/ProvincesOfJapanCount.tsv
