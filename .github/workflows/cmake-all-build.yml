@@ -31,13 +31,12 @@ jobs:
       run: |
         sudo apt-get clean
         sudo apt-get update
-        sudo apt-get install libopencv-dev
-        sudo apt-get install cmake
+        sudo apt-get install -y ninja-build libsfml-dev cmake
 
     - name: Configure CMake
       run: |
         mkdir ${{github.workspace}}/build
-        cmake -B ${{github.workspace}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}} -G "Unix Makefiles"
+        cmake -B ${{github.workspace}}/build -DCMAKE_CXX_COMPILER=${{matrix.compiler}} -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -S ${{env.WORK_SPACE}} -GNinja
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target all -j 12
