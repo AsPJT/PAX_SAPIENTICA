@@ -26,12 +26,12 @@ set(PAXS_BUILD_TYPE "Development" CACHE STRING "Choose the type of build (Develo
 
 if(PAXS_BUILD_TYPE STREQUAL "Development")
     find_package(SFML 2.5 COMPONENTS graphics)
+    set(BINARY_NAME "SFMLMapviewer")
     if(SFML_FOUND)
-        set(BINARY_NAME "SFMLMapviewer")
         if(APPLE)
-            set(CPP_FILE "${OS}/SFML_2.6.1/Main.cpp")
+            set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/Main.cpp")
         else()
-            set(CPP_FILE "${OS}/SFML/Main.cpp")
+            set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML/Main.cpp")
         endif()
         add_executable(${BINARY_NAME} ${CPP_FILE})
         target_link_libraries(${BINARY_NAME} sfml-graphics)
@@ -40,16 +40,38 @@ if(PAXS_BUILD_TYPE STREQUAL "Development")
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
         )
-    endif()
-elseif(PAXS_BUILD_TYPE STREQUAL "Production")
-    set(BINARY_NAME "PAX_SAPIENTICA")
-    if(APPLE)
-        set(SFML_INCLUDE_DIR "${OS}/SFML_2.6.1/include")
-        set(SFML_LIBRARY_DIR "${OS}/SFML_2.6.1/lib")
+    elseif(APPLE)
+        set(SFML_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/include")
+        set(SFML_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/lib")
+        set(SFML_FRAMEWORK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/Frameworks")
 
         include_directories(${SFML_INCLUDE_DIR})
 
         add_executable(${BINARY_NAME} ${OS}/SFML_2.6.1/Main.cpp)
+
+        target_link_directories(${BINARY_NAME} PRIVATE ${SFML_LIBRARY_DIR})
+        target_link_libraries(${BINARY_NAME} sfml-graphics.2.6.1 sfml-window.2.6.1 sfml-system.2.6.1)
+        add_custom_command(
+            TARGET ${BINARY_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SFML_LIBRARY_DIR} ${DESTINATION_DIR}/SFML/lib
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${SFML_FRAMEWORK_DIR} ${DESTINATION_DIR}/SFML/Frameworks
+        )
+
+        set_target_properties(${BINARY_NAME} PROPERTIES
+            INSTALL_RPATH "@executable_path/SFML/lib"
+            BUILD_WITH_INSTALL_RPATH TRUE
+        )
+    endif()
+elseif(PAXS_BUILD_TYPE STREQUAL "Production")
+    set(BINARY_NAME "PAX_SAPIENTICA")
+    if(APPLE)
+        set(SFML_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/include")
+        set(SFML_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/lib")
+
+        include_directories(${SFML_INCLUDE_DIR})
+
+        add_executable(${BINARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/Main.cpp)
 
         target_link_directories(${BINARY_NAME} PRIVATE ${SFML_LIBRARY_DIR})
         target_link_libraries(${BINARY_NAME} sfml-graphics.2.6.1 sfml-window.2.6.1 sfml-system.2.6.1)
