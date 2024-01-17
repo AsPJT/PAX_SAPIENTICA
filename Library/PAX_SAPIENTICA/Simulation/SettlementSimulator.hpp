@@ -194,69 +194,6 @@ namespace paxs {
         constexpr const std::unordered_map<std::uint_least64_t, SettlementGrid>&
             cgetSettlementGrids() const noexcept { return settlement_grids; }
 
-        /// @brief Export the simulation result to a file.
-        /// @brief シミュレーション結果をファイルに出力する
-        void exportResult(const std::string path) const noexcept {
-            // 各令制国の人口を計算
-            std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
-            for (auto& settlement_grid : settlement_grids) {
-                for (auto& settlement : settlement_grid.second->getSettlements()) {
-                    std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), settlement.getPosition());
-                    auto it = ryoseikoku_population_map.find(ryoseikoku_id);
-                    if (it != ryoseikoku_population_map.end()) {
-                        it->second += settlement.getPopulation();
-                    } else {
-                        ryoseikoku_population_map[ryoseikoku_id] = settlement.getPopulation();
-                    }
-                }
-            }
-
-            // 令制国id順にソート
-            std::vector<std::pair<std::uint_least8_t, std::uint_least32_t>> ryoseikoku_population_list;
-            ryoseikoku_population_list.reserve(ryoseikoku_population_map.size());
-            for (auto& ryoseikoku_population : ryoseikoku_population_map) {
-                ryoseikoku_population_list.emplace_back(ryoseikoku_population);
-            }
-
-            std::sort(ryoseikoku_population_list.begin(), ryoseikoku_population_list.end(), [](const std::pair<std::uint_least8_t, std::uint_least32_t>& a, const std::pair<std::uint_least8_t, std::uint_least32_t>& b) {
-                return a.first < b.first;
-            });
-
-            // 計算した結果をファイルに出力
-            std::ofstream ofs(path);
-            if (!ofs) {
-                PAXS_ERROR("Failed to open file: " + path);
-                return;
-            }
-
-            ofs << "ID\tName\tPopulation" << std::endl;
-            for (auto& ryoseikoku_population : ryoseikoku_population_map) {
-                ofs << static_cast<int>(ryoseikoku_population.first) << "\t" << japan_provinces->cgetRyoseikoku(ryoseikoku_population.first).name << "\t" << ryoseikoku_population.second << std::endl;
-            }
-
-            ofs.close();
-        }
-
-        /// @brief Export the simulation initialization result to a file.
-        /// @brief シミュレーションの初期化結果をファイルに出力する
-        void exportInitResult(const std::string path) const noexcept {
-            // ID, 座標, 人口をファイルに出力
-            std::ofstream ofs(path);
-            if (!ofs) {
-                PAXS_ERROR("Failed to open file: " + path);
-                return;
-            }
-
-            ofs << "ID\tX\tY\tPopulation" << std::endl;
-            for (auto& settlement_grid : settlement_grids) {
-                for (auto& settlement : settlement_grid.second.getSettlements()) {
-                    ofs << settlement.getId() << "\t" << settlement.getPosition().x << "\t" << settlement.getPosition().y << "\t" << settlement.getPopulation() << std::endl;
-                }
-            }
-
-            ofs.close();
-        }
-
     private:
         std::unordered_map<std::uint_least64_t, SettlementGrid> settlement_grids;
         std::shared_ptr<Environment> environment;
