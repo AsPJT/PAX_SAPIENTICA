@@ -8,6 +8,8 @@ if(APPLE)
     set(OS "macOS")
 elseif(UNIX)
     set(OS "Ubuntu")
+elseif(WIN32)
+    set(OS "Windows")
 else()
     message(FATAL_ERROR "Unsupported OS")
 endif()
@@ -24,7 +26,29 @@ set(DESTINATION_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 set(PAXS_BUILD_TYPE "Development" CACHE STRING "Choose the type of build (Development or Production)")
 
-if(PAXS_BUILD_TYPE STREQUAL "Development")
+if(WIN32)
+    if(PAXS_BUILD_TYPE STREQUAL "Development")
+        set(BINARY_NAME "SFMLMapviewer")
+        add_definitions(-DPAXS_DEVELOPMENT)
+    elseif(PAXS_BUILD_TYPE STREQUAL "Production")
+        set(BINARY_NAME "PAX_SAPIENTICA")
+    endif()
+    set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/Main.cpp")
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/include)
+    add_executable(${BINARY_NAME} ${CPP_FILE})
+    target_link_directories(${BINARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/lib)
+    target_link_libraries(${BINARY_NAME} sfml-graphics.lib sfml-window.lib sfml-system.lib)
+    set(SFML_DLLS
+        "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/sfml-graphics-2.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/sfml-window-2.dll"
+        "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/sfml-system-2.dll"
+    )
+    add_custom_command(
+        TARGET ${BINARY_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy ${SFML_DLLS} ${DESTINATION_DIR}
+    )
+elseif(PAXS_BUILD_TYPE STREQUAL "Development")
     find_package(SFML 2.5 COMPONENTS graphics)
     set(BINARY_NAME "SFMLMapviewer")
     if(SFML_FOUND)
