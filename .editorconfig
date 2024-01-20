@@ -8,5 +8,5 @@ indent_style = space
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.tsv]
+[*.{md,tsv}]
 insert_final_newline = false

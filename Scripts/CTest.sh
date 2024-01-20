@@ -2,11 +2,12 @@
 
 # Create build directory
 ROOT_PATH=$(dirname $(dirname "$0"))
-cmake -S${ROOT_PATH}/Projects -B${ROOT_PATH}/build
+cd "${ROOT_PATH}"
+cmake -SProjects -Bbuild -DCMAKE_BUILD_TYPE=Release
 
 # Build the project
-cmake --build ${ROOT_PATH}/build
+cmake --build build
 
 # Change directory to build and execute ctest
-cd ${ROOT_PATH}/build
-ctest
+cd build
+ctest --output-on-failure
