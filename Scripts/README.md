@@ -4,9 +4,9 @@
     - コード行数をカウントするためのスクリプトです
 - CTest.*
     - CTestを実行するためのスクリプトです
-- DevelopmentBuild.sh
+- DevelopmentBuild.*
     - MapViewerの開発ビルドを行うためのスクリプトです
-- ProductionBuild.sh
+- ProductionBuild.*
     - MapViewerの本番ビルドを行うためのスクリプトです
 - SyncSubmodule.*
     - submoduleを同期するためのスクリプトです
