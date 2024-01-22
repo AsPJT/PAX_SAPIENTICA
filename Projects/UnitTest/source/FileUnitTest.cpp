@@ -18,9 +18,9 @@
 
 #ifdef PROJECT_ROOT_PATH
 const std::string root = PROJECT_ROOT_PATH;
-const std::string prefix = root + "/Projects/UnitTest/data/File";
+const std::string prefix = root + "/Projects/UnitTest/Data/File";
 #else
-const std::string prefix = "../data/File";
+const std::string prefix = "../Data/File";
 #endif // PROJECT_ROOT_PATH
 
 TEST (FileUnitTest, readFile) {
@@ -63,7 +63,7 @@ TEST (FileUnitTest, getFileNames) {
     std::vector<std::string> actual = paxs::File::getFileNames(prefix);
 
     std::sort(actual.begin(), actual.end());
-    
+
     ASSERT_EQ(expected, actual);
 
 }
