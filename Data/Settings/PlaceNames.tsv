@@ -4,6 +4,7 @@ Data/PlaceName/TestMap/Kofun.tsv	tomb	日本の古墳	0	0.1
 Data/PlaceName/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1			
 Data/PlaceName/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	0.1			
 Data/PlaceName/EastAsia/Yaponesia/Kamekan.tsv	tomb	甕棺墓	0	0.1			
+Data/PlaceName/EastAsia/Yaponesia/Dotaku.tsv	tomb	銅鐸	0	0.1			
 Data/PlaceName/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1			
 Data/PlaceName/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1			
 Data/PlaceName/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1			
