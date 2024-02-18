@@ -24,7 +24,6 @@
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
-#include <PAX_MAHOROBA/3DModel.hpp>
 #include <PAX_MAHOROBA/Calendar.hpp> // 計算時に必要
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/LocationPoint.hpp>
@@ -205,8 +204,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
         //const std::string map_license_name = U"Maptiles by\n淺野孝利 2023「古墳時代の『常総の内海』水域復原に関する一試論」\n研究代表者 荒井啓汰『埋葬施設からみた常総地域の地域構造』\n特別研究員奨励費報告書 筑波大学大学院 人文社会科学研究科";
         //std::string map_license_name = reinterpret_cast<const char*>(u8"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.");
         //const std::string map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
-
-        paxs::Graphics3DModel g3d_model;
 
         void init(
             const SelectLanguage& select_language,
@@ -735,10 +732,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 //                //s3d::LicenseManager::ShowInBrowser();
 //#endif
 //            }
-
-            if (!visible[MurMur3::calcHash(2, "3D")]) {
-                g3d_model.updateRotation(); // 3D モデルを回転させる
-            }
 
             // メニューバー
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });

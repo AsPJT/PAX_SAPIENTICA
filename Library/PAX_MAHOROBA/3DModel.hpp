@@ -34,10 +34,7 @@ namespace paxs {
         s3d::Texture sky;
 
         // 描画するテクスチャの設定
-        s3d::MSRenderTexture renderTexture{
-            s3d::Size{800, 500}/*s3d::Scene::Size()*/, // 表示領域
-                s3d::TextureFormat::R8G8B8A8_Unorm_SRGB, // テクスチャのフォーマットを指定
-                s3d::HasDepth::Yes }; // 深度バッファあり
+        s3d::MSRenderTexture renderTexture;
 
         // カメラ位置を指定
         s3d::DebugCamera3D camera{
@@ -50,6 +47,12 @@ namespace paxs {
     public:
         Graphics3DModel() {
 #ifdef PAXS_USING_SIV3D
+
+            renderTexture = s3d::MSRenderTexture{
+            s3d::Size{s3d::Scene::Width(), s3d::Scene::Height()}/*s3d::Scene::Size()*/, // 表示領域
+                s3d::TextureFormat::R8G8B8A8_Unorm_SRGB, // テクスチャのフォーマットを指定
+                s3d::HasDepth::Yes }; // 深度バッファあり
+
             // 透明な背景を設定
             backgroundColor = s3d::ColorF{ 1,1,1,0 }.removeSRGBCurve();
 
@@ -57,7 +60,7 @@ namespace paxs {
             sekishitsu_model = s3d::Model{ s3d::Unicode::FromUTF8(AppConfig::getInstance()->getRootPath()) + U"Data/3DModels/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj"};
 
             // 360 度写真をロード
-            sky = s3d::Texture(s3d::Image{ s3d::Unicode::FromUTF8(AppConfig::getInstance()->getRootPath()) + U"Data/360DegreePhotos/stone2.jpg" }.mirror());
+            sky = s3d::Texture(s3d::Image{ s3d::Unicode::FromUTF8(AppConfig::getInstance()->getRootPath()) + U"Data/360DegreePhotos/sky.jpg" }.mirror());
 
             // モデルに付随するテクスチャをアセット管理に登録
             s3d::Model::RegisterDiffuseTextures(sekishitsu_model, s3d::TextureDesc::MippedSRGB);
@@ -87,16 +90,26 @@ namespace paxs {
 
                 static double x = 0.0;
                 static double y = 0.0;
-                if (s3d::KeyLeft.pressed()) x += 1.0;
-                if (s3d::KeyRight.pressed()) x -= 1.0;
-                if (s3d::KeyDown.pressed()) y -= 1.0;
-                if (s3d::KeyUp.pressed()) y += 1.0;
+                static double z = -15.5;
+
+                if (s3d::KeyLeft.pressed() || s3d::KeyA.pressed()) x += 1.2;
+                if (s3d::KeyRight.pressed() || s3d::KeyD.pressed()) x -= 1.2;
+                if (s3d::KeyDown.pressed() || s3d::KeyS.pressed()) y -= 1.2;
+                if (s3d::KeyUp.pressed() || s3d::KeyW.pressed()) y += 1.2;
+                if (s3d::KeyQ.pressed()) {
+                    z -= 0.015;
+                    if (z < -17.0) z = -17.0;
+                }
+                if (s3d::KeyE.pressed()) {
+                    z += 0.015;
+                    if (z > -14.2) z = -14.2;
+                }
                 if (x < 0.0) x += 360.0;
                 if (y < 0.0) y += 360.0;
                 if (x >= 360.0) x -= 360.0;
                 if (y >= 360.0) y -= 360.0;
                 // 球体に 360 度写真を貼り付ける
-                s3d::Sphere{ 0, 2, /*-14.2*/-15.5, 2 }.draw(
+                s3d::Sphere{ 0, 2, /*-14.2*/z, 2 }.draw(
                     //s3d::Quaternion::RotateY(rot / 180.0 * 3.1416) *
                     //s3d::Quaternion::RotateX(rot / 180.0 * 3.1416)
                     s3d::Quaternion::RotateY(x / 180.0 * 3.1416) *
@@ -106,8 +119,23 @@ namespace paxs {
 
             // RenderTexture を 2D シーンに描画
             s3d::Graphics3D::Flush(); // 現在までの 3D 描画を実行
+
+            static int count = 0;
+            // 画面サイズが変更されたら幅を変える
+            if (count >= 3) {
+                count = 0;
+                if (renderTexture.width() != s3d::Scene::Width()
+                    || renderTexture.height() != s3d::Scene::Height()) {
+                    renderTexture = s3d::MSRenderTexture{
+    s3d::Size{s3d::Scene::Width(), s3d::Scene::Height()}/*s3d::Scene::Size()*/, // 表示領域
+        s3d::TextureFormat::R8G8B8A8_Unorm_SRGB, // テクスチャのフォーマットを指定
+        s3d::HasDepth::Yes }; // 深度バッファあり
+                }
+            }
+            ++count;
+
             renderTexture.resolve(); // テクスチャを描画可能にする
-            renderTexture.draw(200, 200); // 指定した大きさで描画
+            renderTexture.draw(0, 0); // 指定した大きさで描画
 #endif
         }
 

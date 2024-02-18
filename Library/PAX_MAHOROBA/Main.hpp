@@ -119,6 +119,8 @@ namespace paxs {
 
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
+        paxs::Graphics3DModel g3d_model; // 3D モデル
+
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator<int>> simulator{};
 
@@ -167,7 +169,10 @@ namespace paxs {
             old_width = paxg::Window::width();
             old_height = paxg::Window::height();
 
-            map_view.update(); // キーボード入力を更新
+
+            if (visible[MurMur3::calcHash(2, "3D")]) {
+                map_view.update(); // キーボード入力を更新
+            }
 
             // プルダウンを更新
             string_siv.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.pulldown.getRect().w()), 0 });
@@ -186,26 +191,32 @@ namespace paxs {
             //visible.set(MurMur3::calcHash("Debug"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
             visible.set(MurMur3::calcHash("3D"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(6));
 
+            if (visible[MurMur3::calcHash(2, "3D")]) {
+
             xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
-            // 地図を更新
-            map_siv.update(
-                map_view,
-                select_language,
-                koyomi_siv,
-                string_siv,
+                // 地図を更新
+                map_siv.update(
+                    map_view,
+                    select_language,
+                    koyomi_siv,
+                    string_siv,
 #ifdef PAXS_USING_SIMULATOR
-                simulator,
-                pop_num, // 人口数
-                sat_num, // 集落数
+                    simulator,
+                    pop_num, // 人口数
+                    sat_num, // 集落数
 #endif
-                visible
-            );
-            // 暦を更新
-            bool is_sim = koyomi_siv.update(
+                    visible
+                );
+                // 暦を更新
+                bool is_sim = koyomi_siv.update(
 #ifdef PAXS_USING_SIMULATOR
-                simulator
+                    simulator
 #endif
-            );
+                );
+            }
+            else if (!visible[MurMur3::calcHash(2, "3D")]) {
+                g3d_model.updateRotation(); // 3D モデルを回転させる
+            }
 
             // 文字を更新
             string_siv.update(
