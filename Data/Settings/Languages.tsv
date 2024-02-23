@@ -1,4 +1,4 @@
-key	en-US	ja-JP	zh-TW	zh-CN	ko-KR	es-ES	pt-BR	de-DE	fr-FR	it-IT	tr-TR	pl-PL	el-GR	nl-NL	cs-CZ	uk-UA	ru-RU	id-ID	fa-IR	ar-SA
+﻿key	en-US	ja-JP	zh-TW	zh-CN	ko-KR	es-ES	pt-BR	de-DE	fr-FR	it-IT	tr-TR	pl-PL	el-GR	nl-NL	cs-CZ	uk-UA	ru-RU	id-ID	fa-IR	ar-SA
 en-US	English																			
 ja-JP	日本語																			
 zh-TW	繁體中文																			
@@ -35,7 +35,7 @@ menu_bar_edit_copy	Copy	コピー	复制	复制	복사	Copiar	Copiar	Kopieren	Co
 menu_bar_edit_paste	Paste	貼り付け	粘贴	粘贴	붙여넣기	Pegar	Colar	Einfügen	Coller	Incolla	Yapıştır	Wklej	Επικόλληση	Plakken	Vložit	Вставити	Вставить	Menempel	چسباندن	معجون
 menu_bar_edit_delete	Delete	削除	删除	删除	삭제	Borrar	Apagar	Löschen	Supprimer	Cancellare	Silme	Usuń	Διαγραφή	Verwijderen	Odstranit	Видалити	Удалить	Menghapus	حذف	حذف
 > menu_bar_view																				
-menu_bar_view	View(V)	表示(V)	显示(V)	显示(V)	표시(V)	Ver(V)	Ver(V)	Ansicht(V)	Vue(V)	Vista(V)	Görünüm (V)	Widok(V)	Προβολή(V)	Weergave(V)	Zobrazit(V)	Перегляд(V)	Вид (V)	Melihat (V)	مشاهده (V)	مشاهدة (V)
+menu_bar_view	View	表示	显示	显示	표시	Ver	Ver	Ansicht	Vue	Vista	Görünüm	Widok	Προβολή	Weergave	Zobrazit	Перегляд	Вид	Melihat	مشاهده	مشاهدة
 menu_bar_view_calendar	Calendar	カレンダー	日历	日历	달력	Calendario	Calendário	Kalender	Calendrier	Calendario	Takvim	Kalendarz	Ημερολόγιο	Kalender	Kalendář	Календар	Календарь	Kalender	تقویم	تقويم
 menu_bar_view_map	Map	地図	地图	地图	지도	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة
 menu_bar_view_ui	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI
@@ -43,6 +43,14 @@ menu_bar_view_simulation	Simulation	ステップ数	Simulation	Simulation	Simula
 menu_bar_view_license	License	ライセンス	许可	许可	라이선스	Licencia	Licença	Lizenz	Licence	Licenza	Lisans	Licencja	Άδεια	Licentie	Licence	Ліцензія	Лицензия	Lisensi	مجوز	رخصة
 menu_bar_view_debug	Debug	デバッグ	调试	调试	디버깅	Depurar	Depurar	Debuggen	Débogage	Debug	Hata Ayıklama	Debugowanie	Αποσφαλμάτωση	Debug	Ladění	Налагодження	Отладка	Debug	اشکال زدایی	Debug
 menu_bar_view_3d	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	سه بعدی	ثلاثي الأبعاد
+> menu_bar_place_names																				
+place_names	Place Names	地名・地物	Place Names	地名	지명	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names
+place_names_tomb	Tomb	墳墓	Tomb	坟墓	무덤	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb
+place_names_stone_coffin	Stone Coffin	石棺	Stone Coffin	石棺	석관	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin
+place_names_dotaku	Dotaku	銅鐸	Dotaku	銅鐸	동탁	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku
+place_names_kamekanbo	Jar burial	甕棺墓	Kamekanbo	甕棺葬	독무덤	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo
+place_names_place_name	Place Name	地名	Place Name	地名	지명	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name
+place_names_site	Archaeological site	遺跡	Site	遺蹟	유적	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site
 > menu_bar_calendar																				
 menu_bar_calendar	Calendar(C)	カレンダー(C)	日曆(C)	日历(C)	캘린더(C)	Calendario(C)	Calendário(C)	Kalender(C)	Calendrier(C)	Calendario(C)	Takvim (C)	Kalendarz(C)	Ημερολόγιο(C)	Kalender (C)	Kalendář(C)	Календар(C)	Календарь (C)	Kalender (C)	تقویم (C)	التقويم (C)
 menu_bar_calendar_japan	Japanese Calendar	和暦	日本曆	日本历	일본 달력	Calendario japonés	Calendário Japonês	Japanischer Kalender	Calendrier japonais	Calendario giapponese	Japon Takvimi	Kalendarz japoński	Ιαπωνικό ημερολόγιο	Japanse kalender	Japonský kalendář	Японський календар	Японский календарь	Kalender Jepang	تقویم ژاپنی	التقويم الياباني
