@@ -1,4 +1,4 @@
-value	key
+﻿value	key
 Data/MiniIcon/BlueCircle.svg	BlueCircle
 Data/MiniIcon/RedCircle.svg	RedCircle
 Data/MiniIcon/BrownCircle.svg	BrownCircle
@@ -108,4 +108,10 @@ Data/MiniIcon/PlaceName.svg	PlaceName
 Data/MiniIcon/Tomb/Korea/HwangnamDaechong.svg	HwangnamDaechong
 Data/MiniIcon/Tomb/China/MausoleumOfTheFirstQinEmperor.svg	MausoleumOfTheFirstQinEmperor
 Data/MiniIcon/Kamekan.png	Kamekan
-Data/MiniIcon/Dotaku.png	Dotaku
+Data/MiniIcon/Dotaku/Dotaku.png	Dotaku
+Data/MiniIcon/Dotaku/Dotaku1.png	Dotaku1
+Data/MiniIcon/Dotaku/Dotaku2.png	Dotaku2
+Data/MiniIcon/Dotaku/Dotaku3.png	Dotaku3
+Data/MiniIcon/Dotaku/Dotaku4.png	Dotaku4
+Data/MiniIcon/Dotaku/Dotaku5.png	Dotaku5
+Data/MiniIcon/Dotaku/Dotaku6.png	Dotaku6
