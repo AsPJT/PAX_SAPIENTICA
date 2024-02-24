@@ -1,7 +1,4 @@
 ﻿value	key
-Data/MiniIcon/BlueCircle.svg	BlueCircle
-Data/MiniIcon/RedCircle.svg	RedCircle
-Data/MiniIcon/BrownCircle.svg	BrownCircle
 Data/MiniIcon/Shape/Ripples/Blue.svg	BlueRipples
 Data/MiniIcon/Shape/Ripples/BlueGreen.svg	BlueGreenRipples
 Data/MiniIcon/Shape/Ripples/Brown.svg	BrownRipples
@@ -115,3 +112,6 @@ Data/MiniIcon/Dotaku/Dotaku3.png	Dotaku3
 Data/MiniIcon/Dotaku/Dotaku4.png	Dotaku4
 Data/MiniIcon/Dotaku/Dotaku5.png	Dotaku5
 Data/MiniIcon/Dotaku/Dotaku6.png	Dotaku6
+Data/MiniIcon/BlueCircle.svg	BlueCircle
+Data/MiniIcon/RedCircle.svg	RedCircle
+Data/MiniIcon/BrownCircle.svg	BrownCircle
