@@ -3,7 +3,7 @@ XYZTiles	Data/Settings/XYZTiles.tsv
 Languages	Data/Settings/Languages.tsv
 SimulationRange	Data/Simulations/Range.tsv
 PlaceNames	Data/Settings/PlaceNames.tsv
-MiniIcons	Data/Settings/MiniIcons.tsv
+MiniIcons	Data/Settings/MapIcons.tsv
 PersonNames	Data/Settings/PersonNames.tsv
 Portraits	Data/Settings/Portraits.tsv
 SimulationXYZTiles	Data/Simulations/MapList.tsv

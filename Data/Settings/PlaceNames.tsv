@@ -5,12 +5,6 @@ Data/Genomes/HomoSapiens/HaplogroupInfo/mtDNA-Haplogroup.tsv	mtdna	世界のmtDN
 Data/Genomes/HomoSapiens/Yaponesia/mtDNA-Haplogroup.tsv	mtdna	ヤポネシアmtDNA	0.1				
 Data/PlaceName/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	3			
 Data/PlaceName/TestMap/Hokkaido.tsv	site	北海道の遺跡名	0	0.5			
-Data/PlaceName/TestMap/Kofun.tsv	tomb	日本の古墳	0	0.1
-Data/PlaceName/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1			
-Data/PlaceName/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	0.1			
-Data/PlaceName/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1			
-Data/PlaceName/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1			
-Data/PlaceName/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1			
 Data/PlaceName/EastAsia/Yaponesia/KojikiPlaceName.tsv	place_name	古事記の地名	0	2	1721424	1940208	
 Data/PlaceName/PlaceName.tsv	place_name	汎用的な地名					
 Data/PlaceName/EastAsia/Yaponesia/Ryoseikoku.tsv	place_name	令制国名	1				
@@ -25,7 +19,14 @@ Data/PlaceName/EastAsia/Yaponesia/OmoroSoshiPlaceName.tsv	place_name	おもろ�
 Data/PlaceName/EastAsia/China/China.tsv	place_name	中国大陸の地名	0.1	24	0	9999999	
 Data/PlaceName/EastAsia/Yaponesia/Geoshape/NRCT.tsv	place_name	『日本歴史地名大系』地名項目データセット	0	0.1	1721424	9999999	
 Data/PlaceName/Europe/Roma.tsv	place_name	ローマ帝国	1			9999999	
+Data/PlaceName/TestMap/Kofun.tsv	tomb	日本の古墳	0	0.1
+Data/PlaceName/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1			
+Data/PlaceName/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1			
+Data/PlaceName/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1			
+Data/PlaceName/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1			
 Data/PlaceName/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石室	0	0.1			
 Data/PlaceName/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	0.1			
 Data/PlaceName/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	0.1			
+Data/PlaceName/EastAsia/Yaponesia/Doken.tsv	doken	銅剣	0	0.1
 Data/PlaceName/EastAsia/Yaponesia/Dotaku.tsv	dotaku	銅鐸	0	0.1			
+Data/PlaceName/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	0.1			
