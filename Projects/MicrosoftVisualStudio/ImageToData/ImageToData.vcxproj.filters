@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main_ryoseikoku.cpp">
+    <ClCompile Include="main_segment.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

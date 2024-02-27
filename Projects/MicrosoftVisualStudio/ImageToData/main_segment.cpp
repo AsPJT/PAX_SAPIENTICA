@@ -33,10 +33,21 @@
 //853, 973,
 //326, 448,
 
-constexpr int min_x = 853;
-constexpr int min_y = 385;
-constexpr int max_x = min_x + 64;
-constexpr int max_y = min_y + 64;
+//constexpr int min_x = 853;
+//constexpr int min_y = 385;
+//constexpr int max_x = min_x + 64;
+//constexpr int max_y = min_y + 64;
+
+constexpr int z = 90;
+constexpr int zm = 2;
+
+constexpr int min_x = 216 * zm;
+constexpr int min_y = 96 * zm;
+constexpr int len_x = 16 * zm;
+constexpr int len_y = 16 * zm;
+
+constexpr int max_x = min_x + len_x;
+constexpr int max_y = min_y + len_y;
 
 constexpr int width = 256 * (max_x - min_x);
 constexpr int height = 256 * (max_y - min_y);
@@ -76,8 +87,12 @@ bool ou(const std::string in_, unsigned char* pixels, int row0, int col0, int bp
 
 int main() {
 
-    const std::string input = "../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/zxy_10_853_385_64_64.png";
-    const std::string output = "../../../Data/XYZTiles/Ryoseikoku_20240114_Image/10/zxy_10_";
+    const std::string input = "../../../Data/Map/XYZTile/Union/Ryoseikoku/east_asia_line_" + std::to_string(z) +
+        "_" + std::to_string(min_x) + "_" + std::to_string(min_y) +
+        "_" + std::to_string(len_x) + "_" + std::to_string(len_y) +  ".png";
+    //const std::string input = "../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/zxy_10_853_385_64_64.png";
+    const std::string output = "../../../Data/XYZTiles/NationalBorders/Ryoseikoku/" + std::to_string(z) + "/zxy_" + std::to_string(z) + "_";
+    //const std::string output = "../../../Data/XYZTiles/Ryoseikoku_20240114_Image/10/zxy_10_";
 
     {
         std::ifstream ifs(input);
