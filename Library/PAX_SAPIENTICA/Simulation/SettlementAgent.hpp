@@ -31,7 +31,6 @@ namespace paxs {
 
     /// @brief A class that represents an agent.
     /// @brief エージェントを表すクラス
-    template <typename GridType>
     class SettlementAgent {
     public:
 
@@ -51,7 +50,7 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
-        constexpr float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
+        float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
 
         constexpr std::uint_least32_t getAgeInt() const noexcept { return age; }
 

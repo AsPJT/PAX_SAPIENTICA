@@ -37,18 +37,17 @@ namespace paxs {
 
     /// @brief A class that manages data required for simulation.
     /// @brief シミュレーションに必要なデータを管理するクラス
-    template <typename GridType>
     class Environment {
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
-        using DataVariant = std::variant<Data<std::uint_least8_t, GridType>, Data<std::uint_least32_t, GridType>, Data<float, GridType>, Data<std::int_least16_t, GridType>>;
+        using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>, Data<std::int_least16_t>>;
 
         /// @brief Start position of the simulation.
         /// @brief シミュレーションデータのマップ
         std::unordered_map<std::uint_least32_t, std::unique_ptr<DataVariant>> data_map;
 
-        constexpr explicit Environment() noexcept = default;
+        explicit Environment() noexcept = default;
         explicit Environment(const std::string& setting_file_path) noexcept {
             std::vector<std::vector<std::string>> settings;
 
@@ -89,16 +88,16 @@ namespace paxs {
                 const std::uint_least32_t key = MurMur3::calcHash(settings[i][key_column].size(), settings[i][key_column].c_str());
                 const std::string& key_str = settings[i][key_column];
                 if (data_type == MurMur3::calcHash("u8")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("u32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("f32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("s16")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else {
                     PAXS_WARNING("data_type is not found in " + setting_file_path);
@@ -117,13 +116,13 @@ namespace paxs {
                 PAXS_ERROR(message);
                 throw std::runtime_error(message);
             }
-            return std::get<Data<U, GridType>>(*data_map.at(key)).getValue(position);
+            return std::get<Data<U>>(*data_map.at(key)).getValue(position);
         }
 
         /// @brief Get the land position list.
         /// @brief 陸の位置リストの取得
         constexpr void getLandPositions(std::vector<std::uint64_t>& keys) const {
-            std::get<Data<std::uint_least8_t, GridType>>(*data_map.at(MurMur3::calcHash("gbank"))).getKeys(keys);
+            std::get<Data<std::uint_least8_t>>(*data_map.at(MurMur3::calcHash("gbank"))).getKeys(keys);
         }
 
         /// @brief Is it possible to live?

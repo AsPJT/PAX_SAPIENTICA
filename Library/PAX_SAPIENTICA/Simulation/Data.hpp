@@ -38,7 +38,7 @@ namespace paxs {
 
     /// @brief A class that holds data required for simulation.
     /// @brief シミュレーションに必要なデータを保持するクラス
-    template <typename DataType, typename GridType>
+    template <typename DataType>
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;

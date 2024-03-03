@@ -24,12 +24,9 @@
 namespace paxs {
 
     /// @brief 特定のグリッドに属する集落を管理するクラス
-    template <typename GridType>
     class SettlementGrid {
     public:
-        using Environment = paxs::Environment<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
-        using Settlement = paxs::Settlement<GridType>;
 
         SettlementGrid() = default;
 

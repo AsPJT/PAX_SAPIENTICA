@@ -23,7 +23,6 @@ namespace paxs {
 
     /// @brief Class that represents an object.
     /// @brief オブジェクトを表すクラス
-    template <typename GridType>
     class Object {
     public:
         using Vector2 = paxs::Vector2<GridType>;
@@ -58,7 +57,7 @@ namespace paxs {
             return MapUtility::convertToMercatorCoordinate(start_position, position, z);
         }
 
-        constexpr bool operator==(const paxs::Object<GridType>& a) const noexcept {
+        constexpr bool operator==(const paxs::Object& a) const noexcept {
             return a.position == position && a.id == id && a.name == name;
         }
 

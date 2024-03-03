@@ -30,15 +30,13 @@ namespace paxs {
 
     /// @brief A class that represents an agent.
     /// @brief エージェントを表すクラス
-    template <typename GridType>
-    class Agent : public Object<GridType> {
+    class Agent : public Object {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        using Environment = paxs::Environment<GridType>;
 
-        constexpr explicit Agent(const std::uint_least32_t id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen,
+        explicit Agent(const std::uint_least32_t id, const std::string& name, const Vector2& pos, const std::uint_least8_t gen,
             const std::uint_least32_t age, const std::uint_least32_t life_span, const std::shared_ptr<Environment> env) noexcept
-            : Object<GridType>(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
+            : Object(id, name, pos), gender(gen), age(age), life_span(life_span), environment(env) {}
 
         /// @brief Move the agent.
         /// @brief エージェントを移動させる
@@ -118,7 +116,7 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
-        constexpr float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
+        float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
 
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする
@@ -137,7 +135,7 @@ namespace paxs {
         constexpr std::uint_least8_t getGender() const noexcept { return gender; }
 
         constexpr bool operator==(const Agent& a) const noexcept {
-            return  Object<GridType>::operator==(a) &&
+            return  Object::operator==(a) &&
                 gender == a.gender &&
                 age == a.age &&
                 life_span == a.life_span &&

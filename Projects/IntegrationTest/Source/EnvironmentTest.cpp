@@ -16,6 +16,6 @@
 int main()
 {
 	const std::string setting_file_path = "../../../Data/Simulations/MapList.tsv";
-    paxs::Environment<int> environment(setting_file_path);
+    paxs::Environment environment(setting_file_path);
 	std::cout << "data size: " << environment.data_map.size() << std::endl;
 }

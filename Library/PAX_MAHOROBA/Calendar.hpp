@@ -169,7 +169,7 @@ namespace paxs {
 
         bool update(
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator>& simulator // コンパイル時の分岐により使わない場合あり
 #endif
         ) {
             bool return_bool = false;

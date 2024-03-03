@@ -35,16 +35,12 @@
 
 namespace paxs {
 
-    template <typename GridType>
     class SettlementSimulator {
     public:
-        using Agent = paxs::SettlementAgent<GridType>;
-        using Environment = paxs::Environment<GridType>;
-        using Settlement = paxs::Settlement<GridType>;
-        using SettlementGrid = paxs::SettlementGrid<GridType>;
+        using Agent = paxs::SettlementAgent;
         using Vector2 = paxs::Vector2<GridType>;
 
-        constexpr explicit SettlementSimulator() = default;
+        explicit SettlementSimulator() = default;
 
         explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const unsigned seed = 0) noexcept :
             environment(std::make_unique<Environment>(map_list_path)), gen(seed) {
@@ -57,7 +53,7 @@ namespace paxs {
         /// @brief 環境を設定
         void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, const int z, const unsigned seed = 0) noexcept {
             environment.reset();
-            environment = std::make_unique<Environment>(map_list_path, z);
+            environment = std::make_unique<Environment>(map_list_path);
 
             gen = std::mt19937(seed);
 

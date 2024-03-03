@@ -106,7 +106,7 @@ namespace paxs {
     public:
         PlaceNameLocation() = default;
 #ifdef PAXS_USING_SIMULATOR
-        void update(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position) {
+        void update(const std::vector<paxs::Agent>& agents, const paxs::Vector2<paxs::GridType>& start_position) {
             // エージェントの設定を更新
             location_point_list_list.resize(0);
             std::vector<LocationPoint> location_point_list{}; // 地物の一覧
@@ -545,7 +545,7 @@ namespace paxs {
     public:
 
         void draw(const double jdn,
-            std::unordered_map<std::uint_least64_t, paxs::SettlementGrid<int>>& agents,
+            std::unordered_map<std::uint_least64_t, paxs::SettlementGrid>& agents,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
 
             std::size_t& pop_num, // 人口数

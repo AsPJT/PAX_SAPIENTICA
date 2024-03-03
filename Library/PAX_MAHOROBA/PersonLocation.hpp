@@ -106,7 +106,7 @@ namespace paxs {
     class PersonNameLocation {
     public:
 #ifdef PAXS_USING_SIMULATOR
-        void update(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position) {
+        void update(const std::vector<paxs::Agent>& agents, const paxs::Vector2<paxs::GridType>& start_position) {
             // エージェントの設定を更新
             location_point_list_list.resize(0);
             std::vector<PersonLocationPoint> person_location_list{}; // 地物の一覧

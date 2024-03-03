@@ -25,9 +25,11 @@
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 
+using Vector2 = paxs::Vector2<paxs::GridType>;
+
 class EnvironmentUnitTest : public ::testing::Test {
 protected:
-    paxs::Environment<int> environment;
+    paxs::Environment environment;
 
     void SetUp() override {
         if (CHANGE_DIR(PROJECT_ROOT_PATH) != 0) {
@@ -38,42 +40,42 @@ protected:
         const std::string root = PROJECT_ROOT_PATH;
         const std::string setting_file_path = root + "/Projects/UnitTest/Data/Simulations/UnitTestMapList.tsv";
 
-        environment = paxs::Environment<int>(setting_file_path);
+        environment = paxs::Environment(setting_file_path);
     }
 };
 
 TEST_F (EnvironmentUnitTest, getData) {
-    const paxs::Vector2<int> test_position(0, 0);
+    const paxs::Vector2 test_position(0, 0);
     std::uint_least8_t expected = 0;
     std::uint_least8_t actual = environment.getData<std::uint_least8_t>(paxs::MurMur3::calcHash("gbank"), test_position);
     EXPECT_EQ(expected, actual);
 }
 
 TEST_F (EnvironmentUnitTest, isLive) {
-    const paxs::Vector2<int> test_position(0, 0);
+    const paxs::Vector2 test_position(0, 0);
     EXPECT_FALSE(environment.isLive(test_position));
 }
 
 TEST_F (EnvironmentUnitTest, getSlope) {
-    const paxs::Vector2<int> test_position(0, 0);
+    const paxs::Vector2 test_position(0, 0);
     std::uint8_t expected = 0;
     std::uint8_t actual = environment.getSlope(test_position);
     EXPECT_EQ(expected, actual);
 }
 
 TEST_F (EnvironmentUnitTest, getElevation) {
-    const paxs::Vector2<int> test_position(0, 0);
+    const paxs::Vector2 test_position(0, 0);
     std::int_least16_t expected = 0;
     std::int_least16_t actual = environment.getElevation(test_position);
     EXPECT_EQ(expected, actual);
 }
 
 TEST_F (EnvironmentUnitTest, isLand) {
-    const paxs::Vector2<int> test_position(0, 0);
+    const paxs::Vector2 test_position(0, 0);
     EXPECT_FALSE(environment.isLand(test_position));
 }
 
 TEST_F (EnvironmentUnitTest, isWater) {
-    const paxs::Vector2<int> test_position(0, 0);
+    const paxs::Vector2 test_position(0, 0);
     EXPECT_FALSE(environment.isWater(test_position));
 }
