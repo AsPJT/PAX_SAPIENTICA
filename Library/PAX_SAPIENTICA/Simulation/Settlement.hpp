@@ -157,7 +157,7 @@ namespace paxs {
 
         /// @brief Get the agents.
         /// @brief エージェントを取得
-        constexpr const std::vector<Agent> cgetAgents() const noexcept { return agents; }
+        const std::vector<Agent> cgetAgents() const noexcept { return agents; }
 
         /// @brief Marriage.
         /// @brief 婚姻

@@ -27,7 +27,7 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
-        constexpr explicit Object(const std::uint_least32_t id, const std::string& name, const Vector2& position) noexcept
+        explicit Object(const std::uint_least32_t id, const std::string& name, const Vector2& position) noexcept
         : id(id), name(name), position(position) {}
 
         /// @brief Get the object's id. オブジェクトのIDを取得
@@ -53,7 +53,7 @@ namespace paxs {
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
         /// @brief 座標をメルカトル座標で取得
-        constexpr paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const noexcept {
+        paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const noexcept {
             return MapUtility::convertToMercatorCoordinate(start_position, position, z);
         }
 
