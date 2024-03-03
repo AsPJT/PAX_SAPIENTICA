@@ -57,7 +57,7 @@ namespace paxs {
             return MapUtility::convertToMercatorCoordinate(start_position, position, z);
         }
 
-        constexpr bool operator==(const paxs::Object& a) const noexcept {
+        bool operator==(const paxs::Object& a) const noexcept {
             return a.position == position && a.id == id && a.name == name;
         }
 

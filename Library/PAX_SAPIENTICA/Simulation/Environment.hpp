@@ -121,7 +121,7 @@ namespace paxs {
 
         /// @brief Get the land position list.
         /// @brief 陸の位置リストの取得
-        constexpr void getLandPositions(std::vector<std::uint64_t>& keys) const {
+        void getLandPositions(std::vector<std::uint64_t>& keys) const {
             std::get<Data<std::uint_least8_t>>(*data_map.at(MurMur3::calcHash("gbank"))).getKeys(keys);
         }
 
