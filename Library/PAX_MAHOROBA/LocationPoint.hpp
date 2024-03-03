@@ -26,9 +26,10 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #endif
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/String.hpp>
@@ -390,29 +391,33 @@ namespace paxs {
                     if (strvec[overall_length].size() != 0) is_overall_length = true;
                 }
 
-                double point_longitude = std::stod(strvec[longitude]); // 経度
-                double point_latitude = std::stod(strvec[latitude]); // 緯度
-                // 経緯度の範囲を求める
-                start_longitude = (std::min)(start_longitude, point_longitude);
-                start_latitude = (std::min)(start_latitude, point_latitude);
-                end_longitude = (std::max)(end_longitude, point_longitude);
-                end_latitude = (std::max)(end_latitude, point_latitude);
+                try {
+                    double point_longitude = std::stod(strvec[longitude]); // 経度
+                    double point_latitude = std::stod(strvec[latitude]); // 緯度
+                    // 経緯度の範囲を求める
+                    start_longitude = (std::min)(start_longitude, point_longitude);
+                    start_latitude = (std::min)(start_latitude, point_latitude);
+                    end_longitude = (std::max)(end_longitude, point_longitude);
+                    end_latitude = (std::max)(end_latitude, point_latitude);
 
-                // 格納
-                location_point_list.emplace_back(
-                    place_name,
-                    paxs::EquirectangularDeg(
-                        paxs::Vector2<double>(
-                            point_longitude, // 経度
-                            point_latitude)).toMercatorDeg(), // 緯度
-                    (!is_overall_length) ? 10.0 : std::stod(strvec[overall_length]), // 全長
-                    (minimum_size >= strvec.size()) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
-                    (maximum_size >= strvec.size()) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
-                    (first_julian_day >= strvec.size()) ? min_year_ : std::stod(strvec[first_julian_day]), // 最小時代
-                    (last_julian_day >= strvec.size()) ? max_year_ : std::stod(strvec[last_julian_day]), // 最大時代
-                    lpe_,
-                    (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()) // テクスチャの Key
-                );
+                    // 格納
+                    location_point_list.emplace_back(
+                        place_name,
+                        paxs::EquirectangularDeg(
+                            paxs::Vector2<double>(
+                                point_longitude, // 経度
+                                point_latitude)).toMercatorDeg(), // 緯度
+                        (!is_overall_length) ? 10.0 : std::stod(strvec[overall_length]), // 全長
+                        (minimum_size >= strvec.size()) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
+                        (maximum_size >= strvec.size()) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
+                        (first_julian_day >= strvec.size()) ? min_year_ : std::stod(strvec[first_julian_day]), // 最小時代
+                        (last_julian_day >= strvec.size()) ? max_year_ : std::stod(strvec[last_julian_day]), // 最大時代
+                        lpe_,
+                        (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()) // テクスチャの Key
+                    );
+                } catch (const std::exception& e) {
+                    PAXS_WARNING(strvec[longitude] + " " + strvec[latitude] + " " + e.what());
+                }
             }
             // 地物を何も読み込んでいない場合は何もしないで終わる
             if (location_point_list.size() == 0) return;
