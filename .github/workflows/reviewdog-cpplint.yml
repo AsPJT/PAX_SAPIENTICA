@@ -1,4 +1,4 @@
-name: Reviewdog-cpplint
+name: ReviewdogCpplint
 
 on: [pull_request]
 
