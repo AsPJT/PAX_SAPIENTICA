@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: cpplint
       uses: reviewdog/action-cpplint@b6c13159b10435813edfddea9e1cd02157544f45
