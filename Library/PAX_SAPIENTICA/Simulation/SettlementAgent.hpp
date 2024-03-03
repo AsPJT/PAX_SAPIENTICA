@@ -36,7 +36,7 @@ namespace paxs {
 
         SettlementAgent() = default;
 
-        constexpr explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id, const std::uint_least8_t gen,
+        explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id, const std::uint_least8_t gen,
             const std::uint_least32_t age, const std::uint_least32_t life_span) noexcept
             : id(id), name_id(name_id), gender(gen), age(age), life_span(life_span) {}
 

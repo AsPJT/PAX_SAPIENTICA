@@ -134,7 +134,7 @@ namespace paxs {
         /// @brief エージェントの性別を取得する
         constexpr std::uint_least8_t getGender() const noexcept { return gender; }
 
-        constexpr bool operator==(const Agent& a) const noexcept {
+        bool operator==(const Agent& a) const noexcept {
             return  Object::operator==(a) &&
                 gender == a.gender &&
                 age == a.age &&
