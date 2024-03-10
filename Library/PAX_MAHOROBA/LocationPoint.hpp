@@ -48,6 +48,8 @@ namespace paxs {
         explicit LocationPoint(
             const std::unordered_map<std::uint_least32_t, std::string>& place_name_,  // 地名
             const paxs::MercatorDeg& coordinate_,  // 経緯度
+            std::uint_least16_t x_size_,  // 重ね枚数
+            std::uint_least16_t y_size_,  // 重ね枚数
             const double overall_length_,  // 全長
             const double min_view_,  // 可視化する地図の最小範囲
             const double max_view_,  // 可視化する地図の最大範囲
@@ -56,11 +58,13 @@ namespace paxs {
             const std::uint_least32_t lpe_,  // 対象となる地物の種別
             const std::uint_least32_t place_texture_ // 出典
         ) noexcept
-            : place_name(place_name_), coordinate(coordinate_), overall_length(overall_length_),
+            : place_name(place_name_), coordinate(coordinate_), x_size(x_size_), y_size(y_size_), overall_length(overall_length_),
             min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_) {}
 
         std::unordered_map<std::uint_least32_t, std::string> place_name{}; // 地名
         paxs::MercatorDeg coordinate{}; // 経緯度
+        std::uint_least16_t x_size = 1;
+        std::uint_least16_t y_size = 1;
         double overall_length = 10; // 全長
         double min_view = 0.0, max_view = 9999.0; // 可視化する地図の拡大縮小範囲
         int min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
@@ -114,7 +118,7 @@ namespace paxs {
                 location_point_list.emplace_back(
                     std::unordered_map < std::uint_least32_t, std::string>(),
                     paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),
-                    10, 100, 0, 0, 99999999,
+                    1, 1, 10, 100, 0, 0, 99999999,
                     (agents[i].getGender()) ?
                     MurMur3::calcHash("agent1") :
                     MurMur3::calcHash("agent2")
@@ -276,8 +280,16 @@ namespace paxs {
                         const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                         // 描画
                         if (texture.find(place_tex) != texture.end()) {
-                            const int len = int(lli.overall_length / 2);
-                            texture.at(place_tex).resizedDrawAt(len, draw_pos);
+                            if (lli.x_size <= 1) {
+                                const int len = int(lli.overall_length / 2);
+                                texture.at(place_tex).resizedDrawAt(len, draw_pos);
+                            }
+                            else {
+                                for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
+                                    const int len = int(lli.overall_length / 2);
+                                    texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 5, draw_pos.y() });
+                                }
+                            }
                         }
                         continue;
                     }
@@ -291,8 +303,16 @@ namespace paxs {
                     const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                     // 描画
                     if (texture.find(place_tex) != texture.end()) {
+                        if (lli.x_size <= 1) {
                         const int len = int(lli.overall_length / 2);
                         texture.at(place_tex).resizedDrawAt(len, draw_pos);
+                        }
+                        else {
+                            for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
+                                const int len = int(lli.overall_length / 2);
+                                texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 5, draw_pos.y() });
+                            }
+                        }
                     }
                     // 英語名がない場合
                     if (lli.place_name.find(second_language) == lli.place_name.end()) {
@@ -371,6 +391,8 @@ namespace paxs {
 
             // 配列の添え字番号
             const std::size_t overall_length = getMenuIndex(menu, MurMur3::calcHash("overall_length"));
+            const std::size_t x_size = getMenuIndex(menu, MurMur3::calcHash("x_size"));
+            const std::size_t y_size = getMenuIndex(menu, MurMur3::calcHash("y_size"));
             const std::size_t minimum_size = getMenuIndex(menu, MurMur3::calcHash("min_size"));
             const std::size_t maximum_size = getMenuIndex(menu, MurMur3::calcHash("max_size"));
             const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash("first_julian_day"));
@@ -404,6 +426,14 @@ namespace paxs {
                 if (overall_length < strvec.size()) {
                     if (strvec[overall_length].size() != 0) is_overall_length = true;
                 }
+                bool is_x_size = false;
+                if (x_size < strvec.size()) {
+                    if (strvec[x_size].size() != 0) is_x_size = true;
+                }
+                bool is_y_size = false;
+                if (y_size < strvec.size()) {
+                    if (strvec[y_size].size() != 0) is_y_size = true;
+                }
 
                 double point_longitude = std::stod(strvec[longitude]); // 経度
                 double point_latitude = std::stod(strvec[latitude]); // 緯度
@@ -420,6 +450,8 @@ namespace paxs {
                         paxs::Vector2<double>(
                             point_longitude, // 経度
                             point_latitude)).toMercatorDeg(), // 緯度
+                    (!is_x_size) ? 1 : (strvec[x_size].size() == 0) ? 1 : std::stod(strvec[x_size]), // 横の枚数
+                    (!is_y_size) ? 1 : (strvec[y_size].size() == 0) ? 1 : std::stod(strvec[y_size]), // 縦の枚数
                     (!is_overall_length) ? 10.0 : (strvec[overall_length].size() == 0) ? 10.0 : std::stod(strvec[overall_length]), // 全長
                     (minimum_size >= strvec.size()) ? min_view_ : (strvec[minimum_size].size() == 0) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
                     (maximum_size >= strvec.size()) ? max_view_ : (strvec[maximum_size].size() == 0) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
@@ -586,7 +618,7 @@ namespace paxs {
                         settlement.getPosition().y
                             )
                             , 10)),
-                            10, 100,0,0,99999999,
+                            1, 1, 10, 100,0,0,99999999,
                         //(agent.getGender()) ?
                         MurMur3::calcHash("agent1")
                         ,0 /* 出典なし */
