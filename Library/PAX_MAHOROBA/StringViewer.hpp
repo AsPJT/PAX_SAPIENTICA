@@ -58,7 +58,7 @@ namespace paxs {
     private:
 #ifdef PAXS_USING_SIMULATOR
         void simulation(
-            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
             int debug_start_y
@@ -88,7 +88,7 @@ namespace paxs {
 #endif
 
                         std::random_device seed_gen;
-                        simulator = std::make_unique<paxs::SettlementSimulator<int>>(
+                        simulator = std::make_unique<paxs::SettlementSimulator>(
                             map_list_path, japan_provinces_path,
                             seed_gen());
                         simulator->init();
@@ -327,7 +327,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
             std::size_t& pop_num, // 人口数
             std::size_t& sat_num, // 集落数
 #endif

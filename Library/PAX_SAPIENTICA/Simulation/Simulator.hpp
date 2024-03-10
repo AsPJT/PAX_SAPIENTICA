@@ -31,14 +31,11 @@ namespace paxs {
 
     /// @brief Class that performs simulation.
     /// @brief シミュレーションを行うクラス
-    template <typename GridType>
     class Simulator {
     public:
-        using Environment = paxs::Environment<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
-        using Agent = paxs::Agent<GridType>;
 
-        constexpr explicit Simulator() = default;
+        explicit Simulator() = default;
         explicit Simulator(const std::string& setting_file_path, const unsigned seed = 0) noexcept :
             environment(std::make_unique<Environment>(setting_file_path)), gen(seed) {}
 
@@ -127,7 +124,7 @@ namespace paxs {
 
         /// @brief Print the current status.
         /// @brief 現在の状態を表示する
-        constexpr void printStatus() const noexcept {
+        void printStatus() const noexcept {
             std::cout << "Status: " << std::endl;
             std::cout << "  Agent Count: " << agents.size() << std::endl;
         }

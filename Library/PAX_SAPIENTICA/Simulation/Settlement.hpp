@@ -53,15 +53,12 @@ namespace paxs {
         constexpr float sigma_x_sqrt_2_x_pi = sigma * sqrt_2_x_pi;
     }
 
-    template <typename GridType>
     class Settlement {
     public:
-        using Environment = paxs::Environment<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
-        using Object = paxs::Object<GridType>;
-        using Agent = paxs::SettlementAgent<GridType>;
+        using Agent = paxs::SettlementAgent;
 
-        constexpr explicit Settlement(const std::uint_least32_t id, std::mt19937& gen_, const std::shared_ptr<Environment> env) noexcept : id(id), gen(&gen_), environment(env) {}
+        explicit Settlement(const std::uint_least32_t id, std::mt19937& gen_, const std::shared_ptr<Environment> env) noexcept : id(id), gen(&gen_), environment(env) {}
 
         /// @brief Get the uuid.
         /// @brief idを取得
@@ -156,11 +153,11 @@ namespace paxs {
 
         /// @brief Get the agents.
         /// @brief エージェントを取得
-        std::vector<Agent>& getAgents() const noexcept { return agents; }
+        std::vector<Agent>& getAgents() noexcept { return agents; }
 
         /// @brief Get the agents.
         /// @brief エージェントを取得
-        constexpr const std::vector<Agent> cgetAgents() const noexcept { return agents; }
+        const std::vector<Agent> cgetAgents() const noexcept { return agents; }
 
         /// @brief Marriage.
         /// @brief 婚姻

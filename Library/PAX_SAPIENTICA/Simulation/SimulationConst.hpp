@@ -27,6 +27,8 @@ namespace paxs {
 
     constexpr int pixel_size = 256; // 1画像あたりの縦横のピクセル数
 
+    using GridType = int;
+
     struct SimulationConstants {
         // インスタンスを取得
         static SimulationConstants* getInstance() {

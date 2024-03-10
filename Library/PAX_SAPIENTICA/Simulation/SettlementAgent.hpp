@@ -31,13 +31,12 @@ namespace paxs {
 
     /// @brief A class that represents an agent.
     /// @brief エージェントを表すクラス
-    template <typename GridType>
     class SettlementAgent {
     public:
 
         SettlementAgent() = default;
 
-        constexpr explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id, const std::uint_least8_t gen,
+        explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id, const std::uint_least8_t gen,
             const std::uint_least32_t age, const std::uint_least32_t life_span) noexcept
             : id(id), name_id(name_id), gender(gen), age(age), life_span(life_span) {}
 
@@ -51,7 +50,7 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
-        constexpr float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
+        float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
 
         constexpr std::uint_least32_t getAgeInt() const noexcept { return age; }
 

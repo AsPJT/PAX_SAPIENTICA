@@ -1,4 +1,4 @@
-﻿name: CMake-All-Build
+﻿name: CMakeAllBuild
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Checkout submodules
       run: |

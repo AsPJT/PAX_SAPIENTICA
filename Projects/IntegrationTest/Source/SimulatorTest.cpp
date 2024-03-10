@@ -15,8 +15,8 @@
 
 int main() {
 	const std::string setting_file_path = "../../../Data/Simulations/MapList.tsv";
-    std::unique_ptr<paxs::Simulator<int>> simulator = std::make_unique<paxs::Simulator<int>>(setting_file_path, 10);
+    std::unique_ptr<paxs::Simulator> simulator = std::make_unique<paxs::Simulator>(setting_file_path, 10);
     simulator->init();
 	simulator->run(50);
-	std::vector<paxs::Agent<int>> agents = simulator->getAgents();
+	std::vector<paxs::Agent> agents = simulator->getAgents();
 }

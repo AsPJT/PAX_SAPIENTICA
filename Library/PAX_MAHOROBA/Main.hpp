@@ -122,7 +122,7 @@ namespace paxs {
         paxs::Graphics3DModel g3d_model; // 3D モデル
 
 #ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<paxs::SettlementSimulator<int>> simulator{};
+        std::unique_ptr<paxs::SettlementSimulator> simulator{};
 
         SimulationRange sr;
         // シミュレーションの範囲を設定
@@ -138,7 +138,7 @@ namespace paxs {
 
             tm.init(); // タッチ判定を初期化
 #ifdef PAXS_USING_SIV3D
-            const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定  
+            const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
 #endif
             /*##########################################################################################
                 更新処理関連

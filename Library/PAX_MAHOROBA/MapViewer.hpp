@@ -37,7 +37,7 @@ namespace paxs {
     class MapViewerSiv3D {
     public:
 
-        
+
         std::unique_ptr<TextureLocation> texture_location; // 地図上に描画する画像の一覧
 #ifdef PAXS_USING_SIV3D
         s3d::Array<s3d::Vec2> route1, route2; // 線の情報を格納
@@ -94,7 +94,7 @@ namespace paxs {
             const paxs::KoyomiSiv3D& koyomi_siv,
             paxs::StringViewerSiv3D& string_siv,
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator,
+            std::unique_ptr<paxs::SettlementSimulator>& simulator,
             std::size_t& pop_num, // 人口数
             std::size_t& sat_num, // 集落数
 #endif

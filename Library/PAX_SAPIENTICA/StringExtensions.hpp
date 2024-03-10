@@ -23,6 +23,7 @@
 #include <variant>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
 
@@ -52,7 +53,19 @@ namespace paxs {
             std::vector<double> result;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 if (field.size() == 0) result.emplace_back(std::numeric_limits<double>::quiet_NaN()); // 文字列が空の時は NaN を入れる
-                else result.emplace_back(std::stod(field)); // 文字列を数値に変換する
+                else {
+                    try {
+                        result.emplace_back(std::stod(field)); // 文字列を数値に変換する
+                    }
+                    catch (const std::invalid_argument&/*ia*/) {
+                        PAXS_WARNING("field is not convertible to double");
+                        result.emplace_back(std::numeric_limits<double>::quiet_NaN());
+                    }
+                    catch (const std::out_of_range&/*oor*/) {
+                        PAXS_WARNING("field is out of range for a double");
+                        result.emplace_back(std::numeric_limits<double>::quiet_NaN());
+                    }
+                }
             }
             return result;
         }

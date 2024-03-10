@@ -32,7 +32,6 @@ namespace paxs {
          * @brief メルカトル座標に変換
          * @return Mercator Coordinate
         */
-        template <typename GridType>
         static paxs::Vector2<double> convertToMercatorCoordinate(const paxs::Vector2<GridType>& start_position, const paxs::Vector2<GridType>& position, const int z) noexcept {
             const double n = std::pow(2, z);
             const double pixel_sum = pixel_size * n;
