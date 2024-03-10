@@ -45,6 +45,8 @@ namespace paxg {
 
 #elif defined(PAXS_USING_DXLIB)
         int texture = -1;
+        int x = 1;
+        int y = 1;
 
         Texture(const paxg::String& path) {
             // svgの場合は読み込めないので、pngに拡張子を変換する
@@ -52,6 +54,7 @@ namespace paxg {
             paxs::StringExtensions::replace(path_str, ".svg", ".png");
 
             texture = DxLib::LoadGraph(path_str.c_str());
+            DxLib::GetGraphSize(texture, &x, &y);
         }
         Texture(const std::string& path) {
             // svgの場合は読み込めないので、pngに拡張子を変換する
@@ -59,6 +62,7 @@ namespace paxg {
             paxs::StringExtensions::replace(path_str, ".svg", ".png");
 
             texture = DxLib::LoadGraph(path_str.c_str());
+            DxLib::GetGraphSize(texture, &x, &y);
         }
         operator bool() const { return (texture != -1); }
 
@@ -222,9 +226,10 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_DXLIB)
         void resizedDrawAt(const int resize, const paxg::Vec2i & pos) const {
+            const int resize_x = resize * this->x / this->y;
             DxLib::DrawExtendGraph(
-                pos.x() - (resize / 2), pos.y() - (resize / 2),
-                pos.x() + (resize / 2), pos.y() + (resize / 2),
+                pos.x() - (resize_x / 2), pos.y() - (resize / 2),
+                pos.x() + (resize_x / 2), pos.y() + (resize / 2),
                 texture, TRUE);
         }
 #elif defined(PAXS_USING_SFML)

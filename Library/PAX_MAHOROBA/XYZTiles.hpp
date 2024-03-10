@@ -72,8 +72,8 @@ namespace paxs {
 
         //const std::string* p_root_path = nullptr; // 初めのパス名 例） root_path
 
-        // 1フレーム前のマップの幅
-        double current_map_view_width = -1.0;
+        // 1フレーム前のマップの高さ
+        double current_map_view_height = -1.0;
 
         // XYZ タイルの画面上の始点セル
         MapVec2 start_cell{};
@@ -154,8 +154,8 @@ namespace paxs {
             const double map_view_center_y // 描画される地図の中心緯度
         ) {
             // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
-            if (current_map_view_width != map_view_width) {
-                magnification_z = int(-std::log2(map_view_width) + 12.0);
+            if (current_map_view_height != map_view_height) {
+                magnification_z = int(-std::log2(map_view_height) + 12.5);
                 if (default_z == 999) {
                     z = magnification_z;
                     if (z < min_z) z = min_z;
@@ -165,7 +165,7 @@ namespace paxs {
                     z = default_z;
                 }
                 z_num = (1 << z); // std::pow(2, z) と等価
-                current_map_view_width = map_view_width;
+                current_map_view_height = map_view_height;
             }
             // 拡大率が描画範囲外の場合はここで処理を終了
             if (magnification_z < draw_min_z) return;
@@ -310,18 +310,18 @@ namespace paxs {
                                     }
                                     else {
                                         if (color >= 181) { // 25.64100582
-                                            rgba[row][col].r = static_cast<unsigned char>(160 - 15.0 * (256.0 - color) / (256.0 - 181.0));
-                                            rgba[row][col].g = static_cast<unsigned char>(210 - 10.0 * (256.0 - color) / (256.0 - 181.0));
-                                            rgba[row][col].b = static_cast<unsigned char>(170 - 15.0 * (256.0 - color) / (256.0 - 181.0));
+                                            rgba[row][col].r = static_cast<unsigned char>(180 - 15.0 * (256.0 - color) / (256.0 - 181.0));
+                                            rgba[row][col].g = static_cast<unsigned char>(220 - 10.0 * (256.0 - color) / (256.0 - 181.0));
+                                            rgba[row][col].b = static_cast<unsigned char>(185 - 15.0 * (256.0 - color) / (256.0 - 181.0));
                                         }
                                         else if (color >= 127) { // 9.090276921
-                                            rgba[row][col].r = static_cast<unsigned char>(190 - 30.0 * (181.0 - color) / (181.0 - 127.0));
-                                            rgba[row][col].g = static_cast<unsigned char>(230 - 20.0 * (181.0 - color) / (181.0 - 127.0));
-                                            rgba[row][col].b = static_cast<unsigned char>(200 - 30.0 * (181.0 - color) / (181.0 - 127.0));
+                                            rgba[row][col].r = static_cast<unsigned char>(200 - 30.0 * (181.0 - color) / (181.0 - 127.0));
+                                            rgba[row][col].g = static_cast<unsigned char>(235 - 20.0 * (181.0 - color) / (181.0 - 127.0));
+                                            rgba[row][col].b = static_cast<unsigned char>(210 - 30.0 * (181.0 - color) / (181.0 - 127.0));
                                         }
                                         else {
-                                            rgba[row][col].r = static_cast<unsigned char>(230 - 40.0 * color / 127.0);
-                                            rgba[row][col].g = static_cast<unsigned char>(230);
+                                            rgba[row][col].r = static_cast<unsigned char>(235 - 40.0 * color / 127.0);
+                                            rgba[row][col].g = static_cast<unsigned char>(235);
                                             rgba[row][col].b = static_cast<unsigned char>(240 - 40.0 * color / 127.0);
                                         }
 
@@ -330,7 +330,7 @@ namespace paxs {
                                 }
                             createTextureFolder(x_value, y_value, z_value); // 画像保存用のフォルダを作成
                             stbi_write_png(local_file_path.c_str(), 256, 256, static_cast<int>(sizeof(RGBAa)), rgba, 0);
-                            current_map_view_width = 11111;
+                            current_map_view_height = 11111;
 
                             // ファイル読み込みができるかどうか
                             if (std::filesystem::exists(local_file_path)) {

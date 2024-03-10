@@ -19,6 +19,7 @@
 
 #include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 可視化一覧
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
@@ -170,7 +171,7 @@ namespace paxs {
                     ((strvec[place_type].size() == 0) ?
                         MurMur3::calcHash("place_name") :
                         MurMur3::calcHash(strvec[place_type].size(), strvec[place_type].c_str()));
-
+                
                 // 可視化する地図の最小範囲
                 const double min_view = (minimum_size >= strvec.size()) ?
                     0 : ((strvec[minimum_size].size() == 0) ?
@@ -207,7 +208,8 @@ namespace paxs {
              key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
         }
         // 描画
-        void draw(const double jdn,
+        void draw(paxs::GraphicVisualizationList& visible,
+            const double jdn,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
             paxg::Font& font, paxg::Font& en_font, paxg::Font& /*pin_font*/) {
 
@@ -228,9 +230,12 @@ namespace paxs {
                 // 時間の範囲外を除去
                 if (lll.min_year > jdn) continue;
                 if (lll.max_year < jdn) continue;
+
+                if (!visible[lll.lpe]) continue;
+
                 // 拡大率の範囲外を除去
                 // if (lll.min_view > map_view_width || lll.max_view < map_view_width) continue;
-
+                
                 // 地名を描画
                 for (std::size_t i = 0; i < location_point_list.size(); ++i) {
                     auto& lli = location_point_list[i];
@@ -244,8 +249,8 @@ namespace paxs {
                     if (lli.max_year < jdn) continue;
 
                     // 範囲内の場合
-                    if (lli.min_view > map_view_width
-                        || lli.max_view < map_view_width) {
+                    if (lli.min_view > map_view_height
+                        || lli.max_view < map_view_height) {
 
                         // 描画位置
                         const paxg::Vec2i draw_pos = paxg::Vec2i{
@@ -267,11 +272,11 @@ namespace paxs {
                             }
                             continue;
                         }
-                        const int len = int(lli.overall_length / 2);
 
                         const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                         // 描画
                         if (texture.find(place_tex) != texture.end()) {
+                            const int len = int(lli.overall_length / 2);
                             texture.at(place_tex).resizedDrawAt(len, draw_pos);
                         }
                         continue;
@@ -286,28 +291,38 @@ namespace paxs {
                     const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                     // 描画
                     if (texture.find(place_tex) != texture.end()) {
-                        texture.at(place_tex).resizedDrawAt(35, draw_pos);
+                        const int len = int(lli.overall_length / 2);
+                        texture.at(place_tex).resizedDrawAt(len, draw_pos);
                     }
                     // 英語名がない場合
                     if (lli.place_name.find(second_language) == lli.place_name.end()) {
                         // 名前を描画
                         if (lli.place_name.find(first_language) != lli.place_name.end()) {
-                            font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                            font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
                             font.drawAt(lli.place_name.at(first_language)
-                                , draw_pos, paxg::Color(0, 0, 0));
+                                , draw_pos, paxg::Color(90, 90, 90));
+                        }
+                    }
+                    // 日本語名がない場合
+                    else if (lli.place_name.find(first_language) == lli.place_name.end()) {
+                        // 名前を描画
+                        if (lli.place_name.find(second_language) != lli.place_name.end()) {
+                            en_font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                            en_font.drawAt(lli.place_name.at(second_language)
+                                , draw_pos, paxg::Color(90, 90, 90));
                         }
                     }
                     // 英語名がある場合
                     else {
                         // 名前（英語）を描画
-                        en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                        en_font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
                         en_font.drawBottomCenter(lli.place_name.at(second_language), draw_pos
-                            , paxg::Color(0, 0, 0));
+                            , paxg::Color(90, 90, 90));
                         // 名前を描画
                         if (lli.place_name.find(first_language) != lli.place_name.end()) {
-                            font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                            font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
                             font.drawTopCenter(lli.place_name.at(first_language)
-                                , draw_pos, paxg::Color(0, 0, 0));
+                                , draw_pos, paxg::Color(90, 90, 90));
                         }
                     }
                 }
@@ -397,7 +412,7 @@ namespace paxs {
                 start_latitude = (std::min)(start_latitude, point_latitude);
                 end_longitude = (std::max)(end_longitude, point_longitude);
                 end_latitude = (std::max)(end_latitude, point_latitude);
-
+                
                 // 格納
                 location_point_list.emplace_back(
                     place_name,
@@ -405,11 +420,11 @@ namespace paxs {
                         paxs::Vector2<double>(
                             point_longitude, // 経度
                             point_latitude)).toMercatorDeg(), // 緯度
-                    (!is_overall_length) ? 10.0 : std::stod(strvec[overall_length]), // 全長
-                    (minimum_size >= strvec.size()) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
-                    (maximum_size >= strvec.size()) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
-                    (first_julian_day >= strvec.size()) ? min_year_ : std::stod(strvec[first_julian_day]), // 最小時代
-                    (last_julian_day >= strvec.size()) ? max_year_ : std::stod(strvec[last_julian_day]), // 最大時代
+                    (!is_overall_length) ? 10.0 : (strvec[overall_length].size() == 0) ? 10.0 : std::stod(strvec[overall_length]), // 全長
+                    (minimum_size >= strvec.size()) ? min_view_ : (strvec[minimum_size].size() == 0) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
+                    (maximum_size >= strvec.size()) ? max_view_ : (strvec[maximum_size].size() == 0) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
+                    (first_julian_day >= strvec.size()) ? min_year_ : (strvec[first_julian_day].size() == 0) ? 99999999 : std::stod(strvec[first_julian_day]), // 最小時代
+                    (last_julian_day >= strvec.size()) ? max_year_ : (strvec[last_julian_day].size() == 0) ? max_year_ : std::stod(strvec[last_julian_day]), // 最大時代
                     lpe_,
                     (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()) // テクスチャの Key
                 );
@@ -584,8 +599,8 @@ namespace paxs {
                         || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
 
                     // 範囲内の場合
-                    if (lli.min_view > map_view_width
-                        || lli.max_view < map_view_width
+                    if (lli.min_view > map_view_height
+                        || lli.max_view < map_view_height
                         || lli.min_year > jdn
                         || lli.max_year < jdn) {
                         if (lli.min_year > jdn) continue;

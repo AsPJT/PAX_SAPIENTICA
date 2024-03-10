@@ -133,6 +133,7 @@ namespace paxs {
                 paxg::Font* one_font = string_siv.language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(string_siv.koyomi_font_size), static_cast<std::uint_least8_t>(string_siv.koyomi_font_buffer_thickness_size));
 
                 place_name_location.draw(
+                    visible,
                     koyomi_siv.jdn.cgetDay(),
                     map_view.getWidth(),
                     map_view.getHeight(),

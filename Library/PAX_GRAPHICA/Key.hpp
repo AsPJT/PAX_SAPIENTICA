@@ -231,21 +231,21 @@ namespace paxs {
             paxs::EquirectangularDeg(paxs::Vector2<double>(135, 35)), // 韓国 128, 37
             //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)),
             200.0); // マップ座標の中央
-        double width = 12.0; // マップの幅
+        double height = 12.0; // マップの高さ
 
         // 平城京
         //Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
         //double width = 0.1; // マップの幅
-        
-        // マップの最大幅
-        double max_width =
+
+        // マップの最大高さ
+        double max_height =
 #ifdef PAXS_MAHOROBA
             30.0;
 #else
-            300.0;
+            180.0;
 #endif
-        double min_width = 0.005; // マップの最小幅
-        double height = (width) / double(paxg::Window::width()) * double(paxg::Window::height()); // マップの高さ
+        double min_height = 0.005; // マップの最小高さ
+        double width = (height) / double(paxg::Window::height()) * double(paxg::Window::width()); // マップの高さ
         double expansion_size = 50.0; // マップの拡大量
         std::vector<Key> enl_keys; // 拡大キー
         std::vector<Key> esc_keys; // 縮小キー
@@ -269,9 +269,9 @@ namespace paxs {
         void update() {
             // マウスホイールで地図の拡大・縮小
             {
-                width *= (1.0 + (paxg::Mouse::getInstance()->getWheelRotVol() / 10.0));
-                width = (std::clamp)(width, min_width, max_width);
-                height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                height *= (1.0 + (paxg::Mouse::getInstance()->getWheelRotVol() / 10.0));
+                height = (std::clamp)(height, min_height, max_height);
+                width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
             }
 #ifdef __ANDROID__
             static int old_touch_num = 0;
@@ -282,11 +282,11 @@ namespace paxs {
             if (paxg::Mouse::getInstance()->pressedLeft2()) {
                 center.setX(
                     center.getX() +
-                    width / static_cast<double>(paxg::Window::width()) *
+                    height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(paxg::Mouse::getInstance()->getPosXBefore1Frame() - paxg::Mouse::getInstance()->getPosX()));
                 center.setY(
                     center.getY() +
-                    width / static_cast<double>(paxg::Window::width()) *
+                    height / static_cast<double>(paxg::Window::height()) *
                         static_cast<double>(paxg::Mouse::getInstance()->getPosY() - paxg::Mouse::getInstance()->getPosYBefore1Frame()));
 
                 if (center.getX() < -180.0) {
@@ -324,10 +324,10 @@ namespace paxs {
 
             if (old_touch_num == 1 && touch_num == 1) {
                 center.setX(center.getX() +
-                    width / static_cast<double>(paxg::Window::width()) *
+                    height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(old_pos[0].x - pos[0].x));
                 center.setY(center.getY() +
-                    width / static_cast<double>(paxg::Window::width()) *
+                    height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(pos[0].y - old_pos[0].y));
 
                 if (center.getX() < -180.0) {
@@ -351,60 +351,60 @@ namespace paxs {
                 const int sub = std::abs(len - old_len);
 
                 if (len > old_len) {
-                    if (width > min_width) {
-                        width -= ((width * (1.0 + (sub / 6000.0))) / expansion_size);
-                        height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                    if (height > min_height) {
+                        height -= ((height * (1.0 + (sub / 6000.0))) / expansion_size);
+                        width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
                     }
-                    if (width < min_width) {
-                        width = min_width;
-                        height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                    if (height < min_height) {
+                        height = min_height;
+                        width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
                     }
                 }
                 else if (len < old_len) {
                     // 画面広く
-                    if (width < max_width) {
-                        width += ((width * (1.0 + (sub / 6000.0))) / expansion_size);
-                        height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                    if (height < max_height) {
+                        height += ((height * (1.0 + (sub / 6000.0))) / expansion_size);
+                        width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
                     }
-                    if (width > max_width) {
-                        width = max_width;
-                        height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                    if (height > max_height) {
+                        height = max_height;
+                        width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
                     }
                 }
 
             }
 #endif
 
-            center.update(width);
+            center.update(height);
             if (pressed(enl_keys)) {
-                if (width > min_width) {
-                    width -= (width / expansion_size);
-                    height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                if (height > min_height) {
+                    height -= (height / expansion_size);
+                    width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
                 }
-                if (width < min_width) {
-                    width = min_width;
-                    height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                if (height < min_height) {
+                    height = min_height;
+                    width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
                 }
             }
             if (pressed(esc_keys)) {
-                if (width < max_width) {
-                    width += (width / expansion_size);
-                    height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                if (height < max_height) {
+                    height += (height / expansion_size);
+                    width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
                 }
-                if (width > max_width) {
-                    width = max_width;
-                    height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+                if (height > max_height) {
+                    height = max_height;
+                    width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
                 }
             }
 
             // 位置調整
-            if (width < min_width) {
-                width = min_width;
-                height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+            if (height < min_height) {
+                height = min_height;
+                width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
             }
-            if (width > max_width) {
-                width = max_width;
-                height = (width) / double(paxg::Window::width()) * double(paxg::Window::height());
+            if (height > max_height) {
+                height = max_height;
+                width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
             }
 
 #ifdef PAXS_MAHOROBA
@@ -431,7 +431,7 @@ namespace paxs {
             if (center.getY() - height / 2 < south_max) {
                 center.setY(south_max + height / 2);
             }
-            
+
 
 
         } // Update
@@ -459,71 +459,6 @@ namespace paxs {
             return height;
         }
     };
-
-    // キーボード入力を更新（どの入力が必要か未確定なのでまだクラス化前）
-    void updateKey(
-        double& map_view_center_x, // マップ座標の中央 X
-        double& map_view_center_y, // マップ座標の中央 Y
-        double& map_view_width, // マップの幅
-        double& map_view_max_width, // マップの最大幅
-        double& map_view_min_width, // マップの最小幅
-        double& map_view_height, // マップの高さ
-        double& map_view_movement_size, // マップの移動量
-        double& map_view_expansion_size // マップの拡大量
-    ) {
-        // #ifdef PAXS_USING_SIV3D
-                // 西へ移動
-        if (SIV3D_KEY_A.pressed() || SIV3D_KEY_LEFT.pressed()) {
-            map_view_center_x -= (map_view_width / map_view_movement_size);
-            if (map_view_center_x < -180.0) {
-                map_view_center_x += 360.0;
-            }
-        }
-        // 東へ移動
-        if (SIV3D_KEY_D.pressed() || SIV3D_KEY_RIGHT.pressed()) {
-            map_view_center_x += (map_view_width / map_view_movement_size);
-            if (map_view_center_x >= 180.0) {
-                map_view_center_x -= 360.0;
-            }
-        }
-        // 南へ移動
-        if (SIV3D_KEY_S.pressed() || SIV3D_KEY_DOWN.pressed()) {
-            map_view_center_y -= (map_view_width / map_view_movement_size);
-            if (map_view_center_y < -180.0) {
-                map_view_center_y = -180.0;
-            }
-        }
-        // 北へ移動
-        if (SIV3D_KEY_W.pressed() || SIV3D_KEY_UP.pressed()) {
-            map_view_center_y += (map_view_width / map_view_movement_size);
-            if (map_view_center_y > 180.0) {
-                map_view_center_y = 180.0;
-            }
-        }
-        // 地図を拡大
-        if (SIV3D_KEY_Q.pressed()) {
-            if (map_view_width > map_view_min_width) {
-                map_view_width -= (map_view_width / map_view_expansion_size);
-                map_view_height = (map_view_width) / double(paxg::Window::width()) * double(paxg::Window::height());
-            }
-            if (map_view_width < map_view_min_width) {
-                map_view_width = map_view_min_width;
-                map_view_height = (map_view_width) / double(paxg::Window::width()) * double(paxg::Window::height());
-            }
-        }
-        // 地図を縮小
-        if (SIV3D_KEY_E.pressed()) {
-            if (map_view_width < map_view_max_width) {
-                map_view_width += (map_view_width / map_view_expansion_size);
-                map_view_height = (map_view_width) / double(paxg::Window::width()) * double(paxg::Window::height());
-            }
-            if (map_view_width > map_view_max_width) {
-                map_view_width = map_view_max_width;
-                map_view_height = (map_view_width) / double(paxg::Window::width()) * double(paxg::Window::height());
-            }
-        }
-        // #endif
-    }
 
 }
 

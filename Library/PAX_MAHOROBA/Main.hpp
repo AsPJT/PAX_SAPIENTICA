@@ -91,7 +91,7 @@ namespace paxs {
             [&](const std::string& path_) {xyz_tile_list.add(path_); });
 
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
-        map_view.setHeight(map_view.getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
+        map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
         paxg::Window::update();
 #ifdef PAXS_USING_SFML
@@ -145,12 +145,12 @@ namespace paxs {
             ##########################################################################################*/
 
             // 画面サイズの変更に合わせて地図の幅を変える
-            if (old_width != paxg::Window::width()) {
-                map_view.setWidth(paxg::Window::width() * map_view.getWidth() / old_width);
-                map_view.setHeight(map_view.getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
-            }
             if (old_height != paxg::Window::height()) {
-                map_view.setHeight(map_view.getWidth() / double(paxg::Window::width()) * double(paxg::Window::height()));
+                map_view.setHeight(paxg::Window::height() * map_view.getHeight() / old_height);
+                map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
+            }
+            if (old_width != paxg::Window::width()) {
+                map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
             }
             if (old_width != paxg::Window::width() ||
                 old_height != paxg::Window::height()) {
@@ -190,6 +190,15 @@ namespace paxs {
             //visible.set(MurMur3::calcHash("License"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(4));
             //visible.set(MurMur3::calcHash("Debug"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
             visible.set(MurMur3::calcHash("3D"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(6));
+
+            visible.set(MurMur3::calcHash("tomb"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(0));
+            visible.set(MurMur3::calcHash("stone_coffin"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(1));
+            visible.set(MurMur3::calcHash("dotaku"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(2));
+            visible.set(MurMur3::calcHash("kamekanbo"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(3));
+            visible.set(MurMur3::calcHash("place_name"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(4));
+            visible.set(MurMur3::calcHash("site"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(5));
+            visible.set(MurMur3::calcHash("mtdna"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(6));
+            visible.set(MurMur3::calcHash("doken"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(7));
 
             if (visible[MurMur3::calcHash(2, "3D")]) {
 
