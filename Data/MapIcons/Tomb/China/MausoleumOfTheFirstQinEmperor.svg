@@ -3,13 +3,13 @@
 <svg version="1.1" id="funkei" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 450 450" style="enable-background:new 0 0 450 450;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#A57C52;}
-	.st1{fill:#E6E6F0;}
+	.st0{fill:#555555;}
+	.st1{fill:#A57C52;}
 	.st2{fill:#B69C64;}
 </style>
 <g>
-	<rect x="22.9" y="20" class="st0" width="404.2" height="410"/>
-	<path class="st1" d="M422.1,25v400H27.9V25H422.1 M432.1,15h-10H27.9h-10v10v400v10h10h394.2h10v-10V25V15L432.1,15z"/>
+	<rect x="2.8" class="st0" width="444.3" height="450"/>
+	<rect x="27.8" y="25" class="st1" width="394.3" height="400"/>
 </g>
 <rect x="167.8" y="169.2" class="st2" width="110.2" height="110"/>
 </svg>

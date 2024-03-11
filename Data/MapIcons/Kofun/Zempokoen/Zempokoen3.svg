@@ -3,7 +3,7 @@
 <svg version="1.1" id="funkei" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 450 450" style="enable-background:new 0 0 450 450;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#E6E6F0;stroke:#E6E6F0;stroke-width:20;stroke-miterlimit:10;}
+	.st0{fill:#555555;stroke:#555555;stroke-width:50;stroke-miterlimit:10;}
 	.st1{fill:#A57C52;}
 	.st2{fill:#B49A64;}
 </style>
@@ -13,7 +13,7 @@
 <circle class="st1" cx="225" cy="136.5" r="111.5"/>
 <path class="st1" d="M112.8,425c-3.1,0-5.6-2.4-5.6-5.4l58.9-215.9c0-1.5,1.2-2.7,2.8-2.7h112.2c1.5,0,2.8,1.2,2.8,2.7l58.9,215.9
 	c0,3-2.5,5.4-5.6,5.4H112.8z"/>
-<path class="st2" d="M122.6,414.3c-2.8,0-5.1-2.4-5.1-5.4l53.8-214.9c0-1.4,1.1-2.6,2.6-2.6h102.4c1.4,0,2.5,1.2,2.5,2.6L332.5,409
+<path class="st2" d="M122.6,414.3c-2.8,0-5.1-2.4-5.1-5.4L171.3,194c0-1.4,1.1-2.6,2.6-2.6h102.4c1.4,0,2.5,1.2,2.5,2.6l53.7,215
 	c0,3-2.3,5.4-5.1,5.4L122.6,414.3L122.6,414.3z"/>
 <circle class="st2" cx="225" cy="136.5" r="99.5"/>
 <path class="st1" d="M129.3,408.8c-2.7,0-4.8-2.3-4.8-5.1l50.2-205.2c0-1.4,1.1-2.6,2.4-2.6h95.7c1.3,0,2.4,1.1,2.4,2.6l50.3,205.3

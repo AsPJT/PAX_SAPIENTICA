@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 27.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!-- Generator: Adobe Illustrator 28.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="funkei" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 450 450" style="enable-background:new 0 0 450 450;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#E8383D;}
-	.st1{fill:#FFFFFF;}
+	.st0{fill:#555555;}
+	.st1{fill:#E8383D;}
 </style>
 <g>
-	<circle class="st0" cx="225" cy="225" r="210"/>
-	<path class="st1" d="M225,25c27,0,53.2,5.3,77.8,15.7c23.8,10.1,45.2,24.5,63.6,42.9s32.8,39.8,42.9,63.6
-		C419.7,171.8,425,198,425,225s-5.3,53.2-15.7,77.8c-10.1,23.8-24.5,45.2-42.9,63.6c-18.4,18.4-39.8,32.8-63.6,42.9
-		C278.2,419.7,252,425,225,425s-53.2-5.3-77.8-15.7c-23.8-10.1-45.2-24.5-63.6-42.9c-18.4-18.4-32.8-39.8-42.9-63.6
-		C30.3,278.2,25,252,25,225s5.3-53.2,15.7-77.8c10.1-23.8,24.5-45.2,42.9-63.6s39.8-32.8,63.6-42.9C171.8,30.3,198,25,225,25 M225,5
-		C103.5,5,5,103.5,5,225s98.5,220,220,220s220-98.5,220-220S346.5,5,225,5L225,5z"/>
+	<circle class="st0" cx="225" cy="225" r="225"/>
+	<circle class="st1" cx="225" cy="225" r="200"/>
 </g>
 </svg>
