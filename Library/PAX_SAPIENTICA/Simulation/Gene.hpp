@@ -54,6 +54,10 @@ namespace paxs {
             yDNA = value;
         }
 
+        std::uint_least8_t getGender() const noexcept {
+            return chromosome.getGender();
+        }
+
         static Gene generateRandom() noexcept {
             Gene gene;
             gene.setChromosome(Chromosome::generateRandom());

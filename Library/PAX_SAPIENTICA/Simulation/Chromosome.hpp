@@ -27,10 +27,10 @@ namespace paxs {
     /// @brief 染色体
     class Chromosome {
     public:
-        static constexpr std::uint_least32_t chromosome_length = 46;
+        static constexpr std::uint_least8_t chromosome_length = 46;
         Chromosome() = default;
 
-        std::uint_least8_t get(const std::uint_least32_t index) const noexcept {
+        std::uint_least8_t get(const std::uint_least8_t index) const noexcept {
             if (index >= chromosome_length || index < 0) {
                 PAXS_ERROR("Index out of range: " + std::to_string(index));
                 return 0;
@@ -38,7 +38,7 @@ namespace paxs {
             return chromosome[index];
         }
 
-        void set(const std::uint_least32_t index, const std::uint_least8_t value) noexcept {
+        void set(const std::uint_least8_t index, const std::uint_least8_t value) noexcept {
             if (index >= chromosome_length || index < 0) {
                 PAXS_ERROR("Index out of range: " + std::to_string(index));
                 return;
