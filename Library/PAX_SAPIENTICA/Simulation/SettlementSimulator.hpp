@@ -198,7 +198,6 @@ namespace paxs {
         int move_probability = 0; // 移動確率
 
         std::mt19937 gen; // 乱数生成器
-        std::uniform_int_distribution<unsigned short> gender_dist{ 0, 1 }; // 性別の乱数分布
 
         KanakumaLifeSpan kanakuma_life_span;
 
@@ -325,16 +324,16 @@ namespace paxs {
 
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
-                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(set_gender, gen);
+                        Gene gene = Gene::generateRandom();
+                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(gene.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                         settlement.setAgent(Agent(UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
-                            set_gender,
                             lifespan_dist(gen),
-                            set_lifespan), static_cast<std::size_t>(i));
+                            set_lifespan,
+                            gene), static_cast<std::size_t>(i));
                     }
 
                     // 令制国の人口を減らす
@@ -374,17 +373,17 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(gen));
-                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(set_gender, gen);
+                        Gene gene = Gene::generateRandom();
+                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(gene.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                         agents[i] = Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
-                            set_gender,
                             lifespan_dist(gen),
-                            set_lifespan
+                            set_lifespan,
+                            gene
                         );
                     }
                     settlement.addAgents(agents);

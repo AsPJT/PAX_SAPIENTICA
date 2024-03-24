@@ -240,11 +240,13 @@ namespace paxs {
                                 continue;
                             }
 
-                            agents[marriageable_female_index[index_pair.first]].marry(male_id);
-                            const std::uint_least64_t female_id = agents[marriageable_female_index[index_pair.first]].getId();
-
                             Agent male_ = close_settlements[j].getAgentCopy(male_id);
-                            male_.marry(female_id);
+                            Agent& female_ = agents[marriageable_female_index[index_pair.first]];
+
+                            female_.marry(male_id, male_.cgetGenePtr());
+                            const std::uint_least64_t female_id = female_.getId();
+
+                            male_.marry(female_id, female_.cgetGenePtr());
                             agents.emplace_back(male_);
 
                             is_found = true;
@@ -263,42 +265,7 @@ namespace paxs {
                 }
             }
             else {
-                // 父方の場合
-                for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
-                    std::pair<std::size_t, std::size_t> pair = marriageable_agents_index_pair[i];
-                    std::uint_least64_t male_id = marriageable_agents_index_pair[pair.second].first;
-                    std::uint_least32_t settlement_id = static_cast<std::uint_least32_t>(marriageable_agents_index_pair[pair.second].second);
-
-                    bool is_found = false;
-                    for (std::size_t j = 0; j < close_settlements.size(); ++j) {
-                        if (close_settlements[j].getId() == settlement_id) {
-
-                            if (pair.first >= marriageable_agents_index_pair.size()) {
-                                PAXS_ERROR("The FIRST of pair is larger than the size of marriageable_agents_index_pair.");
-                                continue;
-                            }
-                            if (marriageable_agents_index_pair[pair.first].first >= agents.size()) {
-                                PAXS_ERROR("marriageable_agents_pair is larger than the size of AGENTS.");
-                                continue;
-                            }
-
-                            agents[marriageable_agents_index_pair[pair.first].first].marry(male_id);
-                            // const std::uint_least64_t female_id = agents[marriageable_agents_index_pair[pair.first].first].getId();
-                            // TODO:
-                            // settlements[j].getAgent(male_id).marry(female_id);
-                            // settlements[j].addAgent(agents[marriageable_agents_index_pair[pair.first].first]);
-                            deleteAgent(marriageable_agents_index_pair[pair.first].first);
-
-                            is_found = true;
-                            break;
-                        }
-                    }
-
-                    if (!is_found) {
-                        PAXS_ERROR("Settlement not found.");
-                        continue;
-                    }
-                }
+                // TODO: 父方の場合
             }
         }
 
@@ -405,7 +372,6 @@ namespace paxs {
         Vector2 position;
 
         std::mt19937* gen; // 乱数生成器
-        std::uniform_int_distribution<unsigned short> gender_dist{ 0, 1 }; // 性別の乱数分布
         std::uniform_real_distribution<float> random_dist{ 0.0f, 1.0f }; // 乱数分布
 
         std::shared_ptr<Environment> environment; // 環境
@@ -422,13 +388,15 @@ namespace paxs {
                     if (count == 0) {
                         // 死産
                         if (random_dist(*gen) < 0.11f) continue;
-                        const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
+                        // TODO: 直す
+                        if (!agent.isMarried()) continue;
+                        Gene gene = Gene::generateFromParents(agent.cgetGene(), agent.cgetPartnerGene());
                         children.emplace_back(Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
-                            set_gender,
                             0,
-                            kanakuma_life_span.setLifeSpan(set_gender, *gen)
+                            kanakuma_life_span.setLifeSpan(gene.getGender(), *gen),
+                            gene
                         ));
                     }
                 }
