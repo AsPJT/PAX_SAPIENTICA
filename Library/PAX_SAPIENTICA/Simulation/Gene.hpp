@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -64,7 +64,7 @@ namespace paxs {
 
             std::random_device seed_gen;
             std::mt19937 engine(seed_gen());
-            std::uniform_int_distribution<std::uint_least8_t> dist(std::numeric_limits<std::uint_least8_t>::min(), std::numeric_limits<std::uint_least8_t>::max());
+            std::uniform_int_distribution<> dist(std::numeric_limits<std::uint_least8_t>::min(), std::numeric_limits<std::uint_least8_t>::max());
             gene.setMtDNA(dist(engine));
             gene.setYDNA(dist(engine));
             return gene;
