@@ -280,14 +280,29 @@ namespace paxs {
                         const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                         // 描画
                         if (texture.find(place_tex) != texture.end()) {
+                            const int len = int(lli.overall_length / 2);
                             if (lli.x_size <= 1) {
-                                const int len = int(lli.overall_length / 2);
-                                texture.at(place_tex).resizedDrawAt(len, draw_pos);
+                                if (lli.y_size <= 1) {
+                                    texture.at(place_tex).resizedDrawAt(len, draw_pos);
+                                }
+                                else {
+                                    for (std::uint_least16_t iy = 0; iy < lli.y_size; ++iy) {
+                                        texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x(), draw_pos.y() + iy * 4 });
+                                    }
+                                }
                             }
                             else {
-                                for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
-                                    const int len = int(lli.overall_length / 2);
-                                    texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 5, draw_pos.y() });
+                                if (lli.y_size <= 1) {
+                                    for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
+                                        texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 4, draw_pos.y() });
+                                    }
+                                }
+                                else {
+                                    for (std::uint_least16_t iy = 0; iy < lli.y_size; ++iy) {
+                                        for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
+                                            texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 4, draw_pos.y() + iy * 4 });
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -303,14 +318,29 @@ namespace paxs {
                     const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                     // 描画
                     if (texture.find(place_tex) != texture.end()) {
-                        if (lli.x_size <= 1) {
                         const int len = int(lli.overall_length / 2);
-                        texture.at(place_tex).resizedDrawAt(len, draw_pos);
+                        if (lli.x_size <= 1) {
+                            if (lli.y_size <= 1) {
+                                texture.at(place_tex).resizedDrawAt(len, draw_pos);
+                            }
+                            else {
+                                for (std::uint_least16_t iy = 0; iy < lli.y_size; ++iy) {
+                                    texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x(), draw_pos.y() + iy * 4 });
+                                }
+                            }
                         }
                         else {
-                            for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
-                                const int len = int(lli.overall_length / 2);
-                                texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 5, draw_pos.y() });
+                            if (lli.y_size <= 1) {
+                                for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
+                                    texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 4, draw_pos.y() });
+                                }
+                            }
+                            else {
+                                for (std::uint_least16_t iy = 0; iy < lli.y_size; ++iy) {
+                                    for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
+                                        texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 4, draw_pos.y() + iy * 4 });
+                                    }
+                                }
                             }
                         }
                     }
