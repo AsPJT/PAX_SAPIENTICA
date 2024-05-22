@@ -333,7 +333,10 @@ namespace paxs {
                             0, // TODO: 名前ID
                             lifespan_dist(gen),
                             set_lifespan,
-                            genome), static_cast<std::size_t>(i));
+                            genome,
+                            0, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
+                            255 // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
+                        ), static_cast<std::size_t>(i));
                     }
 
                     // 令制国の人口を減らす
@@ -383,7 +386,9 @@ namespace paxs {
                             0, // TODO: 名前ID
                             lifespan_dist(gen),
                             set_lifespan,
-                            genome
+                            genome,
+                            0, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
+                            255 // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
                         );
                     }
                     settlement.addAgents(agents);

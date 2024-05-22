@@ -243,10 +243,10 @@ namespace paxs {
                             Agent male_ = close_settlements[j].getAgentCopy(male_id);
                             Agent& female_ = agents[marriageable_female_index[index_pair.first]];
 
-                            female_.marry(male_id, male_.cgetGenomePtr());
+                            female_.marry(male_id, male_.cgetGenomePtr(), male_.cgetFarming(), male_.cgetHunterGatherer());
                             const std::uint_least64_t female_id = female_.getId();
 
-                            male_.marry(female_id, female_.cgetGenomePtr());
+                            male_.marry(female_id, female_.cgetGenomePtr(), female_.cgetFarming(), female_.cgetHunterGatherer());
                             agents.emplace_back(male_);
 
                             is_found = true;
@@ -396,7 +396,9 @@ namespace paxs {
                             0, // TODO: 名前ID
                             0,
                             kanakuma_life_span.setLifeSpan(genome.getGender(), *gen),
-                            genome
+                            genome,
+                            (((*gen)() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
+                            (((*gen)() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
                         ));
                     }
                 }
@@ -414,24 +416,26 @@ namespace paxs {
         /// @brief Emigration.
         /// @brief 渡来
         void emigration(KanakumaLifeSpan& kanakuma_life_span, std::uint_least64_t& count) noexcept {
-            //if (agents.size() >= 60) {
+            if (agents.size() >= 60) {
 
-            //    const std::uint_least8_t set_gender = static_cast<std::uint_least8_t>(gender_dist(*gen));
-            //    const std::uint_least32_t set_lifespan = kanakuma_life_span.setAdultLifeSpan(set_gender, *gen);
+                Genome genome = Genome::generateRandom();
+                const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), *gen);
 
-            //    std::uniform_int_distribution<> lifespan_dist{
-            //        (std::min)(18 * SimulationConstants::getInstance()->steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
-            //        static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
+                std::uniform_int_distribution<> lifespan_dist{
+                    (std::min)(18 * SimulationConstants::getInstance()->steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
+                    static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
-            //    agents.emplace_back(Agent(
-            //        UniqueIdentification<std::uint_least64_t>::generate(),
-            //        0, // TODO: 名前ID
-            //        set_gender,
-            //        lifespan_dist(*gen),
-            //        set_lifespan
-            //    ));
-            //    ++count;
-            //}
+                agents.emplace_back(Agent(
+                    UniqueIdentification<std::uint_least64_t>::generate(),
+                    0, // TODO: 名前ID
+                    lifespan_dist(*gen),
+                    set_lifespan,
+                    genome,
+                    255, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
+                    0 // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
+                ));
+                ++count;
+            }
         }
 
         /// @brief Age update.
