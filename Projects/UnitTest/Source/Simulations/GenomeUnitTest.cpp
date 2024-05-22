@@ -1,9 +1,9 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Simulation/Gene.hpp>
+#include <PAX_SAPIENTICA/Simulation/Genome.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
-TEST (GeneUnitTest, getAndSet) {
+TEST (GenomeUnitTest, getAndSet) {
     paxs::Genome genome;
     genome.setMtDNA(1);
     EXPECT_EQ(genome.getMtDNA(), 1);
@@ -14,7 +14,7 @@ TEST (GeneUnitTest, getAndSet) {
     EXPECT_EQ(genome.cgetChromosome(), chromosome);
 }
 
-TEST (GeneUnitTest, generateRandom) {
+TEST (GenomeUnitTest, generateRandom) {
     paxs::Genome genome = paxs::Genome::generateRandom();
     for (std::uint_least8_t i = 0; i < paxs::Chromosome::chromosome_length; ++i) {
         EXPECT_GE(genome.cgetChromosome().get(i), 0);
@@ -26,7 +26,7 @@ TEST (GeneUnitTest, generateRandom) {
     EXPECT_LE(genome.getYDNA(), std::numeric_limits<std::uint_least8_t>::max());
 }
 
-TEST (GeneUnitTest, generateFromParents) {
+TEST (GenomeUnitTest, generateFromParents) {
     paxs::Genome mother;
     paxs::Genome father;
     for (std::uint_least8_t i = 0; i < paxs::Chromosome::chromosome_length; ++i) {
