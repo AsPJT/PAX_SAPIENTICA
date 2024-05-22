@@ -243,10 +243,10 @@ namespace paxs {
                             Agent male_ = close_settlements[j].getAgentCopy(male_id);
                             Agent& female_ = agents[marriageable_female_index[index_pair.first]];
 
-                            female_.marry(male_id, male_.cgetGenomePtr(), male_.cgetFarming(), male_.cgetHunterGatherer());
+                            female_.marry(male_id, male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer());
                             const std::uint_least64_t female_id = female_.getId();
 
-                            male_.marry(female_id, female_.cgetGenomePtr(), female_.cgetFarming(), female_.cgetHunterGatherer());
+                            male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer());
                             agents.emplace_back(male_);
 
                             is_found = true;
@@ -327,6 +327,19 @@ namespace paxs {
         /// @brief Get the population.
         /// @brief 人口を取得
         std::size_t getPopulation() const noexcept { return agents.size(); }
+
+        /// @brief Get the population.
+        /// @brief 渡来人口を取得
+        std::size_t getFarmingPopulation() const noexcept {
+            std::size_t farming_population = 0;
+
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                if (agents[i].cgetFarming() > 0) {
+                    ++farming_population;
+                }
+            }
+            return farming_population;
+        }
 
         /// @brief Divide the settlement.
         /// @brief 集落を分割

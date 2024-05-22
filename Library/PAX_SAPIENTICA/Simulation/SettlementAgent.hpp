@@ -77,11 +77,9 @@ namespace paxs {
 
         constexpr const Genome& cgetGenome() const noexcept { return genome; }
 
-        constexpr const Genome* cgetGenomePtr() const noexcept { return &genome; }
+        constexpr void setPartnerGenome(const Genome& genome) noexcept { partner_genome = genome; }
 
-        constexpr void setPartnerGenome(const Genome& genome) noexcept { partner_genome = &genome; }
-
-        constexpr const Genome& cgetPartnerGenome() const noexcept { return *partner_genome; }
+        constexpr const Genome& cgetPartnerGenome() const noexcept { return partner_genome; }
 
         constexpr std::uint_least8_t cgetFarming() const noexcept { return farming; }
 
@@ -110,7 +108,7 @@ namespace paxs {
 
         /// @brief Set the agent's marriage status.
         /// @brief 結婚する
-        void marry(const std::uint_least64_t partner_id_, const Genome* partner_genome_,
+        void marry(const std::uint_least64_t partner_id_, const Genome& partner_genome_,
             std::uint_least8_t partner_farming_, // 結婚相手の農耕文化
         std::uint_least8_t partner_hunter_gatherer_ // 結婚相手の狩猟採集文化
         ) noexcept {
@@ -151,7 +149,7 @@ namespace paxs {
         void divorce() noexcept {
             is_married = false;
             partner_id = 0;
-            partner_genome = nullptr;
+            // partner_genome = nullptr;
             partner_farming = 0;
             partner_hunter_gatherer = 0;
         }
@@ -178,7 +176,7 @@ namespace paxs {
         std::uint_least64_t partner_id = 0; // 結婚相手のID
 
         Genome genome; // ゲノム
-        Genome const* partner_genome = nullptr; // 結婚相手のゲノム
+        Genome partner_genome; // 結婚相手のゲノム
     };
 }
 
