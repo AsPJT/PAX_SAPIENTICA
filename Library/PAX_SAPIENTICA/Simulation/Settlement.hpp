@@ -243,10 +243,10 @@ namespace paxs {
                             Agent male_ = close_settlements[j].getAgentCopy(male_id);
                             Agent& female_ = agents[marriageable_female_index[index_pair.first]];
 
-                            female_.marry(male_id, male_.cgetGenePtr());
+                            female_.marry(male_id, male_.cgetGenomePtr());
                             const std::uint_least64_t female_id = female_.getId();
 
-                            male_.marry(female_id, female_.cgetGenePtr());
+                            male_.marry(female_id, female_.cgetGenomePtr());
                             agents.emplace_back(male_);
 
                             is_found = true;
@@ -390,13 +390,13 @@ namespace paxs {
                         if (random_dist(*gen) < 0.11f) continue;
                         // TODO: 直す
                         if (!agent.isMarried()) continue;
-                        Gene gene = Gene::generateFromParents(agent.cgetGene(), agent.cgetPartnerGene());
+                        Genome genome = Genome::generateFromParents(agent.cgetGenome(), agent.cgetPartnerGenome());
                         children.emplace_back(Agent(
                             UniqueIdentification<std::uint_least64_t>::generate(),
                             0, // TODO: 名前ID
                             0,
-                            kanakuma_life_span.setLifeSpan(gene.getGender(), *gen),
-                            gene
+                            kanakuma_life_span.setLifeSpan(genome.getGender(), *gen),
+                            genome
                         ));
                     }
                 }

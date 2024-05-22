@@ -38,8 +38,8 @@ namespace paxs {
         SettlementAgent() = default;
 
         explicit SettlementAgent(const std::uint_least64_t id, const std::uint_least32_t& name_id,
-            const std::uint_least32_t age, const std::uint_least32_t life_span, const Gene& gene) noexcept
-            : id(id), name_id(name_id), gender(gene.getGender()), age(age), life_span(life_span), gene(gene) {}
+            const std::uint_least32_t age, const std::uint_least32_t life_span, const Genome& genome) noexcept
+            : id(id), name_id(name_id), gender(genome.getGender()), age(age), life_span(life_span), genome(genome) {}
 
         /// @brief Get the id.
         /// @brief idを取得
@@ -71,13 +71,13 @@ namespace paxs {
         /// @brief エージェントの年齢をインクリメントする
         constexpr void incrementAge(const std::uint_least32_t n) noexcept { age += n; }
 
-        constexpr const Gene& cgetGene() const noexcept { return gene; }
+        constexpr const Genome& cgetGenome() const noexcept { return genome; }
 
-        constexpr const Gene* cgetGenePtr() const noexcept { return &gene; }
+        constexpr const Genome* cgetGenomePtr() const noexcept { return &genome; }
 
-        constexpr void setPartnerGene(const Gene& gene) noexcept { partner_gene = &gene; }
+        constexpr void setPartnerGenome(const Genome& genome) noexcept { partner_genome = &genome; }
 
-        constexpr const Gene& cgetPartnerGene() const noexcept { return *partner_gene; }
+        constexpr const Genome& cgetPartnerGenome() const noexcept { return *partner_genome; }
 
         constexpr bool operator==(const SettlementAgent& a) const noexcept {
             return  id == a.id &&
@@ -85,9 +85,9 @@ namespace paxs {
                 gender == a.gender &&
                 age == a.age &&
                 life_span == a.life_span &&
-                gene == a.gene &&
+                genome == a.genome &&
                 partner_id == a.partner_id &&
-                partner_gene == a.partner_gene;
+                partner_genome == a.partner_genome;
         }
 
         /// @brief Is the agent married?
@@ -96,10 +96,10 @@ namespace paxs {
 
         /// @brief Set the agent's marriage status.
         /// @brief 結婚する
-        void marry(const std::uint_least64_t partner_id_, const Gene* partner_gene_) noexcept {
+        void marry(const std::uint_least64_t partner_id_, const Genome* partner_genome_) noexcept {
             is_married = true;
             partner_id = partner_id_;
-            partner_gene = partner_gene_;
+            partner_genome = partner_genome_;
         }
 
         /// @brief Is the agent able to marry?
@@ -132,7 +132,7 @@ namespace paxs {
         void divorce() noexcept {
             is_married = false;
             partner_id = 0;
-            partner_gene = nullptr;
+            partner_genome = nullptr;
         }
 
         std::uint_least8_t getBirthIntervalCount() const noexcept { return birth_interval_count; }
@@ -151,8 +151,8 @@ namespace paxs {
         std::uint_least64_t id; // ID
         std::uint_least64_t partner_id = 0; // 結婚相手のID
 
-        Gene gene; // 遺伝子
-        Gene const* partner_gene = nullptr; // 結婚相手の遺伝子
+        Genome genome; // ゲノム
+        Genome const* partner_genome = nullptr; // 結婚相手のゲノム
     };
 }
 

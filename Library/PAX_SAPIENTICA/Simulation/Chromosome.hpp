@@ -73,7 +73,7 @@ namespace paxs {
         static Chromosome generateFromParents(const Chromosome& mother, const Chromosome& father) noexcept {
             std::random_device seed_gen;
             std::mt19937 engine(seed_gen());
-            std::uniform_int_distribution<std::uint_least64_t> dist(std::numeric_limits<std::uint_least64_t>::min(), std::numeric_limits<std::uint_least64_t>::max());
+            std::uniform_int_distribution<std::uint_least64_t> dist((std::numeric_limits<std::uint_least64_t>::min)(), (std::numeric_limits<std::uint_least64_t>::max)());
             std::uint_least64_t random_value = dist(engine);
 
             Chromosome child;
@@ -96,7 +96,7 @@ namespace paxs {
         static Chromosome generateRandom() noexcept {
             std::random_device seed_gen;
             std::mt19937 engine(seed_gen());
-            std::uniform_int_distribution<> dist(std::numeric_limits<std::uint_least8_t>::min(), std::numeric_limits<std::uint_least8_t>::max());
+            std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
 
             Chromosome random_chromosome;
             for (std::uint_least8_t i = 0; i < chromosome_length; ++i) {

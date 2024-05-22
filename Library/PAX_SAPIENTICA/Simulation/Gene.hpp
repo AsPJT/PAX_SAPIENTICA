@@ -21,10 +21,10 @@
 
 namespace paxs {
 
-    /// @brief 遺伝子
-    class Gene {
+    /// @brief ゲノム
+    class Genome {
     public:
-        Gene() = default;
+        Genome() = default;
 
         const Chromosome& cgetChromosome() const noexcept {
             return chromosome;
@@ -58,35 +58,35 @@ namespace paxs {
             return chromosome.getGender();
         }
 
-        static Gene generateRandom() noexcept {
-            Gene gene;
-            gene.setChromosome(Chromosome::generateRandom());
+        static Genome generateRandom() noexcept {
+            Genome genome;
+            genome.setChromosome(Chromosome::generateRandom());
 
             std::random_device seed_gen;
             std::mt19937 engine(seed_gen());
-            std::uniform_int_distribution<> dist(std::numeric_limits<std::uint_least8_t>::min(), std::numeric_limits<std::uint_least8_t>::max());
-            gene.setMtDNA(dist(engine));
-            gene.setYDNA(dist(engine));
-            return gene;
+            std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
+            genome.setMtDNA(dist(engine));
+            genome.setYDNA(dist(engine));
+            return genome;
         }
 
-        static Gene generateFromParents(const Gene& mother, const Gene& father) noexcept {
-            Gene gene;
-            gene.setChromosome(Chromosome::generateFromParents(mother.cgetChromosome(), father.cgetChromosome()));
+        static Genome generateFromParents(const Genome& mother, const Genome& father) noexcept {
+            Genome genome;
+            genome.setChromosome(Chromosome::generateFromParents(mother.cgetChromosome(), father.cgetChromosome()));
 
             std::random_device seed_gen;
             std::mt19937 engine(seed_gen());
-            gene.setMtDNA(mother.getMtDNA());
-            if (gene.cgetChromosome().getGender() == SimulationConstants::getInstance()->female) {
-                gene.setYDNA(mother.getYDNA());
+            genome.setMtDNA(mother.getMtDNA());
+            if (genome.cgetChromosome().getGender() == SimulationConstants::getInstance()->female) {
+                genome.setYDNA(mother.getYDNA());
             }
             else {
-                gene.setYDNA(father.getYDNA());
+                genome.setYDNA(father.getYDNA());
             }
-            return gene;
+            return genome;
         }
 
-        bool operator==(const Gene& rhs) const noexcept {
+        bool operator==(const Genome& rhs) const noexcept {
             return chromosome == rhs.chromosome && mtDNA == rhs.mtDNA && yDNA == rhs.yDNA;
         }
 

@@ -324,8 +324,8 @@ namespace paxs {
 
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Gene gene = Gene::generateRandom();
-                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(gene.getGender(), gen);
+                        Genome genome = Genome::generateRandom();
+                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
@@ -333,7 +333,7 @@ namespace paxs {
                             0, // TODO: 名前ID
                             lifespan_dist(gen),
                             set_lifespan,
-                            gene), static_cast<std::size_t>(i));
+                            genome), static_cast<std::size_t>(i));
                     }
 
                     // 令制国の人口を減らす
@@ -373,8 +373,8 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Gene gene = Gene::generateRandom();
-                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(gene.getGender(), gen);
+                        Genome genome = Genome::generateRandom();
+                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
@@ -383,7 +383,7 @@ namespace paxs {
                             0, // TODO: 名前ID
                             lifespan_dist(gen),
                             set_lifespan,
-                            gene
+                            genome
                         );
                     }
                     settlement.addAgents(agents);
