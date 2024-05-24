@@ -89,6 +89,12 @@ namespace paxs {
         // 移動確率の正規化係数
         int move_probability_normalization_coefficient = 1000;
 
+        // 片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
+        float child_agriculture_priority = 0.7f;
+
+        // 死産率
+        float stillbirth_rate = 0.1f;
+
     private:
         template<typename Func_>
         void stoiFunc(KeyValueTSV<std::string>& key_value_tsv_, const std::uint_least32_t key_, Func_&& func_) {
@@ -150,6 +156,8 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("min_move_probability"), [&](const std::string& str_) {min_move_probability = std::stoi(str_); });
             stoiFunc(kvt, MurMur3::calcHash("max_move_probability"), [&](const std::string& str_) {max_move_probability = std::stoi(str_); });
             stoiFunc(kvt, MurMur3::calcHash("move_probability_normalization_coefficient"), [&](const std::string& str_) {move_probability_normalization_coefficient = std::stoi(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("child_agriculture_priority"), [&](const std::string& str_) {child_agriculture_priority = std::stof(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("stillbirth_rate"), [&](const std::string& str_) {stillbirth_rate = std::stof(str_); });
 
         }
 

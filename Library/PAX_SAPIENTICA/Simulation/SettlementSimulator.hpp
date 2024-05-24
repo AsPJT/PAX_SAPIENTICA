@@ -76,7 +76,8 @@ namespace paxs {
         /// @details 集落をクリアし、地域ごとに指定されたエージェント数になるようにランダムに配置する
         void init() {
             settlement_grids.clear();
-            randomizeSettlements();
+            initRandomizeSettlements();
+            randomizeSettlements(0, 0, 255);
         }
 
         /// @brief Run the simulation for the specified number of steps.
@@ -129,6 +130,8 @@ namespace paxs {
                     settlement.preUpdate(kanakuma_life_span, emigration_count);
                 }
             }
+
+            randomizeSettlements(1, 255, 0);
 
             auto delete_agent = [this](const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
                 auto it = settlement_grids.find(key.toU64());
@@ -203,31 +206,34 @@ namespace paxs {
 
         std::uint_least64_t emigration_count = 0;
 
-        /// @brief Randomly place settlements.
-        /// @brief 集落をランダムに配置する
-        void randomizeSettlements() noexcept {
+        // 陸の位置のリストを取得
+        std::vector<std::uint64_t> land_positions;
+
+        struct Live {
+            // 可住地重みリスト
+            std::vector<int> live_probabilities;
+            // 可住地の位置
+            std::vector<std::uint64_t> habitable_land_positions;
+
+            void emplaceBack(const int live_probabilities_, const std::uint64_t habitable_land_positions_) {
+                live_probabilities.emplace_back(live_probabilities_);
+                habitable_land_positions.emplace_back(habitable_land_positions_);
+            }
+        };
+        std::unique_ptr<std::array<Live, 90>> live_list;
+
+        /// @brief ()
+        /// @brief 集落をランダムに配置する前の初期化処理
+        bool initRandomizeSettlements() {
             std::cout << "Randomize settlements..." << std::endl;
 
-            // 陸の位置のリストを取得
-            std::vector<std::uint64_t> land_positions;
             environment->getLandPositions(land_positions);
 
-            struct Live {
-                // 可住地重みリスト
-                std::vector<int> live_probabilities;
-                // 可住地の位置
-                std::vector<std::uint64_t> habitable_land_positions;
+            live_list = std::unique_ptr<std::array<Live, 90>>(new std::array<Live, 90>());
 
-                void emplaceBack(const int live_probabilities_, const std::uint64_t habitable_land_positions_) {
-                    live_probabilities.emplace_back(live_probabilities_);
-                    habitable_land_positions.emplace_back(habitable_land_positions_);
-                }
-            };
-
-            std::unique_ptr<std::array<Live, 90>> live_list(new std::array<Live, 90>());
             if (live_list.get() == nullptr) {
                 std::cout << "Low memory" << std::endl;
-                return; // 処理失敗
+                return false; // 処理失敗
             }
 
             for (const std::uint64_t land_position : land_positions) {
@@ -259,14 +265,24 @@ namespace paxs {
                     (*live_list)[ryoseikoku_id].emplaceBack(live_probability, land_position);
                 }
             }
+            return true;
+        }
+
+        /// @brief Randomly place settlements.
+        /// @brief 集落をランダムに配置する
+        void randomizeSettlements(
+            std::size_t ad200,
+            std::uint_least8_t farming,
+            std::uint_least8_t hunter_gatherer
+        ) noexcept {
 
             // 令制国と人口のマップ
             std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
             for (auto& ryoseikoku : japan_provinces->cgetRyoseikokuList()) {
-                if (ryoseikoku.population_ad200 == 0) {
+                if (ryoseikoku.population[ad200/*ad200*/] == 0) {
                     continue;
                 }
-                ryoseikoku_population_map[ryoseikoku.id] = ryoseikoku.population_ad200;
+                ryoseikoku_population_map[ryoseikoku.id] = ryoseikoku.population[ad200/*ad200*/];
             }
 
             int all_population = 0;
@@ -329,14 +345,15 @@ namespace paxs {
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
-                        settlement.setAgent(Agent(UniqueIdentification<std::uint_least64_t>::generate(),
-                            0, // TODO: 名前ID
+                        settlement.setAgent(Agent(UniqueIdentification<std::uint_least32_t>::generate(),
+                            //0, // TODO: 名前ID
                             lifespan_dist(gen),
                             set_lifespan,
                             genome,
-                            0, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
-                            255 // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
+                            farming, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
+                            hunter_gatherer // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
                         ), static_cast<std::size_t>(i));
+                        if (farming > 0) ++emigration_count; // 農耕カウント
                     }
 
                     // 令制国の人口を減らす
@@ -356,8 +373,8 @@ namespace paxs {
                     live.habitable_land_positions.pop_back();
                 }
             }
-            StatusDisplayer::displayProgressBar(all_population, all_population);
-            std::cout << std::endl;
+            //StatusDisplayer::displayProgressBar(all_population, all_population);
+            //std::cout << std::endl;
 
             // 令制国の人口が残っている場合は、ランダムに配置
             for (auto& ryoseikoku_population : ryoseikoku_population_map) {
@@ -382,20 +399,21 @@ namespace paxs {
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                         agents[i] = Agent(
-                            UniqueIdentification<std::uint_least64_t>::generate(),
-                            0, // TODO: 名前ID
+                            UniqueIdentification<std::uint_least32_t>::generate(),
+                            //0, // TODO: 名前ID
                             lifespan_dist(gen),
                             set_lifespan,
                             genome,
-                            0, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
-                            255 // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
+                            farming, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
+                            hunter_gatherer // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
                         );
+                        if (farming > 0) ++emigration_count; // 農耕カウント
                     }
                     settlement.addAgents(agents);
                 }
             }
 
-            std::cout << "Done." << std::endl;
+            //std::cout << "Done." << std::endl;
         }
 
         /// @brief 指定した令制国のIDの集落グリッドを取得

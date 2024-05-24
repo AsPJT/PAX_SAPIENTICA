@@ -40,8 +40,7 @@ namespace paxs {
             std::uint_least8_t region_id; // 対応する地方区分ID
             std::uint_least32_t settlement_population_min_ad200;
             std::uint_least32_t settlement_population_max_ad200;
-            std::uint_least32_t population_ad200;
-            std::uint_least32_t population_ad725;
+            std::uint_least32_t population[4];
         };
 
     /// @brief A class that represents a prefecture in Japan.
@@ -79,8 +78,8 @@ namespace paxs {
                     ryoseikoku.region_id = static_cast<std::uint_least8_t>(std::stoi(ryoseikoku_tsv[i][2]));
                     ryoseikoku.settlement_population_min_ad200 = std::stoi(ryoseikoku_tsv[i][3]);
                     ryoseikoku.settlement_population_max_ad200 = std::stoi(ryoseikoku_tsv[i][4]);
-                    ryoseikoku.population_ad200 = std::stoi(ryoseikoku_tsv[i][5]);
-                    ryoseikoku.population_ad725 = std::stoi(ryoseikoku_tsv[i][6]);
+                    ryoseikoku.population[0/*ad200*/] = std::stoi(ryoseikoku_tsv[i][5]);
+                    ryoseikoku.population[1/*ad725*/] = std::stoi(ryoseikoku_tsv[i][6]);
                     ryoseikoku_list.emplace_back(ryoseikoku);
                 } catch (const std::invalid_argument&) {
                     PAXS_WARNING("Failed to read Ryoseikoku TSV file: " + ryoseikoku_tsv_path + " at line " + std::to_string(i));
@@ -133,7 +132,7 @@ namespace paxs {
         std::uint_least32_t getRyoseikokuPopulationAd200(const std::uint_least8_t id) const noexcept {
             for (const auto& ryoseikoku : ryoseikoku_list) {
                 if (ryoseikoku.id == id) {
-                    return ryoseikoku.population_ad200;
+                    return ryoseikoku.population[0/*ad200*/];
                 }
             }
             PAXS_WARNING("Failed to get Ryoseikoku population: " + std::to_string(id));

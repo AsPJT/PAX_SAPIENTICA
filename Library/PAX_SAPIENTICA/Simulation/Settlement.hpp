@@ -168,6 +168,8 @@ namespace paxs {
                 // 結婚可能かどうか
                 if (agents[i].isAbleToMarriage() && agents[i].getGender() == SimulationConstants::getInstance()->female) {
                     if (!isMarried(agents[i].getAge())) continue;
+                    // 妊娠していたら婚姻しない（婚姻可能と定義すると再婚者のデータで上書きされ子供への継承が不自然になる）
+                    if (agents[i].getBirthIntervalCount() > 0) continue;
 
                     marriageable_female_index.emplace_back(i);
                 }
@@ -273,7 +275,7 @@ namespace paxs {
         /// @brief 事前更新
         void preUpdate(KanakumaLifeSpan& kanakuma_life_span, std::uint_least64_t& count) noexcept {
             birth(kanakuma_life_span);
-            emigration(kanakuma_life_span, count);
+            //emigration(kanakuma_life_span, count);
         }
 
         /// @brief On update.
@@ -399,18 +401,26 @@ namespace paxs {
                 if (agent.getBirthIntervalCount() > 0) {
                     std::uint_least8_t count = agent.decrementBirthIntervalCount();
                     if (count == 0) {
-                        // 死産
-                        if (random_dist(*gen) < 0.11f) continue;
+                        // 死産率 100 ％の場合は出産しない
+                        if (SimulationConstants::getInstance()->stillbirth_rate >= 1.0f) continue;
+                        else if (SimulationConstants::getInstance()->stillbirth_rate > 0.0f) {
+                            // 死産
+                            if (random_dist(*gen) < SimulationConstants::getInstance()->stillbirth_rate) continue;
+                        }
                         // TODO: 直す
-                        if (!agent.isMarried()) continue;
+                        //if (!agent.isMarried()) continue;
                         Genome genome = Genome::generateFromParents(agent.cgetGenome(), agent.cgetPartnerGenome());
                         children.emplace_back(Agent(
-                            UniqueIdentification<std::uint_least64_t>::generate(),
-                            0, // TODO: 名前ID
+                            UniqueIdentification<std::uint_least32_t>::generate(),
+                            //0, // TODO: 名前ID
                             0,
                             kanakuma_life_span.setLifeSpan(genome.getGender(), *gen),
                             genome,
-                            (((*gen)() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
+                            (agent.cgetFarming() > 0 && agent.cgetPartnerFarming() > 0) ? 255 :(
+                                (agent.cgetFarming() == 0 && agent.cgetPartnerFarming() == 0) ? 0 : (
+                                (random_dist(*gen) < SimulationConstants::getInstance()->child_agriculture_priority) ? 255 : 0
+                            )),
+                            //(((*gen)() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
                             (((*gen)() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
                         ));
                     }
@@ -439,8 +449,8 @@ namespace paxs {
                     static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                 agents.emplace_back(Agent(
-                    UniqueIdentification<std::uint_least64_t>::generate(),
-                    0, // TODO: 名前ID
+                    UniqueIdentification<std::uint_least32_t>::generate(),
+                    //0, // TODO: 名前ID
                     lifespan_dist(*gen),
                     set_lifespan,
                     genome,

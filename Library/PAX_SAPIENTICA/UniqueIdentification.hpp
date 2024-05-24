@@ -34,7 +34,7 @@ namespace paxs {
                 PAXS_WARNING("The counter has reached the maximum value. Resetting the counter.");
                 reset();
             }
-            return counter++;
+            return ++counter;
         }
 
         /// @brief Reset the counter.

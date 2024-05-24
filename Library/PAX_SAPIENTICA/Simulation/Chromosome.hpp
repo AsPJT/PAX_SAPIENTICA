@@ -27,7 +27,7 @@ namespace paxs {
     /// @brief 染色体
     class Chromosome {
     public:
-        static constexpr std::uint_least8_t chromosome_length = 46;
+        static constexpr std::uint_least8_t chromosome_length = 2;// 46;
         Chromosome() = default;
 
         std::uint_least8_t get(const std::uint_least8_t index) const noexcept {
@@ -53,7 +53,7 @@ namespace paxs {
             return os;
         }
 
-        std::uint_least8_t getGender() const noexcept {
+        constexpr std::uint_least8_t getGender() const noexcept {
             return gender;
         }
 

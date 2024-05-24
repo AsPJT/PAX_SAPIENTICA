@@ -54,7 +54,7 @@ namespace paxs {
             yDNA = value;
         }
 
-        std::uint_least8_t getGender() const noexcept {
+        constexpr std::uint_least8_t getGender() const noexcept {
             return chromosome.getGender();
         }
 
