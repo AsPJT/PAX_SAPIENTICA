@@ -720,11 +720,39 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                         (*one_font).drawTopRight(
                             ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
                                 reinterpret_cast<const char*>(u8"渡来数") :
-                                "Immigrants"),
+                                "Total Immigrants"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 120), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
                             std::to_string(simulator->emigrationSize()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 120), paxg::Color(0, 0, 0));
+
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                                reinterpret_cast<const char*>(u8"処理時間") :
+                                "All Processing Time [s]"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 150), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(simulator->cgetProcessingTime()),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 150), paxg::Color(0, 0, 0));
+
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                                reinterpret_cast<const char*>(u8"処理時間") :
+                                "Move Processing Time [s]"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 180), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(simulator->cgetMoveProcessingTime()),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 180), paxg::Color(0, 0, 0));
+
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                                reinterpret_cast<const char*>(u8"処理時間") :
+                                "Marriage Processing Time [s]"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 210), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(simulator->cgetMarriageProcessingTime()),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 210), paxg::Color(0, 0, 0));
+
 
                         }
 #endif

@@ -19,6 +19,7 @@
 #include <cstdint>
 
 #include <array>
+#include <chrono>
 #include <memory>
 #include <random>
 #include <unordered_map>
@@ -105,6 +106,9 @@ namespace paxs {
         /// @brief Execute the simulation for the one step.
         /// @brief シミュレーションを1ステップ実行する
         void step() noexcept {
+            std::chrono::system_clock::time_point  start_time, end_time, move_time, m_start_time, m_end_time;
+            start_time = std::chrono::system_clock::now(); // 計測開始
+
             std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
             for (auto& settlement_grid  : settlement_grids) {
                 std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
@@ -124,6 +128,8 @@ namespace paxs {
             for (auto& move : move_list) {
                 moveSettlement(std::get<0>(move), std::get<1>(move), std::get<2>(move));
             }
+            move_time = std::chrono::system_clock::now(); // 移動
+            move_processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(move_time - start_time).count() / 1000.0);
 
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
@@ -132,6 +138,8 @@ namespace paxs {
             }
 
             randomizeSettlements(1, 255, 0);
+
+            m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
 
             auto delete_agent = [this](const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
                 auto it = settlement_grids.find(key.toU64());
@@ -150,7 +158,7 @@ namespace paxs {
                 }
 
                 // 近隣8グリッドの集落を取得
-                std::vector<Settlement> close_settlements;
+                std::vector<Settlement*> close_settlements;
                 Vector2 grid_position = settlement_grid.second.getGridPosition();
                 grid_position /= SimulationConstants::getInstance()->grid_length;
                 for (int i = -1; i <= 1; ++i) {
@@ -158,7 +166,7 @@ namespace paxs {
                         auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
                         if (it != settlement_grids.end()) {
                             for (auto& settlement : it->second.getSettlements()) {
-                                close_settlements.emplace_back(settlement);
+                                close_settlements.emplace_back(&settlement);
                             }
                         }
                     }
@@ -168,6 +176,9 @@ namespace paxs {
                     settlement.marriage(close_settlements, delete_agent);
                 }
             }
+
+            m_end_time = std::chrono::system_clock::now();  // 婚姻計測終了
+            marriage_processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(m_end_time - m_start_time).count() / 1000.0);
 
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
@@ -182,6 +193,9 @@ namespace paxs {
             for (auto& settlement_grid : settlement_grids) {
                 settlement_grid.second.divideSettlements();
             }
+
+            end_time = std::chrono::system_clock::now();  // 計測終了
+            processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() / 1000.0);
         }
 
         /// @brief Get the agent list.
@@ -193,7 +207,21 @@ namespace paxs {
         constexpr const std::unordered_map<std::uint_least64_t, SettlementGrid>&
             cgetSettlementGrids() const noexcept { return settlement_grids; }
 
+        /// @brief Get processing_time.
+        /// @brief 処理時間を取得する
+        constexpr double cgetProcessingTime() const noexcept { return processing_time; }
+        /// @brief Get processing_time.
+        /// @brief 処理時間を取得する
+        constexpr double cgetMoveProcessingTime() const noexcept { return move_processing_time; }
+        /// @brief Get processing_time.
+        /// @brief 処理時間を取得する
+        constexpr double cgetMarriageProcessingTime() const noexcept { return marriage_processing_time; }
+
     private:
+        double processing_time = 0.0;
+        double move_processing_time = 0.0;
+        double marriage_processing_time = 0.0;
+
         std::unordered_map<std::uint_least64_t, SettlementGrid> settlement_grids;
         std::shared_ptr<Environment> environment;
 
@@ -220,7 +248,7 @@ namespace paxs {
                 habitable_land_positions.emplace_back(habitable_land_positions_);
             }
         };
-        std::unique_ptr<std::array<Live, 90>> live_list;
+        std::unique_ptr<std::array<Live, max_number_of_districts>> live_list;
 
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
@@ -229,7 +257,7 @@ namespace paxs {
 
             environment->getLandPositions(land_positions);
 
-            live_list = std::unique_ptr<std::array<Live, 90>>(new std::array<Live, 90>());
+            live_list = std::unique_ptr<std::array<Live, max_number_of_districts>>(new std::array<Live, max_number_of_districts>());
 
             if (live_list.get() == nullptr) {
                 std::cout << "Low memory" << std::endl;
@@ -261,7 +289,7 @@ namespace paxs {
 
                 // 令制国ごとに人口が決められているので、人口に空きがあるかどうかを判定
                 std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), position);
-                if (ryoseikoku_id < 90) {
+                if (ryoseikoku_id < max_number_of_districts) {
                     (*live_list)[ryoseikoku_id].emplaceBack(live_probability, land_position);
                 }
             }
@@ -291,7 +319,7 @@ namespace paxs {
             }
             int population_sum = 0;
             // 集落配置
-            for (std::uint_least8_t ryoseikoku_id = 0; ryoseikoku_id < 90; ++ryoseikoku_id) {
+            for (std::uint_least8_t ryoseikoku_id = 0; ryoseikoku_id < max_number_of_districts; ++ryoseikoku_id) {
 
                 Live live = (*live_list)[ryoseikoku_id];
 

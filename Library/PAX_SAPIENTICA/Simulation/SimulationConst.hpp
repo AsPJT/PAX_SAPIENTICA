@@ -27,6 +27,8 @@ namespace paxs {
 
     constexpr int pixel_size = 256; // 1画像あたりの縦横のピクセル数
 
+    constexpr std::size_t max_number_of_districts = 90; // 最大地区数
+
     using GridType = int;
 
     struct SimulationConstants {

@@ -98,8 +98,8 @@ namespace paxs {
                 life_span == a.life_span &&
                 genome == a.genome &&
                 partner_id == a.partner_id &&
-                partner_genome == a.partner_genome;
-                partner_farming == a.partner_farming;
+                partner_genome == a.partner_genome &&
+                partner_farming == a.partner_farming &&
                 partner_hunter_gatherer == a.partner_hunter_gatherer;
         }
 

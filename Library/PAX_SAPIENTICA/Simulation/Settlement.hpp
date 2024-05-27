@@ -100,7 +100,7 @@ namespace paxs {
 
         /// @brief Delete the agent.
         /// @brief エージェントを削除する
-        void deleteAgent(const std::uint_least64_t id_) noexcept {
+        void deleteAgent(const std::uint_least32_t id_) noexcept {
             agents.erase(std::remove_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; }), agents.end());
         }
 
@@ -117,7 +117,7 @@ namespace paxs {
         /// @brief Get the agent.
         /// @brief エージェントを取得
         /// @param id The agent's id. エージェントのID
-        Agent& getAgent(const std::uint_least64_t id_) noexcept {
+        Agent& getAgent(const std::uint_least32_t id_) noexcept {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 const std::string message = "Agent not found.";
@@ -129,7 +129,7 @@ namespace paxs {
 
         /// @brief Get the agent.
         /// @brief エージェントを取得
-        const Agent& cgetAgent(const std::uint_least64_t id_) const noexcept {
+        const Agent& cgetAgent(const std::uint_least32_t id_) const noexcept {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 const std::string message = "Agent not found.";
@@ -141,7 +141,7 @@ namespace paxs {
 
         /// @brief Get the agent copy.
         /// @brief エージェントを取得
-        Agent getAgentCopy(const std::uint_least64_t id_) const noexcept {
+        Agent getAgentCopy(const std::uint_least32_t id_) const noexcept {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
                 const std::string message = "Agent not found.";
@@ -161,7 +161,7 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
-        void marriage(std::vector<Settlement> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) noexcept {
+        void marriage(std::vector<Settlement*> close_settlements, std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent) noexcept {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             for (std::size_t i = 0; i < agents.size(); ++i) {
@@ -182,7 +182,7 @@ namespace paxs {
 
             // 近隣の集落を探す
             for (std::size_t i = 0; i < close_settlements.size();) {
-                if (close_settlements[i].getPosition().distance(position) > SimulationConstants::getInstance()->marriage_search_range) {
+                if (close_settlements[i]->getPosition().distance(position) > SimulationConstants::getInstance()->marriage_search_range) {
                     close_settlements[i] = close_settlements.back(); // 同義 it = close_settlements.erase(it);
                     close_settlements.pop_back();
                 } else {
@@ -197,18 +197,18 @@ namespace paxs {
             }
 
             // idで自分を探す
-            auto it = std::find_if(close_settlements.begin(), close_settlements.end(), [this](const Settlement& settlement) { return settlement.getId() == id; });
+            auto it = std::find_if(close_settlements.begin(), close_settlements.end(), [this](const Settlement* const settlement) { return settlement->getId() == id; });
             if (it == close_settlements.end()) {
                 PAXS_ERROR("Settlement not found.");
                 return;
             }
 
             // エージェントIDと集落IDのペアを作成
-            std::vector<std::pair<std::uint_least64_t, std::uint_least32_t>> male_settlement_pair;
+            std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>> male_settlement_pair;
             for (auto& close_settlement : close_settlements) {
-                for (auto& agent : close_settlement.cgetAgents()) {
+                for (auto& agent : close_settlement->cgetAgents()) {
                     if (agent.isAbleToMarriage() && agent.getGender() == SimulationConstants::getInstance()->male) {
-                        male_settlement_pair.emplace_back(agent.getId(), close_settlement.getId());
+                        male_settlement_pair.emplace_back(agent.getId(), close_settlement->getId());
                     }
                 }
             }
@@ -225,13 +225,13 @@ namespace paxs {
             if (true) {
                 for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
                     std::pair<std::size_t, std::size_t> index_pair = marriageable_agents_index_pair[i];
-                    std::uint_least64_t male_id = male_settlement_pair[index_pair.second].first;
+                    std::uint_least32_t male_id = male_settlement_pair[index_pair.second].first;
                     std::uint_least32_t male_settlement_id = male_settlement_pair[index_pair.second].second;
 
                     bool is_found = false;
                     Vector2 male_settlement_position;
                     for (std::size_t j = 0; j < close_settlements.size(); ++j) {
-                        if (close_settlements[j].getId() == male_settlement_id) {
+                        if (close_settlements[j]->getId() == male_settlement_id) {
 
                             if (index_pair.first >= marriageable_female_index.size()) {
                                 PAXS_ERROR("The FIRST of index_pair is larger than the size of marriageable_female_index.");
@@ -242,7 +242,7 @@ namespace paxs {
                                 continue;
                             }
 
-                            Agent male_ = close_settlements[j].getAgentCopy(male_id);
+                            Agent male_ = close_settlements[j]->getAgentCopy(male_id);
                             Agent& female_ = agents[marriageable_female_index[index_pair.first]];
 
                             female_.marry(male_id, male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer());
@@ -252,7 +252,7 @@ namespace paxs {
                             agents.emplace_back(male_);
 
                             is_found = true;
-                            male_settlement_position = close_settlements[j].getPosition();
+                            male_settlement_position = close_settlements[j]->getPosition();
                             break;
                         }
                     }
