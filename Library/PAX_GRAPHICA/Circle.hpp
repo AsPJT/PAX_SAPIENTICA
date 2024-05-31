@@ -76,8 +76,8 @@ namespace paxg {
         void draw(const paxg::Color&) const {}
 #endif
 
-        void drawAt(const Vec2f& pos) const override {}
-        void drawAt(const Vec2i& pos) const override {}
+        void drawAt(const Vec2f&) const override {}
+        void drawAt(const Vec2i&) const override {}
     };
 }
 

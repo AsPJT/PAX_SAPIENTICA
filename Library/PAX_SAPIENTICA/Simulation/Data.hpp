@@ -153,10 +153,10 @@ namespace paxs {
                     bi.calc(tmp_data);
 
                     const Vector2 default_position = Vector2(x, y) * pixel_size - start_xyz_position;
-                    for(std::size_t y = 0;y < pixel_size;++y) {
-                        for(std::size_t x = 0;x < pixel_size;++x) {
-                            const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                            data[position.toU64()] = static_cast<DataType>(tmp_data[y * pixel_size + x]);
+                    for(std::size_t py = 0;py < pixel_size;++py) {
+                        for(std::size_t px = 0;px < pixel_size;++px) {
+                            const Vector2 position = default_position + Vector2((GridType)px, (GridType)py);
+                            data[position.toU64()] = static_cast<DataType>(tmp_data[py * pixel_size + px]);
                         }
                     }
 
@@ -249,22 +249,22 @@ namespace paxs {
 
 
                     const Vector2 default_position = Vector2(x, y) * pixel_size - start_xyz_position;
-                    for(std::size_t y = 0;y < file.size();++y) {
+                    for(std::size_t py = 0;py < file.size();++py) {
                         // タブ区切り
-                        const std::vector<std::string> values = StringExtensions::split(file[y], '\t');
-                        for(std::size_t x = 0;x < values.size();++x) {
-                            const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                            if(values[x] == "") {
+                        const std::vector<std::string> values = StringExtensions::split(file[py], '\t');
+                        for(std::size_t px = 0;px < values.size();++px) {
+                            const Vector2 position = default_position + Vector2((GridType)px, (GridType)py);
+                            if(values[px] == "") {
                                 continue;
                             }
                             // T型に変換
                             try {
                                 if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
-                                    int value = std::stoi(values[x]);
+                                    int value = std::stoi(values[px]);
                                     if(value == 0) continue;
                                     data[position.toU64()] = static_cast<DataType>(value);
                                 } else if constexpr (std::is_same<DataType, float>::value) {
-                                    data[position.toU64()] = static_cast<DataType>(std::stod(values[x]));
+                                    data[position.toU64()] = static_cast<DataType>(std::stod(values[px]));
                                 }
                             } catch (const std::invalid_argument&/*ia*/) {
                                 PAXS_WARNING("File contains invalid value: " + file_name);

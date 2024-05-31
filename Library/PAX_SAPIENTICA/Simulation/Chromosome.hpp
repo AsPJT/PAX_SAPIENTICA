@@ -100,7 +100,7 @@ namespace paxs {
 
             Chromosome random_chromosome;
             for (std::uint_least8_t i = 0; i < chromosome_length; ++i) {
-                random_chromosome.set(i, dist(engine));
+                random_chromosome.set(i, static_cast<std::uint_least8_t>(dist(engine)));
             }
             random_chromosome.setGender(dist(engine) % 2);
             return random_chromosome;

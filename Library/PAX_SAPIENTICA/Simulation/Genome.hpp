@@ -65,8 +65,8 @@ namespace paxs {
             std::random_device seed_gen;
             std::mt19937 engine(seed_gen());
             std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
-            genome.setMtDNA(dist(engine));
-            genome.setYDNA(dist(engine));
+            genome.setMtDNA(static_cast<std::uint_least8_t>(dist(engine)));
+            genome.setYDNA(static_cast<std::uint_least8_t>(dist(engine)));
             return genome;
         }
 

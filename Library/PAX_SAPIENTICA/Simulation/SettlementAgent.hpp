@@ -78,7 +78,7 @@ namespace paxs {
 
         constexpr const Genome& cgetGenome() const noexcept { return genome; }
 
-        constexpr void setPartnerGenome(const Genome& genome) noexcept { partner_genome = genome; }
+        constexpr void setPartnerGenome(const Genome& genome_) noexcept { partner_genome = genome_; }
 
         constexpr const Genome& cgetPartnerGenome() const noexcept { return partner_genome; }
 
@@ -169,15 +169,15 @@ namespace paxs {
         std::uint_least8_t partner_farming = 0; // 結婚相手の農耕文化
         std::uint_least8_t partner_hunter_gatherer = 0; // 結婚相手の狩猟採集文化
 
-        std::uint_least32_t age; // 年齢
-        std::uint_least32_t life_span; // 寿命
+        std::uint_least32_t age = 0; // 年齢
+        std::uint_least32_t life_span = 0; // 寿命
         //std::uint_least32_t name_id; // 名前のID
 
-        std::uint_least32_t id; // ID
+        std::uint_least32_t id = 0; // ID
         std::uint_least32_t partner_id = 0; // 結婚相手のID
 
-        Genome genome; // ゲノム
-        Genome partner_genome; // 結婚相手のゲノム
+        Genome genome{}; // ゲノム
+        Genome partner_genome{}; // 結婚相手のゲノム
     };
 }
 

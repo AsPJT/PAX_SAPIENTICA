@@ -60,7 +60,7 @@ namespace s3d
 
     struct Vec2
     {
-        double x, y;
+        double x{}, y{};
         Vec2() {}
         Vec2(int, int) {}
         Vec2(double _x, double _y) : x(_x), y(_y) {}
@@ -264,9 +264,9 @@ namespace s3d
     class Font
     {
     public:
-        FontMethod method;
-        int w;
-        String path;
+        FontMethod method{};
+        int w{};
+        String path{};
         Font operator()([[maybe_unused]] String path_) const { return Font(); }
         Font region() const { return Font(); }
         int height() const { return 0; }
@@ -374,9 +374,9 @@ namespace s3d
     class MSRenderTexture
     {
     public:
-        Size size;
-        TextureFormat format;
-        HasDepth hasDepth;
+        Size size{};
+        TextureFormat format{};
+        HasDepth hasDepth{};
 
         MSRenderTexture clear([[maybe_unused]] const ColorF& color) const { return MSRenderTexture(); }
         void resolve() {}
@@ -420,7 +420,7 @@ namespace s3d
     class ScopedRenderStates2D
     {
     public:
-        SamplerState samplerState;
+        SamplerState samplerState{};
         ScopedRenderStates2D() {}
         ScopedRenderStates2D(SamplerState) {}
         ScopedRenderStates2D(BlendState) {}

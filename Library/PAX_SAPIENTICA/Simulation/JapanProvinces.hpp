@@ -27,20 +27,20 @@ namespace paxs {
         /// @brief A struct that represents a region in Japan.
         /// @brief 日本の地方区分を表す構造体
         struct JapanRegion {
-            std::uint_least8_t id;
-            std::string name;
-            std::uint_least32_t population; // 人口
+            std::uint_least8_t id = 0;
+            std::string name = "";
+            std::uint_least32_t population = 0; // 人口
         };
 
         /// @brief A struct that represents a prefecture in Japan.
         /// @brief 日本の令制国を表す構造体
         struct Ryoseikoku {
-            std::uint_least8_t id;
-            std::string name;
-            std::uint_least8_t region_id; // 対応する地方区分ID
-            std::uint_least32_t settlement_population_min_ad200;
-            std::uint_least32_t settlement_population_max_ad200;
-            std::uint_least32_t population[4];
+            std::uint_least8_t id = 0;
+            std::string name = "";
+            std::uint_least8_t region_id = 0; // 対応する地方区分ID
+            std::uint_least32_t settlement_population_min_ad200 = 0;
+            std::uint_least32_t settlement_population_max_ad200 = 0;
+            std::uint_least32_t population[4] = {};
         };
 
     /// @brief A class that represents a prefecture in Japan.

@@ -174,11 +174,11 @@ namespace paxs {
         }
 
     private:
-        std::vector<Settlement> settlements;
-        std::shared_ptr<Environment> environment;
-        Vector2 grid_position;
-        std::mt19937* gen; // 乱数生成器
-        std::vector<std::uint_least8_t> ryoseikoku_list;
+        std::vector<Settlement> settlements{};
+        std::shared_ptr<Environment> environment{};
+        Vector2 grid_position{};
+        std::mt19937* gen{}; // 乱数生成器
+        std::vector<std::uint_least8_t> ryoseikoku_list{};
     };
 
 }
