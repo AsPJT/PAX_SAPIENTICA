@@ -16,8 +16,8 @@ male_marriageable_age_max	70	男性の最大結婚可能年齢(歳)
 birthable_age_min	15	出産の最小可能年齢(歳)
 birthable_age_max	50	出産の最大可能年齢(歳)
 birth_interval	10	出産の間隔：10ヶ月(Step)
-marriage_search_range	120	結婚時に近くの集落からエージェントを探す際の探索範囲
-grid_length	128	集落をグループ分けする際の1グリッド辺の長さ
+marriage_search_range	320	結婚時に近くの集落からエージェントを探す際の探索範囲
+grid_length	512	集落をグループ分けする際の1グリッド辺の長さ
 max_settlement_population	80	集落の最大人数(人)
 min_move_distance	10	最小移動距離
 max_move_distance	800	最大移動距離
@@ -25,4 +25,4 @@ min_move_probability	1	移動確率下限
 max_move_probability	10	移動確率上限
 move_probability_normalization_coefficient	1000	移動確率の正規化係数
 child_agriculture_priority	0.7	片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
-stillbirth_rate	0.1	死産率
+stillbirth_rate	0.16	死産率
