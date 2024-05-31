@@ -214,7 +214,7 @@ namespace paxs {
             }
 
             // 女性と男性の組み合わせをランダムに選択
-            RandomSelector selector;
+            RandomSelector selector(gen);
 
             // first: 女性のインデックス, second: 男性のインデックス
             const auto marriageable_agents_index_pair = selector.select(marriageable_female_index.size(), male_settlement_pair.size());
@@ -382,16 +382,16 @@ namespace paxs {
         /// @brief 既に移動したかどうか
         bool is_moved = false;
         /// @brief 集落id
-        std::uint_least32_t id;
+        std::uint_least32_t id = 0;
         /// @brief 集落の座標
-        Vector2 position;
+        Vector2 position{};
 
-        std::mt19937* gen; // 乱数生成器
+        std::mt19937* gen{}; // 乱数生成器
         std::uniform_real_distribution<float> random_dist{ 0.0f, 1.0f }; // 乱数分布
 
-        std::shared_ptr<Environment> environment; // 環境
+        std::shared_ptr<Environment> environment{}; // 環境
         /// @brief エージェントの配列
-        std::vector<Agent> agents;
+        std::vector<Agent> agents{};
 
         /// @brief Birth.
         /// @brief 出産
@@ -507,7 +507,7 @@ namespace paxs {
                 return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const float threshold = weight(age) * (0.98f / 101.8f);
+            const float threshold = static_cast<float>(weight(age)) * (0.98f / 101.8f);
 
             return random_dist(*gen) < threshold;
         }
@@ -520,7 +520,7 @@ namespace paxs {
                 return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const float threshold = weight(age) * (16.0f / 101.8f);
+            const float threshold = static_cast<float>(weight(age)) * (16.0f / 101.8f);
 
             return random_dist(*gen) < threshold;
         }

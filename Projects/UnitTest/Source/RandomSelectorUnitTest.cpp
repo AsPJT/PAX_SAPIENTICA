@@ -14,7 +14,9 @@
 #include <PAX_SAPIENTICA/RandomSelector.hpp>
 
 TEST(RandomSelectorUnitTest, select1) {
-    paxs::RandomSelector selector;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    paxs::RandomSelector selector(&gen);
 
     std::vector<int> vec = { 0, 1, 2, 3, 4, 5 };
     std::vector<int> result = selector.select(vec, 3);
@@ -23,7 +25,9 @@ TEST(RandomSelectorUnitTest, select1) {
 }
 
 TEST(RandomSelectorUnitTest, select2) {
-    paxs::RandomSelector selector;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    paxs::RandomSelector selector(&gen);
 
     std::vector<int> vec = { 0, 1, 2, 3, 4, 5 };
     std::vector<int> result = selector.select(vec, 3);
@@ -44,7 +48,9 @@ TEST(RandomSelectorUnitTest, select2) {
 }
 
 TEST(RandomSelectorUnitTest, outOfRange) {
-    paxs::RandomSelector selector;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    paxs::RandomSelector selector(&gen);
 
     std::vector<int> vec = { 0, 1, 2, 3, 4, 5 };
     std::vector<int> result = {};

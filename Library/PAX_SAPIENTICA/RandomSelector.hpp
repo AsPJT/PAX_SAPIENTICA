@@ -31,7 +31,7 @@ namespace paxs {
     /// @brief ランダムにベクトルから要素を選択
     class RandomSelector {
     public:
-        explicit RandomSelector() noexcept : gen(rd()) {}
+        explicit RandomSelector(std::mt19937* gen_) noexcept : gen(gen_) {}
 
         /// @brief Randomly select elements from a vector.
         /// @brief ベクトルから要素をランダムに選択
@@ -48,7 +48,7 @@ namespace paxs {
             std::vector<T> result(vec);
             for (std::size_t i = 0; i < num_elements; ++i) {
                 std::uniform_int_distribution<std::size_t> distribution(i, result.size() - 1);
-                std::size_t j = distribution(gen);
+                std::size_t j = distribution(*gen);
                 std::swap(result[i], result[j]);
             }
 
@@ -78,14 +78,13 @@ namespace paxs {
         }
 
     private:
-        std::random_device rd;
-        std::mt19937 gen;
+        std::mt19937* gen;
 
         std::size_t getRandomIndex(std::size_t num_elements, std::unordered_set<std::size_t>& used_indices) {
             std::uniform_int_distribution<std::size_t> distribution(0, num_elements - 1);
             std::size_t index;
             do {
-                index = distribution(gen);
+                index = distribution(*gen);
             } while (used_indices.find(index) != used_indices.end());
             used_indices.insert(index);
             return index;
