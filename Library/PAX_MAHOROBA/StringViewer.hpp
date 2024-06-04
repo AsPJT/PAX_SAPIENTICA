@@ -72,7 +72,7 @@ namespace paxs {
                         time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
                     if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                         std::string map_list_path = "Data/Simulations/MapList.tsv";
-                        std::string japan_provinces_path = "Data/Simulations/Japan200-725";
+                        std::string japan_provinces_path = "Data/Simulations/Sample";
 
                         AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationXYZTiles"),
                             [&](const std::string& path_) {map_list_path = path_; });

@@ -7,5 +7,5 @@ MiniIcons	Data/Settings/MapIcons.tsv
 PersonNames	Data/Settings/PersonNames.tsv
 Portraits	Data/Settings/Portraits.tsv
 SimulationXYZTiles	Data/Simulations/MapList.tsv
-SimulationProvincesPath	Data/Simulations/Japan200-725
+SimulationProvincesPath	Data/Simulations/Sample
 SimulationConstants	Data/Simulations/Settings.tsv
