@@ -46,7 +46,7 @@ TEST (JapanProvincesUnitTest, constructor) {
 
     std::cout << paxs::AppConfig::getInstance()->getRootPath() << std::endl;
 
-    const std::string japan_region_tsv_path = "Projects/UnitTest/Data/Simulations";
+    const std::string japan_region_tsv_path = "Projects/UnitTest/Data/Simulations/Sample";
 
     paxs::JapanProvinces japan_provinces(japan_region_tsv_path);
 

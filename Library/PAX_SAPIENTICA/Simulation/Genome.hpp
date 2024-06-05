@@ -58,37 +58,31 @@ namespace paxs {
             return chromosome.getGender();
         }
 
-        static Genome generateRandom() noexcept {
+        static Genome generateRandom(std::mt19937& engine) noexcept {
             Genome genome;
-            genome.setChromosome(Chromosome::generateRandom());
+            genome.setChromosome(Chromosome::generateRandom(engine));
 
-            std::random_device seed_gen;
-            std::mt19937 engine(seed_gen());
             std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
             genome.setMtDNA(static_cast<std::uint_least8_t>(dist(engine)));
             genome.setYDNA(static_cast<std::uint_least8_t>(dist(engine)));
             return genome;
         }
-        static Genome generateRandomSetMtDNA(const std::uint_least8_t mtdna_) noexcept {
+        static Genome generateRandomSetMtDNA(std::mt19937& engine, const std::uint_least8_t mtdna_) noexcept {
             Genome genome;
-            genome.setChromosome(Chromosome::generateRandom());
+            genome.setChromosome(Chromosome::generateRandom(engine));
 
-            std::random_device seed_gen;
-            std::mt19937 engine(seed_gen());
             std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
             genome.setMtDNA(mtdna_);
             genome.setYDNA(static_cast<std::uint_least8_t>(dist(engine)));
             return genome;
         }
 
-        static Genome generateFromParents(const Genome& mother, const Genome& father) noexcept {
+        static Genome generateFromParents(std::mt19937& engine, const Genome& mother, const Genome& father) noexcept {
             Genome genome;
-            genome.setChromosome(Chromosome::generateFromParents(mother.cgetChromosome(), father.cgetChromosome()));
+            genome.setChromosome(Chromosome::generateFromParents(engine, mother.cgetChromosome(), father.cgetChromosome()));
 
-            std::random_device seed_gen;
-            std::mt19937 engine(seed_gen());
             genome.setMtDNA(mother.getMtDNA());
-            if (genome.cgetChromosome().getGender() == SimulationConstants::getInstance()->female) {
+            if (genome.cgetChromosome().getGender() == female_value) {
                 genome.setYDNA(mother.getYDNA());
             }
             else {

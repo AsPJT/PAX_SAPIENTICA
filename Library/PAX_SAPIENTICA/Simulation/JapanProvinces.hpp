@@ -138,12 +138,12 @@ namespace paxs {
                 if (dist.size() <= 1) {
                     continue;
                 }
-                for (int i = 0; i < dist.size(); i += 2) {
-                    for (int j = 0; j < mtdna_list.size();++j) {
+                for (int j = 0; j < dist.size(); j += 2) {
+                    for (int k = 0; k < mtdna_list.size();++k) {
                         // mtDNA の名称の index を取得し、確率分布と一緒に管理
-                        if (mtdna_list[j] == dist[i]) {
-                            mtdna_region.id.emplace_back(j);
-                            mtdna_region.weight.emplace_back(std::stod(dist[i + 1]));
+                        if (mtdna_list[k] == dist[j]) {
+                            mtdna_region.id.emplace_back(k);
+                            mtdna_region.weight.emplace_back(std::stod(dist[j + 1]));
                             break;
                         }
                     }
@@ -224,7 +224,7 @@ namespace paxs {
         }
 
         // 古い実装
-        explicit JapanProvinces(const std::string& japan_region_tsv_path, const std::string& ryoseikoku_tsv_path, int aaa) noexcept {
+        explicit JapanProvinces(const std::string& japan_region_tsv_path, const std::string& ryoseikoku_tsv_path) noexcept {
             std::vector<std::vector<std::string>> japan_region_tsv = File::readTSV(AppConfig::getInstance()->getRootPath() + japan_region_tsv_path);
             if (japan_region_tsv.empty()) {
                 PAXS_WARNING("Failed to read Japan region TSV file: " + japan_region_tsv_path);

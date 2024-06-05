@@ -83,8 +83,8 @@ namespace paxs {
 
         /// @brief Run the simulation for the specified number of steps.
         /// @brief シミュレーションを指定されたステップ数だけ実行する
-        void run(const int step_count) noexcept {
-            for (int i = 0; i < step_count; ++i) {
+        void run(const int step_count_) noexcept {
+            for (int i = 0; i < step_count_; ++i) {
                 std::cout << "Step: " << i + 1 << std::endl;
                 step();
             }
@@ -396,7 +396,7 @@ namespace paxs {
 
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(japan_provinces->getMtDNA((farming>0)? 73/*toraijin*/ : ryoseikoku_id, gen));
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming>0)? 73/*toraijin*/ : ryoseikoku_id, gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
@@ -449,7 +449,7 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(japan_provinces->getMtDNA((farming > 0) ? 73/*toraijin*/ : ryoseikoku_id, gen));
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming > 0) ? 73/*toraijin*/ : ryoseikoku_id, gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布

@@ -37,8 +37,8 @@ namespace paxs {
 
         SettlementAgent() = default;
 
-        explicit SettlementAgent(const std::uint_least32_t id, //const std::uint_least32_t& name_id,
-            const std::uint_least32_t age, const std::uint_least32_t life_span, const Genome& genome,
+        explicit SettlementAgent(const HumanIndexType id,
+            const AgeType age, const AgeType life_span, const Genome& genome,
             std::uint_least8_t farming_, // 農耕文化
             std::uint_least8_t hunter_gatherer_ // 狩猟採集文化
         ) noexcept
@@ -48,7 +48,7 @@ namespace paxs {
 
         /// @brief Get the id.
         /// @brief idを取得
-        constexpr std::uint_least32_t getId() const noexcept { return id; }
+        constexpr HumanIndexType getId() const noexcept { return id; }
 
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す
@@ -58,7 +58,7 @@ namespace paxs {
         /// @brief エージェントの年齢を取得する
         float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
 
-        constexpr std::uint_least32_t getAgeInt() const noexcept { return age; }
+        constexpr AgeType getAgeInt() const noexcept { return age; }
 
         /// @brief Get the agent's age.
         /// @brief エージェントの性別を取得する
@@ -67,14 +67,14 @@ namespace paxs {
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする
         constexpr void incrementAge() noexcept {
-            if (age != (std::numeric_limits<std::uint_least32_t>::max)()) {
+            if (age != (std::numeric_limits<AgeType>::max)()) {
                 ++age;
             }
         }
 
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする
-        constexpr void incrementAge(const std::uint_least32_t n) noexcept { age += n; }
+        constexpr void incrementAge(const AgeType n) noexcept { age += n; }
 
         constexpr const Genome& cgetGenome() const noexcept { return genome; }
 
@@ -92,8 +92,6 @@ namespace paxs {
 
         constexpr bool operator==(const SettlementAgent& a) const noexcept {
             return  id == a.id &&
-                //name_id == a.name_id &&
-                //gender == a.gender &&
                 age == a.age &&
                 life_span == a.life_span &&
                 genome == a.genome &&
@@ -109,7 +107,7 @@ namespace paxs {
 
         /// @brief Set the agent's marriage status.
         /// @brief 結婚する
-        void marry(const std::uint_least32_t partner_id_, const Genome& partner_genome_,
+        void marry(const HumanIndexType partner_id_, const Genome& partner_genome_,
             std::uint_least8_t partner_farming_, // 結婚相手の農耕文化
         std::uint_least8_t partner_hunter_gatherer_ // 結婚相手の狩猟採集文化
         ) noexcept {
@@ -123,7 +121,7 @@ namespace paxs {
         /// @brief Is the agent able to marry?
         /// @brief エージェントが結婚可能かどうかを返す
         bool isAbleToMarriage() const noexcept {
-            float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
+            const float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
             return age_f > (genome.getGender() ?
                 SimulationConstants::getInstance()->male_marriageable_age_min :
                 SimulationConstants::getInstance()->female_marriageable_age_min) &&
@@ -136,23 +134,20 @@ namespace paxs {
         /// @brief Is able to give birth?
         /// @brief 出産可能かどうか
         bool isAbleToGiveBirth() const noexcept {
-            float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
+            const float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
             return age_f > SimulationConstants::getInstance()->birthable_age_min
                 && age_f < SimulationConstants::getInstance()->birthable_age_max && is_married;
         }
 
         /// @brief Get the partner's ID.
         /// @brief 結婚相手のIDを取得
-        std::uint_least32_t getPartnerId() const noexcept { return partner_id; }
+        HumanIndexType getPartnerId() const noexcept { return partner_id; }
 
         /// @brief Divorce.
         /// @brief 離婚
         void divorce() noexcept {
             is_married = false;
             partner_id = 0;
-            // partner_genome = nullptr;
-            //partner_farming = 0;
-            //partner_hunter_gatherer = 0;
         }
 
         std::uint_least8_t getBirthIntervalCount() const noexcept { return birth_interval_count; }
@@ -161,7 +156,6 @@ namespace paxs {
 
     protected:
         bool is_married = false; // 結婚しているかどうか
-        //std::uint_least8_t gender; // 性別: 0 -> 女性, 1 -> 男性
         std::uint_least8_t birth_interval_count = 0; // 出産の間隔のカウント
 
         std::uint_least8_t farming = 0; // 農耕文化
@@ -169,12 +163,11 @@ namespace paxs {
         std::uint_least8_t partner_farming = 0; // 結婚相手の農耕文化
         std::uint_least8_t partner_hunter_gatherer = 0; // 結婚相手の狩猟採集文化
 
-        std::uint_least32_t age = 0; // 年齢
-        std::uint_least32_t life_span = 0; // 寿命
-        //std::uint_least32_t name_id; // 名前のID
+        AgeType age = 0; // 年齢
+        AgeType life_span = 0; // 寿命
 
-        std::uint_least32_t id = 0; // ID
-        std::uint_least32_t partner_id = 0; // 結婚相手のID
+        HumanIndexType id = 0; // ID
+        HumanIndexType partner_id = 0; // 結婚相手のID
 
         Genome genome{}; // ゲノム
         Genome partner_genome{}; // 結婚相手のゲノム

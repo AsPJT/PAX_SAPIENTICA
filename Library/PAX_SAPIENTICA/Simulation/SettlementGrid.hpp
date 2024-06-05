@@ -151,7 +151,7 @@ namespace paxs {
 
         /// @brief Delete the agent.
         /// @brief エージェントを削除
-        void deleteAgent(const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id) noexcept {
+        void deleteAgent(const HumanIndexType agent_id, const std::uint_least32_t settlement_id) noexcept {
             auto it = std::find_if(settlements.begin(), settlements.end(), [settlement_id](const Settlement& settlement) { return settlement.getId() == settlement_id; });
             if (it != settlements.end()) {
                 it->deleteAgent(agent_id);

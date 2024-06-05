@@ -1,28 +1,26 @@
 ﻿key	value	ja-JP
+---------- Time ---------- 時間 --------------------------------------------------	
 start_julian_day	1319309	シミュレーション開始日(ユリウス日)
-area	honsyu	シミュレーションの対象範囲
-unit_group_min	11	単位集団の最小人数
-unit_group_max	40	単位集団の最大人数
-basic_group_min	41	基礎集団の最小人数
-basic_group_max	240	基礎集団の最大人数
-composite_settlement_min	82	複合集落の最小人数
 steps_per_year	12	1年あたりのステップ数
-female	0	女性
-male	1	男性
-female_marriageable_age_min	13	女性の最小結婚可能年齢(歳)
-male_marriageable_age_min	17	男性の最小結婚可能年齢(歳)
-female_marriageable_age_max	60	女性の最大結婚可能年齢(歳)
-male_marriageable_age_max	70	男性の最大結婚可能年齢(歳)
+---------- Space ---------- 空間 --------------------------------------------------	
+area	honsyu	シミュレーションの対象範囲
+grid_length	512	集落をグループ分けする際の1グリッド辺の長さ
+---------- Marriage ---------- 婚姻 --------------------------------------------------	
+marriage_search_range	320	結婚時に近くの集落からエージェントを探す際の探索距離
+female_marriageable_age_min	13	女性の最小婚姻可能年齢(歳)
+male_marriageable_age_min	17	男性の最小婚姻可能年齢(歳)
+female_marriageable_age_max	60	女性の最大婚姻可能年齢(歳)
+male_marriageable_age_max	70	男性の最大婚姻可能年齢(歳)
 birthable_age_min	15	出産の最小可能年齢(歳)
 birthable_age_max	50	出産の最大可能年齢(歳)
+---------- Childbirth ---------- 出産 --------------------------------------------------	
 birth_interval	10	出産の間隔：10ヶ月(Step)
-marriage_search_range	320	結婚時に近くの集落からエージェントを探す際の探索距離
-grid_length	512	集落をグループ分けする際の1グリッド辺の長さ
+stillbirth_rate	0.16	死産率
+child_agriculture_priority	0.7	片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
+---------- Movement ---------- 移動 --------------------------------------------------	
 max_settlement_population	80	集落の最大人数(人)
 min_move_distance	10	最小移動距離
 max_move_distance	800	最大移動距離
 min_move_probability	1	移動確率下限
 max_move_probability	10	移動確率上限
 move_probability_normalization_coefficient	1000	移動確率の正規化係数
-child_agriculture_priority	0.7	片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
-stillbirth_rate	0.16	死産率
