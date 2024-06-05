@@ -122,19 +122,19 @@ namespace paxs {
             }
         }
 
-        /// @brief Add a Ryoseikoku ID to the list.
-        /// @brief 令制国のIDをリストに追加
-        void addRyoseikokuId(const std::uint_least8_t id) noexcept {
+        /// @brief Add a District ID to the list.
+        /// @brief 地区のIDをリストに追加
+        void addDistrictId(const std::uint_least8_t id) noexcept {
             // 重複チェック
-            if (std::find(ryoseikoku_list.begin(), ryoseikoku_list.end(), id) == ryoseikoku_list.end()) {
-                ryoseikoku_list.emplace_back(id);
+            if (std::find(district_list.begin(), district_list.end(), id) == district_list.end()) {
+                district_list.emplace_back(id);
             }
         }
 
-        /// @brief Get the Ryoseikoku list.
-        /// @brief 令制国のリストを取得
-        std::vector<std::uint_least8_t>& getRyoseikokuIds() noexcept { return ryoseikoku_list; }
-        const std::vector<std::uint_least8_t>& cgetRyoseikokuIds() const noexcept { return ryoseikoku_list; }
+        /// @brief Get the District list.
+        /// @brief 地区のリストを取得
+        std::vector<std::uint_least8_t>& getDistrictIds() noexcept { return district_list; }
+        const std::vector<std::uint_least8_t>& cgetDistrictIds() const noexcept { return district_list; }
 
         /// @brief Check if the settlement exists and delete it if it does not.
         /// @brief 集落が存在するかどうかをチェックし、存在しない場合は削除する
@@ -178,7 +178,7 @@ namespace paxs {
         std::shared_ptr<Environment> environment{};
         Vector2 grid_position{};
         std::mt19937* gen{}; // 乱数生成器
-        std::vector<std::uint_least8_t> ryoseikoku_list{};
+        std::vector<std::uint_least8_t> district_list{};
     };
 
 }

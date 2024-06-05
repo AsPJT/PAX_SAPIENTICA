@@ -315,10 +315,10 @@ namespace paxs {
                     continue;
                 }
 
-                // 令制国ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), position);
-                if (ryoseikoku_id < max_number_of_districts) {
-                    (*live_list)[ryoseikoku_id].emplaceBack(live_probability, land_position);
+                // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
+                std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), position);
+                if (district_id < max_number_of_districts) {
+                    (*live_list)[district_id].emplaceBack(live_probability, land_position);
                 }
             }
             return true;
@@ -332,27 +332,27 @@ namespace paxs {
             std::uint_least8_t hunter_gatherer
         ) noexcept {
 
-            // 令制国と人口のマップ
-            std::unordered_map<std::uint_least8_t, std::uint_least32_t> ryoseikoku_population_map;
-            for (auto& ryoseikoku : japan_provinces->cgetRyoseikokuList()) {
-                if (ryoseikoku.population[ad200/*ad200*/] == 0) {
+            // 地区と人口のマップ
+            std::unordered_map<std::uint_least8_t, std::uint_least32_t> district_population_map;
+            for (auto& district : japan_provinces->cgetDistrictList()) {
+                if (district.population[ad200/*ad200*/] == 0) {
                     continue;
                 }
-                ryoseikoku_population_map[ryoseikoku.id] = ryoseikoku.population[ad200/*ad200*/];
+                district_population_map[district.id] = district.population[ad200/*ad200*/];
             }
 
             int all_population = 0;
-            for (auto& ryoseikoku_population : ryoseikoku_population_map) {
-                all_population += ryoseikoku_population.second;
+            for (auto& district_population : district_population_map) {
+                all_population += district_population.second;
             }
             int population_sum = 0;
             // 集落配置
-            for (std::uint_least8_t ryoseikoku_id = 0; ryoseikoku_id < max_number_of_districts; ++ryoseikoku_id) {
+            for (std::uint_least8_t district_id = 0; district_id < max_number_of_districts; ++district_id) {
 
-                Live live = (*live_list)[ryoseikoku_id];
+                Live live = (*live_list)[district_id];
 
                 while (live.live_probabilities.size() > 0 && // 集落を配置し切るまで
-                    ryoseikoku_population_map.find(ryoseikoku_id) != ryoseikoku_population_map.end() // 令制国が残っている間
+                    district_population_map.find(district_id) != district_population_map.end() // 地区が残っている間
                     ) {
                     StatusDisplayer::displayProgressBar(population_sum, all_population);
 
@@ -362,11 +362,11 @@ namespace paxs {
                     int live_probability_index = live_probability_dist(gen);
                     Vector2 live_position = Vector2::fromU64(live.habitable_land_positions[live_probability_index]);
 
-                    // 令制国ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                    // std::uint_least8_t ryoseikoku_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), live_position);
+                    // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
+                    // std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), live_position);
 
-                    auto ryoseikoku_population_it = ryoseikoku_population_map.find(ryoseikoku_id);
-                    if (ryoseikoku_population_it == ryoseikoku_population_map.end()) {
+                    auto district_population_it = district_population_map.find(district_id);
+                    if (district_population_it == district_population_map.end()) {
                         live.live_probabilities[live_probability_index] = live.live_probabilities.back();
                         live.live_probabilities.pop_back();
                         live.habitable_land_positions[live_probability_index] = live.habitable_land_positions.back();
@@ -375,9 +375,9 @@ namespace paxs {
                     }
 
                     // 配置する集落の人口を決定
-                    paxs::Ryoseikoku ryoseikoku = japan_provinces->cgetRyoseikoku(ryoseikoku_id);
-                    int settlement_population = std::uniform_int_distribution<>(ryoseikoku.settlement_population_min_ad200, ryoseikoku.settlement_population_max_ad200)(gen);
-                    settlement_population = (std::min)(settlement_population, static_cast<int>(ryoseikoku_population_it->second));
+                    paxs::District district = japan_provinces->cgetDistrict(district_id);
+                    int settlement_population = std::uniform_int_distribution<>(district.settlement_population_min_ad200, district.settlement_population_max_ad200)(gen);
+                    settlement_population = (std::min)(settlement_population, static_cast<int>(district_population_it->second));
 
                     // 集落をグリッドに配置
                     Vector2 grid_position = live_position / SimulationConstants::getInstance()->grid_length;
@@ -396,7 +396,7 @@ namespace paxs {
 
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming>0)? 73/*toraijin*/ : ryoseikoku_id, gen));
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming>0)? 73/*toraijin*/ : district_id, gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
@@ -412,16 +412,16 @@ namespace paxs {
                         if (farming > 0) ++emigration_count; // 農耕カウント
                     }
 
-                    // 令制国の人口を減らす
-                    ryoseikoku_population_it->second -= settlement_population;
-                    if (ryoseikoku_population_it->second == 0) {
-                        ryoseikoku_population_map.erase(ryoseikoku_population_it);
+                    // 地区の人口を減らす
+                    district_population_it->second -= settlement_population;
+                    if (district_population_it->second == 0) {
+                        district_population_map.erase(district_population_it);
                     }
                     population_sum += settlement_population;
 
                     // 集落をグリッドに配置
                     settlement_grids[key].addSettlement(settlement);
-                    settlement_grids[key].addRyoseikokuId(ryoseikoku_id);
+                    settlement_grids[key].addDistrictId(district_id);
 
                     live.live_probabilities[live_probability_index] = live.live_probabilities.back();
                     live.live_probabilities.pop_back();
@@ -432,15 +432,15 @@ namespace paxs {
             //StatusDisplayer::displayProgressBar(all_population, all_population);
             //std::cout << std::endl;
 
-            // 令制国の人口が残っている場合は、ランダムに配置
-            for (auto& ryoseikoku_population : ryoseikoku_population_map) {
-                std::uint_least8_t ryoseikoku_id = ryoseikoku_population.first;
-                int population = ryoseikoku_population.second;
+            // 地区の人口が残っている場合は、ランダムに配置
+            for (auto& district_population : district_population_map) {
+                std::uint_least8_t district_id = district_population.first;
+                int population = district_population.second;
                 std::vector<Settlement> settlements;
-                getSettlements(settlements, ryoseikoku_id);
+                getSettlements(settlements, district_id);
 
                 if (settlements.size() == 0) {
-                    PAXS_WARNING("Settlements not found. Ryoseikoku ID: " + std::to_string(ryoseikoku_id));
+                    PAXS_WARNING("Settlements not found. District ID: " + std::to_string(district_id));
                     continue;
                 }
 
@@ -449,7 +449,7 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming > 0) ? 73/*toraijin*/ : ryoseikoku_id, gen));
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming > 0) ? 73/*toraijin*/ : district_id, gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
@@ -472,12 +472,12 @@ namespace paxs {
             //std::cout << "Done." << std::endl;
         }
 
-        /// @brief 指定した令制国のIDの集落グリッドを取得
-        void getSettlementGrids(std::vector<SettlementGrid>& settlement_grids_, const std::uint_least8_t ryoseikoku_id_) noexcept {
+        /// @brief 指定した地区のIDの集落グリッドを取得
+        void getSettlementGrids(std::vector<SettlementGrid>& settlement_grids_, const std::uint_least8_t district_id_) noexcept {
             for (auto& settlement_grid : settlement_grids) {
-                std::vector<std::uint_least8_t> ryoseikoku_ids = settlement_grid.second.getRyoseikokuIds();
-                for (auto id : ryoseikoku_ids) {
-                    if (id == ryoseikoku_id_) {
+                std::vector<std::uint_least8_t> district_ids = settlement_grid.second.getDistrictIds();
+                for (auto id : district_ids) {
+                    if (id == district_id_) {
                         settlement_grids_.emplace_back(settlement_grid.second);
                         break;
                     }
@@ -485,10 +485,10 @@ namespace paxs {
             }
         }
 
-        /// @brief 指定した令制国のIDの集落を取得
-        void getSettlements(std::vector<Settlement>& settlements, const std::uint_least8_t ryoseikoku_id_) noexcept {
+        /// @brief 指定した地区のIDの集落を取得
+        void getSettlements(std::vector<Settlement>& settlements, const std::uint_least8_t district_id_) noexcept {
             std::vector<SettlementGrid> settlement_grids_;
-            getSettlementGrids(settlement_grids_, ryoseikoku_id_);
+            getSettlementGrids(settlement_grids_, district_id_);
             for (auto& settlement_grid : settlement_grids_) {
                 for (auto& settlement : settlement_grid.getSettlements()) {
                     settlements.emplace_back(settlement);

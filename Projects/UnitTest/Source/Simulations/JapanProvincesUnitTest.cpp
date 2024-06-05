@@ -53,8 +53,8 @@ TEST (JapanProvincesUnitTest, constructor) {
     // EXPECT_EQ(japan_provinces.getJapanRegionPopulation(0), 0);
     // EXPECT_EQ(japan_provinces.getJapanRegionPopulation(2), 64600);
 
-    EXPECT_EQ(japan_provinces.getRyoseikokuPopulationAd200(0), 0);
-    EXPECT_EQ(japan_provinces.getRyoseikokuPopulationAd200(2), 2400);
+    EXPECT_EQ(japan_provinces.getDistrictPopulationAd200(0), 0);
+    EXPECT_EQ(japan_provinces.getDistrictPopulationAd200(2), 2400);
 
     if (!is_path_tsv_exist) {
         PathTSV::removePathTSV();
