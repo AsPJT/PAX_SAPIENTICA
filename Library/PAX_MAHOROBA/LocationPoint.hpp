@@ -678,7 +678,8 @@ namespace paxs {
                         // if (lli.lpe == MurMur3::calcHash("agent1"))
                         {
                             // const std::size_t pop_original = settlement.getFarmingPopulation(); // settlement.getPopulation();
-                            const float pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0f; // settlement.getPopulation();
+                            //const float pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0f; // settlement.getPopulation();
+                            const float pop_original = settlement.getMostMtDNA() / 27.0f * 75.0f; // settlement.getPopulation();
 
                             const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,

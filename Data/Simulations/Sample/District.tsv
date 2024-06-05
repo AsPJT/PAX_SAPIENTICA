@@ -1,91 +1,91 @@
-﻿id	name	region	min_pop_placed_per_cell	max_pop_placed_per_cell	init_pop	immigrant
-1	satsuma	2	4	20	2270	0
-2	osumi	2	4	20	2400	0
-3	hyuga	2	4	20	1820	0
-4	higo	2	4	20	6426	0
-5	bungo	3	4	20	1226	0
-6	chikugo	3	4	20	1410	0
-7	hizen	3	4	20	1148	0
-8	chikuzen	3	4	20	2664	1
-9	buzen	3	4	20	1122	0
-10	iki	3	4	20	288	0
-11	tsushima	3	4	20	234	0
-12	nagato	5	4	20	976	0
-13	suo	5	4	20	1098	0
-14	aki	5	4	20	1540	0
-15	bingo	5	4	20	1588	0
-16	bitchu	5	4	20	1760	0
-17	mimasaka	5	4	20	1564	0
-18	bizen	5	4	20	1246	0
-19	harima	7	4	20	2358	0
-20	iwami	6	4	20	410	0
-21	izumo	6	4	20	866	0
-22	hoki	6	4	20	532	0
-23	oki	6	4	20	132	0
-24	inaba	6	4	20	554	0
-25	tajima	6	4	20	654	0
-26	tango	6	4	20	388	0
-27	tanba	7	4	20	1636	0
-28	iyo	4	4	20	1726	0
-29	tosa	4	4	20	1030	0
-30	awa	4	4	20	1102	0
-31	sanuki	4	4	20	2158	0
-32	awaji	7	4	20	408	0
-33	kii	7	4	20	1346	0
-34	yamato	8	4	20	2266	0
-35	kawachi	8	4	20	1160	0
-36	yamashiro	8	4	20	1130	0
-37	izumi	8	4	20	348	0
-38	settsu	8	4	20	1130	0
-39	wakasa	11	4	20	378	0
-40	echizen	11	4	20	990	0
-41	kaga	11	4	20	538	0
-42	etchu	11	4	20	754	0
-43	noto	11	4	20	468	0
-44	echigo	11	4	20	610	0
-45	sado	11	4	20	396	0
-46	shima	7	4	20	3374	0
-47	ise	7	4	20	2260	0
-48	iga	7	4	20	432	0
-49	owari	9	4	20	1686	0
-50	mikawa	9	4	20	1686	0
-51	totomi	9	4	20	2346	0
-52	suruga	9	4	20	1442	0
-53	izu	9	4	20	514	0
-54	kai	10	4	20	4746	0
-55	sagami	12	4	20	2078	0
-56	musashi	12	4	20	3690	0
-57	shimosa	12	4	20	2820	0
-58	kazusa	12	4	20	2358	0
-59	awa1	12	4	20	990	0
-60	hitachi	13	4	20	3698	0
-61	omi	7	4	20	2236	0
-62	mino	9	4	20	3202	0
-63	hida	10	4	20	1996	0
-64	shinano	10	4	20	10276	0
-65	kozuke	13	4	20	2466	0
-66	shimotsuke	13	4	20	1692	0
-67	mutsu	15	4	20	5740	0
-68	dewa	14	4	20	940	0
-69	ezo_honshu	15	4	20	2000	0
-70	ezo_hokkaido	16	4	20	0	0
-71	ezo_chishima	16	4	20	0	0
-72	ezo_karafuto	16	4	20	0	0
-73	null1	0	4	20	0	0
-74	null2	0	4	20	0	0
-75	null3	0	4	20	0	0
-76	null4	0	4	20	0	0
-77	null5	0	4	20	0	0
-78	null6	0	4	20	0	0
-79	null7	0	4	20	0	0
-80	null8	0	4	20	0	0
-81	null9	0	4	20	0	0
-82	null10	0	4	20	0	0
-83	null11	0	4	20	0	0
-84	null12	0	4	20	0	0
-85	null13	0	4	20	0	0
-86	null14	0	4	20	0	0
-87	null15	0	4	20	0	0
-88	ogasawara	1	4	20	0	0
-89	izu1	1	4	20	0	0
-90	ryukyu	1	4	20	0	0
+﻿id	name	ja-JP	region	min_pop_placed_per_cell	max_pop_placed_per_cell	init_pop	immigrant	mtdna_region	pop_ad725
+1	satsuma	薩摩	2	4	20	2270	0	kyushu_jomon	38400
+2	osumi	大隅	2	4	20	2400	0	kyushu_jomon	40600
+3	hyuga	日向	2	4	20	1820	0	kyushu_jomon	30800
+4	higo	肥後	2	4	20	6426	0	kyushu_jomon	108700
+5	bungo	豊後	3	4	20	1226	0	kyushu_jomon	51600
+6	chikugo	筑後	3	4	20	1410	0	kyushu_jomon	59300
+7	hizen	肥前	3	4	20	1148	0	kyushu_jomon	48300
+8	chikuzen	筑前	3	4	20	2664	100	kyushu_jomon	112000
+9	buzen	豊前	3	4	20	1122	0	kyushu_jomon	47200
+10	iki	壱岐	3	4	20	288	0	kyushu_jomon	12100
+11	tsushima	対馬	3	4	20	234	0	kyushu_jomon	9900
+12	nagato	長門	5	4	20	976	0	chugoku_jomon	43900
+13	suo	周防	5	4	20	1098	0	chugoku_jomon	49400
+14	aki	安芸	5	4	20	1540	0	chugoku_jomon	69200
+15	bingo	備後	5	4	20	1588	0	chugoku_jomon	71400
+16	bitchu	備中	5	4	20	1760	0	chugoku_jomon	79100
+17	mimasaka	美作	5	4	20	1564	0	chugoku_jomon	70300
+18	bizen	備前	5	4	20	1246	0	chugoku_jomon	56000
+19	harima	播磨	7	4	20	2358	0	kinki_jomon	107600
+20	iwami	石見	6	4	20	410	0	chugoku_jomon	40600
+21	izumo	出雲	6	4	20	866	0	chugoku_jomon	85700
+22	hoki	伯耆	6	4	20	532	0	chugoku_jomon	52700
+23	oki	隠岐	6	4	20	132	0	chugoku_jomon	13200
+24	inaba	因幡	6	4	20	554	0	chugoku_jomon	54900
+25	tajima	但馬	6	4	20	654	0	chugoku_jomon	64800
+26	tango	丹後	6	4	20	388	0	chugoku_jomon	38400
+27	tanba	丹波	7	4	20	1636	0	kinki_jomon	74700
+28	iyo	伊予	4	4	20	1726	0	shikoku_jomon	79100
+29	tosa	土佐	4	4	20	1030	0	shikoku_jomon	47200
+30	awa	阿波	4	4	20	1102	0	shikoku_jomon	50500
+31	sanuki	讃岐	4	4	20	2158	0	shikoku_jomon	98800
+32	awaji	淡路	7	4	20	408	0	kinki_jomon	18700
+33	kii	紀伊	7	4	20	1346	0	kinki_jomon	61500
+34	yamato	大和	8	4	20	2266	0	kinki_jomon	171700
+35	kawachi	河内	8	4	20	1160	0	kinki_jomon	87900
+36	yamashiro	山城	8	4	20	1130	0	kinki_jomon	85700
+37	izumi	和泉	8	4	20	348	0	kinki_jomon	26400
+38	settsu	摂津	8	4	20	1130	0	kinki_jomon	85700
+39	wakasa	若狭	11	4	20	378	0	chubu_jomon	23100
+40	echizen	越前	11	4	20	990	0	chubu_jomon	60400
+41	kaga	加賀	11	4	20	538	0	chubu_jomon	32900
+42	etchu	越中	11	4	20	754	0	chubu_jomon	46100
+43	noto	能登	11	4	20	468	0	chubu_jomon	28600
+44	echigo	越後	11	4	20	610	0	chubu_jomon	37300
+45	sado	佐渡	11	4	20	396	0	chubu_jomon	24200
+46	shima	志摩	7	4	20	3374	0	kinki_jomon	154000
+47	ise	伊勢	7	4	20	2260	0	kinki_jomon	103200
+48	iga	伊賀	7	4	20	432	0	kinki_jomon	19800
+49	owari	尾張	9	4	20	1686	0	chubu_jomon	75800
+50	mikawa	参河	9	4	20	1686	0	chubu_jomon	75800
+51	totomi	遠江	9	4	20	2346	0	chubu_jomon	105400
+52	suruga	駿河	9	4	20	1442	0	chubu_jomon	64800
+53	izu	伊豆	9	4	20	514	0	chubu_jomon	23100
+54	kai	甲斐	10	4	20	4746	0	chubu_jomon	34000
+55	sagami	相模	12	4	20	2078	0	kanto_jomon	73600
+56	musashi	武蔵	12	4	20	3690	0	kanto_jomon	130700
+57	shimosa	下総	12	4	20	2820	0	kanto_jomon	99900
+58	kazusa	上総	12	4	20	2358	0	kanto_jomon	83500
+59	awa1	安房	12	4	20	990	0	kanto_jomon	35100
+60	hitachi	常陸	13	4	20	3698	0	kanto_jomon	168000
+61	omi	近江	7	4	20	2236	0	kinki_jomon	102100
+62	mino	美濃	9	4	20	3202	0	chubu_jomon	143900
+63	hida	飛騨	10	4	20	1996	0	chubu_jomon	14300
+64	shinano	信濃	10	4	20	10276	0	chubu_jomon	73600
+65	kozuke	上野	13	4	20	2466	0	kanto_jomon	112000
+66	shimotsuke	下野	13	4	20	1692	0	kanto_jomon	76900
+67	mutsu	陸奥	15	4	20	5740	0	tohoku_jomon	206500
+68	dewa	出羽	14	4	20	940	0	tohoku_jomon	78000
+69	ezo_honshu	蝦夷(本州)	15	4	20	2000	0	tohoku_jomon	0
+70	ezo_hokkaido	蝦夷(北海道)	16	4	20	0	0	hokkaido_jomon	0
+71	ezo_chishima	蝦夷(千島列島)	16	4	20	0	0	hokkaido_jomon	0
+72	ezo_karafuto	蝦夷(樺太)	16	4	20	0	0	hokkaido_jomon	0
+73	toraijin_land	渡来人	0	0	0	0	0	toraijin	0
+74	null_a		0	4	20	0	0		0
+75	null_b		0	4	20	0	0		0
+76	null_c		0	4	20	0	0		0
+77	null_d		0	4	20	0	0		0
+78	null_e		0	4	20	0	0		0
+79	null_f		0	4	20	0	0		0
+80	null_g		0	4	20	0	0		0
+81	null_h		0	4	20	0	0		0
+82	null_i		0	4	20	0	0		0
+83	null_j		0	4	20	0	0		0
+84	null_k		0	4	20	0	0		0
+85	null_l		0	4	20	0	0		0
+86	null_m		0	4	20	0	0		0
+87	null_n		0	4	20	0	0		0
+88	ogasawara	小笠原諸島	1	4	20	0	0	southern_islands_jomon	0
+89	izu1	伊豆諸島	1	4	20	0	0	southern_islands_jomon	0
+90	ryukyu	琉球諸島	1	4	20	0	0	southern_islands_jomon	0

@@ -45,7 +45,7 @@ namespace paxs {
 
         explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const unsigned seed = 0) noexcept :
             environment(std::make_unique<Environment>(map_list_path)), gen(seed) {
-            japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/District.tsv");
+            japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
 
             // ランダムに移動確率を設定
             std::uniform_int_distribution<> move_probability_dist{ SimulationConstants::getInstance()->min_move_probability, SimulationConstants::getInstance()->max_move_probability };
@@ -59,7 +59,7 @@ namespace paxs {
             gen = std::mt19937(seed);
 
             japan_provinces.reset();
-            japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path + "/JapanRegion.tsv", japan_provinces_path + "/District.tsv");
+            japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
 
             // ランダムに移動確率を設定
             std::uniform_int_distribution<> move_probability_dist{ SimulationConstants::getInstance()->min_move_probability, SimulationConstants::getInstance()->max_move_probability };
@@ -108,6 +108,30 @@ namespace paxs {
         void step() noexcept {
             std::chrono::system_clock::time_point  start_time, end_time, move_time, m_start_time, m_end_time;
             start_time = std::chrono::system_clock::now(); // 計測開始
+
+            if (step_count % 120 == 0) {
+                std::size_t pop_num = 0; // 人口数
+                std::size_t sat_num = 0; // 集落数
+                std::size_t ryopop[90]{};
+
+                // 地名を描画
+                for (const auto& agent : getSettlementGrids()) {
+                    for (const auto& settlement : agent.second.cgetSettlements()) {
+                        ++sat_num; // 集落数を増加させる
+                        pop_num += settlement.getPopulation(); // 人口数を増加させる
+
+                        const std::uint_least8_t ryo_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), settlement.getPosition());
+                        if (ryo_id < 90) {
+                            ryopop[ryo_id]+= settlement.getPopulation(); // 地区ごとに人口数を増加させる
+                        }
+                    }
+                }
+                pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                for (int i = 0; i < 90; ++i) {
+                    pop_ofs << ryopop[i] << '\t';
+                }
+                pop_ofs << step_count << '\n';
+            }
 
             std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
             for (auto& settlement_grid  : settlement_grids) {
@@ -194,6 +218,7 @@ namespace paxs {
                 settlement_grid.second.divideSettlements();
             }
 
+            ++step_count;
             end_time = std::chrono::system_clock::now();  // 計測終了
             processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() / 1000.0);
         }
@@ -233,6 +258,7 @@ namespace paxs {
         KanakumaLifeSpan kanakuma_life_span;
 
         std::uint_least64_t emigration_count = 0;
+        std::uint_least64_t step_count = 0;
 
         // 陸の位置のリストを取得
         std::vector<std::uint64_t> land_positions;
@@ -249,6 +275,8 @@ namespace paxs {
             }
         };
         std::unique_ptr<std::array<Live, max_number_of_districts>> live_list;
+
+        std::ofstream pop_ofs = std::ofstream("pop.txt");
 
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
@@ -368,7 +396,7 @@ namespace paxs {
 
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Genome genome = Genome::generateRandom();
+                        Genome genome = Genome::generateRandomSetMtDNA(japan_provinces->getMtDNA((farming>0)? 73/*toraijin*/ : ryoseikoku_id, gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
@@ -421,7 +449,7 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Genome genome = Genome::generateRandom();
+                        Genome genome = Genome::generateRandomSetMtDNA(japan_provinces->getMtDNA((farming > 0) ? 73/*toraijin*/ : ryoseikoku_id, gen));
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
                         std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布

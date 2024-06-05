@@ -46,10 +46,9 @@ TEST (JapanProvincesUnitTest, constructor) {
 
     std::cout << paxs::AppConfig::getInstance()->getRootPath() << std::endl;
 
-    const std::string japan_region_tsv_path = "Projects/UnitTest/Data/Simulations/JapanRegion.tsv";
-    const std::string ryoseikoku_tsv_path = "Projects/UnitTest/Data/Simulations/Ryoseikoku.tsv";
+    const std::string japan_region_tsv_path = "Projects/UnitTest/Data/Simulations";
 
-    paxs::JapanProvinces japan_provinces(japan_region_tsv_path, ryoseikoku_tsv_path);
+    paxs::JapanProvinces japan_provinces(japan_region_tsv_path);
 
     EXPECT_EQ(japan_provinces.getJapanRegionPopulation(0), 0);
     EXPECT_EQ(japan_provinces.getJapanRegionPopulation(2), 64600);

@@ -343,6 +343,23 @@ namespace paxs {
             return farming_population;
         }
 
+        /// @brief Get the most mtDNA.
+        /// @brief 最多 mtDNA を取得
+        std::size_t getMostMtDNA() const noexcept {
+            //std::vector<std::uint_least8_t> dna_list{};
+            //std::vector<std::uint_least8_t> dna_count_list{};
+
+            std::size_t mtdna_max = 0;
+
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                //for (std::size_t i = 0; i < agents.size(); ++i) {
+                    //if (dna == agents[i].cgetGenome().getMtDNA())
+                //}
+                mtdna_max += agents[i].cgetGenome().getMtDNA();
+            }
+            return mtdna_max / agents.size();
+        }
+
         /// @brief Divide the settlement.
         /// @brief 集落を分割
         Settlement divide() noexcept {

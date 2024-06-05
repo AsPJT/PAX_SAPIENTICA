@@ -69,6 +69,17 @@ namespace paxs {
             genome.setYDNA(static_cast<std::uint_least8_t>(dist(engine)));
             return genome;
         }
+        static Genome generateRandomSetMtDNA(const std::uint_least8_t mtdna_) noexcept {
+            Genome genome;
+            genome.setChromosome(Chromosome::generateRandom());
+
+            std::random_device seed_gen;
+            std::mt19937 engine(seed_gen());
+            std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
+            genome.setMtDNA(mtdna_);
+            genome.setYDNA(static_cast<std::uint_least8_t>(dist(engine)));
+            return genome;
+        }
 
         static Genome generateFromParents(const Genome& mother, const Genome& father) noexcept {
             Genome genome;

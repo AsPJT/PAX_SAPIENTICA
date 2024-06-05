@@ -16,7 +16,7 @@ male_marriageable_age_max	70	男性の最大結婚可能年齢(歳)
 birthable_age_min	15	出産の最小可能年齢(歳)
 birthable_age_max	50	出産の最大可能年齢(歳)
 birth_interval	10	出産の間隔：10ヶ月(Step)
-marriage_search_range	320	結婚時に近くの集落からエージェントを探す際の探索範囲
+marriage_search_range	320	結婚時に近くの集落からエージェントを探す際の探索距離
 grid_length	512	集落をグループ分けする際の1グリッド辺の長さ
 max_settlement_population	80	集落の最大人数(人)
 min_move_distance	10	最小移動距離
