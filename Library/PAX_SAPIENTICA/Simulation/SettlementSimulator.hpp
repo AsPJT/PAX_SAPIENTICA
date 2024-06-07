@@ -72,6 +72,23 @@ namespace paxs {
             return emigration_count;
         }
 
+        /// @brief
+        /// @brief 生命表を取得
+        void outputLifeSpan(const int loop_num_) {
+            std::ofstream life_ofs = std::ofstream("life.txt");
+            std::vector<int> life_num1(SimulationConstants::getInstance()->steps_per_year * 100, 0);
+            std::vector<int> life_num2(SimulationConstants::getInstance()->steps_per_year * 100, 0);
+            for (int i = 0; i < loop_num_; ++i) {
+                life_num1[kanakuma_life_span.setLifeSpan(0, gen)] += 1;
+                life_num2[kanakuma_life_span.setLifeSpan(1, gen)] += 1;
+            }
+            life_ofs << "step\tyear\tfemale\tmale\n";
+            for (int i = 0; i < SimulationConstants::getInstance()->steps_per_year * 100; ++i) {
+                life_ofs << i << '\t' << i / SimulationConstants::getInstance()->steps_per_year << '\t' << life_num1[i] << '\t' << life_num2[i] << '\n';
+            }
+            return;
+        }
+
         /// @brief Initialize the simulator.
         /// @brief 集落の初期化
         /// @details 集落をクリアし、地域ごとに指定されたエージェント数になるようにランダムに配置する
@@ -112,6 +129,7 @@ namespace paxs {
             if (step_count % 120 == 0) {
                 std::size_t pop_num = 0; // 人口数
                 std::size_t sat_num = 0; // 集落数
+                std::vector < std::vector<int>> mtdna_num(90, std::vector<int>(256, 0)); // mtDNA 数
                 std::size_t ryopop[90]{};
 
                 // 地名を描画
@@ -123,14 +141,26 @@ namespace paxs {
                         const std::uint_least8_t ryo_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), settlement.getPosition());
                         if (ryo_id < 90) {
                             ryopop[ryo_id]+= settlement.getPopulation(); // 地区ごとに人口数を増加させる
+
+                            // mtDNA ごとにカウント
+                            for (int popi = 0; popi < settlement.cgetAgents().size(); ++popi) {
+                                mtdna_num[ryo_id][settlement.cgetAgents()[popi].cgetGenome().getMtDNA()] += 1;
+                            }
                         }
                     }
                 }
                 pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                pop_mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 for (int i = 0; i < 90; ++i) {
                     pop_ofs << ryopop[i] << '\t';
+                    for (int j = 0; j < 27; ++j) {
+                        if (int(mtdna_num[i][j]) == 0) continue;
+                        pop_mtdna_ofs << japan_provinces->getMtDNA_Name(j) << ':' << int(mtdna_num[i][j]) << '/';
+                    }
+                    pop_mtdna_ofs << '\t';
                 }
                 pop_ofs << step_count << '\n';
+                pop_mtdna_ofs << step_count << '\n';
             }
 
             std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
@@ -175,6 +205,16 @@ namespace paxs {
                 }
             };
 
+            auto add_agent = [this](const paxs::SettlementAgent agent_, const std::uint_least32_t settlement_id, const Vector2 key) {
+                auto it = settlement_grids.find(key.toU64());
+                if (it != settlement_grids.end()) {
+                    it->second.addAgent(agent_, settlement_id);
+                }
+                else {
+                    PAXS_ERROR("Settlement grid not found. Key: " + std::to_string(key.x) + ", " + std::to_string(key.y));
+                }
+                };
+
             for (auto& settlement_grid : settlement_grids) {
                 std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
                 if (settlements.size() == 0) {
@@ -197,7 +237,7 @@ namespace paxs {
                 }
 
                 for (auto& settlement : settlements) {
-                    settlement.marriage(close_settlements, delete_agent);
+                    settlement.marriage(close_settlements, add_agent, delete_agent);
                 }
             }
 
@@ -277,6 +317,7 @@ namespace paxs {
         std::unique_ptr<std::array<Live, max_number_of_districts>> live_list;
 
         std::ofstream pop_ofs = std::ofstream("pop.txt");
+        std::ofstream pop_mtdna_ofs = std::ofstream("pop_mtdna.txt");
 
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
