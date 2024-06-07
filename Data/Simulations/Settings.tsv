@@ -6,6 +6,7 @@ steps_per_year	12	1年あたりのステップ数
 area	honsyu	シミュレーションの対象範囲
 grid_length	512	集落をグループ分けする際の1グリッド辺の長さ
 ---------- Marriage ---------- 婚姻 --------------------------------------------------	
+maternal_residence_probability	0.5	母方居住婚の確率
 marriage_search_range	320	結婚時に近くの集落からエージェントを探す際の探索距離
 female_marriageable_age_min	13	女性の最小婚姻可能年齢(歳)
 male_marriageable_age_min	17	男性の最小婚姻可能年齢(歳)

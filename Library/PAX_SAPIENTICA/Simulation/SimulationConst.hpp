@@ -93,6 +93,9 @@ namespace paxs {
         // 死産率
         float stillbirth_rate = 0.1f;
 
+        // 母方居住婚の確率
+        float maternal_residence_probability = 0.5f;
+
     private:
         template<typename Func_>
         void stoiFunc(KeyValueTSV<std::string>& key_value_tsv_, const std::uint_least32_t key_, Func_&& func_) {
@@ -154,6 +157,7 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("move_probability_normalization_coefficient"), [&](const std::string& str_) {move_probability_normalization_coefficient = std::stoi(str_); });
             stoiFunc(kvt, MurMur3::calcHash("child_agriculture_priority"), [&](const std::string& str_) {child_agriculture_priority = std::stof(str_); });
             stoiFunc(kvt, MurMur3::calcHash("stillbirth_rate"), [&](const std::string& str_) {stillbirth_rate = std::stof(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("maternal_residence_probability"), [&](const std::string& str_) {maternal_residence_probability = std::stof(str_); });
 
         }
 

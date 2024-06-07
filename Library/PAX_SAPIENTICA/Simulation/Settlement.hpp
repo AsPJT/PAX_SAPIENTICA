@@ -223,7 +223,21 @@ namespace paxs {
             // first: 女性のインデックス, second: 男性のインデックス
             const auto marriageable_agents_index_pair = selector.select(marriageable_female_index.size(), male_settlement_pair.size());
 
-            const bool is_matrilocality = false;
+            // 居住婚
+            bool is_matrilocality = false;
+
+            // 母方居住婚
+            if (SimulationConstants::getInstance()->maternal_residence_probability >= 1.0f) {
+                is_matrilocality = true;
+            }
+            // 父方居住婚
+            else if (SimulationConstants::getInstance()->maternal_residence_probability <= 0.0f) {
+                is_matrilocality = false;
+            }
+            // 選択居住婚
+            else {
+                is_matrilocality = random_dist(*gen);
+            }
 
             // シミュレーションの設定で母方に移住するか父方に移住するかを決める
             // 母方の場合
