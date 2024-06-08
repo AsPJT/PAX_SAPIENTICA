@@ -1,10 +1,10 @@
 key	menu_bar	visible_menu_bar	texture_input_type	binary_input_type	binary_path	texture_path	format	draw_type	map_name	min_z	max_z	draw_min_z	draw_max_z	texture_url
 map_slope_bin	menu_bar_map_slope	1	internal_file	asset_file	Data/XYZTiles/Slope_GMTED2010_8bit/2010/	Data/XYZTiles/Slope_GMTED2010_ImagePale/2010/	{z}/{n}_{z}_{x}_{y}	texture	zxy		8			
 map_land_and_water	menu_bar_map_land_and_water	0	asset_file			Data/Map/XYZTile/LandAndWater/Image/GreenAndAlphaBinary/1868/	{z}/{n}_{z}_{x}_{y}	texture	gbank	8	10	8		
-map_east_asia_line	menu_bar_map_ryosei_line	1	asset_file			Data/XYZTiles/Road/	{z}/{n}_{z}_{x}_{y}	texture	zxy	8	8	7		
 map_kinai	menu_bar_map_ryosei_line	1	asset_file			Data/Map/XYZTile/Kinai/	{z}/{n}_{z}_{x}_{y}	texture	zxy	12	12	11		
 map_heijokyo	menu_bar_map_ryosei_line	1	asset_file			Data/Map/XYZTile/Heijokyo/	{z}/{n}_{z}_{x}_{y}	texture	zxy	16	16	15		
-map_soil	menu_bar_map_soil	0	asset_file			Data/Map/XYZTile/Soil/Image/Soil/2023/	{z}/{n}_{z}_{x}_{y}	texture	soil	12	12	12		
-map_river1	menu_bar_map_lakes_and_rivers1	1	asset_file			Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/	{z}/{n}_{z}_{x}_{y}	texture	water	12	12	11		
-map_river2	menu_bar_map_lakes_and_rivers2	1	asset_file			Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakesBW/2023/	{z}/{n}_{z}_{x}_{y}	texture	water	12	12	11		
-map_soil_temperature	menu_bar_map_soil_temperature	0	asset_file			Data/Map/XYZTile/Temperature/Image/SoilTemperature/2023/	{z}/{n}_{z}_{x}_{y}	texture	soil-tem			8	10	
+map_soil	menu_bar_map_soil	0	asset_file			Data/Map/XYZTile/Soil/Image/Soil/2023/	{z}/{n}_{z}_{x}_{y}	texture	soil	12	12	8		
+map_soil	menu_bar_map_soil	1	asset_file			Data/XYZTiles/east_asia/	{z}/{n}_{z}_{x}_{y}	texture	zxy	10	10	8		
+map_balhae_line	menu_bar_map_ryosei_line	1	asset_file			Data/XYZTiles/NationalBorders/Balhae/	{z}/{n}_{z}_{x}_{y}	texture	zxy	5	9	5		
+map_silla_line	menu_bar_map_ryosei_line	1	asset_file			Data/XYZTiles/NationalBorders/Silla/	{z}/{n}_{z}_{x}_{y}	texture	zxy	5	10	5		
+map_ryoseikoku_line	menu_bar_map_ryosei_line	1	asset_file			Data/XYZTiles/NationalBorders/Ryoseikoku/	{z}/{n}_{z}_{x}_{y}	texture	zxy	6	9	6		
