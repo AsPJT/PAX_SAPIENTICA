@@ -236,7 +236,7 @@ namespace paxs {
             }
             // 選択居住婚
             else {
-                is_matrilocality = random_dist(*gen);
+                is_matrilocality = (SimulationConstants::getInstance()->maternal_residence_probability >= random_dist(*gen));
             }
 
             // シミュレーションの設定で母方に移住するか父方に移住するかを決める
@@ -367,6 +367,22 @@ namespace paxs {
         /// @brief 人口を取得
         std::size_t getPopulation() const noexcept { return agents.size(); }
 
+        /// @brief Get the weight population.
+        /// @brief 重み人口を取得
+        double getPopulationWeight() const noexcept {
+            double population_weight = 0;
+
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                if (agents[i].cgetFarming() > 0) { // 農耕
+                    population_weight += SimulationConstants::getInstance()->max_farming_settlement_weight;
+                }
+                else { // 狩猟採集
+                    population_weight += SimulationConstants::getInstance()->max_hunter_gatherer_settlement_weight;
+                }
+            }
+            return population_weight;
+        }
+
         /// @brief Get the population.
         /// @brief 渡来人口を取得
         std::size_t getFarmingPopulation() const noexcept {
@@ -455,11 +471,16 @@ namespace paxs {
                 if (agent.getBirthIntervalCount() > 0) {
                     std::uint_least8_t count = agent.decrementBirthIntervalCount();
                     if (count == 0) {
+                        // 生業文化別の死産率を格納
+                        const float stillbirth_rate = (agent.cgetFarming() > 0) ?
+                            SimulationConstants::getInstance()->farming_stillbirth_rate :
+                            SimulationConstants::getInstance()->hunter_gatherer_stillbirth_rate;
+
                         // 死産率 100 ％の場合は出産しない
-                        if (SimulationConstants::getInstance()->stillbirth_rate >= 1.0f) continue;
-                        else if (SimulationConstants::getInstance()->stillbirth_rate > 0.0f) {
+                        if (stillbirth_rate >= 1.0f) continue;
+                        else if (stillbirth_rate > 0.0f) {
                             // 死産
-                            if (random_dist(*gen) < SimulationConstants::getInstance()->stillbirth_rate) continue;
+                            if (random_dist(*gen) < stillbirth_rate) continue;
                         }
                         // TODO: 直す
                         //if (!agent.isMarried()) continue;

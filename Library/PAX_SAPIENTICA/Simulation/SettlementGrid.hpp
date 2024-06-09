@@ -177,7 +177,7 @@ namespace paxs {
         void divideSettlements() noexcept {
             // 人口が最大人口を超えている集落を複数探し、分割する
             for (auto& settlement : settlements) {
-                if (settlement.getPopulation() > SimulationConstants::getInstance()->max_settlement_population) {
+                if (settlement.getPopulationWeight() >= 1.0) {
                     // 分割
                     Settlement divided_settlement = settlement.divide();
                     moveSettlementToThis(divided_settlement);

@@ -190,8 +190,10 @@ namespace paxs {
                     settlement.preUpdate(kanakuma_life_span, emigration_count);
                 }
             }
-
-            randomizeSettlements(1, 255, 0);
+            // 前901年から稲作文化開始
+            if (step_count > SimulationConstants::getInstance()->steps_per_year * 200) {
+                randomizeSettlements(1, 255, 0);
+            }
 
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
 
