@@ -396,6 +396,17 @@ namespace paxs {
             return farming_population;
         }
 
+        /// @brief Get the SNP.
+        /// @brief SNP を取得
+        double getSNP() const noexcept {
+            std::uint_least64_t snp = 0;
+
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                    snp += static_cast<std::uint_least64_t>(agents[i].cgetGenome().getSNP());
+            }
+            return static_cast<double>(snp) / static_cast<double>(agents.size()) / 255.0;
+        }
+
         /// @brief Get the most mtDNA.
         /// @brief 最多 mtDNA を取得
         std::size_t getMostMtDNA() const noexcept {
