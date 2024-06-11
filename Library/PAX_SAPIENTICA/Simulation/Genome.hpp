@@ -54,6 +54,14 @@ namespace paxs {
             yDNA = value;
         }
 
+        std::uint_least8_t getSNP() const noexcept {
+            return SNP;
+        }
+
+        void setSNP(const std::uint_least8_t value) noexcept {
+            SNP = value;
+        }
+
         constexpr std::uint_least8_t getGender() const noexcept {
             return chromosome.getGender();
         }
@@ -65,13 +73,15 @@ namespace paxs {
             std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
             genome.setMtDNA(static_cast<std::uint_least8_t>(dist(engine)));
             genome.setYDNA(static_cast<std::uint_least8_t>(dist(engine)));
+            genome.setSNP(static_cast<std::uint_least8_t>(dist(engine)));
             return genome;
         }
-        static Genome generateRandomSetMtDNA(std::mt19937& engine, const std::uint_least8_t mtdna_) noexcept {
+        static Genome generateRandomSetMtDNA(std::mt19937& engine, const std::uint_least8_t mtdna_, const std::uint_least8_t snp_) noexcept {
             Genome genome;
             genome.setChromosome(Chromosome::generateRandom(engine));
 
             std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
+            genome.setSNP(snp_);
             genome.setMtDNA(mtdna_);
             genome.setYDNA(static_cast<std::uint_least8_t>(dist(engine)));
             return genome;
@@ -88,6 +98,7 @@ namespace paxs {
             else {
                 genome.setYDNA(father.getYDNA());
             }
+            genome.setSNP(static_cast<std::uint_least8_t>((int(mother.getSNP()) + int(father.getSNP())) / 2));
             return genome;
         }
 
@@ -96,9 +107,10 @@ namespace paxs {
         }
 
     private:
-        Chromosome chromosome;
-        std::uint_least8_t mtDNA;
-        std::uint_least8_t yDNA;
+        Chromosome chromosome{};
+        std::uint_least8_t SNP = 0;
+        std::uint_least8_t mtDNA = 0;
+        std::uint_least8_t yDNA = 0;
     };
 }
 
