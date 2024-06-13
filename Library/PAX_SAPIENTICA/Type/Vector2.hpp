@@ -114,6 +114,27 @@ namespace paxs {
             return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
         }
 
+        template<typename T>
+        T to() const noexcept {
+            return static_cast<T>(x) << 32 | static_cast<T>(y);
+        }
+        template<>
+        std::uint_least64_t to<std::uint_least64_t>() const noexcept {
+            return static_cast<std::uint_least64_t>(x) << 32 | static_cast<T>(y);
+        }
+        template<>
+        std::int_least64_t to<std::int_least64_t>() const noexcept {
+            return static_cast<std::int_least64_t>(x) << 32 | static_cast<T>(y);
+        }
+        template<>
+        std::uint_least32_t to<std::uint_least32_t>() const noexcept {
+            return static_cast<std::uint_least32_t>(x) << 16 | static_cast<T>(y);
+        }
+        template<>
+        std::int_least32_t to<std::int_least32_t>() const noexcept {
+            return static_cast<std::int_least32_t>(x) << 16 | static_cast<T>(y);
+        }
+
         std::uint_least64_t toU64() const noexcept {
             return static_cast<std::uint_least64_t>(x) << 32 | static_cast<std::uint_least64_t>(y);
         }

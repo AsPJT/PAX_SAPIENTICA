@@ -34,7 +34,9 @@ namespace paxs {
 
     using GridType = int;
     using HumanIndexType = std::uint_least32_t;
-    using AgeType = std::uint_least32_t;
+    using AgeType = std::uint_least16_t;
+
+    using SettlementGridsType = std::uint_least32_t;
 
     struct SimulationConstants {
         // インスタンスを取得

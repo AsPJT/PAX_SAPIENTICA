@@ -617,7 +617,7 @@ namespace paxs {
     public:
 
         void draw(const double jdn,
-            std::unordered_map<std::uint_least64_t, paxs::SettlementGrid>& agents,
+            std::unordered_map<SettlementGridsType, paxs::SettlementGrid>& agents,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
 
             std::size_t& pop_num, // 人口数

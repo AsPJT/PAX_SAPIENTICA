@@ -108,16 +108,16 @@ namespace paxs {
         }
 
         void moveSettlement(const std::uint_least32_t id, const Vector2 current_key, const Vector2 target_key) noexcept {
-            auto it = settlement_grids.find(target_key.toU64());
+            auto it = settlement_grids.find(target_key.to<SettlementGridsType>());
             if (it != settlement_grids.end()) {
-                it->second.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
+                it->second.moveSettlementToThis(settlement_grids[current_key.to<SettlementGridsType>()].getSettlement(id));
             }
             else {
                 SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance()->grid_length, environment, gen);
-                settlement_grid.moveSettlementToThis(settlement_grids[current_key.toU64()].getSettlement(id));
-                settlement_grids[target_key.toU64()] = settlement_grid;
+                settlement_grid.moveSettlementToThis(settlement_grids[current_key.to<SettlementGridsType>()].getSettlement(id));
+                settlement_grids[target_key.to<SettlementGridsType>()] = settlement_grid;
             }
-            settlement_grids[current_key.toU64()].deleteSettlement(id);
+            settlement_grids[current_key.to<SettlementGridsType>()].deleteSettlement(id);
         }
 
         /// @brief Execute the simulation for the one step.
@@ -205,8 +205,8 @@ namespace paxs {
 
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
 
-            auto delete_agent = [this](const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
-                auto it = settlement_grids.find(key.toU64());
+            auto delete_agent = [this](const std::uint_least32_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
+                auto it = settlement_grids.find(key.to<SettlementGridsType>());
                 if (it != settlement_grids.end()) {
                     it->second.deleteAgent(agent_id, settlement_id);
                 }
@@ -216,7 +216,7 @@ namespace paxs {
             };
 
             auto add_agent = [this](const paxs::SettlementAgent agent_, const std::uint_least32_t settlement_id, const Vector2 key) {
-                auto it = settlement_grids.find(key.toU64());
+                auto it = settlement_grids.find(key.to<SettlementGridsType>());
                 if (it != settlement_grids.end()) {
                     it->second.addAgent(agent_, settlement_id);
                 }
@@ -237,7 +237,7 @@ namespace paxs {
                 grid_position /= SimulationConstants::getInstance()->grid_length;
                 for (int i = -1; i <= 1; ++i) {
                     for (int j = -1; j <= 1; ++j) {
-                        auto it = settlement_grids.find((grid_position + Vector2(i, j)).toU64());
+                        auto it = settlement_grids.find((grid_position + Vector2(i, j)).to<SettlementGridsType>());
                         if (it != settlement_grids.end()) {
                             for (auto& settlement : it->second.getSettlements()) {
                                 close_settlements.emplace_back(&settlement);
@@ -275,11 +275,11 @@ namespace paxs {
 
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr std::unordered_map<std::uint_least64_t, SettlementGrid>&
+        constexpr std::unordered_map<SettlementGridsType, SettlementGrid>&
             getSettlementGrids() noexcept { return settlement_grids; }
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr const std::unordered_map<std::uint_least64_t, SettlementGrid>&
+        constexpr const std::unordered_map<SettlementGridsType, SettlementGrid>&
             cgetSettlementGrids() const noexcept { return settlement_grids; }
 
         /// @brief Get processing_time.
@@ -297,7 +297,7 @@ namespace paxs {
         double move_processing_time = 0.0;
         double marriage_processing_time = 0.0;
 
-        std::unordered_map<std::uint_least64_t, SettlementGrid> settlement_grids;
+        std::unordered_map<SettlementGridsType, SettlementGrid> settlement_grids;
         std::shared_ptr<Environment> environment;
 
         std::unique_ptr<paxs::JapanProvinces> japan_provinces;
@@ -407,13 +407,13 @@ namespace paxs {
                 while (live.live_probabilities.size() > 0 && // 集落を配置し切るまで
                     district_population_map.find(district_id) != district_population_map.end() // 地区が残っている間
                     ) {
-                    StatusDisplayer::displayProgressBar(population_sum, all_population);
+                    //StatusDisplayer::displayProgressBar(population_sum, all_population);
 
                     // 重みからインデックスを取得するための分布
                     std::discrete_distribution<> live_probability_dist(live.live_probabilities.begin(), live.live_probabilities.end());
 
-                    int live_probability_index = live_probability_dist(gen);
-                    Vector2 live_position = Vector2::fromU64(live.habitable_land_positions[live_probability_index]);
+                    const int live_probability_index = live_probability_dist(gen);
+                    const Vector2 live_position = Vector2::fromU64(live.habitable_land_positions[live_probability_index]);
 
                     // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
                     // std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), live_position);
@@ -434,7 +434,7 @@ namespace paxs {
 
                     // 集落をグリッドに配置
                     Vector2 grid_position = live_position / SimulationConstants::getInstance()->grid_length;
-                    std::uint64_t key = grid_position.toU64();
+                    SettlementGridsType key = grid_position.to<SettlementGridsType>();
                     // グリッドが存在しない場合は作成
                     if (settlement_grids.find(key) == settlement_grids.end()) {
                         settlement_grids[key] = SettlementGrid(grid_position * SimulationConstants::getInstance()->grid_length, environment, gen);
@@ -452,11 +452,15 @@ namespace paxs {
                         Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming>0)? 73/*toraijin*/ : district_id, gen), snp_);
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
-                        std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
+                        int age_value = 0;
+                        if (set_lifespan > 180) {
+                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 180) }; // 性別の乱数分布
+                            age_value = lifespan_dist(gen);
+                        }
 
                         settlement.setAgent(Agent(UniqueIdentification<std::uint_least32_t>::generate(),
                             //0, // TODO: 名前ID
-                            lifespan_dist(gen),
+                            age_value,
                             set_lifespan,
                             genome,
                             farming, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
@@ -505,12 +509,16 @@ namespace paxs {
                         Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming > 0) ? 73/*toraijin*/ : district_id, gen), snp_);
                         const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
-                        std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
+                        int age_value = 0;
+                        if (set_lifespan > 180) {
+                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 180) }; // 性別の乱数分布
+                            age_value = lifespan_dist(gen);
+                        }
 
                         agents[i] = Agent(
                             UniqueIdentification<std::uint_least32_t>::generate(),
                             //0, // TODO: 名前ID
-                            lifespan_dist(gen),
+                            age_value,
                             set_lifespan,
                             genome,
                             farming, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
