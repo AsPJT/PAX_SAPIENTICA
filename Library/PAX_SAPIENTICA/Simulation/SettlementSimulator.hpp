@@ -311,15 +311,15 @@ namespace paxs {
         std::uint_least64_t step_count = 0;
 
         // 陸の位置のリストを取得
-        std::vector<std::uint64_t> land_positions;
+        std::vector<DataGridsType> land_positions;
 
         struct Live {
             // 可住地重みリスト
             std::vector<int> live_probabilities;
             // 可住地の位置
-            std::vector<std::uint64_t> habitable_land_positions;
+            std::vector<DataGridsType> habitable_land_positions;
 
-            void emplaceBack(const int live_probabilities_, const std::uint64_t habitable_land_positions_) {
+            void emplaceBack(const int live_probabilities_, const DataGridsType habitable_land_positions_) {
                 live_probabilities.emplace_back(live_probabilities_);
                 habitable_land_positions.emplace_back(habitable_land_positions_);
             }
@@ -344,9 +344,9 @@ namespace paxs {
                 return false; // 処理失敗
             }
 
-            for (const std::uint64_t land_position : land_positions) {
+            for (const DataGridsType land_position : land_positions) {
                 // 可住地かどうかを判定
-                Vector2 position = Vector2::fromU64(land_position);
+                Vector2 position = Vector2::from(land_position);
                 if (!environment->isLive(position)) {
                     continue;
                 }
@@ -413,7 +413,7 @@ namespace paxs {
                     std::discrete_distribution<> live_probability_dist(live.live_probabilities.begin(), live.live_probabilities.end());
 
                     const int live_probability_index = live_probability_dist(gen);
-                    const Vector2 live_position = Vector2::fromU64(live.habitable_land_positions[live_probability_index]);
+                    const Vector2 live_position = Vector2::from(live.habitable_land_positions[live_probability_index]);
 
                     // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
                     // std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), live_position);

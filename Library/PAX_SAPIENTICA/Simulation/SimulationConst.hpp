@@ -36,7 +36,10 @@ namespace paxs {
     using HumanIndexType = std::uint_least32_t;
     using AgeType = std::uint_least16_t;
 
+    // 集落グリッドの辞書型
     using SettlementGridsType = std::uint_least32_t;
+    // Data の辞書型
+    using DataGridsType = std::uint_least32_t;
 
     struct SimulationConstants {
         // インスタンスを取得

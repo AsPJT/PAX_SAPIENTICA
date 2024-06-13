@@ -114,34 +114,34 @@ namespace paxs {
             return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
         }
 
-        template<typename T>
-        T to() const noexcept {
-            return static_cast<T>(x) << 32 | static_cast<T>(y);
+        template<typename T_>
+        T_ to() const noexcept {
+            return static_cast<T_>(x) << 32 | static_cast<T_>(y);
         }
         template<>
         std::uint_least64_t to<std::uint_least64_t>() const noexcept {
-            return static_cast<std::uint_least64_t>(x) << 32 | static_cast<T>(y);
+            return static_cast<std::uint_least64_t>(x) << 32 | static_cast<std::uint_least64_t>(y);
         }
         template<>
         std::int_least64_t to<std::int_least64_t>() const noexcept {
-            return static_cast<std::int_least64_t>(x) << 32 | static_cast<T>(y);
+            return static_cast<std::int_least64_t>(x) << 32 | static_cast<std::int_least64_t>(y);
         }
         template<>
         std::uint_least32_t to<std::uint_least32_t>() const noexcept {
-            return static_cast<std::uint_least32_t>(x) << 16 | static_cast<T>(y);
+            return static_cast<std::uint_least32_t>(x) << 16 | static_cast<std::uint_least32_t>(y);
         }
         template<>
         std::int_least32_t to<std::int_least32_t>() const noexcept {
-            return static_cast<std::int_least32_t>(x) << 16 | static_cast<T>(y);
+            return static_cast<std::int_least32_t>(x) << 16 | static_cast<std::int_least32_t>(y);
         }
 
-        std::uint_least64_t toU64() const noexcept {
-            return static_cast<std::uint_least64_t>(x) << 32 | static_cast<std::uint_least64_t>(y);
-        }
-
-        static Vector2<T> fromU64(const std::uint_least64_t u64) noexcept {
+        static Vector2<T> from(const std::uint_least64_t u64) noexcept {
             return Vector2<T>(static_cast<T>(u64 >> 32), static_cast<T>(u64 & 0x00000000ffffffff));
         }
+        static Vector2<T> from(const std::uint_least32_t u32) noexcept {
+            return Vector2<T>(static_cast<T>(u32 >> 16), static_cast<T>(u32 & 0x0000ffff));
+        }
+
     };
 }
 
