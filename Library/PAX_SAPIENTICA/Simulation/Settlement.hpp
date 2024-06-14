@@ -42,15 +42,15 @@ namespace paxs {
     namespace settlement {
 
         // std::sqrt(2 * M_PI)
-        constexpr float sqrt_2_x_pi = static_cast<float>(2.506628275);
+        constexpr double sqrt_2_x_pi = static_cast<double>(2.506628275);
 
         // 結婚・出産の定数
-        constexpr float sigma = 0.25f;
-        constexpr float sigma_p_2 = sigma * sigma;
-        constexpr float sigma_p_2_x_2 = (2 * sigma_p_2);
+        constexpr double sigma = 0.25;
+        constexpr double sigma_p_2 = sigma * sigma;
+        constexpr double sigma_p_2_x_2 = (2.0 * sigma_p_2);
 
         // sigma * sqrt_2_x_pi
-        constexpr float sigma_x_sqrt_2_x_pi = sigma * sqrt_2_x_pi;
+        constexpr double sigma_x_sqrt_2_x_pi = sigma * sqrt_2_x_pi;
     }
 
     class Settlement {
@@ -236,7 +236,7 @@ namespace paxs {
             }
             // 選択居住婚
             else {
-                is_matrilocality = (SimulationConstants::getInstance()->maternal_residence_probability >= random_dist(*gen));
+                is_matrilocality = (SimulationConstants::getInstance()->maternal_residence_probability >= SimulationConstants::getInstance()->random_dist_f32(*gen));
             }
 
             // シミュレーションの設定で母方に移住するか父方に移住するかを決める
@@ -310,9 +310,9 @@ namespace paxs {
 
         /// @brief Pre update.
         /// @brief 事前更新
-        void preUpdate(KanakumaLifeSpan& kanakuma_life_span, std::uint_least64_t& count) noexcept {
+        void preUpdate(KanakumaLifeSpan& kanakuma_life_span) noexcept {
             birth(kanakuma_life_span);
-            //emigration(kanakuma_life_span, count);
+            //emigration(kanakuma_life_span);
         }
 
         /// @brief On update.
@@ -468,7 +468,7 @@ namespace paxs {
         Vector2 position{};
 
         std::mt19937* gen{}; // 乱数生成器
-        std::uniform_real_distribution<float> random_dist{ 0.0f, 1.0f }; // 乱数分布
+        
 
         std::shared_ptr<Environment> environment{}; // 環境
         /// @brief エージェントの配列
@@ -483,7 +483,7 @@ namespace paxs {
                     std::uint_least8_t count = agent.decrementBirthIntervalCount();
                     if (count == 0) {
                         // 生業文化別の死産率を格納
-                        const float stillbirth_rate = (agent.cgetFarming() > 0) ?
+                        const double stillbirth_rate = (agent.cgetFarming() > 0) ?
                             SimulationConstants::getInstance()->farming_stillbirth_rate :
                             SimulationConstants::getInstance()->hunter_gatherer_stillbirth_rate;
 
@@ -491,20 +491,20 @@ namespace paxs {
                         if (stillbirth_rate >= 1.0f) continue;
                         else if (stillbirth_rate > 0.0f) {
                             // 死産
-                            if (random_dist(*gen) < stillbirth_rate) continue;
+                            if (SimulationConstants::getInstance()->random_dist_f32(*gen) < stillbirth_rate) continue;
                         }
                         // TODO: 直す
                         //if (!agent.isMarried()) continue;
                         Genome genome = Genome::generateFromParents(*gen, agent.cgetGenome(), agent.cgetPartnerGenome());
                         children.emplace_back(Agent(
-                            UniqueIdentification<std::uint_least32_t>::generate(),
+                            UniqueIdentification<HumanIndexType>::generate(),
                             //0, // TODO: 名前ID
                             0,
                             kanakuma_life_span.setLifeSpan(genome.getGender(), *gen),
                             genome,
                             (agent.cgetFarming() > 0 && agent.cgetPartnerFarming() > 0) ? 255 :(
                                 (agent.cgetFarming() == 0 && agent.cgetPartnerFarming() == 0) ? 0 : (
-                                (random_dist(*gen) < SimulationConstants::getInstance()->child_agriculture_priority) ? 255 : 0
+                                (SimulationConstants::getInstance()->random_dist_f32(*gen) < SimulationConstants::getInstance()->child_agriculture_priority) ? 255 : 0
                             )),
                             //(((*gen)() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
                             (((*gen)() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
@@ -524,26 +524,25 @@ namespace paxs {
 
         /// @brief Emigration.
         /// @brief 渡来
-        void emigration(KanakumaLifeSpan& kanakuma_life_span, std::uint_least64_t& count) noexcept {
+        void emigration(KanakumaLifeSpan& kanakuma_life_span) noexcept {
             if (agents.size() >= 60) {
 
                 Genome genome = Genome::generateRandom(*gen);
-                const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), *gen);
+                const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), *gen);
 
                 std::uniform_int_distribution<> lifespan_dist{
                     (std::min)(18 * SimulationConstants::getInstance()->steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
                     static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                 agents.emplace_back(Agent(
-                    UniqueIdentification<std::uint_least32_t>::generate(),
+                    UniqueIdentification<HumanIndexType>::generate(),
                     //0, // TODO: 名前ID
-                    lifespan_dist(*gen),
+                    static_cast<AgeType>(lifespan_dist(*gen)),
                     set_lifespan,
                     genome,
                     255, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
                     0 // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
                 ));
-                ++count;
             }
         }
 
@@ -572,7 +571,7 @@ namespace paxs {
                     continue;
                 }
 
-                const std::uint_least64_t partner_id = agents[i].getPartnerId();
+                const HumanIndexType partner_id = agents[i].getPartnerId();
                 if (partner_id != 0) {
                     auto partnerIt = std::find_if(agents.begin(), agents.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
                     if (partnerIt != agents.end()) {
@@ -587,28 +586,28 @@ namespace paxs {
 
         /// @brief Is the agent married?
         /// @brief 確率で結婚するかどうかを返す
-        bool isMarried(const float age) noexcept {
-            auto x = [](float age) { return (age - 13) / 8.5f; };
-            auto weight = [=](float age) {
+        bool isMarried(const double age) noexcept {
+            auto x = [](double age) { return (age - 13) / 8.5; };
+            auto weight = [=](double age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const float threshold = static_cast<float>(weight(age)) * (0.98f / 101.8f);
+            const double threshold = static_cast<double>(weight(age)) * (0.98f / 101.8f);
 
-            return random_dist(*gen) < threshold;
+            return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }
 
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
-        bool isAbleToGiveBirth(const float age) noexcept {
-            auto x = [](float age) { return (age - 14) / 8.5f; };
-            auto weight = [=](float age) {
+        bool isAbleToGiveBirth(const double age) noexcept {
+            auto x = [](double age) { return (age - 14) / 8.5; };
+            auto weight = [=](double age) {
                 return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const float threshold = static_cast<float>(weight(age)) * (16.0f / 101.8f);
+            const double threshold = static_cast<double>(weight(age)) * (16.0f / 101.8f);
 
-            return random_dist(*gen) < threshold;
+            return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }
     };
 

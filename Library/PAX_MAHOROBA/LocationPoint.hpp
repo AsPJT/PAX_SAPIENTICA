@@ -680,7 +680,7 @@ namespace paxs {
                             // const std::size_t pop_original = settlement.getFarmingPopulation(); // settlement.getPopulation();
                             //const float pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0f; // settlement.getPopulation();
                             //const float pop_original = settlement.getMostMtDNA() / 27.0f * 75.0f; // settlement.getPopulation();
-                            const float pop_original = settlement.getSNP() * 75.0f; // settlement.getPopulation();
+                            const double pop_original = settlement.getSNP() * 75.0; // settlement.getPopulation();
 
                             const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,

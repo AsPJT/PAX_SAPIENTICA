@@ -195,7 +195,7 @@ namespace paxs {
 
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
-                    settlement.preUpdate(kanakuma_life_span, emigration_count);
+                    settlement.preUpdate(kanakuma_life_span);
                 }
             }
             // 前901年から稲作文化開始
@@ -450,12 +450,12 @@ namespace paxs {
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
                         Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming>0)? 73/*toraijin*/ : district_id, gen), snp_);
-                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
+                        const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
-                        int age_value = 0;
+                        AgeType age_value = 0;
                         if (set_lifespan > 180) {
                             std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 180) }; // 性別の乱数分布
-                            age_value = lifespan_dist(gen);
+                            age_value = static_cast<AgeType>(lifespan_dist(gen));
                         }
 
                         settlement.setAgent(Agent(UniqueIdentification<std::uint_least32_t>::generate(),
@@ -507,12 +507,12 @@ namespace paxs {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
                         Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming > 0) ? 73/*toraijin*/ : district_id, gen), snp_);
-                        const std::uint_least32_t set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
+                        const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(genome.getGender(), gen);
 
-                        int age_value = 0;
+                        AgeType age_value = 0;
                         if (set_lifespan > 180) {
                             std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 180) }; // 性別の乱数分布
-                            age_value = lifespan_dist(gen);
+                            age_value = static_cast<AgeType>(lifespan_dist(gen));
                         }
 
                         agents[i] = Agent(
