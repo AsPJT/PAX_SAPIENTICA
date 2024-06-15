@@ -617,7 +617,7 @@ namespace paxs {
     public:
 
         void draw(const double jdn,
-            std::unordered_map<std::uint_least64_t, paxs::SettlementGrid>& agents,
+            std::unordered_map<SettlementGridsType, paxs::SettlementGrid>& agents,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
 
             std::size_t& pop_num, // 人口数
@@ -680,7 +680,7 @@ namespace paxs {
                             // const std::size_t pop_original = settlement.getFarmingPopulation(); // settlement.getPopulation();
                             //const float pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0f; // settlement.getPopulation();
                             //const float pop_original = settlement.getMostMtDNA() / 27.0f * 75.0f; // settlement.getPopulation();
-                            const float pop_original = settlement.getSNP() * 75.0f; // settlement.getPopulation();
+                            const double pop_original = settlement.getSNP() * 75.0; // settlement.getPopulation();
 
                             const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,

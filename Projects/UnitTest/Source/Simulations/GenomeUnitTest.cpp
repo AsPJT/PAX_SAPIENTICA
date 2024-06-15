@@ -1,4 +1,5 @@
-﻿#include <gtest/gtest.h>
+﻿#define USING_CHROMOSOME
+#include <gtest/gtest.h>
 
 #include <PAX_SAPIENTICA/Simulation/Genome.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
@@ -49,7 +50,7 @@ TEST (GenomeUnitTest, generateFromParents) {
         }
     }
     EXPECT_EQ(child.getMtDNA(), mother.getMtDNA());
-    if (child.cgetChromosome().getGender() == 0/*female_value*/) {
+    if (child.isFemale()/*female_value*/) {
         EXPECT_EQ(child.getYDNA(), mother.getYDNA());
     }
     else {
