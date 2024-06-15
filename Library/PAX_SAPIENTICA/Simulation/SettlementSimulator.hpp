@@ -108,16 +108,16 @@ namespace paxs {
         }
 
         void moveSettlement(const std::uint_least32_t id, const Vector2 current_key, const Vector2 target_key) noexcept {
-            auto it = settlement_grids.find(target_key.to<SettlementGridsType>());
+            auto it = settlement_grids.find(target_key.to(SettlementGridsType{}));
             if (it != settlement_grids.end()) {
-                it->second.moveSettlementToThis(settlement_grids[current_key.to<SettlementGridsType>()].getSettlement(id));
+                it->second.moveSettlementToThis(settlement_grids[current_key.to(SettlementGridsType{})].getSettlement(id));
             }
             else {
                 SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance()->grid_length, environment, gen);
-                settlement_grid.moveSettlementToThis(settlement_grids[current_key.to<SettlementGridsType>()].getSettlement(id));
-                settlement_grids[target_key.to<SettlementGridsType>()] = settlement_grid;
+                settlement_grid.moveSettlementToThis(settlement_grids[current_key.to(SettlementGridsType{})].getSettlement(id));
+                settlement_grids[target_key.to(SettlementGridsType{})] = settlement_grid;
             }
-            settlement_grids[current_key.to<SettlementGridsType>()].deleteSettlement(id);
+            settlement_grids[current_key.to(SettlementGridsType{})].deleteSettlement(id);
         }
 
         /// @brief Execute the simulation for the one step.
@@ -206,7 +206,7 @@ namespace paxs {
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
 
             auto delete_agent = [this](const std::uint_least32_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
-                auto it = settlement_grids.find(key.to<SettlementGridsType>());
+                auto it = settlement_grids.find(key.to(SettlementGridsType{}));
                 if (it != settlement_grids.end()) {
                     it->second.deleteAgent(agent_id, settlement_id);
                 }
@@ -216,7 +216,7 @@ namespace paxs {
             };
 
             auto add_agent = [this](const paxs::SettlementAgent agent_, const std::uint_least32_t settlement_id, const Vector2 key) {
-                auto it = settlement_grids.find(key.to<SettlementGridsType>());
+                auto it = settlement_grids.find(key.to(SettlementGridsType{}));
                 if (it != settlement_grids.end()) {
                     it->second.addAgent(agent_, settlement_id);
                 }
@@ -237,7 +237,7 @@ namespace paxs {
                 grid_position /= SimulationConstants::getInstance()->grid_length;
                 for (int i = -1; i <= 1; ++i) {
                     for (int j = -1; j <= 1; ++j) {
-                        auto it = settlement_grids.find((grid_position + Vector2(i, j)).to<SettlementGridsType>());
+                        auto it = settlement_grids.find((grid_position + Vector2(i, j)).to(SettlementGridsType{}));
                         if (it != settlement_grids.end()) {
                             for (auto& settlement : it->second.getSettlements()) {
                                 close_settlements.emplace_back(&settlement);
@@ -448,7 +448,7 @@ namespace paxs {
 
                     // 集落をグリッドに配置
                     Vector2 grid_position = live_position / SimulationConstants::getInstance()->grid_length;
-                    SettlementGridsType key = grid_position.to<SettlementGridsType>();
+                    SettlementGridsType key = grid_position.to(SettlementGridsType{});
                     // グリッドが存在しない場合は作成
                     if (settlement_grids.find(key) == settlement_grids.end()) {
                         settlement_grids[key] = SettlementGrid(grid_position * SimulationConstants::getInstance()->grid_length, environment, gen);

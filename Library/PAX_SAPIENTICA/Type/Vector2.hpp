@@ -119,32 +119,22 @@ namespace paxs {
             return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
         }
 
-        template<typename T_>
-        T_ to() const noexcept {
-            return static_cast<T_>(x) << 32 | static_cast<T_>(y);
-        }
-        template<>
-        std::uint_least64_t to<std::uint_least64_t>() const noexcept {
+        std::uint_least64_t to(std::uint_least64_t) const noexcept {
             return static_cast<std::uint_least64_t>(x) << 32 | static_cast<std::uint_least64_t>(y);
         }
-        template<>
-        std::int_least64_t to<std::int_least64_t>() const noexcept {
+        std::int_least64_t to(std::int_least64_t) const noexcept {
             return static_cast<std::int_least64_t>(x) << 32 | static_cast<std::int_least64_t>(y);
         }
-        template<>
-        std::uint_least32_t to<std::uint_least32_t>() const noexcept {
+        std::uint_least32_t to(std::uint_least32_t) const noexcept {
             return static_cast<std::uint_least32_t>(x) << 16 | static_cast<std::uint_least32_t>(y);
         }
-        template<>
-        std::int_least32_t to<std::int_least32_t>() const noexcept {
+        std::int_least32_t to(std::int_least32_t) const noexcept {
             return static_cast<std::int_least32_t>(x) << 16 | static_cast<std::int_least32_t>(y);
         }
-        template<>
-        std::uint_least16_t to<std::uint_least16_t>() const noexcept {
+        std::uint_least16_t to(std::uint_least16_t) const noexcept {
             return static_cast<std::uint_least16_t>(x) << 8 | static_cast<std::uint_least16_t>(y);
         }
-        template<>
-        std::int_least16_t to<std::int_least16_t>() const noexcept {
+        std::int_least16_t to(std::int_least16_t) const noexcept {
             return static_cast<std::int_least16_t>(x) << 8 | static_cast<std::int_least16_t>(y);
         }
 

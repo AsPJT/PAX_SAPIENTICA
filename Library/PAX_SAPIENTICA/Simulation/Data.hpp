@@ -72,7 +72,7 @@ namespace paxs {
         /// @brief 指定した位置の値を取得する
         constexpr DataType getValue(const Vector2& position) const noexcept {
             const Vector2 converted_position = position * z_mag;
-            auto itr = data.find(converted_position.to<DataGridsType>());
+            auto itr = data.find(converted_position.to(DataGridsType{}));
             if(itr == data.end()) {
                 return static_cast<DataType>(0);
             }
@@ -156,7 +156,7 @@ namespace paxs {
                     for(std::size_t py = 0;py < pixel_size;++py) {
                         for(std::size_t px = 0;px < pixel_size;++px) {
                             const Vector2 position = default_position + Vector2((GridType)px, (GridType)py);
-                            data[position.to<DataGridsType>()] = static_cast<DataType>(tmp_data[py * pixel_size + px]);
+                            data[position.to(DataGridsType{})] = static_cast<DataType>(tmp_data[py * pixel_size + px]);
                         }
                     }
 
@@ -207,7 +207,7 @@ namespace paxs {
                 for(std::size_t y = 0;y < pixel_size;++y) {
                     for(std::size_t x = 0;x < pixel_size;++x) {
                         const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                        data[position.toU64()] = static_cast<DataType>(tmp_data[y * pixel_size + x]);
+                        data[position.to(DataGridsType{})] = static_cast<DataType>(tmp_data[y * pixel_size + x]);
                     }
                 }
 
@@ -262,9 +262,9 @@ namespace paxs {
                                 if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
                                     int value = std::stoi(values[px]);
                                     if(value == 0) continue;
-                                    data[position.to<DataGridsType>()] = static_cast<DataType>(value);
+                                    data[position.to(DataGridsType{})] = static_cast<DataType>(value);
                                 } else if constexpr (std::is_same<DataType, float>::value) {
-                                    data[position.to<DataGridsType>()] = static_cast<DataType>(std::stod(values[px]));
+                                    data[position.to(DataGridsType{})] = static_cast<DataType>(std::stod(values[px]));
                                 }
                             } catch (const std::invalid_argument&/*ia*/) {
                                 PAXS_WARNING("File contains invalid value: " + file_name);
@@ -334,9 +334,9 @@ namespace paxs {
                             if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
                                 int value = std::stoi(values[x]);
                                 if(value == 0) continue;
-                                data[position.to<DataType>()] = static_cast<DataType>(value);
+                                data[position.to(DataType{})] = static_cast<DataType>(value);
                             } else if constexpr (std::is_same<DataType, float>::value) {
-                                data[position.to<DataType>()] = static_cast<DataType>(std::stod(values[x]));
+                                data[position.to(DataType{})] = static_cast<DataType>(std::stod(values[x]));
                             }
                         } catch (const std::invalid_argument&/*ia*/) {
                             PAXS_WARNING("File contains invalid value: " + file_name);
@@ -395,7 +395,7 @@ namespace paxs {
                         // T型に変換
                         if (file[y][x] == '0') continue;
                         const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                        data[position.to<DataGridsType>()] = static_cast<DataType>(file[y][x]);
+                        data[position.to(DataGridsType{})] = static_cast<DataType>(file[y][x]);
                     }
                 }
                 ++file_count;
@@ -456,7 +456,7 @@ namespace paxs {
                         }
                         if(!is_contain_one) continue;
                         const Vector2 position = default_position + Vector2(static_cast<GridType>(x / z_mag), static_cast<GridType>(y / z_mag));
-                        data[position.to<DataGridsType>()] = static_cast<DataType>('1');
+                        data[position.to(DataGridsType{})] = static_cast<DataType>('1');
                     }
                 }
                 ++file_count;
