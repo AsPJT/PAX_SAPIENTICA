@@ -334,9 +334,9 @@ namespace paxs {
                             if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
                                 int value = std::stoi(values[x]);
                                 if(value == 0) continue;
-                                data[position.toU64()] = static_cast<DataType>(value);
+                                data[position.to<DataType>()] = static_cast<DataType>(value);
                             } else if constexpr (std::is_same<DataType, float>::value) {
-                                data[position.toU64()] = static_cast<DataType>(std::stod(values[x]));
+                                data[position.to<DataType>()] = static_cast<DataType>(std::stod(values[x]));
                             }
                         } catch (const std::invalid_argument&/*ia*/) {
                             PAXS_WARNING("File contains invalid value: " + file_name);
