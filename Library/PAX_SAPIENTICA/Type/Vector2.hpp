@@ -105,6 +105,11 @@ namespace paxs {
         double distance(const Vector2<T>& v) const noexcept {
             return std::sqrt((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
         }
+        /// @brief  Get the distance^2 between two vectors
+        /// @brief  二つのベクトルの距離の２乗を取得。
+        double distance_pow2(const Vector2<T>& v) const noexcept {
+            return ((x - v.x) * (x - v.x) + (y - v.y) * (y - v.y));
+        }
         friend std::ostream& operator<<(std::ostream& os, const Vector2<T>& v) noexcept {
             os << "(" << v.x << ", " << v.y << ")";
             return os;
@@ -134,12 +139,23 @@ namespace paxs {
         std::int_least32_t to<std::int_least32_t>() const noexcept {
             return static_cast<std::int_least32_t>(x) << 16 | static_cast<std::int_least32_t>(y);
         }
+        template<>
+        std::uint_least16_t to<std::uint_least16_t>() const noexcept {
+            return static_cast<std::uint_least16_t>(x) << 8 | static_cast<std::uint_least16_t>(y);
+        }
+        template<>
+        std::int_least16_t to<std::int_least16_t>() const noexcept {
+            return static_cast<std::int_least16_t>(x) << 8 | static_cast<std::int_least16_t>(y);
+        }
 
         static Vector2<T> from(const std::uint_least64_t u64) noexcept {
             return Vector2<T>(static_cast<T>(u64 >> 32), static_cast<T>(u64 & 0x00000000ffffffff));
         }
         static Vector2<T> from(const std::uint_least32_t u32) noexcept {
             return Vector2<T>(static_cast<T>(u32 >> 16), static_cast<T>(u32 & 0x0000ffff));
+        }
+        static Vector2<T> from(const std::uint_least16_t u16) noexcept {
+            return Vector2<T>(static_cast<T>(u16 >> 8), static_cast<T>(u16 & 0x00ff));
         }
 
     };

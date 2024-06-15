@@ -62,7 +62,8 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの性別を取得する
-        constexpr std::uint_least8_t getGender() const noexcept { return genome.getGender(); }
+        constexpr bool isFemale() const noexcept { return genome.isFemale(); }
+        constexpr bool isMale() const noexcept { return genome.isMale(); }
 
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする
@@ -122,12 +123,12 @@ namespace paxs {
         /// @brief エージェントが結婚可能かどうかを返す
         bool isAbleToMarriage() const noexcept {
             const float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
-            return age_f > (genome.getGender() ?
+            return age_f > (genome.isMale() ?
                 SimulationConstants::getInstance()->male_marriageable_age_min :
                 SimulationConstants::getInstance()->female_marriageable_age_min) &&
-                age_f < (genome.getGender() ?
+                age_f < (genome.isMale() ?
                     SimulationConstants::getInstance()->male_marriageable_age_max :
-                    SimulationConstants::getInstance()->male_marriageable_age_max) &&
+                    SimulationConstants::getInstance()->female_marriageable_age_max) &&
                 !is_married;
         }
 

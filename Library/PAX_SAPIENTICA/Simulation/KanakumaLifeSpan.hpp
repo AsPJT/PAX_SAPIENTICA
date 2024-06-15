@@ -47,9 +47,9 @@ namespace paxs {
 
         /// @brief 英語未翻訳
         /// @brief 寿命を決定する
-        AgeType setAdultLifeSpan(const std::uint_least8_t gender_, std::mt19937& gen) {
+        AgeType setAdultLifeSpan(const bool is_male_, std::mt19937& gen) {
             // もし大人だったら
-            if (gender_ == 0) { // 女性の場合
+            if (!is_male_) { // 女性の場合
                 const AgeType adult_type = static_cast<AgeType>(life_male_adult_num(gen));
 
                 if (adult_type <= 14) { // 成年
@@ -61,7 +61,7 @@ namespace paxs {
                 // 老年
                 return static_cast<AgeType>(life_older_exp_dist(gen));
             }
-            else if (gender_ == 1) { // 男性の場合
+            else { // 男性の場合
                 const AgeType adult_type = static_cast<AgeType>(life_female_adult_num(gen));
 
                 if (adult_type <= 19) { // 成年
@@ -77,7 +77,7 @@ namespace paxs {
 
         /// @brief 英語未翻訳
         /// @brief 寿命を決定する
-        AgeType setLifeSpan(const std::uint_least8_t gender_, std::mt19937& gen) {
+        AgeType setLifeSpan(const bool is_male_, std::mt19937& gen) {
 
             if (life_person_num(gen) <= 37) { // もし子供だったら
                 const AgeType child_type = static_cast<AgeType>(life_child_num(gen));
@@ -95,7 +95,7 @@ namespace paxs {
                 return static_cast<AgeType>(life_young_exp_dist(gen));
             }
             // もし大人だったら
-            return setAdultLifeSpan(gender_, gen);
+            return setAdultLifeSpan(is_male_, gen);
         }
 
     };

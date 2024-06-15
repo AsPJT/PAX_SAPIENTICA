@@ -53,14 +53,6 @@ namespace paxs {
             return os;
         }
 
-        constexpr std::uint_least8_t getGender() const noexcept {
-            return gender;
-        }
-
-        void setGender(const std::uint_least8_t value) noexcept {
-            gender = value;
-        }
-
         bool operator==(const Chromosome& rhs) const noexcept {
             for (std::uint_least8_t i = 0; i < chromosome_length; ++i) {
                 if (chromosome[i] != rhs.chromosome[i]) {
@@ -83,9 +75,9 @@ namespace paxs {
                 else {
                     child.set(i, father.get(i - 1 + (random_value % 2)));
                 }
-                if (i == chromosome_length - 1) {
-                    child.setGender(random_value % 2);
-                }
+                //if (i == chromosome_length - 1) {
+                //    child.setGender(random_value % 2);
+                //}
                 random_value >>= 1;
             }
             return child;
@@ -98,13 +90,12 @@ namespace paxs {
             for (std::uint_least8_t i = 0; i < chromosome_length; ++i) {
                 random_chromosome.set(i, static_cast<std::uint_least8_t>(dist(engine)));
             }
-            random_chromosome.setGender(dist(engine) % 2);
+            //random_chromosome.setGender(dist(engine) % 2);
             return random_chromosome;
         }
 
     private:
         std::array<std::uint_least8_t, chromosome_length> chromosome;
-        std::uint_least8_t gender;
     };
 }
 
