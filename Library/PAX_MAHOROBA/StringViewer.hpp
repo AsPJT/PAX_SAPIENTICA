@@ -328,8 +328,6 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const paxs::Language& language_text,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
-            std::size_t& pop_num, // 人口数
-            std::size_t& sat_num, // 集落数
 #endif
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
@@ -704,7 +702,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                                 "Population"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 60), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
-                            std::to_string(pop_num),
+                            std::to_string(simulator->cgetPopulationNum()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
 
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
@@ -714,7 +712,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                                 "Settlements"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 90), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
-                            std::to_string(sat_num),
+                            std::to_string(simulator->cgetSettlement()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
 
                         (*one_font).drawTopRight(
@@ -778,9 +776,9 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             // メニューバー
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
 
+#ifdef PAXS_USING_SIV3D
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 
-#ifdef PAXS_USING_SIV3D
             texture_dictionary.at(MurMur3::calcHash(14, "texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
             if (tm_.get(s3d::Rect(paxg::Window::width() - 280, 3, 28).leftClicked())) {
                 // Web ページをブラウザで開く

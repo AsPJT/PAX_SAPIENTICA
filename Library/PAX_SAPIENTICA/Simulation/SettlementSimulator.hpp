@@ -52,7 +52,7 @@ namespace paxs {
             move_probability = move_probability_dist(gen);
         }
         /// @brief 環境を設定
-        void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, const int z, const unsigned seed = 0) noexcept {
+        void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, /*const int z,*/ const unsigned seed = 0) noexcept {
             environment.reset();
             environment = std::make_unique<Environment>(map_list_path);
 
@@ -126,13 +126,14 @@ namespace paxs {
             std::chrono::system_clock::time_point  start_time, end_time, move_time, m_start_time, m_end_time;
             start_time = std::chrono::system_clock::now(); // 計測開始
 
-            if (step_count % 120 == 0) {
+            // 指定したステップおきに出力する
+            if (step_count % SimulationConstants::getInstance()->output_step_frequency == 0) {
                 std::size_t pop_num = 0; // 人口数
                 std::size_t sat_num = 0; // 集落数
-                std::vector < std::vector<int>> mtdna_num(90, std::vector<int>(256, 0)); // mtDNA 数
-                std::size_t ryopop[90]{};
-                std::size_t ryoset[90]{};
-                double ryosnp[90]{};
+                std::vector < std::vector<int>> mtdna_num(max_number_of_districts, std::vector<int>(256, 0)); // mtDNA 数
+                std::size_t ryopop[max_number_of_districts]{};
+                std::size_t ryoset[max_number_of_districts]{};
+                double ryosnp[max_number_of_districts]{};
 
                 // 地名を描画
                 for (const auto& agent : getSettlementGrids()) {
@@ -140,8 +141,8 @@ namespace paxs {
                         ++sat_num; // 集落数を増加させる
                         pop_num += settlement.getPopulation(); // 人口数を増加させる
 
-                        const std::uint_least8_t ryo_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), settlement.getPosition());
-                        if (ryo_id < 90) {
+                        const std::uint_least8_t ryo_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("district"), settlement.getPosition());
+                        if (ryo_id < max_number_of_districts) {
                             ryopop[ryo_id]+= settlement.getPopulation(); // 地区ごとに人口数を増加させる
                             ryosnp[ryo_id]+= settlement.getSNP(); // 地区ごとに SNP を増加させる
                             ++(ryoset[ryo_id]);
@@ -156,13 +157,13 @@ namespace paxs {
                 pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 pop_mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 pop_snp_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                for (int i = 0; i < 90; ++i) {
+                for (std::size_t i = 0; i < max_number_of_districts; ++i) {
                     ryosnp[i] /= static_cast<double>(ryoset[i]);
                     pop_ofs << ryopop[i] << '\t';
                     pop_snp_ofs << ryosnp[i] << '\t';
-                    for (int j = 0; j < 27; ++j) {
+                    for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
                         if (int(mtdna_num[i][j]) == 0) continue;
-                        pop_mtdna_ofs << japan_provinces->getMtDNA_Name(j) << ':' << int(mtdna_num[i][j]) << '/';
+                        pop_mtdna_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
                     }
                     pop_mtdna_ofs << '\t';
                 }
@@ -199,7 +200,7 @@ namespace paxs {
                 }
             }
             // 前901年から稲作文化開始
-            if (step_count > SimulationConstants::getInstance()->steps_per_year * 200) {
+            if (step_count >= SimulationConstants::getInstance()->immigration_start_steps) {
                 randomizeSettlements(1, 255, 0, 255/*渡来人は SNP:255*/);
             }
 
@@ -268,6 +269,17 @@ namespace paxs {
                 settlement_grid.second.divideSettlements();
             }
 
+            population_num = 0; // 人口数
+            settlement_num = 0; // 集落数
+
+            // 地名を描画
+            for (const auto& settlement_grid : settlement_grids) {
+                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
+                    ++settlement_num; // 集落数を増加させる
+                    population_num += settlement.getPopulation(); // 人口数を増加させる
+                }
+            }
+
             ++step_count;
             end_time = std::chrono::system_clock::now();  // 計測終了
             processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() / 1000.0);
@@ -292,7 +304,13 @@ namespace paxs {
         /// @brief 処理時間を取得する
         constexpr double cgetMarriageProcessingTime() const noexcept { return marriage_processing_time; }
 
+        constexpr std::size_t cgetPopulationNum() const noexcept { return population_num; }
+        constexpr std::size_t cgetSettlement() const noexcept { return settlement_num; }
+
     private:
+        std::size_t population_num = 0; // 人口数
+        std::size_t settlement_num = 0; // 集落数
+
         double processing_time = 0.0;
         double move_processing_time = 0.0;
         double marriage_processing_time = 0.0;
@@ -368,7 +386,7 @@ namespace paxs {
                 }
 
                 // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), position);
+                std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("district"), position);
                 if (district_id < max_number_of_districts) {
                     (*live_list)[district_id].emplaceBack(live_probability, land_position);
                 }
@@ -430,7 +448,7 @@ namespace paxs {
                     const Vector2 live_position = Vector2::from(live.habitable_land_positions[live_probability_index]);
 
                     // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                    // std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), live_position);
+                    // std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(MurMur3::calcHash("district"), live_position);
 
                     auto district_population_it = district_population_map.find(district_id);
                     if (district_population_it == district_population_map.end()) {
@@ -463,12 +481,12 @@ namespace paxs {
 
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming>0)? 73/*toraijin*/ : district_id, gen), snp_);
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming>0)? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id, gen), snp_);
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(genome.isMale(), gen);
 
                         AgeType age_value = 0;
-                        if (set_lifespan > 180) {
-                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 180) }; // 寿命の乱数分布
+                        if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_min) {
+                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance()->init_lifespan_min) }; // 寿命の乱数分布
                             age_value = static_cast<AgeType>(lifespan_dist(gen));
                         }
 
@@ -522,12 +540,12 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming > 0) ? 73/*toraijin*/ : district_id, gen), snp_);
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming > 0) ? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id, gen), snp_);
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(genome.isMale(), gen);
 
                         AgeType age_value = 0;
-                        if (set_lifespan > 180) {
-                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - 180) }; // 寿命の乱数分布
+                        if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_min) {
+                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance()->init_lifespan_min) }; // 寿命の乱数分布
                             age_value = static_cast<AgeType>(lifespan_dist(gen));
                         }
 

@@ -313,8 +313,11 @@ namespace paxs {
             auto& weight_list = mtdna_region_list.at(district_list[0].mtdna_region_hash);
             return weight_list.id[weight_list.dist(gen)];
         }
-        std::string getMtDNA_Name(const std::uint_least8_t id) noexcept {
+        const std::string& getMtDNA_Name(const std::uint_least8_t id) const noexcept {
             return mtdna_list[id];
+        }
+        std::size_t getSizeMtDNA() const noexcept {
+            return mtdna_list.size();
         }
 
 

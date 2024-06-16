@@ -112,11 +112,6 @@ namespace paxs {
         map_siv.init();
         koyomi_siv.init();
 
-        std::size_t pop_num = 0; // 人口数
-        std::size_t sat_num = 0; // 集落数
-
-        //std::ofstream pop_ofs("pop.txt");
-
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
         paxs::Graphics3DModel g3d_model; // 3D モデル
@@ -211,13 +206,11 @@ namespace paxs {
                     string_siv,
 #ifdef PAXS_USING_SIMULATOR
                     simulator,
-                    pop_num, // 人口数
-                    sat_num, // 集落数
 #endif
                     visible
                 );
                 // 暦を更新
-                bool is_sim = koyomi_siv.update(
+                koyomi_siv.update(
 #ifdef PAXS_USING_SIMULATOR
                     simulator
 #endif
@@ -234,17 +227,11 @@ namespace paxs {
                 language_text,
 #ifdef PAXS_USING_SIMULATOR
                 simulator,
-                pop_num, // 人口数
-                sat_num, // 集落数
 #endif
                 tm,
                 koyomi_siv,
                 visible
             );
-
-            //if (is_sim) {
-            //    //pop_ofs << pop_num << '\t' << sat_num << '\n';
-            //}
 
 #ifdef PAXS_USING_DXLIB
             old_left_touch = DxLib::GetTouchInputNum();

@@ -167,12 +167,11 @@ namespace paxs {
             calcDate();
         }
 
-        bool update(
+        void update(
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator // コンパイル時の分岐により使わない場合あり
 #endif
         ) {
-            bool return_bool = false;
             /*##########################################################################################
                 暦関連
             ##########################################################################################*/
@@ -189,11 +188,12 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
                     // エージェント機能
                     if (is_agent_update && simulator.get() != nullptr) {
-                        jdn += (365.2425 / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
-                        calcDate(); // 日付計算
-                        simulator->step(); // シミュレーションを 1 ステップ実行する
-                        steps.getDay()++; // ステップ数を増やす
-                        return_bool = true;
+                        //for (int si = 0; si < 12; ++si) {
+                            jdn += (365.2425 / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
+                            calcDate(); // 日付計算
+                            simulator->step(); // シミュレーションを 1 ステップ実行する
+                            steps.getDay()++; // ステップ数を増やす
+                        //}
                     }
                     else
 #endif
@@ -210,7 +210,6 @@ namespace paxs {
                     }
                 }
             }
-            return return_bool;
         }
 
     };
