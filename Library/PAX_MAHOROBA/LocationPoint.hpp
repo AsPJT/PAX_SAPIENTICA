@@ -618,27 +618,11 @@ namespace paxs {
 
         void draw(const double jdn,
             std::unordered_map<SettlementGridsType, paxs::SettlementGrid>& agents,
-            const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-
-            std::size_t& pop_num, // 人口数
-            std::size_t& sat_num // 集落数
-
+            const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
         )const {
-
-            pop_num = 0; // 人口を 0 で初期化
-            sat_num = 0; // 集落を 0 で初期化
-
-            //agents.at(0)->getGridPosition().x;
             // 地名を描画
             for (const auto& agent : agents) {
-
-                //if (agent.second == nullptr) continue;
-
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    ++sat_num; // 集落数を増加させる
-                    pop_num += settlement.getPopulation(); // 人口数を増加させる
-                    //if (settlement.get() == nullptr) continue;
-
                     // エージェントの初期設定を定義
                     const auto lli = LocationPoint{
                         std::unordered_map < std::uint_least32_t, std::string>(),

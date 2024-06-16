@@ -137,8 +137,6 @@ namespace paxs {
             std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
 
-            DataType tmp_data[pixel_size * pixel_size]{};
-
             for (GridType y = start_position.y; y <= end_position.y; ++y) {
                 for (GridType x = start_position.x; x <= end_position.x; ++x) {
                     const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".bin";
@@ -149,16 +147,13 @@ namespace paxs {
                         continue;
                     }
 
-                    BinaryDataType bi(file_path + file_name, AppConfig::getInstance()->getRootPath());
-                    bi.calc(tmp_data);
-
                     const Vector2 default_position = Vector2(x, y) * pixel_size - start_xyz_position;
-                    for(std::size_t py = 0;py < pixel_size;++py) {
-                        for(std::size_t px = 0;px < pixel_size;++px) {
-                            const Vector2 position = default_position + Vector2((GridType)px, (GridType)py);
-                            data[position.to(DataGridsType{})] = static_cast<DataType>(tmp_data[py * pixel_size + px]);
+                    BinaryDataType bi(file_path + file_name, AppConfig::getInstance()->getRootPath());
+                    bi.calc([&](const DataType value_, const std::uint_least8_t px, const std::uint_least8_t py) {
+                        const Vector2 position = default_position + Vector2((GridType)px, (GridType)py);
+                        data[position.to(DataGridsType{})] = value_;
                         }
-                    }
+                    );
 
                     ++load_count;
                     StatusDisplayer::displayProgressBar(load_count, file_count);
@@ -176,8 +171,6 @@ namespace paxs {
         void loadBinary(const std::vector<std::string>& file_names) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
-
-            DataType tmp_data[pixel_size * pixel_size]{};
 
             const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
             const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
@@ -202,14 +195,11 @@ namespace paxs {
                 }
 
                 BinaryDataType bi(file_name, "");
-                bi.calc(tmp_data);
-
-                for(std::size_t y = 0;y < pixel_size;++y) {
-                    for(std::size_t x = 0;x < pixel_size;++x) {
+                bi.calc([&](const DataType value_, const std::uint_least8_t x, const std::uint_least8_t y) {
                         const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                        data[position.to(DataGridsType{})] = static_cast<DataType>(tmp_data[y * pixel_size + x]);
+                        data[position.to(DataGridsType{})] = value_;
                     }
-                }
+                );
 
                 ++file_count;
                 ++load_count;

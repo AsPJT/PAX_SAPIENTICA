@@ -46,6 +46,23 @@ namespace paxs {
         }
 
         /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する
+        template<typename Func_>
+        static void split(const std::string& input, const char delimiter, Func_&& func_) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::size_t count = 0;
+            while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
+                if (field.size() == 0) {
+                    ++count;
+                    continue;
+                }
+                func_(field, count);
+                ++count;
+            }
+        }
+
+        /// @brief Split string by delimiter
         /// @brief デリミタで文字列を分割する（ double 版）
         static std::vector<double> splitStod(const std::string& input, const char delimiter) noexcept {
             std::istringstream stream(input);
