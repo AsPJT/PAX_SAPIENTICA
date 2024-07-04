@@ -1,1 +1,0 @@
-Maptiles by OpenStreetMap contributors, under ODbL.
