@@ -32,17 +32,9 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
-// M_PI が定義されていない場合
-#ifndef M_PI
-#define M_PI 3.141592653589
-#endif
-
 namespace paxs {
 
     namespace settlement {
-
-        // std::sqrt(2 * M_PI)
-        constexpr double sqrt_2_x_pi = static_cast<double>(2.506628275);
 
         // 結婚・出産の定数
         constexpr double sigma = 0.25;
@@ -495,17 +487,18 @@ namespace paxs {
                         }
                         // TODO: 直す
                         //if (!agent.isMarried()) continue;
+                        std::uint_least8_t farming = (agent.cgetFarming() > 0 && agent.cgetPartnerFarming() > 0) ? 255 : (
+                            (agent.cgetFarming() == 0 && agent.cgetPartnerFarming() == 0) ? 0 : (
+                                (SimulationConstants::getInstance()->random_dist_f32(*gen) < SimulationConstants::getInstance()->child_agriculture_priority) ? 255 : 0
+                                ));
                         Genome genome = Genome::generateFromParents(*gen, agent.cgetGenome(), agent.cgetPartnerGenome());
                         children.emplace_back(Agent(
                             UniqueIdentification<HumanIndexType>::generate(),
                             //0, // TODO: 名前ID
                             0,
-                            kanakuma_life_span.setLifeSpan(genome.isMale(), *gen),
+                            kanakuma_life_span.setLifeSpan(farming > 0, genome.isMale(), *gen),
                             genome,
-                            (agent.cgetFarming() > 0 && agent.cgetPartnerFarming() > 0) ? 255 :(
-                                (agent.cgetFarming() == 0 && agent.cgetPartnerFarming() == 0) ? 0 : (
-                                (SimulationConstants::getInstance()->random_dist_f32(*gen) < SimulationConstants::getInstance()->child_agriculture_priority) ? 255 : 0
-                            )),
+                            farming,
                             //(((*gen)() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
                             (((*gen)() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
                         ));
@@ -528,7 +521,7 @@ namespace paxs {
             if (agents.size() >= 60) {
 
                 Genome genome = Genome::generateRandom(*gen);
-                const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(genome.isMale(), *gen);
+                const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(true, genome.isMale(), *gen);
 
                 std::uniform_int_distribution<> lifespan_dist{
                     (std::min)(18 * SimulationConstants::getInstance()->steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
@@ -587,12 +580,14 @@ namespace paxs {
         /// @brief Is the agent married?
         /// @brief 確率で結婚するかどうかを返す
         bool isMarried(const double age) noexcept {
-            auto x = [](double age) { return (age - 13) / 8.5; };
+            // 婚姻可能年齢の上限値以上だったら結婚しない
+            if (age >= SimulationConstants::getInstance()->female_marriageable_age_max) return false;
+            auto x = [](double age) { return (age - SimulationConstants::getInstance()->female_marriageable_age_min_f64) / 8.5; };
             auto weight = [=](double age) {
-                return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
+                return std::exp(-std::pow(std::log(x(age)), 2.0) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const double threshold = static_cast<double>(weight(age)) * (0.98f / 101.8f);
+            const double threshold = static_cast<double>(weight(age)) * (0.98 / 101.8);
 
             return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }
@@ -602,10 +597,10 @@ namespace paxs {
         bool isAbleToGiveBirth(const double age) noexcept {
             auto x = [](double age) { return (age - 14) / 8.5; };
             auto weight = [=](double age) {
-                return std::exp(-std::pow(std::log(x(age)), 2) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
+                return std::exp(-std::pow(std::log(x(age)), 2.0) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const double threshold = static_cast<double>(weight(age)) * (16.0f / 101.8f);
+            const double threshold = static_cast<double>(weight(age)) * (16.0 / 101.8);
 
             return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }

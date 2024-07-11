@@ -24,6 +24,11 @@
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/InputFile/SimulationRange.hpp>
 
+// M_PI が定義されていない場合
+#ifndef M_PI
+#define M_PI 3.141592653589
+#endif
+
 namespace paxs {
 
     constexpr int pixel_size = 256; // 1画像あたりの縦横のピクセル数
@@ -32,6 +37,9 @@ namespace paxs {
 
     constexpr std::uint_least8_t female_value = 0; // 女性
     constexpr std::uint_least8_t male_value = 1; // 男性
+
+    // std::sqrt(2 * M_PI)
+    constexpr double sqrt_2_x_pi = static_cast<double>(2.506628275);
 
     using GridType = int;
     using HumanIndexType = std::uint_least32_t;
@@ -58,6 +66,8 @@ namespace paxs {
 
         int start_julian_day = 1728746; // シミュレーション開始日（ユリウス日）
         std::uint_least32_t area = MurMur3::calcHash("japan"); // シミュレーションの対象範囲
+        std::uint_least32_t land_key = MurMur3::calcHash("district"); // 陸地データの Key
+        std::uint_least32_t district_key = MurMur3::calcHash("district"); // 地区データの Key
         SimulationRange sr;
 
         int steps_per_year = 12; // 1年あたりのステップ数
@@ -66,6 +76,7 @@ namespace paxs {
 
         // 女性の結婚可能年齢：13歳以上60歳未満, 男性の結婚可能年齢：17歳以上60歳未満
         std::uint_least32_t female_marriageable_age_min = 13;
+        double female_marriageable_age_min_f64 = 13.0;
         std::uint_least32_t male_marriageable_age_min = 17;
         std::uint_least32_t female_marriageable_age_max = 60;
         std::uint_least32_t male_marriageable_age_max = 70;
@@ -119,6 +130,7 @@ namespace paxs {
 
         std::uniform_real_distribution<float> random_dist_f32 = std::uniform_real_distribution<float>( 0.0f, 1.0f ); // 乱数分布
         std::uniform_real_distribution<double> random_dist = std::uniform_real_distribution<double>( 0.0, 1.0 ); // 乱数分布
+        std::uniform_int_distribution<int> step_per_year_dist = std::uniform_int_distribution<int>( 0, 11 ); // 乱数分布
 
     private:
         template<typename Func_>
@@ -151,23 +163,31 @@ namespace paxs {
 
             stoiFunc(kvt, MurMur3::calcHash("start_julian_day"), [&](const std::string& str_) {start_julian_day = std::stoi(str_); });
             stoiFunc(kvt, MurMur3::calcHash("area"), [&](const std::string& str_) {area = MurMur3::calcHash(str_.size(), str_.c_str()); });
+            stoiFunc(kvt, MurMur3::calcHash("land_key"), [&](const std::string& str_) {land_key = MurMur3::calcHash(str_.size(), str_.c_str()); });
+            stoiFunc(kvt, MurMur3::calcHash("district_key"), [&](const std::string& str_) {district_key = MurMur3::calcHash(str_.size(), str_.c_str()); });
 
             // シミュレーションの範囲を設定
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationRange"),
                 [&](const std::string& path_) {sr.input(path_); });
 
             stoiFunc(kvt, MurMur3::calcHash("steps_per_year"), [&](const std::string& str_) {steps_per_year = std::stoi(str_); });
+            step_per_year_dist = std::uniform_int_distribution<int>(0, steps_per_year - 1);
 
             stoiFunc(kvt, MurMur3::calcHash("output_step_frequency"), [&](const std::string& str_) {output_step_frequency = std::stoi(str_); });
 
             stoiFunc(kvt, MurMur3::calcHash("female_marriageable_age_min"), [&](const std::string& str_) {female_marriageable_age_min = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            female_marriageable_age_min_f64 = static_cast<double>(female_marriageable_age_min);
+
             stoiFunc(kvt, MurMur3::calcHash("male_marriageable_age_min"), [&](const std::string& str_) {male_marriageable_age_min = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("female_marriageable_age_max"), [&](const std::string& str_) {female_marriageable_age_max = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("male_marriageable_age_max"), [&](const std::string& str_) {male_marriageable_age_max = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("birthable_age_min"), [&](const std::string& str_) {birthable_age_min = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("birthable_age_max"), [&](const std::string& str_) {birthable_age_max = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("birth_interval"), [&](const std::string& str_) {birth_interval = static_cast<std::uint_least8_t>(std::stoul(str_)); });
-            stoiFunc(kvt, MurMur3::calcHash("marriage_search_range"), [&](const std::string& str_) {marriage_search_range = static_cast<std::uint_least32_t>(std::stoul(str_)); marriage_search_range_pow2 = marriage_search_range * marriage_search_range; });
+
+            stoiFunc(kvt, MurMur3::calcHash("marriage_search_range"), [&](const std::string& str_) {marriage_search_range = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            marriage_search_range_pow2 = marriage_search_range * marriage_search_range;
+
             stoiFunc(kvt, MurMur3::calcHash("grid_length"), [&](const std::string& str_) {grid_length = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_start_steps"), [&](const std::string& str_) {immigration_start_steps = static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_district_id"), [&](const std::string& str_) {immigration_district_id = static_cast<std::uint_least8_t>(std::stoul(str_)); });
