@@ -8,7 +8,7 @@
     [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
-
+//#define PAXS_DEVELOPMENT
 #ifndef PAX_MAHOROBA_MAIN_HPP
 #define PAX_MAHOROBA_MAIN_HPP
 

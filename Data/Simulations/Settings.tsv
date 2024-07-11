@@ -22,8 +22,8 @@ birthable_age_min	15	出産の最小可能年齢(歳)
 birthable_age_max	50	出産の最大可能年齢(歳)
 #Childbirth --------------------	#出産	--------------------------------------------------
 birth_interval	10	妊娠から出産までのStep間隔(step)
-hunter_gatherer_stillbirth_rate	0.18	狩猟採集死産率
-farming_stillbirth_rate	0.16	水田稲作死産率
+hunter_gatherer_stillbirth_rate	0	狩猟採集死産率
+farming_stillbirth_rate	0	水田稲作死産率
 child_agriculture_priority	0.7	片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
 #Movement --------------------	#移動	--------------------------------------------------
 max_hunter_gatherer_settlement_population	25	狩猟採集集落の最大人数(人)
