@@ -318,13 +318,12 @@ namespace paxs {
         /// @brief Move.
         /// @brief 移動
         /// @return 集落グリッドを移動したかどうか
-        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, int move_probability) noexcept {
+        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine) noexcept {
             Vector2 current_key;
             Vector2 target_key;
 
             // 確率で移動
-            std::uniform_int_distribution<> dist(0, SimulationConstants::getInstance()->move_probability_normalization_coefficient);
-            if (dist(engine) > move_probability) return { 0, Vector2(), Vector2() };
+            if (SimulationConstants::getInstance()->random_dist(engine) > SimulationConstants::getInstance()->move_probability) return { 0, Vector2(), Vector2() };
 
             // 座標を移動
             // 移動距離0~max_move_distance
@@ -582,12 +581,12 @@ namespace paxs {
         bool isMarried(const double age) noexcept {
             // 婚姻可能年齢の上限値以上だったら結婚しない
             if (age >= SimulationConstants::getInstance()->female_marriageable_age_max) return false;
-            auto x = [](double age) { return (age - SimulationConstants::getInstance()->female_marriageable_age_min_f64) / 8.5; };
+            auto x = [](double age) { return (age - SimulationConstants::getInstance()->female_marriageable_age_min_f64) / SimulationConstants::getInstance()->marriageable_age_constant; };
             auto weight = [=](double age) {
                 return std::exp(-std::pow(std::log(x(age)), 2.0) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const double threshold = static_cast<double>(weight(age)) * (0.98 / 101.8);
+            const double threshold = static_cast<double>(weight(age)) * (SimulationConstants::getInstance()->marriageable_age_threshold / SimulationConstants::getInstance()->marriageable_age_all_weight); // (0.98 / 101.8);
 
             return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }
@@ -595,12 +594,12 @@ namespace paxs {
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
         bool isAbleToGiveBirth(const double age) noexcept {
-            auto x = [](double age) { return (age - 14) / 8.5; };
+            auto x = [](double age) { return (age - SimulationConstants::getInstance()->pregnant_age_min_f64) / SimulationConstants::getInstance()->birthable_age_constant; };
             auto weight = [=](double age) {
                 return std::exp(-std::pow(std::log(x(age)), 2.0) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const double threshold = static_cast<double>(weight(age)) * (16.0 / 101.8);
+            const double threshold = static_cast<double>(weight(age)) * (SimulationConstants::getInstance()->birthable_age_threshold / SimulationConstants::getInstance()->birthable_age_all_weight); // (16 / 101.8);
 
             return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }

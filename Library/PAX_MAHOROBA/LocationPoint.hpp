@@ -508,6 +508,8 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
     // エージェントの位置を管理
     class AgentLocation {
+    private:
+        std::size_t select_draw = 1;
     public:
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
@@ -619,7 +621,15 @@ namespace paxs {
         void draw(const double jdn,
             std::unordered_map<SettlementGridsType, paxs::SettlementGrid>& agents,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
-        )const {
+        )/*const Siv3D Key は非 const */ {
+
+#ifdef PAXS_USING_SIV3D
+            if (s3d::Key1.pressed()) select_draw = 1;
+            else if (s3d::Key2.pressed()) select_draw = 2;
+            else if (s3d::Key3.pressed()) select_draw = 3;
+            else if (s3d::Key4.pressed()) select_draw = 4;
+#endif
+
             // 地名を描画
             for (const auto& agent : agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
@@ -661,11 +671,28 @@ namespace paxs {
                         // エージェント
                         // if (lli.lpe == MurMur3::calcHash("agent1"))
                         {
-                            // const std::size_t pop_original = settlement.getFarmingPopulation(); // settlement.getPopulation();
-                            //const float pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0f; // settlement.getPopulation();
-                            //const float pop_original = settlement.getMostMtDNA() / 27.0f * 75.0f; // settlement.getPopulation();
-                            const double pop_original = settlement.getSNP() * 75.0; // settlement.getPopulation();
-
+                            double pop_original = 0.0;
+                            switch (select_draw)
+                            {
+                            case 1:
+                                // const std::size_t
+                                // pop_original = settlement.getFarmingPopulation();
+                                pop_original = static_cast<double>(settlement.getPopulation());
+                                break;
+                            case 2:
+                                //const float
+                                pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0;
+                                break;
+                            case 3:
+                                //const float
+                                pop_original = settlement.getMostMtDNA() / 27.0 * 75.0;
+                                break;
+                            case 4:
+                                //const double
+                                pop_original = settlement.getSNP() * 75.0;
+                                break;
+                            }
+                            
                             const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,
                                 1.0f + (settlement.getPopulation() / 40.0f)//2.0f
