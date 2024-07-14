@@ -4,22 +4,29 @@ start_julian_day	1319309	シミュレーション開始日(ユリウス日)
 steps_per_year	12	1年あたりのStepの数(step/年)
 output_step_frequency	120	何Stepおきに出力するか？(step)
 immigration_start_steps	2401	渡来開始Step数目(step)
+immigration_end_steps	21600	渡来終了Step数目(step)
 init_lifespan_min	180	初期化時の寿命までの最低Step間隔(step)
 #Space --------------------	#空間	--------------------------------------------------
 area	honsyu	シミュレーションの対象範囲
-grid_length	512	集落をグループ分けする際の1グリッド辺の長さ(cell)
+grid_length	256	集落をグループ分けする際の1グリッド辺の長さ(cell)
 immigration_district_id	73	渡来地区ID
 land_key	district	陸地データのKey
 district_key	district	地区データのKey
 #Marriage --------------------	#婚姻	--------------------------------------------------
 maternal_residence_probability	0.5	母方居住婚の確率
-marriage_search_range	320	結婚時に近くの集落からエージェントを探す際の探索距離(cell)
+marriage_search_range	200	結婚時に近くの集落からエージェントを探す際の探索距離(cell)
 female_marriageable_age_min	13	女性の最小婚姻可能年齢(歳)
 male_marriageable_age_min	17	男性の最小婚姻可能年齢(歳)
 female_marriageable_age_max	60	女性の最大婚姻可能年齢(歳)
 male_marriageable_age_max	70	男性の最大婚姻可能年齢(歳)
 birthable_age_min	15	出産の最小可能年齢(歳)
 birthable_age_max	50	出産の最大可能年齢(歳)
+marriageable_age_constant	8.5	婚姻可能年齢定数
+marriageable_age_threshold	0.98	婚姻可能年齢閾値
+marriageable_age_all_weight	101.8	婚姻可能年齢重み
+birthable_age_constant	8.5	出産可能年齢定数
+birthable_age_threshold	16.0	出産可能年齢閾値
+birthable_age_all_weight	101.8	出産可能年齢重み
 #Childbirth --------------------	#出産	--------------------------------------------------
 birth_interval	10	妊娠から出産までのStep間隔(step)
 hunter_gatherer_stillbirth_rate	0	狩猟採集死産率
@@ -28,8 +35,6 @@ child_agriculture_priority	0.7	片親が農耕文化を持ち、もう一方の�
 #Movement --------------------	#移動	--------------------------------------------------
 max_hunter_gatherer_settlement_population	25	狩猟採集集落の最大人数(人)
 max_farming_settlement_population	80	水田稲作集落の最大人数(人)
-min_move_distance	10	最小移動距離
-max_move_distance	800	最大移動距離
-min_move_probability	1	移動確率下限
-max_move_probability	1	移動確率上限
-move_probability_normalization_coefficient	1000	移動確率の正規化係数
+min_move_distance	50	最小移動距離(cell)
+max_move_distance	800	最大移動距離(cell)
+move_probability	0.05	移動確率

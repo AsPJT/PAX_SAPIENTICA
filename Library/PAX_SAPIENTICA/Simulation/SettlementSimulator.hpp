@@ -47,10 +47,6 @@ namespace paxs {
             environment(std::make_unique<Environment>(map_list_path)), gen(seed) {
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
             kanakuma_life_span.japan_provinces = japan_provinces.get();
-
-            // ランダムに移動確率を設定
-            std::uniform_int_distribution<> move_probability_dist{ SimulationConstants::getInstance()->min_move_probability, SimulationConstants::getInstance()->max_move_probability };
-            move_probability = move_probability_dist(gen);
         }
         /// @brief 環境を設定
         void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, /*const int z,*/ const unsigned seed = 0) noexcept {
@@ -62,10 +58,6 @@ namespace paxs {
             japan_provinces.reset();
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
             kanakuma_life_span.japan_provinces = japan_provinces.get();
-
-            // ランダムに移動確率を設定
-            std::uniform_int_distribution<> move_probability_dist{ SimulationConstants::getInstance()->min_move_probability, SimulationConstants::getInstance()->max_move_probability };
-            move_probability = move_probability_dist(gen);
         }
 
         /// @brief
@@ -182,7 +174,7 @@ namespace paxs {
                         continue;
                     }
 
-                    auto [target_id, current_key, target_key] = settlements[i].move(gen, move_probability);
+                    auto [target_id, current_key, target_key] = settlements[i].move(gen);
 
                     if (target_id != 0) {
                         move_list.emplace_back(target_id, current_key, target_key);
@@ -202,7 +194,8 @@ namespace paxs {
                 }
             }
             // 前901年から稲作文化開始
-            if (step_count >= SimulationConstants::getInstance()->immigration_start_steps) {
+            if (step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
+                step_count <= SimulationConstants::getInstance()->immigration_end_steps) {
                 randomizeSettlements(false, 255, 0, 255/*渡来人は SNP:255*/);
             }
 
@@ -283,7 +276,8 @@ namespace paxs {
             }
 
             // 前901年から処理開始
-            if (step_count >= SimulationConstants::getInstance()->immigration_start_steps) {
+            if (step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
+                step_count <= SimulationConstants::getInstance()->immigration_end_steps) {
                 // 渡来数を増やす
                 japan_provinces->update();
             }
@@ -327,7 +321,6 @@ namespace paxs {
         std::shared_ptr<Environment> environment;
 
         std::unique_ptr<paxs::JapanProvinces> japan_provinces;
-        int move_probability = 0; // 移動確率
 
         std::mt19937 gen; // 乱数生成器
 
