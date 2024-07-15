@@ -13,25 +13,25 @@ immigration_district_id	73	渡来地区ID
 land_key	district	陸地データのKey
 district_key	district	地区データのKey
 #Marriage --------------------	#婚姻	--------------------------------------------------
-maternal_residence_probability	0.5	母方居住婚の確率
+maternal_residence_probability	0.5	母方居住婚になる確率（父方居住婚にならない確率）
 marriage_search_range	200	結婚時に近くの集落からエージェントを探す際の探索距離(cell)
 female_marriageable_age_min	13	女性の最小婚姻可能年齢(歳)
 male_marriageable_age_min	17	男性の最小婚姻可能年齢(歳)
 female_marriageable_age_max	60	女性の最大婚姻可能年齢(歳)
 male_marriageable_age_max	70	男性の最大婚姻可能年齢(歳)
-birthable_age_min	15	出産の最小可能年齢(歳)
-birthable_age_max	50	出産の最大可能年齢(歳)
 marriageable_age_constant	8.5	婚姻可能年齢定数
 marriageable_age_threshold	0.98	婚姻可能年齢閾値
 marriageable_age_all_weight	101.8	婚姻可能年齢重み
-birthable_age_constant	8.5	出産可能年齢定数
-birthable_age_threshold	16.0	出産可能年齢閾値
-birthable_age_all_weight	101.8	出産可能年齢重み
 #Childbirth --------------------	#出産	--------------------------------------------------
 birth_interval	10	妊娠から出産までのStep間隔(step)
 hunter_gatherer_stillbirth_rate	0	狩猟採集死産率
 farming_stillbirth_rate	0	水田稲作死産率
 child_agriculture_priority	0.7	片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
+birthable_age_min	15	出産の最小可能年齢(歳)
+birthable_age_max	50	出産の最大可能年齢(歳)
+birthable_age_constant	8.5	出産可能年齢定数
+birthable_age_threshold	16.0	出産可能年齢閾値
+birthable_age_all_weight	101.8	出産可能年齢重み
 #Movement --------------------	#移動	--------------------------------------------------
 max_hunter_gatherer_settlement_population	25	狩猟採集集落の最大人数(人)
 max_farming_settlement_population	80	水田稲作集落の最大人数(人)
