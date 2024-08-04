@@ -70,6 +70,11 @@ namespace paxs {
             double immigrant_f64 = 0;
             double increased_immigration = 0;
             std::uint_least32_t mtdna_region_hash = 0;
+
+            std::uint_least32_t direction_min_distance = 100;
+            // std::array<double, 8> direction_weight{};
+            std::vector<double> direction_weight{};
+            std::discrete_distribution<> direction_dist{};
         };
 
     /// @brief A class that represents a prefecture in Japan.
@@ -257,21 +262,33 @@ namespace paxs {
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("max_pop_placed_per_cell")) ||
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("init_pop")) ||
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("immigrant")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("mtdna_region"))
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("mtdna_region")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("direction_min_distance")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("directions"))
                     ) {
                     PAXS_WARNING("Failed to read Japan region TSV file: " + district_tsv_path + " at line " + std::to_string(i));
                     continue;
                 }
                 District district;
-                district.id = static_cast<std::uint_least8_t>(std::stoi(sub_menu_v[menu[MurMur3::calcHash("id")]]));
+                district.id = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("id")]]));
                 district.name = sub_menu_v[menu[MurMur3::calcHash("name")]];
-                district.region_id = static_cast<std::uint_least8_t>(std::stoi(sub_menu_v[menu[MurMur3::calcHash("region")]]));
-                district.settlement_population_min_ad200 = std::stoi(sub_menu_v[menu[MurMur3::calcHash("min_pop_placed_per_cell")]]);
-                district.settlement_population_max_ad200 = std::stoi(sub_menu_v[menu[MurMur3::calcHash("max_pop_placed_per_cell")]]);
-                district.init_pop = std::stoi(sub_menu_v[menu[MurMur3::calcHash("init_pop")]]);
-                district.immigrant = std::stoi(sub_menu_v[menu[MurMur3::calcHash("immigrant")]]);
+                district.region_id = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("region")]]));
+                district.settlement_population_min_ad200 = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("min_pop_placed_per_cell")]]));
+                district.settlement_population_max_ad200 = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("max_pop_placed_per_cell")]]));
+                district.init_pop = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("init_pop")]]));
+                district.immigrant = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("immigrant")]]));
                 district.immigrant_f64 = static_cast<double>(district.immigrant);
                 district.increased_immigration = std::stod(sub_menu_v[menu[MurMur3::calcHash("increased_immigration")]]);
+
+                district.direction_min_distance = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("direction_min_distance")]]));
+
+                std::vector<std::string> direction_split = paxs::StringExtensions::split(sub_menu_v[menu[MurMur3::calcHash("directions")]], '/');
+                for (std::size_t di = 0; di < direction_split.size() && di < 8; ++di) {
+                    district.direction_weight.emplace_back(std::stod(direction_split[di]));
+                }
+                if(district.direction_weight.size() == 0) district.direction_weight.emplace_back(0.0);
+                // 方向の確率分布を生成
+                district.direction_dist = std::discrete_distribution<>(district.direction_weight.begin(), district.direction_weight.end());
 
                 const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("mtdna_region")]];
                 district.mtdna_region_hash = MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str());

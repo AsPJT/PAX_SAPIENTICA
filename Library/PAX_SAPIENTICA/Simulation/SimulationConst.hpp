@@ -16,6 +16,7 @@
 
 ##########################################################################################*/
 
+#include <array>
 #include <cstdint>
 #include <random>
 #include <string>
@@ -37,6 +38,10 @@ namespace paxs {
 
     constexpr std::uint_least8_t female_value = 0; // 女性
     constexpr std::uint_least8_t male_value = 1; // 男性
+
+    constexpr double pi_per_4 = M_PI / 4.0; // π／４
+    constexpr double pi_per_8 = M_PI / 8.0; // π／８
+    // constexpr double pi_per_4m8 = pi_per_4 - pi_per_8; // π／４ーπ／８
 
     // std::sqrt(2 * M_PI)
     constexpr double sqrt_2_x_pi = static_cast<double>(2.506628275);
@@ -140,6 +145,20 @@ namespace paxs {
         std::uniform_real_distribution<double> random_dist = std::uniform_real_distribution<double>( 0.0, 1.0 ); // 乱数分布
         std::uniform_int_distribution<int> step_per_year_dist = std::uniform_int_distribution<int>( 0, 11 ); // 乱数分布
 
+        std::uniform_int_distribution<int> move_dist = std::uniform_int_distribution<int>(min_move_distance, max_move_distance);
+        std::uniform_real_distribution<double> theta_dist = std::uniform_real_distribution<double>(0.0, static_cast<double>(2.0 * M_PI));
+
+        std::array<std::uniform_real_distribution<double>, 8> theta_dist_array = {
+            std::uniform_real_distribution<double>(-pi_per_8, pi_per_8),
+            std::uniform_real_distribution<double>(pi_per_8, pi_per_8 + pi_per_4),
+            std::uniform_real_distribution<double>(pi_per_8 + pi_per_4, pi_per_8 + 2* pi_per_4),
+            std::uniform_real_distribution<double>(pi_per_8 + 2 * pi_per_4, pi_per_8 + 3 * pi_per_4),
+            std::uniform_real_distribution<double>(pi_per_8 + 3 * pi_per_4, pi_per_8 + 4 * pi_per_4),
+            std::uniform_real_distribution<double>(pi_per_8 + 4 * pi_per_4, pi_per_8 + 5 * pi_per_4),
+            std::uniform_real_distribution<double>(pi_per_8 + 5 * pi_per_4, pi_per_8 + 6 * pi_per_4),
+            std::uniform_real_distribution<double>(pi_per_8 + 7 * pi_per_4, pi_per_8 + 8 * pi_per_4)
+        };
+
     private:
         template<typename Func_>
         void stoiFunc(KeyValueTSV<std::string>& key_value_tsv_, const std::uint_least32_t key_, Func_&& func_) {
@@ -213,6 +232,7 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("max_hunter_gatherer_settlement_population"), [&](const std::string& str_) {max_hunter_gatherer_settlement_weight = 1.0 / static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("min_move_distance"), [&](const std::string& str_) {min_move_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("max_move_distance"), [&](const std::string& str_) {max_move_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            move_dist = std::uniform_int_distribution<int>(min_move_distance, max_move_distance);
 
             stoiFunc(kvt, MurMur3::calcHash("move_probability"), [&](const std::string& str_) {move_probability = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("child_agriculture_priority"), [&](const std::string& str_) {child_agriculture_priority = std::stod(str_); });
