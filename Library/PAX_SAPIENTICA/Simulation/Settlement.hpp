@@ -318,7 +318,7 @@ namespace paxs {
         /// @brief Move.
         /// @brief 移動
         /// @return 集落グリッドを移動したかどうか
-        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine) noexcept {
+        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, District& district_) noexcept {
             Vector2 current_key;
             Vector2 target_key;
 
@@ -327,17 +327,23 @@ namespace paxs {
 
             // 座標を移動
             // 移動距離0~max_move_distance
-            std::uniform_int_distribution<> move_dist(SimulationConstants::getInstance()->min_move_distance, SimulationConstants::getInstance()->max_move_distance);
-            std::uniform_real_distribution<float> theta_dist(0.0f, static_cast<float>(2.0 * M_PI));
 
             Vector2 current_position = position;
             Vector2 target_position = current_position;
 
+            int  loop_count = 0; // 無限ループ回避用のループ上限値
             // 小さい領域のシミュレーションでは無限ループする可能性がある
             while (target_position == current_position || !environment->isLive(target_position)) {
-                float theta = theta_dist(engine);
-                int distance = move_dist(engine);
+                // 無限ループに陥った場合は無視
+                if(loop_count >= 100) return { 0, Vector2(), Vector2() };
+                int distance = SimulationConstants::getInstance()->move_dist(engine);
+
+                // 移動距離が偏りのある方向を指定する距離以上か判定し、方向を格納する
+                double theta = (distance >= static_cast<int>(district_.direction_min_distance)) ?
+                    SimulationConstants::getInstance()->theta_dist_array[district_.direction_dist(engine)](engine) :
+                    SimulationConstants::getInstance()->theta_dist(engine);
                 target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
+                ++loop_count;
             }
 
             current_key = current_position / SimulationConstants::getInstance()->grid_length;

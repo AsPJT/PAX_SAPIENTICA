@@ -102,16 +102,22 @@ namespace paxs {
         }
 
         void moveSettlement(const std::uint_least32_t id, const Vector2 current_key, const Vector2 target_key) noexcept {
-            auto it = settlement_grids.find(target_key.to(SettlementGridsType{}));
+            const auto current_index = current_key.to(SettlementGridsType{});
+            const auto target_index = target_key.to(SettlementGridsType{});
+
+            // ターゲットの地域が登録されているか？
+            auto it = settlement_grids.find(target_index);
             if (it != settlement_grids.end()) {
-                it->second.moveSettlementToThis(settlement_grids[current_key.to(SettlementGridsType{})].getSettlement(id));
+                // 登録されている場合はそのターゲット地域へ移動
+                it->second.moveSettlementToThis(settlement_grids[current_index].getSettlement(id));
             }
             else {
+                // 登録されていない場合は新しく地域を作成
                 SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance()->grid_length, environment, gen);
-                settlement_grid.moveSettlementToThis(settlement_grids[current_key.to(SettlementGridsType{})].getSettlement(id));
-                settlement_grids[target_key.to(SettlementGridsType{})] = settlement_grid;
+                settlement_grid.moveSettlementToThis(settlement_grids[current_index].getSettlement(id));
+                settlement_grids[target_index] = settlement_grid;
             }
-            settlement_grids[current_key.to(SettlementGridsType{})].deleteSettlement(id);
+            settlement_grids[current_index].deleteSettlement(id);
         }
 
         /// @brief Execute the simulation for the one step.
@@ -174,7 +180,7 @@ namespace paxs {
                         continue;
                     }
 
-                    auto [target_id, current_key, target_key] = settlements[i].move(gen);
+                    auto [target_id, current_key, target_key] = settlements[i].move(gen, japan_provinces->getDistrict(environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance()->district_key, settlements[i].getPosition())));
 
                     if (target_id != 0) {
                         move_list.emplace_back(target_id, current_key, target_key);
