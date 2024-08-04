@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20240715L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20240804L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [vX.a.a]
@@ -34,12 +34,12 @@
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (1)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (2)
 #endif
 
 // バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.2.1 KIZAMIME TOTTAIMON"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.2.2 KIZAMIME TOTTAIMON"
 #endif
 
 //char name[
@@ -51,6 +51,7 @@
 	更新履歴
 	バージョン	| 更新日		| 概要
 	6.0.1.0.X	| 2024/0X/XX	| コピペ用
+	6.0.1.2.2	| 2024/08/04	| シミュレーションで動く方向に偏りを指定する機能を追加
 	6.0.1.2.1	| 2024/07/15	| シミュレーションの全定数の入力データ化
 	6.0.1.2.0	| 2024/07/12	| シミュレーション更新版
 	6.0.1.1.10	| 2024/07/11	| 生命表の入力機能を追加
