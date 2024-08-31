@@ -32,7 +32,7 @@ It was presented at the 48th Annual Meeting of the Japan Association for Archaeo
 
 ![PAX SAPIENTICA Simulation](./Images/Animation/ABS01.gif)
 
-## [🧬 DNA haplogroup](Data/Genomes/HomoSapiens)
+## [🧬 DNA Haplogroups](Data/Genomes/HomoSapiens)
 
 This software can handle DNA haplogroup data of ancient human bones.
 
@@ -49,6 +49,17 @@ Ancient human bone mtDNA data registered as of December 21, 2023.
 This software allows you to visualize and move historical figures.
 
 ![PAX SAPIENTICA Movement](./Images/Animation/Person01.gif)
+
+## 📍 Distributions
+
+### Distribution of Zenpokoenfun tombs
+![Distribution of Zenpokoenfun tombs](https://upload.wikimedia.org/wikipedia/commons/6/67/Zenpokoenfun_Map.png)
+
+### Distribution of bronze bells
+![Distribution of bronze bells](https://upload.wikimedia.org/wikipedia/commons/8/82/DotakuDistribution.png)
+
+### Distribution of weapon-shaped bronzes
+![Distribution of weapon-shaped bronzes](https://upload.wikimedia.org/wikipedia/commons/f/f4/JapaneseWeaponShapedBronzes.png)
 
 ---
 
