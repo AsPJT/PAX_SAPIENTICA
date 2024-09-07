@@ -52,13 +52,16 @@ This software allows you to visualize and move historical figures.
 
 ## 📍 Distributions
 
-### Distribution of Zenpokoenfun tombs
+### Distribution of bronze swords in NortheastAsia
+![bronze swords](./Images/DistributionMaps/BronzeSwordsInNortheastAsia.png)
+
+### Distribution of Zenpokoenfun tombs in Japan
 ![Distribution of Zenpokoenfun tombs](https://upload.wikimedia.org/wikipedia/commons/6/67/Zenpokoenfun_Map.png)
 
-### Distribution of bronze bells
+### Distribution of bronze bells in Japan
 ![Distribution of bronze bells](https://upload.wikimedia.org/wikipedia/commons/8/82/DotakuDistribution.png)
 
-### Distribution of weapon-shaped bronzes
+### Distribution of weapon-shaped bronzes in Japan
 ![Distribution of weapon-shaped bronzes](https://upload.wikimedia.org/wikipedia/commons/f/f4/JapaneseWeaponShapedBronzes.png)
 
 ---
