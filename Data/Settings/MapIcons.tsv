@@ -75,6 +75,8 @@ Data/MapIcons/Kofun/En/En.svg	Enpun
 Data/MapIcons/Kofun/En/EnF.svg	EnpunF
 Data/MapIcons/Kofun/Ho/Ho.svg	Hofun
 Data/MapIcons/Kofun/Ho/HoF.svg	HofunF
+Data/MapIcons/Kofun/Yosumi/Yosumi.svg	Yosumi
+Data/MapIcons/Kofun/Yosumi/YosumiF.svg	YosumiF
 Data/MapIcons/Kofun/Hotate/Hotate.svg	HotateFun
 Data/MapIcons/Kofun/Hotate/HotateF.svg	HotateFunF
 Data/MapIcons/Kofun/Hotate/Hotate2.svg	HotateFun2
@@ -126,6 +128,8 @@ Data/MapIcons/Kofun/Maruhakayama.svg	MaruhakayamaKofun
 Data/MapIcons/Kofun/Tatetsuki.svg	TatetsukiIseki
 Data/MapIcons/Kofun/Makimuku.svg	Makimuku
 Data/MapIcons/Kofun/MakimukuF.svg	MakimukuF
+Data/MapIcons/Kofun/MakimukuSgt.svg	MakimukuSgt
+Data/MapIcons/Kofun/MakimukuFSgt.svg	MakimukuFSgt
 Data/MapIcons/PlaceName.svg	PlaceName
 Data/MapIcons/Tomb/Korea/HwangnamDaechong.svg	HwangnamDaechong
 Data/MapIcons/Tomb/China/MausoleumOfTheFirstQinEmperor.svg	MausoleumOfTheFirstQinEmperor
