@@ -56,10 +56,11 @@ namespace paxs {
             const int min_year_,  // 可視化する時代（古い年～）
             const int max_year_,  // 可視化する時代（～新しい年）
             const std::uint_least32_t lpe_,  // 対象となる地物の種別
-            const std::uint_least32_t place_texture_ // 出典
+            const std::uint_least32_t place_texture_, // 出典
+            const double zoom_ // 拡大率
         ) noexcept
             : place_name(place_name_), coordinate(coordinate_), x_size(x_size_), y_size(y_size_), overall_length(overall_length_),
-            min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_) {}
+            min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_), zoom(zoom_){}
 
         std::unordered_map<std::uint_least32_t, std::string> place_name{}; // 地名
         paxs::MercatorDeg coordinate{}; // 経緯度
@@ -70,6 +71,7 @@ namespace paxs {
         int min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t lpe = MurMur3::calcHash("place_name"); // 対象となる地物の種別
         std::uint_least32_t place_texture = 0; // 地物の画像
+        double zoom = 1.0; // 拡大率
     };
 
     // 地物の一覧
@@ -123,6 +125,7 @@ namespace paxs {
                     MurMur3::calcHash("agent1") :
                     MurMur3::calcHash("agent2")
                     , 0 /*出典無し*/
+                    , 1.0 // 拡大率
                 );
             }
             location_point_list_list.emplace_back(location_point_list,
@@ -160,6 +163,7 @@ namespace paxs {
             const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash("first_julian_day"));
             const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash("last_julian_day"));
             const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
+            const std::size_t zoom_size = getMenuIndex(menu, MurMur3::calcHash("zoom"));
 
 
             // 1 行ずつ読み込み（区切りはタブ）
@@ -197,8 +201,13 @@ namespace paxs {
                     0 : ((strvec[place_texture].size() == 0) ?
                         0 : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()));
 
+                // 対象となる地物の種別
+                const double zoom = (zoom_size >= strvec.size()) ?
+                    1.0 : ((strvec[zoom_size].size() == 0) ?
+                        1.0 : std::stod(strvec[zoom_size]));
+
                 // 地物を追加
-                inputPlace(strvec[file_path], min_view, max_view, min_year, max_year, type, place_texture_hash);
+                inputPlace(strvec[file_path], min_view, max_view, min_year, max_year, type, place_texture_hash, zoom);
             }
         }
 
@@ -280,7 +289,7 @@ namespace paxs {
                         const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                         // 描画
                         if (texture.find(place_tex) != texture.end()) {
-                            const int len = int(lli.overall_length / 2);
+                            const int len = int(lli.overall_length / 2 * lli.zoom);
                             if (lli.x_size <= 1) {
                                 if (lli.y_size <= 1) {
                                     texture.at(place_tex).resizedDrawAt(len, draw_pos);
@@ -393,7 +402,8 @@ namespace paxs {
             const int min_year_,  // 可視化する時代（古い年～）
             const int max_year_,  // 可視化する時代（～新しい年）
             const std::uint_least32_t lpe_,  // 対象となる地物の種別
-            const std::uint_least32_t place_texture_ // 出典
+            const std::uint_least32_t place_texture_, // 出典
+            const double zoom_ // 拡大率
         ) {
 
             std::vector<LocationPoint> location_point_list{}; // 地物の一覧
@@ -488,7 +498,8 @@ namespace paxs {
                     (first_julian_day >= strvec.size()) ? min_year_ : (strvec[first_julian_day].size() == 0) ? 99999999 : std::stod(strvec[first_julian_day]), // 最小時代
                     (last_julian_day >= strvec.size()) ? max_year_ : (strvec[last_julian_day].size() == 0) ? max_year_ : std::stod(strvec[last_julian_day]), // 最大時代
                     lpe_,
-                    (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()) // テクスチャの Key
+                    (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()), // テクスチャの Key
+                    zoom_
                 );
             }
             // 地物を何も読み込んでいない場合は何もしないで終わる
@@ -646,6 +657,7 @@ namespace paxs {
                         //(agent.getGender()) ?
                         MurMur3::calcHash("agent1")
                         ,0 /* 出典なし */
+                        ,1.0 // 拡大率
                     };
 
                     // 経緯度の範囲外を除去
