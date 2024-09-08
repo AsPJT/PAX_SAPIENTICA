@@ -42,6 +42,10 @@
 ##########################################################################################*/
 
 namespace paxs {
+
+    constexpr double days_in_a_year = 365.2425;
+    constexpr double julian_day_on_m1_1_1 = 1721060.0;
+
     // 地名
     struct LocationPoint {
         constexpr explicit LocationPoint() = default;
@@ -165,6 +169,9 @@ namespace paxs {
             const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
             const std::size_t zoom_size = getMenuIndex(menu, MurMur3::calcHash("zoom"));
 
+            const std::size_t first_year = getMenuIndex(menu, MurMur3::calcHash("first_year"));
+            const std::size_t last_year = getMenuIndex(menu, MurMur3::calcHash("last_year"));
+
 
             // 1 行ずつ読み込み（区切りはタブ）
             while (pifs.getLine()) {
@@ -190,12 +197,25 @@ namespace paxs {
                         99999999.0 : std::stod(strvec[maximum_size]));
                 // 可視化する時代（古い年～）
                 const int min_year = (first_julian_day >= strvec.size()) ?
-                    -99999999 : ((strvec[first_julian_day].size() == 0) ?
-                        -99999999 : std::stoi(strvec[first_julian_day]));
+                    (first_year >= strvec.size()) ?
+                    -99999999 : ((strvec[first_year].size() == 0) ?
+                        -99999999 : int(std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1))
+                    : ((strvec[first_julian_day].size() == 0) ?
+                        (first_year >= strvec.size()) ?
+                        -99999999 : ((strvec[first_year].size() == 0) ?
+                            -99999999 : int(std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1))
+                        : std::stoi(strvec[first_julian_day]));
                 // 可視化する時代（～新しい年）
                 const int max_year = (last_julian_day >= strvec.size()) ?
-                    99999999 : ((strvec[last_julian_day].size() == 0) ?
-                        99999999 : std::stoi(strvec[last_julian_day]));
+                    (last_year >= strvec.size()) ?
+                    99999999 : ((strvec[last_year].size() == 0) ?
+                        99999999 : int(std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1))
+                    : ((strvec[last_julian_day].size() == 0) ?
+                        (last_year >= strvec.size()) ?
+                        99999999 : ((strvec[last_year].size() == 0) ?
+                            99999999 : int(std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1))
+                        : std::stoi(strvec[last_julian_day]));
+
                 // 画像
                 const std::uint_least32_t place_texture_hash = (place_texture >= strvec.size()) ?
                     0 : ((strvec[place_texture].size() == 0) ?
@@ -439,6 +459,9 @@ namespace paxs {
             const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash("last_julian_day"));
             const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
 
+            const std::size_t first_year = getMenuIndex(menu, MurMur3::calcHash("first_year"));
+            const std::size_t last_year = getMenuIndex(menu, MurMur3::calcHash("last_year"));
+
             // 地名
             const std::size_t language_ja_jp = getMenuIndex(menu, MurMur3::calcHash("ja-JP"));
             const std::size_t language_en_us = getMenuIndex(menu, MurMur3::calcHash("en-US"));
@@ -482,7 +505,13 @@ namespace paxs {
                 start_latitude = (std::min)(start_latitude, point_latitude);
                 end_longitude = (std::max)(end_longitude, point_longitude);
                 end_latitude = (std::max)(end_latitude, point_latitude);
-                
+
+                auto first_jd = int((first_julian_day >= strvec.size()) ? min_year_ : (strvec[first_julian_day].size() == 0) ? min_year_ : std::stod(strvec[first_julian_day]));
+                if(first_jd == min_year_) first_jd = int((first_year >= strvec.size()) ? min_year_ : (strvec[first_year].size() == 0) ? min_year_ : std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1);
+
+                auto last_jd = int((last_julian_day >= strvec.size()) ? max_year_ : (strvec[last_julian_day].size() == 0) ? max_year_ : std::stod(strvec[last_julian_day]));
+                if (last_jd == max_year_) last_jd = int((last_year >= strvec.size()) ? max_year_ : (strvec[last_year].size() == 0) ? max_year_ : std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1);
+
                 // 格納
                 location_point_list.emplace_back(
                     place_name,
@@ -495,8 +524,8 @@ namespace paxs {
                     (!is_overall_length) ? 10.0 : (strvec[overall_length].size() == 0) ? 10.0 : std::stod(strvec[overall_length]), // 全長
                     (minimum_size >= strvec.size()) ? min_view_ : (strvec[minimum_size].size() == 0) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
                     (maximum_size >= strvec.size()) ? max_view_ : (strvec[maximum_size].size() == 0) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
-                    (first_julian_day >= strvec.size()) ? min_year_ : (strvec[first_julian_day].size() == 0) ? 99999999 : std::stod(strvec[first_julian_day]), // 最小時代
-                    (last_julian_day >= strvec.size()) ? max_year_ : (strvec[last_julian_day].size() == 0) ? max_year_ : std::stod(strvec[last_julian_day]), // 最大時代
+                    first_jd, // 最小時代
+                    last_jd, // 最大時代
                     lpe_,
                     (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()), // テクスチャの Key
                     zoom_
