@@ -9,9 +9,11 @@ Data/Features/EastAsia/Yaponesia/Kango.tsv	site	環濠集落	0	0.1
 Data/Features/EastAsia/Yaponesia/Kofun/Kofun.tsv	tomb	日本の古墳	0	0.1
 Data/Features/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1			
 Data/Features/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	0.1			
+Data/Features/EastAsia/Yaponesia/Kofun/Yosumi.tsv	tomb	日本の四隅突出型墳丘墓	0	0.1			
 Data/Features/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1			
 Data/Features/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1			
 Data/Features/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1			
+aData/Features/EastAsia/Korea/Site.tsv	site	韓国の遺跡	0	0.5			
 Data/PlaceNames/EastAsia/Yaponesia/KojikiPlaceName.tsv	place_name	古事記の地名	0	2	1721424	1940208	
 Data/PlaceNames/PlaceNames.tsv	place_name	汎用的な地名					
 Data/PlaceNames/EastAsia/Yaponesia/Ryoseikoku.tsv	place_name	令制国名	1				
@@ -31,5 +33,7 @@ aData/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石�
 Data/Items/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	0.1			
 Data/Items/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	0.1			
 Data/Items/EastAsia/Yaponesia/Dotaku.tsv	dotaku	銅鐸	0	0.1			
+aData/Items/EastAsia/Korea/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1			
+aData/Items/EastAsia/China/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1			
 Data/Items/EastAsia/Yaponesia/Doken.tsv	doken	銅剣	0	0.1			
 Data/Items/EastAsia/Yaponesia/Yajiri.tsv	yajiri	鏃	0	0.9			
