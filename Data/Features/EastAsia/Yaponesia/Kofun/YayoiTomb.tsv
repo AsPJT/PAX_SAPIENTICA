@@ -1,3 +1,4 @@
-﻿ja-JP	en-US	longitude	latitude	first_julian_day	last_julian_day	texture	overall_length
-楯築墳丘墓		133.825486	34.663056	1787169	1801779	TatetsukiIseki	72
-赤坂今井墳墓		135.050556	35.643333	1787169	1801779	Hofun	39
+﻿ja-JP	en-US	longitude	latitude	first_year	last_year	texture	overall_length
+楯築墳丘墓		133.825486	34.663056	181	220	TatetsukiIseki	72
+赤坂今井墳墓		135.050556	35.643333	181	220	Hofun	39
+吉野ヶ里町西一本杉ST008		130.4000646	33.3560551	200	240	YoshinogariST008	26
