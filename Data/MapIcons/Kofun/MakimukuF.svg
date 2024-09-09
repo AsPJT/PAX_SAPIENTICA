@@ -3,16 +3,17 @@
 <svg version="1.1" id="funkei" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 450 450" style="enable-background:new 0 0 450 450;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#555555;stroke:#555555;stroke-width:50;stroke-miterlimit:10;}
-	.st1{fill:#CBC6C0;}
-	.st2{fill:#B69C64;}
+	.st0{fill:#555555;stroke:#555555;stroke-width:50;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st1{fill:#555555;stroke:#555555;stroke-width:50;stroke-miterlimit:10;}
+	.st2{fill:#CBC6C0;}
+	.st3{fill:#B69C64;}
 </style>
 <path class="st0" d="M105.2,416.2c34,5,74.7,8.8,120.7,8.8c41.1,0,77.8-3,109.1-7.1c-41.5-101.8-51.1-148.9-49-171.2
 	c0.1-1.2,0.7-7-2.8-13c-16.7-28-106.6-28.7-121.9-2.8c-3.6,6.1-2.3,12.2-2,13.6C163.7,266.8,154.3,313.8,105.2,416.2z"/>
-<circle class="st0" cx="225" cy="157.2" r="132.2"/>
-<path class="st1" d="M105.2,416.2c34,5,74.7,8.8,120.7,8.8c41.1,0,77.8-3,109.1-7.1c-41.5-101.8-51.1-148.9-49-171.2
-	c0.1-1.2,0.7-7-2.8-13c-16.7-28-106.6-28.7-121.9-2.8c-3.6,6.1-2.3,12.2-2,13.6C163.7,266.8,154.3,313.8,105.2,416.2z"/>
 <circle class="st1" cx="225" cy="157.2" r="132.2"/>
-<polygon class="st2" points="153,374.2 219.8,113.7 230.1,113.7 297,374.2 "/>
-<circle class="st2" cx="225" cy="157.2" r="73.4"/>
+<path class="st2" d="M105.2,416.2c34,5,74.7,8.8,120.7,8.8c41.1,0,77.8-3,109.1-7.1c-41.5-101.8-51.1-148.9-49-171.2
+	c0.1-1.2,0.7-7-2.8-13c-16.7-28-106.6-28.7-121.9-2.8c-3.6,6.1-2.3,12.2-2,13.6C163.7,266.8,154.3,313.8,105.2,416.2z"/>
+<circle class="st2" cx="225" cy="157.2" r="132.2"/>
+<polygon class="st3" points="153,374.2 219.8,113.7 230.1,113.7 297,374.2 "/>
+<circle class="st3" cx="225" cy="157.2" r="73.4"/>
 </svg>
