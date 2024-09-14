@@ -94,6 +94,7 @@ Data/MapIcons/Kofun/En/EnF.svg	EnpunF
 Data/MapIcons/Kofun/Ho/Ho.svg	Hofun		方墳		
 Data/MapIcons/Kofun/Ho/HoG.svg	HofunG				
 Data/MapIcons/Kofun/Ho/HoF.svg	HofunF				
+Data/MapIcons/Kofun/Ho/HoFF.svg	HofunFF				
 Data/MapIcons/Kofun/Yosumi/Yosumi.svg	Yosumi				
 Data/MapIcons/Kofun/Yosumi/YosumiF.svg	YosumiF				
 Data/MapIcons/Kofun/Hotate/Hotate.svg	HotateFun				
@@ -160,6 +161,7 @@ Data/MapIcons/Kofun/Makimuku/MakimukuF.svg	MakimukuFF
 Data/MapIcons/Kofun/Makimuku/MakimukuSgt.svg	MakimukuSgt				
 Data/MapIcons/Kofun/Makimuku/MakimukuFSgt.svg	MakimukuFSgt				
 Data/MapIcons/PlaceName.svg	PlaceName				
+Data/MapIcons/Tomb/Korea/Tomb.svg	KoreaTomb				
 Data/MapIcons/Tomb/Korea/HwangnamDaechong.svg	HwangnamDaechong	Hwangnam Daechong	皇南大塚	황남대총	
 Data/MapIcons/Tomb/China/MausoleumOfTheFirstQinEmperor.svg	MausoleumOfTheFirstQinEmperor				
 Data/MapIcons/Kamekan.png	Kamekan		甕棺		
