@@ -56,7 +56,10 @@ This software allows you to visualize and move historical figures.
 ![bronze swords](./Images/DistributionMaps/BronzeSwordsInNortheastAsia.png)
 
 ### Distribution of Zenpokoenfun tombs in Japan
-![Distribution of Zenpokoenfun tombs](https://upload.wikimedia.org/wikipedia/commons/6/67/Zenpokoenfun_Map.png)
+![Distribution of Zenpokoenfun tombs](./Images/DistributionMaps/Zenpokoenfun.gif)
+
+### Distribution of Yayoi Funkyubo tombs in Japan
+![Distribution of Zenpokoenfun tombs](./Images/DistributionMaps/YayoiFunkyubo.gif)
 
 ### Distribution of bronze bells in Japan
 ![Distribution of bronze bells](https://upload.wikimedia.org/wikipedia/commons/8/82/DotakuDistribution.png)
