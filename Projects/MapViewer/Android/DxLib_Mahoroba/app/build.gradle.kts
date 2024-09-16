@@ -4,14 +4,14 @@
 
 android {
     namespace = "com.aspjt.mahoroba"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.aspjt.mahoroba"
         minSdk = 26
-        targetSdk = 33
-        versionCode = 2
-        versionName = "1.0.1"
+        targetSdk = 34
+        versionCode = 3
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
