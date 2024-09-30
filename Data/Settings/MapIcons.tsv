@@ -54,33 +54,33 @@ Data/MapIcons/MtDNA/Yaponesia/JomonR.svg	MtDNA_R
 Data/MapIcons/MtDNA/Yaponesia/OkhotskY.svg	MtDNA_Y
 Data/MapIcons/MtDNA/Yaponesia/OkhotskY1a.svg	MtDNA_Y1a
 Data/MapIcons/MtDNA/Yaponesia/YayoiZ.svg	MtDNA_Z
-Data/MapIcons/Seidoki/ShokkakuDoken.png	ShokkakuDoken	Antenna-style bronze dagger	触角式銅剣	안테나식 동검	
-Data/MapIcons/Seidoki/ToshikenG.png	Toshiken	Tao Shi Jian bronze sword	桃氏剣	도씨검	
-Data/MapIcons/Seidoki/HiraDokenP.png	Doken	Bronze sword	銅剣	동검	
-Data/MapIcons/Seidoki/BiwaDokenR.png	BiwaDoken	Liaoning-style bronze dagger	遼寧式銅剣	비파형동검	
-Data/MapIcons/Seidoki/OrdosDokenB.png	OrdosDoken	Ordos-style bronze dagger	オルドス式銅剣	오르도스식 동검	
-Data/MapIcons/Seidoki/DokenChuC0.png	YamaDoken				
-Data/MapIcons/Seidoki/DokenChuC0.png	IchiDoken				
-Data/MapIcons/Seidoki/DokenChuC0.png	MuDoken				
-Data/MapIcons/Seidoki/DokenChuC0.png	TomoeDoken				
-Data/MapIcons/Seidoki/DokenChuC0.png	HenDoken				
-Data/MapIcons/Seidoki/DokenChuCY.png	DokenChuC				
-Data/MapIcons/Seidoki/DokenChuCB.png	DokenChuCB				
-Data/MapIcons/Seidoki/DokenChuC0.png	DokenChuCG				
-Data/MapIcons/Seidoki/DokenChuCY.png	DokenChuCY				
-Data/MapIcons/Seidoki/DokenChuC360B.png	DokenChuC360				
-Data/MapIcons/Seidoki/Doka.png	Doka		銅戈		
-Data/MapIcons/Seidoki/Dohoko.png	Dohoko		銅矛		
+Data/MapIcons/Weapons/ShokkakuDoken.png	ShokkakuDoken	Antenna-style bronze dagger	触角式銅剣	안테나식 동검	
+Data/MapIcons/Weapons/ToshikenG.png	Toshiken	Tao Shi Jian bronze sword	桃氏剣	도씨검	
+Data/MapIcons/Weapons/HiraDokenP.png	Doken	Bronze sword	銅剣	동검	
+Data/MapIcons/Weapons/BiwaDokenR.png	BiwaDoken	Liaoning-style bronze dagger	遼寧式銅剣	비파형동검	
+Data/MapIcons/Weapons/OrdosDokenB.png	OrdosDoken	Ordos-style bronze dagger	オルドス式銅剣	오르도스식 동검	
+Data/MapIcons/Weapons/DokenChuC0.png	YamaDoken				
+Data/MapIcons/Weapons/DokenChuC0.png	IchiDoken				
+Data/MapIcons/Weapons/DokenChuC0.png	MuDoken				
+Data/MapIcons/Weapons/DokenChuC0.png	TomoeDoken				
+Data/MapIcons/Weapons/DokenChuC0.png	HenDoken				
+Data/MapIcons/Weapons/DokenChuCY.png	DokenChuC				
+Data/MapIcons/Weapons/DokenChuCB.png	DokenChuCB				
+Data/MapIcons/Weapons/DokenChuC0.png	DokenChuCG				
+Data/MapIcons/Weapons/DokenChuCY.png	DokenChuCY				
+Data/MapIcons/Weapons/DokenChuC360B.png	DokenChuC360				
+Data/MapIcons/Weapons/Doka.png	Doka		銅戈		
+Data/MapIcons/Weapons/Dohoko.png	Dohoko		銅矛		
 Data/MapIcons/Dotaku/Fukuda.png	FukudaDotaku				
-Data/MapIcons/Dokyo/Dokyo.png	Dokyo		銅鏡		
-Data/MapIcons/Dokyo/Naikokamonkyo.png	Naikokamonkyo				
-Data/MapIcons/Dokyo/Sankakubuchi.png	Sankakubuchi				
-Data/MapIcons/Dokyo/Hokakukiku.png	Hokakukiku				
-Data/MapIcons/Dokyo/Syumonkyo.png	Syumonkyo				
-Data/MapIcons/Dokyo/Somonkyo.png	Somonkyo				
-Data/MapIcons/Dokyo/Nejimonkyo.png	Nejimonkyo				
-Data/MapIcons/Dokyo/Tategatadokyo.png	Tategatadokyo				
-Data/MapIcons/Dokyo/Doban.png	Doban				
+Data/MapIcons/Mirrors/Dokyo.png	Dokyo		銅鏡		
+Data/MapIcons/Mirrors/Naikokamonkyo.png	Naikokamonkyo				
+Data/MapIcons/Mirrors/Sankakubuchi.png	Sankakubuchi				
+Data/MapIcons/Mirrors/Hokakukiku.png	Hokakukiku				
+Data/MapIcons/Mirrors/Syumonkyo.png	Syumonkyo				
+Data/MapIcons/Mirrors/Somonkyo.png	Somonkyo				
+Data/MapIcons/Mirrors/Nejimonkyo.png	Nejimonkyo				
+Data/MapIcons/Mirrors/Tategatadokyo.png	Tategatadokyo				
+Data/MapIcons/Mirrors/Doban.png	Doban				
 Data/MapIcons/Coins/Kasen.png	Kasen				
 Data/MapIcons/Coins/Kafu.png	Kafu				
 Data/MapIcons/Kango1.png	Kango1				
