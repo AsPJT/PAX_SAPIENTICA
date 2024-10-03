@@ -260,14 +260,18 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
             std::vector<std::uint_least32_t> list_test6 = {
             MurMur3::calcHash("place_names"),
-                MurMur3::calcHash("place_names_tomb"),
-                MurMur3::calcHash("place_names_stone_coffin"),
-                MurMur3::calcHash("place_names_dotaku"),
-                MurMur3::calcHash("place_names_kamekanbo"),
                 MurMur3::calcHash("place_names_place_name"),
                 MurMur3::calcHash("place_names_site"),
+                MurMur3::calcHash("place_names_tumulus"),
+                MurMur3::calcHash("place_names_dolmen"),
+                MurMur3::calcHash("place_names_kamekanbo"),
+                MurMur3::calcHash("place_names_stone_coffin"),
+                MurMur3::calcHash("place_names_doken"),
+                MurMur3::calcHash("place_names_dotaku"),
+                MurMur3::calcHash("place_names_bronze_mirror"),
+                MurMur3::calcHash("place_names_human_bone"),
                 MurMur3::calcHash("place_names_mtdna"),
-                MurMur3::calcHash("place_names_doken")
+                MurMur3::calcHash("place_names_ydna")
             };
             //std::vector<std::uint_least32_t> list_test4 = {
             //MurMur3::calcHash("menu_bar_calendar"),

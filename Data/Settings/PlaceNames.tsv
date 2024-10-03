@@ -3,9 +3,13 @@ Data/Features/EastAsia/Yaponesia/SekkanIshikiriba.tsv	stone_coffin	石棺の石�
 Data/Genomes/HomoSapiens/AncientSiberian-Steppe-Baltic-CentralAsian-Caucasus-Y-DNA/mtDNA-Haplogroup.tsv	mtdna	シベリアmtDNA	0.1					1
 Data/Genomes/HomoSapiens/HaplogroupInfo/mtDNA-Haplogroup.tsv	mtdna	世界のmtDNA	0.1					1
 Data/Genomes/HomoSapiens/Yaponesia/mtDNA-Haplogroup.tsv	mtdna	ヤポネシアmtDNA	0.1					1
+Data/Genomes/HomoSapiens/JomonYayoi.tsv	bone	人骨	0	0.9				1
 aData/Features/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	3				1
 Data/Features/TestMap/Hokkaido.tsv	site	北海道の遺跡名	0	0.5				1
 Data/Features/EastAsia/Yaponesia/Kango.tsv	site	環濠集落	0	0.1				1
+Data/Features/EastAsia/Yaponesia/Shisekibo.tsv	dolmen	日本の支石墓	0	0.9				1.5
+Data/Features/EastAsia/Korea/Dolmen.tsv	dolmen	朝鮮半島の支石墓	0	0.9				1.5
+Data/Features/EastAsia/Tamna/Dolmen.tsv	dolmen	済州島の支石墓	0	0.9				1.5
 Data/Features/EastAsia/Yaponesia/Kofun/Kofun.tsv	tomb	日本の古墳	0	0.1				1
 Data/Features/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1				1
 Data/Features/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	0.1				1
@@ -33,7 +37,7 @@ aData/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石�
 Data/Items/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Dotaku.tsv	dotaku	銅鐸	0	0.1				1
-aData/Items/EastAsia/Korea/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
-aData/Items/EastAsia/China/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
+Data/Items/EastAsia/Korea/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
+Data/Items/EastAsia/China/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Doken.tsv	doken	銅剣	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Yajiri.tsv	yajiri	鏃	0	0.9				1
