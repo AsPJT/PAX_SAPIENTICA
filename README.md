@@ -25,12 +25,16 @@ It has the ability to display calendars for each region in each time period and 
 
 ![Calendar](./Images/Other/Calendar20230709.gif)
 
-## 🏠 Agent-Based Simulation
+## 🏠 Agent-Based Simulation (ABS)
 
 This is an agent-based simulation that estimates settlement and population dynamics in the Japanese archipelago from the 3rd to 7th centuries.
 It was presented at the 48th Annual Meeting of the Japan Association for Archaeoinformatics on December 2, 2023.
 
 ![PAX SAPIENTICA Simulation](./Images/Animation/ABS01.gif)
+
+![PAX SAPIENTICA Simulation](./Images/Animation/mtDNA-Owari.gif)
+
+Figure. Percentage of mitochondrial DNA haplogroups in the Owari Province of Japan by year from 950 BCE to 100 BCE as output by ABS.
 
 ## [🧬 DNA Haplogroups](Data/Genomes/HomoSapiens)
 
