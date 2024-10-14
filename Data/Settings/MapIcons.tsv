@@ -27,7 +27,15 @@ Data/MapIcons/Mirrors/Nejimonkyo.png	Nejimonkyo
 Data/MapIcons/Mirrors/Tategatadokyo.png	Tategatadokyo				
 Data/MapIcons/Mirrors/Doban.png	Doban				
 Data/MapIcons/Coins/Kasen.png	Kasen				
+Data/MapIcons/Coins/KasenR.png	KasenR				
 Data/MapIcons/Coins/Kafu.png	Kafu				
+Data/MapIcons/Coins/KafuR.png	KafuR				
+Data/MapIcons/Coins/CoinWithSquareHole.png	Coin				
+Data/MapIcons/Coins/CoinWithSquareHoleB.png	CoinB				
+Data/MapIcons/Coins/CoinWithSquareHoleW.png	CoinW				
+Data/MapIcons/Coins/CoinWithSquareHoleG.png	CoinG				
+Data/MapIcons/Coins/CoinWithSquareHoleGr.png	CoinGr				
+Data/MapIcons/Coins/CoinWithSquareHoleGrH.png	CoinGrH				
 Data/MapIcons/Tomb/Dolmen/RoundDolmen.svg	Dolmen				
 Data/MapIcons/Tomb/Dolmen/TwoStoneDolmen.svg	TwoStoneDolmen				
 Data/MapIcons/Tomb/Dolmen/OneStoneDolmen.svg	OneStoneDolmen				
