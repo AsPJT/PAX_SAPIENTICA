@@ -89,6 +89,11 @@ namespace paxs {
             }
         }
 
+        // データのz値を取得（セルの幅）
+        constexpr int getCellWidth() const noexcept {
+            return (z_mag <= 0) ? 1 : int((1 / z_mag) + 0.5);
+        }
+
     private:
         std::string name; // データの名前
         std::unordered_map<DataGridsType, DataType> data; // データ
