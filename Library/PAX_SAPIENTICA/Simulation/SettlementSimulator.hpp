@@ -176,6 +176,9 @@ namespace paxs {
             for (auto& settlement_grid  : settlement_grids) {
                 std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
                 for (std::size_t i = 0; i < settlements.size(); ++i) {
+                    // 集落の過去の位置情報を削除
+                    settlements[i].clearOldPosition();
+
                     if (settlements[i].isMoved()) {
                         continue;
                     }

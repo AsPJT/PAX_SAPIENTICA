@@ -72,6 +72,10 @@ namespace paxs {
     class AStar {
         using AStarVec2 = paxs::Vector2<GridType>;
     private:
+        //始点 元の座標
+        AStarVec2 start_vec2_original{};
+        //終点 元の座標
+        AStarVec2 end_vec2_original{};
         //始点
         AStarVec2 start_vec2{};
         //終点
@@ -85,18 +89,20 @@ namespace paxs {
     public:
         AStar() noexcept = default;
         AStar(const AStarVec2& start_vec2_, const AStarVec2& end_vec2_, const GridType z_) noexcept
-            :start_vec2(start_vec2_), end_vec2(end_vec2_), z(z_) {}
+            :start_vec2_original(start_vec2_), end_vec2_original(end_vec2_),
+            start_vec2(start_vec2_ / z_), end_vec2(end_vec2_ / z_),
+            z(z_) {}
 
         constexpr GridType calculateDistance(const AStarVec2& vec2_) const noexcept {
             const GridType x{ end_vec2.x - vec2_.x };
             const GridType y{ end_vec2.y - vec2_.y };
             return (x >= y) ? x : y;
         }
-        constexpr bool isRange(const AStarVec2& vec2_) const noexcept {
-            return vec2_.x >= (std::min)(start_vec2.x, end_vec2.x)
-                && vec2_.y >= (std::min)(start_vec2.y, end_vec2.y)
-                && vec2_.x < (std::max)(start_vec2.x, end_vec2.x)
-                && vec2_.y < (std::max)(start_vec2.y, end_vec2.y);
+        bool isRange(const AStarVec2& vec2_) const noexcept {
+            return vec2_.x >= (std::min)(start_vec2.x, end_vec2.x) - std::abs(start_vec2.x - end_vec2.x) / 2
+                && vec2_.y >= (std::min)(start_vec2.y, end_vec2.y) - std::abs(start_vec2.y - end_vec2.y) / 2
+                && vec2_.x < (std::max)(start_vec2.x, end_vec2.x) + std::abs(start_vec2.x - end_vec2.x) / 2
+                && vec2_.y < (std::max)(start_vec2.y, end_vec2.y) + std::abs(start_vec2.y - end_vec2.y) / 2;
         }
 
         bool existPoint(const AStarVec2& vec2_, const double cost_) noexcept {
@@ -157,7 +163,7 @@ namespace paxs {
 
                 const AStarVec2 neighbour_z = neighbour * z;
                 if (!isRange(neighbour)) continue;
-                //if (!isRange(neighbour, x_, y_) || environment->getSlope(neighbour_z) >= 213) continue;
+                //if (!isRange(neighbour) || environment->getSlope(neighbour_z) >= 213) continue;
                 //コスト計算
                 const double node_cost = calcCost(environment, neighbour_z) + node_.cost;
                 const GridType distance = calculateDistance(neighbour);
@@ -182,18 +188,21 @@ namespace paxs {
             return closed.back().cost;
         }
 
-        double setPath(std::vector<AStarVec2>& path_) noexcept {
-            path_.emplace_back(end_vec2);
-            double cost{ 1 + closed.back().cost };
-            path_.emplace_back(closed.back().position);
+        void setPath(std::vector<AStarVec2>& path_) noexcept {
+            path_.resize(0);
+            const AStarVec2 sub = AStarVec2{
+                std::abs(start_vec2_original.x - start_vec2.x * z) / 2,
+                std::abs(start_vec2_original.y - start_vec2.y * z) / 2
+            };
+            // path_.emplace_back(end_vec2_original);
+            path_.emplace_back(closed.back().position * z + sub);
             AStarVec2 parent_node{ closed.back().parent_node };
             for (auto&& i{ closed.rbegin() }; i != closed.rend(); ++i) {
                 if (!((*i).position == parent_node) || ((*i).position == start_vec2)) continue;
-                path_.emplace_back((*i).position);
+                path_.emplace_back((*i).position * z + sub);
                 parent_node = (*i).parent_node;
             }
-            path_.emplace_back(start_vec2);
-            return cost;
+            //path_.emplace_back(start_vec2_original);
         }
     };
 
@@ -251,12 +260,21 @@ namespace paxs {
         /// @brief Set the position of the settlement.
         /// @brief 集落の座標を設定
         void setPosition(const Vector2& position_) noexcept {
+            old_position = position;
             position = position_;
+        }
+        /// @brief 
+        /// @brief 集落の過去の座標を消去
+        void clearOldPosition() noexcept {
+            old_position = Vector2(-1, -1);
+            positions.resize(0);
         }
 
         /// @brief Get the position of the settlement.
         /// @brief 集落の座標を取得
         Vector2 getPosition() const noexcept { return position; }
+        Vector2 getOldPosition() const noexcept { return old_position; }
+        const std::vector<Vector2>& getPositions() const noexcept { return positions; }
 
         /// @brief Get the agent.
         /// @brief エージェントを取得
@@ -520,12 +538,14 @@ namespace paxs {
                     if (cp_cw == mp_cw) break; // 同じ座標なので AStar 不可能
                     // 隣接座標なので AStar 不可能
                     else if (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1) break;
-                    AStar astar(cp_cw, mp_cw, cw);
+                    AStar astar(current_position, move_position, cw);
                     astar.search(environment);
                     // 最初の場合または以前よりもコストが低い場合は上書きする
                     if (cost == -1.0 || cost > astar.getCost()) {
                         target_position = move_position;
                         cost = astar.getCost();
+                        // 経路を設定
+                        astar.setPath(positions);
                     }
                 }
             }
@@ -662,6 +682,8 @@ namespace paxs {
         std::uint_least32_t id = 0;
         /// @brief 集落の座標
         Vector2 position{};
+        Vector2 old_position{ -1,-1 };
+        std::vector<Vector2> positions{};
 
         std::mt19937* gen{}; // 乱数生成器
         
