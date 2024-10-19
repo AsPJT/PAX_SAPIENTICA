@@ -321,9 +321,15 @@ namespace paxs {
                                 }
                             }
                             else {
+                                const std::uint_least16_t split_count = 10;
                                 if (lli.y_size <= 1) {
-                                    for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
-                                        texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 4, draw_pos.y() });
+                                    for (std::uint_least16_t ix = 0, ixx = 0, iyy = 0; ix < lli.x_size; ++ix, ++ixx) {
+                                        if (ix != 0 && ix % split_count == 0) {
+                                            ixx = 0;
+                                            ++iyy;
+                                        }
+                                        texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ixx * 6, draw_pos.y() + iyy * 4 });
+
                                     }
                                 }
                                 else {

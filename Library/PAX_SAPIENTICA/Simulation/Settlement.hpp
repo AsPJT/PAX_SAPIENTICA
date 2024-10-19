@@ -16,10 +16,12 @@
 
 ##########################################################################################*/
 
+#include <cmath>
 #include <cstdint>
 
 #include <algorithm>
 #include <functional>
+#include <list>
 #include <memory>
 #include <random>
 
@@ -44,6 +46,156 @@ namespace paxs {
         // sigma * sqrt_2_x_pi
         constexpr double sigma_x_sqrt_2_x_pi = sigma * sqrt_2_x_pi;
     }
+
+    struct AStarNode {
+        using AStarVec2 = paxs::Vector2<GridType>;
+        //位置
+        AStarVec2 position{};
+        //親ノード
+        AStarVec2 parent_node{};
+        //距離
+        GridType distance{};
+        //コスト
+        double cost{};
+
+        constexpr AStarNode() noexcept = default;
+        constexpr AStarNode(const AStarVec2& pos_, const AStarVec2& parent_node_, const GridType distance_, const double cost_) noexcept
+            :position(pos_), parent_node(parent_node_), distance(distance_), cost(cost_) {}
+        bool operator==(const AStarNode& node_) const noexcept {
+            return position == node_.position;
+        }
+        bool operator==(const AStarVec2& vec2_) const noexcept {
+            return position == vec2_;
+        }
+    };
+
+    class AStar {
+        using AStarVec2 = paxs::Vector2<GridType>;
+    private:
+        //始点
+        AStarVec2 start_vec2{};
+        //終点
+        AStarVec2 end_vec2{};
+
+        GridType z{};
+
+        std::list<AStarNode> open{};
+        std::list<AStarNode> closed{};
+
+    public:
+        AStar() noexcept = default;
+        AStar(const AStarVec2& start_vec2_, const AStarVec2& end_vec2_, const GridType z_) noexcept
+            :start_vec2(start_vec2_), end_vec2(end_vec2_), z(z_) {}
+
+        constexpr GridType calculateDistance(const AStarVec2& vec2_) const noexcept {
+            const GridType x{ end_vec2.x - vec2_.x };
+            const GridType y{ end_vec2.y - vec2_.y };
+            return (x >= y) ? x : y;
+        }
+        constexpr bool isRange(const AStarVec2& vec2_) const noexcept {
+            return vec2_.x >= (std::min)(start_vec2.x, end_vec2.x)
+                && vec2_.y >= (std::min)(start_vec2.y, end_vec2.y)
+                && vec2_.x < (std::max)(start_vec2.x, end_vec2.x)
+                && vec2_.y < (std::max)(start_vec2.y, end_vec2.y);
+        }
+
+        bool existPoint(const AStarVec2& vec2_, const double cost_) noexcept {
+            auto i{ std::find(closed.begin(), closed.end(), vec2_) };
+            if (i != closed.end()) {
+                if ((*i).cost + (*i).distance < cost_) return true;
+                else {
+                    closed.erase(i);
+                    return false;
+                }
+            }
+            i = std::find(open.begin(), open.end(), vec2_);
+            if (i != open.end()) {
+                if ((*i).cost + (*i).distance < cost_) return true;
+                else {
+                    open.erase(i);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        double calcCost(std::shared_ptr<Environment>& environment, const AStarVec2& neighbour_z) const noexcept {
+            // 海の通行コスト
+            if (!environment->isLand(neighbour_z)) return SimulationConstants::getInstance()->ocean_cost;
+            // 海岸の通行コスト
+            else if (environment->isCoast(neighbour_z)) return SimulationConstants::getInstance()->coast_cost;
+            else {
+                const double lc = SimulationConstants::getInstance()->land_cost;
+                if (environment->getSlope(neighbour_z) < 6 /*0.1*/) return lc;
+                else if (environment->getSlope(neighbour_z) < 100/*5*/) return 1.8 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 133/*10*/) return 2.1 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 154/*15*/) return 2.5 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 169/*20*/) return 3.0 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 181/*25*/) return 3.6 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 191/*30*/) return 4.3 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 199/*35*/) return 5.1 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 206/*40*/) return 6.0 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 213/*45*/) return 7.2 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 218/*50*/) return 8.6 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 224/*55*/) return 10.2 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 228/*60*/) return 12.2 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 233/*65*/) return 14.5 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 237/*70*/) return 17.3 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 241/*75*/) return 20.6 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 244/*80*/) return 24.5 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) < 247/*85*/) return 29.2 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) <= 250/*90*/) return 34.7 / 1.5 * lc;
+            }
+            return SimulationConstants::getInstance()->land_cost;
+        }
+
+        bool cellOpen(const AStarNode& node_, std::shared_ptr<Environment>& environment) noexcept {
+            for (std::int_fast32_t x{}; x < 8; ++x) {
+                const AStarVec2 neighbour = AStarVec2{ node_.position.x + astar_adjacent_cell[x].x,
+                node_.position.y + astar_adjacent_cell[x].y };
+                if (neighbour == end_vec2) return true;
+
+                const AStarVec2 neighbour_z = neighbour * z;
+                if (!isRange(neighbour)) continue;
+                //if (!isRange(neighbour, x_, y_) || environment->getSlope(neighbour_z) >= 213) continue;
+                //コスト計算
+                const double node_cost = calcCost(environment, neighbour_z) + node_.cost;
+                const GridType distance = calculateDistance(neighbour);
+                if (existPoint(neighbour, node_cost + distance)) continue;
+                open.emplace_back(AStarNode(neighbour, node_.position, distance, node_cost));
+            }
+            return false;
+        }
+
+        bool search(std::shared_ptr<Environment>& environment) noexcept {
+            open.emplace_back(AStarNode(start_vec2, AStarVec2{}, calculateDistance(start_vec2), 0));
+            while (!open.empty()) {
+                const AStarNode nn{ open.front() };
+                open.pop_front();
+                closed.emplace_back(nn);
+                if (cellOpen(nn, environment)) return true;
+            }
+            return false;
+        }
+
+        double getCost() const noexcept {
+            return closed.back().cost;
+        }
+
+        double setPath(std::vector<AStarVec2>& path_) noexcept {
+            path_.emplace_back(end_vec2);
+            double cost{ 1 + closed.back().cost };
+            path_.emplace_back(closed.back().position);
+            AStarVec2 parent_node{ closed.back().parent_node };
+            for (auto&& i{ closed.rbegin() }; i != closed.rend(); ++i) {
+                if (!((*i).position == parent_node) || ((*i).position == start_vec2)) continue;
+                path_.emplace_back((*i).position);
+                parent_node = (*i).parent_node;
+            }
+            path_.emplace_back(start_vec2);
+            return cost;
+        }
+    };
 
     class Settlement {
     public:
@@ -315,37 +467,84 @@ namespace paxs {
             is_moved = false;
         }
 
-        /// @brief Move.
-        /// @brief 移動
-        /// @return 集落グリッドを移動したかどうか
-        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, District& district_) noexcept {
-            Vector2 current_key;
-            Vector2 target_key;
-
-            // 確率で移動
-            if (SimulationConstants::getInstance()->random_dist(engine) > SimulationConstants::getInstance()->move_probability) return { 0, Vector2(), Vector2() };
-
-            // 座標を移動
-            // 移動距離0~max_move_distance
-
-            Vector2 current_position = position;
+        // 移動先を計算する
+        Vector2 calcMovePosition(std::mt19937& engine, District& district_, const Vector2& current_position, const int distance) const noexcept {
             Vector2 target_position = current_position;
-
-            int  loop_count = 0; // 無限ループ回避用のループ上限値
+            std::uint_least32_t  loop_count = 0; // 無限ループ回避用のループ上限値
             // 小さい領域のシミュレーションでは無限ループする可能性がある
             while (target_position == current_position || !environment->isLive(target_position)) {
                 // 無限ループに陥った場合は無視
-                if(loop_count >= 100) return { 0, Vector2(), Vector2() };
-                int distance = SimulationConstants::getInstance()->move_dist(engine);
+                if (loop_count >= SimulationConstants::getInstance()->move_redo) return current_position;
 
                 // 移動距離が偏りのある方向を指定する距離以上か判定し、方向を格納する
-                double theta = (distance >= static_cast<int>(district_.direction_min_distance)) ?
+                const double theta = (distance >= static_cast<int>(district_.direction_min_distance)) ?
                     SimulationConstants::getInstance()->theta_dist_array[district_.direction_dist(engine)](engine) :
                     SimulationConstants::getInstance()->theta_dist(engine);
                 target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
                 ++loop_count;
             }
+            return target_position;
+        }
 
+        /// @brief Move.
+        /// @brief 移動
+        /// @return 集落グリッドを移動したかどうか
+        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, District& district_) noexcept {
+            // 確率で移動
+            if (SimulationConstants::getInstance()->random_dist(engine) > SimulationConstants::getInstance()->move_probability) return { 0, Vector2(), Vector2() };
+
+            Vector2 current_key;
+            Vector2 target_key;
+
+            // 座標を移動
+            // 移動距離0~max_move_distance
+
+            Vector2 current_position = position;
+            Vector2 target_position = position;
+
+            // A* を使った方法
+            if(SimulationConstants::getInstance()->move_method == MurMur3::calcHash("astar")){
+
+                double cost = -1.0;
+                const int distance = SimulationConstants::getInstance()->move_dist(engine);
+
+                const GridType cw = /*environment->getSlopeCellWidth() * */SimulationConstants::getInstance()->move_astar_distance;
+                const Vector2 cp_cw = current_position / cw;
+                for (std::uint_least32_t i = 0; i < SimulationConstants::getInstance()->move_astar_loop; ++i) {
+                    const Vector2 move_position = calcMovePosition(engine, district_, current_position, distance);
+
+                    // 移動先が今の位置ならやり直し（可住地が見つからなかった）
+                    if (move_position == current_position) continue;
+
+                    const Vector2 mp_cw = move_position / cw;
+                    if (cp_cw == mp_cw) break; // 同じ座標なので AStar 不可能
+                    // 隣接座標なので AStar 不可能
+                    else if (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1) break;
+                    AStar astar(cp_cw, mp_cw, cw);
+                    astar.search(environment);
+                    // 最初の場合または以前よりもコストが低い場合は上書きする
+                    if (cost == -1.0 || cost > astar.getCost()) {
+                        target_position = move_position;
+                        cost = astar.getCost();
+                    }
+                }
+            }
+            else {
+                std::uint_least32_t  loop_count = 0; // 無限ループ回避用のループ上限値
+                // 小さい領域のシミュレーションでは無限ループする可能性がある
+                while (target_position == current_position || !environment->isLive(target_position)) {
+                    // 無限ループに陥った場合は無視
+                    if (loop_count >= SimulationConstants::getInstance()->move_redo) return { 0, Vector2(), Vector2() };
+                    int distance = SimulationConstants::getInstance()->move_dist(engine);
+
+                    // 移動距離が偏りのある方向を指定する距離以上か判定し、方向を格納する
+                    const double theta = (distance >= static_cast<int>(district_.direction_min_distance)) ?
+                        SimulationConstants::getInstance()->theta_dist_array[district_.direction_dist(engine)](engine) :
+                        SimulationConstants::getInstance()->theta_dist(engine);
+                    target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
+                    ++loop_count;
+                }
+            }
             current_key = current_position / SimulationConstants::getInstance()->grid_length;
             target_key = target_position / SimulationConstants::getInstance()->grid_length;
 

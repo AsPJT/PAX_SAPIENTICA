@@ -24,6 +24,7 @@
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/InputFile/SimulationRange.hpp>
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 // M_PI が定義されていない場合
 #ifndef M_PI
@@ -54,6 +55,8 @@ namespace paxs {
     using SettlementGridsType = std::uint_least16_t;
     // Data の辞書型
     using DataGridsType = std::uint_least32_t;
+
+    constexpr std::array <Vector2<GridType>, 8> astar_adjacent_cell{ {Vector2<GridType>(-1, -1),Vector2<GridType>(1, -1),Vector2<GridType>(-1, 1),Vector2<GridType>(1, 1),Vector2<GridType>(0, -1),Vector2<GridType>(-1, 0),Vector2<GridType>(0, 1),Vector2<GridType>(1, 0)} };
 
     struct SimulationConstants {
         // インスタンスを取得
@@ -130,6 +133,14 @@ namespace paxs {
         std::uint_least32_t max_move_distance = 800;
         // 移動確率
         double move_probability = 1;
+        // 移動再試行回数
+        std::uint_least32_t move_redo = 10;
+        // A* を行うルート数
+        std::uint_least32_t move_astar_loop = 20;
+        // A* を行うルート間隔
+        std::uint_least32_t move_astar_distance = 32;
+
+        std::uint_least32_t move_method = MurMur3::calcHash("random");
 
         // 片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
         double child_agriculture_priority = 0.7;
@@ -140,6 +151,10 @@ namespace paxs {
 
         // 母方居住婚の確率
         double maternal_residence_probability = 0.5;
+
+        double coast_cost = 0.5; // 海岸の通行コスト
+        double ocean_cost = 0.5; // 海上の通行コスト
+        double land_cost = 0.5; // 傾斜度0度の陸上の通行コスト
 
         std::uniform_real_distribution<float> random_dist_f32 = std::uniform_real_distribution<float>( 0.0f, 1.0f ); // 乱数分布
         std::uniform_real_distribution<double> random_dist = std::uniform_real_distribution<double>( 0.0, 1.0 ); // 乱数分布
@@ -232,6 +247,10 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("max_hunter_gatherer_settlement_population"), [&](const std::string& str_) {max_hunter_gatherer_settlement_weight = 1.0 / static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("min_move_distance"), [&](const std::string& str_) {min_move_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("max_move_distance"), [&](const std::string& str_) {max_move_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("move_redo"), [&](const std::string& str_) {move_redo = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("move_astar_loop"), [&](const std::string& str_) {move_astar_loop = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("move_astar_distance"), [&](const std::string& str_) {move_astar_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("move_method"), [&](const std::string& str_) {move_method = MurMur3::calcHash(str_.size(), str_.c_str()); });
             move_dist = std::uniform_int_distribution<int>(min_move_distance, max_move_distance);
 
             stoiFunc(kvt, MurMur3::calcHash("move_probability"), [&](const std::string& str_) {move_probability = std::stod(str_); });
@@ -239,6 +258,10 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("hunter_gatherer_stillbirth_rate"), [&](const std::string& str_) {hunter_gatherer_stillbirth_rate = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("farming_stillbirth_rate"), [&](const std::string& str_) {farming_stillbirth_rate = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("maternal_residence_probability"), [&](const std::string& str_) {maternal_residence_probability = std::stod(str_); });
+
+            stoiFunc(kvt, MurMur3::calcHash("coast_cost"), [&](const std::string& str_) {coast_cost = std::stod(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("ocean_cost"), [&](const std::string& str_) {ocean_cost = std::stod(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("land_cost"), [&](const std::string& str_) {land_cost = std::stod(str_); });
 
             pregnant_age_min_f64 = birthable_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
         }

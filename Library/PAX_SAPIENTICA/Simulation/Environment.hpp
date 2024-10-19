@@ -144,6 +144,10 @@ namespace paxs {
                 return 0;
             }
         }
+        // 傾斜データのセル幅を取得
+        int getSlopeCellWidth() {
+            return std::get<Data<std::uint_least8_t>>(*data_map.at(MurMur3::calcHash("slope"))).getCellWidth();
+        }
 
         /// @brief Get elevation.
         /// @brief 標高の取得
@@ -168,6 +172,20 @@ namespace paxs {
                 PAXS_ERROR("Failed to get land");
                 return false;
             }
+        }
+        bool isCoast(const Vector2& position) const noexcept {
+            const bool is_land = isLand(position); // 陸かどうか
+            if (!is_land) return false; // 陸ではないので海岸ではない
+            // 隣接セルが陸地ではない場合は海岸
+            if (!isLand(Vector2{ position.x - 1, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x - 1, position.y })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y })) return true;
+            if (!isLand(Vector2{ position.x - 1, position.y + 1 })) return true;
+            if (!isLand(Vector2{ position.x, position.y + 1 })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y + 1 })) return true;
+            return false; // 海岸ではない
         }
 
         /// @brief Is it water?
