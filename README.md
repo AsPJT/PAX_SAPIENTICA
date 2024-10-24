@@ -30,7 +30,7 @@ It has the ability to display calendars for each region in each time period and 
 This is an agent-based simulation that estimates settlement and population dynamics in the Japanese archipelago from the 3rd to 7th centuries.
 It was presented at the 48th Annual Meeting of the Japan Association for Archaeoinformatics on December 2, 2023.
 
-![PAX SAPIENTICA Simulation](./Images/Animation/ABS01.gif)
+![PAX SAPIENTICA Simulation](./Images/Animation/ABS20241024.gif)
 
 ![PAX SAPIENTICA Simulation](./Images/Animation/mtDNA-Owari.gif)
 
