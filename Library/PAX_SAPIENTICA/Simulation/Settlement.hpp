@@ -20,8 +20,8 @@
 #include <cstdint>
 
 #include <algorithm>
+#include <deque>
 #include <functional>
-#include <list>
 #include <memory>
 #include <random>
 
@@ -72,37 +72,48 @@ namespace paxs {
     class AStar {
         using AStarVec2 = paxs::Vector2<GridType>;
     private:
-        //始点 元の座標
+        // 始点 元の座標
         AStarVec2 start_vec2_original{};
-        //終点 元の座標
+        // 終点 元の座標
         AStarVec2 end_vec2_original{};
-        //始点
+        // 始点
         AStarVec2 start_vec2{};
-        //終点
+        // 終点
         AStarVec2 end_vec2{};
+        // 範囲
+        AStarVec2 min_range{};
+        AStarVec2 max_range{};
 
         GridType z{};
 
-        std::list<AStarNode> open{};
-        std::list<AStarNode> closed{};
+        std::deque<AStarNode> open{};
+        std::deque<AStarNode> closed{};
 
     public:
-        AStar() noexcept = default;
         AStar(const AStarVec2& start_vec2_, const AStarVec2& end_vec2_, const GridType z_) noexcept
             :start_vec2_original(start_vec2_), end_vec2_original(end_vec2_),
             start_vec2(start_vec2_ / z_), end_vec2(end_vec2_ / z_),
-            z(z_) {}
+            z(z_) {
+            min_range = AStarVec2{
+                (std::min)(start_vec2.x, end_vec2.x) - std::abs(start_vec2.x - end_vec2.x) / 2,
+                (std::min)(start_vec2.y, end_vec2.y) - std::abs(start_vec2.y - end_vec2.y) / 2
+            };
+            max_range = AStarVec2{
+                (std::max)(start_vec2.x, end_vec2.x) + std::abs(start_vec2.x - end_vec2.x) / 2,
+                (std::max)(start_vec2.y, end_vec2.y) + std::abs(start_vec2.y - end_vec2.y) / 2
+            };
+        }
 
         constexpr GridType calculateDistance(const AStarVec2& vec2_) const noexcept {
             const GridType x{ end_vec2.x - vec2_.x };
             const GridType y{ end_vec2.y - vec2_.y };
-            return (x >= y) ? x : y;
+            return x * x + y * y;
         }
         bool isRange(const AStarVec2& vec2_) const noexcept {
-            return vec2_.x >= (std::min)(start_vec2.x, end_vec2.x) - std::abs(start_vec2.x - end_vec2.x) / 2
-                && vec2_.y >= (std::min)(start_vec2.y, end_vec2.y) - std::abs(start_vec2.y - end_vec2.y) / 2
-                && vec2_.x < (std::max)(start_vec2.x, end_vec2.x) + std::abs(start_vec2.x - end_vec2.x) / 2
-                && vec2_.y < (std::max)(start_vec2.y, end_vec2.y) + std::abs(start_vec2.y - end_vec2.y) / 2;
+            return vec2_.x >= min_range.x
+                && vec2_.y >= min_range.y
+                && vec2_.x < max_range.x
+                && vec2_.y < max_range.y;
         }
 
         bool existPoint(const AStarVec2& vec2_, const double cost_) noexcept {
@@ -141,16 +152,16 @@ namespace paxs {
                 else if (environment->getSlope(neighbour_z) < 191/*30*/) return 4.3 / 1.5 * lc;
                 else if (environment->getSlope(neighbour_z) < 199/*35*/) return 5.1 / 1.5 * lc;
                 else if (environment->getSlope(neighbour_z) < 206/*40*/) return 6.0 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 213/*45*/) return 7.2 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 218/*50*/) return 8.6 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 224/*55*/) return 10.2 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 228/*60*/) return 12.2 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 233/*65*/) return 14.5 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 237/*70*/) return 17.3 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 241/*75*/) return 20.6 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 244/*80*/) return 24.5 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) < 247/*85*/) return 29.2 / 1.5 * lc;
-                else if (environment->getSlope(neighbour_z) <= 250/*90*/) return 34.7 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 213/*45*/) return 100 * 7.2 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 218/*50*/) return 100 * 8.6 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 224/*55*/) return 100 * 10.2 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 228/*60*/) return 100 * 12.2 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 233/*65*/) return 100 * 14.5 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 237/*70*/) return 100 * 17.3 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 241/*75*/) return 100 * 20.6 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 244/*80*/) return 100 * 24.5 / 1.5 * lc;
+                //else if (environment->getSlope(neighbour_z) < 247/*85*/) return 100 * 29.2 / 1.5 * lc;
+                else if (environment->getSlope(neighbour_z) <= 250/*90*/) return 100 * 34.7 / 1.5 * lc;
             }
             return SimulationConstants::getInstance()->land_cost;
         }
@@ -164,8 +175,8 @@ namespace paxs {
                 const AStarVec2 neighbour_z = neighbour * z;
                 if (!isRange(neighbour)) continue;
                 //if (!isRange(neighbour) || environment->getSlope(neighbour_z) >= 213) continue;
-                //コスト計算
-                const double node_cost = calcCost(environment, neighbour_z) + node_.cost;
+                // コスト計算
+                const double node_cost = calcCost(environment, neighbour_z) * ((x <= 3 /* 斜め移動 */) ? 1.41421356237 : 1.0) + node_.cost;
                 const GridType distance = calculateDistance(neighbour);
                 if (existPoint(neighbour, node_cost + distance)) continue;
                 open.emplace_back(AStarNode(neighbour, node_.position, distance, node_cost));
@@ -202,7 +213,7 @@ namespace paxs {
                 path_.emplace_back((*i).position * z + sub);
                 parent_node = (*i).parent_node;
             }
-            //path_.emplace_back(start_vec2_original);
+            // path_.emplace_back(start_vec2_original);
         }
     };
 
@@ -427,20 +438,20 @@ namespace paxs {
                             Agent male_ = close_settlements[j]->getAgentCopy(male_id);
                             Agent& female_ = agents[marriageable_female_index[index_pair.first]];
 
-                            female_.marry(male_id, male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer());
+                            female_.marry(male_id, male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer(), male_.cgetLanguage());
                             const HumanIndexType female_id = female_.getId();
 
-                            male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer());
+                            male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
                             agents.emplace_back(male_);
                         }
                         else {
                             Agent& male_ = close_settlements[j]->getAgent(male_id);
                             Agent female_ = agents[marriageable_female_index[index_pair.first]];
 
-                            female_.marry(male_id, male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer());
+                            female_.marry(male_id, male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer(), male_.cgetLanguage());
                             const HumanIndexType female_id = female_.getId();
 
-                            male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer());
+                            male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
 
                             male_settlement_position /= SimulationConstants::getInstance()->grid_length;
                             add_agent(female_, male_settlement_id, male_settlement_position);
@@ -485,6 +496,86 @@ namespace paxs {
             is_moved = false;
         }
 
+        // A* の経路探索
+        void moveAStar(std::mt19937& engine, District& district_, const Vector2& current_position, Vector2& target_position) noexcept {
+            double cost = -1.0;
+            const int distance = SimulationConstants::getInstance()->move_dist(engine);
+
+            const GridType cw = /*environment->getSlopeCellWidth() * */SimulationConstants::getInstance()->move_astar_distance;
+            const Vector2 cp_cw = current_position / cw;
+#ifdef _OPENMP
+            double max_cost = 1.0;
+            const int loop = SimulationConstants::getInstance()->move_astar_loop;
+            std::vector<double> cost_list(loop);
+            std::vector<Vector2> pos_list(loop);
+            std::vector<Vector2> move_list(loop);
+            std::vector<std::uint_least8_t> slope_list(loop);
+            std::vector<std::vector<Vector2>> route_list(loop);
+
+            for (int i = 0; i < loop; ++i) {
+                move_list[i] = calcMovePosition(engine, district_, current_position, distance);
+                slope_list[i] = environment->getSlope(move_list[i]);
+            }
+            {
+                target_position = move_list[0];
+                const Vector2 mp_cw = move_list[0] / cw;
+                if (cp_cw == mp_cw) return; // 同じ座標なので AStar 不可能
+                // 隣接座標なので AStar 不可能
+                else if (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1) return;
+            }
+#pragma omp parallel for
+            for (int i = 0; i < loop; ++i) {
+#else
+            for (std::uint_least32_t i = 0; i < SimulationConstants::getInstance()->move_astar_loop; ++i) {
+#endif
+#ifdef _OPENMP
+                const Vector2 move_position = move_list[i];
+#else
+                const Vector2 move_position = calcMovePosition(engine, district_, current_position, distance);
+                // 移動先が今の位置ならやり直し（可住地が見つからなかった）
+                if (move_position == current_position) continue;
+                const Vector2 mp_cw = move_position / cw;
+                if (cp_cw == mp_cw) break; // 同じ座標なので AStar 不可能
+                // 隣接座標なので AStar 不可能
+                else if (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1) break;
+#endif
+                AStar astar(current_position, move_position, cw);
+                astar.search(environment);
+#ifdef _OPENMP
+                pos_list[i] = move_position;
+                cost_list[i] = astar.getCost();
+                astar.setPath(route_list[i]);
+#else
+                // 最初の場合または以前よりもコストが低い場合は上書きする
+                if (cost == -1.0 || cost > astar.getCost()) {
+                    target_position = move_position;
+                    cost = astar.getCost();
+                    // 経路を設定
+                    astar.setPath(positions);
+                }
+#endif
+
+            }
+#ifdef _OPENMP
+            int index_num = 0;
+            for (int i = 0; i < loop; ++i) {
+                if (max_cost < cost_list[i]) {
+                    max_cost = cost_list[i];
+                }
+            }
+            for (int i = 0; i < loop; ++i) {
+                // 傾斜含むコスト
+                const double slope_cost = cost_list[i] + max_cost * (slope_list[i] / 250.0) * 2 /* 傾斜の影響度を高くする */;
+                if (cost == -1.0 || cost > slope_cost) {
+                    cost = slope_cost;
+                    index_num = i;
+                }
+            }
+            target_position = pos_list[index_num];
+            positions = route_list[index_num];
+#endif
+        }
+
         // 移動先を計算する
         Vector2 calcMovePosition(std::mt19937& engine, District& district_, const Vector2& current_position, const int distance) const noexcept {
             Vector2 target_position = current_position;
@@ -521,33 +612,8 @@ namespace paxs {
             Vector2 target_position = position;
 
             // A* を使った方法
-            if(SimulationConstants::getInstance()->move_method == MurMur3::calcHash("astar")){
-
-                double cost = -1.0;
-                const int distance = SimulationConstants::getInstance()->move_dist(engine);
-
-                const GridType cw = /*environment->getSlopeCellWidth() * */SimulationConstants::getInstance()->move_astar_distance;
-                const Vector2 cp_cw = current_position / cw;
-                for (std::uint_least32_t i = 0; i < SimulationConstants::getInstance()->move_astar_loop; ++i) {
-                    const Vector2 move_position = calcMovePosition(engine, district_, current_position, distance);
-
-                    // 移動先が今の位置ならやり直し（可住地が見つからなかった）
-                    if (move_position == current_position) continue;
-
-                    const Vector2 mp_cw = move_position / cw;
-                    if (cp_cw == mp_cw) break; // 同じ座標なので AStar 不可能
-                    // 隣接座標なので AStar 不可能
-                    else if (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1) break;
-                    AStar astar(current_position, move_position, cw);
-                    astar.search(environment);
-                    // 最初の場合または以前よりもコストが低い場合は上書きする
-                    if (cost == -1.0 || cost > astar.getCost()) {
-                        target_position = move_position;
-                        cost = astar.getCost();
-                        // 経路を設定
-                        astar.setPath(positions);
-                    }
-                }
+            if(SimulationConstants::getInstance()->move_method == MurMur3::calcHash("astar") && SimulationConstants::getInstance()->move_astar_loop >= 1){
+                moveAStar(engine, district_, current_position, target_position);
             }
             else {
                 std::uint_least32_t  loop_count = 0; // 無限ループ回避用のループ上限値
@@ -621,6 +687,17 @@ namespace paxs {
                     snp += static_cast<std::uint_least64_t>(agents[i].cgetGenome().getSNP());
             }
             return static_cast<double>(snp) / static_cast<double>(agents.size()) / 255.0;
+        }
+
+        /// @brief Get the Language.
+        /// @brief 言語を取得
+        double getLanguage() const noexcept {
+            std::uint_least64_t language = 0;
+
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                language += static_cast<std::uint_least64_t>(agents[i].cgetLanguage());
+            }
+            return static_cast<double>(language) / static_cast<double>(agents.size()) / 255.0;
         }
 
         /// @brief Get the most mtDNA.
@@ -726,7 +803,8 @@ namespace paxs {
                             genome,
                             farming,
                             //(((*gen)() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
-                            (((*gen)() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
+                            (((*gen)() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer(),
+                            (((*gen)() % 2) == 0) ? agent.cgetLanguage() : agent.cgetPartnerLanguage()
                         ));
                     }
                 }
@@ -760,7 +838,8 @@ namespace paxs {
                     set_lifespan,
                     genome,
                     255, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
-                    0 // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
+                    0, // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
+                    255
                 ));
             }
         }

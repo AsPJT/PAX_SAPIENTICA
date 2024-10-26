@@ -83,13 +83,28 @@ namespace paxs {
             return;
         }
 
+        // 人口を計算
+        void calcPop() {
+            population_num = 0; // 人口数
+            settlement_num = 0; // 集落数
+
+            // 地名を描画
+            for (const auto& settlement_grid : settlement_grids) {
+                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
+                    ++settlement_num; // 集落数を増加させる
+                    population_num += settlement.getPopulation(); // 人口数を増加させる
+                }
+            }
+        }
+
         /// @brief Initialize the simulator.
         /// @brief 集落の初期化
         /// @details 集落をクリアし、地域ごとに指定されたエージェント数になるようにランダムに配置する
         void init() {
             settlement_grids.clear();
             initRandomizeSettlements();
-            randomizeSettlements(true, 0, 255, 0/*縄文人は SNP:0*/);
+            randomizeSettlements(true, false /* 在地人 */);
+            calcPop(); // 人口を計算
         }
 
         /// @brief Run the simulation for the specified number of steps.
@@ -205,7 +220,7 @@ namespace paxs {
             // 前901年から稲作文化開始
             if (step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
                 step_count <= SimulationConstants::getInstance()->immigration_end_steps) {
-                randomizeSettlements(false, 255, 0, 255/*渡来人は SNP:255*/);
+                randomizeSettlements(false, true /* 渡来人 */);
             }
 
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
@@ -273,16 +288,7 @@ namespace paxs {
                 settlement_grid.second.divideSettlements();
             }
 
-            population_num = 0; // 人口数
-            settlement_num = 0; // 集落数
-
-            // 地名を描画
-            for (const auto& settlement_grid : settlement_grids) {
-                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
-                    ++settlement_num; // 集落数を増加させる
-                    population_num += settlement.getPopulation(); // 人口数を増加させる
-                }
-            }
+            calcPop();
 
             // 前901年から処理開始
             if (step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
@@ -408,9 +414,7 @@ namespace paxs {
         /// @brief 集落をランダムに配置する
         void randomizeSettlements(
             bool is_ad200,
-            std::uint_least8_t farming,
-            std::uint_least8_t hunter_gatherer,
-            std::uint_least8_t snp_
+            bool is_farming // 渡来人であるか？
         ) noexcept {
             // 地区 ID の最大値
             std::uint_least8_t district_id_max = 0;
@@ -489,10 +493,12 @@ namespace paxs {
                     );
                     settlement.setPosition(live_position);
 
+                    // 渡来人込みの地区 ID
+                    const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id;
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming>0)? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id, gen), snp_);
-                        const AgeType set_lifespan = kanakuma_life_span.setLifeSpan((farming > 0), genome.isMale(), gen);
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), japan_provinces->getSNP(immigration_and_district_id));
+                        const AgeType set_lifespan = kanakuma_life_span.setLifeSpan((is_farming), genome.isMale(), gen);
 
                         AgeType age_value = 0;
                         if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_min) {
@@ -504,10 +510,11 @@ namespace paxs {
                             age_value,
                             set_lifespan,
                             genome,
-                            farming,
-                            hunter_gatherer
+                            japan_provinces->getFarming(immigration_and_district_id),
+                            japan_provinces->getHunterGatherer(immigration_and_district_id),
+                            japan_provinces->getLanguage(immigration_and_district_id)
                         ), static_cast<std::size_t>(i));
-                        if (farming > 0) ++emigration_count; // 農耕カウント
+                        if (is_farming) ++emigration_count; // 農耕カウント
                     }
 
                     // 地区の人口を減らす
@@ -547,11 +554,13 @@ namespace paxs {
 
                 const int add_population = population / static_cast<int>(settlements.size());
 
+                // 渡来人込みの地区 ID
+                const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id;
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA((farming > 0) ? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id, gen), snp_);
-                        const AgeType set_lifespan = kanakuma_life_span.setLifeSpan((farming > 0), genome.isMale(), gen);
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), japan_provinces->getSNP(immigration_and_district_id));
+                        const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(is_farming, genome.isMale(), gen);
 
                         AgeType age_value = 0;
                         if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_min) {
@@ -564,10 +573,11 @@ namespace paxs {
                             age_value,
                             set_lifespan,
                             genome,
-                            farming,
-                            hunter_gatherer
+                            japan_provinces->getFarming(immigration_and_district_id),
+                            japan_provinces->getHunterGatherer(immigration_and_district_id),
+                            japan_provinces->getLanguage(immigration_and_district_id)
                         );
-                        if (farming > 0) ++emigration_count; // 農耕カウント
+                        if (is_farming) ++emigration_count; // 農耕カウント
                     }
                     settlement.addAgents(agents);
                 }

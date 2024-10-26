@@ -40,11 +40,12 @@ namespace paxs {
         explicit SettlementAgent(const HumanIndexType id,
             const AgeType age, const AgeType life_span, const Genome& genome,
             std::uint_least8_t farming_, // 農耕文化
-            std::uint_least8_t hunter_gatherer_ // 狩猟採集文化
+            std::uint_least8_t hunter_gatherer_, // 狩猟採集文化
+            std::uint_least8_t language_ // 言語
         ) noexcept
             : id(id), //name_id(name_id),
             age(age), life_span(life_span), genome(genome),
-            farming(farming_), hunter_gatherer(hunter_gatherer_) {}
+            farming(farming_), hunter_gatherer(hunter_gatherer_), language(language_) {}
 
         /// @brief Get the id.
         /// @brief idを取得
@@ -91,6 +92,10 @@ namespace paxs {
 
         constexpr std::uint_least8_t cgetPartnerHunterGatherer() const noexcept { return partner_hunter_gatherer; }
 
+        constexpr std::uint_least8_t cgetLanguage() const noexcept { return language; }
+
+        constexpr std::uint_least8_t cgetPartnerLanguage() const noexcept { return partner_language; }
+
         constexpr bool operator==(const SettlementAgent& a) const noexcept {
             return  id == a.id &&
                 age == a.age &&
@@ -99,7 +104,8 @@ namespace paxs {
                 partner_id == a.partner_id &&
                 partner_genome == a.partner_genome &&
                 partner_farming == a.partner_farming &&
-                partner_hunter_gatherer == a.partner_hunter_gatherer;
+                partner_hunter_gatherer == a.partner_hunter_gatherer &&
+                partner_language == a.partner_language;
         }
 
         /// @brief Is the agent married?
@@ -110,13 +116,15 @@ namespace paxs {
         /// @brief 結婚する
         void marry(const HumanIndexType partner_id_, const Genome& partner_genome_,
             std::uint_least8_t partner_farming_, // 結婚相手の農耕文化
-        std::uint_least8_t partner_hunter_gatherer_ // 結婚相手の狩猟採集文化
+        std::uint_least8_t partner_hunter_gatherer_, // 結婚相手の狩猟採集文化
+        std::uint_least8_t partner_language_ // 結婚相手の言語
         ) noexcept {
             is_married = true;
             partner_id = partner_id_;
             partner_genome = partner_genome_;
             partner_farming = partner_farming_;
             partner_hunter_gatherer = partner_hunter_gatherer_;
+            partner_language = partner_language_;
         }
 
         /// @brief Is the agent able to marry?
@@ -163,6 +171,9 @@ namespace paxs {
         std::uint_least8_t hunter_gatherer = 0; // 狩猟採集文化
         std::uint_least8_t partner_farming = 0; // 結婚相手の農耕文化
         std::uint_least8_t partner_hunter_gatherer = 0; // 結婚相手の狩猟採集文化
+
+        std::uint_least8_t language = 0; // 言語
+        std::uint_least8_t partner_language = 0; // 結婚相手の言語
 
         AgeType age = 0; // 年齢
         AgeType life_span = 0; // 寿命
