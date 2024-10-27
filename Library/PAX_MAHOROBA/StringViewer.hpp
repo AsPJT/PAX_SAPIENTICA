@@ -760,7 +760,7 @@ MurMur3::calcHash("ar-SA")
 
                         (*one_font).drawTopRight(
                             ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                                reinterpret_cast<const char*>(u8"処理時間") :
+                                reinterpret_cast<const char*>(u8"全ての処理時間（秒）") :
                                 "All Processing Time [s]"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 150), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
@@ -769,7 +769,7 @@ MurMur3::calcHash("ar-SA")
 
                         (*one_font).drawTopRight(
                             ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                                reinterpret_cast<const char*>(u8"処理時間") :
+                                reinterpret_cast<const char*>(u8"集団移動の処理時間（秒）") :
                                 "Move Processing Time [s]"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 180), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
@@ -778,7 +778,7 @@ MurMur3::calcHash("ar-SA")
 
                         (*one_font).drawTopRight(
                             ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                                reinterpret_cast<const char*>(u8"処理時間") :
+                                reinterpret_cast<const char*>(u8"婚姻の処理時間（秒）") :
                                 "Marriage Processing Time [s]"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 210), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
@@ -824,7 +824,11 @@ MurMur3::calcHash("ar-SA")
 
             //if (visible[MurMur3::calcHash("UI")])
 
-            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]
+#ifdef PAXS_USING_SIMULATOR
+                && simulator == nullptr
+#endif
+                ) {
                 int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
                 // 暦描画フォントを指定
                 paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));

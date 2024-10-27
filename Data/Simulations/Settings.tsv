@@ -37,11 +37,11 @@ max_hunter_gatherer_settlement_population	25	狩猟採集集落の最大人数(�
 max_farming_settlement_population	80	水田稲作集落の最大人数(人)
 min_move_distance	1	最小移動距離(cell)
 max_move_distance	1600	最大移動距離(cell)
-move_probability	0.0021	移動確率
+move_probability	0.01	移動確率
 ocean_cost	1.1	海上の通行コスト
 coast_cost	0.7	海岸の通行コスト
-land_cost	4.5	傾斜度0度の陸上の通行コスト
+land_cost	2.5	傾斜度0度の陸上の通行コスト
 move_redo	10	移動再試行回数
 move_method	astar	移動の手法(astar/random)
-move_astar_loop	5	A*を行うルート数
+move_astar_loop	8	A*を行うルート数
 move_astar_distance	64	A*を行うルート間隔

@@ -556,6 +556,10 @@ namespace paxs {
     class AgentLocation {
     private:
         std::size_t select_draw = 1;
+#ifdef PAXS_USING_SIV3D
+        // 選択肢を表示するフォント
+        const s3d::Font select_font{ 30, s3d::Typeface::Bold };
+#endif
     public:
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
@@ -664,6 +668,37 @@ namespace paxs {
 
     public:
 
+        void drawText() {
+#ifdef PAXS_USING_SIV3D
+            constexpr int start_x = 40; // 背景端の左上の X 座標
+            constexpr int start_y = 80; // 背景端の左上の Y 座標
+            constexpr int font_space = 20; // 文字端から背景端までの幅
+            s3d::String text = U""; // 表示するテキスト
+            switch (select_draw)
+            {
+            case 1:
+                text = U"1. 人口 Population";
+                break;
+            case 2:
+                text = U"2. 農耕文化 Farming";
+                break;
+            case 3:
+                text = U"3. mtDNA haplogroup";
+                break;
+            case 4:
+                text = U"4. SNP / Genome";
+                break;
+            case 5:
+                text = U"5. 言語 Language";
+                break;
+            };
+            // 選択項目を描画
+            const s3d::RectF rect = select_font(text).region();
+            s3d::RoundRect{ start_x, start_y, rect.w + font_space * 2, rect.h + font_space * 2, 10 }.draw();
+            select_font(text).draw(start_x + font_space, start_y + font_space, s3d::Palette::Black);
+#endif
+        }
+
         void draw(const double jdn,
             std::unordered_map<SettlementGridsType, paxs::SettlementGrid>& agents,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
@@ -674,6 +709,7 @@ namespace paxs {
             else if (s3d::Key2.pressed()) select_draw = 2;
             else if (s3d::Key3.pressed()) select_draw = 3;
             else if (s3d::Key4.pressed()) select_draw = 4;
+            else if (s3d::Key5.pressed()) select_draw = 5;
 #endif
 
             // 地名を描画
@@ -737,6 +773,10 @@ namespace paxs {
                             case 4:
                                 //const double
                                 pop_original = settlement.getSNP() * 75.0;
+                                break;
+                            case 5:
+                                //const double
+                                pop_original = settlement.getLanguage() * 75.0;
                                 break;
                             }
 

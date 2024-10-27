@@ -63,6 +63,10 @@ namespace paxs {
             std::uint_least8_t id = 0;
             std::string name = "";
             std::uint_least8_t region_id = 0; // 対応する地方区分ID
+            std::uint_least8_t language = 0; // 言語
+            std::uint_least8_t hunter_gatherer = 0; // 狩猟採集
+            std::uint_least8_t farming = 0; // 農耕文化
+            std::uint_least8_t snp = 0; // SNP
             std::uint_least32_t settlement_population_min_ad200 = 0;
             std::uint_least32_t settlement_population_max_ad200 = 0;
             std::uint_least32_t init_pop = 0;
@@ -273,6 +277,10 @@ namespace paxs {
                 district.id = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("id")]]));
                 district.name = sub_menu_v[menu[MurMur3::calcHash("name")]];
                 district.region_id = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("region")]]));
+                district.language = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("language")]]));
+                district.hunter_gatherer = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
+                district.farming = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("farming")]]));
+                district.snp = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("snp")]]));
                 district.settlement_population_min_ad200 = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("min_pop_placed_per_cell")]]));
                 district.settlement_population_max_ad200 = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("max_pop_placed_per_cell")]]));
                 district.init_pop = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("init_pop")]]));
@@ -333,6 +341,54 @@ namespace paxs {
                 }
             }
             PAXS_WARNING("Failed to get Japan region population: " + std::to_string(id));
+
+            return 0;
+        }
+
+        // 言語を取得
+        std::uint_least32_t getLanguage(const std::uint_least8_t id) const noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district.language;
+                }
+            }
+            PAXS_WARNING("Failed to get language: " + std::to_string(id));
+
+            return 0;
+        }
+
+        // 狩猟採集を取得
+        std::uint_least32_t getHunterGatherer(const std::uint_least8_t id) const noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district.hunter_gatherer;
+                }
+            }
+            PAXS_WARNING("Failed to get hunter gatherer: " + std::to_string(id));
+
+            return 0;
+        }
+
+        // 農耕文化を取得
+        std::uint_least32_t getFarming(const std::uint_least8_t id) const noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district.farming;
+                }
+            }
+            PAXS_WARNING("Failed to get farming: " + std::to_string(id));
+
+            return 0;
+        }
+
+        // SNP を取得
+        std::uint_least32_t getSNP(const std::uint_least8_t id) const noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district.snp;
+                }
+            }
+            PAXS_WARNING("Failed to get SNP: " + std::to_string(id));
 
             return 0;
         }

@@ -150,6 +150,14 @@ namespace paxs {
 
             }
 
+#ifdef PAXS_USING_SIMULATOR
+            if (visible[MurMur3::calcHash("Simulation")]) {
+                if (agent_location.get() != nullptr && simulator.get() != nullptr) {
+                    agent_location->drawText();
+                }
+            }
+#endif
+
         }
 
 
