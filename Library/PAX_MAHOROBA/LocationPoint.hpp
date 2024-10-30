@@ -581,7 +581,7 @@ namespace paxs {
 
             // 色付き
             switch (pop_) {
-            case 0: return paxg::Color(45, 87, 154);
+            case 0: return paxg::Color(45, 87, 154); // 青
             case 1: return paxg::Color(36, 92, 156);
             case 2: return paxg::Color(27, 96, 158);
             case 3: return paxg::Color(18, 101, 161);
@@ -606,7 +606,7 @@ namespace paxs {
             case 22: return paxg::Color(0, 138, 104);
             case 23: return paxg::Color(0, 136, 94);
             case 24: return paxg::Color(0, 133, 83);
-            case 25: return paxg::Color(0, 131, 72);
+            case 25: return paxg::Color(0, 131, 72); // 緑
             case 26: return paxg::Color(6, 136, 60);
             case 27: return paxg::Color(13, 141, 48);
             case 28: return paxg::Color(19, 145, 37);
@@ -626,7 +626,7 @@ namespace paxs {
             case 42: return paxg::Color(208, 205, 10);
             case 43: return paxg::Color(216, 205, 6);
             case 44: return paxg::Color(223, 206, 3);
-            case 45: return paxg::Color(230, 207, 0);
+            case 45: return paxg::Color(230, 207, 0); // 黄
             case 46: return paxg::Color(228, 202, 1);
             case 47: return paxg::Color(226, 197, 2);
             case 48: return paxg::Color(225, 191, 3);
@@ -645,7 +645,7 @@ namespace paxs {
             case 61: return paxg::Color(193, 64, 28);
             case 62: return paxg::Color(189, 56, 34);
             case 63: return paxg::Color(186, 48, 40);
-            case 64: return paxg::Color(182, 40, 46);
+            case 64: return paxg::Color(182, 40, 46); // 赤
             case 65: return paxg::Color(179, 32, 52);
             case 66: return paxg::Color(178, 31, 57);
             case 67: return paxg::Color(176, 30, 62);
@@ -753,7 +753,7 @@ namespace paxs {
 
                         // エージェント
                         // if (lli.lpe == MurMur3::calcHash("agent1"))
-                        {
+                        if (select_draw != 5) {
                             double pop_original = 0.0;
                             switch (select_draw)
                             {
@@ -774,16 +774,36 @@ namespace paxs {
                                 //const double
                                 pop_original = settlement.getSNP() * 75.0;
                                 break;
-                            case 5:
-                                //const double
-                                pop_original = settlement.getLanguage() * 75.0;
-                                break;
                             }
 
                             const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,
                                 1.0f + (settlement.getPopulation() / 40.0f)//2.0f
                             ).draw(getColor(pop));
+                        }
+                        else {
+                            paxg::Color language_color = paxg::Color(99, 99, 99); // 灰色
+                            switch (settlement.getLanguage())
+                            {
+                            case 0:
+                                language_color = paxg::Color(99, 99, 99); // 灰色
+                                break;
+                            case 1:
+                                language_color = paxg::Color(0, 131, 72); // 緑色
+                                break;
+                            case 2:
+                                language_color = paxg::Color(45, 87, 154); // 青色
+                                break;
+                            case 3:
+                                language_color = paxg::Color(182, 40, 46); // 赤色
+                                break;
+                            case 4:
+                                language_color = paxg::Color(230, 207, 0); // 黄色
+                                break;
+                            }
+                            paxg::Circle(draw_pos,
+                                1.0f + (settlement.getPopulation() / 40.0f)//2.0f
+                            ).draw(language_color);
                         }
 
 #ifdef PAXS_USING_SIV3D
