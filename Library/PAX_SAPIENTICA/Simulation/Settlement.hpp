@@ -565,7 +565,7 @@ namespace paxs {
             }
             for (int i = 0; i < loop; ++i) {
                 // 傾斜含むコスト
-                const double slope_cost = cost_list[i] + max_cost * (slope_list[i] / 250.0) * 2 /* 傾斜の影響度を高くする */;
+                const double slope_cost = cost_list[i] + max_cost * ((slope_list[i] <= 129) ? 0 : slope_list[i] / 250.0) /* 傾斜の 9.25334 度以下の土地を優先 */;
                 if (cost == -1.0 || cost > slope_cost) {
                     cost = slope_cost;
                     index_num = i;
@@ -691,13 +691,23 @@ namespace paxs {
 
         /// @brief Get the Language.
         /// @brief 言語を取得
-        double getLanguage() const noexcept {
-            std::uint_least64_t language = 0;
-
-            for (std::size_t i = 0; i < agents.size(); ++i) {
-                language += static_cast<std::uint_least64_t>(agents[i].cgetLanguage());
+        std::uint_least8_t getLanguage() const noexcept {
+            static std::uint_least8_t language[256];
+            for (std::size_t i = 0; i < 256; ++i) {
+                language[i] = 0;
             }
-            return static_cast<double>(language) / static_cast<double>(agents.size()) / 255.0;
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                ++language[agents[i].cgetLanguage()];
+            }
+            std::size_t max_count = 0;
+            std::size_t max_index = 0;
+            for (std::size_t i = 0; i < 256; ++i) {
+                if (language[i] > max_count) {
+                    max_count = language[i];
+                    max_index = i;
+                }
+            }
+            return static_cast<std::uint_least8_t>(max_index);
         }
 
         /// @brief Get the most mtDNA.

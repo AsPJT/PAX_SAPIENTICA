@@ -20,6 +20,8 @@
 
 #include <array>
 #include <chrono>
+#include <ctime>
+#include <filesystem>
 #include <memory>
 #include <random>
 #include <unordered_map>
@@ -35,6 +37,14 @@
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
 namespace paxs {
+
+    // シミュレーション出力フォルダ用の時刻取得
+    std::string calcDateTime() {
+        static char buffer[20];
+        std::time_t t = std::time(nullptr);
+        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H-%M-%S", std::localtime(&t));
+        return buffer;
+    }
 
     class SettlementSimulator {
     public:
@@ -96,15 +106,60 @@ namespace paxs {
                 }
             }
         }
+        // 結果の文字列を出力
+        void outputResultString(std::ofstream& ofs_) const {
+            ofs_ << "step_count" << '\t' << "settlement" << '\t' << "population" << '\t';
+        }
+        // 結果の最後の文字列を出力
+        void outputResultLastString(std::ofstream& ofs_) const {
+            ofs_ << "step_count" << '\n';
+        }
+        // 結果の地区名を出力
+        void outputResultDistrictName(std::ofstream& ofs_, const std::size_t i_) const {
+            ofs_ << japan_provinces->cgetDistrictList()[i_].name << '\t';
+        }
+        // 集落の初期化時にシミュレーション変数を出力
+        void initResults() {
+            // 出力
+            const std::string str = "SimulationResults/" + calcDateTime();
+            std::filesystem::create_directories(str);
+            pop_ofs = std::ofstream(str + "/Population.txt");
+            mtdna_ofs = std::ofstream(str + "/mtDNA.txt");
+            snp_ofs = std::ofstream(str + "/SNP.txt");
+            language_ofs = std::ofstream(str + "/Language.txt");
+            live_ofs = std::ofstream(str + "/HabitableLand.txt");
+
+            outputResultString(pop_ofs);
+            outputResultString(mtdna_ofs);
+            outputResultString(snp_ofs);
+            outputResultString(language_ofs);
+            for (std::size_t i = 0; i < max_number_of_districts; ++i) {
+                outputResultDistrictName(pop_ofs, i);
+                outputResultDistrictName(mtdna_ofs, i);
+                outputResultDistrictName(snp_ofs, i);
+                outputResultDistrictName(language_ofs, i);
+            }
+            outputResultLastString(pop_ofs);
+            outputResultLastString(mtdna_ofs);
+            outputResultLastString(snp_ofs);
+            outputResultLastString(language_ofs);
+        }
 
         /// @brief Initialize the simulator.
         /// @brief 集落の初期化
         /// @details 集落をクリアし、地域ごとに指定されたエージェント数になるようにランダムに配置する
         void init() {
+            initResults();
             settlement_grids.clear();
             initRandomizeSettlements();
             randomizeSettlements(true, false /* 在地人 */);
             calcPop(); // 人口を計算
+
+            // 可住地の数を出力
+            live_ofs << "district\thabitable_land\n";
+            for (std::size_t i = 0; i < max_number_of_districts; ++i) {
+                live_ofs << japan_provinces->cgetDistrictList()[i].name << '\t' << (*live_list)[i + 1].habitable_land_positions.size() << '\n';
+            }
         }
 
         /// @brief Run the simulation for the specified number of steps.
@@ -149,6 +204,7 @@ namespace paxs {
                 std::size_t ryopop[max_number_of_districts]{};
                 std::size_t ryoset[max_number_of_districts]{};
                 double ryosnp[max_number_of_districts]{};
+                double ryolanguage[max_number_of_districts]{};
 
                 // 地名を描画
                 for (const auto& agent : getSettlementGrids()) {
@@ -160,6 +216,7 @@ namespace paxs {
                         if (ryo_id < max_number_of_districts) {
                             ryopop[ryo_id]+= settlement.getPopulation(); // 地区ごとに人口数を増加させる
                             ryosnp[ryo_id]+= settlement.getSNP(); // 地区ごとに SNP を増加させる
+                            ryolanguage[ryo_id]+= settlement.getLanguage(); // 地区ごとに言語を増加させる
                             ++(ryoset[ryo_id]);
 
                             // mtDNA ごとにカウント
@@ -170,21 +227,25 @@ namespace paxs {
                     }
                 }
                 pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                pop_mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                pop_snp_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                snp_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                language_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 for (std::size_t i = 0; i < max_number_of_districts; ++i) {
                     ryosnp[i] /= static_cast<double>(ryoset[i]);
+                    ryolanguage[i] /= static_cast<double>(ryoset[i]);
                     pop_ofs << ryopop[i] << '\t';
-                    pop_snp_ofs << ryosnp[i] << '\t';
+                    snp_ofs << ryosnp[i] << '\t';
+                    language_ofs << ryolanguage[i] << '\t';
                     for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
                         if (int(mtdna_num[i][j]) == 0) continue;
-                        pop_mtdna_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
+                        mtdna_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
                     }
-                    pop_mtdna_ofs << '\t';
+                    mtdna_ofs << '\t';
                 }
                 pop_ofs << step_count << '\n';
-                pop_mtdna_ofs << step_count << '\n';
-                pop_snp_ofs << step_count << '\n';
+                mtdna_ofs << step_count << '\n';
+                snp_ofs << step_count << '\n';
+                language_ofs << step_count << '\n';
             }
 
             std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
@@ -358,11 +419,13 @@ namespace paxs {
                 habitable_land_positions.emplace_back(habitable_land_positions_);
             }
         };
-        std::unique_ptr<std::array<Live, max_number_of_districts>> live_list;
+        std::unique_ptr<std::array<Live, max_number_of_districts + 1>> live_list;
 
-        std::ofstream pop_ofs = std::ofstream("pop.txt");
-        std::ofstream pop_mtdna_ofs = std::ofstream("pop_mtdna.txt");
-        std::ofstream pop_snp_ofs = std::ofstream("pop_snp.txt");
+        std::ofstream pop_ofs;
+        std::ofstream mtdna_ofs;
+        std::ofstream snp_ofs;
+        std::ofstream language_ofs;
+        std::ofstream live_ofs;
 
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
@@ -371,7 +434,7 @@ namespace paxs {
 
             environment->getLandPositions(land_positions);
 
-            live_list = std::unique_ptr<std::array<Live, max_number_of_districts>>(new std::array<Live, max_number_of_districts>());
+            live_list = std::unique_ptr<std::array<Live, max_number_of_districts + 1>>(new std::array<Live, max_number_of_districts + 1>());
 
             if (live_list.get() == nullptr) {
                 std::cout << "Low memory" << std::endl;
