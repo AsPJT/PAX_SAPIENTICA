@@ -144,8 +144,8 @@ namespace paxs {
         /// @brief 出産可能かどうか
         bool isAbleToGiveBirth() const noexcept {
             const float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
-            return age_f > SimulationConstants::getInstance()->birthable_age_min
-                && age_f < SimulationConstants::getInstance()->birthable_age_max && is_married;
+            return age_f > SimulationConstants::getInstance()->childbearing_age_min
+                && age_f < SimulationConstants::getInstance()->childbearing_age_max && is_married;
         }
 
         /// @brief Get the partner's ID.

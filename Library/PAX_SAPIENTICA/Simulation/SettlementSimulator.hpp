@@ -183,7 +183,7 @@ namespace paxs {
             }
             else {
                 // 登録されていない場合は新しく地域を作成
-                SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance()->grid_length, environment, gen);
+                SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance()->cell_group_length, environment, gen);
                 settlement_grid.moveSettlementToThis(settlement_grids[current_index].getSettlement(id));
                 settlement_grids[target_index] = settlement_grid;
             }
@@ -315,7 +315,7 @@ namespace paxs {
                 // 近隣8グリッドの集落を取得
                 std::vector<Settlement*> close_settlements;
                 Vector2 grid_position = settlement_grid.second.getGridPosition();
-                grid_position /= SimulationConstants::getInstance()->grid_length;
+                grid_position /= SimulationConstants::getInstance()->cell_group_length;
                 for (int i = -1; i <= 1; ++i) {
                     for (int j = -1; j <= 1; ++j) {
                         auto it = settlement_grids.find((grid_position + Vector2(i, j)).to(SettlementGridsType{}));
@@ -542,11 +542,11 @@ namespace paxs {
                     settlement_population = (std::min)(settlement_population, static_cast<int>(district_population_it->second));
 
                     // 集落をグリッドに配置
-                    Vector2 grid_position = live_position / SimulationConstants::getInstance()->grid_length;
+                    Vector2 grid_position = live_position / SimulationConstants::getInstance()->cell_group_length;
                     SettlementGridsType key = grid_position.to(SettlementGridsType{});
                     // グリッドが存在しない場合は作成
                     if (settlement_grids.find(key) == settlement_grids.end()) {
-                        settlement_grids[key] = SettlementGrid(grid_position * SimulationConstants::getInstance()->grid_length, environment, gen);
+                        settlement_grids[key] = SettlementGrid(grid_position * SimulationConstants::getInstance()->cell_group_length, environment, gen);
                     }
                     // 集落を作成
                     Settlement settlement = Settlement(
@@ -564,8 +564,9 @@ namespace paxs {
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan((is_farming), genome.isMale(), gen);
 
                         AgeType age_value = 0;
-                        if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_min) {
-                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance()->init_lifespan_min) }; // 寿命の乱数分布
+                        if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_grace_period) {
+                            // 寿命の乱数分布
+                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance()->init_lifespan_grace_period) };
                             age_value = static_cast<AgeType>(lifespan_dist(gen));
                         }
 
@@ -626,8 +627,9 @@ namespace paxs {
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(is_farming, genome.isMale(), gen);
 
                         AgeType age_value = 0;
-                        if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_min) {
-                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance()->init_lifespan_min) }; // 寿命の乱数分布
+                        if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_grace_period) {
+                            // 寿命の乱数分布
+                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance()->init_lifespan_grace_period) };
                             age_value = static_cast<AgeType>(lifespan_dist(gen));
                         }
 

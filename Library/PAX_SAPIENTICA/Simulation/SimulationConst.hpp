@@ -89,28 +89,28 @@ namespace paxs {
         std::uint_least32_t female_marriageable_age_max = 60;
         std::uint_least32_t male_marriageable_age_max = 70;
         // 出産可能：15歳以上50歳未満
-        std::uint_least32_t birthable_age_min = 15;
-        double birthable_age_min_f64 = 15.0;
-        std::uint_least32_t birthable_age_max = 50;
+        std::uint_least32_t childbearing_age_min = 15;
+        double childbearing_age_min_f64 = 15.0;
+        std::uint_least32_t childbearing_age_max = 50;
         // 出産の間隔：10ヶ月
         std::uint_least8_t birth_interval = 10;
         // 妊娠可能
-        double pregnant_age_min_f64 = birthable_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
+        double pregnant_age_min_f64 = childbearing_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
         // 婚姻可能年齢定数
         double marriageable_age_constant = 8.5;
         double marriageable_age_threshold = 0.98;
         double marriageable_age_all_weight = 101.8;
         // 出産可能年齢定数
-        double birthable_age_constant = 8.5;
-        double birthable_age_threshold = 16.0;
-        double birthable_age_all_weight = 101.8;
+        double childbearing_age_constant = 8.5;
+        double childbearing_age_threshold = 16.0;
+        double childbearing_age_all_weight = 101.8;
 
         //　結婚時に近くの集落からエージェントを探す際の探索範囲
         std::uint_least32_t marriage_search_range = 60;
         std::uint_least32_t marriage_search_range_pow2 = marriage_search_range * marriage_search_range;
 
         // 集落をグループ分けする際の1グリッド辺の長さ
-        std::uint_least32_t grid_length = 64;
+        std::uint_least32_t cell_group_length = 64;
 
         // 渡来開始ステップ数
         std::uint_least64_t immigration_start_steps = 2401;
@@ -120,10 +120,10 @@ namespace paxs {
         std::uint_least8_t immigration_district_id = 73;
 
         // 初期化時の寿命までの最低年数
-        AgeType init_lifespan_min = 180;
+        AgeType init_lifespan_grace_period = 180;
 
         // 農耕集落の最大人数
-        double max_farming_settlement_weight = 1.0 / 80.0;
+        double max_agricultural_settlement_weight = 1.0 / 80.0;
         // 狩猟採集集落の最大人数
         double max_hunter_gatherer_settlement_weight = 1.0 / 25.0;
 
@@ -145,9 +145,10 @@ namespace paxs {
         // 片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
         double child_agriculture_priority = 0.7;
 
-        // 死産率
+        // 狩猟採集文化の死産率
         double hunter_gatherer_stillbirth_rate = 0.1;
-        double farming_stillbirth_rate = 0.1;
+        // 農耕文化の死産率
+        double agricultural_stillbirth_rate = 0.1;
 
         // 母方居住婚の確率
         double maternal_residence_probability = 0.5;
@@ -223,9 +224,9 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("male_marriageable_age_min"), [&](const std::string& str_) {male_marriageable_age_min = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("female_marriageable_age_max"), [&](const std::string& str_) {female_marriageable_age_max = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("male_marriageable_age_max"), [&](const std::string& str_) {male_marriageable_age_max = static_cast<std::uint_least32_t>(std::stoul(str_)); });
-            stoiFunc(kvt, MurMur3::calcHash("birthable_age_min"), [&](const std::string& str_) {birthable_age_min = static_cast<std::uint_least32_t>(std::stoul(str_)); });
-            birthable_age_min_f64 = static_cast<double>(birthable_age_min);
-            stoiFunc(kvt, MurMur3::calcHash("birthable_age_max"), [&](const std::string& str_) {birthable_age_max = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("childbearing_age_min"), [&](const std::string& str_) {childbearing_age_min = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            childbearing_age_min_f64 = static_cast<double>(childbearing_age_min);
+            stoiFunc(kvt, MurMur3::calcHash("childbearing_age_max"), [&](const std::string& str_) {childbearing_age_max = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("birth_interval"), [&](const std::string& str_) {birth_interval = static_cast<std::uint_least8_t>(std::stoul(str_)); });
 
             stoiFunc(kvt, MurMur3::calcHash("marriage_search_range"), [&](const std::string& str_) {marriage_search_range = static_cast<std::uint_least32_t>(std::stoul(str_)); });
@@ -234,16 +235,16 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("marriageable_age_constant"), [&](const std::string& str_) {marriageable_age_constant = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("marriageable_age_threshold"), [&](const std::string& str_) {marriageable_age_threshold = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("marriageable_age_all_weight"), [&](const std::string& str_) {marriageable_age_all_weight = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("birthable_age_constant"), [&](const std::string& str_) {birthable_age_constant = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("birthable_age_threshold"), [&](const std::string& str_) {birthable_age_threshold = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("birthable_age_all_weight"), [&](const std::string& str_) {birthable_age_all_weight = std::stod(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("childbearing_age_constant"), [&](const std::string& str_) {childbearing_age_constant = std::stod(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("childbearing_age_threshold"), [&](const std::string& str_) {childbearing_age_threshold = std::stod(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("childbearing_age_all_weight"), [&](const std::string& str_) {childbearing_age_all_weight = std::stod(str_); });
 
-            stoiFunc(kvt, MurMur3::calcHash("grid_length"), [&](const std::string& str_) {grid_length = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("cell_group_length"), [&](const std::string& str_) {cell_group_length = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_start_steps"), [&](const std::string& str_) {immigration_start_steps = static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_end_steps"), [&](const std::string& str_) {immigration_end_steps = static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_district_id"), [&](const std::string& str_) {immigration_district_id = static_cast<std::uint_least8_t>(std::stoul(str_)); });
-            stoiFunc(kvt, MurMur3::calcHash("init_lifespan_min"), [&](const std::string& str_) {init_lifespan_min = static_cast<AgeType>(std::stoul(str_)); });
-            stoiFunc(kvt, MurMur3::calcHash("max_farming_settlement_population"), [&](const std::string& str_) {max_farming_settlement_weight = 1.0 / static_cast<std::uint_least64_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("init_lifespan_grace_period"), [&](const std::string& str_) {init_lifespan_grace_period = static_cast<AgeType>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("max_agricultural_settlement_population"), [&](const std::string& str_) {max_agricultural_settlement_weight = 1.0 / static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("max_hunter_gatherer_settlement_population"), [&](const std::string& str_) {max_hunter_gatherer_settlement_weight = 1.0 / static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("min_move_distance"), [&](const std::string& str_) {min_move_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("max_move_distance"), [&](const std::string& str_) {max_move_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
@@ -256,14 +257,14 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("move_probability"), [&](const std::string& str_) {move_probability = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("child_agriculture_priority"), [&](const std::string& str_) {child_agriculture_priority = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("hunter_gatherer_stillbirth_rate"), [&](const std::string& str_) {hunter_gatherer_stillbirth_rate = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("farming_stillbirth_rate"), [&](const std::string& str_) {farming_stillbirth_rate = std::stod(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("agricultural_stillbirth_rate"), [&](const std::string& str_) {agricultural_stillbirth_rate = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("maternal_residence_probability"), [&](const std::string& str_) {maternal_residence_probability = std::stod(str_); });
 
             stoiFunc(kvt, MurMur3::calcHash("coast_cost"), [&](const std::string& str_) {coast_cost = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("ocean_cost"), [&](const std::string& str_) {ocean_cost = std::stod(str_); });
             stoiFunc(kvt, MurMur3::calcHash("land_cost"), [&](const std::string& str_) {land_cost = std::stod(str_); });
 
-            pregnant_age_min_f64 = birthable_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
+            pregnant_age_min_f64 = childbearing_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
         }
 
     };
