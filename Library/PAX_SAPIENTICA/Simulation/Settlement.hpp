@@ -413,8 +413,6 @@ namespace paxs {
             }
 
             // シミュレーションの設定で母方に移住するか父方に移住するかを決める
-            // 母方の場合
-            // if (isMatrilocality()) {
             for (std::size_t i = 0; i < marriageable_agents_index_pair.size(); ++i) {
                 std::pair<std::size_t, std::size_t> index_pair = marriageable_agents_index_pair[i];
                 std::uint_least32_t male_id = male_settlement_pair[index_pair.second].first;
@@ -434,6 +432,7 @@ namespace paxs {
                             continue;
                         }
                         male_settlement_position = close_settlements[j]->getPosition();
+                        // 母方の場合
                         if (is_matrilocality) {
                             Agent male_ = close_settlements[j]->getAgentCopy(male_id);
                             Agent& female_ = agents[marriageable_female_index[index_pair.first]];
@@ -444,6 +443,7 @@ namespace paxs {
                             male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
                             agents.emplace_back(male_);
                         }
+                        // 父方の場合
                         else {
                             Agent& male_ = close_settlements[j]->getAgent(male_id);
                             Agent female_ = agents[marriageable_female_index[index_pair.first]];
@@ -453,7 +453,7 @@ namespace paxs {
 
                             male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
 
-                            male_settlement_position /= SimulationConstants::getInstance()->grid_length;
+                            male_settlement_position /= SimulationConstants::getInstance()->cell_group_length;
                             add_agent(female_, male_settlement_id, male_settlement_position);
                         }
                         is_found = true;
@@ -467,7 +467,7 @@ namespace paxs {
                 }
 
                 if (is_matrilocality) {
-                    male_settlement_position /= SimulationConstants::getInstance()->grid_length;
+                    male_settlement_position /= SimulationConstants::getInstance()->cell_group_length;
                     delete_agent(male_id, male_settlement_id, male_settlement_position);
                 }
                 else {
@@ -485,7 +485,6 @@ namespace paxs {
         /// @brief 事前更新
         void preUpdate(KanakumaLifeSpan& kanakuma_life_span) noexcept {
             birth(kanakuma_life_span);
-            //emigration(kanakuma_life_span);
         }
 
         /// @brief On update.
@@ -631,8 +630,8 @@ namespace paxs {
                     ++loop_count;
                 }
             }
-            current_key = current_position / SimulationConstants::getInstance()->grid_length;
-            target_key = target_position / SimulationConstants::getInstance()->grid_length;
+            current_key = current_position / SimulationConstants::getInstance()->cell_group_length;
+            target_key = target_position / SimulationConstants::getInstance()->cell_group_length;
 
             if (current_key == target_key) return { 0, Vector2(), Vector2() };
 
@@ -652,15 +651,14 @@ namespace paxs {
         /// @brief Get the weight population.
         /// @brief 重み人口を取得
         double getPopulationWeight() const noexcept {
-            double population_weight = 0;
+            // 農耕文化の重み
+            const double ac_weight = SimulationConstants::getInstance()->max_agricultural_settlement_weight;
+            // 狩猟採集文化の重み
+            const double hg_weight = SimulationConstants::getInstance()->max_hunter_gatherer_settlement_weight;
 
+            double population_weight = 0;
             for (std::size_t i = 0; i < agents.size(); ++i) {
-                if (agents[i].cgetFarming() > 0) { // 農耕
-                    population_weight += SimulationConstants::getInstance()->max_farming_settlement_weight;
-                }
-                else { // 狩猟採集
-                    population_weight += SimulationConstants::getInstance()->max_hunter_gatherer_settlement_weight;
-                }
+                population_weight += (agents[i].cgetFarming() > 0) ? ac_weight : hg_weight;
             }
             return population_weight;
         }
@@ -789,7 +787,7 @@ namespace paxs {
                     if (count == 0) {
                         // 生業文化別の死産率を格納
                         const double stillbirth_rate = (agent.cgetFarming() > 0) ?
-                            SimulationConstants::getInstance()->farming_stillbirth_rate :
+                            SimulationConstants::getInstance()->agricultural_stillbirth_rate :
                             SimulationConstants::getInstance()->hunter_gatherer_stillbirth_rate;
 
                         // 死産率 100 ％の場合は出産しない
@@ -798,21 +796,25 @@ namespace paxs {
                             // 死産
                             if (SimulationConstants::getInstance()->random_dist_f32(*gen) < stillbirth_rate) continue;
                         }
-                        // TODO: 直す
-                        //if (!agent.isMarried()) continue;
-                        std::uint_least8_t farming = (agent.cgetFarming() > 0 && agent.cgetPartnerFarming() > 0) ? 255 : (
-                            (agent.cgetFarming() == 0 && agent.cgetPartnerFarming() == 0) ? 0 : (
-                                (SimulationConstants::getInstance()->random_dist_f32(*gen) < SimulationConstants::getInstance()->child_agriculture_priority) ? 255 : 0
+                        const std::uint_least8_t farming =
+                            // 両親が農耕文化であれば両親の半分の値を引き継ぐ
+                            (agent.cgetFarming() > 0 && agent.cgetPartnerFarming() > 0) ?
+                            static_cast<std::uint_least8_t>((int(agent.cgetFarming()) + int(agent.cgetPartnerFarming())) / 2)
+                            // 両親が共に農耕文化を持たない場合は 0
+                            : ((agent.cgetFarming() == 0 && agent.cgetPartnerFarming() == 0) ? 0
+                                // 片親が農耕文化を持つ場合は乱数
+                                : ((SimulationConstants::getInstance()->random_dist_f32(*gen) < SimulationConstants::getInstance()->child_agriculture_priority) ?
+                                    // 農耕文化を持つ親から値を引き継ぐ
+                                    ((agent.cgetFarming() == 0) ? agent.cgetPartnerFarming() : agent.cgetFarming()) :
+                                    0
                                 ));
-                        Genome genome = Genome::generateFromParents(*gen, agent.cgetGenome(), agent.cgetPartnerGenome());
+                        const Genome genome = Genome::generateFromParents(*gen, agent.cgetGenome(), agent.cgetPartnerGenome());
                         children.emplace_back(Agent(
                             UniqueIdentification<HumanIndexType>::generate(),
-                            //0, // TODO: 名前ID
                             0,
                             kanakuma_life_span.setLifeSpan(farming > 0, genome.isMale(), *gen),
                             genome,
                             farming,
-                            //(((*gen)() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
                             (((*gen)() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer(),
                             (((*gen)() % 2) == 0) ? agent.cgetLanguage() : agent.cgetPartnerLanguage()
                         ));
@@ -910,12 +912,12 @@ namespace paxs {
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
         bool isAbleToGiveBirth(const double age) noexcept {
-            auto x = [](double age) { return (age - SimulationConstants::getInstance()->pregnant_age_min_f64) / SimulationConstants::getInstance()->birthable_age_constant; };
+            auto x = [](double age) { return (age - SimulationConstants::getInstance()->pregnant_age_min_f64) / SimulationConstants::getInstance()->childbearing_age_constant; };
             auto weight = [=](double age) {
                 return std::exp(-std::pow(std::log(x(age)), 2.0) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
                 };
 
-            const double threshold = static_cast<double>(weight(age)) * (SimulationConstants::getInstance()->birthable_age_threshold / SimulationConstants::getInstance()->birthable_age_all_weight); // (16 / 101.8);
+            const double threshold = static_cast<double>(weight(age)) * (SimulationConstants::getInstance()->childbearing_age_threshold / SimulationConstants::getInstance()->childbearing_age_all_weight); // (16 / 101.8);
 
             return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }
