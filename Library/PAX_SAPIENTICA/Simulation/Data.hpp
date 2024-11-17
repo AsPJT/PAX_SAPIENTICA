@@ -22,7 +22,7 @@
 #include <iostream>
 #include <regex>
 #include <stdexcept>
-#include <unordered_map>
+#include <map>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
@@ -96,7 +96,7 @@ namespace paxs {
 
     private:
         std::string name; // データの名前
-        std::unordered_map<DataGridsType, DataType> data; // データ
+        std::map<DataGridsType, DataType> data; // データ
         int default_z; // データのz値
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
         int column_size; // シミュレーションの列数

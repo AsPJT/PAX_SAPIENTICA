@@ -334,9 +334,12 @@ namespace paxs {
 
         /// @brief Marriage.
         /// @brief 婚姻
+        template<typename Add_, typename Delete_>
         void marriage(std::vector<Settlement*> close_settlements,
-            std::function<void(const paxs::SettlementAgent, const std::uint_least32_t, const Vector2)> add_agent,
-            std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent
+            //std::function<void(const paxs::SettlementAgent, const std::uint_least32_t, const Vector2)> add_agent,
+            //std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent,
+            Add_&& add_agent, Delete_&& delete_agent,
+            std::vector<GridType4>& marriage_pos_list
         ) noexcept {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
@@ -442,6 +445,8 @@ namespace paxs {
 
                             male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
                             agents.emplace_back(male_);
+
+                            marriage_pos_list.emplace_back(close_settlements[j]->position.x, close_settlements[j]->position.y, position.x, position.y);
                         }
                         // 父方の場合
                         else {
@@ -455,6 +460,8 @@ namespace paxs {
 
                             male_settlement_position /= SimulationConstants::getInstance()->cell_group_length;
                             add_agent(female_, male_settlement_id, male_settlement_position);
+
+                            marriage_pos_list.emplace_back(position.x, position.y, close_settlements[j]->position.x, close_settlements[j]->position.y);
                         }
                         is_found = true;
                         break;
