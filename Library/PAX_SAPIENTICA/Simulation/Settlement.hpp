@@ -338,7 +338,7 @@ namespace paxs {
         void marriage(std::vector<Settlement*> close_settlements,
             //std::function<void(const paxs::SettlementAgent, const std::uint_least32_t, const Vector2)> add_agent,
             //std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent,
-            Add_&& add_agent, Delete_&& delete_agent,
+            Add_ add_agent, Delete_ delete_agent,
             std::vector<GridType4>& marriage_pos_list
         ) noexcept {
             // 結婚の条件を満たすエージェントを取得
