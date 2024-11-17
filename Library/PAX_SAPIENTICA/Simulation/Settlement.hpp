@@ -446,7 +446,7 @@ namespace paxs {
                             male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
                             agents.emplace_back(male_);
 
-                            marriage_pos_list.emplace_back(close_settlements[j]->position.x, close_settlements[j]->position.y, position.x, position.y);
+                            marriage_pos_list.emplace_back(GridType4{ close_settlements[j]->position.x, close_settlements[j]->position.y, position.x, position.y });
                         }
                         // 父方の場合
                         else {
@@ -461,7 +461,7 @@ namespace paxs {
                             male_settlement_position /= SimulationConstants::getInstance()->cell_group_length;
                             add_agent(female_, male_settlement_id, male_settlement_position);
 
-                            marriage_pos_list.emplace_back(position.x, position.y, close_settlements[j]->position.x, close_settlements[j]->position.y);
+                            marriage_pos_list.emplace_back(GridType4{ position.x, position.y, close_settlements[j]->position.x, close_settlements[j]->position.y });
                         }
                         is_found = true;
                         break;
