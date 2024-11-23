@@ -285,8 +285,9 @@ namespace paxs {
             }
 
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
+            marriage_pos_list.clear();
 
-            auto delete_agent = [this](const std::uint_least32_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
+            auto&& delete_agent = [this](const std::uint_least32_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
                 auto it = settlement_grids.find(key.to(SettlementGridsType{}));
                 if (it != settlement_grids.end()) {
                     it->second.deleteAgent(agent_id, settlement_id);
@@ -296,7 +297,7 @@ namespace paxs {
                 }
             };
 
-            auto add_agent = [this](const paxs::SettlementAgent agent_, const std::uint_least32_t settlement_id, const Vector2 key) {
+            auto&& add_agent = [this](const paxs::SettlementAgent agent_, const std::uint_least32_t settlement_id, const Vector2 key) {
                 auto it = settlement_grids.find(key.to(SettlementGridsType{}));
                 if (it != settlement_grids.end()) {
                     it->second.addAgent(agent_, settlement_id);
@@ -328,7 +329,7 @@ namespace paxs {
                 }
 
                 for (auto& settlement : settlements) {
-                    settlement.marriage(close_settlements, add_agent, delete_agent);
+                    settlement.marriage(close_settlements, add_agent, delete_agent, marriage_pos_list);
                 }
             }
 
@@ -362,6 +363,9 @@ namespace paxs {
             end_time = std::chrono::system_clock::now();  // 計測終了
             processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() / 1000.0);
         }
+
+        // 婚姻時に移動した位置一覧を取得する
+        const std::vector<GridType4>& getMarriagePosList() const { return marriage_pos_list; }
 
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
@@ -426,6 +430,8 @@ namespace paxs {
         std::ofstream snp_ofs;
         std::ofstream language_ofs;
         std::ofstream live_ofs;
+        // 婚姻時に移動前の位置と移動後の位置を記録
+        std::vector<GridType4> marriage_pos_list{};
 
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
