@@ -61,10 +61,13 @@ namespace paxs {
         /// @param num_elements_1 The number of elements to select from the first vector.
         /// @param num_elements_2 The number of elements to select from the second vector.
         /// @return A vector of selected elements.
-        std::vector<std::pair<std::size_t, std::size_t>> select(const std::size_t num_elements_1, const std::size_t num_elements_2) {
+        //std::vector<std::pair<std::size_t, std::size_t>>
+        void select(std::vector<std::pair<std::size_t, std::size_t>>& result,
+            const std::size_t num_elements_1, const std::size_t num_elements_2) {
             const std::size_t num_elements = (std::min)(num_elements_1, num_elements_2);
 
-            std::vector<std::pair<std::size_t, std::size_t>> result;
+            //std::vector<std::pair<std::size_t, std::size_t>> result;
+            result.clear();
             std::unordered_set<std::size_t> used_indices_1;
             std::unordered_set<std::size_t> used_indices_2;
 
@@ -73,8 +76,7 @@ namespace paxs {
                 std::size_t index_2 = getRandomIndex(num_elements_2, used_indices_2);
                 result.emplace_back(index_1, index_2);
             }
-
-            return result;
+            //return result;
         }
 
     private:
