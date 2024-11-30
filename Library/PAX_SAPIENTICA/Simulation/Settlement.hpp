@@ -265,6 +265,15 @@ namespace paxs {
         /// @brief Delete the agent.
         /// @brief エージェントを削除する
         void deleteAgent(const std::uint_least32_t id_) noexcept {
+            //for (auto i = 0; i < agents.size();) {
+            //    if (!(agents[i].getId() != id_)) {
+            //        ++i;
+            //        continue;
+            //    }
+            //    agents[i] = agents.back(); // 同義 it = agents.erase(it);
+            //    agents.pop_back();
+            //    break;
+            //}
             agents.erase(std::remove_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; }), agents.end());
         }
 
@@ -335,21 +344,27 @@ namespace paxs {
         /// @brief Marriage.
         /// @brief 婚姻
         //template<typename Add_, typename Delete_>
-        void marriage(std::vector<Settlement*> close_settlements,
+        void marriage(
+            // std::vector のメモリ確保・解放のコストを削減するために再利用する
+            /* この入力値は使わない */ std::vector<std::size_t>& marriageable_female_index,
+            /* この入力値は使わない */ std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>>& male_settlement_pair,
+            std::vector<std::pair<std::size_t, std::size_t>>& marriageable_agents_index_pair,
+            /* この入力値は使わない */ std::vector<Settlement*>& close_settlements,
+            const std::vector<Settlement*>& const_close_settlements,
             std::function<void(const paxs::SettlementAgent, const std::uint_least32_t, const Vector2)> add_agent,
             std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent,
             //Add_ add_agent, Delete_ delete_agent,
             std::vector<GridType4>& marriage_pos_list
         ) noexcept {
             // 結婚の条件を満たすエージェントを取得
-            std::vector<std::size_t> marriageable_female_index;
+            marriageable_female_index.clear();
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 // 結婚可能かどうか
-                if (agents[i].isAbleToMarriage() && agents[i].isFemale()) {
-                    if (!isMarried(agents[i].getAge())) continue;
+                if (agents[i].isFemale() && agents[i].isAbleToMarriage()) {
                     // 妊娠していたら婚姻しない（婚姻可能と定義すると再婚者のデータで上書きされ子供への継承が不自然になる）
                     if (agents[i].getBirthIntervalCount() > 0) continue;
-
+                    // 婚姻するか乱数で決定
+                    if (!isMarried(agents[i].getAge())) continue;
                     marriageable_female_index.emplace_back(i);
                 }
             }
@@ -360,13 +375,10 @@ namespace paxs {
             }
 
             // 近隣の集落を探す
-            for (std::size_t i = 0; i < close_settlements.size();) {
-                if (close_settlements[i]->getPosition().distance_pow2(position) > SimulationConstants::getInstance()->marriage_search_range_pow2) {
-                    close_settlements[i] = close_settlements.back(); // 同義 it = close_settlements.erase(it);
-                    close_settlements.pop_back();
-                }
-                else {
-                    ++i;
+            close_settlements.clear();
+            for (std::size_t i = 0; i < const_close_settlements.size(); ++i) {
+                if (const_close_settlements[i]->getPosition().distance_pow2(position) <= SimulationConstants::getInstance()->marriage_search_range_pow2) {
+                    close_settlements.emplace_back(const_close_settlements[i]);
                 }
             }
 
@@ -384,7 +396,7 @@ namespace paxs {
             }
 
             // エージェントIDと集落IDのペアを作成
-            std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>> male_settlement_pair;
+            male_settlement_pair.clear();
             for (auto& close_settlement : close_settlements) {
                 for (auto& agent : close_settlement->cgetAgents()) {
                     if (agent.isAbleToMarriage() && agent.isMale()) {
@@ -397,10 +409,13 @@ namespace paxs {
             RandomSelector selector(gen);
 
             // first: 女性のインデックス, second: 男性のインデックス
-            const auto marriageable_agents_index_pair = selector.select(marriageable_female_index.size(), male_settlement_pair.size());
+            selector.select(marriageable_agents_index_pair,
+                marriageable_female_index.size(), male_settlement_pair.size());
 
             // 居住婚
             bool is_matrilocality = false;
+            // 選択居住婚
+            //bool is_select_matrilocality = false;
 
             // 母方居住婚
             if (SimulationConstants::getInstance()->maternal_residence_probability >= 1.0f) {
@@ -412,6 +427,7 @@ namespace paxs {
             }
             // 選択居住婚
             else {
+                //is_select_matrilocality = true;
                 is_matrilocality = (SimulationConstants::getInstance()->maternal_residence_probability >= SimulationConstants::getInstance()->random_dist_f32(*gen));
             }
 
@@ -664,8 +680,8 @@ namespace paxs {
             const double hg_weight = SimulationConstants::getInstance()->max_hunter_gatherer_settlement_weight;
 
             double population_weight = 0;
-            for (std::size_t i = 0; i < agents.size(); ++i) {
-                population_weight += (agents[i].cgetFarming() > 0) ? ac_weight : hg_weight;
+            for (const auto& agent : agents) {
+                population_weight += (agent.cgetFarming() > 0) ? ac_weight : hg_weight;
             }
             return population_weight;
         }
@@ -919,6 +935,7 @@ namespace paxs {
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
         bool isAbleToGiveBirth(const double age) noexcept {
+            //return true;// 毎回出産
             auto x = [](double age) { return (age - SimulationConstants::getInstance()->pregnant_age_min_f64) / SimulationConstants::getInstance()->childbearing_age_constant; };
             auto weight = [=](double age) {
                 return std::exp(-std::pow(std::log(x(age)), 2.0) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);

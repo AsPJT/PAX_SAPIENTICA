@@ -307,14 +307,24 @@ namespace paxs {
                 }
                 };
 
+            // 近隣8グリッドの集落を取得
+            std::vector<Settlement*> close_settlements;
+            // 結婚の条件を満たすエージェントを取得
+            std::vector<std::size_t> marriageable_female_index;
+            // エージェントIDと集落IDのペアを作成
+            std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>> male_settlement_pair;
+            // 婚姻半径内の集落
+            std::vector<Settlement*> marriage_settlements;
+            // 婚姻ペア
+            std::vector<std::pair<std::size_t, std::size_t>> marriageable_agents_index_pair;
+
             for (auto& settlement_grid : settlement_grids) {
                 std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
                 if (settlements.size() == 0) {
                     continue;
                 }
 
-                // 近隣8グリッドの集落を取得
-                std::vector<Settlement*> close_settlements;
+                close_settlements.clear();
                 Vector2 grid_position = settlement_grid.second.getGridPosition();
                 grid_position /= SimulationConstants::getInstance()->cell_group_length;
                 for (int i = -1; i <= 1; ++i) {
@@ -329,7 +339,8 @@ namespace paxs {
                 }
 
                 for (auto& settlement : settlements) {
-                    settlement.marriage(close_settlements, add_agent, delete_agent, marriage_pos_list);
+                    settlement.marriage(marriageable_female_index, male_settlement_pair, marriageable_agents_index_pair, marriage_settlements,
+                        close_settlements, add_agent, delete_agent, marriage_pos_list);
                 }
             }
 
