@@ -317,46 +317,46 @@ namespace paxs {
                 }
                 };
 
-            // 近隣8グリッドの集落を取得
-            std::vector<Settlement*> close_settlements;
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             // エージェントIDと集落IDのペアを作成
             std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>> male_settlement_pair;
             // 婚姻半径内の集落
             std::vector<Settlement*> marriage_settlements;
-            // 婚姻ペア
-            std::vector<std::pair<std::size_t, std::size_t>> marriageable_agents_index_pair;
+
+            // 近隣8グリッドの集落を取得
+            std::vector<std::vector<Settlement>*> close_settlements_list;
 
             for (auto& settlement_grid : settlement_grids) {
                 std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
-                if (settlements.size() == 0) {
-                    continue;
-                }
+                if (settlements.size() == 0) continue; // 集落が無い場合
 
-                close_settlements.clear();
                 Vector2 grid_position = settlement_grid.second.getGridPosition();
                 grid_position /= SimulationConstants::getInstance()->cell_group_length;
+
+                close_settlements_list.clear();
                 for (int i = -1; i <= 1; ++i) {
                     for (int j = -1; j <= 1; ++j) {
                         auto it = settlement_grids.find((grid_position + Vector2(i, j)).to(SettlementGridsType{}));
                         if (it != settlement_grids.end()) {
-                            for (auto& settlement : it->second.getSettlements()) {
-                                close_settlements.emplace_back(&settlement);
-                            }
+                            close_settlements_list.emplace_back(&(it->second.getSettlements()));
                         }
                     }
                 }
-                // 青銅交換
-                if (close_settlements.size() >= 2) {
-                    std::uint_fast32_t bronze = (close_settlements.front()->getBronze() + close_settlements.back()->getBronze()) / 2;
-                    close_settlements.front()->setBronze(bronze);
-                    close_settlements.back()->setBronze(bronze);
+                for (auto& close_settlements : close_settlements_list) {
+                    // 青銅交換
+                    if (close_settlements->size() >= 2) {
+                        std::uint_fast32_t bronze = (close_settlements->front().getBronze() + close_settlements->back().getBronze()) / 2;
+                        close_settlements->front().setBronze(bronze);
+                        close_settlements->back().setBronze(bronze);
+                    }
                 }
-
                 for (auto& settlement : settlements) {
-                    settlement.marriage(marriageable_female_index, male_settlement_pair, marriageable_agents_index_pair, marriage_settlements,
-                        close_settlements, add_agent, delete_agent, marriage_pos_list);
+                    settlement.marriage(
+                        close_settlements_list,
+                        marriageable_female_index, male_settlement_pair, marriage_settlements,
+                        add_agent, delete_agent, marriage_pos_list
+                    );
                 }
             }
 
