@@ -118,11 +118,17 @@ namespace paxs {
         std::uint_least32_t cell_group_length = 64;
 
         // 渡来開始ステップ数
-        std::uint_least64_t immigration_start_steps = 2401;
+        std::uint_least64_t immigration_start_steps = 2401; // 前 900 年
         std::uint_least64_t immigration_end_steps = 21600;
+
+        // 青銅開始ステップ数
+        std::uint_least64_t bronze_start_steps = 9601; // 前 300 年
 
         // 渡来地区 ID
         std::uint_least8_t immigration_district_id = 73;
+
+        // 青銅量
+        std::uint_least64_t bronze = 100; // 渡来人が持ってくる青銅量
 
         // 初期化時の寿命までの最低年数
         AgeType init_lifespan_grace_period = 180;
@@ -200,7 +206,7 @@ namespace paxs {
             return sr.getZ(area);
         }
 
-        SimulationConstants() {
+        void init() {
             std::string str = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationConstants"),
                 [&](const std::string& path_) {str = path_; });
@@ -270,6 +276,10 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("land_cost"), [&](const std::string& str_) {land_cost = std::stod(str_); });
 
             pregnant_age_min_f64 = childbearing_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
+        }
+
+        SimulationConstants() {
+            init();
         }
 
     };

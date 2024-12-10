@@ -67,8 +67,8 @@ namespace paxs {
             std::uint_least8_t hunter_gatherer = 0; // 狩猟採集
             std::uint_least8_t farming = 0; // 農耕文化
             std::uint_least8_t snp = 0; // SNP
-            std::uint_least32_t settlement_population_min_ad200 = 0;
-            std::uint_least32_t settlement_population_max_ad200 = 0;
+            std::uint_least32_t settlement_pop_min = 0;
+            std::uint_least32_t settlement_pop_max = 0;
             std::uint_least32_t init_pop = 0;
             std::uint_least32_t immigrant = 0;
             double immigrant_f64 = 0;
@@ -281,8 +281,8 @@ namespace paxs {
                 district.hunter_gatherer = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
                 district.farming = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("farming")]]));
                 district.snp = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("snp")]]));
-                district.settlement_population_min_ad200 = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("min_pop_placed_per_cell")]]));
-                district.settlement_population_max_ad200 = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("max_pop_placed_per_cell")]]));
+                district.settlement_pop_min = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("min_pop_placed_per_cell")]]));
+                district.settlement_pop_max = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("max_pop_placed_per_cell")]]));
                 district.init_pop = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("init_pop")]]));
                 district.immigrant = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("immigrant")]]));
                 district.immigrant_f64 = static_cast<double>(district.immigrant);
