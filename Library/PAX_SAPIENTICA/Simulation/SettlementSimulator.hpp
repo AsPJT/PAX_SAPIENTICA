@@ -151,8 +151,18 @@ namespace paxs {
         void init() {
             initResults();
             settlement_grids.clear();
+            population_num = 0; // 人口数
+            settlement_num = 0; // 集落数
+            processing_time = 0.0;
+            move_processing_time = 0.0;
+            marriage_processing_time = 0.0;
+            emigration_count = 0;
+            step_count = 0;
+            land_positions.clear();
+            marriage_pos_list.clear();
+
             initRandomizeSettlements();
-            randomizeSettlements(true, false /* 在地人 */);
+            randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/);
             calcPop(); // 人口を計算
 
             // 可住地の数を出力
@@ -281,7 +291,7 @@ namespace paxs {
             // 前901年から稲作文化開始
             if (step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
                 step_count <= SimulationConstants::getInstance()->immigration_end_steps) {
-                randomizeSettlements(false, true /* 渡来人 */);
+                randomizeSettlements(false, true /* 渡来人 */, (step_count >= SimulationConstants::getInstance()->bronze_start_steps)/*青銅*/);
             }
 
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
@@ -336,6 +346,12 @@ namespace paxs {
                             }
                         }
                     }
+                }
+                // 青銅交換
+                if (close_settlements.size() >= 2) {
+                    std::uint_fast32_t bronze = (close_settlements.front()->getBronze() + close_settlements.back()->getBronze()) / 2;
+                    close_settlements.front()->setBronze(bronze);
+                    close_settlements.back()->setBronze(bronze);
                 }
 
                 for (auto& settlement : settlements) {
@@ -494,7 +510,8 @@ namespace paxs {
         /// @brief 集落をランダムに配置する
         void randomizeSettlements(
             bool is_ad200,
-            bool is_farming // 渡来人であるか？
+            bool is_farming, // 渡来人であるか？
+            bool is_bronze // 青銅文化であるか？
         ) noexcept {
             // 地区 ID の最大値
             std::uint_least8_t district_id_max = 0;
@@ -555,7 +572,7 @@ namespace paxs {
 
                     // 配置する集落の人口を決定
                     paxs::District district = japan_provinces->cgetDistrict(district_id);
-                    int settlement_population = std::uniform_int_distribution<>(district.settlement_population_min_ad200, district.settlement_population_max_ad200)(gen);
+                    int settlement_population = std::uniform_int_distribution<>(district.settlement_pop_min, district.settlement_pop_max)(gen);
                     settlement_population = (std::min)(settlement_population, static_cast<int>(district_population_it->second));
 
                     // 集落をグリッドに配置
@@ -571,6 +588,8 @@ namespace paxs {
                         gen,
                         environment
                     );
+                    // 青銅の持ち込み
+                    if (is_bronze) settlement.setBronze(SimulationConstants::getInstance()->bronze);
                     settlement.setPosition(live_position);
 
                     // 渡来人込みの地区 ID
@@ -662,6 +681,8 @@ namespace paxs {
                         if (is_farming) ++emigration_count; // 農耕カウント
                     }
                     settlement.addAgents(agents);
+                    // 青銅の持ち込み
+                    if (is_bronze) settlement.setBronze(SimulationConstants::getInstance()->bronze);
                 }
             }
 

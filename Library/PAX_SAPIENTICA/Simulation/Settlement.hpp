@@ -667,6 +667,15 @@ namespace paxs {
         /// @brief 移動したかどうかを取得
         bool isMoved() const noexcept { return is_moved; }
 
+        /// @brief Get the Bronze.
+        /// @brief 青銅を取得
+        std::uint_least32_t getBronze() const noexcept {
+            return bronze;
+        }
+        void setBronze(const std::uint_least32_t bronze_) noexcept {
+            bronze = bronze_;
+        }
+
         /// @brief Get the population.
         /// @brief 人口を取得
         std::size_t getPopulation() const noexcept { return agents.size(); }
@@ -790,8 +799,6 @@ namespace paxs {
         std::uint_least32_t id = 0;
         /// @brief 集落の座標
         Vector2 position{};
-        Vector2 old_position{ -1,-1 };
-        std::vector<Vector2> positions{};
 
         std::mt19937* gen{}; // 乱数生成器
         
@@ -799,6 +806,11 @@ namespace paxs {
         std::shared_ptr<Environment> environment{}; // 環境
         /// @brief エージェントの配列
         std::vector<Agent> agents{};
+
+        std::uint_least32_t bronze = 0; // 青銅
+        /// @brief 集落の移動前の座標
+        Vector2 old_position{ -1,-1 };
+        std::vector<Vector2> positions{};
 
         /// @brief Birth.
         /// @brief 出産

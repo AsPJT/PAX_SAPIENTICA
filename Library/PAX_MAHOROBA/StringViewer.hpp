@@ -57,6 +57,19 @@ namespace paxs {
     class StringViewerSiv3D {
     private:
 #ifdef PAXS_USING_SIMULATOR
+        void simulationInit(
+            std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
+            paxs::KoyomiSiv3D& koyomi_siv
+        ) const {
+            simulator->init();
+            koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
+            koyomi_siv.jdn.setDay(static_cast<double>(SimulationConstants::getInstance()->start_julian_day)); // シミュレーション初期時の日付に設定
+            koyomi_siv.calcDate();
+            koyomi_siv.is_agent_update = false;
+            koyomi_siv.move_forward_in_time = false; // 一時停止
+            koyomi_siv.go_back_in_time = false;
+        }
+
         void simulation(
             std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
             paxs::TouchManager& tm_,
@@ -66,13 +79,14 @@ namespace paxs {
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
                 const int time_icon_size = 40; // 時間操作アイコンの大きさ
 
+                std::string map_list_path = "Data/Simulations/MapList.tsv";
+                std::string japan_provinces_path = "Data/Simulations/Sample";
+
                 // シミュレーションが初期化されていない場合
                 if (simulator.get() == nullptr) {
                     texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
                         time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
                     if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        std::string map_list_path = "Data/Simulations/MapList.tsv";
-                        std::string japan_provinces_path = "Data/Simulations/Sample";
 
                         AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationXYZTiles"),
                             [&](const std::string& path_) {map_list_path = path_; });
@@ -86,20 +100,11 @@ namespace paxs {
                             is_console_open = true;
                         }
 #endif
-
                         std::random_device seed_gen;
                         simulator = std::make_unique<paxs::SettlementSimulator>(
                             map_list_path, japan_provinces_path,
                             seed_gen());
-                        simulator->init();
-                        koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
-                        koyomi_siv.jdn.setDay(static_cast<double>(SimulationConstants::getInstance()->start_julian_day)); // シミュレーション初期時の日付に設定
-                        koyomi_siv.calcDate();
-
-                        koyomi_siv.is_agent_update = false;
-
-                        koyomi_siv.move_forward_in_time = false; // 一時停止
-                        koyomi_siv.go_back_in_time = false;
+                        simulationInit(simulator, koyomi_siv);
                     }
                 }
                 // シミュレーションが初期化されている場合
@@ -119,6 +124,21 @@ namespace paxs {
                     }
                     // シミュレーションが再生されていない場合
                     else {
+                        // シミュレーション入力データを初期化
+                        texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            SimulationConstants::getInstance()->init();
+                        }
+                        // 人間データを初期化
+                        texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            simulationInit(simulator, koyomi_siv);
+
+                            koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
+                            koyomi_siv.calcDate();
+                        }
                         // 地形データを削除
                         texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
                             time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));

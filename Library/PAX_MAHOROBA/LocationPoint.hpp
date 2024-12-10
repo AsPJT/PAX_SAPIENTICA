@@ -559,6 +559,8 @@ namespace paxs {
         std::size_t select_draw = 1;
         // 線を表示するか
         bool is_line = false;
+        // 移動線（矢印）を表示するか
+        bool is_arrow = true;
 #ifdef PAXS_USING_SIV3D
         // 選択肢を表示するフォント
         const s3d::Font select_font{ 30, s3d::Typeface::Bold };
@@ -694,6 +696,9 @@ namespace paxs {
             case 5:
                 text = U"5. 言語 Language";
                 break;
+            case 6:
+                text = U"6. 青銅 Bronze";
+                break;
             };
             // 選択項目を描画
             const s3d::RectF rect = select_font(text).region();
@@ -714,8 +719,10 @@ namespace paxs {
             else if (s3d::Key3.pressed()) select_draw = 3;
             else if (s3d::Key4.pressed()) select_draw = 4;
             else if (s3d::Key5.pressed()) select_draw = 5;
+            else if (s3d::Key6.pressed()) select_draw = 6;
             // グリッド線を描画する
             else if (s3d::KeyL.up()) is_line = (!is_line);
+            else if (s3d::KeyK.up()) is_arrow = (!is_arrow);
 #endif
 
             // 地名を描画
@@ -772,6 +779,9 @@ namespace paxs {
                             case 4:
                                 //const double
                                 pop_original = settlement.getSNP() * 75.0;
+                                break;
+                            case 6:
+                                pop_original = static_cast<double>(settlement.getBronze());
                                 break;
                             }
 
@@ -865,14 +875,108 @@ namespace paxs {
             }
 
             // 移動線を描画
-            for (const auto& agent : agents) {
-                for (const auto& settlement : agent.second.cgetSettlements()) {
+            if (is_arrow) {
+                for (const auto& agent : agents) {
+                    for (const auto& settlement : agent.second.cgetSettlements()) {
+                        // エージェントの初期設定を定義
+                        const auto lli = LocationPoint{
+                            std::unordered_map < std::uint_least32_t, std::string>(),
+                                paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                paxs::Vector2<int>(
+                        settlement.getPosition().x,settlement.getPosition().y), 10)),
+                                1, 1, 10, 100,0,0,99999999,
+                            MurMur3::calcHash("agent1")
+                            ,0 /* 出典なし */
+                            ,1.0 // 拡大率
+                        };
+
+                        // 経緯度の範囲外を除去
+                        if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
+                            || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
+                            || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
+                            || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+
+                        // 範囲内の場合
+                        if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
+                            if (lli.min_year > jdn) continue;
+                            if (lli.max_year < jdn) continue;
+
+                            // 描画位置
+                            const paxg::Vec2i draw_pos = paxg::Vec2i{
+        static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+            static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            };
+
+                            if (settlement.getOldPosition().x != -1 && settlement.getOldPosition().x != 0) {
+                                if (settlement.getPositions().size() >= 1) {
+
+                                    // 過去の位置
+                                    auto old_lli = lli;
+                                    old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                        paxs::Vector2<int>(
+                                            settlement.getOldPosition().x,
+                                            settlement.getOldPosition().y), 10));
+                                    const paxg::Vec2i draw_old_pos = paxg::Vec2i{
+            static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                    };
+
+                                    s3d::Array<s3d::Vec2> va;
+                                    va << s3d::Vec2{ draw_pos.x(), draw_pos.y() };
+                                    for (auto&& p : settlement.getPositions()) {
+                                        auto one_lli = lli;
+                                        one_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                            paxs::Vector2<int>(p.x, p.y), 10));
+                                        const paxg::Vec2i draw_one_pos = paxg::Vec2i{
+        static_cast<int>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+            static_cast<int>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                        };
+                                        va << s3d::Vec2{ draw_one_pos.x(), draw_one_pos.y() };
+                                    }
+                                    va << s3d::Vec2{ draw_old_pos.x(), draw_old_pos.y() };
+
+                                    const s3d::Spline2D spline(va);
+                                    spline.draw(2, Palette::Black);
+
+                                    // 過去の位置
+                                    auto one_lli = lli;
+                                    one_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                        paxs::Vector2<int>(
+                                            settlement.getPositions()[0].x,
+                                            settlement.getPositions()[0].y), 10));
+                                    const paxg::Vec2i draw_one_pos = paxg::Vec2i{
+            static_cast<int>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                static_cast<int>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                    };
+                                    s3d::Line{ draw_one_pos.x(), draw_one_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(0.1, s3d::Vec2{ 8, 16 }, s3d::Palette::Black);
+                                }
+                                else {
+                                    // 過去の位置
+                                    auto old_lli = lli;
+                                    old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                        paxs::Vector2<int>(
+                                            settlement.getOldPosition().x,
+                                            settlement.getOldPosition().y), 10));
+                                    const paxg::Vec2i draw_old_pos = paxg::Vec2i{
+            static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                    };
+                                    s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, s3d::Palette::Black);
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+                // 移動線を描画
+                for (const auto& marriage_pos : marriage_pos_list) {
                     // エージェントの初期設定を定義
                     const auto lli = LocationPoint{
                         std::unordered_map < std::uint_least32_t, std::string>(),
                             paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
                             paxs::Vector2<int>(
-                    settlement.getPosition().x,settlement.getPosition().y), 10)),
+                    marriage_pos.ex,marriage_pos.ey), 10)),
                             1, 1, 10, 100,0,0,99999999,
                         MurMur3::calcHash("agent1")
                         ,0 /* 出典なし */
@@ -896,114 +1000,22 @@ namespace paxs {
         static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                         };
 
-                        if (settlement.getOldPosition().x != -1 && settlement.getOldPosition().x != 0) {
-                            if (settlement.getPositions().size() >= 1) {
-
-                                // 過去の位置
-                                auto old_lli = lli;
-                                old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
-                                    paxs::Vector2<int>(
-                                        settlement.getOldPosition().x,
-                                        settlement.getOldPosition().y), 10));
-                                const paxg::Vec2i draw_old_pos = paxg::Vec2i{
-        static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-            static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                                };
-
-                                s3d::Array<s3d::Vec2> va;
-                                va << s3d::Vec2{ draw_pos.x(), draw_pos.y() };
-                                for (auto&& p : settlement.getPositions()) {
-                                    auto one_lli = lli;
-                                    one_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
-                                        paxs::Vector2<int>(p.x, p.y), 10));
-                                    const paxg::Vec2i draw_one_pos = paxg::Vec2i{
-    static_cast<int>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-        static_cast<int>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                                    };
-                                    va << s3d::Vec2{ draw_one_pos.x(), draw_one_pos.y() };
-                                }
-                                va << s3d::Vec2{ draw_old_pos.x(), draw_old_pos.y() };
-
-                                const s3d::Spline2D spline(va);
-                                spline.draw(2, Palette::Black);
-
-                                // 過去の位置
-                                auto one_lli = lli;
-                                one_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
-                                    paxs::Vector2<int>(
-                                        settlement.getPositions()[0].x,
-                                        settlement.getPositions()[0].y), 10));
-                                const paxg::Vec2i draw_one_pos = paxg::Vec2i{
-        static_cast<int>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-            static_cast<int>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                                };
-                                s3d::Line{ draw_one_pos.x(), draw_one_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(0.1, s3d::Vec2{ 8, 16 }, s3d::Palette::Black);
-                            }
-                            else {
-                                // 過去の位置
-                                auto old_lli = lli;
-                                old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
-                                    paxs::Vector2<int>(
-                                        settlement.getOldPosition().x,
-                                        settlement.getOldPosition().y), 10));
-                                const paxg::Vec2i draw_old_pos = paxg::Vec2i{
-        static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-            static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                                };
-                                s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, s3d::Palette::Black);
-                            }
-                    }
-
-                    }
-
-                }
-            }
-            // 移動線を描画
-            for (const auto& marriage_pos : marriage_pos_list) {
-                // エージェントの初期設定を定義
-                const auto lli = LocationPoint{
-                    std::unordered_map < std::uint_least32_t, std::string>(),
-                        paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
-                        paxs::Vector2<int>(
-                marriage_pos.ex,marriage_pos.ey), 10)),
-                        1, 1, 10, 100,0,0,99999999,
-                    MurMur3::calcHash("agent1")
-                    ,0 /* 出典なし */
-                    ,1.0 // 拡大率
-                };
-
-                // 経緯度の範囲外を除去
-                if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                    || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
-                    || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                    || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
-
-                // 範囲内の場合
-                if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
-                    if (lli.min_year > jdn) continue;
-                    if (lli.max_year < jdn) continue;
-
-                    // 描画位置
-                    const paxg::Vec2i draw_pos = paxg::Vec2i{
-static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-    static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                    };
-
-                    if (marriage_pos.sx != -1 && marriage_pos.sx != 0) {
-                        // 過去の位置
-                        auto old_lli = lli;
-                        old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
-                            paxs::Vector2<int>(
-                                marriage_pos.sx,
-                                marriage_pos.sy), 10));
-                        const paxg::Vec2i draw_old_pos = paxg::Vec2i{
-static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-    static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        };
-                        s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, s3d::Color(221, 67, 98));
+                        if (marriage_pos.sx != -1 && marriage_pos.sx != 0) {
+                            // 過去の位置
+                            auto old_lli = lli;
+                            old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                paxs::Vector2<int>(
+                                    marriage_pos.sx,
+                                    marriage_pos.sy), 10));
+                            const paxg::Vec2i draw_old_pos = paxg::Vec2i{
+    static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            };
+                            s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, s3d::Color(221, 67, 98));
+                        }
                     }
                 }
-            }
+        }
 #endif
         }
 
