@@ -300,11 +300,9 @@ namespace paxs {
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             // エージェントIDと集落IDのペアを作成
-            std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>> male_settlement_pair;
-            // 婚姻半径内の集落
-            std::vector<Settlement*> marriage_settlements;
+            std::vector<Marriage3> male_settlement_pair;
 
-            // 近隣8グリッドの集落を取得
+            // 近隣９グリッドの集落を取得
             std::vector<std::vector<Settlement>*> close_settlements_list;
 
             for (auto& settlement_grid : settlement_grids) {
@@ -323,6 +321,8 @@ namespace paxs {
                         }
                     }
                 }
+                // 近隣９グリッドのシャッフル
+                std::shuffle(close_settlements_list.begin(), close_settlements_list.end(), gen);
                 for (auto& close_settlements : close_settlements_list) {
                     // 青銅交換
                     if (close_settlements->size() >= 2) {
@@ -334,7 +334,7 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     settlement.marriage(
                         close_settlements_list,
-                        marriageable_female_index, male_settlement_pair, marriage_settlements,
+                        marriageable_female_index, male_settlement_pair,
                         marriage_pos_list
                     );
                 }
