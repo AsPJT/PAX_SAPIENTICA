@@ -297,26 +297,6 @@ namespace paxs {
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
             marriage_pos_list.clear();
 
-            auto&& delete_agent = [this](const std::uint_least32_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
-                auto it = settlement_grids.find(key.to(SettlementGridsType{}));
-                if (it != settlement_grids.end()) {
-                    it->second.deleteAgent(agent_id, settlement_id);
-                }
-                else {
-                    PAXS_ERROR("Settlement grid not found. Key: " + std::to_string(key.x) + ", " + std::to_string(key.y));
-                }
-            };
-
-            auto&& add_agent = [this](const paxs::SettlementAgent agent_, const std::uint_least32_t settlement_id, const Vector2 key) {
-                auto it = settlement_grids.find(key.to(SettlementGridsType{}));
-                if (it != settlement_grids.end()) {
-                    it->second.addAgent(agent_, settlement_id);
-                }
-                else {
-                    PAXS_ERROR("Settlement grid not found. Key: " + std::to_string(key.x) + ", " + std::to_string(key.y));
-                }
-                };
-
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             // エージェントIDと集落IDのペアを作成
@@ -355,7 +335,7 @@ namespace paxs {
                     settlement.marriage(
                         close_settlements_list,
                         marriageable_female_index, male_settlement_pair, marriage_settlements,
-                        add_agent, delete_agent, marriage_pos_list
+                        marriage_pos_list
                     );
                 }
             }

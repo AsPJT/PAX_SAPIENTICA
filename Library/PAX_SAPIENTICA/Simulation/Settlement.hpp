@@ -339,7 +339,7 @@ namespace paxs {
 
         /// @brief Get the agents.
         /// @brief エージェントを取得
-        const std::vector<Agent> cgetAgents() const noexcept { return agents; }
+        const std::vector<Agent>& cgetAgents() const noexcept { return agents; }
 
         /// @brief Marriage.
         /// @brief 婚姻
@@ -350,8 +350,6 @@ namespace paxs {
             /* この入力値は使わない */ std::vector<std::size_t>& marriageable_female_index,
             /* この入力値は使わない */ std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>>& male_settlement_pair,
             /* この入力値は使わない */ std::vector<Settlement*>& close_settlements,
-            std::function<void(const paxs::SettlementAgent, const std::uint_least32_t, const Vector2)> add_agent,
-            std::function<void(const std::uint64_t, const std::uint_least32_t, const Vector2)> delete_agent,
             std::vector<GridType4>& marriage_pos_list
         ) noexcept {
             // 結婚の条件を満たすエージェントを取得
@@ -392,21 +390,17 @@ namespace paxs {
             }
             // エージェントIDと集落IDのペアを作成
             male_settlement_pair.clear();
-            for (auto& close_settlement : close_settlements) {
-                for (auto& agent : close_settlement->cgetAgents()) {
-                    if (agent.isAbleToMarriage() && agent.isMale()) {
-                        male_settlement_pair.emplace_back(agent.getId(), close_settlement->getId());
+            for (std::size_t cs = 0; cs < close_settlements.size(); ++cs) {
+                const std::vector<Agent>& close_agent = close_settlements[cs]->cgetAgents();
+                const std::size_t ca_size = close_agent.size();
+                for (std::size_t ca = 0; ca < ca_size; ++ca) {
+                    if (close_agent[ca].isAbleToMarriage() && close_agent[ca].isMale()) {
+                        male_settlement_pair.emplace_back(ca, cs);
                     }
                 }
             }
-            std::shuffle(male_settlement_pair.begin(), male_settlement_pair.end(), *gen);
-
             // 女性と男性の組み合わせをランダムに選択
-            //RandomSelector selector(gen);
-
-            // first: 女性のインデックス, second: 男性のインデックス
-            //selector.select(marriageable_agents_index_pair,
-            //    marriageable_female_index.size(), male_settlement_pair.size());
+            std::shuffle(male_settlement_pair.begin(), male_settlement_pair.end(), *gen);
             const std::size_t num_elements = (std::min)(marriageable_female_index.size(), male_settlement_pair.size());
 
             // 居住婚
@@ -430,72 +424,63 @@ namespace paxs {
 
             // シミュレーションの設定で母方に移住するか父方に移住するかを決める
             for (std::size_t i = 0; i < num_elements; ++i) {
-                std::uint_least32_t male_id = male_settlement_pair[i/*元婚姻ペア（夫）*/].first;
-                std::uint_least32_t male_settlement_id = male_settlement_pair[i/*元婚姻ペア（夫）*/].second;
+                const std::uint_least32_t pair_agent_index = male_settlement_pair[i/*元婚姻ペア（夫）*/].first;
+                const std::uint_least32_t pair_settlement_index = male_settlement_pair[i/*元婚姻ペア（夫）*/].second;
+                Settlement& pair_settlement = *(close_settlements[pair_settlement_index]);
+                Agent& pair_agent = pair_settlement.getAgents()[pair_agent_index];
 
                 bool is_found = false;
-                Vector2 male_settlement_position;
-                for (std::size_t j = 0; j < close_settlements.size(); ++j) {
-                    if (close_settlements[j]->getId() == male_settlement_id) {
-
-                        if (i/*元婚姻ペア（妻）*/ >= marriageable_female_index.size()) {
-                            PAXS_ERROR("The FIRST of index_pair is larger than the size of marriageable_female_index.");
-                            continue;
-                        }
-                        if (marriageable_female_index[i/*元婚姻ペア（妻）*/] >= agents.size()) {
-                            PAXS_ERROR("marriageable_female_index is larger than the size of AGENTS.");
-                            continue;
-                        }
-                        male_settlement_position = close_settlements[j]->getPosition();
-                        // 母方の場合
-                        if (is_matrilocality) {
-                            Agent male_ = close_settlements[j]->getAgentCopy(male_id);
-                            Agent& female_ = agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]];
-
-                            female_.marry(male_id, male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer(), male_.cgetLanguage());
-                            const HumanIndexType female_id = female_.getId();
-
-                            male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
-                            agents.emplace_back(male_);
-
-                            marriage_pos_list.emplace_back(GridType4{ close_settlements[j]->position.x, close_settlements[j]->position.y, position.x, position.y });
-                        }
-                        // 父方の場合
-                        else {
-                            Agent& male_ = close_settlements[j]->getAgent(male_id);
-                            Agent female_ = agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]];
-
-                            female_.marry(male_id, male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer(), male_.cgetLanguage());
-                            const HumanIndexType female_id = female_.getId();
-
-                            male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
-
-                            male_settlement_position /= SimulationConstants::getInstance()->cell_group_length;
-                            add_agent(female_, male_settlement_id, male_settlement_position);
-
-                            marriage_pos_list.emplace_back(GridType4{ position.x, position.y, close_settlements[j]->position.x, close_settlements[j]->position.y });
-                        }
-                        is_found = true;
-                        break;
-                    }
+                if (i/*元婚姻ペア（妻）*/ >= marriageable_female_index.size()) {
+                    PAXS_ERROR("The FIRST of index_pair is larger than the size of marriageable_female_index.");
+                    continue;
                 }
+                if (marriageable_female_index[i/*元婚姻ペア（妻）*/] >= agents.size()) {
+                    PAXS_ERROR("marriageable_female_index is larger than the size of AGENTS.");
+                    continue;
+                }
+                Vector2 male_settlement_position = pair_settlement.getPosition();
+                // 母方の場合
+                if (is_matrilocality) {
+                    Agent male_ = pair_agent;
+                    Agent& female_ = agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]];
+
+                    female_.marry(pair_agent.getId(), male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer(), male_.cgetLanguage());
+                    const HumanIndexType female_id = female_.getId();
+
+                    male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
+                    agents.emplace_back(male_);
+
+                    marriage_pos_list.emplace_back(GridType4{ pair_settlement.position.x, pair_settlement.position.y, position.x, position.y });
+
+                    pair_agent.setAge((std::numeric_limits<AgeType>::max)());
+                    pair_agent.setLifeSpan(0);
+                    pair_agent.setPartnerId(0);
+                }
+                // 父方の場合
+                else {
+                    Agent& male_ = pair_agent;
+                    Agent female_ = agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]];
+
+                    female_.marry(pair_agent.getId(), male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer(), male_.cgetLanguage());
+                    const HumanIndexType female_id = female_.getId();
+
+                    male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
+
+                    male_settlement_position /= SimulationConstants::getInstance()->cell_group_length;
+                    pair_settlement.getAgents().emplace_back(female_);
+
+                    marriage_pos_list.emplace_back(GridType4{ position.x, position.y, pair_settlement.position.x, pair_settlement.position.y });
+
+                    agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]].setAge((std::numeric_limits<AgeType>::max)());
+                    agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]].setLifeSpan(0);
+                    agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]].setPartnerId(0);
+                }
+                is_found = true;
+                break;
 
                 if (!is_found) {
                     PAXS_ERROR("Settlement not found.");
                     continue;
-                }
-
-                if (is_matrilocality) {
-                    male_settlement_position /= SimulationConstants::getInstance()->cell_group_length;
-                    delete_agent(male_id, male_settlement_id, male_settlement_position);
-                }
-                else {
-                    for (std::size_t j = i + 1; j < num_elements; ++j) {
-                        if (marriageable_female_index[j/*元婚姻ペア（妻）*/] < marriageable_female_index[i/*元婚姻ペア（妻）*/]) continue;
-                        marriageable_female_index[j/*元婚姻ペア（妻）*/] -= 1;
-                    }
-                    auto& id_ = marriageable_female_index[i/*元婚姻ペア（妻）*/];
-                    agents.erase(agents.begin() + id_);
                 }
             }
         }

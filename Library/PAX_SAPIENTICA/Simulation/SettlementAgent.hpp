@@ -163,6 +163,10 @@ namespace paxs {
         void setBirthIntervalCount(const std::uint_least8_t count) noexcept { birth_interval_count = count; }
         std::uint_least8_t decrementBirthIntervalCount() noexcept { return --birth_interval_count; }
 
+        void setAge(const AgeType age_) { age = age_; }
+        void setLifeSpan(const AgeType life_span_) { life_span = life_span_; }
+        void setPartnerId(const HumanIndexType partner_id_) { partner_id = partner_id_; }
+
     protected:
         bool is_married = false; // 結婚しているかどうか
         std::uint_least8_t birth_interval_count = 0; // 出産の間隔のカウント
