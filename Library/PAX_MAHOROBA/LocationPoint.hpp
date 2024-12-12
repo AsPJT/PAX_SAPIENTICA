@@ -1011,7 +1011,7 @@ namespace paxs {
     static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
         static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                             };
-                            s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, s3d::Color(221, 67, 98));
+                            s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, (marriage_pos.is_matrilocality) ? s3d::Color(221, 67, 98) : s3d::Color(87, 66, 221));
                         }
                     }
                 }

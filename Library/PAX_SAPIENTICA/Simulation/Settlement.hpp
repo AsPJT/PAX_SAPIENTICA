@@ -341,90 +341,52 @@ namespace paxs {
         /// @brief エージェントを取得
         const std::vector<Agent>& cgetAgents() const noexcept { return agents; }
 
+        bool marriagePair(
+            Marriage3& male_settlement_pair,
+            std::discrete_distribution<std::size_t>& csl_dist,
+            const std::vector<std::vector<Settlement>*>& close_settlements_list
+        ) {
+            // 近隣の集落を探し、エージェントIDと集落IDのペアを作成
+            std::size_t i = csl_dist(*gen);
+            if (close_settlements_list.size() <= i) return false; // 配列外
+            const std::vector<Settlement>& close_settlements = (*close_settlements_list[i]);
+
+            const std::size_t close_settlements_size = close_settlements.size();
+            if (close_settlements_size == 0) return false; // 集落が無かったので失敗
+
+            std::uniform_int_distribution<int> dist(0, close_settlements_size - 1);
+            const std::size_t j = static_cast<std::size_t>(dist(*gen));
+            const Settlement& close_settlement = close_settlements[j];
+            if (close_settlement.getPosition().distance_pow2(position) > SimulationConstants::getInstance()->marriage_search_range_pow2) return false; // 婚姻距離内に集落が無いため失敗
+
+            const std::vector<Agent>& close_agent = close_settlement.cgetAgents();
+            for (std::size_t k = 0; k < close_agent.size(); ++k) {
+                if (close_agent[k].isMale() && close_agent[k].getLifeSpan() != 0 && close_agent[k].isAbleToMarriage()) {
+                    // 婚姻可能なエージェントを発見
+                    male_settlement_pair = Marriage3{
+                            static_cast<std::uint_least32_t>(k),
+                        static_cast<std::uint_least32_t>(j),
+                        static_cast<std::uint_least32_t>(i),
+                        close_agent[k].cgetFarming()
+                    };
+                    return true; // 成功
+                }
+            }
+            return false; // 失敗
+        }
+
         /// @brief Marriage.
         /// @brief 婚姻
         void marriage(
             const std::vector<std::vector<Settlement>*>& close_settlements_list,
-
-            // std::vector のメモリ確保・解放のコストを削減するために再利用する
-            /* この入力値は使わない */ std::vector<std::size_t>& marriageable_female_index,
-            /* この入力値は使わない */ std::vector<Marriage3>& male_settlement_pair,
             std::vector<GridType4>& marriage_pos_list
         ) noexcept {
-            // 結婚の条件を満たすエージェントを取得
-            marriageable_female_index.clear();
-            for (std::size_t i = 0; i < agents.size(); ++i) {
-                // 結婚可能かどうか
-                if (agents[i].isFemale() && agents[i].isAbleToMarriage()) {
-                    // 妊娠していたら婚姻しない（婚姻可能と定義すると再婚者のデータで上書きされ子供への継承が不自然になる）
-                    if (agents[i].getBirthIntervalCount() > 0) continue;
-                    // 婚姻するか乱数で決定
-                    if (!isMarried(agents[i].getAge())) continue;
-                    marriageable_female_index.emplace_back(i);
-                }
-            }
-            // 結婚の条件を満たすエージェントがいない
-            if (marriageable_female_index.empty()) {
-                return;
-            }
-            // 農耕度が高い順にソート
-            std::sort(marriageable_female_index.begin(), marriageable_female_index.end(),
-                [&](const std::size_t a, const std::size_t b) {
-                return agents[a].cgetFarming() > agents[b].cgetFarming();
-                });
-
-            // 近隣の集落を探し、エージェントIDと集落IDのペアを作成
-            male_settlement_pair.clear();
-            const double const_marriage_search_range_pow2 = SimulationConstants::getInstance()->marriage_search_range_pow2;
-            for (std::size_t i = 0; i < close_settlements_list.size(); ++i) {
-                if (marriageable_female_index.size() <= male_settlement_pair.size()) break;
-
-                const std::size_t close_settlements_size = close_settlements_list[i]->size();
-                if (close_settlements_size == 0) continue;
-                std::uniform_int_distribution<int> dist(0, close_settlements_size - 1);
-                const std::size_t cs_start = static_cast<std::size_t>(dist(*gen));
-
-                for (std::size_t acs = 0, css = cs_start; acs < close_settlements_size; ++acs, ++css) {
-                    if (marriageable_female_index.size() <= male_settlement_pair.size()) break;
-                    if (css >= close_settlements_size) css -= close_settlements_size;
-
-                    if ((*close_settlements_list[i])[css].getPosition().distance_pow2(position) <= const_marriage_search_range_pow2) {
-                        const std::vector<Agent>& close_agent = (*close_settlements_list[i])[css].cgetAgents();
-                        const std::size_t close_agent_size = close_agent.size();
-                        for (std::size_t ca = 0; ca < close_agent_size; ++ca) {
-                            if (close_agent[ca].isMale() && close_agent[ca].isAbleToMarriage()) {
-                                male_settlement_pair.emplace_back(
-                                    Marriage3{
-                                        static_cast<std::uint_least32_t>(ca),
-                                    static_cast<std::uint_least32_t>(css),
-                                    static_cast<std::uint_least32_t>(i),
-                                    close_agent[ca].cgetFarming()
-                                    });
-                                break; // １集落１人まで
-                            }
-                        }
-                    }
-                }
-            }
-            // 自分の集落を含めて、近くに婚約者がない
-            if (male_settlement_pair.empty()) {
-                PAXS_ERROR("Settlement not found.");
-                return;
-            }
-            // 女性と男性の組み合わせをランダムに選択
-            std::shuffle(male_settlement_pair.begin(), male_settlement_pair.end(), *gen);
-            // 農耕度が高い順にソート
-            std::sort(male_settlement_pair.begin(), male_settlement_pair.end(),
-                [&](const Marriage3 a, const Marriage3 b) {
-                    return a.farming > b.farming;
-                });
-
-            const std::size_t num_elements = (std::min)(marriageable_female_index.size(), male_settlement_pair.size());
+            if (close_settlements_list.size() == 0) return;
 
             // 居住婚
             bool is_matrilocality = false;
             // 選択居住婚
-            //bool is_select_matrilocality = false;
+            bool is_select_matrilocality = false;
 
             // 母方居住婚
             if (SimulationConstants::getInstance()->maternal_residence_probability >= 1.0f) {
@@ -436,51 +398,77 @@ namespace paxs {
             }
             // 選択居住婚
             else {
-                //is_select_matrilocality = true;
-                is_matrilocality = (SimulationConstants::getInstance()->maternal_residence_probability >= SimulationConstants::getInstance()->random_dist_f32(*gen));
+                is_select_matrilocality = true;
             }
 
-            // シミュレーションの設定で母方に移住するか父方に移住するかを決める
-            for (std::size_t i = 0; i < num_elements; ++i) {
-                const std::uint_least32_t pair_agent_index = male_settlement_pair[i].first;
-                const std::uint_least32_t pair_settlement_index = male_settlement_pair[i].second;
-                Settlement& pair_settlement = (*(close_settlements_list[male_settlement_pair[i].third]))[pair_settlement_index];
-                Agent& pair_agent = pair_settlement.getAgents()[pair_agent_index];
+            // 各集落の選定重み
+            std::vector<std::size_t> close_settlements_list_probabilities;
+            std::discrete_distribution<std::size_t> csl_dist;
 
-                Vector2 male_settlement_position = pair_settlement.getPosition();
-                // 母方の場合
-                if (is_matrilocality) {
-                    Agent male_ = pair_agent;
-                    Agent& female_ = agents[marriageable_female_index[i]];
+            // 結婚の条件を満たすエージェントを取得
+            for (auto& female : agents) {
+                // 結婚可能かどうか
+                if (female.isFemale() && female.isAbleToMarriage()) {
+                    // 妊娠していたら婚姻しない（婚姻可能と定義すると再婚者のデータで上書きされ子供への継承が不自然になる）
+                    if (female.getBirthIntervalCount() > 0) continue;
+                    // 婚姻するか乱数で決定
+                    if (!isMarried(female.getAge())) continue;
 
-                    female_.marry(pair_agent.getId(), male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer(), male_.cgetLanguage());
-                    const HumanIndexType female_id = female_.getId();
+                    // 集落グリッドを重み付け
+                    if (close_settlements_list_probabilities.size() == 0) {
+                        for (const auto& close_settlements : close_settlements_list) {
+                            close_settlements_list_probabilities.emplace_back(close_settlements->size());
+                        }
+                        csl_dist = std::discrete_distribution<std::size_t>(
+                            close_settlements_list_probabilities.begin(),
+                            close_settlements_list_probabilities.end()
+                        );
+                    }
 
-                    male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
-                    agents.emplace_back(male_);
+                    Marriage3 male_settlement_pair{};
+                    bool pair_result = false; // ペアが見つかったか？
+                    for (std::size_t pair_loop = 0; pair_loop < 10/*婚姻相手を見つけるループの回数*/ && !pair_result; ++pair_loop) {
+                        pair_result = marriagePair(
+                            male_settlement_pair, csl_dist, close_settlements_list
+                        );
+                    }
+                    // ペアが見つからなかったので婚姻を諦める
+                    if (!pair_result) continue;
 
-                    marriage_pos_list.emplace_back(GridType4{ pair_settlement.position.x, pair_settlement.position.y, position.x, position.y });
+                    // ペアが見つかった場合
+                    const std::uint_least32_t pair_agent_index = male_settlement_pair.first;
+                    const std::uint_least32_t pair_settlement_index = male_settlement_pair.second;
+                    Settlement& pair_settlement = (*(close_settlements_list[male_settlement_pair.third]))[pair_settlement_index];
+                    Agent& male = pair_settlement.getAgents()[pair_agent_index];
+                    // 選択居住婚の場合はどちらの住居に移動するか乱数で決定する
+                    if (is_select_matrilocality) {
+                        is_matrilocality = (SimulationConstants::getInstance()->maternal_residence_probability >= SimulationConstants::getInstance()->random_dist_f32(*gen));
+                    }
+                    // シミュレーションの設定で母方に移住するか父方に移住するかを決める
+                    // 母方の場合
+                    if (is_matrilocality) {
+                        Agent male_copy = male;
+                        female.marry(male_copy.getId(), male_copy.cgetGenome(), male_copy.cgetFarming(), male_copy.cgetHunterGatherer(), male_copy.cgetLanguage());
+                        male_copy.marry(female.getId(), female.cgetGenome(), female.cgetFarming(), female.cgetHunterGatherer(), female.cgetLanguage());
+                        agents.emplace_back(male_copy);
 
-                    pair_agent.setLifeSpan(0);
-                    pair_agent.setPartnerId(0);
-                }
-                // 父方の場合
-                else {
-                    Agent& male_ = pair_agent;
-                    Agent female_ = agents[marriageable_female_index[i]];
+                        marriage_pos_list.emplace_back(GridType4{ pair_settlement.position.x, pair_settlement.position.y, position.x, position.y, is_matrilocality });
 
-                    female_.marry(pair_agent.getId(), male_.cgetGenome(), male_.cgetFarming(), male_.cgetHunterGatherer(), male_.cgetLanguage());
-                    const HumanIndexType female_id = female_.getId();
+                        male.setLifeSpan(0);
+                        male.setPartnerId(0);
+                    }
+                    // 父方の場合
+                    else {
+                        Agent female_copy = female;
+                        female_copy.marry(male.getId(), male.cgetGenome(), male.cgetFarming(), male.cgetHunterGatherer(), male.cgetLanguage());
+                        male.marry(female_copy.getId(), female_copy.cgetGenome(), female_copy.cgetFarming(), female_copy.cgetHunterGatherer(), female_copy.cgetLanguage());
+                        pair_settlement.getAgents().emplace_back(female_copy);
 
-                    male_.marry(female_id, female_.cgetGenome(), female_.cgetFarming(), female_.cgetHunterGatherer(), female_.cgetLanguage());
+                        marriage_pos_list.emplace_back(GridType4{ position.x, position.y, pair_settlement.position.x, pair_settlement.position.y, is_matrilocality });
 
-                    male_settlement_position /= SimulationConstants::getInstance()->cell_group_length;
-                    pair_settlement.getAgents().emplace_back(female_);
-
-                    marriage_pos_list.emplace_back(GridType4{ position.x, position.y, pair_settlement.position.x, pair_settlement.position.y });
-
-                    agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]].setLifeSpan(0);
-                    agents[marriageable_female_index[i/*元婚姻ペア（妻）*/]].setPartnerId(0);
+                        female.setLifeSpan(0);
+                        female.setPartnerId(0);
+                    }
                 }
             }
         }
@@ -491,12 +479,28 @@ namespace paxs {
             birth(kanakuma_life_span);
         }
 
-        /// @brief On update.
-        /// @brief 更新
-        void onUpdate() noexcept {
-            ageUpdate();
-            death();
-            is_moved = false;
+        /// @brief Death.
+        /// @brief 死亡
+        void death() noexcept {
+            for (auto i = 0; i < agents.size();) {
+                // 年齢を１増やす
+                agents[i].incrementAge();
+                // もし死んでいなかったら次のエージェントを見る
+                if (!(agents[i].isDead())) {
+                    ++i;
+                    continue;
+                }
+
+                const HumanIndexType partner_id = agents[i].getPartnerId();
+                if (partner_id != 0) {
+                    auto partnerIt = std::find_if(agents.begin(), agents.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
+                    if (partnerIt != agents.end()) {
+                        partnerIt->divorce();
+                    }
+                }
+                agents[i] = agents.back(); // 同義 it = agents.erase(it);
+                agents.pop_back();
+            }
         }
 
         // A* の経路探索
@@ -647,6 +651,10 @@ namespace paxs {
         /// @brief Get the is_moved.
         /// @brief 移動したかどうかを取得
         bool isMoved() const noexcept { return is_moved; }
+
+        void setIsMoved(const bool is_moved_) noexcept {
+            is_moved = is_moved_;
+        }
 
         /// @brief Get the Bronze.
         /// @brief 青銅を取得
@@ -886,28 +894,6 @@ namespace paxs {
                 agent.incrementAge();
             }
 #endif
-        }
-
-        /// @brief Death.
-        /// @brief 死亡
-        void death() noexcept {
-            for (auto i = 0; i < agents.size();) {
-                if (!(agents[i].isDead())) {
-                    ++i;
-                    continue;
-                }
-
-                const HumanIndexType partner_id = agents[i].getPartnerId();
-                if (partner_id != 0) {
-                    auto partnerIt = std::find_if(agents.begin(), agents.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
-                    if (partnerIt != agents.end()) {
-                        partnerIt->divorce();
-                    }
-                }
-
-                agents[i] = agents.back(); // 同義 it = agents.erase(it);
-                agents.pop_back();
-            }
         }
 
         /// @brief Is the agent married?

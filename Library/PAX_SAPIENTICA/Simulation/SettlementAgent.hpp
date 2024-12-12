@@ -50,6 +50,7 @@ namespace paxs {
         /// @brief Get the id.
         /// @brief idを取得
         constexpr HumanIndexType getId() const noexcept { return id; }
+        constexpr AgeType getLifeSpan() const noexcept { return life_span; }
 
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す

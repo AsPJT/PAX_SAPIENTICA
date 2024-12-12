@@ -321,8 +321,6 @@ namespace paxs {
                         }
                     }
                 }
-                // 近隣９グリッドのシャッフル
-                std::shuffle(close_settlements_list.begin(), close_settlements_list.end(), gen);
                 for (auto& close_settlements : close_settlements_list) {
                     // 青銅交換
                     if (close_settlements->size() >= 2) {
@@ -334,7 +332,6 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     settlement.marriage(
                         close_settlements_list,
-                        marriageable_female_index, male_settlement_pair,
                         marriage_pos_list
                     );
                 }
@@ -345,15 +342,13 @@ namespace paxs {
 
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
-                    settlement.onUpdate();
+                    settlement.death();
+                    settlement.setIsMoved(false);
                 }
             }
-
+            // 集落の削除処理と集落の分割処理
             for (auto& settlement_grid : settlement_grids) {
                 settlement_grid.second.checkSettlements();
-            }
-
-            for (auto& settlement_grid : settlement_grids) {
                 settlement_grid.second.divideSettlements();
             }
 
@@ -365,8 +360,7 @@ namespace paxs {
                 // 渡来数を増やす
                 japan_provinces->update();
             }
-
-            ++step_count;
+            ++step_count; // ステップ数を増やす
             end_time = std::chrono::system_clock::now();  // 計測終了
             processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() / 1000.0);
         }
