@@ -406,7 +406,8 @@ namespace paxs {
             std::discrete_distribution<std::size_t> csl_dist;
 
             // 結婚の条件を満たすエージェントを取得
-            for (auto& female : agents) {
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                Agent& female = agents[i];
                 // 結婚可能かどうか
                 if (female.isFemale() && female.isAbleToMarriage()) {
                     // 妊娠していたら婚姻しない（婚姻可能と定義すると再婚者のデータで上書きされ子供への継承が不自然になる）
@@ -427,7 +428,7 @@ namespace paxs {
 
                     Marriage3 male_settlement_pair{};
                     bool pair_result = false; // ペアが見つかったか？
-                    for (std::size_t pair_loop = 0; pair_loop < 10/*婚姻相手を見つけるループの回数*/ && !pair_result; ++pair_loop) {
+                    for (std::size_t pair_loop = 0; pair_loop < 50/*婚姻相手を見つけるループの回数*/ && !pair_result; ++pair_loop) {
                         pair_result = marriagePair(
                             male_settlement_pair, csl_dist, close_settlements_list
                         );
@@ -448,26 +449,22 @@ namespace paxs {
                     // 母方の場合
                     if (is_matrilocality) {
                         Agent male_copy = male;
-                        female.marry(male_copy.getId(), male_copy.cgetGenome(), male_copy.cgetFarming(), male_copy.cgetHunterGatherer(), male_copy.cgetLanguage());
-                        male_copy.marry(female.getId(), female.cgetGenome(), female.cgetFarming(), female.cgetHunterGatherer(), female.cgetLanguage());
-                        agents.emplace_back(male_copy);
-
-                        marriage_pos_list.emplace_back(GridType4{ pair_settlement.position.x, pair_settlement.position.y, position.x, position.y, is_matrilocality });
-
                         male.setLifeSpan(0);
                         male.setPartnerId(0);
+                        female.marry(male_copy.getId(), male_copy.cgetGenome(), male_copy.cgetFarming(), male_copy.cgetHunterGatherer(), male_copy.cgetLanguage());
+                        male_copy.marry(female.getId(), female.cgetGenome(), female.cgetFarming(), female.cgetHunterGatherer(), female.cgetLanguage());
+                        marriage_pos_list.emplace_back(GridType4{ pair_settlement.position.x, pair_settlement.position.y, position.x, position.y, is_matrilocality });
+                        agents.emplace_back(male_copy);
                     }
                     // 父方の場合
                     else {
                         Agent female_copy = female;
-                        female_copy.marry(male.getId(), male.cgetGenome(), male.cgetFarming(), male.cgetHunterGatherer(), male.cgetLanguage());
-                        male.marry(female_copy.getId(), female_copy.cgetGenome(), female_copy.cgetFarming(), female_copy.cgetHunterGatherer(), female_copy.cgetLanguage());
-                        pair_settlement.getAgents().emplace_back(female_copy);
-
-                        marriage_pos_list.emplace_back(GridType4{ position.x, position.y, pair_settlement.position.x, pair_settlement.position.y, is_matrilocality });
-
                         female.setLifeSpan(0);
                         female.setPartnerId(0);
+                        female_copy.marry(male.getId(), male.cgetGenome(), male.cgetFarming(), male.cgetHunterGatherer(), male.cgetLanguage());
+                        male.marry(female_copy.getId(), female_copy.cgetGenome(), female_copy.cgetFarming(), female_copy.cgetHunterGatherer(), female_copy.cgetLanguage());
+                        marriage_pos_list.emplace_back(GridType4{ position.x, position.y, pair_settlement.position.x, pair_settlement.position.y, is_matrilocality });
+                        pair_settlement.getAgents().emplace_back(female_copy);
                     }
                 }
             }

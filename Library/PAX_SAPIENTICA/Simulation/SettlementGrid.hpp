@@ -78,6 +78,7 @@ namespace paxs {
             if (black_list.size() == SimulationConstants::getInstance()->cell_group_length * SimulationConstants::getInstance()->cell_group_length) {
                 // 居住可能な場所がない
                 PAXS_WARNING("No place to live.");
+                return; // 集落を追加しない
             }
 
             settlement.setPosition(position);
