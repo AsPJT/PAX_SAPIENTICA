@@ -148,10 +148,10 @@ namespace paxs {
             while (life_span_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = life_span_tsv.split('\t');
                 if (
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("jomon_male_ndx")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("jomon_female_ndx")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("yayoi_male_ndx")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("yayoi_female_ndx"))
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer_male_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer_female_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural_male_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural_female_ndx"))
                     ) {
                     PAXS_WARNING("Failed to read Japan LifeSpan TSV file: " + path + " at line " + std::to_string(i));
 
@@ -161,10 +161,10 @@ namespace paxs {
                     life_span.weight_hunter_gatherer_male.emplace_back(0.0);
                     continue;
                 }
-                life_span.weight_farming_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("yayoi_female_ndx")]]));
-                life_span.weight_farming_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("yayoi_male_ndx")]]));
-                life_span.weight_hunter_gatherer_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("jomon_female_ndx")]]));
-                life_span.weight_hunter_gatherer_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("jomon_male_ndx")]]));
+                life_span.weight_farming_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_female_ndx")]]));
+                life_span.weight_farming_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_male_ndx")]]));
+                life_span.weight_hunter_gatherer_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer_female_ndx")]]));
+                life_span.weight_hunter_gatherer_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer_male_ndx")]]));
                 ;
                 // 確率分布を生成
                 life_span.dist_farming_female = std::discrete_distribution<>(life_span.weight_farming_female.begin(), life_span.weight_farming_female.end());
