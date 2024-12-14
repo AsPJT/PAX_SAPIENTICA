@@ -70,6 +70,19 @@ namespace paxs {
     };
 
     /// @brief
+    /// @brief 生命表
+    struct lifeSpan {
+        std::vector<double> weight_farming_female{}; // 農耕民の女性の重み
+        std::vector<double> weight_farming_male{}; // 農耕民の男性の重み
+        std::vector<double> weight_hunter_gatherer_female{}; // 狩猟採集民の女性の重み
+        std::vector<double> weight_hunter_gatherer_male{}; // 狩猟採集民の男性の重み
+        std::discrete_distribution<> dist_farming_female{};
+        std::discrete_distribution<> dist_farming_male{};
+        std::discrete_distribution<> dist_hunter_gatherer_female{};
+        std::discrete_distribution<> dist_hunter_gatherer_male{};
+    };
+
+    /// @brief
     /// @brief 妊娠確率
     struct MarriageProbability {
         std::vector<double> agricultural{}; // 農耕民の確率
@@ -140,7 +153,7 @@ namespace paxs {
         std::uint_least8_t immigration_district_id = 73;
 
         // 青銅量
-        std::uint_least64_t bronze = 100; // 渡来人が持ってくる青銅量
+        std::uint_least64_t bronze = 500; // 渡来人が持ってくる青銅量
 
         // 初期化時の寿命までの最低年数
         AgeType init_lifespan_grace_period = 180;
@@ -180,6 +193,7 @@ namespace paxs {
         double ocean_cost = 0.5; // 海上の通行コスト
         double land_cost = 0.5; // 傾斜度0度の陸上の通行コスト
 
+        lifeSpan life_span;
         MarriageProbability marriage_probability;
         ChildbearingProbability childbearing_probability;
 
@@ -224,6 +238,65 @@ namespace paxs {
         // 項目の ID を返す
         std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
+        }
+
+        AgeType getLifeSpan(const bool is_farming, const bool is_female, std::mt19937& gen) noexcept {
+            return static_cast<AgeType>((is_farming) ?
+                ((is_female) ? life_span.dist_farming_female(gen) :
+                    life_span.dist_farming_male(gen)) :
+                ((is_female) ? life_span.dist_hunter_gatherer_female(gen) :
+                    life_span.dist_hunter_gatherer_male(gen)));
+        }
+
+        void inputLifeSpan() noexcept {
+            std::string path = "";
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
+                [&](const std::string& path_) {path = path_; });
+            path += "/LifeSpan.tsv";
+
+            paxs::InputFile life_span_tsv(path);
+            if (life_span_tsv.fail()) {
+                PAXS_WARNING("Failed to read LifeSpan TSV file: " + path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(life_span_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            life_span_tsv.deleteBOM();
+            // 1 行目を分割する
+            std::unordered_map<std::uint_least32_t, std::size_t> menu = life_span_tsv.splitHashMapMurMur3('\t');
+            std::size_t i = 1;
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (life_span_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = life_span_tsv.split('\t');
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer_male_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer_female_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural_male_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural_female_ndx"))
+                    ) {
+                    PAXS_WARNING("Failed to read Japan LifeSpan TSV file: " + path + " at line " + std::to_string(i));
+
+                    life_span.weight_farming_female.emplace_back(0.0);
+                    life_span.weight_farming_male.emplace_back(0.0);
+                    life_span.weight_hunter_gatherer_female.emplace_back(0.0);
+                    life_span.weight_hunter_gatherer_male.emplace_back(0.0);
+                    ++i;
+                    continue;
+                }
+                life_span.weight_farming_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_female_ndx")]]));
+                life_span.weight_farming_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_male_ndx")]]));
+                life_span.weight_hunter_gatherer_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer_female_ndx")]]));
+                life_span.weight_hunter_gatherer_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer_male_ndx")]]));
+                // 確率分布を生成
+                life_span.dist_farming_female = std::discrete_distribution<>(life_span.weight_farming_female.begin(), life_span.weight_farming_female.end());
+                life_span.dist_farming_male = std::discrete_distribution<>(life_span.weight_farming_male.begin(), life_span.weight_farming_male.end());
+                life_span.dist_hunter_gatherer_female = std::discrete_distribution<>(life_span.weight_hunter_gatherer_female.begin(), life_span.weight_hunter_gatherer_female.end());
+                life_span.dist_hunter_gatherer_male = std::discrete_distribution<>(life_span.weight_hunter_gatherer_male.begin(), life_span.weight_hunter_gatherer_male.end());
+                ++i;
+            }
         }
 
         // 婚姻確率を返す
@@ -381,8 +454,9 @@ namespace paxs {
 
             pregnant_age_min_f64 = childbearing_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
 
-            inputMarriage();
-            inputChildbearing();
+            inputMarriage(); // 婚姻確率
+            inputChildbearing(); // 出産確率
+            inputLifeSpan(); // 生命表
         }
 
         SimulationConstants() {
