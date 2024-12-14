@@ -257,6 +257,7 @@ namespace paxs {
             std::unordered_map<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
             marriage_probability.agricultural.clear();
             marriage_probability.hunter_gatherer.clear();
+            std::size_t i = 1;
             // 1 行ずつ読み込み（区切りはタブ）
             while (probability_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = probability_tsv.split('\t');
@@ -267,10 +268,12 @@ namespace paxs {
                     PAXS_WARNING("Failed to read Japan Marriage TSV file: " + path + " at line " + std::to_string(i));
                     marriage_probability.agricultural.emplace_back(0.0);
                     marriage_probability.hunter_gatherer.emplace_back(0.0);
+                    ++i;
                     continue;
                 }
                 marriage_probability.agricultural.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural")]]));
                 marriage_probability.hunter_gatherer.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
+                ++i;
             }
         }
         void inputChildbearing() noexcept {
@@ -294,6 +297,7 @@ namespace paxs {
             std::unordered_map<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
             childbearing_probability.agricultural.clear();
             childbearing_probability.hunter_gatherer.clear();
+            std::size_t i = 1;
             // 1 行ずつ読み込み（区切りはタブ）
             while (probability_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = probability_tsv.split('\t');
@@ -304,10 +308,12 @@ namespace paxs {
                     PAXS_WARNING("Failed to read Japan Childbearing TSV file: " + path + " at line " + std::to_string(i));
                     childbearing_probability.agricultural.emplace_back(0.0);
                     childbearing_probability.hunter_gatherer.emplace_back(0.0);
+                    ++i;
                     continue;
                 }
                 childbearing_probability.agricultural.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural")]]));
                 childbearing_probability.hunter_gatherer.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
+                ++i;
             }
         }
 

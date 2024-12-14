@@ -117,6 +117,7 @@ namespace paxs {
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("mtdna"))
                     ) {
                     PAXS_WARNING("Failed to read Japan MtDNA_List TSV file: " + path + " at line " + std::to_string(i));
+                    ++i;
                     continue;
                 }
                 mtdna_list.emplace_back(sub_menu_v[menu[MurMur3::calcHash("mtdna")]]);
@@ -142,7 +143,7 @@ namespace paxs {
             life_span_tsv.deleteBOM();
             // 1 行目を分割する
             std::unordered_map<std::uint_least32_t, std::size_t> menu = life_span_tsv.splitHashMapMurMur3('\t');
-
+            std::size_t i = 1;
             // 1 行ずつ読み込み（区切りはタブ）
             while (life_span_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = life_span_tsv.split('\t');
@@ -158,6 +159,7 @@ namespace paxs {
                     life_span.weight_farming_male.emplace_back(0.0);
                     life_span.weight_hunter_gatherer_female.emplace_back(0.0);
                     life_span.weight_hunter_gatherer_male.emplace_back(0.0);
+                    ++i;
                     continue;
                 }
                 life_span.weight_farming_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_female_ndx")]]));
@@ -169,6 +171,7 @@ namespace paxs {
                 life_span.dist_farming_male = std::discrete_distribution<>(life_span.weight_farming_male.begin(), life_span.weight_farming_male.end());
                 life_span.dist_hunter_gatherer_female = std::discrete_distribution<>(life_span.weight_hunter_gatherer_female.begin(), life_span.weight_hunter_gatherer_female.end());
                 life_span.dist_hunter_gatherer_male = std::discrete_distribution<>(life_span.weight_hunter_gatherer_male.begin(), life_span.weight_hunter_gatherer_male.end());
+                ++i;
             }
         }
 
