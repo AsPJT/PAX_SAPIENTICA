@@ -50,6 +50,7 @@ namespace paxs {
         /// @brief Get the id.
         /// @brief idを取得
         constexpr HumanIndexType getId() const noexcept { return id; }
+        constexpr AgeType getLifeSpan() const noexcept { return life_span; }
 
         /// @brief Is the agent dead?
         /// @brief エージェントが死んでいるかどうかを返す
@@ -162,6 +163,10 @@ namespace paxs {
         std::uint_least8_t getBirthIntervalCount() const noexcept { return birth_interval_count; }
         void setBirthIntervalCount(const std::uint_least8_t count) noexcept { birth_interval_count = count; }
         std::uint_least8_t decrementBirthIntervalCount() noexcept { return --birth_interval_count; }
+
+        void setAge(const AgeType age_) { age = age_; }
+        void setLifeSpan(const AgeType life_span_) { life_span = life_span_; }
+        void setPartnerId(const HumanIndexType partner_id_) { partner_id = partner_id_; }
 
     protected:
         bool is_married = false; // 結婚しているかどうか

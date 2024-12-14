@@ -61,6 +61,12 @@ namespace paxs {
     // 始点と終点を管理（婚姻の前後の位置情報を保持する用）
     struct GridType4 {
         GridType sx{}, sy{}, ex{}, ey{};
+        bool is_matrilocality = false;
+    };
+    // 始点と終点を管理（婚姻の前後の位置情報を保持する用）
+    struct Marriage3 {
+        std::uint_least32_t first{}, second{}, third{};
+        std::uint_least8_t farming{};
     };
 
     struct SimulationConstants {

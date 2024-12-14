@@ -297,34 +297,12 @@ namespace paxs {
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
             marriage_pos_list.clear();
 
-            auto&& delete_agent = [this](const std::uint_least32_t agent_id, const std::uint_least32_t settlement_id, const Vector2 key) {
-                auto it = settlement_grids.find(key.to(SettlementGridsType{}));
-                if (it != settlement_grids.end()) {
-                    it->second.deleteAgent(agent_id, settlement_id);
-                }
-                else {
-                    PAXS_ERROR("Settlement grid not found. Key: " + std::to_string(key.x) + ", " + std::to_string(key.y));
-                }
-            };
-
-            auto&& add_agent = [this](const paxs::SettlementAgent agent_, const std::uint_least32_t settlement_id, const Vector2 key) {
-                auto it = settlement_grids.find(key.to(SettlementGridsType{}));
-                if (it != settlement_grids.end()) {
-                    it->second.addAgent(agent_, settlement_id);
-                }
-                else {
-                    PAXS_ERROR("Settlement grid not found. Key: " + std::to_string(key.x) + ", " + std::to_string(key.y));
-                }
-                };
-
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
             // エージェントIDと集落IDのペアを作成
-            std::vector<std::pair<std::uint_least32_t, std::uint_least32_t>> male_settlement_pair;
-            // 婚姻半径内の集落
-            std::vector<Settlement*> marriage_settlements;
+            std::vector<Marriage3> male_settlement_pair;
 
-            // 近隣8グリッドの集落を取得
+            // 近隣９グリッドの集落を取得
             std::vector<std::vector<Settlement>*> close_settlements_list;
 
             for (auto& settlement_grid : settlement_grids) {
@@ -354,8 +332,7 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     settlement.marriage(
                         close_settlements_list,
-                        marriageable_female_index, male_settlement_pair, marriage_settlements,
-                        add_agent, delete_agent, marriage_pos_list
+                        marriage_pos_list
                     );
                 }
             }
@@ -365,15 +342,13 @@ namespace paxs {
 
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
-                    settlement.onUpdate();
+                    settlement.death();
+                    settlement.setIsMoved(false);
                 }
             }
-
+            // 集落の削除処理と集落の分割処理
             for (auto& settlement_grid : settlement_grids) {
                 settlement_grid.second.checkSettlements();
-            }
-
-            for (auto& settlement_grid : settlement_grids) {
                 settlement_grid.second.divideSettlements();
             }
 
@@ -385,8 +360,7 @@ namespace paxs {
                 // 渡来数を増やす
                 japan_provinces->update();
             }
-
-            ++step_count;
+            ++step_count; // ステップ数を増やす
             end_time = std::chrono::system_clock::now();  // 計測終了
             processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() / 1000.0);
         }
