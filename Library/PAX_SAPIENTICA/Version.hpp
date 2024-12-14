@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20241030L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20241214L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [vX.a.a]
@@ -34,12 +34,12 @@
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (10)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (16)
 #endif
 
 // バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.2.10 KIZAMIME TOTTAIMON"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.2.16 KIZAMIME TOTTAIMON"
 #endif
 
 //char name[
@@ -51,6 +51,12 @@
 	更新履歴
 	バージョン	| 更新日		| 概要
 	6.0.1.0.X	| 2024/0X/XX	| コピペ用
+	6.0.1.2.16	| 2024/12/14	| 生活に関するTSVデータ入力の追加 #116
+	6.0.1.2.15	| 2024/12/13	| 婚姻処理の高速化 #115
+	6.0.1.2.14	| 2024/12/10	| シミュレーションの人間・設定初期化ボタン・青銅器変数を追加 #114
+	6.0.1.2.13	| 2024/11/30	| 婚姻処理の高速化 #113
+	6.0.1.2.12	| 2024/11/17	| シミュレーションに婚姻移動表示とグリッド表示機能を追加 #112
+	6.0.1.2.11	| 2024/10/31	| シミュレーション変数の命名変更 #111
 	6.0.1.2.10	| 2024/10/30	| シミュレーション結果の追加 #110
 	6.0.1.2.9	| 2024/10/26	| 渡来人及び地区別の初期時の狩猟採集、農耕、SNP、言語の値の指定機能 #109
 	6.0.1.2.8	| 2024/10/26	| シミュレーションの選択項目のテキストを表示 #109

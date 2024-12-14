@@ -413,7 +413,7 @@ namespace paxs {
                     // 妊娠していたら婚姻しない（婚姻可能と定義すると再婚者のデータで上書きされ子供への継承が不自然になる）
                     if (female.getBirthIntervalCount() > 0) continue;
                     // 婚姻するか乱数で決定
-                    if (!isMarried(female.getAge())) continue;
+                    if (!isMarried(female.getAgeSizeT(), female.cgetFarming() > 0)) continue;
 
                     // 集落グリッドを重み付け
                     if (close_settlements_list_probabilities.size() == 0) {
@@ -842,7 +842,7 @@ namespace paxs {
                     }
                 }
                 // 出産可能かどうか
-                else if (agent.isAbleToGiveBirth() && isAbleToGiveBirth(agent.getAge())) {
+                else if (agent.isAbleToGiveBirth() && isAbleToGiveBirth(agent.getAgeSizeT(), agent.cgetFarming() > 0)) {
                     agent.setBirthIntervalCount(SimulationConstants::getInstance()->birth_interval);
                 }
 
@@ -895,30 +895,20 @@ namespace paxs {
 
         /// @brief Is the agent married?
         /// @brief 確率で結婚するかどうかを返す
-        bool isMarried(const double age) noexcept {
+        bool isMarried(const std::size_t age, const bool is_agricultural) noexcept {
             // 婚姻可能年齢の上限値以上だったら結婚しない
-            if (age >= SimulationConstants::getInstance()->female_marriageable_age_max) return false;
-            auto x = [](double age) { return (age - SimulationConstants::getInstance()->female_marriageable_age_min_f64) / SimulationConstants::getInstance()->marriageable_age_constant; };
-            auto weight = [=](double age) {
-                return std::exp(-std::pow(std::log(x(age)), 2.0) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
-                };
-
-            const double threshold = static_cast<double>(weight(age)) * (SimulationConstants::getInstance()->marriageable_age_threshold / SimulationConstants::getInstance()->marriageable_age_all_weight); // (0.98 / 101.8);
-
+            const double threshold = SimulationConstants::getInstance()->getMarriageProbability(age, is_agricultural);
+            if (threshold == 0.0) return false;
+            if (threshold >= 1.0) return true;
             return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }
 
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
-        bool isAbleToGiveBirth(const double age) noexcept {
-            //return true;// 毎回出産
-            auto x = [](double age) { return (age - SimulationConstants::getInstance()->pregnant_age_min_f64) / SimulationConstants::getInstance()->childbearing_age_constant; };
-            auto weight = [=](double age) {
-                return std::exp(-std::pow(std::log(x(age)), 2.0) / settlement::sigma_p_2_x_2) / (x(age) * settlement::sigma_x_sqrt_2_x_pi);
-                };
-
-            const double threshold = static_cast<double>(weight(age)) * (SimulationConstants::getInstance()->childbearing_age_threshold / SimulationConstants::getInstance()->childbearing_age_all_weight); // (16 / 101.8);
-
+        bool isAbleToGiveBirth(const std::size_t age, const bool is_agricultural) noexcept {
+            const double threshold = SimulationConstants::getInstance()->getChildbearingProbability(age, is_agricultural);
+            if (threshold == 0.0) return false;
+            if (threshold >= 1.0) return true;
             return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
         }
     };

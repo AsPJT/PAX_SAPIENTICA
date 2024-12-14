@@ -142,7 +142,6 @@ namespace paxs {
             life_span_tsv.deleteBOM();
             // 1 行目を分割する
             std::unordered_map<std::uint_least32_t, std::size_t> menu = life_span_tsv.splitHashMapMurMur3('\t');
-            std::size_t i = 1;
 
             // 1 行ずつ読み込み（区切りはタブ）
             while (life_span_tsv.getLine()) {
@@ -165,13 +164,11 @@ namespace paxs {
                 life_span.weight_farming_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_male_ndx")]]));
                 life_span.weight_hunter_gatherer_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer_female_ndx")]]));
                 life_span.weight_hunter_gatherer_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer_male_ndx")]]));
-                ;
                 // 確率分布を生成
                 life_span.dist_farming_female = std::discrete_distribution<>(life_span.weight_farming_female.begin(), life_span.weight_farming_female.end());
                 life_span.dist_farming_male = std::discrete_distribution<>(life_span.weight_farming_male.begin(), life_span.weight_farming_male.end());
                 life_span.dist_hunter_gatherer_female = std::discrete_distribution<>(life_span.weight_hunter_gatherer_female.begin(), life_span.weight_hunter_gatherer_female.end());
                 life_span.dist_hunter_gatherer_male = std::discrete_distribution<>(life_span.weight_hunter_gatherer_male.begin(), life_span.weight_hunter_gatherer_male.end());
-                ++i;
             }
         }
 
@@ -315,7 +312,6 @@ namespace paxs {
             inputMtDNA_Region(japan_provinces_path);
             inputDistrict(japan_provinces_path);
             inputLifeSpan(japan_provinces_path);
-
         }
 
         /// @brief
@@ -488,7 +484,6 @@ namespace paxs {
         //std::vector<std::uint_least32_t> mtdna_region_hash_list; // mtDNA ハッシュ計算用
         std::vector<std::string> mtdna_list; // mtDNA
         lifeSpan life_span;
-
     };
 
 }
