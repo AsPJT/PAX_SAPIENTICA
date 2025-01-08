@@ -56,7 +56,6 @@ namespace paxs {
         explicit SettlementSimulator(const std::string& map_list_path, const std::string& japan_provinces_path, const unsigned seed = 0) noexcept :
             environment(std::make_unique<Environment>(map_list_path)), gen(seed) {
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
-            kanakuma_life_span.japan_provinces = japan_provinces.get();
         }
         /// @brief 環境を設定
         void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, /*const int z,*/ const unsigned seed = 0) noexcept {
@@ -67,7 +66,6 @@ namespace paxs {
 
             japan_provinces.reset();
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
-            kanakuma_life_span.japan_provinces = japan_provinces.get();
         }
 
         /// @brief

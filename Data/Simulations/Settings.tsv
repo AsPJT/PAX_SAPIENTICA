@@ -19,9 +19,6 @@ female_marriageable_age_min	13	女性の最小婚姻可能年齢(歳)
 male_marriageable_age_min	17	男性の最小婚姻可能年齢(歳)
 female_marriageable_age_max	60	女性の最大婚姻可能年齢(歳)
 male_marriageable_age_max	70	男性の最大婚姻可能年齢(歳)
-marriageable_age_constant	8.5	婚姻可能年齢定数
-marriageable_age_threshold	0.98	婚姻可能年齢閾値
-marriageable_age_all_weight	101.8	婚姻可能年齢重み
 #Childbirth --------------------	#出産	--------------------------------------------------
 birth_interval	10	妊娠から出産までのStep間隔(step)
 hunter_gatherer_stillbirth_rate	0	狩猟採集死産率 (no effect)
@@ -29,19 +26,16 @@ agricultural_stillbirth_rate	0	水田稲作死産率 (no effect)
 child_agriculture_priority	0.5	片親が農耕文化を持ち、もう一方の片親が農耕文化を持たない時の農耕文化継承の優先度
 childbearing_age_min	15	出産の最小可能年齢(歳)
 childbearing_age_max	50	出産の最大可能年齢(歳)
-childbearing_age_constant	8.5	出産可能年齢定数
-childbearing_age_threshold	16	出産可能年齢閾値
-childbearing_age_all_weight	101.8	出産可能年齢重み
 #Movement --------------------	#移動	--------------------------------------------------
 max_hunter_gatherer_settlement_population	25	狩猟採集集落の最大人数(人)
 max_agricultural_settlement_population	80	水田稲作集落の最大人数(人)
 min_move_distance	1	最小移動距離(cell)
 max_move_distance	1600	最大移動距離(cell)
-move_probability	0.01	移動確率
+move_probability	0.0021	移動確率
 ocean_cost	1.1	海上の通行コスト
 coast_cost	0.7	海岸の通行コスト
 land_cost	2.5	傾斜度0度の陸上の通行コスト
 move_redo	10	移動再試行回数
 move_method	astar	移動の手法(astar/random)
 move_astar_loop	8	A*を行うルート数
-move_astar_distance	64	A*を行うルート間隔
+move_astar_distance	128	A*を行うルート間隔

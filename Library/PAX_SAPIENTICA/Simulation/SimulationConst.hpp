@@ -69,6 +69,33 @@ namespace paxs {
         std::uint_least8_t farming{};
     };
 
+    /// @brief
+    /// @brief 生命表
+    struct lifeSpan {
+        std::vector<double> weight_farming_female{}; // 農耕民の女性の重み
+        std::vector<double> weight_farming_male{}; // 農耕民の男性の重み
+        std::vector<double> weight_hunter_gatherer_female{}; // 狩猟採集民の女性の重み
+        std::vector<double> weight_hunter_gatherer_male{}; // 狩猟採集民の男性の重み
+        std::discrete_distribution<> dist_farming_female{};
+        std::discrete_distribution<> dist_farming_male{};
+        std::discrete_distribution<> dist_hunter_gatherer_female{};
+        std::discrete_distribution<> dist_hunter_gatherer_male{};
+    };
+
+    /// @brief
+    /// @brief 妊娠確率
+    struct MarriageProbability {
+        std::vector<double> agricultural{}; // 農耕民の確率
+        std::vector<double> hunter_gatherer{}; // 狩猟採集民の確率
+    };
+    /// @brief
+    /// @brief 出産確率
+    struct ChildbearingProbability {
+        std::vector<double> agricultural{}; // 農耕民の確率
+        std::vector<double> hunter_gatherer{}; // 狩猟採集民の確率
+    };
+
+
     struct SimulationConstants {
         // インスタンスを取得
         static SimulationConstants* getInstance() {
@@ -107,14 +134,6 @@ namespace paxs {
         std::uint_least8_t birth_interval = 10;
         // 妊娠可能
         double pregnant_age_min_f64 = childbearing_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
-        // 婚姻可能年齢定数
-        double marriageable_age_constant = 8.5;
-        double marriageable_age_threshold = 0.98;
-        double marriageable_age_all_weight = 101.8;
-        // 出産可能年齢定数
-        double childbearing_age_constant = 8.5;
-        double childbearing_age_threshold = 16.0;
-        double childbearing_age_all_weight = 101.8;
 
         //　結婚時に近くの集落からエージェントを探す際の探索範囲
         std::uint_least32_t marriage_search_range = 60;
@@ -134,7 +153,7 @@ namespace paxs {
         std::uint_least8_t immigration_district_id = 73;
 
         // 青銅量
-        std::uint_least64_t bronze = 100; // 渡来人が持ってくる青銅量
+        std::uint_least64_t bronze = 500; // 渡来人が持ってくる青銅量
 
         // 初期化時の寿命までの最低年数
         AgeType init_lifespan_grace_period = 180;
@@ -174,6 +193,10 @@ namespace paxs {
         double ocean_cost = 0.5; // 海上の通行コスト
         double land_cost = 0.5; // 傾斜度0度の陸上の通行コスト
 
+        lifeSpan life_span;
+        MarriageProbability marriage_probability;
+        ChildbearingProbability childbearing_probability;
+
         std::uniform_real_distribution<float> random_dist_f32 = std::uniform_real_distribution<float>( 0.0f, 1.0f ); // 乱数分布
         std::uniform_real_distribution<double> random_dist = std::uniform_real_distribution<double>( 0.0, 1.0 ); // 乱数分布
         std::uniform_int_distribution<int> step_per_year_dist = std::uniform_int_distribution<int>( 0, 11 ); // 乱数分布
@@ -210,6 +233,161 @@ namespace paxs {
         }
         int getZ() {
             return sr.getZ(area);
+        }
+
+        // 項目の ID を返す
+        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
+            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
+        }
+
+        AgeType getLifeSpan(const bool is_farming, const bool is_female, std::mt19937& gen) noexcept {
+            return static_cast<AgeType>((is_farming) ?
+                ((is_female) ? life_span.dist_farming_female(gen) :
+                    life_span.dist_farming_male(gen)) :
+                ((is_female) ? life_span.dist_hunter_gatherer_female(gen) :
+                    life_span.dist_hunter_gatherer_male(gen)));
+        }
+
+        void inputLifeSpan() noexcept {
+            std::string path = "";
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
+                [&](const std::string& path_) {path = path_; });
+            path += "/LifeSpan.tsv";
+
+            paxs::InputFile life_span_tsv(path);
+            if (life_span_tsv.fail()) {
+                PAXS_WARNING("Failed to read LifeSpan TSV file: " + path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(life_span_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            life_span_tsv.deleteBOM();
+            // 1 行目を分割する
+            std::unordered_map<std::uint_least32_t, std::size_t> menu = life_span_tsv.splitHashMapMurMur3('\t');
+            std::size_t i = 1;
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (life_span_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = life_span_tsv.split('\t');
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer_male_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer_female_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural_male_ndx")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural_female_ndx"))
+                    ) {
+                    PAXS_WARNING("Failed to read Japan LifeSpan TSV file: " + path + " at line " + std::to_string(i));
+
+                    life_span.weight_farming_female.emplace_back(0.0);
+                    life_span.weight_farming_male.emplace_back(0.0);
+                    life_span.weight_hunter_gatherer_female.emplace_back(0.0);
+                    life_span.weight_hunter_gatherer_male.emplace_back(0.0);
+                    ++i;
+                    continue;
+                }
+                life_span.weight_farming_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_female_ndx")]]));
+                life_span.weight_farming_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_male_ndx")]]));
+                life_span.weight_hunter_gatherer_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer_female_ndx")]]));
+                life_span.weight_hunter_gatherer_male.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer_male_ndx")]]));
+                // 確率分布を生成
+                life_span.dist_farming_female = std::discrete_distribution<>(life_span.weight_farming_female.begin(), life_span.weight_farming_female.end());
+                life_span.dist_farming_male = std::discrete_distribution<>(life_span.weight_farming_male.begin(), life_span.weight_farming_male.end());
+                life_span.dist_hunter_gatherer_female = std::discrete_distribution<>(life_span.weight_hunter_gatherer_female.begin(), life_span.weight_hunter_gatherer_female.end());
+                life_span.dist_hunter_gatherer_male = std::discrete_distribution<>(life_span.weight_hunter_gatherer_male.begin(), life_span.weight_hunter_gatherer_male.end());
+                ++i;
+            }
+        }
+
+        // 婚姻確率を返す
+        double getMarriageProbability(const std::size_t age_, const bool is_agricultural) const noexcept {
+            return (is_agricultural) ? marriage_probability.agricultural[age_] :
+                marriage_probability.hunter_gatherer[age_];
+        }
+        // 出産確率を返す
+        double getChildbearingProbability(const std::size_t age_, const bool is_agricultural) const noexcept {
+            return (is_agricultural) ? childbearing_probability.agricultural[age_] :
+                childbearing_probability.hunter_gatherer[age_];
+        }
+
+        void inputMarriage() noexcept {
+            std::string path = "";
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
+                [&](const std::string& path_) {path = path_; });
+            path += "/Marriage.tsv";
+            paxs::InputFile probability_tsv(path);
+            if (probability_tsv.fail()) {
+                PAXS_WARNING("Failed to read Marriage TSV file: " + path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(probability_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            probability_tsv.deleteBOM();
+            // 1 行目を分割する
+            std::unordered_map<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
+            marriage_probability.agricultural.clear();
+            marriage_probability.hunter_gatherer.clear();
+            std::size_t i = 1;
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (probability_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = probability_tsv.split('\t');
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural"))
+                    ) {
+                    PAXS_WARNING("Failed to read Japan Marriage TSV file: " + path + " at line " + std::to_string(i));
+                    marriage_probability.agricultural.emplace_back(0.0);
+                    marriage_probability.hunter_gatherer.emplace_back(0.0);
+                    ++i;
+                    continue;
+                }
+                marriage_probability.agricultural.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural")]]));
+                marriage_probability.hunter_gatherer.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
+                ++i;
+            }
+        }
+        void inputChildbearing() noexcept {
+            std::string path = "";
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
+                [&](const std::string& path_) {path = path_; });
+            if (path.size() == 0) return;
+            path += "/Childbearing.tsv";
+            paxs::InputFile probability_tsv(path);
+            if (probability_tsv.fail()) {
+                PAXS_WARNING("Failed to read Childbearing TSV file: " + path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(probability_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            probability_tsv.deleteBOM();
+            // 1 行目を分割する
+            std::unordered_map<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
+            childbearing_probability.agricultural.clear();
+            childbearing_probability.hunter_gatherer.clear();
+            std::size_t i = 1;
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (probability_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = probability_tsv.split('\t');
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural"))
+                    ) {
+                    PAXS_WARNING("Failed to read Japan Childbearing TSV file: " + path + " at line " + std::to_string(i));
+                    childbearing_probability.agricultural.emplace_back(0.0);
+                    childbearing_probability.hunter_gatherer.emplace_back(0.0);
+                    ++i;
+                    continue;
+                }
+                childbearing_probability.agricultural.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural")]]));
+                childbearing_probability.hunter_gatherer.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
+                ++i;
+            }
         }
 
         void init() {
@@ -249,13 +427,6 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("marriage_search_range"), [&](const std::string& str_) {marriage_search_range = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             marriage_search_range_pow2 = marriage_search_range * marriage_search_range;
 
-            stoiFunc(kvt, MurMur3::calcHash("marriageable_age_constant"), [&](const std::string& str_) {marriageable_age_constant = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("marriageable_age_threshold"), [&](const std::string& str_) {marriageable_age_threshold = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("marriageable_age_all_weight"), [&](const std::string& str_) {marriageable_age_all_weight = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("childbearing_age_constant"), [&](const std::string& str_) {childbearing_age_constant = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("childbearing_age_threshold"), [&](const std::string& str_) {childbearing_age_threshold = std::stod(str_); });
-            stoiFunc(kvt, MurMur3::calcHash("childbearing_age_all_weight"), [&](const std::string& str_) {childbearing_age_all_weight = std::stod(str_); });
-
             stoiFunc(kvt, MurMur3::calcHash("cell_group_length"), [&](const std::string& str_) {cell_group_length = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_start_steps"), [&](const std::string& str_) {immigration_start_steps = static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_end_steps"), [&](const std::string& str_) {immigration_end_steps = static_cast<std::uint_least64_t>(std::stoul(str_)); });
@@ -282,6 +453,10 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("land_cost"), [&](const std::string& str_) {land_cost = std::stod(str_); });
 
             pregnant_age_min_f64 = childbearing_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
+
+            inputMarriage(); // 婚姻確率
+            inputChildbearing(); // 出産確率
+            inputLifeSpan(); // 生命表
         }
 
         SimulationConstants() {

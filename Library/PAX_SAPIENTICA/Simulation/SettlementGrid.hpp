@@ -177,10 +177,10 @@ namespace paxs {
         /// @brief 集落を分割する
         void divideSettlements() noexcept {
             // 人口が最大人口を超えている集落を複数探し、分割する
-            for (auto& settlement : settlements) {
-                if (settlement.getPopulationWeight() >= 1.0) {
+            for (std::size_t i = 0; i < settlements.size(); ++i) {
+                if (settlements[i].getPopulationWeight() >= 1.0) {
                     // 分割
-                    Settlement divided_settlement = settlement.divide();
+                    Settlement divided_settlement = settlements[i].divide();
                     moveSettlementToThis(divided_settlement);
                 }
             }
