@@ -204,7 +204,8 @@ MurMur3::calcHash("uk-UA"),
 MurMur3::calcHash("ru-RU"),
 MurMur3::calcHash("id-ID"),
 MurMur3::calcHash("fa-IR"),
-MurMur3::calcHash("ar-SA")
+MurMur3::calcHash("ar-SA"),
+MurMur3::calcHash("ain")
         };
         std::vector<std::string> path_list = {
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
@@ -227,7 +228,8 @@ MurMur3::calcHash("ar-SA")
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
             "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf",
-            "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf"
+            "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"
         };
 
         // プルダウンのフォントサイズ
@@ -747,6 +749,16 @@ MurMur3::calcHash("ar-SA")
                         (*one_font).drawTopRight(std::to_string(map_view.getHeight()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 30), paxg::Color(0, 0, 0));
 
+                        //map_view.setHeight(11.0);
+                        //map_view.setCenterX(134.0);
+                        //map_view.setCenterY(36.8);
+
+                        if (visible[MurMur3::calcHash(8, "Simulation")]) {
+                            (*one_font).drawTopRight(std::to_string(map_view.getCenterX()),
+                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
+                            (*one_font).drawTopRight(std::to_string(map_view.getCenterY()),
+                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
+                        }
 #ifdef PAXS_USING_SIMULATOR
                         if (simulator != nullptr) {
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
