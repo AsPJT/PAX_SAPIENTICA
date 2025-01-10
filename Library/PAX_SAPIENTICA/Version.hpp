@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20241214L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20250110L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [vX.a.a]
@@ -29,17 +29,17 @@
 
 // PAX_SAPIENTICA 補助バージョン  [v6.0.a.X.a]
 #ifndef PAX_SAPIENTICA_LIBRARY_MINOR
-#define PAX_SAPIENTICA_LIBRARY_MINOR (2)
+#define PAX_SAPIENTICA_LIBRARY_MINOR (3)
 #endif
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (16)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
 #endif
 
 // バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.2.16 KIZAMIME TOTTAIMON"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.3.0 KAMUY YUKAR"
 #endif
 
 //char name[
@@ -51,6 +51,7 @@
 	更新履歴
 	バージョン	| 更新日		| 概要
 	6.0.1.0.X	| 2024/0X/XX	| コピペ用
+    6.0.1.3.0   | 2025/01/10    | 画面に表示する情報を追加 #117
 	6.0.1.2.16	| 2024/12/14	| 生活に関するTSVデータ入力の追加 #116
 	6.0.1.2.15	| 2024/12/13	| 婚姻処理の高速化 #115
 	6.0.1.2.14	| 2024/12/10	| シミュレーションの人間・設定初期化ボタン・青銅器変数を追加 #114
