@@ -753,11 +753,17 @@ MurMur3::calcHash("ain")
                         //map_view.setCenterX(134.0);
                         //map_view.setCenterY(36.8);
 
-                        if (visible[MurMur3::calcHash(8, "Simulation")]) {
-                            (*one_font).drawTopRight(std::to_string(map_view.getCenterX()),
-                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
-                            (*one_font).drawTopRight(std::to_string(map_view.getCenterY()),
-                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
+#ifdef PAXS_USING_SIMULATOR
+                        if (simulator == nullptr) {
+#else
+                            {
+#endif
+                            if (visible[MurMur3::calcHash(8, "Simulation")]) {
+                                (*one_font).drawTopRight(std::to_string(map_view.getCenterX()),
+                                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
+                                (*one_font).drawTopRight(std::to_string(map_view.getCenterY()),
+                                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
+                            }
                         }
 #ifdef PAXS_USING_SIMULATOR
                         if (simulator != nullptr) {
