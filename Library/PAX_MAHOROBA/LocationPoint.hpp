@@ -32,6 +32,7 @@
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Circle.hpp>
+#include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
@@ -42,6 +43,10 @@
 ##########################################################################################*/
 
 namespace paxs {
+
+    constexpr double days_in_a_year = 365.2425;
+    constexpr double julian_day_on_m1_1_1 = 1721060.0;
+
     // 地名
     struct LocationPoint {
         constexpr explicit LocationPoint() = default;
@@ -56,10 +61,11 @@ namespace paxs {
             const int min_year_,  // 可視化する時代（古い年～）
             const int max_year_,  // 可視化する時代（～新しい年）
             const std::uint_least32_t lpe_,  // 対象となる地物の種別
-            const std::uint_least32_t place_texture_ // 出典
+            const std::uint_least32_t place_texture_, // 出典
+            const double zoom_ // 拡大率
         ) noexcept
             : place_name(place_name_), coordinate(coordinate_), x_size(x_size_), y_size(y_size_), overall_length(overall_length_),
-            min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_) {}
+            min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_), zoom(zoom_){}
 
         std::unordered_map<std::uint_least32_t, std::string> place_name{}; // 地名
         paxs::MercatorDeg coordinate{}; // 経緯度
@@ -70,6 +76,7 @@ namespace paxs {
         int min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t lpe = MurMur3::calcHash("place_name"); // 対象となる地物の種別
         std::uint_least32_t place_texture = 0; // 地物の画像
+        double zoom = 1.0; // 拡大率
     };
 
     // 地物の一覧
@@ -123,6 +130,7 @@ namespace paxs {
                     MurMur3::calcHash("agent1") :
                     MurMur3::calcHash("agent2")
                     , 0 /*出典無し*/
+                    , 1.0 // 拡大率
                 );
             }
             location_point_list_list.emplace_back(location_point_list,
@@ -160,6 +168,10 @@ namespace paxs {
             const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash("first_julian_day"));
             const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash("last_julian_day"));
             const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
+            const std::size_t zoom_size = getMenuIndex(menu, MurMur3::calcHash("zoom"));
+
+            const std::size_t first_year = getMenuIndex(menu, MurMur3::calcHash("first_year"));
+            const std::size_t last_year = getMenuIndex(menu, MurMur3::calcHash("last_year"));
 
 
             // 1 行ずつ読み込み（区切りはタブ）
@@ -186,19 +198,37 @@ namespace paxs {
                         99999999.0 : std::stod(strvec[maximum_size]));
                 // 可視化する時代（古い年～）
                 const int min_year = (first_julian_day >= strvec.size()) ?
-                    -99999999 : ((strvec[first_julian_day].size() == 0) ?
-                        -99999999 : std::stoi(strvec[first_julian_day]));
+                    (first_year >= strvec.size()) ?
+                    -99999999 : ((strvec[first_year].size() == 0) ?
+                        -99999999 : int(std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1))
+                    : ((strvec[first_julian_day].size() == 0) ?
+                        (first_year >= strvec.size()) ?
+                        -99999999 : ((strvec[first_year].size() == 0) ?
+                            -99999999 : int(std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1))
+                        : std::stoi(strvec[first_julian_day]));
                 // 可視化する時代（～新しい年）
                 const int max_year = (last_julian_day >= strvec.size()) ?
-                    99999999 : ((strvec[last_julian_day].size() == 0) ?
-                        99999999 : std::stoi(strvec[last_julian_day]));
+                    (last_year >= strvec.size()) ?
+                    99999999 : ((strvec[last_year].size() == 0) ?
+                        99999999 : int(std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1))
+                    : ((strvec[last_julian_day].size() == 0) ?
+                        (last_year >= strvec.size()) ?
+                        99999999 : ((strvec[last_year].size() == 0) ?
+                            99999999 : int(std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1))
+                        : std::stoi(strvec[last_julian_day]));
+
                 // 画像
                 const std::uint_least32_t place_texture_hash = (place_texture >= strvec.size()) ?
                     0 : ((strvec[place_texture].size() == 0) ?
                         0 : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()));
 
+                // 対象となる地物の種別
+                const double zoom = (zoom_size >= strvec.size()) ?
+                    1.0 : ((strvec[zoom_size].size() == 0) ?
+                        1.0 : std::stod(strvec[zoom_size]));
+
                 // 地物を追加
-                inputPlace(strvec[file_path], min_view, max_view, min_year, max_year, type, place_texture_hash);
+                inputPlace(strvec[file_path], min_view, max_view, min_year, max_year, type, place_texture_hash, zoom);
             }
         }
 
@@ -280,7 +310,7 @@ namespace paxs {
                         const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                         // 描画
                         if (texture.find(place_tex) != texture.end()) {
-                            const int len = int(lli.overall_length / 2);
+                            const int len = int(lli.overall_length / 2 * lli.zoom);
                             if (lli.x_size <= 1) {
                                 if (lli.y_size <= 1) {
                                     texture.at(place_tex).resizedDrawAt(len, draw_pos);
@@ -292,9 +322,15 @@ namespace paxs {
                                 }
                             }
                             else {
+                                const std::uint_least16_t split_count = 10;
                                 if (lli.y_size <= 1) {
-                                    for (std::uint_least16_t ix = 0; ix < lli.x_size; ++ix) {
-                                        texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ix * 4, draw_pos.y() });
+                                    for (std::uint_least16_t ix = 0, ixx = 0, iyy = 0; ix < lli.x_size; ++ix, ++ixx) {
+                                        if (ix != 0 && ix % split_count == 0) {
+                                            ixx = 0;
+                                            ++iyy;
+                                        }
+                                        texture.at(place_tex).resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + ixx * 6, draw_pos.y() + iyy * 4 });
+
                                     }
                                 }
                                 else {
@@ -393,7 +429,8 @@ namespace paxs {
             const int min_year_,  // 可視化する時代（古い年～）
             const int max_year_,  // 可視化する時代（～新しい年）
             const std::uint_least32_t lpe_,  // 対象となる地物の種別
-            const std::uint_least32_t place_texture_ // 出典
+            const std::uint_least32_t place_texture_, // 出典
+            const double zoom_ // 拡大率
         ) {
 
             std::vector<LocationPoint> location_point_list{}; // 地物の一覧
@@ -428,6 +465,9 @@ namespace paxs {
             const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash("first_julian_day"));
             const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash("last_julian_day"));
             const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
+
+            const std::size_t first_year = getMenuIndex(menu, MurMur3::calcHash("first_year"));
+            const std::size_t last_year = getMenuIndex(menu, MurMur3::calcHash("last_year"));
 
             // 地名
             const std::size_t language_ja_jp = getMenuIndex(menu, MurMur3::calcHash("ja-JP"));
@@ -472,7 +512,13 @@ namespace paxs {
                 start_latitude = (std::min)(start_latitude, point_latitude);
                 end_longitude = (std::max)(end_longitude, point_longitude);
                 end_latitude = (std::max)(end_latitude, point_latitude);
-                
+
+                auto first_jd = int((first_julian_day >= strvec.size()) ? min_year_ : (strvec[first_julian_day].size() == 0) ? min_year_ : std::stod(strvec[first_julian_day]));
+                if(first_jd == min_year_) first_jd = int((first_year >= strvec.size()) ? min_year_ : (strvec[first_year].size() == 0) ? min_year_ : std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1);
+
+                auto last_jd = int((last_julian_day >= strvec.size()) ? max_year_ : (strvec[last_julian_day].size() == 0) ? max_year_ : std::stod(strvec[last_julian_day]));
+                if (last_jd == max_year_) last_jd = int((last_year >= strvec.size()) ? max_year_ : (strvec[last_year].size() == 0) ? max_year_ : std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1);
+
                 // 格納
                 location_point_list.emplace_back(
                     place_name,
@@ -485,10 +531,11 @@ namespace paxs {
                     (!is_overall_length) ? 10.0 : (strvec[overall_length].size() == 0) ? 10.0 : std::stod(strvec[overall_length]), // 全長
                     (minimum_size >= strvec.size()) ? min_view_ : (strvec[minimum_size].size() == 0) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
                     (maximum_size >= strvec.size()) ? max_view_ : (strvec[maximum_size].size() == 0) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
-                    (first_julian_day >= strvec.size()) ? min_year_ : (strvec[first_julian_day].size() == 0) ? 99999999 : std::stod(strvec[first_julian_day]), // 最小時代
-                    (last_julian_day >= strvec.size()) ? max_year_ : (strvec[last_julian_day].size() == 0) ? max_year_ : std::stod(strvec[last_julian_day]), // 最大時代
+                    first_jd, // 最小時代
+                    last_jd, // 最大時代
                     lpe_,
-                    (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()) // テクスチャの Key
+                    (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()), // テクスチャの Key
+                    zoom_
                 );
             }
             // 地物を何も読み込んでいない場合は何もしないで終わる
@@ -508,6 +555,16 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
     // エージェントの位置を管理
     class AgentLocation {
+    private:
+        std::size_t select_draw = 1;
+        // 線を表示するか
+        bool is_line = false;
+        // 移動線（矢印）を表示するか
+        bool is_arrow = true;
+#ifdef PAXS_USING_SIV3D
+        // 選択肢を表示するフォント
+        const s3d::Font select_font{ 30, s3d::Typeface::Bold };
+#endif
     public:
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
@@ -529,7 +586,7 @@ namespace paxs {
 
             // 色付き
             switch (pop_) {
-            case 0: return paxg::Color(45, 87, 154);
+            case 0: return paxg::Color(45, 87, 154); // 青
             case 1: return paxg::Color(36, 92, 156);
             case 2: return paxg::Color(27, 96, 158);
             case 3: return paxg::Color(18, 101, 161);
@@ -554,7 +611,7 @@ namespace paxs {
             case 22: return paxg::Color(0, 138, 104);
             case 23: return paxg::Color(0, 136, 94);
             case 24: return paxg::Color(0, 133, 83);
-            case 25: return paxg::Color(0, 131, 72);
+            case 25: return paxg::Color(0, 131, 72); // 緑
             case 26: return paxg::Color(6, 136, 60);
             case 27: return paxg::Color(13, 141, 48);
             case 28: return paxg::Color(19, 145, 37);
@@ -574,7 +631,7 @@ namespace paxs {
             case 42: return paxg::Color(208, 205, 10);
             case 43: return paxg::Color(216, 205, 6);
             case 44: return paxg::Color(223, 206, 3);
-            case 45: return paxg::Color(230, 207, 0);
+            case 45: return paxg::Color(230, 207, 0); // 黄
             case 46: return paxg::Color(228, 202, 1);
             case 47: return paxg::Color(226, 197, 2);
             case 48: return paxg::Color(225, 191, 3);
@@ -593,7 +650,7 @@ namespace paxs {
             case 61: return paxg::Color(193, 64, 28);
             case 62: return paxg::Color(189, 56, 34);
             case 63: return paxg::Color(186, 48, 40);
-            case 64: return paxg::Color(182, 40, 46);
+            case 64: return paxg::Color(182, 40, 46); // 赤
             case 65: return paxg::Color(179, 32, 52);
             case 66: return paxg::Color(178, 31, 57);
             case 67: return paxg::Color(176, 30, 62);
@@ -616,10 +673,58 @@ namespace paxs {
 
     public:
 
+        void drawText() {
+#ifdef PAXS_USING_SIV3D
+            constexpr int start_x = 40; // 背景端の左上の X 座標
+            constexpr int start_y = 80; // 背景端の左上の Y 座標
+            constexpr int font_space = 20; // 文字端から背景端までの幅
+            s3d::String text = U""; // 表示するテキスト
+            switch (select_draw)
+            {
+            case 1:
+                text = U"1. 人口 Population";
+                break;
+            case 2:
+                text = U"2. 農耕文化 Farming";
+                break;
+            case 3:
+                text = U"3. mtDNA haplogroup";
+                break;
+            case 4:
+                text = U"4. SNP / Genome";
+                break;
+            case 5:
+                text = U"5. 言語 Language";
+                break;
+            case 6:
+                text = U"6. 青銅 Bronze";
+                break;
+            };
+            // 選択項目を描画
+            const s3d::RectF rect = select_font(text).region();
+            s3d::RoundRect{ start_x, start_y, rect.w + font_space * 2, rect.h + font_space * 2, 10 }.draw();
+            select_font(text).draw(start_x + font_space, start_y + font_space, s3d::Palette::Black);
+#endif
+        }
+
         void draw(const double jdn,
             std::unordered_map<SettlementGridsType, paxs::SettlementGrid>& agents,
+            const std::vector<GridType4>& marriage_pos_list,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
-        )const {
+        )/*const Siv3D Key は非 const */ {
+
+#ifdef PAXS_USING_SIV3D
+            if (s3d::Key1.pressed()) select_draw = 1;
+            else if (s3d::Key2.pressed()) select_draw = 2;
+            else if (s3d::Key3.pressed()) select_draw = 3;
+            else if (s3d::Key4.pressed()) select_draw = 4;
+            else if (s3d::Key5.pressed()) select_draw = 5;
+            else if (s3d::Key6.pressed()) select_draw = 6;
+            // グリッド線を描画する
+            else if (s3d::KeyL.up()) is_line = (!is_line);
+            else if (s3d::KeyK.up()) is_arrow = (!is_arrow);
+#endif
+
             // 地名を描画
             for (const auto& agent : agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
@@ -628,14 +733,11 @@ namespace paxs {
                         std::unordered_map < std::uint_least32_t, std::string>(),
                             paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
                             paxs::Vector2<int>(
-                    settlement.getPosition().x,
-                        settlement.getPosition().y
-                            )
-                            , 10)),
+                    settlement.getPosition().x,settlement.getPosition().y), 10)),
                             1, 1, 10, 100,0,0,99999999,
-                        //(agent.getGender()) ?
                         MurMur3::calcHash("agent1")
                         ,0 /* 出典なし */
+                        ,1.0 // 拡大率
                     };
 
                     // 経緯度の範囲外を除去
@@ -645,10 +747,7 @@ namespace paxs {
                         || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
 
                     // 範囲内の場合
-                    if (lli.min_view > map_view_height
-                        || lli.max_view < map_view_height
-                        || lli.min_year > jdn
-                        || lli.max_year < jdn) {
+                    if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
                         if (lli.min_year > jdn) continue;
                         if (lli.max_year < jdn) continue;
 
@@ -660,22 +759,264 @@ namespace paxs {
 
                         // エージェント
                         // if (lli.lpe == MurMur3::calcHash("agent1"))
-                        {
-                            // const std::size_t pop_original = settlement.getFarmingPopulation(); // settlement.getPopulation();
-                            //const float pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0f; // settlement.getPopulation();
-                            //const float pop_original = settlement.getMostMtDNA() / 27.0f * 75.0f; // settlement.getPopulation();
-                            const double pop_original = settlement.getSNP() * 75.0; // settlement.getPopulation();
+                        if (select_draw != 5) {
+                            double pop_original = 0.0;
+                            switch (select_draw)
+                            {
+                            case 1:
+                                // const std::size_t
+                                // pop_original = settlement.getFarmingPopulation();
+                                pop_original = static_cast<double>(settlement.getPopulation());
+                                break;
+                            case 2:
+                                //const float
+                                pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0;
+                                break;
+                            case 3:
+                                //const float
+                                pop_original = settlement.getMostMtDNA() / 27.0 * 75.0;
+                                break;
+                            case 4:
+                                //const double
+                                pop_original = settlement.getSNP() * 75.0;
+                                break;
+                            case 6:
+                                pop_original = static_cast<double>(settlement.getBronze());
+                                break;
+                            }
 
                             const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,
                                 1.0f + (settlement.getPopulation() / 40.0f)//2.0f
                             ).draw(getColor(pop));
                         }
+                        else {
+                            paxg::Color language_color = paxg::Color(99, 99, 99); // 灰色
+                            switch (settlement.getLanguage())
+                            {
+                            case 0:
+                                language_color = paxg::Color(99, 99, 99); // 灰色
+                                break;
+                            case 1:
+                                language_color = paxg::Color(0, 131, 72); // 緑色
+                                break;
+                            case 2:
+                                language_color = paxg::Color(45, 87, 154); // 青色
+                                break;
+                            case 3:
+                                language_color = paxg::Color(182, 40, 46); // 赤色
+                                break;
+                            case 4:
+                                language_color = paxg::Color(230, 207, 0); // 黄色
+                                break;
+                            }
+                            paxg::Circle(draw_pos,
+                                1.0f + (settlement.getPopulation() / 40.0f)//2.0f
+                            ).draw(language_color);
+                        }
 
                     }
-
                 }
             }
+#ifdef PAXS_USING_SIV3D
+            // グリッド線を描画
+            if (is_line) {
+                const auto area_width = SimulationConstants::getInstance()->getEndArea().x - SimulationConstants::getInstance()->getStartArea().x;
+                const auto area_height = SimulationConstants::getInstance()->getEndArea().y - SimulationConstants::getInstance()->getStartArea().y;
+
+                const paxs::MercatorDeg start_coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                    paxs::Vector2<int>(0, 0), 10));
+                const paxg::Vec2f draw_start_pos = paxg::Vec2f{
+    static_cast<float>((start_coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<float>(double(paxg::Window::height()) - ((start_coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                };
+                const paxs::MercatorDeg end_coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                    paxs::Vector2<int>(area_width * 256, area_height * 256), 10));
+                const paxg::Vec2f draw_end_pos = paxg::Vec2f{
+    static_cast<float>((end_coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<float>(double(paxg::Window::height()) - ((end_coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                };
+                const paxs::MercatorDeg tile_coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                    paxs::Vector2<int>(SimulationConstants::getInstance()->cell_group_length, SimulationConstants::getInstance()->cell_group_length), 10));
+                const paxg::Vec2f tile_pos = paxg::Vec2f{
+    static_cast<float>((tile_coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())) - draw_start_pos.x(),
+        static_cast<float>(double(paxg::Window::height()) - ((tile_coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))) - draw_start_pos.y()
+                };
+
+                paxg::Line(
+                    static_cast<float>(draw_start_pos.x()), static_cast<float>(draw_start_pos.y()),
+                    static_cast<float>(draw_start_pos.x()), static_cast<float>(draw_end_pos.y())
+                ).draw(5, paxg::Color(0, 0, 0));
+                paxg::Line(
+                    static_cast<float>(draw_start_pos.x()), static_cast<float>(draw_start_pos.y()),
+                    static_cast<float>(draw_end_pos.x()), static_cast<float>(draw_start_pos.y())
+                ).draw(5, paxg::Color(0, 0, 0));
+                paxg::Line(
+                    static_cast<float>(draw_end_pos.x()), static_cast<float>(draw_start_pos.y()),
+                    static_cast<float>(draw_end_pos.x()), static_cast<float>(draw_end_pos.y())
+                ).draw(5, paxg::Color(0, 0, 0));
+                paxg::Line(
+                    static_cast<float>(draw_start_pos.x()), static_cast<float>(draw_end_pos.y()),
+                    static_cast<float>(draw_end_pos.x()), static_cast<float>(draw_end_pos.y())
+                ).draw(5, paxg::Color(0, 0, 0));
+
+                for (float i = draw_start_pos.x(); i < draw_end_pos.x(); i += tile_pos.x()) {
+                    paxg::Line(
+                        static_cast<float>(i), static_cast<float>(draw_start_pos.y()),
+                        static_cast<float>(i), static_cast<float>(draw_end_pos.y())
+                    ).draw(0.5, paxg::Color(0, 0, 0));
+                }
+                for (float i = draw_start_pos.y(); i < draw_end_pos.y(); i += tile_pos.y()) {
+                    paxg::Line(
+                        static_cast<float>(draw_start_pos.x()), static_cast<float>(i),
+                        static_cast<float>(draw_end_pos.x()), static_cast<float>(i)
+                    ).draw(0.5, paxg::Color(0, 0, 0));
+                }
+            }
+
+            // 移動線を描画
+            if (is_arrow) {
+                for (const auto& agent : agents) {
+                    for (const auto& settlement : agent.second.cgetSettlements()) {
+                        // エージェントの初期設定を定義
+                        const auto lli = LocationPoint{
+                            std::unordered_map < std::uint_least32_t, std::string>(),
+                                paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                paxs::Vector2<int>(
+                        settlement.getPosition().x,settlement.getPosition().y), 10)),
+                                1, 1, 10, 100,0,0,99999999,
+                            MurMur3::calcHash("agent1")
+                            ,0 /* 出典なし */
+                            ,1.0 // 拡大率
+                        };
+
+                        // 経緯度の範囲外を除去
+                        if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
+                            || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
+                            || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
+                            || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+
+                        // 範囲内の場合
+                        if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
+                            if (lli.min_year > jdn) continue;
+                            if (lli.max_year < jdn) continue;
+
+                            // 描画位置
+                            const paxg::Vec2i draw_pos = paxg::Vec2i{
+        static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+            static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            };
+
+                            if (settlement.getOldPosition().x != -1 && settlement.getOldPosition().x != 0) {
+                                if (settlement.getPositions().size() >= 1) {
+
+                                    // 過去の位置
+                                    auto old_lli = lli;
+                                    old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                        paxs::Vector2<int>(
+                                            settlement.getOldPosition().x,
+                                            settlement.getOldPosition().y), 10));
+                                    const paxg::Vec2i draw_old_pos = paxg::Vec2i{
+            static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                    };
+
+                                    s3d::Array<s3d::Vec2> va;
+                                    va << s3d::Vec2{ draw_pos.x(), draw_pos.y() };
+                                    for (auto&& p : settlement.getPositions()) {
+                                        auto one_lli = lli;
+                                        one_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                            paxs::Vector2<int>(p.x, p.y), 10));
+                                        const paxg::Vec2i draw_one_pos = paxg::Vec2i{
+        static_cast<int>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+            static_cast<int>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                        };
+                                        va << s3d::Vec2{ draw_one_pos.x(), draw_one_pos.y() };
+                                    }
+                                    va << s3d::Vec2{ draw_old_pos.x(), draw_old_pos.y() };
+
+                                    const s3d::Spline2D spline(va);
+                                    spline.draw(2, Palette::Black);
+
+                                    // 過去の位置
+                                    auto one_lli = lli;
+                                    one_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                        paxs::Vector2<int>(
+                                            settlement.getPositions()[0].x,
+                                            settlement.getPositions()[0].y), 10));
+                                    const paxg::Vec2i draw_one_pos = paxg::Vec2i{
+            static_cast<int>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                static_cast<int>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                    };
+                                    s3d::Line{ draw_one_pos.x(), draw_one_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(0.1, s3d::Vec2{ 8, 16 }, s3d::Palette::Black);
+                                }
+                                else {
+                                    // 過去の位置
+                                    auto old_lli = lli;
+                                    old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                        paxs::Vector2<int>(
+                                            settlement.getOldPosition().x,
+                                            settlement.getOldPosition().y), 10));
+                                    const paxg::Vec2i draw_old_pos = paxg::Vec2i{
+            static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                    };
+                                    s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, s3d::Palette::Black);
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+                // 移動線を描画
+                for (const auto& marriage_pos : marriage_pos_list) {
+                    // エージェントの初期設定を定義
+                    const auto lli = LocationPoint{
+                        std::unordered_map < std::uint_least32_t, std::string>(),
+                            paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                            paxs::Vector2<int>(
+                    marriage_pos.ex,marriage_pos.ey), 10)),
+                            1, 1, 10, 100,0,0,99999999,
+                        MurMur3::calcHash("agent1")
+                        ,0 /* 出典なし */
+                        ,1.0 // 拡大率
+                    };
+
+                    // 経緯度の範囲外を除去
+                    if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
+                        || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
+                        || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
+                        || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+
+                    // 範囲内の場合
+                    if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
+                        if (lli.min_year > jdn) continue;
+                        if (lli.max_year < jdn) continue;
+
+                        // 描画位置
+                        const paxg::Vec2i draw_pos = paxg::Vec2i{
+    static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                        };
+
+                        if (marriage_pos.sx != -1 && marriage_pos.sx != 0) {
+                            // 過去の位置
+                            auto old_lli = lli;
+                            old_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
+                                paxs::Vector2<int>(
+                                    marriage_pos.sx,
+                                    marriage_pos.sy), 10));
+                            const paxg::Vec2i draw_old_pos = paxg::Vec2i{
+    static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            };
+                            s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, (marriage_pos.is_matrilocality) ? s3d::Color(221, 67, 98) : s3d::Color(87, 66, 221));
+                        }
+                    }
+                }
+        }
+#endif
         }
 
     };

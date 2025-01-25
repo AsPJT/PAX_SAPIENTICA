@@ -1,7 +1,7 @@
 key	value
 XYZTiles	Data/Settings/XYZTiles.tsv
 Languages	Data/Settings/Languages.tsv
-SimulationRange	Data/Simulations/Range.tsv
+SimulationRange	Data/Simulations/Area.tsv
 PlaceNames	Data/Settings/PlaceNames.tsv
 MiniIcons	Data/Settings/MapIcons.tsv
 PersonNames	Data/Settings/PersonNames.tsv

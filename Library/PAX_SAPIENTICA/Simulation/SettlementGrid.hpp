@@ -56,11 +56,11 @@ namespace paxs {
 #endif
 
             // ランダムな位置を探す
-            std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::SimulationConstants::getInstance()->grid_length - 1);
-            std::uniform_int_distribution<> dis_y(grid_position.y, grid_position.y + paxs::SimulationConstants::getInstance()->grid_length - 1);
+            std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::SimulationConstants::getInstance()->cell_group_length - 1);
+            std::uniform_int_distribution<> dis_y(grid_position.y, grid_position.y + paxs::SimulationConstants::getInstance()->cell_group_length - 1);
             Vector2 position;
 
-            while (black_list.size() < SimulationConstants::getInstance()->grid_length * SimulationConstants::getInstance()->grid_length) {
+            while (black_list.size() < SimulationConstants::getInstance()->cell_group_length * SimulationConstants::getInstance()->cell_group_length) {
                 position.x = dis_x(*gen);
                 position.y = dis_y(*gen);
                 if (std::find(black_list.begin(), black_list.end(), position) == black_list.end()) {
@@ -75,9 +75,10 @@ namespace paxs {
             }
 
             // 集落を移動
-            if (black_list.size() == SimulationConstants::getInstance()->grid_length * SimulationConstants::getInstance()->grid_length) {
+            if (black_list.size() == SimulationConstants::getInstance()->cell_group_length * SimulationConstants::getInstance()->cell_group_length) {
                 // 居住可能な場所がない
                 PAXS_WARNING("No place to live.");
+                return; // 集落を追加しない
             }
 
             settlement.setPosition(position);
@@ -176,10 +177,10 @@ namespace paxs {
         /// @brief 集落を分割する
         void divideSettlements() noexcept {
             // 人口が最大人口を超えている集落を複数探し、分割する
-            for (auto& settlement : settlements) {
-                if (settlement.getPopulationWeight() >= 1.0) {
+            for (std::size_t i = 0; i < settlements.size(); ++i) {
+                if (settlements[i].getPopulationWeight() >= 1.0) {
                     // 分割
-                    Settlement divided_settlement = settlement.divide();
+                    Settlement divided_settlement = settlements[i].divide();
                     moveSettlementToThis(divided_settlement);
                 }
             }

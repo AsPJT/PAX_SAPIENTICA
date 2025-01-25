@@ -4,19 +4,19 @@
 
 android {
     namespace = "com.aspjt.mahoroba"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.aspjt.mahoroba"
         minSdk = 26
-        targetSdk = 33
-        versionCode = 2
-        versionName = "1.0.1"
+        targetSdk = 34
+        versionCode = 4
+        versionName = "1.2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                cppFlags += "-std=c++17"
+                cppFlags += "-std=c++2b"
             }
         }
     }

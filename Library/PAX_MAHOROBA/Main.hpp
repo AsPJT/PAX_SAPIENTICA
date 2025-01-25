@@ -8,7 +8,7 @@
     [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
-
+//#define PAXS_DEVELOPMENT
 #ifndef PAX_MAHOROBA_MAIN_HPP
 #define PAX_MAHOROBA_MAIN_HPP
 
@@ -186,14 +186,18 @@ namespace paxs {
             //visible.set(MurMur3::calcHash("Debug"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
             visible.set(MurMur3::calcHash("3D"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(6));
 
-            visible.set(MurMur3::calcHash("tomb"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(0));
-            visible.set(MurMur3::calcHash("stone_coffin"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(1));
-            visible.set(MurMur3::calcHash("dotaku"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(2));
-            visible.set(MurMur3::calcHash("kamekanbo"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(3));
-            visible.set(MurMur3::calcHash("place_name"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(4));
-            visible.set(MurMur3::calcHash("site"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(5));
-            visible.set(MurMur3::calcHash("mtdna"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(6));
-            visible.set(MurMur3::calcHash("doken"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(7));
+            visible.set(MurMur3::calcHash("place_name"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(0));
+            visible.set(MurMur3::calcHash("site"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(1));
+            visible.set(MurMur3::calcHash("tumulus"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(2));
+            visible.set(MurMur3::calcHash("dolmen"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(3));
+            visible.set(MurMur3::calcHash("kamekanbo"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(4));
+            visible.set(MurMur3::calcHash("stone_coffin"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(5));
+            visible.set(MurMur3::calcHash("doken"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(6));
+            visible.set(MurMur3::calcHash("dotaku"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(7));
+            visible.set(MurMur3::calcHash("bronze_mirror"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(8));
+            visible.set(MurMur3::calcHash("human_bone"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(9));
+            visible.set(MurMur3::calcHash("mtdna"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(10));
+            visible.set(MurMur3::calcHash("ydna"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(11));
 
             if (visible[MurMur3::calcHash(2, "3D")]) {
 

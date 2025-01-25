@@ -25,14 +25,18 @@ It has the ability to display calendars for each region in each time period and 
 
 ![Calendar](./Images/Other/Calendar20230709.gif)
 
-## 🏠 Agent-Based Simulation
+## 🏠 Agent-Based Simulation (ABS)
 
 This is an agent-based simulation that estimates settlement and population dynamics in the Japanese archipelago from the 3rd to 7th centuries.
 It was presented at the 48th Annual Meeting of the Japan Association for Archaeoinformatics on December 2, 2023.
 
-![PAX SAPIENTICA Simulation](./Images/Animation/ABS01.gif)
+![PAX SAPIENTICA Simulation](./Images/Animation/ABS20241024.gif)
 
-## [🧬 DNA haplogroup](Data/Genomes/HomoSapiens)
+![PAX SAPIENTICA Simulation](./Images/Animation/mtDNA-Owari.gif)
+
+Figure. Percentage of mitochondrial DNA haplogroups in the Owari Province of Japan by year from 950 BCE to 100 BCE as output by ABS.
+
+## [🧬 DNA Haplogroups](Data/Genomes/HomoSapiens)
 
 This software can handle DNA haplogroup data of ancient human bones.
 
@@ -49,6 +53,23 @@ Ancient human bone mtDNA data registered as of December 21, 2023.
 This software allows you to visualize and move historical figures.
 
 ![PAX SAPIENTICA Movement](./Images/Animation/Person01.gif)
+
+## 📍 Distributions
+
+### Distribution of bronze swords in NortheastAsia
+![bronze swords](./Images/DistributionMaps/BronzeSwordsInNortheastAsia.png)
+
+### Distribution of Zenpokoenfun tombs in Japan
+![Distribution of Zenpokoenfun tombs](./Images/DistributionMaps/Zenpokoenfun.gif)
+
+### Distribution of Yayoi Funkyubo tombs in Japan
+![Distribution of Zenpokoenfun tombs](./Images/DistributionMaps/YayoiFunkyubo.gif)
+
+### Distribution of bronze bells in Japan
+![Distribution of bronze bells](https://upload.wikimedia.org/wikipedia/commons/8/82/DotakuDistribution.png)
+
+### Distribution of weapon-shaped bronzes in Japan
+![Distribution of weapon-shaped bronzes](https://upload.wikimedia.org/wikipedia/commons/f/f4/JapaneseWeaponShapedBronzes.png)
 
 ---
 

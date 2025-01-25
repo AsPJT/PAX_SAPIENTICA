@@ -122,7 +122,7 @@ namespace paxs {
         /// @brief Get the land position list.
         /// @brief 陸の位置リストの取得
         void getLandPositions(std::vector<DataGridsType>& keys) const {
-            std::get<Data<std::uint_least8_t>>(*data_map.at(MurMur3::calcHash("district"))).getKeys(keys);
+            std::get<Data<std::uint_least8_t>>(*data_map.at(SimulationConstants::getInstance()->land_key)).getKeys(keys);
         }
 
         /// @brief Is it possible to live?
@@ -144,6 +144,10 @@ namespace paxs {
                 return 0;
             }
         }
+        // 傾斜データのセル幅を取得
+        int getSlopeCellWidth() {
+            return std::get<Data<std::uint_least8_t>>(*data_map.at(MurMur3::calcHash("slope"))).getCellWidth();
+        }
 
         /// @brief Get elevation.
         /// @brief 標高の取得
@@ -161,13 +165,27 @@ namespace paxs {
         /// @brief 陸地かどうかの判定
         virtual bool isLand(const Vector2& position) const noexcept {
             try {
-                auto value = getData<std::uint_least8_t>(MurMur3::calcHash("district"), position);
+                auto value = getData<std::uint_least8_t>(SimulationConstants::getInstance()->land_key, position);
                 return static_cast<int>(value) >= static_cast<int>(1);
             }
             catch (const std::exception&) {
                 PAXS_ERROR("Failed to get land");
                 return false;
             }
+        }
+        bool isCoast(const Vector2& position) const noexcept {
+            const bool is_land = isLand(position); // 陸かどうか
+            if (!is_land) return false; // 陸ではないので海岸ではない
+            // 隣接セルが陸地ではない場合は海岸
+            if (!isLand(Vector2{ position.x - 1, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x - 1, position.y })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y })) return true;
+            if (!isLand(Vector2{ position.x - 1, position.y + 1 })) return true;
+            if (!isLand(Vector2{ position.x, position.y + 1 })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y + 1 })) return true;
+            return false; // 海岸ではない
         }
 
         /// @brief Is it water?

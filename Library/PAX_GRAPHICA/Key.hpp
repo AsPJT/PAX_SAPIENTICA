@@ -442,6 +442,12 @@ namespace paxs {
         void setHeight(const double height_) {
             height = height_;
         }
+        void setCenterX(const double x_) {
+            center.setX(x_);
+        }
+        void setCenterY(const double y_) {
+            center.setY(y_);
+        }
 
         Coordinate& getCoordinate() {
             return center;

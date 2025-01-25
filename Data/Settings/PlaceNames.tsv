@@ -1,35 +1,44 @@
-﻿file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture
-Data/Features/EastAsia/Yaponesia/SekkanIshikiriba.tsv	stone_coffin	石棺の石切り場	0	0.1			
-Data/Genomes/HomoSapiens/AncientSiberian-Steppe-Baltic-CentralAsian-Caucasus-Y-DNA/mtDNA-Haplogroup.tsv	mtdna	シベリアmtDNA	0.1				
-Data/Genomes/HomoSapiens/HaplogroupInfo/mtDNA-Haplogroup.tsv	mtdna	世界のmtDNA	0.1				
-Data/Genomes/HomoSapiens/Yaponesia/mtDNA-Haplogroup.tsv	mtdna	ヤポネシアmtDNA	0.1				
-aData/Features/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	3			
-Data/Features/TestMap/Hokkaido.tsv	site	北海道の遺跡名	0	0.5			
-Data/Features/EastAsia/Yaponesia/Kango.tsv	site	環濠集落	0	0.1			
-Data/Features/TestMap/Kofun.tsv	tomb	日本の古墳	0	0.1
-Data/Features/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1			
-Data/Features/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	0.1			
-Data/Features/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1			
-Data/Features/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1			
-Data/Features/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1			
-Data/PlaceNames/EastAsia/Yaponesia/KojikiPlaceName.tsv	place_name	古事記の地名	0	2	1721424	1940208	
-Data/PlaceNames/PlaceNames.tsv	place_name	汎用的な地名					
-Data/PlaceNames/EastAsia/Yaponesia/Ryoseikoku.tsv	place_name	令制国名	1				
-Data/PlaceNames/EastAsia/Yaponesia/TohokuAinu.tsv	place_name	東北アイヌ	1		1721424	9999999	
-Data/PlaceNames/EastAsia/Yaponesia/HokkaidoAinu.tsv	place_name	北海道アイヌ	1		1721424	9999999	
-Data/PlaceNames/EastAsia/Yaponesia/SakhalinAinu.tsv	place_name	サハリンアイヌ	1		1721424	9999999	
-Data/PlaceNames/EastAsia/Siberia/KamchatkaAinu.tsv	place_name	カムサスカアイヌ	1		1721424	9999999	
-Data/PlaceNames/EastAsia/Manchuria/Balhae.tsv	place_name	渤海国	1		1976003	2059279	
-Data/PlaceNames/EastAsia/Korea/SamgukSagi.tsv	place_name	三国史記	0.1				
-Data/PlaceNames/EastAsia/Yaponesia/WamyoRuijushoPlaceName.tsv	place_name	倭名類聚抄の地名	0	0.4	1721424	9999999	
-Data/PlaceNames/EastAsia/Yaponesia/WamyoRuijushoKori.tsv	place_name	倭名類聚抄の郡	0.4		1721424		
-Data/PlaceNames/EastAsia/Yaponesia/OmoroSoshiPlaceName.tsv	place_name	おもろさうしの地名	0	1	1721424	9999999	
-Data/PlaceNames/EastAsia/China/China.tsv	place_name	中国大陸の地名	0.1	24	0	9999999	
-Data/PlaceNames/EastAsia/Yaponesia/Geoshape/NRCT.tsv	place_name	『日本歴史地名大系』地名項目データセット	0	0.1	1721424	9999999	
-Data/PlaceNames/Europe/Roma.tsv	place_name	ローマ帝国	1			9999999	
-aData/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石室	0	0.1			
-Data/Items/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	0.1			
-Data/Items/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	0.1			
-Data/Items/EastAsia/Yaponesia/Dotaku.tsv	dotaku	銅鐸	0	0.1			
-Data/Items/EastAsia/Yaponesia/Doken.tsv	doken	銅剣	0	0.1			
-Data/Items/EastAsia/Yaponesia/Yajiri.tsv	yajiri	鏃	0	0.9			
+﻿file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture	zoom
+Data/Features/EastAsia/Yaponesia/SekkanIshikiriba.tsv	stone_coffin	石棺の石切り場	0	0.1				1
+Data/Genomes/HomoSapiens/JomonYayoi.tsv	bone	人骨	0	0.9				1
+Data/Genomes/HomoSapiens/AncientSiberian-Steppe-Baltic-CentralAsian-Caucasus-Y-DNA/mtDNA-Haplogroup.tsv	mtdna	シベリアmtDNA	0.1					1
+Data/Genomes/HomoSapiens/HaplogroupInfo/mtDNA-Haplogroup.tsv	mtdna	世界のmtDNA	0.1					1
+Data/Genomes/HomoSapiens/Yaponesia/mtDNA-Haplogroup.tsv	mtdna	ヤポネシアmtDNA	0.1					1
+aData/Features/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	3				1
+Data/Features/TestMap/Hokkaido.tsv	site	北海道の遺跡名	0	0.5				1
+Data/Features/EastAsia/Yaponesia/Kango.tsv	site	環濠集落	0	0.1				0.5
+Data/Features/EastAsia/Yaponesia/Shisekibo.tsv	dolmen	日本の支石墓	0	0.9				1
+Data/Features/EastAsia/Korea/Dolmen.tsv	dolmen	朝鮮半島の支石墓	0	0.9				1
+Data/Features/EastAsia/Tamna/Dolmen.tsv	dolmen	済州島の支石墓	0	0.9				1
+Data/Features/EastAsia/Yaponesia/Kofun/Kofun.tsv	tomb	日本の古墳	0	0.1				1
+Data/Features/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1				1
+Data/Features/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	0.1				1
+Data/Features/EastAsia/Yaponesia/Kofun/Yosumi.tsv	tomb	日本の四隅突出型墳丘墓	0	0.1				1
+Data/Features/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1				1
+Data/Features/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1				1
+Data/Features/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1				1
+aData/Features/EastAsia/Korea/Site.tsv	site	韓国の遺跡	0	0.5				1
+Data/PlaceNames/EastAsia/Yaponesia/KojikiPlaceName.tsv	place_name	古事記の地名	0	2	1721424	1940208		1
+Data/PlaceNames/PlaceNames.tsv	place_name	汎用的な地名						1
+Data/PlaceNames/EastAsia/Yaponesia/Ryoseikoku.tsv	place_name	令制国名	1					1
+Data/PlaceNames/EastAsia/Yaponesia/TohokuAinu.tsv	place_name	東北アイヌ	1	4	1721424	9999999		1
+Data/PlaceNames/EastAsia/Yaponesia/HokkaidoAinu.tsv	place_name	北海道アイヌ	1	4	1721424	9999999		1
+Data/PlaceNames/EastAsia/Yaponesia/SakhalinAinu.tsv	place_name	サハリンアイヌ	1	4	1721424	9999999		1
+Data/PlaceNames/EastAsia/Siberia/KamchatkaAinu.tsv	place_name	カムサスカアイヌ	1		1721424	9999999		1
+Data/PlaceNames/EastAsia/Manchuria/Balhae.tsv	place_name	渤海国	1		1976003	2059279		1
+Data/PlaceNames/EastAsia/Korea/SamgukSagi.tsv	place_name	三国史記	0.1					1
+Data/PlaceNames/EastAsia/Yaponesia/WamyoRuijushoPlaceName.tsv	place_name	倭名類聚抄の地名	0	0.4	1721424	9999999		1
+Data/PlaceNames/EastAsia/Yaponesia/WamyoRuijushoKori.tsv	place_name	倭名類聚抄の郡	0.4		1721424			1
+Data/PlaceNames/EastAsia/Yaponesia/OmoroSoshiPlaceName.tsv	place_name	おもろさうしの地名	0	1	1721424	9999999		1
+Data/PlaceNames/EastAsia/China/China.tsv	place_name	中国大陸の地名	0.1	24	0	9999999		1
+Data/PlaceNames/EastAsia/Yaponesia/Geoshape/NRCT.tsv	place_name	『日本歴史地名大系』地名項目データセット	0	0.1	1721424	9999999		1
+Data/PlaceNames/Europe/Roma.tsv	place_name	ローマ帝国	1			9999999		1
+aData/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石室	0	0.1				1
+Data/Items/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	0.1				1
+Data/Items/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	0.1				1
+Data/Items/EastAsia/Yaponesia/Dotaku.tsv	dotaku	銅鐸	0	0.1				1
+Data/Items/EastAsia/Korea/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
+Data/Items/EastAsia/China/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
+Data/Items/EastAsia/Yaponesia/Doken.tsv	doken	銅剣	0	0.1				1
+Data/Items/EastAsia/Yaponesia/Yajiri.tsv	yajiri	鏃	0	0.9				1
+Data/Items/EastAsia/Yaponesia/Kasen.tsv	coin	貨泉	0	0.9				0.5

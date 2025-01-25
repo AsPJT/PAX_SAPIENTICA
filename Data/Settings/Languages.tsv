@@ -1,521 +1,528 @@
-﻿key	en-US	ja-JP	zh-TW	zh-CN	ko-KR	es-ES	pt-BR	de-DE	fr-FR	it-IT	tr-TR	pl-PL	el-GR	nl-NL	cs-CZ	uk-UA	ru-RU	id-ID	fa-IR	ar-SA
-en-US	English																			
-ja-JP	日本語																			
-zh-TW	繁體中文																			
-zh-CN	简体中文																			
-ko-KR	한국어																			
-es-ES	Español																			
-pt-BR	Português																			
-de-DE	Deutsch																			
-fr-FR	Français																			
-it-IT	Italiano																			
-tr-TR	Türkçe																			
-pl-PL	Język polski																			
-el-GR	Ελληνικά																			
-nl-NL	Nederlands																			
-cs-CZ	Čeština																			
-uk-UA	Українська																			
-ru-RU	Русский язык																			
-id-ID	Bahasa Indonesia																			
-fa-IR	فارسی																			
-ar-SA	اللغة العربية																			
-> font																				
-font_path	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-sc/NotoSansSC-Regular.otf	Data/Font/noto-sans-sc/NotoSansSC-Regular.otf	Data/Font/noto-sans-kr/NotoSansKR-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans/NotoSans-Regular.ttf	Data/Font/noto-sans/NotoSans-Regular.ttf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans/NotoSans-Regular.ttf	Data/Font/noto-sans/NotoSans-Regular.ttf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf	Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf
-> menu_bar_file																				
-menu_bar_file	File(F)	ファイル(F)	文件(F)	文件(F)	파일(F)	Archivo(F)	Ficheiro(F)	Datei(F)	Fichier(F)	File(F)	Dosya(F)	Plik(F)	Αρχείο (F)	Bestand (F)	Soubor(F)	Файл(F)	Файл (F)	File (F)	فایل (F)	ملف (F)
-menu_bar_file_new	New	新規作成	新建	新建	새로 만들기	Nuevo	Novo	Neu	Nouveau	Nuovo	Yeni	Nowy	Νέο	Nieuw	Nový	Новий	Новый	Baru	جدید	جديد
-menu_bar_file_open	Open	開く	打开	打开	열기	Abrir	Abrir	Öffnen	Ouvrir	Aprire	Açık	Otwórz	Άνοιγμα	Open	Otevřít	Відкрити	Открыть	Buka	باز کن	يفتح
-menu_bar_file_save	Save	保存	保存	保存	저장	Guardar	Guardar	Speichern	Sauvegarder	Salva	Kaydet	Zapisz	Αποθήκευση	Opslaan	Uložit	Зберегти	Сохранить	Simpan	صرفه جویی	يحفظ
-menu_bar_file_close	Close	閉じる	关闭	关闭	닫기	Cerrar	Fechar	Schließen	Fermer	Chiudere	Kapat	Zamknij	Close	Sluiten	Zavřít	Закрити	Закрыть	Tutup	بستن	يغلق
-menu_bar_file_exit	Exit	終了	退出	退出	종료	Salir	Sair	Beenden	Quitter	Esci	Çıkış	Wyjdź	Έξοδος	Exit	Ukončit	Вихід	Выход	Keluar	خروج	مخرج
-> menu_bar_edit																				
-menu_bar_edit	Edit(E)	編集(E)	编辑(E)	编辑(E)	편집(E)	Editar(E)	Editar(E)	Bearbeiten(E)	Modifier(E)	Modifica(E)	Düzenle(E)	Edytuj(E)	Επεξεργασία(E)	Bewerken(E)	Upravit(E)	Редагувати(E)	Редактировать (E)	Edit (E)	ویرایش (E)	تحرير (E)
-menu_bar_edit_cut	Cut	切り取り	剪切	剪切	잘라내기	Cortar	Cortar	Ausschneiden	Couper	Tagliare	Kesmek	Wytnij	Cut	Knippen	Střih	Вирізати	Вырезать	Memotong	برش	يقطع
-menu_bar_edit_copy	Copy	コピー	复制	复制	복사	Copiar	Copiar	Kopieren	Copier	Copia	Kopya	Kopiuj	Αντιγραφή	Kopiëren	Kopírovat	Копіювати	Копировать	Menyalin	کپی	ينسخ
-menu_bar_edit_paste	Paste	貼り付け	粘贴	粘贴	붙여넣기	Pegar	Colar	Einfügen	Coller	Incolla	Yapıştır	Wklej	Επικόλληση	Plakken	Vložit	Вставити	Вставить	Menempel	چسباندن	معجون
-menu_bar_edit_delete	Delete	削除	删除	删除	삭제	Borrar	Apagar	Löschen	Supprimer	Cancellare	Silme	Usuń	Διαγραφή	Verwijderen	Odstranit	Видалити	Удалить	Menghapus	حذف	حذف
-> menu_bar_view																				
-menu_bar_view	View	表示	显示	显示	표시	Ver	Ver	Ansicht	Vue	Vista	Görünüm	Widok	Προβολή	Weergave	Zobrazit	Перегляд	Вид	Melihat	مشاهده	مشاهدة
-menu_bar_view_calendar	Calendar	カレンダー	日历	日历	달력	Calendario	Calendário	Kalender	Calendrier	Calendario	Takvim	Kalendarz	Ημερολόγιο	Kalender	Kalendář	Календар	Календарь	Kalender	تقویم	تقويم
-menu_bar_view_map	Map	地図	地图	地图	지도	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة
-menu_bar_view_ui	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI
-menu_bar_view_simulation	Simulation	ステップ数	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation	Simulation
-menu_bar_view_license	License	ライセンス	许可	许可	라이선스	Licencia	Licença	Lizenz	Licence	Licenza	Lisans	Licencja	Άδεια	Licentie	Licence	Ліцензія	Лицензия	Lisensi	مجوز	رخصة
-menu_bar_view_debug	Debug	デバッグ	调试	调试	디버깅	Depurar	Depurar	Debuggen	Débogage	Debug	Hata Ayıklama	Debugowanie	Αποσφαλμάτωση	Debug	Ladění	Налагодження	Отладка	Debug	اشکال زدایی	Debug
-menu_bar_view_3d	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	سه بعدی	ثلاثي الأبعاد
-> menu_bar_place_names																				
-place_names	Place Names	地名・地物	Place Names	地名	지명	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names	Place Names
-place_names_tomb	Tomb	墳墓	Tomb	坟墓	무덤	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb	Tomb
-place_names_stone_coffin	Stone Coffin	石棺	Stone Coffin	石棺	석관	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin
-place_names_dotaku	Dotaku	銅鐸	Dotaku	銅鐸	동탁	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku
-place_names_kamekanbo	Jar burial	甕棺墓	Kamekanbo	甕棺葬	독무덤	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo	Kamekanbo
-place_names_place_name	Place Name	地名	Place Name	地名	지명	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name	Place Name
-place_names_site	Archaeological site	遺跡	Site	遺蹟	유적	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site	Site
-place_names_mtdna	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA
-place_names_doken	Doken	銅剣	Doken	銅剣	銅剣	Doken	Doken	Doken	Doken	Doken	Doken	Doken	Doken	Doken	Doken	Doken	Doken	Doken	Doken	Doken
-> menu_bar_calendar																				
-menu_bar_calendar	Calendar(C)	カレンダー(C)	日曆(C)	日历(C)	캘린더(C)	Calendario(C)	Calendário(C)	Kalender(C)	Calendrier(C)	Calendario(C)	Takvim (C)	Kalendarz(C)	Ημερολόγιο(C)	Kalender (C)	Kalendář(C)	Календар(C)	Календарь (C)	Kalender (C)	تقویم (C)	التقويم (C)
-menu_bar_calendar_japan	Japanese Calendar	和暦	日本曆	日本历	일본 달력	Calendario japonés	Calendário Japonês	Japanischer Kalender	Calendrier japonais	Calendario giapponese	Japon Takvimi	Kalendarz japoński	Ιαπωνικό ημερολόγιο	Japanse kalender	Japonský kalendář	Японський календар	Японский календарь	Kalender Jepang	تقویم ژاپنی	التقويم الياباني
-menu_bar_calendar_gregorian	Gregorian Calendar	グレゴリオ暦	公曆	公历	그레고리력	Calendario gregoriano	Calendário Gregoriano	Gregorianischer Kalender	Calendrier grégorien	Calendario gregoriano	Miladi Takvim	Kalendarz gregoriański	Γρηγοριανό ημερολόγιο	Gregoriaanse kalender	Gregoriánský kalendář	Григоріанський календар	Григорианский календарь	Kalender Gregorian	تقویم میلادی	التقويم الميلادي
-menu_bar_calendar_julian	Julian Calendar	ユリウス暦	儒略曆	儒略历	율리우스력	Calendario juliano	Calendário Juliano	Julianischer Kalender	Calendrier julien	Calendario giuliano	Jülyen Takvimi	Kalendarz juliański	Ιουλιανό ημερολόγιο	Juliaanse kalender	Juliánský kalendář	Юліанський календар	Юлианский календарь	Kalender Julian	تقویم جولیان	تقويم جوليان
-menu_bar_calendar_julian_day	Julian day	ユリウス通日	儒略日	儒略日	율리우스일	Día juliano	Dia Juliano	Julianischer Tag	Jour julien	Giorno giuliano	Julian günü	Dzień juliański	Ιουλιανή ημέρα	Juliaanse dag	Juliánský den	Юліанський день	Юлианский день	Hari Julian	روز جولیان	يوم جوليان
-menu_bar_calendar_hijri	Hijri Calendar	ヒジュラ暦	伊斯兰曆	伊斯兰历	이슬람력	Calendario hijri	Calendário Hijri	Hijri Kalender	Calendrier hijri	Calendario hijri	Hijri Takvimi	Kalendarz hijri	Hijri ημερολόγιο	Hijri kalender	Hijri kalendář	Hijri календар	Hijri календарь	Kalender Hijri	تقویم اسلامی	تقويم هجري
-> menu_bar_map																				
-menu_bar_map	Map(M)	地図(M)	地図(M)	地図(M)	지도(M)	Mapa(M)	Mapa(M)	Karte(M)	Carte(M)	Mappa(M)	Harita(M)	Mapa(M)	Χάρτης(M)	Kaart (M)	Mapa(M)	Карта(M)	Карта (M)	Peta (M)	نقشه (M)	خريطة (M)
-menu_bar_map_base	Base	通常	通常	通常	보통	Base	Base	Basis	Base	Base	Üs	Baza	Βάση	Basis	Základna	База	База	Pangkalan	پایه	قاعدة
-menu_bar_map_land_and_sea	Land and Sea	陸海	陸海	陸海	육해	Tierra y Mar	Terra e Mar	Land und Meer	Terre et mer	Terra e mare	Kara ve Deniz	Ląd i morze	Γη και θάλασσα	Land en Zee	Země a moře	Суша і море	Земля и море	Daratan dan Laut	خشکی و دریا	الأرض والبحر
-menu_bar_map_land_and_water	Land and Water	陸水	陸水	陸水	육수	Tierra y Agua	Terra e água	Land und Wasser	Terre et eau	Terra e acqua	Kara ve Su	Ląd i woda	Γη και Νερό	Land en Water	Země a voda	Суша і вода	Земля и вода	Tanah dan Air	زمین و آب	الأرض والمياه
-menu_bar_map_soil	Soil	土壌	土壌	土壌	토양	Suelo	Solo	Boden	Sol	Suolo	Toprak	Gleba	Έδαφος	Bodem	Půda	Ґрунт	Почва	Tanah	خاک	تربة
-menu_bar_map_soil_temperature	Soil Temperature	土壌温度	土壌温度	土壌温度	토양 온도	Temperatura del suelo	Temperatura do solo	Bodentemperatur	Température du sol	Temperatura del suolo	Toprak Sıcaklığı	Temperatura gleby	Θερμοκρασία εδάφους	Bodem Temperatuur	Teplota půdy	Температура ґрунту	Температура почвы	Suhu Tanah	دمای خاک	درجة حرارة التربة
-menu_bar_map_ryosei_country	Ryosei Country	令制国	令制国	令制国	율령국	País Ryosei	País de Ryosei	Ryosei Land	Pays Ryosei	Paese Ryosei	Ryosei Ülkesi	Kraj Ryosei	Χώρα Ryosei	Ryosei Land	Země Ryosei	Країна Рьосей	Страна Рёсэй	Negara Ryosei	کشور Ryosei	دولة Ryosei
-menu_bar_map_ryosei_line	Ryosei Line	令制国線	令制国線	令制国線	율령국선	Línea Ryosei	Linha de Ryosei	Ryosei Linie	Ligne Ryosei	Linea Ryosei	Ryosei Line	Linia Ryosei	Γραμμή Ryosei	Ryosei Lijn	Linie Ryosei	Лінія Рьосей	Линия Рёсэй	Garis Ryosei	خط Ryosei	خط Ryosei
-menu_bar_map_slope	Slope	傾斜	坡度	坡度	경사면	Pendiente	Declive	Gefälle	Pente	Pendenza	Eğim	Nachylenie	Κλίση	Helling	Svah	Схил	Склон	Kemiringan	شیب	ميل
-menu_bar_map_lakes_and_rivers1	Lakes and rivers1	湖川1	河流和湖泊1	河流和湖泊1	호수와 강1	Lagos y ríos1	Lagos e rios1	Seen und Flüsse1	Lacs et rivières1	Laghi e fiumi1	Göller ve nehirler1	Jeziora i rzeki1	Λίμνες και ποτάμια1	Meren en rivieren1	Jezera a řeky1	Озера та річки1	Озера и реки1	Danau dan sungai1	دریاچه ها و رودخانه ها 1	البحيرات والأنهار 1
-menu_bar_map_lakes_and_rivers2	Lakes and rivers2	湖川2	河流和湖泊2	河流和湖泊2	호수와 강2	Lagos y ríos2	Lagos e rios2	Seen und Flüsse2	Lacs et rivières2	Laghi e fiumi2	Göller ve nehirler2	Jeziora i rzeki2	Λίμνες και ποτάμια2	Meren en rivieren2	Jezera a řeky2	Озера та річки2	Озера и реки2	Danau dan sungai2	دریاچه ها و رودخانه ها 2	البحيرات والأنهار 2
-menu_bar_map_line1	Line1	線1	線1	線1	선1	Línea1	Linha1	Linie1	Ligne 1	Linea1	Hat1	Linia1	Γραμμή1	Lijn1	Linie1	Лінія1	Линия1	Garis1	خط 1	خط 1
-menu_bar_map_line2	Line2	線2	線2	線2	선2	Línea2	Linha 2	Linie2	Ligne 2	Linea2	Hat2	Linia2	Γραμμή2	Lijn2	Linie2	Лінія2	Линия2	Jalur2	خط 2	خط 2
-> calendar																				
-calendar_japan	Japanese cal.	和暦	JP曆	JP历	JP력	Cal. japonés	Cal. japonesa	Japanisches Kal.	Cal. japonais	Cal. giapponese	Japon Takvimi	Kal. japoński	Ιαπωνικά cal.	Japanse kal.	Japonský kal.	Японський кал.	Японский кал.	Kal. Jepang	تقویم ژاپنی	التقويم الياباني
-calendar_gregorian	Gregorian cal.	グレゴリオ暦	公曆	公历	그레고리력	Cal. gregoriano	Cal. gregoriana	Gregorianisches Kal.	Cal. grégorien	Cal. gregoriano	Miladi Takvim	Kal. gregoriański	Γρηγοριανό cal.	Gregoriaanse kal.	Gregoriánský kal.	Григоріанський кал.	Григорианский кал.	Kal. Gregorian	تقویم میلادی	التقويم الميلادي
-calendar_julian	Julian cal.	ユリウス暦	儒略曆	儒略历	율리우스력	Cal. juliano	Cal. juliano	Julianisches Kal.	Cal. julien	Cal. giuliano	Jülyen Takvimi	Kal. juliański	Ιουλιανό cal.	Juliaanse kal.	Juliánský kal.	Юліанський кал.	Юлианский кал.	Kal. Julian	تقویم جولیان	تقويم جوليان
-calendar_julian_day	Julian day	ユリウス通日	儒略日	儒略日	율리우스일	Día juliano	Dia Juliano	Julianischer Tag	Jour julien	Giorno giuliano	Julian günü	Dzień juliański	Ιουλιανή ημέρα	Juliaanse dag	Juliánský den	Юліанський день	Юлианский день	Hari Julian	روز جولیان	يوم جوليان
-calendar_calbp	cal BP	較正年代	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP
-calendar_hijri	Hijri cal.	ヒジュラ暦	伊斯兰曆	伊斯兰历	이슬람력	Cal. hijri	Cal. Hijri	Hijri Kal.	Cal. hijri	Cal. hijri	Hijri Takvimi	Kal. hijri	Hijri cal.	Hijri kal.	Hijri kal.	Hijri кал.	Hijri кал.	Kal. Hijri	تقویم اسلامی	تقويم هجري
-> debug																				
-debug_magnification_power	Magnification power	拡大率	放大率	放大率	확대율	Potencia de aumento	Potência de ampliação	Vergrößerungsmaßstab	Puissance d'agrandissement	Potenza di ingrandimento	Büyütme gücü	Moc powiększenia	Δύναμη μεγέθυνσης	Mate van vergroting	Výkon zvětšení	Потужність збільшення	Кратность увеличения	Kekuatan pembesaran	قدرت بزرگنمایی	قوة التكبير
-debug_mercator_longitude	Mercator longitude	メルカトル経度	麥卡托経度	麥卡托经度	메르카토르 경도	Longitud Mercator	Longitude de Mercator	Mercator Längengrad	Longitude de Mercator	Longitudine Mercatore	Merkatör boylamı	Długość geograficzna Merkatora	Γεωγραφικό μήκος Mercator	Mercator lengtegraad	Mercatorova zeměpisná délka	Довгота Меркатора	Меркаторская долгота	Bujur Mercator	طول جغرافیایی مرکاتور	خط الطول مركاتور
-debug_mercator_latitude	Mercator latitude	メルカトル緯度	麥卡托緯度	麥卡托纬度	메르카토르 위도	Latitud Mercator	Latitude de Mercator	Mercator-Breitengrad	Latitude de Mercator	Latitudine di Mercatore	Merkatör enlemi	Szerokość geograficzna Merkatora	Γεωγραφικό πλάτος Mercator	Mercator breedtegraad	Mercatorova zeměpisná šířka	Широта Меркатора	Меркаторская широта	Lintang Mercator	عرض جغرافیایی مرکاتور	خط عرض مركاتور
-debug_latitude	Latitude	緯度	緯度	纬度	위도	Latitud	Latitude	Breitengrad	Latitude	Latitudine	Enlem	Szerokość geograficzna	Γεωγραφικό πλάτος	Breedtegraad	Zeměpisná šířka	Широта	широта	Lintang	عرض جغرافیایی	خط العرض
-debug_xyz_tiles_z	XYZ Tiles Z	XYZタイル Z	XYZ瓦片 Z	XYZ瓦片 Z	XYZ타일 Z	Azulejos XYZ Z	XYZ Azulejos Z	XYZ Kacheln Z	Carreaux XYZ Z	XYZ Piastrelle Z	XYZ Karolar Z	XYZ Płytki Z	XYZ Πλακάκια Z	XYZ tegels Z	XYZ Dlaždice Z	XYZ Плитка Z	XYZ Плитка Z	Ubin XYZ Ubin Z	کاشی XYZ Z	XYZ البلاط Z
-> sueki																				
-sueki_nakamura	Sue pottery Nakamura	須恵器 中村(1993)	須恵器 中村(1993)	須恵器 中村(1993)	須恵器(수혜기) 나카무라	Cerámica Sue Nakamura	Cerâmica Sue Nakamura	Sue Töpferei Nakamura	Sue poterie Nakamura	Sue ceramiche Nakamura	Sue çömlek Nakamura	Sue ceramika Nakamura	Sue κεραμικά Nakamura	Sue aardewerk Nakamura	Sue keramika Nakamura	Сью гончар Накамура	Сью керамика Накамура	Tuntut tembikar Nakamura	سو سفال Nakamura	الفخار سو Nakamura
-sueki_tanabe	Sue pottery Tanabe	須恵器 田辺(1983)	須恵器 田辺(1983)	須恵器 田辺(1983)	須恵器(수혜기) 타나베	Cerámica Sue Tanabe	Cerâmica Sue Tanabe	Sue-Töpferei Tanabe	Sue poterie Tanabe	Sue ceramiche Tanabe	Sue çömlek Tanabe	Sue ceramika Tanabe	Sue κεραμική Tanabe	Sue aardewerk Tanabe	Sue keramika Tanabe	Сью гончар Танабе	Сью керамика Танабе	Tuntut tembikar Tanabe	سو سفال Tanabe	سو الفخار Tanabe
-> gengo																				
-gengo_0	Before Jimmu	神武天皇即位前	神武天皇即位前	神武天皇即位前	Before Jimmu															
-gengo_1	Emperor Jimmu	神武天皇	神武天皇	神武天皇	황제 Jimmu															
-gengo_2	Emperor Suizei	綏靖天皇	綏靖天皇	綏靖天皇	황제 Suizei															
-gengo_3	Emperor Annei	安寧天皇	安寧天皇	安寧天皇	황제 Annei															
-gengo_4	Emperor Itoku	懿徳天皇	懿德天皇	懿德天皇	황제 Itoku															
-gengo_5	Emperor Kōshō	孝昭天皇	孝昭天皇	孝昭天皇	황제 Kōshō															
-gengo_6	Emperor Kōan	孝安天皇	孝安天皇	孝安天皇	황제 Kōan															
-gengo_7	Emperor Kōrei	孝霊天皇	孝靈天皇	孝靈天皇	황제 Kōrei															
-gengo_8	Emperor Kōgen	孝元天皇	孝元天皇	孝元天皇	황제 Kōgen															
-gengo_9	Emperor Kaika	開化天皇	開化天皇	開化天皇	황제 Kaika															
-gengo_10	Emperor Sujin	崇神天皇	崇神天皇	崇神天皇	황제 Sujin															
-gengo_11	Emperor Suinin	垂仁天皇	垂仁天皇	垂仁天皇	황제 Suinin															
-gengo_12	Emperor Keikō	景行天皇	景行天皇	景行天皇	황제 Keikō															
-gengo_13	Emperor Seimu	成務天皇	成務天皇	成務天皇	황제 Seimu															
-gengo_14	Emperor Chūai	仲哀天皇	仲哀天皇	仲哀天皇	황제 Chūai															
-gengo_15	Empress Jingū	神功皇后	神功皇后	神功皇后	황후 Jingū															
-gengo_16	Emperor Ōjin	応神天皇	應神天皇	應神天皇	황제 Ōjin															
-gengo_17	Emperor Nintoku	仁徳天皇	仁德天皇	仁德天皇	황제 Nintoku															
-gengo_18	Emperor Richū	履中天皇	履中天皇	履中天皇	황제 Richū															
-gengo_19	Emperor Hanzei	反正天皇	反正天皇	反正天皇	황제 Hanzei															
-gengo_20	Emperor Ingyō	允恭天皇	允恭天皇	允恭天皇	황제 Ingyō															
-gengo_21	Emperor Ankō	安康天皇	安康天皇	安康天皇	황제 Ankō															
-gengo_22	Emperor Yūryaku	雄略天皇	雄略天皇	雄略天皇	황제 Yūryaku															
-gengo_23	Emperor Seinei	清寧天皇	清寧天皇	清寧天皇	황제 Seinei															
-gengo_24	Emperor Kenzō	顕宗天皇	顯宗天皇	顯宗天皇	황제 Kenzō															
-gengo_25	Emperor Ninken	仁賢天皇	仁賢天皇	仁賢天皇	황제 Ninken															
-gengo_26	Emperor Buretsu	武烈天皇	武烈天皇	武烈天皇	황제 Buretsu															
-gengo_27	Emperor Keitai	継体天皇	繼體天皇	繼體天皇	황제 Keitai															
-gengo_28	Emperor Ankan	安閑天皇	安閑天皇	安閑天皇	황제 Ankan															
-gengo_29	Emperor Senka	宣化天皇	宣化天皇	宣化天皇	황제 Senka															
-gengo_30	Emperor Kinmei	欽明天皇	欽明天皇	欽明天皇	황제 Kinmei															
-gengo_31	Emperor Bidatsu	敏達天皇	敏達天皇	敏達天皇	황제 Bidatsu															
-gengo_32	Emperor Yōmei	用明天皇	用明天皇	用明天皇	황제 Yōmei															
-gengo_33	Emperor Sushun	崇峻天皇	崇峻天皇	崇峻天皇	황제 Sushun															
-gengo_34	Empress Suiko	推古天皇	推古天皇	推古天皇	황후 Suiko															
-gengo_35	Emperor Jomei	舒明天皇	舒明天皇	舒明天皇	황제 Jomei															
-gengo_36	Empress Kōgyoku	皇極天皇	皇極天皇	皇極天皇	황후 Kōgyoku															
-gengo_37	Taika	大化	大化	大化	Taika															
-gengo_38	Hakuchi	白雉	白雉	白雉	Hakuchi															
-gengo_39	Empress Saimei	斉明天皇	齊明天皇	齊明天皇	황후 Saimei															
-gengo_40	Emperor Tenji	天智天皇	天智天皇	天智天皇	황제 Tenji															
-gengo_41	Emperor Tenmu	天武天皇	天武天皇	天武天皇	황제 Tenmu															
-gengo_42	Shuchō	朱鳥	朱鳥	朱鳥	Shuchō															
-gengo_43	Empress Jitō	持統天皇	持統天皇	持統天皇	황후 Jitō															
-gengo_44	Emperor Monmu	文武天皇	文武天皇	文武天皇	황제 Monmu															
-gengo_45	Taihō	大宝	大寶	大寶	Taihō															
-gengo_46	Keiun	慶雲	慶雲	慶雲	Keiun															
-gengo_47	Wadō	和銅	和銅	和銅	Wadō															
-gengo_48	Reiki	霊亀	靈龜	靈龜	Reiki															
-gengo_49	Yōrō	養老	養老	養老	Yōrō															
-gengo_50	Jinki	神亀	神龜	神龜	Jinki															
-gengo_51	Tenpyō	天平	天平	天平	Tenpyō															
-gengo_52	Tenpyō-kanpō	天平感宝	天平感寶	天平感寶	Tenpyō-kanpō															
-gengo_53	Tenpyō-shōhō	天平勝宝	天平勝寶	天平勝寶	Tenpyō-shōhō															
-gengo_54	Tenpyō-hōji	天平宝字	天平寶字	天平寶字	Tenpyō-hōji															
-gengo_55	Tenpyō-jingo	天平神護	天平神護	天平神護	Tenpyō-jingo															
-gengo_56	Jingo-keiun	神護景雲	神護景雲	神護景雲	Jingo-keiun															
-gengo_57	Hōki	宝亀	寶龜	寶龜	Hōki															
-gengo_58	Ten'ō	天応	天應	天應	Ten'ō															
-gengo_59	Enryaku	延暦	延曆	延曆	Enryaku															
-gengo_60	Daidō	大同	大同	大同	Daidō															
-gengo_61	Kōnin	弘仁	弘仁	弘仁	Kōnin															
-gengo_62	Tenchō	天長	天長	天長	Tenchō															
-gengo_63	Jōwa	承和	承和	承和	Jōwa															
-gengo_64	Kashō	嘉祥	嘉祥	嘉祥	Kashō															
-gengo_65	Ninju	仁寿	仁壽	仁壽	Ninju															
-gengo_66	Saikō	斉衡	齊衡	齊衡	Saikō															
-gengo_67	Ten'an	天安	天安	天安	Ten'an															
-gengo_68	Jōgan	貞観	貞觀	貞觀	Jōgan															
-gengo_69	Gangyō	元慶	元慶	元慶	Gangyō															
-gengo_70	Ninna	仁和	仁和	仁和	Ninna															
-gengo_71	Kanpyō	寛平	寛平	寛平	Kanpyō															
-gengo_72	Shōtai	昌泰	昌泰	昌泰	Shōtai															
-gengo_73	Engi	延喜	延喜	延喜	Engi															
-gengo_74	Enchō	延長	延長	延長	Enchō															
-gengo_75	Jōhei	承平	承平	承平	Jōhei															
-gengo_76	Tengyō	天慶	天慶	天慶	Tengyō															
-gengo_77	Tenryaku	天暦	天曆	天曆	Tenryaku															
-gengo_78	Tentoku	天徳	天德	天德	Tentoku															
-gengo_79	Ōwa	応和	應和	應和	Ōwa															
-gengo_80	Kōhō	康保	康保	康保	Kōhō															
-gengo_81	Anna	安和	安和	安和	Anna															
-gengo_82	Tenroku	天禄	天祿	天祿	Tenroku															
-gengo_83	Ten'en	天延	天延	天延	Ten'en															
-gengo_84	Jōgen	貞元	貞元	貞元	Jōgen															
-gengo_85	Tengen	天元	天元	天元	Tengen															
-gengo_86	Eikan	永観	永觀	永觀	Eikan															
-gengo_87	Kanna	寛和	寛和	寛和	Kanna															
-gengo_88	Eien	永延	永延	永延	Eien															
-gengo_89	Eiso	永祚	永祚	永祚	Eiso															
-gengo_90	Shōryaku	正暦	正曆	正曆	Shōryaku															
-gengo_91	Chōtoku	長徳	長德	長德	Chōtoku															
-gengo_92	Chōhō	長保	長保	長保	Chōhō															
-gengo_93	Kankō	寛弘	寛弘	寛弘	Kankō															
-gengo_94	Chōwa	長和	長和	長和	Chōwa															
-gengo_95	Kannin	寛仁	寛仁	寛仁	Kannin															
-gengo_96	Jian	治安	治安	治安	Jian															
-gengo_97	Manju	万寿	萬壽	萬壽	Manju															
-gengo_98	Chōgen	長元	長元	長元	Chōgen															
-gengo_99	Chōryaku	長暦	長曆	長曆	Chōryaku															
-gengo_100	Chōkyū	長久	長久	長久	Chōkyū															
-gengo_101	Kantoku	寛徳	寛德	寛德	Kantoku															
-gengo_102	Eishō	永承	永承	永承	Eishō															
-gengo_103	Tengi	天喜	天喜	天喜	Tengi															
-gengo_104	Kōhei	康平	康平	康平	Kōhei															
-gengo_105	Jiryaku	治暦	治曆	治曆	Jiryaku															
-gengo_106	Enkyū	延久	延久	延久	Enkyū															
-gengo_107	Jōhō	承保	承保	承保	Jōhō															
-gengo_108	Jōryaku	承暦	承曆	承曆	Jōryaku															
-gengo_109	Eihō	永保	永保	永保	Eihō															
-gengo_110	Ōtoku	応徳	應德	應德	Ōtoku															
-gengo_111	Kanji	寛治	寛治	寛治	Kanji															
-gengo_112	Kahō	嘉保	嘉保	嘉保	Kahō															
-gengo_113	Eichō	永長	永長	永長	Eichō															
-gengo_114	Jōtoku	承徳	承德	承德	Jōtoku															
-gengo_115	Kōwa	康和	康和	康和	Kōwa															
-gengo_116	Chōji	長治	長治	長治	Chōji															
-gengo_117	Kajō	嘉承	嘉承	嘉承	Kajō															
-gengo_118	Tennin	天仁	天仁	天仁	Tennin															
-gengo_119	Ten'ei	天永	天永	天永	Ten'ei															
-gengo_120	Eikyū	永久	永久	永久	Eikyū															
-gengo_121	Gen'ei	元永	元永	元永	Gen'ei															
-gengo_122	Hōan	保安	保安	保安	Hōan															
-gengo_123	Tenji	天治	天治	天治	Tenji															
-gengo_124	Daiji	大治	大治	大治	Daiji															
-gengo_125	Tenshō	天承	天承	天承	Tenshō															
-gengo_126	Chōshō	長承	長承	長承	Chōshō															
-gengo_127	Hōen	保延	保延	保延	Hōen															
-gengo_128	Eiji	永治	永治	永治	Eiji															
-gengo_129	Kōji	康治	康治	康治	Kōji															
-gengo_130	Ten'yō	天養	天養	天養	Ten'yō															
-gengo_131	Kyūan	久安	久安	久安	Kyūan															
-gengo_132	Ninpei	仁平	仁平	仁平	Ninpei															
-gengo_133	Kyūju	久寿	久壽	久壽	Kyūju															
-gengo_134	Hōgen	保元	保元	保元	Hōgen															
-gengo_135	Heiji	平治	平治	平治	Heiji															
-gengo_136	Eiryaku	永暦	永曆	永曆	Eiryaku															
-gengo_137	Ōhō	応保	應保	應保	Ōhō															
-gengo_138	Chōkan	長寛	長寛	長寛	Chōkan															
-gengo_139	Eiman	永万	永萬	永萬	Eiman															
-gengo_140	Nin'an	仁安	仁安	仁安	Nin'an															
-gengo_141	Kaō	嘉応	嘉應	嘉應	Kaō															
-gengo_142	Jōan	承安	承安	承安	Jōan															
-gengo_143	Angen	安元	安元	安元	Angen															
-gengo_144	Jishō	治承	治承	治承	Jishō															
-gengo_145	Yōwa	養和	養和	養和	Yōwa															
-gengo_146	Juei	寿永	壽永	壽永	Juei															
-gengo_147	Genryaku	元暦	元曆	元曆	Genryaku															
-gengo_148	Bunji	文治	文治	文治	Bunji															
-gengo_149	Kenkyū	建久	建久	建久	Kenkyū															
-gengo_150	Shōji	正治	正治	正治	Shōji															
-gengo_151	Kennin	建仁	建仁	建仁	Kennin															
-gengo_152	Genkyū	元久	元久	元久	Genkyū															
-gengo_153	Ken'ei	建永	建永	建永	Ken'ei															
-gengo_154	Jōgen	承元	承元	承元	Jōgen															
-gengo_155	Kenryaku	建暦	建曆	建曆	Kenryaku															
-gengo_156	Kempo	建保	建保	建保	Kempo															
-gengo_157	Jōkyū	承久	承久	承久	Jōkyū															
-gengo_158	Jōō	貞応	貞應	貞應	Jōō															
-gengo_159	Gennin	元仁	元仁	元仁	Gennin															
-gengo_160	Karoku	嘉禄	嘉祿	嘉祿	Karoku															
-gengo_161	Antei	安貞	安貞	安貞	Antei															
-gengo_162	Kangi	寛喜	寛喜	寛喜	Kangi															
-gengo_163	Jōei	貞永	貞永	貞永	Jōei															
-gengo_164	Tenpuku	天福	天福	天福	Tenpuku															
-gengo_165	Bunryaku	文暦	文曆	文曆	Bunryaku															
-gengo_166	Katei	嘉禎	嘉禎	嘉禎	Katei															
-gengo_167	Ryakunin	暦仁	曆仁	曆仁	Ryakunin															
-gengo_168	En'ō	延応	延應	延應	En'ō															
-gengo_169	Ninji	仁治	仁治	仁治	Ninji															
-gengo_170	Kangen	寛元	寛元	寛元	Kangen															
-gengo_171	Hōji	宝治	寶治	寶治	Hōji															
-gengo_172	Kenchō	建長	建長	建長	Kenchō															
-gengo_173	Kōgen	康元	康元	康元	Kōgen															
-gengo_174	Shōka	正嘉	正嘉	正嘉	Shōka															
-gengo_175	Shōgen	正元	正元	正元	Shōgen															
-gengo_176	Bun'ō	文応	文應	文應	Bun'ō															
-gengo_177	Kōchō	弘長	弘長	弘長	Kōchō															
-gengo_178	Bun'ei	文永	文永	文永	Bun'ei															
-gengo_179	Kenji	建治	建治	建治	Kenji															
-gengo_180	Kōan	弘安	弘安	弘安	Kōan															
-gengo_181	Shōō	正応	正應	正應	Shōō															
-gengo_182	Einin	永仁	永仁	永仁	Einin															
-gengo_183	Shōan	正安	正安	正安	Shōan															
-gengo_184	Kengen	乾元	乾元	乾元	Kengen															
-gengo_185	Kagen	嘉元	嘉元	嘉元	Kagen															
-gengo_186	Tokuji	徳治	德治	德治	Tokuji															
-gengo_187	Enkyō	延慶	延慶	延慶	Enkyō															
-gengo_188	Ōchō	応長	應長	應長	Ōchō															
-gengo_189	Shōwa	正和	正和	正和	Shōwa															
-gengo_190	Bunpō	文保	文保	文保	Bunpō															
-gengo_191	Gen'ō	元応	元應	元應	Gen'ō															
-gengo_192	Genkō	元亨	元亨	元亨	Genkō															
-gengo_193	Shōchū	正中	正中	正中	Shōchū															
-gengo_194	Karyaku	嘉暦	嘉曆	嘉曆	Karyaku															
-gengo_195	Gentoku	元徳	元德	元德	Gentoku															
-gengo_196	Genkō	元弘	元弘	元弘	Genkō															
-gengo_197	Shōkyō	正慶	正慶	正慶	Shōkyō															
-gengo_198	Kenmu	建武	建武	建武	Kenmu															
-gengo_199	Engen	延元	延元	延元	Engen															
-gengo_200	Ryakuō	暦応	曆應	曆應	Ryakuō															
-gengo_201	Kōkoku	興国	興國	興國	Kōkoku															
-gengo_202	Kōei	康永	康永	康永	Kōei															
-gengo_203	Jōwa	貞和	貞和	貞和	Jōwa															
-gengo_204	Shōhei	正平	正平	正平	Shōhei															
-gengo_205	Kannō	観応	觀應	觀應	Kannō															
-gengo_206	Bunna	文和	文和	文和	Bunna															
-gengo_207	Enbun	延文	延文	延文	Enbun															
-gengo_208	Kōan	康安	康安	康安	Kōan															
-gengo_209	Jōji	貞治	貞治	貞治	Jōji															
-gengo_210	Ōan	応安	應安	應安	Ōan															
-gengo_211	Kentoku	建徳	建德	建德	Kentoku															
-gengo_212	Bunchū	文中	文中	文中	Bunchū															
-gengo_213	Tenju	天授	天授	天授	Tenju															
-gengo_214	Eiwa	永和	永和	永和	Eiwa															
-gengo_215	Kōryaku	康暦	康曆	康曆	Kōryaku															
-gengo_216	Kōwa	弘和	弘和	弘和	Kōwa															
-gengo_217	Eitoku	永徳	永德	永德	Eitoku															
-gengo_218	Genchū	元中	元中	元中	Genchū															
-gengo_219	Shitoku	至徳	至德	至德	Shitoku															
-gengo_220	Kakei	嘉慶	嘉慶	嘉慶	Kakei															
-gengo_221	Kōō	康応	康應	康應	Kōō															
-gengo_222	Meitoku	明徳	明德	明德	Meitoku															
-gengo_223	Ōei	応永	應永	應永	Ōei															
-gengo_224	Shōchō	正長	正長	正長	Shōchō															
-gengo_225	Eikyō	永享	永享	永享	Eikyō															
-gengo_226	Kakitsu	嘉吉	嘉吉	嘉吉	Kakitsu															
-gengo_227	Bun'an	文安	文安	文安	Bun'an															
-gengo_228	Hōtoku	宝徳	寶德	寶德	Hōtoku															
-gengo_229	Kyōtoku	享徳	享德	享德	Kyōtoku															
-gengo_230	Kōshō	康正	康正	康正	Kōshō															
-gengo_231	Chōroku	長禄	長祿	長祿	Chōroku															
-gengo_232	Kanshō	寛正	寛正	寛正	Kanshō															
-gengo_233	Bunshō	文正	文正	文正	Bunshō															
-gengo_234	Ōnin	応仁	應仁	應仁	Ōnin															
-gengo_235	Bunmei	文明	文明	文明	Bunmei															
-gengo_236	Chōkyō	長享	長享	長享	Chōkyō															
-gengo_237	Entoku	延徳	延德	延德	Entoku															
-gengo_238	Meiō	明応	明應	明應	Meiō															
-gengo_239	Bunki	文亀	文龜	文龜	Bunki															
-gengo_240	Eishō	永正	永正	永正	Eishō															
-gengo_241	Daiei	大永	大永	大永	Daiei															
-gengo_242	Kyōroku	享禄	享祿	享祿	Kyōroku															
-gengo_243	Tenbun	天文	天文	天文	Tenbun															
-gengo_244	Kōji	弘治	弘治	弘治	Kōji															
-gengo_245	Eiroku	永禄	永祿	永祿	Eiroku															
-gengo_246	Genki	元亀	元龜	元龜	Genki															
-gengo_247	Tenshō	天正	天正	天正	Tenshō															
-gengo_248	Bunroku	文禄	文祿	文祿	Bunroku															
-gengo_249	Keichō	慶長	慶長	慶長	Keichō															
-gengo_250	Genna	元和	元和	元和	Genna															
-gengo_251	Kan'ei	寛永	寛永	寛永	Kan'ei															
-gengo_252	Shōhō	正保	正保	正保	Shōhō															
-gengo_253	Keian	慶安	慶安	慶安	Keian															
-gengo_254	Jōō	承応	承應	承應	Jōō															
-gengo_255	Meireki	明暦	明曆	明曆	Meireki															
-gengo_256	Manji	万治	萬治	萬治	Manji															
-gengo_257	Kanbun	寛文	寛文	寛文	Kanbun															
-gengo_258	Enpō	延宝	延寶	延寶	Enpō															
-gengo_259	Tenna	天和	天和	天和	Tenna															
-gengo_260	Jōkyō	貞享	貞享	貞享	Jōkyō															
-gengo_261	Genroku	元禄	元祿	元祿	Genroku															
-gengo_262	Hōei	宝永	寶永	寶永	Hōei															
-gengo_263	Shōtoku	正徳	正德	正德	Shōtoku															
-gengo_264	Kyōhō	享保	享保	享保	Kyōhō															
-gengo_265	Genbun	元文	元文	元文	Genbun															
-gengo_266	Kanpō	寛保	寛保	寛保	Kanpō															
-gengo_267	Enkyō	延享	延享	延享	Enkyō															
-gengo_268	Kan'en	寛延	寛延	寛延	Kan'en															
-gengo_269	Hōreki	宝暦	寶曆	寶曆	Hōreki															
-gengo_270	Meiwa	明和	明和	明和	Meiwa															
-gengo_271	An'ei	安永	安永	安永	An'ei															
-gengo_272	Tenmei	天明	天明	天明	Tenmei															
-gengo_273	Kansei	寛政	寛政	寛政	Kansei															
-gengo_274	Kyōwa	享和	享和	享和	Kyōwa															
-gengo_275	Bunka	文化	文化	文化	Bunka															
-gengo_276	Bunsei	文政	文政	文政	Bunsei															
-gengo_277	Tenpō	天保	天保	天保	Tenpō															
-gengo_278	Kōka	弘化	弘化	弘化	Kōka															
-gengo_279	Kaei	嘉永	嘉永	嘉永	Kaei															
-gengo_280	Ansei	安政	安政	安政	Ansei															
-gengo_281	Man'en	万延	萬延	萬延	Man'en															
-gengo_282	Bunkyū	文久	文久	文久	Bunkyū															
-gengo_283	Genji	元治	元治	元治	Genji															
-gengo_284	Keiō	慶応	慶應	慶應	Keiō															
-gengo_285	Meiji	明治	明治	明治	Meiji															
-gengo_286	Taishō	大正	大正	大正	Taishō															
-gengo_287	Shōwa	昭和	昭和	昭和	Shōwa															
-gengo_288	Heisei	平成	平成	平成	Heisei															
-gengo_289	Reiwa	令和	令和	令和	Reiwa															
-> chinese_calendar																				
-chinese_calendar_1	魏 黄初																			
-chinese_calendar_2	魏 太和																			
-chinese_calendar_3	魏 青龍																			
-chinese_calendar_4	魏 景初																			
-chinese_calendar_5	魏 正始																			
-chinese_calendar_6	魏 嘉平																			
-chinese_calendar_7	魏 正元																			
-chinese_calendar_8	魏 甘露																			
-chinese_calendar_9	魏 景元																			
-chinese_calendar_10	魏 咸熙																			
-chinese_calendar_11	西晋 泰始																			
-chinese_calendar_12	西晋 咸寧																			
-chinese_calendar_13	西晋 太康																			
-chinese_calendar_14	西晋 太熙																			
-chinese_calendar_15	西晋 永熙																			
-chinese_calendar_16	西晋 永平																			
-chinese_calendar_17	西晋 元康																			
-chinese_calendar_18	西晋 永康																			
-chinese_calendar_19	西晋 永寧																			
-chinese_calendar_20	西晋 太安																			
-chinese_calendar_21	西晋 永安																			
-chinese_calendar_22	西晋 建武																			
-chinese_calendar_23	西晋 永安																			
-chinese_calendar_24	西晋 永興																			
-chinese_calendar_25	西晋 光熙																			
-chinese_calendar_26	西晋 永嘉																			
-chinese_calendar_27	西晋 建興																			
-chinese_calendar_28	東晋 建武																			
-chinese_calendar_29	東晋 大興																			
-chinese_calendar_30	東晋 永昌																			
-chinese_calendar_31	東晋 太寧																			
-chinese_calendar_32	東晋 咸和																			
-chinese_calendar_33	東晋 咸康																			
-chinese_calendar_34	東晋 建元																			
-chinese_calendar_35	東晋 永和																			
-chinese_calendar_36	東晋 升平																			
-chinese_calendar_37	東晋 隆和																			
-chinese_calendar_38	東晋 興寧																			
-chinese_calendar_39	東晋 太和																			
-chinese_calendar_40	東晋 咸安																			
-chinese_calendar_41	東晋 寧康																			
-chinese_calendar_42	東晋 太元																			
-chinese_calendar_43	東晋 隆安																			
-chinese_calendar_44	東晋 元興																			
-chinese_calendar_45	東晋 隆安																			
-chinese_calendar_46	東晋 大亨																			
-chinese_calendar_47	東晋 元興(2)																			
-chinese_calendar_48	東晋 義熙																			
-chinese_calendar_49	東晋 元熙																			
-chinese_calendar_50	南朝宋 永初																			
-chinese_calendar_51	南朝宋 景平																			
-chinese_calendar_52	南朝宋 元嘉																			
-chinese_calendar_53	南朝宋 孝建																			
-chinese_calendar_54	南朝宋 大明																			
-chinese_calendar_55	南朝宋 永光																			
-chinese_calendar_56	南朝宋 景和																			
-chinese_calendar_57	南朝宋 泰始																			
-chinese_calendar_58	南朝宋 泰豫																			
-chinese_calendar_59	南朝宋 元徽																			
-chinese_calendar_60	南朝宋 昇明																			
-chinese_calendar_61	南朝斉 建元																			
-chinese_calendar_62	南朝斉 永明																			
-chinese_calendar_63	南朝斉 隆昌																			
-chinese_calendar_64	南朝斉 延興																			
-chinese_calendar_65	南朝斉 建武																			
-chinese_calendar_66	南朝斉 永泰																			
-chinese_calendar_67	南朝斉 永元																			
-chinese_calendar_68	南朝斉 中興																			
-chinese_calendar_69	南朝梁 天監																			
-chinese_calendar_70	南朝梁 普通																			
-chinese_calendar_71	南朝梁 大通																			
-chinese_calendar_72	南朝梁 中大通																			
-chinese_calendar_73	南朝梁 大同																			
-chinese_calendar_74	南朝梁 中大同																			
-chinese_calendar_75	南朝梁 太清																			
-chinese_calendar_76	南朝梁 大宝																			
-chinese_calendar_77	南朝梁 天正																			
-chinese_calendar_78	南朝梁 承聖																			
-chinese_calendar_79	南朝梁 天成																			
-chinese_calendar_80	南朝梁 紹泰																			
-chinese_calendar_81	南朝梁 太平																			
-chinese_calendar_82	南朝梁 天啓																			
-chinese_calendar_83	南朝陳 永定																			
-chinese_calendar_84	南朝陳 天嘉																			
-chinese_calendar_85	南朝陳 天康																			
-chinese_calendar_86	南朝陳 光大																			
-chinese_calendar_87	南朝陳 太建																			
-chinese_calendar_88	南朝陳 至徳																			
-chinese_calendar_89	南朝陳 禎明																			
-chinese_calendar_90	隋 開皇																			
-chinese_calendar_91	隋 仁寿																			
-chinese_calendar_92	隋 大業																			
-chinese_calendar_93	隋 義寧																			
-chinese_calendar_94	唐 武徳																			
-chinese_calendar_95	唐 貞観																			
-chinese_calendar_96	唐 永徽																			
-chinese_calendar_97	唐 顕慶																			
-chinese_calendar_98	唐 龍朔																			
-chinese_calendar_99	唐 麟徳																			
-chinese_calendar_100	唐 乾封																			
-chinese_calendar_101	唐 総章																			
-chinese_calendar_102	唐 咸亨																			
-chinese_calendar_103	唐 上元																			
-chinese_calendar_104	唐 儀鳳																			
-chinese_calendar_105	唐 調露																			
-chinese_calendar_106	唐 永隆																			
-chinese_calendar_107	唐 開耀																			
-chinese_calendar_108	唐 永淳																			
-chinese_calendar_109	唐 弘道																			
-chinese_calendar_110	唐 嗣聖																			
-chinese_calendar_111	唐 文明																			
-chinese_calendar_112	唐 光宅																			
-chinese_calendar_113	唐 垂拱																			
-chinese_calendar_114	唐 永昌																			
-chinese_calendar_115	唐 載初																			
-chinese_calendar_116	武周 天授																			
-chinese_calendar_117	武周 如意																			
-chinese_calendar_118	武周 長寿																			
-chinese_calendar_119	武周 延載																			
-chinese_calendar_120	武周 証聖																			
-chinese_calendar_121	武周 天冊万歳																			
-chinese_calendar_122	武周 万歳登封																			
-chinese_calendar_123	武周 万歳通天																			
-chinese_calendar_124	武周 神功																			
-chinese_calendar_125	武周 聖暦																			
-chinese_calendar_126	武周 久視																			
-chinese_calendar_127	武周 大足																			
-chinese_calendar_128	武周 長安																			
-chinese_calendar_129	唐 神龍																			
-chinese_calendar_130	唐 景龍																			
-chinese_calendar_131	唐 唐隆																			
-chinese_calendar_132	唐 景雲																			
-chinese_calendar_133	唐 太極																			
-chinese_calendar_134	唐 延和																			
-chinese_calendar_135	唐 先天																			
-chinese_calendar_136	唐 開元																			
-chinese_calendar_137	唐 天宝																			
+﻿key	en-US	ja-JP	zh-TW	zh-CN	ko-KR	hiragana	es-ES	pt-BR	de-DE	fr-FR	it-IT	tr-TR	pl-PL	el-GR	nl-NL	cs-CZ	uk-UA	ru-RU	id-ID	fa-IR	ar-SA	ain
+Gaikokugo	英語	日本語	中国語（繁体字）	中国語（簡体字）	韓国語	ひらがな	スペイン語	ポルトガル語	ドイツ語	フランス語	イタリア語	トルコ語	ポーランド語	ギリシャ語	オランダ語	チェコ語	ウクライナ語	ロシア語	インドネシア語	ペルシャ語	アラビア語	アイヌ語
+en-US	English																					
+ja-JP	日本語																					
+zh-TW	繁體中文																					
+zh-CN	简体中文																					
+ko-KR	한국어																					
+hiragana	ひらがな																					
+es-ES	Español																					
+pt-BR	Português																					
+de-DE	Deutsch																					
+fr-FR	Français																					
+it-IT	Italiano																					
+tr-TR	Türkçe																					
+pl-PL	Język polski																					
+el-GR	Ελληνικά																					
+nl-NL	Nederlands																					
+cs-CZ	Čeština																					
+uk-UA	Українська																					
+ru-RU	Русский язык																					
+id-ID	Bahasa Indonesia																					
+fa-IR	فارسی																					
+ar-SA	اللغة العربية																					
+ain	Aynu itak																					
+> font																						
+font_path	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-sc/NotoSansSC-Regular.otf	Data/Font/noto-sans-sc/NotoSansSC-Regular.otf	Data/Font/noto-sans-kr/NotoSansKR-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans/NotoSans-Regular.ttf	Data/Font/noto-sans/NotoSans-Regular.ttf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans/NotoSans-Regular.ttf	Data/Font/noto-sans/NotoSans-Regular.ttf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf	Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf	Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf	Data/Font/noto-sans-jp/NotoSansJP-Regular.otf
+> menu_bar_file																						
+menu_bar_file	File(F)	ファイル(F)	文件(F)	文件(F)	파일(F)	ふぁいる	Archivo(F)	Ficheiro(F)	Datei(F)	Fichier(F)	File(F)	Dosya(F)	Plik(F)	Αρχείο (F)	Bestand (F)	Soubor(F)	Файл(F)	Файл (F)	File (F)	فایل (F)	ملف (F)	File(F)
+menu_bar_file_new	New	新規作成	新建	新建	새로 만들기	しんき さくせい	Nuevo	Novo	Neu	Nouveau	Nuovo	Yeni	Nowy	Νέο	Nieuw	Nový	Новий	Новый	Baru	جدید	جديد	File kar
+menu_bar_file_open	Open	開く	打开	打开	열기	ひらく	Abrir	Abrir	Öffnen	Ouvrir	Aprire	Açık	Otwórz	Άνοιγμα	Open	Otevřít	Відкрити	Открыть	Buka	باز کن	يفتح	File maka
+menu_bar_file_save	Save	保存	保存	保存	저장	ほぞん	Guardar	Guardar	Speichern	Sauvegarder	Salva	Kaydet	Zapisz	Αποθήκευση	Opslaan	Uložit	Зберегти	Сохранить	Simpan	صرفه جویی	يحفظ	File anu
+menu_bar_file_close	Close	閉じる	关闭	关闭	닫기	とじる	Cerrar	Fechar	Schließen	Fermer	Chiudere	Kapat	Zamknij	Close	Sluiten	Zavřít	Закрити	Закрыть	Tutup	بستن	يغلق	File seske
+menu_bar_file_exit	Exit	終了	退出	退出	종료	しゅうりょう	Salir	Sair	Beenden	Quitter	Esci	Çıkış	Wyjdź	Έξοδος	Exit	Ukončit	Вихід	Выход	Keluar	خروج	مخرج	Lokere
+> menu_bar_edit																						
+menu_bar_edit	Edit(E)	編集(E)	编辑(E)	编辑(E)	편집(E)	へんしゅう	Editar(E)	Editar(E)	Bearbeiten(E)	Modifier(E)	Modifica(E)	Düzenle(E)	Edytuj(E)	Επεξεργασία(E)	Bewerken(E)	Upravit(E)	Редагувати(E)	Редактировать (E)	Edit (E)	ویرایش (E)	تحرير (E)	Edit(E)
+menu_bar_edit_cut	Cut	切り取り	剪切	剪切	잘라내기	きりとり	Cortar	Cortar	Ausschneiden	Couper	Tagliare	Kesmek	Wytnij	Cut	Knippen	Střih	Вирізати	Вырезать	Memotong	برش	يقطع	Cut
+menu_bar_edit_copy	Copy	コピー	复制	复制	복사	こぴー	Copiar	Copiar	Kopieren	Copier	Copia	Kopya	Kopiuj	Αντιγραφή	Kopiëren	Kopírovat	Копіювати	Копировать	Menyalin	کپی	ينسخ	Lattupte
+menu_bar_edit_paste	Paste	貼り付け	粘贴	粘贴	붙여넣기	はりつけ	Pegar	Colar	Einfügen	Coller	Incolla	Yapıştır	Wklej	Επικόλληση	Plakken	Vložit	Вставити	Вставить	Menempel	چسباندن	معجون	Paste
+menu_bar_edit_delete	Delete	削除	删除	删除	삭제	さくじょ	Borrar	Apagar	Löschen	Supprimer	Cancellare	Silme	Usuń	Διαγραφή	Verwijderen	Odstranit	Видалити	Удалить	Menghapus	حذف	حذف	Delete
+> menu_bar_view																						
+menu_bar_view	View	表示	显示	显示	표시	ひょうじ	Ver	Ver	Ansicht	Vue	Vista	Görünüm	Widok	Προβολή	Weergave	Zobrazit	Перегляд	Вид	Melihat	مشاهده	مشاهدة	Kuttupte
+menu_bar_view_calendar	Calendar	カレンダー	日历	日历	달력	かれんだー	Calendario	Calendário	Kalender	Calendrier	Calendario	Takvim	Kalendarz	Ημερολόγιο	Kalender	Kalendář	Календар	Календарь	Kalender	تقویم	تقويم	Tonukarpe
+menu_bar_view_map	Map	地図	地图	地图	지도	ちず	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة	Sinrunoka
+menu_bar_view_ui	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI
+menu_bar_view_simulation	Simulation	ステップ数	仿真	仿真	시뮬레이션	しみゅれーしょん	Simulación	Simulação	Simulation	Simulation	Simulazione	Simülasyon	Symulacja	Προσομοίωση	Simulatie	Simulace	Симуляція	Симулирование	Simulasi	شبیه‌سازی	محاكاة	Simulation
+menu_bar_view_license	License	ライセンス	许可	许可	라이선스	らいせんす	Licencia	Licença	Lizenz	Licence	Licenza	Lisans	Licencja	Άδεια	Licentie	Licence	Ліцензія	Лицензия	Lisensi	مجوز	رخصة	License
+menu_bar_view_debug	Debug	デバッグ	调试	调试	디버깅	でばっぐ	Depurar	Depurar	Debuggen	Débogage	Debug	Hata Ayıklama	Debugowanie	Αποσφαλμάτωση	Debug	Ladění	Налагодження	Отладка	Debug	اشکال زدایی	Debug	Debug
+menu_bar_view_3d	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	سه بعدی	ثلاثي الأبعاد	3D
+> menu_bar_place_names																						
+place_names	Feature	地物	地物	地物	지물	ちぶつ	Características	Caraterísticas	Merkmal	Fonctionnalité	Feature	Feature	Feature	Feature	Feature	Feature	Feature	Feature	Feature	Feature	Feature	Feature
+place_names_place_name	Place Name	地名	地名	地名	지명	ちめい	Topónimo	Topônimo	Geografischer Name	Place Name	Toponimo	Place Name	Toponim	Place Name	Toponiem	Toponymum	Топонім	Топоним	Place Name	Place Name	Place Name	Sinre
+place_names_site	Archaeological site	遺跡	遺蹟	遗蹟	유적	いせき	Yacimiento arqueológico	Sítio arqueológico	Site	Site archéologique	Sito archeologico	Arkeolojik sit	Stanowisko archeologiczne	Αρχαιολογική θέση	Vindplaats	Archeologická lokalita	Пам'ятка археології	Археологический памятник	Sito archeologico	محوطه باستانی	موقع أثري	Archaeological site
+place_names_tumulus	Tumulus	墳丘墓	墳冢	坟冢	분구묘	ふんきゅうぼ	Túmulo	Tumulus	Hügelgrab	Tumulus	Tumulo	Tümülüs	Tumulus	Τύμβος	Grafheuvel	Mohyla	Тумулус	Тумулус	Tumulus	گورپشته	جثوة	Tumulus
+place_names_dolmen	Dolmen	支石墓	石棚	石棚	고인돌	しせきぼ	Dolmen	Dólmen	Dolmen	Dolmen	Dolmen	Dolmen	Dolmen	Ντολμέν	Hunebed	Dolmen	Дольмен	Дольмен	Dolmen	میزسنگ	دلمن	Dolmen
+place_names_kamekanbo	Jar burial	甕棺墓	甕棺葬	瓮棺葬	독무덤	かめかんぼ	Vasija de enterramiento	Jar burial	Jar burial	Jar burial	Jar burial	Jar burial	Jar burial	Jar burial	Jar burial	Jar burial	Глекові поховання	Кувшинные погребения	Jar burial	گورخمره	الدفن في الجرار	Jar burial
+place_names_stone_coffin	Stone Coffin	石棺	Stone Coffin	石棺	석관	せっかん	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	Stone Coffin	ناووس	Suma Ot
+place_names_doken	Bronze Sword	銅剣	銅劍	铜剑	청동 검	どうけん	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Bronze Sword	Hurekane Emus
+place_names_dotaku	Dotaku	銅鐸	銅鐸	铜鐸	동탁	どうたく	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku	Dotaku
+place_names_bronze_mirror	Bronze Mirror	銅鏡	銅鏡	铜镜	동경	どうきょう	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Bronze Mirror	Hurekane Kankami
+place_names_human_bone	Human Bone	人骨	人骨	人骨	인골	じんこつ	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Human Bone	Aynu Pone
+place_names_mtdna	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA
+place_names_ydna	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA
+> menu_bar_calendar																						
+menu_bar_calendar	Calendar(C)	カレンダー(C)	日曆(C)	日历(C)	캘린더(C)	かれんだー	Calendario(C)	Calendário(C)	Kalender(C)	Calendrier(C)	Calendario(C)	Takvim (C)	Kalendarz(C)	Ημερολόγιο(C)	Kalender (C)	Kalendář(C)	Календар(C)	Календарь (C)	Kalender (C)	تقویم (C)	التقويم (C)	Tonukarpe(C)
+menu_bar_calendar_japan	Japanese Calendar	和暦	日本曆	日本历	일본 달력	わ れき	Calendario japonés	Calendário Japonês	Japanischer Kalender	Calendrier japonais	Calendario giapponese	Japon Takvimi	Kalendarz japoński	Ιαπωνικό ημερολόγιο	Japanse kalender	Japonský kalendář	Японський календар	Японский календарь	Kalender Jepang	تقویم ژاپنی	التقويم الياباني	Japanese Tonukarpe
+menu_bar_calendar_gregorian	Gregorian Calendar	グレゴリオ暦	公曆	公历	그레고리력	ぐれごりお れき	Calendario gregoriano	Calendário Gregoriano	Gregorianischer Kalender	Calendrier grégorien	Calendario gregoriano	Miladi Takvim	Kalendarz gregoriański	Γρηγοριανό ημερολόγιο	Gregoriaanse kalender	Gregoriánský kalendář	Григоріанський календар	Григорианский календарь	Kalender Gregorian	تقویم میلادی	التقويم الميلادي	Guregoriuskar Tonukarpe
+menu_bar_calendar_julian	Julian Calendar	ユリウス暦	儒略曆	儒略历	율리우스력	ゆりうす れき	Calendario juliano	Calendário Juliano	Julianischer Kalender	Calendrier julien	Calendario giuliano	Jülyen Takvimi	Kalendarz juliański	Ιουλιανό ημερολόγιο	Juliaanse kalender	Juliánský kalendář	Юліанський календар	Юлианский календарь	Kalender Julian	تقویم جولیان	تقويم جوليان	Yúriuskar Tonukarpe
+menu_bar_calendar_julian_day	Julian day	ユリウス通日	儒略日	儒略日	율리우스일	ゆりうす つうじつ	Día juliano	Dia Juliano	Julianischer Tag	Jour julien	Giorno giuliano	Julian günü	Dzień juliański	Ιουλιανή ημέρα	Juliaanse dag	Juliánský den	Юліанський день	Юлианский день	Hari Julian	روز جولیان	يوم جوليان	Yúriuskar to
+menu_bar_calendar_hijri	Hijri Calendar	ヒジュラ暦	伊斯兰曆	伊斯兰历	이슬람력	ひじゅら れき	Calendario hijri	Calendário Hijri	Hijri Kalender	Calendrier hijri	Calendario hijri	Hijri Takvimi	Kalendarz hijri	Hijri ημερολόγιο	Hijri kalender	Hijri kalendář	Hijri календар	Hijri календарь	Kalender Hijri	تقویم اسلامی	تقويم هجري	Musrimkor Tonukarpe
+> menu_bar_map																						
+menu_bar_map	Map	地図	地図	地図	지도	ちず	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة	Sinrunoka
+menu_bar_map_base	Base	通常	通常	通常	보통	つうじょう	Base	Base	Basis	Base	Base	Üs	Baza	Βάση	Basis	Základna	База	База	Pangkalan	پایه	قاعدة	Base
+menu_bar_map_land_and_sea	Land and Sea	陸海	陸海	陸海	육해	りくかい	Tierra y Mar	Terra e Mar	Land und Meer	Terre et mer	Terra e mare	Kara ve Deniz	Ląd i morze	Γη και θάλασσα	Land en Zee	Země a moře	Суша і море	Земля и море	Daratan dan Laut	خشکی و دریا	الأرض والبحر	Ya & Atuy
+menu_bar_map_land_and_water	Land and Water	陸水	陸水	陸水	육수	りくすい	Tierra y Agua	Terra e água	Land und Wasser	Terre et eau	Terra e acqua	Kara ve Su	Ląd i woda	Γη και Νερό	Land en Water	Země a voda	Суша і вода	Земля и вода	Tanah dan Air	زمین و آب	الأرض والمياه	Ya & Wakka
+menu_bar_map_soil	Soil	土壌	土壌	土壌	토양	どじょう	Suelo	Solo	Boden	Sol	Suolo	Toprak	Gleba	Έδαφος	Bodem	Půda	Ґрунт	Почва	Tanah	خاک	تربة	Toy
+menu_bar_map_soil_temperature	Soil Temperature	土壌温度	土壌温度	土壌温度	토양 온도	どじょう おんど	Temperatura del suelo	Temperatura do solo	Bodentemperatur	Température du sol	Temperatura del suolo	Toprak Sıcaklığı	Temperatura gleby	Θερμοκρασία εδάφους	Bodem Temperatuur	Teplota půdy	Температура ґрунту	Температура почвы	Suhu Tanah	دمای خاک	درجة حرارة التربة	Toy Sesekru
+menu_bar_map_ryosei_country	Ryosei Country	令制国	令制国	令制国	율령국	りょうせいこく	País Ryosei	País de Ryosei	Ryosei Land	Pays Ryosei	Paese Ryosei	Ryosei Ülkesi	Kraj Ryosei	Χώρα Ryosei	Ryosei Land	Země Ryosei	Країна Рьосей	Страна Рёсэй	Negara Ryosei	کشور Ryosei	دولة Ryosei	Ryosei Mosir
+menu_bar_map_ryosei_line	Ryosei Line	令制国線	令制国線	令制国線	율령국선	りょうせいこく せん	Línea Ryosei	Linha de Ryosei	Ryosei Linie	Ligne Ryosei	Linea Ryosei	Ryosei Line	Linia Ryosei	Γραμμή Ryosei	Ryosei Lijn	Linie Ryosei	Лінія Рьосей	Линия Рёсэй	Garis Ryosei	خط Ryosei	خط Ryosei	Ryosei Rúnoka
+menu_bar_map_slope	Slope	傾斜	坡度	坡度	경사면	けいしゃ	Pendiente	Declive	Gefälle	Pente	Pendenza	Eğim	Nachylenie	Κλίση	Helling	Svah	Схил	Склон	Kemiringan	شیب	ميل	Slope
+menu_bar_map_lakes_and_rivers1	Lakes and rivers1	湖川1	河流和湖泊1	河流和湖泊1	호수와 강1	こせん1	Lagos y ríos1	Lagos e rios1	Seen und Flüsse1	Lacs et rivières1	Laghi e fiumi1	Göller ve nehirler1	Jeziora i rzeki1	Λίμνες και ποτάμια1	Meren en rivieren1	Jezera a řeky1	Озера та річки1	Озера и реки1	Danau dan sungai1	دریاچه ها و رودخانه ها 1	البحيرات والأنهار 1	To & Pet1
+menu_bar_map_lakes_and_rivers2	Lakes and rivers2	湖川2	河流和湖泊2	河流和湖泊2	호수와 강2	こせん2	Lagos y ríos2	Lagos e rios2	Seen und Flüsse2	Lacs et rivières2	Laghi e fiumi2	Göller ve nehirler2	Jeziora i rzeki2	Λίμνες και ποτάμια2	Meren en rivieren2	Jezera a řeky2	Озера та річки2	Озера и реки2	Danau dan sungai2	دریاچه ها و رودخانه ها 2	البحيرات والأنهار 2	To & Pet2
+menu_bar_map_line1	Line1	線1	線1	線1	선1	せん1	Línea1	Linha1	Linie1	Ligne 1	Linea1	Hat1	Linia1	Γραμμή1	Lijn1	Linie1	Лінія1	Линия1	Garis1	خط 1	خط 1	Rúnoka1
+menu_bar_map_line2	Line2	線2	線2	線2	선2	せん2	Línea2	Linha 2	Linie2	Ligne 2	Linea2	Hat2	Linia2	Γραμμή2	Lijn2	Linie2	Лінія2	Линия2	Jalur2	خط 2	خط 2	Rúnoka2
+> calendar																						
+calendar_japan	Japanese cal.	和暦	和曆	和历	화력	わ れき	Cal. japonés	Cal. japonesa	Japanisches Kal.	Cal. japonais	Cal. giapponese	Japon Takvimi	Kal. japoński	Ιαπωνικά cal.	Japanse kal.	Japonský kal.	Японський кал.	Японский кал.	Kal. Jepang	تقویم ژاپنی	التقويم الياباني	Japanese pa
+calendar_gregorian	Gregorian cal.	グレゴリオ暦	公曆	公历	그레고리력	ぐれごりお れき	Cal. gregoriano	Cal. gregoriana	Gregorianisches Kal.	Cal. grégorien	Cal. gregoriano	Miladi Takvim	Kal. gregoriański	Γρηγοριανό cal.	Gregoriaanse kal.	Gregoriánský kal.	Григоріанський кал.	Григорианский кал.	Kal. Gregorian	تقویم میلادی	التقويم الميلادي	Guregoriuskar
+calendar_julian	Julian cal.	ユリウス暦	儒略曆	儒略历	율리우스력	ゆりうす れき	Cal. juliano	Cal. juliano	Julianisches Kal.	Cal. julien	Cal. giuliano	Jülyen Takvimi	Kal. juliański	Ιουλιανό cal.	Juliaanse kal.	Juliánský kal.	Юліанський кал.	Юлианский кал.	Kal. Julian	تقویم جولیان	تقويم جوليان	Yúriuskar pa
+calendar_julian_day	Julian day	ユリウス通日	儒略日	儒略日	율리우스일	ゆりうす つうじつ	Día juliano	Dia Juliano	Julianischer Tag	Jour julien	Giorno giuliano	Julian günü	Dzień juliański	Ιουλιανή ημέρα	Juliaanse dag	Juliánský den	Юліанський день	Юлианский день	Hari Julian	روز جولیان	يوم جوليان	Yúriuskar to
+calendar_calbp	cal BP	較正年代	cal BP	cal BP	cal BP	こうせい ねんだい	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP	cal BP
+calendar_hijri	Hijri cal.	ヒジュラ暦	伊斯兰曆	伊斯兰历	이슬람력	ひじゅら れき	Cal. hijri	Cal. Hijri	Hijri Kal.	Cal. hijri	Cal. hijri	Hijri Takvimi	Kal. hijri	Hijri cal.	Hijri kal.	Hijri kal.	Hijri кал.	Hijri кал.	Kal. Hijri	تقویم اسلامی	تقويم هجري	Musrimkor
+> debug																						
+debug_magnification_power	Magnification power	拡大率	放大率	放大率	확대율	かくだい りつ	Potencia de aumento	Potência de ampliação	Vergrößerungsmaßstab	Puissance d'agrandissement	Potenza di ingrandimento	Büyütme gücü	Moc powiększenia	Δύναμη μεγέθυνσης	Mate van vergroting	Výkon zvětšení	Потужність збільшення	Кратность увеличения	Kekuatan pembesaran	قدرت بزرگنمایی	قوة التكبير	Magnification power
+debug_mercator_longitude	Mercator longitude	メルカトル経度	麥卡托経度	麥卡托经度	메르카토르 경도	めるかとる けいど	Longitud Mercator	Longitude de Mercator	Mercator Längengrad	Longitude de Mercator	Longitudine Mercatore	Merkatör boylamı	Długość geograficzna Merkatora	Γεωγραφικό μήκος Mercator	Mercator lengtegraad	Mercatorova zeměpisná délka	Довгота Меркатора	Меркаторская долгота	Bujur Mercator	طول جغرافیایی مرکاتور	خط الطول مركاتور	Mercator aturika
+debug_mercator_latitude	Mercator latitude	メルカトル緯度	麥卡托緯度	麥卡托纬度	메르카토르 위도	めるかとる いど	Latitud Mercator	Latitude de Mercator	Mercator-Breitengrad	Latitude de Mercator	Latitudine di Mercatore	Merkatör enlemi	Szerokość geograficzna Merkatora	Γεωγραφικό πλάτος Mercator	Mercator breedtegraad	Mercatorova zeměpisná šířka	Широта Меркатора	Меркаторская широта	Lintang Mercator	عرض جغرافیایی مرکاتور	خط عرض مركاتور	Mercator ahunka
+debug_latitude	Latitude	緯度	緯度	纬度	위도	いど	Latitud	Latitude	Breitengrad	Latitude	Latitudine	Enlem	Szerokość geograficzna	Γεωγραφικό πλάτος	Breedtegraad	Zeměpisná šířka	Широта	широта	Lintang	عرض جغرافیایی	خط العرض	Ahunka
+debug_xyz_tiles_z	XYZ Tiles Z	XYZタイル Z	XYZ瓦片 Z	XYZ瓦片 Z	XYZ타일 Z	XYZたいるZ	Azulejos XYZ Z	XYZ Azulejos Z	XYZ Kacheln Z	Carreaux XYZ Z	XYZ Piastrelle Z	XYZ Karolar Z	XYZ Płytki Z	XYZ Πλακάκια Z	XYZ tegels Z	XYZ Dlaždice Z	XYZ Плитка Z	XYZ Плитка Z	Ubin XYZ Ubin Z	کاشی XYZ Z	XYZ البلاط Z	XYZ Tiles Z
+> sueki																						
+sueki_nakamura	Sue pottery Nakamura	須恵器 中村(1993)	須恵器 中村(1993)	須恵器 中村(1993)	須恵器(수혜기) 나카무라	すえき なかむら(1993)	Cerámica Sue Nakamura	Cerâmica Sue Nakamura	Sue Töpferei Nakamura	Sue poterie Nakamura	Sue ceramiche Nakamura	Sue çömlek Nakamura	Sue ceramika Nakamura	Sue κεραμικά Nakamura	Sue aardewerk Nakamura	Sue keramika Nakamura	Сью гончар Накамура	Сью керамика Накамура	Tuntut tembikar Nakamura	سو سفال Nakamura	الفخار سو Nakamura	Sue toysu Nakamura
+sueki_tanabe	Sue pottery Tanabe	須恵器 田辺(1983)	須恵器 田辺(1983)	須恵器 田辺(1983)	須恵器(수혜기) 타나베	すえき たなべ(1983)	Cerámica Sue Tanabe	Cerâmica Sue Tanabe	Sue-Töpferei Tanabe	Sue poterie Tanabe	Sue ceramiche Tanabe	Sue çömlek Tanabe	Sue ceramika Tanabe	Sue κεραμική Tanabe	Sue aardewerk Tanabe	Sue keramika Tanabe	Сью гончар Танабе	Сью керамика Танабе	Tuntut tembikar Tanabe	سو سفال Tanabe	سو الفخار Tanabe	Sue toysu Tanabe
+> gengo																						
+gengo_0	Before Jimmu	神武天皇即位前	神武天皇即位前	神武天皇即位前	Before Jimmu																	Jimmu Etoko
+gengo_1	Emperor Jimmu	神武天皇	神武天皇	神武天皇	황제 Jimmu																	Jimmu Cimayrekamuy
+gengo_2	Emperor Suizei	綏靖天皇	綏靖天皇	綏靖天皇	황제 Suizei																	Suizei Cimayrekamuy
+gengo_3	Emperor Annei	安寧天皇	安寧天皇	安寧天皇	황제 Annei																	Annei Cimayrekamuy
+gengo_4	Emperor Itoku	懿徳天皇	懿德天皇	懿德天皇	황제 Itoku																	Itoku Cimayrekamuy
+gengo_5	Emperor Kōshō	孝昭天皇	孝昭天皇	孝昭天皇	황제 Kōshō																	Kōshō Cimayrekamuy
+gengo_6	Emperor Kōan	孝安天皇	孝安天皇	孝安天皇	황제 Kōan																	Kōan Cimayrekamuy
+gengo_7	Emperor Kōrei	孝霊天皇	孝靈天皇	孝靈天皇	황제 Kōrei																	Kōrei Cimayrekamuy
+gengo_8	Emperor Kōgen	孝元天皇	孝元天皇	孝元天皇	황제 Kōgen																	Kōgen Cimayrekamuy
+gengo_9	Emperor Kaika	開化天皇	開化天皇	開化天皇	황제 Kaika																	Kaika Cimayrekamuy
+gengo_10	Emperor Sujin	崇神天皇	崇神天皇	崇神天皇	황제 Sujin																	Sujin Cimayrekamuy
+gengo_11	Emperor Suinin	垂仁天皇	垂仁天皇	垂仁天皇	황제 Suinin																	Suinin Cimayrekamuy
+gengo_12	Emperor Keikō	景行天皇	景行天皇	景行天皇	황제 Keikō																	Keikō Cimayrekamuy
+gengo_13	Emperor Seimu	成務天皇	成務天皇	成務天皇	황제 Seimu																	Seimu Cimayrekamuy
+gengo_14	Emperor Chūai	仲哀天皇	仲哀天皇	仲哀天皇	황제 Chūai																	Chūai Cimayrekamuy
+gengo_15	Empress Jingū	神功皇后	神功皇后	神功皇后	황후 Jingū																	Jingū Cimayrekamuy
+gengo_16	Emperor Ōjin	応神天皇	應神天皇	應神天皇	황제 Ōjin																	Ōjin Cimayrekamuy
+gengo_17	Emperor Nintoku	仁徳天皇	仁德天皇	仁德天皇	황제 Nintoku																	Nintoku Cimayrekamuy
+gengo_18	Emperor Richū	履中天皇	履中天皇	履中天皇	황제 Richū																	Richū Cimayrekamuy
+gengo_19	Emperor Hanzei	反正天皇	反正天皇	反正天皇	황제 Hanzei																	Hanzei Cimayrekamuy
+gengo_20	Emperor Ingyō	允恭天皇	允恭天皇	允恭天皇	황제 Ingyō																	Ingyō Cimayrekamuy
+gengo_21	Emperor Ankō	安康天皇	安康天皇	安康天皇	황제 Ankō																	Ankō Cimayrekamuy
+gengo_22	Emperor Yūryaku	雄略天皇	雄略天皇	雄略天皇	황제 Yūryaku																	Yūryaku Cimayrekamuy
+gengo_23	Emperor Seinei	清寧天皇	清寧天皇	清寧天皇	황제 Seinei																	Seinei Cimayrekamuy
+gengo_24	Emperor Kenzō	顕宗天皇	顯宗天皇	顯宗天皇	황제 Kenzō																	Kenzō Cimayrekamuy
+gengo_25	Emperor Ninken	仁賢天皇	仁賢天皇	仁賢天皇	황제 Ninken																	Ninken Cimayrekamuy
+gengo_26	Emperor Buretsu	武烈天皇	武烈天皇	武烈天皇	황제 Buretsu																	Buretsu Cimayrekamuy
+gengo_27	Emperor Keitai	継体天皇	繼體天皇	繼體天皇	황제 Keitai																	Keitai Cimayrekamuy
+gengo_28	Emperor Ankan	安閑天皇	安閑天皇	安閑天皇	황제 Ankan																	Ankan Cimayrekamuy
+gengo_29	Emperor Senka	宣化天皇	宣化天皇	宣化天皇	황제 Senka																	Senka Cimayrekamuy
+gengo_30	Emperor Kinmei	欽明天皇	欽明天皇	欽明天皇	황제 Kinmei																	Kinmei Cimayrekamuy
+gengo_31	Emperor Bidatsu	敏達天皇	敏達天皇	敏達天皇	황제 Bidatsu																	Bidatsu Cimayrekamuy
+gengo_32	Emperor Yōmei	用明天皇	用明天皇	用明天皇	황제 Yōmei																	Yōmei Cimayrekamuy
+gengo_33	Emperor Sushun	崇峻天皇	崇峻天皇	崇峻天皇	황제 Sushun																	Sushun Cimayrekamuy
+gengo_34	Empress Suiko	推古天皇	推古天皇	推古天皇	황후 Suiko																	Suiko Cimayrekamuy
+gengo_35	Emperor Jomei	舒明天皇	舒明天皇	舒明天皇	황제 Jomei																	Jomei Cimayrekamuy
+gengo_36	Empress Kōgyoku	皇極天皇	皇極天皇	皇極天皇	황후 Kōgyoku																	Kōgyoku Cimayrekamuy
+gengo_37	Taika	大化	大化	大化	Taika																	Taika
+gengo_38	Hakuchi	白雉	白雉	白雉	Hakuchi																	Hakuchi
+gengo_39	Empress Saimei	斉明天皇	齊明天皇	齊明天皇	황후 Saimei																	Saimei Cimayrekamuy
+gengo_40	Emperor Tenji	天智天皇	天智天皇	天智天皇	황제 Tenji																	Tenji Cimayrekamuy
+gengo_41	Emperor Tenmu	天武天皇	天武天皇	天武天皇	황제 Tenmu																	Tenmu Cimayrekamuy
+gengo_42	Shuchō	朱鳥	朱鳥	朱鳥	Shuchō																	Shuchō
+gengo_43	Empress Jitō	持統天皇	持統天皇	持統天皇	황후 Jitō																	Jitō Cimayrekamuy
+gengo_44	Emperor Monmu	文武天皇	文武天皇	文武天皇	황제 Monmu																	Monmu Cimayrekamuy
+gengo_45	Taihō	大宝	大寶	大寶	Taihō																	Taihō
+gengo_46	Keiun	慶雲	慶雲	慶雲	Keiun																	Keiun
+gengo_47	Wadō	和銅	和銅	和銅	Wadō																	Wadō
+gengo_48	Reiki	霊亀	靈龜	靈龜	Reiki																	Reiki
+gengo_49	Yōrō	養老	養老	養老	Yōrō																	Yōrō
+gengo_50	Jinki	神亀	神龜	神龜	Jinki																	Jinki
+gengo_51	Tenpyō	天平	天平	天平	Tenpyō																	Tenpyō
+gengo_52	Tenpyō-kanpō	天平感宝	天平感寶	天平感寶	Tenpyō-kanpō																	Tenpyō-kanpō
+gengo_53	Tenpyō-shōhō	天平勝宝	天平勝寶	天平勝寶	Tenpyō-shōhō																	Tenpyō-shōhō
+gengo_54	Tenpyō-hōji	天平宝字	天平寶字	天平寶字	Tenpyō-hōji																	Tenpyō-hōji
+gengo_55	Tenpyō-jingo	天平神護	天平神護	天平神護	Tenpyō-jingo																	Tenpyō-jingo
+gengo_56	Jingo-keiun	神護景雲	神護景雲	神護景雲	Jingo-keiun																	Jingo-keiun
+gengo_57	Hōki	宝亀	寶龜	寶龜	Hōki																	Hōki
+gengo_58	Ten'ō	天応	天應	天應	Ten'ō																	Ten'ō
+gengo_59	Enryaku	延暦	延曆	延曆	Enryaku																	Enryaku
+gengo_60	Daidō	大同	大同	大同	Daidō																	Daidō
+gengo_61	Kōnin	弘仁	弘仁	弘仁	Kōnin																	Kōnin
+gengo_62	Tenchō	天長	天長	天長	Tenchō																	Tenchō
+gengo_63	Jōwa	承和	承和	承和	Jōwa																	Jōwa
+gengo_64	Kashō	嘉祥	嘉祥	嘉祥	Kashō																	Kashō
+gengo_65	Ninju	仁寿	仁壽	仁壽	Ninju																	Ninju
+gengo_66	Saikō	斉衡	齊衡	齊衡	Saikō																	Saikō
+gengo_67	Ten'an	天安	天安	天安	Ten'an																	Ten'an
+gengo_68	Jōgan	貞観	貞觀	貞觀	Jōgan																	Jōgan
+gengo_69	Gangyō	元慶	元慶	元慶	Gangyō																	Gangyō
+gengo_70	Ninna	仁和	仁和	仁和	Ninna																	Ninna
+gengo_71	Kanpyō	寛平	寛平	寛平	Kanpyō																	Kanpyō
+gengo_72	Shōtai	昌泰	昌泰	昌泰	Shōtai																	Shōtai
+gengo_73	Engi	延喜	延喜	延喜	Engi																	Engi
+gengo_74	Enchō	延長	延長	延長	Enchō																	Enchō
+gengo_75	Jōhei	承平	承平	承平	Jōhei																	Jōhei
+gengo_76	Tengyō	天慶	天慶	天慶	Tengyō																	Tengyō
+gengo_77	Tenryaku	天暦	天曆	天曆	Tenryaku																	Tenryaku
+gengo_78	Tentoku	天徳	天德	天德	Tentoku																	Tentoku
+gengo_79	Ōwa	応和	應和	應和	Ōwa																	Ōwa
+gengo_80	Kōhō	康保	康保	康保	Kōhō																	Kōhō
+gengo_81	Anna	安和	安和	安和	Anna																	Anna
+gengo_82	Tenroku	天禄	天祿	天祿	Tenroku																	Tenroku
+gengo_83	Ten'en	天延	天延	天延	Ten'en																	Ten'en
+gengo_84	Jōgen	貞元	貞元	貞元	Jōgen																	Jōgen
+gengo_85	Tengen	天元	天元	天元	Tengen																	Tengen
+gengo_86	Eikan	永観	永觀	永觀	Eikan																	Eikan
+gengo_87	Kanna	寛和	寛和	寛和	Kanna																	Kanna
+gengo_88	Eien	永延	永延	永延	Eien																	Eien
+gengo_89	Eiso	永祚	永祚	永祚	Eiso																	Eiso
+gengo_90	Shōryaku	正暦	正曆	正曆	Shōryaku																	Shōryaku
+gengo_91	Chōtoku	長徳	長德	長德	Chōtoku																	Chōtoku
+gengo_92	Chōhō	長保	長保	長保	Chōhō																	Chōhō
+gengo_93	Kankō	寛弘	寛弘	寛弘	Kankō																	Kankō
+gengo_94	Chōwa	長和	長和	長和	Chōwa																	Chōwa
+gengo_95	Kannin	寛仁	寛仁	寛仁	Kannin																	Kannin
+gengo_96	Jian	治安	治安	治安	Jian																	Jian
+gengo_97	Manju	万寿	萬壽	萬壽	Manju																	Manju
+gengo_98	Chōgen	長元	長元	長元	Chōgen																	Chōgen
+gengo_99	Chōryaku	長暦	長曆	長曆	Chōryaku																	Chōryaku
+gengo_100	Chōkyū	長久	長久	長久	Chōkyū																	Chōkyū
+gengo_101	Kantoku	寛徳	寛德	寛德	Kantoku																	Kantoku
+gengo_102	Eishō	永承	永承	永承	Eishō																	Eishō
+gengo_103	Tengi	天喜	天喜	天喜	Tengi																	Tengi
+gengo_104	Kōhei	康平	康平	康平	Kōhei																	Kōhei
+gengo_105	Jiryaku	治暦	治曆	治曆	Jiryaku																	Jiryaku
+gengo_106	Enkyū	延久	延久	延久	Enkyū																	Enkyū
+gengo_107	Jōhō	承保	承保	承保	Jōhō																	Jōhō
+gengo_108	Jōryaku	承暦	承曆	承曆	Jōryaku																	Jōryaku
+gengo_109	Eihō	永保	永保	永保	Eihō																	Eihō
+gengo_110	Ōtoku	応徳	應德	應德	Ōtoku																	Ōtoku
+gengo_111	Kanji	寛治	寛治	寛治	Kanji																	Kanji
+gengo_112	Kahō	嘉保	嘉保	嘉保	Kahō																	Kahō
+gengo_113	Eichō	永長	永長	永長	Eichō																	Eichō
+gengo_114	Jōtoku	承徳	承德	承德	Jōtoku																	Jōtoku
+gengo_115	Kōwa	康和	康和	康和	Kōwa																	Kōwa
+gengo_116	Chōji	長治	長治	長治	Chōji																	Chōji
+gengo_117	Kajō	嘉承	嘉承	嘉承	Kajō																	Kajō
+gengo_118	Tennin	天仁	天仁	天仁	Tennin																	Tennin
+gengo_119	Ten'ei	天永	天永	天永	Ten'ei																	Ten'ei
+gengo_120	Eikyū	永久	永久	永久	Eikyū																	Eikyū
+gengo_121	Gen'ei	元永	元永	元永	Gen'ei																	Gen'ei
+gengo_122	Hōan	保安	保安	保安	Hōan																	Hōan
+gengo_123	Tenji	天治	天治	天治	Tenji																	Tenji
+gengo_124	Daiji	大治	大治	大治	Daiji																	Daiji
+gengo_125	Tenshō	天承	天承	天承	Tenshō																	Tenshō
+gengo_126	Chōshō	長承	長承	長承	Chōshō																	Chōshō
+gengo_127	Hōen	保延	保延	保延	Hōen																	Hōen
+gengo_128	Eiji	永治	永治	永治	Eiji																	Eiji
+gengo_129	Kōji	康治	康治	康治	Kōji																	Kōji
+gengo_130	Ten'yō	天養	天養	天養	Ten'yō																	Ten'yō
+gengo_131	Kyūan	久安	久安	久安	Kyūan																	Kyūan
+gengo_132	Ninpei	仁平	仁平	仁平	Ninpei																	Ninpei
+gengo_133	Kyūju	久寿	久壽	久壽	Kyūju																	Kyūju
+gengo_134	Hōgen	保元	保元	保元	Hōgen																	Hōgen
+gengo_135	Heiji	平治	平治	平治	Heiji																	Heiji
+gengo_136	Eiryaku	永暦	永曆	永曆	Eiryaku																	Eiryaku
+gengo_137	Ōhō	応保	應保	應保	Ōhō																	Ōhō
+gengo_138	Chōkan	長寛	長寛	長寛	Chōkan																	Chōkan
+gengo_139	Eiman	永万	永萬	永萬	Eiman																	Eiman
+gengo_140	Nin'an	仁安	仁安	仁安	Nin'an																	Nin'an
+gengo_141	Kaō	嘉応	嘉應	嘉應	Kaō																	Kaō
+gengo_142	Jōan	承安	承安	承安	Jōan																	Jōan
+gengo_143	Angen	安元	安元	安元	Angen																	Angen
+gengo_144	Jishō	治承	治承	治承	Jishō																	Jishō
+gengo_145	Yōwa	養和	養和	養和	Yōwa																	Yōwa
+gengo_146	Juei	寿永	壽永	壽永	Juei																	Juei
+gengo_147	Genryaku	元暦	元曆	元曆	Genryaku																	Genryaku
+gengo_148	Bunji	文治	文治	文治	Bunji																	Bunji
+gengo_149	Kenkyū	建久	建久	建久	Kenkyū																	Kenkyū
+gengo_150	Shōji	正治	正治	正治	Shōji																	Shōji
+gengo_151	Kennin	建仁	建仁	建仁	Kennin																	Kennin
+gengo_152	Genkyū	元久	元久	元久	Genkyū																	Genkyū
+gengo_153	Ken'ei	建永	建永	建永	Ken'ei																	Ken'ei
+gengo_154	Jōgen	承元	承元	承元	Jōgen																	Jōgen
+gengo_155	Kenryaku	建暦	建曆	建曆	Kenryaku																	Kenryaku
+gengo_156	Kempo	建保	建保	建保	Kempo																	Kempo
+gengo_157	Jōkyū	承久	承久	承久	Jōkyū																	Jōkyū
+gengo_158	Jōō	貞応	貞應	貞應	Jōō																	Jōō
+gengo_159	Gennin	元仁	元仁	元仁	Gennin																	Gennin
+gengo_160	Karoku	嘉禄	嘉祿	嘉祿	Karoku																	Karoku
+gengo_161	Antei	安貞	安貞	安貞	Antei																	Antei
+gengo_162	Kangi	寛喜	寛喜	寛喜	Kangi																	Kangi
+gengo_163	Jōei	貞永	貞永	貞永	Jōei																	Jōei
+gengo_164	Tenpuku	天福	天福	天福	Tenpuku																	Tenpuku
+gengo_165	Bunryaku	文暦	文曆	文曆	Bunryaku																	Bunryaku
+gengo_166	Katei	嘉禎	嘉禎	嘉禎	Katei																	Katei
+gengo_167	Ryakunin	暦仁	曆仁	曆仁	Ryakunin																	Ryakunin
+gengo_168	En'ō	延応	延應	延應	En'ō																	En'ō
+gengo_169	Ninji	仁治	仁治	仁治	Ninji																	Ninji
+gengo_170	Kangen	寛元	寛元	寛元	Kangen																	Kangen
+gengo_171	Hōji	宝治	寶治	寶治	Hōji																	Hōji
+gengo_172	Kenchō	建長	建長	建長	Kenchō																	Kenchō
+gengo_173	Kōgen	康元	康元	康元	Kōgen																	Kōgen
+gengo_174	Shōka	正嘉	正嘉	正嘉	Shōka																	Shōka
+gengo_175	Shōgen	正元	正元	正元	Shōgen																	Shōgen
+gengo_176	Bun'ō	文応	文應	文應	Bun'ō																	Bun'ō
+gengo_177	Kōchō	弘長	弘長	弘長	Kōchō																	Kōchō
+gengo_178	Bun'ei	文永	文永	文永	Bun'ei																	Bun'ei
+gengo_179	Kenji	建治	建治	建治	Kenji																	Kenji
+gengo_180	Kōan	弘安	弘安	弘安	Kōan																	Kōan
+gengo_181	Shōō	正応	正應	正應	Shōō																	Shōō
+gengo_182	Einin	永仁	永仁	永仁	Einin																	Einin
+gengo_183	Shōan	正安	正安	正安	Shōan																	Shōan
+gengo_184	Kengen	乾元	乾元	乾元	Kengen																	Kengen
+gengo_185	Kagen	嘉元	嘉元	嘉元	Kagen																	Kagen
+gengo_186	Tokuji	徳治	德治	德治	Tokuji																	Tokuji
+gengo_187	Enkyō	延慶	延慶	延慶	Enkyō																	Enkyō
+gengo_188	Ōchō	応長	應長	應長	Ōchō																	Ōchō
+gengo_189	Shōwa	正和	正和	正和	Shōwa																	Shōwa
+gengo_190	Bunpō	文保	文保	文保	Bunpō																	Bunpō
+gengo_191	Gen'ō	元応	元應	元應	Gen'ō																	Gen'ō
+gengo_192	Genkō	元亨	元亨	元亨	Genkō																	Genkō
+gengo_193	Shōchū	正中	正中	正中	Shōchū																	Shōchū
+gengo_194	Karyaku	嘉暦	嘉曆	嘉曆	Karyaku																	Karyaku
+gengo_195	Gentoku	元徳	元德	元德	Gentoku																	Gentoku
+gengo_196	Genkō	元弘	元弘	元弘	Genkō																	Genkō
+gengo_197	Shōkyō	正慶	正慶	正慶	Shōkyō																	Shōkyō
+gengo_198	Kenmu	建武	建武	建武	Kenmu																	Kenmu
+gengo_199	Engen	延元	延元	延元	Engen																	Engen
+gengo_200	Ryakuō	暦応	曆應	曆應	Ryakuō																	Ryakuō
+gengo_201	Kōkoku	興国	興國	興國	Kōkoku																	Kōkoku
+gengo_202	Kōei	康永	康永	康永	Kōei																	Kōei
+gengo_203	Jōwa	貞和	貞和	貞和	Jōwa																	Jōwa
+gengo_204	Shōhei	正平	正平	正平	Shōhei																	Shōhei
+gengo_205	Kannō	観応	觀應	觀應	Kannō																	Kannō
+gengo_206	Bunna	文和	文和	文和	Bunna																	Bunna
+gengo_207	Enbun	延文	延文	延文	Enbun																	Enbun
+gengo_208	Kōan	康安	康安	康安	Kōan																	Kōan
+gengo_209	Jōji	貞治	貞治	貞治	Jōji																	Jōji
+gengo_210	Ōan	応安	應安	應安	Ōan																	Ōan
+gengo_211	Kentoku	建徳	建德	建德	Kentoku																	Kentoku
+gengo_212	Bunchū	文中	文中	文中	Bunchū																	Bunchū
+gengo_213	Tenju	天授	天授	天授	Tenju																	Tenju
+gengo_214	Eiwa	永和	永和	永和	Eiwa																	Eiwa
+gengo_215	Kōryaku	康暦	康曆	康曆	Kōryaku																	Kōryaku
+gengo_216	Kōwa	弘和	弘和	弘和	Kōwa																	Kōwa
+gengo_217	Eitoku	永徳	永德	永德	Eitoku																	Eitoku
+gengo_218	Genchū	元中	元中	元中	Genchū																	Genchū
+gengo_219	Shitoku	至徳	至德	至德	Shitoku																	Shitoku
+gengo_220	Kakei	嘉慶	嘉慶	嘉慶	Kakei																	Kakei
+gengo_221	Kōō	康応	康應	康應	Kōō																	Kōō
+gengo_222	Meitoku	明徳	明德	明德	Meitoku																	Meitoku
+gengo_223	Ōei	応永	應永	應永	Ōei																	Ōei
+gengo_224	Shōchō	正長	正長	正長	Shōchō																	Shōchō
+gengo_225	Eikyō	永享	永享	永享	Eikyō																	Eikyō
+gengo_226	Kakitsu	嘉吉	嘉吉	嘉吉	Kakitsu																	Kakitsu
+gengo_227	Bun'an	文安	文安	文安	Bun'an																	Bun'an
+gengo_228	Hōtoku	宝徳	寶德	寶德	Hōtoku																	Hōtoku
+gengo_229	Kyōtoku	享徳	享德	享德	Kyōtoku																	Kyōtoku
+gengo_230	Kōshō	康正	康正	康正	Kōshō																	Kōshō
+gengo_231	Chōroku	長禄	長祿	長祿	Chōroku																	Chōroku
+gengo_232	Kanshō	寛正	寛正	寛正	Kanshō																	Kanshō
+gengo_233	Bunshō	文正	文正	文正	Bunshō																	Bunshō
+gengo_234	Ōnin	応仁	應仁	應仁	Ōnin																	Ōnin
+gengo_235	Bunmei	文明	文明	文明	Bunmei																	Bunmei
+gengo_236	Chōkyō	長享	長享	長享	Chōkyō																	Chōkyō
+gengo_237	Entoku	延徳	延德	延德	Entoku																	Entoku
+gengo_238	Meiō	明応	明應	明應	Meiō																	Meiō
+gengo_239	Bunki	文亀	文龜	文龜	Bunki																	Bunki
+gengo_240	Eishō	永正	永正	永正	Eishō																	Eishō
+gengo_241	Daiei	大永	大永	大永	Daiei																	Daiei
+gengo_242	Kyōroku	享禄	享祿	享祿	Kyōroku																	Kyōroku
+gengo_243	Tenbun	天文	天文	天文	Tenbun																	Tenbun
+gengo_244	Kōji	弘治	弘治	弘治	Kōji																	Kōji
+gengo_245	Eiroku	永禄	永祿	永祿	Eiroku																	Eiroku
+gengo_246	Genki	元亀	元龜	元龜	Genki																	Genki
+gengo_247	Tenshō	天正	天正	天正	Tenshō																	Tenshō
+gengo_248	Bunroku	文禄	文祿	文祿	Bunroku																	Bunroku
+gengo_249	Keichō	慶長	慶長	慶長	Keichō																	Keichō
+gengo_250	Genna	元和	元和	元和	Genna																	Genna
+gengo_251	Kan'ei	寛永	寛永	寛永	Kan'ei																	Kan'ei
+gengo_252	Shōhō	正保	正保	正保	Shōhō																	Shōhō
+gengo_253	Keian	慶安	慶安	慶安	Keian																	Keian
+gengo_254	Jōō	承応	承應	承應	Jōō																	Jōō
+gengo_255	Meireki	明暦	明曆	明曆	Meireki																	Meireki
+gengo_256	Manji	万治	萬治	萬治	Manji																	Manji
+gengo_257	Kanbun	寛文	寛文	寛文	Kanbun																	Kanbun
+gengo_258	Enpō	延宝	延寶	延寶	Enpō																	Enpō
+gengo_259	Tenna	天和	天和	天和	Tenna																	Tenna
+gengo_260	Jōkyō	貞享	貞享	貞享	Jōkyō																	Jōkyō
+gengo_261	Genroku	元禄	元祿	元祿	Genroku																	Genroku
+gengo_262	Hōei	宝永	寶永	寶永	Hōei																	Hōei
+gengo_263	Shōtoku	正徳	正德	正德	Shōtoku																	Shōtoku
+gengo_264	Kyōhō	享保	享保	享保	Kyōhō																	Kyōhō
+gengo_265	Genbun	元文	元文	元文	Genbun																	Genbun
+gengo_266	Kanpō	寛保	寛保	寛保	Kanpō																	Kanpō
+gengo_267	Enkyō	延享	延享	延享	Enkyō																	Enkyō
+gengo_268	Kan'en	寛延	寛延	寛延	Kan'en																	Kan'en
+gengo_269	Hōreki	宝暦	寶曆	寶曆	Hōreki																	Hōreki
+gengo_270	Meiwa	明和	明和	明和	Meiwa																	Meiwa
+gengo_271	An'ei	安永	安永	安永	An'ei																	An'ei
+gengo_272	Tenmei	天明	天明	天明	Tenmei																	Tenmei
+gengo_273	Kansei	寛政	寛政	寛政	Kansei																	Kansei
+gengo_274	Kyōwa	享和	享和	享和	Kyōwa																	Kyōwa
+gengo_275	Bunka	文化	文化	文化	Bunka																	Bunka
+gengo_276	Bunsei	文政	文政	文政	Bunsei																	Bunsei
+gengo_277	Tenpō	天保	天保	天保	Tenpō																	Tenpō
+gengo_278	Kōka	弘化	弘化	弘化	Kōka																	Kōka
+gengo_279	Kaei	嘉永	嘉永	嘉永	Kaei																	Kaei
+gengo_280	Ansei	安政	安政	安政	Ansei																	Ansei
+gengo_281	Man'en	万延	萬延	萬延	Man'en																	Man'en
+gengo_282	Bunkyū	文久	文久	文久	Bunkyū																	Bunkyū
+gengo_283	Genji	元治	元治	元治	Genji																	Genji
+gengo_284	Keiō	慶応	慶應	慶應	Keiō																	Keiō
+gengo_285	Meiji	明治	明治	明治	Meiji																	Meiji
+gengo_286	Taishō	大正	大正	大正	Taishō																	Taishō
+gengo_287	Shōwa	昭和	昭和	昭和	Shōwa																	Shōwa
+gengo_288	Heisei	平成	平成	平成	Heisei																	Heisei
+gengo_289	Reiwa	令和	令和	令和	Reiwa																	Reiwa
+> chinese_calendar																						
+chinese_calendar_1	魏 黄初																					
+chinese_calendar_2	魏 太和																					
+chinese_calendar_3	魏 青龍																					
+chinese_calendar_4	魏 景初																					
+chinese_calendar_5	魏 正始																					
+chinese_calendar_6	魏 嘉平																					
+chinese_calendar_7	魏 正元																					
+chinese_calendar_8	魏 甘露																					
+chinese_calendar_9	魏 景元																					
+chinese_calendar_10	魏 咸熙																					
+chinese_calendar_11	西晋 泰始																					
+chinese_calendar_12	西晋 咸寧																					
+chinese_calendar_13	西晋 太康																					
+chinese_calendar_14	西晋 太熙																					
+chinese_calendar_15	西晋 永熙																					
+chinese_calendar_16	西晋 永平																					
+chinese_calendar_17	西晋 元康																					
+chinese_calendar_18	西晋 永康																					
+chinese_calendar_19	西晋 永寧																					
+chinese_calendar_20	西晋 太安																					
+chinese_calendar_21	西晋 永安																					
+chinese_calendar_22	西晋 建武																					
+chinese_calendar_23	西晋 永安																					
+chinese_calendar_24	西晋 永興																					
+chinese_calendar_25	西晋 光熙																					
+chinese_calendar_26	西晋 永嘉																					
+chinese_calendar_27	西晋 建興																					
+chinese_calendar_28	東晋 建武																					
+chinese_calendar_29	東晋 大興																					
+chinese_calendar_30	東晋 永昌																					
+chinese_calendar_31	東晋 太寧																					
+chinese_calendar_32	東晋 咸和																					
+chinese_calendar_33	東晋 咸康																					
+chinese_calendar_34	東晋 建元																					
+chinese_calendar_35	東晋 永和																					
+chinese_calendar_36	東晋 升平																					
+chinese_calendar_37	東晋 隆和																					
+chinese_calendar_38	東晋 興寧																					
+chinese_calendar_39	東晋 太和																					
+chinese_calendar_40	東晋 咸安																					
+chinese_calendar_41	東晋 寧康																					
+chinese_calendar_42	東晋 太元																					
+chinese_calendar_43	東晋 隆安																					
+chinese_calendar_44	東晋 元興																					
+chinese_calendar_45	東晋 隆安																					
+chinese_calendar_46	東晋 大亨																					
+chinese_calendar_47	東晋 元興(2)																					
+chinese_calendar_48	東晋 義熙																					
+chinese_calendar_49	東晋 元熙																					
+chinese_calendar_50	南朝宋 永初																					
+chinese_calendar_51	南朝宋 景平																					
+chinese_calendar_52	南朝宋 元嘉																					
+chinese_calendar_53	南朝宋 孝建																					
+chinese_calendar_54	南朝宋 大明																					
+chinese_calendar_55	南朝宋 永光																					
+chinese_calendar_56	南朝宋 景和																					
+chinese_calendar_57	南朝宋 泰始																					
+chinese_calendar_58	南朝宋 泰豫																					
+chinese_calendar_59	南朝宋 元徽																					
+chinese_calendar_60	南朝宋 昇明																					
+chinese_calendar_61	南朝斉 建元																					
+chinese_calendar_62	南朝斉 永明																					
+chinese_calendar_63	南朝斉 隆昌																					
+chinese_calendar_64	南朝斉 延興																					
+chinese_calendar_65	南朝斉 建武																					
+chinese_calendar_66	南朝斉 永泰																					
+chinese_calendar_67	南朝斉 永元																					
+chinese_calendar_68	南朝斉 中興																					
+chinese_calendar_69	南朝梁 天監																					
+chinese_calendar_70	南朝梁 普通																					
+chinese_calendar_71	南朝梁 大通																					
+chinese_calendar_72	南朝梁 中大通																					
+chinese_calendar_73	南朝梁 大同																					
+chinese_calendar_74	南朝梁 中大同																					
+chinese_calendar_75	南朝梁 太清																					
+chinese_calendar_76	南朝梁 大宝																					
+chinese_calendar_77	南朝梁 天正																					
+chinese_calendar_78	南朝梁 承聖																					
+chinese_calendar_79	南朝梁 天成																					
+chinese_calendar_80	南朝梁 紹泰																					
+chinese_calendar_81	南朝梁 太平																					
+chinese_calendar_82	南朝梁 天啓																					
+chinese_calendar_83	南朝陳 永定																					
+chinese_calendar_84	南朝陳 天嘉																					
+chinese_calendar_85	南朝陳 天康																					
+chinese_calendar_86	南朝陳 光大																					
+chinese_calendar_87	南朝陳 太建																					
+chinese_calendar_88	南朝陳 至徳																					
+chinese_calendar_89	南朝陳 禎明																					
+chinese_calendar_90	隋 開皇																					
+chinese_calendar_91	隋 仁寿																					
+chinese_calendar_92	隋 大業																					
+chinese_calendar_93	隋 義寧																					
+chinese_calendar_94	唐 武徳																					
+chinese_calendar_95	唐 貞観																					
+chinese_calendar_96	唐 永徽																					
+chinese_calendar_97	唐 顕慶																					
+chinese_calendar_98	唐 龍朔																					
+chinese_calendar_99	唐 麟徳																					
+chinese_calendar_100	唐 乾封																					
+chinese_calendar_101	唐 総章																					
+chinese_calendar_102	唐 咸亨																					
+chinese_calendar_103	唐 上元																					
+chinese_calendar_104	唐 儀鳳																					
+chinese_calendar_105	唐 調露																					
+chinese_calendar_106	唐 永隆																					
+chinese_calendar_107	唐 開耀																					
+chinese_calendar_108	唐 永淳																					
+chinese_calendar_109	唐 弘道																					
+chinese_calendar_110	唐 嗣聖																					
+chinese_calendar_111	唐 文明																					
+chinese_calendar_112	唐 光宅																					
+chinese_calendar_113	唐 垂拱																					
+chinese_calendar_114	唐 永昌																					
+chinese_calendar_115	唐 載初																					
+chinese_calendar_116	武周 天授																					
+chinese_calendar_117	武周 如意																					
+chinese_calendar_118	武周 長寿																					
+chinese_calendar_119	武周 延載																					
+chinese_calendar_120	武周 証聖																					
+chinese_calendar_121	武周 天冊万歳																					
+chinese_calendar_122	武周 万歳登封																					
+chinese_calendar_123	武周 万歳通天																					
+chinese_calendar_124	武周 神功																					
+chinese_calendar_125	武周 聖暦																					
+chinese_calendar_126	武周 久視																					
+chinese_calendar_127	武周 大足																					
+chinese_calendar_128	武周 長安																					
+chinese_calendar_129	唐 神龍																					
+chinese_calendar_130	唐 景龍																					
+chinese_calendar_131	唐 唐隆																					
+chinese_calendar_132	唐 景雲																					
+chinese_calendar_133	唐 太極																					
+chinese_calendar_134	唐 延和																					
+chinese_calendar_135	唐 先天																					
+chinese_calendar_136	唐 開元																					
+chinese_calendar_137	唐 天宝																					

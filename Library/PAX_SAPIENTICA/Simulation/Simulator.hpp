@@ -88,7 +88,7 @@ namespace paxs {
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
 
-        KanakumaLifeSpan kanakuma_life_span;
+        KanakumaLifeSpan kanakuma_life_span{};
 
         /// @brief Clear the agents.
         /// @brief エージェントをクリアする
@@ -115,7 +115,7 @@ namespace paxs {
                 agents.emplace_back(Agent( id, "", position,
                     set_gender,
                     age_dist(gen),
-                    kanakuma_life_span.setLifeSpan(set_gender, gen),
+                    kanakuma_life_span.setLifeSpan(true, set_gender, gen),
                     environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);

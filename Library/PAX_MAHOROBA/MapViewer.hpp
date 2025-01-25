@@ -105,7 +105,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             if (visible[MurMur3::calcHash("Simulation")]) {
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
-                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY()
+                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), simulator->getMarriagePosList(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY()
                     );
                 }
             }
@@ -149,6 +149,14 @@ namespace paxs {
                     string_siv.pin_font);
 
             }
+
+#ifdef PAXS_USING_SIMULATOR
+            if (visible[MurMur3::calcHash("Simulation")]) {
+                if (agent_location.get() != nullptr && simulator.get() != nullptr) {
+                    agent_location->drawText();
+                }
+            }
+#endif
 
         }
 
