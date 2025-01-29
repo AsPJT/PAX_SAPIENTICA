@@ -39,3 +39,7 @@ move_redo	10	移動再試行回数
 move_method	astar	移動の手法(astar/random)
 move_astar_loop	8	A*を行うルート数
 move_astar_distance	128	A*を行うルート間隔
+#File --------------------	#ファイル	--------------------------------------------------
+marriage_file	Marriage.tsv	年別婚姻率
+childbearing_file	Childbearing.tsv	年別出産率
+life_span_file	LifeSpan.tsv	年別死亡重み
