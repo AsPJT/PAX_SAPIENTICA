@@ -32,6 +32,8 @@
 #include <PAX_SAPIENTICA/Color/Ryoseikoku.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
+#include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
+
 const std::string path = "../../../"; // Data 階層のパス
 
 // ColorCodingByProvincesOfJapan_8_218_90_16_16.png
@@ -120,6 +122,40 @@ bool output_tsv(const xyz_tiles_conv::XYZTilesConv& conv_data, const std::string
     return true;
 }
 
+bool output_bin(const xyz_tiles_conv::XYZTilesConv& conv_data, const std::string& out_, unsigned char* pixels, const int row0, const int col0, const int bpp) {
+    // 色の二次元配列
+    std::unique_ptr<paxs::RGBA[][xyz_tiles_conv::width0]> rgba(new(std::nothrow) paxs::RGBA[xyz_tiles_conv::height0][xyz_tiles_conv::width0]);
+    if (!rgba) return false;
+
+    bool is_white_only = true; // 白のみ
+    for (std::size_t row{}, count = 0; row < xyz_tiles_conv::height0; ++row) {
+        for (std::size_t col{}; col < xyz_tiles_conv::width0; ++col, count += std::size_t(bpp)) {
+            rgba[row][col].r = pixels[((row0 * 256 + row) * conv_data.width + col0 * 256 + col) * bpp];
+            rgba[row][col].g = pixels[((row0 * 256 + row) * conv_data.width + col0 * 256 + col) * bpp + 1];
+            rgba[row][col].b = pixels[((row0 * 256 + row) * conv_data.width + col0 * 256 + col) * bpp + 2];
+            if (bpp == 4) rgba[row][col].a = pixels[((row0 * 256 + row) * conv_data.width + col0 * 256 + col) * bpp + 3];
+            else rgba[row][col].a = 255;
+            if (is_white_only) {
+                if (rgba[row][col].r != 255 || rgba[row][col].g != 255 || rgba[row][col].b != 255) is_white_only = false;
+            }
+        }
+    }
+    if (is_white_only) return true; // 白しかなかったら出力しない
+    paxs::SlopeDegU0To250UnitOutput sd(out_ + ".bin");
+    unsigned char pre_value = 252; // 1 つ前の値
+    paxs::RyoseikokuColor rc;
+    for (std::size_t row{}, count = 0; row < xyz_tiles_conv::height0; ++row) {
+        for (std::size_t col{}; col < xyz_tiles_conv::width0; ++col, count += std::size_t(bpp)) {
+            const unsigned char next_value = static_cast<unsigned char>(rc.getIndex(rgba[row][col]));
+            sd.calc(pre_value, next_value);
+            pre_value = next_value;
+        }
+    }
+    sd.calc(pre_value, 252);
+
+    return true;
+}
+
 bool ToTSV(const xyz_tiles_conv::XYZTilesConv& conv_data) {
     std::string input_path = conv_data.input;
     paxs::StringExtensions::replace(input_path, "{z}", std::to_string(conv_data.z));
@@ -167,7 +203,8 @@ bool ToTSV(const xyz_tiles_conv::XYZTilesConv& conv_data) {
                 std::cout << x << "," << y << "," << dir_path << std::endl;
             }
             //output_png(conv_data, output_path, pixels, row0, col0, bpp);
-            output_tsv(conv_data, output_path, pixels, row0, col0, bpp);
+            //output_tsv(conv_data, output_path, pixels, row0, col0, bpp);
+            output_bin(conv_data, output_path, pixels, row0, col0, bpp);
         }
     }
     // メモリ上の画像データを破棄
