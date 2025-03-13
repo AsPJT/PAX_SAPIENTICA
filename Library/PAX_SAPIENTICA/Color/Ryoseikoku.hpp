@@ -26,7 +26,7 @@ namespace paxs {
     struct RyoseikokuColor {
         std::vector<paxs::RGBA> soil_temp =
         {
-            {0,0,0},
+            {0,0,0}, // 0
             {245,105,100},
             {240,110,100},
             {235,115,100},
