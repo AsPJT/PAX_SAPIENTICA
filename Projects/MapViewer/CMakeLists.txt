@@ -53,7 +53,7 @@ elseif(PAXS_BUILD_TYPE STREQUAL "Development")
     set(BINARY_NAME "SFMLMapviewer")
     if(SFML_FOUND)
         if(APPLE)
-            set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/Main.cpp")
+            set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/Main.cpp")
         else()
             set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML/Main.cpp")
         endif()
@@ -65,16 +65,16 @@ elseif(PAXS_BUILD_TYPE STREQUAL "Development")
             COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
         )
     elseif(APPLE)
-        set(SFML_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/include")
-        set(SFML_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/lib")
-        set(SFML_FRAMEWORK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/Frameworks")
+        set(SFML_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/include")
+        set(SFML_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/lib")
+        set(SFML_FRAMEWORK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/Frameworks")
 
         include_directories(${SFML_INCLUDE_DIR})
 
-        add_executable(${BINARY_NAME} ${OS}/SFML_2.6.1/Main.cpp)
+        add_executable(${BINARY_NAME} ${OS}/SFML_3.0.0/Main.cpp)
 
         target_link_directories(${BINARY_NAME} PRIVATE ${SFML_LIBRARY_DIR})
-        target_link_libraries(${BINARY_NAME} sfml-graphics.2.6.1 sfml-window.2.6.1 sfml-system.2.6.1)
+        target_link_libraries(${BINARY_NAME} sfml-graphics.3.0.0 sfml-window.3.0.0 sfml-system.3.0.0)
         add_custom_command(
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
@@ -90,15 +90,15 @@ elseif(PAXS_BUILD_TYPE STREQUAL "Development")
 elseif(PAXS_BUILD_TYPE STREQUAL "Production")
     set(BINARY_NAME "PAX_SAPIENTICA")
     if(APPLE)
-        set(SFML_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/include")
-        set(SFML_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/lib")
+        set(SFML_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/include")
+        set(SFML_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/lib")
 
         include_directories(${SFML_INCLUDE_DIR})
 
-        add_executable(${BINARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_2.6.1/Main.cpp)
+        add_executable(${BINARY_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/Main.cpp)
 
         target_link_directories(${BINARY_NAME} PRIVATE ${SFML_LIBRARY_DIR})
-        target_link_libraries(${BINARY_NAME} sfml-graphics.2.6.1 sfml-window.2.6.1 sfml-system.2.6.1)
+        target_link_libraries(${BINARY_NAME} sfml-graphics.3.0.0 sfml-window.3.0.0 sfml-system.3.0.0)
         add_custom_command(
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
