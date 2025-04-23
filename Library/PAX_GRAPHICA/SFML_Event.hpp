@@ -50,6 +50,7 @@ namespace paxg {
         float wheel_delta = 0;
         bool update(sf::RenderWindow& window) {
             wheel_delta = 0;
+            sf::FloatRect visibleArea;
             while (window.pollEvent(ev))
             {
                 switch (ev.type) {
@@ -59,8 +60,10 @@ namespace paxg {
                     wheel_delta = ev.mouseWheel.delta;
                     break;
                 case sf::Event::Resized:
-                    sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
+                    visibleArea = sf::FloatRect(0, 0, ev.size.width, ev.size.height);
                     window.setView(sf::View(visibleArea));
+                    break;
+                default:
                     break;
                 }
             }
