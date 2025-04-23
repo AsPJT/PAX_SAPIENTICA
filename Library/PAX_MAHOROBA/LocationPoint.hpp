@@ -32,6 +32,7 @@
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Circle.hpp>
+#include <PAX_GRAPHICA/Key.hpp> // キーボード入力
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
@@ -713,17 +714,26 @@ namespace paxs {
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
         )/*const Siv3D Key は非 const */ {
 
-#ifdef PAXS_USING_SIV3D
-            if (s3d::Key1.pressed()) select_draw = 1;
-            else if (s3d::Key2.pressed()) select_draw = 2;
-            else if (s3d::Key3.pressed()) select_draw = 3;
-            else if (s3d::Key4.pressed()) select_draw = 4;
-            else if (s3d::Key5.pressed()) select_draw = 5;
-            else if (s3d::Key6.pressed()) select_draw = 6;
-            // グリッド線を描画する
-            else if (s3d::KeyL.up()) is_line = (!is_line);
-            else if (s3d::KeyK.up()) is_arrow = (!is_arrow);
-#endif
+            if (Key(SIV3D_KEY_1).isPressed()) select_draw = 1;
+            else if (Key(SIV3D_KEY_2).isPressed()) select_draw = 2;
+            else if (Key(SIV3D_KEY_3).isPressed()) select_draw = 3;
+            else if (Key(SIV3D_KEY_4).isPressed()) select_draw = 4;
+            else if (Key(SIV3D_KEY_5).isPressed()) select_draw = 5;
+            else if (Key(SIV3D_KEY_6).isPressed()) select_draw = 6;
+            else if (Key(SIV3D_KEY_L).isPressed()) is_line = (!is_line);
+            else if (Key(SIV3D_KEY_K).isPressed()) is_arrow = (!is_arrow);
+
+//#ifdef PAXS_USING_SIV3D
+//            if (s3d::Key1.pressed()) select_draw = 1;
+//            else if (s3d::Key2.pressed()) select_draw = 2;
+//            else if (s3d::Key3.pressed()) select_draw = 3;
+//            else if (s3d::Key4.pressed()) select_draw = 4;
+//            else if (s3d::Key5.pressed()) select_draw = 5;
+//            else if (s3d::Key6.pressed()) select_draw = 6;
+//            // グリッド線を描画する
+//            else if (s3d::KeyL.up()) is_line = (!is_line);
+//            else if (s3d::KeyK.up()) is_arrow = (!is_arrow);
+//#endif
 
             // 地名を描画
             for (const auto& agent : agents) {
@@ -818,7 +828,7 @@ namespace paxs {
                     }
                 }
             }
-#ifdef PAXS_USING_SIV3D
+
             // グリッド線を描画
             if (is_line) {
                 const auto area_width = SimulationConstants::getInstance()->getEndArea().x - SimulationConstants::getInstance()->getStartArea().x;
@@ -873,7 +883,7 @@ namespace paxs {
                     ).draw(0.5, paxg::Color(0, 0, 0));
                 }
             }
-
+#ifdef PAXS_USING_SIV3D
             // 移動線を描画
             if (is_arrow) {
                 for (const auto& agent : agents) {

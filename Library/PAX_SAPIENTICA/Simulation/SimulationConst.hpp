@@ -215,6 +215,10 @@ namespace paxs {
             std::uniform_real_distribution<double>(pi_per_8 + 7 * pi_per_4, pi_per_8 + 8 * pi_per_4)
         };
 
+        std::string marriage_file = "Marriage.tsv";
+        std::string childbearing_file = "Childbearing.tsv";
+        std::string life_span_file = "LifeSpan.tsv";
+
     private:
         template<typename Func_>
         void stoiFunc(KeyValueTSV<std::string>& key_value_tsv_, const std::uint_least32_t key_, Func_&& func_) {
@@ -252,7 +256,7 @@ namespace paxs {
             std::string path = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
                 [&](const std::string& path_) {path = path_; });
-            path += "/LifeSpan.tsv";
+            path += std::string("/" + life_span_file);
 
             paxs::InputFile life_span_tsv(path);
             if (life_span_tsv.fail()) {
@@ -314,7 +318,7 @@ namespace paxs {
             std::string path = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
                 [&](const std::string& path_) {path = path_; });
-            path += "/Marriage.tsv";
+            path += std::string("/" + marriage_file);
             paxs::InputFile probability_tsv(path);
             if (probability_tsv.fail()) {
                 PAXS_WARNING("Failed to read Marriage TSV file: " + path);
@@ -354,7 +358,7 @@ namespace paxs {
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
                 [&](const std::string& path_) {path = path_; });
             if (path.size() == 0) return;
-            path += "/Childbearing.tsv";
+            path += std::string("/" + childbearing_file);
             paxs::InputFile probability_tsv(path);
             if (probability_tsv.fail()) {
                 PAXS_WARNING("Failed to read Childbearing TSV file: " + path);
@@ -453,6 +457,10 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("land_cost"), [&](const std::string& str_) {land_cost = std::stod(str_); });
 
             pregnant_age_min_f64 = childbearing_age_min_f64 - static_cast<double>(birth_interval) / static_cast<double>(steps_per_year);
+
+            stoiFunc(kvt, MurMur3::calcHash("marriage_file"), [&](const std::string& str_) {marriage_file = str_; });
+            stoiFunc(kvt, MurMur3::calcHash("childbearing_file"), [&](const std::string& str_) {childbearing_file = str_; });
+            stoiFunc(kvt, MurMur3::calcHash("life_span_file"), [&](const std::string& str_) {life_span_file = str_; });
 
             inputMarriage(); // 婚姻確率
             inputChildbearing(); // 出産確率
