@@ -443,7 +443,7 @@ namespace s3d
     class SimpleHTTP
     {
     public:
-        static SimpleHTTP Save(URL url, Texture texture) { return SimpleHTTP(); }
+        static SimpleHTTP Save(URL /*url*/, Texture /*texture*/) { return SimpleHTTP(); }
         bool isOK() { return true; }
     };
 

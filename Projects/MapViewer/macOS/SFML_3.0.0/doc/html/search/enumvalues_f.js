@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['p_0',['P',['../namespacesf_1_1Keyboard.html#acb4cacd7cc5802dec45724cf3314a142a44c29edb103a2872f519ad0c9a0fdaaa',1,'sf::Keyboard::P'],['../namespacesf_1_1Keyboard.html#aed978288ff367518d29cfe0c9e3b295fa44c29edb103a2872f519ad0c9a0fdaaa',1,'sf::Keyboard::P']]],
+  ['pagedown_1',['PageDown',['../namespacesf_1_1Keyboard.html#acb4cacd7cc5802dec45724cf3314a142aee3677bcca83ece9384b01e43952bf33',1,'sf::Keyboard::PageDown'],['../namespacesf_1_1Keyboard.html#aed978288ff367518d29cfe0c9e3b295faee3677bcca83ece9384b01e43952bf33',1,'sf::Keyboard::PageDown']]],
+  ['pagetypeunknown_2',['PageTypeUnknown',['../classsf_1_1Ftp_1_1Response.html#af81738f06b6f571761696291276acb3ba5ee25da5e669e314a80052cdac9465ce',1,'sf::Ftp::Response']]],
+  ['pageup_3',['PageUp',['../namespacesf_1_1Keyboard.html#acb4cacd7cc5802dec45724cf3314a142a9b869c510c75c5827ac82e49d4340927',1,'sf::Keyboard::PageUp'],['../namespacesf_1_1Keyboard.html#aed978288ff367518d29cfe0c9e3b295fa9b869c510c75c5827ac82e49d4340927',1,'sf::Keyboard::PageUp']]],
+  ['parameternotimplemented_4',['ParameterNotImplemented',['../classsf_1_1Ftp_1_1Response.html#af81738f06b6f571761696291276acb3ba39173a703db2fce4762e56cdedce7df0',1,'sf::Ftp::Response']]],
+  ['parametersunknown_5',['ParametersUnknown',['../classsf_1_1Ftp_1_1Response.html#af81738f06b6f571761696291276acb3ba6ac12706c8a5d211d4c4772dfe15cc82',1,'sf::Ftp::Response']]],
+  ['partial_6',['Partial',['../classsf_1_1Socket.html#a51bf0fd51057b98a10fbb866246176dca44ffd38a6dea695cbe2b34efdcc6cf27',1,'sf::Socket']]],
+  ['partialcontent_7',['PartialContent',['../classsf_1_1Http_1_1Response.html#a663e071978e30fbbeb20ed045be874d8a750de7eda10d780b3bbaefb57128c24b',1,'sf::Http::Response']]],
+  ['paste_8',['Paste',['../namespacesf_1_1Keyboard.html#aed978288ff367518d29cfe0c9e3b295fa36bb6559696dc9124986ae120515984f',1,'sf::Keyboard']]],
+  ['pause_9',['Pause',['../namespacesf_1_1Keyboard.html#acb4cacd7cc5802dec45724cf3314a142a105b296a83f9c105355403f3332af50f',1,'sf::Keyboard::Pause'],['../namespacesf_1_1Keyboard.html#aed978288ff367518d29cfe0c9e3b295fa105b296a83f9c105355403f3332af50f',1,'sf::Keyboard::Pause']]],
+  ['paused_10',['Paused',['../classsf_1_1SoundSource.html#ac43af72c98c077500b239bc75b812f03ae99180abf47a8b3a856e0bcb2656990a',1,'sf::SoundSource']]],
+  ['period_11',['Period',['../namespacesf_1_1Keyboard.html#acb4cacd7cc5802dec45724cf3314a142a1901606ea069a83dc7beea17881ef95a',1,'sf::Keyboard::Period'],['../namespacesf_1_1Keyboard.html#aed978288ff367518d29cfe0c9e3b295fa1901606ea069a83dc7beea17881ef95a',1,'sf::Keyboard::Period']]],
+  ['pixels_12',['Pixels',['../group__graphics.html#gga3279cc83ec99c60693c4fe6d0d3fb98bac3d2f5d37334dc978fd8b17fc77408a1',1,'sf']]],
+  ['playing_13',['Playing',['../classsf_1_1SoundSource.html#ac43af72c98c077500b239bc75b812f03ac9dbb2b7c84159b632d71e512eba8428',1,'sf::SoundSource']]],
+  ['pointlesscommand_14',['PointlessCommand',['../classsf_1_1Ftp_1_1Response.html#af81738f06b6f571761696291276acb3bacd4761523f0302440343fb1e4ec8a4e6',1,'sf::Ftp::Response']]],
+  ['points_15',['Points',['../group__graphics.html#gga5ee56ac1339984909610713096283b1ba75dd5f1160a3f02b6fae89c54361a1b3',1,'sf']]],
+  ['post_16',['Post',['../classsf_1_1Http_1_1Request.html#a620f8bff6f43e1378f321bf53fbf5598a03d947a2158373c3b9d74325850cb8b9',1,'sf::Http::Request']]],
+  ['povx_17',['PovX',['../namespacesf_1_1Joystick.html#a48db337092c2e263774f94de6d50baa7a783ee6cd28c54605c9ef0453ff213692',1,'sf::Joystick']]],
+  ['povy_18',['PovY',['../namespacesf_1_1Joystick.html#a48db337092c2e263774f94de6d50baa7ad5145e1dd4aa9600d94cad6ec92e94e5',1,'sf::Joystick']]],
+  ['printscreen_19',['PrintScreen',['../namespacesf_1_1Keyboard.html#aed978288ff367518d29cfe0c9e3b295fabf54024481cd2ad6bbb9ae44b7312472',1,'sf::Keyboard']]],
+  ['put_20',['Put',['../classsf_1_1Http_1_1Request.html#a620f8bff6f43e1378f321bf53fbf5598ad0bf1810982e9728fcf3ac444a015373',1,'sf::Http::Request']]]
+];

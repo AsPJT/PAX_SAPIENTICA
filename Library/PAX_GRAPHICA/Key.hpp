@@ -280,7 +280,7 @@ namespace paxs {
     public:
         double movement_size; // マップの移動量
 
-        Coordinate(const paxs::MercatorDeg& coordinate_, double movement_size) : coordinate(coordinate_), movement_size(movement_size) {
+        Coordinate(double movement_size, const paxs::MercatorDeg& coordinate_) : movement_size(movement_size), coordinate(coordinate_) {
             increase_x_keys.resize(2);
             increase_x_keys[0] = (Key(SIV3D_KEY_A));
             increase_x_keys[1] = (Key(SIV3D_KEY_LEFT));
@@ -348,9 +348,10 @@ namespace paxs {
     private:
         // 中央の座標を指定
         Coordinate center = Coordinate(
-            paxs::EquirectangularDeg(paxs::Vector2<double>(135, 35)), // 韓国 128, 37
-            //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0)),
-            200.0); // マップ座標の中央
+            200.0,
+            paxs::EquirectangularDeg(paxs::Vector2<double>(135, 35)) // 韓国 128, 37
+            //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0))
+            ); // マップ座標の中央
         double height = 12.0; // マップの高さ
 
         // 平城京
