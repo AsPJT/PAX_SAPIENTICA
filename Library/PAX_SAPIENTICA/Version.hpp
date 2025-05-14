@@ -34,7 +34,7 @@
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (10)
 #endif
 
 // バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
@@ -51,6 +51,16 @@
 	更新履歴
 	バージョン	| 更新日		| 概要
 	6.0.1.0.X	| 2024/0X/XX	| コピペ用
+    6.0.1.3.10  | 2025/05/14    | シミュレーション結果のRegionテキスト出力機能追加 #130
+    6.0.1.3.9   | 2025/04/24    | SFML3.0.0対応（Mac） #129
+    6.0.1.3.8   | 2025/04/23    | CMR46 & CMR49 #127 #128
+    6.0.1.3.7   | 2025/04/23    | Added LifeSpanCMR47 #125 #126
+    6.0.1.3.6   | 2025/03/13    | Fixed population estimates #124
+    6.0.1.3.5   | 2025/03/13    | Added population estimates for regions in Ryukyu and Hokkaido #123
+    6.0.1.3.4   | 2025/03/13    | Changes to Childbearing.tsv and District.tsv #122
+    6.0.1.3.3   | 2025/03/13    | シミュレーションのファイルパス指定機能・合成地図のTSV出力プログラムを追加 #121
+    6.0.1.3.2   | 2025/01/29    | Fixed birth rate #120
+    6.0.1.3.1   | 2025/01/28    | Fixed Childbearing.tsv #118 #119
     6.0.1.3.0   | 2025/01/10    | 画面に表示する情報を追加 #117
 	6.0.1.2.16	| 2024/12/14	| 生活に関するTSVデータ入力の追加 #116
 	6.0.1.2.15	| 2024/12/13	| 婚姻処理の高速化 #115
