@@ -56,7 +56,7 @@ namespace xyz_tiles_conv {
         std::string input{};
     };
     //const std::string output = path + "Data/XYZTiles/Test20250313/{z}/{x}/{y}";
-    const std::string output = path + "Data/XYZTiles/Test20250313/zxy_{z}_{x}_{y}";
+    const std::string output = path + "Data/XYZTiles/Test20250512/zxy_{z}_{x}_{y}";
 
     constexpr std::size_t width0{ 256 }, height0{ 256 }; //幅と高さ
 }
@@ -214,15 +214,30 @@ bool ToTSV(const xyz_tiles_conv::XYZTilesConv& conv_data) {
 
 int main() {
 
+    //zxy_10_840_432_40_72
     std::vector<xyz_tiles_conv::XYZTilesConv> conv_data_list;
     conv_data_list.emplace_back(
-        /*z*/ 10,/*min_x*/ 908,/*min_y*/ 326,/*len_x*/ 50,/*len_y*/ 59,
-        /*std::string*/ path + "Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/zxy3_{z}_{min_x}_{min_y}_{len_x}_{len_y}.png"
+        /*z*/ 7,/*min_x*/ 105,/*min_y*/ 54,/*len_x*/ 5,/*len_y*/ 9,
+        /*std::string*/ path + "Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/zxy_{z}_{min_x}_{min_y}_{len_x}_{len_y}.png"
     );
-    conv_data_list.emplace_back(
-        /*z*/ 10,/*min_x*/ 853,/*min_y*/ 385,/*len_x*/ 64,/*len_y*/ 64,
-        /*std::string*/ path + "Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/zxy3_{z}_{min_x}_{min_y}_{len_x}_{len_y}.png"
-    );
+
+    //zxy_10_840_432_40_72
+    //std::vector<xyz_tiles_conv::XYZTilesConv> conv_data_list;
+    //conv_data_list.emplace_back(
+    //    /*z*/ 10,/*min_x*/ 840,/*min_y*/ 432,/*len_x*/ 40,/*len_y*/ 72,
+    //    /*std::string*/ path + "Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/zxy_{z}_{min_x}_{min_y}_{len_x}_{len_y}.png"
+    //);
+
+    //// 北海道・サハリン南部
+    //std::vector<xyz_tiles_conv::XYZTilesConv> conv_data_list;
+    //conv_data_list.emplace_back(
+    //    /*z*/ 10,/*min_x*/ 908,/*min_y*/ 326,/*len_x*/ 50,/*len_y*/ 59,
+    //    /*std::string*/ path + "Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/zxy5_{z}_{min_x}_{min_y}_{len_x}_{len_y}.png"
+    //);
+    //conv_data_list.emplace_back(
+    //    /*z*/ 10,/*min_x*/ 853,/*min_y*/ 385,/*len_x*/ 64,/*len_y*/ 64,
+    //    /*std::string*/ path + "Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/zxy3_{z}_{min_x}_{min_y}_{len_x}_{len_y}.png"
+    //);
 
     //conv_data_list.emplace_back(
     //    /*z*/ 10,/*min_x*/ 872,/*min_y*/ 360,/*len_x*/ 64,/*len_y*/ 64,
@@ -230,6 +245,6 @@ int main() {
     //);
 
     ToTSV(conv_data_list[0]);
-    ToTSV(conv_data_list[1]);
+    //ToTSV(conv_data_list[1]);
 
 }

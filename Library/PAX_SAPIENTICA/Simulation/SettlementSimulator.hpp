@@ -127,11 +127,22 @@ namespace paxs {
             language_ofs = std::ofstream(str + "/Language.txt");
             live_ofs = std::ofstream(str + "/HabitableLand.txt");
 
+            pop_region_ofs = std::ofstream(str + "/Region_Population.txt");
+            mtdna_region_ofs = std::ofstream(str + "/Region_mtDNA.txt");
+            snp_region_ofs = std::ofstream(str + "/Region_SNP.txt");
+            language_region_ofs = std::ofstream(str + "/Region_Language.txt");
+            live_region_ofs = std::ofstream(str + "/Region_HabitableLand.txt");
+
             outputResultString(pop_ofs);
             outputResultString(mtdna_ofs);
             outputResultString(snp_ofs);
             outputResultString(language_ofs);
-            for (std::size_t i = 0; i < max_number_of_districts; ++i) {
+
+            outputResultString(pop_region_ofs);
+            outputResultString(mtdna_region_ofs);
+            outputResultString(snp_region_ofs);
+            outputResultString(language_region_ofs);
+            for (std::size_t i = 0; i < max_number_of_districts - 1; ++i) {
                 outputResultDistrictName(pop_ofs, i);
                 outputResultDistrictName(mtdna_ofs, i);
                 outputResultDistrictName(snp_ofs, i);
@@ -141,6 +152,11 @@ namespace paxs {
             outputResultLastString(mtdna_ofs);
             outputResultLastString(snp_ofs);
             outputResultLastString(language_ofs);
+
+            outputResultLastString(pop_region_ofs);
+            outputResultLastString(mtdna_region_ofs);
+            outputResultLastString(snp_region_ofs);
+            outputResultLastString(language_region_ofs);
         }
 
         /// @brief Initialize the simulator.
@@ -165,7 +181,7 @@ namespace paxs {
 
             // 可住地の数を出力
             live_ofs << "district\thabitable_land\n";
-            for (std::size_t i = 0; i < max_number_of_districts; ++i) {
+            for (std::size_t i = 1; i < max_number_of_districts; ++i) {
                 live_ofs << japan_provinces->cgetDistrictList()[i].name << '\t' << (*live_list)[i + 1].habitable_land_positions.size() << '\n';
             }
         }
@@ -214,6 +230,12 @@ namespace paxs {
                 double ryosnp[max_number_of_districts]{};
                 double ryolanguage[max_number_of_districts]{};
 
+                std::array<std::uint_least32_t, 10> region_pop{};
+                std::array<std::uint_least32_t, 10> region_set{};
+                std::array<std::uint_least32_t, 10> region_snp{};
+                std::array<std::uint_least32_t, 10> region_language{};
+                std::vector<std::vector<int>> mtdna_region_num(10, std::vector<int>(256, 0)); // mtDNA 数
+
                 // 地名を描画
                 for (const auto& agent : getSettlementGrids()) {
                     for (const auto& settlement : agent.second.cgetSettlements()) {
@@ -227,9 +249,14 @@ namespace paxs {
                             ryolanguage[ryo_id]+= settlement.getLanguage(); // 地区ごとに言語を増加させる
                             ++(ryoset[ryo_id]);
 
+                            // 地域区分
+                            const std::uint_least8_t region_id = japan_provinces->getJapanRegionId(ryo_id);
+
                             // mtDNA ごとにカウント
                             for (int popi = 0; popi < settlement.cgetAgents().size(); ++popi) {
-                                mtdna_num[ryo_id][settlement.cgetAgents()[popi].cgetGenome().getMtDNA()] += 1;
+                                const auto get_mtdna = settlement.cgetAgents()[popi].cgetGenome().getMtDNA();
+                                mtdna_num[ryo_id][get_mtdna] += 1;
+                                if (region_id < 10) mtdna_region_num[region_id][get_mtdna] += 1;
                             }
                         }
                     }
@@ -238,7 +265,21 @@ namespace paxs {
                 mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 snp_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 language_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                for (std::size_t i = 0; i < max_number_of_districts; ++i) {
+
+                pop_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                mtdna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                snp_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                language_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+
+                for (std::size_t i = 1; i < max_number_of_districts; ++i) {
+                    // 地域区分
+                    const std::uint_least8_t region_id = japan_provinces->getJapanRegionId(i);
+                    if (region_id < 10) {
+                        region_pop[region_id] += static_cast<std::uint_least32_t>(ryopop[i]);
+                        region_set[region_id] += static_cast<std::uint_least32_t>(ryoset[i]);
+                        region_snp[region_id] += static_cast<std::uint_least32_t>(ryosnp[i]);
+                        region_language[region_id] += static_cast<std::uint_least32_t>(ryolanguage[i]);
+                    }
                     ryosnp[i] /= static_cast<double>(ryoset[i]);
                     ryolanguage[i] /= static_cast<double>(ryoset[i]);
                     pop_ofs << ryopop[i] << '\t';
@@ -250,10 +291,26 @@ namespace paxs {
                     }
                     mtdna_ofs << '\t';
                 }
+                // Region
+                for (std::size_t region_id = 0; region_id < 10; ++region_id) {
+                    pop_region_ofs << region_pop[region_id] << '\t';
+                    snp_region_ofs << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                    language_region_ofs << static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                    for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
+                        if (int(mtdna_region_num[region_id][j]) == 0) continue;
+                        mtdna_region_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
+                    }
+                    mtdna_region_ofs << '\t';
+                }
                 pop_ofs << step_count << '\n';
                 mtdna_ofs << step_count << '\n';
                 snp_ofs << step_count << '\n';
                 language_ofs << step_count << '\n';
+
+                pop_region_ofs << step_count << '\n';
+                mtdna_region_ofs << step_count << '\n';
+                snp_region_ofs << step_count << '\n';
+                language_region_ofs << step_count << '\n';
             }
 
             std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
@@ -429,6 +486,13 @@ namespace paxs {
         std::ofstream snp_ofs;
         std::ofstream language_ofs;
         std::ofstream live_ofs;
+
+        std::ofstream pop_region_ofs;
+        std::ofstream mtdna_region_ofs;
+        std::ofstream snp_region_ofs;
+        std::ofstream language_region_ofs;
+        std::ofstream live_region_ofs;
+
         // 婚姻時に移動前の位置と移動後の位置を記録
         std::vector<GridType4> marriage_pos_list{};
 

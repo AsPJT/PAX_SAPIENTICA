@@ -349,10 +349,10 @@ namespace paxs {
         // 中央の座標を指定
         Coordinate center = Coordinate(
             200.0,
-            paxs::EquirectangularDeg(paxs::Vector2<double>(135, 35)) // 韓国 128, 37
+            paxs::EquirectangularDeg(paxs::Vector2<double>(146, 46)) // 韓国 128, 37 // 135, 35
             //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0))
             ); // マップ座標の中央
-        double height = 12.0; // マップの高さ
+        double height = 16.0; // マップの高さ
 
         // 平城京
         //Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
