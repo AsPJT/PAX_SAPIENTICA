@@ -797,7 +797,7 @@ namespace paxs {
 
                             const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,
-                                1.0f + (settlement.getPopulation() / 40.0f)//2.0f
+                                1.0f + (settlement.getPopulation() / 10.0f)//2.0f
                             ).draw(getColor(pop));
                         }
                         else {
@@ -821,7 +821,7 @@ namespace paxs {
                                 break;
                             }
                             paxg::Circle(draw_pos,
-                                1.0f + (settlement.getPopulation() / 40.0f)//2.0f
+                                1.0f + (settlement.getPopulation() / 10.0f)//2.0f
                             ).draw(language_color);
                         }
 
