@@ -1,10 +1,10 @@
 ﻿key	value	ja-JP
 #Time --------------------	#時間	--------------------------------------------------
-start_julian_day	1319309	シミュレーション開始日(ユリウス日)
+start_julian_day	1922324	シミュレーション開始日(ユリウス日)
 steps_per_year	12	1年あたりのStepの数(step/年)
 output_step_frequency	120	何Stepおきに出力するか？(step)
-immigration_start_steps	1801	渡来開始Step数目(step)
-immigration_end_steps	21600	渡来終了Step数目(step)
+immigration_start_steps	991801	渡来開始Step数目(step)
+immigration_end_steps	9921600	渡来終了Step数目(step)
 init_lifespan_grace_period	180	初期化時の寿命までの最低Step間隔(step)
 #Space --------------------	#空間	--------------------------------------------------
 area	yaponesia	シミュレーションの対象範囲
@@ -14,7 +14,7 @@ land_key	district	陸地データのKey
 district_key	district	地区データのKey
 #Marriage --------------------	#婚姻	--------------------------------------------------
 maternal_residence_probability	0.5	母方居住婚になる確率（父方居住婚にならない確率）
-marriage_search_range	160	結婚時に近くの集落からエージェントを探す際の探索距離(cell)
+marriage_search_range	32	結婚時に近くの集落からエージェントを探す際の探索距離(cell)
 female_marriageable_age_min	13	女性の最小婚姻可能年齢(歳)
 male_marriageable_age_min	17	男性の最小婚姻可能年齢(歳)
 female_marriageable_age_max	60	女性の最大婚姻可能年齢(歳)
@@ -27,19 +27,19 @@ child_agriculture_priority	0.5	片親が農耕文化を持ち、もう一方の�
 childbearing_age_min	15	出産の最小可能年齢(歳)
 childbearing_age_max	50	出産の最大可能年齢(歳)
 #Movement --------------------	#移動	--------------------------------------------------
-max_hunter_gatherer_settlement_population	25	狩猟採集集落の最大人数(人)
+max_hunter_gatherer_settlement_population	180	狩猟採集集落の最大人数(人)
 max_agricultural_settlement_population	80	水田稲作集落の最大人数(人)
 min_move_distance	1	最小移動距離(cell)
 max_move_distance	1600	最大移動距離(cell)
-move_probability	0.0021	移動確率
-ocean_cost	1.1	海上の通行コスト
-coast_cost	0.7	海岸の通行コスト
+move_probability	0.2	移動確率
+ocean_cost	0.1	海上の通行コスト
+coast_cost	0.01	海岸の通行コスト
 land_cost	2.5	傾斜度0度の陸上の通行コスト
 move_redo	10	移動再試行回数
 move_method	astar	移動の手法(astar/random)
 move_astar_loop	8	A*を行うルート数
-move_astar_distance	128	A*を行うルート間隔
+move_astar_distance	32	A*を行うルート間隔
 #File --------------------	#ファイル	--------------------------------------------------
 marriage_file	Marriage.tsv	年別婚姻率
 childbearing_file	Childbearing.tsv	年別出産率
-life_span_file	LifeSpan.tsv	年別死亡重み
+life_span_file	LifeSpanCMR50.tsv	年別死亡重み
