@@ -271,9 +271,7 @@ namespace paxs {
             life_span_tsv.deleteBOM();
             // 1 行目を分割する
             std::unordered_map<std::uint_least32_t, std::size_t> menu = life_span_tsv.splitHashMapMurMur3('\t');
-#ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
-#endif
             // 1 行ずつ読み込み（区切りはタブ）
             while (life_span_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = life_span_tsv.split('\t');
@@ -283,17 +281,13 @@ namespace paxs {
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural_male_ndx")) ||
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural_female_ndx"))
                     ) {
-#ifdef PAXS_DEVELOPMENT
                     PAXS_WARNING("Failed to read Japan LifeSpan TSV file: " + path + " at line " + std::to_string(i));
-#endif
 
                     life_span.weight_farming_female.emplace_back(0.0);
                     life_span.weight_farming_male.emplace_back(0.0);
                     life_span.weight_hunter_gatherer_female.emplace_back(0.0);
                     life_span.weight_hunter_gatherer_male.emplace_back(0.0);
-#ifdef PAXS_DEVELOPMENT
                     ++i;
-#endif
                     continue;
                 }
                 life_span.weight_farming_female.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural_female_ndx")]]));
@@ -305,9 +299,7 @@ namespace paxs {
                 life_span.dist_farming_male = std::discrete_distribution<>(life_span.weight_farming_male.begin(), life_span.weight_farming_male.end());
                 life_span.dist_hunter_gatherer_female = std::discrete_distribution<>(life_span.weight_hunter_gatherer_female.begin(), life_span.weight_hunter_gatherer_female.end());
                 life_span.dist_hunter_gatherer_male = std::discrete_distribution<>(life_span.weight_hunter_gatherer_male.begin(), life_span.weight_hunter_gatherer_male.end());
-#ifdef PAXS_DEVELOPMENT
                 ++i;
-#endif
             }
         }
 
@@ -342,9 +334,7 @@ namespace paxs {
             std::unordered_map<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
             marriage_probability.agricultural.clear();
             marriage_probability.hunter_gatherer.clear();
-#ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
-#endif
             // 1 行ずつ読み込み（区切りはタブ）
             while (probability_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = probability_tsv.split('\t');
@@ -352,21 +342,15 @@ namespace paxs {
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer")) ||
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural"))
                     ) {
-#ifdef PAXS_DEVELOPMENT
                     PAXS_WARNING("Failed to read Japan Marriage TSV file: " + path + " at line " + std::to_string(i));
-#endif
                     marriage_probability.agricultural.emplace_back(0.0);
                     marriage_probability.hunter_gatherer.emplace_back(0.0);
-#ifdef PAXS_DEVELOPMENT
                     ++i;
-#endif
                     continue;
                 }
                 marriage_probability.agricultural.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural")]]));
                 marriage_probability.hunter_gatherer.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
-#ifdef PAXS_DEVELOPMENT
                 ++i;
-#endif
             }
         }
         void inputChildbearing() noexcept {
@@ -390,9 +374,7 @@ namespace paxs {
             std::unordered_map<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
             childbearing_probability.agricultural.clear();
             childbearing_probability.hunter_gatherer.clear();
-#ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
-#endif
             // 1 行ずつ読み込み（区切りはタブ）
             while (probability_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = probability_tsv.split('\t');
@@ -400,21 +382,15 @@ namespace paxs {
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("hunter_gatherer")) ||
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("agricultural"))
                     ) {
-#ifdef PAXS_DEVELOPMENT
                     PAXS_WARNING("Failed to read Japan Childbearing TSV file: " + path + " at line " + std::to_string(i));
-#endif
                     childbearing_probability.agricultural.emplace_back(0.0);
                     childbearing_probability.hunter_gatherer.emplace_back(0.0);
-#ifdef PAXS_DEVELOPMENT
                     ++i;
-#endif
                     continue;
                 }
                 childbearing_probability.agricultural.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("agricultural")]]));
                 childbearing_probability.hunter_gatherer.emplace_back(std::stod(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
-#ifdef PAXS_DEVELOPMENT
                 ++i;
-#endif
             }
         }
 
