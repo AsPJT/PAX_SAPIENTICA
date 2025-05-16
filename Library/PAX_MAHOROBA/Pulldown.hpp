@@ -84,7 +84,7 @@ namespace paxs {
                 }
                 else {
                     if (i == 0) {
-                        rect.setW((*one_font).width(*str));
+                        rect.setW(static_cast<float>((*one_font).width(*str)));
                     }
                 }
             }
@@ -213,9 +213,9 @@ namespace paxs {
             // 三角形を描画
             sf::ConvexShape triangle;
             triangle.setPointCount(3);
-            triangle.setPoint(0, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x(), rect.y() + rect.h() / 2.0 + down_button_size * 0.25));
-            triangle.setPoint(1, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5, rect.y() + rect.h() / 2.0 - down_button_size * 0.5 + down_button_size * 0.25));
-            triangle.setPoint(2, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5, rect.y() + rect.h() / 2.0 + down_button_size * 0.5 + down_button_size * 0.25));
+            triangle.setPoint(0, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x()), static_cast<float>(rect.y() + rect.h() / 2.0 + down_button_size * 0.25)));
+            triangle.setPoint(1, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5), static_cast<float>(rect.y() + rect.h() / 2.0 - down_button_size * 0.5 + down_button_size * 0.25)));
+            triangle.setPoint(2, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5), static_cast<float>(rect.y() + rect.h() / 2.0 + down_button_size * 0.5 + down_button_size * 0.25)));
             triangle.setFillColor(sf::Color::Black);
             triangle.setOutlineColor(sf::Color::Black);
             triangle.setOutlineThickness(0);

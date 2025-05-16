@@ -57,10 +57,10 @@ namespace paxg {
                 case sf::Event::Closed:
                     return false;
                 case sf::Event::MouseWheelMoved:
-                    wheel_delta = ev.mouseWheel.delta;
+                    wheel_delta = static_cast<float>(ev.mouseWheel.delta);
                     break;
                 case sf::Event::Resized:
-                    visibleArea = sf::FloatRect(0, 0, ev.size.width, ev.size.height);
+                    visibleArea = sf::FloatRect(0, 0, static_cast<float>(ev.size.width), static_cast<float>(ev.size.height));
                     window.setView(sf::View(visibleArea));
                     break;
                 default:

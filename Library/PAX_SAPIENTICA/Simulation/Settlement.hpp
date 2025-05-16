@@ -354,7 +354,7 @@ namespace paxs {
             const std::size_t close_settlements_size = close_settlements.size();
             if (close_settlements_size == 0) return false; // 集落が無かったので失敗
 
-            std::uniform_int_distribution<int> dist(0, close_settlements_size - 1);
+            std::uniform_int_distribution<int> dist(0, static_cast<int>(close_settlements_size - 1));
             const std::size_t j = static_cast<std::size_t>(dist(*gen));
             const Settlement& close_settlement = close_settlements[j];
             if (close_settlement.getPosition().distance_pow2(position) > SimulationConstants::getInstance()->marriage_search_range_pow2) return false; // 婚姻距離内に集落が無いため失敗

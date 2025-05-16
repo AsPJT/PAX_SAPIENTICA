@@ -273,7 +273,7 @@ namespace paxs {
 
                 for (std::size_t i = 1; i < max_number_of_districts; ++i) {
                     // 地域区分
-                    const std::uint_least8_t region_id = japan_provinces->getJapanRegionId(i);
+                    const std::uint_least8_t region_id = static_cast<std::uint_least8_t>(japan_provinces->getJapanRegionId(static_cast<std::uint_least8_t>(i)));
                     if (region_id < 10) {
                         region_pop[region_id] += static_cast<std::uint_least32_t>(ryopop[i]);
                         region_set[region_id] += static_cast<std::uint_least32_t>(ryoset[i]);
@@ -625,14 +625,14 @@ namespace paxs {
                         environment
                     );
                     // 青銅の持ち込み
-                    if (is_bronze) settlement.setBronze(SimulationConstants::getInstance()->bronze);
+                    if (is_bronze) settlement.setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance()->bronze));
                     settlement.setPosition(live_position);
 
                     // 渡来人込みの地区 ID
                     const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id;
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), japan_provinces->getSNP(immigration_and_district_id));
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)));
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan((is_farming), genome.isMale(), gen);
 
                         AgeType age_value = 0;
@@ -646,9 +646,9 @@ namespace paxs {
                             age_value,
                             set_lifespan,
                             genome,
-                            japan_provinces->getFarming(immigration_and_district_id),
-                            japan_provinces->getHunterGatherer(immigration_and_district_id),
-                            japan_provinces->getLanguage(immigration_and_district_id)
+                            static_cast<std::uint_least8_t>(japan_provinces->getFarming(immigration_and_district_id)),
+                            static_cast<std::uint_least8_t>(japan_provinces->getHunterGatherer(immigration_and_district_id)),
+                            static_cast<std::uint_least8_t>(japan_provinces->getLanguage(immigration_and_district_id))
                         ), static_cast<std::size_t>(i));
                         if (is_farming) ++emigration_count; // 農耕カウント
                     }
@@ -695,7 +695,7 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), japan_provinces->getSNP(immigration_and_district_id));
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)));
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(is_farming, genome.isMale(), gen);
 
                         AgeType age_value = 0;
@@ -710,15 +710,15 @@ namespace paxs {
                             age_value,
                             set_lifespan,
                             genome,
-                            japan_provinces->getFarming(immigration_and_district_id),
-                            japan_provinces->getHunterGatherer(immigration_and_district_id),
-                            japan_provinces->getLanguage(immigration_and_district_id)
+                            static_cast<std::uint_least8_t>(japan_provinces->getFarming(immigration_and_district_id)),
+                            static_cast<std::uint_least8_t>(japan_provinces->getHunterGatherer(immigration_and_district_id)),
+                            static_cast<std::uint_least8_t>(japan_provinces->getLanguage(immigration_and_district_id))
                         );
                         if (is_farming) ++emigration_count; // 農耕カウント
                     }
                     settlement.addAgents(agents);
                     // 青銅の持ち込み
-                    if (is_bronze) settlement.setBronze(SimulationConstants::getInstance()->bronze);
+                    if (is_bronze) settlement.setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance()->bronze));
                 }
             }
 

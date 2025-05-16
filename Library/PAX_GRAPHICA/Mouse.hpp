@@ -90,7 +90,7 @@ namespace paxg {
             left_before_1frame = left;
 
 #if defined(PAXS_USING_SIV3D)
-            wheel_rot_vol = s3d::Mouse::Wheel();
+            wheel_rot_vol = static_cast<int>(s3d::Mouse::Wheel());
             left = s3d::MouseL.pressed();
             pos_x = s3d::Cursor::Pos().x;
             pos_y = s3d::Cursor::Pos().y;
@@ -101,7 +101,7 @@ namespace paxg {
                 pos_x = pos_y = 0;
             }
 #elif defined(PAXS_USING_SFML)
-            wheel_rot_vol = paxg::SFML_Event::getInstance()->wheel_delta;
+            wheel_rot_vol = static_cast<int>(paxg::SFML_Event::getInstance()->wheel_delta);
             left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
             pos_x = sf::Mouse::getPosition(Window::window).x;
             pos_y = sf::Mouse::getPosition(Window::window).y;
