@@ -119,8 +119,8 @@ namespace paxg {
         bool left_before_1frame = false; // 1 フレーム前の左クリック判定
 
         bool left = false;
-        bool right = false;
-        bool middle = false;
+        //bool right = false; // 未使用
+        //bool middle = false; // 未使用
 
         int wheel_rot_vol = 0;
 

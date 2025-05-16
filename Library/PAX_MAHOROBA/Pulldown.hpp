@@ -118,15 +118,15 @@ namespace paxs {
             std::size_t pdt_ = 0, // プルダウンの種別
             const bool is_one_font_ = false)
             :
-            font{ &font_ }
+            select_language_ptr(select_language_ptr_)
+            , language_ptr(language_ptr_)
+            , items_key(items_key_)
+            , font{ &font_ }
             , font_size(font_size_)
             , font_buffer_thickness_size(font_buffer_thickness_size_)
             , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
             , pdt(pdt_)
-            , is_one_font(is_one_font_)
-            , items_key(items_key_)
-            , select_language_ptr(select_language_ptr_)
-            , language_ptr(language_ptr_) {
+            , is_one_font(is_one_font_) {
 
             updateLanguage();
 
