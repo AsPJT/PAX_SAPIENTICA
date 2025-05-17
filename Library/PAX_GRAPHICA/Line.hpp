@@ -83,14 +83,14 @@ namespace paxg {
         }
         Line(const float sx, const float sy, const Vec2i& e) {
             line[0].position = sf::Vector2f(sx, sy);
-            line[1].position = sf::Vector2f(e.x(), e.y());
+            line[1].position = sf::Vector2f(static_cast<float>(e.x()), static_cast<float>(e.y()));
         }
         Line(const Vec2i& s, const Vec2i& e) {
-            line[0].position = sf::Vector2f(s.x(), s.y());
-            line[1].position = sf::Vector2f(e.x(), e.y());
+            line[0].position = sf::Vector2f(static_cast<float>(s.x()), static_cast<float>(s.y()));
+            line[1].position = sf::Vector2f(static_cast<float>(e.x()), static_cast<float>(e.y()));
         }
 
-        void draw(const double thickness, const paxg::Color& color) {
+        void draw(const double /*thickness*/, const paxg::Color& color) {
             line[0].color = color;
             line[1].color = color;
             Window::window.draw(line, 2, sf::Lines);

@@ -451,11 +451,11 @@ namespace s3d
     class Array
     {
     public:
-        Type& operator [](int n) { return dummyData; }  // non-const version
-        const Type& operator [](int n) const { return dummyData; }
+        Type& operator []([[maybe_unused]] int n) { return dummyData; }  // non-const version
+        const Type& operator []([[maybe_unused]] int n) const { return dummyData; }
         int size() const { return 0; }
         template <class... Args>
-        void emplace_back(Args&&... args) {}
+        void emplace_back([[maybe_unused]] Args&&... args) {}
     private:
         Type dummyData;
 

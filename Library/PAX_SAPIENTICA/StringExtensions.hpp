@@ -183,10 +183,10 @@ namespace paxs {
             std::istringstream stream(input);
             std::string field{};
             std::vector<std::uint_least32_t> result;
-            std::size_t index = 0;
+            //std::size_t index = 0; // 未使用
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 result.emplace_back(MurMur3::calcHash(field.size(), field.c_str()));
-                ++index;
+                //++index;
             }
             return result;
         }

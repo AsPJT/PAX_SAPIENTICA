@@ -213,7 +213,7 @@ namespace paxg {
         void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize.x()) / texture.getSize().x, static_cast<float>(resize.y()) / texture.getSize().y);
-            sprite.setPosition(pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2));
+            sprite.setPosition(static_cast<float>(pos.x() - (resize.x() / 2)), static_cast<float>(pos.y() - (resize.y() / 2)));
             paxg::Window::window.draw(sprite);
         }
 #else
@@ -236,7 +236,7 @@ namespace paxg {
         void resizedDrawAt(const int resize, const paxg::Vec2i & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y);
-            sprite.setPosition(pos.x() - (resize / 2), pos.y() - (resize / 2));
+            sprite.setPosition(static_cast<float>(pos.x() - (resize / 2)), static_cast<float>(pos.y() - (resize / 2)));
             paxg::Window::window.draw(sprite);
         }
 #else
@@ -302,7 +302,7 @@ namespace paxg {
         void resizedDraw(const paxg::Vec2i & resize, const paxg::Vec2i & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize.x()) / texture.getSize().x, static_cast<float>(resize.y()) / texture.getSize().y);
-            sprite.setPosition(pos.x(), pos.y());
+            sprite.setPosition(static_cast<float>(pos.x()), static_cast<float>(pos.y()));
             paxg::Window::window.draw(sprite);
         }
 #else
@@ -324,7 +324,7 @@ namespace paxg {
         void resizedDraw(const int resize, const paxg::Vec2i & pos) const {
             sf::Sprite sprite(texture);
             sprite.setScale(static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y);
-            sprite.setPosition(pos.x(), pos.y());
+            sprite.setPosition(static_cast<float>(pos.x()), static_cast<float>(pos.y()));
             paxg::Window::window.draw(sprite);
         }
 #else

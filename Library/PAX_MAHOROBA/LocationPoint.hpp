@@ -710,7 +710,7 @@ namespace paxs {
 
         void draw(const double jdn,
             std::unordered_map<SettlementGridsType, paxs::SettlementGrid>& agents,
-            const std::vector<GridType4>& marriage_pos_list,
+            const std::vector<GridType4>& marriage_pos_list/* SFML では使わない */,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
         )/*const Siv3D Key は非 const */ {
 

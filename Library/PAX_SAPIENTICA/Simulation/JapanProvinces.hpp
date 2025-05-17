@@ -130,7 +130,9 @@ namespace paxs {
             mtdna_tsv.deleteBOM();
             // 1 行目を分割する
             std::unordered_map<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
+#ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
+#endif
 
             // 1 行ずつ読み込み（区切りはタブ）
             while (mtdna_tsv.getLine()) {
@@ -139,7 +141,9 @@ namespace paxs {
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("haplo_group_region")) ||
                     sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("haplo_dist"))
                     ) {
+#ifdef PAXS_DEVELOPMENT
                     PAXS_WARNING("Failed to read Japan MtDNA TSV file: " + path + " at line " + std::to_string(i));
+#endif
                     continue;
                 }
 
@@ -169,7 +173,9 @@ namespace paxs {
                 const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("haplo_group_region")]];
                 mtdna_region_list.emplace(MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str()), mtdna_region);
 
+#ifdef PAXS_DEVELOPMENT
                 ++i;
+#endif
             }
         }
 

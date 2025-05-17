@@ -42,7 +42,11 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
         sf::Color color;
-        Color(const int r, const int g, const int b, const int a = 255) : color(r, g, b, a) {}
+        Color(const int r, const int g, const int b, const int a = 255) : color(
+            static_cast<sf::Uint8>(r), 
+            static_cast<sf::Uint8>(g), 
+            static_cast<sf::Uint8>(b), 
+            static_cast<sf::Uint8>(a)) {}
         operator sf::Color() const { return color; }
 #else
         int r, g, b, a = 255;
