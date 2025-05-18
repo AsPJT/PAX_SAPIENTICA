@@ -47,6 +47,7 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
@@ -221,21 +222,9 @@ MurMur3::calcHash("ain")
         };
 
         // シミュレーションの Key
-        std::vector<std::uint_least32_t> simulation_key = {
-MurMur3::calcHash("Sample"),
-MurMur3::calcHash("Yaponesia"),
-MurMur3::calcHash("AynuMosir"),
-MurMur3::calcHash("Philippines"),
-MurMur3::calcHash("Aotearoa")
-        };
+        std::vector<std::uint_least32_t> simulation_key;
         // シミュレーションモデル名
-        std::vector<std::string> simulation_model_name = {
-            "Sample",
-            "Yaponesia",
-            "AynuMosir",
-            "Philippines",
-            "Aotearoa"
-        };
+        std::vector<std::string> simulation_model_name;
 
         std::vector<std::string> path_list = {
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
@@ -320,6 +309,31 @@ MurMur3::calcHash("Aotearoa")
             pulldown = paxs::Pulldown(&select_language, &language_text, language_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
 #ifdef PAXS_USING_SIMULATOR
+            {
+                // シミュレーションモデルのファイルを読み込む
+                const std::string models_path = "Data/Simulations/Models.txt";
+                paxs::InputFile models_tsv(AppConfig::getInstance()->getRootPath() + models_path);
+                if (models_tsv.fail()) {
+                    PAXS_WARNING("Failed to read Models TXT file: " + path);
+                    return;
+                }
+                // 1 行目を読み込む
+                if (!(models_tsv.getLine())) {
+                    return; // 何もない場合
+                }
+                // BOM を削除
+                models_tsv.deleteBOM();
+                // 1 行目を分割する
+                simulation_model_name.emplace_back(models_tsv.pline);
+                simulation_key.emplace_back(MurMur3::calcHash(models_tsv.pline.c_str()));
+                //getMenuIndex(menu, MurMur3::calcHash("mtdna"))
+                // 1 行ずつ読み込み（区切りはタブ）
+                while (models_tsv.getLine()) {
+                    simulation_model_name.emplace_back(models_tsv.pline);
+                    simulation_key.emplace_back(MurMur3::calcHash(models_tsv.pline.c_str()));
+                }
+            }
+            // シミュレーションモデルのプルダウンメニューを初期化
             simulation_pulldown = paxs::Pulldown(&select_language, &simulation_text, simulation_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, false);
             simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), 600 });
 #endif
