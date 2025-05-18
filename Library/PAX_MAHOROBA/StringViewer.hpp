@@ -61,9 +61,13 @@ namespace paxs {
             std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
             paxs::KoyomiSiv3D& koyomi_siv
         ) const {
+            const std::string model_name =
+                (simulation_model_index >= simulation_model_name.size()) ?
+                "Sample" : simulation_model_name[simulation_model_index];
+
             simulator->init();
             koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
-            koyomi_siv.jdn.setDay(static_cast<double>(SimulationConstants::getInstance()->start_julian_day)); // シミュレーション初期時の日付に設定
+            koyomi_siv.jdn.setDay(static_cast<double>(SimulationConstants::getInstance(model_name)->start_julian_day)); // シミュレーション初期時の日付に設定
             koyomi_siv.calcDate();
             koyomi_siv.is_agent_update = false;
             koyomi_siv.move_forward_in_time = false; // 一時停止
@@ -79,8 +83,12 @@ namespace paxs {
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
                 const int time_icon_size = 40; // 時間操作アイコンの大きさ
 
-                std::string map_list_path = "Data/Simulations/MapList.tsv";
-                std::string japan_provinces_path = "Data/Simulations/Sample";
+                const std::string model_name =
+                    (simulation_model_index >= simulation_model_name.size()) ?
+                    "Sample" : simulation_model_name[simulation_model_index];
+
+                std::string map_list_path = "Data/Simulations/" + model_name + "/MapList.tsv";
+                std::string japan_provinces_path = "Data/Simulations/" + model_name;
 
                 // シミュレーションが初期化されていない場合
                 if (simulator.get() == nullptr) {
@@ -92,7 +100,11 @@ namespace paxs {
                             [&](const std::string& path_) {map_list_path = path_; });
                         AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationProvincesPath"),
                             [&](const std::string& path_) {japan_provinces_path = path_; });
-
+                        // Sample を選択モデル名に置換
+                        paxs::StringExtensions::replace(map_list_path, "Sample", model_name);
+                        paxs::StringExtensions::replace(japan_provinces_path, "Sample", model_name);
+                        // シミュレーション変数を初期化
+                        SimulationConstants::getInstance(model_name)->init(model_name);
 #ifdef PAXS_USING_SIV3D
                         static bool is_console_open = false;
                         if (!is_console_open) {
@@ -128,7 +140,7 @@ namespace paxs {
                         texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
                             time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60));
                         if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                            SimulationConstants::getInstance()->init();
+                            SimulationConstants::getInstance(model_name)->init(model_name);
                         }
                         // 人間データを初期化
                         texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
@@ -207,6 +219,24 @@ MurMur3::calcHash("fa-IR"),
 MurMur3::calcHash("ar-SA"),
 MurMur3::calcHash("ain")
         };
+
+        // シミュレーションの Key
+        std::vector<std::uint_least32_t> simulation_key = {
+MurMur3::calcHash("Sample"),
+MurMur3::calcHash("Yaponesia"),
+MurMur3::calcHash("AynuMosir"),
+MurMur3::calcHash("Philippines"),
+MurMur3::calcHash("Aotearoa")
+        };
+        // シミュレーションモデル名
+        std::vector<std::string> simulation_model_name = {
+            "Sample",
+            "Yaponesia",
+            "AynuMosir",
+            "Philippines",
+            "Aotearoa"
+        };
+
         std::vector<std::string> path_list = {
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
@@ -253,12 +283,18 @@ MurMur3::calcHash("ain")
         std::size_t map_view_center_y_str_index;
         std::size_t map_view_center_lat_str_index;
         std::size_t xyz_tile_z_str_index;
+
+        // シミュレーションのモデル番号
+        std::size_t simulation_model_index = 0;
 #ifdef PAXS_USING_SIV3D
         // UI の影
         s3d::RenderTexture shadow_texture{};
         s3d::RenderTexture internal_texture{};
 #endif
         paxs::Pulldown pulldown;
+#ifdef PAXS_USING_SIMULATOR
+        paxs::Pulldown simulation_pulldown;
+#endif
         paxs::MenuBar menu_bar;
 
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
@@ -269,7 +305,8 @@ MurMur3::calcHash("ain")
 
         void init(
             const SelectLanguage& select_language,
-            const paxs::Language& language_text
+            const paxs::Language& language_text,
+            const paxs::Language& simulation_text
         ) {
             language_fonts.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
             setLanguageFont(pulldown_font_size, AppConfig::getInstance()->getRootPath(), pulldown_font_buffer_thickness_size);
@@ -282,7 +319,10 @@ MurMur3::calcHash("ain")
 
             pulldown = paxs::Pulldown(&select_language, &language_text, language_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
-
+#ifdef PAXS_USING_SIMULATOR
+            simulation_pulldown = paxs::Pulldown(&select_language, &simulation_text, simulation_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, false);
+            simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), 600 });
+#endif
             //std::vector<std::uint_least32_t> list_test1 = {
             //MurMur3::calcHash("menu_bar_file"),
             //    MurMur3::calcHash("menu_bar_file_new"),
@@ -847,6 +887,11 @@ MurMur3::calcHash("ain")
 
             // メニューバー
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
+#ifdef PAXS_USING_SIMULATOR
+            if (simulator == nullptr) {
+                paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(simulation_pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
+            }
+#endif
 
 #ifdef PAXS_USING_SIV3D
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
@@ -855,6 +900,11 @@ MurMur3::calcHash("ain")
             if (tm_.get(s3d::Rect(paxg::Window::width() - 280, 3, 28).leftClicked())) {
                 // Web ページをブラウザで開く
                 s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
+            }
+#endif
+#ifdef PAXS_USING_SIMULATOR
+            if (simulator == nullptr) {
+                simulation_pulldown.draw(); // シミュレーション選択
             }
 #endif
             pulldown.draw(); // 言語選択
@@ -921,6 +971,7 @@ MurMur3::calcHash("ain")
             "",reinterpret_cast<const char*>(u8"I-1前"),reinterpret_cast<const char*>(u8"I-1後"),"I-2","I-3","I-3","I-3","I-4","I-4/I-5","I-5",
             "II-1","II-2","II-2/II-3","II-3","II-4","II-5","II-6","III-1"
                                     } };
+#ifndef PAXS_USING_SIMULATOR
                         {
                             int date_year = 0;
                             std::visit([&](const auto& x) { date_year = int(x.cgetYear()); }, koyomi_siv.date_list[1].date);
@@ -979,6 +1030,7 @@ MurMur3::calcHash("ain")
                                 std::string(sueki_tanabe),
                                 paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 170), paxg::Color(0, 0, 0));
                         }
+#endif
                     }
                 }
             }
