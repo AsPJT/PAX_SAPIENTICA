@@ -6,6 +6,7 @@ PlaceNames	Data/Settings/PlaceNames.tsv
 MiniIcons	Data/Settings/MapIcons.tsv
 PersonNames	Data/Settings/PersonNames.tsv
 Portraits	Data/Settings/Portraits.tsv
-SimulationXYZTiles	Data/Simulations/MapList.tsv
+SimulationModels	Data/Simulations/Models.tsv
+SimulationXYZTiles	Data/Simulations/Sample/MapList.tsv
 SimulationProvincesPath	Data/Simulations/Sample
-SimulationConstants	Data/Simulations/Settings.tsv
+SimulationConstants	Data/Simulations/Sample/Settings.tsv
