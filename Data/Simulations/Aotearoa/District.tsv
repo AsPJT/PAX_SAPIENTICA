@@ -1,6 +1,6 @@
 ﻿id	name	ja-JP	region	min_pop_placed_per_cell	max_pop_placed_per_cell	init_pop	immigrant	increased_immigration	mtdna_region	pop_ad725	directions	direction_min_distance	language	hunter_gatherer	farming	snp
-1	フィリピン	フィリピン	1	10	100	1000	0	0	epijomon	0	1/1/1/1/1/1/1/1	160	1	255	0	255
-2	null	null	1	15	35	0	0	0	epijomon	0	1/1/1/1/1/1/1/1	160	1	255	0	255
+1	NewZealand	NewZealand	1	10	100	20000	0	0	epijomon	0	1/1/1/1/1/1/1/1	160	1	255	0	255
+2	NewZealand2	NewZealand2	1	15	35	10000	0	0	epijomon	0	1/1/1/1/1/1/1/1	160	1	255	0	255
 3	null	null	1	50	180	0	0	0	okhotsk	0	1/1/1/1/1/1/1/1	160	0	255	0	0
 4	null	null	1	15	35	0	0	0	epijomon	0	1/1/1/1/1/1/1/1	160	1	255	0	255
 5	null	null	1	50	180	0	0	0	okhotsk	0	1/1/1/1/1/1/1/1	160	0	255	0	0
