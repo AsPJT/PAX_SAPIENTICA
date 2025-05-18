@@ -7,7 +7,7 @@ immigration_start_steps	1801	渡来開始Step数目(step)
 immigration_end_steps	21600	渡来終了Step数目(step)
 init_lifespan_grace_period	180	初期化時の寿命までの最低Step間隔(step)
 #Space --------------------	#空間	--------------------------------------------------
-area	Honsyu	シミュレーションの対象範囲
+area	Japan	シミュレーションの対象範囲
 cell_group_length	256	集落をグループ分けする際の1グリッド辺の長さ(cell)
 immigration_district_id	73	渡来地区ID
 land_key	district	陸地データのKey

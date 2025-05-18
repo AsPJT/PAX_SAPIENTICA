@@ -314,23 +314,28 @@ MurMur3::calcHash("ain")
                 const std::string models_path = "Data/Simulations/Models.txt";
                 paxs::InputFile models_tsv(AppConfig::getInstance()->getRootPath() + models_path);
                 if (models_tsv.fail()) {
-                    PAXS_WARNING("Failed to read Models TXT file: " + path);
-                    return;
+                    PAXS_WARNING("Failed to read Models TXT file: " + models_path);
+                    simulation_model_name.emplace_back("Sample");
+                    simulation_key.emplace_back(MurMur3::calcHash("Sample"));
                 }
-                // 1 行目を読み込む
-                if (!(models_tsv.getLine())) {
-                    return; // 何もない場合
-                }
-                // BOM を削除
-                models_tsv.deleteBOM();
-                // 1 行目を分割する
-                simulation_model_name.emplace_back(models_tsv.pline);
-                simulation_key.emplace_back(MurMur3::calcHash(models_tsv.pline.c_str()));
-                //getMenuIndex(menu, MurMur3::calcHash("mtdna"))
-                // 1 行ずつ読み込み（区切りはタブ）
-                while (models_tsv.getLine()) {
-                    simulation_model_name.emplace_back(models_tsv.pline);
-                    simulation_key.emplace_back(MurMur3::calcHash(models_tsv.pline.c_str()));
+                else {
+                    // 1 行目を読み込む
+                    if (!(models_tsv.getLine())) {
+                        simulation_model_name.emplace_back("Sample");
+                        simulation_key.emplace_back(MurMur3::calcHash("Sample"));
+                    }
+                    else {
+                        // BOM を削除
+                        models_tsv.deleteBOM();
+                        // 1 行目を分割する
+                        simulation_model_name.emplace_back(models_tsv.pline);
+                        simulation_key.emplace_back(MurMur3::calcHash(models_tsv.pline.c_str()));
+                        // 1 行ずつ読み込み（区切りはタブ）
+                        while (models_tsv.getLine()) {
+                            simulation_model_name.emplace_back(models_tsv.pline);
+                            simulation_key.emplace_back(MurMur3::calcHash(models_tsv.pline.c_str()));
+                        }
+                    }
                 }
             }
             // シミュレーションモデルのプルダウンメニューを初期化
