@@ -1,5 +1,4 @@
 ﻿file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture	ja-JP
-Data/PersonName/Japan/NaraPeriod/Abe_no_Nakamaro.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Sakanoue_no_Tamuramaro.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Kibi_no_Makibi.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Abe_no_Hirafu.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
@@ -11,8 +10,14 @@ Data/PersonName/Japan/NaraPeriod/Otomo_no_Kunimaro.tsv	place_name	聖徳太子	0
 Data/PersonName/Japan/NaraPeriod/Michimori_no_Maro.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Shimotsuke_no_Komaro.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Choe_Chi-won.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
+Data/PersonName/Japan/NaraPeriod/Du Huan.tsv	place_name	杜環	0	1000	0	9948341	Unknown	杜環
+Data/PersonName/Japan/NaraPeriod/Wang Wei.tsv	place_name	王維	0	1000	0	9948341	Unknown	王維
+Data/PersonName/Japan/NaraPeriod/Wu Zetian.tsv	place_name	武則天	0	1000	0	9948341	Unknown	武則天
+Data/PersonName/Japan/NaraPeriod/Charlemagne.tsv	place_name	カール大帝	0	1000	0	9948341	Unknown	カール大帝
+Data/PersonName/Japan/NaraPeriod/Alcuin.tsv	place_name	アルクィン	0	1000	0	9948341	Unknown	アルクィン
+Data/PersonName/Japan/NaraPeriod/Anan ben David.tsv	place_name	アナン・ベン・ダヴィド	0	1000	0	9948341	Unknown	アナン・ベン・ダヴィド
 Data/PersonName/Japan/NaraPeriod/Huang_Shaoqing.tsv	place_name	黃少卿	0	1000	0	9948341	Unknown	黃少卿
-Data/PersonName/Japan/NaraPeriod/Sri_Jayanasa.tsv	place_name	シュリー・ジャヤナサ	0	1000	0	9948341	Unknown	シュリー・ジャヤナサ
+Data/PersonName/Japan/NaraPeriod/Sri_Jayanasa.tsv	place_name	シュリー・ジャヤナサ	0	1000	0	9948341	Sri_Jayanasa	シュリー・ジャヤナサ
 Data/PersonName/Japan/NaraPeriod/Jayadevi.tsv	place_name	ジャヤデヴィ	0	1000	0	9948341	Unknown	ジャヤデヴィ
 Data/PersonName/Japan/NaraPeriod/Haribhadra.tsv	place_name	ハリバドラ	0	1000	0	9948341	Unknown	ハリバドラ
 Data/PersonName/Japan/NaraPeriod/Dugu_Qieluo.tsv	place_name	獨孤伽羅	0	1000	0	9948341	Unknown	獨孤伽羅
@@ -20,11 +25,13 @@ Data/PersonName/Japan/NaraPeriod/Bori_Shad.tsv	place_name	步利設	0	1000	0	994
 Data/PersonName/Japan/NaraPeriod/Ashina_Jiesheshuai.tsv	place_name	阿史那結社率	0	1000	0	9948341	Ashina_Jiesheshuai	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Qibi_Heli.tsv	place_name	契苾何力	0	1000	0	9948341	Qibi_Heli	契苾何力
 Data/PersonName/Japan/NaraPeriod/Tonyukuk.tsv	place_name	暾欲谷	0	1000	0	9948341	Tonyukuk	暾欲谷
+Data/PersonName/Japan/NaraPeriod/Wukong.tsv	place_name	梧空	0	1000	0	9948341	Wukong	梧空
 Data/PersonName/Japan/NaraPeriod/Amoghavajra.tsv	place_name	不空金剛	0	1000	0	9948341	Amoghavajra	不空金剛
 Data/PersonName/Japan/NaraPeriod/Subhakarasimha.tsv	place_name	善無畏	0	1000	0	9948341	Subhakarasimha	善無畏
 Data/PersonName/Japan/NaraPeriod/Vajrabodhi.tsv	place_name	金剛智	0	1000	0	9948341	Vajrabodhi	金剛智
 Data/PersonName/Japan/NaraPeriod/Yijing.tsv	place_name	義浄	0	1000	0	9948341	Yijing	義浄
 Data/PersonName/Japan/NaraPeriod/Brahmagupta.tsv	place_name	ブラフマグプタ	0	1000	0	9948341	Brahmagupta	ブラフマグプタ
+Data/PersonName/Japan/NaraPeriod/Abe_no_Nakamaro.tsv	place_name	阿倍仲麻呂	0	1000	0	9948341	Abe_no_Nakamaro	阿倍仲麻呂
 Data/PersonName/Japan/AsukaPeriod/OnoNoImoko.tsv	place_name	小野妹子	0	1000	1930749	1948341	OnoNoImoko	小野妹子
 Data/PersonName/Japan/AsukaPeriod/SuikoTenno.tsv	place_name	推古天皇	0	1000	1923547	1950540	SuikoTenno	推古天皇
 Data/PersonName/Japan/AsukaPeriod/ShotokuTaishi.tsv	place_name	聖徳太子	0	1000	1930749	1948341	SyotokuTaishi	聖徳太子
@@ -34,7 +41,7 @@ Data/PersonName/Japan/NaraPeriod/Uisang.tsv	place_name	義湘	0	1000	0	9948341	U
 Data/PersonName/Japan/NaraPeriod/Jang_Bogo.tsv	place_name	張保皐	0	1000	0	9948341	Jang_Bogo	張保皐
 Data/PersonName/Japan/NaraPeriod/Kim_Yu-sin.tsv	place_name	金庾信	0	1000	0	9948341	Kim_Yu-sin	金庾信
 Data/PersonName/Japan/NaraPeriod/Kukai.tsv	place_name	空海	0	1000	0	9948341	Kukai	空海
-Data/PersonName/Japan/NaraPeriod/Gyoki.tsv	place_name	行基	0	1000	0	9948341	Unknown	行基
+Data/PersonName/Japan/NaraPeriod/Gyoki.tsv	place_name	行基	0	1000	0	9948341	Gyoki	行基
 Data/PersonName/Japan/NaraPeriod/Saicho.tsv	place_name	最澄	0	1000	0	9948341	Saicho	最澄
 Data/PersonName/Japan/NaraPeriod/Jianzhen.tsv	place_name	鑑真	0	1000	0	9948341	Jianzhen	鑑真
 Data/PersonName/Japan/NaraPeriod/Xuanzang.tsv	place_name	玄奘	0	1000	0	9948341	Xuanzang	玄奘
