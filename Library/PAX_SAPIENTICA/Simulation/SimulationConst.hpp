@@ -24,6 +24,7 @@
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/InputFile/SimulationRange.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 // M_PI が定義されていない場合
@@ -98,9 +99,9 @@ namespace paxs {
 
     struct SimulationConstants {
         // インスタンスを取得
-        static SimulationConstants* getInstance() {
+        static SimulationConstants* getInstance(const std::string& model_name_ = "Sample") {
             if (instance == nullptr) {
-                instance = new SimulationConstants();
+                instance = new SimulationConstants(model_name_);
             }
             return instance;
         }
@@ -252,10 +253,12 @@ namespace paxs {
                     life_span.dist_hunter_gatherer_male(gen)));
         }
 
-        void inputLifeSpan() noexcept {
+        void inputLifeSpan(const std::string& model_name_) noexcept {
             std::string path = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
                 [&](const std::string& path_) {path = path_; });
+            // Sample を選択モデル名に置換
+            paxs::StringExtensions::replace(path, "Sample", model_name_);
             path += std::string("/" + life_span_file);
 
             paxs::InputFile life_span_tsv(path);
@@ -274,6 +277,8 @@ namespace paxs {
 #ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
 #endif
+            // 生命表を初期化
+            life_span = lifeSpan{};
             // 1 行ずつ読み込み（区切りはタブ）
             while (life_span_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = life_span_tsv.split('\t');
@@ -322,10 +327,12 @@ namespace paxs {
                 childbearing_probability.hunter_gatherer[age_];
         }
 
-        void inputMarriage() noexcept {
+        void inputMarriage(const std::string& model_name_) noexcept {
             std::string path = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
                 [&](const std::string& path_) {path = path_; });
+            // Sample を選択モデル名に置換
+            paxs::StringExtensions::replace(path, "Sample", model_name_);
             path += std::string("/" + marriage_file);
             paxs::InputFile probability_tsv(path);
             if (probability_tsv.fail()) {
@@ -345,6 +352,8 @@ namespace paxs {
 #ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
 #endif
+            // 婚姻確率を初期化
+            marriage_probability = MarriageProbability{};
             // 1 行ずつ読み込み（区切りはタブ）
             while (probability_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = probability_tsv.split('\t');
@@ -369,10 +378,12 @@ namespace paxs {
 #endif
             }
         }
-        void inputChildbearing() noexcept {
+        void inputChildbearing(const std::string& model_name_) noexcept {
             std::string path = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
                 [&](const std::string& path_) {path = path_; });
+            // Sample を選択モデル名に置換
+            paxs::StringExtensions::replace(path, "Sample", model_name_);
             if (path.size() == 0) return;
             path += std::string("/" + childbearing_file);
             paxs::InputFile probability_tsv(path);
@@ -393,6 +404,8 @@ namespace paxs {
 #ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
 #endif
+            // 出産確率を初期化
+            childbearing_probability = ChildbearingProbability{};
             // 1 行ずつ読み込み（区切りはタブ）
             while (probability_tsv.getLine()) {
                 std::vector<std::string> sub_menu_v = probability_tsv.split('\t');
@@ -418,11 +431,13 @@ namespace paxs {
             }
         }
 
-        void init() {
+        void init(const std::string& model_name_ = "Sample") {
             std::string str = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationConstants"),
                 [&](const std::string& path_) {str = path_; });
-            if (str.size() == 0) return;
+            // Sample を選択モデル名に置換
+            paxs::StringExtensions::replace(str, "Sample", model_name_);
+            if (str.size() == 0) return; std::cout << model_name_;
 
             KeyValueTSV<std::string> kvt;
             kvt.input(str);
@@ -486,13 +501,13 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("childbearing_file"), [&](const std::string& str_) {childbearing_file = str_; });
             stoiFunc(kvt, MurMur3::calcHash("life_span_file"), [&](const std::string& str_) {life_span_file = str_; });
 
-            inputMarriage(); // 婚姻確率
-            inputChildbearing(); // 出産確率
-            inputLifeSpan(); // 生命表
+            inputMarriage(model_name_); // 婚姻確率
+            inputChildbearing(model_name_); // 出産確率
+            inputLifeSpan(model_name_); // 生命表
         }
 
-        SimulationConstants() {
-            init();
+        SimulationConstants(const std::string& model_name_ = "Sample") {
+            init(model_name_);
         }
 
     };
