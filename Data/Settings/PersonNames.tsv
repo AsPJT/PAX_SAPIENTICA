@@ -1,4 +1,42 @@
 ﻿file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture	ja-JP
+Data/PersonName/Japan/NaraPeriod/Dokyo.tsv	place_name	道鏡	0	1000	0	9948341	Unknown	道鏡
+Data/PersonName/Japan/NaraPeriod/Fujiwara no Fuhito.tsv	place_name	藤原不比等	0	1000	0	9948341	Unknown	藤原不比等
+Data/PersonName/Japan/NaraPeriod/Hikami no Shioyaki.tsv	place_name	氷上塩焼	0	1000	0	9948341	Unknown	氷上塩焼
+Data/PersonName/Japan/NaraPeriod/Hozumi no Oyu.tsv	place_name	穂積老	0	1000	0	9948341	Unknown	穂積老
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Enpo.tsv	place_name	百済王遠宝	0	1000	0	9948341	Unknown	百済王遠宝
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Ganchu.tsv	place_name	百済王元忠	0	1000	0	9948341	Unknown	百済王元忠
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Jikyo.tsv	place_name	百済王慈敬	0	1000	0	9948341	Unknown	百済王慈敬
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Kochu.tsv	place_name	百済王孝忠	0	1000	0	9948341	Unknown	百済王孝忠
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Kyofuku.tsv	place_name	百済王敬福	0	1000	0	9948341	Unknown	百済王敬福
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Nanten.tsv	place_name	百済王南典	0	1000	0	9948341	Unknown	百済王南典
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Ninjo.tsv	place_name	百済王仁貞	0	1000	0	9948341	Unknown	百済王仁貞
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Rihaku.tsv	place_name	百済王理伯	0	1000	0	9948341	Unknown	百済王理伯
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Rizen.tsv	place_name	百済王利善	0	1000	0	9948341	Unknown	百済王利善
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Shuntetsu.tsv	place_name	百済王俊哲	0	1000	0	9948341	Unknown	百済王俊哲
+Data/PersonName/Japan/NaraPeriod/Kudara no Konikishi Zenpuku.tsv	place_name	百済王全福	0	1000	0	9948341	Unknown	百済王全福
+Data/PersonName/Japan/NaraPeriod/Miwa no Takechimaro.tsv	place_name	三輪高市麻呂	0	1000	0	9948341	Unknown	三輪高市麻呂
+Data/PersonName/Japan/NaraPeriod/Saeki no Imaemishi.tsv	place_name	佐伯今毛人	0	1000	0	9948341	Unknown	佐伯今毛人
+Data/PersonName/Japan/NaraPeriod/Saeki no Matanari.tsv	place_name	佐伯全成	0	1000	0	9948341	Unknown	佐伯全成
+Data/PersonName/Japan/NaraPeriod/Sakanoue no Inukai.tsv	place_name	坂上犬養	0	1000	0	9948341	Unknown	坂上犬養
+Data/PersonName/Japan/NaraPeriod/Sakanoue no Karitamaro.tsv	place_name	坂上苅田麻呂	0	1000	0	9948341	Unknown	坂上苅田麻呂
+Data/PersonName/Japan/NaraPeriod/Yuge no Kiyohito.tsv	place_name	弓削浄人	0	1000	0	9948341	Unknown	弓削浄人
+Data/PersonName/Japan/NaraPeriod/Heki no Kiyotari.tsv	place_name	日置浄足	0	1000	0	9948341	Unknown	日置浄足
+Data/PersonName/Japan/NaraPeriod/Heki no Michikata.tsv	place_name	日置道形	0	1000	0	9948341	Unknown	日置道形
+Data/PersonName/Japan/NaraPeriod/Heki no Minomaro.tsv	place_name	日置蓑麻呂	0	1000	0	9948341	Unknown	日置蓑麻呂
+Data/PersonName/Japan/NaraPeriod/Heki no Ominari.tsv	place_name	日置雄三成	0	1000	0	9948341	Unknown	日置雄三成
+Data/PersonName/Japan/NaraPeriod/Heki no Sademaro.tsv	place_name	日置佐堤麻呂	0	1000	0	9948341	Unknown	日置佐堤麻呂
+Data/PersonName/Japan/NaraPeriod/Hikami no Kawatsugu.tsv	place_name	氷上川継	0	1000	0	9948341	Unknown	氷上川継
+Data/PersonName/Japan/NaraPeriod/Hikami no Shikeshimaro.tsv	place_name	氷上志計志麻呂	0	1000	0	9948341	Unknown	氷上志計志麻呂
+Data/PersonName/Japan/NaraPeriod/Mino no Ishimori.tsv	place_name	三野石守	0	1000	0	9948341	Unknown	三野石守
+Data/PersonName/Japan/NaraPeriod/Mino no Namiuo.tsv	place_name	三野浪魚	0	1000	0	9948341	Unknown	三野浪魚
+Data/PersonName/Japan/NaraPeriod/Mino no Obayashi.tsv	place_name	三野小林	0	1000	0	9948341	Unknown	三野小林
+Data/PersonName/Japan/NaraPeriod/Mino no Otomasu.tsv	place_name	三野乙益	0	1000	0	9948341	Unknown	三野乙益
+Data/PersonName/Japan/NaraPeriod/Mino no Sonoki.tsv	place_name	三野園生	0	1000	0	9948341	Unknown	三野園生
+Data/PersonName/Japan/NaraPeriod/Mino no Umakai.tsv	place_name	三野馬甘	0	1000	0	9948341	Unknown	三野馬甘
+Data/PersonName/Japan/NaraPeriod/Hiketa no Mushimaro.tsv	place_name	引田虫麻呂	0	1000	0	9948341	Unknown	引田虫麻呂
+Data/PersonName/Japan/NaraPeriod/Moro no Kurao.tsv	place_name	諸鞍男	0	1000	0	9948341	Unknown	諸鞍男
+Data/PersonName/Japan/NaraPeriod/Ono no Tamori.tsv	place_name	小野田守	0	1000	0	9948341	Unknown	小野田守
+Data/PersonName/Japan/NaraPeriod/Otomo no Inukai.tsv	place_name	大伴犬養	0	1000	0	9948341	Unknown	大伴犬養
 Data/PersonName/Japan/NaraPeriod/Sakanoue_no_Tamuramaro.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Kibi_no_Makibi.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Abe_no_Hirafu.tsv	place_name	聖徳太子	0	1000	0	9948341	Unknown	聖徳太子
@@ -17,14 +55,15 @@ Data/PersonName/Japan/NaraPeriod/Charlemagne.tsv	place_name	カール大帝	0	10
 Data/PersonName/Japan/NaraPeriod/Alcuin.tsv	place_name	アルクィン	0	1000	0	9948341	Unknown	アルクィン
 Data/PersonName/Japan/NaraPeriod/Anan ben David.tsv	place_name	アナン・ベン・ダヴィド	0	1000	0	9948341	Unknown	アナン・ベン・ダヴィド
 Data/PersonName/Japan/NaraPeriod/Huang_Shaoqing.tsv	place_name	黃少卿	0	1000	0	9948341	Unknown	黃少卿
-Data/PersonName/Japan/NaraPeriod/Sri_Jayanasa.tsv	place_name	シュリー・ジャヤナサ	0	1000	0	9948341	Sri_Jayanasa	シュリー・ジャヤナサ
-Data/PersonName/Japan/NaraPeriod/Jayadevi.tsv	place_name	ジャヤデヴィ	0	1000	0	9948341	Unknown	ジャヤデヴィ
 Data/PersonName/Japan/NaraPeriod/Haribhadra.tsv	place_name	ハリバドラ	0	1000	0	9948341	Unknown	ハリバドラ
 Data/PersonName/Japan/NaraPeriod/Dugu_Qieluo.tsv	place_name	獨孤伽羅	0	1000	0	9948341	Unknown	獨孤伽羅
+Data/PersonName/Japan/NaraPeriod/Isidore of Seville.tsv	place_name	イシドールス	0	1000	0	9948341	Unknown	イシドールス
 Data/PersonName/Japan/NaraPeriod/Bori_Shad.tsv	place_name	步利設	0	1000	0	9948341	Bori_Shad	步利設
 Data/PersonName/Japan/NaraPeriod/Ashina_Jiesheshuai.tsv	place_name	阿史那結社率	0	1000	0	9948341	Ashina_Jiesheshuai	聖徳太子
 Data/PersonName/Japan/NaraPeriod/Qibi_Heli.tsv	place_name	契苾何力	0	1000	0	9948341	Qibi_Heli	契苾何力
 Data/PersonName/Japan/NaraPeriod/Tonyukuk.tsv	place_name	暾欲谷	0	1000	0	9948341	Tonyukuk	暾欲谷
+Data/PersonName/Japan/NaraPeriod/Jayadevi.tsv	place_name	ジャヤデヴィ	0	1000	0	9948341	Jayadevi	ジャヤデヴィ
+Data/PersonName/Japan/NaraPeriod/Sri_Jayanasa.tsv	place_name	シュリー・ジャヤナサ	0	1000	0	9948341	Sri_Jayanasa	シュリー・ジャヤナサ
 Data/PersonName/Japan/NaraPeriod/Wukong.tsv	place_name	梧空	0	1000	0	9948341	Wukong	梧空
 Data/PersonName/Japan/NaraPeriod/Amoghavajra.tsv	place_name	不空金剛	0	1000	0	9948341	Amoghavajra	不空金剛
 Data/PersonName/Japan/NaraPeriod/Subhakarasimha.tsv	place_name	善無畏	0	1000	0	9948341	Subhakarasimha	善無畏
