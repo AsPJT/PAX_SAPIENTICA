@@ -84,3 +84,10 @@ Data/PersonName/Japan/NaraPeriod/Gyoki.tsv	place_name	行基	0	1000	0	9948341	Gy
 Data/PersonName/Japan/NaraPeriod/Saicho.tsv	place_name	最澄	0	1000	0	9948341	Saicho	最澄
 Data/PersonName/Japan/NaraPeriod/Jianzhen.tsv	place_name	鑑真	0	1000	0	9948341	Jianzhen	鑑真
 Data/PersonName/Japan/NaraPeriod/Xuanzang.tsv	place_name	玄奘	0	1000	0	9948341	Xuanzang	玄奘
+Data/PersonName/Norway/Bjarni Herjolfsson.tsv	place_name	ビャルニ・ヘルヨールフソン	0	1000	0	9948341	Leif Erikson	ビャルニ・ヘルヨールフソン
+Data/PersonName/Norway/Gunnbjorn Ulfsson.tsv	place_name	グンビョルン・ウルヴソン	0	1000	0	9948341	Leif Erikson	グンビョルン・ウルヴソン
+Data/PersonName/Norway/Snaebjorn galti.tsv	place_name	スネーブヨルン・ガルティ	0	1000	0	9948341	Leif Erikson	スネーブヨルン・ガルティ
+Data/PersonName/Norway/Thorfinn Karlsefni.tsv	place_name	ソルフィン・カルルセフニ	0	1000	0	9948341	Leif Erikson	ソルフィン・カルルセフニ
+Data/PersonName/Norway/Thorvald Eiriksson.tsv	place_name	ソーヴァル・エイリークソン	0	1000	0	9948341	Leif Erikson	ソーヴァル・エイリークソン
+Data/PersonName/Norway/Leif Erikson.tsv	place_name	レイフ・エリクソン	0	1000	0	9948341	Leif Erikson	レイフ・エリクソン
+Data/PersonName/Norway/Erik the Red.tsv	place_name	赤毛のエイリーク	0	1000	0	9948341	Leif Erikson	赤毛のエイリーク
