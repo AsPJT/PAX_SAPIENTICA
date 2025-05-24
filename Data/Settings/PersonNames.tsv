@@ -1,4 +1,11 @@
 ﻿file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture	ja-JP
+Data/PersonName/Maya/Kinich Kan Bahlam II.tsv	place_name	キニッチ・カン・バフラム2世	0	1000	0	9948341	Pakal	キニッチ・カン・バフラム2世
+Data/PersonName/Maya/Balaj Chan Kawiil.tsv	place_name	バラフ・チャン・カウィール	0	1000	0	9948341	Pakal	バラフ・チャン・カウィール
+Data/PersonName/Maya/Chan Imix Kawiil.tsv	place_name	チャン・イミックス・カウィール	0	1000	0	9948341	Pakal	チャン・イミックス・カウィール
+Data/PersonName/Maya/Itzam Kan Ahk I.tsv	place_name	イツァム・カン・アック1世	0	1000	0	9948341	Pakal	イツァム・カン・アック1世
+Data/PersonName/Maya/Jasaw Chan Kawiil I.tsv	place_name	ジャソー・チャン・カウィール1世	0	1000	0	9948341	Pakal	ジャソー・チャン・カウィール1世
+Data/PersonName/Maya/Kinich Yonal Ahk I.tsv	place_name	キニッチ・ヨナル・アフ1世	0	1000	0	9948341	Pakal	キニッチ・ヨナル・アフ1世
+Data/PersonName/Maya/Kinich Janaab Pakal I.tsv	place_name	キニチ・ハナーブ・パカル1世	0	1000	0	9948341	Pakal	キニチ・ハナーブ・パカル1世
 Data/PersonName/Japan/NaraPeriod/Dokyo.tsv	place_name	道鏡	0	1000	0	9948341	Unknown	道鏡
 Data/PersonName/Japan/NaraPeriod/Fujiwara no Fuhito.tsv	place_name	藤原不比等	0	1000	0	9948341	Unknown	藤原不比等
 Data/PersonName/Japan/NaraPeriod/Hikami no Shioyaki.tsv	place_name	氷上塩焼	0	1000	0	9948341	Unknown	氷上塩焼
@@ -57,6 +64,8 @@ Data/PersonName/Japan/NaraPeriod/Anan ben David.tsv	place_name	アナン・ベ�
 Data/PersonName/Japan/NaraPeriod/Huang_Shaoqing.tsv	place_name	黃少卿	0	1000	0	9948341	Unknown	黃少卿
 Data/PersonName/Japan/NaraPeriod/Haribhadra.tsv	place_name	ハリバドラ	0	1000	0	9948341	Unknown	ハリバドラ
 Data/PersonName/Japan/NaraPeriod/Dugu_Qieluo.tsv	place_name	獨孤伽羅	0	1000	0	9948341	Unknown	獨孤伽羅
+Data/PersonName/Japan/NaraPeriod/Shima of Kalingga.tsv	place_name	カリンガのシーマ	0	1000	0	9948341	Unknown	カリンガのシーマ
+Data/PersonName/Japan/NaraPeriod/Kahina.tsv	place_name	カヒナ	0	1000	0	9948341	Unknown	カヒナ
 Data/PersonName/Japan/NaraPeriod/Isidore of Seville.tsv	place_name	イシドールス	0	1000	0	9948341	Unknown	イシドールス
 Data/PersonName/Japan/NaraPeriod/Peroz III.tsv	place_name	卑路斯	0	1000	0	9948341	Unknown	卑路斯
 Data/PersonName/Europe/Byzantine/7th century/Valentinus.tsv	place_name	ヴァレンティヌス	0	1000	0	9948341	Unknown	ヴァレンティヌス
