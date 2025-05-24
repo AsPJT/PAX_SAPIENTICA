@@ -1,4 +1,4 @@
-# PAX SAPIENTICA [![CMake-All-Build](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml) [![CMake-Unit-Test](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml)
+﻿# PAX SAPIENTICA [![CMake-All-Build](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-all-build.yml) [![CMake-Unit-Test](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml/badge.svg)](https://github.com/AsPJT/PAX_SAPIENTICA/actions/workflows/cmake-unit-test.yml)
 
 ![PAX SAPIENTICA Logo](./Images/Logo/TitleBanner4.svg)
 
@@ -53,6 +53,8 @@ Ancient human bone mtDNA data registered as of December 21, 2023.
 This software allows you to visualize and move historical figures.
 
 ![PAX SAPIENTICA Movement](./Images/Animation/Person01.gif)
+
+![PAX SAPIENTICA Movement](./Images/Animation/Person02.gif)
 
 ## 📍 Distributions
 
