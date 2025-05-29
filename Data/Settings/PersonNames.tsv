@@ -57,7 +57,6 @@ Data/PersonName/Europe/England/7th century/Penda of Mercia.tsv	place_name	???	0	
 Data/PersonName/Europe/England/7th century/Saebbi of Essex.tsv	place_name	???	0	1000	0	9948341	Unknown	???
 Data/PersonName/Europe/England/7th century/Wihtred of Kent.tsv	place_name	???	0	1000	0	9948341	Unknown	???
 Data/PersonName/Europe/England/7th century/Wulfhere of Mercia.tsv	place_name	???	0	1000	0	9948341	Unknown	???
-Data/PersonName/Japan/NaraPeriod/Dokyo.tsv	place_name	道鏡	0	1000	0	9948341	Unknown	道鏡
 Data/PersonName/Japan/NaraPeriod/Fujiwara no Fuhito.tsv	place_name	藤原不比等	0	1000	0	9948341	Unknown	藤原不比等
 Data/PersonName/Japan/NaraPeriod/Hikami no Shioyaki.tsv	place_name	氷上塩焼	0	1000	0	9948341	Unknown	氷上塩焼
 Data/PersonName/Japan/NaraPeriod/Hozumi no Oyu.tsv	place_name	穂積老	0	1000	0	9948341	Unknown	穂積老
@@ -129,6 +128,27 @@ Data/PersonName/Europe/Byzantine/7th century/Heraclius.tsv	place_name	ヘラク�
 Data/PersonName/West Asia/Caliphate/7th century/Khalid ibn al-Walid.tsv	place_name	ハーリド・イブン・アル＝ワリード	0	1000	0	9948341	Khalid ibn al-Walid	ハーリド・イブン・アル＝ワリード
 Data/PersonName/West Asia/Caliphate/7th century/Abd Allah ibn al-Zubayr.tsv	place_name	アブド・アッラー・イブン・アル＝ズバイル	0	1000	0	9948341	Khalid ibn al-Walid	アブド・アッラー・イブン・アル＝ズバイル
 Data/PersonName/West Asia/Caliphate/7th century/Abd al-Rahman ibn Abi Bakr.tsv	place_name	アブド・アル＝ラフマーン・イブン・アビ・バクル	0	1000	0	9948341	Khalid ibn al-Walid	アブド・アル＝ラフマーン・イブン・アビ・バクル
+Data/PersonName/Europe/Lombard/7th century/Adaloald.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/Lombard/7th century/Agilulf.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/Lombard/7th century/Grimoald.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/Lombard/7th century/Rodoald.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/Lombard/7th century/Rothari.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/Lombard/7th century/Theodelinda.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/Lombard/7th century/Ansprand.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/Lombard/7th century/Gisulf II of Friuli.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/Lombard/7th century/Gundeberga.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/7th century/Sigebert III.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/7th century/Asparuh of Bulgaria.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/7th century/Khosrow II.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/8th century/Pope Adrian I.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/8th century/Saint Baudolino.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Japan/NaraPeriod/Dokyo.tsv	place_name	道鏡	0	1000	0	9948341	Unknown	道鏡
+Data/PersonName/Europe/8th century/Gaubald.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/East Asia/8th century/Kim Daeseong.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/Europe/8th century/Pope Paul I.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/East Asia/8th century/Shitou Xiqian.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/East Asia/8th century/Wang Jin.tsv	place_name	???	0	1000	0	9948341	Unknown	???
+Data/PersonName/West Asia/8th century/Wasil ibn Ata.tsv	place_name	???	0	1000	0	9948341	Unknown	???
 Data/PersonName/Kusaila.tsv	place_name	クサイラ	0	1000	0	9948341	Unknown	クサイラ
 Data/PersonName/Japan/NaraPeriod/Shima of Kalingga.tsv	place_name	カリンガのシーマ	0	1000	0	9948341	Shima of Kalingga	カリンガのシーマ
 Data/PersonName/Japan/NaraPeriod/Kahina.tsv	place_name	カヒナ	0	1000	0	9948341	Kahina	カヒナ
