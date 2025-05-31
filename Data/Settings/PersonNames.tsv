@@ -1,11 +1,66 @@
 ﻿file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture	ja-JP
-Data/PersonName/Maya/Kinich Kan Bahlam II.tsv	place_name	キニッチ・カン・バフラム2世	0	1000	0	9948341	Pakal	キニッチ・カン・バフラム2世
-Data/PersonName/Maya/Balaj Chan Kawiil.tsv	place_name	バラフ・チャン・カウィール	0	1000	0	9948341	Pakal	バラフ・チャン・カウィール
-Data/PersonName/Maya/Chan Imix Kawiil.tsv	place_name	チャン・イミックス・カウィール	0	1000	0	9948341	Pakal	チャン・イミックス・カウィール
-Data/PersonName/Maya/Itzam Kan Ahk I.tsv	place_name	イツァム・カン・アック1世	0	1000	0	9948341	Pakal	イツァム・カン・アック1世
-Data/PersonName/Maya/Jasaw Chan Kawiil I.tsv	place_name	ジャソー・チャン・カウィール1世	0	1000	0	9948341	Pakal	ジャソー・チャン・カウィール1世
-Data/PersonName/Maya/Kinich Yonal Ahk I.tsv	place_name	キニッチ・ヨナル・アフ1世	0	1000	0	9948341	Pakal	キニッチ・ヨナル・アフ1世
-Data/PersonName/Maya/Kinich Janaab Pakal I.tsv	place_name	キニチ・ハナーブ・パカル1世	0	1000	0	9948341	Pakal	キニチ・ハナーブ・パカル1世
+Data/PersonName/Maya/1st century/Yax Ehb Xook.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/3rd century/Animal Headdress.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/3rd century/Foliated Jaguar.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/4th century/Atlatl Cauac.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/4th century/Chak Tok Ichaak I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/4th century/Kinich Muwaan Jol.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/4th century/Sihyaj Chan Kawiil I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/4th century/Siyaj Kak.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/4th century/Te Kab Chaak.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/4th century/Unen Bahlam.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/4th century/Yax Nuun Ahiin I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Casper.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Chak Tok Ichaak II.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Kahk Ujol Kinich I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Kan Ahk I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Kan Ahk II.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Kan Chitam.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Kinich Popol Hol.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Kinich Yax Kuk Mo.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Ku Ix.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Kuk Bahlam I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Muyal Jol.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Ruler 3.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Ruler 5.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Ruler X.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Sihyaj Chan Kawiil II.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Tok Casper.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Tutuum Yohl Kinich.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Yajaw Te Kinich I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/5th century/Yax Nuun Ahiin I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Animal Skull.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Balam Nehn.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Bird Claw.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Butz Aj Sak Chiik.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Kaloomte Bahlam.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Kan Bahlam I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Kan Joy Chitam I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Scroll Serpent.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Sak-Lu.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Piedras Negras Ruler C.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Ahkal Mo Nahb II.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Ahkal Mo Nahb I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Lady of Tikal.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Kan I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Kak Chan Yopaat.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Knot Ajaw.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Tzi-Balam.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Tuun Kab Hix.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Sky Witness.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Yajaw Te Kinich II.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Wil Ohl Kinich.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Wak Chan Kawiil.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Yuknoom Cheen I.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Yohl Iknal.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/6th century/Yax Yopaat.tsv	place_name	???	0	1000	0	9948341	Pakal	???
+Data/PersonName/Maya/7th century/Kinich Kan Bahlam II.tsv	place_name	キニッチ・カン・バフラム2世	0	1000	0	9948341	Pakal	キニッチ・カン・バフラム2世
+Data/PersonName/Maya/7th century/Balaj Chan Kawiil.tsv	place_name	バラフ・チャン・カウィール	0	1000	0	9948341	Pakal	バラフ・チャン・カウィール
+Data/PersonName/Maya/7th century/Chan Imix Kawiil.tsv	place_name	チャン・イミックス・カウィール	0	1000	0	9948341	Pakal	チャン・イミックス・カウィール
+Data/PersonName/Maya/7th century/Itzam Kan Ahk I.tsv	place_name	イツァム・カン・アック1世	0	1000	0	9948341	Pakal	イツァム・カン・アック1世
+Data/PersonName/Maya/7th century/Jasaw Chan Kawiil I.tsv	place_name	ジャソー・チャン・カウィール1世	0	1000	0	9948341	Pakal	ジャソー・チャン・カウィール1世
+Data/PersonName/Maya/7th century/Kinich Yonal Ahk I.tsv	place_name	キニッチ・ヨナル・アフ1世	0	1000	0	9948341	Pakal	キニッチ・ヨナル・アフ1世
+Data/PersonName/Maya/7th century/Kinich Janaab Pakal I.tsv	place_name	キニチ・ハナーブ・パカル1世	0	1000	0	9948341	Pakal	キニチ・ハナーブ・パカル1世
 Data/PersonName/Europe/Scotland/7th century/Adomnan.tsv	place_name	???	0	1000	0	9948341	Unknown	???
 Data/PersonName/Europe/Scotland/7th century/Aebbe of Coldingham.tsv	place_name	???	0	1000	0	9948341	Unknown	???
 Data/PersonName/Europe/Scotland/7th century/Molaise of Leighlin.tsv	place_name	???	0	1000	0	9948341	Unknown	???
