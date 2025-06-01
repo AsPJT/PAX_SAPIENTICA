@@ -221,7 +221,7 @@ namespace paxs {
             const std::uint_least32_t ja_jp_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t en_us_language = MurMur3::calcHash("en-US");
 
-            const std::unordered_map<std::uint_least32_t, paxg::Texture> texture = key_value_tsv.get();
+            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture = key_value_tsv.get();
 
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& person_location_list = location_point_list_list[h].person_location_list;

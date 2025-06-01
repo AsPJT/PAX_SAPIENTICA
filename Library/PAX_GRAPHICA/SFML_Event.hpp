@@ -44,16 +44,16 @@ namespace paxg {
         }
 
 #if defined(PAXS_USING_SFML)
-        float wheel_delta = 0;
+        float wheel_delta = 0.0f;
         bool update(sf::RenderWindow& window) {
-            wheel_delta = 0;
+            wheel_delta = 0.0f;
             sf::FloatRect visibleArea;
 
             // 新しいポーリングメカニズム
             while (const auto& poll_event = window.pollEvent()) {
                 if (poll_event->is<sf::Event::Closed>()) return false; // 終了シグナル
                 else if (const auto* mouseWheelScrolled = poll_event->getIf<sf::Event::MouseWheelScrolled>()) {
-                    wheel_delta = mouseWheelScrolled->delta; // 特定のイベント構造体からdeltaにアクセス
+                    wheel_delta = -(mouseWheelScrolled->delta); // 特定のイベント構造体からdeltaにアクセス
                 }
                 else if (const auto* resized = poll_event->getIf<sf::Event::Resized>()) {
                     // resized->size (sf::Vector2u型) から新しい幅と高さをアクセス

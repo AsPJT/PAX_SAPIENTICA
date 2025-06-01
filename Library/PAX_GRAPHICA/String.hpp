@@ -278,6 +278,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y() - size / 2) });
             paxg::Window::window.draw(text);
         }
@@ -289,6 +291,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x), static_cast<float>(pos.y() + size / 2) });
             paxg::Window::window.draw(text);
         }
@@ -300,6 +304,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y()) });
             paxg::Window::window.draw(text);
         }
@@ -311,6 +317,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y() - size / 2) });
             paxg::Window::window.draw(text);
         }
@@ -322,6 +330,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y() + size / 2) });
             paxg::Window::window.draw(text);
         }
@@ -333,6 +343,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y()) });
             paxg::Window::window.draw(text);
         }

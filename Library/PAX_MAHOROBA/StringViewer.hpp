@@ -633,9 +633,9 @@ MurMur3::calcHash("ain")
                             (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::string(koyomi_siv.month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
-
-                            if (i == 1) (*big_year_font).drawTopRight(std::to_string(date_year)/* + " AD"*/, paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x + 100-70), static_cast<int>(550-30 + koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
-
+                            if (simulator == nullptr) {
+                                if (i == 1) (*big_year_font).drawTopRight(std::to_string(date_year)/* + " AD"*/, paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x + 100 - 70), static_cast<int>(550 - 30 + koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+                            }
 
                             if (date_lm) {
                                 (*one_font).drawTopRight("int.", paxg::Vec2i(static_cast<int>((
@@ -913,9 +913,11 @@ MurMur3::calcHash("ain")
 
             // メニューバー
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
-#ifdef PAXS_USING_SIMULATOR
-            if (simulator == nullptr) {
-                paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(simulation_pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
+#ifdef PAXS_USING_SIMULATOR            // シミュレーションのボタン
+            if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
+                if (simulator == nullptr) {
+                    paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(simulation_pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
+                }
             }
 #endif
 
@@ -929,8 +931,11 @@ MurMur3::calcHash("ain")
             }
 #endif
 #ifdef PAXS_USING_SIMULATOR
-            if (simulator == nullptr) {
-                simulation_pulldown.draw(); // シミュレーション選択
+            // シミュレーションのボタン
+            if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
+                if (simulator == nullptr) {
+                    simulation_pulldown.draw(); // シミュレーション選択
+                }
             }
 #endif
             pulldown.draw(); // 言語選択
