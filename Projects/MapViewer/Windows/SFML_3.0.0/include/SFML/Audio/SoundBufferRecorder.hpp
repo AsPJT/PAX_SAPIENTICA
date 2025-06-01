@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2023 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -22,16 +22,20 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_SOUNDBUFFERRECORDER_HPP
-#define SFML_SOUNDBUFFERRECORDER_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Audio/Export.hpp>
+
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Audio/SoundRecorder.hpp>
+
 #include <vector>
+
+#include <cstddef>
+#include <cstdint>
 
 
 namespace sf
@@ -44,12 +48,11 @@ namespace sf
 class SFML_AUDIO_API SoundBufferRecorder : public SoundRecorder
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// \brief destructor
     ///
     ////////////////////////////////////////////////////////////
-    ~SoundBufferRecorder();
+    ~SoundBufferRecorder() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the sound buffer containing the captured audio data
@@ -62,17 +65,16 @@ public:
     /// \return Read-only access to the sound buffer
     ///
     ////////////////////////////////////////////////////////////
-    const SoundBuffer& getBuffer() const;
+    [[nodiscard]] const SoundBuffer& getBuffer() const;
 
 protected:
-
     ////////////////////////////////////////////////////////////
     /// \brief Start capturing audio data
     ///
-    /// \return True to start the capture, or false to abort it
+    /// \return `true` to start the capture, or `false` to abort it
     ///
     ////////////////////////////////////////////////////////////
-    virtual bool onStart();
+    [[nodiscard]] bool onStart() override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Process a new chunk of recorded samples
@@ -80,45 +82,42 @@ protected:
     /// \param samples     Pointer to the new chunk of recorded samples
     /// \param sampleCount Number of samples pointed by \a samples
     ///
-    /// \return True to continue the capture, or false to stop it
+    /// \return `true` to continue the capture, or `false` to stop it
     ///
     ////////////////////////////////////////////////////////////
-    virtual bool onProcessSamples(const Int16* samples, std::size_t sampleCount);
+    [[nodiscard]] bool onProcessSamples(const std::int16_t* samples, std::size_t sampleCount) override;
 
     ////////////////////////////////////////////////////////////
     /// \brief Stop capturing audio data
     ///
     ////////////////////////////////////////////////////////////
-    virtual void onStop();
+    void onStop() override;
 
 private:
-
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    std::vector<Int16> m_samples; //!< Temporary sample buffer to hold the recorded data
-    SoundBuffer        m_buffer;  //!< Sound buffer that will contain the recorded data
+    std::vector<std::int16_t> m_samples; //!< Temporary sample buffer to hold the recorded data
+    SoundBuffer               m_buffer;  //!< Sound buffer that will contain the recorded data
 };
 
 } // namespace sf
-
-#endif // SFML_SOUNDBUFFERRECORDER_HPP
 
 
 ////////////////////////////////////////////////////////////
 /// \class sf::SoundBufferRecorder
 /// \ingroup audio
 ///
-/// sf::SoundBufferRecorder allows to access a recorded sound
-/// through a sf::SoundBuffer, so that it can be played, saved
+/// `sf::SoundBufferRecorder` allows to access a recorded sound
+/// through a `sf::SoundBuffer`, so that it can be played, saved
 /// to a file, etc.
 ///
-/// It has the same simple interface as its base class (start(), stop())
+/// It has the same simple interface as its base class (`start()`, `stop()`)
 /// and adds a function to retrieve the recorded sound buffer
-/// (getBuffer()).
+/// (`getBuffer()`).
 ///
-/// As usual, don't forget to call the isAvailable() function
-/// before using this class (see sf::SoundRecorder for more details
+/// As usual, don't forget to call the `isAvailable()` function
+/// before using this class (see `sf::SoundRecorder` for more details
 /// about this).
 ///
 /// Usage example:
@@ -127,7 +126,10 @@ private:
 /// {
 ///     // Record some audio data
 ///     sf::SoundBufferRecorder recorder;
-///     recorder.start();
+///     if (!recorder.start())
+///     {
+///         // Handle error...
+///     }
 ///     ...
 ///     recorder.stop();
 ///
@@ -135,10 +137,13 @@ private:
 ///     const sf::SoundBuffer& buffer = recorder.getBuffer();
 ///
 ///     // Save it to a file (for example...)
-///     buffer.saveToFile("my_record.ogg");
+///     if (!buffer.saveToFile("my_record.ogg"))
+///     {
+///         // Handle error...
+///     }
 /// }
 /// \endcode
 ///
-/// \see sf::SoundRecorder
+/// \see `sf::SoundRecorder`
 ///
 ////////////////////////////////////////////////////////////

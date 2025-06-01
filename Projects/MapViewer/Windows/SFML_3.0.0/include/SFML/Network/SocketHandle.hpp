@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2023 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -22,8 +22,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_SOCKETHANDLE_HPP
-#define SFML_SOCKETHANDLE_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////
 // Headers
@@ -31,27 +30,23 @@
 #include <SFML/Config.hpp>
 
 #if defined(SFML_SYSTEM_WINDOWS)
-    #include <basetsd.h>
+#include <basetsd.h>
 #endif
 
 
 namespace sf
 {
 ////////////////////////////////////////////////////////////
-// Define the low-level socket handle type, specific to
-// each platform
+// Low-level socket handle type, specific to each platform
 ////////////////////////////////////////////////////////////
 #if defined(SFML_SYSTEM_WINDOWS)
 
-    typedef UINT_PTR SocketHandle;
+using SocketHandle = UINT_PTR;
 
 #else
 
-    typedef int SocketHandle;
+using SocketHandle = int;
 
 #endif
 
 } // namespace sf
-
-
-#endif // SFML_SOCKETHANDLE_HPP

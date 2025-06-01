@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2023 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -22,16 +22,20 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_UDPSOCKET_HPP
-#define SFML_UDPSOCKET_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Network/Export.hpp>
-#include <SFML/Network/Socket.hpp>
+
 #include <SFML/Network/IpAddress.hpp>
+#include <SFML/Network/Socket.hpp>
+
+#include <optional>
 #include <vector>
+
+#include <cstddef>
 
 
 namespace sf
@@ -45,14 +49,11 @@ class Packet;
 class SFML_NETWORK_API UdpSocket : public Socket
 {
 public:
-
     ////////////////////////////////////////////////////////////
     // Constants
     ////////////////////////////////////////////////////////////
-    enum
-    {
-        MaxDatagramSize = 65507 //!< The maximum number of bytes that can be sent in a single UDP datagram
-    };
+    // NOLINTNEXTLINE(readability-identifier-naming)
+    static constexpr std::size_t MaxDatagramSize{65507}; //!< The maximum number of bytes that can be sent in a single UDP datagram
 
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
@@ -68,10 +69,10 @@ public:
     ///
     /// \return Port to which the socket is bound
     ///
-    /// \see bind
+    /// \see `bind`
     ///
     ////////////////////////////////////////////////////////////
-    unsigned short getLocalPort() const;
+    [[nodiscard]] unsigned short getLocalPort() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Bind the socket to a specific port
@@ -79,9 +80,9 @@ public:
     /// Binding the socket to a port is necessary for being
     /// able to receive data on that port.
     ///
-    /// When providing sf::Socket::AnyPort as port, the listener
+    /// When providing `sf::Socket::AnyPort` as port, the listener
     /// will request an available port from the system.
-    /// The chosen port can be retrieved by calling getLocalPort().
+    /// The chosen port can be retrieved by calling `getLocalPort()`.
     ///
     /// Since the socket can only be bound to a single port at
     /// any given moment, if it is already bound when this
@@ -93,21 +94,21 @@ public:
     ///
     /// \return Status code
     ///
-    /// \see unbind, getLocalPort
+    /// \see `unbind`, `getLocalPort`
     ///
     ////////////////////////////////////////////////////////////
-    Status bind(unsigned short port, const IpAddress& address = IpAddress::Any);
+    [[nodiscard]] Status bind(unsigned short port, IpAddress address = IpAddress::Any);
 
     ////////////////////////////////////////////////////////////
     /// \brief Unbind the socket from the local port to which it is bound
     ///
     /// The port that the socket was previously bound to is immediately
     /// made available to the operating system after this function is called.
-    /// This means that a subsequent call to bind() will be able to re-bind
+    /// This means that a subsequent call to `bind()` will be able to re-bind
     /// the port if no other process has done so in the mean time.
     /// If the socket is not bound to a port, this function has no effect.
     ///
-    /// \see bind
+    /// \see `bind`
     ///
     ////////////////////////////////////////////////////////////
     void unbind();
@@ -115,8 +116,8 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Send raw data to a remote peer
     ///
-    /// Make sure that \a size is not greater than
-    /// UdpSocket::MaxDatagramSize, otherwise this function will
+    /// Make sure that `size` is not greater than
+    /// `UdpSocket::MaxDatagramSize`, otherwise this function will
     /// fail and no data will be sent.
     ///
     /// \param data          Pointer to the sequence of bytes to send
@@ -126,10 +127,10 @@ public:
     ///
     /// \return Status code
     ///
-    /// \see receive
+    /// \see `receive`
     ///
     ////////////////////////////////////////////////////////////
-    Status send(const void* data, std::size_t size, const IpAddress& remoteAddress, unsigned short remotePort);
+    [[nodiscard]] Status send(const void* data, std::size_t size, IpAddress remoteAddress, unsigned short remotePort);
 
     ////////////////////////////////////////////////////////////
     /// \brief Receive raw data from a remote peer
@@ -149,16 +150,20 @@ public:
     ///
     /// \return Status code
     ///
-    /// \see send
+    /// \see `send`
     ///
     ////////////////////////////////////////////////////////////
-    Status receive(void* data, std::size_t size, std::size_t& received, IpAddress& remoteAddress, unsigned short& remotePort);
+    [[nodiscard]] Status receive(void*                     data,
+                                 std::size_t               size,
+                                 std::size_t&              received,
+                                 std::optional<IpAddress>& remoteAddress,
+                                 unsigned short&           remotePort);
 
     ////////////////////////////////////////////////////////////
     /// \brief Send a formatted packet of data to a remote peer
     ///
     /// Make sure that the packet size is not greater than
-    /// UdpSocket::MaxDatagramSize, otherwise this function will
+    /// `UdpSocket::MaxDatagramSize`, otherwise this function will
     /// fail and no data will be sent.
     ///
     /// \param packet        Packet to send
@@ -167,10 +172,10 @@ public:
     ///
     /// \return Status code
     ///
-    /// \see receive
+    /// \see `receive`
     ///
     ////////////////////////////////////////////////////////////
-    Status send(Packet& packet, const IpAddress& remoteAddress, unsigned short remotePort);
+    [[nodiscard]] Status send(Packet& packet, IpAddress remoteAddress, unsigned short remotePort);
 
     ////////////////////////////////////////////////////////////
     /// \brief Receive a formatted packet of data from a remote peer
@@ -184,23 +189,19 @@ public:
     ///
     /// \return Status code
     ///
-    /// \see send
+    /// \see `send`
     ///
     ////////////////////////////////////////////////////////////
-    Status receive(Packet& packet, IpAddress& remoteAddress, unsigned short& remotePort);
+    [[nodiscard]] Status receive(Packet& packet, std::optional<IpAddress>& remoteAddress, unsigned short& remotePort);
 
 private:
-
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    std::vector<char> m_buffer; //!< Temporary buffer holding the received data in Receive(Packet)
+    std::vector<std::byte> m_buffer{MaxDatagramSize}; //!< Temporary buffer holding the received data in Receive(Packet)
 };
 
 } // namespace sf
-
-
-#endif // SFML_UDPSOCKET_HPP
 
 
 ////////////////////////////////////////////////////////////
@@ -212,7 +213,7 @@ private:
 /// it can send to and receive from any host at any time.
 ///
 /// It is a datagram protocol: bounded blocks of data (datagrams)
-/// are transfered over the network rather than a continuous
+/// are transferred over the network rather than a continuous
 /// stream of data (TCP). Therefore, one call to send will always
 /// match one call to receive (if the datagram is not lost),
 /// with the same data that was sent.
@@ -229,13 +230,13 @@ private:
 /// Sending and receiving data can use either the low-level
 /// or the high-level functions. The low-level functions
 /// process a raw sequence of bytes, whereas the high-level
-/// interface uses packets (see sf::Packet), which are easier
+/// interface uses packets (see `sf::Packet`), which are easier
 /// to use and provide more safety regarding the data that is
-/// exchanged. You can look at the sf::Packet class to get
+/// exchanged. You can look at the `sf::Packet` class to get
 /// more details about how they work.
 ///
-/// It is important to note that UdpSocket is unable to send
-/// datagrams bigger than MaxDatagramSize. In this case, it
+/// It is important to note that `UdpSocket` is unable to send
+/// datagrams bigger than `MaxDatagramSize`. In this case, it
 /// returns an error and doesn't send anything. This applies
 /// to both raw data and packets. Indeed, even packets are
 /// unable to split and recompose data, due to the unreliability
@@ -261,12 +262,12 @@ private:
 /// socket.send(message.c_str(), message.size() + 1, "192.168.1.50", 55002);
 ///
 /// // Receive an answer (most likely from 192.168.1.50, but could be anyone else)
-/// char buffer[1024];
+/// std::array<char, 1024> buffer;
 /// std::size_t received = 0;
-/// sf::IpAddress sender;
+/// std::optional<sf::IpAddress> sender;
 /// unsigned short port;
-/// socket.receive(buffer, sizeof(buffer), received, sender, port);
-/// std::cout << sender.ToString() << " said: " << buffer << std::endl;
+/// if (socket.receive(buffer.data(), buffer.size(), received, sender, port) == sf::Socket::Status::Done)
+///     std::cout << sender->toString() << " said: " << buffer.data() << std::endl;
 ///
 /// // ----- The server -----
 ///
@@ -275,18 +276,18 @@ private:
 /// socket.bind(55002);
 ///
 /// // Receive a message from anyone
-/// char buffer[1024];
+/// std::array<char, 1024> buffer;
 /// std::size_t received = 0;
-/// sf::IpAddress sender;
+/// std::optional<sf::IpAddress> sender;
 /// unsigned short port;
-/// socket.receive(buffer, sizeof(buffer), received, sender, port);
-/// std::cout << sender.ToString() << " said: " << buffer << std::endl;
+/// if (socket.receive(buffer.data(), buffer.size(), received, sender, port) == sf::Socket::Status::Done)
+///     std::cout << sender->toString() << " said: " << buffer.data() << std::endl;
 ///
 /// // Send an answer
 /// std::string message = "Welcome " + sender.toString();
 /// socket.send(message.c_str(), message.size() + 1, sender, port);
 /// \endcode
 ///
-/// \see sf::Socket, sf::TcpSocket, sf::Packet
+/// \see `sf::Socket`, `sf::TcpSocket`, `sf::Packet`
 ///
 ////////////////////////////////////////////////////////////

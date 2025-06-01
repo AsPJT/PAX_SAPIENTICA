@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2023 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -22,35 +22,30 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_SOCKET_HPP
-#define SFML_SOCKET_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Network/Export.hpp>
+
 #include <SFML/Network/SocketHandle.hpp>
-#include <SFML/System/NonCopyable.hpp>
-#include <vector>
 
 
 namespace sf
 {
-class SocketSelector;
-
 ////////////////////////////////////////////////////////////
 /// \brief Base class for all the socket types
 ///
 ////////////////////////////////////////////////////////////
-class SFML_NETWORK_API Socket : NonCopyable
+class SFML_NETWORK_API Socket
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// \brief Status codes that may be returned by socket functions
     ///
     ////////////////////////////////////////////////////////////
-    enum Status
+    enum class Status
     {
         Done,         //!< The socket has sent / received the data
         NotReady,     //!< The socket is not ready to send / receive data yet
@@ -63,18 +58,38 @@ public:
     /// \brief Some special values used by sockets
     ///
     ////////////////////////////////////////////////////////////
-    enum
-    {
-        AnyPort = 0 //!< Special value that tells the system to pick any available port
-    };
-
-public:
+    // NOLINTNEXTLINE(readability-identifier-naming)
+    static constexpr unsigned short AnyPort{0}; //!< Special value that tells the system to pick any available port
 
     ////////////////////////////////////////////////////////////
     /// \brief Destructor
     ///
     ////////////////////////////////////////////////////////////
     virtual ~Socket();
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Deleted copy constructor
+    ///
+    ////////////////////////////////////////////////////////////
+    Socket(const Socket&) = delete;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Deleted copy assignment
+    ///
+    ////////////////////////////////////////////////////////////
+    Socket& operator=(const Socket&) = delete;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Move constructor
+    ///
+    ////////////////////////////////////////////////////////////
+    Socket(Socket&& socket) noexcept;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Move assignment
+    ///
+    ////////////////////////////////////////////////////////////
+    Socket& operator=(Socket&& socket) noexcept;
 
     ////////////////////////////////////////////////////////////
     /// \brief Set the blocking state of the socket
@@ -88,9 +103,9 @@ public:
     /// available or not.
     /// By default, all sockets are blocking.
     ///
-    /// \param blocking True to set the socket as blocking, false for non-blocking
+    /// \param blocking `true` to set the socket as blocking, `false` for non-blocking
     ///
-    /// \see isBlocking
+    /// \see `isBlocking`
     ///
     ////////////////////////////////////////////////////////////
     void setBlocking(bool blocking);
@@ -98,20 +113,19 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Tell whether the socket is in blocking or non-blocking mode
     ///
-    /// \return True if the socket is blocking, false otherwise
+    /// \return `true` if the socket is blocking, `false` otherwise
     ///
-    /// \see setBlocking
+    /// \see `setBlocking`
     ///
     ////////////////////////////////////////////////////////////
-    bool isBlocking() const;
+    [[nodiscard]] bool isBlocking() const;
 
 protected:
-
     ////////////////////////////////////////////////////////////
     /// \brief Types of protocols that the socket can use
     ///
     ////////////////////////////////////////////////////////////
-    enum Type
+    enum class Type
     {
         Tcp, //!< TCP protocol
         Udp  //!< UDP protocol
@@ -125,7 +139,7 @@ protected:
     /// \param type Type of the socket (TCP or UDP)
     ///
     ////////////////////////////////////////////////////////////
-    Socket(Type type);
+    explicit Socket(Type type);
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the internal handle of the socket
@@ -137,7 +151,7 @@ protected:
     /// \return The internal (OS-specific) handle of the socket
     ///
     ////////////////////////////////////////////////////////////
-    SocketHandle getHandle() const;
+    [[nodiscard]] SocketHandle getNativeHandle() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Create the internal representation of the socket
@@ -167,21 +181,17 @@ protected:
     void close();
 
 private:
-
     friend class SocketSelector;
 
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    Type         m_type;       //!< Type of the socket (TCP or UDP)
-    SocketHandle m_socket;     //!< Socket descriptor
-    bool         m_isBlocking; //!< Current blocking mode of the socket
+    Type         m_type;             //!< Type of the socket (TCP or UDP)
+    SocketHandle m_socket;           //!< Socket descriptor
+    bool         m_isBlocking{true}; //!< Current blocking mode of the socket
 };
 
 } // namespace sf
-
-
-#endif // SFML_SOCKET_HPP
 
 
 ////////////////////////////////////////////////////////////
@@ -205,7 +215,7 @@ private:
 /// In non-blocking mode, all the socket functions will
 /// return immediately. If the socket is not ready to complete
 /// the requested operation, the function simply returns
-/// the proper status code (Socket::NotReady).
+/// the proper status code (`Socket::Status::NotReady`).
 ///
 /// The default mode, which is blocking, is the one that is
 /// generally used, in combination with threads or selectors.
@@ -214,6 +224,6 @@ private:
 /// the socket often enough, and cannot afford blocking
 /// this loop.
 ///
-/// \see sf::TcpListener, sf::TcpSocket, sf::UdpSocket
+/// \see `sf::TcpListener`, `sf::TcpSocket`, `sf::UdpSocket`
 ///
 ////////////////////////////////////////////////////////////

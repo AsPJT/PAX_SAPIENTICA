@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2023 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -22,14 +22,18 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_INPUTSTREAM_HPP
-#define SFML_INPUTSTREAM_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Config.hpp>
+
 #include <SFML/System/Export.hpp>
+
+#include <optional>
+
+#include <cstdint>
 
 
 namespace sf
@@ -41,12 +45,11 @@ namespace sf
 class SFML_SYSTEM_API InputStream
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// \brief Virtual destructor
     ///
     ////////////////////////////////////////////////////////////
-    virtual ~InputStream() {}
+    virtual ~InputStream() = default;
 
     ////////////////////////////////////////////////////////////
     /// \brief Read data from the stream
@@ -57,42 +60,39 @@ public:
     /// \param data Buffer where to copy the read data
     /// \param size Desired number of bytes to read
     ///
-    /// \return The number of bytes actually read, or -1 on error
+    /// \return The number of bytes actually read, or `std::nullopt` on error
     ///
     ////////////////////////////////////////////////////////////
-    virtual Int64 read(void* data, Int64 size) = 0;
+    [[nodiscard]] virtual std::optional<std::size_t> read(void* data, std::size_t size) = 0;
 
     ////////////////////////////////////////////////////////////
     /// \brief Change the current reading position
     ///
     /// \param position The position to seek to, from the beginning
     ///
-    /// \return The position actually sought to, or -1 on error
+    /// \return The position actually sought to, or `std::nullopt` on error
     ///
     ////////////////////////////////////////////////////////////
-    virtual Int64 seek(Int64 position) = 0;
+    [[nodiscard]] virtual std::optional<std::size_t> seek(std::size_t position) = 0;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the current reading position in the stream
     ///
-    /// \return The current position, or -1 on error.
+    /// \return The current position, or `std::nullopt` on error.
     ///
     ////////////////////////////////////////////////////////////
-    virtual Int64 tell() = 0;
+    [[nodiscard]] virtual std::optional<std::size_t> tell() = 0;
 
     ////////////////////////////////////////////////////////////
     /// \brief Return the size of the stream
     ///
-    /// \return The total number of bytes available in the stream, or -1 on error
+    /// \return The total number of bytes available in the stream, or `std::nullopt` on error
     ///
     ////////////////////////////////////////////////////////////
-    virtual Int64 getSize() = 0;
+    virtual std::optional<std::size_t> getSize() = 0;
 };
 
 } // namespace sf
-
-
-#endif // SFML_INPUTSTREAM_HPP
 
 
 ////////////////////////////////////////////////////////////
@@ -102,13 +102,13 @@ public:
 /// This class allows users to define their own file input sources
 /// from which SFML can load resources.
 ///
-/// SFML resource classes like sf::Texture and
-/// sf::SoundBuffer provide loadFromFile and loadFromMemory functions,
+/// SFML resource classes like `sf::Texture` and
+/// `sf::SoundBuffer` provide `loadFromFile` and `loadFromMemory` functions,
 /// which read data from conventional sources. However, if you
 /// have data coming from a different source (over a network,
 /// embedded, encrypted, compressed, etc) you can derive your
-/// own class from sf::InputStream and load SFML resources with
-/// their loadFromStream function.
+/// own class from `sf::InputStream` and load SFML resources with
+/// their `loadFromStream` function.
 ///
 /// Usage example:
 /// \code
@@ -117,17 +117,17 @@ public:
 /// {
 /// public:
 ///
-///     ZipStream(std::string archive);
+///     ZipStream(const std::string& archive);
 ///
-///     bool open(std::string filename);
+///     [[nodiscard]] bool open(const std::filesystem::path& filename);
 ///
-///     Int64 read(void* data, Int64 size);
+///     [[nodiscard]] std::optional<std::size_t> read(void* data, std::size_t size);
 ///
-///     Int64 seek(Int64 position);
+///     [[nodiscard]] std::optional<std::size_t> seek(std::size_t position);
 ///
-///     Int64 tell();
+///     [[nodiscard]] std::optional<std::size_t> tell();
 ///
-///     Int64 getSize();
+///     std::optional<std::size_t> getSize();
 ///
 /// private:
 ///
@@ -135,18 +135,32 @@ public:
 /// };
 ///
 /// // now you can load textures...
-/// sf::Texture texture;
 /// ZipStream stream("resources.zip");
-/// stream.open("images/img.png");
-/// texture.loadFromStream(stream);
+///
+/// if (!stream.open("images/img.png"))
+/// {
+///     // Handle error...
+/// }
+///
+/// const sf::Texture texture(stream);
 ///
 /// // musics...
 /// sf::Music music;
 /// ZipStream stream("resources.zip");
-/// stream.open("musics/msc.ogg");
-/// music.openFromStream(stream);
+///
+/// if (!stream.open("musics/msc.ogg"))
+/// {
+///     // Handle error...
+/// }
+///
+/// if (!music.openFromStream(stream))
+/// {
+///     // Handle error...
+/// }
 ///
 /// // etc.
 /// \endcode
+///
+/// \see `FileInputStream`, `MemoryInputStream`
 ///
 ////////////////////////////////////////////////////////////

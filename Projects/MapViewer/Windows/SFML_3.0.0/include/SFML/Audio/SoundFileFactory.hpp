@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2023 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -22,15 +22,18 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_SOUNDFILEFACTORY_HPP
-#define SFML_SOUNDFILEFACTORY_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Audio/Export.hpp>
-#include <string>
-#include <vector>
+
+#include <filesystem>
+#include <memory>
+#include <unordered_map>
+
+#include <cstddef>
 
 
 namespace sf
@@ -46,11 +49,10 @@ class SoundFileWriter;
 class SFML_AUDIO_API SoundFileFactory
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// \brief Register a new reader
     ///
-    /// \see unregisterReader
+    /// \see `unregisterReader`
     ///
     ////////////////////////////////////////////////////////////
     template <typename T>
@@ -59,16 +61,23 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Unregister a reader
     ///
-    /// \see registerReader
+    /// \see `registerReader`
     ///
     ////////////////////////////////////////////////////////////
     template <typename T>
     static void unregisterReader();
 
     ////////////////////////////////////////////////////////////
+    /// \brief Check if a reader is registered
+    ///
+    ////////////////////////////////////////////////////////////
+    template <typename T>
+    [[nodiscard]] static bool isReaderRegistered();
+
+    ////////////////////////////////////////////////////////////
     /// \brief Register a new writer
     ///
-    /// \see unregisterWriter
+    /// \see `unregisterWriter`
     ///
     ////////////////////////////////////////////////////////////
     template <typename T>
@@ -77,98 +86,89 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Unregister a writer
     ///
-    /// \see registerWriter
+    /// \see `registerWriter`
     ///
     ////////////////////////////////////////////////////////////
     template <typename T>
     static void unregisterWriter();
 
     ////////////////////////////////////////////////////////////
-    /// \brief Instantiate the right reader for the given file on disk
+    /// \brief Check if a writer is registered
     ///
-    /// It's up to the caller to release the returned reader
+    ////////////////////////////////////////////////////////////
+    template <typename T>
+    [[nodiscard]] static bool isWriterRegistered();
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Instantiate the right reader for the given file on disk
     ///
     /// \param filename Path of the sound file
     ///
     /// \return A new sound file reader that can read the given file, or null if no reader can handle it
     ///
-    /// \see createReaderFromMemory, createReaderFromStream
+    /// \see `createReaderFromMemory`, `createReaderFromStream`
     ///
     ////////////////////////////////////////////////////////////
-    static SoundFileReader* createReaderFromFilename(const std::string& filename);
+    [[nodiscard]] static std::unique_ptr<SoundFileReader> createReaderFromFilename(const std::filesystem::path& filename);
 
     ////////////////////////////////////////////////////////////
     /// \brief Instantiate the right codec for the given file in memory
-    ///
-    /// It's up to the caller to release the returned reader
     ///
     /// \param data        Pointer to the file data in memory
     /// \param sizeInBytes Total size of the file data, in bytes
     ///
     /// \return A new sound file codec that can read the given file, or null if no codec can handle it
     ///
-    /// \see createReaderFromFilename, createReaderFromStream
+    /// \see `createReaderFromFilename`, `createReaderFromStream`
     ///
     ////////////////////////////////////////////////////////////
-    static SoundFileReader* createReaderFromMemory(const void* data, std::size_t sizeInBytes);
+    [[nodiscard]] static std::unique_ptr<SoundFileReader> createReaderFromMemory(const void* data, std::size_t sizeInBytes);
 
     ////////////////////////////////////////////////////////////
     /// \brief Instantiate the right codec for the given file in stream
-    ///
-    /// It's up to the caller to release the returned reader
     ///
     /// \param stream Source stream to read from
     ///
     /// \return A new sound file codec that can read the given file, or null if no codec can handle it
     ///
-    /// \see createReaderFromFilename, createReaderFromMemory
+    /// \see `createReaderFromFilename`, `createReaderFromMemory`
     ///
     ////////////////////////////////////////////////////////////
-    static SoundFileReader* createReaderFromStream(InputStream& stream);
+    [[nodiscard]] static std::unique_ptr<SoundFileReader> createReaderFromStream(InputStream& stream);
 
     ////////////////////////////////////////////////////////////
     /// \brief Instantiate the right writer for the given file on disk
-    ///
-    /// It's up to the caller to release the returned writer
     ///
     /// \param filename Path of the sound file
     ///
     /// \return A new sound file writer that can write given file, or null if no writer can handle it
     ///
     ////////////////////////////////////////////////////////////
-    static SoundFileWriter* createWriterFromFilename(const std::string& filename);
+    [[nodiscard]] static std::unique_ptr<SoundFileWriter> createWriterFromFilename(const std::filesystem::path& filename);
 
 private:
-
     ////////////////////////////////////////////////////////////
     // Types
     ////////////////////////////////////////////////////////////
-    struct ReaderFactory
-    {
-        bool (*check)(InputStream&);
-        SoundFileReader* (*create)();
-    };
-    typedef std::vector<ReaderFactory> ReaderFactoryArray;
+    template <typename T>
+    using CreateFnPtr = std::unique_ptr<T> (*)();
 
-    struct WriterFactory
-    {
-        bool (*check)(const std::string&);
-        SoundFileWriter* (*create)();
-    };
-    typedef std::vector<WriterFactory> WriterFactoryArray;
+    using ReaderCheckFnPtr = bool (*)(InputStream&);
+    using WriterCheckFnPtr = bool (*)(const std::filesystem::path&);
+
+    using ReaderFactoryMap = std::unordered_map<CreateFnPtr<SoundFileReader>, ReaderCheckFnPtr>;
+    using WriterFactoryMap = std::unordered_map<CreateFnPtr<SoundFileWriter>, WriterCheckFnPtr>;
 
     ////////////////////////////////////////////////////////////
-    // Static member data
+    // Static member functions
     ////////////////////////////////////////////////////////////
-    static ReaderFactoryArray s_readers; //!< List of all registered readers
-    static WriterFactoryArray s_writers; //!< List of all registered writers
+    [[nodiscard]] static ReaderFactoryMap& getReaderFactoryMap();
+    [[nodiscard]] static WriterFactoryMap& getWriterFactoryMap();
 };
 
 } // namespace sf
 
 #include <SFML/Audio/SoundFileFactory.inl>
-
-#endif // SFML_SOUNDFILEFACTORY_HPP
 
 
 ////////////////////////////////////////////////////////////
@@ -178,20 +178,23 @@ private:
 /// This class is where all the sound file readers and writers are
 /// registered. You should normally only need to use its registration
 /// and unregistration functions; readers/writers creation and manipulation
-/// are wrapped into the higher-level classes sf::InputSoundFile and
-/// sf::OutputSoundFile.
+/// are wrapped into the higher-level classes `sf::InputSoundFile` and
+/// `sf::OutputSoundFile`.
 ///
-/// To register a new reader (writer) use the sf::SoundFileFactory::registerReader
-/// (registerWriter) static function. You don't have to call the unregisterReader
-/// (unregisterWriter) function, unless you want to unregister a format before your
+/// To register a new reader (writer) use the `sf::SoundFileFactory::registerReader`
+/// (`registerWriter`) static function. You don't have to call the `unregisterReader`
+/// (`unregisterWriter`) function, unless you want to unregister a format before your
 /// application ends (typically, when a plugin is unloaded).
 ///
 /// Usage example:
 /// \code
 /// sf::SoundFileFactory::registerReader<MySoundFileReader>();
+/// assert(sf::SoundFileFactory::isReaderRegistered<MySoundFileReader>());
+///
 /// sf::SoundFileFactory::registerWriter<MySoundFileWriter>();
+/// assert(sf::SoundFileFactory::isWriterRegistered<MySoundFileWriter>());
 /// \endcode
 ///
-/// \see sf::InputSoundFile, sf::OutputSoundFile, sf::SoundFileReader, sf::SoundFileWriter
+/// \see `sf::InputSoundFile`, `sf::OutputSoundFile`, `sf::SoundFileReader`, `sf::SoundFileWriter`
 ///
 ////////////////////////////////////////////////////////////

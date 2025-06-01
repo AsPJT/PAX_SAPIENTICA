@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2023 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -22,18 +22,23 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef SFML_SOUNDBUFFER_HPP
-#define SFML_SOUNDBUFFER_HPP
+#pragma once
 
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
 #include <SFML/Audio/Export.hpp>
-#include <SFML/Audio/AlResource.hpp>
+
+#include <SFML/Audio/SoundChannel.hpp>
+
 #include <SFML/System/Time.hpp>
-#include <string>
+
+#include <filesystem>
+#include <unordered_set>
 #include <vector>
-#include <set>
+
+#include <cstddef>
+#include <cstdint>
 
 
 namespace sf
@@ -46,15 +51,17 @@ class InputStream;
 /// \brief Storage for audio samples defining a sound
 ///
 ////////////////////////////////////////////////////////////
-class SFML_AUDIO_API SoundBuffer : AlResource
+class SFML_AUDIO_API SoundBuffer
 {
 public:
-
     ////////////////////////////////////////////////////////////
     /// \brief Default constructor
     ///
+    /// Construct an empty sound buffer that does not contain
+    /// any samples.
+    ///
     ////////////////////////////////////////////////////////////
-    SoundBuffer();
+    SoundBuffer() = default;
 
     ////////////////////////////////////////////////////////////
     /// \brief Copy constructor
@@ -65,6 +72,74 @@ public:
     SoundBuffer(const SoundBuffer& copy);
 
     ////////////////////////////////////////////////////////////
+    /// \brief Construct the sound buffer from a file
+    ///
+    /// See the documentation of `sf::InputSoundFile` for the list
+    /// of supported formats.
+    ///
+    /// \param filename Path of the sound file to load
+    ///
+    /// \throws sf::Exception if loading was unsuccessful
+    ///
+    /// \see `loadFromMemory`, `loadFromStream`, `loadFromSamples`, `saveToFile`
+    ///
+    ////////////////////////////////////////////////////////////
+    explicit SoundBuffer(const std::filesystem::path& filename);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Construct the sound buffer from a file in memory
+    ///
+    /// See the documentation of `sf::InputSoundFile` for the list
+    /// of supported formats.
+    ///
+    /// \param data        Pointer to the file data in memory
+    /// \param sizeInBytes Size of the data to load, in bytes
+    ///
+    /// \throws sf::Exception if loading was unsuccessful
+    ///
+    /// \see `loadFromFile`, `loadFromStream`, `loadFromSamples`
+    ///
+    ////////////////////////////////////////////////////////////
+    SoundBuffer(const void* data, std::size_t sizeInBytes);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Construct the sound buffer from a custom stream
+    ///
+    /// See the documentation of `sf::InputSoundFile` for the list
+    /// of supported formats.
+    ///
+    /// \param stream Source stream to read from
+    ///
+    /// \throws sf::Exception if loading was unsuccessful
+    ///
+    /// \see `loadFromFile`, `loadFromMemory`, `loadFromSamples`
+    ///
+    ////////////////////////////////////////////////////////////
+    explicit SoundBuffer(InputStream& stream);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Construct the sound buffer from an array of audio samples
+    ///
+    /// The assumed format of the audio samples is 16 bit signed integer.
+    ///
+    /// \param samples      Pointer to the array of samples in memory
+    /// \param sampleCount  Number of samples in the array
+    /// \param channelCount Number of channels (1 = mono, 2 = stereo, ...)
+    /// \param sampleRate   Sample rate (number of samples to play per second)
+    /// \param channelMap   Map of position in sample frame to sound channel
+    ///
+    /// \throws sf::Exception if loading was unsuccessful
+    ///
+    /// \see `loadFromFile`, `loadFromMemory`, `saveToFile`
+    ///
+    ////////////////////////////////////////////////////////////
+    SoundBuffer(const std::int16_t*              samples,
+                std::uint64_t                    sampleCount,
+                unsigned int                     channelCount,
+                unsigned int                     sampleRate,
+                const std::vector<SoundChannel>& channelMap);
+
+    ////////////////////////////////////////////////////////////
     /// \brief Destructor
     ///
     ////////////////////////////////////////////////////////////
@@ -73,108 +148,110 @@ public:
     ////////////////////////////////////////////////////////////
     /// \brief Load the sound buffer from a file
     ///
-    /// See the documentation of sf::InputSoundFile for the list
+    /// See the documentation of `sf::InputSoundFile` for the list
     /// of supported formats.
     ///
     /// \param filename Path of the sound file to load
     ///
-    /// \return True if loading succeeded, false if it failed
+    /// \return `true` if loading succeeded, `false` if it failed
     ///
-    /// \see loadFromMemory, loadFromStream, loadFromSamples, saveToFile
+    /// \see `loadFromMemory`, `loadFromStream`, `loadFromSamples`, `saveToFile`
     ///
     ////////////////////////////////////////////////////////////
-    bool loadFromFile(const std::string& filename);
+    [[nodiscard]] bool loadFromFile(const std::filesystem::path& filename);
 
     ////////////////////////////////////////////////////////////
     /// \brief Load the sound buffer from a file in memory
     ///
-    /// See the documentation of sf::InputSoundFile for the list
+    /// See the documentation of `sf::InputSoundFile` for the list
     /// of supported formats.
     ///
     /// \param data        Pointer to the file data in memory
     /// \param sizeInBytes Size of the data to load, in bytes
     ///
-    /// \return True if loading succeeded, false if it failed
+    /// \return `true` if loading succeeded, `false` if it failed
     ///
-    /// \see loadFromFile, loadFromStream, loadFromSamples
+    /// \see `loadFromFile`, `loadFromStream`, `loadFromSamples`
     ///
     ////////////////////////////////////////////////////////////
-    bool loadFromMemory(const void* data, std::size_t sizeInBytes);
+    [[nodiscard]] bool loadFromMemory(const void* data, std::size_t sizeInBytes);
 
     ////////////////////////////////////////////////////////////
     /// \brief Load the sound buffer from a custom stream
     ///
-    /// See the documentation of sf::InputSoundFile for the list
+    /// See the documentation of `sf::InputSoundFile` for the list
     /// of supported formats.
     ///
     /// \param stream Source stream to read from
     ///
-    /// \return True if loading succeeded, false if it failed
+    /// \return `true` if loading succeeded, `false` if it failed
     ///
-    /// \see loadFromFile, loadFromMemory, loadFromSamples
+    /// \see `loadFromFile`, `loadFromMemory`, `loadFromSamples`
     ///
     ////////////////////////////////////////////////////////////
-    bool loadFromStream(InputStream& stream);
+    [[nodiscard]] bool loadFromStream(InputStream& stream);
 
     ////////////////////////////////////////////////////////////
     /// \brief Load the sound buffer from an array of audio samples
     ///
-    /// The assumed format of the audio samples is 16 bits signed integer
-    /// (sf::Int16).
+    /// The assumed format of the audio samples is 16 bit signed integer.
     ///
     /// \param samples      Pointer to the array of samples in memory
     /// \param sampleCount  Number of samples in the array
     /// \param channelCount Number of channels (1 = mono, 2 = stereo, ...)
     /// \param sampleRate   Sample rate (number of samples to play per second)
+    /// \param channelMap   Map of position in sample frame to sound channel
     ///
-    /// \return True if loading succeeded, false if it failed
+    /// \return `true` if loading succeeded, `false` if it failed
     ///
-    /// \see loadFromFile, loadFromMemory, saveToFile
+    /// \see `loadFromFile`, `loadFromMemory`, `saveToFile`
     ///
     ////////////////////////////////////////////////////////////
-    bool loadFromSamples(const Int16* samples, Uint64 sampleCount, unsigned int channelCount, unsigned int sampleRate);
+    [[nodiscard]] bool loadFromSamples(const std::int16_t*              samples,
+                                       std::uint64_t                    sampleCount,
+                                       unsigned int                     channelCount,
+                                       unsigned int                     sampleRate,
+                                       const std::vector<SoundChannel>& channelMap);
 
     ////////////////////////////////////////////////////////////
     /// \brief Save the sound buffer to an audio file
     ///
-    /// See the documentation of sf::OutputSoundFile for the list
+    /// See the documentation of `sf::OutputSoundFile` for the list
     /// of supported formats.
     ///
     /// \param filename Path of the sound file to write
     ///
-    /// \return True if saving succeeded, false if it failed
-    ///
-    /// \see loadFromFile, loadFromMemory, loadFromSamples
+    /// \return `true` if saving succeeded, `false` if it failed
     ///
     ////////////////////////////////////////////////////////////
-    bool saveToFile(const std::string& filename) const;
+    [[nodiscard]] bool saveToFile(const std::filesystem::path& filename) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the array of audio samples stored in the buffer
     ///
-    /// The format of the returned samples is 16 bits signed integer
-    /// (sf::Int16). The total number of samples in this array
-    /// is given by the getSampleCount() function.
+    /// The format of the returned samples is 16 bit signed integer.
+    /// The total number of samples in this array is given by the
+    /// `getSampleCount()` function.
     ///
     /// \return Read-only pointer to the array of sound samples
     ///
-    /// \see getSampleCount
+    /// \see `getSampleCount`
     ///
     ////////////////////////////////////////////////////////////
-    const Int16* getSamples() const;
+    [[nodiscard]] const std::int16_t* getSamples() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the number of samples stored in the buffer
     ///
-    /// The array of samples can be accessed with the getSamples()
+    /// The array of samples can be accessed with the `getSamples()`
     /// function.
     ///
     /// \return Number of samples
     ///
-    /// \see getSamples
+    /// \see `getSamples`
     ///
     ////////////////////////////////////////////////////////////
-    Uint64 getSampleCount() const;
+    [[nodiscard]] std::uint64_t getSampleCount() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the sample rate of the sound
@@ -185,10 +262,10 @@ public:
     ///
     /// \return Sample rate (number of samples per second)
     ///
-    /// \see getChannelCount, getDuration
+    /// \see `getChannelCount`, `getChannelMap`, `getDuration`
     ///
     ////////////////////////////////////////////////////////////
-    unsigned int getSampleRate() const;
+    [[nodiscard]] unsigned int getSampleRate() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the number of channels used by the sound
@@ -198,20 +275,33 @@ public:
     ///
     /// \return Number of channels
     ///
-    /// \see getSampleRate, getDuration
+    /// \see `getSampleRate`, `getChannelMap`, `getDuration`
     ///
     ////////////////////////////////////////////////////////////
-    unsigned int getChannelCount() const;
+    [[nodiscard]] unsigned int getChannelCount() const;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Get the map of position in sample frame to sound channel
+    ///
+    /// This is used to map a sample in the sample stream to a
+    /// position during spatialization.
+    ///
+    /// \return Map of position in sample frame to sound channel
+    ///
+    /// \see `getSampleRate`, `getChannelCount`, `getDuration`
+    ///
+    ////////////////////////////////////////////////////////////
+    [[nodiscard]] std::vector<SoundChannel> getChannelMap() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Get the total duration of the sound
     ///
     /// \return Sound duration
     ///
-    /// \see getSampleRate, getChannelCount
+    /// \see `getSampleRate`, `getChannelCount`, `getChannelMap`
     ///
     ////////////////////////////////////////////////////////////
-    Time getDuration() const;
+    [[nodiscard]] Time getDuration() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Overload of assignment operator
@@ -221,10 +311,9 @@ public:
     /// \return Reference to self
     ///
     ////////////////////////////////////////////////////////////
-    SoundBuffer& operator =(const SoundBuffer& right);
+    SoundBuffer& operator=(const SoundBuffer& right);
 
 private:
-
     friend class Sound;
 
     ////////////////////////////////////////////////////////////
@@ -232,21 +321,22 @@ private:
     ///
     /// \param file Sound file providing access to the new loaded sound
     ///
-    /// \return True on successful initialization, false on failure
+    /// \return `true` on successful initialization, `false` on failure
     ///
     ////////////////////////////////////////////////////////////
-    bool initialize(InputSoundFile& file);
+    [[nodiscard]] bool initialize(InputSoundFile& file);
 
     ////////////////////////////////////////////////////////////
     /// \brief Update the internal buffer with the cached audio samples
     ///
     /// \param channelCount Number of channels
     /// \param sampleRate   Sample rate (number of samples per second)
+    /// \param channelMap   Map of position in sample frame to sound channel
     ///
-    /// \return True on success, false if any error happened
+    /// \return `true` on success, `false` if any error happened
     ///
     ////////////////////////////////////////////////////////////
-    bool update(unsigned int channelCount, unsigned int sampleRate);
+    [[nodiscard]] bool update(unsigned int channelCount, unsigned int sampleRate, const std::vector<SoundChannel>& channelMap);
 
     ////////////////////////////////////////////////////////////
     /// \brief Add a sound to the list of sounds that use this buffer
@@ -267,21 +357,19 @@ private:
     ////////////////////////////////////////////////////////////
     // Types
     ////////////////////////////////////////////////////////////
-    typedef std::set<Sound*> SoundList; //!< Set of unique sound instances
+    using SoundList = std::unordered_set<Sound*>; //!< Set of unique sound instances
 
     ////////////////////////////////////////////////////////////
     // Member data
     ////////////////////////////////////////////////////////////
-    unsigned int       m_buffer;   //!< OpenAL buffer identifier
-    std::vector<Int16> m_samples;  //!< Samples buffer
-    Time               m_duration; //!< Sound duration
-    mutable SoundList  m_sounds;   //!< List of sounds that are using this buffer
+    std::vector<std::int16_t> m_samples;                        //!< Samples buffer
+    unsigned int              m_sampleRate{44100};              //!< Number of samples per second
+    std::vector<SoundChannel> m_channelMap{SoundChannel::Mono}; //!< The map of position in sample frame to sound channel
+    Time              m_duration;                               //!< Sound duration
+    mutable SoundList m_sounds;                                 //!< List of sounds that are using this buffer
 };
 
 } // namespace sf
-
-
-#endif // SFML_SOUNDBUFFER_HPP
 
 
 ////////////////////////////////////////////////////////////
@@ -289,64 +377,75 @@ private:
 /// \ingroup audio
 ///
 /// A sound buffer holds the data of a sound, which is
-/// an array of audio samples. A sample is a 16 bits signed integer
+/// an array of audio samples. A sample is a 16 bit signed integer
 /// that defines the amplitude of the sound at a given time.
 /// The sound is then reconstituted by playing these samples at
 /// a high rate (for example, 44100 samples per second is the
 /// standard rate used for playing CDs). In short, audio samples
-/// are like texture pixels, and a sf::SoundBuffer is similar to
-/// a sf::Texture.
+/// are like texture pixels, and a `sf::SoundBuffer` is similar to
+/// a `sf::Texture`.
 ///
-/// A sound buffer can be loaded from a file (see loadFromFile()
-/// for the complete list of supported formats), from memory, from
-/// a custom stream (see sf::InputStream) or directly from an array
+/// A sound buffer can be loaded from a file, from memory, from
+/// a custom stream (see `sf::InputStream`) or directly from an array
 /// of samples. It can also be saved back to a file.
 ///
 /// Sound buffers alone are not very useful: they hold the audio data
-/// but cannot be played. To do so, you need to use the sf::Sound class,
+/// but cannot be played. To do so, you need to use the `sf::Sound` class,
 /// which provides functions to play/pause/stop the sound as well as
 /// changing the way it is outputted (volume, pitch, 3D position, ...).
 /// This separation allows more flexibility and better performances:
-/// indeed a sf::SoundBuffer is a heavy resource, and any operation on it
+/// indeed a `sf::SoundBuffer` is a heavy resource, and any operation on it
 /// is slow (often too slow for real-time applications). On the other
-/// side, a sf::Sound is a lightweight object, which can use the audio data
+/// side, a `sf::Sound` is a lightweight object, which can use the audio data
 /// of a sound buffer and change the way it is played without actually
 /// modifying that data. Note that it is also possible to bind
-/// several sf::Sound instances to the same sf::SoundBuffer.
+/// several `sf::Sound` instances to the same `sf::SoundBuffer`.
 ///
-/// It is important to note that the sf::Sound instance doesn't
+/// It is important to note that the `sf::Sound` instance doesn't
 /// copy the buffer that it uses, it only keeps a reference to it.
-/// Thus, a sf::SoundBuffer must not be destructed while it is
-/// used by a sf::Sound (i.e. never write a function that
-/// uses a local sf::SoundBuffer instance for loading a sound).
+/// Thus, a `sf::SoundBuffer` must not be destructed while it is
+/// used by a `sf::Sound` (i.e. never write a function that
+/// uses a local `sf::SoundBuffer` instance for loading a sound).
+///
+/// When loading sound samples from an array, a channel map needs to be
+/// provided, which specifies the mapping of the position in the sample frame
+/// to the sound channel. For example when you have six samples in a frame and
+/// a 5.1 sound system, the channel map defines how each of those samples map
+/// to which speaker channel.
 ///
 /// Usage example:
 /// \code
-/// // Declare a new sound buffer
-/// sf::SoundBuffer buffer;
+/// // Load a new sound buffer from a file
+/// const sf::SoundBuffer buffer("sound.wav");
 ///
-/// // Load it from a file
-/// if (!buffer.loadFromFile("sound.wav"))
-/// {
-///     // error...
-/// }
-///
-/// // Create a sound source and bind it to the buffer
-/// sf::Sound sound1;
-/// sound1.setBuffer(buffer);
+/// // Create a sound source bound to the buffer
+/// sf::Sound sound1(buffer);
 ///
 /// // Play the sound
 /// sound1.play();
 ///
 /// // Create another sound source bound to the same buffer
-/// sf::Sound sound2;
-/// sound2.setBuffer(buffer);
+/// sf::Sound sound2(buffer);
 ///
 /// // Play it with a higher pitch -- the first sound remains unchanged
 /// sound2.setPitch(2);
 /// sound2.play();
+///
+/// // Load samples with a channel map
+/// auto samples = std::vector<std::int16_t>();
+/// // ...
+/// auto channelMap = std::vector<sf::SoundChannel>{
+///     sf::SoundChannel::FrontLeft,
+///     sf::SoundChannel::FrontCenter,
+///     sf::SoundChannel::FrontRight,
+///     sf::SoundChannel::BackRight,
+///     sf::SoundChannel::BackLeft,
+///     sf::SoundChannel::LowFrequencyEffects
+/// };
+/// auto soundBuffer = sf::SoundBuffer(samples.data(), samples.size(), channelMap.size(), 44100, channelMap);
+/// auto sound = sf::Sound(soundBuffer);
 /// \endcode
 ///
-/// \see sf::Sound, sf::SoundBufferRecorder
+/// \see `sf::Sound`, `sf::SoundBufferRecorder`
 ///
 ////////////////////////////////////////////////////////////
