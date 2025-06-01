@@ -251,7 +251,7 @@ namespace paxs {
             const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
 
-            const std::unordered_map<std::uint_least32_t, paxg::Texture> texture = key_value_tsv.get();
+            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture = key_value_tsv.get();
 
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& location_point_list = location_point_list_list[h].location_point_list;
@@ -713,7 +713,6 @@ namespace paxs {
             const std::vector<GridType4>& marriage_pos_list/* SFML では使わない */,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
         )/*const Siv3D Key は非 const */ {
-
             if (Key(SIV3D_KEY_1).isPressed()) select_draw = 1;
             else if (Key(SIV3D_KEY_2).isPressed()) select_draw = 2;
             else if (Key(SIV3D_KEY_3).isPressed()) select_draw = 3;
@@ -722,18 +721,6 @@ namespace paxs {
             else if (Key(SIV3D_KEY_6).isPressed()) select_draw = 6;
             else if (Key(SIV3D_KEY_L).isPressed()) is_line = (!is_line);
             else if (Key(SIV3D_KEY_K).isPressed()) is_arrow = (!is_arrow);
-
-//#ifdef PAXS_USING_SIV3D
-//            if (s3d::Key1.pressed()) select_draw = 1;
-//            else if (s3d::Key2.pressed()) select_draw = 2;
-//            else if (s3d::Key3.pressed()) select_draw = 3;
-//            else if (s3d::Key4.pressed()) select_draw = 4;
-//            else if (s3d::Key5.pressed()) select_draw = 5;
-//            else if (s3d::Key6.pressed()) select_draw = 6;
-//            // グリッド線を描画する
-//            else if (s3d::KeyL.up()) is_line = (!is_line);
-//            else if (s3d::KeyK.up()) is_arrow = (!is_arrow);
-//#endif
 
             // 地名を描画
             for (const auto& agent : agents) {

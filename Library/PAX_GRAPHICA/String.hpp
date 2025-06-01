@@ -262,7 +262,7 @@ namespace paxg {
         Font(const int size_, const std::string& path, const int /*buffer_thickness*/) {
             size = size_;
             if (path.size() == 0) return;
-            if (!font.loadFromFile(path)) {
+            if (!font.openFromFile(path)) {
                 PAXS_WARNING(path + " is missing.");
             }
         }
@@ -272,74 +272,80 @@ namespace paxg {
         }
 
         void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            sf::Text text;
-            text.setFont(font);
+            sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(static_cast<float>(pos.x()), static_cast<float>(pos.y() - size / 2));
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
+            text.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y() - size / 2) });
             paxg::Window::window.draw(text);
         }
 
         void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            sf::Text text;
-            text.setFont(font);
+            sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(static_cast<float>(pos.x() - text.getGlobalBounds().width), static_cast<float>(pos.y() + size / 2));
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
+            text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x), static_cast<float>(pos.y() + size / 2) });
             paxg::Window::window.draw(text);
         }
 
         void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            sf::Text text;
-            text.setFont(font);
+            sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(static_cast<float>(pos.x()), static_cast<float>(pos.y()));
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
+            text.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y()) });
             paxg::Window::window.draw(text);
         }
 
         void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            sf::Text text;
-            text.setFont(font);
+            sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(static_cast<float>(pos.x() - text.getGlobalBounds().width / 2), static_cast<float>(pos.y() - size / 2));
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
+            text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y() - size / 2) });
             paxg::Window::window.draw(text);
         }
 
         void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            sf::Text text;
-            text.setFont(font);
+            sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(static_cast<float>(pos.x() - text.getGlobalBounds().width / 2), static_cast<float>(pos.y() + size / 2));
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
+            text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y() + size / 2) });
             paxg::Window::window.draw(text);
         }
 
         void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            sf::Text text;
-            text.setFont(font);
+            sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color.color);
-            text.setPosition(static_cast<float>(pos.x() - text.getGlobalBounds().width / 2), static_cast<float>(pos.y()));
+            text.setOutlineColor(sf::Color::White);
+            text.setOutlineThickness(2.0f);
+            text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y()) });
             paxg::Window::window.draw(text);
         }
 
@@ -348,14 +354,13 @@ namespace paxg {
         }
 
         int width(const std::string& str_) {
-            sf::Text text;
-            text.setFont(font);
+            sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str_.begin(), str_.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
 
-            return static_cast<int>(text.getGlobalBounds().width);
+            return static_cast<int>(text.getGlobalBounds().size.x);
             // return str_.size() * size * 0.5;
         }
 

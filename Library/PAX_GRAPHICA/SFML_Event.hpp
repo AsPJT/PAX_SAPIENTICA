@@ -34,9 +34,6 @@ namespace paxg {
     // 実行時定数
     class SFML_Event {
     private:
-#if defined(PAXS_USING_SFML)
-    sf::Event ev;
-#endif
     public:
         // インスタンスを取得
         static SFML_Event* getInstance() {
@@ -47,44 +44,33 @@ namespace paxg {
         }
 
 #if defined(PAXS_USING_SFML)
-        float wheel_delta = 0;
+        float wheel_delta = 0.0f;
         bool update(sf::RenderWindow& window) {
-            wheel_delta = 0;
+            wheel_delta = 0.0f;
             sf::FloatRect visibleArea;
-            while (window.pollEvent(ev))
-            {
-                switch (ev.type) {
-                case sf::Event::Closed:
-                    return false;
-                case sf::Event::MouseWheelMoved:
-                    wheel_delta = static_cast<float>(ev.mouseWheel.delta);
-                    break;
-                case sf::Event::Resized:
-                    visibleArea = sf::FloatRect(0, 0, static_cast<float>(ev.size.width), static_cast<float>(ev.size.height));
-                    window.setView(sf::View(visibleArea));
-                    break;
-                default:
-                    break;
+
+            // 新しいポーリングメカニズム
+            while (const auto& poll_event = window.pollEvent()) {
+                if (poll_event->is<sf::Event::Closed>()) return false; // 終了シグナル
+                else if (const auto* mouseWheelScrolled = poll_event->getIf<sf::Event::MouseWheelScrolled>()) {
+                    wheel_delta = -(mouseWheelScrolled->delta); // 特定のイベント構造体からdeltaにアクセス
+                }
+                else if (const auto* resized = poll_event->getIf<sf::Event::Resized>()) {
+                    // resized->size (sf::Vector2u型) から新しい幅と高さをアクセス
+                    // sf::FloatRectのコンストラクタは {位置}, {サイズ} を取る
+                    sf::FloatRect visibleAreaUpdate({ 0.f, 0.f },
+                        { static_cast<float>(resized->size.x), static_cast<float>(resized->size.y) });
+                    // sf::View(sf::FloatRect) コンストラクタは引き続き利用可能
+                    window.setView(sf::View(visibleAreaUpdate));
                 }
             }
             return true;
-        }
-        sf::Event& getEvent() {
-            return ev;
         }
 #endif
 
     private:
         static SFML_Event* instance;
-
-#if defined(PAXS_USING_SFML)
-        SFML_Event() {
-
-        }
-#else
         SFML_Event() = default;
-#endif
-
         ~SFML_Event() {
             delete instance;
         }

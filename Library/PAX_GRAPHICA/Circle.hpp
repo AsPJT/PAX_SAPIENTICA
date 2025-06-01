@@ -49,7 +49,7 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
             SFML_Circle::getInstance()->circle.setRadius(r);
-            SFML_Circle::getInstance()->circle.setPosition(x, y);
+            SFML_Circle::getInstance()->circle.setPosition({ x, y });
             Window::window.draw(SFML_Circle::getInstance()->circle);
 #endif
         }
@@ -67,7 +67,7 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
         void draw(const paxg::Color& c_) const {
             SFML_Circle::getInstance()->circle.setRadius(r);
-            SFML_Circle::getInstance()->circle.setPosition(x, y);
+            SFML_Circle::getInstance()->circle.setPosition({ x, y });
 
             SFML_Circle::getInstance()->circle.setFillColor(c_.color);
             Window::window.draw(SFML_Circle::getInstance()->circle);

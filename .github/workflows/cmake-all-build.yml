@@ -31,7 +31,7 @@ jobs:
       run: |
         sudo apt-get clean
         sudo apt-get update
-        sudo apt-get install -y ninja-build libsfml-dev cmake
+        sudo apt-get install -y ninja-build cmake
 
     - name: Configure CMake
       run: |

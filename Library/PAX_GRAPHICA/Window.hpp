@@ -37,7 +37,7 @@ namespace paxg {
 
     namespace Window {
 #ifdef PAXS_USING_SFML
-        sf::RenderWindow window(sf::VideoMode(1280, 720), "PAX SAPIENTICA Library");
+        sf::RenderWindow window(sf::VideoMode({ 1280, 720 }), "PAX SAPIENTICA Library");
         paxg::Color backgroundColor = paxg::Color(140, 180, 250);
 #endif // PAXS_USING_SFML
 
@@ -61,8 +61,8 @@ namespace paxg {
 #endif
         }
 #elif defined(PAXS_USING_SFML)
-        void Init(int width, int height, const std::string& title) {
-            window.create(sf::VideoMode(width, height), title);
+        void Init(int width_, int height_, const std::string& title) {
+            window.create(sf::VideoMode({ static_cast<unsigned int>(width_), static_cast<unsigned int>(height_) }, 24), title);
         }
 #else
         void Init(int, int, const std::string&) {}
@@ -283,7 +283,7 @@ namespace paxg {
             sf::Image icon;
             if (!icon.loadFromFile(path))
                 return;
-            window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+            window.setIcon({ icon.getSize().x, icon.getSize().y }, icon.getPixelsPtr());
         }
 #else
         void setIcon(const std::string&) {}
@@ -340,8 +340,7 @@ namespace paxg {
             if (!image.loadFromFile(path))
                 return;
 
-            sf::Cursor cursor;
-            cursor.loadFromPixels(image.getPixelsPtr(), image.getSize(), sf::Vector2u(0, 0));
+            sf::Cursor cursor(image.getPixelsPtr(), image.getSize(), sf::Vector2u(0, 0));
             window.setMouseCursor(cursor);
         }
 #else
