@@ -633,7 +633,11 @@ MurMur3::calcHash("ain")
                             (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::string(koyomi_siv.month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+#ifdef PAXS_USING_SIMULATOR
                             if (simulator == nullptr) {
+#else
+                            {
+#endif
                                 if (i == 1) (*big_year_font).drawTopRight(std::to_string(date_year)/* + " AD"*/, paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x + 100 - 70), static_cast<int>(550 - 30 + koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             }
 
