@@ -25,6 +25,7 @@
 #endif
 
 #include <PAX_GRAPHICA/String.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 
 namespace paxg {
 
@@ -37,7 +38,11 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
         sf::Image image;
-        Image(const paxg::String& path) { image.loadFromFile(path.string); }
+        Image(const paxg::String& path) {
+            if (!image.loadFromFile(path.string)) {
+                PAXS_WARNING("Failed to load image: " + path.string);
+            }
+        }
         operator sf::Image() const { return image; }
 #else
         constexpr Image([[maybe_unused]] const paxg::String& path) {}

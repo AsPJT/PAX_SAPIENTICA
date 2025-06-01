@@ -69,7 +69,9 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
         sf::Texture texture{};
         Texture(const paxg::Image& image) {
-            texture.loadFromImage(image);
+            if (!texture.loadFromImage(image)) {
+                PAXS_WARNING("Failed to load image");
+            }
         }
         Texture(const paxg::String& path) {
             // svgの場合は読み込めないので、pngに拡張子を変換する
