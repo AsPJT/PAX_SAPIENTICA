@@ -49,8 +49,6 @@ find_package(SFML 3.0 COMPONENTS Graphics)
 
 if(SFML_FOUND)
     include_directories(${SFML_ROOT_DIR}/include)
-else()
-    message(FATAL_ERROR "SFML not found. Please install SFML 3.0 or set SFML_ROOT_DIR correctly.")
 endif()
 
 add_subdirectory(IncludeTest)
