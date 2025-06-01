@@ -45,7 +45,7 @@ if(WIN32 OR APPLE)
 elseif(UNIX)
     set(SFML_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/MapViewer/${OS}/SFML")
 endif()
-find_package(SFML 3.0 COMPONENTS Graphics Window System)
+find_package(SFML 3.0 COMPONENTS Graphics)
 
 if(SFML_FOUND)
     include_directories(${SFML_ROOT_DIR}/include)
