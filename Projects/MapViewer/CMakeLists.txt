@@ -3,17 +3,6 @@ project(MapViewer)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# os
-if(APPLE)
-    set(OS "macOS")
-elseif(UNIX)
-    set(OS "Ubuntu")
-elseif(WIN32)
-    set(OS "Windows")
-else()
-    message(FATAL_ERROR "Unsupported OS")
-endif()
-
 set(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
 include_directories(
@@ -28,7 +17,7 @@ set(PAXS_BUILD_TYPE "Development" CACHE STRING "Choose the type of build (Develo
 
 if(WIN32)
     if(PAXS_BUILD_TYPE STREQUAL "Development")
-        set(BINARY_NAME "SFMLMapviewer")
+        set(BINARY_NAME "SFMLMapViewer")
         add_definitions(-DPAXS_DEVELOPMENT)
     elseif(PAXS_BUILD_TYPE STREQUAL "Production")
         set(BINARY_NAME "PAX_SAPIENTICA")
@@ -49,11 +38,10 @@ if(WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy ${SFML_DLLS} ${DESTINATION_DIR}
     )
 elseif(PAXS_BUILD_TYPE STREQUAL "Development")
-    find_package(SFML 2.5 COMPONENTS graphics)
-    set(BINARY_NAME "SFMLMapviewer")
+    set(BINARY_NAME "SFMLMapViewer")
     if(SFML_FOUND)
         if(APPLE)
-            set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/Main.cpp")
+            set(CPP_FILE "${SFML_ROOT_DIR}/Main.cpp")
         else()
             set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML/Main.cpp")
         endif()
