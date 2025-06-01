@@ -48,7 +48,6 @@ endif()
 find_package(SFML 3.0 COMPONENTS Graphics Window System)
 
 if(SFML_FOUND)
-    add_definitions(-DPAXS_USING_SFML)
     include_directories(${SFML_ROOT_DIR}/include)
 else()
     message(FATAL_ERROR "SFML not found. Please install SFML 3.0 or set SFML_ROOT_DIR correctly.")

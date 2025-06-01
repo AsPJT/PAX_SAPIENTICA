@@ -11,6 +11,8 @@ add_executable(EnvironmentTest Source/EnvironmentTest.cpp)
 add_executable(WindowTest Source/WindowTest.cpp)
 
 if(SFML_FOUND)
+    target_compile_definitions(WindowTest PRIVATE PAXS_USING_SFML)
+
     add_executable(SFMLTest Source/SFMLTest.cpp)
     if(WIN32 OR APPLE)
         target_link_libraries(SFMLTest PRIVATE SFML::Graphics SFML::Window SFML::System)
@@ -18,6 +20,18 @@ if(SFML_FOUND)
     elseif(UNIX)
         target_link_libraries(SFMLTest PRIVATE sfml-graphics)
         target_link_libraries(WindowTest PRIVATE sfml-graphics sfml-window sfml-system)
+    endif()
+
+    if(WIN32)
+        set(SFML_DLLS
+            "${SFML_ROOT_DIR}/sfml-graphics-2.dll"
+            "${SFML_ROOT_DIR}/sfml-window-2.dll"
+            "${SFML_ROOT_DIR}/sfml-system-2.dll"
+        )
+        add_custom_command(
+            TARGET SFMLTest POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${SFML_DLLS} ${CMAKE_CURRENT_BINARY_DIR}
+        )
     endif()
 endif()
 
