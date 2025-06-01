@@ -37,7 +37,7 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
         sf::Image image;
-        Image(const paxg::String& path) { image.loadFromFile(path); }
+        Image(const paxg::String& path) { image.loadFromFile(path.string); }
         operator sf::Image() const { return image; }
 #else
         constexpr Image([[maybe_unused]] const paxg::String& path) {}

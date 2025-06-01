@@ -602,6 +602,9 @@ MurMur3::calcHash("ain")
                         // 暦描画フォントを指定
                         paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                         if (one_font == nullptr) continue;
+                        // 年描画フォントを指定
+                        paxg::Font* big_year_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size * 3), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+                        if (big_year_font == nullptr) continue;
 
                         // 暦の読み方を返す
                         const std::string* const text_str = language_text.getStringPtr(
@@ -630,6 +633,10 @@ MurMur3::calcHash("ain")
                             (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::string(koyomi_siv.month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+
+                            if (i == 1) (*big_year_font).drawTopRight(std::to_string(date_year)/* + " AD"*/, paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x + 100-70), static_cast<int>(550-30 + koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+
+
                             if (date_lm) {
                                 (*one_font).drawTopRight("int.", paxg::Vec2i(static_cast<int>((
                                     int(152 * koyomi_font_size / 30.0) + koyomi_font_en_x
@@ -980,7 +987,7 @@ MurMur3::calcHash("ain")
                         std::string sueki_tanabe = "";
 
                         static std::array<int, 18> sueki_year = { {
-                        380,390,410,430,440,450,460,470,490,500,520,530,550,560,590,620,645,670
+                        1380,1390,1410,1430,1440,1450,1460,1470,1490,1500,1520,1530,1550,1560,1590,1620,1645,1670
                         } };
                         static std::array<std::string, 18> sueki_name = { {
             "","TG232","TK73","TK216","ON46","ON46/TK208","TK208","TK23","TK23/TK47","TK47",

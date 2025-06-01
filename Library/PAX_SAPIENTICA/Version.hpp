@@ -19,7 +19,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20250518L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20250529L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [vX.a.a]

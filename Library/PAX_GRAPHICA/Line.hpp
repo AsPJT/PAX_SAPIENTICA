@@ -93,7 +93,8 @@ namespace paxg {
         void draw(const double /*thickness*/, const paxg::Color& color) {
             line[0].color = color;
             line[1].color = color;
-            Window::window.draw(line, 2, sf::Lines);
+            // SFML v3.0.0 Todo
+            //Window::window.draw(line, 2, sf::Lines);
         }
 
 #else

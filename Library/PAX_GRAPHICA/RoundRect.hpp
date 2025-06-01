@@ -81,17 +81,17 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
         sf::RectangleShape rect{};
         constexpr RoundRect() = default;
-        RoundRect(const int x, const int y, const int w, const int h) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition(static_cast<float>(x), static_cast<float>(y)); }
-        RoundRect(const int x, const int y, const int w, const int h, const int) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition(static_cast<float>(x), static_cast<float>(y)); }
-        RoundRect(const sf::Vector2i& pos, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition(static_cast<float>(pos.x), static_cast<float>(pos.y)); }
-        RoundRect(const sf::Vector2i& pos, const sf::Vector2i& size, const int) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition(static_cast<float>(pos.x), static_cast<float>(pos.y)); }
-        RoundRect(const sf::Vector2i& pos, const int w, const int h) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition(static_cast<float>(pos.x), static_cast<float>(pos.y)); }
-        RoundRect(const sf::Vector2i& pos, const int w, const int h, const int) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition(static_cast<float>(pos.x), static_cast<float>(pos.y)); }
-        RoundRect(const int x, const int y, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition(static_cast<float>(x), static_cast<float>(y)); }
-        RoundRect(const int x, const int y, const sf::Vector2i& size, const int) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition(static_cast<float>(x), static_cast<float>(y)); }
+        RoundRect(const int x, const int y, const int w, const int h) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition({ static_cast<float>(x), static_cast<float>(y) }); }
+        RoundRect(const int x, const int y, const int w, const int h, const int) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition({ static_cast<float>(x), static_cast<float>(y) }); }
+        RoundRect(const sf::Vector2i& pos, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
+        RoundRect(const sf::Vector2i& pos, const sf::Vector2i& size, const int) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
+        RoundRect(const sf::Vector2i& pos, const int w, const int h) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
+        RoundRect(const sf::Vector2i& pos, const int w, const int h, const int) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
+        RoundRect(const int x, const int y, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(x), static_cast<float>(y) }); }
+        RoundRect(const int x, const int y, const sf::Vector2i& size, const int) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(x), static_cast<float>(y) }); }
         operator sf::RectangleShape() const { return rect; }
-        void setX(const int x_) { rect.setPosition(static_cast<float>(x_), rect.getPosition().y); }
-        void setY(const int y_) { rect.setPosition(rect.getPosition().x, static_cast<float>(y_)); }
+        void setX(const int x_) { rect.setPosition({ static_cast<float>(x_), rect.getPosition().y }); }
+        void setY(const int y_) { rect.setPosition({ rect.getPosition().x, static_cast<float>(y_) }); }
         void setW(const int w_) { rect.setSize(sf::Vector2f(static_cast<float>(w_), rect.getSize().y)); }
         void setH(const int h_) { rect.setSize(sf::Vector2f(rect.getSize().x, static_cast<float>(h_))); }
         void setR(const int) {}
@@ -102,9 +102,9 @@ namespace paxg {
         int r() const { return 0; }
         Vec2i pos() const { return Vec2i(static_cast<int>(rect.getPosition().x), static_cast<int>(rect.getPosition().y)); }
         Vec2i size() const { return Vec2i(static_cast<int>(rect.getSize().x), static_cast<int>(rect.getSize().y)); }
-        void setPos(const int x_, const int y_) { rect.setPosition(static_cast<float>(x_), static_cast<float>(y_)); }
+        void setPos(const int x_, const int y_) { rect.setPosition({ static_cast<float>(x_), static_cast<float>(y_) }); }
         void setSize(const int w_, const int h_) { rect.setSize(sf::Vector2f(static_cast<float>(w_), static_cast<float>(h_))); }
-        void setPos(const Vec2i& pos_) { rect.setPosition(static_cast<float>(pos_.x()), static_cast<float>(pos_.y())); }
+        void setPos(const Vec2i& pos_) { rect.setPosition({ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()) }); }
         void setSize(const Vec2i& size_) { rect.setSize(sf::Vector2f(static_cast<float>(size_.x()), static_cast<float>(size_.y()))); }
 #else
         int x0{}, y0{}, w0{}, h0{}, r0{};
@@ -257,25 +257,25 @@ namespace paxg {
 
             sf::RectangleShape rect1(sf::Vector2f(
                 static_cast<float>(rect.getSize().x + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
-            rect1.setPosition(rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness));
+            rect1.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
             rect1.setFillColor(c_.color);
             Window::window.draw(rect1);
 
             sf::RectangleShape rect2(sf::Vector2f(
                 static_cast<float>(rect.getSize().x + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
-            rect2.setPosition(rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y + rect.getSize().y - static_cast<float>(inner_thickness));
+            rect2.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y + rect.getSize().y - static_cast<float>(inner_thickness) });
             rect2.setFillColor(c_.color);
             Window::window.draw(rect2);
 
             sf::RectangleShape rect3(sf::Vector2f(
                 static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(rect.getSize().y + outer_thickness * 2)));
-            rect3.setPosition(rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness));
+            rect3.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
             rect3.setFillColor(c_.color);
             Window::window.draw(rect3);
 
             sf::RectangleShape rect4(sf::Vector2f(
                 static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(rect.getSize().y + outer_thickness * 2)));
-            rect4.setPosition(rect.getPosition().x + static_cast<float>(rect.getSize().x - inner_thickness), rect.getPosition().y - static_cast<float>(outer_thickness));
+            rect4.setPosition({ rect.getPosition().x + static_cast<float>(rect.getSize().x - inner_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
             rect4.setFillColor(c_.color);
             Window::window.draw(rect4);
 
@@ -330,8 +330,8 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
             return rect.getGlobalBounds().contains(
-                static_cast<float>(sf::Mouse::getPosition(Window::window).x), 
-            static_cast<float>(sf::Mouse::getPosition(Window::window).y));
+                { static_cast<float>(sf::Mouse::getPosition(Window::window).x),
+            static_cast<float>(sf::Mouse::getPosition(Window::window).y) });
 
 #else
             return false;

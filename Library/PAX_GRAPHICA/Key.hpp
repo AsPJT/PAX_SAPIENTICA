@@ -42,8 +42,8 @@ namespace paxs {
         InputStruct(int key) :input(key) {}
 
 #elif defined(PAXS_USING_SFML)
-        int input{ -1 };
-        InputStruct(int key) :input(key) {}
+        sf::Keyboard::Key input{ -1 };
+        InputStruct(sf::Keyboard::Key key) :input(key) {}
 
 #endif
         bool pressed() const {
@@ -158,46 +158,46 @@ namespace paxs {
 #elif defined(PAXS_USING_SFML)
     using InputKey = InputStruct;
 
-#define SIV3D_KEY_0 InputKey{sf::Keyboard::Num0}
-#define SIV3D_KEY_1 InputKey{sf::Keyboard::Num1}
-#define SIV3D_KEY_2 InputKey{sf::Keyboard::Num2}
-#define SIV3D_KEY_3 InputKey{sf::Keyboard::Num3}
-#define SIV3D_KEY_4 InputKey{sf::Keyboard::Num4}
-#define SIV3D_KEY_5 InputKey{sf::Keyboard::Num5}
-#define SIV3D_KEY_6 InputKey{sf::Keyboard::Num6}
-#define SIV3D_KEY_7 InputKey{sf::Keyboard::Num7}
-#define SIV3D_KEY_8 InputKey{sf::Keyboard::Num8}
-#define SIV3D_KEY_9 InputKey{sf::Keyboard::Num9}
-#define SIV3D_KEY_A InputKey{sf::Keyboard::A}
-#define SIV3D_KEY_B InputKey{sf::Keyboard::B}
-#define SIV3D_KEY_C InputKey{sf::Keyboard::C}
-#define SIV3D_KEY_D InputKey{sf::Keyboard::D}
-#define SIV3D_KEY_E InputKey{sf::Keyboard::E}
-#define SIV3D_KEY_F InputKey{sf::Keyboard::F}
-#define SIV3D_KEY_G InputKey{sf::Keyboard::G}
-#define SIV3D_KEY_H InputKey{sf::Keyboard::H}
-#define SIV3D_KEY_I InputKey{sf::Keyboard::I}
-#define SIV3D_KEY_J InputKey{sf::Keyboard::J}
-#define SIV3D_KEY_K InputKey{sf::Keyboard::K}
-#define SIV3D_KEY_L InputKey{sf::Keyboard::L}
-#define SIV3D_KEY_M InputKey{sf::Keyboard::M}
-#define SIV3D_KEY_N InputKey{sf::Keyboard::N}
-#define SIV3D_KEY_O InputKey{sf::Keyboard::O}
-#define SIV3D_KEY_P InputKey{sf::Keyboard::P}
-#define SIV3D_KEY_Q InputKey{sf::Keyboard::Q}
-#define SIV3D_KEY_R InputKey{sf::Keyboard::R}
-#define SIV3D_KEY_S InputKey{sf::Keyboard::S}
-#define SIV3D_KEY_T InputKey{sf::Keyboard::T}
-#define SIV3D_KEY_U InputKey{sf::Keyboard::U}
-#define SIV3D_KEY_V InputKey{sf::Keyboard::V}
-#define SIV3D_KEY_W InputKey{sf::Keyboard::W}
-#define SIV3D_KEY_X InputKey{sf::Keyboard::X}
-#define SIV3D_KEY_Y InputKey{sf::Keyboard::Y}
-#define SIV3D_KEY_Z InputKey{sf::Keyboard::Z}
-#define SIV3D_KEY_LEFT InputKey{sf::Keyboard::Left}
-#define SIV3D_KEY_RIGHT InputKey{sf::Keyboard::Right}
-#define SIV3D_KEY_DOWN InputKey{sf::Keyboard::Down}
-#define SIV3D_KEY_UP InputKey{sf::Keyboard::Up}
+#define SIV3D_KEY_0 InputKey{sf::Keyboard::Key::Num0}
+#define SIV3D_KEY_1 InputKey{sf::Keyboard::Key::Num1}
+#define SIV3D_KEY_2 InputKey{sf::Keyboard::Key::Num2}
+#define SIV3D_KEY_3 InputKey{sf::Keyboard::Key::Num3}
+#define SIV3D_KEY_4 InputKey{sf::Keyboard::Key::Num4}
+#define SIV3D_KEY_5 InputKey{sf::Keyboard::Key::Num5}
+#define SIV3D_KEY_6 InputKey{sf::Keyboard::Key::Num6}
+#define SIV3D_KEY_7 InputKey{sf::Keyboard::Key::Num7}
+#define SIV3D_KEY_8 InputKey{sf::Keyboard::Key::Num8}
+#define SIV3D_KEY_9 InputKey{sf::Keyboard::Key::Num9}
+#define SIV3D_KEY_A InputKey{sf::Keyboard::Key::A}
+#define SIV3D_KEY_B InputKey{sf::Keyboard::Key::B}
+#define SIV3D_KEY_C InputKey{sf::Keyboard::Key::C}
+#define SIV3D_KEY_D InputKey{sf::Keyboard::Key::D}
+#define SIV3D_KEY_E InputKey{sf::Keyboard::Key::E}
+#define SIV3D_KEY_F InputKey{sf::Keyboard::Key::F}
+#define SIV3D_KEY_G InputKey{sf::Keyboard::Key::G}
+#define SIV3D_KEY_H InputKey{sf::Keyboard::Key::H}
+#define SIV3D_KEY_I InputKey{sf::Keyboard::Key::I}
+#define SIV3D_KEY_J InputKey{sf::Keyboard::Key::J}
+#define SIV3D_KEY_K InputKey{sf::Keyboard::Key::K}
+#define SIV3D_KEY_L InputKey{sf::Keyboard::Key::L}
+#define SIV3D_KEY_M InputKey{sf::Keyboard::Key::M}
+#define SIV3D_KEY_N InputKey{sf::Keyboard::Key::N}
+#define SIV3D_KEY_O InputKey{sf::Keyboard::Key::O}
+#define SIV3D_KEY_P InputKey{sf::Keyboard::Key::P}
+#define SIV3D_KEY_Q InputKey{sf::Keyboard::Key::Q}
+#define SIV3D_KEY_R InputKey{sf::Keyboard::Key::R}
+#define SIV3D_KEY_S InputKey{sf::Keyboard::Key::S}
+#define SIV3D_KEY_T InputKey{sf::Keyboard::Key::T}
+#define SIV3D_KEY_U InputKey{sf::Keyboard::Key::U}
+#define SIV3D_KEY_V InputKey{sf::Keyboard::Key::V}
+#define SIV3D_KEY_W InputKey{sf::Keyboard::Key::W}
+#define SIV3D_KEY_X InputKey{sf::Keyboard::Key::X}
+#define SIV3D_KEY_Y InputKey{sf::Keyboard::Key::Y}
+#define SIV3D_KEY_Z InputKey{sf::Keyboard::Key::Z}
+#define SIV3D_KEY_LEFT InputKey{sf::Keyboard::Key::Left}
+#define SIV3D_KEY_RIGHT InputKey{sf::Keyboard::Key::Right}
+#define SIV3D_KEY_DOWN InputKey{sf::Keyboard::Key::Down}
+#define SIV3D_KEY_UP InputKey{sf::Keyboard::Key::Up}
 
 #else
     using InputKey = InputStruct;
@@ -349,10 +349,10 @@ namespace paxs {
         // 中央の座標を指定
         Coordinate center = Coordinate(
             200.0,
-            paxs::EquirectangularDeg(paxs::Vector2<double>(146, 46)) // 韓国 128, 37 // 135, 35
+            paxs::EquirectangularDeg(paxs::Vector2<double>(/*全世界*/ 100, 0)) // 韓国 128, 37 // 日本 135, 35 // 北海道 // 東アジア 127, 31, 75.0
             //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0))
             ); // マップ座標の中央
-        double height = 16.0; // マップの高さ
+        double height = 240.0; // 各国 16.0; // マップの高さ
 
         // 平城京
         //Coordinate center = Coordinate(135.807, 37.009/*getLatitudeToMercatorY(35)*/, 200.0); // マップ座標の中央
@@ -363,7 +363,7 @@ namespace paxs {
 #ifdef PAXS_MAHOROBA
             30.0;
 #else
-            180.0;
+            240.0;
 #endif
         double min_height = 0.005; // マップの最小高さ
         double width = (height) / double(paxg::Window::height()) * double(paxg::Window::width()); // マップの高さ
