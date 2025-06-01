@@ -721,17 +721,6 @@ namespace paxs {
             else if (Key(SIV3D_KEY_6).isPressed()) select_draw = 6;
             else if (Key(SIV3D_KEY_L).isPressed()) is_line = (!is_line);
             else if (Key(SIV3D_KEY_K).isPressed()) is_arrow = (!is_arrow);
-//#ifdef PAXS_USING_SIV3D
-//            if (s3d::Key1.pressed()) select_draw = 1;
-//            else if (s3d::Key2.pressed()) select_draw = 2;
-//            else if (s3d::Key3.pressed()) select_draw = 3;
-//            else if (s3d::Key4.pressed()) select_draw = 4;
-//            else if (s3d::Key5.pressed()) select_draw = 5;
-//            else if (s3d::Key6.pressed()) select_draw = 6;
-//            // グリッド線を描画する
-//            else if (s3d::KeyL.up()) is_line = (!is_line);
-//            else if (s3d::KeyK.up()) is_arrow = (!is_arrow);
-//#endif
 
             // 地名を描画
             for (const auto& agent : agents) {
