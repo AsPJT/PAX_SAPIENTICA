@@ -24,17 +24,16 @@ endif()
 if(WIN32)
     set(CPP_FILE "${SFML_ROOT_DIR}/Main.cpp")
     add_executable(${BINARY_NAME} ${CPP_FILE})
-    target_link_directories(${BINARY_NAME} PRIVATE ${SFML_ROOT_DIR}/lib)
-    target_link_libraries(${BINARY_NAME} sfml-graphics.lib sfml-window.lib sfml-system.lib)
+    target_link_libraries(${BINARY_NAME} PRIVATE SFML::Graphics)
     set(SFML_DLLS
-        "${SFML_ROOT_DIR}/sfml-graphics-2.dll"
-        "${SFML_ROOT_DIR}/sfml-window-2.dll"
-        "${SFML_ROOT_DIR}/sfml-system-2.dll"
+        "${SFML_ROOT_DIR}/bin/sfml-graphics-d-3.dll"
+        "${SFML_ROOT_DIR}/bin/sfml-window-d-3.dll"
+        "${SFML_ROOT_DIR}/bin/sfml-system-d-3.dll"
     )
     add_custom_command(
         TARGET ${BINARY_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy ${SFML_DLLS} ${DESTINATION_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SOURCE_TSV_FILE} $<TARGET_FILE_DIR:${BINARY_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DLLS} $<TARGET_FILE_DIR:${BINARY_NAME}>
     )
 elseif(APPLE)
     set(CPP_FILE "${SFML_ROOT_DIR}/Main.cpp")
@@ -42,7 +41,7 @@ elseif(APPLE)
     target_link_libraries(${BINARY_NAME} SFML::Graphics)
     add_custom_command(
         TARGET ${BINARY_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${CMAKE_CURRENT_BINARY_DIR}
     )
 
     if(PAXS_BUILD_TYPE STREQUAL "Production")
@@ -57,7 +56,7 @@ elseif(UNIX)
     target_link_libraries(${BINARY_NAME} sfml-graphics)
     add_custom_command(
         TARGET ${BINARY_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${DESTINATION_DIR}
+        COMMAND ${CMAKE_COMMAND} -E copy ${SOURCE_TSV_FILE} ${CMAKE_CURRENT_BINARY_DIR}
     )
 endif()
 
