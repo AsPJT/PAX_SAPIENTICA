@@ -10,6 +10,10 @@ This software is PAX SAPIENTICA (abbreviated PAXS).
 PAXS is a GIS for philological, archaeological, and anthropological data.
 It has the ability to display calendars for each region in each time period and agent-based simulation.
 
+The phenomenon of history is formed by a complex interplay of time, space, and the actions of the people who lived within them. At the core of PAX SAPIENTICA lies the objective to understand and reproduce this dynamism of history. Specifically, it aims to seamlessly integrate temporal and spatial information, which is indispensable for historical research, and furthermore, to dynamically analyze history as "an accumulation of people's actions" using the agent-based simulation method.
+
+Traditional Geographic Information Systems (GIS), while adept at handling spatial information, have faced challenges in managing complex temporal information crucial for historical research, such as the concept of the time axis, calendars specific to different eras, and archaeological chronologies. Moreover, existing agent-based simulation software has not always been optimized for the specific needs of historical research, for instance, displaying and managing calendrical systems or chronological frameworks of particular periods. PAX SAPIENTICA is designed to overcome these challenges and meet the unique requirements faced by historical researchers.
+
 # List of elements supported by this software.
 
 ## 📅 Calendar
