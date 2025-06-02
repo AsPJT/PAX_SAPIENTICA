@@ -84,7 +84,7 @@ This software has both a GUI and a CUI.
 The GUI supports the following libraries
 
 * SFML (CMake)
-* [SFML v2.6.1 (.sln / for Windows)](Projects/MapViewer/Windows/SFML_2.6.1) - Available without installation
+* [SFML v3.0.0 (.sln / for Windows)](Projects/MapViewer/Windows/SFML_3.0.0) - Available without installation. The Windows version of SFML in the `PAX_SAPIENTICA/Projects/MapViewer/Windows/SFML_3.0.0` directory can run in Visual Studio 2022 (compiler is MSVC).
 * OpenSiv3D (tested with v0.6.13 & Visual Studio Community 2022 v17.8.3)
 * DxLib (tested on Windows and Android versions)
 
