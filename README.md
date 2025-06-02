@@ -56,6 +56,15 @@ Ancient human bone mtDNA data registered as of December 21, 2023.
 
 This software allows you to visualize and move historical figures.
 
+Displaying historical figures on maps offers several key advantages:
+
+* Deepens Spatial Understanding: It visualizes figures' activity ranges, travel routes, and the geographical influences on their actions and impacts.
+* Integrates Time and Space: It allows for tracking historical changes and power dynamics spatially over time, providing better context for events.
+* Facilitates New Discoveries: It can reveal previously unseen geographical patterns, correlations, and relationships, sparking new research questions.
+* Enhances Education and Learning: It makes history more engaging, tangible, and easier to remember by linking abstract information to concrete locations.
+* Promotes Interdisciplinary Research: It aids in combining historical data with insights from geography, archaeology, and other fields.
+* Increases Public Engagement: It makes history more accessible and relatable to a wider audience, fostering interest in local and broader historical narratives.
+
 ![PAX SAPIENTICA Movement](./Images/Animation/Person01.gif)
 
 ![PAX SAPIENTICA Movement](./Images/Animation/Person02.gif)
