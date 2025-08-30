@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Create build directory
-SCRIPT_DIR=$(cd $(dirname $0); pwd)
-cmake -S${SCRIPT_DIR}/../Projects -B${SCRIPT_DIR}/../build
+ROOT_PATH=$(dirname $(dirname "$0"))
+cd "${ROOT_PATH}"
+cmake -SProjects -Bbuild -DCMAKE_BUILD_TYPE=Release
 
 # Build the project
-cmake --build ${SCRIPT_DIR}/../build
+cmake --build build
 
 # Change directory to build and execute ctest
-cd ${SCRIPT_DIR}/../build
-ctest
+cd build
+ctest --output-on-failure

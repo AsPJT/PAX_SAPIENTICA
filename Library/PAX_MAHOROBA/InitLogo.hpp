@@ -44,7 +44,9 @@ namespace paxs {
 #endif
 
             // PAX SAPIENTICA 用の背景
-            const paxg::Color paxs_color = paxg::Color(140, 180, 250); // 青
+            const paxg::Color paxs_color = paxg::Color(145, 190, 240); // 水色
+            //const paxg::Color paxs_color = paxg::Color(140, 180, 250); // 元青
+            //const paxg::Color paxs_color = paxg::Color(255, 255, 255); // 白
             paxg::Window::setBackgroundColor(paxs_color);
             paxg::Window::setLetterbox(paxs_color);
             // paxg::Color(255, 255, 255); // 白

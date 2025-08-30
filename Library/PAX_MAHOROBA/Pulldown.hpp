@@ -84,7 +84,7 @@ namespace paxs {
                 }
                 else {
                     if (i == 0) {
-                        rect.setW((*one_font).width(*str));
+                        rect.setW(static_cast<float>((*one_font).width(*str)));
                     }
                 }
             }
@@ -118,15 +118,15 @@ namespace paxs {
             std::size_t pdt_ = 0, // プルダウンの種別
             const bool is_one_font_ = false)
             :
-            font{ &font_ }
+            select_language_ptr(select_language_ptr_)
+            , language_ptr(language_ptr_)
+            , items_key(items_key_)
+            , font{ &font_ }
             , font_size(font_size_)
             , font_buffer_thickness_size(font_buffer_thickness_size_)
             , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
             , pdt(pdt_)
-            , is_one_font(is_one_font_)
-            , items_key(items_key_)
-            , select_language_ptr(select_language_ptr_)
-            , language_ptr(language_ptr_) {
+            , is_one_font(is_one_font_) {
 
             updateLanguage();
 
@@ -213,9 +213,9 @@ namespace paxs {
             // 三角形を描画
             sf::ConvexShape triangle;
             triangle.setPointCount(3);
-            triangle.setPoint(0, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x(), rect.y() + rect.h() / 2.0 + down_button_size * 0.25));
-            triangle.setPoint(1, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5, rect.y() + rect.h() / 2.0 - down_button_size * 0.5 + down_button_size * 0.25));
-            triangle.setPoint(2, sf::Vector2f(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5, rect.y() + rect.h() / 2.0 + down_button_size * 0.5 + down_button_size * 0.25));
+            triangle.setPoint(0, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x()), static_cast<float>(rect.y() + rect.h() / 2.0 + down_button_size * 0.25)));
+            triangle.setPoint(1, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5), static_cast<float>(rect.y() + rect.h() / 2.0 - down_button_size * 0.5 + down_button_size * 0.25)));
+            triangle.setPoint(2, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5), static_cast<float>(rect.y() + rect.h() / 2.0 + down_button_size * 0.5 + down_button_size * 0.25)));
             triangle.setFillColor(sf::Color::Black);
             triangle.setOutlineColor(sf::Color::Black);
             triangle.setOutlineThickness(0);

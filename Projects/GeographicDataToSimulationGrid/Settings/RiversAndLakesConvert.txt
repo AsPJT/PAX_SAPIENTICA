@@ -1,2 +1,0 @@
-input_path = ../../../Data/Map/XYZTile/RiversAndLakes/Image/RiversAndLakes/2023/12/
-output_path = ../../../Data/Map/XYZTile/RiversAndLakes/Data/RiversAndLakes/2023/12/

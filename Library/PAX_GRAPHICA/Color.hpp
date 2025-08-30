@@ -24,6 +24,8 @@
 #include <SFML/Graphics.hpp>
 #endif
 
+#include <cstdint>
+
 namespace paxg {
 
     // R 赤
@@ -42,7 +44,11 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
         sf::Color color;
-        Color(const int r, const int g, const int b, const int a = 255) : color(r, g, b, a) {}
+        Color(const int r, const int g, const int b, const int a = 255) : color(
+            static_cast<std::uint8_t>(r),
+            static_cast<std::uint8_t>(g),
+            static_cast<std::uint8_t>(b),
+            static_cast<std::uint8_t>(a)) {}
         operator sf::Color() const { return color; }
 #else
         int r, g, b, a = 255;

@@ -43,7 +43,7 @@ namespace paxs {
         }
         // 指定した要素の符号を取得
         bool operator[](const std::uint_least32_t& str_) const {
-            return visible.at(str_);
+            return (visible.find(str_) != visible.end()) ? visible.at(str_) : true;
         }
 
     };

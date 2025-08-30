@@ -1,11 +1,12 @@
 key	value
 XYZTiles	Data/Settings/XYZTiles.tsv
 Languages	Data/Settings/Languages.tsv
-SimulationRange	Data/Simulations/Range.tsv
+SimulationRange	Data/Simulations/Area.tsv
 PlaceNames	Data/Settings/PlaceNames.tsv
-MiniIcons	Data/Settings/MiniIcons.tsv
+MiniIcons	Data/Settings/MapIcons.tsv
 PersonNames	Data/Settings/PersonNames.tsv
 Portraits	Data/Settings/Portraits.tsv
-SimulationXYZTiles	Data/Simulations/MapList.tsv
-SimulationProvincesPath	Data/Simulations/Japan200-725
-SimulationConstants	Data/Simulations/Settings.tsv
+SimulationModels	Data/Simulations/ModelLanguages.tsv
+SimulationXYZTiles	Data/Simulations/Sample/MapList.tsv
+SimulationProvincesPath	Data/Simulations/Sample
+SimulationConstants	Data/Simulations/Sample/Settings.tsv

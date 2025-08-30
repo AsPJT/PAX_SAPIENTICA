@@ -31,25 +31,13 @@ namespace paxs {
 
     /// @brief Class that performs simulation.
     /// @brief シミュレーションを行うクラス
-    template <typename GridType>
     class Simulator {
     public:
-        using Environment = paxs::Environment<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
-        using Agent = paxs::Agent<GridType>;
 
-        constexpr explicit Simulator() = default;
-        explicit Simulator(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z, const unsigned seed = 0) noexcept :
-            environment(std::make_unique<Environment>(setting_file_path, start_position, end_position, z)), gen(seed) {
-                if (z <= 0) {
-                    PAXS_ERROR("Z must be greater than 0.");
-                    return;
-                }
-                if (start_position.x < 0 || start_position.y < 0 || end_position.x < 0 || end_position.y < 0) {
-                    PAXS_ERROR("Start position and end position must be greater than 0.");
-                    return;
-                }
-            }
+        explicit Simulator() = default;
+        explicit Simulator(const std::string& setting_file_path, const unsigned seed = 0) noexcept :
+            environment(std::make_unique<Environment>(setting_file_path)), gen(seed) {}
 
         /// @brief Initialize the simulator.
         /// @brief エージェントの初期化
@@ -100,7 +88,7 @@ namespace paxs {
         std::mt19937 gen; // 乱数生成器
         std::uniform_int_distribution<> gender_dist{0, 1}; // 性別の乱数分布
 
-        KanakumaLifeSpan kanakuma_life_span;
+        KanakumaLifeSpan kanakuma_life_span{};
 
         /// @brief Clear the agents.
         /// @brief エージェントをクリアする
@@ -109,7 +97,7 @@ namespace paxs {
         /// @brief Randomly place the agents.
         /// @brief エージェントをランダムに配置する
         void randomizeAgents(const int agent_count) {
-            const Vector2& offset = environment->getEndPosition() - environment->getStartPosition();
+            const Vector2& offset = SimulationConstants::getInstance()->getEndArea() - SimulationConstants::getInstance()->getStartArea();
             std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
             std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
             std::uniform_int_distribution<> age_dist(0, 20);
@@ -127,7 +115,7 @@ namespace paxs {
                 agents.emplace_back(Agent( id, "", position,
                     set_gender,
                     age_dist(gen),
-                    kanakuma_life_span.setLifeSpan(set_gender, gen),
+                    kanakuma_life_span.setLifeSpan(true, set_gender, gen),
                     environment));
             }
             StatusDisplayer::displayProgressBar(agent_count, agent_count);
@@ -136,7 +124,7 @@ namespace paxs {
 
         /// @brief Print the current status.
         /// @brief 現在の状態を表示する
-        constexpr void printStatus() const noexcept {
+        void printStatus() const noexcept {
             std::cout << "Status: " << std::endl;
             std::cout << "  Agent Count: " << agents.size() << std::endl;
         }

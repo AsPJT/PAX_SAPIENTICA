@@ -1,9 +1,16 @@
 各スクリプトの説明
 
-- Init.*
-    - 環境構築用のスクリプトです
-- CmakeGenerate.*
-    - CMakeでconfigure, generateするためのスクリプトです
-    - Libraryのファイルを追加および削除した場合は、このスクリプトを実行してください
+- CodeCounter.py
+    - コード行数をカウントするためのスクリプトです
 - CTest.*
     - CTestを実行するためのスクリプトです
+- DevelopmentBuild.*
+    - MapViewerの開発ビルドを行うためのスクリプトです
+- ProductionBuild.*
+    - MapViewerの本番ビルドを行うためのスクリプトです
+- SyncSubmodule.*
+    - submoduleを同期するためのスクリプトです
+- UbuntuBuild/Build.sh
+    - Ubuntu上でのビルドを行うためのスクリプトです
+- UbuntuBuild/docker-compose.yml
+    - build環境を構築するためのdocker-composeファイルです

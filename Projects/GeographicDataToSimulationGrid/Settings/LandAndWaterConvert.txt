@@ -1,2 +1,0 @@
-input_path = ../../../Data/Map/XYZTile/LandAndWater/Image/BlackAndWhiteBinary/1868/10/
-output_path = ../../../Data/Map/XYZTile/LandAndWater/Data/BlackAndWhiteBinary/1868/10/

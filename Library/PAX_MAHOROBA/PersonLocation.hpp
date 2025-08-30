@@ -106,7 +106,7 @@ namespace paxs {
     class PersonNameLocation {
     public:
 #ifdef PAXS_USING_SIMULATOR
-        void update(const std::vector<paxs::Agent<int>>& agents, const paxs::Vector2<int>& start_position) {
+        void update(const std::vector<paxs::Agent>& agents, const paxs::Vector2<paxs::GridType>& start_position) {
             // エージェントの設定を更新
             location_point_list_list.resize(0);
             std::vector<PersonLocationPoint> person_location_list{}; // 地物の一覧
@@ -218,10 +218,10 @@ namespace paxs {
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
             paxg::Font& font, paxg::Font& en_font, paxg::Font& /*pin_font*/) {
 
-            const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
-            const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
+            const std::uint_least32_t ja_jp_language = MurMur3::calcHash("ja-JP");
+            const std::uint_least32_t en_us_language = MurMur3::calcHash("en-US");
 
-            const std::unordered_map<std::uint_least32_t, paxg::Texture> texture = key_value_tsv.get();
+            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture = key_value_tsv.get();
 
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& person_location_list = location_point_list_list[h].person_location_list;
@@ -328,34 +328,37 @@ namespace paxs {
                     };
 
                     const paxg::Vec2i draw_font_pos = paxg::Vec2i{
-                        draw_pos.x(), draw_pos.y() - 30
+                        draw_pos.x(), draw_pos.y() - 60//+30
                     };
 
                     const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
                     // 描画
                     if (texture.find(place_tex) != texture.end()) {
-                        texture.at(place_tex).resizedDrawAt(100, draw_pos);
+                        texture.at(place_tex).resizedDrawAt(120, draw_pos);
                     }
                     // 英語名がない場合
-                    if (lli.place_name.find(second_language) == lli.place_name.end()) {
-                        // 名前を描画
-                        if (lli.place_name.find(first_language) != lli.place_name.end()) {
+                    if (lli.place_name.find(en_us_language) == lli.place_name.end()) {
+                        // 日本語名を描画
+                        if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
                             font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                            font.drawAt(lli.place_name.at(first_language)
-                                , draw_font_pos, paxg::Color(0, 0, 0));
+                            font.drawTopCenter(lli.place_name.at(ja_jp_language), draw_font_pos, paxg::Color(0, 0, 0));
                         }
                     }
                     // 英語名がある場合
                     else {
-                        // 名前（英語）を描画
-                        en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                        en_font.drawBottomCenter(lli.place_name.at(second_language), draw_font_pos
-                            , paxg::Color(0, 0, 0));
-                        // 名前を描画
-                        if (lli.place_name.find(first_language) != lli.place_name.end()) {
+                        // 日本語名がある場合
+                        if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
+                            // 名前（英語）を描画
+                            en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                            en_font.drawBottomCenter(lli.place_name.at(en_us_language), draw_font_pos, paxg::Color(0, 0, 0));
+                            // 日本語名を描画
                             font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                            font.drawTopCenter(lli.place_name.at(first_language)
-                                , draw_font_pos, paxg::Color(0, 0, 0));
+                            font.drawTopCenter(lli.place_name.at(ja_jp_language), draw_font_pos, paxg::Color(0, 0, 0));
+                        }
+                        else {
+                            // 名前（英語）を描画
+                            en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                            en_font.drawTopCenter(lli.place_name.at(en_us_language), draw_font_pos, paxg::Color(0, 0, 0));
                         }
                     }
                 }

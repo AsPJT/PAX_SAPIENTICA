@@ -22,7 +22,7 @@
 #include <iostream>
 #include <regex>
 #include <stdexcept>
-#include <unordered_map>
+#include <map>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
@@ -38,35 +38,30 @@ namespace paxs {
 
     /// @brief A class that holds data required for simulation.
     /// @brief シミュレーションに必要なデータを保持するクラス
-    template <typename DataType, typename GridType>
+    template <typename DataType>
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        explicit Data(const std::string& file_path, const std::string name, const Vector2& start_position, const Vector2& end_position,  const int default_z, const int pj_z) noexcept : name(name), start_position(start_position), end_position(end_position), default_z(default_z), pj_z(pj_z) {
-            z_mag = std::pow(2, default_z - pj_z);
-            column_size = static_cast<int>((end_position.x - start_position.x + 1) * pixel_size * z_mag);
+        explicit Data(const std::string& file_path, const std::string name, const int default_z) noexcept : name(name), default_z(default_z) {
+            z_mag = std::pow(2, default_z - SimulationConstants::getInstance()->getZ());
+            GridType area_x = SimulationConstants::getInstance()->getEndArea().x - SimulationConstants::getInstance()->getStartArea().x + 1;
+            column_size = static_cast<int>(area_x * pixel_size * z_mag);
 
             load(file_path);
         }
         Data(const Data& other) noexcept
-            : start_position(other.start_position),
-            end_position(other.end_position),
-            name(other.name),
+            : name(other.name),
             data(other.data),
             default_z(other.default_z),
-            pj_z(other.pj_z),
             z_mag(other.z_mag),
             column_size(other.column_size) {}
 
         // Copy assignment operator
         constexpr Data& operator=(const Data& other) noexcept {
             if (this != &other) {
-                start_position = other.start_position;
-                end_position = other.end_position;
                 name = other.name;
                 data = other.data;
                 default_z = other.default_z;
-                pj_z = other.pj_z;
                 z_mag = other.z_mag;
                 column_size = other.column_size;
             }
@@ -77,7 +72,7 @@ namespace paxs {
         /// @brief 指定した位置の値を取得する
         constexpr DataType getValue(const Vector2& position) const noexcept {
             const Vector2 converted_position = position * z_mag;
-            auto itr = data.find(converted_position.toU64());
+            auto itr = data.find(converted_position.to(DataGridsType{}));
             if(itr == data.end()) {
                 return static_cast<DataType>(0);
             }
@@ -87,20 +82,22 @@ namespace paxs {
         /// @brief Get the data of the key.
         /// @brief キーをvectorで取得
         /// @return keyのvector
-        constexpr void getKeys(std::vector<std::uint64_t>& keys) const noexcept {
+        constexpr void getKeys(std::vector<DataGridsType>& keys) const noexcept {
             keys.reserve(data.size());
             for (const auto& [key, value] : data) {
                 keys.emplace_back(key);
             }
         }
 
+        // データのz値を取得（セルの幅）
+        constexpr int getCellWidth() const noexcept {
+            return (z_mag <= 0) ? 1 : int((1 / z_mag) + 0.5);
+        }
+
     private:
-        Vector2 start_position; // シミュレーションの左上の座標
-        Vector2 end_position; // シミュレーションの右下の座標
         std::string name; // データの名前
-        std::unordered_map<std::uint_least64_t, DataType> data; // データ
+        std::map<DataGridsType, DataType> data; // データ
         int default_z; // データのz値
-        int pj_z; // シミュレーションのz値
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
         int column_size; // シミュレーションの列数
 
@@ -120,7 +117,7 @@ namespace paxs {
             if(file_names[0].find(".tsv") != std::string::npos) {
                 loadNumericTSV(file_path);
             } else if(file_names[0].find(".txt") != std::string::npos) {
-                if (default_z > pj_z) loadNumericTextAndCompress(file_names);
+                if (z_mag > 1) loadNumericTextAndCompress(file_names);
                 else loadNumericText(file_names);
             } else if(file_names[0].find(".bin") != std::string::npos) {
                 if constexpr (std::is_same<DataType, std::uint_least8_t>::value) {
@@ -137,18 +134,16 @@ namespace paxs {
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
         void loadBinary(const std::string& file_path) noexcept {
-            const Vector2 start_position_ = start_position * z_mag;
-            const Vector2 end_position_ = end_position * z_mag;
+            const Vector2 start_position = SimulationConstants::getInstance()->getStartArea() * z_mag;
+            const Vector2 end_position = SimulationConstants::getInstance()->getEndArea() * z_mag;
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
 
-            std::uint_least32_t file_count = (end_position_.x - start_position_.x + 1) * (end_position_.y - start_position_.y + 1);
+            std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
 
-            DataType tmp_data[pixel_size * pixel_size]{};
-
-            for (GridType y = start_position_.y; y <= end_position_.y; ++y) {
-                for (GridType x = start_position_.x; x <= end_position_.x; ++x) {
+            for (GridType y = start_position.y; y <= end_position.y; ++y) {
+                for (GridType x = start_position.x; x <= end_position.x; ++x) {
                     const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".bin";
 
                     if (!std::filesystem::exists(AppConfig::getInstance()->getRootPath() + file_path + file_name)) {
@@ -157,16 +152,13 @@ namespace paxs {
                         continue;
                     }
 
-                    BinaryDataType bi(file_path + file_name, AppConfig::getInstance()->getRootPath());
-                    bi.calc(tmp_data);
-
                     const Vector2 default_position = Vector2(x, y) * pixel_size - start_xyz_position;
-                    for(std::size_t y = 0;y < pixel_size;++y) {
-                        for(std::size_t x = 0;x < pixel_size;++x) {
-                            const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                            data[position.toU64()] = static_cast<DataType>(tmp_data[y * pixel_size + x]);
+                    BinaryDataType bi(file_path + file_name, AppConfig::getInstance()->getRootPath());
+                    bi.calc([&](const DataType value_, const std::uint_least8_t px, const std::uint_least8_t py) {
+                        const Vector2 position = default_position + Vector2((GridType)px, (GridType)py);
+                        data[position.to(DataGridsType{})] = value_;
                         }
-                    }
+                    );
 
                     ++load_count;
                     StatusDisplayer::displayProgressBar(load_count, file_count);
@@ -185,10 +177,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            DataType tmp_data[pixel_size * pixel_size]{};
-
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
-            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
@@ -210,14 +200,11 @@ namespace paxs {
                 }
 
                 BinaryDataType bi(file_name, "");
-                bi.calc(tmp_data);
-
-                for(std::size_t y = 0;y < pixel_size;++y) {
-                    for(std::size_t x = 0;x < pixel_size;++x) {
+                bi.calc([&](const DataType value_, const std::uint_least8_t x, const std::uint_least8_t y) {
                         const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                        data[position.toU64()] = static_cast<DataType>(tmp_data[y * pixel_size + x]);
+                        data[position.to(DataGridsType{})] = value_;
                     }
-                }
+                );
 
                 ++file_count;
                 ++load_count;
@@ -230,16 +217,16 @@ namespace paxs {
         /// @brief Load numeric TSV files.
         /// @brief 数値TSVファイルのロード
         void loadNumericTSV(const std::string& file_path) noexcept {
-            const Vector2 start_position_ = start_position * z_mag;
-            const Vector2 end_position_ = end_position * z_mag;
+            const Vector2 start_position = SimulationConstants::getInstance()->getStartArea() * z_mag;
+            const Vector2 end_position = SimulationConstants::getInstance()->getEndArea() * z_mag;
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
 
-            std::uint_least32_t file_count = (end_position_.x - start_position_.x + 1) * (end_position_.y - start_position_.y + 1);
+            std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
 
-            for (GridType y = start_position_.y; y <= end_position_.y; ++y) {
-                for (GridType x = start_position_.x; x <= end_position_.x; ++x) {
+            for (GridType y = start_position.y; y <= end_position.y; ++y) {
+                for (GridType x = start_position.x; x <= end_position.x; ++x) {
                     const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".tsv";
 
                     if (!std::filesystem::exists(AppConfig::getInstance()->getRootPath() + file_path + file_name)) {
@@ -257,22 +244,22 @@ namespace paxs {
 
 
                     const Vector2 default_position = Vector2(x, y) * pixel_size - start_xyz_position;
-                    for(std::size_t y = 0;y < file.size();++y) {
+                    for(std::size_t py = 0;py < file.size();++py) {
                         // タブ区切り
-                        const std::vector<std::string> values = StringExtensions::split(file[y], '\t');
-                        for(std::size_t x = 0;x < values.size();++x) {
-                            const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                            if(values[x] == "") {
+                        const std::vector<std::string> values = StringExtensions::split(file[py], '\t');
+                        for(std::size_t px = 0;px < values.size();++px) {
+                            const Vector2 position = default_position + Vector2((GridType)px, (GridType)py);
+                            if(values[px] == "") {
                                 continue;
                             }
                             // T型に変換
                             try {
                                 if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
-                                    int value = std::stoi(values[x]);
+                                    int value = std::stoi(values[px]);
                                     if(value == 0) continue;
-                                    data[position.toU64()] = static_cast<DataType>(value);
+                                    data[position.to(DataGridsType{})] = static_cast<DataType>(value);
                                 } else if constexpr (std::is_same<DataType, float>::value) {
-                                    data[position.toU64()] = static_cast<DataType>(std::stod(values[x]));
+                                    data[position.to(DataGridsType{})] = static_cast<DataType>(std::stod(values[px]));
                                 }
                             } catch (const std::invalid_argument&/*ia*/) {
                                 PAXS_WARNING("File contains invalid value: " + file_name);
@@ -300,8 +287,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
-            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
@@ -342,9 +329,9 @@ namespace paxs {
                             if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
                                 int value = std::stoi(values[x]);
                                 if(value == 0) continue;
-                                data[position.toU64()] = static_cast<DataType>(value);
+                                data[position.to(DataType{})] = static_cast<DataType>(value);
                             } else if constexpr (std::is_same<DataType, float>::value) {
-                                data[position.toU64()] = static_cast<DataType>(std::stod(values[x]));
+                                data[position.to(DataType{})] = static_cast<DataType>(std::stod(values[x]));
                             }
                         } catch (const std::invalid_argument&/*ia*/) {
                             PAXS_WARNING("File contains invalid value: " + file_name);
@@ -369,8 +356,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = start_position * pixel_size * z_mag;
-            const Vector2 end_xyz_position = end_position * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
@@ -403,7 +390,7 @@ namespace paxs {
                         // T型に変換
                         if (file[y][x] == '0') continue;
                         const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
-                        data[position.toU64()] = static_cast<DataType>(file[y][x]);
+                        data[position.to(DataGridsType{})] = static_cast<DataType>(file[y][x]);
                     }
                 }
                 ++file_count;
@@ -420,8 +407,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = start_position * pixel_size;
-            const Vector2 end_xyz_position = end_position * pixel_size;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_name : file_names) {
@@ -464,7 +451,7 @@ namespace paxs {
                         }
                         if(!is_contain_one) continue;
                         const Vector2 position = default_position + Vector2(static_cast<GridType>(x / z_mag), static_cast<GridType>(y / z_mag));
-                        data[position.toU64()] = static_cast<DataType>('1');
+                        data[position.to(DataGridsType{})] = static_cast<DataType>('1');
                     }
                 }
                 ++file_count;
@@ -472,7 +459,7 @@ namespace paxs {
             }
 
             z_mag = 1;
-            default_z = pj_z;
+            default_z = SimulationConstants::getInstance()->getZ();
 
             StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;

@@ -37,19 +37,18 @@ namespace paxs {
 
     /// @brief A class that manages data required for simulation.
     /// @brief シミュレーションに必要なデータを管理するクラス
-    template <typename GridType>
     class Environment {
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
-        using DataVariant = std::variant<Data<std::uint_least8_t, GridType>, Data<std::uint_least32_t, GridType>, Data<float, GridType>, Data<std::int_least16_t, GridType>>;
+        using DataVariant = std::variant<Data<std::uint_least8_t>, Data<std::uint_least32_t>, Data<float>, Data<std::int_least16_t>>;
 
         /// @brief Start position of the simulation.
         /// @brief シミュレーションデータのマップ
         std::unordered_map<std::uint_least32_t, std::unique_ptr<DataVariant>> data_map;
 
-        constexpr explicit Environment() noexcept = default;
-        explicit Environment(const std::string& setting_file_path, const Vector2& start_position, const Vector2& end_position, const int z) noexcept : start_position(start_position), end_position(end_position), z(z) {
+        explicit Environment() noexcept = default;
+        explicit Environment(const std::string& setting_file_path) noexcept {
             std::vector<std::vector<std::string>> settings;
 
             settings = File::readTSV(AppConfig::getInstance()->getRootPath() + setting_file_path);
@@ -89,27 +88,22 @@ namespace paxs {
                 const std::uint_least32_t key = MurMur3::calcHash(settings[i][key_column].size(), settings[i][key_column].c_str());
                 const std::string& key_str = settings[i][key_column];
                 if (data_type == MurMur3::calcHash("u8")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("u32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("f32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else if (data_type == MurMur3::calcHash("s16")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t, GridType>(settings[i][file_path_column], key_str, start_position, end_position, std::stoi(settings[i][z_column]), z)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
                 }
                 else {
                     PAXS_WARNING("data_type is not found in " + setting_file_path);
                 }
             }
         }
-
-        /// @brief シミュレーションの左上の座標の取得
-        constexpr Vector2 getStartPosition() const noexcept { return start_position; }
-        /// @brief シミュレーションの右下の座標の取得
-        constexpr Vector2 getEndPosition() const noexcept { return end_position; }
 
         /// @brief Get data.
         /// @brief データの取得
@@ -122,13 +116,13 @@ namespace paxs {
                 PAXS_ERROR(message);
                 throw std::runtime_error(message);
             }
-            return std::get<Data<U, GridType>>(*data_map.at(key)).getValue(position);
+            return std::get<Data<U>>(*data_map.at(key)).getValue(position);
         }
 
         /// @brief Get the land position list.
         /// @brief 陸の位置リストの取得
-        constexpr void getLandPositions(std::vector<std::uint64_t>& keys) const {
-            std::get<Data<std::uint_least8_t, GridType>>(*data_map.at(MurMur3::calcHash("gbank"))).getKeys(keys);
+        void getLandPositions(std::vector<DataGridsType>& keys) const {
+            std::get<Data<std::uint_least8_t>>(*data_map.at(SimulationConstants::getInstance()->land_key)).getKeys(keys);
         }
 
         /// @brief Is it possible to live?
@@ -150,6 +144,10 @@ namespace paxs {
                 return 0;
             }
         }
+        // 傾斜データのセル幅を取得
+        int getSlopeCellWidth() {
+            return std::get<Data<std::uint_least8_t>>(*data_map.at(MurMur3::calcHash("slope"))).getCellWidth();
+        }
 
         /// @brief Get elevation.
         /// @brief 標高の取得
@@ -167,13 +165,27 @@ namespace paxs {
         /// @brief 陸地かどうかの判定
         virtual bool isLand(const Vector2& position) const noexcept {
             try {
-                auto value = getData<std::uint_least8_t>(MurMur3::calcHash("gbank"), position);
+                auto value = getData<std::uint_least8_t>(SimulationConstants::getInstance()->land_key, position);
                 return static_cast<int>(value) >= static_cast<int>(1);
             }
             catch (const std::exception&) {
                 PAXS_ERROR("Failed to get land");
                 return false;
             }
+        }
+        bool isCoast(const Vector2& position) const noexcept {
+            const bool is_land = isLand(position); // 陸かどうか
+            if (!is_land) return false; // 陸ではないので海岸ではない
+            // 隣接セルが陸地ではない場合は海岸
+            if (!isLand(Vector2{ position.x - 1, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y - 1 })) return true;
+            if (!isLand(Vector2{ position.x - 1, position.y })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y })) return true;
+            if (!isLand(Vector2{ position.x - 1, position.y + 1 })) return true;
+            if (!isLand(Vector2{ position.x, position.y + 1 })) return true;
+            if (!isLand(Vector2{ position.x + 1, position.y + 1 })) return true;
+            return false; // 海岸ではない
         }
 
         /// @brief Is it water?
@@ -188,10 +200,6 @@ namespace paxs {
                 return false;
             }
         }
-    private:
-        Vector2 start_position; // シミュレーションの左上の座標
-        Vector2 end_position; // シミュレーションの右下の座標
-        int z; // シミュレーションのz値
     };
 }
 

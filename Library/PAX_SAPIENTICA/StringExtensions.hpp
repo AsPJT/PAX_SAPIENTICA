@@ -23,6 +23,7 @@
 #include <variant>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
 
@@ -45,6 +46,23 @@ namespace paxs {
         }
 
         /// @brief Split string by delimiter
+        /// @brief デリミタで文字列を分割する
+        template<typename Func_>
+        static void split(const std::string& input, const char delimiter, Func_&& func_) noexcept {
+            std::istringstream stream(input);
+            std::string field;
+            std::size_t count = 0;
+            while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
+                if (field.size() == 0) {
+                    ++count;
+                    continue;
+                }
+                func_(field, count);
+                ++count;
+            }
+        }
+
+        /// @brief Split string by delimiter
         /// @brief デリミタで文字列を分割する（ double 版）
         static std::vector<double> splitStod(const std::string& input, const char delimiter) noexcept {
             std::istringstream stream(input);
@@ -52,7 +70,19 @@ namespace paxs {
             std::vector<double> result;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 if (field.size() == 0) result.emplace_back(std::numeric_limits<double>::quiet_NaN()); // 文字列が空の時は NaN を入れる
-                else result.emplace_back(std::stod(field)); // 文字列を数値に変換する
+                else {
+                    try {
+                        result.emplace_back(std::stod(field)); // 文字列を数値に変換する
+                    }
+                    catch (const std::invalid_argument&/*ia*/) {
+                        PAXS_WARNING("field is not convertible to double");
+                        result.emplace_back(std::numeric_limits<double>::quiet_NaN());
+                    }
+                    catch (const std::out_of_range&/*oor*/) {
+                        PAXS_WARNING("field is out of range for a double");
+                        result.emplace_back(std::numeric_limits<double>::quiet_NaN());
+                    }
+                }
             }
             return result;
         }
@@ -153,10 +183,10 @@ namespace paxs {
             std::istringstream stream(input);
             std::string field{};
             std::vector<std::uint_least32_t> result;
-            std::size_t index = 0;
+            //std::size_t index = 0; // 未使用
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 result.emplace_back(MurMur3::calcHash(field.size(), field.c_str()));
-                ++index;
+                //++index;
             }
             return result;
         }

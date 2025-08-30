@@ -16,75 +16,259 @@
 
 ##########################################################################################*/
 
+#include <random>
+#include <unordered_map>
 #include <vector>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
 
         /// @brief A struct that represents a region in Japan.
         /// @brief 日本の地方区分を表す構造体
         struct JapanRegion {
-            std::uint_least8_t id;
-            std::string name;
-            std::uint_least32_t population; // 人口
+            std::uint_least8_t id = 0;
+            std::string name = "";
+            std::uint_least32_t population = 0; // 人口
+        };
+
+        /// @brief 
+        /// @brief mtDNA の地方区分を表す構造体
+        struct mtDNA_Region {
+            std::vector<std::uint_least8_t> id{};
+            std::vector<double> weight{};
+            std::discrete_distribution<> dist{};
         };
 
         /// @brief A struct that represents a prefecture in Japan.
-        /// @brief 日本の令制国を表す構造体
-        struct Ryoseikoku {
-            std::uint_least8_t id;
-            std::string name;
-            std::uint_least8_t region_id; // 対応する地方区分ID
-            std::uint_least32_t settlement_population_min_ad200;
-            std::uint_least32_t settlement_population_max_ad200;
-            std::uint_least32_t population_ad200;
-            std::uint_least32_t population_ad725;
+        /// @brief 日本の地区を表す構造体
+        struct District {
+            std::uint_least8_t id = 0;
+            std::string name = "";
+            std::uint_least8_t region_id = 0; // 対応する地方区分ID
+            std::uint_least8_t language = 0; // 言語
+            std::uint_least8_t hunter_gatherer = 0; // 狩猟採集
+            std::uint_least8_t farming = 0; // 農耕文化
+            std::uint_least8_t snp = 0; // SNP
+            std::uint_least32_t settlement_pop_min = 0;
+            std::uint_least32_t settlement_pop_max = 0;
+            std::uint_least32_t init_pop = 0;
+            std::uint_least32_t immigrant = 0;
+            double immigrant_f64 = 0;
+            double increased_immigration = 0;
+            std::uint_least32_t mtdna_region_hash = 0;
+
+            std::uint_least32_t direction_min_distance = 100;
+            // std::array<double, 8> direction_weight{};
+            std::vector<double> direction_weight{};
+            std::discrete_distribution<> direction_dist{};
         };
 
     /// @brief A class that represents a prefecture in Japan.
     /// @brief 日本の州を表すクラス
     class JapanProvinces {
+    private:
+
+        // 項目の ID を返す
+        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
+            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
+        }
+
+        void inputMtDNA_List(const std::string& japan_provinces_path) noexcept {
+
+            const std::string path = japan_provinces_path + "/mtDNA_List.tsv";
+
+            paxs::InputFile mtdna_tsv(AppConfig::getInstance()->getRootPath() + path);
+            if (mtdna_tsv.fail()) {
+                PAXS_WARNING("Failed to read MtDNA_List TSV file: " + path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(mtdna_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            mtdna_tsv.deleteBOM();
+            // 1 行目を分割する
+            std::unordered_map<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
+            std::size_t i = 1;
+
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (mtdna_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = mtdna_tsv.split('\t');
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("mtdna"))
+                    ) {
+                    PAXS_WARNING("Failed to read Japan MtDNA_List TSV file: " + path + " at line " + std::to_string(i));
+                    ++i;
+                    continue;
+                }
+                mtdna_list.emplace_back(sub_menu_v[menu[MurMur3::calcHash("mtdna")]]);
+                ++i;
+            }
+
+        }
+
+        void inputMtDNA_Region(const std::string& japan_provinces_path) noexcept {
+
+            const std::string path = japan_provinces_path + "/mtDNA.tsv";
+
+            paxs::InputFile mtdna_tsv(AppConfig::getInstance()->getRootPath() + path);
+            if (mtdna_tsv.fail()) {
+                PAXS_WARNING("Failed to read MtDNA TSV file: " + path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(mtdna_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            mtdna_tsv.deleteBOM();
+            // 1 行目を分割する
+            std::unordered_map<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
+#ifdef PAXS_DEVELOPMENT
+            std::size_t i = 1;
+#endif
+
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (mtdna_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = mtdna_tsv.split('\t');
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("haplo_group_region")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("haplo_dist"))
+                    ) {
+#ifdef PAXS_DEVELOPMENT
+                    PAXS_WARNING("Failed to read Japan MtDNA TSV file: " + path + " at line " + std::to_string(i));
+#endif
+                    continue;
+                }
+
+                mtDNA_Region mtdna_region;
+                std::vector<std::string> dist = paxs::StringExtensions::split(sub_menu_v[menu[MurMur3::calcHash("haplo_dist")]], '/');
+
+                if (dist.size() % 2 == 1) {
+                    continue;
+                }
+                if (dist.size() <= 1) {
+                    continue;
+                }
+                for (int j = 0; j < dist.size(); j += 2) {
+                    for (int k = 0; k < mtdna_list.size();++k) {
+                        // mtDNA の名称の index を取得し、確率分布と一緒に管理
+                        if (mtdna_list[k] == dist[j]) {
+                            mtdna_region.id.emplace_back(k);
+                            mtdna_region.weight.emplace_back(std::stod(dist[j + 1]));
+                            break;
+                        }
+                    }
+                }
+                // 確率分布を生成
+                mtdna_region.dist = std::discrete_distribution<>(mtdna_region.weight.begin(), mtdna_region.weight.end());
+
+                // mtDNA 地方区分のハッシュ
+                const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("haplo_group_region")]];
+                mtdna_region_list.emplace(MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str()), mtdna_region);
+
+#ifdef PAXS_DEVELOPMENT
+                ++i;
+#endif
+            }
+        }
+
+        void inputDistrict(const std::string& japan_provinces_path) noexcept {
+
+            const std::string district_tsv_path = japan_provinces_path + "/District.tsv";
+
+            paxs::InputFile district_tsv(AppConfig::getInstance()->getRootPath() + district_tsv_path);
+            if (district_tsv.fail()) {
+                PAXS_WARNING("Failed to read District TSV file: " + district_tsv_path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(district_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            district_tsv.deleteBOM();
+            // 1 行目を分割する
+            std::unordered_map<std::uint_least32_t, std::size_t> menu = district_tsv.splitHashMapMurMur3('\t');
+            std::size_t i = 1;
+
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (district_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = district_tsv.split('\t');
+
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("id")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("name")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("region")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("min_pop_placed_per_cell")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("max_pop_placed_per_cell")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("init_pop")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("immigrant")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("mtdna_region")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("direction_min_distance")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("directions"))
+                    ) {
+                    PAXS_WARNING("Failed to read Japan region TSV file: " + district_tsv_path + " at line " + std::to_string(i));
+                    continue;
+                }
+                District district;
+                district.id = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("id")]]));
+                district.name = sub_menu_v[menu[MurMur3::calcHash("name")]];
+                district.region_id = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("region")]]));
+                district.language = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("language")]]));
+                district.hunter_gatherer = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
+                district.farming = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("farming")]]));
+                district.snp = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("snp")]]));
+                district.settlement_pop_min = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("min_pop_placed_per_cell")]]));
+                district.settlement_pop_max = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("max_pop_placed_per_cell")]]));
+                district.init_pop = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("init_pop")]]));
+                district.immigrant = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("immigrant")]]));
+                district.immigrant_f64 = static_cast<double>(district.immigrant);
+                district.increased_immigration = std::stod(sub_menu_v[menu[MurMur3::calcHash("increased_immigration")]]);
+
+                district.direction_min_distance = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("direction_min_distance")]]));
+
+                std::vector<std::string> direction_split = paxs::StringExtensions::split(sub_menu_v[menu[MurMur3::calcHash("directions")]], '/');
+                for (std::size_t di = 0; di < direction_split.size() && di < 8; ++di) {
+                    district.direction_weight.emplace_back(std::stod(direction_split[di]));
+                }
+                if(district.direction_weight.size() == 0) district.direction_weight.emplace_back(0.0);
+                // 方向の確率分布を生成
+                district.direction_dist = std::discrete_distribution<>(district.direction_weight.begin(), district.direction_weight.end());
+
+                const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("mtdna_region")]];
+                district.mtdna_region_hash = MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str());
+                district_list.emplace_back(district);
+                ++i;
+            }
+
+        }
+
     public:
-        explicit JapanProvinces(const std::string& japan_region_tsv_path, const std::string& ryoseikoku_tsv_path) noexcept {
-            std::vector<std::vector<std::string>> japan_region_tsv = File::readTSV(AppConfig::getInstance()->getRootPath() + japan_region_tsv_path);
-            if (japan_region_tsv.empty()) {
-                PAXS_WARNING("Failed to read Japan region TSV file: " + japan_region_tsv_path);
-            }
+        explicit JapanProvinces(const std::string& japan_provinces_path) noexcept {
 
-            std::vector<std::vector<std::string>> ryoseikoku_tsv = File::readTSV(AppConfig::getInstance()->getRootPath() + ryoseikoku_tsv_path);
-            if (ryoseikoku_tsv.empty()) {
-                PAXS_WARNING("Failed to read Ryoseikoku TSV file: " + ryoseikoku_tsv_path);
-            }
+            //const std::string japan_region_tsv_path = japan_provinces_path + "/JapanRegion.tsv";
 
-            for (std::size_t i = 1; i < japan_region_tsv.size(); ++i) {
-                try {
-                    JapanRegion japan_region;
-                    japan_region.id = static_cast<std::uint_least8_t>(std::stoi(japan_region_tsv[i][0]));
-                    japan_region.name = japan_region_tsv[i][1];
-                    japan_region.population = std::stoi(japan_region_tsv[i][2]);
-                    japan_regions.emplace_back(japan_region);
-                } catch (const std::invalid_argument&) {
-                    PAXS_WARNING("Failed to read Japan region TSV file: " + japan_region_tsv_path + " at line " + std::to_string(i));
-                }
-            }
+            inputMtDNA_List(japan_provinces_path);
+            inputMtDNA_Region(japan_provinces_path);
+            inputDistrict(japan_provinces_path);
+        }
 
-            for (std::size_t i = 1; i < ryoseikoku_tsv.size(); ++i) {
-                try {
-                    Ryoseikoku ryoseikoku;
-                    ryoseikoku.id = static_cast<std::uint_least8_t>(std::stoi(ryoseikoku_tsv[i][0]));
-                    ryoseikoku.name = ryoseikoku_tsv[i][1];
-                    ryoseikoku.region_id = static_cast<std::uint_least8_t>(std::stoi(ryoseikoku_tsv[i][2]));
-                    ryoseikoku.settlement_population_min_ad200 = std::stoi(ryoseikoku_tsv[i][3]);
-                    ryoseikoku.settlement_population_max_ad200 = std::stoi(ryoseikoku_tsv[i][4]);
-                    ryoseikoku.population_ad200 = std::stoi(ryoseikoku_tsv[i][5]);
-                    ryoseikoku.population_ad725 = std::stoi(ryoseikoku_tsv[i][6]);
-                    ryoseikoku_list.emplace_back(ryoseikoku);
-                } catch (const std::invalid_argument&) {
-                    PAXS_WARNING("Failed to read Ryoseikoku TSV file: " + ryoseikoku_tsv_path + " at line " + std::to_string(i));
-                }
+        /// @brief
+        /// @brief 更新処理
+        void update() noexcept {
+            for (auto& district : district_list) {
+                // 渡来人増加が０の場合は処理しない
+                if (district.increased_immigration == 0.0) continue;
+                // 渡来人の増加
+                district.immigrant_f64 += district.increased_immigration;
+                district.immigrant = static_cast<std::uint_least32_t>(district.immigrant_f64);
             }
         }
 
@@ -103,52 +287,118 @@ namespace paxs {
             return 0;
         }
 
-        /// @brief Get a ryoseikoku from the ID of the ryoseikoku in Japan.
-        /// @brief 日本の令制国のIDから令制国を取得する
-        Ryoseikoku& getRyoseikoku(const std::uint_least8_t id) noexcept {
-            for (auto& ryoseikoku : ryoseikoku_list) {
-                if (ryoseikoku.id == id) {
-                    return ryoseikoku;
+        // 言語を取得
+        std::uint_least32_t getLanguage(const std::uint_least8_t id) const noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district.language;
                 }
             }
-            PAXS_WARNING("Failed to get Ryoseikoku: " + std::to_string(id));
-
-            return ryoseikoku_list[0];
-        }
-        const Ryoseikoku& cgetRyoseikoku(const std::uint_least8_t id) const noexcept {
-            for (const auto& ryoseikoku : ryoseikoku_list) {
-                if (ryoseikoku.id == id) {
-                    return ryoseikoku;
-                }
-            }
-            PAXS_WARNING("Failed to get Ryoseikoku: " + std::to_string(id));
-
-            return ryoseikoku_list[0];
-        }
-
-        /// @brief 日本の令制国のIDから人口を取得する
-        /// @param id 日本の令制国のID
-        /// @return 人口
-        /// @note IDが不正な場合は0を返す
-        std::uint_least32_t getRyoseikokuPopulationAd200(const std::uint_least8_t id) const noexcept {
-            for (const auto& ryoseikoku : ryoseikoku_list) {
-                if (ryoseikoku.id == id) {
-                    return ryoseikoku.population_ad200;
-                }
-            }
-            PAXS_WARNING("Failed to get Ryoseikoku population: " + std::to_string(id));
+            PAXS_WARNING("Failed to get language: " + std::to_string(id));
 
             return 0;
         }
 
-        /// @brief 日本の令制国のIDから地方区分のIDを取得する
-        /// @param id 日本の令制国のID
+        // 狩猟採集を取得
+        std::uint_least32_t getHunterGatherer(const std::uint_least8_t id) const noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district.hunter_gatherer;
+                }
+            }
+            PAXS_WARNING("Failed to get hunter gatherer: " + std::to_string(id));
+
+            return 0;
+        }
+
+        // 農耕文化を取得
+        std::uint_least32_t getFarming(const std::uint_least8_t id) const noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district.farming;
+                }
+            }
+            PAXS_WARNING("Failed to get farming: " + std::to_string(id));
+
+            return 0;
+        }
+
+        // SNP を取得
+        std::uint_least32_t getSNP(const std::uint_least8_t id) const noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district.snp;
+                }
+            }
+            PAXS_WARNING("Failed to get SNP: " + std::to_string(id));
+
+            return 0;
+        }
+
+        /// @brief Get a district from the ID of the district in Japan.
+        /// @brief 日本の地区のIDから地区を取得する
+        District& getDistrict(const std::uint_least8_t id) noexcept {
+            for (auto& district : district_list) {
+                if (district.id == id) {
+                    return district;
+                }
+            }
+            PAXS_WARNING("Failed to get District: " + std::to_string(id));
+
+            return district_list[0];
+        }
+        const District& cgetDistrict(const std::uint_least8_t id) const noexcept {
+            for (const auto& district : district_list) {
+                if (district.id == id) {
+                    return district;
+                }
+            }
+            PAXS_WARNING("Failed to get District: " + std::to_string(id));
+
+            return district_list[0];
+        }
+        std::uint_least8_t getMtDNA(const std::uint_least8_t id, std::mt19937& gen) noexcept {
+            for (const auto& district : district_list) {
+                if (district.id == id) {
+                    auto& weight_list = mtdna_region_list.at(district.mtdna_region_hash);
+                    return weight_list.id[weight_list.dist(gen)];
+                }
+            }
+            PAXS_WARNING("Failed to get District: " + std::to_string(id));
+
+            auto& weight_list = mtdna_region_list.at(district_list[0].mtdna_region_hash);
+            return weight_list.id[weight_list.dist(gen)];
+        }
+        const std::string& getMtDNA_Name(const std::uint_least8_t id) const noexcept {
+            return mtdna_list[id];
+        }
+        std::size_t getSizeMtDNA() const noexcept {
+            return mtdna_list.size();
+        }
+
+        /// @brief 日本の地区のIDから人口を取得する
+        /// @param id 日本の地区のID
+        /// @return 人口
+        /// @note IDが不正な場合は0を返す
+        std::uint_least32_t getDistrictPopulationAd200(const std::uint_least8_t id) const noexcept {
+            for (const auto& district : district_list) {
+                if (district.id == id) {
+                    return district.init_pop;
+                }
+            }
+            PAXS_WARNING("Failed to get District population: " + std::to_string(id));
+
+            return 0;
+        }
+
+        /// @brief 日本の地区のIDから地方区分のIDを取得する
+        /// @param id 日本の地区のID
         /// @return 地方区分のID
         /// @note IDが不正な場合は0を返す
         std::uint_least8_t getJapanRegionId(const std::uint_least8_t id) const noexcept {
-            for (const auto& ryoseikoku : ryoseikoku_list) {
-                if (ryoseikoku.id == id) {
-                    return ryoseikoku.region_id;
+            for (const auto& district : district_list) {
+                if (district.id == id) {
+                    return district.region_id;
                 }
             }
             PAXS_WARNING("Failed to get Japan region ID: " + std::to_string(id));
@@ -156,18 +406,20 @@ namespace paxs {
             return 0;
         }
 
-        /// @brief Get a list of Ryoseikoku
-        /// @brief 令制国のリストを取得する
-        std::vector<Ryoseikoku>& getRyoseikokuList() noexcept {
-            return ryoseikoku_list;
+        /// @brief Get a list of District
+        /// @brief 地区のリストを取得する
+        std::vector<District>& getDistrictList() noexcept {
+            return district_list;
         }
-        const std::vector<Ryoseikoku>& cgetRyoseikokuList() const noexcept {
-            return ryoseikoku_list;
+        const std::vector<District>& cgetDistrictList() const noexcept {
+            return district_list;
         }
     private:
         std::vector<JapanRegion> japan_regions; // 日本の地方区分
-        std::vector<Ryoseikoku> ryoseikoku_list; // 日本の令制国
-
+        std::vector<District> district_list; // 日本の地区
+        std::unordered_map<std::uint_least32_t, mtDNA_Region> mtdna_region_list; // mtDNA 地方区分
+        //std::vector<std::uint_least32_t> mtdna_region_hash_list; // mtDNA ハッシュ計算用
+        std::vector<std::string> mtdna_list; // mtDNA
     };
 
 }

@@ -24,12 +24,9 @@
 namespace paxs {
 
     /// @brief 特定のグリッドに属する集落を管理するクラス
-    template <typename GridType>
     class SettlementGrid {
     public:
-        using Environment = paxs::Environment<GridType>;
         using Vector2 = paxs::Vector2<GridType>;
-        using Settlement = paxs::Settlement<GridType>;
 
         SettlementGrid() = default;
 
@@ -59,11 +56,11 @@ namespace paxs {
 #endif
 
             // ランダムな位置を探す
-            std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::SimulationConstants::getInstance()->grid_length - 1);
-            std::uniform_int_distribution<> dis_y(grid_position.y, grid_position.y + paxs::SimulationConstants::getInstance()->grid_length - 1);
+            std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::SimulationConstants::getInstance()->cell_group_length - 1);
+            std::uniform_int_distribution<> dis_y(grid_position.y, grid_position.y + paxs::SimulationConstants::getInstance()->cell_group_length - 1);
             Vector2 position;
 
-            while (black_list.size() < SimulationConstants::getInstance()->grid_length * SimulationConstants::getInstance()->grid_length) {
+            while (black_list.size() < SimulationConstants::getInstance()->cell_group_length * SimulationConstants::getInstance()->cell_group_length) {
                 position.x = dis_x(*gen);
                 position.y = dis_y(*gen);
                 if (std::find(black_list.begin(), black_list.end(), position) == black_list.end()) {
@@ -78,9 +75,10 @@ namespace paxs {
             }
 
             // 集落を移動
-            if (black_list.size() == SimulationConstants::getInstance()->grid_length * SimulationConstants::getInstance()->grid_length) {
+            if (black_list.size() == SimulationConstants::getInstance()->cell_group_length * SimulationConstants::getInstance()->cell_group_length) {
                 // 居住可能な場所がない
                 PAXS_WARNING("No place to live.");
+                return; // 集落を追加しない
             }
 
             settlement.setPosition(position);
@@ -125,19 +123,19 @@ namespace paxs {
             }
         }
 
-        /// @brief Add a Ryoseikoku ID to the list.
-        /// @brief 令制国のIDをリストに追加
-        void addRyoseikokuId(const std::uint_least8_t id) noexcept {
+        /// @brief Add a District ID to the list.
+        /// @brief 地区のIDをリストに追加
+        void addDistrictId(const std::uint_least8_t id) noexcept {
             // 重複チェック
-            if (std::find(ryoseikoku_list.begin(), ryoseikoku_list.end(), id) == ryoseikoku_list.end()) {
-                ryoseikoku_list.emplace_back(id);
+            if (std::find(district_list.begin(), district_list.end(), id) == district_list.end()) {
+                district_list.emplace_back(id);
             }
         }
 
-        /// @brief Get the Ryoseikoku list.
-        /// @brief 令制国のリストを取得
-        std::vector<std::uint_least8_t>& getRyoseikokuIds() noexcept { return ryoseikoku_list; }
-        const std::vector<std::uint_least8_t>& cgetRyoseikokuIds() const noexcept { return ryoseikoku_list; }
+        /// @brief Get the District list.
+        /// @brief 地区のリストを取得
+        std::vector<std::uint_least8_t>& getDistrictIds() noexcept { return district_list; }
+        const std::vector<std::uint_least8_t>& cgetDistrictIds() const noexcept { return district_list; }
 
         /// @brief Check if the settlement exists and delete it if it does not.
         /// @brief 集落が存在するかどうかをチェックし、存在しない場合は削除する
@@ -154,7 +152,7 @@ namespace paxs {
 
         /// @brief Delete the agent.
         /// @brief エージェントを削除
-        void deleteAgent(const std::uint_least64_t agent_id, const std::uint_least32_t settlement_id) noexcept {
+        void deleteAgent(const HumanIndexType agent_id, const std::uint_least32_t settlement_id) noexcept {
             auto it = std::find_if(settlements.begin(), settlements.end(), [settlement_id](const Settlement& settlement) { return settlement.getId() == settlement_id; });
             if (it != settlements.end()) {
                 it->deleteAgent(agent_id);
@@ -163,25 +161,37 @@ namespace paxs {
             }
         }
 
+        /// @brief Add the agent.
+        /// @brief エージェントを追加
+        void addAgent(const paxs::SettlementAgent& agent_, const std::uint_least32_t settlement_id) noexcept {
+            auto it = std::find_if(settlements.begin(), settlements.end(), [settlement_id](const Settlement& settlement) { return settlement.getId() == settlement_id; });
+            if (it != settlements.end()) {
+                it->addAgent(agent_);
+            }
+            else {
+                PAXS_ERROR("Settlement not found. ID: " + std::to_string(settlement_id));
+            }
+        }
+
         /// @brief Divide the settlement.
         /// @brief 集落を分割する
         void divideSettlements() noexcept {
             // 人口が最大人口を超えている集落を複数探し、分割する
-            for (auto& settlement : settlements) {
-                if (settlement.getPopulation() > SimulationConstants::getInstance()->max_settlement_population) {
+            for (std::size_t i = 0; i < settlements.size(); ++i) {
+                if (settlements[i].getPopulationWeight() >= 1.0) {
                     // 分割
-                    Settlement divided_settlement = settlement.divide();
+                    Settlement divided_settlement = settlements[i].divide();
                     moveSettlementToThis(divided_settlement);
                 }
             }
         }
 
     private:
-        std::vector<Settlement> settlements;
-        std::shared_ptr<Environment> environment;
-        Vector2 grid_position;
-        std::mt19937* gen; // 乱数生成器
-        std::vector<std::uint_least8_t> ryoseikoku_list;
+        std::vector<Settlement> settlements{};
+        std::shared_ptr<Environment> environment{};
+        Vector2 grid_position{};
+        std::mt19937* gen{}; // 乱数生成器
+        std::vector<std::uint_least8_t> district_list{};
     };
 
 }

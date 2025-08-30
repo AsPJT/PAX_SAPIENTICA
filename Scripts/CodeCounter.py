@@ -2,7 +2,7 @@ import os
 import re
 
 # 除外するディレクトリのリスト
-EXCLUDED_DIRS = ['bin', '.github', 'build', 'Data', 'Document', 'ExternalLibrary', 'Image', 'Scripts']
+EXCLUDED_DIRS = ['bin', '.github', 'build', 'Data', 'Documents', 'ExternalLibrary', 'Image', 'Scripts']
 
 def is_excluded_dir(dirpath):
     for excluded in EXCLUDED_DIRS:

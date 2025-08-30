@@ -1,14 +1,14 @@
-name: Reviewdog-cpplint
+name: ReviewdogCpplint
 
 on: [pull_request]
 
 jobs:
   cpplint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: cpplint
       uses: reviewdog/action-cpplint@b6c13159b10435813edfddea9e1cd02157544f45

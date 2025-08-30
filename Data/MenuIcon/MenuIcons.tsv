@@ -18,6 +18,7 @@ texture_100c_l	Data/MenuIcon/10kYearL.svg
 texture_100c_r	Data/MenuIcon/10kYearR.svg
 texture_stop	Data/MenuIcon/stop.svg
 texture_playback	Data/MenuIcon/playback.svg
+texture_reload	Data/MenuIcon/Reload.svg
 texture_reverse_playback	Data/MenuIcon/reverse-playback.svg
 texture_1step	Data/MenuIcon/1Step.svg
 texture_delete_agent_data	Data/MenuIcon/DeleteAgentData.svg

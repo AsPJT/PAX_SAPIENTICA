@@ -24,7 +24,6 @@
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
-#include <PAX_MAHOROBA/3DModel.hpp>
 #include <PAX_MAHOROBA/Calendar.hpp> // 計算時に必要
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/LocationPoint.hpp>
@@ -48,6 +47,7 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
@@ -58,8 +58,25 @@ namespace paxs {
     class StringViewerSiv3D {
     private:
 #ifdef PAXS_USING_SIMULATOR
+        void simulationInit(
+            std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
+            paxs::KoyomiSiv3D& koyomi_siv
+        ) const {
+            const std::string model_name =
+                (simulation_model_index >= simulation_model_name.size()) ?
+                "Sample" : simulation_model_name[simulation_model_index];
+
+            simulator->init();
+            koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
+            koyomi_siv.jdn.setDay(static_cast<double>(SimulationConstants::getInstance(model_name)->start_julian_day)); // シミュレーション初期時の日付に設定
+            koyomi_siv.calcDate();
+            koyomi_siv.is_agent_update = false;
+            koyomi_siv.move_forward_in_time = false; // 一時停止
+            koyomi_siv.go_back_in_time = false;
+        }
+
         void simulation(
-            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
             int debug_start_y
@@ -67,19 +84,28 @@ namespace paxs {
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
                 const int time_icon_size = 40; // 時間操作アイコンの大きさ
 
+                const std::string model_name =
+                    (simulation_model_index >= simulation_model_name.size()) ?
+                    "Sample" : simulation_model_name[simulation_model_index];
+
+                std::string map_list_path = "Data/Simulations/" + model_name + "/MapList.tsv";
+                std::string japan_provinces_path = "Data/Simulations/" + model_name;
+
                 // シミュレーションが初期化されていない場合
                 if (simulator.get() == nullptr) {
                     texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
                         time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
                     if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        std::string map_list_path = "Data/Simulations/MapList.tsv";
-                        std::string japan_provinces_path = "Data/Simulations/Japan200-725";
 
                         AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationXYZTiles"),
                             [&](const std::string& path_) {map_list_path = path_; });
                         AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationProvincesPath"),
                             [&](const std::string& path_) {japan_provinces_path = path_; });
-
+                        // Sample を選択モデル名に置換
+                        paxs::StringExtensions::replace(map_list_path, "Sample", model_name);
+                        paxs::StringExtensions::replace(japan_provinces_path, "Sample", model_name);
+                        // シミュレーション変数を初期化
+                        SimulationConstants::getInstance(model_name)->init(model_name);
 #ifdef PAXS_USING_SIV3D
                         static bool is_console_open = false;
                         if (!is_console_open) {
@@ -87,23 +113,11 @@ namespace paxs {
                             is_console_open = true;
                         }
 #endif
-
                         std::random_device seed_gen;
-                        simulator = std::make_unique<paxs::SettlementSimulator<int>>(
+                        simulator = std::make_unique<paxs::SettlementSimulator>(
                             map_list_path, japan_provinces_path,
-                            SimulationConstants::getInstance()->getStartArea(),
-                            SimulationConstants::getInstance()->getEndArea(),
-                            SimulationConstants::getInstance()->getZ(),
                             seed_gen());
-                        simulator->init();
-                        koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
-                        koyomi_siv.jdn.setDay(static_cast<double>(SimulationConstants::getInstance()->start_julian_day)); // シミュレーション初期時の日付に設定
-                        koyomi_siv.calcDate();
-
-                        koyomi_siv.is_agent_update = false;
-
-                        koyomi_siv.move_forward_in_time = false; // 一時停止
-                        koyomi_siv.go_back_in_time = false;
+                        simulationInit(simulator, koyomi_siv);
                     }
                 }
                 // シミュレーションが初期化されている場合
@@ -123,6 +137,21 @@ namespace paxs {
                     }
                     // シミュレーションが再生されていない場合
                     else {
+                        // シミュレーション入力データを初期化
+                        texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            SimulationConstants::getInstance(model_name)->init(model_name);
+                        }
+                        // 人間データを初期化
+                        texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
+                            time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y));
+                        if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                            simulationInit(simulator, koyomi_siv);
+
+                            koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
+                            koyomi_siv.calcDate();
+                        }
                         // 地形データを削除
                         texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
                             time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
@@ -168,10 +197,58 @@ namespace paxs {
         LanguageFonts language_fonts;
 
         std::vector<std::uint_least32_t> language_key = {
-MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW"), MurMur3::calcHash("zh-CN"), MurMur3::calcHash("ko-KR"), MurMur3::calcHash("es-ES"), MurMur3::calcHash("pt-BR"), MurMur3::calcHash("de-DE"), MurMur3::calcHash("fr-FR"), MurMur3::calcHash("it-IT"), MurMur3::calcHash("tr-TR"), MurMur3::calcHash("pl-PL"), MurMur3::calcHash("el-GR"), MurMur3::calcHash("nl-NL"), MurMur3::calcHash("cs-CZ"), MurMur3::calcHash("uk-UA"), MurMur3::calcHash("ru-RU"), MurMur3::calcHash("id-ID"), MurMur3::calcHash("fa-IR"), MurMur3::calcHash("ar-SA")
+MurMur3::calcHash("en-US"),
+MurMur3::calcHash("ja-JP"),
+MurMur3::calcHash("zh-TW"),
+MurMur3::calcHash("zh-CN"),
+MurMur3::calcHash("ko-KR"),
+MurMur3::calcHash("hiragana"),
+MurMur3::calcHash("es-ES"),
+MurMur3::calcHash("pt-BR"),
+MurMur3::calcHash("de-DE"),
+MurMur3::calcHash("fr-FR"),
+MurMur3::calcHash("it-IT"),
+MurMur3::calcHash("tr-TR"),
+MurMur3::calcHash("pl-PL"),
+MurMur3::calcHash("el-GR"),
+MurMur3::calcHash("nl-NL"),
+MurMur3::calcHash("cs-CZ"),
+MurMur3::calcHash("uk-UA"),
+MurMur3::calcHash("ru-RU"),
+MurMur3::calcHash("id-ID"),
+MurMur3::calcHash("fa-IR"),
+MurMur3::calcHash("ar-SA"),
+MurMur3::calcHash("ain")
         };
+
+        // シミュレーションの Key
+        std::vector<std::uint_least32_t> simulation_key;
+        // シミュレーションモデル名
+        std::vector<std::string> simulation_model_name;
+
         std::vector<std::string> path_list = {
-            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf", "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf", "Data/Font/noto-sans-kr/NotoSansKR-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans/NotoSans-Regular.ttf", "Data/Font/noto-sans/NotoSans-Regular.ttf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans/NotoSans-Regular.ttf", "Data/Font/noto-sans/NotoSans-Regular.ttf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf", "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf"
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf",
+            "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf",
+            "Data/Font/noto-sans-kr/NotoSansKR-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans/NotoSans-Regular.ttf",
+            "Data/Font/noto-sans/NotoSans-Regular.ttf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans/NotoSans-Regular.ttf",
+            "Data/Font/noto-sans/NotoSans-Regular.ttf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
+            "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf",
+            "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf",
+            "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"
         };
 
         // プルダウンのフォントサイズ
@@ -184,7 +261,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
         int pulldown_font_buffer_thickness_size = 3; // プルダウンのフォント太さ
 
-        int koyomi_font_size = 19; // 暦のフォントサイズ
+        int koyomi_font_size = 22; // 暦のフォントサイズ
         int koyomi_font_buffer_thickness_size = 3; // 暦のフォント太さ
 
         paxg::Font pin_font{};
@@ -195,12 +272,18 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
         std::size_t map_view_center_y_str_index;
         std::size_t map_view_center_lat_str_index;
         std::size_t xyz_tile_z_str_index;
+
+        // シミュレーションのモデル番号
+        std::size_t simulation_model_index = 0;
 #ifdef PAXS_USING_SIV3D
         // UI の影
         s3d::RenderTexture shadow_texture{};
         s3d::RenderTexture internal_texture{};
 #endif
         paxs::Pulldown pulldown;
+#ifdef PAXS_USING_SIMULATOR
+        paxs::Pulldown simulation_pulldown;
+#endif
         paxs::MenuBar menu_bar;
 
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
@@ -209,11 +292,10 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
         //std::string map_license_name = reinterpret_cast<const char*>(u8"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.");
         //const std::string map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
 
-        paxs::Graphics3DModel g3d_model;
-
         void init(
             const SelectLanguage& select_language,
-            const paxs::Language& language_text
+            const paxs::Language& language_text,
+            const paxs::Language& simulation_text
         ) {
             language_fonts.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
             setLanguageFont(pulldown_font_size, AppConfig::getInstance()->getRootPath(), pulldown_font_buffer_thickness_size);
@@ -224,19 +306,42 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             map_view_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
-            std::vector<std::uint_least32_t> list_test0 = {
-            MurMur3::calcHash("en-US"),
-                MurMur3::calcHash("ja-JP"),
-                MurMur3::calcHash("zh-TW"),
-                MurMur3::calcHash("zh-CN"),
-                MurMur3::calcHash("ko-KR"),
-                MurMur3::calcHash("es-ES"),
-                MurMur3::calcHash("pt-BR")
-            };
-
-            pulldown = paxs::Pulldown(&select_language, &language_text, list_test0, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
+            pulldown = paxs::Pulldown(&select_language, &language_text, language_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
-
+#ifdef PAXS_USING_SIMULATOR
+            {
+                // シミュレーションモデルのファイルを読み込む
+                const std::string models_path = "Data/Simulations/Models.txt";
+                paxs::InputFile models_tsv(AppConfig::getInstance()->getRootPath() + models_path);
+                if (models_tsv.fail()) {
+                    PAXS_WARNING("Failed to read Models TXT file: " + models_path);
+                    simulation_model_name.emplace_back("Sample");
+                    simulation_key.emplace_back(MurMur3::calcHash("Sample"));
+                }
+                else {
+                    // 1 行目を読み込む
+                    if (!(models_tsv.getLine())) {
+                        simulation_model_name.emplace_back("Sample");
+                        simulation_key.emplace_back(MurMur3::calcHash("Sample"));
+                    }
+                    else {
+                        // BOM を削除
+                        models_tsv.deleteBOM();
+                        // 1 行目を分割する
+                        simulation_model_name.emplace_back(models_tsv.pline);
+                        simulation_key.emplace_back(MurMur3::calcHash(models_tsv.pline.c_str()));
+                        // 1 行ずつ読み込み（区切りはタブ）
+                        while (models_tsv.getLine()) {
+                            simulation_model_name.emplace_back(models_tsv.pline);
+                            simulation_key.emplace_back(MurMur3::calcHash(models_tsv.pline.c_str()));
+                        }
+                    }
+                }
+            }
+            // シミュレーションモデルのプルダウンメニューを初期化
+            simulation_pulldown = paxs::Pulldown(&select_language, &simulation_text, simulation_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, false);
+            simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), 600 });
+#endif
             //std::vector<std::uint_least32_t> list_test1 = {
             //MurMur3::calcHash("menu_bar_file"),
             //    MurMur3::calcHash("menu_bar_file_new"),
@@ -262,6 +367,23 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 MurMur3::calcHash("menu_bar_view_debug"),
                 MurMur3::calcHash("menu_bar_view_3d")
             };
+
+
+            std::vector<std::uint_least32_t> list_test6 = {
+            MurMur3::calcHash("place_names"),
+                MurMur3::calcHash("place_names_place_name"),
+                MurMur3::calcHash("place_names_site"),
+                MurMur3::calcHash("place_names_tumulus"),
+                MurMur3::calcHash("place_names_dolmen"),
+                MurMur3::calcHash("place_names_kamekanbo"),
+                MurMur3::calcHash("place_names_stone_coffin"),
+                MurMur3::calcHash("place_names_doken"),
+                MurMur3::calcHash("place_names_dotaku"),
+                MurMur3::calcHash("place_names_bronze_mirror"),
+                MurMur3::calcHash("place_names_human_bone"),
+                MurMur3::calcHash("place_names_mtdna"),
+                MurMur3::calcHash("place_names_ydna")
+            };
             //std::vector<std::uint_least32_t> list_test4 = {
             //MurMur3::calcHash("menu_bar_calendar"),
             //    MurMur3::calcHash("menu_bar_calendar_japan"),
@@ -270,26 +392,27 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             //    MurMur3::calcHash("menu_bar_calendar_julian_day"),
             //    MurMur3::calcHash("menu_bar_calendar_hijri")
             //};
-            //std::vector<std::uint_least32_t> list_test5 = {
-            //MurMur3::calcHash("menu_bar_map"),
-            //    MurMur3::calcHash("menu_bar_map_base"),
-            //    MurMur3::calcHash("menu_bar_map_land_and_sea"),
-            //    MurMur3::calcHash("menu_bar_map_land_and_water"),
-            //    MurMur3::calcHash("menu_bar_map_soil"),
-            //    MurMur3::calcHash("menu_bar_map_soil_temperature"),
-            //    MurMur3::calcHash("menu_bar_map_ryosei_country"),
-            //    MurMur3::calcHash("menu_bar_map_ryosei_line"),
-            //    MurMur3::calcHash("menu_bar_map_slope"),
-            //    MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
-            //    MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
-            //    MurMur3::calcHash("menu_bar_map_line1"),
-            //    MurMur3::calcHash("menu_bar_map_line2")
-            //};
+            std::vector<std::uint_least32_t> list_test5 = {
+            MurMur3::calcHash("menu_bar_map"),
+                MurMur3::calcHash("menu_bar_map_base"),
+                MurMur3::calcHash("menu_bar_map_land_and_sea"),
+                MurMur3::calcHash("menu_bar_map_land_and_water"),
+                MurMur3::calcHash("menu_bar_map_soil"),
+                MurMur3::calcHash("menu_bar_map_soil_temperature"),
+                MurMur3::calcHash("menu_bar_map_ryosei_country"),
+                MurMur3::calcHash("menu_bar_map_ryosei_line"),
+                MurMur3::calcHash("menu_bar_map_slope"),
+                MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
+                MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
+                MurMur3::calcHash("menu_bar_map_line1"),
+                MurMur3::calcHash("menu_bar_map_line2")
+            };
             //menu_bar.add(&select_language, &language_text, list_test1, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("file"));
             //menu_bar.add(&select_language, &language_text, list_test2, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("edit"));
             menu_bar.add(&select_language, &language_text, list_test3, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
+            menu_bar.add(&select_language, &language_text, list_test6, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("place_names"));
             //menu_bar.add(&select_language, &language_text, list_test4, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("calendar"));
-            //menu_bar.add(&select_language, &language_text, list_test5, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
+            menu_bar.add(&select_language, &language_text, list_test5, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
 
             const std::string path = (AppConfig::getInstance()->getRootPath());
             // 暦の時間操作のアイコン
@@ -300,11 +423,11 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             pin_font = paxg::Font{ 14 /*, Typeface::Bold*/
                 , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
 
-            pin_font = paxg::Font{ 18 /*, Typeface::Bold*/
-                , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
+            //pin_font = paxg::Font{ 18 /*, Typeface::Bold*/
+            //    , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
 
             // 英語用フォント
-            en_font = paxg::Font{ 16 /*, Typeface::Bold*/
+            en_font = paxg::Font{ 20 /*, Typeface::Bold*/
     , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
 
 #ifdef PAXS_USING_SIV3D
@@ -319,15 +442,12 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator, // コンパイル時の分岐により使わない場合あり
-            std::size_t& pop_num, // 人口数
-            std::size_t& sat_num, // 集落数
+            std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
 #endif
             paxs::TouchManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
             paxs::GraphicVisualizationList& visible
             ) {
-            const double map_view_width = map_view.getWidth();
             // const double map_view_center_lat =
                 //paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view->getCenterY()))));
             map_view.getCoordinate().toEquirectangularDegY();
@@ -341,15 +461,16 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             int koyomi_font_en_x = 0;//820;
             int koyomi_font_en_y = pulldown_font_size + 43;
 
-            koyomi_font_x = paxg::Window::width() - 220;
-            koyomi_font_en_x = paxg::Window::width() - 240;
-            int rect_start_x = paxg::Window::width() - 395;
+            koyomi_font_x = paxg::Window::width() - 270;
+            koyomi_font_en_x = koyomi_font_x - 20;
+            int rect_start_x = koyomi_font_en_x - 165;
+            int rect_len_x = paxg::Window::width() - rect_start_x - 15;
 
             int koyomi_height = static_cast<int>(koyomi_siv.date_list.size()) * (koyomi_font_size * 4 / 3); // 暦の縦の幅
 
-            const int arrow_time_icon_size = 24; // 時間操作アイコンの大きさ
-            const int time_icon_size = 40; // 時間操作アイコンの大きさ
-            int icon_const_start_x = 360;
+            const int arrow_time_icon_size = 40; // 時間操作アイコンの大きさ
+            const int time_icon_size = 50; // 時間操作アイコンの大きさ
+            int icon_const_start_x = rect_len_x - 10;
 
             int icon_start_x = icon_const_start_x;
 
@@ -359,11 +480,11 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             const int arrow_icon_move_x = int(arrow_time_icon_size * 1.2);// int(time_icon_size * 1.4);
             const int icon_move_x = int(time_icon_size * 1.1);// int(time_icon_size * 1.4);
 
-            const int arrow_icon_move_y = 30;
-            const int icon_move_y = 44;
+            const int arrow_icon_move_y = int(arrow_time_icon_size * 1.1);
+            const int icon_move_y = int(time_icon_size * 1.1);
 
             int next_rect_start_y = icon_start_y + sum_icon_height + 50;//230;
-            int next_rect_end_y = 230;//380;
+            int next_rect_end_y = 280;//380;
 
 #ifdef PAXS_USING_SIV3D
                 // 影を作る図形を shadow_texture に描く
@@ -374,8 +495,8 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                 paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(); // メニューバー
 
                 if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
-                    paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, 380, next_rect_start_y, 10 }.draw();
-                    paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 380, next_rect_end_y, 10 }.draw();
+                    paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, rect_len_x, next_rect_start_y, 10 }.draw();
+                    paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, rect_len_x, next_rect_end_y, 10 }.draw();
                 }
             }
                 // shadow_texture を 2 回ガウスぼかし
@@ -387,8 +508,8 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 #endif
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦表示の範囲に白背景を追加
-                paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, 380, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
-                paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, 380, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
+                paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, rect_len_x, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
+                paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, rect_len_x, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
             }
 
 #ifdef PAXS_USING_SIMULATOR
@@ -481,6 +602,9 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                         // 暦描画フォントを指定
                         paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                         if (one_font == nullptr) continue;
+                        // 年描画フォントを指定
+                        paxg::Font* big_year_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size * 3), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+                        if (big_year_font == nullptr) continue;
 
                         // 暦の読み方を返す
                         const std::string* const text_str = language_text.getStringPtr(
@@ -509,6 +633,14 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                             (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::string(koyomi_siv.month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(280 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+#ifdef PAXS_USING_SIMULATOR
+                            if (simulator == nullptr) {
+#else
+                            {
+#endif
+                                if (i == 1) (*big_year_font).drawTopRight(std::to_string(date_year)/* + " AD"*/, paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * koyomi_font_size / 30.0) + koyomi_font_en_x + 100 - 70), static_cast<int>(550 - 30 + koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
+                            }
+
                             if (date_lm) {
                                 (*one_font).drawTopRight("int.", paxg::Vec2i(static_cast<int>((
                                     int(152 * koyomi_font_size / 30.0) + koyomi_font_en_x
@@ -678,15 +810,31 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                         // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[map_view_width_str_index][select_language.cget() + 1 /* 言語位置調整 */]
                         //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
 
-                        // マップの幅
+                        // マップの高さ
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                         (*one_font).drawTopRight(((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
                             reinterpret_cast<const char*>(u8"拡大率") :
                             "Zoom rate"),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y), paxg::Color(0, 0, 0));
-                        (*one_font).drawTopRight(std::to_string(map_view_width),
+                        (*one_font).drawTopRight(std::to_string(map_view.getHeight()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 30), paxg::Color(0, 0, 0));
 
+                        //map_view.setHeight(11.0);
+                        //map_view.setCenterX(134.0);
+                        //map_view.setCenterY(36.8);
+
+#ifdef PAXS_USING_SIMULATOR
+                        if (simulator == nullptr) {
+#else
+                            {
+#endif
+                            if (visible[MurMur3::calcHash(8, "Simulation")]) {
+                                (*one_font).drawTopRight(std::to_string(map_view.getCenterX()),
+                                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
+                                (*one_font).drawTopRight(std::to_string(map_view.getCenterY()),
+                                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
+                            }
+                        }
 #ifdef PAXS_USING_SIMULATOR
                         if (simulator != nullptr) {
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
@@ -696,7 +844,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                                 "Population"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 60), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
-                            std::to_string(pop_num),
+                            std::to_string(simulator->cgetPopulationNum()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
 
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
@@ -706,17 +854,45 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                                 "Settlements"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 90), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
-                            std::to_string(sat_num),
+                            std::to_string(simulator->cgetSettlement()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
 
                         (*one_font).drawTopRight(
                             ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
                                 reinterpret_cast<const char*>(u8"渡来数") :
-                                "Immigrants"),
+                                "Total Immigrants"),
                             paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 120), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(
                             std::to_string(simulator->emigrationSize()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 120), paxg::Color(0, 0, 0));
+
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                                reinterpret_cast<const char*>(u8"全ての処理時間（秒）") :
+                                "All Processing Time [s]"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 150), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(simulator->cgetProcessingTime()),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 150), paxg::Color(0, 0, 0));
+
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                                reinterpret_cast<const char*>(u8"集団移動の処理時間（秒）") :
+                                "Move Processing Time [s]"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 180), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(simulator->cgetMoveProcessingTime()),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 180), paxg::Color(0, 0, 0));
+
+                        (*one_font).drawTopRight(
+                            ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                                reinterpret_cast<const char*>(u8"婚姻の処理時間（秒）") :
+                                "Marriage Processing Time [s]"),
+                            paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 210), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(
+                            std::to_string(simulator->cgetMarriageProcessingTime()),
+                            paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 210), paxg::Color(0, 0, 0));
+
 
                         }
 #endif
@@ -739,20 +915,31 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 //#endif
 //            }
 
-            if (!visible[MurMur3::calcHash(2, "3D")]) {
-                g3d_model.updateRotation(); // 3D モデルを回転させる
-            }
-
             // メニューバー
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
-
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
+#ifdef PAXS_USING_SIMULATOR            // シミュレーションのボタン
+            if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
+                if (simulator == nullptr) {
+                    paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(simulation_pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
+                }
+            }
+#endif
 
 #ifdef PAXS_USING_SIV3D
+            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
+
             texture_dictionary.at(MurMur3::calcHash(14, "texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
             if (tm_.get(s3d::Rect(paxg::Window::width() - 280, 3, 28).leftClicked())) {
                 // Web ページをブラウザで開く
                 s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
+            }
+#endif
+#ifdef PAXS_USING_SIMULATOR
+            // シミュレーションのボタン
+            if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
+                if (simulator == nullptr) {
+                    simulation_pulldown.draw(); // シミュレーション選択
+                }
             }
 #endif
             pulldown.draw(); // 言語選択
@@ -760,17 +947,56 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
 
             //if (visible[MurMur3::calcHash("UI")])
 
-            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]
+#ifdef PAXS_USING_SIMULATOR
+                && simulator == nullptr
+#endif
+                ) {
                 int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
                 // 暦描画フォントを指定
                 paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                 if (one_font != nullptr) {
                     {
+                        std::string dotaku = "";
+                        std::string doken = "";
+
+                        static std::array<int, 12> yayoi_year = { {
+-230, -190, -150, -100, -50, -20, 10, 40, 80, 120, 160, 200
+} };
+                        static std::array<std::string, 12> dotaku_name = { {
+                                "",
+                                reinterpret_cast<const char*>(u8"Ⅰ式　菱環紐1式"),
+            reinterpret_cast<const char*>(u8"Ⅰ式　菱環紐2式"),
+            reinterpret_cast<const char*>(u8"Ⅱ式　外縁付鈕1式"),
+            reinterpret_cast<const char*>(u8"Ⅱ式　外縁付鈕2式"),
+            reinterpret_cast<const char*>(u8"Ⅲ式　扁平鈕1式"),
+            reinterpret_cast<const char*>(u8"Ⅲ式　扁平鈕2式"),
+            reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕1式"),
+            reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕2式"),
+            reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕3式"),
+            reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕4式"),
+            reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕5式")
+                                    } };
+                        static std::array<std::string, 12> doken_name = { {
+                                "",
+                                reinterpret_cast<const char*>(u8"細形"),
+            reinterpret_cast<const char*>(u8""),
+            reinterpret_cast<const char*>(u8"中細形a類"),
+            reinterpret_cast<const char*>(u8"中細形b類"),
+            reinterpret_cast<const char*>(u8"中細形c類／平形Ⅰ"),
+            reinterpret_cast<const char*>(u8"中広形／平形Ⅱ"),
+            reinterpret_cast<const char*>(u8""),
+            reinterpret_cast<const char*>(u8""),
+            reinterpret_cast<const char*>(u8""),
+            reinterpret_cast<const char*>(u8""),
+            reinterpret_cast<const char*>(u8"")
+                                    } };
+
                         std::string sueki_nakamura = "";
                         std::string sueki_tanabe = "";
 
                         static std::array<int, 18> sueki_year = { {
-                        380,390,410,430,440,450,460,470,490,500,520,530,550,560,590,620,645,670
+                        1380,1390,1410,1430,1440,1450,1460,1470,1490,1500,1520,1530,1550,1560,1590,1620,1645,1670
                         } };
                         static std::array<std::string, 18> sueki_name = { {
             "","TG232","TK73","TK216","ON46","ON46/TK208","TK208","TK23","TK23/TK47","TK47",
@@ -780,6 +1006,7 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
             "",reinterpret_cast<const char*>(u8"I-1前"),reinterpret_cast<const char*>(u8"I-1後"),"I-2","I-3","I-3","I-3","I-4","I-4/I-5","I-5",
             "II-1","II-2","II-2/II-3","II-3","II-4","II-5","II-6","III-1"
                                     } };
+#ifndef PAXS_USING_SIMULATOR
                         {
                             int date_year = 0;
                             std::visit([&](const auto& x) { date_year = int(x.cgetYear()); }, koyomi_siv.date_list[1].date);
@@ -790,29 +1017,55 @@ MurMur3::calcHash("en-US"), MurMur3::calcHash("ja-JP"), MurMur3::calcHash("zh-TW
                                     break;
                                 }
                             }
+                            dotaku = "";
+                            for (std::size_t i = 0; i < yayoi_year.size(); ++i) {
+                                if (date_year < yayoi_year[i]) {
+                                    dotaku = dotaku_name[i];
+                                    doken = doken_name[i];
+                                    break;
+                                }
+                            }
                         }
+                        if (dotaku.size() != 0) {
+                                (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                                (*one_font).draw(reinterpret_cast<const char*>(u8"銅鐸 型式"),
+                                    paxg::Vec2i(rect_start_x + 10, debug_start_y + 140), paxg::Color(0, 0, 0));
+                            (*one_font).drawTopRight(
+                                std::string(dotaku),
+                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 140), paxg::Color(0, 0, 0));
+                        }
+                        if (doken.size() != 0) {
+                            (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                            (*one_font).draw(reinterpret_cast<const char*>(u8"銅剣 型式"),
+                                paxg::Vec2i(rect_start_x + 10, debug_start_y + 170), paxg::Color(0, 0, 0));
+                            (*one_font).drawTopRight(
+                                std::string(doken),
+                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 170), paxg::Color(0, 0, 0));
+                        }
+
                         const std::string* sueki_nakamura_str = language_text.getStringPtr(koyomi_siv.sueki_nakamura_key, select_language.cgetKey());
                         if (sueki_nakamura.size() != 0) {
                             if (sueki_nakamura_str != nullptr) {
                                 (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                                (*one_font).drawTopRight(*sueki_nakamura_str,
-                                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 150), paxg::Color(0, 0, 0));
+                                (*one_font).draw(*sueki_nakamura_str,
+                                    paxg::Vec2i(rect_start_x + 10, debug_start_y + 140), paxg::Color(0, 0, 0));
                             }
                             (*one_font).drawTopRight(
                                 std::string(sueki_nakamura),
-                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 150), paxg::Color(0, 0, 0));
+                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 140), paxg::Color(0, 0, 0));
                         }
                         if (sueki_tanabe.size() != 0) {
                             const std::string* sueki_tanabe_str = language_text.getStringPtr(koyomi_siv.sueki_tanabe_key, select_language.cgetKey());
                             if (sueki_nakamura_str != nullptr) {
-                                (*one_font).drawTopRight(*sueki_tanabe_str,
-                                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 180), paxg::Color(0, 0, 0));
+                                (*one_font).draw(*sueki_tanabe_str,
+                                    paxg::Vec2i(rect_start_x + 10, debug_start_y + 170), paxg::Color(0, 0, 0));
                             }
                             (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
                             (*one_font).drawTopRight(
                                 std::string(sueki_tanabe),
-                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 180), paxg::Color(0, 0, 0));
+                                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 170), paxg::Color(0, 0, 0));
                         }
+#endif
                     }
                 }
             }

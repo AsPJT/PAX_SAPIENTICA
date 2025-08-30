@@ -31,7 +31,7 @@ namespace paxs {
     /// @brief ランダムにベクトルから要素を選択
     class RandomSelector {
     public:
-        explicit RandomSelector() noexcept : gen(rd()) {}
+        explicit RandomSelector(std::mt19937* gen_) noexcept : gen(gen_) {}
 
         /// @brief Randomly select elements from a vector.
         /// @brief ベクトルから要素をランダムに選択
@@ -48,7 +48,7 @@ namespace paxs {
             std::vector<T> result(vec);
             for (std::size_t i = 0; i < num_elements; ++i) {
                 std::uniform_int_distribution<std::size_t> distribution(i, result.size() - 1);
-                std::size_t j = distribution(gen);
+                std::size_t j = distribution(*gen);
                 std::swap(result[i], result[j]);
             }
 
@@ -58,13 +58,13 @@ namespace paxs {
 
         /// @brief Randomly select pairs of elements from two vectors.
         /// @brief 二つの要素数が異なるベクトルからペアをランダムに選択
+        /// @param result A vector of selected elements.
         /// @param num_elements_1 The number of elements to select from the first vector.
         /// @param num_elements_2 The number of elements to select from the second vector.
-        /// @return A vector of selected elements.
-        std::vector<std::pair<std::size_t, std::size_t>> select(const std::size_t num_elements_1, const std::size_t num_elements_2) {
+        void select(std::vector<std::pair<std::size_t, std::size_t>>& result,
+            const std::size_t num_elements_1, const std::size_t num_elements_2) {
             const std::size_t num_elements = (std::min)(num_elements_1, num_elements_2);
-
-            std::vector<std::pair<std::size_t, std::size_t>> result;
+            result.clear();
             std::unordered_set<std::size_t> used_indices_1;
             std::unordered_set<std::size_t> used_indices_2;
 
@@ -73,19 +73,27 @@ namespace paxs {
                 std::size_t index_2 = getRandomIndex(num_elements_2, used_indices_2);
                 result.emplace_back(index_1, index_2);
             }
+        }
 
+        /// @brief Randomly select pairs of elements from two vectors.
+        /// @brief 二つの要素数が異なるベクトルからペアをランダムに選択
+        /// @param num_elements_1 The number of elements to select from the first vector.
+        /// @param num_elements_2 The number of elements to select from the second vector.
+        /// @return A vector of selected elements.
+        std::vector<std::pair<std::size_t, std::size_t>> select(const std::size_t num_elements_1, const std::size_t num_elements_2) {
+            std::vector<std::pair<std::size_t, std::size_t>> result;
+            select(result, num_elements_1, num_elements_2);
             return result;
         }
 
     private:
-        std::random_device rd;
-        std::mt19937 gen;
+        std::mt19937* gen;
 
         std::size_t getRandomIndex(std::size_t num_elements, std::unordered_set<std::size_t>& used_indices) {
             std::uniform_int_distribution<std::size_t> distribution(0, num_elements - 1);
             std::size_t index;
             do {
-                index = distribution(gen);
+                index = distribution(*gen);
             } while (used_indices.find(index) != used_indices.end());
             used_indices.insert(index);
             return index;

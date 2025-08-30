@@ -346,6 +346,63 @@ namespace paxs {
             return true;
         }
 
+        template<typename Func_>
+        bool calc(Func_&& func_) {
+            if (ifs.fail()) return false; // 読み込み失敗
+            char xyz_tiles[256 * 256 * 2/*2byte*/]{};
+            const std::size_t byte_num = ifs.splitBinary(xyz_tiles, 256 * 256 * 2); // バイト数
+            if (byte_num <= 1) return false; // 1 文字になることはない
+
+            for (std::size_t i = 0, j = 0;
+                i < byte_num // 入力された文字数
+                && j < 256 * 256 // XYZ タイルの大きさ
+                ;) {
+
+                std::int_least16_t first_value = static_cast<std::int_least16_t>(
+                    (static_cast<std::uint_least16_t>(static_cast<unsigned char>(xyz_tiles[i])) << 8) // 値
+                    + static_cast<std::uint_least16_t>(static_cast<unsigned char>(xyz_tiles[i + 1]))); // 値
+
+                // 値だったら代入
+                if (first_value <= 32763) {
+                    func_(first_value, static_cast<std::uint_least8_t>(j & 0xff), static_cast<std::uint_least8_t>(j >> 8));
+                    i += 2;
+                    ++j;
+                }
+                // command の場合
+                else if (first_value == 32765 || first_value == 32764) {
+                    const std::size_t len =
+                        (first_value == 32765) ?
+                        static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 2])) :
+
+                        ((static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 2])) << 8) // 上位バイト
+                            + static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 3]))); // 下位バイト
+
+                    for (std::size_t k = 0; k < len + 1 && j < 256 * 256; ++j, ++k) {
+                        func_(32761, static_cast<std::uint_least8_t>(j & 0xff), static_cast<std::uint_least8_t>(j >> 8)); // 固定値
+                    }
+                    i += ((first_value == 32765) ? 3 : 4);
+                }
+                // command の場合
+                else {
+                    std::int_least16_t second_value = static_cast<std::int_least16_t>(
+                        (static_cast<std::uint_least16_t>(static_cast<unsigned char>(xyz_tiles[i + 2])) << 8) // 値
+                        + static_cast<std::uint_least16_t>(static_cast<unsigned char>(xyz_tiles[i + 3]))); // 値
+                    const std::size_t len =
+                        (first_value == 32767) ?
+                        static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 4])) :
+
+                        ((static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 4])) << 8) // 上位バイト
+                            + static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 5]))); // 下位バイト
+
+                    for (std::size_t k = 0; k < len + 1 && j < 256 * 256; ++j, ++k) {
+                        func_(second_value, static_cast<std::uint_least8_t>(j & 0xff), static_cast<std::uint_least8_t>(j >> 8)); // 値
+                    }
+                    i += ((first_value == 32767) ? 5 : 6);
+                }
+            }
+            return true;
+        }
+
     };
 
     // 8bit バイナリデータを読み込む
@@ -387,6 +444,43 @@ namespace paxs {
 
                     for (std::size_t k = 0; k < len + 1 && j < 256 * 256; ++j, ++k) {
                         tiles_[j] = second_value; // 値
+                    }
+                    i += ((first_value == 255) ? 3 : 4);
+                }
+            }
+            return true;
+        }
+
+        template<typename Func_>
+        bool calc(Func_&& func_) {
+            if (ifs.fail()) return false; // 読み込み失敗
+            char xyz_tiles[256 * 256]{};
+            const std::size_t byte_num = ifs.splitBinary(xyz_tiles, 256 * 256); // バイト数
+            for (std::size_t i = 0, j = 0;
+                i < byte_num // 入力された文字数
+                && j < 256 * 256 // XYZ タイルの大きさ
+                ;) {
+
+                unsigned char first_value = static_cast<unsigned char>(xyz_tiles[i]); // 値
+
+                // 値だったら代入
+                if (first_value <= 253) {
+                    func_(first_value, static_cast<std::uint_least8_t>(j & 0xff), static_cast<std::uint_least8_t>(j >> 8));
+                    ++i;
+                    ++j;
+                }
+                // command の場合
+                else {
+                    unsigned char second_value = static_cast<unsigned char>(xyz_tiles[i + 1]); // 値
+                    const std::size_t len =
+                        (first_value == 255) ?
+                        static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 2])) :
+
+                        ((static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 2])) << 8) // 上位バイト
+                            + static_cast<std::size_t>(static_cast<unsigned char>(xyz_tiles[i + 3]))); // 下位バイト
+
+                    for (std::size_t k = 0; k < len + 1 && j < 256 * 256; ++j, ++k) {
+                        func_(second_value, static_cast<std::uint_least8_t>(j & 0xff), static_cast<std::uint_least8_t>(j >> 8)); // 値
                     }
                     i += ((first_value == 255) ? 3 : 4);
                 }

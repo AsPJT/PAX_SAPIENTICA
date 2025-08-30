@@ -14,14 +14,14 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest ${
 
 add_definitions(-DPROJECT_ROOT_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/../..\")
 
-set(TEST_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source")
+set(TEST_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 
 file(GLOB_RECURSE TEST_SOURCES "${TEST_SOURCE_DIR}/*.cpp")
 foreach(TEST_SOURCE ${TEST_SOURCES})
     string(REPLACE "${TEST_SOURCE_DIR}/" "" TARGET_NAME ${TEST_SOURCE})
     string(REPLACE ".cpp" "" TARGET_NAME ${TARGET_NAME})
     string(REPLACE "/" "_" TARGET_NAME ${TARGET_NAME})
-    string(REPLACE "${TEST_SOURCE_DIR}/" "source/" TEST_SOURCE ${TEST_SOURCE})
+    string(REPLACE "${TEST_SOURCE_DIR}/" "Source/" TEST_SOURCE ${TEST_SOURCE})
     add_executable(${TARGET_NAME} ${TEST_SOURCE})
     target_link_libraries(${TARGET_NAME} gtest_main)
     add_test(

@@ -37,7 +37,7 @@ namespace paxs {
     class MapViewerSiv3D {
     public:
 
-        
+
         std::unique_ptr<TextureLocation> texture_location; // 地図上に描画する画像の一覧
 #ifdef PAXS_USING_SIV3D
         s3d::Array<s3d::Vec2> route1, route2; // 線の情報を格納
@@ -94,9 +94,7 @@ namespace paxs {
             const paxs::KoyomiSiv3D& koyomi_siv,
             paxs::StringViewerSiv3D& string_siv,
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator<int>>& simulator,
-            std::size_t& pop_num, // 人口数
-            std::size_t& sat_num, // 集落数
+            std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
             paxs::GraphicVisualizationList& visible
             ) {
@@ -107,9 +105,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             if (visible[MurMur3::calcHash("Simulation")]) {
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
-                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY(),
-                        pop_num,
-                        sat_num
+                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), simulator->getMarriagePosList(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY()
                     );
                 }
             }
@@ -133,6 +129,7 @@ namespace paxs {
                 paxg::Font* one_font = string_siv.language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(string_siv.koyomi_font_size), static_cast<std::uint_least8_t>(string_siv.koyomi_font_buffer_thickness_size));
 
                 place_name_location.draw(
+                    visible,
                     koyomi_siv.jdn.cgetDay(),
                     map_view.getWidth(),
                     map_view.getHeight(),
@@ -152,6 +149,14 @@ namespace paxs {
                     string_siv.pin_font);
 
             }
+
+#ifdef PAXS_USING_SIMULATOR
+            if (visible[MurMur3::calcHash("Simulation")]) {
+                if (agent_location.get() != nullptr && simulator.get() != nullptr) {
+                    agent_location->drawText();
+                }
+            }
+#endif
 
         }
 
