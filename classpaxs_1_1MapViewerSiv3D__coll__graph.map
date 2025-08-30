@@ -1,5 +1,7 @@
 <map id="paxs::MapViewerSiv3D" name="paxs::MapViewerSiv3D">
-<area shape="rect" id="node1" title=" " alt="" coords="124,95,296,121"/>
-<area shape="rect" id="node2" href="$classpaxs_1_1PlaceNameLocation.html" title=" " alt="" coords="5,5,196,32"/>
-<area shape="rect" id="node3" href="$classpaxs_1_1PersonNameLocation.html" title=" " alt="" coords="220,5,419,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="124,93,296,119"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1PlaceNameLocation.html" title=" " alt="" coords="5,5,196,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,40,149,67,187,91,184,95,146,71,117,44"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1PersonNameLocation.html" title=" " alt="" coords="220,5,419,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="311,45,292,71,272,85,250,96,248,91,269,81,288,67,307,42"/>
 </map>

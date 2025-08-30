@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['gray_1731',['Gray',['../namespaces3d.html#ab13ab7b184d808ea55b520b81d316028a994ae1d9731cebe455aff211bcb25b93',1,'s3d']]],
-  ['gregorian_5fdate_5ftype_1732',['gregorian_date_type',['../namespacepaxs_1_1cal.html#afd4a33f11b893e4260e74dec451a9603a6997648aa82958d48c6059162f3d9b96',1,'paxs::cal']]]
+  ['maxalpha_0',['MaxAlpha',['../namespaces3d.html#a0e8862daab0620b59644075c86e0f3eda9eb7585e5738779cd8325648236ee6c5',1,'s3d']]],
+  ['mippedsrgb_1',['MippedSRGB',['../namespaces3d.html#a5b42e807576f710e4d777a1b278d68aca0b5dd7b5dc341170cadb3ee127ab3d78',1,'s3d']]]
 ];

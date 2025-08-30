@@ -1,8 +1,16 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/MapProjection.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/MapProjection.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,316,61"/>
-<area shape="rect" id="node2" title=" " alt="" coords="117,199,180,225"/>
-<area shape="rect" id="node3" href="$Math_8hpp.html" title=" " alt="" coords="62,117,259,143"/>
-<area shape="rect" id="node4" href="$Vector2_8hpp.html" title=" " alt="" coords="284,109,451,151"/>
-<area shape="rect" id="node5" title=" " alt="" coords="281,199,361,225"/>
-<area shape="rect" id="node6" title=" " alt="" coords="385,199,443,225"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,316,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="68,196,131,221"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,62,73,83,52,109,47,128,52,147,63,167,78,185,74,188,59,170,48,149,42,128,48,107,70,79,98,58"/>
+<area shape="rect" id="Node000003" href="$Math_8hpp.html" title=" " alt="" coords="62,115,259,141"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="163,60,163,101,158,101,158,60"/>
+<area shape="rect" id="Node000004" href="$Vector2_8hpp.html" title=" " alt="" coords="284,108,451,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="220,58,314,100,312,105,218,62"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="304,151,145,197,144,192,302,145"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="230,196,310,221"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="345,150,297,189,293,185,342,146"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="334,196,401,221"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="370,148,370,182,365,182,365,148"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="425,196,483,221"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="390,146,433,184,429,188,387,150"/>
 </map>

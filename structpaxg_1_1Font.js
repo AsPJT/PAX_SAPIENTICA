@@ -1,14 +1,14 @@
 var structpaxg_1_1Font =
 [
     [ "Font", "structpaxg_1_1Font.html#a1d57ec3c28fa96a00aee727a6d907f2f", null ],
-    [ "Font", "structpaxg_1_1Font.html#a917842adad9834abc193b1424559110b", null ],
-    [ "draw", "structpaxg_1_1Font.html#ac71e9d80a33d7ae4a29d986712db18d7", null ],
-    [ "drawAt", "structpaxg_1_1Font.html#aba2ea47955a55762d497cd620484c02d", null ],
-    [ "drawBottomCenter", "structpaxg_1_1Font.html#a7a5a9971b24b9d069c8679a9225f5afb", null ],
-    [ "drawBottomLeft", "structpaxg_1_1Font.html#a205caacd5a12fe0490601b8f047e4a2f", null ],
-    [ "drawTopCenter", "structpaxg_1_1Font.html#a53d1fa1f628dc9c44cf3a592fec8071c", null ],
-    [ "drawTopRight", "structpaxg_1_1Font.html#a984b58725e6150e2da51a5c4425df88c", null ],
+    [ "Font", "structpaxg_1_1Font.html#a3b01f71bb4584919ce8cc9ab68e96f1e", null ],
+    [ "draw", "structpaxg_1_1Font.html#a51a89d29896c9c5aa193c83062c0b9f4", null ],
+    [ "drawAt", "structpaxg_1_1Font.html#a85130b30da7846af231f7ef0fb9b8afa", null ],
+    [ "drawBottomCenter", "structpaxg_1_1Font.html#af533d7054969ae45933708f0cd4c8abf", null ],
+    [ "drawBottomLeft", "structpaxg_1_1Font.html#a01b5e5808a3b2e6d5148299b80ed1715", null ],
+    [ "drawTopCenter", "structpaxg_1_1Font.html#aa3afcdea2bfbb5f372b4e14321b6e4b1", null ],
+    [ "drawTopRight", "structpaxg_1_1Font.html#a6888d5f7ffcfb8be503eec2d1e2bf9d6", null ],
     [ "height", "structpaxg_1_1Font.html#a2f861e4866e42d427efa9df7628e72be", null ],
-    [ "setOutline", "structpaxg_1_1Font.html#a409b58023002d104c875c48882f70cce", null ],
-    [ "width", "structpaxg_1_1Font.html#a3c5ea5137bed7f9537936835794df9e6", null ]
+    [ "setOutline", "structpaxg_1_1Font.html#a135dd05582e7d1dde136c6e820b42d23", null ],
+    [ "width", "structpaxg_1_1Font.html#a742b5e026fbbb0edbd880c21a7f6c672", null ]
 ];

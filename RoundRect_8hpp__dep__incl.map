@@ -1,6 +1,10 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/RoundRect.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/RoundRect.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="16,5,293,61"/>
-<area shape="rect" id="node2" href="$StringViewer_8hpp.html" title=" " alt="" coords="5,109,304,165"/>
-<area shape="rect" id="node3" href="$Main_8hpp.html" title=" " alt="" coords="30,317,279,373"/>
-<area shape="rect" id="node4" href="$MapViewer_8hpp.html" title=" " alt="" coords="102,213,391,269"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="16,5,293,60"/>
+<area shape="rect" id="Node000002" href="$StringViewer_8hpp.html" title=" " alt="" coords="5,108,304,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="157,74,157,108,152,108,152,74"/>
+<area shape="rect" id="Node000003" href="$Main_8hpp.html" title=" " alt="" coords="30,313,279,368"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="116,174,102,192,92,212,86,238,92,264,106,290,125,311,121,315,102,293,87,266,80,238,87,210,98,189,112,171"/>
+<area shape="rect" id="Node000004" href="$MapViewer_8hpp.html" title=" " alt="" coords="102,211,391,265"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="190,171,225,209,221,212,186,175"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="215,277,181,315,177,311,211,274"/>
 </map>

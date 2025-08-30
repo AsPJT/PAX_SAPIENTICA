@@ -1,9 +1,8 @@
 var classpaxs_1_1StringViewerSiv3D =
 [
-    [ "init", "classpaxs_1_1StringViewerSiv3D.html#aa95827cc49b8ff91a8099595f94c5ef9", null ],
+    [ "init", "classpaxs_1_1StringViewerSiv3D.html#a2e9dbf80e797afedee3eddbcc5509263", null ],
     [ "update", "classpaxs_1_1StringViewerSiv3D.html#a14293e46e0230bde0ddecd9fbfe99eba", null ],
     [ "en_font", "classpaxs_1_1StringViewerSiv3D.html#a6a03b28ded4788ffa9d9dde1b6950df8", null ],
-    [ "g3d_model", "classpaxs_1_1StringViewerSiv3D.html#a328f19bd106fa4ea5ed6270fae84153f", null ],
     [ "key_value_tsv", "classpaxs_1_1StringViewerSiv3D.html#a5c6931a426ff72f31c074f6361d30a11", null ],
     [ "koyomi_font_buffer_thickness_size", "classpaxs_1_1StringViewerSiv3D.html#a4fb8ec4f0bcbd2364f2997c7eaf9fb38", null ],
     [ "koyomi_font_size", "classpaxs_1_1StringViewerSiv3D.html#a0382cc17981e734a507977274d271450", null ],
@@ -19,5 +18,8 @@ var classpaxs_1_1StringViewerSiv3D =
     [ "pulldown", "classpaxs_1_1StringViewerSiv3D.html#afdc4696151df52d96fcea70f8ebb3ec2", null ],
     [ "pulldown_font_buffer_thickness_size", "classpaxs_1_1StringViewerSiv3D.html#a292d51c7d036b7f1cadaa9994d56562f", null ],
     [ "pulldown_font_size", "classpaxs_1_1StringViewerSiv3D.html#a436e6fdce77e7010a0681b171c23d27b", null ],
+    [ "simulation_key", "classpaxs_1_1StringViewerSiv3D.html#af1abf1cf41cf01f7bce019ed5ebde616", null ],
+    [ "simulation_model_index", "classpaxs_1_1StringViewerSiv3D.html#a7c769450a5e674b56b13623e5a2919c1", null ],
+    [ "simulation_model_name", "classpaxs_1_1StringViewerSiv3D.html#ac12a43b5500a28cc7e63a4999d7d23ef", null ],
     [ "xyz_tile_z_str_index", "classpaxs_1_1StringViewerSiv3D.html#a370cf62628df38ee56c3d36d033b3275", null ]
 ];

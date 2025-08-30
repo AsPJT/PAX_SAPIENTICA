@@ -1,5 +1,8 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/StringViewer.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/StringViewer.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,304,61"/>
-<area shape="rect" id="node2" href="$Main_8hpp.html" title=" " alt="" coords="30,213,279,269"/>
-<area shape="rect" id="node3" href="$MapViewer_8hpp.html" title=" " alt="" coords="102,109,391,165"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,304,60"/>
+<area shape="rect" id="Node000002" href="$Main_8hpp.html" title=" " alt="" coords="30,211,279,265"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="116,71,102,89,92,109,86,135,92,162,106,187,125,209,121,212,102,190,87,164,80,135,87,107,98,86,112,68"/>
+<area shape="rect" id="Node000003" href="$MapViewer_8hpp.html" title=" " alt="" coords="102,108,391,163"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="190,69,225,106,221,110,186,72"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="215,175,181,212,177,209,211,171"/>
 </map>

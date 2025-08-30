@@ -1,6 +1,9 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,268,76"/>
-<area shape="rect" id="node2" title=" " alt="" coords="16,124,79,151"/>
-<area shape="rect" id="node3" title=" " alt="" coords="103,124,170,151"/>
-<area shape="rect" id="node4" title=" " alt="" coords="194,124,253,151"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,268,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="16,123,79,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,77,70,114,66,111,102,73"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="103,123,170,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="139,75,139,109,134,109,134,75"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="194,123,253,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="170,73,205,111,201,114,166,77"/>
 </map>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['e_1729',['E',['../namespacepaxs.html#a46eacacedc98035eed006bd5b6e9345ba3a3ea00cfc35332cedf6e5e9a32e94da',1,'paxs']]]
+  ['islamic_5fdate_5ftype_0',['islamic_date_type',['../namespacepaxs_1_1cal.html#afd4a33f11b893e4260e74dec451a9603a400d84b64667f799060164acdff15846',1,'paxs::cal']]]
 ];

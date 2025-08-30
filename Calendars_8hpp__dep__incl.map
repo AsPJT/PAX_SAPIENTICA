@@ -1,7 +1,14 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Calendar/Calendars.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Calendar/Calendars.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="106,5,353,76"/>
-<area shape="rect" id="node2" href="$Calendar_8hpp.html" title=" " alt="" coords="5,124,280,180"/>
-<area shape="rect" id="node4" href="$StringViewer_8hpp.html" title=" " alt="" coords="168,228,467,284"/>
-<area shape="rect" id="node3" href="$Main_8hpp.html" title=" " alt="" coords="57,436,306,492"/>
-<area shape="rect" id="node5" href="$MapViewer_8hpp.html" title=" " alt="" coords="219,332,509,388"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="106,5,353,75"/>
+<area shape="rect" id="Node000002" href="$Calendar_8hpp.html" title=" " alt="" coords="5,123,280,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="196,87,166,124,162,121,192,83"/>
+<area shape="rect" id="Node000004" href="$StringViewer_8hpp.html" title=" " alt="" coords="168,225,467,280"/>
+<area shape="poly" id="edge7_Node000001_Node000004" title=" " alt="" coords="272,84,294,122,311,176,318,225,313,226,306,177,290,124,267,87"/>
+<area shape="rect" id="Node000003" href="$Main_8hpp.html" title=" " alt="" coords="57,431,306,485"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="149,191,159,280,180,430,175,431,153,280,144,191"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="201,182,273,223,270,227,199,186"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="252,290,229,308,210,329,198,354,190,381,184,431,178,430,185,380,193,352,206,327,225,304,248,286"/>
+<area shape="rect" id="Node000005" href="$MapViewer_8hpp.html" title=" " alt="" coords="219,328,509,383"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="338,291,354,327,349,329,333,294"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="306,392,231,433,228,428,303,387"/>
 </map>

@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['mapprojectionf32_1698',['MapProjectionF32',['../namespacepaxs.html#a0d56fd4f3089e5a3bc61e6875f8577c6',1,'paxs']]],
-  ['mapprojectionf64_1699',['MapProjectionF64',['../namespacepaxs.html#aef90e6da333ef047ba8b93f74c0ffb0a',1,'paxs']]],
-  ['mathf32_1700',['MathF32',['../namespacepaxs.html#ad1b46e79deef20666917e6d4f4a15356',1,'paxs']]],
-  ['mathf64_1701',['MathF64',['../namespacepaxs.html#ae88116d44895183924ca46011135ba58',1,'paxs']]]
+  ['jdn_5ff64_0',['JDN_F64',['../namespacepaxs_1_1cal.html#a858bd69a018cb27e966fa2401a338fe0',1,'paxs::cal']]],
+  ['jdn_5fs32_1',['JDN_S32',['../namespacepaxs_1_1cal.html#a7c02d803a8d629a382f9efede38f9c97',1,'paxs::cal']]],
+  ['jdn_5fs64_2',['JDN_S64',['../namespacepaxs_1_1cal.html#a5ce2bf15b110b3b55084a6d6584e1566',1,'paxs::cal']]]
 ];

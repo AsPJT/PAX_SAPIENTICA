@@ -1,5 +1,7 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/StatusDisplayer.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/StatusDisplayer.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,324,61"/>
-<area shape="rect" id="node2" title=" " alt="" coords="74,109,154,136"/>
-<area shape="rect" id="node3" title=" " alt="" coords="178,109,253,136"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,324,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="74,108,154,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,61,130,97,126,95,147,59"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="178,108,253,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="182,59,204,95,199,97,178,61"/>
 </map>

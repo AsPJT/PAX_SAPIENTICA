@@ -1,6 +1,10 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Color/SoilTemperature.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Color/SoilTemperature.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,228,76"/>
-<area shape="rect" id="node2" title=" " alt="" coords="16,131,79,158"/>
-<area shape="rect" id="node3" title=" " alt="" coords="149,213,207,240"/>
-<area shape="rect" id="node4" href="$RGBA_8hpp.html" title=" " alt="" coords="154,124,325,165"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,228,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="16,130,79,155"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,77,65,120,61,117,91,74"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="149,211,207,236"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="123,75,131,117,144,162,164,198,159,200,140,164,126,118,118,76"/>
+<area shape="rect" id="Node000004" href="$RGBA_8hpp.html" title=" " alt="" coords="154,123,325,163"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="160,73,207,112,204,116,156,77"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="227,165,198,201,193,198,222,161"/>
 </map>

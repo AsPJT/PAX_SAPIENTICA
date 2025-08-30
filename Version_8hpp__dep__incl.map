@@ -1,5 +1,7 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Version.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Version.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="7,5,273,61"/>
-<area shape="rect" id="node2" href="$InitLogo_8hpp.html" title=" " alt="" coords="5,109,275,165"/>
-<area shape="rect" id="node3" href="$Main_8hpp.html" title=" " alt="" coords="15,213,265,269"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="7,5,273,60"/>
+<area shape="rect" id="Node000002" href="$InitLogo_8hpp.html" title=" " alt="" coords="5,108,275,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="143,74,143,108,137,108,137,74"/>
+<area shape="rect" id="Node000003" href="$Main_8hpp.html" title=" " alt="" coords="15,211,265,265"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="143,176,143,211,137,211,137,176"/>
 </map>

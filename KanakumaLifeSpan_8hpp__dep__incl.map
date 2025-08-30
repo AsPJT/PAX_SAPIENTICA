@@ -1,8 +1,15 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="223,5,481,76"/>
-<area shape="rect" id="node2" href="$Settlement_8hpp.html" title=" " alt="" coords="56,124,315,195"/>
-<area shape="rect" id="node4" href="$SettlementSimulator_8hpp.html" title=" " alt="" coords="172,361,431,432"/>
-<area shape="rect" id="node5" href="$Simulator_8hpp.html" title=" " alt="" coords="389,124,648,195"/>
-<area shape="rect" id="node3" href="$SettlementGrid_8hpp.html" title=" " alt="" coords="5,243,264,313"/>
-<area shape="rect" id="node6" href="$Main_8hpp.html" title=" " alt="" coords="394,250,643,306"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="223,5,481,75"/>
+<area shape="rect" id="Node000002" href="$Settlement_8hpp.html" title=" " alt="" coords="56,123,315,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="293,85,236,124,233,120,290,81"/>
+<area shape="rect" id="Node000004" href="$SettlementSimulator_8hpp.html" title=" " alt="" coords="172,357,431,427"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="348,89,309,358,304,357,343,88"/>
+<area shape="rect" id="Node000005" href="$Simulator_8hpp.html" title=" " alt="" coords="389,123,648,192"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="414,81,471,120,468,124,411,85"/>
+<area shape="rect" id="Node000003" href="$SettlementGrid_8hpp.html" title=" " alt="" coords="5,240,264,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="167,206,152,241,147,239,163,204"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="247,199,264,218,278,239,291,268,299,300,305,357,299,357,294,301,286,270,274,241,260,221,243,203"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="196,315,254,355,251,359,193,320"/>
+<area shape="rect" id="Node000006" href="$Main_8hpp.html" title=" " alt="" coords="394,247,643,302"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="521,206,521,247,516,247,516,206"/>
 </map>

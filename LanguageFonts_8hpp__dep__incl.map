@@ -1,8 +1,18 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/LanguageFonts.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/LanguageFonts.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="53,5,367,61"/>
-<area shape="rect" id="node2" href="$Pulldown_8hpp.html" title=" " alt="" coords="191,109,467,165"/>
-<area shape="rect" id="node4" href="$StringViewer_8hpp.html" title=" " alt="" coords="23,317,322,373"/>
-<area shape="rect" id="node3" href="$Main_8hpp.html" title=" " alt="" coords="233,525,483,581"/>
-<area shape="rect" id="node6" href="$XYZTilesList_8hpp.html" title=" " alt="" coords="211,213,508,269"/>
-<area shape="rect" id="node5" href="$MapViewer_8hpp.html" title=" " alt="" coords="5,421,295,477"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="53,5,367,60"/>
+<area shape="rect" id="Node000002" href="$Pulldown_8hpp.html" title=" " alt="" coords="191,108,467,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="253,67,299,106,296,110,250,71"/>
+<area shape="rect" id="Node000004" href="$StringViewer_8hpp.html" title=" " alt="" coords="23,313,322,368"/>
+<area shape="poly" id="edge10_Node000001_Node000004" title=" " alt="" coords="193,74,181,109,172,165,169,222,172,313,167,313,163,222,166,164,175,107,188,72"/>
+<area shape="rect" id="Node000003" href="$Main_8hpp.html" title=" " alt="" coords="233,519,483,573"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="472,167,499,185,521,209,533,230,540,251,541,296,529,340,508,384,480,425,449,463,391,520,387,517,445,459,475,422,503,381,524,338,536,295,535,252,528,232,517,212,496,189,469,171"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="247,172,221,190,200,212,187,237,179,263,174,313,169,313,174,262,182,235,196,209,218,186,244,167"/>
+<area shape="rect" id="Node000006" href="$XYZTilesList_8hpp.html" title=" " alt="" coords="211,211,508,265"/>
+<area shape="poly" id="edge7_Node000002_Node000006" title=" " alt="" coords="343,175,354,210,349,211,338,177"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="254,372,282,391,308,414,326,439,339,467,355,517,350,519,334,469,321,442,304,418,279,395,251,377"/>
+<area shape="rect" id="Node000005" href="$MapViewer_8hpp.html" title=" " alt="" coords="5,416,295,471"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="166,382,159,416,153,415,161,381"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="217,474,305,516,303,521,215,479"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="362,279,361,518,355,518,356,279"/>
+<area shape="poly" id="edge9_Node000006_Node000004" title=" " alt="" coords="300,274,223,315,220,311,298,269"/>
 </map>

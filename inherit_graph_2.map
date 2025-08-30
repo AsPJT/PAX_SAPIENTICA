@@ -1,7 +1,11 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structpaxg_1_1IDrawable.html" title=" " alt="" coords="5,81,133,108"/>
-<area shape="rect" id="node2" href="$structpaxg_1_1Circle.html" title=" " alt="" coords="198,5,297,32"/>
-<area shape="rect" id="node3" href="$structpaxg_1_1Rect.html" title=" " alt="" coords="202,56,293,83"/>
-<area shape="rect" id="node4" href="$structpaxg_1_1RoundRect.html" title=" " alt="" coords="181,107,313,133"/>
-<area shape="rect" id="node5" href="$structpaxg_1_1Texture.html" title=" " alt="" coords="192,157,303,184"/>
+<area shape="rect" id="Node000000" href="$structpaxg_1_1IDrawable.html" title=" " alt="" coords="5,80,133,105"/>
+<area shape="rect" id="Node000001" href="$structpaxg_1_1Circle.html" title=" " alt="" coords="198,5,297,31"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="109,72,180,40,209,28,211,33,182,44,111,76"/>
+<area shape="rect" id="Node000002" href="$structpaxg_1_1Rect.html" title=" " alt="" coords="202,55,293,80"/>
+<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="147,79,201,71,202,76,147,84"/>
+<area shape="rect" id="Node000003" href="$structpaxg_1_1RoundRect.html" title=" " alt="" coords="181,104,313,129"/>
+<area shape="poly" id="edge3_Node000000_Node000003" title=" " alt="" coords="147,100,182,105,181,110,146,106"/>
+<area shape="rect" id="Node000004" href="$structpaxg_1_1Texture.html" title=" " alt="" coords="192,153,303,179"/>
+<area shape="poly" id="edge4_Node000000_Node000004" title=" " alt="" coords="113,108,182,138,213,151,211,156,180,143,110,113"/>
 </map>

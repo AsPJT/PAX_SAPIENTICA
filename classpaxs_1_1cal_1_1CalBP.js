@@ -6,7 +6,7 @@ var classpaxs_1_1cal_1_1CalBP =
     [ "cgetGengo", "classpaxs_1_1cal_1_1CalBP.html#a9680e5964ab4fa3830fd59f64f397022", null ],
     [ "cgetMonth", "classpaxs_1_1cal_1_1CalBP.html#a9f75ea8a7c1db8a8038bfefef7c52a62", null ],
     [ "cgetYear", "classpaxs_1_1cal_1_1CalBP.html#a074554f13deec1448cd7a0afcb1a733a", null ],
-    [ "getDay", "classpaxs_1_1cal_1_1CalBP.html#ada135ed34e77097cf5a22a4a2f15beca", null ],
+    [ "getDay", "classpaxs_1_1cal_1_1CalBP.html#a07bb8310428900f7941e6662bac1783a", null ],
     [ "getGengo", "classpaxs_1_1cal_1_1CalBP.html#abcfe566cfe18a5014e25f0910fe71ed8", null ],
     [ "getMonth", "classpaxs_1_1cal_1_1CalBP.html#af531c248cf67fa949b5b5652ce80959f", null ],
     [ "getYear", "classpaxs_1_1cal_1_1CalBP.html#adeff78e7c9d77cf24a461191cea1b172", null ],

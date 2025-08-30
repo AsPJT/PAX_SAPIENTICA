@@ -1,8 +1,22 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Line.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Line.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="25,5,260,61"/>
-<area shape="rect" id="node2" href="$XYZTiles_8hpp.html" title=" " alt="" coords="5,109,280,165"/>
-<area shape="rect" id="node3" href="$Main_8hpp.html" title=" " alt="" coords="19,525,269,581"/>
-<area shape="rect" id="node4" href="$StringViewer_8hpp.html" title=" " alt="" coords="61,317,360,373"/>
-<area shape="rect" id="node6" href="$XYZTilesList_8hpp.html" title=" " alt="" coords="181,213,478,269"/>
-<area shape="rect" id="node5" href="$MapViewer_8hpp.html" title=" " alt="" coords="91,421,381,477"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="229,5,463,60"/>
+<area shape="rect" id="Node000002" href="$LocationPoint_8hpp.html" title=" " alt="" coords="5,211,311,265"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="314,72,185,212,181,208,310,68"/>
+<area shape="rect" id="Node000006" href="$XYZTiles_8hpp.html" title=" " alt="" coords="305,108,579,163"/>
+<area shape="poly" id="edge8_Node000001_Node000006" title=" " alt="" coords="382,68,419,106,415,110,379,72"/>
+<area shape="rect" id="Node000003" href="$Main_8hpp.html" title=" " alt="" coords="356,519,605,573"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="143,279,128,322,119,373,119,399,122,424,130,448,143,469,156,480,175,491,227,508,290,522,356,531,355,536,289,527,226,513,173,496,153,485,139,472,125,450,117,425,113,399,114,372,123,321,138,277"/>
+<area shape="rect" id="Node000004" href="$MapViewer_8hpp.html" title=" " alt="" coords="153,416,443,471"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="162,279,170,323,178,346,189,366,214,393,243,413,240,418,210,397,185,370,173,348,165,325,157,280"/>
+<area shape="rect" id="Node000005" href="$StringViewer_8hpp.html" title=" " alt="" coords="199,313,498,368"/>
+<area shape="poly" id="edge5_Node000002_Node000005" title=" " alt="" coords="221,269,300,311,297,315,218,274"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="359,475,434,516,431,521,356,480"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="414,374,437,392,456,415,469,440,477,468,483,518,478,519,472,469,464,442,452,417,433,396,411,378"/>
+<area shape="poly" id="edge7_Node000005_Node000004" title=" " alt="" coords="332,381,314,417,309,415,327,379"/>
+<area shape="poly" id="edge9_Node000006_Node000003" title=" " alt="" coords="593,162,657,183,681,195,697,209,710,230,717,252,719,275,717,297,700,342,672,386,636,426,596,463,522,520,519,516,593,459,632,423,668,382,696,340,712,296,714,275,712,253,705,233,693,212,678,200,655,188,592,167"/>
+<area shape="poly" id="edge10_Node000006_Node000005" title=" " alt="" coords="404,174,376,212,366,237,359,264,352,313,347,312,354,263,361,236,372,209,399,171"/>
+<area shape="rect" id="Node000007" href="$XYZTilesList_8hpp.html" title=" " alt="" coords="387,211,684,265"/>
+<area shape="poly" id="edge11_Node000006_Node000007" title=" " alt="" coords="478,171,513,209,509,212,474,175"/>
+<area shape="poly" id="edge12_Node000007_Node000003" title=" " alt="" coords="531,279,488,519,483,518,526,278"/>
+<area shape="poly" id="edge13_Node000007_Node000005" title=" " alt="" coords="476,274,399,315,396,311,474,269"/>
 </map>

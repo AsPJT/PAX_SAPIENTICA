@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['level_1714',['Level',['../classpaxs_1_1Logger.html#a3f15ea26e9fd373842905b844d81152d',1,'paxs::Logger']]]
+  ['palette_0',['Palette',['../namespaces3d.html#ab13ab7b184d808ea55b520b81d316028',1,'s3d']]]
 ];

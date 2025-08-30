@@ -1,7 +1,12 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Init.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Init.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,244,61"/>
-<area shape="rect" id="node2" title=" " alt="" coords="54,184,113,211"/>
-<area shape="rect" id="node3" href="$Mock_8hpp.html" title=" " alt="" coords="93,109,292,136"/>
-<area shape="rect" id="node4" title=" " alt="" coords="150,184,206,211"/>
-<area shape="rect" id="node5" title=" " alt="" coords="231,184,293,211"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,244,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="54,181,113,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,62,94,84,85,109,81,139,82,168,77,168,75,139,79,107,89,82,103,59"/>
+<area shape="rect" id="Node000003" href="$Mock_8hpp.html" title=" " alt="" coords="93,108,292,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="148,58,177,95,173,99,143,62"/>
+<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="177,136,114,176,111,171,174,131"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="150,181,206,207"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="193,134,186,168,181,167,188,133"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="231,181,293,207"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="206,132,243,170,239,173,202,136"/>
 </map>

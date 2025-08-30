@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['keycode_1713',['KeyCode',['../namespacepaxs.html#a46eacacedc98035eed006bd5b6e9345b',1,'paxs']]]
+  ['level_0',['Level',['../classpaxs_1_1Logger.html#a3f15ea26e9fd373842905b844d81152d',1,'paxs::Logger']]]
 ];

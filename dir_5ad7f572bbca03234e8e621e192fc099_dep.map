@@ -1,9 +1,12 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library">
-<area shape="rect" id="node2" href="dir_a776ac0614aba203522d87139e14024d.html" title="PAX_GRAPHICA" alt="" coords="29,123,152,171"/>
-<area shape="rect" id="node4" href="dir_9eb0715ef15de70c86db824069b1c4c9.html" title="PAX_SAPIENTICA" alt="" coords="69,219,201,267"/>
-<area shape="rect" id="edge3-headlabel" href="dir_000001_000003.html" title="6" alt="" coords="119,191,128,206"/>
-<area shape="rect" id="node3" href="dir_8472849eb23acbd1cd05b39b855e0ffd.html" title="PAX_MAHOROBA" alt="" coords="27,27,159,75"/>
-<area shape="rect" id="edge2-headlabel" href="dir_000002_000001.html" title="30" alt="" coords="92,97,109,112"/>
-<area shape="rect" id="edge1-headlabel" href="dir_000002_000003.html" title="60" alt="" coords="156,199,173,213"/>
-<area shape="rect" id="clust1" href="dir_5ad7f572bbca03234e8e621e192fc099.html" alt="" coords="16,16,267,277"/>
+<area shape="rect" id="node2" href="dir_a776ac0614aba203522d87139e14024d.html" title="PAX_GRAPHICA" alt="" coords="29,100,152,125"/>
+<area shape="rect" id="node4" href="dir_9eb0715ef15de70c86db824069b1c4c9.html" title="PAX_SAPIENTICA" alt="" coords="69,173,201,199"/>
+<area shape="poly" id="edge1" href="dir_000005_000007.html" alt="" coords="100,124,123,160,118,163,96,127"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000005_000007.html" title="7" alt="" coords="120,146,130,161"/>
+<area shape="rect" id="node3" href="dir_8472849eb23acbd1cd05b39b855e0ffd.html" title="PAX_MAHOROBA" alt="" coords="27,27,159,52"/>
+<area shape="poly" id="edge3" href="dir_000006_000005.html" alt="" coords="96,52,94,87,89,86,90,52"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000006_000005.html" title="32" alt="" coords="92,75,109,89"/>
+<area shape="poly" id="edge2" href="dir_000006_000007.html" alt="" coords="117,50,144,70,166,99,170,116,168,133,155,163,150,161,163,131,165,116,162,101,140,74,114,54"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000006_000007.html" title="62" alt="" coords="153,155,170,170"/>
+<area shape="rect" id="clust1" href="dir_5ad7f572bbca03234e8e621e192fc099.html" alt="" coords="16,16,261,209"/>
 </map>

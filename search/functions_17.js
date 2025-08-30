@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zero_1482',['zero',['../structpaxs_1_1Vector2.html#af888cd00192b079553679b6e9e68fa45',1,'paxs::Vector2']]]
+  ['zero_0',['zero',['../structpaxs_1_1Vector2.html#a6a2a8fe429efb2fea1683232ffa13c71',1,'paxs::Vector2']]]
 ];

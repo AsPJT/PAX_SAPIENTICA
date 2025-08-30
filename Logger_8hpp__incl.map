@@ -1,9 +1,15 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Logger.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Logger.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="147,5,407,61"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,109,72,136"/>
-<area shape="rect" id="node3" title=" " alt="" coords="96,109,155,136"/>
-<area shape="rect" id="node4" title=" " alt="" coords="179,109,269,136"/>
-<area shape="rect" id="node5" title=" " alt="" coords="294,109,367,136"/>
-<area shape="rect" id="node6" title=" " alt="" coords="392,109,467,136"/>
-<area shape="rect" id="node7" title=" " alt="" coords="491,109,565,136"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="147,5,407,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,108,72,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="205,63,84,106,83,101,204,58"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="96,108,155,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="232,62,159,104,156,99,230,58"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="179,108,269,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="263,61,241,98,236,95,259,59"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="294,108,367,133"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="296,59,318,95,314,98,291,61"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="392,108,467,133"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="325,58,399,99,396,104,322,62"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="491,108,565,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="355,58,482,101,481,106,353,63"/>
 </map>

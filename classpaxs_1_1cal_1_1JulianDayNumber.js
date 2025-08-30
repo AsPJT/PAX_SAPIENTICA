@@ -8,7 +8,7 @@ var classpaxs_1_1cal_1_1JulianDayNumber =
     [ "cgetYear", "classpaxs_1_1cal_1_1JulianDayNumber.html#aa04921ef56abd4be5310ed1e83ddfd96", null ],
     [ "fromGregorianCalendar", "classpaxs_1_1cal_1_1JulianDayNumber.html#a89a747d9f9fbe0a56764f6f23a3c0c82", null ],
     [ "fromJulianCalendar", "classpaxs_1_1cal_1_1JulianDayNumber.html#a903b59c21bcc471a66bb22a8ea34a426", null ],
-    [ "getDay", "classpaxs_1_1cal_1_1JulianDayNumber.html#aeaf45b1e02e8f4e1e5f53ca218e7a921", null ],
+    [ "getDay", "classpaxs_1_1cal_1_1JulianDayNumber.html#a09d7cd0437c1777548129282b4c28e22", null ],
     [ "getGengo", "classpaxs_1_1cal_1_1JulianDayNumber.html#a714ba5609d4525fc710683fb1207a365", null ],
     [ "getMonth", "classpaxs_1_1cal_1_1JulianDayNumber.html#a8058206e475899ae6af1ebad317d76f7", null ],
     [ "getYear", "classpaxs_1_1cal_1_1JulianDayNumber.html#af940a0a8556c15e45bc76b0077e31827", null ],

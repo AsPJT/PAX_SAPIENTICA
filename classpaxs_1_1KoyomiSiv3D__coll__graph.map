@@ -1,4 +1,5 @@
 <map id="paxs::KoyomiSiv3D" name="paxs::KoyomiSiv3D">
-<area shape="rect" id="node1" title=" " alt="" coords="29,95,177,121"/>
-<area shape="rect" id="node2" href="$classpaxs_1_1cal_1_1SimulationSteps.html" title=" " alt="" coords="5,5,200,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="29,93,177,119"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1cal_1_1SimulationSteps.html" title=" " alt="" coords="5,5,200,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,45,105,93,100,93,100,45"/>
 </map>

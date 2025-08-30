@@ -1,9 +1,19 @@
 <map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Circle.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Circle.hpp">
-<area shape="rect" id="node1" title=" " alt="" coords="185,5,429,61"/>
-<area shape="rect" id="node2" href="$Graphics_8hpp.html" title=" " alt="" coords="5,109,269,165"/>
-<area shape="rect" id="node3" href="$LocationPoint_8hpp.html" title=" " alt="" coords="441,109,746,165"/>
-<area shape="rect" id="node7" href="$PersonLocation_8hpp.html" title=" " alt="" coords="146,213,462,269"/>
-<area shape="rect" id="node4" href="$Main_8hpp.html" title=" " alt="" coords="562,421,811,477"/>
-<area shape="rect" id="node5" href="$MapViewer_8hpp.html" title=" " alt="" coords="358,317,647,373"/>
-<area shape="rect" id="node6" href="$StringViewer_8hpp.html" title=" " alt="" coords="537,213,836,269"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="185,5,429,60"/>
+<area shape="rect" id="Node000002" href="$Graphics_8hpp.html" title=" " alt="" coords="5,108,269,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="252,69,183,110,180,105,249,65"/>
+<area shape="rect" id="Node000003" href="$LocationPoint_8hpp.html" title=" " alt="" coords="441,108,746,163"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="395,62,520,105,518,110,393,67"/>
+<area shape="rect" id="Node000007" href="$PersonLocation_8hpp.html" title=" " alt="" coords="146,211,462,265"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="309,74,307,210,302,210,303,74"/>
+<area shape="rect" id="Node000004" href="$Main_8hpp.html" title=" " alt="" coords="562,416,811,471"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="751,164,812,184,835,196,850,209,864,238,864,268,854,297,835,326,811,353,784,378,730,418,727,414,780,374,807,349,831,323,849,295,859,267,859,239,846,212,832,200,810,188,749,169"/>
+<area shape="rect" id="Node000005" href="$MapViewer_8hpp.html" title=" " alt="" coords="358,313,647,368"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="555,174,528,212,518,237,511,264,506,313,500,313,506,263,513,236,523,209,551,171"/>
+<area shape="rect" id="Node000006" href="$StringViewer_8hpp.html" title=" " alt="" coords="537,211,836,265"/>
+<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="629,171,664,209,660,212,625,175"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="564,372,640,413,637,418,561,377"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="689,279,689,415,684,415,684,279"/>
+<area shape="poly" id="edge8_Node000006_Node000005" title=" " alt="" coords="628,274,552,315,550,311,626,269"/>
+<area shape="poly" id="edge10_Node000007_Node000005" title=" " alt="" coords="369,269,452,311,450,316,367,274"/>
 </map>

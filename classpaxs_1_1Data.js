@@ -1,9 +1,10 @@
 var classpaxs_1_1Data =
 [
-    [ "Vector2", "classpaxs_1_1Data.html#acd41c64d0289b6142783eead8ab3832e", null ],
-    [ "Data", "classpaxs_1_1Data.html#a0e3df950dedcc31914a334974d19d187", null ],
-    [ "Data", "classpaxs_1_1Data.html#a5637e6066a0cea4d660be5299fa5007f", null ],
-    [ "getKeys", "classpaxs_1_1Data.html#a6cd0623f5a31a4b4aa0b69644df51ac8", null ],
-    [ "getValue", "classpaxs_1_1Data.html#a41ccef7fb528272749bf6b3f6c8a2747", null ],
-    [ "operator=", "classpaxs_1_1Data.html#a18ef4f5ed8b63dfa8ae92d11830a5003", null ]
+    [ "Vector2", "classpaxs_1_1Data.html#a9c7cf9b610c362c0f711b1b3bfc8c185", null ],
+    [ "Data", "classpaxs_1_1Data.html#a10b22983459ea6608216f2c10ed0107a", null ],
+    [ "Data", "classpaxs_1_1Data.html#a538e0bbb7ceec2e72174a812bddbceb9", null ],
+    [ "getCellWidth", "classpaxs_1_1Data.html#aab33cf1261c5ae19a75f6a364fcfef7e", null ],
+    [ "getKeys", "classpaxs_1_1Data.html#a248963bcb1027f6f2e70cabe3b91449a", null ],
+    [ "getValue", "classpaxs_1_1Data.html#a44ad8c058c2c10b28609ca8e78f7a5b1", null ],
+    [ "operator=", "classpaxs_1_1Data.html#afa0b118ecdbce311726d35c3cf3d3227", null ]
 ];

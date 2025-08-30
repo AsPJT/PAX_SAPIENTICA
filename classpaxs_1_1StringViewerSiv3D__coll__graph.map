@@ -1,9 +1,13 @@
 <map id="paxs::StringViewerSiv3D" name="paxs::StringViewerSiv3D">
-<area shape="rect" id="node1" title=" " alt="" coords="335,139,517,165"/>
-<area shape="rect" id="node2" href="$classpaxs_1_1MenuBar.html" title=" " alt="" coords="34,5,153,32"/>
-<area shape="rect" id="node3" href="$classpaxs_1_1Pulldown.html" title=" " alt="" coords="33,56,153,83"/>
-<area shape="rect" id="node4" href="$structpaxg_1_1Font.html" title=" " alt="" coords="48,111,139,137"/>
-<area shape="rect" id="node5" href="$classpaxs_1_1LanguageFonts.html" title=" " alt="" coords="14,161,173,188"/>
-<area shape="rect" id="node6" href="$classpaxs_1_1Graphics3DModel.html" title=" " alt="" coords="5,212,181,239"/>
-<area shape="rect" id="node7" href="$classpaxs_1_1KeyValueTSV.html" title=" " alt="" coords="15,263,172,305"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="317,112,500,137"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1LanguageFonts.html" title=" " alt="" coords="5,5,164,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,25,236,37,294,54,349,81,392,110,389,114,346,86,292,59,235,42,177,31"/>
+<area shape="rect" id="Node000003" href="$structpaxg_1_1Font.html" title=" " alt="" coords="39,63,130,88"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="144,82,325,109,324,115,143,87"/>
+<area shape="rect" id="Node000004" href="$classpaxs_1_1Pulldown.html" title=" " alt="" coords="25,112,145,137"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="158,122,317,122,317,127,158,127"/>
+<area shape="rect" id="Node000005" href="$classpaxs_1_1MenuBar.html" title=" " alt="" coords="25,161,144,187"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="157,162,293,142,336,135,337,140,294,147,158,167"/>
+<area shape="rect" id="Node000006" href="$classpaxs_1_1KeyValueTSV.html" title=" " alt="" coords="6,211,163,251"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="176,211,234,197,292,178,342,157,384,135,386,140,344,162,294,183,236,202,177,216"/>
 </map>

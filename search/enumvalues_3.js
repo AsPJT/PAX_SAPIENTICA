@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['d_1727',['D',['../namespacepaxs.html#a46eacacedc98035eed006bd5b6e9345baf623e75af30e62bbd73d6df5b50bb7b5',1,'paxs']]],
-  ['down_1728',['Down',['../namespacepaxs.html#a46eacacedc98035eed006bd5b6e9345ba08a38277b0309070706f6652eeae9a53',1,'paxs']]]
+  ['gray_0',['Gray',['../namespaces3d.html#ab13ab7b184d808ea55b520b81d316028a994ae1d9731cebe455aff211bcb25b93',1,'s3d']]],
+  ['gregorian_5fdate_5ftype_1',['gregorian_date_type',['../namespacepaxs_1_1cal.html#afd4a33f11b893e4260e74dec451a9603a6997648aa82958d48c6059162f3d9b96',1,'paxs::cal']]]
 ];
