@@ -284,3 +284,4 @@ Document/Doxygen/*/
 DevelopmentBuild/
 ProductionBuild/
 SimulationResults/
+LabeledSimulationResults/
