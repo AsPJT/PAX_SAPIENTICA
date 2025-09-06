@@ -5,6 +5,7 @@ steps_per_year	12	1年あたりのStepの数(step/年)
 output_step_frequency	120	何Stepおきに出力するか？(step)
 immigration_start_steps	1801	渡来開始Step数目(step)
 immigration_end_steps	21600	渡来終了Step数目(step)
+immigration_step_interval	12	渡来のステップ間隔 (step)
 init_lifespan_grace_period	180	初期化時の寿命までの最低Step間隔(step)
 #Space --------------------	#空間	--------------------------------------------------
 area	Japan	シミュレーションの対象範囲
