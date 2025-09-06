@@ -122,6 +122,29 @@ namespace paxs {
                 }
                 // シミュレーションが初期化されている場合
                 else {
+
+                    const auto* constants = SimulationConstants::getInstance(model_name);
+                    const int total_steps = constants->total_steps;
+
+                    // 規定ステップ数に達したかチェック
+                    if (total_steps > 0 && koyomi_siv.steps.cgetDay() >= total_steps) {
+                        // 残り実行回数を減らす
+                        m_remaining_iterations--;
+
+                        if (m_remaining_iterations > 0) {
+                            // まだ実行回数が残っている場合、シミュレーションを初期化して自動で再開
+                            simulationInit(simulator, koyomi_siv);
+                            koyomi_siv.is_agent_update = true;
+                            koyomi_siv.move_forward_in_time = true;
+                        }
+                        else {
+                            // 全ての実行が終了した場合、シミュレーションを停止
+                            koyomi_siv.is_agent_update = false;
+                            koyomi_siv.move_forward_in_time = false;
+                            m_remaining_iterations = 0; //念のため0にリセット
+                        }
+                    }
+
                     // シミュレーションが再生されている場合
                     if (koyomi_siv.is_agent_update) {
                         // シミュレーションを停止
@@ -168,6 +191,9 @@ namespace paxs {
                         if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                             // if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
                             koyomi_siv.is_agent_update = true;
+
+                            // 実行回数をセット
+                            m_remaining_iterations = SimulationConstants::getInstance(model_name)->num_iterations;
 
                             koyomi_siv.move_forward_in_time = true; // 再生
                             koyomi_siv.go_back_in_time = false;
@@ -275,6 +301,8 @@ MurMur3::calcHash("ain")
 
         // シミュレーションのモデル番号
         std::size_t simulation_model_index = 0;
+        // シミュレーションの繰り返し回数
+        int m_remaining_iterations = 0;
 #ifdef PAXS_USING_SIV3D
         // UI の影
         s3d::RenderTexture shadow_texture{};
