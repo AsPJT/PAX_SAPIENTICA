@@ -102,7 +102,7 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
             sf::Sprite sprite(texture);
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
 
 #endif
         }
@@ -171,7 +171,7 @@ namespace paxg {
         void drawAt(const paxg::Vec2f& pos) const override {
             sf::Sprite sprite(texture);
             sprite.setPosition({ static_cast<float>(pos.x() - (width() / 2)), static_cast<float>(pos.y() - (height() / 2)) });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void drawAt(const paxg::Vec2f&) const override {}
@@ -189,7 +189,7 @@ namespace paxg {
         void drawAt(const paxg::Vec2i& pos) const override {
             sf::Sprite sprite(texture);
             sprite.setPosition({ static_cast<float>(pos.x() - (width() / 2)), static_cast<float>(pos.y() - (height() / 2)) });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void drawAt(const paxg::Vec2i&) const override {}
@@ -211,7 +211,7 @@ namespace paxg {
             sf::Sprite sprite(texture);
             sprite.setScale({ static_cast<float>(resize.x()) / texture.getSize().x, static_cast<float>(resize.y()) / texture.getSize().y });
             sprite.setPosition({ static_cast<float>(pos.x() - (resize.x() / 2)), static_cast<float>(pos.y() - (resize.y() / 2)) });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void resizedDrawAt(const paxg::Vec2i&, const paxg::Vec2i&) const {}
@@ -234,7 +234,7 @@ namespace paxg {
             sf::Sprite sprite(texture);
             sprite.setScale({ static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y });
             sprite.setPosition({ static_cast<float>(pos.x() - (resize / 2)), static_cast<float>(pos.y() - (resize / 2)) });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void resizedDrawAt(const int, const paxg::Vec2i&) const {}
@@ -256,7 +256,7 @@ namespace paxg {
             sf::Sprite sprite(texture);
             sprite.setScale({ resize.x() / texture.getSize().x, resize.y() / texture.getSize().y });
             sprite.setPosition({ pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2) });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void resizedDrawAt(const paxg::Vec2f&, const paxg::Vec2f&) const {}
@@ -278,7 +278,7 @@ namespace paxg {
             sf::Sprite sprite(texture);
             sprite.setScale({ static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y });
             sprite.setPosition({ pos.x() - (resize / 2), pos.y() - (resize / 2) });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void resizedDrawAt(const int, const paxg::Vec2f&) const {}
@@ -300,7 +300,7 @@ namespace paxg {
             sf::Sprite sprite(texture);
             sprite.setScale({ static_cast<float>(resize.x()) / texture.getSize().x, static_cast<float>(resize.y()) / texture.getSize().y });
             sprite.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y()) });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void resizedDraw(const paxg::Vec2i&, const paxg::Vec2i&) const {}
@@ -322,7 +322,7 @@ namespace paxg {
             sf::Sprite sprite(texture);
             sprite.setScale({ static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y });
             sprite.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y()) });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void resizedDraw(const int, const paxg::Vec2i&) const {}
@@ -344,7 +344,7 @@ namespace paxg {
             sf::Sprite sprite(texture);
             sprite.setScale({ resize.x() / texture.getSize().x, resize.y() / texture.getSize().y });
             sprite.setPosition({ pos.x(), pos.y() });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void resizedDraw(const paxg::Vec2f&, const paxg::Vec2f&) const {}
@@ -366,7 +366,7 @@ namespace paxg {
             sf::Sprite sprite(texture);
             sprite.setScale({ static_cast<float>(resize) / texture.getSize().x, static_cast<float>(resize) / texture.getSize().y });
             sprite.setPosition({ pos.x(), pos.y() });
-            paxg::Window::window.draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 #else
         void resizedDraw(const int, const paxg::Vec2f&) const {}

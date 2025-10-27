@@ -163,7 +163,7 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+            Window::window().draw(rect);
 
 #endif
         }
@@ -182,7 +182,7 @@ namespace paxg {
         void draw(const paxg::Color& c_) const {
             sf::RectangleShape rect2 = rect;
             rect2.setFillColor(c_.color);
-            Window::window.draw(rect2);
+            Window::window().draw(rect2);
         }
 #else
         void draw(const paxg::Color&) const {}
@@ -198,7 +198,7 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+            Window::window().draw(rect);
 
 #endif
         }
@@ -217,7 +217,7 @@ namespace paxg {
         void drawAt(const paxg::Color& c_) const {
             sf::RectangleShape rect2 = rect;
             rect2.setFillColor(c_.color);
-            Window::window.draw(rect2);
+            Window::window().draw(rect2);
         }
 #else
         void drawAt(const paxg::Color&) const {}
@@ -255,25 +255,25 @@ namespace paxg {
                 static_cast<float>(rect.getSize().x + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
             rect1.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
             rect1.setFillColor(c_.color);
-            Window::window.draw(rect1);
+            Window::window().draw(rect1);
 
             sf::RectangleShape rect2(sf::Vector2f(
                 static_cast<float>(rect.getSize().x + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
             rect2.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y + rect.getSize().y - static_cast<float>(inner_thickness) });
             rect2.setFillColor(c_.color);
-            Window::window.draw(rect2);
+            Window::window().draw(rect2);
 
             sf::RectangleShape rect3(sf::Vector2f(
                 static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(rect.getSize().y + outer_thickness * 2)));
             rect3.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
             rect3.setFillColor(c_.color);
-            Window::window.draw(rect3);
+            Window::window().draw(rect3);
 
             sf::RectangleShape rect4(sf::Vector2f(
                 static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(rect.getSize().y + outer_thickness * 2)));
             rect4.setPosition({ rect.getPosition().x + static_cast<float>(rect.getSize().x - inner_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
             rect4.setFillColor(c_.color);
-            Window::window.draw(rect4);
+            Window::window().draw(rect4);
 
         }
 #else
@@ -303,7 +303,7 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
             // 1 フレーム前にタッチされている
             if (paxg::Mouse::getInstance()->upLeft()) {
-                int mx = sf::Mouse::getPosition(Window::window).x, my = sf::Mouse::getPosition(Window::window).y;
+                int mx = sf::Mouse::getPosition(Window::window()).x, my = sf::Mouse::getPosition(Window::window()).y;
                 return (mx >= rect.getPosition().x &&
                     my >= rect.getPosition().y &&
                     mx < rect.getPosition().x + rect.getSize().x &&
@@ -326,8 +326,8 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
             return rect.getGlobalBounds().contains(
-                { static_cast<float>(sf::Mouse::getPosition(Window::window).x),
-            static_cast<float>(sf::Mouse::getPosition(Window::window).y) });
+                { static_cast<float>(sf::Mouse::getPosition(Window::window()).x),
+            static_cast<float>(sf::Mouse::getPosition(Window::window()).y) });
 
 #else
             return false;

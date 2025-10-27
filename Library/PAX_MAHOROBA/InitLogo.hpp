@@ -79,7 +79,7 @@ namespace paxs {
             paxg::Window::update();
 #endif
 #ifdef PAXS_USING_SFML
-            paxg::Window::window.setFramerateLimit(60);
+            paxg::Window::window().setFramerateLimit(60);
 #endif
         }
 

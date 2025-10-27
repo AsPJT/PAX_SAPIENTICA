@@ -99,8 +99,8 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
             wheel_rot_vol = static_cast<int>(paxg::SFML_Event::getInstance()->wheel_delta);
             left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
-            pos_x = sf::Mouse::getPosition(Window::window).x;
-            pos_y = sf::Mouse::getPosition(Window::window).y;
+            pos_x = sf::Mouse::getPosition(Window::window()).x;
+            pos_y = sf::Mouse::getPosition(Window::window()).y;
 #endif
         }
 

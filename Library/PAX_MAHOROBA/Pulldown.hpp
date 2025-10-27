@@ -215,7 +215,7 @@ namespace paxs {
             triangle.setFillColor(sf::Color::Black);
             triangle.setOutlineColor(sf::Color::Black);
             triangle.setOutlineThickness(0);
-            paxg::Window::window.draw(triangle);
+            paxg::Window::window().draw(triangle);
 #endif
             paxg::Vec2i pos = rect.pos();
 

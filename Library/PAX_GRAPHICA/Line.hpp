@@ -89,7 +89,7 @@ namespace paxg {
         void draw(const double /*thickness*/, const paxg::Color& color) {
             line[0].color = color;
             line[1].color = color;
-            Window::window.draw(line, 2, sf::PrimitiveType::Lines);
+            Window::window().draw(line, 2, sf::PrimitiveType::Lines);
         }
 
 #else
