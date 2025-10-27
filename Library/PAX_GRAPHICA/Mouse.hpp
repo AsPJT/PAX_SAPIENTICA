@@ -12,6 +12,8 @@
 #ifndef PAX_GRAPHICA_MOUSE_HPP
 #define PAX_GRAPHICA_MOUSE_HPP
 
+#include <optional>
+
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -99,8 +101,27 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
             wheel_rot_vol = static_cast<int>(paxg::SFML_Event::getInstance()->wheel_delta);
             left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
-            pos_x = sf::Mouse::getPosition(Window::window()).x;
-            pos_y = sf::Mouse::getPosition(Window::window()).y;
+            auto mouse_pos = sf::Mouse::getPosition(Window::window());
+            pos_x = mouse_pos.x;
+            pos_y = mouse_pos.y;
+#endif
+        }
+
+        // SFML 3.0.0: より安全なマウス位置取得（std::optional）
+        std::optional<Vec2i> tryGetPosition() const {
+#if defined(PAXS_USING_SIV3D)
+            return Vec2i(s3d::Cursor::Pos().x, s3d::Cursor::Pos().y);
+#elif defined(PAXS_USING_DXLIB)
+            int x = 0, y = 0;
+            if (DxLib::GetMousePoint(&x, &y) == -1) {
+                return std::nullopt;
+            }
+            return Vec2i(x, y);
+#elif defined(PAXS_USING_SFML)
+            // SFML 3.0 では常に成功するが、一貫性のためoptionalを返す
+            return Vec2i(pos_x, pos_y);
+#else
+            return std::nullopt;
 #endif
         }
 

@@ -12,6 +12,9 @@
 #ifndef PAX_GRAPHICA_IMAGE_HPP
 #define PAX_GRAPHICA_IMAGE_HPP
 
+#include <optional>
+#include <vector>
+
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -32,6 +35,8 @@ namespace paxg {
         Image(const paxg::String& path) : image(path.string) {}
         constexpr operator s3d::Image() const { return image; }
 
+        bool isValid() const { return !!image; }
+
 #elif defined(PAXS_USING_SFML)
         sf::Image image;
         Image(const paxg::String& path) {
@@ -40,9 +45,26 @@ namespace paxg {
             }
         }
         operator sf::Image() const { return image; }
+
+        bool isValid() const { return image.getSize().x > 0 && image.getSize().y > 0; }
+
+        // SFML 3.0.0: saveToMemory returns std::optional
+        std::optional<std::vector<std::uint8_t>> saveToMemory(const std::string& format = "png") const {
+            return image.saveToMemory(format);
+        }
+
+        // Save to file with error checking
+        bool saveToFile(const std::string& filename) const {
+            return image.saveToFile(filename);
+        }
+
 #else
         constexpr Image([[maybe_unused]] const paxg::String& path) {}
+        constexpr bool isValid() const { return false; }
 #endif
+
+        // Common interface
+        explicit operator bool() const { return isValid(); }
     };
 }
 
