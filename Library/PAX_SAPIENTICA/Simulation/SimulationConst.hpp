@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_SIMULATION_CONST_HPP
 #define PAX_SAPIENTICA_SIMULATION_SIMULATION_CONST_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <array>
 #include <cstdint>
 #include <random>

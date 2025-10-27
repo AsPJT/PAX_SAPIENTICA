@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_ENVIRONMENT_HPP
 #define PAX_SAPIENTICA_SIMULATION_ENVIRONMENT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cmath>
 #include <iostream>
 #include <memory>

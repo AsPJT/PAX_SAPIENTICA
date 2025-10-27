@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_XYZ_TILES_HPP
 #define PAX_MAHOROBA_XYZ_TILES_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cmath>
 #include <filesystem>
 #include <string>

@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_COLOR_HPP
 #define PAX_GRAPHICA_COLOR_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D/Color.hpp>
 #elif defined(PAXS_USING_DXLIB)

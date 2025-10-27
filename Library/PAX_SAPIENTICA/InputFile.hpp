@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_INPUT_FILE_HPP
 #define PAX_SAPIENTICA_INPUT_FILE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <fstream>
 #include <string>
 #include <vector>

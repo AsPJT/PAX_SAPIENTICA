@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_CONVERT_TO_INT_HPP
 #define PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_CONVERT_TO_INT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cmath>
 #include <cstdint>
 #include <limits>

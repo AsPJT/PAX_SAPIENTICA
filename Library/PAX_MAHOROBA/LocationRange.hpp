@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_LOCATION_RANGE_HPP
 #define PAX_MAHOROBA_LOCATION_RANGE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <string>
 
 #include <PAX_MAHOROBA/Init.hpp>

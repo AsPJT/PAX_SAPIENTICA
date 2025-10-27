@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_TOUCH_MANAGER_HPP
 #define PAX_SAPIENTICA_TOUCH_MANAGER_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 namespace paxs {
 
     /// @brief A class that manages touch.

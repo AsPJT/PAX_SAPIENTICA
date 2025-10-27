@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_IDRAWABLE_HPP
 #define PAX_GRAPHICA_IDRAWABLE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 namespace paxg {

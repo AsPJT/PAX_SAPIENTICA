@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_RECT_HPP
 #define PAX_GRAPHICA_RECT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_DXLIB)

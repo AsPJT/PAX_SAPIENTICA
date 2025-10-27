@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_PULLDOWN_HPP
 #define PAX_MAHOROBA_PULLDOWN_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <algorithm> // std::max
 #include <limits>
 #include <string>

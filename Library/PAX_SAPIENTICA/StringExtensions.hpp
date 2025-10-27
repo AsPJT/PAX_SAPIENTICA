@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_STRING_EXTENSIONS_HPP
 #define PAX_SAPIENTICA_STRING_EXTENSIONS_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <limits>
 #include <sstream>
 #include <string>
@@ -110,17 +106,6 @@ namespace paxs {
                 if (field.size() == 0) result[counter] = 251; // 文字列が空の時は NaN(251) を入れる
                 else {
                     result[counter] = paxs::slopeDegF64ToLog2U8(std::stod(field)); // 文字列を数値に変換する
-
-                    /* バイナリデータをより小さくするための実験 */
-                    //if (result[counter] > 181) result[counter] = 181;
-                    //else if (result[counter] > 162) result[counter] = 162;
-                    //else if (result[counter] > 127) result[counter] = 127;
-                    //else if (result[counter] > 0) result[counter] = 1;
-
-                    //if ((result[counter] & 1) == 1) ++result[counter]; // 実験：奇数を削除
-                    //const unsigned int b = 16;
-                    //result[counter] = unsigned char(b * ((result[counter] + (b - 1)) / b)); // 倍数を削除
-                    //if (result[counter] > 250) result[counter] = 250;
                 }
 
                 ++counter;

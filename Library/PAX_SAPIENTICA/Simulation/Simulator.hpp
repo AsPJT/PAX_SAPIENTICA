@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_SIMULATOR_HPP
 #define PAX_SAPIENTICA_SIMULATION_SIMULATOR_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <memory>
 #include <stdexcept>
 

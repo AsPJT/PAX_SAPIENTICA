@@ -26,7 +26,7 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #endif
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
+#include <PAX_SAPIENTICA/MapProjection.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Circle.hpp>
@@ -34,10 +34,6 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-
-/*##########################################################################################
-
-##########################################################################################*/
 
 namespace paxs {
     // 地名

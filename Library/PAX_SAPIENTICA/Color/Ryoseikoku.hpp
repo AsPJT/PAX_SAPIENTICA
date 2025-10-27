@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_COLOR_RYOSEIKOKU_HPP
 #define PAX_SAPIENTICA_COLOR_RYOSEIKOKU_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <vector>
 #include <string>
 

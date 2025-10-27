@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_PROVINCES_JAPAN_HPP
 #define PAX_SAPIENTICA_PROVINCES_JAPAN_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <random>
 #include <unordered_map>
 #include <vector>

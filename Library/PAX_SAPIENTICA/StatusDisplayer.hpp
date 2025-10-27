@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_STATUS_DISPLAYER_HPP
 #define PAX_SAPIENTICA_STATUS_DISPLAYER_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <iostream>
 #include <iomanip>
 

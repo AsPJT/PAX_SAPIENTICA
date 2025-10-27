@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_CALENDAR_JAPANESE_ERA_HPP
 #define PAX_SAPIENTICA_CALENDAR_JAPANESE_ERA_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <array>
 #include <cmath>
 #include <fstream>
@@ -52,12 +48,6 @@ namespace paxs {
             leap_month(leap_month_) {}
     private:
         static int emptyCharSupportStoi(const std::string& str_) {
-            // 例外発生時のデバッグ用
-            //for (auto s : str_) {
-            //	if (s < '0' || s > '9') {
-            //		auto a = str_.size();
-            //	}
-            //}
             return (str_.size() == 0) ? 0 : std::stoi(str_);
         }
 

@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_AGENT_HPP
 #define PAX_SAPIENTICA_SIMULATION_AGENT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <array>
 #include <limits>
 #include <memory>

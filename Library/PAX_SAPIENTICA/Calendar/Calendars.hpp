@@ -12,11 +12,6 @@
 #ifndef PAX_SAPIENTICA_CALENDAR_CALENDARS_HPP
 #define PAX_SAPIENTICA_CALENDAR_CALENDARS_HPP
 
-/*##########################################################################################
-    Define a structure that handles the year, month, and day.
-    年月日を扱う構造体を定義する。
-##########################################################################################*/
-
 #include <cstddef>
 #include <variant>
 

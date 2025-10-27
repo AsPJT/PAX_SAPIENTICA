@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_INIT_LOGO_HPP
 #define PAX_MAHOROBA_INIT_LOGO_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>
 

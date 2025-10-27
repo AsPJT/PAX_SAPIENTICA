@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_VEC2_HPP
 #define PAX_GRAPHICA_VEC2_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D/Vector2D.hpp>
 #elif defined(PAXS_USING_DXLIB)

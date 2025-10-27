@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_TYPE_MAP_PROJECTION_HPP
 #define PAX_SAPIENTICA_TYPE_MAP_PROJECTION_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cmath>
 
 #include <PAX_SAPIENTICA/Math.hpp>
@@ -34,9 +30,7 @@ namespace paxs {
     // 前方宣言
     // forward declaration
     struct MercatorDeg; // メルカトル図法（度）
-    //struct MercatorRad; // メルカトル図法（ラジアン）
     struct EquirectangularDeg; // 正距円筒図法（度）
-    //struct EquirectangularRad; // 正距円筒図法（ラジアン）
 
     // メルカトル図法（度）
     struct MercatorDeg : paxs::Vector2<double> {

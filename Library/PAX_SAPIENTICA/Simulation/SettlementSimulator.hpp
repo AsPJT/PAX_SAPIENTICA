@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SETTLEMENT_SIMULATOR_HPP
 #define PAX_SAPIENTICA_SETTLEMENT_SIMULATOR_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cstdint>
 
 #include <array>

@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_LANGUAGE_FONTS_HPP
 #define PAX_MAHOROBA_LANGUAGE_FONTS_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cstdint>
 #include <string>
 #include <unordered_map>

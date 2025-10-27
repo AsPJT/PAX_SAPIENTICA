@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_COLOR_SOIL_TEMPERATURE_HPP
 #define PAX_SAPIENTICA_COLOR_SOIL_TEMPERATURE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <vector>
 #include <string>
 

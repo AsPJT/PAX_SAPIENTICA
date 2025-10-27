@@ -19,7 +19,7 @@
 
 #include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 可視化一覧
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
@@ -28,20 +28,16 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #endif
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
+#include <PAX_SAPIENTICA/MapProjection.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Key.hpp> // キーボード入力
+#include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-
-/*##########################################################################################
-
-##########################################################################################*/
 
 namespace paxs {
 
@@ -188,7 +184,7 @@ namespace paxs {
                     ((strvec[place_type].size() == 0) ?
                         MurMur3::calcHash("place_name") :
                         MurMur3::calcHash(strvec[place_type].size(), strvec[place_type].c_str()));
-                
+
                 // 可視化する地図の最小範囲
                 const double min_view = (minimum_size >= strvec.size()) ?
                     0 : ((strvec[minimum_size].size() == 0) ?
@@ -270,7 +266,7 @@ namespace paxs {
 
                 // 拡大率の範囲外を除去
                 // if (lll.min_view > map_view_width || lll.max_view < map_view_width) continue;
-                
+
                 // 地名を描画
                 for (std::size_t i = 0; i < location_point_list.size(); ++i) {
                     auto& lli = location_point_list[i];
