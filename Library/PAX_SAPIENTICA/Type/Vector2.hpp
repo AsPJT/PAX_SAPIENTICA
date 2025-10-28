@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_TYPE_VECTOR2_HPP
 #define PAX_SAPIENTICA_TYPE_VECTOR2_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cmath>
 #include <iostream>
 #include <cstdint>

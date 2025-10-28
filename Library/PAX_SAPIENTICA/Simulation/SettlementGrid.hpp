@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SETTLEMENT_GRID_HPP
 #define PAX_SAPIENTICA_SETTLEMENT_GRID_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <memory>
 
 #include <PAX_SAPIENTICA/Simulation/Settlement.hpp>

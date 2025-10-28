@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SETTLEMENT_SIMULATOR_HPP
 #define PAX_SAPIENTICA_SETTLEMENT_SIMULATOR_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cstdint>
 
 #include <array>
@@ -512,7 +508,7 @@ namespace paxs {
                 }
             }
             // 渡来期間
-            if (step_count >= SimulationConstants::getInstance()->immigration_step_interval > 0 &&
+            if (SimulationConstants::getInstance()->immigration_step_interval > 0 &&
                 step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
                 step_count <= SimulationConstants::getInstance()->immigration_end_steps &&
                 (step_count - SimulationConstants::getInstance()->immigration_start_steps) % SimulationConstants::getInstance()->immigration_step_interval == 0) {
@@ -580,7 +576,7 @@ namespace paxs {
             calcPop();
 
             // 渡来期間
-            if (step_count >= SimulationConstants::getInstance()->immigration_step_interval > 0 &&
+            if (SimulationConstants::getInstance()->immigration_step_interval > 0 &&
                 step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
                 step_count <= SimulationConstants::getInstance()->immigration_end_steps &&
                 (step_count - SimulationConstants::getInstance()->immigration_start_steps) % SimulationConstants::getInstance()->immigration_step_interval == 0) {

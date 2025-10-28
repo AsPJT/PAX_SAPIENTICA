@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIV3D_KEY_HPP
 #define PAX_SAPIENTICA_SIV3D_KEY_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <algorithm>
 #include <array>
 #include <cmath>

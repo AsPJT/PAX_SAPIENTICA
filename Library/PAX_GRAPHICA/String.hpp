@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_STRING_HPP
 #define PAX_GRAPHICA_STRING_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <string>
 
 #if defined(PAXS_USING_SIV3D)
@@ -281,7 +277,7 @@ namespace paxg {
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y() - size / 2) });
-            paxg::Window::window.draw(text);
+            paxg::Window::window().draw(text);
         }
 
         void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -294,7 +290,7 @@ namespace paxg {
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x), static_cast<float>(pos.y() + size / 2) });
-            paxg::Window::window.draw(text);
+            paxg::Window::window().draw(text);
         }
 
         void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -307,7 +303,7 @@ namespace paxg {
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y()) });
-            paxg::Window::window.draw(text);
+            paxg::Window::window().draw(text);
         }
 
         void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -320,7 +316,7 @@ namespace paxg {
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y() - size / 2) });
-            paxg::Window::window.draw(text);
+            paxg::Window::window().draw(text);
         }
 
         void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -333,7 +329,7 @@ namespace paxg {
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y() + size / 2) });
-            paxg::Window::window.draw(text);
+            paxg::Window::window().draw(text);
         }
 
         void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
@@ -346,7 +342,7 @@ namespace paxg {
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y()) });
-            paxg::Window::window.draw(text);
+            paxg::Window::window().draw(text);
         }
 
         int height() const {

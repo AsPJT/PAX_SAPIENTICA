@@ -1,0 +1,164 @@
+/*##########################################################################################
+
+    PAX SAPIENTICA Library 💀🌿🌏
+
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
+
+#ifndef PAX_GRAPHICA_SFML_WINDOW_IMPL_HPP
+#define PAX_GRAPHICA_SFML_WINDOW_IMPL_HPP
+
+#if defined(PAXS_USING_SFML)
+
+#include <SFML/Graphics.hpp>
+
+#include <PAX_GRAPHICA/WindowImpl.hpp>
+#include <PAX_GRAPHICA/SFML_Event.hpp>
+
+namespace paxg {
+
+    class SFMLWindowImpl : public WindowImpl {
+    private:
+        sf::RenderWindow m_window;
+        Color backgroundColor{140, 180, 250};
+
+    public:
+        SFMLWindowImpl() : m_window(sf::VideoMode({1280, 720}), "PAX SAPIENTICA Library") {}
+
+        // For backward compatibility with existing drawing code
+        sf::RenderWindow& getWindow() { return m_window; }
+
+        void init(int width, int height, const std::string& title) override {
+            m_window.create(sf::VideoMode({static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, 24), title);
+        }
+
+        bool update() override {
+            m_window.display();
+            bool upd = paxg::SFML_Event::getInstance()->update(m_window);
+            m_window.clear(backgroundColor.color);
+            return upd;
+        }
+
+        void setTitle(const std::string& title) override {
+            m_window.setTitle(title);
+        }
+
+        void setSize(int width, int height) override {
+            m_window.setSize(sf::Vector2u(width, height));
+        }
+
+        void setPosition(int x, int y) override {
+            m_window.setPosition(sf::Vector2i(x, y));
+        }
+
+        void setPosition(const Vec2i& pos) override {
+            m_window.setPosition(sf::Vector2i(pos.x(), pos.y()));
+        }
+
+        void setIcon(const std::string& path) override {
+            sf::Image icon;
+            if (!icon.loadFromFile(path))
+                return;
+            m_window.setIcon({icon.getSize().x, icon.getSize().y}, icon.getPixelsPtr());
+        }
+
+        void setVisible(bool visible) override {
+            m_window.setVisible(visible);
+        }
+
+        void setVSync(bool vsync) override {
+            m_window.setVerticalSyncEnabled(vsync);
+        }
+
+        void setFPS(int fps) override {
+            m_window.setFramerateLimit(fps);
+        }
+
+        void setMouseCursorVisible(bool visible) override {
+            m_window.setMouseCursorVisible(visible);
+        }
+
+        void setMouseCursorGrabbed(bool grabbed) override {
+            m_window.setMouseCursorGrabbed(grabbed);
+        }
+
+        void setMouseCursor(const std::string& path) override {
+            sf::Image image;
+            if (!image.loadFromFile(path))
+                return;
+
+            sf::Cursor cursor(image.getPixelsPtr(), image.getSize(), sf::Vector2u(0, 0));
+            m_window.setMouseCursor(cursor);
+        }
+
+        void setMousePosition(int x, int y) override {
+            sf::Mouse::setPosition(sf::Vector2i(x, y), m_window);
+        }
+
+        void setMousePosition(const Vec2i& pos) override {
+            sf::Mouse::setPosition(sf::Vector2i(pos.x(), pos.y()), m_window);
+        }
+
+        void setKeyRepeat(bool repeat) override {
+            m_window.setKeyRepeatEnabled(repeat);
+        }
+
+        void setBackgroundColor(const Color color) override {
+            backgroundColor = color;
+        }
+
+        void setLetterbox(const Color) override {
+            // SFML does not support letterbox
+        }
+
+        void setResizable(bool resizable) override {
+            // SFML window style cannot be changed after creation
+            // This would require recreating the window which causes OpenGL context issues
+            // The window is created with Default style (resizable) in init()
+            // Note: Changing this at runtime is not safe in SFML 3.0
+            (void)resizable; // Suppress unused parameter warning
+        }
+
+        Vec2i center() const override {
+            return Vec2i{static_cast<int>(m_window.getSize().x / 2), static_cast<int>(m_window.getSize().y / 2)};
+        }
+
+        int width() const override {
+            return static_cast<int>(m_window.getSize().x);
+        }
+
+        int height() const override {
+            return static_cast<int>(m_window.getSize().y);
+        }
+
+        Vec2i size() const override {
+            return Vec2i{static_cast<int>(m_window.getSize().x), static_cast<int>(m_window.getSize().y)};
+        }
+
+        Vec2i getMousePosition() const override {
+            auto pos = sf::Mouse::getPosition(m_window);
+            return Vec2i{pos.x, pos.y};
+        }
+
+        void clear() override {
+            m_window.clear(backgroundColor.color);
+        }
+
+        void display() override {
+            m_window.display();
+        }
+
+        void close() override {
+            m_window.close();
+        }
+    };
+
+} // namespace paxg
+
+#endif // defined(PAXS_USING_SFML)
+
+#endif // !PAX_GRAPHICA_SFML_WINDOW_IMPL_HPP

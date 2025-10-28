@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_DATA_HPP
 #define PAX_SAPIENTICA_SIMULATION_DATA_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cmath>
 #include <filesystem>
 #include <fstream>

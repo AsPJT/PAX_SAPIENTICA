@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
 #define PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cstddef>
 #include <fstream>
 #include <string>

@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_APP_CONFIG_HPP
 #define PAX_SAPIENTICA_APP_CONFIG_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 
 namespace paxs {

@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_CALENDAR_HPP
 #define PAX_MAHOROBA_CALENDAR_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <limits>
 #include <string>
 #include <variant>

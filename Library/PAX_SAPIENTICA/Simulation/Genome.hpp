@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_GENE_HPP
 #define PAX_SAPIENTICA_SIMULATION_GENE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <PAX_SAPIENTICA/Simulation/Chromosome.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
@@ -145,8 +141,8 @@ namespace paxs {
                 chromosome == rhs.chromosome &&
 #endif // USING_CHROMOSOME
                 mtDNA == rhs.mtDNA &&
-                yDNA == rhs.yDNA;
-            language == rhs.language;
+                yDNA == rhs.yDNA &&
+                language == rhs.language;
         }
 
     private:

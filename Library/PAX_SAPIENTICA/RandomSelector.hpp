@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_RANDOM_SELECTOR_HPP
 #define PAX_SAPIENTICA_RANDOM_SELECTOR_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <algorithm>
 #include <random>
 #include <stdexcept>

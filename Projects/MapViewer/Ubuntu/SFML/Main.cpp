@@ -14,7 +14,6 @@
 #include <SFML/Graphics.hpp>
 #include <PAX_MAHOROBA/Main.hpp>
 
-// その他の処理 (Windows)
 int main() {
 
     paxs::startMain();

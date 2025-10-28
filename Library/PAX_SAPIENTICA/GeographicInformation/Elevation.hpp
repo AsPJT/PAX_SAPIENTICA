@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_ELEVATION_HPP
 #define PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_ELEVATION_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <array>
 #include <cmath>
 #include <stdexcept>

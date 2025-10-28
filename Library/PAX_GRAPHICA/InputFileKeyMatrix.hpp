@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_INPUT_FILE_KEY_MATRIX_HPP
 #define PAX_GRAPHICA_INPUT_FILE_KEY_MATRIX_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <fstream>
 #include <string>
 #include <vector>

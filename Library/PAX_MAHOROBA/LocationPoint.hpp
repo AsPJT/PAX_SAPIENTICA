@@ -19,7 +19,7 @@
 
 #include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 可視化一覧
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
@@ -28,20 +28,17 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #endif
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
+#include <PAX_SAPIENTICA/MapProjection.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Key.hpp> // キーボード入力
+#include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
+#include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-
-/*##########################################################################################
-
-##########################################################################################*/
 
 namespace paxs {
 
@@ -188,7 +185,7 @@ namespace paxs {
                     ((strvec[place_type].size() == 0) ?
                         MurMur3::calcHash("place_name") :
                         MurMur3::calcHash(strvec[place_type].size(), strvec[place_type].c_str()));
-                
+
                 // 可視化する地図の最小範囲
                 const double min_view = (minimum_size >= strvec.size()) ?
                     0 : ((strvec[minimum_size].size() == 0) ?
@@ -270,7 +267,7 @@ namespace paxs {
 
                 // 拡大率の範囲外を除去
                 // if (lll.min_view > map_view_width || lll.max_view < map_view_width) continue;
-                
+
                 // 地名を描画
                 for (std::size_t i = 0; i < location_point_list.size(); ++i) {
                     auto& lli = location_point_list[i];
@@ -562,10 +559,8 @@ namespace paxs {
         bool is_line = false;
         // 移動線（矢印）を表示するか
         bool is_arrow = true;
-#ifdef PAXS_USING_SIV3D
-        // 選択肢を表示するフォント
-        const s3d::Font select_font{ 30, s3d::Typeface::Bold };
-#endif
+        // 選択肢を表示するフォント（全プラットフォーム対応）
+        paxg::Font select_font{ 30, "", 3 };
     public:
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
@@ -675,37 +670,36 @@ namespace paxs {
     public:
 
         void drawText() {
-#ifdef PAXS_USING_SIV3D
             constexpr int start_x = 40; // 背景端の左上の X 座標
             constexpr int start_y = 80; // 背景端の左上の Y 座標
             constexpr int font_space = 20; // 文字端から背景端までの幅
-            s3d::String text = U""; // 表示するテキスト
+            std::string text = ""; // 表示するテキスト
             switch (select_draw)
             {
             case 1:
-                text = U"1. 人口 Population";
+                text = reinterpret_cast<const char*>(u8"1. 人口 Population");
                 break;
             case 2:
-                text = U"2. 農耕文化 Farming";
+                text = reinterpret_cast<const char*>(u8"2. 農耕文化 Farming");
                 break;
             case 3:
-                text = U"3. mtDNA haplogroup";
+                text = reinterpret_cast<const char*>(u8"3. mtDNA haplogroup");
                 break;
             case 4:
-                text = U"4. SNP / Genome";
+                text = reinterpret_cast<const char*>(u8"4. SNP / Genome");
                 break;
             case 5:
-                text = U"5. 言語 Language";
+                text = reinterpret_cast<const char*>(u8"5. 言語 Language");
                 break;
             case 6:
-                text = U"6. 青銅 Bronze";
+                text = reinterpret_cast<const char*>(u8"6. 青銅 Bronze");
                 break;
             };
             // 選択項目を描画
-            const s3d::RectF rect = select_font(text).region();
-            s3d::RoundRect{ start_x, start_y, rect.w + font_space * 2, rect.h + font_space * 2, 10 }.draw();
-            select_font(text).draw(start_x + font_space, start_y + font_space, s3d::Palette::Black);
-#endif
+            const int text_width = select_font.width(text);
+            const int text_height = select_font.height();
+            paxg::RoundRect{ start_x, start_y, text_width + font_space * 2, text_height + font_space * 2, 10 }.draw();
+            select_font.draw(text, paxg::Vec2i{ start_x + font_space, start_y + font_space }, paxg::Color{ 0, 0, 0 });
         }
 
         void draw(const double jdn,
@@ -899,9 +893,9 @@ namespace paxs {
                             if (lli.max_year < jdn) continue;
 
                             // 描画位置
-                            const paxg::Vec2i draw_pos = paxg::Vec2i{
-        static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-            static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            const paxg::Vec2f draw_pos = paxg::Vec2f{
+        static_cast<float>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+            static_cast<float>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                             };
 
                             if (settlement.getOldPosition().x != -1 && settlement.getOldPosition().x != 0) {
@@ -941,11 +935,11 @@ namespace paxs {
                                         paxs::Vector2<int>(
                                             settlement.getPositions()[0].x,
                                             settlement.getPositions()[0].y), 10));
-                                    const paxg::Vec2i draw_one_pos = paxg::Vec2i{
-            static_cast<int>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                static_cast<int>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                    const paxg::Vec2f draw_one_pos = paxg::Vec2f{
+            static_cast<float>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                static_cast<float>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                                     };
-                                    s3d::Line{ draw_one_pos.x(), draw_one_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(0.1, s3d::Vec2{ 8, 16 }, s3d::Palette::Black);
+                                    paxg::Line{ draw_one_pos.x(), draw_one_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(0.1, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                                 }
                                 else {
                                     // 過去の位置
@@ -954,11 +948,11 @@ namespace paxs {
                                         paxs::Vector2<int>(
                                             settlement.getOldPosition().x,
                                             settlement.getOldPosition().y), 10));
-                                    const paxg::Vec2i draw_old_pos = paxg::Vec2i{
-            static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                    const paxg::Vec2f draw_old_pos = paxg::Vec2f{
+            static_cast<float>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+                static_cast<float>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                                     };
-                                    s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, s3d::Palette::Black);
+                                    paxg::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                                 }
                             }
 
@@ -992,9 +986,9 @@ namespace paxs {
                         if (lli.max_year < jdn) continue;
 
                         // 描画位置
-                        const paxg::Vec2i draw_pos = paxg::Vec2i{
-    static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                        const paxg::Vec2f draw_pos = paxg::Vec2f{
+    static_cast<float>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<float>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                         };
 
                         if (marriage_pos.sx != -1 && marriage_pos.sx != 0) {
@@ -1004,11 +998,11 @@ namespace paxs {
                                 paxs::Vector2<int>(
                                     marriage_pos.sx,
                                     marriage_pos.sy), 10));
-                            const paxg::Vec2i draw_old_pos = paxg::Vec2i{
-    static_cast<int>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-        static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                            const paxg::Vec2f draw_old_pos = paxg::Vec2f{
+    static_cast<float>((old_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
+        static_cast<float>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                             };
-                            s3d::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, s3d::Vec2{ 8, 16 }, (marriage_pos.is_matrilocality) ? s3d::Color(221, 67, 98) : s3d::Color(87, 66, 221));
+                            paxg::Line{ draw_old_pos.x(), draw_old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(2, paxg::Vec2f{ 8.0f, 16.0f }, (marriage_pos.is_matrilocality) ? paxg::Color(221, 67, 98) : paxg::Color(87, 66, 221));
                         }
                     }
                 }

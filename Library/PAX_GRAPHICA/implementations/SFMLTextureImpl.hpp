@@ -1,0 +1,155 @@
+/*##########################################################################################
+
+    PAX SAPIENTICA Library 💀🌿🌏
+
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
+
+#ifndef PAX_GRAPHICA_SFML_TEXTURE_IMPL_HPP
+#define PAX_GRAPHICA_SFML_TEXTURE_IMPL_HPP
+
+#if defined(PAXS_USING_SFML)
+
+#include <SFML/Graphics.hpp>
+
+#include <PAX_GRAPHICA/TextureImpl.hpp>
+#include <PAX_GRAPHICA/Image.hpp>
+#include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
+
+namespace paxg {
+
+    class SFMLTextureImpl : public TextureImpl {
+    private:
+        sf::Texture texture;
+
+    public:
+        SFMLTextureImpl() = default;
+
+        SFMLTextureImpl(const Image& image) {
+            if (!texture.loadFromImage(image)) {
+                PAXS_WARNING("Failed to load image");
+            }
+        }
+
+        SFMLTextureImpl(const String& path) {
+            std::string path_str = convertSvgToPng(path.string);
+            if (!texture.loadFromFile(path_str)) {
+                PAXS_WARNING("Failed to load texture: " + path_str);
+            }
+        }
+
+        SFMLTextureImpl(const std::string& path) {
+            std::string path_str = convertSvgToPng(path);
+            if (!texture.loadFromFile(path_str)) {
+                PAXS_WARNING("Failed to load texture: " + path_str);
+            }
+        }
+
+        bool isValid() const override {
+            return texture.getSize().x > 0;
+        }
+
+        int width() const override {
+            return static_cast<int>(texture.getSize().x);
+        }
+
+        int height() const override {
+            return static_cast<int>(texture.getSize().y);
+        }
+
+        void draw() const override {
+            sf::Sprite sprite(texture);
+            Window::window().draw(sprite);
+        }
+
+        void drawAt(const Vec2f& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setPosition({pos.x() - (width() / 2.0f), pos.y() - (height() / 2.0f)});
+            Window::window().draw(sprite);
+        }
+
+        void drawAt(const Vec2i& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setPosition({static_cast<float>(pos.x() - (width() / 2)),
+                              static_cast<float>(pos.y() - (height() / 2))});
+            Window::window().draw(sprite);
+        }
+
+        void resizedDrawAt(const Vec2i& resize, const Vec2i& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setScale({static_cast<float>(resize.x()) / texture.getSize().x,
+                           static_cast<float>(resize.y()) / texture.getSize().y});
+            sprite.setPosition({static_cast<float>(pos.x() - (resize.x() / 2)),
+                              static_cast<float>(pos.y() - (resize.y() / 2))});
+            Window::window().draw(sprite);
+        }
+
+        void resizedDrawAt(int resize, const Vec2i& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
+                           static_cast<float>(resize) / texture.getSize().y});
+            sprite.setPosition({static_cast<float>(pos.x() - (resize / 2)),
+                              static_cast<float>(pos.y() - (resize / 2))});
+            Window::window().draw(sprite);
+        }
+
+        void resizedDrawAt(const Vec2f& resize, const Vec2f& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setScale({resize.x() / texture.getSize().x, resize.y() / texture.getSize().y});
+            sprite.setPosition({pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2)});
+            Window::window().draw(sprite);
+        }
+
+        void resizedDrawAt(int resize, const Vec2f& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
+                           static_cast<float>(resize) / texture.getSize().y});
+            sprite.setPosition({pos.x() - (resize / 2.0f), pos.y() - (resize / 2.0f)});
+            Window::window().draw(sprite);
+        }
+
+        void resizedDraw(const Vec2i& resize, const Vec2i& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setScale({static_cast<float>(resize.x()) / texture.getSize().x,
+                           static_cast<float>(resize.y()) / texture.getSize().y});
+            sprite.setPosition({static_cast<float>(pos.x()), static_cast<float>(pos.y())});
+            Window::window().draw(sprite);
+        }
+
+        void resizedDraw(int resize, const Vec2i& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
+                           static_cast<float>(resize) / texture.getSize().y});
+            sprite.setPosition({static_cast<float>(pos.x()), static_cast<float>(pos.y())});
+            Window::window().draw(sprite);
+        }
+
+        void resizedDraw(const Vec2f& resize, const Vec2f& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setScale({resize.x() / texture.getSize().x, resize.y() / texture.getSize().y});
+            sprite.setPosition({pos.x(), pos.y()});
+            Window::window().draw(sprite);
+        }
+
+        void resizedDraw(int resize, const Vec2f& pos) const override {
+            sf::Sprite sprite(texture);
+            sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
+                           static_cast<float>(resize) / texture.getSize().y});
+            sprite.setPosition({pos.x(), pos.y()});
+            Window::window().draw(sprite);
+        }
+
+        const sf::Texture& getNativeTexture() const { return texture; }
+    };
+
+} // namespace paxg
+
+#endif // defined(PAXS_USING_SFML)
+
+#endif // !PAX_GRAPHICA_SFML_TEXTURE_IMPL_HPP

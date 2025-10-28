@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_OBJECT_HPP
 #define PAX_SAPIENTICA_SIMULATION_OBJECT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <PAX_SAPIENTICA/MapUtility.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 

@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_GRAPHICS_HPP
 #define PAX_GRAPHICA_GRAPHICS_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>

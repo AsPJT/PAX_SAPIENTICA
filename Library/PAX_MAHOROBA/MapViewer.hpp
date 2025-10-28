@@ -12,17 +12,13 @@
 #ifndef PAX_MAHOROBA_MAP_VIEWER_HPP
 #define PAX_MAHOROBA_MAP_VIEWER_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <memory>
 #include <new>
 
 #include <PAX_MAHOROBA/LocationPoint.hpp>
 #include <PAX_MAHOROBA/LocationRange.hpp> // TextureLocation
 #include <PAX_MAHOROBA/PersonLocation.hpp> // PersonLocation 人物を描画
-#include <PAX_MAHOROBA/StringViewer.hpp> // 文字
+#include <PAX_MAHOROBA/StringViewer.hpp>
 
 #include <PAX_GRAPHICA/Key.hpp>
 

@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_UNIQUE_IDENTIFICATION_HPP
 #define PAX_SAPIENTICA_UNIQUE_IDENTIFICATION_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <PAX_SAPIENTICA/Logger.hpp>
 
 namespace paxs {

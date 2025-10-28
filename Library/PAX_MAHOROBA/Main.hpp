@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_MAIN_HPP
 #define PAX_MAHOROBA_MAIN_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
 // シミュレーションを使用しない
 #else
@@ -24,7 +20,7 @@
 
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#if defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
+#if defined(PAXS_USING_DXLIB)
 static int old_left_touch = 0;
 static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #endif
@@ -247,7 +243,6 @@ namespace paxs {
                 koyomi_siv,
                 visible
             );
-
 #ifdef PAXS_USING_DXLIB
             old_left_touch = DxLib::GetTouchInputNum();
             if (old_left_touch >= 1) {

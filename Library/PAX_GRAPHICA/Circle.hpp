@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_CIRCLE_HPP
 #define PAX_GRAPHICA_CIRCLE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -50,7 +46,7 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
             SFML_Circle::getInstance()->circle.setRadius(r);
             SFML_Circle::getInstance()->circle.setPosition({ x, y });
-            Window::window.draw(SFML_Circle::getInstance()->circle);
+            Window::window().draw(SFML_Circle::getInstance()->circle);
 #endif
         }
 
@@ -70,7 +66,7 @@ namespace paxg {
             SFML_Circle::getInstance()->circle.setPosition({ x, y });
 
             SFML_Circle::getInstance()->circle.setFillColor(c_.color);
-            Window::window.draw(SFML_Circle::getInstance()->circle);
+            Window::window().draw(SFML_Circle::getInstance()->circle);
         }
 #else
         void draw(const paxg::Color&) const {}

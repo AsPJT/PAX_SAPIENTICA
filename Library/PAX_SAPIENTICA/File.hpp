@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_TYPE_FILE_HPP
 #define PAX_SAPIENTICA_TYPE_FILE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>

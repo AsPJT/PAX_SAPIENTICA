@@ -12,11 +12,6 @@
 #ifndef PAX_SAPIENTICA_CALENDAR_JULIAN_DAY_NUMBER_HPP
 #define PAX_SAPIENTICA_CALENDAR_JULIAN_DAY_NUMBER_HPP
 
-/*##########################################################################################
-    Deals with calculations related to the Julian calendar, the Gregorian calendar, and the Julian day.
-    ユリウス暦、グレゴリオ暦、ユリウス日に関する計算を扱う。
-##########################################################################################*/
-
 #include <cmath>
 #include <cstdint>
 #include <vector>

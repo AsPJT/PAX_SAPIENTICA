@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_XYZ_TILES_LIST_HPP
 #define PAX_MAHOROBA_XYZ_TILES_LIST_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <string>
 #include <unordered_map>
 #include <vector>

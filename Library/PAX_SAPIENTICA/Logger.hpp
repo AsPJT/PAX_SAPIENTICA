@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_LOGGER_HPP
 #define PAX_SAPIENTICA_LOGGER_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <chrono>
 #include <ctime>
 #include <filesystem>

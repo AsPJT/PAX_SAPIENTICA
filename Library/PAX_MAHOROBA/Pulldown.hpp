@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_PULLDOWN_HPP
 #define PAX_MAHOROBA_PULLDOWN_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <algorithm> // std::max
 #include <limits>
 #include <string>
@@ -29,6 +25,7 @@
 
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/Triangle.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxs {
@@ -74,7 +71,7 @@ namespace paxs {
 
                 // 最大の文字数からプルダウンの各項目の幅を定義
                 //rect.setW
-                all_rect_x = 
+                all_rect_x =
                 (
                     static_cast<float>((std::max)(static_cast<int>(all_rect_x), static_cast<int>((*one_font).width(*str))))
                 );
@@ -204,23 +201,14 @@ namespace paxs {
             // プルダウンのふちを描画
             rect.drawFrame(1, 0, is_open ? paxg::Color{ 255, 165, 0 } : paxg::Color{ 128, 128, 128 });
 
-#ifdef PAXS_USING_SIV3D
-            // 三角形を描画
-            s3d::Triangle{ (rect.x() + rect.w() - down_button_size / 2.0 - padding.x()), (rect.y() + rect.h() / 2.0),
-                (down_button_size * 0.5), 3.1416 }.draw(s3d::Palette::Black);
+            // 三角形を描画（下向き▼）
+            constexpr float radius = 10.0f; // down_button_size * 0.5f を定数化
+            static constexpr paxg::TriangleShape down_arrow_shape(radius, 3.1416f); // π radians = down
+            const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x());
+            const float center_y = static_cast<float>(rect.y() + rect.h() / 2.0);
+            paxg::Triangle triangle(center_x, center_y, down_arrow_shape);
+            triangle.draw(paxg::Color{ 0, 0, 0 });
 
-#elif defined(PAXS_USING_SFML)
-            // 三角形を描画
-            sf::ConvexShape triangle;
-            triangle.setPointCount(3);
-            triangle.setPoint(0, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x()), static_cast<float>(rect.y() + rect.h() / 2.0 + down_button_size * 0.25)));
-            triangle.setPoint(1, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5), static_cast<float>(rect.y() + rect.h() / 2.0 - down_button_size * 0.5 + down_button_size * 0.25)));
-            triangle.setPoint(2, sf::Vector2f(static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x() + down_button_size * 0.5), static_cast<float>(rect.y() + rect.h() / 2.0 + down_button_size * 0.5 + down_button_size * 0.25)));
-            triangle.setFillColor(sf::Color::Black);
-            triangle.setOutlineColor(sf::Color::Black);
-            triangle.setOutlineThickness(0);
-            paxg::Window::window.draw(triangle);
-#endif
             paxg::Vec2i pos = rect.pos();
 
             const std::uint_least32_t select_key = ((is_one_font) ? items_key[item_index] : (*select_language_ptr).cgetKey());

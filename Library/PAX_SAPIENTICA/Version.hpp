@@ -12,11 +12,6 @@
 #ifndef PAX_SAPIENTICA_CONSTANT_VERSION_HPP
 #define PAX_SAPIENTICA_CONSTANT_VERSION_HPP
 
-/*##########################################################################################
-	Define version macro.
-	バージョンマクロを定義する。
-##########################################################################################*/
-
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
 #define PAX_SAPIENTICA_LIBRARY_VERSION (20250529L)

@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_STRING_VIEWER_HPP
 #define PAX_MAHOROBA_STRING_VIEWER_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <limits>
 #include <string>
 #include <variant>
