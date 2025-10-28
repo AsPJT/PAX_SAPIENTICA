@@ -125,6 +125,10 @@ namespace paxg {
                         static_cast<std::int_least32_t>(s3d::Cursor::PosF().y));
         }
 
+        bool hasFocus() const override {
+            return s3d::System::GetUserActions() != s3d::UserAction::NoAction;
+        }
+
         void clear() override {
             // Siv3D does not require explicit clear
         }

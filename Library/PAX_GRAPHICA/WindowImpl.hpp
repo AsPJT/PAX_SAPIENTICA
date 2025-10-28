@@ -50,6 +50,7 @@ namespace paxg {
         virtual int height() const = 0;
         virtual Vec2i size() const = 0;
         virtual Vec2i getMousePosition() const = 0;
+        virtual bool hasFocus() const = 0;
 
         virtual void clear() = 0;
         virtual void display() = 0;

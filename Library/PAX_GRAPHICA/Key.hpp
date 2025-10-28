@@ -44,13 +44,13 @@ namespace paxs {
 #endif
         bool pressed() const {
 #if defined(PAXS_USING_SIV3D)
-            return input.pressed();
+            return paxg::Window::hasFocus() && input.pressed();
 
 #elif defined(PAXS_USING_DXLIB)
-            return DxLib::CheckHitKey(input) == 1;
+            return paxg::Window::hasFocus() && DxLib::CheckHitKey(input) == 1;
 
 #elif defined(PAXS_USING_SFML)
-            return sf::Keyboard::isKeyPressed((sf::Keyboard::Key)input);
+            return paxg::Window::hasFocus() && sf::Keyboard::isKeyPressed((sf::Keyboard::Key)input);
 
 #else
             return false;

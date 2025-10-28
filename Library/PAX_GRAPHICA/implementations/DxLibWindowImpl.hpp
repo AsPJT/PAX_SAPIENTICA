@@ -162,6 +162,10 @@ namespace paxg {
             return Vec2i(0, 0);
         }
 
+        bool hasFocus() const override {
+            return DxLib::GetWindowActiveFlag() == TRUE;
+        }
+
         void clear() override {
             // DxLib does not require explicit clear
         }

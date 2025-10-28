@@ -150,6 +150,12 @@ namespace paxg {
             return getImpl().getMousePosition();
         }
 
+        static bool hasFocus() {
+            // Return true if window is not initialized yet (to avoid crashes during startup)
+            if (!impl) return true;
+            return getImpl().hasFocus();
+        }
+
         static void clear() {
             getImpl().clear();
         }

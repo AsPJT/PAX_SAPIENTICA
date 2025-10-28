@@ -144,6 +144,10 @@ namespace paxg {
             return Vec2i{pos.x, pos.y};
         }
 
+        bool hasFocus() const override {
+            return m_window.hasFocus();
+        }
+
         void clear() override {
             m_window.clear(backgroundColor.color);
         }
