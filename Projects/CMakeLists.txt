@@ -42,8 +42,15 @@ else()
     message(FATAL_ERROR "Unsupported OS")
 endif()
 
-# Find SFML using custom module
-find_package(SFMLCustom REQUIRED)
+# Find SFML
+if(WIN32 OR APPLE)
+    find_package(SFMLCustom REQUIRED)
+elseif(UNIX)
+    find_package(SFML COMPONENTS Graphics QUIET)
+    if(NOT SFML_FOUND)
+        message(STATUS "SFML 3.0 not found on Linux - MapViewer will not be built")
+    endif()
+endif()
 
 if(SFML_FOUND)
     if(SFML_INCLUDE_DIRS)
