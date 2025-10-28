@@ -38,6 +38,7 @@ namespace paxg {
         void setKeyRepeat(bool) override {}
         void setBackgroundColor(const Color) override {}
         void setLetterbox(const Color) override {}
+        void setResizable(bool) override {}
 
         Vec2i center() const override { return Vec2i{}; }
         int width() const override { return 1; }

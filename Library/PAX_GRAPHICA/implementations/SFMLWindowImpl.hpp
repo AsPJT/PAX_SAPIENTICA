@@ -115,6 +115,14 @@ namespace paxg {
             // SFML does not support letterbox
         }
 
+        void setResizable(bool resizable) override {
+            // SFML window style cannot be changed after creation
+            // This would require recreating the window which causes OpenGL context issues
+            // The window is created with Default style (resizable) in init()
+            // Note: Changing this at runtime is not safe in SFML 3.0
+            (void)resizable; // Suppress unused parameter warning
+        }
+
         Vec2i center() const override {
             return Vec2i{static_cast<int>(m_window.getSize().x / 2), static_cast<int>(m_window.getSize().y / 2)};
         }

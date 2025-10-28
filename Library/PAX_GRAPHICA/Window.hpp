@@ -126,6 +126,10 @@ namespace paxg {
             getImpl().setLetterbox(color);
         }
 
+        static void setResizable(bool resizable) {
+            getImpl().setResizable(resizable);
+        }
+
         static Vec2i center() {
             return getImpl().center();
         }

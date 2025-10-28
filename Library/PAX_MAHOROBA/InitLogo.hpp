@@ -57,12 +57,8 @@ namespace paxs {
             paxg::Window::setTitle(
                 std::string("PAX SAPIENTICA v") + std::string(PAX_SAPIENTICA_LIBRARY_VERSION_NAME));
 
-#ifdef PAXS_USING_SIV3D
             // ウィンドウのサイズを変更可能にする
-            s3d::Window::SetStyle(s3d::WindowStyle::Sizable);
-            // 画像の拡大縮小の方式を設定
-            const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest };
-#endif
+            paxg::Window::setResizable(true);
 #ifdef PAXS_USING_DXLIB
             DxLib::DxLib_Init();
 #endif // PAXS_USING_DXLIB
@@ -79,7 +75,7 @@ namespace paxs {
             paxg::Window::update();
 #endif
 #ifdef PAXS_USING_SFML
-            paxg::Window::window().setFramerateLimit(60);
+            paxg::Window::setFPS(60);
 #endif
         }
 

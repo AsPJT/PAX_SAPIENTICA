@@ -43,6 +43,7 @@ namespace paxg {
         virtual void setKeyRepeat(bool repeat) = 0;
         virtual void setBackgroundColor(const Color color) = 0;
         virtual void setLetterbox(const Color color) = 0;
+        virtual void setResizable(bool resizable) = 0;
 
         virtual Vec2i center() const = 0;
         virtual int width() const = 0;

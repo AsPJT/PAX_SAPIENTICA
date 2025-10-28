@@ -96,6 +96,14 @@ namespace paxg {
             s3d::Scene::SetLetterbox(color.color);
         }
 
+        void setResizable(bool resizable) override {
+            if (resizable) {
+                s3d::Window::SetStyle(s3d::WindowStyle::Sizable);
+            } else {
+                s3d::Window::SetStyle(s3d::WindowStyle::Fixed);
+            }
+        }
+
         Vec2i center() const override {
             return Vec2i(s3d::Scene::Center().x, s3d::Scene::Center().y);
         }

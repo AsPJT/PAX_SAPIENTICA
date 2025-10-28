@@ -34,9 +34,10 @@
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
+#include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxs {
@@ -558,10 +559,8 @@ namespace paxs {
         bool is_line = false;
         // 移動線（矢印）を表示するか
         bool is_arrow = true;
-#ifdef PAXS_USING_SIV3D
-        // 選択肢を表示するフォント
-        const s3d::Font select_font{ 30, s3d::Typeface::Bold };
-#endif
+        // 選択肢を表示するフォント（全プラットフォーム対応）
+        paxg::Font select_font{ 30, "", 3 };
     public:
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
@@ -671,37 +670,36 @@ namespace paxs {
     public:
 
         void drawText() {
-#ifdef PAXS_USING_SIV3D
             constexpr int start_x = 40; // 背景端の左上の X 座標
             constexpr int start_y = 80; // 背景端の左上の Y 座標
             constexpr int font_space = 20; // 文字端から背景端までの幅
-            s3d::String text = U""; // 表示するテキスト
+            std::string text = ""; // 表示するテキスト
             switch (select_draw)
             {
             case 1:
-                text = U"1. 人口 Population";
+                text = "1. 人口 Population";
                 break;
             case 2:
-                text = U"2. 農耕文化 Farming";
+                text = "2. 農耕文化 Farming";
                 break;
             case 3:
-                text = U"3. mtDNA haplogroup";
+                text = "3. mtDNA haplogroup";
                 break;
             case 4:
-                text = U"4. SNP / Genome";
+                text = "4. SNP / Genome";
                 break;
             case 5:
-                text = U"5. 言語 Language";
+                text = "5. 言語 Language";
                 break;
             case 6:
-                text = U"6. 青銅 Bronze";
+                text = "6. 青銅 Bronze";
                 break;
             };
             // 選択項目を描画
-            const s3d::RectF rect = select_font(text).region();
-            s3d::RoundRect{ start_x, start_y, rect.w + font_space * 2, rect.h + font_space * 2, 10 }.draw();
-            select_font(text).draw(start_x + font_space, start_y + font_space, s3d::Palette::Black);
-#endif
+            const int text_width = select_font.width(text);
+            const int text_height = select_font.height();
+            paxg::RoundRect{ start_x, start_y, text_width + font_space * 2, text_height + font_space * 2, 10 }.draw();
+            select_font.draw(text, paxg::Vec2i{ start_x + font_space, start_y + font_space }, paxg::Color{ 0, 0, 0 });
         }
 
         void draw(const double jdn,

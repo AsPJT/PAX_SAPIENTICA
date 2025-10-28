@@ -133,6 +133,10 @@ namespace paxg {
             // DxLib does not support letterbox
         }
 
+        void setResizable(bool resizable) override {
+            DxLib::SetWindowSizeChangeEnableFlag(resizable ? TRUE : FALSE);
+        }
+
         Vec2i center() const override {
             updateCache();
             return Vec2i{cachedWidth / 2, cachedHeight / 2};
