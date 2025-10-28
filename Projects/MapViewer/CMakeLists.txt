@@ -40,11 +40,13 @@ if(WIN32)
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DLLS} $<TARGET_FILE_DIR:${BINARY_NAME}>
+            COMMENT "Copying SFML DLLs and Config.tsv..."
         )
     else()
         add_custom_command(
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
+            COMMENT "Copying Config.tsv for SFML..."
         )
     endif()
 elseif(APPLE)
@@ -102,7 +104,7 @@ if(WIN32 AND DxLib_FOUND)
     set(DXLIB_BINARY_NAME "DxLibMapViewer")
     set(DXLIB_CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/DxLib/Main.cpp")
 
-    add_executable(${DXLIB_BINARY_NAME} ${DXLIB_CPP_FILE})
+    add_executable(${DXLIB_BINARY_NAME} WIN32 ${DXLIB_CPP_FILE})
     target_link_libraries(${DXLIB_BINARY_NAME} PRIVATE DxLib::DxLib)
     target_include_directories(${DXLIB_BINARY_NAME} PRIVATE
         ${PROJECT_ROOT_DIR}/Library
@@ -126,11 +128,12 @@ if(WIN32 AND DxLib_FOUND)
     endif()
 
     # Copy Config.tsv to build directory
-    set(DXLIB_TSV_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/DxLib/Config.tsv")
+    set(DXLIB_TSV_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Config.tsv")
     if(EXISTS ${DXLIB_TSV_SOURCE_PATH})
         add_custom_command(
             TARGET ${DXLIB_BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DXLIB_TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${DXLIB_BINARY_NAME}>
+            COMMENT "Copying Config.tsv for DxLib..."
         )
     endif()
 endif()

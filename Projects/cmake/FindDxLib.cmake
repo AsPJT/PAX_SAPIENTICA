@@ -33,24 +33,25 @@ find_path(DxLib_INCLUDE_DIR
 # Find library files (Debug and Release)
 if(MSVC)
     # Visual Studio uses different library names for Debug/Release
+    # For x64 builds, we need DxLib_x64.lib and DxLib_x64_d.lib
     find_library(DxLib_LIBRARY_DEBUG
-        NAMES DxLib_d DxLib
+        NAMES DxLib_x64_d DxLib_d DxLib
         PATHS
             ${DxLib_ROOT_DIR}
             ${DXLIB_ROOT_DIR}
             $ENV{DXLIB_DIR}
             "C:/DxLib"
-        PATH_SUFFIXES lib lib/x64
+        PATH_SUFFIXES lib lib/x64 ""
     )
 
     find_library(DxLib_LIBRARY_RELEASE
-        NAMES DxLib
+        NAMES DxLib_x64 DxLib
         PATHS
             ${DxLib_ROOT_DIR}
             ${DXLIB_ROOT_DIR}
             $ENV{DXLIB_DIR}
             "C:/DxLib"
-        PATH_SUFFIXES lib lib/x64
+        PATH_SUFFIXES lib lib/x64 ""
     )
 endif()
 
@@ -71,6 +72,13 @@ if(DxLib_FOUND)
             INTERFACE_INCLUDE_DIRECTORIES "${DxLib_INCLUDE_DIRS}"
         )
 
+        # Add library directory to link directories so the linker can find all DxLib dependencies
+        if(DxLib_ROOT_DIR)
+            set_target_properties(DxLib::DxLib PROPERTIES
+                INTERFACE_LINK_DIRECTORIES "${DxLib_ROOT_DIR}"
+            )
+        endif()
+
         # Set libraries based on build type using generator expressions
         if(DxLib_LIBRARY_DEBUG AND DxLib_LIBRARY_RELEASE)
             set_target_properties(DxLib::DxLib PROPERTIES
@@ -86,10 +94,7 @@ if(DxLib_FOUND)
             )
         endif()
 
-        # Add compile definitions
-        set_target_properties(DxLib::DxLib PROPERTIES
-            INTERFACE_COMPILE_DEFINITIONS "PAXS_USING_DXLIB"
-        )
+        # Compile definitions are managed in CMakeLists.txt or Main.cpp
     endif()
 
     mark_as_advanced(DxLib_INCLUDE_DIR DxLib_LIBRARY_DEBUG DxLib_LIBRARY_RELEASE)
