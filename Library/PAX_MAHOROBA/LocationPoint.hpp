@@ -677,22 +677,22 @@ namespace paxs {
             switch (select_draw)
             {
             case 1:
-                text = "1. 人口 Population";
+                text = reinterpret_cast<const char*>(u8"1. 人口 Population");
                 break;
             case 2:
-                text = "2. 農耕文化 Farming";
+                text = reinterpret_cast<const char*>(u8"2. 農耕文化 Farming");
                 break;
             case 3:
-                text = "3. mtDNA haplogroup";
+                text = reinterpret_cast<const char*>(u8"3. mtDNA haplogroup");
                 break;
             case 4:
-                text = "4. SNP / Genome";
+                text = reinterpret_cast<const char*>(u8"4. SNP / Genome");
                 break;
             case 5:
-                text = "5. 言語 Language";
+                text = reinterpret_cast<const char*>(u8"5. 言語 Language");
                 break;
             case 6:
-                text = "6. 青銅 Bronze";
+                text = reinterpret_cast<const char*>(u8"6. 青銅 Bronze");
                 break;
             };
             // 選択項目を描画
