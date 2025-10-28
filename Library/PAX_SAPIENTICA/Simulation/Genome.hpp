@@ -141,8 +141,8 @@ namespace paxs {
                 chromosome == rhs.chromosome &&
 #endif // USING_CHROMOSOME
                 mtDNA == rhs.mtDNA &&
-                yDNA == rhs.yDNA;
-            language == rhs.language;
+                yDNA == rhs.yDNA &&
+                language == rhs.language;
         }
 
     private:

@@ -508,7 +508,7 @@ namespace paxs {
                 }
             }
             // 渡来期間
-            if (step_count >= SimulationConstants::getInstance()->immigration_step_interval > 0 &&
+            if (SimulationConstants::getInstance()->immigration_step_interval > 0 &&
                 step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
                 step_count <= SimulationConstants::getInstance()->immigration_end_steps &&
                 (step_count - SimulationConstants::getInstance()->immigration_start_steps) % SimulationConstants::getInstance()->immigration_step_interval == 0) {
@@ -576,7 +576,7 @@ namespace paxs {
             calcPop();
 
             // 渡来期間
-            if (step_count >= SimulationConstants::getInstance()->immigration_step_interval > 0 &&
+            if (SimulationConstants::getInstance()->immigration_step_interval > 0 &&
                 step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
                 step_count <= SimulationConstants::getInstance()->immigration_end_steps &&
                 (step_count - SimulationConstants::getInstance()->immigration_start_steps) % SimulationConstants::getInstance()->immigration_step_interval == 0) {

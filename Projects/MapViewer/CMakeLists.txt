@@ -84,7 +84,6 @@ elseif(UNIX AND SFML_FOUND)
 endif()
 
 if(SFML_FOUND)
-    target_compile_definitions(${BINARY_NAME} PRIVATE PAXS_USING_SFML)
     if(PAXS_BUILD_TYPE STREQUAL "Development")
         target_compile_definitions(${BINARY_NAME} PRIVATE PAXS_DEVELOPMENT)
     endif()
