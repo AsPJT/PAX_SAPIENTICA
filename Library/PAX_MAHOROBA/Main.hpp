@@ -20,10 +20,6 @@
 
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#if defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
-static int old_left_touch = 0;
-static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
-#endif
 
 #include <PAX_MAHOROBA/Init.hpp>
 #include <PAX_MAHOROBA/InitLogo.hpp>
@@ -243,15 +239,6 @@ namespace paxs {
                 koyomi_siv,
                 visible
             );
-
-#ifdef PAXS_USING_DXLIB
-            old_left_touch = DxLib::GetTouchInputNum();
-            if (old_left_touch >= 1) {
-                int pos_x = 0, pos_y = 0;
-                DxLib::GetTouchInput(0, &pos_x, &pos_y, NULL, NULL);
-                old_left_touch_pos = paxg::Vec2i(pos_x, pos_y);
-            }
-#endif
         }
     }
 }
