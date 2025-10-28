@@ -12,11 +12,12 @@
 #ifndef PAX_MAHOROBA_PULLDOWN_HPP
 #define PAX_MAHOROBA_PULLDOWN_HPP
 
-#include <algorithm> // std::max
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <span>
 
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Init.hpp>
@@ -107,7 +108,7 @@ namespace paxs {
         Pulldown(
             const SelectLanguage* select_language_ptr_,
             const Language* language_ptr_,
-            const std::vector<std::uint_least32_t>& items_key_,
+            const std::span<const std::uint_least32_t> items_key_,
             LanguageFonts& font_,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
@@ -316,7 +317,7 @@ namespace paxs {
         std::vector<bool> is_items{}; // 項目が TRUE か FALSE になっているか格納
         std::unordered_map<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
 
-        std::vector<std::uint_least32_t> items_key{}; // 項目の Key 一覧
+        std::span<const std::uint_least32_t> items_key{}; // 項目の Key 一覧
 
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
@@ -337,7 +338,7 @@ namespace paxs {
         void add(
             const SelectLanguage* select_language_ptr_,
             const Language* language_ptr_,
-            const std::vector<std::uint_least32_t>& items_key_,
+            const std::span<const std::uint_least32_t> items_key_,
             LanguageFonts& font_menu_bar,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,

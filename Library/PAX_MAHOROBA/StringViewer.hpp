@@ -28,6 +28,8 @@
 #include <PAX_MAHOROBA/XYZTiles.hpp>
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
 
+#include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
+#include <PAX_SAPIENTICA/Key/MenuKeys.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -218,31 +220,6 @@ namespace paxs {
 
         LanguageFonts language_fonts;
 
-        std::vector<std::uint_least32_t> language_key = {
-MurMur3::calcHash("en-US"),
-MurMur3::calcHash("ja-JP"),
-MurMur3::calcHash("zh-TW"),
-MurMur3::calcHash("zh-CN"),
-MurMur3::calcHash("ko-KR"),
-MurMur3::calcHash("hiragana"),
-MurMur3::calcHash("es-ES"),
-MurMur3::calcHash("pt-BR"),
-MurMur3::calcHash("de-DE"),
-MurMur3::calcHash("fr-FR"),
-MurMur3::calcHash("it-IT"),
-MurMur3::calcHash("tr-TR"),
-MurMur3::calcHash("pl-PL"),
-MurMur3::calcHash("el-GR"),
-MurMur3::calcHash("nl-NL"),
-MurMur3::calcHash("cs-CZ"),
-MurMur3::calcHash("uk-UA"),
-MurMur3::calcHash("ru-RU"),
-MurMur3::calcHash("id-ID"),
-MurMur3::calcHash("fa-IR"),
-MurMur3::calcHash("ar-SA"),
-MurMur3::calcHash("ain")
-        };
-
         // シミュレーションの Key
         std::vector<std::uint_least32_t> simulation_key;
         // シミュレーションモデル名
@@ -330,7 +307,7 @@ MurMur3::calcHash("ain")
             map_view_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
-            pulldown = paxs::Pulldown(&select_language, &language_text, language_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
+            pulldown = paxs::Pulldown(&select_language, &language_text, paxs::LanguageKeys::ALL_LANGUAGE_HASHES, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
 #ifdef PAXS_USING_SIMULATOR
             {
@@ -374,6 +351,7 @@ MurMur3::calcHash("ain")
             //    MurMur3::calcHash("menu_bar_file_close"),
             //    MurMur3::calcHash("menu_bar_file_exit")
             //};
+
             //std::vector<std::uint_least32_t> list_test2 = {
             //MurMur3::calcHash("menu_bar_edit"),
             //    MurMur3::calcHash("menu_bar_edit_cut"),
@@ -381,33 +359,7 @@ MurMur3::calcHash("ain")
             //    MurMur3::calcHash("menu_bar_edit_paste"),
             //    MurMur3::calcHash("menu_bar_edit_delete")
             //};
-            std::vector<std::uint_least32_t> list_test3 = {
-            MurMur3::calcHash("menu_bar_view"),
-                MurMur3::calcHash("menu_bar_view_calendar"),
-                MurMur3::calcHash("menu_bar_view_map"),
-                MurMur3::calcHash("menu_bar_view_ui"),
-                MurMur3::calcHash("menu_bar_view_simulation"),
-                MurMur3::calcHash("menu_bar_view_license"),
-                MurMur3::calcHash("menu_bar_view_debug"),
-                MurMur3::calcHash("menu_bar_view_3d")
-            };
 
-
-            std::vector<std::uint_least32_t> list_test6 = {
-            MurMur3::calcHash("place_names"),
-                MurMur3::calcHash("place_names_place_name"),
-                MurMur3::calcHash("place_names_site"),
-                MurMur3::calcHash("place_names_tumulus"),
-                MurMur3::calcHash("place_names_dolmen"),
-                MurMur3::calcHash("place_names_kamekanbo"),
-                MurMur3::calcHash("place_names_stone_coffin"),
-                MurMur3::calcHash("place_names_doken"),
-                MurMur3::calcHash("place_names_dotaku"),
-                MurMur3::calcHash("place_names_bronze_mirror"),
-                MurMur3::calcHash("place_names_human_bone"),
-                MurMur3::calcHash("place_names_mtdna"),
-                MurMur3::calcHash("place_names_ydna")
-            };
             //std::vector<std::uint_least32_t> list_test4 = {
             //MurMur3::calcHash("menu_bar_calendar"),
             //    MurMur3::calcHash("menu_bar_calendar_japan"),
@@ -416,27 +368,13 @@ MurMur3::calcHash("ain")
             //    MurMur3::calcHash("menu_bar_calendar_julian_day"),
             //    MurMur3::calcHash("menu_bar_calendar_hijri")
             //};
-            std::vector<std::uint_least32_t> list_test5 = {
-            MurMur3::calcHash("menu_bar_map"),
-                MurMur3::calcHash("menu_bar_map_base"),
-                MurMur3::calcHash("menu_bar_map_land_and_sea"),
-                MurMur3::calcHash("menu_bar_map_land_and_water"),
-                MurMur3::calcHash("menu_bar_map_soil"),
-                MurMur3::calcHash("menu_bar_map_soil_temperature"),
-                MurMur3::calcHash("menu_bar_map_ryosei_country"),
-                MurMur3::calcHash("menu_bar_map_ryosei_line"),
-                MurMur3::calcHash("menu_bar_map_slope"),
-                MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
-                MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
-                MurMur3::calcHash("menu_bar_map_line1"),
-                MurMur3::calcHash("menu_bar_map_line2")
-            };
+
             //menu_bar.add(&select_language, &language_text, list_test1, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("file"));
             //menu_bar.add(&select_language, &language_text, list_test2, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("edit"));
-            menu_bar.add(&select_language, &language_text, list_test3, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
-            menu_bar.add(&select_language, &language_text, list_test6, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("place_names"));
+            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
+            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("place_names"));
             //menu_bar.add(&select_language, &language_text, list_test4, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("calendar"));
-            menu_bar.add(&select_language, &language_text, list_test5, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
+            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
 
             const std::string path = (AppConfig::getInstance()->getRootPath());
             // 暦の時間操作のアイコン
@@ -1102,7 +1040,7 @@ MurMur3::calcHash("ain")
             for (std::size_t i = 0; i < path_list.size(); ++i) {
                 language_fonts.add(
                     (path + path_list[i]),
-                    language_key[i],
+                    paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i],
                     static_cast<std::uint_least8_t>(font_size_),
                     static_cast<std::uint_least8_t>(buffer_thickness)
                 );
