@@ -34,17 +34,20 @@ namespace paxg {
         float offset1_x, offset1_y;
         float offset2_x, offset2_y;
         float offset3_x, offset3_y;
+        float radius, rotation;
 
         /// @brief Constexpr constructor that calculates vertex offsets at compile time
         /// @param radius Radius of the circumscribed circle
         /// @param rotation Rotation angle in radians
-        constexpr TriangleShape(const float radius, const float rotation)
-            : offset1_x(radius * constexprCos(rotation - 1.5707963267948966f))
-            , offset1_y(radius * constexprSin(rotation - 1.5707963267948966f))
-            , offset2_x(radius * constexprCos(rotation - 1.5707963267948966f + 2.0943951023931953f))
-            , offset2_y(radius * constexprSin(rotation - 1.5707963267948966f + 2.0943951023931953f))
-            , offset3_x(radius * constexprCos(rotation - 1.5707963267948966f + 4.1887902047863906f))
-            , offset3_y(radius * constexprSin(rotation - 1.5707963267948966f + 4.1887902047863906f))
+        constexpr TriangleShape(const float radius_, const float rotation_)
+            : offset1_x(radius_ * constexprCos(rotation_ - 1.5707963267948966f))
+            , offset1_y(radius_ * constexprSin(rotation_ - 1.5707963267948966f))
+            , offset2_x(radius_ * constexprCos(rotation_ - 1.5707963267948966f + 2.0943951023931953f))
+            , offset2_y(radius_ * constexprSin(rotation_ - 1.5707963267948966f + 2.0943951023931953f))
+            , offset3_x(radius_ * constexprCos(rotation_ - 1.5707963267948966f + 4.1887902047863906f))
+            , offset3_y(radius_ * constexprSin(rotation_ - 1.5707963267948966f + 4.1887902047863906f))
+            , radius(radius_)
+            , rotation(rotation_)
         {}
 
     private:
@@ -93,10 +96,10 @@ namespace paxg {
         /// @param center_y Y coordinate of the center
         /// @param shape Pre-computed triangle shape (typically constexpr static)
         constexpr Triangle(const float center_x, const float center_y, const TriangleShape& shape)
-            : center_x_(center_x), center_y_(center_y), radius_(0.0f), rotation_(0.0f), shape_(&shape) {}
+            : center_x_(center_x), center_y_(center_y), radius_(shape.radius), rotation_(shape.rotation), shape_(&shape) {}
 
         constexpr Triangle(const Vec2f& center, const TriangleShape& shape)
-            : center_x_(center.x()), center_y_(center.y()), radius_(0.0f), rotation_(0.0f), shape_(&shape) {}
+            : center_x_(center.x()), center_y_(center.y()), radius_(shape.radius), rotation_(shape.rotation), shape_(&shape) {}
 
         // Getters
         constexpr float centerX() const { return center_x_; }
