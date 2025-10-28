@@ -17,6 +17,7 @@
 #include <DxLib.h>
 
 #include <PAX_GRAPHICA/TextureImpl.hpp>
+#include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 
 namespace paxg {
@@ -30,6 +31,14 @@ namespace paxg {
     public:
         DxLibTextureImpl() = default;
 
+        DxLibTextureImpl(const Image& /* image */) {
+            // DxLib doesn't have a direct way to create texture from image data
+            // This would require additional implementation
+            texture = -1;
+            cachedWidth = 1;
+            cachedHeight = 1;
+        }
+
         DxLibTextureImpl(const String& path) {
             std::string path_str = convertSvgToPng(path.string);
             texture = DxLib::LoadGraph(path_str.c_str());
@@ -42,10 +51,44 @@ namespace paxg {
             DxLib::GetGraphSize(texture, &cachedWidth, &cachedHeight);
         }
 
+        // Destructor
         ~DxLibTextureImpl() {
             if (texture != -1) {
                 DxLib::DeleteGraph(texture);
             }
+        }
+
+        // Delete copy operations (texture handle should not be copied)
+        DxLibTextureImpl(const DxLibTextureImpl&) = delete;
+        DxLibTextureImpl& operator=(const DxLibTextureImpl&) = delete;
+
+        // Allow move operations
+        DxLibTextureImpl(DxLibTextureImpl&& other) noexcept
+            : texture(other.texture)
+            , cachedWidth(other.cachedWidth)
+            , cachedHeight(other.cachedHeight)
+        {
+            other.texture = -1;
+            other.cachedWidth = 1;
+            other.cachedHeight = 1;
+        }
+
+        DxLibTextureImpl& operator=(DxLibTextureImpl&& other) noexcept {
+            if (this != &other) {
+                // Clean up existing resource
+                if (texture != -1) {
+                    DxLib::DeleteGraph(texture);
+                }
+                // Move from other
+                texture = other.texture;
+                cachedWidth = other.cachedWidth;
+                cachedHeight = other.cachedHeight;
+                // Reset other
+                other.texture = -1;
+                other.cachedWidth = 1;
+                other.cachedHeight = 1;
+            }
+            return *this;
         }
 
         bool isValid() const override {
