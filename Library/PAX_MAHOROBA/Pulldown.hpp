@@ -71,7 +71,7 @@ namespace paxs {
 
                 // 最大の文字数からプルダウンの各項目の幅を定義
                 //rect.setW
-                all_rect_x = 
+                all_rect_x =
                 (
                     static_cast<float>((std::max)(static_cast<int>(all_rect_x), static_cast<int>((*one_font).width(*str))))
                 );
@@ -202,10 +202,11 @@ namespace paxs {
             rect.drawFrame(1, 0, is_open ? paxg::Color{ 255, 165, 0 } : paxg::Color{ 128, 128, 128 });
 
             // 三角形を描画（下向き▼）
+            constexpr float radius = 10.0f; // down_button_size * 0.5f を定数化
+            static constexpr paxg::TriangleShape down_arrow_shape(radius, 3.1416f); // π radians = down
             const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x());
             const float center_y = static_cast<float>(rect.y() + rect.h() / 2.0);
-            const float radius = down_button_size * 0.5f;
-            paxg::Triangle triangle(center_x, center_y, radius, 3.1416f); // π radians = 180° = down-pointing
+            paxg::Triangle triangle(center_x, center_y, down_arrow_shape);
             triangle.draw(paxg::Color{ 0, 0, 0 });
 
             paxg::Vec2i pos = rect.pos();

@@ -12,6 +12,8 @@
 #ifndef PAX_GRAPHICA_LINE_HPP
 #define PAX_GRAPHICA_LINE_HPP
 
+#include <cmath>
+
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -40,6 +42,10 @@ namespace paxg {
 
         void draw(const double thickness, const paxg::Color& color) const {
             line.draw(thickness, color.color);
+        }
+
+        void drawArrow(const double thickness, const Vec2f& arrowSize, const paxg::Color& color) const {
+            line.drawArrow(thickness, s3d::Vec2(arrowSize.x(), arrowSize.y()), color.color);
         }
 
 #elif defined(PAXS_USING_DXLIB)
@@ -71,6 +77,42 @@ namespace paxg {
             }
         }
 
+        void drawArrow(const double thickness, const Vec2f& arrowSize, const paxg::Color& color) const {
+            // Draw the main line
+            draw(thickness, color);
+
+            // Calculate direction vector
+            const float dx = w0 - x0;
+            const float dy = h0 - y0;
+            const float length = std::sqrt(dx * dx + dy * dy);
+            if (length < 0.001f) return; // Too short to draw arrow
+
+            // Normalize direction
+            const float ndx = dx / length;
+            const float ndy = dy / length;
+
+            // Perpendicular vector
+            const float pdx = -ndy;
+            const float pdy = ndx;
+
+            // Arrow head vertices
+            const float tipX = w0;
+            const float tipY = h0;
+            const float baseX = w0 - ndx * arrowSize.y();
+            const float baseY = h0 - ndy * arrowSize.y();
+            const float leftX = baseX + pdx * arrowSize.x() / 2;
+            const float leftY = baseY + pdy * arrowSize.x() / 2;
+            const float rightX = baseX - pdx * arrowSize.x() / 2;
+            const float rightY = baseY - pdy * arrowSize.x() / 2;
+
+            // Draw arrow head lines
+            const unsigned int dxColor = DxLib::GetColor(color.r, color.g, color.b);
+            DxLib::DrawLine(static_cast<int>(tipX), static_cast<int>(tipY),
+                           static_cast<int>(leftX), static_cast<int>(leftY), dxColor);
+            DxLib::DrawLine(static_cast<int>(tipX), static_cast<int>(tipY),
+                           static_cast<int>(rightX), static_cast<int>(rightY), dxColor);
+        }
+
 #elif defined(PAXS_USING_SFML)
         sf::Vertex line[2]{};
         Line(const float sx, const float sy, const float ex, const float ey) {
@@ -92,6 +134,47 @@ namespace paxg {
             Window::window().draw(line, 2, sf::PrimitiveType::Lines);
         }
 
+        void drawArrow(const double thickness, const Vec2f& arrowSize, const paxg::Color& color) {
+            // Draw the main line
+            draw(thickness, color);
+
+            // Calculate direction vector
+            const float dx = line[1].position.x - line[0].position.x;
+            const float dy = line[1].position.y - line[0].position.y;
+            const float length = std::sqrt(dx * dx + dy * dy);
+            if (length < 0.001f) return; // Too short to draw arrow
+
+            // Normalize direction
+            const float ndx = dx / length;
+            const float ndy = dy / length;
+
+            // Perpendicular vector
+            const float pdx = -ndy;
+            const float pdy = ndx;
+
+            // Arrow head vertices
+            const float tipX = line[1].position.x;
+            const float tipY = line[1].position.y;
+            const float baseX = tipX - ndx * arrowSize.y();
+            const float baseY = tipY - ndy * arrowSize.y();
+            const float leftX = baseX + pdx * arrowSize.x() / 2;
+            const float leftY = baseY + pdy * arrowSize.x() / 2;
+            const float rightX = baseX - pdx * arrowSize.x() / 2;
+            const float rightY = baseY - pdy * arrowSize.x() / 2;
+
+            // Draw arrow head lines
+            sf::Vertex arrowLeft[2] = {
+                sf::Vertex(sf::Vector2f(tipX, tipY), color),
+                sf::Vertex(sf::Vector2f(leftX, leftY), color)
+            };
+            sf::Vertex arrowRight[2] = {
+                sf::Vertex(sf::Vector2f(tipX, tipY), color),
+                sf::Vertex(sf::Vector2f(rightX, rightY), color)
+            };
+            Window::window().draw(arrowLeft, 2, sf::PrimitiveType::Lines);
+            Window::window().draw(arrowRight, 2, sf::PrimitiveType::Lines);
+        }
+
 #else
         float sx0{}, sy0{}, ex0{}, ey0{};
         constexpr Line(const float sx, const float sy, const float ex, const float ey)
@@ -103,6 +186,9 @@ namespace paxg {
             ex0(static_cast<float>(e.x())), ey0(static_cast<float>(e.y())) {}
 
         void draw([[maybe_unused]] const double thickness, [[maybe_unused]] const paxg::Color& color) const {
+        }
+
+        void drawArrow([[maybe_unused]] const double thickness, [[maybe_unused]] const Vec2f& arrowSize, [[maybe_unused]] const paxg::Color& color) const {
         }
 #endif
     };
