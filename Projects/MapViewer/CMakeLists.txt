@@ -25,6 +25,9 @@ if(WIN32)
     set(CPP_FILE "${SFML_ROOT_DIR}/Main.cpp")
     add_executable(${BINARY_NAME} ${CPP_FILE})
     target_link_libraries(${BINARY_NAME} PRIVATE SFML::Graphics)
+    if(MSVC)
+        target_compile_options(${BINARY_NAME} PRIVATE /utf-8)
+    endif()
     set(SFML_DLLS
         "${SFML_ROOT_DIR}/bin/sfml-graphics-d-3.dll"
         "${SFML_ROOT_DIR}/bin/sfml-window-d-3.dll"
