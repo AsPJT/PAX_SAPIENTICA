@@ -163,14 +163,18 @@ namespace paxg {
             const float rightY = baseY - pdy * arrowSize.x() / 2;
 
             // Draw arrow head lines
-            sf::Vertex arrowLeft[2] = {
-                sf::Vertex(sf::Vector2f(tipX, tipY), color),
-                sf::Vertex(sf::Vector2f(leftX, leftY), color)
-            };
-            sf::Vertex arrowRight[2] = {
-                sf::Vertex(sf::Vector2f(tipX, tipY), color),
-                sf::Vertex(sf::Vector2f(rightX, rightY), color)
-            };
+            sf::Vertex arrowLeft[2];
+            arrowLeft[0].position = sf::Vector2f(tipX, tipY);
+            arrowLeft[0].color = color;
+            arrowLeft[1].position = sf::Vector2f(leftX, leftY);
+            arrowLeft[1].color = color;
+
+            sf::Vertex arrowRight[2];
+            arrowRight[0].position = sf::Vector2f(tipX, tipY);
+            arrowRight[0].color = color;
+            arrowRight[1].position = sf::Vector2f(rightX, rightY);
+            arrowRight[1].color = color;
+
             Window::window().draw(arrowLeft, 2, sf::PrimitiveType::Lines);
             Window::window().draw(arrowRight, 2, sf::PrimitiveType::Lines);
         }
