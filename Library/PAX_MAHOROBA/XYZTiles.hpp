@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>

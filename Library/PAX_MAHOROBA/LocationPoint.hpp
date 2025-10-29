@@ -24,6 +24,7 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #endif
 
+#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Spline2D.hpp>

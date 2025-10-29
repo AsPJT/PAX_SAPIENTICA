@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <unordered_map>
 
-#include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/Font.hpp>
 
 namespace paxs {
 

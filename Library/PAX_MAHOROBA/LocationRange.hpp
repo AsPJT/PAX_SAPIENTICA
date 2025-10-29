@@ -15,6 +15,7 @@
 #include <string>
 
 #include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Init.hpp>
 

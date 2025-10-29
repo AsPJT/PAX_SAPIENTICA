@@ -25,6 +25,8 @@
 
 #include <PAX_GRAPHICA/String.hpp>
 
+#include <PAX_SAPIENTICA/Logger.hpp>
+
 namespace paxg {
 
     struct Image
