@@ -19,9 +19,6 @@
 #include <stdexcept>
 
 #include <PAX_SAPIENTICA/Simulation/Genome.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/Simulation/Environment.hpp>
-#include <PAX_SAPIENTICA/Simulation/Object.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
@@ -31,7 +28,7 @@ namespace paxs {
     class SettlementAgent {
     public:
 
-        SettlementAgent() = default;
+        constexpr SettlementAgent() = default;
 
         explicit SettlementAgent(const HumanIndexType id,
             const AgeType age, const AgeType life_span, const Genome& genome,

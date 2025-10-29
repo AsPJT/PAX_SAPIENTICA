@@ -15,8 +15,6 @@
 #include <memory>
 #include <string>
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
-
 #if defined(PAXS_USING_SIV3D)
 #include <PAX_GRAPHICA/implementations/Siv3DWindowImpl.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -26,6 +24,8 @@
 #else
 #include <PAX_GRAPHICA/implementations/NullWindowImpl.hpp>
 #endif
+
+#include <PAX_GRAPHICA/WindowImpl.hpp>
 
 namespace paxg {
 
@@ -74,7 +74,7 @@ namespace paxg {
             getImpl().setPosition(x, y);
         }
 
-        static void setPosition(const Vec2i& pos) {
+        static void setPosition(const paxg::Vec2i& pos) {
             getImpl().setPosition(pos);
         }
 
@@ -110,7 +110,7 @@ namespace paxg {
             getImpl().setMousePosition(x, y);
         }
 
-        static void setMousePosition(const Vec2i& pos) {
+        static void setMousePosition(const paxg::Vec2i& pos) {
             getImpl().setMousePosition(pos);
         }
 
@@ -118,11 +118,11 @@ namespace paxg {
             getImpl().setKeyRepeat(repeat);
         }
 
-        static void setBackgroundColor(const Color color) {
+        static void setBackgroundColor(const paxg::Color color) {
             getImpl().setBackgroundColor(color);
         }
 
-        static void setLetterbox(const Color color) {
+        static void setLetterbox(const paxg::Color color) {
             getImpl().setLetterbox(color);
         }
 
@@ -130,7 +130,7 @@ namespace paxg {
             getImpl().setResizable(resizable);
         }
 
-        static Vec2i center() {
+        static paxg::Vec2i center() {
             return getImpl().center();
         }
 
@@ -142,12 +142,18 @@ namespace paxg {
             return getImpl().height();
         }
 
-        static Vec2i size() {
+        static paxg::Vec2i size() {
             return getImpl().size();
         }
 
-        static Vec2i getMousePosition() {
+        static paxg::Vec2i getMousePosition() {
             return getImpl().getMousePosition();
+        }
+
+        static bool hasFocus() {
+            // Return true if window is not initialized yet (to avoid crashes during startup)
+            if (!impl) return true;
+            return getImpl().hasFocus();
         }
 
         static void clear() {

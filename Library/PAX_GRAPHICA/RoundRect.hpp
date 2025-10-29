@@ -17,22 +17,17 @@
 #elif defined(PAXS_USING_DXLIB)
 #include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
-#ifndef OLD_LEFT_MOUSE
-#define OLD_LEFT_MOUSE
-static bool old_left_mouse = false;
-#endif // !OLD_LEFT_MOUSE
 #include <SFML/Graphics.hpp>
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/IDrawable.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 
-    struct RoundRect : public paxg::IDrawable {
+    struct RoundRect {
 #if defined(PAXS_USING_SIV3D)
         s3d::RoundRect rect{};
         constexpr RoundRect() = default;
@@ -153,7 +148,7 @@ namespace paxg {
         }
 #endif
 
-        void draw() const override {
+        void draw() const {
 #if defined(PAXS_USING_SIV3D)
             rect.draw();
 
@@ -333,9 +328,6 @@ namespace paxg {
             return false;
 #endif
         }
-
-        void drawAt(const Vec2f&) const override {}
-        void drawAt(const Vec2i&) const override {}
     };
 }
 

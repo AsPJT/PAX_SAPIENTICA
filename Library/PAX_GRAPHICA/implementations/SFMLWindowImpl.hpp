@@ -24,7 +24,7 @@ namespace paxg {
     class SFMLWindowImpl : public WindowImpl {
     private:
         sf::RenderWindow m_window;
-        Color backgroundColor{140, 180, 250};
+        paxg::Color backgroundColor{140, 180, 250};
 
     public:
         SFMLWindowImpl() : m_window(sf::VideoMode({1280, 720}), "PAX SAPIENTICA Library") {}
@@ -123,8 +123,8 @@ namespace paxg {
             (void)resizable; // Suppress unused parameter warning
         }
 
-        Vec2i center() const override {
-            return Vec2i{static_cast<int>(m_window.getSize().x / 2), static_cast<int>(m_window.getSize().y / 2)};
+        paxg::Vec2i center() const override {
+            return paxg::Vec2i{static_cast<int>(m_window.getSize().x / 2), static_cast<int>(m_window.getSize().y / 2)};
         }
 
         int width() const override {
@@ -135,13 +135,17 @@ namespace paxg {
             return static_cast<int>(m_window.getSize().y);
         }
 
-        Vec2i size() const override {
-            return Vec2i{static_cast<int>(m_window.getSize().x), static_cast<int>(m_window.getSize().y)};
+        paxg::Vec2i size() const override {
+            return paxg::Vec2i{static_cast<int>(m_window.getSize().x), static_cast<int>(m_window.getSize().y)};
         }
 
-        Vec2i getMousePosition() const override {
+        paxg::Vec2i getMousePosition() const override {
             auto pos = sf::Mouse::getPosition(m_window);
-            return Vec2i{pos.x, pos.y};
+            return paxg::Vec2i{pos.x, pos.y};
+        }
+
+        bool hasFocus() const override {
+            return m_window.hasFocus();
         }
 
         void clear() override {

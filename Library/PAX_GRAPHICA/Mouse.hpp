@@ -20,14 +20,9 @@
 #include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
-#endif
-
-#if defined(PAXS_USING_SFML)
 #include <PAX_GRAPHICA/SFML_Event.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/IDrawable.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 

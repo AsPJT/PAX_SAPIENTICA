@@ -12,6 +12,8 @@
 #ifndef PAX_GRAPHICA_COLOR_HPP
 #define PAX_GRAPHICA_COLOR_HPP
 
+#include <cstdint>
+
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D/Color.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -19,8 +21,6 @@
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
 #endif
-
-#include <cstdint>
 
 namespace paxg {
 
@@ -40,7 +40,7 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
         sf::Color color;
-        Color(const int r, const int g, const int b, const int a = 255) : color(
+        constexpr Color(const int r, const int g, const int b, const int a = 255) : color(
             static_cast<std::uint8_t>(r),
             static_cast<std::uint8_t>(g),
             static_cast<std::uint8_t>(b),

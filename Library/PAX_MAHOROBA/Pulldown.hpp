@@ -12,22 +12,21 @@
 #ifndef PAX_MAHOROBA_PULLDOWN_HPP
 #define PAX_MAHOROBA_PULLDOWN_HPP
 
-#include <algorithm> // std::max
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <span>
+
+#include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/Triangle.hpp>
 
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Init.hpp>
+
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
-
-#include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/String.hpp>
-#include <PAX_GRAPHICA/Triangle.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
-
 namespace paxs {
 
     class Pulldown {
@@ -107,7 +106,7 @@ namespace paxs {
         Pulldown(
             const SelectLanguage* select_language_ptr_,
             const Language* language_ptr_,
-            const std::vector<std::uint_least32_t>& items_key_,
+            const std::span<const std::uint_least32_t> items_key_,
             LanguageFonts& font_,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
@@ -308,15 +307,17 @@ namespace paxs {
         std::uint_least32_t getKey() const { return items_key[index]; }
 
     private:
+        const SelectLanguage* select_language_ptr = nullptr; // 選択されている言語
+        const Language* language_ptr = nullptr; // 言語
+        std::span<const std::uint_least32_t> items_key{}; // 項目の Key 一覧
+        LanguageFonts* font = nullptr;
+
         std::size_t language_index = 0; // 言語の要素番号
         std::uint_least32_t old_language_key = 0; // 選択されている言語の Key
-        LanguageFonts* font = nullptr;
         std::uint_least8_t font_size = 16;
         std::uint_least8_t font_buffer_thickness_size = 16;
         std::vector<bool> is_items{}; // 項目が TRUE か FALSE になっているか格納
         std::unordered_map<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
-
-        std::vector<std::uint_least32_t> items_key{}; // 項目の Key 一覧
 
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
@@ -326,9 +327,6 @@ namespace paxs {
         bool is_open = false;
         std::size_t pdt{};
         bool is_one_font = false;
-
-        const Language* language_ptr = nullptr; // 言語
-        const SelectLanguage* select_language_ptr = nullptr; // 選択されている言語
     };
     // メニューバーを管理
     class MenuBar {
@@ -337,7 +335,7 @@ namespace paxs {
         void add(
             const SelectLanguage* select_language_ptr_,
             const Language* language_ptr_,
-            const std::vector<std::uint_least32_t>& items_key_,
+            const std::span<const std::uint_least32_t> items_key_,
             LanguageFonts& font_menu_bar,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,

@@ -45,6 +45,7 @@ namespace paxg {
         int height() const override { return 1; }
         Vec2i size() const override { return Vec2i{}; }
         Vec2i getMousePosition() const override { return Vec2i(0, 0); }
+        bool hasFocus() const override { return false; }
 
         void clear() override {}
         void display() override {}

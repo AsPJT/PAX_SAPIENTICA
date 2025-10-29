@@ -80,6 +80,9 @@ if(WIN32)
     endif()
 endif()
 
+# Suppress warnings from external libraries (stb, etc.)
+include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/../ExternalLibrary)
+
 add_subdirectory(IncludeTest)
 add_subdirectory(IntegrationTest)
 add_subdirectory(MapViewer)

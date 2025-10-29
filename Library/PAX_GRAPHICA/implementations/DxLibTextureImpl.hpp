@@ -16,9 +16,8 @@
 
 #include <DxLib.h>
 
-#include <PAX_GRAPHICA/TextureImpl.hpp>
 #include <PAX_GRAPHICA/Image.hpp>
-#include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/TextureImpl.hpp>
 
 namespace paxg {
 
@@ -31,7 +30,7 @@ namespace paxg {
     public:
         DxLibTextureImpl() = default;
 
-        DxLibTextureImpl(const Image& /* image */) {
+        DxLibTextureImpl(const paxg::Image& /* image */) {
             // DxLib doesn't have a direct way to create texture from image data
             // This would require additional implementation
             texture = -1;
@@ -39,7 +38,7 @@ namespace paxg {
             cachedHeight = 1;
         }
 
-        DxLibTextureImpl(const String& path) {
+        DxLibTextureImpl(const paxg::String& path) {
             std::string path_str = convertSvgToPng(path.string);
             texture = DxLib::LoadGraph(path_str.c_str());
             DxLib::GetGraphSize(texture, &cachedWidth, &cachedHeight);

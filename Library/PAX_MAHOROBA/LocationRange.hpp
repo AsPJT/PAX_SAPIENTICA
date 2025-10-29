@@ -14,10 +14,12 @@
 
 #include <string>
 
-#include <PAX_MAHOROBA/Init.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
-
 #include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_MAHOROBA/Init.hpp>
+
+#include <PAX_SAPIENTICA/MapProjection.hpp>
 
 namespace paxs {
 
@@ -50,9 +52,9 @@ namespace paxs {
             //	MapProjectionF64::equirectangularDegYToMercatorDegY(39.4));
 
             //location_range_list.emplace_back("./../../../../../Data/Map/TestMap/nara.png",
-            //	135.7104, 
+            //	135.7104,
             //	MapProjectionF64::equirectangularDegYToMercatorDegY(34.59451),
-            //	135.84725, 
+            //	135.84725,
             //	MapProjectionF64::equirectangularDegYToMercatorDegY(34.7072));
 
             //location_range_list.emplace_back("./../../../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/ColorCodingByProvincesOfJapanLineAlpha_8_218_90_16_16.png",

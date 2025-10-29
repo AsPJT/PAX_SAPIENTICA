@@ -22,6 +22,7 @@
 #include <PAX_MAHOROBA/XYZTiles.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {

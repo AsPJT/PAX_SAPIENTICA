@@ -13,7 +13,6 @@
 #define PAX_SAPIENTICA_SIMULATION_GENE_HPP
 
 #include <PAX_SAPIENTICA/Simulation/Chromosome.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
 

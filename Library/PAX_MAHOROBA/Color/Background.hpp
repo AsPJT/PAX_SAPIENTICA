@@ -9,12 +9,18 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_GRAPHICA_GRAPHICS_HPP
-#define PAX_GRAPHICA_GRAPHICS_HPP
+#ifndef PAX_GRAPHICA_BACKGROUND_COLOR_HPP
+#define PAX_GRAPHICA_BACKGROUND_COLOR_HPP
 
-#include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
+#include <PAX_GRAPHICA/Color.hpp>
 
-#endif // !PAX_GRAPHICA_GRAPHICS_HPP
+namespace paxs {
+
+    namespace BackgroundColor {
+        inline constexpr paxg::Color White = paxg::Color(255, 255, 255);
+        inline constexpr paxg::Color Blue = paxg::Color(140, 180, 250);
+        inline constexpr paxg::Color LightBlue = paxg::Color(145, 190, 240);
+    }
+}
+
+#endif // !PAX_GRAPHICA_BACKGROUND_COLOR_HPP

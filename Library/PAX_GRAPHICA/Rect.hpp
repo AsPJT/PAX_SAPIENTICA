@@ -21,14 +21,13 @@
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/IDrawable.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 
-    struct Rect : public paxg::IDrawable {
+    struct Rect {
 #if defined(PAXS_USING_SIV3D)
         s3d::RectF rect{};
         constexpr Rect() = default;
@@ -126,7 +125,7 @@ namespace paxg {
         }
 #endif
 
-        void draw() const override {
+        void draw() const {
 #if defined(PAXS_USING_SIV3D)
             rect.draw();
 
@@ -306,9 +305,6 @@ namespace paxg {
             return false;
 #endif
         }
-
-        void drawAt(const Vec2f&) const override {}
-        void drawAt(const Vec2i&) const override {}
     };
 }
 

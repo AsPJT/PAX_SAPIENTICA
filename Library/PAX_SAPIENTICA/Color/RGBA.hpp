@@ -12,65 +12,53 @@
 #ifndef PAX_SAPIENTICA_COLOR_RGBA_HPP
 #define PAX_SAPIENTICA_COLOR_RGBA_HPP
 
-#include <string>
+#include <cstring>
+#include <stdexcept>
 
 namespace paxs {
 
     struct RGBA {
     public:
         unsigned char r = 0, g = 0, b = 0, a = 255; //赤, 緑, 青, 不透過
-    private:
-        unsigned char getHexToRGB(const char hex) {
-            switch (hex) {
-            case '0':return 0; break;
-            case '1':return 1; break;
-            case '2':return 2; break;
-            case '3':return 3; break;
-            case '4':return 4; break;
-            case '5':return 5; break;
-            case '6':return 6; break;
-            case '7':return 7; break;
-            case '8':return 8; break;
-            case '9':return 9; break;
-            case 'a':return 10; break;
-            case 'b':return 11; break;
-            case 'c':return 12; break;
-            case 'd':return 13; break;
-            case 'e':return 14; break;
-            case 'f':return 15; break;
-            case 'A':return 10; break;
-            case 'B':return 11; break;
-            case 'C':return 12; break;
-            case 'D':return 13; break;
-            case 'E':return 14; break;
-            case 'F':return 15; break;
-            }
-            return 0;
-        }
-        unsigned char getHexToRGB(const char hex1, const char hex2) {
-            return (getHexToRGB(hex1) * 16 + getHexToRGB(hex2));
-        }
-        void setHexToRGB(
-            const char hex1, const char hex2,
-            const char hex3, const char hex4,
-            const char hex5, const char hex6
-        ) {
-            r = getHexToRGB(hex1, hex2);
-            g = getHexToRGB(hex3, hex4);
-            b = getHexToRGB(hex5, hex6);
-        }
 
-    public:
-        RGBA() = default;
+        constexpr RGBA() = default;
         constexpr RGBA(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_ = 255) :r(r_), g(g_), b(b_), a(a_) {}
-        RGBA(const std::string& str_) {
-
-            if (str_.size() == 7) {
-                setHexToRGB(str_[1], str_[2], str_[3], str_[4], str_[5], str_[6]);
+        template <size_t N>
+        constexpr RGBA(const char (&str_)[N]) :
+            // コンパイル時にサイズをチェック
+            r((N != 8 || str_[0] != '#') ? throw std::logic_error("Invalid hex format") : convertHexToRGB(str_[1], str_[2])),
+            g((N != 8 || str_[0] != '#') ? throw std::logic_error("Invalid hex format") : convertHexToRGB(str_[3], str_[4])),
+            b((N != 8 || str_[0] != '#') ? throw std::logic_error("Invalid hex format") : convertHexToRGB(str_[5], str_[6]))
+        {
+            if (N != 8) {
+                throw std::logic_error("Hex color string must be 8 chars long (e.g. \"#RRGGBB\")");
+             }
+            if (str_[0] != '#') {
+                throw std::logic_error("Hex color string must start with '#'");
             }
-
         }
 
+    private:
+        /// @brief 16進数文字1つを数値(0-15)に変換する
+        // @param hex 16進数文字
+        // @return 変換後の数値(0-15)
+        // @note 不正な文字の場合は255を返す
+        static constexpr unsigned char hexToValue(const char hex) {
+            if (hex >= '0' && hex <= '9') return hex - '0';
+            if (hex >= 'a' && hex <= 'f') return hex - 'a' + 10;
+            if (hex >= 'A' && hex <= 'F') return hex - 'A' + 10;
+            return 255;
+        }
+
+        /// @brief 16進数文字2つを組み合わせてRGB値(0-255)に変換する
+        static constexpr unsigned char convertHexToRGB(const char hex1, const char hex2) {
+            const unsigned char high = hexToValue(hex1);
+            const unsigned char low = hexToValue(hex2);
+            if (high == 255 || low == 255) {
+                throw std::invalid_argument("Invalid hex character");
+            }
+            return high * 16 + low;
+        }
     };
 
 }

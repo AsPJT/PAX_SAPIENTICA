@@ -14,6 +14,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <type_traits>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -27,9 +28,9 @@ namespace paxs::cal {
     private:
         Day day{ 1940571 /*西暦601年1月1日*/}; // 1808286 西暦238年10月26日
     public:
-        JulianDayNumber() = default;
-        template<typename T>
-        JulianDayNumber(const T jdn_) { day = static_cast<Day>(jdn_); }
+        constexpr JulianDayNumber() = default;
+        template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
+        constexpr JulianDayNumber(const T jdn_) { day = static_cast<Day>(jdn_); }
 
     public:
 

@@ -12,45 +12,46 @@
 #ifndef PAX_SAPIENTICA_COLOR_SOIL_TEMPERATURE_HPP
 #define PAX_SAPIENTICA_COLOR_SOIL_TEMPERATURE_HPP
 
-#include <vector>
+#include <array>
 #include <string>
 
 #include <PAX_SAPIENTICA/Color/RGBA.hpp>
 
 namespace paxs {
 
-    struct SoilTemp {
-        std::vector<paxs::RGBA> soil_temp =
+    class SoilTemp {
+        inline static constexpr std::array<paxs::RGBA, 91> soil_temp =
         {
-        std::string("#000000")
-        ,	std::string("#FFFFFF")
-        ,	std::string("#1A7DB7")
-        ,	std::string("#308ABE")
-        ,	std::string("#4697C5")
-        ,	std::string("#5BA4CC")
-        ,	std::string("#71B1D3")
-        ,	std::string("#87BEDA")
-        ,	std::string("#99C8DF")
-        ,	std::string("#A9D0E3")
-        ,	std::string("#B8D8E7")
-        ,	std::string("#C8DFEB")
-        ,	std::string("#DFEBF1")
-        ,	std::string("#EFF3F5")
-        ,	std::string("#F7F1EE")
-        ,	std::string("#F7E4DB")
-        ,	std::string("#F6D7C8")
-        ,	std::string("#FFC9B6")
-        ,	std::string("#F5BCA3")
-        ,	std::string("#F5AF90")
-        ,	std::string("#F39F7E")
-        ,	std::string("#F39F7E")
-        ,	std::string("#E56A5F")
-        ,	std::string("#DF4F4F")
-        ,	std::string("#D8353F")
-        ,	std::string("#D11A2F")
-        ,	std::string("#CA0020")
+              paxs::RGBA("#000000")
+            , paxs::RGBA("#FFFFFF")
+            , paxs::RGBA("#1A7DB7")
+            , paxs::RGBA("#308ABE")
+            , paxs::RGBA("#4697C5")
+            , paxs::RGBA("#5BA4CC")
+            , paxs::RGBA("#71B1D3")
+            , paxs::RGBA("#87BEDA")
+            , paxs::RGBA("#99C8DF")
+            , paxs::RGBA("#A9D0E3")
+            , paxs::RGBA("#B8D8E7")
+            , paxs::RGBA("#C8DFEB")
+            , paxs::RGBA("#DFEBF1")
+            , paxs::RGBA("#EFF3F5")
+            , paxs::RGBA("#F7F1EE")
+            , paxs::RGBA("#F7E4DB")
+            , paxs::RGBA("#F6D7C8")
+            , paxs::RGBA("#FFC9B6")
+            , paxs::RGBA("#F5BCA3")
+            , paxs::RGBA("#F5AF90")
+            , paxs::RGBA("#F39F7E")
+            , paxs::RGBA("#F39F7E")
+            , paxs::RGBA("#E56A5F")
+            , paxs::RGBA("#DF4F4F")
+            , paxs::RGBA("#D8353F")
+            , paxs::RGBA("#D11A2F")
+            , paxs::RGBA("#CA0020")
         };
 
+    public:
         std::size_t getIndex(const RGBA& rgba) {
             std::size_t index = 0;
             int diff = 99999999;

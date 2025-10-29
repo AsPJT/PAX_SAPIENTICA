@@ -8,6 +8,7 @@
     [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
+
 //#define PAXS_DEVELOPMENT
 #ifndef PAX_MAHOROBA_MAIN_HPP
 #define PAX_MAHOROBA_MAIN_HPP
@@ -18,44 +19,32 @@
 #define PAXS_USING_SIMULATOR
 #endif
 
-#include <PAX_GRAPHICA/Vec2.hpp>
+#ifdef PAXS_USING_SIMULATOR
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+#endif
 
+#include <PAX_GRAPHICA/Vec2.hpp>
 #if defined(PAXS_USING_DXLIB)
 static int old_left_touch = 0;
 static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #endif
 
-#include <PAX_MAHOROBA/Init.hpp>
-#include <PAX_MAHOROBA/InitLogo.hpp>
-#include <PAX_MAHOROBA/LocationRange.hpp>
-#include <PAX_MAHOROBA/LocationPoint.hpp>
-#include <PAX_MAHOROBA/3DModel.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
-
-#ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
-#endif
-#include <PAX_MAHOROBA/XYZTiles.hpp>
-#include <PAX_MAHOROBA/XYZTilesList.hpp>
-
-// シミュレータを使用する
-
-#include <PAX_MAHOROBA/Calendar.hpp> // 暦
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 可視化一覧
-#include <PAX_MAHOROBA/MapViewer.hpp> // 地図
-#include <PAX_MAHOROBA/StringViewer.hpp> // 文字
-
-#include <PAX_SAPIENTICA/TouchManager.hpp>
-
-#include <PAX_SAPIENTICA/Math.hpp>
-
+#include <PAX_GRAPHICA/3DModel.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
 
+#include <PAX_MAHOROBA/Calendar.hpp>
+#include <PAX_MAHOROBA/InitLogo.hpp>
+#include <PAX_MAHOROBA/Pulldown.hpp>
+#include <PAX_MAHOROBA/XYZTilesList.hpp>
+#include <PAX_MAHOROBA/MapViewer.hpp>
+#include <PAX_MAHOROBA/StringViewer.hpp>
+
 #include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_SAPIENTICA/TouchManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -74,11 +63,11 @@ namespace paxs {
         MapView map_view{};
         XYZTilesList xyz_tile_list; // 描画する XYZ タイルを管理
         paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
-        paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
+        paxs::StringViewer string_siv{}; // 文字を管理する
         SelectLanguage select_language{}; // 選択言語
         paxs::Language language_text;
         paxs::Language simulation_text;
-        paxs::MapViewerSiv3D map_siv{}; // 地図を管理する
+        paxs::MapViewer map_siv{}; // 地図を管理する
         paxs::TouchManager tm; // 画面のクリック・タッチを管理する
 
         paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
@@ -115,7 +104,7 @@ namespace paxs {
 
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
-        paxs::Graphics3DModel g3d_model; // 3D モデル
+        paxg::Graphics3DModel g3d_model; // 3D モデル
 
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator> simulator{};
@@ -172,9 +161,9 @@ namespace paxs {
 
             // シミュレーションモデル選択のプルダウンを更新
 #ifdef PAXS_USING_SIMULATOR
-            string_siv.simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.simulation_pulldown.getRect().w() - 200), 600 });
-            string_siv.simulation_pulldown.update(tm);
-            string_siv.simulation_model_index = string_siv.simulation_pulldown.getIndex();
+            string_siv.simulation_viewer.simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.simulation_viewer.simulation_pulldown.getRect().w() - 200), 600 });
+            string_siv.simulation_viewer.simulation_pulldown.update(tm);
+            string_siv.simulation_viewer.simulation_model_index = string_siv.simulation_viewer.simulation_pulldown.getIndex();
 #endif
             // 選択言語のプルダウンを更新
             string_siv.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.pulldown.getRect().w()), 0 });

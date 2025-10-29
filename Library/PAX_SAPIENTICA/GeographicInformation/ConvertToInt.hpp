@@ -21,13 +21,13 @@ namespace paxs {
     constexpr double u8_max_p_log2_slope_max = 38.4154715724661; // 250 / log2(91)
 
     // 傾斜を uint8 (0-250) から double （度）へ変換
-    double slopeDegLog2U8ToF64(const unsigned char char_value_) {
+    constexpr double slopeDegLog2U8ToF64(const unsigned char char_value_) {
         return (char_value_ >= 251u) ? std::numeric_limits<double>::quiet_NaN() : // 251 以上は NaN
             std::pow(2, char_value_ / u8_max_p_log2_slope_max) - 1.0; // 250 以下は値を変換
     }
 
     // 傾斜（度）を double から uint8 (0-250) へ変換
-    unsigned char slopeDegF64ToLog2U8(const double float_value_) {
+    constexpr unsigned char slopeDegF64ToLog2U8(const double float_value_) {
         // NaN は 251
         if (float_value_ == std::numeric_limits<double>::quiet_NaN()) {
             return 251u;
@@ -46,14 +46,14 @@ namespace paxs {
     constexpr double s16_max_p_log2_elevation_max = 2440.16038278159; // 32760 / log2(11000 + 1)
 
     // 標高を int16 から double (m) へ変換
-    double elevationLog2S16ToF64(const std::int_least16_t char_value_) {
+    constexpr double elevationLog2S16ToF64(const std::int_least16_t char_value_) {
         return (char_value_ >= 32761) ? std::numeric_limits<double>::quiet_NaN() : // 32761 以上は NaN
             ((char_value_ < 0) ? -std::pow(2, -char_value_ / s16_max_p_log2_elevation_max) + 1.0 : // 32760 以下は値を変換
                 std::pow(2, char_value_ / s16_max_p_log2_elevation_max) - 1.0); // 32760 以下は値を変換
     }
 
     // 標高 (m) を double から int16 へ変換
-    std::int_least16_t elevationF64ToLog2S16(const double float_value_) {
+    constexpr std::int_least16_t elevationF64ToLog2S16(const double float_value_) {
         // NaN は 32761
         if (float_value_ == std::numeric_limits<double>::quiet_NaN()) {
             return 32761;

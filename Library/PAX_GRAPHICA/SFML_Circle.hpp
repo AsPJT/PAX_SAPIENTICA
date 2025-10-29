@@ -20,11 +20,6 @@
 #include <SFML/Graphics.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/IDrawable.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
-
 namespace paxg {
 
     // 実行時定数
