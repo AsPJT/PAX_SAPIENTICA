@@ -29,6 +29,7 @@
 #include <PAX_GRAPHICA/3DModel.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
+#include <PAX_GRAPHICA/ScopedRenderState.hpp>
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
 #include <PAX_MAHOROBA/Calendar.hpp>
@@ -78,10 +79,6 @@ namespace paxs {
         map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
         paxg::Window::update();
-#ifdef PAXS_USING_SFML
-        xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
-        paxg::Window::update();
-#endif
         // 言語を初期化（テキストの多言語対応クラス）
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
             [&](const std::string& path_) {language_text.add(path_); });
@@ -120,9 +117,7 @@ namespace paxs {
             paxg::Mouse::getInstance()->calledFirstEveryFrame(); // 入力を更新
 
             tm.init(); // タッチ判定を初期化
-#ifdef PAXS_USING_SIV3D
-            const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
-#endif
+            const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
             /*##########################################################################################
                 更新処理関連
             ##########################################################################################*/
@@ -139,10 +134,8 @@ namespace paxs {
                 old_height != paxg::Window::height()) {
                 // 影を定義
                 if (size_change_count < 1) {
-#ifdef PAXS_USING_SIV3D
-                    string_siv.shadow_texture = s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
-                    string_siv.internal_texture = s3d::RenderTexture{ string_siv.shadow_texture.size() };
-#endif
+                    string_siv.shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
+                    string_siv.internal_texture = paxg::RenderTexture{ string_siv.shadow_texture.size() };
                 }
                 if (size_change_count >= 100) size_change_count = 100;
                 ++size_change_count;

@@ -22,7 +22,12 @@
 #endif
 
 #include <PAX_GRAPHICA/Key.hpp>
+#include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
+#include <PAX_GRAPHICA/ScopedRenderState.hpp>
+#include <PAX_GRAPHICA/ScopedRenderTarget.hpp>
+#include <PAX_GRAPHICA/ScopedTransform2D.hpp>
+#include <PAX_GRAPHICA/Shader.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Calendar.hpp>
@@ -94,11 +99,10 @@ namespace paxs {
         std::size_t map_view_center_lat_str_index;
         std::size_t xyz_tile_z_str_index;
 
-#ifdef PAXS_USING_SIV3D
         // UI の影
-        s3d::RenderTexture shadow_texture{};
-        s3d::RenderTexture internal_texture{};
-#endif
+        paxg::RenderTexture shadow_texture{};
+        paxg::RenderTexture internal_texture{};
+
         paxs::Pulldown pulldown;
         paxs::MenuBar menu_bar;
 
@@ -152,11 +156,9 @@ namespace paxs {
             en_font = paxg::Font{ 20 /*, Typeface::Bold*/
     , (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
 
-#ifdef PAXS_USING_SIV3D
             // 影
-            shadow_texture = s3d::RenderTexture{ s3d::Scene::Size(), s3d::ColorF{ 1.0, 0.0 } };
-            internal_texture = s3d::RenderTexture{ shadow_texture.size() };
-#endif
+            shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
+            internal_texture = paxg::RenderTexture{ shadow_texture.size() };
         }
 
         void update(
@@ -173,7 +175,7 @@ namespace paxs {
             map_view.getCoordinate().toEquirectangularDegY();
 
             // 画像の拡大縮小の方式を設定
-            const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampLinear };
+            const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
 
             // 暦の位置
             int koyomi_font_y = pulldown_font_size + 43;
@@ -204,12 +206,11 @@ namespace paxs {
             int next_rect_start_y = icon_start_y + sum_icon_height + 50;
             int next_rect_end_y = 280;
 
-#ifdef PAXS_USING_SIV3D
-                // 影を作る図形を shadow_texture に描く
+            // 影を作る図形を shadow_texture に描く
             {
-                const s3d::ScopedRenderTarget2D target{ shadow_texture.clear(s3d::ColorF{ 1.0, 0.0 }) };
-                const s3d::ScopedRenderStates2D blend{ s3d::BlendState::MaxAlpha };
-                const s3d::Transformer2D transform{ s3d::Mat3x2::Translate(3, 3) };
+                const paxg::ScopedRenderTarget target{ shadow_texture, paxg::ColorF{ 1.0, 0.0 } };
+                const paxg::ScopedBlendState blend{ paxg::BlendState::MaxAlpha };
+                const paxg::ScopedTransform2D transform{ 3.0, 3.0 };
                 paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(); // メニューバー
 
                 if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
@@ -219,11 +220,11 @@ namespace paxs {
             }
                 // shadow_texture を 2 回ガウスぼかし
             {
-                s3d::Shader::GaussianBlur(shadow_texture, internal_texture, shadow_texture);
-                s3d::Shader::GaussianBlur(shadow_texture, internal_texture, shadow_texture);
+                paxg::Shader::GaussianBlur(shadow_texture, internal_texture, shadow_texture);
+                paxg::Shader::GaussianBlur(shadow_texture, internal_texture, shadow_texture);
             }
-            shadow_texture.draw(s3d::ColorF{ 0.0, 0.5 });
-#endif
+            shadow_texture.draw(paxg::ColorF{ 0.0, 0.5 });
+
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦表示の範囲に白背景を追加
                 paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, rect_len_x, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
@@ -594,7 +595,7 @@ namespace paxs {
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 
             texture_dictionary.at(MurMur3::calcHash(14, "texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
-            if (tm_.get(s3d::Rect(paxg::Window::width() - 280, 3, 28).leftClicked())) {
+            if (tm_.get(paxg::Rect(paxg::Window::width() - 280, 3, 28, 28).leftClicked())) {
                 // Web ページをブラウザで開く
                 s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
             }

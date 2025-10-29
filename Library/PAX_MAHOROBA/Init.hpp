@@ -13,16 +13,6 @@
 #define PAX_MAHOROBA_INIT_HPP
 
 #ifdef PAXS_USING_SIV3D
-
-#include <Siv3D.hpp>
-
-#else
-#include <string>
-
-#include <PAX_GRAPHICA/Mock.hpp>
-#endif
-
-#ifdef PAXS_USING_SIV3D
 #ifdef SIV3D_PLATFORM_PRIVATE_DEFINITION_WINDOWS
 #ifndef PAXS_S3D_RESOURCE
 #define PAXS_S3D_RESOURCE s3d::Resource

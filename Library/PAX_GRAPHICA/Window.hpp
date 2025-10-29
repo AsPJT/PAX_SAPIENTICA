@@ -15,6 +15,8 @@
 #include <memory>
 #include <string>
 
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+
 #if defined(PAXS_USING_SIV3D)
 #include <PAX_GRAPHICA/implementations/Siv3DWindowImpl.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -144,6 +146,12 @@ namespace paxg {
 
         static paxg::Vec2i size() {
             return getImpl().size();
+        }
+
+        /// @brief Get window size (alias for size() to match Siv3D Scene::Size())
+        static paxs::Vector2<int> Size() {
+            auto s = getImpl().size();
+            return paxs::Vector2<int>(s.x(), s.y());
         }
 
         static paxg::Vec2i getMousePosition() {
