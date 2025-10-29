@@ -12,6 +12,7 @@
 #ifndef PAX_MAHOROBA_CALENDAR_HPP
 #define PAX_MAHOROBA_CALENDAR_HPP
 
+#include <array>
 #include <limits>
 #include <string>
 #include <variant>
@@ -27,16 +28,13 @@
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Key/CalendarKeys.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
 
     class KoyomiSiv3D {
     public:
-        /*##########################################################################################
-            暦
-        ##########################################################################################*/
-
         /// @brief 出力に必要な日付の情報
         struct OutputDate {
             std::uint_least32_t calendar_name_key; // 暦の名前
@@ -45,112 +43,139 @@ namespace paxs {
 
         cal::JDN_F64 jdn{}; // ユリウス通日（基準となる暦）
         cal::SimulationSteps steps{}; // シミュレーションのステップ数
-        std::vector<OutputDate> date_list{}; // 表示する暦レイヤー
+
+        // 表示する暦レイヤー（8種類の暦）
+        std::array<OutputDate, 8> date_list = {
+            OutputDate{CalendarKeys::CALENDAR_JAPAN_HASH, cal::JapanDate{}},
+            OutputDate{CalendarKeys::CALENDAR_GREGORIAN_HASH, cal::GregorianDate{}},
+            OutputDate{CalendarKeys::CALENDAR_JULIAN_HASH, cal::JulianDate{}},
+            OutputDate{CalendarKeys::CALENDAR_HIJRI_HASH, cal::IslamicDate{}},
+            OutputDate{CalendarKeys::CALENDAR_CHINESE_HASH, cal::ChinaDate{}},
+            OutputDate{CalendarKeys::CALENDAR_JULIAN_DAY_HASH, cal::JDN_S64{}},
+            OutputDate{CalendarKeys::CALENDAR_CALBP_HASH, cal::CalBP{}},
+            OutputDate{CalendarKeys::MENU_BAR_VIEW_SIMULATION_HASH, cal::SimulationSteps{}}
+        };
 
         std::vector<paxs::JapaneseEra> japanese_era_list; // 日本の元号の一覧
         std::vector<paxs::ChineseEra> chinese_era_list; // 中国大陸の元号の一覧
 
-        /*##########################################################################################
-            編年・時代区分（実験）
-        ##########################################################################################*/
-
-        std::uint_least32_t sueki_nakamura_key; // 須恵器の中村編年の配列のインデックス値を格納
-        std::uint_least32_t sueki_tanabe_key; // 須恵器の田辺編年の配列のインデックス値を格納
+        static constexpr std::uint_least32_t sueki_nakamura_key = CalendarKeys::SUEKI_NAKAMURA_HASH; // 須恵器の中村編年の配列のインデックス値
+        static constexpr std::uint_least32_t sueki_tanabe_key = CalendarKeys::SUEKI_TANABE_HASH; // 須恵器の田辺編年の配列のインデックス値
 
         // 時代区分の文字列
-        std::vector<std::string> options = {
+        static constexpr std::array period_names = {
             "旧石器時代", "縄文時代", "弥生時代", "古墳時代 CE251-",
             "飛鳥時代 CE592-", "奈良時代 CE710-", "平安時代 CE794-",
             "鎌倉時代", "室町時代", "安土桃山時代", "江戸時代", "明治時代" };
         // 時代区分ごとのユリウス日の数値
-        std::array<int, 12> period_jdn = {
-            0,0,1538799,1812736,
-            1937666,1980488,2011388,
-            2154234,2209376,2295823,2306626,2403629
+        static constexpr std::array period_jdn = {
+            0, 0, 1538799, 1812736,
+            1937666, 1980488, 2011388,
+            2154234, 2209376, 2295823, 2306626, 2403629
         };
-        // 月の英語名
-        std::string month_name_long[13] = { "","January","February","March","April","May","June",
-            "July","August","September","October","November","December" };
-        std::string month_name[13] = { "","Jan.","Feb.","Mar.","Apr.","May","Jun.",
-            "Jul.","Aug.","Sep.","Oct.","Nov.","Dec." };
+        // 月の英語名（完全版）
+        static constexpr std::array month_name_long = {
+            "", "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        };
+        // 月の英語名（短縮版）
+        static constexpr std::array month_name = {
+            "", "Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.",
+            "Jul.", "Aug.", "Sep.", "Oct.", "Nov.", "Dec."
+        };
 
-
-        bool move_forward_in_time = true; // デバッグ false; // 時間を進めるか
+        bool move_forward_in_time = true; // 時間を進めるか
         bool go_back_in_time = false; // 時間を戻すか
         bool is_agent_update = false; // エージェントの更新をするか
 
+    private:
+        // 暦の更新に関する定数
+        static constexpr double days_per_year = 365.2425; // グレゴリオ暦の1年の平均日数
+        static constexpr double time_scale_factor = 18.0; // 時間経過の速度調整係数
+        static constexpr int calendar_update_threshold = 0; // 暦更新のしきい値
+
+        /// @brief グレゴリオ暦に変換
+        void updateGregorianDate(OutputDate& output_date) {
+            output_date.date = jdn.toGregorianCalendar();
+        }
+
+        /// @brief ユリウス暦に変換
+        void updateJulianDate(OutputDate& output_date) {
+            output_date.date = jdn.toJulianCalendar();
+        }
+
+        /// @brief 和暦に変換
+        void updateJapaneseDate(OutputDate& output_date) {
+            const paxs::cal::JapanDate jp_date = jdn.toJapaneseCalendar(japanese_era_list);
+            const std::string gengo = "gengo_" + std::to_string(jp_date.cgetGengo());
+            output_date.calendar_name_key = MurMur3::calcHash(gengo.size(), gengo.c_str());
+            output_date.date = jp_date;
+        }
+
+        /// @brief 中国暦に変換
+        void updateChineseDate(OutputDate& output_date) {
+            const paxs::cal::ChinaDate cn_date = jdn.toChineseCalendar(chinese_era_list);
+            const std::string gengo = "chinese_calendar_" + std::to_string(cn_date.cgetGengo());
+            output_date.calendar_name_key = MurMur3::calcHash(gengo.size(), gengo.c_str());
+            output_date.date = cn_date;
+        }
+
+        /// @brief ユリウス通日を格納
+        void updateJulianDayNumber(OutputDate& output_date) {
+            output_date.date = jdn;
+        }
+
+        /// @brief BP（年代測定）に変換
+        void updateCalBP(OutputDate& output_date) {
+            output_date.date = jdn.toCalBP();
+        }
+
+        /// @brief イスラム暦（ヒジュラ暦）に変換
+        void updateIslamicDate(OutputDate& output_date) {
+            output_date.date = jdn.toIslamicCalendar();
+        }
+
+        /// @brief シミュレーションステップ数を格納
+        void updateSimulationSteps(OutputDate& output_date) {
+            output_date.date = steps;
+        }
+
     public:
-        /*##########################################################################################
-            日付データの更新
-        ##########################################################################################*/
         void calcDate() {
             // 暦データを更新
-            paxs::cal::JapanDate jp_date{};
-            paxs::cal::ChinaDate cn_date{};
-            std::string gengo{};
             for (auto& dl : date_list) {
                 switch (dl.date.index()) {
                 case cal::gregorian_date_type:
-                    // グレゴリオ暦を格納
-                    dl.date = jdn.toGregorianCalendar();
+                    updateGregorianDate(dl);
                     break;
                 case cal::julian_date_type:
-                    // ユリウス暦を格納
-                    dl.date = jdn.toJulianCalendar();
+                    updateJulianDate(dl);
                     break;
                 case cal::japan_date_type:
-                    // 和暦を格納
-                    jp_date = jdn.toJapaneseCalendar(japanese_era_list);
-                    // 元号を格納
-                    gengo = std::string("gengo_" + std::to_string(jp_date.cgetGengo()));
-                    dl.calendar_name_key = ((MurMur3::calcHash(gengo.size(), gengo.c_str())));
-                    dl.date = jp_date;
+                    updateJapaneseDate(dl);
                     break;
                 case cal::china_date_type:
-                    // 和暦を格納
-                    cn_date = jdn.toChineseCalendar(chinese_era_list);
-                    // 元号を格納
-                    gengo = std::string("chinese_calendar_" + std::to_string(cn_date.cgetGengo()));
-                    dl.calendar_name_key = ((MurMur3::calcHash(gengo.size(), gengo.c_str())));
-                    dl.date = cn_date;
+                    updateChineseDate(dl);
                     break;
                 case cal::jdn_f64_type:
                 case cal::jdn_s32_type:
                 case cal::jdn_s64_type:
-                    dl.date = jdn; // ユリウス通日を格納
+                    updateJulianDayNumber(dl);
                     break;
                 case cal::calbp_type:
-                    // BP （年代測定）を格納
-                    dl.date = jdn.toCalBP();
+                    updateCalBP(dl);
                     break;
                 case cal::islamic_date_type:
-                    // ヒジュラ暦を格納
-                    dl.date = jdn.toIslamicCalendar();
+                    updateIslamicDate(dl);
                     break;
                 case cal::simulation_steps_type:
-                    // シミュレーションのステップ数を格納
-                    dl.date = steps;
+                    updateSimulationSteps(dl);
                     break;
                 }
             }
         }
 
         void init() {
-            // 各暦の日付情報を初期化
-            date_list = std::vector<OutputDate>{
-                OutputDate{(MurMur3::calcHash("calendar_japan")),cal::JapanDate() },
-                    OutputDate{(MurMur3::calcHash("calendar_gregorian")),cal::GregorianDate() },
-                    OutputDate{(MurMur3::calcHash("calendar_julian")), cal::JulianDate() },
-                    OutputDate{(MurMur3::calcHash("calendar_hijri")), cal::IslamicDate() },
-                    OutputDate{(MurMur3::calcHash("calendar_chinese")), cal::ChinaDate() },
-                    OutputDate{(MurMur3::calcHash("calendar_julian_day")), cal::JDN_S64() },
-                    OutputDate{(MurMur3::calcHash("calendar_calbp")), cal::CalBP()},
-                    OutputDate{(MurMur3::calcHash("menu_bar_view_simulation")), cal::SimulationSteps()}
-            };
-            // 須恵器編年の文字列を言語テキストファイルから探して格納
-            sueki_nakamura_key = (MurMur3::calcHash("sueki_nakamura"));
-            sueki_tanabe_key = (MurMur3::calcHash("sueki_tanabe"));
-
             // 暦を読み込み
             paxs::JapaneseEra::inputList(japanese_era_list, AppConfig::getInstance()->getRootPath() + "Data/Calendars/JapaneseEraName.tsv");
             paxs::ChineseEra::inputList(chinese_era_list, AppConfig::getInstance()->getRootPath() + "Data/Calendars/ChineseEraName.tsv");
@@ -163,20 +188,17 @@ namespace paxs {
             std::unique_ptr<paxs::SettlementSimulator>& simulator // コンパイル時の分岐により使わない場合あり
 #endif
         ) {
-            /*##########################################################################################
-                暦関連
-            ##########################################################################################*/
-
             static int calendar_update_counter = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
             ++calendar_update_counter;
-            if (calendar_update_counter >= /*30*/0) { // カウンタが指定した値を超えたら日付を変える処理を実行
+            if (calendar_update_counter >= calendar_update_threshold) { // カウンタが指定した値を超えたら日付を変える処理を実行
                 calendar_update_counter = 0;
                 // 時間を進めている場合（逆行していない場合）
                 if (move_forward_in_time) {
 #ifdef PAXS_USING_SIMULATOR
                     // エージェント機能
+                    // TODO: fix
                     if (is_agent_update && simulator.get() != nullptr) {
-                        jdn += (365.2425 / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
+                        jdn += (days_per_year / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
                         calcDate(); // 日付計算
                         simulator->step(); // シミュレーションを 1 ステップ実行する
                         steps.getDay()++; // ステップ数を増やす
@@ -184,14 +206,14 @@ namespace paxs {
                     else
 #endif
                     if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
-                        jdn += (365.2425 / 18.0/2);//(0.8 / 30.0); //(365.2425 / 12.0);//365.2425;//1.0;// ユリウス日を繰り上げ（次の日にする）
+                        jdn += (days_per_year / time_scale_factor / 2.0); // ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                 }
                 // 時間を逆行している場合
                 else if (go_back_in_time) {
                     if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
-                        jdn -= (365.2425 / 18.0);//(0.8 / 30.0); //(365.2425 / 12.0);//365.24252;//1.0;// ユリウス日を繰り上げ（次の日にする）
+                        jdn -= (days_per_year / time_scale_factor); // ユリウス日を繰り下げ（前の日にする）
                         calcDate(); // 日付計算
                     }
                 }
