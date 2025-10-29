@@ -112,6 +112,9 @@ namespace paxs {
             const paxs::Language& language_text,
             const paxs::Language& simulation_text
         ) {
+#ifndef PAXS_USING_SIMULATOR
+            (void)simulation_text; // シミュレーター未使用時の警告を抑制
+#endif
             language_fonts.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
             setLanguageFont(pulldown_font_size, AppConfig::getInstance()->getRootPath(), pulldown_font_buffer_thickness_size);
             //koyomi_font = setFont(koyomi_font_size, AppConfig::getInstance()->getRootPath(), koyomi_font_buffer_thickness_size);

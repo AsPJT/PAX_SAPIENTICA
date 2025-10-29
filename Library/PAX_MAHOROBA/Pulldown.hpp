@@ -160,7 +160,7 @@ namespace paxs {
                 static_cast<int>(rect.pos().y() + rect.h()));
             if (is_open) { // 項目が開かれている場合
                 // その項目の選択肢
-                for (int i = 0; i < items_key.size(); ++i) {
+                for (std::size_t i = 0; i < items_key.size(); ++i) {
                     const paxg::Rect rect_tmp{ pos, rect.w(), rect.h() };
                     if (tm_.get(
                         rect_tmp.leftClicked()

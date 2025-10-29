@@ -273,6 +273,10 @@ namespace paxg {
             viewRotationX = x;
             viewRotationY = y;
             viewPositionZ = z;
+#else
+            (void)x; // 未使用パラメータの警告を抑制
+            (void)y; // 未使用パラメータの警告を抑制
+            (void)z; // 未使用パラメータの警告を抑制
 #endif
         }
     };

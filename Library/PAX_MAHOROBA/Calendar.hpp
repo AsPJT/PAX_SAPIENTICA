@@ -169,9 +169,6 @@ namespace paxs {
 
             static int calendar_update_counter = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
             ++calendar_update_counter;
-            // if (move_forward_in_time) jdn.getDay() += 1.0; // デバッグ
-            //else if(go_back_in_time) jdn -= 1000;
-        //if (count >= 0) {
             if (calendar_update_counter >= /*30*/0) { // カウンタが指定した値を超えたら日付を変える処理を実行
                 calendar_update_counter = 0;
                 // 時間を進めている場合（逆行していない場合）
@@ -179,12 +176,10 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
                     // エージェント機能
                     if (is_agent_update && simulator.get() != nullptr) {
-                        //for (int si = 0; si < 12; ++si) {
-                            jdn += (365.2425 / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
-                            calcDate(); // 日付計算
-                            simulator->step(); // シミュレーションを 1 ステップ実行する
-                            steps.getDay()++; // ステップ数を増やす
-                        //}
+                        jdn += (365.2425 / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
+                        calcDate(); // 日付計算
+                        simulator->step(); // シミュレーションを 1 ステップ実行する
+                        steps.getDay()++; // ステップ数を増やす
                     }
                     else
 #endif
