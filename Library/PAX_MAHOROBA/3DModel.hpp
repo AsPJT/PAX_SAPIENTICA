@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_3D_MODEL_HPP
 
 #include <PAX_MAHOROBA/Init.hpp>
+
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 
 namespace paxs {

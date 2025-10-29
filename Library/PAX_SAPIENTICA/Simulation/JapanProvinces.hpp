@@ -20,7 +20,6 @@
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
 
@@ -32,7 +31,7 @@ namespace paxs {
             std::uint_least32_t population = 0; // 人口
         };
 
-        /// @brief 
+        /// @brief
         /// @brief mtDNA の地方区分を表す構造体
         struct mtDNA_Region {
             std::vector<std::uint_least8_t> id{};

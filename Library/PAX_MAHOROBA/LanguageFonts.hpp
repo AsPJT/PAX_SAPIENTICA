@@ -13,10 +13,9 @@
 #define PAX_MAHOROBA_LANGUAGE_FONTS_HPP
 
 #include <cstdint>
-#include <string>
 #include <unordered_map>
 
-#include <PAX_GRAPHICA/String.hpp> // Font
+#include <PAX_GRAPHICA/String.hpp>
 
 namespace paxs {
 

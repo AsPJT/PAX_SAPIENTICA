@@ -16,14 +16,13 @@
 #include <cmath>
 #include <fstream>
 #include <string>
-#include <vector> // テンプレートにした後は不要
+#include <vector>
 
 #include <PAX_SAPIENTICA/InputFile.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
 
-    // 日本の元号
+    // 中国大陸の元号
     struct ChineseEra {
         std::array<int, 4> gengo{};			// 元号
         std::array<int, 4> gengo_num{};				// 年
@@ -34,8 +33,8 @@ namespace paxs {
         int leap_month{};							// 閏月
 
         // コンストラクタ
-        ChineseEra() = default;
-        ChineseEra(const std::array<int, 4>& gengo_,
+        constexpr ChineseEra() = default;
+        constexpr ChineseEra(const std::array<int, 4>& gengo_,
             const std::array<int, 4>& gengo_num_,
             const int start_jdn_,
             const std::array<int, 2>& kaigen_jdn_,
@@ -47,15 +46,15 @@ namespace paxs {
             number_of_days_of_leap_month(number_of_days_of_leap_month_),
             leap_month(leap_month_) {}
     private:
-        static int emptyCharSupportStoi(const std::string& str_) {
+        constexpr static int emptyCharSupportStoi(const std::string& str_) {
             return (str_.size() == 0) ? 0 : std::stoi(str_);
         }
 
     public:
-        /// @brief 日本の元号一覧を入力する
-        /// @param japanese_era_list 元号リスト
+        /// @brief 中国大陸の元号一覧を入力する
+        /// @param chinese_era_list 元号リスト
         /// @param path 元号一覧のファイルパス
-        static void inputList(std::vector<paxs::ChineseEra>& japanese_era_list, const std::string& path) {
+        static void inputList(std::vector<paxs::ChineseEra>& chinese_era_list, const std::string& path) {
 
             paxs::InputFile pifs(path);
             if (pifs.fail()) return;
@@ -65,7 +64,7 @@ namespace paxs {
             while (pifs.getLine()) {
                 std::vector<std::string> strvec = pifs.split('\t');
 
-                japanese_era_list.emplace_back(
+                chinese_era_list.emplace_back(
                     std::array<int, 4>({
                         emptyCharSupportStoi(strvec[14]),
                         emptyCharSupportStoi(strvec[16]),

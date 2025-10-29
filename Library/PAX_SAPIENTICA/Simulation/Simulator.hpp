@@ -15,7 +15,6 @@
 #include <memory>
 #include <stdexcept>
 
-#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp>

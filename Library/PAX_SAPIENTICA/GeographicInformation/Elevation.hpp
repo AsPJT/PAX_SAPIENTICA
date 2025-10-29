@@ -21,7 +21,7 @@ namespace paxs {
 
     /// @brief A class that handles elevation.
     struct Grid3x3 {
-        Grid3x3(const std::array<double, 9>& grid) : grid(grid) {}
+        constexpr Grid3x3(const std::array<double, 9>& grid) : grid(grid) {}
         std::array<double, 9> grid;
         constexpr const double* operator[](const int i) const {
             if (i < 0 || i > 8) {
@@ -36,7 +36,7 @@ namespace paxs {
     public:
         /// @brief Get the slope.
         /// @param grid List of 9 grids.
-        static double getSlopeRad(const Grid3x3& grid,
+        static constexpr double getSlopeRad(const Grid3x3& grid,
             const double x_cell_size,
             const double y_cell_size
             //const int z

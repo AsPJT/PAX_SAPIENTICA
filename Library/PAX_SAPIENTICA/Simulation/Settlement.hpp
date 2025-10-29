@@ -12,20 +12,18 @@
 #ifndef PAX_SAPIENTICA_SETTLEMENT_HPP
 #define PAX_SAPIENTICA_SETTLEMENT_HPP
 
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
-
-#include <algorithm>
 #include <deque>
 #include <functional>
 #include <memory>
 #include <random>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/RandomSelector.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp>
-#include <PAX_SAPIENTICA/Simulation/Object.hpp>
+#include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
@@ -260,7 +258,7 @@ namespace paxs {
             old_position = position;
             position = position_;
         }
-        /// @brief 
+        /// @brief
         /// @brief 集落の過去の座標を消去
         void clearOldPosition() noexcept {
             old_position = Vector2(-1, -1);
@@ -758,7 +756,7 @@ namespace paxs {
         Vector2 position{};
 
         std::mt19937* gen{}; // 乱数生成器
-        
+
 
         std::shared_ptr<Environment> environment{}; // 環境
         /// @brief エージェントの配列

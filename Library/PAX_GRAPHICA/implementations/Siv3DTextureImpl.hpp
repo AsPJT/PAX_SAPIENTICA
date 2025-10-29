@@ -17,8 +17,6 @@
 #include <Siv3D.hpp>
 
 #include <PAX_GRAPHICA/TextureImpl.hpp>
-#include <PAX_GRAPHICA/Image.hpp>
-#include <PAX_GRAPHICA/String.hpp>
 
 namespace paxg {
 
@@ -29,12 +27,12 @@ namespace paxg {
     public:
         Siv3DTextureImpl() = default;
 
-        Siv3DTextureImpl(const Image& image) : texture(image) {}
+        Siv3DTextureImpl(const paxg::Image& image) : texture(image) {}
 
-        Siv3DTextureImpl(const String& path) : texture(path.string) {}
+        Siv3DTextureImpl(const paxg::String& path) : texture(path.string) {}
 
         Siv3DTextureImpl(const std::string& path)
-            : texture(static_cast<String>(path).string) {}
+            : texture(static_cast<paxg::String>(path).string) {}
 
         bool isValid() const override {
             return !!texture;
@@ -52,43 +50,43 @@ namespace paxg {
             texture.draw();
         }
 
-        void drawAt(const Vec2f& pos) const override {
+        void drawAt(const paxg::Vec2f& pos) const override {
             texture.drawAt(pos.x(), pos.y());
         }
 
-        void drawAt(const Vec2i& pos) const override {
+        void drawAt(const paxg::Vec2i& pos) const override {
             texture.drawAt(pos.x(), pos.y());
         }
 
-        void resizedDrawAt(const Vec2i& resize, const Vec2i& pos) const override {
+        void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const override {
             texture.resized(resize.x(), resize.y()).drawAt(pos.x(), pos.y());
         }
 
-        void resizedDrawAt(int resize, const Vec2i& pos) const override {
+        void resizedDrawAt(int resize, const paxg::Vec2i& pos) const override {
             texture.resized(resize).drawAt(pos.x(), pos.y());
         }
 
-        void resizedDrawAt(const Vec2f& resize, const Vec2f& pos) const override {
+        void resizedDrawAt(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const override {
             texture.resized(resize.x(), resize.y()).drawAt(pos.x(), pos.y());
         }
 
-        void resizedDrawAt(int resize, const Vec2f& pos) const override {
+        void resizedDrawAt(int resize, const paxg::Vec2f& pos) const override {
             texture.resized(resize).drawAt(pos.x(), pos.y());
         }
 
-        void resizedDraw(const Vec2i& resize, const Vec2i& pos) const override {
+        void resizedDraw(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const override {
             texture.resized(resize.x(), resize.y()).draw(pos.x(), pos.y());
         }
 
-        void resizedDraw(int resize, const Vec2i& pos) const override {
+        void resizedDraw(int resize, const paxg::Vec2i& pos) const override {
             texture.resized(resize).draw(pos.x(), pos.y());
         }
 
-        void resizedDraw(const Vec2f& resize, const Vec2f& pos) const override {
+        void resizedDraw(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const override {
             texture.resized(resize.x(), resize.y()).draw(pos.x(), pos.y());
         }
 
-        void resizedDraw(int resize, const Vec2f& pos) const override {
+        void resizedDraw(int resize, const paxg::Vec2f& pos) const override {
             texture.resized(resize).draw(pos.x(), pos.y());
         }
 

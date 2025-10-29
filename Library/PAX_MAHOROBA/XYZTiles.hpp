@@ -18,20 +18,18 @@
 #include <unordered_map>
 #include <utility>
 
-#include <PAX_MAHOROBA/Init.hpp>
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
-
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_MAHOROBA/Init.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 // マクロ分岐の可能性があるため別の include とは別で記載
 //#ifdef USING_BINARY_TEXTURE

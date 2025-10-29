@@ -24,7 +24,7 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
-        SettlementGrid() = default;
+        constexpr SettlementGrid() = default;
 
         explicit SettlementGrid(const Vector2& grid_position, std::shared_ptr<Environment> environment,
             std::mt19937& gen_) noexcept : grid_position(grid_position), environment(environment), gen(&gen_) {}

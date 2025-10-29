@@ -16,7 +16,7 @@
 #include <cmath>
 #include <fstream>
 #include <string>
-#include <vector> // テンプレートにした後は不要
+#include <vector>
 
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
@@ -34,8 +34,8 @@ namespace paxs {
         int leap_month{};							// 閏月
 
         // コンストラクタ
-        JapaneseEra() = default;
-        JapaneseEra(const std::array<int, 4>& gengo_,
+        constexpr JapaneseEra() = default;
+        constexpr JapaneseEra(const std::array<int, 4>& gengo_,
             const std::array<int, 4>& gengo_num_,
             const int start_jdn_,
             const std::array<int, 2>& kaigen_jdn_,
@@ -47,7 +47,7 @@ namespace paxs {
             number_of_days_of_leap_month(number_of_days_of_leap_month_),
             leap_month(leap_month_) {}
     private:
-        static int emptyCharSupportStoi(const std::string& str_) {
+        constexpr static int emptyCharSupportStoi(const std::string& str_) {
             return (str_.size() == 0) ? 0 : std::stoi(str_);
         }
 

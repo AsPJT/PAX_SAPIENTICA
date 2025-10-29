@@ -14,11 +14,6 @@
 
 #include <memory>
 
-#include <PAX_GRAPHICA/IDrawable.hpp>
-#include <PAX_GRAPHICA/Image.hpp>
-#include <PAX_GRAPHICA/String.hpp>
-#include <PAX_GRAPHICA/TextureImpl.hpp>
-
 #if defined(PAXS_USING_SIV3D)
 #include <PAX_GRAPHICA/implementations/Siv3DTextureImpl.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -29,10 +24,14 @@
 #include <PAX_GRAPHICA/implementations/NullTextureImpl.hpp>
 #endif
 
+#include <PAX_GRAPHICA/Image.hpp>
+#include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/TextureImpl.hpp>
+
 namespace paxg {
 
     /// @brief Texture class using pimpl idiom for multi-library support
-    struct Texture : public IDrawable {
+    struct Texture {
     private:
         std::shared_ptr<TextureImpl> impl;
 
@@ -83,15 +82,15 @@ namespace paxg {
             return impl ? impl->height() : 0;
         }
 
-        void draw() const override {
+        void draw() const {
             if (impl) impl->draw();
         }
 
-        void drawAt(const Vec2f& pos) const override {
+        void drawAt(const Vec2f& pos) const {
             if (impl) impl->drawAt(pos);
         }
 
-        void drawAt(const Vec2i& pos) const override {
+        void drawAt(const Vec2i& pos) const {
             if (impl) impl->drawAt(pos);
         }
 

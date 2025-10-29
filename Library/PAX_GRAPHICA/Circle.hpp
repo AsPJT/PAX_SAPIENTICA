@@ -21,13 +21,12 @@
 #include <PAX_GRAPHICA/SFML_Circle.hpp>
 #endif
 
-#include <PAX_GRAPHICA/IDrawable.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 
-    struct Circle : public IDrawable
+    struct Circle
     {
 #if defined(PAXS_USING_SIV3D)
         s3d::Circle circle;
@@ -39,14 +38,14 @@ namespace paxg {
         constexpr Circle(const float x, const float y, const float r) : x(x), y(y), r(r) {}
         constexpr Circle(const paxg::Vec2i& pos, const float r) : x(static_cast<float>(pos.x())), y(static_cast<float>(pos.y())), r(r) {}
 #endif
-        void draw() const override {
+        void draw() const {
 #if defined(PAXS_USING_SIV3D)
             circle.draw();
 
 #elif defined(PAXS_USING_SFML)
             SFML_Circle::getInstance()->circle.setRadius(r);
             SFML_Circle::getInstance()->circle.setPosition({ x, y });
-            Window::window().draw(SFML_Circle::getInstance()->circle);
+            paxg::Window::window().draw(SFML_Circle::getInstance()->circle);
 #endif
         }
 
@@ -66,14 +65,11 @@ namespace paxg {
             SFML_Circle::getInstance()->circle.setPosition({ x, y });
 
             SFML_Circle::getInstance()->circle.setFillColor(c_.color);
-            Window::window().draw(SFML_Circle::getInstance()->circle);
+            paxg::Window::window().draw(SFML_Circle::getInstance()->circle);
         }
 #else
         void draw(const paxg::Color&) const {}
 #endif
-
-        void drawAt(const Vec2f&) const override {}
-        void drawAt(const Vec2i&) const override {}
     };
 }
 

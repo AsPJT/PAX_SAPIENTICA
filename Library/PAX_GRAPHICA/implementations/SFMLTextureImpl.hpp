@@ -16,11 +16,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <PAX_GRAPHICA/TextureImpl.hpp>
 #include <PAX_GRAPHICA/Image.hpp>
-#include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/TextureImpl.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
 
 namespace paxg {
 
@@ -31,13 +29,13 @@ namespace paxg {
     public:
         SFMLTextureImpl() = default;
 
-        SFMLTextureImpl(const Image& image) {
+        SFMLTextureImpl(const paxg::Image& image) {
             if (!texture.loadFromImage(image)) {
                 PAXS_WARNING("Failed to load image");
             }
         }
 
-        SFMLTextureImpl(const String& path) {
+        SFMLTextureImpl(const paxg::String& path) {
             std::string path_str = convertSvgToPng(path.string);
             if (!texture.loadFromFile(path_str)) {
                 PAXS_WARNING("Failed to load texture: " + path_str);
@@ -65,20 +63,20 @@ namespace paxg {
 
         void draw() const override {
             sf::Sprite sprite(texture);
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void drawAt(const Vec2f& pos) const override {
             sf::Sprite sprite(texture);
             sprite.setPosition({pos.x() - (width() / 2.0f), pos.y() - (height() / 2.0f)});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void drawAt(const Vec2i& pos) const override {
             sf::Sprite sprite(texture);
             sprite.setPosition({static_cast<float>(pos.x() - (width() / 2)),
                               static_cast<float>(pos.y() - (height() / 2))});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void resizedDrawAt(const Vec2i& resize, const Vec2i& pos) const override {
@@ -87,7 +85,7 @@ namespace paxg {
                            static_cast<float>(resize.y()) / texture.getSize().y});
             sprite.setPosition({static_cast<float>(pos.x() - (resize.x() / 2)),
                               static_cast<float>(pos.y() - (resize.y() / 2))});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void resizedDrawAt(int resize, const Vec2i& pos) const override {
@@ -96,14 +94,14 @@ namespace paxg {
                            static_cast<float>(resize) / texture.getSize().y});
             sprite.setPosition({static_cast<float>(pos.x() - (resize / 2)),
                               static_cast<float>(pos.y() - (resize / 2))});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void resizedDrawAt(const Vec2f& resize, const Vec2f& pos) const override {
             sf::Sprite sprite(texture);
             sprite.setScale({resize.x() / texture.getSize().x, resize.y() / texture.getSize().y});
             sprite.setPosition({pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2)});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void resizedDrawAt(int resize, const Vec2f& pos) const override {
@@ -111,7 +109,7 @@ namespace paxg {
             sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
                            static_cast<float>(resize) / texture.getSize().y});
             sprite.setPosition({pos.x() - (resize / 2.0f), pos.y() - (resize / 2.0f)});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void resizedDraw(const Vec2i& resize, const Vec2i& pos) const override {
@@ -119,7 +117,7 @@ namespace paxg {
             sprite.setScale({static_cast<float>(resize.x()) / texture.getSize().x,
                            static_cast<float>(resize.y()) / texture.getSize().y});
             sprite.setPosition({static_cast<float>(pos.x()), static_cast<float>(pos.y())});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void resizedDraw(int resize, const Vec2i& pos) const override {
@@ -127,14 +125,14 @@ namespace paxg {
             sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
                            static_cast<float>(resize) / texture.getSize().y});
             sprite.setPosition({static_cast<float>(pos.x()), static_cast<float>(pos.y())});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void resizedDraw(const Vec2f& resize, const Vec2f& pos) const override {
             sf::Sprite sprite(texture);
             sprite.setScale({resize.x() / texture.getSize().x, resize.y() / texture.getSize().y});
             sprite.setPosition({pos.x(), pos.y()});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         void resizedDraw(int resize, const Vec2f& pos) const override {
@@ -142,7 +140,7 @@ namespace paxg {
             sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
                            static_cast<float>(resize) / texture.getSize().y});
             sprite.setPosition({pos.x(), pos.y()});
-            Window::window().draw(sprite);
+            paxg::Window::window().draw(sprite);
         }
 
         const sf::Texture& getNativeTexture() const { return texture; }

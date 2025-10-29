@@ -17,34 +17,27 @@
 #include <variant>
 #include <vector>
 
-#include <PAX_GRAPHICA/Key.hpp>
-#include <PAX_GRAPHICA/RoundRect.hpp>
-
-#include <PAX_MAHOROBA/Calendar.hpp> // 計算時に必要
-#include <PAX_MAHOROBA/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/LocationPoint.hpp>
-#include <PAX_MAHOROBA/LocationRange.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
-#include <PAX_MAHOROBA/XYZTiles.hpp>
-#include <PAX_MAHOROBA/XYZTilesList.hpp>
-
-#include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
-#include <PAX_SAPIENTICA/Key/MenuKeys.hpp>
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
-#include <PAX_SAPIENTICA/Calendar/Date.hpp>
-#include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 暦にないファイル
-#include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
-#include <PAX_SAPIENTICA/Math.hpp> // 数学定数
-#include <PAX_SAPIENTICA/MurMur3.hpp>
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
+
+#include <PAX_GRAPHICA/Key.hpp>
+#include <PAX_GRAPHICA/RoundRect.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
+
+#include <PAX_MAHOROBA/Calendar.hpp>
+#include <PAX_MAHOROBA/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Pulldown.hpp>
+
+#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Calendar/Date.hpp>
+#include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
+#include <PAX_SAPIENTICA/Key/MenuKeys.hpp>
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
@@ -410,8 +403,6 @@ namespace paxs {
             paxs::KoyomiSiv3D& koyomi_siv,
             paxs::GraphicVisualizationList& visible
             ) {
-            // const double map_view_center_lat =
-                //paxs::MathF64::radToDeg(std::asin(std::tanh(paxs::MathF64::degToRad(map_view->getCenterY()))));
             map_view.getCoordinate().toEquirectangularDegY();
 
             // 画像の拡大縮小の方式を設定

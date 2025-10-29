@@ -15,18 +15,19 @@
 #include <memory>
 #include <new>
 
-#include <PAX_MAHOROBA/LocationPoint.hpp>
-#include <PAX_MAHOROBA/LocationRange.hpp> // TextureLocation
-#include <PAX_MAHOROBA/PersonLocation.hpp> // PersonLocation 人物を描画
-#include <PAX_MAHOROBA/StringViewer.hpp>
-
-#include <PAX_GRAPHICA/Key.hpp>
-
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
+
+#include <PAX_GRAPHICA/Key.hpp>
+
+#include <PAX_MAHOROBA/LocationPoint.hpp>
+#include <PAX_MAHOROBA/LocationRange.hpp>
+#include <PAX_MAHOROBA/PersonLocation.hpp>
+#include <PAX_MAHOROBA/StringViewer.hpp>
+
+#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
 

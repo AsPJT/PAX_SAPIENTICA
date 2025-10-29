@@ -17,28 +17,27 @@
 #include <string>
 #include <unordered_map>
 
-#include <PAX_MAHOROBA/Init.hpp>
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
-#include <PAX_SAPIENTICA/InputFile.hpp>
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #endif
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
-#include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_MAHOROBA/Init.hpp>
+
+#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/InputFile.hpp>
+#include <PAX_SAPIENTICA/MapProjection.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
 

@@ -34,8 +34,8 @@ namespace paxs::cal {
     private:
         std::uint_least32_t day{ 0 };
     public:
-        SimulationSteps() = default;
-        SimulationSteps(const std::uint_least32_t day_)
+        constexpr SimulationSteps() = default;
+        constexpr SimulationSteps(const std::uint_least32_t day_)
             :day(day_) {}
         constexpr void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
         constexpr void setYear(const DateYear) const {} // 何もしない（ Variant に用いているため定義）
@@ -59,8 +59,8 @@ namespace paxs::cal {
     private:
         std::int_least32_t day{};
     public:
-        CalBP() = default;
-        CalBP(const std::int_least32_t day_)
+        constexpr CalBP() = default;
+        constexpr CalBP(const std::int_least32_t day_)
             :day(day_) {}
         constexpr void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
         constexpr void setYear(const DateYear) const {} // 何もしない（ Variant に用いているため定義）
@@ -94,8 +94,8 @@ namespace paxs::cal {
                 + 227014); // カレンダーの開始日の前日
         }
 
-        IslamicDate() = default;
-        IslamicDate(const DateYear year_, const DateMonth month_, const DateDay day_)
+        constexpr IslamicDate() = default;
+        constexpr IslamicDate(const DateYear year_, const DateMonth month_, const DateDay day_)
             :year(year_), month(month_), day(day_) {}
 
         constexpr void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
@@ -122,8 +122,8 @@ namespace paxs::cal {
         DateMonth month{};
         DateDay day{};
     public:
-        GregorianDate() = default;
-        GregorianDate(const DateYear year_, const DateMonth month_, const DateDay day_)
+        constexpr GregorianDate() = default;
+        constexpr GregorianDate(const DateYear year_, const DateMonth month_, const DateDay day_)
             :year(year_), month(month_), day(day_) {}
 
         constexpr void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
@@ -150,8 +150,8 @@ namespace paxs::cal {
         DateMonth month{};
         DateDay day{};
     public:
-        JulianDate() = default;
-        JulianDate(const DateYear year_, const DateMonth month_, const DateDay day_)
+        constexpr JulianDate() = default;
+        constexpr JulianDate(const DateYear year_, const DateMonth month_, const DateDay day_)
             :year(year_), month(month_), day(day_) {}
 
         constexpr void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
@@ -180,8 +180,8 @@ namespace paxs::cal {
         DateDay day{};
         bool is_leap_month = false; // 閏月かどうか
     public:
-        JapanDate() = default;
-        JapanDate(const DateGengo gengo_, const DateYear year_, const DateMonth month_, const DateDay day_, const bool is_leap_month_ = false)
+        constexpr JapanDate() = default;
+        constexpr JapanDate(const DateGengo gengo_, const DateYear year_, const DateMonth month_, const DateDay day_, const bool is_leap_month_ = false)
             :gengo(gengo_), year(year_), month(month_), day(day_), is_leap_month(is_leap_month_) {}
 
         constexpr void setGengo(const DateGengo gengo_) { gengo = gengo_; }
@@ -210,8 +210,8 @@ namespace paxs::cal {
         DateDay day{};
         bool is_leap_month = false; // 閏月かどうか
     public:
-        ChinaDate() = default;
-        ChinaDate(const DateGengo gengo_, const DateYear year_, const DateMonth month_, const DateDay day_, const bool is_leap_month_ = false)
+        constexpr ChinaDate() = default;
+        constexpr ChinaDate(const DateGengo gengo_, const DateYear year_, const DateMonth month_, const DateDay day_, const bool is_leap_month_ = false)
             :gengo(gengo_), year(year_), month(month_), day(day_), is_leap_month(is_leap_month_) {}
 
         constexpr void setGengo(const DateGengo gengo_) { gengo = gengo_; }

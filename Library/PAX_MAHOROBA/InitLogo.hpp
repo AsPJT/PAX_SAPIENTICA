@@ -12,14 +12,12 @@
 #ifndef PAX_MAHOROBA_INIT_LOGO_HPP
 #define PAX_MAHOROBA_INIT_LOGO_HPP
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Version.hpp>
-
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Init.hpp>
+
+#include <PAX_SAPIENTICA/Version.hpp>
 
 namespace paxs {
 
@@ -41,17 +39,10 @@ namespace paxs {
 
             // PAX SAPIENTICA 用の背景
             const paxg::Color paxs_color = paxg::Color(145, 190, 240); // 水色
-            //const paxg::Color paxs_color = paxg::Color(140, 180, 250); // 元青
-            //const paxg::Color paxs_color = paxg::Color(255, 255, 255); // 白
+            // const paxg::Color paxs_color = paxg::Color(140, 180, 250); // 元青
+            // const paxg::Color paxs_color = paxg::Color(255, 255, 255); // 白
             paxg::Window::setBackgroundColor(paxs_color);
             paxg::Window::setLetterbox(paxs_color);
-            // paxg::Color(255, 255, 255); // 白
-// paxg::Color(243, 243, 243); // 白
-// paxg::Color(181,0,0);
-// paxg::Color(180, 154, 100); // 茶色
-// paxg::Color(110, 146, 161); // 濁った青
-// paxg::Color(156, 192, 249); // 薄い青
-// paxg::Color();
 
             // タイトルを変更
             paxg::Window::setTitle(

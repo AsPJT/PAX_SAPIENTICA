@@ -17,22 +17,17 @@
 #include <variant>
 #include <vector>
 
+#ifdef PAXS_USING_SIMULATOR
+#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#endif
+
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
 #include <PAX_SAPIENTICA/Calendar/ChineseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
-#include <PAX_SAPIENTICA/Math.hpp> // 数学定数
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
-#endif
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/TouchManager.hpp>
 
 namespace paxs {
 

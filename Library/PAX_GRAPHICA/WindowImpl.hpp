@@ -41,15 +41,15 @@ namespace paxg {
         virtual void setMousePosition(int x, int y) = 0;
         virtual void setMousePosition(const Vec2i& pos) = 0;
         virtual void setKeyRepeat(bool repeat) = 0;
-        virtual void setBackgroundColor(const Color color) = 0;
-        virtual void setLetterbox(const Color color) = 0;
+        virtual void setBackgroundColor(const paxg::Color color) = 0;
+        virtual void setLetterbox(const paxg::Color color) = 0;
         virtual void setResizable(bool resizable) = 0;
 
-        virtual Vec2i center() const = 0;
+        virtual paxg::Vec2i center() const = 0;
         virtual int width() const = 0;
         virtual int height() const = 0;
-        virtual Vec2i size() const = 0;
-        virtual Vec2i getMousePosition() const = 0;
+        virtual paxg::Vec2i size() const = 0;
+        virtual paxg::Vec2i getMousePosition() const = 0;
         virtual bool hasFocus() const = 0;
 
         virtual void clear() = 0;

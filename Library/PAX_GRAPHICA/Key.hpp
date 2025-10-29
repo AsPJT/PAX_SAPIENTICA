@@ -19,11 +19,11 @@
 #include <new>
 #include <vector>
 
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp> // 地図投影法
-
 #include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/MapProjection.hpp>
 
 namespace paxs {
 
@@ -346,7 +346,6 @@ namespace paxs {
         Coordinate center = Coordinate(
             200.0,
             paxs::EquirectangularDeg(paxs::Vector2<double>(145, 48)) // 韓国 128, 37 // 日本 135, 35 // 北海道 // 東アジア 127, 31, 75.0 // 全世界 100, 0
-            //paxs::Vector2(135.0, getLatitudeToMercatorY(35.0))
         ); // マップ座標の中央
         double height = 24.0; // 各国 16.0; // 全世界 240.0 // マップの高さ
 
@@ -434,7 +433,7 @@ namespace paxs {
                 int pos_x = 0, pos_y = 0;
 
                 DxLib::GetTouchInput(i, &pos_x, &pos_y, NULL, NULL);
-                pos[i] = Vector2<int>(pos_x, pos_y);
+                pos[i] = paxs::Vector2<int>(pos_x, pos_y);
 
                 DxLib::DrawCircle(pos_x, pos_y, 40, GetColor(230, 230, 240), TRUE);
             }

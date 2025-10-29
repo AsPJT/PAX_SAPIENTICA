@@ -12,6 +12,8 @@
 #ifndef PAX_GRAPHICA_TRIANGLE_HPP
 #define PAX_GRAPHICA_TRIANGLE_HPP
 
+#include <cmath>
+
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -19,8 +21,6 @@
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
 #endif
-
-#include <cmath>
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -88,7 +88,7 @@ namespace paxg {
         constexpr Triangle(const float center_x, const float center_y, const float radius, const float rotation = 0.0f)
             : center_x_(center_x), center_y_(center_y), radius_(radius), rotation_(rotation) {}
 
-        constexpr Triangle(const Vec2f& center, const float radius, const float rotation = 0.0f)
+        constexpr Triangle(const paxg::Vec2f& center, const float radius, const float rotation = 0.0f)
             : center_x_(center.x()), center_y_(center.y()), radius_(radius), rotation_(rotation) {}
 
         /// @brief Optimized constructor using pre-computed shape (no runtime trigonometry)
@@ -98,7 +98,7 @@ namespace paxg {
         constexpr Triangle(const float center_x, const float center_y, const TriangleShape& shape)
             : center_x_(center_x), center_y_(center_y), radius_(shape.radius), rotation_(shape.rotation), shape_(&shape) {}
 
-        constexpr Triangle(const Vec2f& center, const TriangleShape& shape)
+        constexpr Triangle(const paxg::Vec2f& center, const TriangleShape& shape)
             : center_x_(center.x()), center_y_(center.y()), radius_(shape.radius), rotation_(shape.rotation), shape_(&shape) {}
 
         // Getters
@@ -111,12 +111,12 @@ namespace paxg {
         void setCenterX(const float x) { center_x_ = x; }
         void setCenterY(const float y) { center_y_ = y; }
         void setCenter(const float x, const float y) { center_x_ = x; center_y_ = y; }
-        void setCenter(const Vec2f& center) { center_x_ = center.x(); center_y_ = center.y(); }
+        void setCenter(const paxg::Vec2f& center) { center_x_ = center.x(); center_y_ = center.y(); }
         void setRadius(const float r) { radius_ = r; }
         void setRotation(const float rot) { rotation_ = rot; }
 
         /// @brief Draw the triangle with specified color (defaults to black)
-        void draw(const Color& color = Color(0, 0, 0)) const {
+        void draw(const paxg::Color& color = paxg::Color(0, 0, 0)) const {
 #if defined(PAXS_USING_SIV3D)
             s3d::Triangle{ center_x_, center_y_, radius_, rotation_ }.draw(s3d::ColorF{ color.color });
 

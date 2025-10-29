@@ -19,16 +19,14 @@
 #include <vector>
 #include <span>
 
+#include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/Triangle.hpp>
+
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Init.hpp>
+
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
-
-#include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/String.hpp>
-#include <PAX_GRAPHICA/Triangle.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
-
 namespace paxs {
 
     class Pulldown {

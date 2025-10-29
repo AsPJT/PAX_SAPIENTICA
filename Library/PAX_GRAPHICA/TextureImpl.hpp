@@ -14,14 +14,12 @@
 
 #include <string>
 
+#include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
+
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxg {
-
-    // Forward declarations
-    struct Image;
-    struct String;
 
     /// @brief Abstract base class for texture implementations
     class TextureImpl {
@@ -33,18 +31,18 @@ namespace paxg {
         virtual int height() const = 0;
 
         virtual void draw() const = 0;
-        virtual void drawAt(const Vec2f& pos) const = 0;
-        virtual void drawAt(const Vec2i& pos) const = 0;
+        virtual void drawAt(const paxg::Vec2f& pos) const = 0;
+        virtual void drawAt(const paxg::Vec2i& pos) const = 0;
 
-        virtual void resizedDrawAt(const Vec2i& resize, const Vec2i& pos) const = 0;
-        virtual void resizedDrawAt(int resize, const Vec2i& pos) const = 0;
-        virtual void resizedDrawAt(const Vec2f& resize, const Vec2f& pos) const = 0;
-        virtual void resizedDrawAt(int resize, const Vec2f& pos) const = 0;
+        virtual void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const = 0;
+        virtual void resizedDrawAt(int resize, const paxg::Vec2i& pos) const = 0;
+        virtual void resizedDrawAt(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const = 0;
+        virtual void resizedDrawAt(int resize, const paxg::Vec2f& pos) const = 0;
 
-        virtual void resizedDraw(const Vec2i& resize, const Vec2i& pos) const = 0;
-        virtual void resizedDraw(int resize, const Vec2i& pos) const = 0;
-        virtual void resizedDraw(const Vec2f& resize, const Vec2f& pos) const = 0;
-        virtual void resizedDraw(int resize, const Vec2f& pos) const = 0;
+        virtual void resizedDraw(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const = 0;
+        virtual void resizedDraw(int resize, const paxg::Vec2i& pos) const = 0;
+        virtual void resizedDraw(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const = 0;
+        virtual void resizedDraw(int resize, const paxg::Vec2f& pos) const = 0;
 
     protected:
         // Helper to convert SVG paths to PNG

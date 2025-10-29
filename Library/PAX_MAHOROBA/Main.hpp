@@ -18,44 +18,32 @@
 #define PAXS_USING_SIMULATOR
 #endif
 
-#include <PAX_GRAPHICA/Vec2.hpp>
-
 #if defined(PAXS_USING_DXLIB)
 static int old_left_touch = 0;
 static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #endif
 
-#include <PAX_MAHOROBA/Init.hpp>
-#include <PAX_MAHOROBA/InitLogo.hpp>
-#include <PAX_MAHOROBA/LocationRange.hpp>
-#include <PAX_MAHOROBA/LocationPoint.hpp>
-#include <PAX_MAHOROBA/3DModel.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
-
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
-#include <PAX_MAHOROBA/XYZTiles.hpp>
-#include <PAX_MAHOROBA/XYZTilesList.hpp>
-
-// シミュレータを使用する
-
-#include <PAX_MAHOROBA/Calendar.hpp> // 暦
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp> // 可視化一覧
-#include <PAX_MAHOROBA/MapViewer.hpp> // 地図
-#include <PAX_MAHOROBA/StringViewer.hpp> // 文字
-
-#include <PAX_SAPIENTICA/TouchManager.hpp>
-
-#include <PAX_SAPIENTICA/Math.hpp>
 
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
+#include <PAX_GRAPHICA/Vec2.hpp>
+
+#include <PAX_MAHOROBA/Calendar.hpp>
+#include <PAX_MAHOROBA/InitLogo.hpp>
+#include <PAX_MAHOROBA/3DModel.hpp>
+#include <PAX_MAHOROBA/Pulldown.hpp>
+#include <PAX_MAHOROBA/XYZTilesList.hpp>
+#include <PAX_MAHOROBA/MapViewer.hpp>
+#include <PAX_MAHOROBA/StringViewer.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_SAPIENTICA/TouchManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {

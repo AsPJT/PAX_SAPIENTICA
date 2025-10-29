@@ -12,6 +12,8 @@
 #ifndef PAX_GRAPHICA_COLOR_HPP
 #define PAX_GRAPHICA_COLOR_HPP
 
+#include <cstdint>
+
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D/Color.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -19,8 +21,6 @@
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
 #endif
-
-#include <cstdint>
 
 namespace paxg {
 

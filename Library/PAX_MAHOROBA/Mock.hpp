@@ -14,7 +14,6 @@
 
 #include <array>
 #include <string>
-#include <vector>
 
 namespace s3d
 {

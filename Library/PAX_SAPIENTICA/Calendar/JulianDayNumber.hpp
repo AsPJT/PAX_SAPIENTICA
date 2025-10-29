@@ -27,9 +27,9 @@ namespace paxs::cal {
     private:
         Day day{ 1940571 /*西暦601年1月1日*/}; // 1808286 西暦238年10月26日
     public:
-        JulianDayNumber() = default;
+        constexpr JulianDayNumber() = default;
         template<typename T>
-        JulianDayNumber(const T jdn_) { day = static_cast<Day>(jdn_); }
+        constexpr JulianDayNumber(const T jdn_) { day = static_cast<Day>(jdn_); }
 
     public:
 
