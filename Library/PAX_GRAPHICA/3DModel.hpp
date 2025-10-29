@@ -12,7 +12,13 @@
 #ifndef PAX_MAHOROBA_3D_MODEL_HPP
 #define PAX_MAHOROBA_3D_MODEL_HPP
 
-#include <PAX_MAHOROBA/Init.hpp>
+#if defined(PAXS_USING_SIV3D)
+#include <Siv3D.hpp>
+#elif defined(PAXS_USING_DXLIB)
+#include <DxLib.h>
+#elif defined(PAXS_USING_SFML)
+#include <SFML/Graphics.hpp>
+#endif
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 
@@ -53,10 +59,10 @@ namespace paxg {
             backgroundColor = s3d::ColorF{ 1,1,1,0 }.removeSRGBCurve();
 
             // 3D モデルデータをロード
-            sekishitsu_model = s3d::Model{ s3d::Unicode::FromUTF8(AppConfig::getInstance()->getRootPath()) + U"Data/3DModels/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj"};
+            sekishitsu_model = s3d::Model{ s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath()) + U"Data/3DModels/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj"};
 
             // 360 度写真をロード
-            sky = s3d::Texture(s3d::Image{ s3d::Unicode::FromUTF8(AppConfig::getInstance()->getRootPath()) + U"Data/360DegreePhotos/sky.jpg" }.mirror());
+            sky = s3d::Texture(s3d::Image{ s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath()) + U"Data/360DegreePhotos/sky.jpg" }.mirror());
 
             // モデルに付随するテクスチャをアセット管理に登録
             s3d::Model::RegisterDiffuseTextures(sekishitsu_model, s3d::TextureDesc::MippedSRGB);
