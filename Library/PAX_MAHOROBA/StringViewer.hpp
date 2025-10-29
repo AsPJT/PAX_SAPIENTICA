@@ -43,14 +43,7 @@
 namespace paxs {
 
     class StringViewer {
-    private:
-
     public:
-
-        /*##########################################################################################
-            フォント
-        ##########################################################################################*/
-
         LanguageFonts language_fonts;
 
         std::vector<std::string> path_list = {
@@ -179,13 +172,11 @@ namespace paxs {
             const s3d::ScopedRenderStates2D sampler{ s3d::SamplerState::ClampLinear };
 
             // 暦の位置
-            int koyomi_font_x = 0;//220;
             int koyomi_font_y = pulldown_font_size + 43;
-            int koyomi_font_en_x = 0;//820;
             int koyomi_font_en_y = pulldown_font_size + 43;
 
-            koyomi_font_x = paxg::Window::width() - 270;
-            koyomi_font_en_x = koyomi_font_x - 20;
+            int koyomi_font_x = paxg::Window::width() - 270;
+            int koyomi_font_en_x = koyomi_font_x - 20;
             int rect_start_x = koyomi_font_en_x - 165;
             int rect_len_x = paxg::Window::width() - rect_start_x - 15;
 
@@ -199,15 +190,15 @@ namespace paxs {
 
             int sum_icon_height = arrow_time_icon_size + time_icon_size * 2;
 
-            int icon_start_y = koyomi_height + 40;// 80 + 30;
-            const int arrow_icon_move_x = int(arrow_time_icon_size * 1.2);// int(time_icon_size * 1.4);
-            const int icon_move_x = int(time_icon_size * 1.1);// int(time_icon_size * 1.4);
+            int icon_start_y = koyomi_height + 40;
+            const int arrow_icon_move_x = int(arrow_time_icon_size * 1.2);
+            const int icon_move_x = int(time_icon_size * 1.1);
 
             const int arrow_icon_move_y = int(arrow_time_icon_size * 1.1);
             const int icon_move_y = int(time_icon_size * 1.1);
 
-            int next_rect_start_y = icon_start_y + sum_icon_height + 50;//230;
-            int next_rect_end_y = 280;//380;
+            int next_rect_start_y = icon_start_y + sum_icon_height + 50;
+            int next_rect_end_y = 280;
 
 #ifdef PAXS_USING_SIV3D
                 // 影を作る図形を shadow_texture に描く
@@ -278,7 +269,7 @@ namespace paxs {
                                 }, koyomi_siv.date_list[i].date);
                             if (date_day <= 0 || date_month <= 0) break;
 
-                            (*one_font).drawTopRight(*text_str//std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])
+                            (*one_font).drawTopRight(*text_str
                                 ,
                                 paxg::Vec2i(static_cast<int>(koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"年"), paxg::Vec2i(static_cast<int>(int(120 * koyomi_font_size / 30.0) + koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
@@ -295,7 +286,7 @@ namespace paxs {
                             }
                             break;
                         case paxs::cal::DateOutputType::name_and_value:
-                            (*one_font).drawTopRight(*text_str//std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])
+                            (*one_font).drawTopRight(*text_str
                                 , paxg::Vec2i(static_cast<int>(koyomi_font_x), static_cast<int>(koyomi_font_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                             std::visit([&](const auto& x) {
                                 date_day = int(x.cgetDay());
@@ -344,7 +335,7 @@ namespace paxs {
                                 }, koyomi_siv.date_list[i].date);
                             if (date_day <= 0 || date_month <= 0) break;
 
-                            if (text_str != nullptr) (*one_font).drawTopRight(*text_str//std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])
+                            if (text_str != nullptr) (*one_font).drawTopRight(*text_str
                                 , paxg::Vec2i(static_cast<int>(koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
 
                             (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(95 * koyomi_font_size / 30.0) + koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
@@ -371,8 +362,7 @@ namespace paxs {
                         case paxs::cal::DateOutputType::name_and_value:
 
                         {
-                            if (text_str != nullptr) (*one_font).drawTopRight(*text_str//std::string(koyomi_siv.date_list[i].calendar_name[select_language.cget() + 1 /* 言語位置調整 */])
-                                ,
+                            if (text_str != nullptr) (*one_font).drawTopRight(*text_str,
                                 paxg::Vec2i(static_cast<int>(koyomi_font_en_x), static_cast<int>(koyomi_font_en_y + i * (koyomi_font_size * 4 / 3))), paxg::Color(0, 0, 0));
                         }
                         std::visit([&](const auto& x) {
@@ -611,8 +601,6 @@ namespace paxs {
 #endif
             pulldown.draw(); // 言語選択
             menu_bar.draw(); // 左上メニューバー
-
-            //if (visible[MurMur3::calcHash("UI")])
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]
 #ifdef PAXS_USING_SIMULATOR
