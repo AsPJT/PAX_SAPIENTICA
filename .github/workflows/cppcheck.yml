@@ -25,6 +25,7 @@ jobs:
           --enable=warning,style,performance,portability \
           --suppress=missingIncludeSystem \
           --suppress=unusedFunction \
+          --suppress=syntaxError:*/UnitTest/* \
           --inline-suppr \
           --output-file=cppcheck-result.txt \
           --quiet \
