@@ -67,7 +67,7 @@ namespace paxs {
             MapView& map_view,
             const SelectLanguage& select_language,
             const paxs::KoyomiSiv3D& koyomi_siv,
-            paxs::StringViewerSiv3D& string_siv,
+            paxs::StringViewer& string_siv,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif

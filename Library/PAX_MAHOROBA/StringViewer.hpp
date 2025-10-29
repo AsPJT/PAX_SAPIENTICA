@@ -46,7 +46,7 @@
 
 namespace paxs {
 
-    class StringViewerSiv3D {
+    class StringViewer {
     private:
 #ifdef PAXS_USING_SIMULATOR
         void simulationInit(
@@ -282,10 +282,6 @@ namespace paxs {
 
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
 
-        //const std::string map_license_name = U"Maptiles by\n淺野孝利 2023「古墳時代の『常総の内海』水域復原に関する一試論」\n研究代表者 荒井啓汰『埋葬施設からみた常総地域の地域構造』\n特別研究員奨励費報告書 筑波大学大学院 人文社会科学研究科";
-        //std::string map_license_name = reinterpret_cast<const char*>(u8"Maptiles by\n農研機構農業環境研究部門, under CC BY 2.1 JP.\n20万分の1シームレス地質図V2.\nOpenStreetMap contributors, under ODbL.");
-        //const std::string map_license_name = U"Maptiles by MIERUNE, under CC BY. Data by OpenStreetMap contributors, under ODbL.\nMaptiles by 農研機構農業環境研究部門, under CC BY 2.1 JP";
-
         void init(
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
@@ -336,37 +332,9 @@ namespace paxs {
             simulation_pulldown = paxs::Pulldown(&select_language, &simulation_text, simulation_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, false);
             simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), 600 });
 #endif
-            //std::vector<std::uint_least32_t> list_test1 = {
-            //MurMur3::calcHash("menu_bar_file"),
-            //    MurMur3::calcHash("menu_bar_file_new"),
-            //    MurMur3::calcHash("menu_bar_file_open"),
-            //    MurMur3::calcHash("menu_bar_file_save"),
-            //    MurMur3::calcHash("menu_bar_file_close"),
-            //    MurMur3::calcHash("menu_bar_file_exit")
-            //};
 
-            //std::vector<std::uint_least32_t> list_test2 = {
-            //MurMur3::calcHash("menu_bar_edit"),
-            //    MurMur3::calcHash("menu_bar_edit_cut"),
-            //    MurMur3::calcHash("menu_bar_edit_copy"),
-            //    MurMur3::calcHash("menu_bar_edit_paste"),
-            //    MurMur3::calcHash("menu_bar_edit_delete")
-            //};
-
-            //std::vector<std::uint_least32_t> list_test4 = {
-            //MurMur3::calcHash("menu_bar_calendar"),
-            //    MurMur3::calcHash("menu_bar_calendar_japan"),
-            //    MurMur3::calcHash("menu_bar_calendar_gregorian"),
-            //    MurMur3::calcHash("menu_bar_calendar_julian"),
-            //    MurMur3::calcHash("menu_bar_calendar_julian_day"),
-            //    MurMur3::calcHash("menu_bar_calendar_hijri")
-            //};
-
-            //menu_bar.add(&select_language, &language_text, list_test1, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("file"));
-            //menu_bar.add(&select_language, &language_text, list_test2, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("edit"));
             menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
             menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("place_names"));
-            //menu_bar.add(&select_language, &language_text, list_test4, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("calendar"));
             menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
 
             const std::string path = (AppConfig::getInstance()->getRootPath());
@@ -727,41 +695,14 @@ namespace paxs {
                 }
 
             }
-            // 時代区分を選択するラジオボタン
-            // static size_t index1 = 2;
-            // if (s3d::SimpleGUI::RadioButtons(index1, options, s3d::Vec2{ paxg::Window::width() - 400, 400 })) {
-            // jdn = period_jdn[index1];
-            // }
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 int debug_start_y = koyomi_font_y + next_rect_start_y + 10;
-                //int debug_move_y = 25;
-                // その他のデバッグ用の変数情報の表示
-                //if (visible[MurMur3::calcHash(2, "UI")])
                 {
 
                     // 暦描画フォントを指定
                     paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                     if (one_font != nullptr) {
-
-                        // (*one_font)(std::string(language_text.cget()[map_view_center_x_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                        //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-                        // (*one_font)(s3d::ToString(map_view->getCenterX())
-                        //    ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
-                        //debug_start_y += debug_move_y;
-                        //// マップ中心座標 Y
-                        // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[map_view_center_y_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                        //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-                        // (*one_font)(s3d::ToString(map_view->getCenterY())
-                        //    ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
-                        //debug_start_y += debug_move_y;
-                        // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[map_view_center_lat_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                        //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-                        // (*one_font)(s3d::ToString(map_view_center_lat)
-                        //    ).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
-                        //debug_start_y += debug_move_y;
-                        // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[map_view_width_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                        //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
 
                         // マップの高さ
                         (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
@@ -771,10 +712,6 @@ namespace paxs {
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y), paxg::Color(0, 0, 0));
                         (*one_font).drawTopRight(std::to_string(map_view.getHeight()),
                             paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 30), paxg::Color(0, 0, 0));
-
-                        //map_view.setHeight(11.0);
-                        //map_view.setCenterX(134.0);
-                        //map_view.setCenterY(36.8);
 
 #ifdef PAXS_USING_SIMULATOR
                         if (simulator == nullptr) {
@@ -849,24 +786,9 @@ namespace paxs {
 
                         }
 #endif
-                        //debug_start_y += debug_move_y;
-                        // (*one_font)(s3d::Unicode::FromUTF8(language_text.cget()[xyz_tile_z_str_index][select_language.cget() + 1 /* 言語位置調整 */]
-                        //)).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Arg::topRight = s3d::Vec2(paxg::Window::width() - 160, debug_start_y), s3d::Palette::Black);
-
-                        //koyomi_font[language](s3d::ToString(xyz_tile2->getZ())
-                        //).draw(s3d::TextStyle::Outline(0, 0.6, s3d::Palette::White), s3d::Vec2(paxg::Window::width() - 110, debug_start_y), s3d::Palette::Black);
-                        //debug_start_y += debug_move_y;
-                        // koyomi_font[select_language.cget()].setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                        // koyomi_font[select_language.cget()].draw(std::to_string(xyz_tile2->getZNum()),
-                        //    paxg::Vec2i(paxg::Window::width() - 110, debug_start_y), paxg::Color(0, 0, 0));
                     }
                 }
             }
-//            if (visible[MurMur3::calcHash(7, "License")]) {
-//#ifdef PAXS_USING_SIV3D
-//                //s3d::LicenseManager::ShowInBrowser();
-//#endif
-//            }
 
             // メニューバー
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });

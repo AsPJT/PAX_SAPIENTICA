@@ -63,7 +63,7 @@ namespace paxs {
         MapView map_view{};
         XYZTilesList xyz_tile_list; // 描画する XYZ タイルを管理
         paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
-        paxs::StringViewerSiv3D string_siv{}; // 文字を管理する
+        paxs::StringViewer string_siv{}; // 文字を管理する
         SelectLanguage select_language{}; // 選択言語
         paxs::Language language_text;
         paxs::Language simulation_text;
