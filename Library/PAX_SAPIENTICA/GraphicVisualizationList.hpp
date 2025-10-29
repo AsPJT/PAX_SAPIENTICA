@@ -12,6 +12,7 @@
 #ifndef PAX_SAPIENTICA_GRAPHIC_VISUALIZATION_LIST_HPP
 #define PAX_SAPIENTICA_GRAPHIC_VISUALIZATION_LIST_HPP
 
+#include <cstdint>
 #include <unordered_map>
 
 namespace paxs {

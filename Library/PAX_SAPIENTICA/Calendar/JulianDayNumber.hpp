@@ -14,6 +14,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <type_traits>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
