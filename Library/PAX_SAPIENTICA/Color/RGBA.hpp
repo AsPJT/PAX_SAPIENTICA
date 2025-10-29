@@ -39,7 +39,7 @@ namespace paxs {
         }
 
     private:
-        // @brief 16進数文字1つを数値(0-15)に変換する
+        /// @brief 16進数文字1つを数値(0-15)に変換する
         // @param hex 16進数文字
         // @return 変換後の数値(0-15)
         // @note 不正な文字の場合は255を返す
@@ -50,7 +50,7 @@ namespace paxs {
             return 255;
         }
 
-        // @brief 16進数文字2つを組み合わせてRGB値(0-255)に変換する
+        /// @brief 16進数文字2つを組み合わせてRGB値(0-255)に変換する
         static constexpr unsigned char convertHexToRGB(const char hex1, const char hex2) {
             const unsigned char high = hexToValue(hex1);
             const unsigned char low = hexToValue(hex2);

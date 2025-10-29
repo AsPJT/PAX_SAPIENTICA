@@ -26,16 +26,16 @@ namespace paxg {
 
     /// @brief 3D モデル描画の設定
     struct Graphics3DModelConfig {
-        // @brief カメラ設定
+        /// @brief カメラ設定
         struct Camera {
-            // @brief 垂直視野角（度）
+            /// @brief 垂直視野角（度）
             double verticalFOV = 40.0;
             double posX = 0.0;
             double posY = 3.0;
             double posZ = -16.0;
         } camera;
 
-        // @brief 背景色設定
+        /// @brief 背景色設定
         struct Background {
             float r = 1.0f;                 // 赤成分
             float g = 1.0f;                 // 緑成分
@@ -43,7 +43,7 @@ namespace paxg {
             float a = 0.0f;                 // 透明度
         } background;
 
-        // @brief 360度写真の球体設定
+        /// @brief 360度写真の球体設定
         struct Sphere {
             double centerX = 0.0;           // 球体中心X座標
             double centerY = 2.0;           // 球体中心Y座標
@@ -55,7 +55,7 @@ namespace paxg {
             double zoomMax = -14.2;         // ズーム最大値
         } sphere;
 
-        // @brief ファイルパス設定
+        /// @brief ファイルパス設定
         struct FilePaths {
             std::string modelPath = "Data/3DModels/KofunOBJ/Model/Sekishitsu/KamoKitaKofun/KamoKitaKofun.obj";
             std::string skyTexturePath = "Data/360DegreePhotos/sky.jpg";
