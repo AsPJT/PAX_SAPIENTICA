@@ -38,7 +38,7 @@
 #include <PAX_SAPIENTICA/Key/MenuKeys.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/TouchManager.hpp>
+#include <PAX_SAPIENTICA/TouchStateManager.hpp>
 
 
 namespace paxs {
@@ -166,7 +166,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
 #endif
-            paxs::TouchManager& tm_,
+            paxs::TouchStateManager& tm_,
             paxs::KoyomiSiv3D& koyomi_siv,
             paxs::GraphicVisualizationList& visible
             ) {

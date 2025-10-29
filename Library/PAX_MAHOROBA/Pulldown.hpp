@@ -26,7 +26,7 @@
 #include <PAX_MAHOROBA/Init.hpp>
 
 #include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_SAPIENTICA/TouchManager.hpp>
+#include <PAX_SAPIENTICA/TouchStateManager.hpp>
 namespace paxs {
 
     class Pulldown {
@@ -138,7 +138,7 @@ namespace paxs {
         }
 
         // 更新処理
-        void update(paxs::TouchManager& tm_) {
+        void update(paxs::TouchStateManager& tm_) {
             if (language_ptr == nullptr) return; // 言語がない場合は処理をしない
             if (select_language_ptr == nullptr) return; // 選択されている言語がない場合は処理をしない
             if (font == nullptr) return;
@@ -356,7 +356,7 @@ namespace paxs {
                 1));
         }
 
-        void update(paxs::TouchManager& tm_) {
+        void update(paxs::TouchStateManager& tm_) {
             start_x = 0;
             for (auto& pd : pdv) {
                 pd.update(tm_);

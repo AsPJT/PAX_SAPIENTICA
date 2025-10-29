@@ -45,7 +45,7 @@ static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_SAPIENTICA/TouchManager.hpp>
+#include <PAX_SAPIENTICA/TouchStateManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -69,7 +69,7 @@ namespace paxs {
         paxs::Language language_text;
         paxs::Language simulation_text;
         paxs::MapViewer map_siv{}; // 地図を管理する
-        paxs::TouchManager tm; // 画面のクリック・タッチを管理する
+        paxs::TouchStateManager tm; // 画面のクリック・タッチを管理する
 
         paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
 

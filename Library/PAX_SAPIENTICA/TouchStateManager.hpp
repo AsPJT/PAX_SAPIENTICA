@@ -9,24 +9,29 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_TOUCH_MANAGER_HPP
-#define PAX_SAPIENTICA_TOUCH_MANAGER_HPP
+#ifndef PAX_SAPIENTICA_TOUCH_STATE_MANAGER_HPP
+#define PAX_SAPIENTICA_TOUCH_STATE_MANAGER_HPP
 
 namespace paxs {
 
-    /// @brief A class that manages touch.
-    /// @brief タッチを管理するクラス
-    struct TouchManager {
+    /// @brief A class that manages touch state to prevent duplicate processing
+    /// @brief タッチの状態を管理して二重処理を防ぐクラス
+    /// @details Tracks whether a touch event has been processed to avoid handling the same touch multiple times
+    struct TouchStateManager {
     private:
         // タッチされているか
         bool is_touch = false;
     public:
-        /// @brief Initialize the touch.
-        /// @brief タッチを初期化する
+        /// @brief Initialize the touch state
+        /// @brief タッチ状態を初期化する
+        /// @details Resets the internal touch flag to allow new touch events
         constexpr void init() noexcept { is_touch = false; }
 
-        /// @brief Get the touch.
-        /// @brief タッチを取得する
+        /// @brief Check and update touch state
+        /// @brief タッチ状態を確認して更新する
+        /// @param is_touch_ Current touch status (true if touched, false otherwise)
+        /// @return true if this is a new touch event (not yet processed), false if already processed or not touched
+        /// @details Returns true only on the first frame when touch begins, preventing duplicate processing
         constexpr bool get(const bool is_touch_) noexcept {
 
             // まだタッチされていない場合
@@ -48,7 +53,6 @@ namespace paxs {
             }
         }
     };
-
 }
 
-#endif // !PAX_SAPIENTICA_TOUCH_MANAGER_HPP
+#endif // !PAX_SAPIENTICA_TOUCH_STATE_MANAGER_HPP

@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/TouchManager.hpp>
+#include <PAX_SAPIENTICA/TouchStateManager.hpp>
 
 TEST (TouchManagerUnitTest, init) {
     paxs::TouchManager touchManager;

@@ -16,8 +16,11 @@
 #include <array>
 #include <cmath>
 
+#include <PAX_GRAPHICA/Circle.hpp>
+#include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
+#include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
@@ -128,17 +131,15 @@ namespace paxs {
             old_touch_num = touch_num;
             old_pos = pos;
 
-            touch_num = DxLib::GetTouchInputNum();
+            touch_num = paxg::TouchInput::getTouchCount();
 
 
             for (int i = 0; i < touch_num; i++) {
                 if (i >= MapViewConstants::max_touch_points) break;
-                int pos_x = 0, pos_y = 0;
 
-                DxLib::GetTouchInput(i, &pos_x, &pos_y, NULL, NULL);
-                pos[i] = paxs::Vector2<int>(pos_x, pos_y);
-
-                DxLib::DrawCircle(pos_x, pos_y, 40, GetColor(230, 230, 240), TRUE);
+                if (paxg::TouchInput::getTouchPosition(i, pos[i])) {
+                    paxg::Circle(pos[i].x, pos[i].y, 40).draw(paxg::Color(230, 230, 240));
+                }
             }
 
             if (old_touch_num == 1 && touch_num == 1) {
