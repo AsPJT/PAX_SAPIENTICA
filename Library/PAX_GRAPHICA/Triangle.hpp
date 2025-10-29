@@ -180,6 +180,8 @@ namespace paxg {
 
                 DxLib::DrawTriangle(x1, y1, x2, y2, x3, y3, DxLib::GetColor(color.r, color.g, color.b), TRUE);
             }
+#else
+            (void)color; // 未使用パラメータの警告を抑制
 #endif
         }
     };
