@@ -31,14 +31,12 @@
 
 namespace paxs {
 
-    class MapViewerSiv3D {
+    class MapViewer {
     public:
 
 
         std::unique_ptr<TextureLocation> texture_location; // 地図上に描画する画像の一覧
-#ifdef PAXS_USING_SIV3D
-        s3d::Array<s3d::Vec2> route1, route2; // 線の情報を格納
-#endif
+
         PlaceNameLocation place_name_location{}; // 地名
         PersonNameLocation person_name_location{}; // 人名
 
@@ -48,7 +46,7 @@ namespace paxs {
 #endif
     public:
 
-        MapViewerSiv3D()
+        MapViewer()
             :texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation))
 #ifdef PAXS_USING_SIMULATOR
             ,agent_location(std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation))
@@ -56,27 +54,6 @@ namespace paxs {
         {}
 
         void init() {
-#ifdef PAXS_USING_SIV3D
-            //// 航路を読み込み
-            //std::ifstream rifs(AppConfig::getInstance()->getRootPath() + "Data/Route/Yamatai.tsv");
-            //if (rifs.fail()) return;
-            //std::string rline;
-            //while (std::getline(rifs, rline)) { // ファイルを 1 行ずつ読み込む
-            //    const std::vector<std::string> strvec = paxs::StringExtensions::split(rline, '\t');
-            //    const MercatorDeg coordinate = EquirectangularDeg(
-            //        paxs::Vector2(std::stod(strvec[0]), std::stod(strvec[1])) // 経緯度を格納
-            //    );
-            //    route1.emplace_back(coordinate.x, coordinate.y);
-            //}
-            //for (std::size_t i = 0; i < route1.size(); ++i) {
-            //    // 経路を格納
-            //    route2.emplace_back(
-            //        (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(paxg::Window::width()),
-            //        double(paxg::Window::height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(paxg::Window::height()))
-            //    );
-            //}
-#endif
-
             // 地名
             place_name_location.init();
             place_name_location.add();
@@ -110,17 +87,6 @@ namespace paxs {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する
                 texture_location->update(map_view.getCenterX(), map_view.getCenterY(), map_view.getWidth(), map_view.getHeight());
-#ifdef PAXS_USING_SIV3D
-                //// 線の描画
-                //for (std::size_t i = 0; i < route2.size(); ++i) {
-                //    route2[i] = s3d::Vec2(
-                //        (route1[i].x - (map_view->getCenterX() - map_view->getWidth() / 2)) / map_view->getWidth() * double(paxg::Window::width()),
-                //        double(paxg::Window::height()) - ((route1[i].y - (map_view->getCenterY() - map_view->getHeight() / 2)) / map_view->getHeight() * double(paxg::Window::height()))
-                //    );
-                //}
-                //// 航路を描画
-                //s3d::Spline2D{ route2 }.draw(2, s3d::Color{ 85, 145, 245 });
-#endif
 
                 // フォントを指定
                 paxg::Font* one_font = string_siv.language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(string_siv.koyomi_font_size), static_cast<std::uint_least8_t>(string_siv.koyomi_font_buffer_thickness_size));
@@ -154,12 +120,8 @@ namespace paxs {
                 }
             }
 #endif
-
         }
-
-
     };
-
 }
 
 #endif // !PAX_MAHOROBA_MAP_VIEWER_HPP

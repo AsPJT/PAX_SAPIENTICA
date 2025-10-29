@@ -67,7 +67,7 @@ namespace paxs {
         SelectLanguage select_language{}; // 選択言語
         paxs::Language language_text;
         paxs::Language simulation_text;
-        paxs::MapViewerSiv3D map_siv{}; // 地図を管理する
+        paxs::MapViewer map_siv{}; // 地図を管理する
         paxs::TouchManager tm; // 画面のクリック・タッチを管理する
 
         paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
