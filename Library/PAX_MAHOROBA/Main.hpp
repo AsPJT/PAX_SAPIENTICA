@@ -50,6 +50,7 @@ namespace paxs {
 
     // 主要な実行時定数・変数
     void startMain() { // フォルダ階層
+        paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
 
         // 可視化一覧
         GraphicVisualizationList visible{};
@@ -69,7 +70,6 @@ namespace paxs {
         paxs::MapViewer map_siv{}; // 地図を管理する
         paxs::TouchStateManager tm; // 画面のクリック・タッチを管理する
 
-        paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
 
         // XYZ タイルを初期化
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
@@ -78,7 +78,7 @@ namespace paxs {
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
         map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
-        paxg::Window::update();
+        paxg::Window::display();
         // 言語を初期化（テキストの多言語対応クラス）
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
             [&](const std::string& path_) {language_text.add(path_); });

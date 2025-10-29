@@ -29,7 +29,6 @@ namespace paxs {
 //            s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
 //#endif
 
-            // 画面サイズを変更
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
 
 #else
@@ -68,6 +67,8 @@ namespace paxs {
 
 #ifdef PAXS_USING_SFML
             paxg::Window::setFPS(60);
+            paxg::Window::clear();
+            paxg::Window::display();
 #endif
         }
 
