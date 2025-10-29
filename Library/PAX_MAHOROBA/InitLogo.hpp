@@ -12,9 +12,9 @@
 #ifndef PAX_MAHOROBA_INIT_LOGO_HPP
 #define PAX_MAHOROBA_INIT_LOGO_HPP
 
-#include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Color/Background.hpp>
 #include <PAX_MAHOROBA/Init.hpp>
 
 #include <PAX_SAPIENTICA/Version.hpp>
@@ -38,11 +38,8 @@ namespace paxs {
 #endif
 
             // PAX SAPIENTICA 用の背景
-            const paxg::Color paxs_color = paxg::Color(145, 190, 240); // 水色
-            // const paxg::Color paxs_color = paxg::Color(140, 180, 250); // 元青
-            // const paxg::Color paxs_color = paxg::Color(255, 255, 255); // 白
-            paxg::Window::setBackgroundColor(paxs_color);
-            paxg::Window::setLetterbox(paxs_color);
+            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LightBlue);
+            paxg::Window::setLetterbox(paxs::BackgroundColor::LightBlue);
 
             // タイトルを変更
             paxg::Window::setTitle(
@@ -53,18 +50,22 @@ namespace paxs {
 #ifdef PAXS_USING_DXLIB
             DxLib::DxLib_Init();
 #endif // PAXS_USING_DXLIB
-            // 画面サイズを変更
+
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            // DxLibのアンドロイド版の画面サイズを変更
             int w{ 1280 }, h{ 720 };
             DxLib::GetAndroidDisplayResolution(&w, &h);
             DxLib::SetGraphMode(w, h, 32);
 #endif
+
 #ifdef PAXS_USING_DXLIB
             DxLib::SetDrawScreen(DX_SCREEN_BACK);
 #endif // PAXS_USING_DXLIB
+
 #ifdef PAXS_USING_SIV3D
             paxg::Window::update();
 #endif
+
 #ifdef PAXS_USING_SFML
             paxg::Window::setFPS(60);
 #endif

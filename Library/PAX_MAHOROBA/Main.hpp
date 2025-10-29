@@ -8,6 +8,7 @@
     [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
+
 //#define PAXS_DEVELOPMENT
 #ifndef PAX_MAHOROBA_MAIN_HPP
 #define PAX_MAHOROBA_MAIN_HPP
@@ -29,12 +30,12 @@ static int old_left_touch = 0;
 static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #endif
 
+#include <PAX_GRAPHICA/3DModel.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
 
 #include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/InitLogo.hpp>
-#include <PAX_MAHOROBA/3DModel.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
 #include <PAX_MAHOROBA/MapViewer.hpp>
@@ -103,7 +104,7 @@ namespace paxs {
 
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
-        paxs::Graphics3DModel g3d_model; // 3D モデル
+        paxg::Graphics3DModel g3d_model; // 3D モデル
 
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator> simulator{};

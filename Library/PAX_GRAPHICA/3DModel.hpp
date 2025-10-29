@@ -16,7 +16,7 @@
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 
-namespace paxs {
+namespace paxg {
 
     class Graphics3DModel {
     private:
@@ -35,7 +35,6 @@ namespace paxs {
 
         // カメラ位置を指定
         s3d::DebugCamera3D camera{
-            //s3d::Size{500,300},
             s3d::Graphics3D::GetRenderTargetSize(),
                 40.0 / 180.0 * 3.1416,
                 s3d::Vec3{ 0, 3, -16 } };
@@ -46,7 +45,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIV3D
 
             renderTexture = s3d::MSRenderTexture{
-            s3d::Size{s3d::Scene::Width(), s3d::Scene::Height()}/*s3d::Scene::Size()*/, // 表示領域
+            s3d::Size{s3d::Scene::Width(), s3d::Scene::Height()}, // 表示領域
                 s3d::TextureFormat::R8G8B8A8_Unorm_SRGB, // テクスチャのフォーマットを指定
                 s3d::HasDepth::Yes }; // 深度バッファあり
 
@@ -66,7 +65,6 @@ namespace paxs {
 
         void updateRotation() {
 #ifdef PAXS_USING_SIV3D
-            //camera.update(4.0);
             s3d::Graphics3D::SetCameraTransform(camera); // カメラ情報を設定
 
             // 3D シーンの描画
@@ -74,8 +72,11 @@ namespace paxs {
             // モデルの描画
             ++rot;
             if (rot >= 360) rot = 0;
-            //const s3d::ScopedRenderStates3D renderStates{ s3d::BlendState::OpaqueAlphaToCoverage, s3d::RasterizerState::SolidCullNone };
-            //sekishitsu_model.draw(s3d::Vec3{ 0, 0, 0 }, s3d::Quaternion::RotateY(rot / 180.0 * 3.1416));
+
+            // TODO: 石室モデルの描画（現在は360度写真のみを表示）
+            // 将来的に石室モデルと360度写真を同時に表示する場合は以下のコメントを解除
+            // const s3d::ScopedRenderStates3D renderStates{ s3d::BlendState::OpaqueAlphaToCoverage, s3d::RasterizerState::SolidCullNone };
+            // sekishitsu_model.draw(s3d::Vec3{ 0, 0, 0 }, s3d::Quaternion::RotateY(rot / 180.0 * 3.1416));
 
             {
                 // 太陽光の影響を与えないようにする
@@ -106,9 +107,7 @@ namespace paxs {
                 if (x >= 360.0) x -= 360.0;
                 if (y >= 360.0) y -= 360.0;
                 // 球体に 360 度写真を貼り付ける
-                s3d::Sphere{ 0, 2, /*-14.2*/z, 2 }.draw(
-                    //s3d::Quaternion::RotateY(rot / 180.0 * 3.1416) *
-                    //s3d::Quaternion::RotateX(rot / 180.0 * 3.1416)
+                s3d::Sphere{ 0, 2, z, 2 }.draw(
                     s3d::Quaternion::RotateY(x / 180.0 * 3.1416) *
                     s3d::Quaternion::RotateX(y / 180.0 * 3.1416)
                     , sky);
