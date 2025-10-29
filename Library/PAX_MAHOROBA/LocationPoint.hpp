@@ -864,7 +864,7 @@ namespace paxs {
                     ).draw(0.5, paxg::Color(0, 0, 0));
                 }
             }
-#ifdef PAXS_USING_SIV3D
+
             // 移動線を描画
             if (is_arrow) {
                 for (const auto& agent : agents) {
@@ -1006,8 +1006,7 @@ namespace paxs {
                         }
                     }
                 }
-        }
-#endif
+            }
         }
 
     };

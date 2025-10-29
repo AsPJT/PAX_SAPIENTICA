@@ -66,9 +66,9 @@ namespace paxg {
         /// @brief スプライン曲線を描画
         /// @param thickness 線の太さ
         /// @param color 線の色
-        void draw(double thickness, const Color& color) const {
+        void draw(double thickness, const paxg::Color& color) const {
 #ifdef PAXS_USING_SIV3D
-            spline.draw(thickness, s3d::ColorF{ color.r / 255.0, color.g / 255.0, color.b / 255.0, color.a / 255.0 });
+            spline.draw(thickness, s3d::ColorF(color.color));
 #elif defined(PAXS_USING_DXLIB)
             // TODO: DxLibでのスプライン曲線描画を実装
 #elif defined(PAXS_USING_SFML)
