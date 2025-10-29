@@ -36,9 +36,10 @@ static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 
 #include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/InitLogo.hpp>
+#include <PAX_MAHOROBA/MapView.hpp>
+#include <PAX_MAHOROBA/MapViewer.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
-#include <PAX_MAHOROBA/MapViewer.hpp>
 #include <PAX_MAHOROBA/StringViewer.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>

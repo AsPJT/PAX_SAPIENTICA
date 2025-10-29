@@ -27,6 +27,7 @@
 
 #include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/MapView.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>

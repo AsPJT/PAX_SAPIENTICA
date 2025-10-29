@@ -18,6 +18,7 @@
 
 #include <PAX_GRAPHICA/Key.hpp>
 
+#include <PAX_MAHOROBA/MapView.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTiles.hpp>
 

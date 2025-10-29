@@ -20,9 +20,8 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Key.hpp>
-
 #include <PAX_MAHOROBA/LocationPoint.hpp>
+#include <PAX_MAHOROBA/MapView.hpp>
 #include <PAX_MAHOROBA/LocationRange.hpp>
 #include <PAX_MAHOROBA/PersonLocation.hpp>
 #include <PAX_MAHOROBA/StringViewer.hpp>
