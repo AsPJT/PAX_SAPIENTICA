@@ -19,7 +19,7 @@
 #else
 #include <string>
 
-#include <PAX_MAHOROBA/Mock.hpp>
+#include <PAX_GRAPHICA/Mock.hpp>
 #endif
 
 #ifdef PAXS_USING_SIV3D

@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_MOCK_HPP
-#define PAX_MAHOROBA_MOCK_HPP
+#ifndef PAX_GRAPHICA_MOCK_HPP
+#define PAX_GRAPHICA_MOCK_HPP
 
 #include <array>
 #include <string>
@@ -508,4 +508,4 @@ namespace s3d
     };
 }
 
-#endif // !PAX_MAHOROBA_MOCK_HPP
+#endif // !PAX_GRAPHICA_MOCK_HPP
