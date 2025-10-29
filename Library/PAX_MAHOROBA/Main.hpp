@@ -23,9 +23,14 @@
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
 
+#include <PAX_GRAPHICA/Vec2.hpp>
+#if defined(PAXS_USING_DXLIB)
+static int old_left_touch = 0;
+static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
+#endif
+
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/InitLogo.hpp>
@@ -40,11 +45,6 @@
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-
-#if defined(PAXS_USING_DXLIB)
-static int old_left_touch = 0;
-static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
-#endif
 
 namespace paxs {
 
