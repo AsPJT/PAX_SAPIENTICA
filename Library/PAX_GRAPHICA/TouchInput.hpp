@@ -16,11 +16,16 @@
 
 namespace paxg {
 
-    /// @brief Multi-touch input abstraction class
-    /// @brief マルチタッチ入力抽象化クラス
+    /// @brief Multi-touch input abstraction class with state tracking
+    /// @brief 状態追跡機能付きマルチタッチ入力抽象化クラス
     /// @details Provides a platform-independent interface for retrieving multi-touch input data.
     ///          Currently supports Android via DxLib, with null implementation for other platforms.
+    ///          Also tracks previous frame's touch state for click detection.
     class TouchInput {
+    private:
+        inline static int previous_touch_count = 0;
+        inline static paxs::Vector2<int> previous_touch_position{0, 0};
+
     public:
         /// @brief Get the number of current touch points
         /// @brief 現在のタッチポイント数を取得
@@ -56,6 +61,31 @@ namespace paxg {
             (void)pos;
             return false;
 #endif
+        }
+
+        /// @brief Update touch state (call once per frame)
+        /// @brief タッチ状態を更新（フレームごとに1回呼び出す）
+        /// @details Updates the previous frame's touch count and position for click detection.
+        ///          Should be called at the end of each frame.
+        static void updateState() {
+            previous_touch_count = getTouchCount();
+            if (previous_touch_count >= 1) {
+                getTouchPosition(0, previous_touch_position);
+            }
+        }
+
+        /// @brief Get previous frame's touch count
+        /// @brief 前フレームのタッチポイント数を取得
+        /// @return Number of touch points in the previous frame
+        static int getPreviousTouchCount() {
+            return previous_touch_count;
+        }
+
+        /// @brief Get previous frame's touch position
+        /// @brief 前フレームのタッチ位置を取得
+        /// @return Touch position from the previous frame
+        static const paxs::Vector2<int>& getPreviousTouchPosition() {
+            return previous_touch_position;
         }
     };
 
