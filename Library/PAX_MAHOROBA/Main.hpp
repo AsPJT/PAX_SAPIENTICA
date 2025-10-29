@@ -18,11 +18,6 @@
 #define PAXS_USING_SIMULATOR
 #endif
 
-#if defined(PAXS_USING_DXLIB)
-static int old_left_touch = 0;
-static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
-#endif
-
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
@@ -45,6 +40,11 @@ static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/TouchManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+
+#if defined(PAXS_USING_DXLIB)
+static int old_left_touch = 0;
+static paxg::Vec2i old_left_touch_pos = paxg::Vec2i{ 0,0 };
+#endif
 
 namespace paxs {
 

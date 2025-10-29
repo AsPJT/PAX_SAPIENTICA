@@ -16,6 +16,7 @@
 
 #include <DxLib.h>
 
+#include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/TextureImpl.hpp>
 
 namespace paxg {

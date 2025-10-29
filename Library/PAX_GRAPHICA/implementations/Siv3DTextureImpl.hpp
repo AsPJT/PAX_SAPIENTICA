@@ -16,6 +16,7 @@
 
 #include <Siv3D.hpp>
 
+#include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/TextureImpl.hpp>
 
 namespace paxg {
