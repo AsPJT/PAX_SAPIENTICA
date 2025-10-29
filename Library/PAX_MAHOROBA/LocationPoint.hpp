@@ -28,6 +28,7 @@
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
+#include <PAX_GRAPHICA/Spline2D.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -911,8 +912,8 @@ namespace paxs {
                 static_cast<int>(double(paxg::Window::height()) - ((old_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                                     };
 
-                                    s3d::Array<s3d::Vec2> va;
-                                    va << s3d::Vec2{ draw_pos.x(), draw_pos.y() };
+                                    std::vector<paxg::Vec2f> spline_points;
+                                    spline_points.push_back(paxg::Vec2f{ draw_pos.x(), draw_pos.y() });
                                     for (auto&& p : settlement.getPositions()) {
                                         auto one_lli = lli;
                                         one_lli.coordinate = paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
@@ -921,12 +922,12 @@ namespace paxs {
         static_cast<int>((one_lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
             static_cast<int>(double(paxg::Window::height()) - ((one_lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
                                         };
-                                        va << s3d::Vec2{ draw_one_pos.x(), draw_one_pos.y() };
+                                        spline_points.push_back(paxg::Vec2f{ static_cast<float>(draw_one_pos.x()), static_cast<float>(draw_one_pos.y()) });
                                     }
-                                    va << s3d::Vec2{ draw_old_pos.x(), draw_old_pos.y() };
+                                    spline_points.push_back(paxg::Vec2f{ static_cast<float>(draw_old_pos.x()), static_cast<float>(draw_old_pos.y()) });
 
-                                    const s3d::Spline2D spline(va);
-                                    spline.draw(2, Palette::Black);
+                                    const paxg::Spline2D spline(spline_points);
+                                    spline.draw(2.0, paxg::Color(0, 0, 0));
 
                                     // 過去の位置
                                     auto one_lli = lli;
