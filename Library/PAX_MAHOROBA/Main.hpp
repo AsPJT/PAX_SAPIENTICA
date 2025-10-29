@@ -161,9 +161,9 @@ namespace paxs {
 
             // シミュレーションモデル選択のプルダウンを更新
 #ifdef PAXS_USING_SIMULATOR
-            string_siv.simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.simulation_pulldown.getRect().w() - 200), 600 });
-            string_siv.simulation_pulldown.update(tm);
-            string_siv.simulation_model_index = string_siv.simulation_pulldown.getIndex();
+            string_siv.simulation_viewer.simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.simulation_viewer.simulation_pulldown.getRect().w() - 200), 600 });
+            string_siv.simulation_viewer.simulation_pulldown.update(tm);
+            string_siv.simulation_viewer.simulation_model_index = string_siv.simulation_viewer.simulation_pulldown.getIndex();
 #endif
             // 選択言語のプルダウンを更新
             string_siv.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.pulldown.getRect().w()), 0 });
