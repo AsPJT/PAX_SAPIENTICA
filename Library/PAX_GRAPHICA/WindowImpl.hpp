@@ -44,6 +44,7 @@ namespace paxg {
         virtual void setBackgroundColor(const paxg::Color color) = 0;
         virtual void setLetterbox(const paxg::Color color) = 0;
         virtual void setResizable(bool resizable) = 0;
+        virtual void setDecorated(bool decorated) = 0;
 
         virtual paxg::Vec2i center() const = 0;
         virtual int width() const = 0;

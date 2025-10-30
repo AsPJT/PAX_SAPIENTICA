@@ -132,6 +132,12 @@ namespace paxg {
             getImpl().setResizable(resizable);
         }
 
+        /// @brief ウィンドウの装飾（タイトルバー等）を設定
+        /// @param decorated true: 表示, false: 非表示
+        static void setDecorated(bool decorated) {
+            getImpl().setDecorated(decorated);
+        }
+
         static paxg::Vec2i center() {
             return getImpl().center();
         }

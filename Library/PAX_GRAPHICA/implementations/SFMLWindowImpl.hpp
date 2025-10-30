@@ -25,6 +25,10 @@ namespace paxg {
     private:
         sf::RenderWindow m_window;
         paxg::Color backgroundColor{145, 190, 240};
+        bool m_isDecorated = true;
+        std::string m_title = "PAX SAPIENTICA Library";
+        int m_width = 1280;
+        int m_height = 720;
 
     public:
         SFMLWindowImpl() : m_window(sf::VideoMode({1280, 720}), "PAX SAPIENTICA Library") {}
@@ -44,10 +48,13 @@ namespace paxg {
         }
 
         void setTitle(const std::string& title) override {
+            m_title = title;
             m_window.setTitle(title);
         }
 
         void setSize(int width, int height) override {
+            m_width = width;
+            m_height = height;
             m_window.setSize(sf::Vector2u(width, height));
         }
 
@@ -121,6 +128,16 @@ namespace paxg {
             // The window is created with Default style (resizable) in init()
             // Note: Changing this at runtime is not safe in SFML 3.0
             (void)resizable; // Suppress unused parameter warning
+        }
+
+        void setDecorated(bool decorated) override {
+            // SFML does not support changing window decoration after creation
+            // Recreating the window causes event handling issues and crashes
+            // This feature is not supported in SFML at runtime
+            (void)decorated; // Suppress unused parameter warning
+
+            // Note: To change window style in SFML, you must create the window with
+            // the desired style from the beginning (in constructor or init())
         }
 
         paxg::Vec2i center() const override {

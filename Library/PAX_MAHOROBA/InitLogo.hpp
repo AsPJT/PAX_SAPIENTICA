@@ -24,7 +24,7 @@
 
 namespace paxs {
 
-    class PaxSapienticaInitSiv3D {
+    class PaxSapienticaInit {
     public:
         // ソフトウェアを実行した最初のフレームの一番最初に実行
         static void firstInit() {
@@ -86,6 +86,12 @@ namespace paxs {
 
         // ローディング画面を表示する
         static void displayLoadingScreen() {
+            // ウィンドウの装飾を非表示にする（フルスクリーン風）
+            // 注意: SFMLでは実行時の変更が不安定なため無効化
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
+            paxg::Window::setDecorated(false);
+#endif
+
             // ローディング画面の画像を読み込む
             const std::string loading_screen_path =
                 paxs::AppConfig::getInstance()->getRootPath() + "Data/LoadingScreen/LoadingScreen.png";
@@ -125,6 +131,15 @@ namespace paxs {
 #endif
 #if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
             paxg::Window::update();
+#endif
+        }
+
+        // ローディング画面を終了し、通常のウィンドウに戻す
+        static void endLoadingScreen() {
+            // ウィンドウの装飾を再表示
+            // 注意: SFMLでは実行時の変更が不安定なため無効化
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
+            paxg::Window::setDecorated(true);
 #endif
         }
     };

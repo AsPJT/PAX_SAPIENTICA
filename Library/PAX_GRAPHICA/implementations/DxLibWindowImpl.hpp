@@ -161,6 +161,10 @@ namespace paxg {
             DxLib::SetWindowSizeChangeEnableFlag(resizable ? TRUE : FALSE);
         }
 
+        void setDecorated(bool decorated) override {
+            DxLib::SetWindowStyleMode(decorated ? 1 : 8); // 1: 通常ウィンドウ, 8: 枠なし
+        }
+
         Vec2i center() const override {
             updateCache();
             return Vec2i{cachedWidth / 2, cachedHeight / 2};

@@ -50,7 +50,7 @@ namespace paxs {
 
     // 主要な実行時定数・変数
     void startMain() { // フォルダ階層
-        paxs::PaxSapienticaInitSiv3D::firstInit(); // 初期化とロゴの表示
+        paxs::PaxSapienticaInit::firstInit(); // 初期化とロゴの表示
 
         // 可視化一覧
         GraphicVisualizationList visible{};
@@ -108,6 +108,7 @@ namespace paxs {
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationRange"),
             [&](const std::string& path_) {sr.input(path_); });
 #endif
+        paxs::PaxSapienticaInit::endLoadingScreen();
         /*##########################################################################################
             ループ開始
         ##########################################################################################*/
