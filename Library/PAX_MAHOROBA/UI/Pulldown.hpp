@@ -232,7 +232,7 @@ namespace paxs {
             rect.drawFrame(1, 0, is_open ? paxg::Color{ 255, 165, 0 } : paxg::Color{ 128, 128, 128 });
 
             // 三角形を描画（下向き▼）
-            constexpr float radius = 10.0f; // down_button_size * 0.5f を定数化
+            constexpr float radius = 8.0f;
             static constexpr paxg::TriangleShape down_arrow_shape(radius, 3.1416f); // π radians = down
             const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x());
             const float center_y = static_cast<float>(rect.y() + rect.h() / 2.0);

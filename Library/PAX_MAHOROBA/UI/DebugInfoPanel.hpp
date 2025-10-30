@@ -47,8 +47,8 @@ namespace paxs {
         }
 
         // 可視性の設定・取得
-        void setVisible(bool visible) { visible_ = visible; }
-        bool isVisible() const { return visible_; }
+        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_; }
 
         // マップ情報とシミュレーション統計を描画
         void renderMapAndSimulationInfo(

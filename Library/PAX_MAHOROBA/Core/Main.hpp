@@ -165,33 +165,33 @@ namespace paxs {
             // 表示の可視化を更新
             //Calendar Map UI Simulation License Debug 3D
             {
-                auto* view_pulldown = ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view"));
-                if (view_pulldown) {
-                    visible.set(MurMur3::calcHash("Calendar"), view_pulldown->getIsItems(0));
-                    visible.set(MurMur3::calcHash("Map"), view_pulldown->getIsItems(1));
-                    visible.set(MurMur3::calcHash("UI"), view_pulldown->getIsItems(2));
-                    visible.set(MurMur3::calcHash("Simulation"), view_pulldown->getIsItems(3));
-                    //visible.set(MurMur3::calcHash("License"), view_pulldown->getIsItems(4));
-                    //visible.set(MurMur3::calcHash("Debug"), view_pulldown->getIsItems(5));
-                    visible.set(MurMur3::calcHash("3D"), view_pulldown->getIsItems(6));
+                auto* view_menu = ui_manager.menu_bar.getMenuItem(MurMur3::calcHash("view"));
+                if (view_menu) {
+                    visible.set(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
+                    visible.set(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
+                    visible.set(MurMur3::calcHash("UI"), view_menu->getIsItems(std::size_t(2)));
+                    visible.set(MurMur3::calcHash("Simulation"), view_menu->getIsItems(std::size_t(3)));
+                    //visible.set(MurMur3::calcHash("License"), view_menu->getIsItems(std::size_t(4)));
+                    //visible.set(MurMur3::calcHash("Debug"), view_menu->getIsItems(std::size_t(5)));
+                    visible.set(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
                 }
             }
 
             {
-                auto* place_names_pulldown = ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names"));
-                if (place_names_pulldown) {
-                    visible.set(MurMur3::calcHash("place_name"), place_names_pulldown->getIsItems(0));
-                    visible.set(MurMur3::calcHash("site"), place_names_pulldown->getIsItems(1));
-                    visible.set(MurMur3::calcHash("tumulus"), place_names_pulldown->getIsItems(2));
-                    visible.set(MurMur3::calcHash("dolmen"), place_names_pulldown->getIsItems(3));
-                    visible.set(MurMur3::calcHash("kamekanbo"), place_names_pulldown->getIsItems(4));
-                    visible.set(MurMur3::calcHash("stone_coffin"), place_names_pulldown->getIsItems(5));
-                    visible.set(MurMur3::calcHash("doken"), place_names_pulldown->getIsItems(6));
-                    visible.set(MurMur3::calcHash("dotaku"), place_names_pulldown->getIsItems(7));
-                    visible.set(MurMur3::calcHash("bronze_mirror"), place_names_pulldown->getIsItems(8));
-                    visible.set(MurMur3::calcHash("human_bone"), place_names_pulldown->getIsItems(9));
-                    visible.set(MurMur3::calcHash("mtdna"), place_names_pulldown->getIsItems(10));
-                    visible.set(MurMur3::calcHash("ydna"), place_names_pulldown->getIsItems(11));
+                auto* place_names_menu = ui_manager.menu_bar.getMenuItem(MurMur3::calcHash("place_names"));
+                if (place_names_menu) {
+                    visible.set(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
+                    visible.set(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
+                    visible.set(MurMur3::calcHash("tumulus"), place_names_menu->getIsItems(std::size_t(2)));
+                    visible.set(MurMur3::calcHash("dolmen"), place_names_menu->getIsItems(std::size_t(3)));
+                    visible.set(MurMur3::calcHash("kamekanbo"), place_names_menu->getIsItems(std::size_t(4)));
+                    visible.set(MurMur3::calcHash("stone_coffin"), place_names_menu->getIsItems(std::size_t(5)));
+                    visible.set(MurMur3::calcHash("doken"), place_names_menu->getIsItems(std::size_t(6)));
+                    visible.set(MurMur3::calcHash("dotaku"), place_names_menu->getIsItems(std::size_t(7)));
+                    visible.set(MurMur3::calcHash("bronze_mirror"), place_names_menu->getIsItems(std::size_t(8)));
+                    visible.set(MurMur3::calcHash("human_bone"), place_names_menu->getIsItems(std::size_t(9)));
+                    visible.set(MurMur3::calcHash("mtdna"), place_names_menu->getIsItems(std::size_t(10)));
+                    visible.set(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
                 }
             }
 

@@ -57,11 +57,11 @@ namespace paxs {
             const double map_viewport_center_y = map_viewport.getCenterY();
             const int date = static_cast<int>(jdn.cgetDay());
 
-            const auto* map_pulldown = menu_bar.cgetPulldown(MurMur3::calcHash("map"));
+            const auto* map_menu = menu_bar.cgetMenuItem(MurMur3::calcHash("map"));
 
             for (const auto& tile : tiles) {
                 // メニューバーの可視性チェック
-                if (map_pulldown && map_pulldown->getIsItemsKey(tile.getMenuBarMap()) != tile.getMenuBarMapBool()) {
+                if (map_menu && map_menu->getIsItemsKey(tile.getMenuBarMap()) != tile.getMenuBarMapBool()) {
                     continue;
                 }
 

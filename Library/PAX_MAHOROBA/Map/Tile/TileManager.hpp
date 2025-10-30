@@ -65,9 +65,9 @@ namespace paxs {
             const double map_viewport_center_y = map_viewport.getCenterY();
 
             // 更新処理
-            const auto* map_pulldown = menu_bar.cgetPulldown(MurMur3::calcHash("map"));
+            const auto* map_menu = menu_bar.cgetMenuItem(MurMur3::calcHash("map"));
             for (auto&& xyzi : xyz_tile_list) {
-                if (xyzi.getMenuBarMap() != 0 && map_pulldown && map_pulldown->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
+                if (xyzi.getMenuBarMap() != 0 && map_menu && map_menu->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
                 xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
             }
 
