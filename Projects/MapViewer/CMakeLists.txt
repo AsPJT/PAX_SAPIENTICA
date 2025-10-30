@@ -30,7 +30,6 @@ if(WIN32)
     endif()
 
     # Copy SFML DLLs if available
-    set(ICON_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/icon.png")
     if(SFML_ROOT_DIR AND EXISTS "${SFML_ROOT_DIR}/bin")
         set(SFML_DLLS
             "${SFML_ROOT_DIR}/bin/sfml-graphics-d-3.dll"
@@ -40,16 +39,14 @@ if(WIN32)
         add_custom_command(
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ICON_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DLLS} $<TARGET_FILE_DIR:${BINARY_NAME}>
-            COMMENT "Copying SFML DLLs, Config.tsv, and icon.png..."
+            COMMENT "Copying SFML DLLs, Config.tsv..."
         )
     else()
         add_custom_command(
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ICON_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
-            COMMENT "Copying Config.tsv and icon.png for SFML..."
+            COMMENT "Copying Config.tsv for SFML..."
         )
     endif()
 elseif(APPLE)
@@ -130,15 +127,13 @@ if(WIN32 AND DxLib_FOUND)
         target_compile_definitions(${DXLIB_BINARY_NAME} PRIVATE PAXS_DEVELOPMENT)
     endif()
 
-    # Copy Config.tsv and icon.ico to build directory
+    # Copy Config.tsv to build directory
     set(DXLIB_TSV_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Config.tsv")
-    set(DXLIB_ICON_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/DxLib/icon.ico")
     if(EXISTS ${DXLIB_TSV_SOURCE_PATH})
         add_custom_command(
             TARGET ${DXLIB_BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DXLIB_TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${DXLIB_BINARY_NAME}>
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DXLIB_ICON_SOURCE_PATH} $<TARGET_FILE_DIR:${DXLIB_BINARY_NAME}>
-            COMMENT "Copying Config.tsv and icon.ico for DxLib..."
+            COMMENT "Copying Config.tsv for DxLib..."
         )
     endif()
 endif()

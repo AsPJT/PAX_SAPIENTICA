@@ -18,6 +18,7 @@
 #include <PAX_MAHOROBA/Color/Background.hpp>
 #include <PAX_MAHOROBA/Init.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>
 
 namespace paxs {
@@ -50,12 +51,12 @@ namespace paxs {
 
             // アプリケーションアイコンを設定
 #ifdef PAXS_USING_SFML
-            paxg::Window::setIcon("icon.png");
+            paxg::Window::setIcon(paxs::AppConfig::getInstance()->getRootPath() + "Images/Logo/LogoRed.png");
 #endif
 #ifdef PAXS_USING_DXLIB
             DxLib::DxLib_Init();
             // DxLib は初期化後にアイコンを設定
-            paxg::Window::setIcon("icon.ico");
+            paxg::Window::setIcon(paxs::AppConfig::getInstance()->getRootPath() + "Images/Logo/LogoRed.svg");
 #endif // PAXS_USING_DXLIB
 
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
