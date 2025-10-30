@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_STRING_VIEWER_HPP
-#define PAX_MAHOROBA_STRING_VIEWER_HPP
+#ifndef PAX_MAHOROBA_FONT_MANAGER_HPP
+#define PAX_MAHOROBA_FONT_MANAGER_HPP
 
 #include <string>
 #include <vector>
@@ -96,4 +96,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_MAHOROBA_STRING_VIEWER_HPP
+#endif // !PAX_MAHOROBA_FONT_MANAGER_HPP

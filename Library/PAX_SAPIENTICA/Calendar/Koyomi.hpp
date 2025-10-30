@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_CALENDAR_HPP
-#define PAX_MAHOROBA_CALENDAR_HPP
+#ifndef PAX_SAPIENTICA_CALENDAR_KOYOMI_HPP
+#define PAX_SAPIENTICA_CALENDAR_KOYOMI_HPP
 
 #include <array>
 #include <limits>

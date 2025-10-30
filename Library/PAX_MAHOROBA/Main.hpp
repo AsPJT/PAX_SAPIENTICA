@@ -36,7 +36,7 @@
 #include <PAX_MAHOROBA/MapController.hpp>
 #include <PAX_MAHOROBA/MapViewport.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
-#include <PAX_MAHOROBA/XYZTilesList.hpp>
+#include <PAX_MAHOROBA/TileManager.hpp>
 #include <PAX_MAHOROBA/UIManager.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -61,7 +61,7 @@ namespace paxs {
         visible.emplace(MurMur3::calcHash("3D"), false); // 3D
 
         MapViewport map_viewport{};
-        XYZTilesList xyz_tile_list; // 描画する XYZ タイルを管理
+        TileManager tile_manager; // 描画する タイルを管理
         paxs::Koyomi koyomi{}; // 暦を管理する
         paxs::UIManager ui_manager{}; // UIを統合管理する
         SelectLanguage select_language{}; // 選択言語
@@ -73,11 +73,11 @@ namespace paxs {
 
         // XYZ タイルを初期化
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
-            [&](const std::string& path_) {xyz_tile_list.add(path_); });
+            [&](const std::string& path_) {tile_manager.add(path_); });
 
-        xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
+        tile_manager.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
         map_viewport.setWidth(map_viewport.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
-        xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
+        tile_manager.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
         // 言語を初期化（テキストの多言語対応クラス）
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
             [&](const std::string& path_) {language_text.add(path_); });
@@ -96,7 +96,7 @@ namespace paxs {
         map_controller.init();
         koyomi.init();
 
-        xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
+        tile_manager.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
 
         paxg::Graphics3DModel g3d_model; // 3D モデル
 
@@ -197,7 +197,7 @@ namespace paxs {
 
             if (visible[MurMur3::calcHash(2, "3D")]) {
 
-            xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
+            tile_manager.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
                 // 地図を更新
                 // フォントを取得
                 paxg::Font* main_font = ui_manager.font_manager.language_fonts.getAndAdd(

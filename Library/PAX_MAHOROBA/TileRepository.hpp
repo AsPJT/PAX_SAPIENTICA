@@ -9,56 +9,57 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_XYZ_TILES_LIST_HPP
-#define PAX_MAHOROBA_XYZ_TILES_LIST_HPP
+#ifndef PAX_MAHOROBA_TILE_REPOSITORY_HPP
+#define PAX_MAHOROBA_TILE_REPOSITORY_HPP
 
 #include <string>
 #include <vector>
 
-#include <PAX_GRAPHICA/Key.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
-
-#include <PAX_MAHOROBA/Color/Background.hpp>
-#include <PAX_MAHOROBA/MapViewport.hpp>
-#include <PAX_MAHOROBA/MenuBar.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTiles.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
 
-    class XYZTilesList {
+    /// @brief タイルデータリポジトリ (Infrastructure Layer)
+    /// @brief ファイルからタイルデータを読み込む
+    class TileRepository {
     private:
-        // 描画する XYZ タイルを管理
-        std::vector<XYZTile> xyz_tile_list;
-
         // 項目の ID を返す
-        std::size_t getMenuIndexMap(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
+        static std::size_t getMenuIndexMap(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
             // Key が登録されていたら Key の中身（添え字）を返す
-            return  (menu.find(str_) != menu.end()) ? menu.at(str_) :
+            return (menu.find(str_) != menu.end()) ? menu.at(str_) :
                 SIZE_MAX; // 登録されていない場合は最大値を返す
         }
 
     public:
-        // XYZ Tiles を追加
-        void add(const std::string& str) {
-            paxs::InputFile pifs(str);
-            if (pifs.fail()) return;
+        TileRepository() = default;
+
+        /// @brief ファイルからXYZタイルを読み込む
+        /// @param file_path ファイルパス
+        /// @return 読み込んだタイルのリスト
+        std::vector<XYZTile> loadFromFile(const std::string& file_path) const {
+            std::vector<XYZTile> tiles;
+
+            paxs::InputFile pifs(file_path);
+            if (pifs.fail()) return tiles;
+
             // 1 行目を読み込む
             if (!(pifs.getLine())) {
-                return; // 何もない場合
+                return tiles; // 何もない場合
             }
+
             // BOM を削除
             pifs.deleteBOM();
+
             // 1 行目を分割する
             paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
-            //const std::size_t key_index = getMenuIndexMap(menu, MurMur3::calcHash("key"));
-            //if (key_index == SIZE_MAX) return; // Key がないのはデータにならない
+            // カラムインデックスを取得
             const std::size_t menu_bar_index = getMenuIndexMap(menu, MurMur3::calcHash("menu_bar"));
             const std::size_t visible_menu_bar_index = getMenuIndexMap(menu, MurMur3::calcHash("visible_menu_bar"));
             const std::size_t texture_input_type_index = getMenuIndexMap(menu, MurMur3::calcHash("texture_input_type"));
@@ -77,9 +78,6 @@ namespace paxs {
             // 1 行ずつ読み込み（区切りはタブ）
             while (pifs.getLine()) {
                 std::vector<std::string> strvec = pifs.split('\t');
-
-                // Key が空の場合は読み込まない
-                //if (strvec[key_index].size() == 0) continue;
 
                 // 描画の種類 例）画像 texture やグリッド grid など
                 const bool menu_bar_map_bool = (visible_menu_bar_index >= strvec.size()) ? false :
@@ -129,14 +127,17 @@ namespace paxs {
                 const unsigned int min_z = (min_z_index >= strvec.size()) ?
                     99999999 : ((strvec[min_z_index].size() == 0) ?
                         99999999 : std::stoi(strvec[min_z_index]));
+
                 // 読み込む地図の最大範囲
                 const unsigned int max_z = (max_z_index >= strvec.size()) ?
                     99999999 : ((strvec[max_z_index].size() == 0) ?
                         99999999 : std::stoi(strvec[max_z_index]));
+
                 // 可視化する地図の最小範囲
                 const unsigned int draw_min_z = (draw_min_z_index >= strvec.size()) ?
                     99999999 : ((strvec[draw_min_z_index].size() == 0) ?
                         99999999 : std::stoi(strvec[draw_min_z_index]));
+
                 // 可視化する地図の最大範囲
                 const unsigned int draw_max_z = (draw_max_z_index >= strvec.size()) ?
                     99999999 : ((strvec[draw_max_z_index].size() == 0) ?
@@ -145,63 +146,28 @@ namespace paxs {
                 XYZTile xyz_tile(menu_bar_map, menu_bar_map_bool,
                     texture_input_type, binary_input_type, binary_path,
                     texture_path, format, draw_type, texture_url);
+
                 if (map_name.size() != 0) xyz_tile.setMapName(map_name);
                 if (min_z != 99999999) xyz_tile.setMinZ(min_z);
                 if (max_z != 99999999) xyz_tile.setMaxZ(max_z);
                 if (draw_min_z != 99999999) xyz_tile.setDrawMinZ(draw_min_z);
                 if (draw_max_z != 99999999) xyz_tile.setDrawMaxZ(draw_max_z);
-                xyz_tile_list.emplace_back(/*MurMur3::calcHash(strvec[key_index].size(), strvec[key_index].c_str()), */xyz_tile);
+
+                tiles.emplace_back(xyz_tile);
             }
+
+            return tiles;
         }
 
-
-        // グリッド線を追加
-        void addGridLine() {
-            // XYZ タイルのグリッド線
+        /// @brief グリッド線タイルを作成
+        /// @return グリッド線タイル
+        XYZTile createGridLineTile() const {
             XYZTile xyz_tile(MurMur3::calcHash("menu_bar_map_line2"), false,
                 paxs::MurMur3::calcHash("asset_file"), 0, "", "",
                 (""), paxs::MurMur3::calcHash("grid_and_string"), "");
-            xyz_tile_list.emplace_back(/*MurMur3::calcHash("map_line3"), */xyz_tile);
-        }
-
-        // 地図の辞書を更新
-        void update(const paxs::MenuBar& menu_bar, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
-
-            const double map_viewport_width = map_viewport.getWidth();
-            const double map_viewport_height = map_viewport.getHeight();
-            const double map_viewport_center_x = map_viewport.getCenterX();
-            const double map_viewport_center_y = map_viewport.getCenterY();
-
-            // 更新処理
-            const auto* map_pulldown = menu_bar.cgetPulldown(MurMur3::calcHash("map"));
-            for (auto&& xyzi : xyz_tile_list) {
-                if (xyzi.getMenuBarMap() != 0 && map_pulldown && map_pulldown->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
-                xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
-            }
-
-            // 地図の背景を塗りつぶす
-            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(paxg::Window::height()) }.draw(paxs::BackgroundColor::LightBlue);
-
-            // 地図を表示する場合
-            const int date = static_cast<int>(jdn.cgetDay());
-            for (const auto& xyzi : xyz_tile_list) {
-                if (map_pulldown && map_pulldown->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
-                switch (xyzi.getDrawType()) {
-                case paxs::MurMur3::calcHash("texture"): // 画像を描画
-                    xyzi.draw(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, date);
-                    break;
-                case paxs::MurMur3::calcHash("texture_and_grid"): // 画像とグリッドを描画
-                    xyzi.draw(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, date);
-                    xyzi.drawLine(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, 0.8, paxg::Color{ 95, 99, 104 });
-                    break;
-                case paxs::MurMur3::calcHash("grid_and_string"): // 線と文字列を描画
-                    xyzi.drawLine(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, 0.8, paxg::Color{ 95, 99, 104 });
-                    xyzi.drawXYZ(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
-                    break;
-                }
-            }
+            return xyz_tile;
         }
     };
 }
 
-#endif // !PAX_MAHOROBA_XYZ_TILES_LIST_HPP
+#endif // !PAX_MAHOROBA_TILE_REPOSITORY_HPP
