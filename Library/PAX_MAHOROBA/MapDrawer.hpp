@@ -14,6 +14,8 @@
 
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_MAHOROBA/PersonLocation.hpp>
+#include <PAX_MAHOROBA/PlaceNameManager.hpp>
+
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 

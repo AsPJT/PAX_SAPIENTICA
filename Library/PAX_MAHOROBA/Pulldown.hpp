@@ -30,6 +30,25 @@
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 namespace paxs {
 
+    /// @brief プルダウンの表示タイプ
+    /// @brief Display type for pulldown
+    enum class PulldownDisplayType : std::size_t {
+        /// @brief 選択された値をヘッダーに表示（通常のプルダウン）
+        /// @brief Display selected value in header (normal pulldown)
+        /// @details 例: 言語選択で「日本語」「English」などが表示される
+        SelectedValue = 0,
+
+        /// @brief 固定のヘッダー名を表示（メニューバー用）
+        /// @brief Display fixed header name (for menu bar)
+        /// @details 例: 「ファイル」「編集」「表示」などのメニュー名が表示される
+        FixedHeader = 1
+    };
+
+    /// @brief プルダウンメニューコンポーネント
+    /// @brief Pulldown menu component
+    /// @details 2つのモードで動作:
+    ///          - SelectedValue: 選択した値がヘッダーに表示される（言語選択など）
+    ///          - FixedHeader: 固定のヘッダー名が表示される（メニューバーなど）
     class Pulldown : public IUIWidget {
     public:
         Pulldown() = default;
@@ -103,7 +122,16 @@ namespace paxs {
             rect.setH(rect.h() * 1.2f);
 #endif
         }
-        // コンストラクタ
+        /// @brief コンストラクタ
+        /// @param select_language_ptr_ 選択されている言語
+        /// @param language_ptr_ 言語データ
+        /// @param items_key_ 項目のキー一覧
+        /// @param font_ フォント
+        /// @param font_size_ フォントサイズ
+        /// @param font_buffer_thickness_size_ フォントの太さ
+        /// @param pos_ 表示位置
+        /// @param display_type_ 表示タイプ（SelectedValue or FixedHeader）
+        /// @param is_one_font_ 単一フォントを使用するか
         Pulldown(
             const SelectLanguage* select_language_ptr_,
             const Language* language_ptr_,
@@ -112,7 +140,7 @@ namespace paxs {
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
             const paxg::Vec2i& pos_ = { 0,0 },
-            std::size_t pdt_ = 0, // プルダウンの種別
+            PulldownDisplayType display_type_ = PulldownDisplayType::SelectedValue,
             const bool is_one_font_ = false)
             :
             select_language_ptr(select_language_ptr_)
@@ -122,7 +150,7 @@ namespace paxs {
             , font_size(font_size_)
             , font_buffer_thickness_size(font_buffer_thickness_size_)
             , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
-            , pdt(pdt_)
+            , display_type(display_type_)
             , is_one_font(is_one_font_) {
 
             updateLanguage();
@@ -216,7 +244,9 @@ namespace paxs {
             const std::uint_least32_t select_key = ((is_one_font) ? items_key[item_index] : (*select_language_ptr).cgetKey());
 
             // 種別によって描画処理を変える
-            if (pdt == 0) {
+            // SelectedValue: 選択された値を表示（言語選択など）
+            // FixedHeader: 固定のヘッダー名を表示（メニューバーなど）
+            if (display_type == PulldownDisplayType::SelectedValue) {
                 const std::string* str = (*language_ptr).getStringPtr(items_key[index], (*select_language_ptr).cgetKey());
                 if (str == nullptr) {
                     return;
@@ -262,7 +292,9 @@ namespace paxs {
             const paxg::Rect back_rect{ pos, all_rect_x, (rect.h() * items_key.size()) };
             // 影を描画
             back_rect.drawShadow({ 1, 1 }, 4, 1).draw();
-            for (std::size_t i = pdt; i < items_key.size(); ++i) {
+            // FixedHeader モードの場合は最初の項目（ヘッダー名）をスキップ
+            const std::size_t start_index = (display_type == PulldownDisplayType::FixedHeader) ? 1 : 0;
+            for (std::size_t i = start_index; i < items_key.size(); ++i) {
 
                 const std::string* i_str = (*language_ptr).getStringPtr(items_key[i], (*select_language_ptr).cgetKey());
                 if (i_str == nullptr) continue;
@@ -331,14 +363,15 @@ namespace paxs {
         std::vector<bool> is_items{}; // 項目が TRUE か FALSE になっているか格納
         paxs::UnorderedMap<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
 
+        paxg::Rect rect{};
+        PulldownDisplayType display_type{}; // 表示タイプ (SelectedValue or FixedHeader)
+        bool is_one_font = false;
+
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
-        paxg::Rect rect{};
         float all_rect_x{}; // 全ての項目の文字幅
         int down_button_size = 20;
         bool is_open = false;
-        std::size_t pdt{};
-        bool is_one_font = false;
 
         // IUIWidget インターフェース用の状態
         bool visible_ = true;

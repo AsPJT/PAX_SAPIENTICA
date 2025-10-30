@@ -124,7 +124,7 @@ namespace paxs {
             map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
-            pulldown = paxs::Pulldown(&select_language, &language_text, paxs::LanguageKeys::ALL_LANGUAGE_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
+            pulldown = paxs::Pulldown(&select_language, &language_text, paxs::LanguageKeys::ALL_LANGUAGE_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, paxs::PulldownDisplayType::SelectedValue, true);
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
 
             menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));

@@ -41,7 +41,7 @@ namespace paxs {
                 font_size_,
                 font_buffer_thickness_size_,
                 paxg::Vec2i{ static_cast<int>(start_x), 0 },
-                1));
+                paxs::PulldownDisplayType::FixedHeader));
         }
 
         void update(paxs::TouchStateManager& tm_) override {
