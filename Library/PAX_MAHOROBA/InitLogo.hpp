@@ -47,8 +47,15 @@ namespace paxs {
 
             // ウィンドウのサイズを変更可能にする
             paxg::Window::setResizable(true);
+
+            // アプリケーションアイコンを設定
+#ifdef PAXS_USING_SFML
+            paxg::Window::setIcon("icon.png");
+#endif
 #ifdef PAXS_USING_DXLIB
             DxLib::DxLib_Init();
+            // DxLib は初期化後にアイコンを設定
+            paxg::Window::setIcon("icon.ico");
 #endif // PAXS_USING_DXLIB
 
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
