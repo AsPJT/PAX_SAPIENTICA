@@ -15,12 +15,12 @@
 #include <limits>
 #include <sstream>
 #include <string>
-#include <unordered_map>
 #include <variant>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
 
 namespace paxs {
@@ -135,11 +135,11 @@ namespace paxs {
         }
 
         /// @brief Split string by delimiter
-        /// @brief デリミタで文字列を分割する（ std::unordered_map 版）
-        static std::unordered_map<std::string, std::size_t> splitHashMap(const std::string& input, const char delimiter) noexcept {
+        /// @brief デリミタで文字列を分割する（ UnorderedMap 版）
+        static paxs::UnorderedMap<std::string, std::size_t> splitHashMap(const std::string& input, const char delimiter) noexcept {
             std::istringstream stream(input);
             std::string field;
-            std::unordered_map<std::string, std::size_t> result;
+            paxs::UnorderedMap<std::string, std::size_t> result;
             std::size_t index = 0;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 result.emplace(field, index);
@@ -149,11 +149,11 @@ namespace paxs {
         }
 
         /// @brief Split string by delimiter
-        /// @brief デリミタで文字列を分割する（ std::unordered_map 版）
-        static std::unordered_map<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const std::string& input, const char delimiter) noexcept {
+        /// @brief デリミタで文字列を分割する（ UnorderedMap 版）
+        static paxs::UnorderedMap<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const std::string& input, const char delimiter) noexcept {
             std::istringstream stream(input);
             std::string field{};
-            std::unordered_map<std::uint_least32_t, std::size_t> result;
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> result;
             std::size_t index = 0;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 result.emplace(MurMur3::calcHash(field.size(), field.c_str()), index);

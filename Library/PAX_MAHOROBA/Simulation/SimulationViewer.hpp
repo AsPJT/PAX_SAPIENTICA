@@ -75,7 +75,7 @@ namespace paxs {
 			paxs::KoyomiSiv3D& koyomi_siv,
 			int debug_start_y
 		) {
-			const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
+			const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 			const int time_icon_size = 40; // 時間操作アイコンの大きさ
 
 			const std::string model_name =

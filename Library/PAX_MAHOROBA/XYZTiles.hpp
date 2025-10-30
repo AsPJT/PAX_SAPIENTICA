@@ -15,7 +15,6 @@
 #include <cmath>
 #include <filesystem>
 #include <string>
-#include <unordered_map>
 #include <utility>
 
 #include <PAX_GRAPHICA/Font.hpp>
@@ -27,6 +26,8 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Init.hpp>
+
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -56,8 +57,8 @@ namespace paxs {
         using MapVec2D = Vector2<double>;
 
         // XYZ タイルの画像の情報を保持
-        std::unordered_map<std::uint_least64_t, paxg::Texture> texture_list{};
-        std::unordered_map<std::uint_least64_t, unsigned char> is_texture_list{}; // テクスチャが読み込まれているか
+        paxs::UnorderedMap<std::uint_least64_t, paxg::Texture> texture_list{};
+        paxs::UnorderedMap<std::uint_least64_t, unsigned char> is_texture_list{}; // テクスチャが読み込まれているか
 
         std::string texture_url = ""; // URL
         std::string binary_file_name_format = ""; // バイナリデータ
@@ -98,7 +99,7 @@ namespace paxs {
         bool menu_bar_map_bool = true;
 
     private:
-        // テクスチャ unordered_map の添え字を XYZ から生成
+        // テクスチャ UnorderedMap の添え字を XYZ から生成
         constexpr std::uint_least64_t textureIndex(std::uint_least64_t z_, std::uint_least64_t y_, std::uint_least64_t x_) const {
             return (z_ << 48) + (y_ << 24) + (x_);
         }

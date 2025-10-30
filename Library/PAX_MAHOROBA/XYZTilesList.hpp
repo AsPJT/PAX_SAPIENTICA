@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_XYZ_TILES_LIST_HPP
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include <PAX_GRAPHICA/Key.hpp>
@@ -37,7 +36,7 @@ namespace paxs {
         std::vector<XYZTile> xyz_tile_list;
 
         // 項目の ID を返す
-        std::size_t getMenuIndexMap(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
+        std::size_t getMenuIndexMap(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
             // Key が登録されていたら Key の中身（添え字）を返す
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) :
                 SIZE_MAX; // 登録されていない場合は最大値を返す
@@ -55,7 +54,7 @@ namespace paxs {
             // BOM を削除
             pifs.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
             //const std::size_t key_index = getMenuIndexMap(menu, MurMur3::calcHash("key"));
             //if (key_index == SIZE_MAX) return; // Key がないのはデータにならない

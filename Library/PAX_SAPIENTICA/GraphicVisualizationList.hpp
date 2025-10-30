@@ -13,14 +13,15 @@
 #define PAX_SAPIENTICA_GRAPHIC_VISUALIZATION_LIST_HPP
 
 #include <cstdint>
-#include <unordered_map>
+
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
 
     // GUI 上で可視化する項目を管理
     class GraphicVisualizationList {
     private:
-        std::unordered_map<std::uint_least32_t, bool> visible{}; // 可視化するかしないかを持つ辞書
+        paxs::UnorderedMap<std::uint_least32_t, bool> visible{}; // 可視化するかしないかを持つ辞書
 
     public:
         // 新しい項目を追加

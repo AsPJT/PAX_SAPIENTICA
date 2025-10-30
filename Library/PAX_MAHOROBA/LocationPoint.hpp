@@ -15,7 +15,6 @@
 #include <cstdint>
 #include <algorithm>
 #include <string>
-#include <unordered_map>
 
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
@@ -30,6 +29,7 @@
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -42,7 +42,7 @@ namespace paxs {
     struct LocationPoint {
         constexpr explicit LocationPoint() = default;
         explicit LocationPoint(
-            const std::unordered_map<std::uint_least32_t, std::string>& place_name_,  // 地名
+            const paxs::UnorderedMap<std::uint_least32_t, std::string>& place_name_,  // 地名
             const paxs::MercatorDeg& coordinate_,  // 経緯度
             std::uint_least16_t x_size_,  // 重ね枚数
             std::uint_least16_t y_size_,  // 重ね枚数
@@ -58,7 +58,7 @@ namespace paxs {
             : place_name(place_name_), coordinate(coordinate_), x_size(x_size_), y_size(y_size_), overall_length(overall_length_),
             min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_), zoom(zoom_){}
 
-        std::unordered_map<std::uint_least32_t, std::string> place_name{}; // 地名
+        paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{}; // 地名
         paxs::MercatorDeg coordinate{}; // 経緯度
         std::uint_least16_t x_size = 1;
         std::uint_least16_t y_size = 1;
@@ -124,7 +124,7 @@ namespace paxs {
             // BOM を削除
             pifs.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
             const std::size_t file_path = getMenuIndex(menu, MurMur3::calcHash("file_path"));
             if (file_path == SIZE_MAX) return; // パスがないのはデータにならない
@@ -217,7 +217,7 @@ namespace paxs {
             const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
 
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture = key_value_tsv.get();
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture = key_value_tsv.get();
 
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& location_point_list = location_point_list_list[h].location_point_list;
@@ -384,7 +384,7 @@ namespace paxs {
     private:
 
         // 項目の ID を返す
-        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
+        std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
         }
 
@@ -411,7 +411,7 @@ namespace paxs {
             // BOM を削除
             pifs.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
             const std::size_t longitude = getMenuIndex(menu, MurMur3::calcHash("longitude"));
             if (longitude == SIZE_MAX) return; // 経度がないのはデータにならない
@@ -452,7 +452,7 @@ namespace paxs {
                 else if (strvec[latitude].size() == 0) continue;
 
                 // 地名
-                std::unordered_map<std::uint_least32_t, std::string> place_name{};
+                paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{};
                 if (language_ja_jp < strvec.size() && strvec[language_ja_jp].size() != 0) {
                     place_name.emplace(MurMur3::calcHash("ja-JP"), strvec[language_ja_jp]);
                 }

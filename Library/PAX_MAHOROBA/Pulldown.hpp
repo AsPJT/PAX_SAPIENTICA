@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <limits>
 #include <string>
-#include <unordered_map>
 #include <vector>
 #include <span>
 
@@ -28,6 +27,7 @@
 
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/TouchStateManager.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 namespace paxs {
 
     class Pulldown : public IUIWidget {
@@ -333,7 +333,7 @@ namespace paxs {
         std::uint_least8_t font_size = 16;
         std::uint_least8_t font_buffer_thickness_size = 16;
         std::vector<bool> is_items{}; // 項目が TRUE か FALSE になっているか格納
-        std::unordered_map<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
 
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
@@ -424,7 +424,7 @@ namespace paxs {
         std::vector<paxs::Pulldown> pdv;
 
         // 各プルダウンに紐づけられた Key (Hash)
-        std::unordered_map<std::uint_least32_t, std::size_t> pulldown_key{};
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> pulldown_key{};
 
         std::size_t start_x = 0;
 

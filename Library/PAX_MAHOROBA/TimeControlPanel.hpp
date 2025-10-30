@@ -12,8 +12,6 @@
 #ifndef PAX_MAHOROBA_TIME_CONTROL_PANEL_HPP
 #define PAX_MAHOROBA_TIME_CONTROL_PANEL_HPP
 
-#include <unordered_map>
-
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -21,6 +19,7 @@
 
 #include <PAX_MAHOROBA/Calendar.hpp>
 
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/TouchStateManager.hpp>
 
@@ -45,7 +44,7 @@ namespace paxs {
         void update(
             int base_x,
             int base_y,
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary,
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
             paxs::KoyomiSiv3D& koyomi_siv
         ) {
@@ -76,7 +75,7 @@ namespace paxs {
         void drawPlaybackControls(
             int start_x,
             int y,
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary,
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
             paxs::KoyomiSiv3D& koyomi_siv
         ) {
@@ -110,7 +109,7 @@ namespace paxs {
         void drawBackwardTimeControls(
             int start_x,
             int y,
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary,
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
             paxs::KoyomiSiv3D& koyomi_siv
         ) {
@@ -148,7 +147,7 @@ namespace paxs {
         void drawForwardTimeControls(
             int start_x,
             int y,
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary,
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
             paxs::KoyomiSiv3D& koyomi_siv
         ) {
@@ -189,7 +188,7 @@ namespace paxs {
             int y,
             int size,
             const char* texture_key,
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary,
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
             Callback&& callback
         ) {
@@ -207,7 +206,7 @@ namespace paxs {
             int y,
             const char* texture_key,
             double day_delta,
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary,
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
             paxs::KoyomiSiv3D& koyomi_siv
         ) {

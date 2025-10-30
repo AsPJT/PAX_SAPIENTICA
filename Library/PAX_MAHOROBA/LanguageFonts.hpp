@@ -13,9 +13,11 @@
 #define PAX_MAHOROBA_LANGUAGE_FONTS_HPP
 
 #include <cstdint>
-#include <unordered_map>
 
 #include <PAX_GRAPHICA/Font.hpp>
+
+#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
 
@@ -23,8 +25,8 @@ namespace paxs {
     class LanguageFonts {
     private:
         std::string default_path{};
-        std::unordered_map<std::uint_least64_t, paxg::Font> fonts{};
-        std::unordered_map<std::uint_least32_t, std::string> paths{};
+        paxs::UnorderedMap<std::uint_least64_t, paxg::Font> fonts{};
+        paxs::UnorderedMap<std::uint_least32_t, std::string> paths{};
 
         constexpr std::uint_least64_t createIndex(const std::uint_least32_t language_key_, const std::uint_least8_t size_, const std::uint_least8_t buffer_thickness_) const {
             return (static_cast<std::uint_least64_t>(language_key_) << 32)

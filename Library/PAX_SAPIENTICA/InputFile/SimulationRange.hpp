@@ -20,10 +20,10 @@
 
 #include <cmath>
 #include <string>
-#include <unordered_map>
 
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 namespace paxs {
@@ -37,7 +37,7 @@ namespace paxs {
             int z = 10;
         };
 
-        std::unordered_map<std::uint_least32_t, StartAndEnd> path_list;
+        paxs::UnorderedMap<std::uint_least32_t, StartAndEnd> path_list;
     public:
 
         StartAndEnd operator[](const std::uint_least32_t key_) {
@@ -57,7 +57,7 @@ namespace paxs {
 
     private:
         // 項目の ID を返す
-        inline std::size_t inputPathGetMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
+        inline std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
         }
     public:
@@ -78,7 +78,7 @@ namespace paxs {
             // BOM を削除
             pifs.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
             const std::size_t start_x = inputPathGetMenuIndex(menu, MurMur3::calcHash("start_x"));
             const std::size_t start_y = inputPathGetMenuIndex(menu, MurMur3::calcHash("start_y"));

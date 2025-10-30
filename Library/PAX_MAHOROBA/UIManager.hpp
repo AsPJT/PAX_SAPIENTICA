@@ -195,7 +195,7 @@ namespace paxs {
                 calendar_renderer.render(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
 
                 // 時間操作パネルを更新・描画
-                const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
+                const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
                 time_control_panel.update(ui_layout.time_control_base_x, ui_layout.koyomi_font_y + ui_layout.time_control_base_y, texture_dictionary, tm_, koyomi_siv);
             }
 
@@ -217,7 +217,7 @@ namespace paxs {
             simulation_viewer.drawPulldownBackground(simulator, visible);
 #endif
 
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 
             texture_dictionary.at(MurMur3::calcHash("texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
             if (tm_.get(paxg::Rect(paxg::Window::width() - 280, 3, 28, 28).leftClicked())) {

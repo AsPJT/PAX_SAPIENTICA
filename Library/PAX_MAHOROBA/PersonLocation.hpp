@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
@@ -26,6 +25,7 @@
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 namespace paxs {
@@ -33,7 +33,7 @@ namespace paxs {
     struct PersonLocationPoint {
         constexpr explicit PersonLocationPoint() = default;
         explicit PersonLocationPoint(
-            const std::unordered_map<std::uint_least32_t, std::string>& place_name_,  // 地名
+            const paxs::UnorderedMap<std::uint_least32_t, std::string>& place_name_,  // 地名
             const paxs::MercatorDeg& start_coordinate_,  // 経緯度
             const paxs::MercatorDeg& end_coordinate_,  // 経緯度
             const double overall_length_,  // 全長
@@ -47,7 +47,7 @@ namespace paxs {
             : place_name(place_name_), start_coordinate(start_coordinate_), end_coordinate(end_coordinate_), overall_length(overall_length_),
             min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_) {}
 
-        std::unordered_map<std::uint_least32_t, std::string> place_name{}; // 地名
+        paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{}; // 地名
         paxs::MercatorDeg start_coordinate{}; // 経緯度
         paxs::MercatorDeg end_coordinate{}; // 経緯度
         double overall_length = 10; // 全長
@@ -110,7 +110,7 @@ namespace paxs {
             // BOM を削除
             pifs.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
             const std::size_t file_path = getMenuIndex(menu, MurMur3::calcHash("file_path"));
             if (file_path == SIZE_MAX) return; // パスがないのはデータにならない
@@ -181,7 +181,7 @@ namespace paxs {
             const std::uint_least32_t ja_jp_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t en_us_language = MurMur3::calcHash("en-US");
 
-            const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture = key_value_tsv.get();
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture = key_value_tsv.get();
 
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& person_location_list = location_point_list_list[h].person_location_list;
@@ -330,7 +330,7 @@ namespace paxs {
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
 
         // 項目の ID を返す
-        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
+        std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
         }
 
@@ -356,7 +356,7 @@ namespace paxs {
             // BOM を削除
             pifs.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
             const std::size_t start_longitude = getMenuIndex(menu, MurMur3::calcHash("start_longitude"));
             if (start_longitude == SIZE_MAX) return; // 経度がないのはデータにならない
@@ -404,7 +404,7 @@ namespace paxs {
                 if (strvec[end_latitude].size() == 0) continue;
 
                 // 地名
-                std::unordered_map<std::uint_least32_t, std::string> place_name{};
+                paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{};
                 if (language_ja_jp < strvec.size() && strvec[language_ja_jp].size() != 0) {
                     place_name.emplace(MurMur3::calcHash("ja-JP"), strvec[language_ja_jp]);
                 }

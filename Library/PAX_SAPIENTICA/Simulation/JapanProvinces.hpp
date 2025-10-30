@@ -13,7 +13,6 @@
 #define PAX_SAPIENTICA_PROVINCES_JAPAN_HPP
 
 #include <random>
-#include <unordered_map>
 #include <vector>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -70,7 +69,7 @@ namespace paxs {
     private:
 
         // 項目の ID を返す
-        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
+        std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
         }
 
@@ -90,7 +89,7 @@ namespace paxs {
             // BOM を削除
             language_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = language_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = language_tsv.splitHashMapMurMur3('\t');
             std::size_t i = 1;
 
             // 1 行ずつ読み込み（区切りはタブ）
@@ -125,7 +124,7 @@ namespace paxs {
             // BOM を削除
             mtdna_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
             std::size_t i = 1;
 
             // 1 行ずつ読み込み（区切りはタブ）
@@ -160,7 +159,7 @@ namespace paxs {
             // BOM を削除
             language_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = language_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = language_tsv.splitHashMapMurMur3('\t');
 #ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
 #endif
@@ -226,7 +225,7 @@ namespace paxs {
             // BOM を削除
             mtdna_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
 #ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
 #endif
@@ -292,7 +291,7 @@ namespace paxs {
             // BOM を削除
             district_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = district_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = district_tsv.splitHashMapMurMur3('\t');
             std::size_t i = 1;
 
             // 1 行ずつ読み込み（区切りはタブ）
@@ -538,8 +537,8 @@ namespace paxs {
     private:
         std::vector<JapanRegion> japan_regions; // 日本の地方区分
         std::vector<District> district_list; // 日本の地区
-        std::unordered_map<std::uint_least32_t, mtDNA_Region> mtdna_region_list; // mtDNA 地方区分
-        std::unordered_map<std::uint_least32_t, mtDNA_Region> language_region_list; // 言語 地方区分
+        paxs::UnorderedMap<std::uint_least32_t, mtDNA_Region> mtdna_region_list; // mtDNA 地方区分
+        paxs::UnorderedMap<std::uint_least32_t, mtDNA_Region> language_region_list; // 言語 地方区分
         //std::vector<std::uint_least32_t> mtdna_region_hash_list; // mtDNA ハッシュ計算用
         std::vector<std::string> mtdna_list; // mtDNA
         std::vector<std::string> language_list; // 言語

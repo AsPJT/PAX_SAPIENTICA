@@ -22,6 +22,7 @@
 
 #include <PAX_SAPIENTICA/MapUtility.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する
@@ -90,7 +91,7 @@ namespace paxs {
         /// @param map_view_center_x マップビューの中心X座標
         /// @param map_view_center_y マップビューの中心Y座標
         void draw(const double jdn,
-            std::unordered_map<SettlementGridsType, paxs::SettlementGrid>& agents,
+            paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>& agents,
             const std::vector<GridType4>& marriage_pos_list/* SFML では使わない */,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
         )/*const Siv3D Key は非 const */ {
@@ -108,7 +109,7 @@ namespace paxs {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
                     // エージェントの初期設定を定義
                     const auto lli = LocationPoint{
-                        std::unordered_map < std::uint_least32_t, std::string>(),
+                        paxs::UnorderedMap < std::uint_least32_t, std::string>(),
                             paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
                             paxs::Vector2<int>(
                     settlement.getPosition().x,settlement.getPosition().y), 10)),
@@ -258,7 +259,7 @@ namespace paxs {
                     for (const auto& settlement : agent.second.cgetSettlements()) {
                         // エージェントの初期設定を定義
                         const auto lli = LocationPoint{
-                            std::unordered_map < std::uint_least32_t, std::string>(),
+                            paxs::UnorderedMap < std::uint_least32_t, std::string>(),
                                 paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
                                 paxs::Vector2<int>(
                         settlement.getPosition().x,settlement.getPosition().y), 10)),
@@ -351,7 +352,7 @@ namespace paxs {
                 for (const auto& marriage_pos : marriage_pos_list) {
                     // エージェントの初期設定を定義
                     const auto lli = LocationPoint{
-                        std::unordered_map < std::uint_least32_t, std::string>(),
+                        paxs::UnorderedMap < std::uint_least32_t, std::string>(),
                             paxs::MercatorDeg(getLocation(SimulationConstants::getInstance()->getStartArea(),
                             paxs::Vector2<int>(
                     marriage_pos.ex,marriage_pos.ey), 10)),
