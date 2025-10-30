@@ -24,7 +24,7 @@ namespace paxg {
     class SFMLWindowImpl : public WindowImpl {
     private:
         sf::RenderWindow m_window;
-        paxg::Color backgroundColor{140, 180, 250};
+        paxg::Color backgroundColor{145, 190, 240};
 
     public:
         SFMLWindowImpl() : m_window(sf::VideoMode({1280, 720}), "PAX SAPIENTICA Library") {}

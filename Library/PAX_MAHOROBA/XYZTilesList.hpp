@@ -17,7 +17,11 @@
 #include <vector>
 
 #include <PAX_GRAPHICA/Key.hpp>
+#include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Color/Background.hpp>
+#include <PAX_MAHOROBA/MapView.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTiles.hpp>
 
@@ -173,6 +177,9 @@ namespace paxs {
                 if (xyzi.getMenuBarMap() != 0 && menu_bar.cgetPulldown(MurMur3::calcHash("map")).getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
                 xyzi.update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
+
+            // 地図の背景を塗りつぶす
+            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(paxg::Window::height()) }.draw(paxs::BackgroundColor::LightBlue);
 
             // 地図を表示する場合
             const int date = static_cast<int>(jdn.cgetDay());

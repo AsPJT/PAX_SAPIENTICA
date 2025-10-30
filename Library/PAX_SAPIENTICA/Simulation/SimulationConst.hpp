@@ -16,6 +16,8 @@
 #include <cstdint>
 #include <random>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>

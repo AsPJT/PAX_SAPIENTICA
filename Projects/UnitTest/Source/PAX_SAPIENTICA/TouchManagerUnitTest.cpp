@@ -11,15 +11,15 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/TouchManager.hpp>
+#include <PAX_SAPIENTICA/TouchStateManager.hpp>
 
 TEST (TouchManagerUnitTest, init) {
-    paxs::TouchManager touchManager;
+    paxs::TouchStateManager touchManager;
     touchManager.init();
 }
 
 TEST (TouchManagerUnitTest, get) {
-    paxs::TouchManager touchManager;
+    paxs::TouchStateManager touchManager;
     touchManager.init();
     bool expected = true;
     bool actual = touchManager.get(true);

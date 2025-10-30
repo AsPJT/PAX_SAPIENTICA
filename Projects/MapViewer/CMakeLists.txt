@@ -30,6 +30,7 @@ if(WIN32)
     endif()
 
     # Copy SFML DLLs if available
+    set(ICON_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/icon.png")
     if(SFML_ROOT_DIR AND EXISTS "${SFML_ROOT_DIR}/bin")
         set(SFML_DLLS
             "${SFML_ROOT_DIR}/bin/sfml-graphics-d-3.dll"
@@ -39,20 +40,22 @@ if(WIN32)
         add_custom_command(
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ICON_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DLLS} $<TARGET_FILE_DIR:${BINARY_NAME}>
-            COMMENT "Copying SFML DLLs and Config.tsv..."
+            COMMENT "Copying SFML DLLs, Config.tsv, and icon.png..."
         )
     else()
         add_custom_command(
             TARGET ${BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
-            COMMENT "Copying Config.tsv for SFML..."
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ICON_SOURCE_PATH} $<TARGET_FILE_DIR:${BINARY_NAME}>
+            COMMENT "Copying Config.tsv and icon.png for SFML..."
         )
     endif()
 elseif(APPLE)
     set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/Main.cpp")
     add_executable(${BINARY_NAME} ${CPP_FILE})
-    target_link_libraries(${BINARY_NAME} SFML::Graphics)
+    target_link_libraries(${BINARY_NAME} SFML::Graphics curl)
     add_custom_command(
         TARGET ${BINARY_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${TSV_SOURCE_PATH} ${CMAKE_CURRENT_BINARY_DIR}
@@ -67,7 +70,7 @@ elseif(APPLE)
 elseif(UNIX AND SFML_FOUND)
     set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML/Main.cpp")
     add_executable(${BINARY_NAME} ${CPP_FILE})
-    target_link_libraries(${BINARY_NAME} SFML::Graphics)
+    target_link_libraries(${BINARY_NAME} SFML::Graphics curl)
     add_custom_command(
         TARGET ${BINARY_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${TSV_SOURCE_PATH} ${CMAKE_CURRENT_BINARY_DIR}
@@ -127,13 +130,15 @@ if(WIN32 AND DxLib_FOUND)
         target_compile_definitions(${DXLIB_BINARY_NAME} PRIVATE PAXS_DEVELOPMENT)
     endif()
 
-    # Copy Config.tsv to build directory
+    # Copy Config.tsv and icon.ico to build directory
     set(DXLIB_TSV_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Config.tsv")
+    set(DXLIB_ICON_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/DxLib/icon.ico")
     if(EXISTS ${DXLIB_TSV_SOURCE_PATH})
         add_custom_command(
             TARGET ${DXLIB_BINARY_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DXLIB_TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${DXLIB_BINARY_NAME}>
-            COMMENT "Copying Config.tsv for DxLib..."
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DXLIB_ICON_SOURCE_PATH} $<TARGET_FILE_DIR:${DXLIB_BINARY_NAME}>
+            COMMENT "Copying Config.tsv and icon.ico for DxLib..."
         )
     endif()
 endif()

@@ -75,6 +75,29 @@ namespace paxs {
             return result;
         }
 
+        /// @brief Create directories recursively.
+        /// @brief ディレクトリを再帰的に作成する。
+        static bool createDirectories(const std::string& directory_path) noexcept {
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            return false; // std::filesystem が動作しないため何もしない
+#else
+            std::error_code ec;
+            std::filesystem::path dir_path(directory_path);
+
+            // 相対パスの場合は絶対パスに変換
+            if (dir_path.is_relative()) {
+                dir_path = std::filesystem::absolute(dir_path);
+            }
+
+            std::filesystem::create_directories(dir_path, ec);
+            if (ec) {
+                PAXS_ERROR("Failed to create directories: " + directory_path + " (" + ec.message() + ")");
+                return false;
+            }
+            return true;
+#endif
+        }
+
         /// @brief Get the file name in the directory.
         /// @brief ディレクトリ内のファイル名を取得する。
         static std::vector<std::string> getFileNames(const std::string& directory_path) noexcept {

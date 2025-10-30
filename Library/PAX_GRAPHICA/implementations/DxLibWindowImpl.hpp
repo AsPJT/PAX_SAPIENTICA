@@ -16,6 +16,10 @@
 
 #include <DxLib.h>
 
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
+
 #include <PAX_GRAPHICA/WindowImpl.hpp>
 
 namespace paxg {
@@ -85,8 +89,28 @@ namespace paxg {
             // DxLib does not support window position control
         }
 
-        void setIcon(const std::string&) override {
-            // DxLib does not support icon setting
+        void setIcon(const std::string& path) override {
+#if defined(_WIN32) && !defined(__ANDROID__)
+            // Windows API を使ってアイコンを設定
+            HWND hWnd = DxLib::GetMainWindowHandle();
+            if (hWnd) {
+                // アイコンファイルを読み込む（.icoファイルのみ対応）
+                HICON hIcon = (HICON)LoadImageA(
+                    NULL,
+                    path.c_str(),
+                    IMAGE_ICON,
+                    0, 0,
+                    LR_LOADFROMFILE | LR_DEFAULTSIZE
+                );
+                if (hIcon) {
+                    // ウィンドウアイコンを設定
+                    SendMessage(hWnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+                    SendMessage(hWnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+                }
+            }
+#else
+            (void)path; // Suppress unused parameter warning
+#endif
         }
 
         void setVisible(bool) override {

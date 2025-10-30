@@ -17,10 +17,6 @@
 #include <string>
 #include <unordered_map>
 
-#ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/Agent.hpp>
-#endif
-
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
@@ -98,35 +94,6 @@ namespace paxs {
     // GUI に描画する地物の情報を管理・描画するクラス
     class PersonNameLocation {
     public:
-#ifdef PAXS_USING_SIMULATOR
-        void update(const std::vector<paxs::Agent>& agents, const paxs::Vector2<paxs::GridType>& start_position) {
-            // エージェントの設定を更新
-            location_point_list_list.resize(0);
-            std::vector<PersonLocationPoint> person_location_list{}; // 地物の一覧
-            for (std::size_t i = 0; i < agents.size(); ++i) {
-                person_location_list.emplace_back(
-                    std::unordered_map < std::uint_least32_t, std::string>(),
-                    paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),
-                    paxs::MercatorDeg(agents[i].getLocation(start_position, 10)),
-                    10, 100, 0, 0, 99999999,
-                    (agents[i].getGender()) ?
-                    MurMur3::calcHash("agent1") :
-                    MurMur3::calcHash("agent2")
-                    , 0 /*出典無し*/
-                );
-            }
-            location_point_list_list.emplace_back(person_location_list,
-                paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(-180/* 経度 */, -90/* 緯度 */)).toMercatorDeg(),
-                paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(180/* 経度 */, 90/* 緯度 */)).toMercatorDeg(),
-                paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(-180/* 経度 */, -90/* 緯度 */)).toMercatorDeg(),
-                paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(180/* 経度 */, 90/* 緯度 */)).toMercatorDeg(),
-                0, 99999999, -99999999, 99999999, 0, 0);
-        }
-#endif
         // 地物を追加
         void add() {
             std::string str = "";

@@ -94,14 +94,14 @@ namespace paxs {
             const std::vector<GridType4>& marriage_pos_list/* SFML では使わない */,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
         )/*const Siv3D Key は非 const */ {
-            if (Key(SIV3D_KEY_1).isPressed()) select_draw = 1;
-            else if (Key(SIV3D_KEY_2).isPressed()) select_draw = 2;
-            else if (Key(SIV3D_KEY_3).isPressed()) select_draw = 3;
-            else if (Key(SIV3D_KEY_4).isPressed()) select_draw = 4;
-            else if (Key(SIV3D_KEY_5).isPressed()) select_draw = 5;
-            else if (Key(SIV3D_KEY_6).isPressed()) select_draw = 6;
-            else if (Key(SIV3D_KEY_L).isPressed()) is_line = (!is_line);
-            else if (Key(SIV3D_KEY_K).isPressed()) is_arrow = (!is_arrow);
+            if (Key(PAXG_KEY_1).isPressed()) select_draw = 1;
+            else if (Key(PAXG_KEY_2).isPressed()) select_draw = 2;
+            else if (Key(PAXG_KEY_3).isPressed()) select_draw = 3;
+            else if (Key(PAXG_KEY_4).isPressed()) select_draw = 4;
+            else if (Key(PAXG_KEY_5).isPressed()) select_draw = 5;
+            else if (Key(PAXG_KEY_6).isPressed()) select_draw = 6;
+            else if (Key(PAXG_KEY_L).isPressed()) is_line = (!is_line);
+            else if (Key(PAXG_KEY_K).isPressed()) is_arrow = (!is_arrow);
 
             // 地名を描画
             for (const auto& agent : agents) {

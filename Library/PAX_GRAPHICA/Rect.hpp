@@ -22,6 +22,7 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
+#include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -256,12 +257,13 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             return rect.leftClicked();
 #elif defined(PAXS_USING_DXLIB)
-            if (old_left_touch == 1) {
-                const int touch_num = DxLib::GetTouchInputNum();
+            if (paxg::TouchInput::getPreviousTouchCount() == 1) {
+                const int touch_num = paxg::TouchInput::getTouchCount();
                 // 1 フレーム前にタッチされている
                 if (touch_num == 0) {
-                    const auto& mx = old_left_touch_pos.x();
-                    const auto& my = old_left_touch_pos.y();
+                    const auto& prev_pos = paxg::TouchInput::getPreviousTouchPosition();
+                    const auto& mx = prev_pos.x;
+                    const auto& my = prev_pos.y;
                     return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
                 }
             }

@@ -35,7 +35,7 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/TouchManager.hpp>
+#include <PAX_SAPIENTICA/TouchStateManager.hpp>
 
 namespace paxs {
 	/// @brief シミュレーションのビューアクラス
@@ -71,7 +71,7 @@ namespace paxs {
 		/// @param debug_start_y UIの開始Y座標
 		void simulation(
 			std::unique_ptr<paxs::SettlementSimulator>& simulator,
-			paxs::TouchManager& tm_,
+			paxs::TouchStateManager& tm_,
 			paxs::KoyomiSiv3D& koyomi_siv,
 			int debug_start_y
 		) {
@@ -283,7 +283,7 @@ namespace paxs {
 		/// @param visible 可視性フラグ
 		void update(
 			std::unique_ptr<paxs::SettlementSimulator>& simulator,
-			paxs::TouchManager& tm_,
+			paxs::TouchStateManager& tm_,
 			paxs::KoyomiSiv3D& koyomi_siv,
 			int debug_start_y,
 			paxs::GraphicVisualizationList& visible
