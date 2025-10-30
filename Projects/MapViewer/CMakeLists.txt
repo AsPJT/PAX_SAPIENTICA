@@ -52,7 +52,7 @@ if(WIN32)
 elseif(APPLE)
     set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/Main.cpp")
     add_executable(${BINARY_NAME} ${CPP_FILE})
-    target_link_libraries(${BINARY_NAME} SFML::Graphics)
+    target_link_libraries(${BINARY_NAME} SFML::Graphics curl)
     add_custom_command(
         TARGET ${BINARY_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${TSV_SOURCE_PATH} ${CMAKE_CURRENT_BINARY_DIR}
@@ -67,7 +67,7 @@ elseif(APPLE)
 elseif(UNIX AND SFML_FOUND)
     set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML/Main.cpp")
     add_executable(${BINARY_NAME} ${CPP_FILE})
-    target_link_libraries(${BINARY_NAME} SFML::Graphics)
+    target_link_libraries(${BINARY_NAME} SFML::Graphics curl)
     add_custom_command(
         TARGET ${BINARY_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${TSV_SOURCE_PATH} ${CMAKE_CURRENT_BINARY_DIR}

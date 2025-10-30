@@ -20,6 +20,7 @@
 
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
+#include <PAX_GRAPHICA/Network.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -239,17 +240,15 @@ namespace paxs {
                     }
 #endif
                     // 新しいテクスチャが読み込めなかった場合
-#if defined(PAXS_USING_SIV3D)
-                        // URL の記載がある場合
+                    // URL の記載がある場合
                     if (texture_url.size() != 0) {
                         std::string new_path = texture_url;
                         paxs::StringExtensions::replace(new_path, "{x}", x_value);
                         paxs::StringExtensions::replace(new_path, "{y}", y_value);
                         paxs::StringExtensions::replace(new_path, "{z}", z_value);
-                        const s3d::URL new_url = s3d::Unicode::FromUTF8(new_path);
 
                         createTextureFolder(x_value, y_value, z_value); // 画像保存用のフォルダを作成
-                        if (s3d::SimpleHTTP::Save(new_url, s3d::Unicode::FromUTF8(local_file_path)).isOK()) {
+                        if (paxg::Network::downloadFile(new_path, local_file_path)) {
 
                             // ファイル読み込みができるかどうか
                             if (std::filesystem::exists(local_file_path)) {
@@ -265,13 +264,11 @@ namespace paxs {
                             }
                         }
                     }
-                    else
-#endif
-                        if (binary_file_name_format.size() != 0 && // 画像の元になるバイナリデータがある場合
-                            texture_full_path_folder.size() != 0) { // フルパスがある場合
-                            std::string new_path = binary_file_name_format;
-                            paxs::StringExtensions::replace(new_path, "{x}", x_value);
-                            paxs::StringExtensions::replace(new_path, "{y}", y_value);
+                    else if (binary_file_name_format.size() != 0 && // 画像の元になるバイナリデータがある場合
+                             texture_full_path_folder.size() != 0) { // フルパスがある場合
+                        std::string new_path = binary_file_name_format;
+                        paxs::StringExtensions::replace(new_path, "{x}", x_value);
+                        paxs::StringExtensions::replace(new_path, "{y}", y_value);
                             paxs::StringExtensions::replace(new_path, "{z}", z_value);
                             if (map_name.size() != 0) paxs::StringExtensions::replace(new_path, "{n}", map_name);
 
