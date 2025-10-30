@@ -12,8 +12,8 @@
 #ifndef PAX_MAHOROBA_MENU_BAR_HPP
 #define PAX_MAHOROBA_MENU_BAR_HPP
 
-#include <PAX_MAHOROBA/IUIWidget.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
+#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
 namespace paxs {
     // メニューバーを管理

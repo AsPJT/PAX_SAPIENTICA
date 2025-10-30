@@ -21,8 +21,8 @@
 
 #include <PAX_MAHOROBA/Color/Background.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/MenuBar.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar.hpp>
+#include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRepository.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>

@@ -13,7 +13,7 @@
 #include <DxLib.h>
 
 #include <PAX_GRAPHICA/Window.hpp>
-#include <PAX_MAHOROBA/Main.hpp>
+#include <PAX_MAHOROBA/Core/Main.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 #include <filesystem>

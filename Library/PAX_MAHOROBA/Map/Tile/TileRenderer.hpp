@@ -20,7 +20,7 @@
 
 #include <PAX_MAHOROBA/Color/Background.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/MenuBar.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>

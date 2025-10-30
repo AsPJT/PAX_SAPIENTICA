@@ -17,7 +17,7 @@
 
 #include <PAX_GRAPHICA/Font.hpp>
 
-#include <PAX_MAHOROBA/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>

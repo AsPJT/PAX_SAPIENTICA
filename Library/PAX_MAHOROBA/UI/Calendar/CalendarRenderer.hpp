@@ -16,9 +16,9 @@
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/CalendarUILayout.hpp>
-#include <PAX_MAHOROBA/IUIWidget.hpp>
-#include <PAX_MAHOROBA/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
+#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>

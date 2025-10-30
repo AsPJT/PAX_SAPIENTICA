@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
-#include <PAX_MAHOROBA/Init.hpp>
+#include <PAX_MAHOROBA/Core/Init.hpp>
 
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>

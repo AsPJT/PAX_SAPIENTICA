@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Color/Background.hpp>
-#include <PAX_MAHOROBA/Init.hpp>
+#include <PAX_MAHOROBA/Core/Init.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>

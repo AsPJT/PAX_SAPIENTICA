@@ -13,7 +13,7 @@
 #define PAXS_USING_DXLIB
 #include <DxLib.h> // DxLib
 #include <omp.h>
-#include <PAX_MAHOROBA/Main.hpp>
+#include <PAX_MAHOROBA/Core/Main.hpp>
 
 #if defined(__ANDROID__)
 // Android 専用処理

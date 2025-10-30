@@ -21,10 +21,10 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/IUIWidget.hpp>
-#include <PAX_MAHOROBA/IViewerComponent.hpp>
-#include <PAX_MAHOROBA/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
+#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Core/IViewerComponent.hpp>
+#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>

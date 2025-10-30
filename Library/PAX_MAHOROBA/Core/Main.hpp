@@ -32,12 +32,12 @@
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
-#include <PAX_MAHOROBA/InitLogo.hpp>
+#include <PAX_MAHOROBA/Core/InitLogo.hpp>
 #include <PAX_MAHOROBA/Map/MapController.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
+#include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
-#include <PAX_MAHOROBA/UIManager.hpp>
+#include <PAX_MAHOROBA/UI/UIManager.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>

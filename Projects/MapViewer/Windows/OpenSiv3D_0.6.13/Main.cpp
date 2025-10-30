@@ -12,7 +12,7 @@
 #define PAXS_USING_SIV3D
 #include <Siv3D.hpp> // OpenSiv3D
 #include <omp.h>
-#include <PAX_MAHOROBA/Main.hpp>
+#include <PAX_MAHOROBA/Core/Main.hpp>
 
 void Main() {
 	paxs::startMain();

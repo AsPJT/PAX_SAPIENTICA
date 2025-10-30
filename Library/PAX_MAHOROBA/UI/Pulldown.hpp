@@ -21,9 +21,9 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>
 
-#include <PAX_MAHOROBA/IUIWidget.hpp>
-#include <PAX_MAHOROBA/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/Init.hpp>
+#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Core/Init.hpp>
 
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/TouchStateManager.hpp>

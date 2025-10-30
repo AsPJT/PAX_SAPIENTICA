@@ -31,17 +31,17 @@
 #include <PAX_GRAPHICA/System.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
-#include <PAX_MAHOROBA/CalendarRenderer.hpp>
-#include <PAX_MAHOROBA/CalendarUILayout.hpp>
-#include <PAX_MAHOROBA/DebugInfoPanel.hpp>
-#include <PAX_MAHOROBA/IUIWidget.hpp>
-#include <PAX_MAHOROBA/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/CalendarRenderer.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
+#include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
+#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/MenuBar.hpp>
-#include <PAX_MAHOROBA/Pulldown.hpp>
-#include <PAX_MAHOROBA/ShadowRenderer.hpp>
-#include <PAX_MAHOROBA/FontManager.hpp>
-#include <PAX_MAHOROBA/TimeControlPanel.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar.hpp>
+#include <PAX_MAHOROBA/UI/Pulldown.hpp>
+#include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
+#include <PAX_MAHOROBA/Rendering/FontManager.hpp>
+#include <PAX_MAHOROBA/UI/TimeControlPanel.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
