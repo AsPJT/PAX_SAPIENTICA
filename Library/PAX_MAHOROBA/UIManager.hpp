@@ -178,6 +178,8 @@ namespace paxs {
             ui_layout.calculate(pulldown_font_size, koyomi_font_size, koyomi.date_list.size(), time_control_panel.getHeight());
 
             // 影とパネルを描画
+#ifdef PAXS_USING_SIV3D
+            // Siv3D: Use high-quality shadow renderer with Gaussian blur
             paxs::ShadowRenderer::renderShadowWithPanels(
                 shadow_texture,
                 internal_texture,
@@ -198,6 +200,17 @@ namespace paxs {
                     }
                 }
             );
+#else
+            // SFML/DxLib: Use simple shadow with drawShadow method
+            // メニューバーの影
+            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.drawShadow({ 1, 1 }, 4, 1).draw();
+
+            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+                // カレンダーパネルの影と描画
+                paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y - 15, ui_layout.rect_len_x, ui_layout.next_rect_start_y, 10 }.drawShadow({ 1, 1 }, 4, 1).draw(paxg::Color{ 255, 255, 255 });
+                paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 5, ui_layout.rect_len_x, ui_layout.next_rect_end_y, 10 }.drawShadow({ 1, 1 }, 4, 1).draw(paxg::Color{ 255, 255, 255 });
+            }
+#endif
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン

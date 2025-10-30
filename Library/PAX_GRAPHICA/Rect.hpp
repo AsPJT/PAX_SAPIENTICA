@@ -161,6 +161,69 @@ namespace paxg {
         void draw(const paxg::Color&) const {}
 #endif
 
+        /// @brief Draw shadow with blur effect
+        /// @brief ぼかし効果付きの影を描画
+        /// @param offset Shadow offset (影のオフセット)
+        /// @param blur_size Blur size (ぼかしサイズ)
+        /// @param spread Spread size (広がりサイズ)
+        /// @return Reference to this for method chaining (メソッドチェーン用の自身への参照)
+#if defined(PAXS_USING_SIV3D)
+        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
+            rect.drawShadow({offset.x(), offset.y()}, blur_size, spread);
+            return *this;
+        }
+#elif defined(PAXS_USING_SFML)
+        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
+            // SFML: Simple shadow using semi-transparent rectangles
+            // 複数の半透明矩形を重ねて簡易的な影を表現
+            sf::RectangleShape shadow = rect;
+            const int shadow_alpha = 40; // Base opacity
+
+            for (int i = spread + blur_size; i >= 0; --i) {
+                shadow.setPosition(sf::Vector2f(
+                    rect.getPosition().x + offset.x() + i,
+                    rect.getPosition().y + offset.y() + i
+                ));
+                shadow.setSize(sf::Vector2f(
+                    rect.getSize().x + i * 2,
+                    rect.getSize().y + i * 2
+                ));
+
+                int alpha = shadow_alpha * (spread + blur_size - i + 1) / (spread + blur_size + 1);
+                shadow.setFillColor(sf::Color(0, 0, 0, alpha));
+                Window::window().draw(shadow);
+            }
+            return *this;
+        }
+#elif defined(PAXS_USING_DXLIB)
+        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
+            // DxLib: Simple shadow using semi-transparent rectangles
+            // 複数の半透明矩形を重ねて簡易的な影を表現
+            DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 40);
+
+            for (int i = spread + blur_size; i >= 0; --i) {
+                int alpha = 40 * (spread + blur_size - i + 1) / (spread + blur_size + 1);
+                DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+
+                DxLib::DrawBox(
+                    static_cast<int>(x0 + offset.x() + i),
+                    static_cast<int>(y0 + offset.y() + i),
+                    static_cast<int>(x0 + w0 + i),
+                    static_cast<int>(y0 + h0 + i),
+                    DxLib::GetColor(0, 0, 0),
+                    TRUE
+                );
+            }
+
+            DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+            return *this;
+        }
+#else
+        const Rect& drawShadow(const Vec2i&, int, int) const {
+            return *this;
+        }
+#endif
+
         void drawAt() const {
 #if defined(PAXS_USING_SIV3D)
             // rect.draw();

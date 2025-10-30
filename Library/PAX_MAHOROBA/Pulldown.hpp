@@ -260,12 +260,8 @@ namespace paxs {
 
             // 四角形を描画
             const paxg::Rect back_rect{ pos, all_rect_x, (rect.h() * items_key.size()) };
-#ifdef PAXS_USING_SIV3D
             // 影を描画
-            back_rect.rect.drawShadow({ 1, 1 }, 4, 1).draw();
-#else
-            back_rect.draw();
-#endif
+            back_rect.drawShadow({ 1, 1 }, 4, 1).draw();
             for (std::size_t i = pdt; i < items_key.size(); ++i) {
 
                 const std::string* i_str = (*language_ptr).getStringPtr(items_key[i], (*select_language_ptr).cgetKey());
