@@ -12,6 +12,7 @@
 #ifndef PAX_MAHOROBA_INIT_LOGO_HPP
 #define PAX_MAHOROBA_INIT_LOGO_HPP
 
+#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Color/Background.hpp>
@@ -62,6 +63,10 @@ namespace paxs {
 #endif // PAXS_USING_DXLIB
 
 #ifdef PAXS_USING_SIV3D
+            // 一度 update を呼んでシーンサイズを反映させる
+            paxg::Window::update();
+            // 背景を描画してから update することで、初期化時に水色背景が表示される
+            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(paxg::Window::height()) }.draw(paxs::BackgroundColor::LightBlue);
             paxg::Window::update();
 #endif
 

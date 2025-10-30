@@ -78,9 +78,6 @@ namespace paxs {
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
         map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
         xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
-#ifdef PAXS_USING_SIV3D
-        paxg::Window::update();
-#endif
         // 言語を初期化（テキストの多言語対応クラス）
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
             [&](const std::string& path_) {language_text.add(path_); });
