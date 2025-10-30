@@ -31,10 +31,10 @@ namespace paxg {
     /// @brief Blend state types for alpha blending
     /// @brief アルファブレンディング用のブレンドステート
     enum class BlendState {
-        Default,        ///< Default alpha blending
-        Additive,       ///< Additive blending
-        Multiplicative, ///< Multiplicative blending
-        MaxAlpha        ///< Max alpha blending
+        Opaque,        ///< 不透明ブレンディング
+        Additive,      ///< 加算ブレンディング
+        Multiplicative,///< 乗算ブレンディング
+        MaxAlpha       ///< 最大アルファブレンディング
     };
 
     /// @brief RAII-style scoped render state manager for sampler settings
@@ -94,8 +94,8 @@ namespace paxg {
         explicit ScopedBlendState(BlendState blend) {
 #if defined(PAXS_USING_SIV3D)
             switch (blend) {
-                case BlendState::Default:
-                    state = std::make_unique<s3d::ScopedRenderStates2D>(s3d::BlendState::Default);
+                case BlendState::Opaque:
+                    state = std::make_unique<s3d::ScopedRenderStates2D>(s3d::BlendState::Opaque);
                     break;
                 case BlendState::Additive:
                     state = std::make_unique<s3d::ScopedRenderStates2D>(s3d::BlendState::Additive);
