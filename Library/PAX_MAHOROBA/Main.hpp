@@ -111,7 +111,6 @@ namespace paxs {
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationRange"),
             [&](const std::string& path_) {sr.input(path_); });
 #endif
-        paxg::Window::clear();
         /*##########################################################################################
             ループ開始
         ##########################################################################################*/

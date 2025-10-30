@@ -28,6 +28,7 @@
 #include <PAX_GRAPHICA/ScopedRenderTarget.hpp>
 #include <PAX_GRAPHICA/ScopedTransform2D.hpp>
 #include <PAX_GRAPHICA/Shader.hpp>
+#include <PAX_GRAPHICA/System.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Calendar.hpp>
@@ -227,8 +228,8 @@ namespace paxs {
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // 暦表示の範囲に白背景を追加
-                paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, rect_len_x, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
-                paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, rect_len_x, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 }/*s3d::Palette::White*/);
+                paxg::RoundRect{ rect_start_x, koyomi_font_y - 15, rect_len_x, next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 });
+                paxg::RoundRect{ rect_start_x, koyomi_font_y + next_rect_start_y + 5, rect_len_x, next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 });
             }
 
 #ifdef PAXS_USING_SIMULATOR
@@ -591,15 +592,14 @@ namespace paxs {
             simulation_viewer.drawPulldownBackground(simulator, visible);
 #endif
 
-#ifdef PAXS_USING_SIV3D
             const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 
-            texture_dictionary.at(MurMur3::calcHash(14, "texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
+            texture_dictionary.at(MurMur3::calcHash("texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
             if (tm_.get(paxg::Rect(paxg::Window::width() - 280, 3, 28, 28).leftClicked())) {
                 // Web ページをブラウザで開く
-                s3d::System::LaunchBrowser(U"https://github.com/AsPJT/PAX_SAPIENTICA");
+                paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
             }
-#endif
+
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン
             simulation_viewer.drawPulldown(simulator, visible);
