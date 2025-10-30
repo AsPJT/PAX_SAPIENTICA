@@ -35,6 +35,7 @@
 #include <PAX_MAHOROBA/CalendarRenderer.hpp>
 #include <PAX_MAHOROBA/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/DebugInfoPanel.hpp>
+#include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/MapView.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
@@ -85,6 +86,9 @@ namespace paxs {
 
         paxs::Pulldown pulldown;
         paxs::MenuBar menu_bar;
+
+        // IUIWidget を実装したウィジェットの統合管理
+        std::vector<IUIWidget*> widgets;
 
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
         paxs::TimeControlPanel time_control_panel;
@@ -137,6 +141,20 @@ namespace paxs {
             // 影
             shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
             internal_texture = paxg::RenderTexture{ shadow_texture.size() };
+
+            // IUIWidget を実装したウィジェットを登録
+            widgets.clear();
+            widgets.push_back(&menu_bar);
+            widgets.push_back(&pulldown);
+            widgets.push_back(&time_control_panel);
+            widgets.push_back(&calendar_renderer);
+            widgets.push_back(&debug_info_panel);
+#ifdef PAXS_USING_SIMULATOR
+            widgets.push_back(&simulation_viewer);
+#endif
+
+            // TimeControlPanelに必要な参照を設定
+            // 注: texture_dictionaryとkoyomi_sivは後で設定する必要がある
         }
 
         void update(
@@ -182,7 +200,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン
-            simulation_viewer.update(simulator, tm_, koyomi_siv, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20, visible);
+            simulation_viewer.setReferences(simulator, tm_, koyomi_siv, visible, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 #endif
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
@@ -192,16 +210,23 @@ namespace paxs {
 #else
                 bool is_simulator_active = false;
 #endif
-                calendar_renderer.render(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
+                // CalendarRendererのレンダリングパラメータを設定
+                calendar_renderer.setRenderParams(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
+                calendar_renderer.setVisible(true);
 
                 // 時間操作パネルを更新・描画
                 const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
-                time_control_panel.update(ui_layout.time_control_base_x, ui_layout.koyomi_font_y + ui_layout.time_control_base_y, texture_dictionary, tm_, koyomi_siv);
+                time_control_panel.setReferences(texture_dictionary, koyomi_siv);
+                time_control_panel.setPos(paxg::Vec2i{ui_layout.time_control_base_x, ui_layout.koyomi_font_y + ui_layout.time_control_base_y});
+                time_control_panel.update(tm_);
+            } else {
+                calendar_renderer.setVisible(false);
             }
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 int debug_start_y = ui_layout.getDebugStartY();
                 // マップ情報とシミュレーション統計を描画
+                debug_info_panel.setVisible(true);
                 debug_info_panel.renderMapAndSimulationInfo(
                     map_view, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
                     select_language, language_text, visible
@@ -209,11 +234,13 @@ namespace paxs {
                     , simulator
 #endif
                 );
+            } else {
+                debug_info_panel.setVisible(false);
             }
 
-            // メニューバー
+            // メニューバー背景
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
-#ifdef PAXS_USING_SIMULATOR            // シミュレーションのボタン
+#ifdef PAXS_USING_SIMULATOR
             simulation_viewer.drawPulldownBackground(simulator, visible);
 #endif
 
@@ -225,12 +252,12 @@ namespace paxs {
                 paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
             }
 
-#ifdef PAXS_USING_SIMULATOR
-            // シミュレーションのボタン
-            simulation_viewer.drawPulldown(simulator, visible);
-#endif
-            pulldown.draw(); // 言語選択
-            menu_bar.draw(); // 左上メニューバー
+            // IUIWidget を実装したウィジェットを描画
+            for (auto* widget : widgets) {
+                if (widget) {
+                    widget->draw();
+                }
+            }
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]
 #ifdef PAXS_USING_SIMULATOR

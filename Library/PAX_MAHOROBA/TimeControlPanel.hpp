@@ -18,6 +18,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Calendar.hpp>
+#include <PAX_MAHOROBA/IUIWidget.hpp>
 
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -26,7 +27,7 @@
 namespace paxs {
 
     // 時間操作パネル - 再生/一時停止/逆再生、時間移動アイコンを管理
-    class TimeControlPanel {
+    class TimeControlPanel : public IUIWidget {
     public:
         // 時間操作アイコンのサイズ
         int arrow_time_icon_size = 40; // 再生/停止/逆再生アイコンの大きさ
@@ -217,6 +218,58 @@ namespace paxs {
                 koyomi_siv.jdn.getDay() += day_delta;
                 koyomi_siv.calcDate();
             }
+        }
+
+    private:
+        // IUIWidget用の状態管理
+        bool visible_ = true;
+        bool enabled_ = true;
+        paxg::Vec2i pos_{0, 0};
+
+        // 描画に必要な参照（nullptrチェック必須）
+        const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;
+        paxs::KoyomiSiv3D* koyomi_siv_ = nullptr;
+
+    public:
+        // IUIWidget インターフェースの実装
+        void update(paxs::TouchStateManager& tm) override {
+            if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_siv_) return;
+
+            // 元のupdate()ロジックを呼び出し
+            update(pos_.x(), pos_.y(), *texture_dictionary_, tm, *koyomi_siv_);
+        }
+
+        void draw() override {
+            // TimeControlPanelは update() 内で描画も行うため、draw()は空実装
+            // 将来的には update() と draw() を分離することが望ましい
+        }
+
+        paxg::Rect getRect() const override {
+            return paxg::Rect{
+                static_cast<float>(pos_.x()),
+                static_cast<float>(pos_.y()),
+                static_cast<float>(icon_move_x * 7), // 7つのアイコン
+                static_cast<float>(getHeight())
+            };
+        }
+
+        void setPos(const paxg::Vec2i& pos) override {
+            pos_ = pos;
+        }
+
+        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_; }
+
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        bool isEnabled() const override { return enabled_; }
+
+        // TimeControlPanel固有の初期化メソッド
+        void setReferences(
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
+            paxs::KoyomiSiv3D& koyomi_siv
+        ) {
+            texture_dictionary_ = &texture_dictionary;
+            koyomi_siv_ = &koyomi_siv;
         }
     };
 

@@ -22,6 +22,8 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Calendar.hpp>
+#include <PAX_MAHOROBA/IUIWidget.hpp>
+#include <PAX_MAHOROBA/IViewerComponent.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 
@@ -40,8 +42,18 @@
 namespace paxs {
 	/// @brief シミュレーションのビューアクラス
 	/// @brief Simulation viewer class
-	class SimulationViewer {
+	class SimulationViewer : public IViewerComponent, public IUIWidget {
 	private:
+		bool visible_ = true;
+		bool enabled_ = true;
+		paxg::Vec2i pos_{0, 0};
+		int debug_start_y_ = 0;
+
+		// 外部参照（UIManagerから設定される）
+		std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
+		paxs::TouchStateManager* touch_manager_ = nullptr;
+		paxs::KoyomiSiv3D* koyomi_siv_ = nullptr;
+		paxs::GraphicVisualizationList* visible_list_ = nullptr;
 		/// @brief シミュレーションを初期化する
 		/// @brief Initialize the simulation
 		/// @param simulator シミュレータのユニークポインタ
@@ -324,6 +336,118 @@ namespace paxs {
 					paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(simulation_pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
 				}
 			}
+		}
+
+		// ========================================
+		// IViewerComponent インターフェース実装
+		// ========================================
+
+		/// @brief コンポーネント名を取得
+		const char* getName() const override {
+			return "SimulationViewer";
+		}
+
+		/// @brief コンポーネントが利用可能かチェック
+		bool isAvailable() const override {
+			return true; // PAXS_USING_SIMULATORが定義されている場合のみコンパイルされる
+		}
+
+		/// @brief 有効状態を設定
+		void setEnabled(bool enabled) override {
+			enabled_ = enabled;
+		}
+
+		/// @brief 有効状態を取得
+		bool isEnabled() const override {
+			return enabled_;
+		}
+
+		// ========================================
+		// IUIWidget インターフェース実装
+		// ========================================
+
+		/// @brief 外部参照を設定
+		/// @param simulator シミュレータのユニークポインタへの参照
+		/// @param tm タッチマネージャー
+		/// @param koyomi_siv 暦情報
+		/// @param visible_list 可視性リスト
+		/// @param debug_start_y UIの開始Y座標
+		void setReferences(
+			std::unique_ptr<paxs::SettlementSimulator>& simulator,
+			paxs::TouchStateManager& tm,
+			paxs::KoyomiSiv3D& koyomi_siv,
+			paxs::GraphicVisualizationList& visible_list,
+			int debug_start_y
+		) {
+			simulator_ptr_ = &simulator;
+			touch_manager_ = &tm;
+			koyomi_siv_ = &koyomi_siv;
+			visible_list_ = &visible_list;
+			debug_start_y_ = debug_start_y;
+		}
+
+		/// @brief 更新処理（IUIWidget）
+		void update(paxs::TouchStateManager& tm) override {
+			if (!visible_ || !enabled_) return;
+			if (!simulator_ptr_ || !koyomi_siv_ || !visible_list_) return;
+
+			// 既存のupdate()を呼び出し
+			update(*simulator_ptr_, tm, *koyomi_siv_, debug_start_y_, *visible_list_);
+
+			// プルダウンの更新
+			if (visible_list_->at(MurMur3::calcHash("Simulation")) &&
+			    visible_list_->at(MurMur3::calcHash("UI")) &&
+			    visible_list_->at(MurMur3::calcHash("Calendar"))) {
+				if (*simulator_ptr_ == nullptr) {
+					simulation_pulldown.update(tm);
+					simulation_model_index = simulation_pulldown.getIndex();
+				}
+			}
+		}
+
+		/// @brief 描画処理（IUIWidget）
+		void draw() override {
+			if (!visible_) return;
+			if (!simulator_ptr_ || !visible_list_) return;
+
+			// プルダウンの描画のみ（背景はUIManagerで描画される）
+			drawPulldown(*simulator_ptr_, *visible_list_);
+		}
+
+		/// @brief 矩形を取得
+		paxg::Rect getRect() const override {
+			// シミュレーションビューアの矩形を返す
+			// プルダウンがある場合はその矩形、ない場合は操作ボタンの領域
+			if (simulator_ptr_ && *simulator_ptr_ == nullptr) {
+				return simulation_pulldown.getRect();
+			}
+			// シミュレーション実行中の操作ボタン領域
+			return paxg::Rect{
+				static_cast<float>(paxg::Window::width() - 420),
+				static_cast<float>(debug_start_y_),
+				420.0f,
+				100.0f
+			};
+		}
+
+		/// @brief 位置を設定
+		void setPos(const paxg::Vec2i& pos) override {
+			pos_ = pos;
+			// プルダウンの位置も更新
+			simulation_pulldown.setPos(paxg::Vec2i{
+				static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
+				pos.y()
+			});
+		}
+
+		/// @brief 可視性を設定
+		void setVisible(bool visible) override {
+			visible_ = visible;
+		}
+
+		/// @brief 可視性を取得
+		bool isVisible() const override {
+			return visible_;
 		}
 	};
 }

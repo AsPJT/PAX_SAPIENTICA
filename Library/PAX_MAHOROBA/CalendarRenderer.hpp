@@ -18,16 +18,18 @@
 
 #include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/CalendarUILayout.hpp>
+#include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/TouchStateManager.hpp>
 
 namespace paxs {
 
     // カレンダー表示を担当するクラス
-    class CalendarRenderer {
+    class CalendarRenderer : public IUIWidget {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
@@ -210,6 +212,76 @@ namespace paxs {
                     break;
                 }
             }
+        }
+
+    private:
+        // IUIWidget用の状態管理
+        bool visible_ = true;
+        bool enabled_ = true;
+        paxg::Vec2i pos_{0, 0};
+
+        // 描画に必要な参照（render呼び出し時に設定される）
+        const paxs::KoyomiSiv3D* koyomi_siv_ = nullptr;
+        const paxs::CalendarUILayout* ui_layout_ = nullptr;
+        int koyomi_font_size_ = 22;
+        int koyomi_font_buffer_thickness_size_ = 3;
+        const SelectLanguage* select_language_ = nullptr;
+        const paxs::Language* language_text_ = nullptr;
+        bool is_simulator_active_ = false;
+
+    public:
+        // IUIWidget インターフェースの実装
+        void update(paxs::TouchStateManager& tm) override {
+            // CalendarRendererは入力処理を行わないため、空実装
+            (void)tm;
+        }
+
+        void draw() override {
+            if (!visible_ || !koyomi_siv_ || !ui_layout_ || !select_language_ || !language_text_) return;
+
+            // 保存された引数でrender()を呼び出し
+            render(*koyomi_siv_, *ui_layout_, koyomi_font_size_,
+                   koyomi_font_buffer_thickness_size_, *select_language_,
+                   *language_text_, is_simulator_active_);
+        }
+
+        paxg::Rect getRect() const override {
+            if (!ui_layout_) return paxg::Rect{0, 0, 0, 0};
+            return paxg::Rect{
+                static_cast<float>(pos_.x()),
+                static_cast<float>(ui_layout_->koyomi_font_y),
+                static_cast<float>(ui_layout_->koyomi_font_en_x + 400),
+                static_cast<float>(koyomi_font_size_ * 4 * 7) // 7行分
+            };
+        }
+
+        void setPos(const paxg::Vec2i& pos) override {
+            pos_ = pos;
+        }
+
+        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_; }
+
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        bool isEnabled() const override { return enabled_; }
+
+        // CalendarRenderer固有の参照設定メソッド
+        void setRenderParams(
+            const paxs::KoyomiSiv3D& koyomi_siv,
+            const paxs::CalendarUILayout& ui_layout,
+            int koyomi_font_size,
+            int koyomi_font_buffer_thickness_size,
+            const SelectLanguage& select_language,
+            const paxs::Language& language_text,
+            bool is_simulator_active
+        ) {
+            koyomi_siv_ = &koyomi_siv;
+            ui_layout_ = &ui_layout;
+            koyomi_font_size_ = koyomi_font_size;
+            koyomi_font_buffer_thickness_size_ = koyomi_font_buffer_thickness_size;
+            select_language_ = &select_language;
+            language_text_ = &language_text;
+            is_simulator_active_ = is_simulator_active;
         }
     };
 

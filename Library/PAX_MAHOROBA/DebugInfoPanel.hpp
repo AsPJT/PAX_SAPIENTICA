@@ -22,12 +22,14 @@
 
 #include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/CalendarUILayout.hpp>
+#include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/MapView.hpp>
 
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/TouchStateManager.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
@@ -36,7 +38,7 @@
 namespace paxs {
 
     // デバッグ情報パネルを表示するクラス
-    class DebugInfoPanel {
+    class DebugInfoPanel : public IUIWidget {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
@@ -279,6 +281,39 @@ namespace paxs {
     private:
         paxs::LanguageFonts* language_fonts_ = nullptr;
         bool visible_ = true;
+        bool enabled_ = true;
+        paxg::Vec2i pos_{0, 0};
+
+    public:
+        // IUIWidget インターフェースの実装
+        void update(paxs::TouchStateManager& tm) override {
+            // DebugInfoPanelは入力処理を行わないため、空実装
+            (void)tm;
+        }
+
+        void draw() override {
+            // DebugInfoPanelは2つのrenderメソッドがあるため、
+            // UIManagerから直接render呼び出しを継続
+            // draw()は空実装（将来的な統合のためのプレースホルダー）
+        }
+
+        paxg::Rect getRect() const override {
+            // デバッグパネルの領域を返す
+            return paxg::Rect{
+                static_cast<float>(pos_.x()),
+                static_cast<float>(pos_.y()),
+                static_cast<float>(paxg::Window::width()),
+                300.0f // おおよその高さ
+            };
+        }
+
+        void setPos(const paxg::Vec2i& pos) override {
+            pos_ = pos;
+        }
+
+        // setVisible/isVisibleは既に実装済み（互換性維持）
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        bool isEnabled() const override { return enabled_; }
     };
 
 }

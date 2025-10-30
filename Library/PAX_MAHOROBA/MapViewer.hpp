@@ -26,7 +26,6 @@
 #include <PAX_MAHOROBA/PersonLocation.hpp>
 #include <PAX_MAHOROBA/UIManager.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {

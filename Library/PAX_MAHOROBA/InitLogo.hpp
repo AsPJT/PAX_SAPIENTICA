@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_INIT_LOGO_HPP
 
 #include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Color/Background.hpp>
@@ -56,7 +57,7 @@ namespace paxs {
 #ifdef PAXS_USING_DXLIB
             DxLib::DxLib_Init();
             // DxLib は初期化後にアイコンを設定
-            paxg::Window::setIcon(paxs::AppConfig::getInstance()->getRootPath() + "Images/Logo/LogoRed.svg");
+            paxg::Window::setIcon(paxs::AppConfig::getInstance()->getRootPath() + "Images/Logo/LogoRed.ico");
 #endif // PAXS_USING_DXLIB
 
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
@@ -73,18 +74,59 @@ namespace paxs {
 #ifdef PAXS_USING_SIV3D
             // 一度 update を呼んでシーンサイズを反映させる
             paxg::Window::update();
-            // 背景を描画してから update することで、初期化時に水色背景が表示される
-            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(paxg::Window::height()) }.draw(paxs::BackgroundColor::LightBlue);
-            paxg::Window::update();
 #endif
 
 #ifdef PAXS_USING_SFML
             paxg::Window::setFPS(60);
-            paxg::Window::clear();
-            paxg::Window::display();
+
 #endif
+            // ローディング画面を表示
+            displayLoadingScreen();
         }
 
+        // ローディング画面を表示する
+        static void displayLoadingScreen() {
+            // ローディング画面の画像を読み込む
+            const std::string loading_screen_path =
+                paxs::AppConfig::getInstance()->getRootPath() + "Data/LoadingScreen/LoadingScreen.png";
+
+            paxg::Texture loading_texture(loading_screen_path);
+
+            // ウィンドウをクリア
+            paxg::Window::clear();
+
+            // 画面サイズを取得
+            const int window_width = paxg::Window::width();
+            const int window_height = paxg::Window::height();
+
+            // 画像のサイズを取得
+            const int texture_width = loading_texture.width();
+            const int texture_height = loading_texture.height();
+
+            // 画像をウィンドウサイズに合わせてスケーリング
+            // アスペクト比を維持しながらウィンドウに収まるようにする
+            const float scale_x = static_cast<float>(window_width) / static_cast<float>(texture_width);
+            const float scale_y = static_cast<float>(window_height) / static_cast<float>(texture_height);
+            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+            const int scaled_width = static_cast<int>(texture_width * scale);
+            const int scaled_height = static_cast<int>(texture_height * scale);
+
+            // 中央配置の座標を計算
+            const int x = (window_width - scaled_width) / 2;
+            const int y = (window_height - scaled_height) / 2;
+
+            // 画像をリサイズして描画
+            loading_texture.resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{x, y});
+
+            // 画面を更新
+#ifdef PAXS_USING_SFML
+            paxg::Window::display();
+#endif
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
+            paxg::Window::update();
+#endif
+        }
     };
 
 }
