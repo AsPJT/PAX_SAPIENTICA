@@ -22,6 +22,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>
 
+#include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Init.hpp>
 
@@ -29,7 +30,7 @@
 #include <PAX_SAPIENTICA/TouchStateManager.hpp>
 namespace paxs {
 
-    class Pulldown {
+    class Pulldown : public IUIWidget {
     public:
         Pulldown() = default;
         // X を指定したサイズに変更
@@ -138,11 +139,12 @@ namespace paxs {
         }
 
         // 更新処理
-        void update(paxs::TouchStateManager& tm_) {
+        void update(paxs::TouchStateManager& tm_) override {
+            if (isEmpty()) return;
             if (language_ptr == nullptr) return; // 言語がない場合は処理をしない
             if (select_language_ptr == nullptr) return; // 選択されている言語がない場合は処理をしない
             if (font == nullptr) return;
-            if (isEmpty()) return;
+            if (!visible_ || !enabled_) return; // 非表示または無効の場合は処理をしない
             // 言語が変わっていたら更新処理
             if (old_language_key != (*select_language_ptr).cgetKey()) {
                 language_index = (*select_language_ptr).cget();
@@ -178,7 +180,7 @@ namespace paxs {
             }
         }
         // 描画
-        void draw() const {
+        void draw() override {
             if (isEmpty()) {
                 return;
             }
@@ -194,6 +196,7 @@ namespace paxs {
             if (items_key.size() == 0) {
                 return;
             }
+            if (!visible_) return; // 非表示の場合は描画しない
 
             const std::size_t item_index = index;
             rect.draw(paxg::Color{ 243, 243, 243 }); // プルダウンの背景を描画
@@ -288,8 +291,7 @@ namespace paxs {
             back_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
         }
 
-        void setPos(const paxg::Vec2i& pos) { rect.setPos(pos); }
-        const paxg::Rect& getRect() const { return rect; }
+        // Pulldown 固有のメソッド
         size_t getIndex() const { return index; }
         // 引数の添え字番号の項目が TRUE か FALSE になっているか調べる
         bool getIsItems(const std::size_t i) const {
@@ -305,6 +307,20 @@ namespace paxs {
         }
 
         std::uint_least32_t getKey() const { return items_key[index]; }
+
+        // プルダウンの開閉状態を管理
+        bool isOpen() const { return is_open; }
+        void close() { is_open = false; }
+
+        // IUIWidget インターフェースの実装
+        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
+        paxg::Rect getRect() const override { return rect; }
+
+        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_; }
+
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        bool isEnabled() const override { return enabled_; }
 
     private:
         const SelectLanguage* select_language_ptr = nullptr; // 選択されている言語
@@ -327,9 +343,13 @@ namespace paxs {
         bool is_open = false;
         std::size_t pdt{};
         bool is_one_font = false;
+
+        // IUIWidget インターフェース用の状態
+        bool visible_ = true;
+        bool enabled_ = true;
     };
     // メニューバーを管理
-    class MenuBar {
+    class MenuBar : public IUIWidget {
     public:
 
         void add(
@@ -356,37 +376,82 @@ namespace paxs {
                 1));
         }
 
-        void update(paxs::TouchStateManager& tm_) {
+        void update(paxs::TouchStateManager& tm_) override {
             start_x = 0;
-            for (auto& pd : pdv) {
-                pd.update(tm_);
-                pd.setRectX(start_x);
-                start_x += static_cast<std::size_t>(pd.getRect().w());
+
+            // 更新前の開閉状態を記録
+            std::vector<bool> was_open;
+            was_open.reserve(pdv.size());
+            for (const auto& pd : pdv) {
+                was_open.push_back(pd.isOpen());
+            }
+
+            // 各プルダウンを更新
+            for (std::size_t i = 0; i < pdv.size(); ++i) {
+                if (visible_ && enabled_) {
+                    pdv[i].update(tm_);
+                }
+                pdv[i].setRectX(start_x);
+                start_x += static_cast<std::size_t>(pdv[i].getRect().w());
+
+                // このプルダウンが新しく開かれた場合、他のプルダウンを閉じる
+                if (visible_ && enabled_ && !was_open[i] && pdv[i].isOpen()) {
+                    for (std::size_t j = 0; j < pdv.size(); ++j) {
+                        if (j != i && pdv[j].isOpen()) {
+                            pdv[j].close();
+                        }
+                    }
+                }
             }
         }
-        void draw() {
+        void draw() override {
+            if (!visible_) return;
             for (auto& pd : pdv) {
                 pd.draw();
             }
         }
 
-        paxs::Pulldown& getPulldown(const std::uint_least32_t key) {
-            return (pulldown_key.find(key) != pulldown_key.end()) ? pdv[pulldown_key.at(key)] : empty;
+        paxs::Pulldown* getPulldown(const std::uint_least32_t key) {
+            return (pulldown_key.find(key) != pulldown_key.end()) ? &pdv[pulldown_key.at(key)] : nullptr;
         }
-        const paxs::Pulldown& cgetPulldown(const std::uint_least32_t key) const {
-            return (pulldown_key.find(key) != pulldown_key.end()) ? pdv[pulldown_key.at(key)] : empty;
+        const paxs::Pulldown* cgetPulldown(const std::uint_least32_t key) const {
+            return (pulldown_key.find(key) != pulldown_key.end()) ? &pdv[pulldown_key.at(key)] : nullptr;
         }
 
     private:
         // メニューバーに付属するプルダウンが左から順番に格納されている
         // 例） | ファイル | 編集 | 表示 |
         std::vector<paxs::Pulldown> pdv;
-        paxs::Pulldown empty{};
 
         // 各プルダウンに紐づけられた Key (Hash)
         std::unordered_map<std::uint_least32_t, std::size_t> pulldown_key{};
 
         std::size_t start_x = 0;
+
+        // IUIWidget インターフェース用の状態
+        bool visible_ = true;
+        bool enabled_ = true;
+
+    public:
+        // IUIWidget インターフェースの実装
+        void setPos(const paxg::Vec2i& pos) override {
+            // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
+            // 必要に応じて各Pulldownの位置を調整することは可能
+        }
+
+        paxg::Rect getRect() const override {
+            if (pdv.empty()) return paxg::Rect{0, 0, 0, 0};
+            // メニューバー全体の矩形を返す
+            float total_width = static_cast<float>(start_x);
+            float height = pdv.front().getRect().h();
+            return paxg::Rect{0, 0, total_width, height};
+        }
+
+        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_; }
+
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        bool isEnabled() const override { return enabled_; }
     };
 
 }

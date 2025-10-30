@@ -173,8 +173,9 @@ namespace paxs {
             const double map_view_center_y = map_view.getCenterY();
 
             // 更新処理
+            const auto* map_pulldown = menu_bar.cgetPulldown(MurMur3::calcHash("map"));
             for (auto&& xyzi : xyz_tile_list) {
-                if (xyzi.getMenuBarMap() != 0 && menu_bar.cgetPulldown(MurMur3::calcHash("map")).getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
+                if (xyzi.getMenuBarMap() != 0 && map_pulldown && map_pulldown->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
                 xyzi.update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
             }
 
@@ -184,7 +185,7 @@ namespace paxs {
             // 地図を表示する場合
             const int date = static_cast<int>(jdn.cgetDay());
             for (const auto& xyzi : xyz_tile_list) {
-                if (menu_bar.cgetPulldown(MurMur3::calcHash("map")).getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
+                if (map_pulldown && map_pulldown->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
                 switch (xyzi.getDrawType()) {
                 case paxs::MurMur3::calcHash("texture"): // 画像を描画
                     xyzi.draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);

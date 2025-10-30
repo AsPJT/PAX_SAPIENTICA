@@ -163,26 +163,36 @@ namespace paxs {
 
             // 表示の可視化を更新
             //Calendar Map UI Simulation License Debug 3D
-            visible.set(MurMur3::calcHash("Calendar"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(0));
-            visible.set(MurMur3::calcHash("Map"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(1));
-            visible.set(MurMur3::calcHash("UI"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(2));
-            visible.set(MurMur3::calcHash("Simulation"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(3));
-            //visible.set(MurMur3::calcHash("License"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(4));
-            //visible.set(MurMur3::calcHash("Debug"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
-            visible.set(MurMur3::calcHash("3D"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(6));
+            {
+                auto* view_pulldown = ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view"));
+                if (view_pulldown) {
+                    visible.set(MurMur3::calcHash("Calendar"), view_pulldown->getIsItems(0));
+                    visible.set(MurMur3::calcHash("Map"), view_pulldown->getIsItems(1));
+                    visible.set(MurMur3::calcHash("UI"), view_pulldown->getIsItems(2));
+                    visible.set(MurMur3::calcHash("Simulation"), view_pulldown->getIsItems(3));
+                    //visible.set(MurMur3::calcHash("License"), view_pulldown->getIsItems(4));
+                    //visible.set(MurMur3::calcHash("Debug"), view_pulldown->getIsItems(5));
+                    visible.set(MurMur3::calcHash("3D"), view_pulldown->getIsItems(6));
+                }
+            }
 
-            visible.set(MurMur3::calcHash("place_name"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(0));
-            visible.set(MurMur3::calcHash("site"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(1));
-            visible.set(MurMur3::calcHash("tumulus"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(2));
-            visible.set(MurMur3::calcHash("dolmen"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(3));
-            visible.set(MurMur3::calcHash("kamekanbo"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(4));
-            visible.set(MurMur3::calcHash("stone_coffin"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(5));
-            visible.set(MurMur3::calcHash("doken"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(6));
-            visible.set(MurMur3::calcHash("dotaku"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(7));
-            visible.set(MurMur3::calcHash("bronze_mirror"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(8));
-            visible.set(MurMur3::calcHash("human_bone"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(9));
-            visible.set(MurMur3::calcHash("mtdna"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(10));
-            visible.set(MurMur3::calcHash("ydna"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(11));
+            {
+                auto* place_names_pulldown = ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names"));
+                if (place_names_pulldown) {
+                    visible.set(MurMur3::calcHash("place_name"), place_names_pulldown->getIsItems(0));
+                    visible.set(MurMur3::calcHash("site"), place_names_pulldown->getIsItems(1));
+                    visible.set(MurMur3::calcHash("tumulus"), place_names_pulldown->getIsItems(2));
+                    visible.set(MurMur3::calcHash("dolmen"), place_names_pulldown->getIsItems(3));
+                    visible.set(MurMur3::calcHash("kamekanbo"), place_names_pulldown->getIsItems(4));
+                    visible.set(MurMur3::calcHash("stone_coffin"), place_names_pulldown->getIsItems(5));
+                    visible.set(MurMur3::calcHash("doken"), place_names_pulldown->getIsItems(6));
+                    visible.set(MurMur3::calcHash("dotaku"), place_names_pulldown->getIsItems(7));
+                    visible.set(MurMur3::calcHash("bronze_mirror"), place_names_pulldown->getIsItems(8));
+                    visible.set(MurMur3::calcHash("human_bone"), place_names_pulldown->getIsItems(9));
+                    visible.set(MurMur3::calcHash("mtdna"), place_names_pulldown->getIsItems(10));
+                    visible.set(MurMur3::calcHash("ydna"), place_names_pulldown->getIsItems(11));
+                }
+            }
 
             if (visible[MurMur3::calcHash(2, "3D")]) {
 
