@@ -200,7 +200,7 @@ namespace paxs {
             xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
                 // 地図を更新
                 // フォントを取得
-                paxg::Font* main_font = ui_manager.string_viewer.language_fonts.getAndAdd(
+                paxg::Font* main_font = ui_manager.font_manager.language_fonts.getAndAdd(
                     select_language.cgetKey(),
                     static_cast<std::uint_least8_t>(ui_manager.koyomi_font_size),
                     static_cast<std::uint_least8_t>(ui_manager.koyomi_font_buffer_thickness_size)
@@ -208,9 +208,9 @@ namespace paxs {
                 map_controller.update(
                     map_viewport,
                     koyomi,
-                    (main_font == nullptr) ? ui_manager.string_viewer.pin_font : (*main_font),
-                    ui_manager.string_viewer.en_font,
-                    ui_manager.string_viewer.pin_font,
+                    (main_font == nullptr) ? ui_manager.font_manager.pin_font : (*main_font),
+                    ui_manager.font_manager.en_font,
+                    ui_manager.font_manager.pin_font,
 #ifdef PAXS_USING_SIMULATOR
                     simulator,
 #endif

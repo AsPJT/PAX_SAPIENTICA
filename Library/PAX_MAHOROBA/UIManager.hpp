@@ -40,7 +40,7 @@
 #include <PAX_MAHOROBA/MenuBar.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/ShadowRenderer.hpp>
-#include <PAX_MAHOROBA/StringViewer.hpp>
+#include <PAX_MAHOROBA/FontManager.hpp>
 #include <PAX_MAHOROBA/TimeControlPanel.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -60,7 +60,7 @@ namespace paxs {
     // UIの統合管理を担当するクラス
     class UIManager {
     public:
-        StringViewer string_viewer; // 文字表示専用クラス
+        FontManager font_manager; // 文字表示専用クラス
 
         // プルダウンのフォントサイズ
         int pulldown_font_size =
@@ -109,14 +109,14 @@ namespace paxs {
 #ifndef PAXS_USING_SIMULATOR
             (void)simulation_text; // シミュレーター未使用時の警告を抑制
 #endif
-            // StringViewerを初期化
-            string_viewer.init(select_language, pulldown_font_size, pulldown_font_buffer_thickness_size);
+            // FontManager
+            font_manager.init(select_language, pulldown_font_size, pulldown_font_buffer_thickness_size);
 
             // CalendarRendererを初期化
-            calendar_renderer.init(string_viewer.language_fonts);
+            calendar_renderer.init(font_manager.language_fonts);
 
             // DebugInfoPanelを初期化
-            debug_info_panel.init(string_viewer.language_fonts);
+            debug_info_panel.init(font_manager.language_fonts);
             //koyomi_font = setFont(koyomi_font_size, AppConfig::getInstance()->getRootPath(), koyomi_font_buffer_thickness_size);
             map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
             map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
@@ -124,19 +124,19 @@ namespace paxs {
             map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
-            pulldown = paxs::Pulldown(&select_language, &language_text, paxs::LanguageKeys::ALL_LANGUAGE_HASHES, string_viewer.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
+            pulldown = paxs::Pulldown(&select_language, &language_text, paxs::LanguageKeys::ALL_LANGUAGE_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
             pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
 
-            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, string_viewer.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
-            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, string_viewer.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("place_names"));
-            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, string_viewer.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
+            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
+            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("place_names"));
+            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
 
             const std::string path = (AppConfig::getInstance()->getRootPath());
             // 暦の時間操作のアイコン
             key_value_tsv.input(path + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_viewer.init(select_language, simulation_text, string_viewer.language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size, path);
+            simulation_viewer.init(select_language, simulation_text, font_manager.language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size, path);
 #endif
 
             // 影

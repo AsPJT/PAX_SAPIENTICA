@@ -26,7 +26,7 @@
 namespace paxs {
 
     // 文字表示（フォント描画）のみを担当するクラス
-    class StringViewer {
+    class FontManager {
     public:
         LanguageFonts language_fonts;
 
