@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -29,16 +29,47 @@ namespace paxs {
     // カレンダー表示を担当するクラス
     class CalendarRenderer {
     public:
-        // 日本語・中国語のカレンダーを描画
-        static void renderAsianCalendar(
+        // 初期化（LanguageFontsへの参照を設定）
+        void init(paxs::LanguageFonts& fonts) {
+            language_fonts_ = &fonts;
+        }
+
+        // カレンダーを描画（言語に応じて自動選択）
+        void render(
             const paxs::KoyomiSiv3D& koyomi_siv,
             const paxs::CalendarUILayout& ui_layout,
             int koyomi_font_size,
             int koyomi_font_buffer_thickness_size,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
-            paxs::LanguageFonts& language_fonts
+            bool is_simulator_active
         ) {
+            // 日本語・中国語・台湾語の場合はアジア式カレンダー
+            if (select_language.cgetKey() == MurMur3::calcHash("ja-JP")
+                || select_language.cgetKey() == MurMur3::calcHash("zh-TW")
+                || select_language.cgetKey() == MurMur3::calcHash("zh-CN")) {
+                renderAsianCalendar(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text);
+            }
+            else {
+                // その他の言語は西洋式カレンダー
+                renderWesternCalendar(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
+            }
+        }
+
+    private:
+        paxs::LanguageFonts* language_fonts_ = nullptr;
+
+        // 日本語・中国語のカレンダーを描画
+        void renderAsianCalendar(
+            const paxs::KoyomiSiv3D& koyomi_siv,
+            const paxs::CalendarUILayout& ui_layout,
+            int koyomi_font_size,
+            int koyomi_font_buffer_thickness_size,
+            const SelectLanguage& select_language,
+            const paxs::Language& language_text
+        ) {
+            if (language_fonts_ == nullptr) return;
+
             for (std::size_t i = 0; i < koyomi_siv.date_list.size(); ++i) {
                 cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
                 std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi_siv.date_list[i].date);
@@ -56,7 +87,7 @@ namespace paxs {
                 if (text_str == nullptr) continue;
 
                 // 暦描画フォントを指定
-                paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+                paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                 if (one_font == nullptr) continue;
 
                 switch (output_type) {
@@ -99,16 +130,17 @@ namespace paxs {
         }
 
         // 英語のカレンダーを描画
-        static void renderWesternCalendar(
+        void renderWesternCalendar(
             const paxs::KoyomiSiv3D& koyomi_siv,
             const paxs::CalendarUILayout& ui_layout,
             int koyomi_font_size,
             int koyomi_font_buffer_thickness_size,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
-            paxs::LanguageFonts& language_fonts,
             bool is_simulator_active
         ) {
+            if (language_fonts_ == nullptr) return;
+
             for (std::size_t i = 0; i < koyomi_siv.date_list.size(); ++i) {
                 cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
                 std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi_siv.date_list[i].date);
@@ -120,10 +152,10 @@ namespace paxs {
                 const int en_cal_name_pos_x = 85;
 
                 // 暦描画フォントを指定
-                paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+                paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                 if (one_font == nullptr) continue;
                 // 年描画フォントを指定
-                paxg::Font* big_year_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size * 3), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+                paxg::Font* big_year_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size * 3), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
                 if (big_year_font == nullptr) continue;
 
                 // 暦の読み方を返す
@@ -177,29 +209,6 @@ namespace paxs {
                 default:
                     break;
                 }
-            }
-        }
-
-        // カレンダーを描画（言語に応じて自動選択）
-        static void render(
-            const paxs::KoyomiSiv3D& koyomi_siv,
-            const paxs::CalendarUILayout& ui_layout,
-            int koyomi_font_size,
-            int koyomi_font_buffer_thickness_size,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text,
-            paxs::LanguageFonts& language_fonts,
-            bool is_simulator_active
-        ) {
-            // 日本語・中国語・台湾語の場合はアジア式カレンダー
-            if (select_language.cgetKey() == MurMur3::calcHash("ja-JP")
-                || select_language.cgetKey() == MurMur3::calcHash("zh-TW")
-                || select_language.cgetKey() == MurMur3::calcHash("zh-CN")) {
-                renderAsianCalendar(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, language_fonts);
-            }
-            else {
-                // その他の言語は西洋式カレンダー
-                renderWesternCalendar(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, language_fonts, is_simulator_active);
             }
         }
     };

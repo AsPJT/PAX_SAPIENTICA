@@ -89,6 +89,8 @@ namespace paxs {
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
         paxs::TimeControlPanel time_control_panel;
         paxs::CalendarUILayout ui_layout;
+        paxs::CalendarRenderer calendar_renderer;  // カレンダー描画
+        paxs::DebugInfoPanel debug_info_panel;     // デバッグ情報パネル
 
 #ifdef PAXS_USING_SIMULATOR
         paxs::SimulationViewer simulation_viewer;
@@ -104,6 +106,12 @@ namespace paxs {
 #endif
             // StringViewerを初期化
             string_viewer.init(select_language, pulldown_font_size, pulldown_font_buffer_thickness_size);
+
+            // CalendarRendererを初期化
+            calendar_renderer.init(string_viewer.language_fonts);
+
+            // DebugInfoPanelを初期化
+            debug_info_panel.init(string_viewer.language_fonts);
             //koyomi_font = setFont(koyomi_font_size, AppConfig::getInstance()->getRootPath(), koyomi_font_buffer_thickness_size);
             map_view_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
             map_view_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
@@ -184,7 +192,7 @@ namespace paxs {
 #else
                 bool is_simulator_active = false;
 #endif
-                paxs::CalendarRenderer::render(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, string_viewer.language_fonts, is_simulator_active);
+                calendar_renderer.render(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
 
                 // 時間操作パネルを更新・描画
                 const std::unordered_map<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
@@ -194,9 +202,9 @@ namespace paxs {
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 int debug_start_y = ui_layout.getDebugStartY();
                 // マップ情報とシミュレーション統計を描画
-                paxs::DebugInfoPanel::renderMapAndSimulationInfo(
+                debug_info_panel.renderMapAndSimulationInfo(
                     map_view, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
-                    select_language, language_text, string_viewer.language_fonts, visible
+                    select_language, language_text, visible
 #ifdef PAXS_USING_SIMULATOR
                     , simulator
 #endif
@@ -231,9 +239,9 @@ namespace paxs {
                 ) {
                 int debug_start_y = ui_layout.getDebugStartY();
                 // 考古学的遺物の型式情報を描画
-                paxs::DebugInfoPanel::renderArchaeologicalInfo(
+                debug_info_panel.renderArchaeologicalInfo(
                     koyomi_siv, ui_layout, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
-                    select_language, language_text, string_viewer.language_fonts
+                    select_language, language_text
                 );
             }
         }

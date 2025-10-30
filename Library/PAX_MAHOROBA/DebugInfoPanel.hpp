@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -38,22 +38,33 @@ namespace paxs {
     // デバッグ情報パネルを表示するクラス
     class DebugInfoPanel {
     public:
+        // 初期化（LanguageFontsへの参照を設定）
+        void init(paxs::LanguageFonts& fonts) {
+            language_fonts_ = &fonts;
+            visible_ = true;
+        }
+
+        // 可視性の設定・取得
+        void setVisible(bool visible) { visible_ = visible; }
+        bool isVisible() const { return visible_; }
+
         // マップ情報とシミュレーション統計を描画
-        static void renderMapAndSimulationInfo(
+        void renderMapAndSimulationInfo(
             MapView& map_view,
             int debug_start_y,
             int koyomi_font_size,
             int koyomi_font_buffer_thickness_size,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
-            paxs::LanguageFonts& language_fonts,
             const paxs::GraphicVisualizationList& visible
 #ifdef PAXS_USING_SIMULATOR
             , std::unique_ptr<paxs::SettlementSimulator>& simulator
 #endif
         ) {
+            if (!visible_ || language_fonts_ == nullptr) return;
+
             // 暦描画フォントを指定
-            paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+            paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
             if (one_font == nullptr) return;
 
             // マップの拡大率
@@ -139,18 +150,19 @@ namespace paxs {
         }
 
         // 考古学的遺物の型式情報を描画
-        static void renderArchaeologicalInfo(
+        void renderArchaeologicalInfo(
             const paxs::KoyomiSiv3D& koyomi_siv,
             const paxs::CalendarUILayout& ui_layout,
             int debug_start_y,
             int koyomi_font_size,
             int koyomi_font_buffer_thickness_size,
             const SelectLanguage& select_language,
-            const paxs::Language& language_text,
-            paxs::LanguageFonts& language_fonts
+            const paxs::Language& language_text
         ) {
+            if (!visible_ || language_fonts_ == nullptr) return;
+
             // 暦描画フォントを指定
-            paxg::Font* one_font = language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+            paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
             if (one_font == nullptr) return;
 
             std::string dotaku = "";
@@ -263,6 +275,10 @@ namespace paxs {
             }
 #endif
         }
+
+    private:
+        paxs::LanguageFonts* language_fonts_ = nullptr;
+        bool visible_ = true;
     };
 
 }
