@@ -33,15 +33,8 @@
 
 namespace paxs {
 
-// 前方宣言
-// Note: UIManagerの完全な定義が必要なため、このヘッダーを使用する前に
-//       UIManager.hppをインクルードしてください
-class UIManager;
-
     /// @brief 地図コントローラー（統合制御クラス）
     /// @brief Map Controller (Integrated Control Class)
-    /// @note MapPresenterの機能を統合
-    /// @warning 使用前にUIManager.hppのインクルードが必要
     class MapController {
     public:
         std::unique_ptr<TextureLocation> texture_location; // 地図上に描画する画像の一覧
@@ -77,9 +70,10 @@ class UIManager;
         /// @brief Update and render (integrated version)
         void update(
             MapViewport& map_viewport,
-            const SelectLanguage& select_language,
             const paxs::Koyomi& koyomi,
-            paxs::UIManager& ui_manager,
+            paxg::Font& main_font,
+            paxg::Font& en_font,
+            paxg::Font& pin_font,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
@@ -96,13 +90,6 @@ class UIManager;
                 const double center_y = map_viewport.getCenterY();
                 const double julian_day = koyomi.jdn.cgetDay();
 
-                // フォントを指定（SelectLanguageに応じた主フォント）
-                paxg::Font* main_font = ui_manager.string_viewer.language_fonts.getAndAdd(
-                    select_language.cgetKey(),
-                    static_cast<std::uint_least8_t>(ui_manager.koyomi_font_size),
-                    static_cast<std::uint_least8_t>(ui_manager.koyomi_font_buffer_thickness_size)
-                );
-
                 // 地名を描画
                 drawer_.drawPlaceNames(
                     place_name_location,
@@ -112,9 +99,9 @@ class UIManager;
                     height,
                     center_x,
                     center_y,
-                    (main_font == nullptr) ? ui_manager.string_viewer.pin_font : (*main_font),
-                    ui_manager.string_viewer.en_font,
-                    ui_manager.string_viewer.pin_font
+                    main_font,
+                    en_font,
+                    pin_font
                 );
 
                 // 人名を描画
@@ -125,9 +112,9 @@ class UIManager;
                     height,
                     center_x,
                     center_y,
-                    (main_font == nullptr) ? ui_manager.string_viewer.pin_font : (*main_font),
-                    ui_manager.string_viewer.en_font,
-                    ui_manager.string_viewer.pin_font
+                    main_font,
+                    en_font,
+                    pin_font
                 );
 
 #ifdef PAXS_USING_SIMULATOR

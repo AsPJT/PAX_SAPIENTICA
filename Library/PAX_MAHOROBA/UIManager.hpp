@@ -145,13 +145,13 @@ namespace paxs {
             // IUIWidget を実装したウィジェットを登録
             widgets.clear();
             widgets.push_back(&menu_bar);
-            widgets.push_back(&pulldown);
             widgets.push_back(&time_control_panel);
             widgets.push_back(&calendar_renderer);
             widgets.push_back(&debug_info_panel);
 #ifdef PAXS_USING_SIMULATOR
             widgets.push_back(&simulation_viewer);
 #endif
+            widgets.push_back(&pulldown);
 
             // TimeControlPanelに必要な参照を設定
             // 注: texture_dictionaryとkoyomiは後で設定する必要がある
@@ -247,7 +247,7 @@ namespace paxs {
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 
             texture_dictionary.at(MurMur3::calcHash("texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
-            if (tm_.get(paxg::Rect(paxg::Window::width() - 280, 3, 28, 28).leftClicked())) {
+            if (tm_.get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
                 // Web ページをブラウザで開く
                 paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
             }

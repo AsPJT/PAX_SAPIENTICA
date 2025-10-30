@@ -133,7 +133,7 @@ namespace paxs {
 				const int total_steps = constants->total_steps;
 
 				// 規定ステップ数に達したかチェック
-				if (total_steps > 0 && koyomi.steps.cgetDay() >= total_steps) {
+				if (total_steps > 0 && koyomi.steps.cgetDay() >= static_cast<std::size_t>(total_steps)) {
 					// 残り実行回数を減らす
 					m_remaining_iterations--;
 
