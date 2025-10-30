@@ -33,11 +33,11 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
 #include <PAX_MAHOROBA/InitLogo.hpp>
+#include <PAX_MAHOROBA/MapController.hpp>
 #include <PAX_MAHOROBA/MapViewport.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
 #include <PAX_MAHOROBA/UIManager.hpp>
-#include <PAX_MAHOROBA/MapController.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>

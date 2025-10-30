@@ -37,6 +37,7 @@
 #include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/MapViewport.hpp>
+#include <PAX_MAHOROBA/MenuBar.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/StringViewer.hpp>
