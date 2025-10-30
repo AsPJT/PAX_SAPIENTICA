@@ -12,6 +12,7 @@
 #ifndef PAX_SAPIENTICA_MAP_MAP_MODEL_HPP
 #define PAX_SAPIENTICA_MAP_MAP_MODEL_HPP
 
+#include <cmath>
 #include <cstdint>
 
 namespace paxs {
@@ -38,9 +39,9 @@ struct VisibleArea {
 
 /// @brief 地図のドメインモデル（UI非依存のロジック）
 /// @brief Map domain model (UI-independent logic)
-class MapModel {
+class MapDomainLogic {
 public:
-    MapModel() = default;
+    MapDomainLogic() = default;
 
     /// @brief MapViewから可視領域を計算する
     /// @brief Calculate visible area from MapView

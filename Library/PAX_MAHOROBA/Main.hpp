@@ -34,10 +34,10 @@
 
 #include <PAX_MAHOROBA/InitLogo.hpp>
 #include <PAX_MAHOROBA/MapViewport.hpp>
-#include <PAX_MAHOROBA/MapViewer.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
 #include <PAX_MAHOROBA/UIManager.hpp>
+#include <PAX_MAHOROBA/MapController.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -67,7 +67,7 @@ namespace paxs {
         SelectLanguage select_language{}; // 選択言語
         paxs::Language language_text;
         paxs::Language simulation_text;
-        paxs::MapViewer map_siv{}; // 地図を管理する
+        paxs::MapController map_controller{}; // 地図を統合管理する
         paxs::TouchStateManager tm; // 画面のクリック・タッチを管理する
 
 
@@ -93,7 +93,7 @@ namespace paxs {
 
         int size_change_count = 0; // サイズを更新するカウンタ
 
-        map_siv.init();
+        map_controller.init();
         koyomi.init();
 
         xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
@@ -199,7 +199,7 @@ namespace paxs {
 
             xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
                 // 地図を更新
-                map_siv.update(
+                map_controller.update(
                     map_viewport,
                     select_language,
                     koyomi,

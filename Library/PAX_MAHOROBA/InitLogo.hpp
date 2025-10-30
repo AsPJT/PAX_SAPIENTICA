@@ -88,7 +88,7 @@ namespace paxs {
         static void displayLoadingScreen() {
             // ウィンドウの装飾を非表示にする（フルスクリーン風）
             // 注意: SFMLでは実行時の変更が不安定なため無効化
-#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
+#if defined(PAXS_USING_SIV3D)
             paxg::Window::setDecorated(false);
 #endif
 
@@ -138,7 +138,7 @@ namespace paxs {
         static void endLoadingScreen() {
             // ウィンドウの装飾を再表示
             // 注意: SFMLでは実行時の変更が不安定なため無効化
-#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
+#if defined(PAXS_USING_SIV3D)
             paxg::Window::setDecorated(true);
 #endif
         }

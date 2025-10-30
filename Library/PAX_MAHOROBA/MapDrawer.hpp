@@ -17,7 +17,6 @@
 #include <PAX_MAHOROBA/PersonLocation.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
-#include <PAX_SAPIENTICA/Map/MapModel.hpp>
 
 namespace paxs {
 
@@ -26,9 +25,9 @@ class UIManager;
 
 /// @brief 地図の描画処理を担当するクラス
 /// @brief Class responsible for map rendering
-class MapRenderer {
+class MapDrawer {
 public:
-    MapRenderer() = default;
+    MapDrawer() = default;
 
     /// @brief UIManagerへの参照を設定
     /// @brief Set reference to UIManager
