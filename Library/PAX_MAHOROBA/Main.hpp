@@ -38,7 +38,7 @@
 #include <PAX_MAHOROBA/MapViewer.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
-#include <PAX_MAHOROBA/StringViewer.hpp>
+#include <PAX_MAHOROBA/UIManager.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
@@ -63,7 +63,7 @@ namespace paxs {
         MapView map_view{};
         XYZTilesList xyz_tile_list; // 描画する XYZ タイルを管理
         paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
-        paxs::StringViewer string_siv{}; // 文字を管理する
+        paxs::UIManager ui_manager{}; // UIを統合管理する
         SelectLanguage select_language{}; // 選択言語
         paxs::Language language_text;
         paxs::Language simulation_text;
@@ -77,7 +77,7 @@ namespace paxs {
 
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
         map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
-        xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+        xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
         // 言語を初期化（テキストの多言語対応クラス）
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
             [&](const std::string& path_) {language_text.add(path_); });
@@ -86,7 +86,7 @@ namespace paxs {
             [&](const std::string& path_) {simulation_text.add(path_); });
 
         //language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Settings/Languages.tsv");
-        string_siv.init(select_language, language_text, simulation_text);
+        ui_manager.init(select_language, language_text, simulation_text);
 
         int old_width = paxg::Window::width(); // 1 フレーム前の幅
         int old_height = paxg::Window::height(); // 1 フレーム前の高さ
@@ -96,7 +96,7 @@ namespace paxs {
         map_siv.init();
         koyomi_siv.init();
 
-        xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+        xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
 
         paxg::Graphics3DModel g3d_model; // 3D モデル
 
@@ -132,8 +132,8 @@ namespace paxs {
                 old_height != paxg::Window::height()) {
                 // 影を定義
                 if (size_change_count < 1) {
-                    string_siv.shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
-                    string_siv.internal_texture = paxg::RenderTexture{ string_siv.shadow_texture.size() };
+                    ui_manager.shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
+                    ui_manager.internal_texture = paxg::RenderTexture{ ui_manager.shadow_texture.size() };
                 }
                 if (size_change_count >= 100) size_change_count = 100;
                 ++size_change_count;
@@ -150,49 +150,49 @@ namespace paxs {
 
             // シミュレーションモデル選択のプルダウンを更新
 #ifdef PAXS_USING_SIMULATOR
-            string_siv.simulation_viewer.simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.simulation_viewer.simulation_pulldown.getRect().w() - 200), 600 });
-            string_siv.simulation_viewer.simulation_pulldown.update(tm);
-            string_siv.simulation_viewer.simulation_model_index = string_siv.simulation_viewer.simulation_pulldown.getIndex();
+            ui_manager.simulation_viewer.simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - ui_manager.simulation_viewer.simulation_pulldown.getRect().w() - 200), 600 });
+            ui_manager.simulation_viewer.simulation_pulldown.update(tm);
+            ui_manager.simulation_viewer.simulation_model_index = ui_manager.simulation_viewer.simulation_pulldown.getIndex();
 #endif
             // 選択言語のプルダウンを更新
-            string_siv.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - string_siv.pulldown.getRect().w()), 0 });
-            string_siv.pulldown.update(tm);
-            select_language.set(std::size_t(string_siv.pulldown.getIndex())); // 選択言語を更新
-            select_language.setKey(std::uint_least32_t(string_siv.pulldown.getKey())); // 選択言語を更新
-            string_siv.menu_bar.update(tm);
+            ui_manager.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - ui_manager.pulldown.getRect().w()), 0 });
+            ui_manager.pulldown.update(tm);
+            select_language.set(std::size_t(ui_manager.pulldown.getIndex())); // 選択言語を更新
+            select_language.setKey(std::uint_least32_t(ui_manager.pulldown.getKey())); // 選択言語を更新
+            ui_manager.menu_bar.update(tm);
 
             // 表示の可視化を更新
             //Calendar Map UI Simulation License Debug 3D
-            visible.set(MurMur3::calcHash("Calendar"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(0));
-            visible.set(MurMur3::calcHash("Map"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(1));
-            visible.set(MurMur3::calcHash("UI"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(2));
-            visible.set(MurMur3::calcHash("Simulation"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(3));
-            //visible.set(MurMur3::calcHash("License"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(4));
-            //visible.set(MurMur3::calcHash("Debug"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
-            visible.set(MurMur3::calcHash("3D"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(6));
+            visible.set(MurMur3::calcHash("Calendar"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(0));
+            visible.set(MurMur3::calcHash("Map"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(1));
+            visible.set(MurMur3::calcHash("UI"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(2));
+            visible.set(MurMur3::calcHash("Simulation"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(3));
+            //visible.set(MurMur3::calcHash("License"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(4));
+            //visible.set(MurMur3::calcHash("Debug"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(5));
+            visible.set(MurMur3::calcHash("3D"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("view")).getIsItems(6));
 
-            visible.set(MurMur3::calcHash("place_name"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(0));
-            visible.set(MurMur3::calcHash("site"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(1));
-            visible.set(MurMur3::calcHash("tumulus"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(2));
-            visible.set(MurMur3::calcHash("dolmen"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(3));
-            visible.set(MurMur3::calcHash("kamekanbo"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(4));
-            visible.set(MurMur3::calcHash("stone_coffin"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(5));
-            visible.set(MurMur3::calcHash("doken"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(6));
-            visible.set(MurMur3::calcHash("dotaku"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(7));
-            visible.set(MurMur3::calcHash("bronze_mirror"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(8));
-            visible.set(MurMur3::calcHash("human_bone"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(9));
-            visible.set(MurMur3::calcHash("mtdna"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(10));
-            visible.set(MurMur3::calcHash("ydna"), string_siv.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(11));
+            visible.set(MurMur3::calcHash("place_name"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(0));
+            visible.set(MurMur3::calcHash("site"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(1));
+            visible.set(MurMur3::calcHash("tumulus"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(2));
+            visible.set(MurMur3::calcHash("dolmen"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(3));
+            visible.set(MurMur3::calcHash("kamekanbo"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(4));
+            visible.set(MurMur3::calcHash("stone_coffin"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(5));
+            visible.set(MurMur3::calcHash("doken"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(6));
+            visible.set(MurMur3::calcHash("dotaku"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(7));
+            visible.set(MurMur3::calcHash("bronze_mirror"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(8));
+            visible.set(MurMur3::calcHash("human_bone"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(9));
+            visible.set(MurMur3::calcHash("mtdna"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(10));
+            visible.set(MurMur3::calcHash("ydna"), ui_manager.menu_bar.getPulldown(MurMur3::calcHash("place_names")).getIsItems(11));
 
             if (visible[MurMur3::calcHash(2, "3D")]) {
 
-            xyz_tile_list.update(string_siv.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+            xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
                 // 地図を更新
                 map_siv.update(
                     map_view,
                     select_language,
                     koyomi_siv,
-                    string_siv,
+                    ui_manager,
 #ifdef PAXS_USING_SIMULATOR
                     simulator,
 #endif
@@ -210,7 +210,7 @@ namespace paxs {
             }
 
             // 文字を更新
-            string_siv.update(
+            ui_manager.update(
                 map_view,
                 select_language,
                 language_text,

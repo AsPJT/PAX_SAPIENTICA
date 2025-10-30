@@ -24,7 +24,7 @@
 #include <PAX_MAHOROBA/MapView.hpp>
 #include <PAX_MAHOROBA/LocationRange.hpp>
 #include <PAX_MAHOROBA/PersonLocation.hpp>
-#include <PAX_MAHOROBA/StringViewer.hpp>
+#include <PAX_MAHOROBA/UIManager.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -66,7 +66,7 @@ namespace paxs {
             MapView& map_view,
             const SelectLanguage& select_language,
             const paxs::KoyomiSiv3D& koyomi_siv,
-            paxs::StringViewer& string_siv,
+            paxs::UIManager& ui_manager,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
@@ -89,7 +89,7 @@ namespace paxs {
                 texture_location->update(map_view.getCenterX(), map_view.getCenterY(), map_view.getWidth(), map_view.getHeight());
 
                 // フォントを指定
-                paxg::Font* one_font = string_siv.language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(string_siv.koyomi_font_size), static_cast<std::uint_least8_t>(string_siv.koyomi_font_buffer_thickness_size));
+                paxg::Font* one_font = ui_manager.string_viewer.language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(ui_manager.koyomi_font_size), static_cast<std::uint_least8_t>(ui_manager.koyomi_font_buffer_thickness_size));
 
                 place_name_location.draw(
                     visible,
@@ -98,18 +98,18 @@ namespace paxs {
                     map_view.getHeight(),
                     map_view.getCenterX(),
                     map_view.getCenterY(),
-                    (one_font == nullptr) ? string_siv.pin_font : (*one_font),
-                    string_siv.en_font,
-                    string_siv.pin_font);
+                    (one_font == nullptr) ? ui_manager.string_viewer.pin_font : (*one_font),
+                    ui_manager.string_viewer.en_font,
+                    ui_manager.string_viewer.pin_font);
                 person_name_location.draw(
                     koyomi_siv.jdn.cgetDay(),
                     map_view.getWidth(),
                     map_view.getHeight(),
                     map_view.getCenterX(),
                     map_view.getCenterY(),
-                    (one_font == nullptr) ? string_siv.pin_font : (*one_font),
-                    string_siv.en_font,
-                    string_siv.pin_font);
+                    (one_font == nullptr) ? ui_manager.string_viewer.pin_font : (*one_font),
+                    ui_manager.string_viewer.en_font,
+                    ui_manager.string_viewer.pin_font);
 
             }
 

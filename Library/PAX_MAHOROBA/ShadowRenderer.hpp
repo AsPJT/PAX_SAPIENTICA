@@ -59,7 +59,6 @@ namespace paxs {
             shadow_texture.draw(shadow_color);
         }
 
-        // 影とパネルをまとめて描画（StringViewerで使用するパターン）
         // shadow_texture: 影を描くレンダーテクスチャ
         // internal_texture: ぼかし処理用の内部テクスチャ
         // draw_shadow_shapes: 影の形状を描画するコールバック関数
