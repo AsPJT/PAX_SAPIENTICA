@@ -21,13 +21,13 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/IViewerComponent.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
@@ -52,39 +52,39 @@ namespace paxs {
 		// 外部参照（UIManagerから設定される）
 		std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
 		paxs::TouchStateManager* touch_manager_ = nullptr;
-		paxs::KoyomiSiv3D* koyomi_siv_ = nullptr;
+		paxs::Koyomi* koyomi_ = nullptr;
 		paxs::GraphicVisualizationList* visible_list_ = nullptr;
 		/// @brief シミュレーションを初期化する
 		/// @brief Initialize the simulation
 		/// @param simulator シミュレータのユニークポインタ
-		/// @param koyomi_siv 暦情報
+		/// @param koyomi 暦情報
 		void simulationInit(
 			std::unique_ptr<paxs::SettlementSimulator>& simulator,
-			paxs::KoyomiSiv3D& koyomi_siv
+			paxs::Koyomi& koyomi
 		) const {
 			const std::string model_name =
 				(simulation_model_index >= simulation_model_name.size()) ?
 				"Sample" : simulation_model_name[simulation_model_index];
 
 			simulator->init();
-			koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
-			koyomi_siv.jdn.setDay(static_cast<double>(SimulationConstants::getInstance(model_name)->start_julian_day)); // シミュレーション初期時の日付に設定
-			koyomi_siv.calcDate();
-			koyomi_siv.is_agent_update = false;
-			koyomi_siv.move_forward_in_time = false; // 一時停止
-			koyomi_siv.go_back_in_time = false;
+			koyomi.steps.setDay(0); // ステップ数を 0 にする
+			koyomi.jdn.setDay(static_cast<double>(SimulationConstants::getInstance(model_name)->start_julian_day)); // シミュレーション初期時の日付に設定
+			koyomi.calcDate();
+			koyomi.is_agent_update = false;
+			koyomi.move_forward_in_time = false; // 一時停止
+			koyomi.go_back_in_time = false;
 		}
 
 		/// @brief シミュレーションのUI描画と操作処理
 		/// @brief Simulation UI drawing and operation processing
 		/// @param simulator シミュレータのユニークポインタ
 		/// @param tm_ タッチマネージャー
-		/// @param koyomi_siv 暦情報
+		/// @param koyomi 暦情報
 		/// @param debug_start_y UIの開始Y座標
 		void simulation(
 			std::unique_ptr<paxs::SettlementSimulator>& simulator,
 			paxs::TouchStateManager& tm_,
-			paxs::KoyomiSiv3D& koyomi_siv,
+			paxs::Koyomi& koyomi,
 			int debug_start_y
 		) {
 			const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
@@ -123,7 +123,7 @@ namespace paxs {
 					simulator = std::make_unique<paxs::SettlementSimulator>(
 						map_list_path, japan_provinces_path,
 						seed_gen());
-					simulationInit(simulator, koyomi_siv);
+					simulationInit(simulator, koyomi);
 				}
 			}
 			// シミュレーションが初期化されている場合
@@ -133,35 +133,35 @@ namespace paxs {
 				const int total_steps = constants->total_steps;
 
 				// 規定ステップ数に達したかチェック
-				if (total_steps > 0 && koyomi_siv.steps.cgetDay() >= total_steps) {
+				if (total_steps > 0 && koyomi.steps.cgetDay() >= total_steps) {
 					// 残り実行回数を減らす
 					m_remaining_iterations--;
 
 					if (m_remaining_iterations > 0) {
 						// まだ実行回数が残っている場合、シミュレーションを初期化して自動で再開
-						simulationInit(simulator, koyomi_siv);
-						koyomi_siv.is_agent_update = true;
-						koyomi_siv.move_forward_in_time = true;
+						simulationInit(simulator, koyomi);
+						koyomi.is_agent_update = true;
+						koyomi.move_forward_in_time = true;
 					}
 					else {
 						// 全ての実行が終了した場合、シミュレーションを停止
-						koyomi_siv.is_agent_update = false;
-						koyomi_siv.move_forward_in_time = false;
+						koyomi.is_agent_update = false;
+						koyomi.move_forward_in_time = false;
 						m_remaining_iterations = 0; //念のため0にリセット
 					}
 				}
 
 				// シミュレーションが再生されている場合
-				if (koyomi_siv.is_agent_update) {
+				if (koyomi.is_agent_update) {
 					// シミュレーションを停止
 					texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
 						time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
 					if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
 						// if (s3d::SimpleGUI::Button(U"Sim Stop", s3d::Vec2{ 330, 60 })) {
-						koyomi_siv.is_agent_update = false;
+						koyomi.is_agent_update = false;
 
-						koyomi_siv.move_forward_in_time = false; // 一時停止
-						koyomi_siv.go_back_in_time = false;
+						koyomi.move_forward_in_time = false; // 一時停止
+						koyomi.go_back_in_time = false;
 					}
 				}
 				// シミュレーションが再生されていない場合
@@ -176,10 +176,10 @@ namespace paxs {
 					texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
 						time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y));
 					if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-						simulationInit(simulator, koyomi_siv);
+						simulationInit(simulator, koyomi);
 
-						koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
-						koyomi_siv.calcDate();
+						koyomi.steps.setDay(0); // ステップ数を 0 にする
+						koyomi.calcDate();
 					}
 					// 地形データを削除
 					texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
@@ -187,8 +187,8 @@ namespace paxs {
 					if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
 						simulator.reset();
 
-						koyomi_siv.steps.setDay(0); // ステップ数を 0 にする
-						koyomi_siv.calcDate();
+						koyomi.steps.setDay(0); // ステップ数を 0 にする
+						koyomi.calcDate();
 					}
 
 					// シミュレーションを再生
@@ -196,24 +196,24 @@ namespace paxs {
 						time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
 					if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
 						// if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
-						koyomi_siv.is_agent_update = true;
+						koyomi.is_agent_update = true;
 
 						// 実行回数をセット
 						m_remaining_iterations = SimulationConstants::getInstance(model_name)->num_iterations;
 
-						koyomi_siv.move_forward_in_time = true; // 再生
-						koyomi_siv.go_back_in_time = false;
+						koyomi.move_forward_in_time = true; // 再生
+						koyomi.go_back_in_time = false;
 					}
 					// シミュレーションを 1 Step 実行
 					texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
 						time_icon_size, paxg::Vec2i(paxg::Window::width() - 240, debug_start_y));
 					if (tm_.get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 240, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
 						simulator->step(); // シミュレーションを 1 ステップ実行する
-						koyomi_siv.steps.getDay()++; // ステップ数を増やす
-						koyomi_siv.calcDate();
+						koyomi.steps.getDay()++; // ステップ数を増やす
+						koyomi.calcDate();
 
-						koyomi_siv.move_forward_in_time = false; // 一時停止
-						koyomi_siv.go_back_in_time = false;
+						koyomi.move_forward_in_time = false; // 一時停止
+						koyomi.go_back_in_time = false;
 					}
 				}
 			}
@@ -290,19 +290,19 @@ namespace paxs {
 		/// @brief Update and draw simulation
 		/// @param simulator シミュレータのユニークポインタ
 		/// @param tm_ タッチマネージャー
-		/// @param koyomi_siv 暦情報
+		/// @param koyomi 暦情報
 		/// @param debug_start_y UIの開始Y座標
 		/// @param visible 可視性フラグ
 		void update(
 			std::unique_ptr<paxs::SettlementSimulator>& simulator,
 			paxs::TouchStateManager& tm_,
-			paxs::KoyomiSiv3D& koyomi_siv,
+			paxs::Koyomi& koyomi,
 			int debug_start_y,
 			paxs::GraphicVisualizationList& visible
 		) {
 			// シミュレーションのボタン
 			if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
-				simulation(simulator, tm_, koyomi_siv, debug_start_y);
+				simulation(simulator, tm_, koyomi, debug_start_y);
 			}
 		}
 
@@ -369,19 +369,19 @@ namespace paxs {
 		/// @brief 外部参照を設定
 		/// @param simulator シミュレータのユニークポインタへの参照
 		/// @param tm タッチマネージャー
-		/// @param koyomi_siv 暦情報
+		/// @param koyomi 暦情報
 		/// @param visible_list 可視性リスト
 		/// @param debug_start_y UIの開始Y座標
 		void setReferences(
 			std::unique_ptr<paxs::SettlementSimulator>& simulator,
 			paxs::TouchStateManager& tm,
-			paxs::KoyomiSiv3D& koyomi_siv,
+			paxs::Koyomi& koyomi,
 			paxs::GraphicVisualizationList& visible_list,
 			int debug_start_y
 		) {
 			simulator_ptr_ = &simulator;
 			touch_manager_ = &tm;
-			koyomi_siv_ = &koyomi_siv;
+			koyomi_ = &koyomi;
 			visible_list_ = &visible_list;
 			debug_start_y_ = debug_start_y;
 		}
@@ -389,10 +389,10 @@ namespace paxs {
 		/// @brief 更新処理（IUIWidget）
 		void update(paxs::TouchStateManager& tm) override {
 			if (!visible_ || !enabled_) return;
-			if (!simulator_ptr_ || !koyomi_siv_ || !visible_list_) return;
+			if (!simulator_ptr_ || !koyomi_ || !visible_list_) return;
 
 			// 既存のupdate()を呼び出し
-			update(*simulator_ptr_, tm, *koyomi_siv_, debug_start_y_, *visible_list_);
+			update(*simulator_ptr_, tm, *koyomi_, debug_start_y_, *visible_list_);
 
 			// プルダウンの更新
 			if (visible_list_->at(MurMur3::calcHash("Simulation")) &&

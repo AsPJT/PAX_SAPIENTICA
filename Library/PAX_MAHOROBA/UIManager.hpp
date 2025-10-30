@@ -31,7 +31,6 @@
 #include <PAX_GRAPHICA/System.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
-#include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/CalendarRenderer.hpp>
 #include <PAX_MAHOROBA/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/DebugInfoPanel.hpp>
@@ -45,6 +44,7 @@
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
+#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
@@ -154,7 +154,7 @@ namespace paxs {
 #endif
 
             // TimeControlPanelに必要な参照を設定
-            // 注: texture_dictionaryとkoyomi_sivは後で設定する必要がある
+            // 注: texture_dictionaryとkoyomiは後で設定する必要がある
         }
 
         void update(
@@ -165,7 +165,7 @@ namespace paxs {
             std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
 #endif
             paxs::TouchStateManager& tm_,
-            paxs::KoyomiSiv3D& koyomi_siv,
+            paxs::Koyomi& koyomi,
             paxs::GraphicVisualizationList& visible
             ) {
             map_view.getCoordinate().toEquirectangularDegY();
@@ -174,7 +174,7 @@ namespace paxs {
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
 
             // UIレイアウトを計算
-            ui_layout.calculate(pulldown_font_size, koyomi_font_size, koyomi_siv.date_list.size(), time_control_panel.getHeight());
+            ui_layout.calculate(pulldown_font_size, koyomi_font_size, koyomi.date_list.size(), time_control_panel.getHeight());
 
             // 影とパネルを描画
             paxs::ShadowRenderer::renderShadowWithPanels(
@@ -200,7 +200,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン
-            simulation_viewer.setReferences(simulator, tm_, koyomi_siv, visible, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_viewer.setReferences(simulator, tm_, koyomi, visible, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 #endif
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
@@ -211,12 +211,12 @@ namespace paxs {
                 bool is_simulator_active = false;
 #endif
                 // CalendarRendererのレンダリングパラメータを設定
-                calendar_renderer.setRenderParams(koyomi_siv, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
+                calendar_renderer.setRenderParams(koyomi, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
                 calendar_renderer.setVisible(true);
 
                 // 時間操作パネルを更新・描画
                 const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
-                time_control_panel.setReferences(texture_dictionary, koyomi_siv);
+                time_control_panel.setReferences(texture_dictionary, koyomi);
                 time_control_panel.setPos(paxg::Vec2i{ui_layout.time_control_base_x, ui_layout.koyomi_font_y + ui_layout.time_control_base_y});
                 time_control_panel.update(tm_);
             } else {
@@ -267,7 +267,7 @@ namespace paxs {
                 int debug_start_y = ui_layout.getDebugStartY();
                 // 考古学的遺物の型式情報を描画
                 debug_info_panel.renderArchaeologicalInfo(
-                    koyomi_siv, ui_layout, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
+                    koyomi, ui_layout, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
                     select_language, language_text
                 );
             }

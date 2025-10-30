@@ -17,9 +17,9 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/IUIWidget.hpp>
 
+#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/TouchStateManager.hpp>
@@ -47,23 +47,23 @@ namespace paxs {
             int base_y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
-            paxs::KoyomiSiv3D& koyomi_siv
+            paxs::Koyomi& koyomi
         ) {
             int icon_start_x = base_x;
             int icon_start_y = 0;
 
             // 再生コントロール（逆再生/停止/再生）
-            drawPlaybackControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi_siv);
+            drawPlaybackControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi);
             icon_start_y += arrow_icon_move_y;
             icon_start_x = base_x;
 
             // 時間移動（過去へ: 日/月/年/10年/世紀/千年紀/万年紀）
-            drawBackwardTimeControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi_siv);
+            drawBackwardTimeControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi);
             icon_start_y += icon_move_y;
             icon_start_x = base_x;
 
             // 時間移動（未来へ: 日/月/年/10年/世紀/千年紀/万年紀）
-            drawForwardTimeControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi_siv);
+            drawForwardTimeControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi);
         }
 
         // 時間操作パネルの高さを取得
@@ -78,31 +78,31 @@ namespace paxs {
             int y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
-            paxs::KoyomiSiv3D& koyomi_siv
+            paxs::Koyomi& koyomi
         ) {
             int x = start_x;
 
             // 逆再生ボタン
             drawIconButton(x, y, arrow_time_icon_size, "texture_reverse_playback", texture_dictionary, tm,
-                [&koyomi_siv]() {
-                    koyomi_siv.move_forward_in_time = false;
-                    koyomi_siv.go_back_in_time = true;
+                [&koyomi]() {
+                    koyomi.move_forward_in_time = false;
+                    koyomi.go_back_in_time = true;
                 });
             x -= arrow_icon_move_x;
 
             // 停止ボタン
             drawIconButton(x, y, arrow_time_icon_size, "texture_stop", texture_dictionary, tm,
-                [&koyomi_siv]() {
-                    koyomi_siv.move_forward_in_time = false;
-                    koyomi_siv.go_back_in_time = false;
+                [&koyomi]() {
+                    koyomi.move_forward_in_time = false;
+                    koyomi.go_back_in_time = false;
                 });
             x -= arrow_icon_move_x;
 
             // 再生ボタン
             drawIconButton(x, y, arrow_time_icon_size, "texture_playback", texture_dictionary, tm,
-                [&koyomi_siv]() {
-                    koyomi_siv.move_forward_in_time = true;
-                    koyomi_siv.go_back_in_time = false;
+                [&koyomi]() {
+                    koyomi.move_forward_in_time = true;
+                    koyomi.go_back_in_time = false;
                 });
         }
 
@@ -112,36 +112,36 @@ namespace paxs {
             int y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
-            paxs::KoyomiSiv3D& koyomi_siv
+            paxs::Koyomi& koyomi
         ) {
             int x = start_x;
 
             // 日
-            drawTimeButton(x, y, "texture_d_l", -1, texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_d_l", -1, texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 月
-            drawTimeButton(x, y, "texture_m_l", -(365.2422 / 12.0), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_m_l", -(365.2422 / 12.0), texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 年
-            drawTimeButton(x, y, "texture_y_l", -365.2422, texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_y_l", -365.2422, texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 10年
-            drawTimeButton(x, y, "texture_10y_l", -(365.2422 * 10), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_10y_l", -(365.2422 * 10), texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 世紀（100年）
-            drawTimeButton(x, y, "texture_c_l", -(365.2422 * 100), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_c_l", -(365.2422 * 100), texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 千年紀（1000年）
-            drawTimeButton(x, y, "texture_10c_l", -(365.2422 * 1000), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_10c_l", -(365.2422 * 1000), texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 万年紀（10000年）
-            drawTimeButton(x, y, "texture_100c_l", -(365.2422 * 10000), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_100c_l", -(365.2422 * 10000), texture_dictionary, tm, koyomi);
         }
 
         // 未来への時間移動ボタンを描画
@@ -150,36 +150,36 @@ namespace paxs {
             int y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
-            paxs::KoyomiSiv3D& koyomi_siv
+            paxs::Koyomi& koyomi
         ) {
             int x = start_x;
 
             // 日
-            drawTimeButton(x, y, "texture_d_r", 1, texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_d_r", 1, texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 月
-            drawTimeButton(x, y, "texture_m_r", (365.2422 / 12.0), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_m_r", (365.2422 / 12.0), texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 年
-            drawTimeButton(x, y, "texture_y_r", 365.2422, texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_y_r", 365.2422, texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 10年
-            drawTimeButton(x, y, "texture_10y_r", (365.2422 * 10), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_10y_r", (365.2422 * 10), texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 世紀（100年）
-            drawTimeButton(x, y, "texture_c_r", (365.2422 * 100), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_c_r", (365.2422 * 100), texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 千年紀（1000年）
-            drawTimeButton(x, y, "texture_10c_r", (365.2422 * 1000), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_10c_r", (365.2422 * 1000), texture_dictionary, tm, koyomi);
             x -= icon_move_x;
 
             // 万年紀（10000年）
-            drawTimeButton(x, y, "texture_100c_r", (365.2422 * 10000), texture_dictionary, tm, koyomi_siv);
+            drawTimeButton(x, y, "texture_100c_r", (365.2422 * 10000), texture_dictionary, tm, koyomi);
         }
 
         // アイコンボタンを描画（汎用）
@@ -209,14 +209,14 @@ namespace paxs {
             double day_delta,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             paxs::TouchStateManager& tm,
-            paxs::KoyomiSiv3D& koyomi_siv
+            paxs::Koyomi& koyomi
         ) {
             paxg::Vec2i pos(paxg::Window::width() - x, y);
             texture_dictionary.at(MurMur3::calcHash(texture_key)).resizedDraw(time_icon_size, pos);
 
             if (tm.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                koyomi_siv.jdn.getDay() += day_delta;
-                koyomi_siv.calcDate();
+                koyomi.jdn.getDay() += day_delta;
+                koyomi.calcDate();
             }
         }
 
@@ -228,15 +228,15 @@ namespace paxs {
 
         // 描画に必要な参照（nullptrチェック必須）
         const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;
-        paxs::KoyomiSiv3D* koyomi_siv_ = nullptr;
+        paxs::Koyomi* koyomi_ = nullptr;
 
     public:
         // IUIWidget インターフェースの実装
         void update(paxs::TouchStateManager& tm) override {
-            if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_siv_) return;
+            if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return;
 
             // 元のupdate()ロジックを呼び出し
-            update(pos_.x(), pos_.y(), *texture_dictionary_, tm, *koyomi_siv_);
+            update(pos_.x(), pos_.y(), *texture_dictionary_, tm, *koyomi_);
         }
 
         void draw() override {
@@ -266,10 +266,10 @@ namespace paxs {
         // TimeControlPanel固有の初期化メソッド
         void setReferences(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
-            paxs::KoyomiSiv3D& koyomi_siv
+            paxs::Koyomi& koyomi
         ) {
             texture_dictionary_ = &texture_dictionary;
-            koyomi_siv_ = &koyomi_siv;
+            koyomi_ = &koyomi;
         }
     };
 

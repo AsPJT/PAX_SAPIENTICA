@@ -32,7 +32,6 @@
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
-#include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/InitLogo.hpp>
 #include <PAX_MAHOROBA/MapView.hpp>
 #include <PAX_MAHOROBA/MapViewer.hpp>
@@ -40,6 +39,7 @@
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
 #include <PAX_MAHOROBA/UIManager.hpp>
 
+#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
@@ -62,7 +62,7 @@ namespace paxs {
 
         MapView map_view{};
         XYZTilesList xyz_tile_list; // 描画する XYZ タイルを管理
-        paxs::KoyomiSiv3D koyomi_siv{}; // 暦を管理する
+        paxs::Koyomi koyomi{}; // 暦を管理する
         paxs::UIManager ui_manager{}; // UIを統合管理する
         SelectLanguage select_language{}; // 選択言語
         paxs::Language language_text;
@@ -77,7 +77,7 @@ namespace paxs {
 
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
         map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
-        xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+        xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi.jdn.cgetDay()); // 地図の辞書を更新
         // 言語を初期化（テキストの多言語対応クラス）
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
             [&](const std::string& path_) {language_text.add(path_); });
@@ -94,9 +94,9 @@ namespace paxs {
         int size_change_count = 0; // サイズを更新するカウンタ
 
         map_siv.init();
-        koyomi_siv.init();
+        koyomi.init();
 
-        xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+        xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi.jdn.cgetDay()); // 地図の辞書を更新
 
         paxg::Graphics3DModel g3d_model; // 3D モデル
 
@@ -196,12 +196,12 @@ namespace paxs {
 
             if (visible[MurMur3::calcHash(2, "3D")]) {
 
-            xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi_siv.jdn.cgetDay()); // 地図の辞書を更新
+            xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi.jdn.cgetDay()); // 地図の辞書を更新
                 // 地図を更新
                 map_siv.update(
                     map_view,
                     select_language,
-                    koyomi_siv,
+                    koyomi,
                     ui_manager,
 #ifdef PAXS_USING_SIMULATOR
                     simulator,
@@ -209,7 +209,7 @@ namespace paxs {
                     visible
                 );
                 // 暦を更新
-                koyomi_siv.update(
+                koyomi.update(
 #ifdef PAXS_USING_SIMULATOR
                     simulator
 #endif
@@ -228,7 +228,7 @@ namespace paxs {
                 simulator,
 #endif
                 tm,
-                koyomi_siv,
+                koyomi,
                 visible
             );
             paxg::TouchInput::updateState();

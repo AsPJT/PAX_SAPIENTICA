@@ -33,7 +33,7 @@
 
 namespace paxs {
 
-    class KoyomiSiv3D {
+    class Koyomi {
     public:
         /// @brief 出力に必要な日付の情報
         struct OutputDate {

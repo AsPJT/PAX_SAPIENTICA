@@ -20,12 +20,12 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Calendar.hpp>
 #include <PAX_MAHOROBA/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/MapView.hpp>
 
+#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -153,7 +153,7 @@ namespace paxs {
 
         // 考古学的遺物の型式情報を描画
         void renderArchaeologicalInfo(
-            const paxs::KoyomiSiv3D& koyomi_siv,
+            const paxs::Koyomi& koyomi,
             const paxs::CalendarUILayout& ui_layout,
             int debug_start_y,
             int koyomi_font_size,
@@ -219,7 +219,7 @@ namespace paxs {
 #ifndef PAXS_USING_SIMULATOR
             {
                 int date_year = 0;
-                std::visit([&](const auto& x) { date_year = int(x.cgetYear()); }, koyomi_siv.date_list[1].date);
+                std::visit([&](const auto& x) { date_year = int(x.cgetYear()); }, koyomi.date_list[1].date);
                 for (std::size_t i = 0; i < sueki_year.size(); ++i) {
                     if (date_year < sueki_year[i]) {
                         sueki_tanabe = sueki_name[i];
@@ -253,7 +253,7 @@ namespace paxs {
                     paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 170), paxg::Color(0, 0, 0));
             }
 
-            const std::string* sueki_nakamura_str = language_text.getStringPtr(koyomi_siv.sueki_nakamura_key, select_language.cgetKey());
+            const std::string* sueki_nakamura_str = language_text.getStringPtr(koyomi.sueki_nakamura_key, select_language.cgetKey());
             if (sueki_nakamura.size() != 0) {
                 if (sueki_nakamura_str != nullptr) {
                     (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
@@ -265,7 +265,7 @@ namespace paxs {
                     paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 140), paxg::Color(0, 0, 0));
             }
             if (sueki_tanabe.size() != 0) {
-                const std::string* sueki_tanabe_str = language_text.getStringPtr(koyomi_siv.sueki_tanabe_key, select_language.cgetKey());
+                const std::string* sueki_tanabe_str = language_text.getStringPtr(koyomi.sueki_tanabe_key, select_language.cgetKey());
                 if (sueki_nakamura_str != nullptr) {
                     (*one_font).draw(*sueki_tanabe_str,
                         paxg::Vec2i(ui_layout.rect_start_x + 10, debug_start_y + 170), paxg::Color(0, 0, 0));

@@ -26,6 +26,7 @@
 #include <PAX_MAHOROBA/PersonLocation.hpp>
 #include <PAX_MAHOROBA/UIManager.hpp>
 
+#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -64,7 +65,7 @@ namespace paxs {
         void update(
             MapView& map_view,
             const SelectLanguage& select_language,
-            const paxs::KoyomiSiv3D& koyomi_siv,
+            const paxs::Koyomi& koyomi,
             paxs::UIManager& ui_manager,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
@@ -78,7 +79,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             if (visible[MurMur3::calcHash("Simulation")]) {
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
-                    agent_location->draw(koyomi_siv.jdn.cgetDay(), simulator->getSettlementGrids(), simulator->getMarriagePosList(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY()
+                    agent_location->draw(koyomi.jdn.cgetDay(), simulator->getSettlementGrids(), simulator->getMarriagePosList(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY()
                     );
                 }
             }
@@ -92,7 +93,7 @@ namespace paxs {
 
                 place_name_location.draw(
                     visible,
-                    koyomi_siv.jdn.cgetDay(),
+                    koyomi.jdn.cgetDay(),
                     map_view.getWidth(),
                     map_view.getHeight(),
                     map_view.getCenterX(),
@@ -101,7 +102,7 @@ namespace paxs {
                     ui_manager.string_viewer.en_font,
                     ui_manager.string_viewer.pin_font);
                 person_name_location.draw(
-                    koyomi_siv.jdn.cgetDay(),
+                    koyomi.jdn.cgetDay(),
                     map_view.getWidth(),
                     map_view.getHeight(),
                     map_view.getCenterX(),
