@@ -68,7 +68,7 @@ namespace paxs {
 
         // 時間操作パネルの高さを取得
         int getHeight() const {
-            return arrow_time_icon_size + time_icon_size * 2 + arrow_icon_move_y + icon_move_y;
+            return arrow_time_icon_size + time_icon_size * 2;
         }
 
     private:
