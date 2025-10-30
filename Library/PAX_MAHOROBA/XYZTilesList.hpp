@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Color/Background.hpp>
-#include <PAX_MAHOROBA/MapView.hpp>
+#include <PAX_MAHOROBA/MapViewport.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTiles.hpp>
 
@@ -164,18 +164,18 @@ namespace paxs {
         }
 
         // 地図の辞書を更新
-        void update(const paxs::MenuBar& menu_bar, const MapView& map_view, cal::JDN_F64 jdn) {
+        void update(const paxs::MenuBar& menu_bar, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
 
-            const double map_view_width = map_view.getWidth();
-            const double map_view_height = map_view.getHeight();
-            const double map_view_center_x = map_view.getCenterX();
-            const double map_view_center_y = map_view.getCenterY();
+            const double map_viewport_width = map_viewport.getWidth();
+            const double map_viewport_height = map_viewport.getHeight();
+            const double map_viewport_center_x = map_viewport.getCenterX();
+            const double map_viewport_center_y = map_viewport.getCenterY();
 
             // 更新処理
             const auto* map_pulldown = menu_bar.cgetPulldown(MurMur3::calcHash("map"));
             for (auto&& xyzi : xyz_tile_list) {
                 if (xyzi.getMenuBarMap() != 0 && map_pulldown && map_pulldown->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
-                xyzi.update(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+                xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
             }
 
             // 地図の背景を塗りつぶす
@@ -187,15 +187,15 @@ namespace paxs {
                 if (map_pulldown && map_pulldown->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
                 switch (xyzi.getDrawType()) {
                 case paxs::MurMur3::calcHash("texture"): // 画像を描画
-                    xyzi.draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
+                    xyzi.draw(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, date);
                     break;
                 case paxs::MurMur3::calcHash("texture_and_grid"): // 画像とグリッドを描画
-                    xyzi.draw(map_view_width, map_view_height, map_view_center_x, map_view_center_y, date);
-                    xyzi.drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, paxg::Color{ 95, 99, 104 });
+                    xyzi.draw(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, date);
+                    xyzi.drawLine(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, 0.8, paxg::Color{ 95, 99, 104 });
                     break;
                 case paxs::MurMur3::calcHash("grid_and_string"): // 線と文字列を描画
-                    xyzi.drawLine(map_view_width, map_view_height, map_view_center_x, map_view_center_y, 0.8, paxg::Color{ 95, 99, 104 });
-                    xyzi.drawXYZ(map_view_width, map_view_height, map_view_center_x, map_view_center_y);
+                    xyzi.drawLine(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, 0.8, paxg::Color{ 95, 99, 104 });
+                    xyzi.drawXYZ(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
                     break;
                 }
             }

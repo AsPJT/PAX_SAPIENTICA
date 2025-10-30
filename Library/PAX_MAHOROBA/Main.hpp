@@ -33,7 +33,7 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
 #include <PAX_MAHOROBA/InitLogo.hpp>
-#include <PAX_MAHOROBA/MapView.hpp>
+#include <PAX_MAHOROBA/MapViewport.hpp>
 #include <PAX_MAHOROBA/MapViewer.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/XYZTilesList.hpp>
@@ -60,7 +60,7 @@ namespace paxs {
         //visible.emplace(MurMur3::calcHash("License"), false); // ライセンス
         visible.emplace(MurMur3::calcHash("3D"), false); // 3D
 
-        MapView map_view{};
+        MapViewport map_viewport{};
         XYZTilesList xyz_tile_list; // 描画する XYZ タイルを管理
         paxs::Koyomi koyomi{}; // 暦を管理する
         paxs::UIManager ui_manager{}; // UIを統合管理する
@@ -76,8 +76,8 @@ namespace paxs {
             [&](const std::string& path_) {xyz_tile_list.add(path_); });
 
         xyz_tile_list.addGridLine(); // グリッド線を追加 （描画順が最後なので最後に追加）
-        map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
-        xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi.jdn.cgetDay()); // 地図の辞書を更新
+        map_viewport.setWidth(map_viewport.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
+        xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
         // 言語を初期化（テキストの多言語対応クラス）
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
             [&](const std::string& path_) {language_text.add(path_); });
@@ -96,7 +96,7 @@ namespace paxs {
         map_siv.init();
         koyomi.init();
 
-        xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi.jdn.cgetDay()); // 地図の辞書を更新
+        xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
 
         paxg::Graphics3DModel g3d_model; // 3D モデル
 
@@ -122,11 +122,11 @@ namespace paxs {
 
             // 画面サイズの変更に合わせて地図の幅を変える
             if (old_height != paxg::Window::height()) {
-                map_view.setHeight(paxg::Window::height() * map_view.getHeight() / old_height);
-                map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
+                map_viewport.setHeight(paxg::Window::height() * map_viewport.getHeight() / old_height);
+                map_viewport.setWidth(map_viewport.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
             }
             if (old_width != paxg::Window::width()) {
-                map_view.setWidth(map_view.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
+                map_viewport.setWidth(map_viewport.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
             }
             if (old_width != paxg::Window::width() ||
                 old_height != paxg::Window::height()) {
@@ -145,7 +145,7 @@ namespace paxs {
 
 
             if (visible[MurMur3::calcHash(2, "3D")]) {
-                map_view.update(); // キーボード入力を更新
+                map_viewport.update(); // キーボード入力を更新
             }
 
             // シミュレーションモデル選択のプルダウンを更新
@@ -196,10 +196,10 @@ namespace paxs {
 
             if (visible[MurMur3::calcHash(2, "3D")]) {
 
-            xyz_tile_list.update(ui_manager.menu_bar, map_view, koyomi.jdn.cgetDay()); // 地図の辞書を更新
+            xyz_tile_list.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
                 // 地図を更新
                 map_siv.update(
-                    map_view,
+                    map_viewport,
                     select_language,
                     koyomi,
                     ui_manager,
@@ -221,7 +221,7 @@ namespace paxs {
 
             // 文字を更新
             ui_manager.update(
-                map_view,
+                map_viewport,
                 select_language,
                 language_text,
 #ifdef PAXS_USING_SIMULATOR

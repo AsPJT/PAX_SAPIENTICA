@@ -36,7 +36,7 @@
 #include <PAX_MAHOROBA/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/MapView.hpp>
+#include <PAX_MAHOROBA/MapViewport.hpp>
 #include <PAX_MAHOROBA/Pulldown.hpp>
 #include <PAX_MAHOROBA/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/StringViewer.hpp>
@@ -74,10 +74,10 @@ namespace paxs {
         int koyomi_font_size = 22; // 暦のフォントサイズ
         int koyomi_font_buffer_thickness_size = 3; // 暦のフォント太さ
 
-        std::size_t map_view_width_str_index;
-        std::size_t map_view_center_x_str_index;
-        std::size_t map_view_center_y_str_index;
-        std::size_t map_view_center_lat_str_index;
+        std::size_t map_viewport_width_str_index;
+        std::size_t map_viewport_center_x_str_index;
+        std::size_t map_viewport_center_y_str_index;
+        std::size_t map_viewport_center_lat_str_index;
         std::size_t xyz_tile_z_str_index;
 
         // UI の影
@@ -117,10 +117,10 @@ namespace paxs {
             // DebugInfoPanelを初期化
             debug_info_panel.init(string_viewer.language_fonts);
             //koyomi_font = setFont(koyomi_font_size, AppConfig::getInstance()->getRootPath(), koyomi_font_buffer_thickness_size);
-            map_view_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
-            map_view_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
-            map_view_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
-            map_view_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
+            map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
+            map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
+            map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
+            map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
             pulldown = paxs::Pulldown(&select_language, &language_text, paxs::LanguageKeys::ALL_LANGUAGE_HASHES, string_viewer.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, 0, true);
@@ -158,7 +158,7 @@ namespace paxs {
         }
 
         void update(
-            MapView& map_view,
+            MapViewport& map_viewport,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
 #ifdef PAXS_USING_SIMULATOR
@@ -168,7 +168,7 @@ namespace paxs {
             paxs::Koyomi& koyomi,
             paxs::GraphicVisualizationList& visible
             ) {
-            map_view.getCoordinate().toEquirectangularDegY();
+            map_viewport.getCoordinate().toEquirectangularDegY();
 
             // 画像の拡大縮小の方式を設定
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
@@ -228,7 +228,7 @@ namespace paxs {
                 // マップ情報とシミュレーション統計を描画
                 debug_info_panel.setVisible(true);
                 debug_info_panel.renderMapAndSimulationInfo(
-                    map_view, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
+                    map_viewport, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
                     select_language, language_text, visible
 #ifdef PAXS_USING_SIMULATOR
                     , simulator

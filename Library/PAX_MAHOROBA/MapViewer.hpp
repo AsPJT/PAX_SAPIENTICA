@@ -21,20 +21,22 @@
 #endif
 
 #include <PAX_MAHOROBA/LocationPoint.hpp>
-#include <PAX_MAHOROBA/MapView.hpp>
+#include <PAX_MAHOROBA/MapViewport.hpp>
 #include <PAX_MAHOROBA/LocationRange.hpp>
 #include <PAX_MAHOROBA/PersonLocation.hpp>
 #include <PAX_MAHOROBA/UIManager.hpp>
+#include <PAX_MAHOROBA/MapPresenter.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
 
+    /// @brief 地図ビューアー（Facadeパターン）
+    /// @brief Map Viewer (Facade Pattern)
+    /// @note MapPresenterに処理を委譲し、後方互換性を維持
     class MapViewer {
     public:
-
-
         std::unique_ptr<TextureLocation> texture_location; // 地図上に描画する画像の一覧
 
         PlaceNameLocation place_name_location{}; // 地名
@@ -44,8 +46,9 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<AgentLocation> agent_location; // エージェント
 #endif
-    public:
+        MapPresenter presenter_; // プレゼンター（実際の処理を担当）
 
+    public:
         MapViewer()
             :texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation))
 #ifdef PAXS_USING_SIMULATOR
@@ -62,8 +65,10 @@ namespace paxs {
 
         }
 
+        /// @brief 更新処理（Presenterに委譲）
+        /// @brief Update (delegate to Presenter)
         void update(
-            MapView& map_view,
+            MapViewport& map_viewport,
             const SelectLanguage& select_language,
             const paxs::Koyomi& koyomi,
             paxs::UIManager& ui_manager,
@@ -74,48 +79,28 @@ namespace paxs {
             ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する
-                texture_location->update(map_view.getCenterX(), map_view.getCenterY(), map_view.getWidth(), map_view.getHeight());
-            }
+                texture_location->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
+
+                // Presenterに描画を委譲
+                presenter_.update(
+                    map_viewport,
+                    select_language,
+                    koyomi,
+                    ui_manager,
 #ifdef PAXS_USING_SIMULATOR
-            if (visible[MurMur3::calcHash("Simulation")]) {
-                if (agent_location.get() != nullptr && simulator.get() != nullptr) {
-                    agent_location->draw(koyomi.jdn.cgetDay(), simulator->getSettlementGrids(), simulator->getMarriagePosList(), map_view.getWidth(), map_view.getHeight(), map_view.getCenterX(), map_view.getCenterY()
-                    );
-                }
-            }
+                    simulator,
+                    *agent_location,
 #endif
-            if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
-                // 地図上に画像を描画する
-                texture_location->update(map_view.getCenterX(), map_view.getCenterY(), map_view.getWidth(), map_view.getHeight());
-
-                // フォントを指定
-                paxg::Font* one_font = ui_manager.string_viewer.language_fonts.getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(ui_manager.koyomi_font_size), static_cast<std::uint_least8_t>(ui_manager.koyomi_font_buffer_thickness_size));
-
-                place_name_location.draw(
-                    visible,
-                    koyomi.jdn.cgetDay(),
-                    map_view.getWidth(),
-                    map_view.getHeight(),
-                    map_view.getCenterX(),
-                    map_view.getCenterY(),
-                    (one_font == nullptr) ? ui_manager.string_viewer.pin_font : (*one_font),
-                    ui_manager.string_viewer.en_font,
-                    ui_manager.string_viewer.pin_font);
-                person_name_location.draw(
-                    koyomi.jdn.cgetDay(),
-                    map_view.getWidth(),
-                    map_view.getHeight(),
-                    map_view.getCenterX(),
-                    map_view.getCenterY(),
-                    (one_font == nullptr) ? ui_manager.string_viewer.pin_font : (*one_font),
-                    ui_manager.string_viewer.en_font,
-                    ui_manager.string_viewer.pin_font);
-
+                    place_name_location,
+                    person_name_location,
+                    visible
+                );
             }
-
 #ifdef PAXS_USING_SIMULATOR
-            if (visible[MurMur3::calcHash("Simulation")]) {
+            else if (visible[MurMur3::calcHash("Simulation")]) {
+                // シミュレーションのみ表示の場合
                 if (agent_location.get() != nullptr && simulator.get() != nullptr) {
+                    agent_location->draw(koyomi.jdn.cgetDay(), simulator->getSettlementGrids(), simulator->getMarriagePosList(), map_viewport.getWidth(), map_viewport.getHeight(), map_viewport.getCenterX(), map_viewport.getCenterY());
                     agent_location->drawText();
                 }
             }

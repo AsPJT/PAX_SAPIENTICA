@@ -23,7 +23,7 @@
 #include <PAX_MAHOROBA/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/MapView.hpp>
+#include <PAX_MAHOROBA/MapViewport.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
@@ -52,7 +52,7 @@ namespace paxs {
 
         // マップ情報とシミュレーション統計を描画
         void renderMapAndSimulationInfo(
-            MapView& map_view,
+            MapViewport& map_viewport,
             int debug_start_y,
             int koyomi_font_size,
             int koyomi_font_buffer_thickness_size,
@@ -75,7 +75,7 @@ namespace paxs {
                 reinterpret_cast<const char*>(u8"拡大率") :
                 "Zoom rate"),
                 paxg::Vec2i(paxg::Window::width() - 40, debug_start_y), paxg::Color(0, 0, 0));
-            (*one_font).drawTopRight(std::to_string(map_view.getHeight()),
+            (*one_font).drawTopRight(std::to_string(map_viewport.getHeight()),
                 paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 30), paxg::Color(0, 0, 0));
 
 #ifdef PAXS_USING_SIMULATOR
@@ -84,9 +84,9 @@ namespace paxs {
             {
 #endif
                 if (visible[MurMur3::calcHash(8, "Simulation")]) {
-                    (*one_font).drawTopRight(std::to_string(map_view.getCenterX()),
+                    (*one_font).drawTopRight(std::to_string(map_viewport.getCenterX()),
                         paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::to_string(map_view.getCenterY()),
+                    (*one_font).drawTopRight(std::to_string(map_viewport.getCenterY()),
                         paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
                 }
             }
