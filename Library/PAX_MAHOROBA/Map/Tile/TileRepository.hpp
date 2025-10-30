@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include <PAX_MAHOROBA/XYZTiles.hpp>
+#include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>

@@ -23,7 +23,7 @@
 #include <PAX_MAHOROBA/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/IUIWidget.hpp>
 #include <PAX_MAHOROBA/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/MapViewport.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>

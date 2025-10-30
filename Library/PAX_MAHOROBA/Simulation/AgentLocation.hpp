@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
 #include <PAX_MAHOROBA/Color/Simulation.hpp>
-#include <PAX_MAHOROBA/LocationPoint.hpp>
+#include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
 
 #include <PAX_SAPIENTICA/MapUtility.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>

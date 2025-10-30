@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-#include <PAX_MAHOROBA/LocationPoint.hpp>
+#include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>

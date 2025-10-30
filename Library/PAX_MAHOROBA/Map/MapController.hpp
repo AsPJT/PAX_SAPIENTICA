@@ -20,11 +20,11 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
-#include <PAX_MAHOROBA/PlaceNameManager.hpp>
-#include <PAX_MAHOROBA/MapViewport.hpp>
-#include <PAX_MAHOROBA/LocationRange.hpp>
-#include <PAX_MAHOROBA/PersonLocation.hpp>
-#include <PAX_MAHOROBA/MapDrawer.hpp>
+#include <PAX_MAHOROBA/Map/Location/PlaceNameManager.hpp>
+#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Location/LocationRange.hpp>
+#include <PAX_MAHOROBA/Map/Location/PersonLocation.hpp>
+#include <PAX_MAHOROBA/Map/MapDrawer.hpp>
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
