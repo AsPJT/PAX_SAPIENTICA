@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_MAP_RENDERER_HPP
 
 #include <PAX_GRAPHICA/Font.hpp>
-#include <PAX_MAHOROBA/LocationPoint.hpp>
 #include <PAX_MAHOROBA/PersonLocation.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
@@ -38,7 +37,7 @@ public:
 
     /// @brief 地名を描画
     /// @brief Draw place names
-    /// @param place_name_location 地名ロケーション
+    /// @param place_name_manager 地名マネージャー
     /// @param visible 可視性マネージャー
     /// @param julian_day ユリウス日
     /// @param width 幅
@@ -49,7 +48,7 @@ public:
     /// @param en_font 英語フォント
     /// @param pin_font ピンフォント
     void drawPlaceNames(
-        PlaceNameLocation& place_name_location,
+        PlaceNameManager& place_name_manager,
         GraphicVisualizationList& visible,
         double julian_day,
         double width,
@@ -60,7 +59,7 @@ public:
         paxg::Font& en_font,
         paxg::Font& pin_font
     ) {
-        place_name_location.draw(
+        place_name_manager.draw(
             visible,
             julian_day,
             width,
@@ -85,7 +84,7 @@ public:
     /// @param en_font 英語フォント
     /// @param pin_font ピンフォント
     void drawPersonNames(
-        PersonNameLocation& person_name_location,
+        PersonNameManager& person_name_manager,
         double julian_day,
         double width,
         double height,
@@ -95,7 +94,7 @@ public:
         paxg::Font& en_font,
         paxg::Font& pin_font
     ) {
-        person_name_location.draw(
+        person_name_manager.draw(
             julian_day,
             width,
             height,

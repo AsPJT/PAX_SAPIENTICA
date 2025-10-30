@@ -39,9 +39,10 @@ namespace paxs {
             , mx(mex_ - msx_), my(mey_ - msy_) {}
     };
 
-    class TextureLocation {
+    // 地図上に描画する画像を管理するクラス (Application Layer)
+    class TextureManager {
     public:
-        TextureLocation() {
+        TextureManager() {
             // ここに実験用のテクスチャを定義する
 
             //// 統一新羅 朝鮮半島

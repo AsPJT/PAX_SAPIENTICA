@@ -20,11 +20,12 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
-#include <PAX_MAHOROBA/LocationPoint.hpp>
+#include <PAX_MAHOROBA/PlaceNameManager.hpp>
 #include <PAX_MAHOROBA/MapViewport.hpp>
 #include <PAX_MAHOROBA/LocationRange.hpp>
 #include <PAX_MAHOROBA/PersonLocation.hpp>
 #include <PAX_MAHOROBA/MapDrawer.hpp>
+
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
@@ -37,10 +38,10 @@ namespace paxs {
     /// @brief Map Controller (Integrated Control Class)
     class MapController {
     public:
-        std::unique_ptr<TextureLocation> texture_location; // 地図上に描画する画像の一覧
+        std::unique_ptr<TextureManager> texture_manager; // 地図上に描画する画像の一覧
 
-        PlaceNameLocation place_name_location{}; // 地名
-        PersonNameLocation person_name_location{}; // 人名
+        PlaceNameManager place_name_manager{}; // 地名
+        PersonNameManager person_name_manager{}; // 人名
 
     private:
 #ifdef PAXS_USING_SIMULATOR
@@ -51,7 +52,7 @@ namespace paxs {
 
     public:
         MapController()
-            :texture_location(std::unique_ptr<TextureLocation>(new(std::nothrow) TextureLocation))
+            :texture_manager(std::unique_ptr<TextureManager>(new(std::nothrow) TextureManager))
 #ifdef PAXS_USING_SIMULATOR
             ,agent_location(std::unique_ptr<AgentLocation>(new(std::nothrow) AgentLocation))
 #endif
@@ -59,10 +60,10 @@ namespace paxs {
 
         void init() {
             // 地名
-            place_name_location.init();
-            place_name_location.add();
-            person_name_location.init();
-            person_name_location.add();
+            place_name_manager.init();
+            place_name_manager.add();
+            person_name_manager.init();
+            person_name_manager.add();
 
         }
 
@@ -81,7 +82,7 @@ namespace paxs {
             ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する
-                texture_location->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
+                texture_manager->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
 
                 // 描画処理（旧Presenterの処理を統合）
                 const double width = map_viewport.getWidth();
@@ -92,7 +93,7 @@ namespace paxs {
 
                 // 地名を描画
                 drawer_.drawPlaceNames(
-                    place_name_location,
+                    place_name_manager,
                     visible,
                     julian_day,
                     width,
@@ -106,7 +107,7 @@ namespace paxs {
 
                 // 人名を描画
                 drawer_.drawPersonNames(
-                    person_name_location,
+                    person_name_manager,
                     julian_day,
                     width,
                     height,

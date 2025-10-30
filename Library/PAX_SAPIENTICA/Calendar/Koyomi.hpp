@@ -224,4 +224,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_MAHOROBA_CALENDAR_HPP
+#endif // !PAX_SAPIENTICA_CALENDAR_KOYOMI_HPP

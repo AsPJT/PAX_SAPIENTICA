@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_KEY_HPP
-#define PAX_SAPIENTICA_SIV3D_KEY_HPP
+#ifndef PAX_GRAPHICA_KEY_HPP
+#define PAX_GRAPHICA_KEY_HPP
 
 #include <algorithm>
 #include <array>
@@ -252,4 +252,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_KEY_HPP
+#endif // !PAX_GRAPHICA_KEY_HPP

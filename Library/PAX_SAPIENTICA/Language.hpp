@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
-#define PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
+#ifndef PAX_SAPIENTICA_LANGUAGE_HPP
+#define PAX_SAPIENTICA_LANGUAGE_HPP
 
 #include <cstddef>
 #include <fstream>
@@ -136,4 +136,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
+#endif // !PAX_SAPIENTICA_LANGUAGE_HPP

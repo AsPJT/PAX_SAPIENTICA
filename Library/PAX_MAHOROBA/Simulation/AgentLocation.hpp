@@ -13,7 +13,9 @@
 #define PAX_MAHOROBA_AGENT_LOCATION_HPP
 
 #include <PAX_GRAPHICA/Circle.hpp>
+#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
+#include <PAX_GRAPHICA/Spline2D.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 

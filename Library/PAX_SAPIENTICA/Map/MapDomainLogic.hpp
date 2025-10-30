@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_MAP_MAP_MODEL_HPP
-#define PAX_SAPIENTICA_MAP_MAP_MODEL_HPP
+#ifndef PAX_SAPIENTICA_MAP_MAP_DOMAIN_LOGIC_HPP
+#define PAX_SAPIENTICA_MAP_MAP_DOMAIN_LOGIC_HPP
 
 #include <cmath>
 #include <cstdint>
