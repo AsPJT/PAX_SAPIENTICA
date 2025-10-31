@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_COLOR_SIMULATION_HPP
-#define PAX_MAHOROBA_COLOR_SIMULATION_HPP
+#ifndef PAX_MAHOROBA_RENDERING_SIMULATION_COLOR_HPP
+#define PAX_MAHOROBA_RENDERING_SIMULATION_COLOR_HPP
 
 #include <array>
 
@@ -116,4 +116,4 @@ namespace paxs {
 
 }
 
-#endif // PAX_MAHOROBA_COLOR_SIMULATION_HPP
+#endif // PAX_MAHOROBA_RENDERING_SIMULATION_COLOR_HPP

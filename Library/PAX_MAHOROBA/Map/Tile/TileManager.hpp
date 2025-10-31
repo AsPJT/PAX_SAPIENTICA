@@ -19,7 +19,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Color/Background.hpp>
+#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>

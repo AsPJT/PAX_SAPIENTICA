@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_SIMULATION_SIMULATION_PANEL_HPP
-#define PAX_MAHOROBA_SIMULATION_SIMULATION_PANEL_HPP
+#ifndef PAX_MAHOROBA_UI_SIMULATION_PANEL_HPP
+#define PAX_MAHOROBA_UI_SIMULATION_PANEL_HPP
 
 #include <cstdint>
 #include <memory>
@@ -502,4 +502,4 @@ namespace paxs {
 	};
 }
 
-#endif // !PAX_MAHOROBA_SIMULATION_SIMULATION_PANEL_HPP
+#endif // !PAX_MAHOROBA_UI_SIMULATION_PANEL_HPP

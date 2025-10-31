@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_GRAPHICA_BACKGROUND_COLOR_HPP
-#define PAX_GRAPHICA_BACKGROUND_COLOR_HPP
+#ifndef PAX_MAHOROBA_RENDERING_BACKGROUND_COLOR_HPP
+#define PAX_MAHOROBA_RENDERING_BACKGROUND_COLOR_HPP
 
 #include <PAX_GRAPHICA/Color.hpp>
 
@@ -23,4 +23,4 @@ namespace paxs {
     }
 }
 
-#endif // !PAX_GRAPHICA_BACKGROUND_COLOR_HPP
+#endif // !PAX_MAHOROBA_RENDERING_BACKGROUND_COLOR_HPP

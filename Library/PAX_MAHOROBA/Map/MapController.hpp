@@ -16,7 +16,7 @@
 #include <new>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/Simulation/AgentLocation.hpp>
+#include <PAX_MAHOROBA/Map/Location/AgentLocation.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 

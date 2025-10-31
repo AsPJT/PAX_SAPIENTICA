@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_AGENT_LOCATION_HPP
-#define PAX_MAHOROBA_AGENT_LOCATION_HPP
+#ifndef PAX_MAHOROBA_MAP_LOCATION_AGENT_LOCATION_HPP
+#define PAX_MAHOROBA_MAP_LOCATION_AGENT_LOCATION_HPP
 
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
-#include <PAX_MAHOROBA/Color/Simulation.hpp>
+#include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
 #include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
 
 #include <PAX_SAPIENTICA/MapUtility.hpp>
@@ -403,4 +403,4 @@ namespace paxs {
     };
 } // namespace paxs
 
-#endif // !PAX_MAHOROBA_AGENT_LOCATION_HPP
+#endif // !PAX_MAHOROBA_MAP_LOCATION_AGENT_LOCATION_HPP

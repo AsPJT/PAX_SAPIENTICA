@@ -18,7 +18,7 @@
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/Simulation/SimulationPanel.hpp>
+#include <PAX_MAHOROBA/UI/SimulationPanel.hpp>
 #endif
 
 #include <PAX_GRAPHICA/Key.hpp>
