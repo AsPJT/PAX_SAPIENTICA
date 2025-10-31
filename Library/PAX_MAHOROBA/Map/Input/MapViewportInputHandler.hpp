@@ -263,20 +263,34 @@ namespace paxs {
         bool handleInput(const InputEvent& event) override {
             if (!enabled_ || viewport_ == nullptr) return false;
 
-            // キーボード入力は常に処理
-            handleKeyboardZoom(*viewport_);
-            handleMouseWheelZoom(*viewport_);
+            // イベントタイプに応じて処理を分岐
+            // Branch processing according to event type
+            switch (event.type) {
+                case InputEventType::Keyboard:
+                    // キーボード入力（Q/Eキーによるズーム）
+                    // Keyboard input (zoom with Q/E keys)
+                    handleKeyboardZoom(*viewport_);
+                    viewport_->applyConstraints();
+                    return false; // 他のハンドラーにも処理を継続
 
-            // マウスドラッグとタッチ入力
-            handleMouseDrag(*viewport_);
-            handleTouchInput(*viewport_);
+                case InputEventType::MouseWheel:
+                    // マウスホイール入力（ズーム）
+                    // Mouse wheel input (zoom)
+                    handleMouseWheelZoom(*viewport_);
+                    viewport_->applyConstraints();
+                    return false; // 他のハンドラーにも処理を継続
 
-            // 入力処理後に境界制約を適用
-            viewport_->applyConstraints();
+                case InputEventType::Mouse:
+                    // マウス/タッチ入力（パンと移動）
+                    // Mouse/Touch input (pan and move)
+                    handleMouseDrag(*viewport_);
+                    handleTouchInput(*viewport_);
+                    viewport_->applyConstraints();
+                    return false; // 他のハンドラーにも処理を継続
 
-            // 画面全体の入力処理を行うため、常にtrueを返す
-            // （他のハンドラーにも処理を継続させる場合はfalseを返す）
-            return false; // 他のハンドラーにも処理を継続させる
+                default:
+                    return false;
+            }
         }
 
         /// @brief ヒットテスト（画面全体を対象）

@@ -120,15 +120,24 @@ namespace paxs {
             graphics_manager.getUILayer().updateLanguage(select_language);
             graphics_manager.getUILayer().syncVisibilityFromMenu(visible);
 
-            // 入力処理（InputRouterを使用）
-            // Input processing (using InputRouter)
+            // 入力処理（InputRouterを使用した統合的な入力処理）
+            // Input processing (unified input processing using InputRouter)
             if (!visible[MurMur3::calcHash(2, "3D")]) {
-                // マウス位置を取得
+                // キーボード入力（座標に依存しない）
+                // Keyboard input (coordinate-independent)
+                // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
+                graphics_manager.getInputRouter().routeKeyboardInput(&input_state_manager);
+
+                // マウスホイール入力（座標に依存しない）
+                // Mouse wheel input (coordinate-independent)
+                // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
+                graphics_manager.getInputRouter().routeMouseWheelInput(&input_state_manager);
+
+                // マウス/タッチ入力（座標ベース）
+                // Mouse/Touch input (coordinate-based)
                 int mouse_x = paxg::Mouse::getInstance()->getPosX();
                 int mouse_y = paxg::Mouse::getInstance()->getPosY();
 
-                // InputRouterで入力イベントをルーティング
-                // Route input event via InputRouter
                 // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
                 graphics_manager.getInputRouter().routeInput(&input_state_manager, mouse_x, mouse_y);
             }

@@ -17,9 +17,21 @@
 
 namespace paxs {
 
+	/// @brief 入力イベントの種類
+	/// @brief Input event type
+	enum class InputEventType {
+		Mouse,      ///< マウス/タッチ入力 / Mouse/Touch input
+		Keyboard,   ///< キーボード入力 / Keyboard input
+		MouseWheel  ///< マウスホイール入力 / Mouse wheel input
+	};
+
 	/// @brief 入力イベントの構造体
 	/// @brief Input event structure
 	struct InputEvent {
+		/// @brief 入力イベントの種類
+		/// @brief Input event type
+		InputEventType type = InputEventType::Mouse;
+
 		/// @brief 入力状態マネージャー（既存のシステムとの互換性のため）
 		/// @brief Input state manager (for compatibility with existing system)
 		InputStateManager* input_state_manager = nullptr;
@@ -36,13 +48,20 @@ namespace paxs {
 		/// @brief Default constructor
 		InputEvent() = default;
 
-		/// @brief コンストラクタ
-		/// @brief Constructor
+		/// @brief コンストラクタ（マウス/タッチ入力用）
+		/// @brief Constructor (for Mouse/Touch input)
 		/// @param manager 入力状態マネージャー / Input state manager
 		/// @param x_ X座標 / X coordinate
 		/// @param y_ Y座標 / Y coordinate
 		InputEvent(InputStateManager* manager, int x_, int y_)
-			: input_state_manager(manager), x(x_), y(y_) {}
+			: type(InputEventType::Mouse), input_state_manager(manager), x(x_), y(y_) {}
+
+		/// @brief コンストラクタ（キーボード/マウスホイール入力用）
+		/// @brief Constructor (for Keyboard/MouseWheel input)
+		/// @param event_type 入力イベントの種類 / Input event type
+		/// @param manager 入力状態マネージャー / Input state manager
+		InputEvent(InputEventType event_type, InputStateManager* manager)
+			: type(event_type), input_state_manager(manager), x(0), y(0) {}
 	};
 
 	/// @brief 入力処理可能オブジェクトの基底インターフェース

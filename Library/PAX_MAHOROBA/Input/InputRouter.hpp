@@ -132,6 +132,80 @@ namespace paxs {
 			return routeInput(event);
 		}
 
+		/// @brief キーボード入力イベントをルーティング
+		/// @brief Route keyboard input event
+		/// @param input_state_manager 入力状態マネージャー / Input state manager
+		/// @return イベントが処理された場合true / true if event was handled
+		///
+		/// キーボード入力は座標に依存しないため、ヒットテストをスキップして
+		/// 全ハンドラーに順番に処理を試みさせます。
+		/// Keyboard input is coordinate-independent, so hit test is skipped and
+		/// all handlers are given a chance to process it in order.
+		bool routeKeyboardInput(InputStateManager* input_state_manager) {
+			InputEvent event(InputEventType::Keyboard, input_state_manager);
+
+			// ソートされていない場合は自動的にソート
+			// Sort automatically if not sorted
+			if (!is_sorted_) {
+				sort();
+			}
+
+			// 前面から順に入力イベントを処理（ヒットテストなし）
+			// Process input event from front to back (without hit test)
+			for (IInputHandler* handler : handlers_) {
+				if (handler == nullptr || !handler->isEnabled()) continue;
+
+				// キーボード入力はヒットテストをスキップ
+				// Skip hit test for keyboard input
+				if (handler->handleInput(event)) {
+					// イベントが処理されたら伝播を停止
+					// Stop propagation if event was handled
+					return true;
+				}
+			}
+
+			// どのハンドラーも処理しなかった
+			// No handler processed the event
+			return false;
+		}
+
+		/// @brief マウスホイール入力イベントをルーティング
+		/// @brief Route mouse wheel input event
+		/// @param input_state_manager 入力状態マネージャー / Input state manager
+		/// @return イベントが処理された場合true / true if event was handled
+		///
+		/// マウスホイール入力は座標に依存しないため、ヒットテストをスキップして
+		/// 全ハンドラーに順番に処理を試みさせます。
+		/// Mouse wheel input is coordinate-independent, so hit test is skipped and
+		/// all handlers are given a chance to process it in order.
+		bool routeMouseWheelInput(InputStateManager* input_state_manager) {
+			InputEvent event(InputEventType::MouseWheel, input_state_manager);
+
+			// ソートされていない場合は自動的にソート
+			// Sort automatically if not sorted
+			if (!is_sorted_) {
+				sort();
+			}
+
+			// 前面から順に入力イベントを処理（ヒットテストなし）
+			// Process input event from front to back (without hit test)
+			for (IInputHandler* handler : handlers_) {
+				if (handler == nullptr || !handler->isEnabled()) continue;
+
+				// マウスホイール入力はヒットテストをスキップ
+				// Skip hit test for mouse wheel input
+				if (handler->handleInput(event)) {
+					// イベントが処理されたら伝播を停止
+					// Stop propagation if event was handled
+					return true;
+				}
+			}
+
+			// どのハンドラーも処理しなかった
+			// No handler processed the event
+			return false;
+		}
+
 		/// @brief 特定レイヤー範囲の入力イベントをルーティング
 		/// @brief Route input event to specific layer range
 		/// @param event 入力イベント / Input event

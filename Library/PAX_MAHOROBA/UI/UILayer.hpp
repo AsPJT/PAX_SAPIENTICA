@@ -413,8 +413,14 @@ namespace paxs {
         bool handleInput(const InputEvent& event) override {
             if (!enabled_ || !visible_) return false;
 
-            // 子ウィジェットに順番に入力イベントを渡す
-            // Pass input event to child widgets in order
+            // キーボードとマウスホイールイベントは座標に依存しないためスキップ
+            // Skip keyboard and mouse wheel events as they are coordinate-independent
+            if (event.type == InputEventType::Keyboard || event.type == InputEventType::MouseWheel) {
+                return false;
+            }
+
+            // 子ウィジェットに順番に入力イベントを渡す（マウス/タッチのみ）
+            // Pass input event to child widgets in order (Mouse/Touch only)
             for (auto* widget : widgets) {
                 if (widget && widget->isEnabled() && widget->isVisible()) {
                     if (widget->hitTest(event.x, event.y)) {
