@@ -44,6 +44,7 @@
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuKeys.hpp>
@@ -58,19 +59,6 @@ namespace paxs {
     class UIManager {
     private:
         FontManager* font_manager_ = nullptr; // 文字表示専用クラス（依存性注入）
-
-        // プルダウンのフォントサイズ
-        int pulldown_font_size =
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
-            40;
-#else
-            24;
-#endif
-
-        int pulldown_font_buffer_thickness_size = 3; // プルダウンのフォント太さ
-
-        int koyomi_font_size = 22; // 暦のフォントサイズ
-        int koyomi_font_buffer_thickness_size = 3; // 暦のフォント太さ
 
         std::size_t map_viewport_width_str_index;
         std::size_t map_viewport_center_x_str_index;
@@ -99,14 +87,6 @@ namespace paxs {
 #endif
 
     public:
-        // FontManagerへのアクセスを提供
-        FontManager& getFontManager() { return *font_manager_; }
-        const FontManager& getFontManager() const { return *font_manager_; }
-
-        // フォントサイズへのアクセスを提供
-        int getKoyomiFontSize() const { return koyomi_font_size; }
-        int getKoyomiFontBufferThicknessSize() const { return koyomi_font_buffer_thickness_size; }
-
         void init(
             FontManager& font_manager,
             const SelectLanguage& select_language,
@@ -116,9 +96,8 @@ namespace paxs {
 #ifndef PAXS_USING_SIMULATOR
             (void)simulation_text; // シミュレーター未使用時の警告を抑制
 #endif
-            // FontManagerの参照を保存
+            // FontManagerの参照を保存（初期化はGraphicsManagerで実施済み）
             font_manager_ = &font_manager;
-            font_manager_->init(select_language, pulldown_font_size, pulldown_font_buffer_thickness_size);
 
             // CalendarRendererを初期化
             calendar_renderer.init(font_manager_->language_fonts);
@@ -132,13 +111,13 @@ namespace paxs {
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
             // HeaderPanelを初期化
-            header_panel.init(&select_language, &language_text, font_manager_->language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size));
+            header_panel.init(&select_language, &language_text, font_manager_->language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS));
 
             // 暦の時間操作のアイコン
             key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.init(select_language, simulation_text, font_manager_->language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size);
+            simulation_panel.init(select_language, simulation_text, font_manager_->language_fonts, FontConfig::PULLDOWN_FONT_SIZE, FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
 #endif
 
             // 影
@@ -259,7 +238,7 @@ namespace paxs {
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
 
             // UIレイアウトを計算
-            ui_layout.calculate(pulldown_font_size, koyomi_font_size, koyomi.date_list.size(), time_control_panel.getHeight());
+            ui_layout.calculate(FontConfig::PULLDOWN_FONT_SIZE, FontConfig::KOYOMI_FONT_SIZE, koyomi.date_list.size(), time_control_panel.getHeight());
 
             // 影とパネルを描画
 #ifdef PAXS_USING_SIV3D
@@ -309,7 +288,7 @@ namespace paxs {
                 bool is_simulator_active = false;
 #endif
                 // CalendarRendererのレンダリングパラメータを設定
-                calendar_renderer.setRenderParams(koyomi, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
+                calendar_renderer.setRenderParams(koyomi, ui_layout, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS, select_language, language_text, is_simulator_active);
                 calendar_renderer.setVisible(true);
 
                 // 時間操作パネルを更新・描画
@@ -327,7 +306,7 @@ namespace paxs {
                 // マップ情報とシミュレーション統計を描画
                 debug_info_panel.setVisible(true);
                 debug_info_panel.renderMapAndSimulationInfo(
-                    map_viewport, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
+                    map_viewport, debug_start_y, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS,
                     select_language, language_text, visible
 #ifdef PAXS_USING_SIMULATOR
                     , simulator
@@ -371,7 +350,7 @@ namespace paxs {
                 int debug_start_y = ui_layout.getDebugStartY();
                 // 考古学的遺物の型式情報を描画
                 debug_info_panel.renderArchaeologicalInfo(
-                    koyomi, ui_layout, debug_start_y, koyomi_font_size, koyomi_font_buffer_thickness_size,
+                    koyomi, ui_layout, debug_start_y, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS,
                     select_language, language_text
                 );
             }

@@ -22,6 +22,7 @@
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 
@@ -53,16 +54,9 @@ namespace paxs {
 			const paxs::Language& language_text,
 			const paxs::Language& simulation_text
 		) {
-			// UIManagerを初期化（FontManagerを渡す）
+			font_manager_.init(select_language);
 			ui_manager_.init(font_manager_, select_language, language_text, simulation_text);
-
-			// MapControllerを初期化（FontManagerを渡す）
-			map_controller_.init(
-				font_manager_,
-				select_language,
-				static_cast<std::uint_least8_t>(ui_manager_.getKoyomiFontSize()),
-				static_cast<std::uint_least8_t>(ui_manager_.getKoyomiFontBufferThicknessSize())
-			);
+			map_controller_.init(font_manager_, select_language);
 
 			old_width_ = paxg::Window::width();
 			old_height_ = paxg::Window::height();

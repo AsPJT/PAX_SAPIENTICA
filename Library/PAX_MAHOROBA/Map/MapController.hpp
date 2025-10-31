@@ -30,6 +30,7 @@
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -54,8 +55,6 @@ namespace paxs {
         // 依存性注入された参照
         FontManager* font_manager_ = nullptr;
         const SelectLanguage* select_language_ = nullptr;
-        std::uint_least8_t koyomi_font_size_ = 22;
-        std::uint_least8_t koyomi_font_buffer_thickness_size_ = 3;
 
     public:
         MapController()
@@ -65,8 +64,7 @@ namespace paxs {
 #endif
         {}
 
-        void init(FontManager& font_manager, const SelectLanguage& select_language,
-                  std::uint_least8_t koyomi_font_size, std::uint_least8_t koyomi_font_buffer_thickness_size) {
+        void init(FontManager& font_manager, const SelectLanguage& select_language) {
             // 地名
             place_name_manager.init();
             place_name_manager.add();
@@ -76,8 +74,6 @@ namespace paxs {
             // フォント管理への参照を保存
             font_manager_ = &font_manager;
             select_language_ = &select_language;
-            koyomi_font_size_ = koyomi_font_size;
-            koyomi_font_buffer_thickness_size_ = koyomi_font_buffer_thickness_size;
         }
 
         /// @brief 更新処理（統合版）
@@ -97,8 +93,8 @@ namespace paxs {
                 // フォントを取得
                 paxg::Font* main_font = font_manager_->language_fonts.getAndAdd(
                     select_language_->cgetKey(),
-                    koyomi_font_size_,
-                    koyomi_font_buffer_thickness_size_
+                    FontConfig::KOYOMI_FONT_SIZE,
+                    FontConfig::KOYOMI_FONT_BUFFER_THICKNESS
                 );
 
                 // 描画処理（旧Presenterの処理を統合）
