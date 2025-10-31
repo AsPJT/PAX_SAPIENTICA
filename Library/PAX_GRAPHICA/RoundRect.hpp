@@ -26,6 +26,8 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <algorithm> // std::min, std::max (SFMLで使用)
+
 namespace paxg {
 
     struct RoundRect {
@@ -71,33 +73,60 @@ namespace paxg {
         }
 
 #elif defined(PAXS_USING_SFML)
-        sf::RectangleShape rect{};
+        int x0{}, y0{}, w0{}, h0{}, r0{};
         constexpr RoundRect() = default;
-        RoundRect(const int x, const int y, const int w, const int h) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition({ static_cast<float>(x), static_cast<float>(y) }); }
-        RoundRect(const int x, const int y, const int w, const int h, const int) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition({ static_cast<float>(x), static_cast<float>(y) }); }
-        RoundRect(const sf::Vector2i& pos, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
-        RoundRect(const sf::Vector2i& pos, const sf::Vector2i& size, const int) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
-        RoundRect(const sf::Vector2i& pos, const int w, const int h) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
-        RoundRect(const sf::Vector2i& pos, const int w, const int h, const int) : rect(sf::Vector2f(static_cast<float>(w), static_cast<float>(h))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
-        RoundRect(const int x, const int y, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(x), static_cast<float>(y) }); }
-        RoundRect(const int x, const int y, const sf::Vector2i& size, const int) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(x), static_cast<float>(y) }); }
-        operator sf::RectangleShape() const { return rect; }
-        void setX(const int x_) { rect.setPosition({ static_cast<float>(x_), rect.getPosition().y }); }
-        void setY(const int y_) { rect.setPosition({ rect.getPosition().x, static_cast<float>(y_) }); }
-        void setW(const int w_) { rect.setSize(sf::Vector2f(static_cast<float>(w_), rect.getSize().y)); }
-        void setH(const int h_) { rect.setSize(sf::Vector2f(rect.getSize().x, static_cast<float>(h_))); }
-        void setR(const int) {}
-        int x() const { return static_cast<int>(rect.getPosition().x); }
-        int y() const { return static_cast<int>(rect.getPosition().y); }
-        int w() const { return static_cast<int>(rect.getSize().x); }
-        int h() const { return static_cast<int>(rect.getSize().y); }
-        int r() const { return 0; }
-        Vec2i pos() const { return Vec2i(static_cast<int>(rect.getPosition().x), static_cast<int>(rect.getPosition().y)); }
-        Vec2i size() const { return Vec2i(static_cast<int>(rect.getSize().x), static_cast<int>(rect.getSize().y)); }
-        void setPos(const int x_, const int y_) { rect.setPosition({ static_cast<float>(x_), static_cast<float>(y_) }); }
-        void setSize(const int w_, const int h_) { rect.setSize(sf::Vector2f(static_cast<float>(w_), static_cast<float>(h_))); }
-        void setPos(const Vec2i& pos_) { rect.setPosition({ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()) }); }
-        void setSize(const Vec2i& size_) { rect.setSize(sf::Vector2f(static_cast<float>(size_.x()), static_cast<float>(size_.y()))); }
+        // [修正] コンストラクタを #else と同様に修正
+        RoundRect(const int x, const int y, const int w, const int h) :
+            x0(x), y0(y), w0(w), h0(h), r0(w / 5) {}
+        RoundRect(const int x, const int y, const int w, const int h, const int r) :
+            x0(x), y0(y), w0(w), h0(h), r0(r) {}
+        // [修正] 引数を Vec2i に (Siv3D, #else との互換性のため)
+        RoundRect(const Vec2i& pos, const Vec2i& size)
+            : x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())),
+            w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(w0 / 5) {}
+        RoundRect(const Vec2i& pos, const Vec2i& size, const int r)
+            : x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())),
+            w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(r) {}
+        RoundRect(const Vec2i& pos, const int w, const int h) :
+            x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())), w0(w), h0(h), r0(w0 / 5) {}
+        RoundRect(const Vec2i& pos, const int w, const int h, const int r) :
+            x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())), w0(w), h0(h), r0(r) {}
+        RoundRect(const int x, const int y, const Vec2i& size)
+            : x0(x), y0(y), w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(w0 / 5) {}
+        RoundRect(const int x, const int y, const Vec2i& size, const int r)
+            : x0(x), y0(y), w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(r) {}
+
+        // operator sf::RectangleShape() const { return rect; } // [削除] rect メンバはもうない
+
+        // [修正] セッター/ゲッターを #else と同様に修正
+        void setX(const int x_) { x0 = x_; }
+        void setY(const int y_) { y0 = y_; }
+        void setW(const int w_) { w0 = w_; }
+        void setH(const int h_) { h0 = h_; }
+        void setR(const int r_) { r0 = r_; }
+        int x() const { return x0; }
+        int y() const { return y0; }
+        int w() const { return w0; }
+        int h() const { return h0; }
+        int r() const { return r0; }
+        Vec2i pos() const { return Vec2i(static_cast<int>(x0), static_cast<int>(y0)); }
+        Vec2i size() const { return Vec2i(static_cast<int>(w0), static_cast<int>(h0)); }
+        void setPos(const int x_, const int y_) {
+            x0 = x_;
+            y0 = y_;
+        }
+        void setSize(const int w_, const int h_) {
+            w0 = w_;
+            h0 = h_;
+        }
+        void setPos(const Vec2i& pos_) {
+            x0 = static_cast<int>(pos_.x());
+            y0 = static_cast<int>(pos_.y());
+        }
+        void setSize(const Vec2i& size_) {
+            w0 = static_cast<int>(size_.x());
+            h0 = static_cast<int>(size_.y());
+        }
 #else
         int x0{}, y0{}, w0{}, h0{}, r0{};
         constexpr RoundRect() = default;
@@ -149,6 +178,61 @@ namespace paxg {
         }
 #endif
 
+        // [追加] SFML描画用のヘルパー関数
+#if defined(PAXS_USING_SFML)
+    private:
+        void drawInternal(float x, float y, float w, float h, float r, const sf::Color& c) const {
+            // r が大きすぎる場合は補正
+            r = std::min(r, w / 2.0f);
+            r = std::min(r, h / 2.0f);
+            r = std::max(r, 0.0f); // r がマイナスにならないように
+
+            // r が 0 なら通常の四角形を描画
+            if (r == 0.0f) {
+                sf::RectangleShape rect(sf::Vector2f(w, h));
+                rect.setPosition({ x, y });
+                rect.setFillColor(c);
+                Window::window().draw(rect);
+                return;
+            }
+
+            // 2つの長方形（中央の十字）と4つの円（角）で角丸を表現
+
+            // 1. 中央の水平な長方形
+            sf::RectangleShape rect_h(sf::Vector2f(w - 2.0f * r, h));
+            rect_h.setPosition({ x + r, y });
+            rect_h.setFillColor(c);
+            Window::window().draw(rect_h);
+
+            // 2. 中央の垂直な長方形
+            sf::RectangleShape rect_v(sf::Vector2f(w, h - 2.0f * r));
+            rect_v.setPosition({ x, y + r });
+            rect_v.setFillColor(c);
+            Window::window().draw(rect_v);
+
+            // 3. 四隅の円
+            sf::CircleShape corner(r);
+            corner.setFillColor(c);
+
+            // 左上
+            corner.setPosition({ x, y });
+            Window::window().draw(corner);
+
+            // 右上
+            corner.setPosition({ x + w - 2.0f * r, y });
+            Window::window().draw(corner);
+
+            // 左下
+            corner.setPosition({ x, y + h - 2.0f * r });
+            Window::window().draw(corner);
+
+            // 右下
+            corner.setPosition({ x + w - 2.0f * r, y + h - 2.0f * r });
+            Window::window().draw(corner);
+        }
+    public:
+#endif
+
         void draw() const {
 #if defined(PAXS_USING_SIV3D)
             rect.draw();
@@ -159,8 +243,10 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
-            Window::window().draw(rect);
-
+            // [修正] ヘルパー関数を呼び出す
+            drawInternal(static_cast<float>(x0), static_cast<float>(y0),
+                static_cast<float>(w0), static_cast<float>(h0),
+                static_cast<float>(r0), sf::Color::White);
 #endif
         }
 
@@ -176,9 +262,10 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_SFML)
         void draw(const paxg::Color& c_) const {
-            sf::RectangleShape rect2 = rect;
-            rect2.setFillColor(c_.color);
-            Window::window().draw(rect2);
+            // [修正] ヘルパー関数を呼び出す
+            drawInternal(static_cast<float>(x0), static_cast<float>(y0),
+                static_cast<float>(w0), static_cast<float>(h0),
+                static_cast<float>(r0), c_.color);
         }
 #else
         void draw(const paxg::Color&) const {}
@@ -192,29 +279,34 @@ namespace paxg {
         /// @return Reference to this for method chaining (メソッドチェーン用の自身への参照)
 #if defined(PAXS_USING_SIV3D)
         const RoundRect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
-            rect.drawShadow({offset.x(), offset.y()}, blur_size, spread);
+            rect.drawShadow({ offset.x(), offset.y() }, blur_size, spread);
             return *this;
         }
 #elif defined(PAXS_USING_SFML)
         const RoundRect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
-            // SFML: Simple shadow using semi-transparent rectangles
-            // 複数の半透明矩形を重ねて簡易的な影を表現
-            sf::RectangleShape shadow = rect;
+            // [修正] 角丸の影を描画するようにロジックを全体的に変更
+            const float base_x = static_cast<float>(x0);
+            const float base_y = static_cast<float>(y0);
+            const float base_w = static_cast<float>(w0);
+            const float base_h = static_cast<float>(h0);
+            const float base_r = static_cast<float>(r0);
+
             const int shadow_alpha = 40; // Base opacity
 
             for (int i = spread + blur_size; i >= 0; --i) {
-                shadow.setPosition(sf::Vector2f(
-                    rect.getPosition().x + offset.x() + i,
-                    rect.getPosition().y + offset.y() + i
-                ));
-                shadow.setSize(sf::Vector2f(
-                    rect.getSize().x + i * 2,
-                    rect.getSize().y + i * 2
-                ));
+                // 影の位置とサイズ、角の丸みを計算
+                // (影は元の図形より 2*i 大きく、-i オフセットして中央揃えにする)
+                const float x = base_x + offset.x() - i;
+                const float y = base_y + offset.y() - i;
+                const float w = base_w + 2.0f * i;
+                const float h = base_h + 2.0f * i;
+                const float r = base_r + i;
 
                 int alpha = shadow_alpha * (spread + blur_size - i + 1) / (spread + blur_size + 1);
-                shadow.setFillColor(sf::Color(0, 0, 0, alpha));
-                Window::window().draw(shadow);
+                sf::Color shadow_color(0, 0, 0, alpha);
+
+                // ヘルパー関数で角丸の影を描画
+                drawInternal(x, y, w, h, r, shadow_color);
             }
             return *this;
         }
@@ -228,12 +320,13 @@ namespace paxg {
                 int alpha = 40 * (spread + blur_size - i + 1) / (spread + blur_size + 1);
                 DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
+                // [修正] DxLibの実装も影が広がるように修正 (Siv3D/SFMLの挙動に合わせる)
                 DxLib::DrawRoundRect(
-                    static_cast<int>(x0 + offset.x() + i),
-                    static_cast<int>(y0 + offset.y() + i),
-                    static_cast<int>(x0 + w0 + i),
-                    static_cast<int>(y0 + h0 + i),
-                    r0, r0,
+                    static_cast<int>(x0 + offset.x() - i),
+                    static_cast<int>(y0 + offset.y() - i),
+                    static_cast<int>(x0 + w0 + offset.x() + i),
+                    static_cast<int>(y0 + h0 + offset.y() + i),
+                    r0 + i, r0 + i, // 角の丸みも広げる
                     DxLib::GetColor(0, 0, 0),
                     TRUE
                 );
@@ -251,22 +344,24 @@ namespace paxg {
 
         void drawAt() const {
 #if defined(PAXS_USING_SIV3D)
-            // rect.draw();
-
+            // rect.draw(); // 元のコードでもコメントアウトされていた
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawRoundRect(
                 static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2), r0, r0,
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
-            Window::window().draw(rect);
-
+            // [修正] (x0, y0) が中心になるように座標を計算してヘルパーを呼び出す
+            drawInternal(static_cast<float>(x0) - static_cast<float>(w0) / 2.0f,
+                static_cast<float>(y0) - static_cast<float>(h0) / 2.0f,
+                static_cast<float>(w0), static_cast<float>(h0),
+                static_cast<float>(r0), sf::Color::White);
 #endif
         }
 
 #if defined(PAXS_USING_SIV3D)
         void drawAt(const paxg::Color&) const {
-            // rect.draw(c_.color);
+            // rect.draw(c_.color); // 元のコードでもコメントアウトされていた
         }
 #elif defined(PAXS_USING_DXLIB)
         void drawAt(const paxg::Color& c_) const {
@@ -276,9 +371,11 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_SFML)
         void drawAt(const paxg::Color& c_) const {
-            sf::RectangleShape rect2 = rect;
-            rect2.setFillColor(c_.color);
-            Window::window().draw(rect2);
+            // [修正] (x0, y0) が中心になるように座標を計算してヘルパーを呼び出す
+            drawInternal(static_cast<float>(x0) - static_cast<float>(w0) / 2.0f,
+                static_cast<float>(y0) - static_cast<float>(h0) / 2.0f,
+                static_cast<float>(w0), static_cast<float>(h0),
+                static_cast<float>(r0), c_.color);
         }
 #else
         void drawAt(const paxg::Color&) const {}
@@ -311,31 +408,35 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_SFML)
         void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& c_) const {
+            // [修正] rect.getSize(), rect.getPosition() を x0, y0, w0, h0 に置き換え
+            const float x = static_cast<float>(x0);
+            const float y = static_cast<float>(y0);
+            const float w = static_cast<float>(w0);
+            const float h = static_cast<float>(h0);
 
             sf::RectangleShape rect1(sf::Vector2f(
-                static_cast<float>(rect.getSize().x + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
-            rect1.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
+                static_cast<float>(w + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
+            rect1.setPosition({ x - static_cast<float>(outer_thickness), y - static_cast<float>(outer_thickness) });
             rect1.setFillColor(c_.color);
             Window::window().draw(rect1);
 
             sf::RectangleShape rect2(sf::Vector2f(
-                static_cast<float>(rect.getSize().x + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
-            rect2.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y + rect.getSize().y - static_cast<float>(inner_thickness) });
+                static_cast<float>(w + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
+            rect2.setPosition({ x - static_cast<float>(outer_thickness), y + h - static_cast<float>(inner_thickness) });
             rect2.setFillColor(c_.color);
             Window::window().draw(rect2);
 
             sf::RectangleShape rect3(sf::Vector2f(
-                static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(rect.getSize().y + outer_thickness * 2)));
-            rect3.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
+                static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(h + outer_thickness * 2)));
+            rect3.setPosition({ x - static_cast<float>(outer_thickness), y - static_cast<float>(outer_thickness) });
             rect3.setFillColor(c_.color);
             Window::window().draw(rect3);
 
             sf::RectangleShape rect4(sf::Vector2f(
-                static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(rect.getSize().y + outer_thickness * 2)));
-            rect4.setPosition({ rect.getPosition().x + static_cast<float>(rect.getSize().x - inner_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
+                static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(h + outer_thickness * 2)));
+            rect4.setPosition({ x + static_cast<float>(w - inner_thickness), y - static_cast<float>(outer_thickness) });
             rect4.setFillColor(c_.color);
             Window::window().draw(rect4);
-
         }
 #else
         void drawFrame(const double, const double, const paxg::Color&) const {}
@@ -366,10 +467,11 @@ namespace paxg {
             // 1 フレーム前にタッチされている
             if (paxg::Mouse::getInstance()->upLeft()) {
                 int mx = sf::Mouse::getPosition(Window::window()).x, my = sf::Mouse::getPosition(Window::window()).y;
-                return (mx >= rect.getPosition().x &&
-                    my >= rect.getPosition().y &&
-                    mx < rect.getPosition().x + rect.getSize().x &&
-                    my < rect.getPosition().y + rect.getSize().y);
+                // [修正] rect.getPosition(), rect.getSize() を x0, y0, w0, h0 に置き換え
+                return (mx >= x0 &&
+                    my >= y0 &&
+                    mx < x0 + w0 &&
+                    my < y0 + h0);
             }
             return false;
 #else
@@ -387,10 +489,9 @@ namespace paxg {
             return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
 
 #elif defined(PAXS_USING_SFML)
-            return rect.getGlobalBounds().contains(
+            return sf::RectangleShape{}.getGlobalBounds().contains(
                 { static_cast<float>(sf::Mouse::getPosition(Window::window()).x),
-            static_cast<float>(sf::Mouse::getPosition(Window::window()).y) });
-
+                  static_cast<float>(sf::Mouse::getPosition(Window::window()).y) });
 #else
             return false;
 #endif
