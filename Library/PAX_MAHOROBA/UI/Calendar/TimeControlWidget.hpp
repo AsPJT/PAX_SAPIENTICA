@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_TIME_CONTROL_PANEL_HPP
-#define PAX_MAHOROBA_TIME_CONTROL_PANEL_HPP
+#ifndef PAX_MAHOROBA_CALENDAR_TIME_CONTROL_WIDGET_HPP
+#define PAX_MAHOROBA_CALENDAR_TIME_CONTROL_WIDGET_HPP
 
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
@@ -26,8 +26,9 @@
 
 namespace paxs {
 
-    // 時間操作パネル - 再生/一時停止/逆再生、時間移動アイコンを管理
-    class TimeControlPanel : public IUIWidget {
+    /// @brief 時間操作ウィジェット - 再生/一時停止/逆再生、時間移動アイコンを管理
+    /// @brief Time Control Widget - Manages playback/pause/reverse and time navigation icons
+    class TimeControlWidget : public IUIWidget {
     public:
         // 時間操作アイコンのサイズ
         int arrow_time_icon_size = 40; // 再生/停止/逆再生アイコンの大きさ
@@ -250,14 +251,14 @@ namespace paxs {
     };
 
     // IUIWidget メソッドの実装（クラス外定義）
-    inline void TimeControlPanel::update(paxs::InputStateManager& input_state_manager) {
+    inline void TimeControlWidget::update(paxs::InputStateManager& input_state_manager) {
         if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return;
 
         // クリック判定などの更新処理
         updateState(input_state_manager);
     }
 
-    inline void TimeControlPanel::draw() {
+    inline void TimeControlWidget::draw() {
         if (!visible_ || !texture_dictionary_ || !koyomi_) return;
 
         // 描画処理を実行
@@ -266,4 +267,4 @@ namespace paxs {
 
 } // namespace paxs
 
-#endif // !PAX_MAHOROBA_TIME_CONTROL_PANEL_HPP
+#endif // !PAX_MAHOROBA_TIME_CONTROL_WIDGET_HPP

@@ -12,17 +12,22 @@
 #ifndef PAX_MAHOROBA_UI_SIMULATION_PANEL_HPP
 #define PAX_MAHOROBA_UI_SIMULATION_PANEL_HPP
 
+#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <random>
 #include <string>
 #include <vector>
 
+#include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -54,6 +59,14 @@ namespace paxs {
 		paxs::InputStateManager* input_state_manager_ = nullptr;
 		paxs::Koyomi* koyomi_ = nullptr;
 		paxs::FeatureVisibilityManager* visible_list_ = nullptr;
+		MapViewport* map_viewport_ = nullptr;
+		LanguageFonts* language_fonts_ = nullptr;
+		const SelectLanguage* select_language_ = nullptr;
+		const paxs::Language* language_text_ = nullptr;
+
+		// 影描画用テクスチャ（外部から注入）
+		paxg::RenderTexture* shadow_texture_ = nullptr;
+		paxg::RenderTexture* internal_texture_ = nullptr;
 		/// @brief シミュレーションを初期化する
 		/// @brief Initialize the simulation
 		/// @param simulator シミュレータのユニークポインタ
@@ -284,6 +297,13 @@ namespace paxs {
 			key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 		}
 
+		/// @brief 影用のテクスチャを設定
+		/// @brief Set textures for shadow rendering
+		void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
+			shadow_texture_ = &shadow_tex;
+			internal_texture_ = &internal_tex;
+		}
+
 		/// @brief シミュレーションの更新と描画
 		/// @brief Update and draw simulation
         /// @param simulator シミュレータのユニークポインタ
@@ -335,7 +355,30 @@ namespace paxs {
 			// シミュレーションのボタン
 			if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
 				if (simulator == nullptr) {
-					paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(simulation_pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
+					const float panel_height = static_cast<float>(simulation_pulldown.getRect().h());
+					const float panel_width = static_cast<float>(paxg::Window::width());
+
+#ifdef PAXS_USING_SIV3D
+					// Siv3D: Use high-quality shadow renderer with Gaussian blur
+					if (shadow_texture_ && internal_texture_) {
+						paxs::ShadowRenderer::renderShadowWithPanels(
+							*shadow_texture_,
+							*internal_texture_,
+							[panel_width, panel_height]() {
+								// 影の形状を描画
+								paxg::Rect{ 0, 0, panel_width, panel_height }.draw();
+							},
+							[panel_width, panel_height]() {
+								// パネル本体を描画
+								paxg::Rect{ 0, 0, panel_width, panel_height }.draw(paxg::Color{243, 243, 243});
+							}
+						);
+					}
+#else
+					// SFML/DxLib: Use simple shadow with drawShadow method
+					paxg::Rect{ 0, 0, panel_width, panel_height }
+						.drawShadow({1, 1}, 4, 1).draw(paxg::Color{243, 243, 243});
+#endif
 				}
 			}
 		}
@@ -375,12 +418,20 @@ namespace paxs {
 			paxs::InputStateManager& input_state_manager,
 			paxs::Koyomi& koyomi,
 			paxs::FeatureVisibilityManager& visible_list,
+			MapViewport& map_viewport,
+			LanguageFonts& language_fonts,
+			const SelectLanguage& select_language,
+			const paxs::Language& language_text,
 			int debug_start_y
 		) {
 			simulator_ptr_ = &simulator;
 			input_state_manager_ = &input_state_manager;
 			koyomi_ = &koyomi;
 			visible_list_ = &visible_list;
+			map_viewport_ = &map_viewport;
+			language_fonts_ = &language_fonts;
+			select_language_ = &select_language;
+			language_text_ = &language_text;
 			debug_start_y_ = debug_start_y;
 		}
 
@@ -423,6 +474,40 @@ namespace paxs {
 		}
 
 	private:
+		/// @brief Z拡大率を描画
+		/// @brief Draw Z magnification
+		void drawZMagnification() {
+			if (!map_viewport_ || !language_fonts_ || !select_language_ || !language_text_) return;
+
+			// XYZ Tile Z magnification の計算
+			const int magnification_z = static_cast<int>(-std::log2(map_viewport_->getHeight()) + 12.5);
+
+			// フォントサイズを設定
+			constexpr int font_size = 22;
+			constexpr int font_buffer_thickness = 2;
+
+			paxg::Font* font = language_fonts_->getAndAdd(select_language_->cgetKey(),
+				static_cast<std::uint_least8_t>(font_size),
+				static_cast<std::uint_least8_t>(font_buffer_thickness));
+			if (font == nullptr) return;
+
+			// ラベルテキストを取得
+			const std::string* label_text_ptr = language_text_->getStringPtr(
+				MurMur3::calcHash("debug_xyz_tiles_z"),
+				select_language_->cgetKey()
+			);
+			if (label_text_ptr == nullptr) return;
+
+			// Z拡大率のラベルを描画
+			font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
+			font->drawTopRight(*label_text_ptr,
+				paxg::Vec2i(paxg::Window::width() - 40, debug_start_y_), paxg::Color(0, 0, 0));
+
+			// Z拡大率の値を描画
+			font->drawTopRight(std::to_string(magnification_z),
+				paxg::Vec2i(paxg::Window::width() - 40, debug_start_y_ + 30), paxg::Color(0, 0, 0));
+		}
+
 		/// @brief シミュレーションコントロールボタンを描画
 		void drawSimulationControls() {
 			if (!simulator_ptr_ || !koyomi_) return;
@@ -430,6 +515,9 @@ namespace paxs {
 			const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 			const int time_icon_size = 40;
 			const int debug_start_y = debug_start_y_;
+
+			// Z拡大率の表示
+			drawZMagnification();
 
 			// シミュレーションが初期化されていない場合
 			if (simulator_ptr_->get() == nullptr) {

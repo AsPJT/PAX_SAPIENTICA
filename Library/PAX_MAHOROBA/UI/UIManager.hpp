@@ -22,20 +22,17 @@
 #endif
 
 #include <PAX_GRAPHICA/RenderTexture.hpp>
-#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
 #include <PAX_GRAPHICA/System.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
-#include <PAX_MAHOROBA/UI/Calendar/CalendarRenderer.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
-#include <PAX_MAHOROBA/UI/TimeControlPanel.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -43,9 +40,9 @@
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 
 namespace paxs {
@@ -72,9 +69,8 @@ namespace paxs {
         std::vector<IUIWidget*> widgets;
 
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
-        paxs::TimeControlPanel time_control_panel;
         paxs::CalendarUILayout ui_layout;
-        paxs::CalendarRenderer calendar_renderer;  // カレンダー描画
+        paxs::CalendarPanel calendar_panel;        // カレンダーパネル（時間操作 + カレンダー表示）
         paxs::DebugInfoPanel debug_info_panel;     // デバッグ情報パネル
 
 #ifdef PAXS_USING_SIMULATOR
@@ -91,13 +87,11 @@ namespace paxs {
 #ifndef PAXS_USING_SIMULATOR
             (void)simulation_text; // シミュレーター未使用時の警告を抑制
 #endif
-            // FontManagerの参照を保存（初期化はGraphicsManagerで実施済み）
+            // FontManagerの参照を保存
             font_manager_ = &font_manager;
 
-            // CalendarRendererを初期化
-            calendar_renderer.init(font_manager_->getLanguageFonts());
+            calendar_panel.init(font_manager_->getLanguageFonts());
 
-            // DebugInfoPanelを初期化
             debug_info_panel.init(font_manager_->getLanguageFonts());
             map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
             map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
@@ -105,7 +99,6 @@ namespace paxs {
             map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
-            // HeaderPanelを初期化
             header_panel.init(&select_language, &language_text, font_manager_->getLanguageFonts(), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS));
 
             // 暦の時間操作のアイコン
@@ -121,15 +114,14 @@ namespace paxs {
 
             // IUIWidget を実装したウィジェットを登録
             widgets.clear();
-            widgets.push_back(&time_control_panel);
-            widgets.push_back(&calendar_renderer);
+            widgets.push_back(&calendar_panel);
             widgets.push_back(&debug_info_panel);
 #ifdef PAXS_USING_SIMULATOR
             widgets.push_back(&simulation_panel);
 #endif
             widgets.push_back(&header_panel);
 
-            // TimeControlPanelに必要な参照を設定
+            // TimeControlWidgetに必要な参照を設定
             // 注: texture_dictionaryとkoyomiは後で設定する必要がある
         }
 
@@ -233,46 +225,15 @@ namespace paxs {
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
 
             // UIレイアウトを計算
-            ui_layout.calculate(FontConfig::PULLDOWN_FONT_SIZE, FontConfig::KOYOMI_FONT_SIZE, koyomi.date_list.size(), time_control_panel.getHeight());
+            ui_layout.calculate(FontConfig::PULLDOWN_FONT_SIZE, FontConfig::KOYOMI_FONT_SIZE, koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
-            // 影とパネルを描画
-#ifdef PAXS_USING_SIV3D
-            // Siv3D: Use high-quality shadow renderer with Gaussian blur
-            paxs::ShadowRenderer::renderShadowWithPanels(
-                shadow_texture,
-                internal_texture,
-                [&]() {
-                    // 影の形状を描画
-                    paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(header_panel.getHeight()) }.draw(); // メニューバー
-
-                    if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
-                        paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y - 15, ui_layout.rect_len_x, ui_layout.next_rect_start_y, 10 }.draw();
-                        paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 5, ui_layout.rect_len_x, ui_layout.next_rect_end_y, 10 }.draw();
-                    }
-                },
-                [&]() {
-                    // パネル本体を描画
-                    if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
-                        paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y - 15, ui_layout.rect_len_x, ui_layout.next_rect_start_y, 10 }.draw(paxg::Color{ 255, 255, 255 });
-                        paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 5, ui_layout.rect_len_x, ui_layout.next_rect_end_y, 10 }.draw(paxg::Color{ 255, 255, 255 });
-                    }
-                }
-            );
-#else
-            // SFML/DxLib: Use simple shadow with drawShadow method
-            // メニューバーの影
-            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(header_panel.getHeight()) }.drawShadow({ 1, 1 }, 4, 1).draw();
-
-            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
-                // カレンダーパネルの影と描画
-                paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y - 15, ui_layout.rect_len_x, ui_layout.next_rect_start_y, 10 }.drawShadow({ 1, 1 }, 4, 1).draw(paxg::Color{ 255, 255, 255 });
-                paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 5, ui_layout.rect_len_x, ui_layout.next_rect_end_y, 10 }.drawShadow({ 1, 1 }, 4, 1).draw(paxg::Color{ 255, 255, 255 });
-            }
-#endif
+            // HeaderPanelに影テクスチャを設定
+            header_panel.setShadowTextures(shadow_texture, internal_texture);
 
 #ifdef PAXS_USING_SIMULATOR
+            simulation_panel.setShadowTextures(shadow_texture, internal_texture);
             // シミュレーションのボタン
-            simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible, map_viewport, font_manager_->getLanguageFonts(), select_language, language_text, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 #endif
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
@@ -282,24 +243,29 @@ namespace paxs {
 #else
                 bool is_simulator_active = false;
 #endif
-                // CalendarRendererのレンダリングパラメータを設定
-                calendar_renderer.setRenderParams(koyomi, ui_layout, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS, select_language, language_text, is_simulator_active);
-                calendar_renderer.setVisible(true);
-
-                // 時間操作パネルを更新・描画
-                const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
-                time_control_panel.setReferences(texture_dictionary, koyomi);
-                time_control_panel.setPos(paxg::Vec2i{ui_layout.time_control_base_x, ui_layout.koyomi_font_y + ui_layout.time_control_base_y});
-                time_control_panel.setVisible(true);
+                // CalendarPanelの設定
+                calendar_panel.setShadowTextures(shadow_texture, internal_texture);
+                calendar_panel.setLayout(ui_layout, key_value_tsv.get());
+                calendar_panel.setCalendarParams(koyomi, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS, select_language, language_text, is_simulator_active);
+                calendar_panel.setTimeControlParams(koyomi);
+                calendar_panel.setVisible(true);
             } else {
-                calendar_renderer.setVisible(false);
-                time_control_panel.setVisible(false);
+                calendar_panel.setVisible(false);
             }
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 int debug_start_y = ui_layout.getDebugStartY();
-                // マップ情報とシミュレーション統計を描画
+                // DebugInfoPanelの設定
+                debug_info_panel.setShadowTextures(shadow_texture, internal_texture);
+                debug_info_panel.setBackgroundRect(
+                    ui_layout.rect_start_x,
+                    debug_start_y - 15,
+                    ui_layout.rect_len_x,
+                    ui_layout.next_rect_end_y
+                );
                 debug_info_panel.setVisible(true);
+
+                // マップ情報とシミュレーション統計を描画
                 debug_info_panel.renderMapAndSimulationInfo(
                     map_viewport, debug_start_y, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS,
                     select_language, language_text, visible

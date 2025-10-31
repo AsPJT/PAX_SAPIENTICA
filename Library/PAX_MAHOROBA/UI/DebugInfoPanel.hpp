@@ -17,12 +17,15 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
+#include <PAX_GRAPHICA/RenderTexture.hpp>
+#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -44,6 +47,22 @@ namespace paxs {
         void init(paxs::LanguageFonts& fonts) {
             language_fonts_ = &fonts;
             visible_ = true;
+        }
+
+        /// @brief 影用のテクスチャを設定
+        /// @brief Set textures for shadow rendering
+        void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
+            shadow_texture_ = &shadow_tex;
+            internal_texture_ = &internal_tex;
+        }
+
+        /// @brief 背景描画の位置とサイズを設定
+        /// @brief Set background position and size
+        void setBackgroundRect(int start_x, int start_y, int width, int height) {
+            bg_start_x_ = start_x;
+            bg_start_y_ = start_y;
+            bg_width_ = width;
+            bg_height_ = height;
         }
 
         // IUIWidget インターフェースの実装（コンポーネント情報）
@@ -291,9 +310,52 @@ namespace paxs {
 
     private:
         paxs::LanguageFonts* language_fonts_ = nullptr;
+
+        // 影描画用テクスチャ（外部から注入）
+        paxg::RenderTexture* shadow_texture_ = nullptr;
+        paxg::RenderTexture* internal_texture_ = nullptr;
+
+        // 背景の位置とサイズ
+        int bg_start_x_ = 0;
+        int bg_start_y_ = 0;
+        int bg_width_ = 0;
+        int bg_height_ = 0;
+
         bool visible_ = true;
         bool enabled_ = true;
         paxg::Vec2i pos_{0, 0};
+
+        /// @brief 背景パネルを描画
+        /// @brief Draw background panel
+        void drawBackground() {
+            if (bg_width_ <= 0 || bg_height_ <= 0) return;
+
+#ifdef PAXS_USING_SIV3D
+            // Siv3D: Use high-quality shadow renderer with Gaussian blur
+            if (shadow_texture_ && internal_texture_) {
+                paxs::ShadowRenderer::renderShadowWithPanels(
+                    *shadow_texture_,
+                    *internal_texture_,
+                    [this]() {
+                        // 影の形状を描画
+                        paxg::RoundRect{ bg_start_x_, bg_start_y_,
+                                        bg_width_, bg_height_, 10 }.draw();
+                    },
+                    [this]() {
+                        // パネル本体を描画
+                        paxg::RoundRect{ bg_start_x_, bg_start_y_,
+                                        bg_width_, bg_height_, 10 }
+                            .draw(paxg::Color{255, 255, 255});
+                    }
+                );
+            }
+#else
+            // SFML/DxLib: Use simple shadow with drawShadow method
+            paxg::RoundRect{ bg_start_x_, bg_start_y_,
+                            bg_width_, bg_height_, 10 }
+                .drawShadow({1, 1}, 4, 1).draw(paxg::Color{255, 255, 255});
+#endif
+        }
 
     public:
         // IUIWidget インターフェースの実装
@@ -303,9 +365,13 @@ namespace paxs {
         }
 
         void draw() override {
-            // DebugInfoPanelは2つのrenderメソッドがあるため、
+            if (!visible_) return;
+
+            // 背景パネルを描画
+            drawBackground();
+
+            // DebugInfoPanelのコンテンツは2つのrenderメソッドがあるため、
             // UIManagerから直接render呼び出しを継続
-            // draw()は空実装（将来的な統合のためのプレースホルダー）
         }
 
         paxg::Rect getRect() const override {
