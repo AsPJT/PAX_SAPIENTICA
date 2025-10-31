@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_MAP_CONTROLLER_HPP
 
 #include <memory>
-#include <new>
 
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_MAHOROBA/Map/Location/SettlementRenderer.hpp>
@@ -33,6 +32,7 @@
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -58,11 +58,21 @@ namespace paxs {
 
     public:
         MapController()
-            :texture_manager_(std::unique_ptr<TextureManager>(new(std::nothrow) TextureManager))
+            :texture_manager_(std::make_unique<TextureManager>())
 #ifdef PAXS_USING_SIMULATOR
-            ,settlement_renderer(std::unique_ptr<SettlementRenderer>(new(std::nothrow) SettlementRenderer))
+            ,settlement_renderer(std::make_unique<SettlementRenderer>())
 #endif
-        {}
+        {
+            // メモリ割り当てチェック
+            if (!texture_manager_) {
+                PAXS_ERROR("Failed to allocate TextureManager");
+            }
+#ifdef PAXS_USING_SIMULATOR
+            if (!settlement_renderer) {
+                PAXS_ERROR("Failed to allocate SettlementRenderer");
+            }
+#endif
+        }
 
         void init(FontManager& font_manager, const SelectLanguage& select_language) {
             // 地名
@@ -91,11 +101,7 @@ namespace paxs {
                 texture_manager_->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
 
                 // フォントを取得
-                paxg::Font* main_font = font_manager_->language_fonts.getAndAdd(
-                    select_language_->cgetKey(),
-                    FontConfig::KOYOMI_FONT_SIZE,
-                    FontConfig::KOYOMI_FONT_BUFFER_THICKNESS
-                );
+                paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
 
                 // 描画処理（旧Presenterの処理を統合）
                 const double width = map_viewport.getWidth();
@@ -113,9 +119,9 @@ namespace paxs {
                     height,
                     center_x,
                     center_y,
-                    (main_font == nullptr) ? font_manager_->pin_font : (*main_font),
-                    font_manager_->en_font,
-                    font_manager_->pin_font
+                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
+                    font_manager_->getEnFont(),
+                    font_manager_->getPinFont()
                 );
 
                 // 人名を描画
@@ -126,9 +132,9 @@ namespace paxs {
                     height,
                     center_x,
                     center_y,
-                    (main_font == nullptr) ? font_manager_->pin_font : (*main_font),
-                    font_manager_->en_font,
-                    font_manager_->pin_font
+                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
+                    font_manager_->getEnFont(),
+                    font_manager_->getPinFont()
                 );
 
 #ifdef PAXS_USING_SIMULATOR

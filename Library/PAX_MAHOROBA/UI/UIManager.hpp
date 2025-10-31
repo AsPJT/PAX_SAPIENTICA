@@ -95,10 +95,10 @@ namespace paxs {
             font_manager_ = &font_manager;
 
             // CalendarRendererを初期化
-            calendar_renderer.init(font_manager_->language_fonts);
+            calendar_renderer.init(font_manager_->getLanguageFonts());
 
             // DebugInfoPanelを初期化
-            debug_info_panel.init(font_manager_->language_fonts);
+            debug_info_panel.init(font_manager_->getLanguageFonts());
             map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
             map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
             map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
@@ -106,13 +106,13 @@ namespace paxs {
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
             // HeaderPanelを初期化
-            header_panel.init(&select_language, &language_text, font_manager_->language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS));
+            header_panel.init(&select_language, &language_text, font_manager_->getLanguageFonts(), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS));
 
             // 暦の時間操作のアイコン
             key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.init(select_language, simulation_text, font_manager_->language_fonts, FontConfig::PULLDOWN_FONT_SIZE, FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
+            simulation_panel.init(select_language, simulation_text, font_manager_->getLanguageFonts(), FontConfig::PULLDOWN_FONT_SIZE, FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
 #endif
 
             // 影
