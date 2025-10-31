@@ -18,6 +18,7 @@
 #include <PAX_MAHOROBA/Map/MapController.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
+#include <PAX_MAHOROBA/Map/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>
@@ -47,6 +48,10 @@ namespace paxs {
 		// Layer-based system (Phase 1: parallel operation)
 		RenderLayerManager render_layer_manager_;
 		InputRouter input_router_;
+
+		// MapViewportの入力処理（GraphicsManagerで管理）
+		// MapViewport input handler (managed by GraphicsManager)
+		MapViewportInputHandler* map_viewport_input_handler_ = nullptr;
 
 		// ウィンドウサイズ変更の検知用
 		int old_width_ = 0;
@@ -78,6 +83,28 @@ namespace paxs {
 			// Register components to input router (UI has priority)
 			input_router_.registerHandler(&ui_manager_);
 			input_router_.registerHandler(&map_controller_);
+
+			// MapViewportInputHandlerが設定されている場合は登録
+			// Register MapViewportInputHandler if set
+			if (map_viewport_input_handler_ != nullptr) {
+				input_router_.registerHandler(map_viewport_input_handler_);
+			}
+		}
+
+		/// @brief MapViewportInputHandlerを設定
+		/// @brief Set MapViewportInputHandler
+		/// @param handler MapViewportInputHandlerへのポインタ / Pointer to MapViewportInputHandler
+		/// @param viewport MapViewportへのポインタ / Pointer to MapViewport
+		///
+		/// InputRouterにMapViewportInputHandlerを登録します。
+		/// Registers MapViewportInputHandler to InputRouter.
+		void setMapViewportInputHandler(MapViewportInputHandler* handler, MapViewport* viewport) {
+			map_viewport_input_handler_ = handler;
+			if (handler != nullptr) {
+				handler->setViewport(viewport);
+				// InputRouterに登録（最低優先度）
+				input_router_.registerHandler(handler);
+			}
 		}
 
 		/// @brief TileManagerへのアクセス（初期化用）

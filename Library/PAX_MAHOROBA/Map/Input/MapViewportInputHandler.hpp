@@ -24,15 +24,24 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 namespace paxs {
 
     /// @brief MapViewport の入力処理を担当するクラス（UI層）
     /// @brief Handles input processing for MapViewport (UI layer)
-    class MapViewportInputHandler {
+    ///
+    /// IInputHandlerを継承し、レイヤーベースの入力システムに対応します。
+    /// 画面全体のパン・ズーム操作を担当するため、hitTest()は常にtrueを返します。
+    /// Inherits IInputHandler to support layer-based input system.
+    /// Handles pan/zoom for the entire screen, so hitTest() always returns true.
+    class MapViewportInputHandler : public IInputHandler {
     private:
         std::array<Key, 1> enl_keys; // 拡大キー
         std::array<Key, 1> esc_keys; // 縮小キー
+
+        bool enabled_ = true; // 入力処理の有効/無効
 
 #ifdef __ANDROID__
         int touch_num = 0;
@@ -40,6 +49,10 @@ namespace paxs {
         std::array<paxs::Vector2<int>, MapViewportConstants::max_touch_points> pos;
         std::array<paxs::Vector2<int>, MapViewportConstants::max_touch_points> old_pos;
 #endif
+
+        /// @brief MapViewportへの参照（入力処理用）
+        /// @brief Reference to MapViewport (for input processing)
+        MapViewport* viewport_ = nullptr;
 
     public:
         MapViewportInputHandler()
@@ -226,6 +239,74 @@ namespace paxs {
 
             // 入力処理後に境界制約を適用
             viewport.applyConstraints();
+        }
+
+        /// @brief MapViewportへの参照を設定
+        /// @brief Set reference to MapViewport
+        /// @param viewport MapViewportへの参照 / Reference to MapViewport
+        void setViewport(MapViewport* viewport) {
+            viewport_ = viewport;
+        }
+
+        // IInputHandler の実装
+        // IInputHandler implementation
+
+        /// @brief 入力処理（IInputHandlerインターフェース）
+        /// @brief Handle input (IInputHandler interface)
+        /// @param event 入力イベント / Input event
+        /// @return 処理した場合true / true if handled
+        ///
+        /// MapViewportInputHandlerは画面全体の入力を処理するため、
+        /// hitTest()がtrueを返す場合は常に処理を行います。
+        /// MapViewportInputHandler handles input for the entire screen,
+        /// so it always processes if hitTest() returns true.
+        bool handleInput(const InputEvent& event) override {
+            if (!enabled_ || viewport_ == nullptr) return false;
+
+            // キーボード入力は常に処理
+            handleKeyboardZoom(*viewport_);
+            handleMouseWheelZoom(*viewport_);
+
+            // マウスドラッグとタッチ入力
+            handleMouseDrag(*viewport_);
+            handleTouchInput(*viewport_);
+
+            // 入力処理後に境界制約を適用
+            viewport_->applyConstraints();
+
+            // 画面全体の入力処理を行うため、常にtrueを返す
+            // （他のハンドラーにも処理を継続させる場合はfalseを返す）
+            return false; // 他のハンドラーにも処理を継続させる
+        }
+
+        /// @brief ヒットテスト（画面全体を対象）
+        /// @brief Hit test (targets entire screen)
+        /// @param x X座標 / X coordinate
+        /// @param y Y座標 / Y coordinate
+        /// @return 常にtrue（画面全体が対象） / Always true (entire screen is target)
+        bool hitTest(int /*x*/, int /*y*/) const override {
+            // 画面全体が対象なので常にtrue
+            return enabled_;
+        }
+
+        /// @brief レイヤーを取得
+        /// @brief Get layer
+        /// @return Backgroundレイヤー（最低優先度） / Background layer (lowest priority)
+        RenderLayer getLayer() const override {
+            // 最も低い優先度（UI、MapControllerの後）
+            return RenderLayer::Background;
+        }
+
+        /// @brief 有効性を取得
+        /// @brief Get enabled state
+        bool isEnabled() const override {
+            return enabled_;
+        }
+
+        /// @brief 有効性を設定
+        /// @brief Set enabled state
+        void setEnabled(bool enabled) {
+            enabled_ = enabled;
         }
     };
 

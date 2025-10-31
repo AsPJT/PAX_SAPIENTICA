@@ -78,6 +78,10 @@ namespace paxs {
         // GraphicsManagerを初期化
         graphics_manager.init(select_language, language_text, simulation_text);
 
+        // MapViewportInputHandlerをGraphicsManagerに登録
+        // Register MapViewportInputHandler to GraphicsManager
+        graphics_manager.setMapViewportInputHandler(&map_viewport_input_handler, &map_viewport);
+
         // XYZ タイルを初期化
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
             [&](const std::string& path_) {graphics_manager.getTileManager().add(path_); });
@@ -116,30 +120,17 @@ namespace paxs {
             graphics_manager.getUILayer().updateLanguage(select_language);
             graphics_manager.getUILayer().syncVisibilityFromMenu(visible);
 
-            // 入力処理（UIが優先）
-            // Input processing (UI has priority)
+            // 入力処理（InputRouterを使用）
+            // Input processing (using InputRouter)
             if (!visible[MurMur3::calcHash(2, "3D")]) {
                 // マウス位置を取得
                 int mouse_x = paxg::Mouse::getInstance()->getPosX();
                 int mouse_y = paxg::Mouse::getInstance()->getPosY();
 
-                // UIがヒットしているかチェック
-                bool ui_hit = graphics_manager.getUILayer().hitTest(mouse_x, mouse_y);
-                bool mouse_dragging = paxg::Mouse::getInstance()->pressedLeft2();
-
-                // UIの上でマウスドラッグしている場合は、地図のマウスドラッグを無効化
-                // キーボード入力とマウスホイールは常に有効
-                if (ui_hit && mouse_dragging) {
-                    // UIがマウスドラッグを処理中の場合
-                    // キーボードとマウスホイールのみ処理
-                    map_viewport_input_handler.handleKeyboardZoom(map_viewport);
-                    map_viewport_input_handler.handleMouseWheelZoom(map_viewport);
-                    map_viewport.applyConstraints();
-                } else {
-                    // UIがヒットしていない、またはマウスドラッグしていない場合
-                    // 全ての入力処理を実行
-                    map_viewport_input_handler.update(map_viewport);
-                }
+                // InputRouterで入力イベントをルーティング
+                // Route input event via InputRouter
+                // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
+                graphics_manager.getInputRouter().routeInput(&input_state_manager, mouse_x, mouse_y);
             }
 
             if (!visible[MurMur3::calcHash(2, "3D")]) {
