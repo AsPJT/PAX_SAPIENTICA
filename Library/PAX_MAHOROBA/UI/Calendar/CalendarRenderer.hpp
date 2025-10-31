@@ -18,6 +18,7 @@
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Simulation/IViewerComponent.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -29,12 +30,23 @@
 namespace paxs {
 
     // カレンダー表示を担当するクラス
-    class CalendarRenderer : public IUIWidget {
+    class CalendarRenderer : public IViewerComponent, public IUIWidget {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
             language_fonts_ = &fonts;
         }
+
+        // IViewerComponent インターフェースの実装
+        const char* getName() const override {
+            return "CalendarRenderer";
+        }
+
+        bool isAvailable() const override {
+            return true; // カレンダー表示は常に利用可能
+        }
+
+        // setEnabled/isEnabledは下部で実装済み（両インターフェースで共有）
 
         // カレンダーを描画（言語に応じて自動選択）
         void render(
@@ -262,6 +274,7 @@ namespace paxs {
         void setVisible(bool visible) override { visible_ = visible; }
         bool isVisible() const override { return visible_; }
 
+        // setEnabled/isEnabledはIViewerComponentとIUIWidgetの両方で共有
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
 

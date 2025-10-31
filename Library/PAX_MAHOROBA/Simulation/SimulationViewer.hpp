@@ -22,7 +22,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
-#include <PAX_MAHOROBA/Core/IViewerComponent.hpp>
+#include <PAX_MAHOROBA/Simulation/IViewerComponent.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 

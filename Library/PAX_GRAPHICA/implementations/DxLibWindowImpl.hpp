@@ -99,7 +99,7 @@ namespace paxg {
                 // アイコンファイルを読み込む（.icoファイルのみ対応）
                 HICON hIcon = (HICON)LoadImageA(
                     NULL,
-                    paxs::AppConfig::getInstance()->getRootPath() + path.c_str(),
+                    (paxs::AppConfig::getInstance()->getRootPath() + path).c_str(),
                     IMAGE_ICON,
                     0, 0,
                     LR_LOADFROMFILE | LR_DEFAULTSIZE
