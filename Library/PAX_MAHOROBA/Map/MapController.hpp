@@ -24,7 +24,7 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Location/LocationRange.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonLocation.hpp>
-#include <PAX_MAHOROBA/Map/MapDrawer.hpp>
+#include <PAX_MAHOROBA/Map/MapRenderer.hpp>
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -48,7 +48,7 @@ namespace paxs {
         std::unique_ptr<AgentLocation> agent_location; // エージェント
 #endif
         paxs::map::MapDomainLogic map_domain_logic_; // ドメインロジック
-        MapDrawer drawer_; // 描画処理
+        MapRenderer renderer_; // 描画処理
 
     public:
         MapController()
@@ -92,7 +92,7 @@ namespace paxs {
                 const double julian_day = koyomi.jdn.cgetDay();
 
                 // 地名を描画
-                drawer_.drawPlaceNames(
+                renderer_.drawPlaceNames(
                     place_name_manager,
                     visible,
                     julian_day,
@@ -106,7 +106,7 @@ namespace paxs {
                 );
 
                 // 人名を描画
-                drawer_.drawPersonNames(
+                renderer_.drawPersonNames(
                     person_name_manager,
                     julian_day,
                     width,
@@ -121,7 +121,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
                 if (simulator) {
                     // エージェントを描画
-                    drawer_.drawAgents(
+                    renderer_.drawAgents(
                         *agent_location,
                         julian_day,
                         simulator->getSettlementGrids(),
@@ -133,7 +133,7 @@ namespace paxs {
                     );
 
                     // エージェントのテキストを描画
-                    drawer_.drawAgentText(*agent_location);
+                    renderer_.drawAgentText(*agent_location);
                 }
 #endif
             }

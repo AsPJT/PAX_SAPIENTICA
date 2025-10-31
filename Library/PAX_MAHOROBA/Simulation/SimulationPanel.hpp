@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_SIMULATION_SIMULATION_VIEWER_HPP
-#define PAX_MAHOROBA_SIMULATION_SIMULATION_VIEWER_HPP
+#ifndef PAX_MAHOROBA_SIMULATION_SIMULATION_PANEL_HPP
+#define PAX_MAHOROBA_SIMULATION_SIMULATION_PANEL_HPP
 
 #include <cstdint>
 #include <memory>
@@ -39,9 +39,9 @@
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
-	/// @brief シミュレーションのビューアクラス
-	/// @brief Simulation viewer class
-	class SimulationViewer : public IUIWidget {
+	/// @brief シミュレーションのパネルクラス
+	/// @brief Simulation panel class
+	class SimulationPanel : public IUIWidget {
 	private:
 		bool visible_ = true;
 		bool enabled_ = true;
@@ -232,8 +232,8 @@ namespace paxs {
 
 		paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
 
-		/// @brief シミュレーションビューアの初期化
-		/// @brief Initialize the simulation viewer
+		/// @brief シミュレーションパネルの初期化
+		/// @brief Initialize the simulation panel
 		/// @param select_language 選択された言語
 		/// @param simulation_text シミュレーション関連のテキスト
 		/// @param language_fonts 言語フォント
@@ -339,7 +339,7 @@ namespace paxs {
 
 		/// @brief コンポーネント名を取得
 		const char* getName() const override {
-			return "SimulationViewer";
+			return "SimulationPanel";
 		}
 
 		/// @brief コンポーネントが利用可能かチェック
@@ -466,7 +466,7 @@ namespace paxs {
 	public:
 		/// @brief 矩形を取得
 		paxg::Rect getRect() const override {
-			// シミュレーションビューアの矩形を返す
+			// シミュレーションパネルの矩形を返す
 			// プルダウンがある場合はその矩形、ない場合は操作ボタンの領域
 			if (simulator_ptr_ && *simulator_ptr_ == nullptr) {
 				return simulation_pulldown.getRect();
@@ -502,4 +502,4 @@ namespace paxs {
 	};
 }
 
-#endif // !PAX_MAHOROBA_SIMULATION_SIMULATION_VIEWER_HPP
+#endif // !PAX_MAHOROBA_SIMULATION_SIMULATION_PANEL_HPP

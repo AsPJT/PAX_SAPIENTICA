@@ -146,12 +146,6 @@ namespace paxs {
                 map_viewport.update(); // キーボード入力を更新
             }
 
-            // シミュレーションモデル選択のプルダウンを更新
-#ifdef PAXS_USING_SIMULATOR
-            ui_manager.simulation_viewer.simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - ui_manager.simulation_viewer.simulation_pulldown.getRect().w() - 200), 600 });
-            ui_manager.simulation_viewer.simulation_pulldown.update(input_state_manager);
-            ui_manager.simulation_viewer.simulation_model_index = ui_manager.simulation_viewer.simulation_pulldown.getIndex();
-#endif
             // 選択言語のプルダウンを更新
             ui_manager.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - ui_manager.pulldown.getRect().w()), 0 });
             ui_manager.pulldown.update(input_state_manager);

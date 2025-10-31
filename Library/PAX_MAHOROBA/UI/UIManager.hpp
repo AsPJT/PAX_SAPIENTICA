@@ -18,15 +18,13 @@
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/Simulation/SimulationViewer.hpp>
+#include <PAX_MAHOROBA/Simulation/SimulationPanel.hpp>
 #endif
 
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
-#include <PAX_GRAPHICA/ScopedRenderTarget.hpp>
-#include <PAX_GRAPHICA/ScopedTransform2D.hpp>
 #include <PAX_GRAPHICA/Shader.hpp>
 #include <PAX_GRAPHICA/System.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
@@ -98,7 +96,7 @@ namespace paxs {
         paxs::DebugInfoPanel debug_info_panel;     // デバッグ情報パネル
 
 #ifdef PAXS_USING_SIMULATOR
-        paxs::SimulationViewer simulation_viewer;
+        paxs::SimulationPanel simulation_panel;
 #endif
 
         void init(
@@ -134,7 +132,7 @@ namespace paxs {
             key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_viewer.init(select_language, simulation_text, font_manager.language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size);
+            simulation_panel.init(select_language, simulation_text, font_manager.language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size);
 #endif
 
             // 影
@@ -148,7 +146,7 @@ namespace paxs {
             widgets.push_back(&calendar_renderer);
             widgets.push_back(&debug_info_panel);
 #ifdef PAXS_USING_SIMULATOR
-            widgets.push_back(&simulation_viewer);
+            widgets.push_back(&simulation_panel);
 #endif
             widgets.push_back(&pulldown);
 
@@ -212,7 +210,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン
-            simulation_viewer.setReferences(simulator, input_state_manager, koyomi, visible, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 #endif
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
@@ -230,9 +228,10 @@ namespace paxs {
                 const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
                 time_control_panel.setReferences(texture_dictionary, koyomi);
                 time_control_panel.setPos(paxg::Vec2i{ui_layout.time_control_base_x, ui_layout.koyomi_font_y + ui_layout.time_control_base_y});
-                time_control_panel.update(input_state_manager);
+                time_control_panel.setVisible(true);
             } else {
                 calendar_renderer.setVisible(false);
+                time_control_panel.setVisible(false);
             }
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
@@ -253,7 +252,7 @@ namespace paxs {
             // メニューバー背景
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
 #ifdef PAXS_USING_SIMULATOR
-            simulation_viewer.drawPulldownBackground(simulator, visible);
+            simulation_panel.drawPulldownBackground(simulator, visible);
 #endif
 
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
@@ -262,6 +261,13 @@ namespace paxs {
             if (input_state_manager.get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
                 // Web ページをブラウザで開く
                 paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
+            }
+
+            // IUIWidget を実装したウィジェットを更新
+            for (auto* widget : widgets) {
+                if (widget) {
+                    widget->update(input_state_manager);
+                }
             }
 
             // IUIWidget を実装したウィジェットを描画
