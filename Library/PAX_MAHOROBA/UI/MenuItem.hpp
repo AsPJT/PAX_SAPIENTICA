@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -157,7 +157,7 @@ namespace paxs {
                     paxg::Font* check_font = (*font).getAndAdd(select_font_key, font_size, font_buffer_thickness_size);
                     if (check_font != nullptr) {
                         (*check_font).draw(
-                            "✓",
+                            reinterpret_cast<const char*>(u8"✓"),
                             paxg::Vec2i(check_x, pos.y() + padding.y()),
                             paxg::Color{ 0, 0, 0 });
                     }
