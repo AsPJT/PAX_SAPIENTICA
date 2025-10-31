@@ -32,6 +32,7 @@
 
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/GraphicsManager.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -58,6 +59,7 @@ namespace paxs {
         visible.emplace(MurMur3::calcHash("3D"), false); // 3D
 
         MapViewport map_viewport{};
+        MapViewportInputHandler map_viewport_input_handler{}; // 地図ビューポートの入力処理
         paxs::Koyomi koyomi{}; // 暦を管理する
         paxs::GraphicsManager graphics_manager{}; // グラフィック統合管理
         SelectLanguage select_language{}; // 選択言語
@@ -112,7 +114,7 @@ namespace paxs {
             ##########################################################################################*/
 
             if (!visible[MurMur3::calcHash(2, "3D")]) {
-                map_viewport.update(); // キーボード入力を更新
+                map_viewport_input_handler.update(map_viewport); // 入力処理を更新
             }
 
             graphics_manager.getUIManager().updateLanguage(select_language);

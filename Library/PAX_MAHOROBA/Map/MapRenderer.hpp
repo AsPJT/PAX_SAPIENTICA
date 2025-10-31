@@ -109,34 +109,41 @@ namespace paxs {
             /// @param height 高さ
             /// @param center_x 中心X座標
             /// @param center_y 中心Y座標
-            template<typename AgentLocation, typename SettlementGrids, typename MarriagePosList>
-            void drawAgents(
-                AgentLocation& agent_location,
+            template<typename SettlementRenderer, typename SettlementGrids, typename MarriagePosList>
+            void drawSettlements(
+                SettlementRenderer& settlement_renderer,
                 double julian_day,
                 SettlementGrids& settlement_grids,
                 MarriagePosList& marriage_pos_list,
                 double width,
                 double height,
                 double center_x,
-                double center_y
+                double center_y,
+                std::size_t select_draw,
+                bool is_line,
+                bool is_arrow
             ) {
-                agent_location.draw(
+                settlement_renderer.draw(
                     julian_day,
                     settlement_grids,
                     marriage_pos_list,
                     width,
                     height,
                     center_x,
-                    center_y
+                    center_y,
+                    select_draw,
+                    is_line,
+                    is_arrow
                 );
             }
 
-            /// @brief エージェントのテキストを描画
-            /// @brief Draw agent text
-            /// @param agent_location エージェントロケーション
-            template<typename AgentLocation>
-            void drawAgentText(AgentLocation& agent_location) {
-                agent_location.drawText();
+            /// @brief 集落のテキストを描画
+            /// @brief Draw settlement text
+            /// @param settlement_renderer 集落レンダラー
+            /// @param select_draw 表示モード
+            template<typename SettlementRenderer>
+            void drawSettlementText(SettlementRenderer& settlement_renderer, std::size_t select_draw) {
+                settlement_renderer.drawText(select_draw);
             }
         #endif
         };

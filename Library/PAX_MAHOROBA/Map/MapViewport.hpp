@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -16,11 +16,6 @@
 #include <array>
 #include <cmath>
 
-#include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/Key.hpp>
-#include <PAX_GRAPHICA/Mouse.hpp>
-#include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
@@ -75,163 +70,26 @@ namespace paxs {
         double min_height = MapViewportConstants::min_height; // マップの最小高さ
         double width = (height) / double(paxg::Window::height()) * double(paxg::Window::width()); // マップの高さ
         double expansion_size = MapViewportConstants::default_expansion_size; // マップの拡大量
-        std::array<Key, 1> enl_keys; // 拡大キー
-        std::array<Key, 1> esc_keys; // 縮小キー
-
-#ifdef __ANDROID__
-        int touch_num = 0;
-        int old_touch_num = 0;
-        std::array<paxs::Vector2<int>, MapViewportConstants::max_touch_points> pos;
-        std::array<paxs::Vector2<int>, MapViewportConstants::max_touch_points> old_pos;
-#endif
-
 
     public:
-        MapViewport() : enl_keys{Key(PAXG_KEY_Q)}, esc_keys{Key(PAXG_KEY_E)} {
-        }
-        void update() {
-            // マウスホイールで地図の拡大・縮小
-            {
-                height *= (1.0 + (paxg::Mouse::getInstance()->getWheelRotVol() / MapViewportConstants::mouse_wheel_sensitivity));
-                height = (std::clamp)(height, min_height, max_height);
-                width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-            }
-#ifdef __ANDROID__
-            static int old_touch_num = 0;
-            static int touch_num = 0;
-            static std::array<paxs::Vector2<int>, MapViewportConstants::max_touch_points> pos = { paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0} };
-            static std::array<paxs::Vector2<int>, MapViewportConstants::max_touch_points> old_pos = { paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0},paxs::Vector2<int>{0,0} };
-#else
-            if (paxg::Mouse::getInstance()->pressedLeft2()) {
-                center.setX(
-                    center.getX() +
-                    height / static_cast<double>(paxg::Window::height()) *
-                    static_cast<double>(paxg::Mouse::getInstance()->getPosXBefore1Frame() - paxg::Mouse::getInstance()->getPosX()));
-                center.setY(
-                    center.getY() +
-                    height / static_cast<double>(paxg::Window::height()) *
-                        static_cast<double>(paxg::Mouse::getInstance()->getPosY() - paxg::Mouse::getInstance()->getPosYBefore1Frame()));
+        MapViewport() = default;
+        /// @brief ビューポートの境界制約を適用（Domain層の責任）
+        /// @brief Apply boundary constraints to viewport (Domain layer responsibility)
+        void applyConstraints() {
+            // 高さの制約
+            height = (std::clamp)(height, min_height, max_height);
+            width = height / double(paxg::Window::height()) * double(paxg::Window::width());
 
-                if (center.getX() < MapViewportConstants::longitude_min) {
-                    center.setX(center.getX() + MapViewportConstants::longitude_range);
-                }
-                if (center.getX() >= MapViewportConstants::longitude_max) {
-                    center.setX(center.getX() - MapViewportConstants::longitude_range);
-                }
-                if (center.getY() < MapViewportConstants::longitude_min) {
-                    center.setY(center.getY() - MapViewportConstants::longitude_max);
-                }
-                if (center.getY() > MapViewportConstants::longitude_max) {
-                    center.setY(center.getY() + MapViewportConstants::longitude_max);
-                }
-
-            }
-#endif
-
-#ifdef __ANDROID__
-            old_touch_num = touch_num;
-            old_pos = pos;
-
-            touch_num = paxg::TouchInput::getTouchCount();
-
-
-            for (int i = 0; i < touch_num; i++) {
-                if (i >= MapViewportConstants::max_touch_points) break;
-
-                if (paxg::TouchInput::getTouchPosition(i, pos[i])) {
-                    paxg::Circle(pos[i].x, pos[i].y, 40).draw(paxg::Color(230, 230, 240));
-                }
-            }
-
-            if (old_touch_num == 1 && touch_num == 1) {
-                center.setX(center.getX() +
-                    height / static_cast<double>(paxg::Window::height()) *
-                    static_cast<double>(old_pos[0].x - pos[0].x));
-                center.setY(center.getY() +
-                    height / static_cast<double>(paxg::Window::height()) *
-                    static_cast<double>(pos[0].y - old_pos[0].y));
-
-                if (center.getX() < MapViewportConstants::longitude_min) {
-                    center.setX(center.getX() + MapViewportConstants::longitude_range);
-                }
-                if (center.getX() >= MapViewportConstants::longitude_max) {
-                    center.setX(center.getX() - MapViewportConstants::longitude_range);
-                }
-                if (center.getY() < MapViewportConstants::longitude_min) {
-                    center.setY(center.getY() - MapViewportConstants::longitude_max);
-                }
-                if (center.getY() > MapViewportConstants::longitude_max) {
-                    center.setY(center.getY() + MapViewportConstants::longitude_max);
-                }
-
-            }
-            else if (old_touch_num == 2 && touch_num == 2) {
-
-                const int len = (pos[0].x - pos[1].x) * (pos[0].x - pos[1].x) + (pos[0].y - pos[1].y) * (pos[0].y - pos[1].y);
-                const int old_len = (old_pos[0].x - old_pos[1].x) * (old_pos[0].x - old_pos[1].x) + (old_pos[0].y - old_pos[1].y) * (old_pos[0].y - old_pos[1].y);
-                const int sub = std::abs(len - old_len);
-
-                if (len > old_len) {
-                    if (height > min_height) {
-                        height -= ((height * (1.0 + (sub / MapViewportConstants::touch_zoom_divisor))) / expansion_size);
-                        width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-                    }
-                    if (height < min_height) {
-                        height = min_height;
-                        width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-                    }
-                }
-                else if (len < old_len) {
-                    // 画面広く
-                    if (height < max_height) {
-                        height += ((height * (1.0 + (sub / MapViewportConstants::touch_zoom_divisor))) / expansion_size);
-                        width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-                    }
-                    if (height > max_height) {
-                        height = max_height;
-                        width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-                    }
-                }
-
-            }
-#endif
-
+            // 座標の更新
             center.update(height);
-            if (pressed(enl_keys)) {
-                if (height > min_height) {
-                    height -= (height / expansion_size);
-                    width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-                }
-                if (height < min_height) {
-                    height = min_height;
-                    width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-                }
-            }
-            if (pressed(esc_keys)) {
-                if (height < max_height) {
-                    height += (height / expansion_size);
-                    width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-                }
-                if (height > max_height) {
-                    height = max_height;
-                    width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-                }
-            }
-
-            // 位置調整
-            if (height < min_height) {
-                height = min_height;
-                width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-            }
-            if (height > max_height) {
-                height = max_height;
-                width = (height) / double(paxg::Window::height()) * double(paxg::Window::width());
-            }
 
 #ifdef PAXS_MAHOROBA
             constexpr double west_max = (208.0 / MapViewportConstants::tile_size) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
             constexpr double east_max = (MapViewportConstants::tile_size / MapViewportConstants::tile_size) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
-            // 位置調整
+            constexpr double north_max = (1.0 - (80.0 / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
+            constexpr double south_max = (1.0 - (128.0 / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
+
+            // X座標の位置調整
             if (center.getX() - width / 2 < west_max) {
                 center.setX(west_max + width / 2);
             }
@@ -239,23 +97,26 @@ namespace paxs {
                 center.setX(east_max - width / 2);
             }
 
-            constexpr double north_max = (1.0 - (80.0 / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
-            constexpr double south_max = (1.0 - (128.0 / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
-#else
-            constexpr double north_max = (1.0 - (0.0 / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
-            constexpr double south_max = (1.0 - (MapViewportConstants::tile_size / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
-#endif
-            // 位置調整
+            // Y座標の位置調整
             if (center.getY() + height / 2 > north_max) {
                 center.setY(north_max - height / 2);
             }
             if (center.getY() - height / 2 < south_max) {
                 center.setY(south_max + height / 2);
             }
+#else
+            constexpr double north_max = (1.0 - (0.0 / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
+            constexpr double south_max = (1.0 - (MapViewportConstants::tile_size / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
 
-
-
-        } // Update
+            // Y座標の位置調整のみ（PAXS_MAHOROBA以外）
+            if (center.getY() + height / 2 > north_max) {
+                center.setY(north_max - height / 2);
+            }
+            if (center.getY() - height / 2 < south_max) {
+                center.setY(south_max + height / 2);
+            }
+#endif
+        }
 
         void setWidth(const double width_) {
             width = width_;
@@ -284,6 +145,15 @@ namespace paxs {
         }
         double getHeight() const {
             return height;
+        }
+        double getMinHeight() const {
+            return min_height;
+        }
+        double getMaxHeight() const {
+            return max_height;
+        }
+        double getExpansionSize() const {
+            return expansion_size;
         }
     };
 

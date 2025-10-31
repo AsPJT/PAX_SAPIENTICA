@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -9,12 +9,11 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_MAP_LOCATION_AGENT_LOCATION_HPP
-#define PAX_MAHOROBA_MAP_LOCATION_AGENT_LOCATION_HPP
+#ifndef PAX_MAHOROBA_MAP_SETTLEMENT_RENDERER_HPP
+#define PAX_MAHOROBA_MAP_SETTLEMENT_RENDERER_HPP
 
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
-#include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/Spline2D.hpp>
 #include <PAX_GRAPHICA/String.hpp>
@@ -29,13 +28,9 @@
 
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する
-    class AgentLocation {
+    /// @brief Visualize simulation settlements
+    class SettlementRenderer {
     private:
-        std::size_t select_draw = 1;
-        // 線を表示するか
-        bool is_line = false;
-        // 移動線（矢印）を表示するか
-        bool is_arrow = true;
         // 選択肢を表示するフォント（全プラットフォーム対応）
         paxg::Font select_font{ 30, "", 3 };
     public:
@@ -52,7 +47,8 @@ namespace paxs {
     public:
 
         /// @brief 選択項目のテキストを描画
-        void drawText() {
+        /// @brief Draw text for selected item
+        void drawText(std::size_t select_draw) {
             constexpr int start_x = 40; // 背景端の左上の X 座標
             constexpr int start_y = 80; // 背景端の左上の Y 座標
             constexpr int font_space = 20; // 文字端から背景端までの幅
@@ -86,6 +82,7 @@ namespace paxs {
         }
 
         /// @brief エージェント（集落）を描画
+        /// @brief Draw agents (settlements) without input processing
         /// @param jdn ユリウス日
         /// @param agents 集落グリッド
         /// @param marriage_pos_list 婚姻移動のリスト
@@ -93,19 +90,15 @@ namespace paxs {
         /// @param map_view_height マップビューの高さ
         /// @param map_view_center_x マップビューの中心X座標
         /// @param map_view_center_y マップビューの中心Y座標
+        /// @param select_draw 表示モード (1-6)
+        /// @param is_line グリッド線を表示するか
+        /// @param is_arrow 移動矢印を表示するか
         void draw(const double jdn,
             paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>& agents,
-            const std::vector<GridType4>& marriage_pos_list/* SFML では使わない */,
-            const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
-        )/*const Siv3D Key は非 const */ {
-            if (Key(PAXG_KEY_1).isPressed()) select_draw = 1;
-            else if (Key(PAXG_KEY_2).isPressed()) select_draw = 2;
-            else if (Key(PAXG_KEY_3).isPressed()) select_draw = 3;
-            else if (Key(PAXG_KEY_4).isPressed()) select_draw = 4;
-            else if (Key(PAXG_KEY_5).isPressed()) select_draw = 5;
-            else if (Key(PAXG_KEY_6).isPressed()) select_draw = 6;
-            else if (Key(PAXG_KEY_L).isPressed()) is_line = (!is_line);
-            else if (Key(PAXG_KEY_K).isPressed()) is_arrow = (!is_arrow);
+            const std::vector<GridType4>& marriage_pos_list,
+            const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
+            std::size_t select_draw, bool is_line, bool is_arrow
+        ) const {
 
             // 地名を描画
             for (const auto& agent : agents) {
@@ -403,4 +396,4 @@ namespace paxs {
     };
 } // namespace paxs
 
-#endif // !PAX_MAHOROBA_MAP_LOCATION_AGENT_LOCATION_HPP
+#endif // !PAX_MAHOROBA_MAP_SETTLEMENT_RENDERER_HPP
