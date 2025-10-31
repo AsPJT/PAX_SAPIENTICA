@@ -17,11 +17,10 @@
 #include <string>
 #include <vector>
 
-#include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
-
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>
+#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 

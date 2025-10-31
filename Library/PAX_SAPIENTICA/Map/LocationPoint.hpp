@@ -9,17 +9,13 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_LOCATION_POINT_HPP
-#define PAX_MAHOROBA_LOCATION_POINT_HPP
+#ifndef PAX_SAPIENTICA_MAP_LOCATION_POINT_HPP
+#define PAX_SAPIENTICA_MAP_LOCATION_POINT_HPP
 
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <string>
-
-#include <PAX_GRAPHICA/Texture.hpp>
-
-#include <PAX_MAHOROBA/Core/Init.hpp>
 
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>

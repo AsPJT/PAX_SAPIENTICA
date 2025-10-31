@@ -40,13 +40,11 @@ namespace paxs {
     /// @brief 地図コントローラー（統合制御クラス）
     /// @brief Map Controller (Integrated Control Class)
     class MapController {
-    public:
-        std::unique_ptr<TextureManager> texture_manager; // 地図上に描画する画像の一覧
-
-        PlaceNameManager place_name_manager{}; // 地名
-        PersonNameManager person_name_manager{}; // 人名
-
     private:
+        std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
+
+        PlaceNameManager place_name_manager_{}; // 地名
+        PersonNameManager person_name_manager_{}; // 人名
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<SettlementRenderer> settlement_renderer; // 集落描画
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
@@ -60,7 +58,7 @@ namespace paxs {
 
     public:
         MapController()
-            :texture_manager(std::unique_ptr<TextureManager>(new(std::nothrow) TextureManager))
+            :texture_manager_(std::unique_ptr<TextureManager>(new(std::nothrow) TextureManager))
 #ifdef PAXS_USING_SIMULATOR
             ,settlement_renderer(std::unique_ptr<SettlementRenderer>(new(std::nothrow) SettlementRenderer))
 #endif
@@ -68,10 +66,10 @@ namespace paxs {
 
         void init(FontManager& font_manager, const SelectLanguage& select_language) {
             // 地名
-            place_name_manager.init();
-            place_name_manager.add();
-            person_name_manager.init();
-            person_name_manager.add();
+            place_name_manager_.init();
+            place_name_manager_.add();
+            person_name_manager_.init();
+            person_name_manager_.add();
 
             // フォント管理への参照を保存
             font_manager_ = &font_manager;
@@ -90,7 +88,7 @@ namespace paxs {
             ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する
-                texture_manager->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
+                texture_manager_->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
 
                 // フォントを取得
                 paxg::Font* main_font = font_manager_->language_fonts.getAndAdd(
@@ -108,7 +106,7 @@ namespace paxs {
 
                 // 地名を描画
                 renderer_.drawPlaceNames(
-                    place_name_manager,
+                    place_name_manager_,
                     visible,
                     julian_day,
                     width,
@@ -122,7 +120,7 @@ namespace paxs {
 
                 // 人名を描画
                 renderer_.drawPersonNames(
-                    person_name_manager,
+                    person_name_manager_,
                     julian_day,
                     width,
                     height,

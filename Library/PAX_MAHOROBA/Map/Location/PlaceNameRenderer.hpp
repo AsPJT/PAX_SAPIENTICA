@@ -19,9 +19,8 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
-
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 

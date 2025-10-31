@@ -19,13 +19,13 @@
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
-#include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameRepository.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 
 namespace paxs {
 

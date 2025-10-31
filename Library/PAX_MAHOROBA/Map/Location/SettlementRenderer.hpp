@@ -20,9 +20,9 @@
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
 #include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
-#include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
 
 #include <PAX_SAPIENTICA/MapUtility.hpp>
+#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
