@@ -167,6 +167,12 @@ namespace paxs {
         bool isEnabled() const override { return enabled_; }
 
         const char* getName() const override { return "HeaderPanel"; }
+
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        RenderLayer getLayer() const override {
+            return RenderLayer::UIContent;
+        }
         bool isAvailable() const override { return true; }
 
     private:

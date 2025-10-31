@@ -289,6 +289,12 @@ namespace paxs {
 		void setEnabled(bool enabled) override { enabled_ = enabled; }
 		bool isEnabled() const override { return enabled_; }
 		const char* getName() const override { return "MenuItem"; }
+
+		/// @brief レンダリングレイヤーを取得
+		/// @brief Get rendering layer
+		RenderLayer getLayer() const override {
+			return is_open ? RenderLayer::UIOverlay : RenderLayer::UIContent;
+		}
 		bool isAvailable() const override { return true; }
 
 	private:

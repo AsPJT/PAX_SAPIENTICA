@@ -71,6 +71,12 @@ namespace paxs {
             return "DebugInfoPanel";
         }
 
+        /// @brief レンダリングレイヤーを取得（デバッグ情報は最前面）
+        /// @brief Get rendering layer (debug info is front-most)
+        RenderLayer getLayer() const override {
+            return RenderLayer::Debug;
+        }
+
         bool isAvailable() const override {
             return true;
         }

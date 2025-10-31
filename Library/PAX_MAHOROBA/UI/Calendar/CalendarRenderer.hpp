@@ -42,6 +42,12 @@ namespace paxs {
             return "CalendarRenderer";
         }
 
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        RenderLayer getLayer() const override {
+            return RenderLayer::UIContent;
+        }
+
         bool isAvailable() const override {
             return true; // カレンダー表示は常に利用可能
         }

@@ -84,6 +84,12 @@ namespace paxs {
 			return "CalendarPanel";
 		}
 
+		/// @brief レンダリングレイヤーを取得
+		/// @brief Get rendering layer
+		RenderLayer getLayer() const override {
+			return RenderLayer::UIContent;
+		}
+
 		bool isAvailable() const override {
 			return true;
 		}

@@ -389,6 +389,12 @@ namespace paxs {
 			return "SimulationPanel";
 		}
 
+		/// @brief レンダリングレイヤーを取得
+		/// @brief Get rendering layer
+		RenderLayer getLayer() const override {
+			return RenderLayer::UIContent;
+		}
+
 		/// @brief コンポーネントが利用可能かチェック
 		bool isAvailable() const override {
 			return true; // PAXS_USING_SIMULATORが定義されている場合のみコンパイルされる

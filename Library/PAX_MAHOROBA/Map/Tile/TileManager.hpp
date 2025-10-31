@@ -19,13 +19,19 @@
 #include <PAX_MAHOROBA/Map/Tile/TileRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRepository.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 
-    class TileManager {
+    /// @brief タイル管理クラス
+    /// @brief Tile manager class
+    ///
+    /// IRenderable を継承し、レイヤーベースシステムに対応します。
+    /// Inherits IRenderable to support layer-based system.
+    class TileManager : public IRenderable {
     private:
         // 描画する XYZ タイルを管理
         std::vector<XYZTile> xyz_tile_list;
@@ -35,6 +41,9 @@ namespace paxs {
 
         // タイルデータ読み込みを担当
         TileRepository tile_repository_;
+
+        // 可視性管理
+        bool visible_ = true;
 
     public:
         // XYZ Tiles を追加（TileRepositoryに委譲）
@@ -62,9 +71,40 @@ namespace paxs {
                 xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
             }
 
-            // 描画処理（TileRendererに委譲）
+            // 描画処理（既存の動作を維持）
+            // Drawing (maintains existing behavior)
             tile_renderer_.drawBackground();
             tile_renderer_.drawTiles(xyz_tile_list, visible, map_viewport, jdn);
+        }
+
+        // IRenderable の実装
+        // IRenderable implementation
+
+        /// @brief レンダリング処理（既存のupdate()内で描画済み）
+        /// @brief Render (already drawn in update())
+        void render() override {
+            // 既存の動作を維持するため、update()内で描画を実施
+            // Drawing is done in update() to maintain existing behavior
+            // 将来的には描画処理をここに移動予定
+            // TODO: Move drawing logic here in the future
+        }
+
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        RenderLayer getLayer() const override {
+            return RenderLayer::MapBase;
+        }
+
+        /// @brief 可視性を取得
+        /// @brief Get visibility
+        bool isVisible() const override {
+            return visible_;
+        }
+
+        /// @brief 可視性を設定
+        /// @brief Set visibility
+        void setVisible(bool visible) override {
+            visible_ = visible;
         }
     };
 }

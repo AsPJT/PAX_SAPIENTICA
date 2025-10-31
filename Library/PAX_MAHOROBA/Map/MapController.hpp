@@ -20,8 +20,10 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonNameManager.hpp>
 #include <PAX_MAHOROBA/Map/MapRenderer.hpp>
@@ -39,7 +41,10 @@ namespace paxs {
 
     /// @brief 地図コントローラー（統合制御クラス）
     /// @brief Map Controller (Integrated Control Class)
-    class MapController {
+    ///
+    /// IRenderable と IInputHandler を継承し、レイヤーベースシステムに対応します。
+    /// Inherits IRenderable and IInputHandler to support layer-based system.
+    class MapController : public IRenderable, public IInputHandler {
     private:
         std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
 
@@ -55,6 +60,10 @@ namespace paxs {
         // 依存性注入された参照
         FontManager* font_manager_ = nullptr;
         const SelectLanguage* select_language_ = nullptr;
+
+        // 可視性・有効性管理
+        bool visible_ = true;
+        bool enabled_ = true;
 
     public:
         MapController()
@@ -185,6 +194,61 @@ namespace paxs {
                 }
             }
 #endif
+        }
+
+        // IRenderable の実装
+        // IRenderable implementation
+
+        /// @brief レンダリング処理（既存のupdate()内で描画済み）
+        /// @brief Render (already drawn in update())
+        void render() override {
+            // 既存の動作を維持するため、update()内で描画を実施
+            // Drawing is done in update() to maintain existing behavior
+            // 将来的には描画処理をここに移動予定
+            // TODO: Move drawing logic here in the future
+        }
+
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        RenderLayer getLayer() const override {
+            return RenderLayer::MapContent;
+        }
+
+        /// @brief 可視性を取得
+        /// @brief Get visibility
+        bool isVisible() const override {
+            return visible_;
+        }
+
+        /// @brief 可視性を設定
+        /// @brief Set visibility
+        void setVisible(bool visible) override {
+            visible_ = visible;
+        }
+
+        // IInputHandler の実装
+        // IInputHandler implementation
+
+        /// @brief 入力処理
+        /// @brief Handle input
+        bool handleInput(const InputEvent& event) override {
+            // TODO: 入力処理の実装
+            // 現在は update() 内で処理されている
+            return false;
+        }
+
+        /// @brief ヒットテスト
+        /// @brief Hit test
+        bool hitTest(int x, int y) const override {
+            // 地図全体が対象なので常にtrue
+            // Always true as the entire map is the target
+            return visible_ && enabled_;
+        }
+
+        /// @brief 有効性を取得
+        /// @brief Get enabled state
+        bool isEnabled() const override {
+            return enabled_;
         }
     };
 }
