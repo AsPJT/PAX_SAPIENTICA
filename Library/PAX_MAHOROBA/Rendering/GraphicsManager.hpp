@@ -14,10 +14,12 @@
 
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Input/InputRouter.hpp>
 #include <PAX_MAHOROBA/Map/MapController.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
+#include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -40,6 +42,11 @@ namespace paxs {
 		TileManager tile_manager_;
 		UILayer ui_manager_;
 		MapController map_controller_;
+
+		// レイヤーベースシステム（フェーズ1: 並行運用）
+		// Layer-based system (Phase 1: parallel operation)
+		RenderLayerManager render_layer_manager_;
+		InputRouter input_router_;
 
 		// ウィンドウサイズ変更の検知用
 		int old_width_ = 0;
@@ -72,6 +79,16 @@ namespace paxs {
 		/// @brief MapControllerへのアクセス
 		MapController& getMapController() { return map_controller_; }
 		const MapController& getMapController() const { return map_controller_; }
+
+		/// @brief RenderLayerManagerへのアクセス
+		/// @brief Access to RenderLayerManager
+		RenderLayerManager& getRenderLayerManager() { return render_layer_manager_; }
+		const RenderLayerManager& getRenderLayerManager() const { return render_layer_manager_; }
+
+		/// @brief InputRouterへのアクセス
+		/// @brief Access to InputRouter
+		InputRouter& getInputRouter() { return input_router_; }
+		const InputRouter& getInputRouter() const { return input_router_; }
 
 		/// @brief ウィンドウサイズ変更を検知してMapViewportを更新
 		void handleWindowResize(MapViewport& map_viewport) {
