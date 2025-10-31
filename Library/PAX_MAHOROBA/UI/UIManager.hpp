@@ -21,11 +21,9 @@
 #include <PAX_MAHOROBA/UI/SimulationPanel.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
-#include <PAX_GRAPHICA/Shader.hpp>
 #include <PAX_GRAPHICA/System.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
@@ -34,7 +32,6 @@
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
@@ -46,8 +43,6 @@
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
-#include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
-#include <PAX_SAPIENTICA/Key/MenuKeys.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>

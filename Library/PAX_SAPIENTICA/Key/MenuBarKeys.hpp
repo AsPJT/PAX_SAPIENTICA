@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_KEY_MENU_KEYS_HPP
-#define PAX_SAPIENTICA_KEY_MENU_KEYS_HPP
+#ifndef PAX_SAPIENTICA_KEY_MENU_BAR_KEYS_HPP
+#define PAX_SAPIENTICA_KEY_MENU_BAR_KEYS_HPP
 
 #include <array>
 #include <cstdint>
