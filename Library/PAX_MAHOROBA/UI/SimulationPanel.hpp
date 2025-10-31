@@ -47,6 +47,7 @@ namespace paxs {
 		bool enabled_ = true;
 		paxg::Vec2i pos_{0, 0};
 		int debug_start_y_ = 0;
+		int pulldown_y_ = 600; // プルダウンのY座標
 
 		// 外部参照（UIManagerから設定される）
 		std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
@@ -276,7 +277,8 @@ namespace paxs {
 
 			// シミュレーションモデルのプルダウンメニューを初期化
 			simulation_pulldown = paxs::Pulldown(&select_language, &simulation_text, simulation_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, paxs::PulldownDisplayType::SelectedValue, false);
-			simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), 600 });
+			pulldown_y_ = 600;
+			simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), pulldown_y_ });
 
 			// 暦の時間操作のアイコン
 			key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
@@ -312,6 +314,11 @@ namespace paxs {
 			// シミュレーションのボタン
 			if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
 				if (simulator == nullptr) {
+					// 画面サイズに合わせて位置を更新
+					simulation_pulldown.setPos(paxg::Vec2i{
+						static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
+						pulldown_y_
+					});
 					simulation_pulldown.draw(); // シミュレーション選択
 				}
 			}
