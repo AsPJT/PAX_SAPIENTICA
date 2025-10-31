@@ -23,7 +23,7 @@
 
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>
+#include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>

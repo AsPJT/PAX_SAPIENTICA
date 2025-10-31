@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_XYZ_TILES_HPP
-#define PAX_MAHOROBA_XYZ_TILES_HPP
+#ifndef PAX_MAHOROBA_XYZ_TILE_HPP
+#define PAX_MAHOROBA_XYZ_TILE_HPP
 
 #include <cmath>
 #include <filesystem>

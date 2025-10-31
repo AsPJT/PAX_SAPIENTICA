@@ -52,11 +52,7 @@ namespace paxs {
         }
 
         bool isAvailable() const override {
-#ifdef PAXS_USING_SIMULATOR
             return true;
-#else
-            return true; // デバッグ情報は常に利用可能
-#endif
         }
 
         // setEnabled/isEnabledは下部で実装済み
