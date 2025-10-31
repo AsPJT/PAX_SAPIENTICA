@@ -47,6 +47,9 @@ namespace paxs {
 
         // setEnabled/isEnabledは下部で実装済み
 
+    private:
+        paxs::LanguageFonts* language_fonts_ = nullptr;
+
         // カレンダーを描画（言語に応じて自動選択）
         void render(
             const paxs::Koyomi& koyomi,
@@ -68,9 +71,6 @@ namespace paxs {
                 renderWesternCalendar(koyomi, ui_layout, koyomi_font_size, koyomi_font_buffer_thickness_size, select_language, language_text, is_simulator_active);
             }
         }
-
-    private:
-        paxs::LanguageFonts* language_fonts_ = nullptr;
 
         // 日本語・中国語のカレンダーを描画
         void renderAsianCalendar(

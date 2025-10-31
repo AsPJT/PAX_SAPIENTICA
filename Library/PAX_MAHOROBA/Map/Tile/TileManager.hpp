@@ -21,14 +21,13 @@
 
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/UI/MenuBar.hpp>
-#include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRepository.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -57,7 +56,7 @@ namespace paxs {
         }
 
         // 地図の辞書を更新
-        void update(const paxs::MenuBar& menu_bar, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
+        void update(const paxs::FeatureVisibilityManager& visible, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
 
             const double map_viewport_width = map_viewport.getWidth();
             const double map_viewport_height = map_viewport.getHeight();
@@ -65,15 +64,14 @@ namespace paxs {
             const double map_viewport_center_y = map_viewport.getCenterY();
 
             // 更新処理
-            const auto* map_menu = menu_bar.cgetMenuItem(MurMur3::calcHash("map"));
             for (auto&& xyzi : xyz_tile_list) {
-                if (xyzi.getMenuBarMap() != 0 && map_menu && map_menu->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
+                if (xyzi.getMenuBarMap() != 0 && visible.isVisible(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
                 xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
             }
 
             // 描画処理（TileRendererに委譲）
             tile_renderer_.drawBackground();
-            tile_renderer_.drawTiles(xyz_tile_list, menu_bar, map_viewport, jdn);
+            tile_renderer_.drawTiles(xyz_tile_list, visible, map_viewport, jdn);
         }
     };
 }

@@ -23,10 +23,10 @@
 
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/UI/MenuBar.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
@@ -50,12 +50,12 @@ namespace paxs {
 
         /// @brief タイルを描画
         /// @param tiles タイルのリスト
-        /// @param menu_bar メニューバー
+        /// @param visible 可視性管理
         /// @param map_viewport マップビューポート
         /// @param jdn ユリウス日
         void drawTiles(
             const std::vector<XYZTile>& tiles,
-            const MenuBar& menu_bar,
+            const FeatureVisibilityManager& visible,
             const MapViewport& map_viewport,
             cal::JDN_F64 jdn
         ) const {
@@ -65,11 +65,9 @@ namespace paxs {
             const double map_viewport_center_y = map_viewport.getCenterY();
             const int date = static_cast<int>(jdn.cgetDay());
 
-            const auto* map_menu = menu_bar.cgetMenuItem(MurMur3::calcHash("map"));
-
             for (const auto& tile : tiles) {
-                // メニューバーの可視性チェック
-                if (map_menu && map_menu->getIsItemsKey(tile.getMenuBarMap()) != tile.getMenuBarMapBool()) {
+                // 可視性チェック
+                if (tile.getMenuBarMap() != 0 && visible.isVisible(tile.getMenuBarMap()) != tile.getMenuBarMapBool()) {
                     continue;
                 }
 

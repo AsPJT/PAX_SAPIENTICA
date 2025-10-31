@@ -25,6 +25,7 @@
 #include <PAX_MAHOROBA/Map/Location/LocationRange.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonLocation.hpp>
 #include <PAX_MAHOROBA/Map/MapRenderer.hpp>
+#include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -50,6 +51,12 @@ namespace paxs {
         paxs::map::MapDomainLogic map_domain_logic_; // ドメインロジック
         MapRenderer renderer_; // 描画処理
 
+        // 依存性注入された参照
+        FontManager* font_manager_ = nullptr;
+        const SelectLanguage* select_language_ = nullptr;
+        std::uint_least8_t koyomi_font_size_ = 22;
+        std::uint_least8_t koyomi_font_buffer_thickness_size_ = 3;
+
     public:
         MapController()
             :texture_manager(std::unique_ptr<TextureManager>(new(std::nothrow) TextureManager))
@@ -58,13 +65,19 @@ namespace paxs {
 #endif
         {}
 
-        void init() {
+        void init(FontManager& font_manager, const SelectLanguage& select_language,
+                  std::uint_least8_t koyomi_font_size, std::uint_least8_t koyomi_font_buffer_thickness_size) {
             // 地名
             place_name_manager.init();
             place_name_manager.add();
             person_name_manager.init();
             person_name_manager.add();
 
+            // フォント管理への参照を保存
+            font_manager_ = &font_manager;
+            select_language_ = &select_language;
+            koyomi_font_size_ = koyomi_font_size;
+            koyomi_font_buffer_thickness_size_ = koyomi_font_buffer_thickness_size;
         }
 
         /// @brief 更新処理（統合版）
@@ -72,9 +85,6 @@ namespace paxs {
         void update(
             MapViewport& map_viewport,
             const paxs::Koyomi& koyomi,
-            paxg::Font& main_font,
-            paxg::Font& en_font,
-            paxg::Font& pin_font,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
@@ -83,6 +93,13 @@ namespace paxs {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する
                 texture_manager->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
+
+                // フォントを取得
+                paxg::Font* main_font = font_manager_->language_fonts.getAndAdd(
+                    select_language_->cgetKey(),
+                    koyomi_font_size_,
+                    koyomi_font_buffer_thickness_size_
+                );
 
                 // 描画処理（旧Presenterの処理を統合）
                 const double width = map_viewport.getWidth();
@@ -100,9 +117,9 @@ namespace paxs {
                     height,
                     center_x,
                     center_y,
-                    main_font,
-                    en_font,
-                    pin_font
+                    (main_font == nullptr) ? font_manager_->pin_font : (*main_font),
+                    font_manager_->en_font,
+                    font_manager_->pin_font
                 );
 
                 // 人名を描画
@@ -113,9 +130,9 @@ namespace paxs {
                     height,
                     center_x,
                     center_y,
-                    main_font,
-                    en_font,
-                    pin_font
+                    (main_font == nullptr) ? font_manager_->pin_font : (*main_font),
+                    font_manager_->en_font,
+                    font_manager_->pin_font
                 );
 
 #ifdef PAXS_USING_SIMULATOR

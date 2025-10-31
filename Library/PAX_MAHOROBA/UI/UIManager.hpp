@@ -32,11 +32,10 @@
 #include <PAX_MAHOROBA/UI/Calendar/CalendarRenderer.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
+#include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/UI/MenuBar.hpp>
-#include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 #include <PAX_MAHOROBA/UI/TimeControlPanel.hpp>
@@ -57,8 +56,8 @@ namespace paxs {
 
     // UIの統合管理を担当するクラス
     class UIManager {
-    public:
-        FontManager font_manager; // 文字表示専用クラス
+    private:
+        FontManager* font_manager_ = nullptr; // 文字表示専用クラス（依存性注入）
 
         // プルダウンのフォントサイズ
         int pulldown_font_size =
@@ -82,9 +81,9 @@ namespace paxs {
         // UI の影
         paxg::RenderTexture shadow_texture{};
         paxg::RenderTexture internal_texture{};
+        int size_change_count_ = 0;
 
-        paxs::Pulldown pulldown;
-        paxs::MenuBar menu_bar;
+        paxs::HeaderPanel header_panel;  // ヘッダーパネル（メニューバー + 言語選択）
 
         // IUIWidget を実装したウィジェットの統合管理
         std::vector<IUIWidget*> widgets;
@@ -99,7 +98,17 @@ namespace paxs {
         paxs::SimulationPanel simulation_panel;
 #endif
 
+    public:
+        // FontManagerへのアクセスを提供
+        FontManager& getFontManager() { return *font_manager_; }
+        const FontManager& getFontManager() const { return *font_manager_; }
+
+        // フォントサイズへのアクセスを提供
+        int getKoyomiFontSize() const { return koyomi_font_size; }
+        int getKoyomiFontBufferThicknessSize() const { return koyomi_font_buffer_thickness_size; }
+
         void init(
+            FontManager& font_manager,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
             const paxs::Language& simulation_text
@@ -107,32 +116,29 @@ namespace paxs {
 #ifndef PAXS_USING_SIMULATOR
             (void)simulation_text; // シミュレーター未使用時の警告を抑制
 #endif
-            // FontManager
-            font_manager.init(select_language, pulldown_font_size, pulldown_font_buffer_thickness_size);
+            // FontManagerの参照を保存
+            font_manager_ = &font_manager;
+            font_manager_->init(select_language, pulldown_font_size, pulldown_font_buffer_thickness_size);
 
             // CalendarRendererを初期化
-            calendar_renderer.init(font_manager.language_fonts);
+            calendar_renderer.init(font_manager_->language_fonts);
 
             // DebugInfoPanelを初期化
-            debug_info_panel.init(font_manager.language_fonts);
+            debug_info_panel.init(font_manager_->language_fonts);
             map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
             map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
             map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
             map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
-            pulldown = paxs::Pulldown(&select_language, &language_text, paxs::LanguageKeys::ALL_LANGUAGE_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, paxs::PulldownDisplayType::SelectedValue, true);
-            pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - pulldown.getRect().w()), 0 });
-
-            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("view"));
-            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("place_names"));
-            menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
+            // HeaderPanelを初期化
+            header_panel.init(&select_language, &language_text, font_manager_->language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size));
 
             // 暦の時間操作のアイコン
             key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.init(select_language, simulation_text, font_manager.language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size);
+            simulation_panel.init(select_language, simulation_text, font_manager_->language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size);
 #endif
 
             // 影
@@ -141,17 +147,99 @@ namespace paxs {
 
             // IUIWidget を実装したウィジェットを登録
             widgets.clear();
-            widgets.push_back(&menu_bar);
             widgets.push_back(&time_control_panel);
             widgets.push_back(&calendar_renderer);
             widgets.push_back(&debug_info_panel);
 #ifdef PAXS_USING_SIMULATOR
             widgets.push_back(&simulation_panel);
 #endif
-            widgets.push_back(&pulldown);
+            widgets.push_back(&header_panel);
 
             // TimeControlPanelに必要な参照を設定
             // 注: texture_dictionaryとkoyomiは後で設定する必要がある
+        }
+
+        /// @brief 可視性状態をメニューに反映（初期化時に呼び出し）
+        void initializeMenuFromVisibility(paxs::FeatureVisibilityManager& visible) {
+            auto* view_menu = header_panel.getMenuBar().getMenuItem(MurMur3::calcHash("view"));
+            if (view_menu) {
+                view_menu->setIsItems(std::size_t(0), visible.isVisible(MurMur3::calcHash("Calendar")));
+                view_menu->setIsItems(std::size_t(1), visible.isVisible(MurMur3::calcHash("Map")));
+                view_menu->setIsItems(std::size_t(2), visible.isVisible(MurMur3::calcHash("UI")));
+                view_menu->setIsItems(std::size_t(3), visible.isVisible(MurMur3::calcHash("Simulation")));
+                view_menu->setIsItems(std::size_t(4), visible.isVisible(MurMur3::calcHash("License")));
+                view_menu->setIsItems(std::size_t(5), visible.isVisible(MurMur3::calcHash("Debug")));
+                view_menu->setIsItems(std::size_t(6), visible.isVisible(MurMur3::calcHash("3D")));
+            }
+        }
+
+        /// @brief 選択言語を更新（HeaderPanelから取得）
+        void updateLanguage(SelectLanguage& select_language) {
+            select_language.set(std::size_t(header_panel.getLanguageIndex()));
+            select_language.setKey(std::uint_least32_t(header_panel.getLanguageKey()));
+        }
+
+        /// @brief メニュー状態を可視性に反映（毎フレーム呼び出し）
+        void syncVisibilityFromMenu(paxs::FeatureVisibilityManager& visible) {
+            // View メニューの状態を同期
+            auto* view_menu = header_panel.getMenuBar().getMenuItem(MurMur3::calcHash("view"));
+            if (view_menu) {
+                visible.set(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
+                visible.set(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
+                visible.set(MurMur3::calcHash("UI"), view_menu->getIsItems(std::size_t(2)));
+                visible.set(MurMur3::calcHash("Simulation"), view_menu->getIsItems(std::size_t(3)));
+                visible.set(MurMur3::calcHash("License"), view_menu->getIsItems(std::size_t(4)));
+                visible.set(MurMur3::calcHash("Debug"), view_menu->getIsItems(std::size_t(5)));
+                visible.set(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
+            }
+
+            // Place Names メニューの状態を同期
+            auto* place_names_menu = header_panel.getMenuBar().getMenuItem(MurMur3::calcHash("place_names"));
+            if (place_names_menu) {
+                visible.set(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
+                visible.set(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
+                visible.set(MurMur3::calcHash("tumulus"), place_names_menu->getIsItems(std::size_t(2)));
+                visible.set(MurMur3::calcHash("dolmen"), place_names_menu->getIsItems(std::size_t(3)));
+                visible.set(MurMur3::calcHash("kamekanbo"), place_names_menu->getIsItems(std::size_t(4)));
+                visible.set(MurMur3::calcHash("stone_coffin"), place_names_menu->getIsItems(std::size_t(5)));
+                visible.set(MurMur3::calcHash("doken"), place_names_menu->getIsItems(std::size_t(6)));
+                visible.set(MurMur3::calcHash("dotaku"), place_names_menu->getIsItems(std::size_t(7)));
+                visible.set(MurMur3::calcHash("bronze_mirror"), place_names_menu->getIsItems(std::size_t(8)));
+                visible.set(MurMur3::calcHash("human_bone"), place_names_menu->getIsItems(std::size_t(9)));
+                visible.set(MurMur3::calcHash("mtdna"), place_names_menu->getIsItems(std::size_t(10)));
+                visible.set(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
+            }
+
+            // Map メニューの状態を同期
+            auto* map_menu = header_panel.getMenuBar().getMenuItem(MurMur3::calcHash("map"));
+            if (map_menu) {
+                visible.set(MurMur3::calcHash("menu_bar_map_base"), map_menu->getIsItems(std::size_t(0)));
+                visible.set(MurMur3::calcHash("menu_bar_map_land_and_sea"), map_menu->getIsItems(std::size_t(1)));
+                visible.set(MurMur3::calcHash("menu_bar_map_land_and_water"), map_menu->getIsItems(std::size_t(2)));
+                visible.set(MurMur3::calcHash("menu_bar_map_soil"), map_menu->getIsItems(std::size_t(3)));
+                visible.set(MurMur3::calcHash("menu_bar_map_soil_temperature"), map_menu->getIsItems(std::size_t(4)));
+                visible.set(MurMur3::calcHash("menu_bar_map_ryosei_country"), map_menu->getIsItems(std::size_t(5)));
+                visible.set(MurMur3::calcHash("menu_bar_map_ryosei_line"), map_menu->getIsItems(std::size_t(6)));
+                visible.set(MurMur3::calcHash("menu_bar_map_slope"), map_menu->getIsItems(std::size_t(7)));
+                visible.set(MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"), map_menu->getIsItems(std::size_t(8)));
+                visible.set(MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"), map_menu->getIsItems(std::size_t(9)));
+                visible.set(MurMur3::calcHash("menu_bar_map_line1"), map_menu->getIsItems(std::size_t(10)));
+                visible.set(MurMur3::calcHash("menu_bar_map_line2"), map_menu->getIsItems(std::size_t(11)));
+            }
+        }
+
+        /// @brief ウィンドウサイズ変更時のテクスチャ再初期化
+        void handleWindowResize() {
+            if (size_change_count_ < 1) {
+                shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
+                internal_texture = paxg::RenderTexture{ shadow_texture.size() };
+            }
+            if (size_change_count_ >= 100) size_change_count_ = 100;
+            ++size_change_count_;
+        }
+
+        void resetSizeChangeCount() {
+            size_change_count_ = 0;
         }
 
         void update(
@@ -181,7 +269,7 @@ namespace paxs {
                 internal_texture,
                 [&]() {
                     // 影の形状を描画
-                    paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(); // メニューバー
+                    paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(header_panel.getHeight()) }.draw(); // メニューバー
 
                     if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                         paxg::RoundRect{ ui_layout.rect_start_x, ui_layout.koyomi_font_y - 15, ui_layout.rect_len_x, ui_layout.next_rect_start_y, 10 }.draw();
@@ -199,7 +287,7 @@ namespace paxs {
 #else
             // SFML/DxLib: Use simple shadow with drawShadow method
             // メニューバーの影
-            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.drawShadow({ 1, 1 }, 4, 1).draw();
+            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(header_panel.getHeight()) }.drawShadow({ 1, 1 }, 4, 1).draw();
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 // カレンダーパネルの影と描画
@@ -249,8 +337,6 @@ namespace paxs {
                 debug_info_panel.setVisible(false);
             }
 
-            // メニューバー背景
-            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(pulldown.getRect().h()) }.draw(paxg::Color{ 243, 243, 243 });
 #ifdef PAXS_USING_SIMULATOR
             simulation_panel.drawPulldownBackground(simulator, visible);
 #endif
