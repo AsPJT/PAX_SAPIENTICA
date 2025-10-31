@@ -350,6 +350,9 @@ namespace paxs {
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
 
+        const char* getName() const override { return "Pulldown"; }
+        bool isAvailable() const override { return true; }
+
     private:
         const SelectLanguage* select_language_ptr = nullptr; // 選択されている言語
         const Language* language_ptr = nullptr; // 言語

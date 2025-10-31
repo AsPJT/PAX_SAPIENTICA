@@ -39,6 +39,10 @@ namespace paxs {
         // 有効/無効管理
         virtual void setEnabled(bool enabled) = 0;
         virtual bool isEnabled() const = 0;
+
+        // コンポーネント情報
+        virtual const char* getName() const = 0;
+        virtual bool isAvailable() const = 0;
     };
 
 }

@@ -22,7 +22,6 @@
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
-#include <PAX_MAHOROBA/Simulation/IViewerComponent.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 
@@ -39,7 +38,7 @@
 namespace paxs {
 
     // デバッグ情報パネルを表示するクラス
-    class DebugInfoPanel : public IViewerComponent, public IUIWidget {
+    class DebugInfoPanel : public IUIWidget {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
@@ -47,7 +46,7 @@ namespace paxs {
             visible_ = true;
         }
 
-        // IViewerComponent インターフェースの実装
+        // IUIWidget インターフェースの実装（コンポーネント情報）
         const char* getName() const override {
             return "DebugInfoPanel";
         }
@@ -60,7 +59,7 @@ namespace paxs {
 #endif
         }
 
-        // setEnabled/isEnabledは下部で実装済み（両インターフェースで共有）
+        // setEnabled/isEnabledは下部で実装済み
 
         // 可視性の設定・取得
         void setVisible(bool visible) override { visible_ = visible; }
@@ -327,8 +326,7 @@ namespace paxs {
             pos_ = pos;
         }
 
-        // setVisible/isVisibleは既に実装済み（互換性維持）
-        // setEnabled/isEnabledはIViewerComponentとIUIWidgetの両方で共有
+        // setEnabled/isEnabledは下部で実装済み
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
     };

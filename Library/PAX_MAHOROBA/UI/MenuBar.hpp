@@ -12,6 +12,8 @@
 #ifndef PAX_MAHOROBA_MENU_BAR_HPP
 #define PAX_MAHOROBA_MENU_BAR_HPP
 
+#include <vector>
+
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuItem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
@@ -136,6 +138,9 @@ namespace paxs {
 
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
+
+        const char* getName() const override { return "MenuBar"; }
+        bool isAvailable() const override { return true; }
     };
 } // namespace paxs
 

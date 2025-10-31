@@ -411,6 +411,9 @@ namespace paxs {
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
 
+        const char* getName() const override { return "TimeControlPanel"; }
+        bool isAvailable() const override { return true; }
+
         // TimeControlPanel固有の初期化メソッド
         void setReferences(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,

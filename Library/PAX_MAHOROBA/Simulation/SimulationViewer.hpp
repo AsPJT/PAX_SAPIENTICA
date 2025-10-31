@@ -22,7 +22,6 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
-#include <PAX_MAHOROBA/Simulation/IViewerComponent.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
@@ -42,7 +41,7 @@
 namespace paxs {
 	/// @brief シミュレーションのビューアクラス
 	/// @brief Simulation viewer class
-	class SimulationViewer : public IViewerComponent, public IUIWidget {
+	class SimulationViewer : public IUIWidget {
 	private:
 		bool visible_ = true;
 		bool enabled_ = true;
@@ -335,7 +334,7 @@ namespace paxs {
 		}
 
 		// ========================================
-		// IViewerComponent インターフェース実装
+		// IUIWidget インターフェース実装
 		// ========================================
 
 		/// @brief コンポーネント名を取得
@@ -357,10 +356,6 @@ namespace paxs {
 		bool isEnabled() const override {
 			return enabled_;
 		}
-
-		// ========================================
-		// IUIWidget インターフェース実装
-		// ========================================
 
 		/// @brief 外部参照を設定
 		/// @param simulator シミュレータのユニークポインタへの参照

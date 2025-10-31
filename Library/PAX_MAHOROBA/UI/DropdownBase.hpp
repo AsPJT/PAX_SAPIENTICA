@@ -30,7 +30,6 @@ namespace paxs {
 
     /// @brief ドロップダウンメニューの基底クラス
     /// @brief Base class for dropdown menus
-    /// @details Pulldown と MenuItem の共通機能を提供
     class DropdownBase : public IUIWidget {
     protected:
         // 言語関連
@@ -236,6 +235,8 @@ namespace paxs {
         bool isVisible() const override { return visible_; }
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
+        const char* getName() const override { return "DropdownBase"; }
+        bool isAvailable() const override { return true; }
 
     protected:
         /// @brief ヘッダー部分のテキストを描画（派生クラスで実装）
