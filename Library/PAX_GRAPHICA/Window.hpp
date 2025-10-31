@@ -80,6 +80,8 @@ namespace paxg {
             getImpl().setPosition(pos);
         }
 
+        /// @brief Set the window icon
+        /// @param path Path to the icon file (relative to root path)
         static void setIcon(const std::string& path) {
             getImpl().setIcon(path);
         }

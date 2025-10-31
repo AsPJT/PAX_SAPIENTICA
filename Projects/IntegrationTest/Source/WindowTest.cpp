@@ -18,7 +18,7 @@
 int main() {
     paxg::Rect rect(0, 0, 100, 100);
     // paxg::Circle circle(100, 100, 50);
-    paxg::String path("../data/sample.png");
+    paxg::String path("data/sample.png");
     paxg::Texture texture(path);
     paxg::Window::Init(800, 600, "PAX SAPIENTICA Library");
     while (paxg::Window::update()) {

@@ -227,7 +227,7 @@ namespace paxs {
                     if (std::filesystem::exists(local_file_path)) {
 #endif
                         // 新しいテクスチャ
-                        paxg::Texture new_tex(local_file_path);
+                        paxg::Texture new_tex(paxs::StringExtensions::removeRelativePathPrefix(local_file_path));
 
                         // テクスチャが読み込めた場合
                         if (!!new_tex) {
@@ -253,7 +253,7 @@ namespace paxs {
 
                             // ファイル読み込みができるかどうか
                             if (std::filesystem::exists(local_file_path)) {
-                                paxg::Texture new_url_tex{ local_file_path };
+                                paxg::Texture new_url_tex{ paxs::StringExtensions::removeRelativePathPrefix(local_file_path) };
                                 if (!new_url_tex) {
                                     is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
                                 }
@@ -275,13 +275,11 @@ namespace paxs {
 
                             paxs::Input8BitBinary i8bbs(new_path,
                                 AppConfig::getInstance()->getRootPath()
-                                //(p_root_path == nullptr) ? "" : *p_root_path
                             );
 
                             static unsigned char xyz_tiles[256 * 256]{};
                             // テクスチャが読み込めない場合
                             if (!i8bbs.calc(xyz_tiles)) {
-                                //printfDx("1. %s   %s\n", p_root_path->c_str() , new_path.c_str());
                                 is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
                                 continue;
                             }
@@ -330,7 +328,7 @@ namespace paxs {
                                 // 画像として読み込み
 
                                 // 新しいテクスチャ
-                                paxg::Texture bin_tex(local_file_path);
+                                paxg::Texture bin_tex(paxs::StringExtensions::removeRelativePathPrefix(local_file_path));
                                 if (!bin_tex) {
                                     is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
                                 }

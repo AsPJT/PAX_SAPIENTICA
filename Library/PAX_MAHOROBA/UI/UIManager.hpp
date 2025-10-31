@@ -131,12 +131,11 @@ namespace paxs {
             menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("place_names"));
             menu_bar.add(&select_language, &language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, font_manager.language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), MurMur3::calcHash("map"));
 
-            const std::string path = (AppConfig::getInstance()->getRootPath());
             // 暦の時間操作のアイコン
-            key_value_tsv.input(path + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
+            key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_viewer.init(select_language, simulation_text, font_manager.language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size, path);
+            simulation_viewer.init(select_language, simulation_text, font_manager.language_fonts, pulldown_font_size, pulldown_font_buffer_thickness_size);
 #endif
 
             // 影

@@ -46,26 +46,26 @@ namespace paxs {
             // ここに実験用のテクスチャを定義する
 
             //// 統一新羅 朝鮮半島
-            //location_range_list.emplace_back("./../../../../../Data/Map/TestMap/a.png",
+            //location_range_list.emplace_back("Data/Map/TestMap/a.png",
             //    124.6,
             //	MapProjectionF64::equirectangularDegYToMercatorDegY(34.25),
             //    129.65,
             //	MapProjectionF64::equirectangularDegYToMercatorDegY(39.4));
 
-            //location_range_list.emplace_back("./../../../../../Data/Map/TestMap/nara.png",
+            //location_range_list.emplace_back("Data/Map/TestMap/nara.png",
             //	135.7104,
             //	MapProjectionF64::equirectangularDegYToMercatorDegY(34.59451),
             //	135.84725,
             //	MapProjectionF64::equirectangularDegYToMercatorDegY(34.7072));
 
-            //location_range_list.emplace_back("./../../../../../Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/ColorCodingByProvincesOfJapanLineAlpha_8_218_90_16_16.png",
-            ////location_range_list.emplace_back("./../../../../../Data/Map/XYZTile/Union/Ryoseikoku_8_218_90_16_16.png",
+            //location_range_list.emplace_back("Data/Map/XYZTile/Union/ColorCodingByProvincesOfJapan/ColorCodingByProvincesOfJapanLineAlpha_8_218_90_16_16.png",
+            ////location_range_list.emplace_back("Data/Map/XYZTile/Union/Ryoseikoku_8_218_90_16_16.png",
             //	(218.0 / 256.0 * 360.0) - 180.0, // 126.5625
             //	((1.0 - ((90.0 + 16.0) / 256.0)) * 360.0) - 180.0,
             //	((218.0 + 16.0) / 256.0 * 360.0) - 180.0, // 149.0625
             //	((1.0 - (90.0 / 256.0)) * 360.0) - 180.0);
 
-            //location_range_list.emplace_back("./../../../../../Data/Map/XYZTile/Union/Gaya_8_218_90_16_16.png",
+            //location_range_list.emplace_back("Data/Map/XYZTile/Union/Gaya_8_218_90_16_16.png",
             //	(218.0 / 256.0 * 360.0) - 180.0, // 126.5625
             //	((1.0 - ((90.0 + 16.0) / 256.0)) * 360.0) - 180.0,
             //	((218.0 + 16.0) / 256.0 * 360.0) - 180.0, // 149.0625

@@ -521,8 +521,7 @@ namespace paxs {
                 [&](const std::string& path_) {str = path_; });
             if (str.size() == 0) return;
 
-            const std::string path = (AppConfig::getInstance()->getRootPath());
-            key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
+            key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ value_ }; });
         }
         // 描画
         void draw(const double jdn,

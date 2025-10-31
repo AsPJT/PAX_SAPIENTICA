@@ -18,7 +18,6 @@
 #include <PAX_MAHOROBA/Color/Background.hpp>
 #include <PAX_MAHOROBA/Core/Init.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>
 
 namespace paxs {
@@ -92,10 +91,7 @@ namespace paxs {
 #endif
 
             // ローディング画面の画像を読み込む
-            const std::string loading_screen_path =
-                paxs::AppConfig::getInstance()->getRootPath() + "Data/LoadingScreen/LoadingScreen.png";
-
-            paxg::Texture loading_texture(loading_screen_path);
+            paxg::Texture loading_texture("Data/LoadingScreen/LoadingScreen.png");
 
             // ウィンドウをクリア
             paxg::Window::clear();

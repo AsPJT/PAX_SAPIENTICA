@@ -57,10 +57,14 @@ namespace paxg {
             createImpl(image);
         }
 
+        /// @brief Constructor to load texture from file path
+        /// @param path Path to the texture file (relative to root path)
         Texture(const String& path) {
             createImpl(path);
         }
 
+        /// @brief Constructor to load texture from file path
+        /// @param path Path to the texture file (relative to root path)
         Texture(const std::string& path) {
             createImpl(path);
         }

@@ -241,14 +241,12 @@ namespace paxs {
 		/// @param language_fonts 言語フォント
 		/// @param pulldown_font_size プルダウンのフォントサイズ
 		/// @param pulldown_font_buffer_thickness_size プルダウンのフォント太さ
-		/// @param path ルートパス
 		void init(
 			const SelectLanguage& select_language,
 			const paxs::Language& simulation_text,
 			LanguageFonts& language_fonts,
 			int pulldown_font_size,
-			int pulldown_font_buffer_thickness_size,
-			const std::string& path
+			int pulldown_font_buffer_thickness_size
 		) {
 			// シミュレーションモデルのファイルを読み込む
 			const std::string models_path = "Data/Simulations/Models.txt";
@@ -283,7 +281,7 @@ namespace paxs {
 			simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), 600 });
 
 			// 暦の時間操作のアイコン
-			key_value_tsv.input(path + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ path + value_ }; });
+			key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 		}
 
 		/// @brief シミュレーションの更新と描画
