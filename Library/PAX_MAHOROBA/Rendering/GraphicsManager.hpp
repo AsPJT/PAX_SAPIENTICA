@@ -67,6 +67,17 @@ namespace paxs {
 
 			old_width_ = paxg::Window::width();
 			old_height_ = paxg::Window::height();
+
+			// レイヤーシステムに各コンポーネントを登録
+			// Register components to layer system
+			render_layer_manager_.registerRenderable(&tile_manager_);
+			render_layer_manager_.registerRenderable(&map_controller_);
+			render_layer_manager_.registerRenderable(&ui_manager_);
+
+			// 入力ルーターに各コンポーネントを登録（UIが優先）
+			// Register components to input router (UI has priority)
+			input_router_.registerHandler(&ui_manager_);
+			input_router_.registerHandler(&map_controller_);
 		}
 
 		/// @brief TileManagerへのアクセス（初期化用）

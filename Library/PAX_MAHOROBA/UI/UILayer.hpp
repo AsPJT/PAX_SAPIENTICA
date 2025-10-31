@@ -33,6 +33,8 @@
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -47,9 +49,17 @@
 
 namespace paxs {
 
-    // UIレイヤーの統合管理を担当するクラス
-    class UILayer {
+    /// @brief UIレイヤーの統合管理を担当するクラス
+    /// @brief Integrated management class for UI layer
+    ///
+    /// IRenderable と IInputHandler を継承し、レイヤーベースシステムに対応します。
+    /// 子ウィジェットへの処理委譲を行います。
+    /// Inherits IRenderable and IInputHandler to support layer-based system.
+    /// Delegates processing to child widgets.
+    class UILayer : public IRenderable, public IInputHandler {
     private:
+        bool visible_ = true;
+        bool enabled_ = true;
         FontManager* font_manager_ = nullptr; // 文字表示専用クラス（依存性注入）
 
         std::size_t map_viewport_width_str_index;
@@ -308,6 +318,111 @@ namespace paxs {
                     koyomi, ui_layout, debug_start_y, select_language, language_text
                 );
             }
+        }
+
+        // IRenderable の実装
+        // IRenderable implementation
+
+        /// @brief レンダリング処理（既存のdraw処理を呼び出す）
+        /// @brief Render (calls existing draw processing)
+        void render() override {
+            // update()内で描画が実施されているため、ここでは何もしない
+            // Drawing is performed in update(), so nothing is done here
+        }
+
+        /// @brief レイヤーを取得
+        /// @brief Get layer
+        /// @return UIContentレイヤー / UIContent layer
+        RenderLayer getLayer() const override {
+            return RenderLayer::UIContent;
+        }
+
+        /// @brief 可視性を取得
+        /// @brief Get visibility
+        bool isVisible() const override {
+            return visible_;
+        }
+
+        /// @brief 可視性を設定
+        /// @brief Set visibility
+        void setVisible(bool visible) override {
+            visible_ = visible;
+        }
+
+        // IInputHandler の実装
+        // IInputHandler implementation
+
+        /// @brief 入力処理（子ウィジェットに委譲）
+        /// @brief Handle input (delegate to child widgets)
+        /// @param event 入力イベント / Input event
+        /// @return 処理した場合true / true if handled
+        bool handleInput(const InputEvent& event) override {
+            if (!enabled_ || !visible_) return false;
+
+            // 子ウィジェットに順番に入力イベントを渡す
+            // Pass input event to child widgets in order
+            for (auto* widget : widgets) {
+                if (widget && widget->isEnabled() && widget->isVisible()) {
+                    if (widget->hitTest(event.x, event.y)) {
+                        if (widget->handleInput(event)) {
+                            return true;  // 処理された
+                        }
+                    }
+                }
+            }
+
+            // HeaderPanelは常に処理を試みる（メニューバーは画面上部に固定）
+            // HeaderPanel always attempts to process (menu bar is fixed at top of screen)
+            if (header_panel.isEnabled() && header_panel.isVisible()) {
+                if (header_panel.hitTest(event.x, event.y)) {
+                    if (header_panel.handleInput(event)) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// @brief ヒットテスト（子ウィジェットのいずれかにヒット）
+        /// @brief Hit test (hit any of child widgets)
+        /// @param x X座標 / X coordinate
+        /// @param y Y座標 / Y coordinate
+        /// @return 範囲内ならtrue / true if within bounds
+        bool hitTest(int x, int y) const override {
+            if (!visible_ || !enabled_) return false;
+
+            // いずれかの子ウィジェットがヒットすればtrue
+            // Return true if any child widget is hit
+            for (const auto* widget : widgets) {
+                if (widget && widget->isVisible() && widget->isEnabled()) {
+                    if (widget->hitTest(x, y)) {
+                        return true;
+                    }
+                }
+            }
+
+            // HeaderPanelのヒットテスト
+            // HeaderPanel hit test
+            if (header_panel.isVisible() && header_panel.isEnabled()) {
+                if (header_panel.hitTest(x, y)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// @brief 有効性を取得
+        /// @brief Get enabled state
+        bool isEnabled() const override {
+            return enabled_;
+        }
+
+        /// @brief 有効性を設定
+        /// @brief Set enabled state
+        void setEnabled(bool enabled) {
+            enabled_ = enabled;
         }
     };
 
