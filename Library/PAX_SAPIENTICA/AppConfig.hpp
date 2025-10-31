@@ -44,10 +44,9 @@ namespace paxs {
         template<typename Func_>
         void calcDataSettings(const std::uint_least32_t key_, Func_&& func_) const {
             // 指定したキーのデータ設定が存在している場合は処理をする
-            if (AppConfig::getInstance()->isDataSettings(key_)) {
+            if (isDataSettings(key_)) {
                 func_(
-                    AppConfig::getInstance()->getRootPath()
-                    + AppConfig::getInstance()->getDataSettings(key_));
+                    getRootPath() + getDataSettings(key_));
             } else {
                 PAXS_WARNING("Data settings for key " + std::to_string(key_) + " is missing.");
             }
@@ -55,9 +54,9 @@ namespace paxs {
         template<typename Func_>
         void calcDataSettingsNotPath(const std::uint_least32_t key_, Func_&& func_) const {
             // 指定したキーのデータ設定が存在している場合は処理をする
-            if (AppConfig::getInstance()->isDataSettings(key_)) {
+            if (isDataSettings(key_)) {
                 func_(
-                    AppConfig::getInstance()->getDataSettings(key_));
+                    getDataSettings(key_));
             } else {
                 PAXS_WARNING("Data settings for key " + std::to_string(key_) + " is missing.");
             }

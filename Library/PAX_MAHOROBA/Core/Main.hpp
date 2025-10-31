@@ -37,8 +37,8 @@
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
 #include <PAX_MAHOROBA/UI/UIManager.hpp>
 
-#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/TouchStateManager.hpp>
@@ -83,7 +83,6 @@ namespace paxs {
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationModels"),
             [&](const std::string& path_) {simulation_text.add(path_); });
 
-        //language_text.add(AppConfig::getInstance()->getRootPath() + "Data/Settings/Languages.tsv");
         ui_manager.init(select_language, language_text, simulation_text);
 
         int old_width = paxg::Window::width(); // 1 フレーム前の幅

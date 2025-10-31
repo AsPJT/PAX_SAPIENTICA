@@ -117,7 +117,6 @@ namespace paxs {
 
             // DebugInfoPanelを初期化
             debug_info_panel.init(font_manager.language_fonts);
-            //koyomi_font = setFont(koyomi_font_size, AppConfig::getInstance()->getRootPath(), koyomi_font_buffer_thickness_size);
             map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
             map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
             map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));

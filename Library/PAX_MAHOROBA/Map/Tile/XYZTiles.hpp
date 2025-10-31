@@ -399,9 +399,7 @@ namespace paxs {
                     break;
                 }
 #else
-                file_name_format = //(p_root_path == nullptr) ?
-                    //map_file_path_name_ + file_name_format_ + std::string(".png") :
-                    AppConfig::getInstance()->getRootPath() + map_file_path_name_ + file_name_format_ + std::string(".png");
+                file_name_format = AppConfig::getInstance()->getRootPath() + map_file_path_name_ + file_name_format_ + std::string(".png");
 #endif
                 //if (file_name_format.size() != 0) printfDx("2. %s\n", file_name_format.c_str());
             }
