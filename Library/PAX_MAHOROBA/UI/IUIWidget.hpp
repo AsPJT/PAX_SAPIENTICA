@@ -15,7 +15,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_SAPIENTICA/TouchStateManager.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
 
@@ -25,7 +25,7 @@ namespace paxs {
         virtual ~IUIWidget() = default;
 
         // 基本操作
-        virtual void update(TouchStateManager& tm) = 0;
+        virtual void update(InputStateManager& input_state_manager) = 0;
         virtual void draw() = 0;
 
         // 位置・サイズ管理

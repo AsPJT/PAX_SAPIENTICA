@@ -12,8 +12,7 @@
 #ifndef PAX_MAHOROBA_FONT_MANAGER_HPP
 #define PAX_MAHOROBA_FONT_MANAGER_HPP
 
-#include <string>
-#include <vector>
+#include <array>
 
 #include <PAX_GRAPHICA/Font.hpp>
 
@@ -29,7 +28,7 @@ namespace paxs {
     public:
         LanguageFonts language_fonts;
 
-        std::vector<std::string> path_list = {
+        static constexpr std::array path_list = {
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
             "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf",

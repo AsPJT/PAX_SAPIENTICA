@@ -46,13 +46,13 @@
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuKeys.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/TouchStateManager.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 
 namespace paxs {
@@ -163,9 +163,9 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
 #endif
-            paxs::TouchStateManager& tm_,
+            paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi,
-            paxs::GraphicVisualizationList& visible
+            paxs::FeatureVisibilityManager& visible
             ) {
             map_viewport.getCoordinate().toEquirectangularDegY();
 
@@ -212,7 +212,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションのボタン
-            simulation_viewer.setReferences(simulator, tm_, koyomi, visible, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_viewer.setReferences(simulator, input_state_manager, koyomi, visible, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 #endif
 
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
@@ -230,7 +230,7 @@ namespace paxs {
                 const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
                 time_control_panel.setReferences(texture_dictionary, koyomi);
                 time_control_panel.setPos(paxg::Vec2i{ui_layout.time_control_base_x, ui_layout.koyomi_font_y + ui_layout.time_control_base_y});
-                time_control_panel.update(tm_);
+                time_control_panel.update(input_state_manager);
             } else {
                 calendar_renderer.setVisible(false);
             }
@@ -259,7 +259,7 @@ namespace paxs {
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
 
             texture_dictionary.at(MurMur3::calcHash("texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
-            if (tm_.get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
+            if (input_state_manager.get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
                 // Web ページをブラウザで開く
                 paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
             }

@@ -21,7 +21,7 @@
 
 #include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
 
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
@@ -36,7 +36,7 @@ namespace paxs {
 		void draw(
 			const std::vector<LocationPointList>& location_point_list_list,
 			const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
-			GraphicVisualizationList& visible,
+			FeatureVisibilityManager& visible,
 			const double jdn,
 			const double map_view_width,
 			const double map_view_height,

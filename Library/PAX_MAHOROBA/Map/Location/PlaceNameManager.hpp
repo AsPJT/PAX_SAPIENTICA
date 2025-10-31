@@ -24,7 +24,7 @@
 #include <PAX_MAHOROBA/Map/Location/PlaceNameRepository.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 
 namespace paxs {
@@ -62,7 +62,7 @@ namespace paxs {
 			 key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 		}
 		// 描画
-		void draw(paxs::GraphicVisualizationList& visible,
+		void draw(paxs::FeatureVisibilityManager& visible,
 			const double jdn,
 			const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
 			paxg::Font& font, paxg::Font& en_font, paxg::Font& pin_font) {

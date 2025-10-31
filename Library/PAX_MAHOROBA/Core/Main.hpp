@@ -39,9 +39,9 @@
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_SAPIENTICA/TouchStateManager.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -51,7 +51,7 @@ namespace paxs {
         paxs::PaxSapienticaInit::firstInit(); // 初期化とロゴの表示
 
         // 可視化一覧
-        GraphicVisualizationList visible{};
+        FeatureVisibilityManager visible{};
         visible.emplace(MurMur3::calcHash("Calendar"), true); // 暦
         visible.emplace(MurMur3::calcHash("Map"), true); // 地図
         visible.emplace(MurMur3::calcHash("UI"), true); // UI
@@ -66,7 +66,7 @@ namespace paxs {
         paxs::Language language_text;
         paxs::Language simulation_text;
         paxs::MapController map_controller{}; // 地図を統合管理する
-        paxs::TouchStateManager tm; // 画面のクリック・タッチを管理する
+        paxs::InputStateManager input_state_manager; // 画面のクリック・タッチを管理する
 
 
         // XYZ タイルを初期化
@@ -112,7 +112,7 @@ namespace paxs {
         while (paxg::Window::update()) {
             paxg::Mouse::getInstance()->calledFirstEveryFrame(); // 入力を更新
 
-            tm.init(); // タッチ判定を初期化
+            input_state_manager.init(); // タッチ判定を初期化
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
             /*##########################################################################################
                 更新処理関連
@@ -149,15 +149,15 @@ namespace paxs {
             // シミュレーションモデル選択のプルダウンを更新
 #ifdef PAXS_USING_SIMULATOR
             ui_manager.simulation_viewer.simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - ui_manager.simulation_viewer.simulation_pulldown.getRect().w() - 200), 600 });
-            ui_manager.simulation_viewer.simulation_pulldown.update(tm);
+            ui_manager.simulation_viewer.simulation_pulldown.update(input_state_manager);
             ui_manager.simulation_viewer.simulation_model_index = ui_manager.simulation_viewer.simulation_pulldown.getIndex();
 #endif
             // 選択言語のプルダウンを更新
             ui_manager.pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - ui_manager.pulldown.getRect().w()), 0 });
-            ui_manager.pulldown.update(tm);
+            ui_manager.pulldown.update(input_state_manager);
             select_language.set(std::size_t(ui_manager.pulldown.getIndex())); // 選択言語を更新
             select_language.setKey(std::uint_least32_t(ui_manager.pulldown.getKey())); // 選択言語を更新
-            ui_manager.menu_bar.update(tm);
+            ui_manager.menu_bar.update(input_state_manager);
 
             // 表示の可視化を更新
             //Calendar Map UI Simulation License Debug 3D
@@ -232,7 +232,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
                 simulator,
 #endif
-                tm,
+                input_state_manager,
                 koyomi,
                 visible
             );

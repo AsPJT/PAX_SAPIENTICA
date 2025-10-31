@@ -12,47 +12,22 @@
 #ifndef PAX_SAPIENTICA_TOUCH_STATE_MANAGER_HPP
 #define PAX_SAPIENTICA_TOUCH_STATE_MANAGER_HPP
 
+/*##########################################################################################
+	このファイルは後方互換性のために残されています。
+	新しいコードでは InputStateManager を使用してください。
+
+	This file is kept for backward compatibility.
+	Please use InputStateManager for new code.
+##########################################################################################*/
+
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
+
 namespace paxs {
 
-    /// @brief A class that manages touch state to prevent duplicate processing
-    /// @brief タッチの状態を管理して二重処理を防ぐクラス
-    /// @details Tracks whether a touch event has been processed to avoid handling the same touch multiple times
-    struct TouchStateManager {
-    private:
-        // タッチされているか
-        bool is_touch = false;
-    public:
-        /// @brief Initialize the touch state
-        /// @brief タッチ状態を初期化する
-        /// @details Resets the internal touch flag to allow new touch events
-        constexpr void init() noexcept { is_touch = false; }
+	/// @deprecated TouchStateManager is deprecated. Use InputStateManager instead.
+	/// @brief TouchStateManager は非推奨です。代わりに InputStateManager を使用してください。
+	using TouchStateManager = InputStateManager;
 
-        /// @brief Check and update touch state
-        /// @brief タッチ状態を確認して更新する
-        /// @param is_touch_ Current touch status (true if touched, false otherwise)
-        /// @return true if this is a new touch event (not yet processed), false if already processed or not touched
-        /// @details Returns true only on the first frame when touch begins, preventing duplicate processing
-        constexpr bool get(const bool is_touch_) noexcept {
-
-            // まだタッチされていない場合
-            if (!is_touch) {
-                // 今回もタッチされていないので不可
-                if (!is_touch_) {
-                    return false;
-                }
-                // 今回初めてタッチされたので成功
-                else {
-                    is_touch = true;
-                    return true;
-                }
-            }
-            // 既にタッチされている場合
-            else {
-                // 二重処理を防ぐため、不可
-                return false;
-            }
-        }
-    };
 }
 
 #endif // !PAX_SAPIENTICA_TOUCH_STATE_MANAGER_HPP

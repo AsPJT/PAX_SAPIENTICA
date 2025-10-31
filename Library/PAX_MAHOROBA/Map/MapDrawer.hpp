@@ -17,7 +17,7 @@
 #include <PAX_MAHOROBA/Map/Location/PlaceNameManager.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 
@@ -51,7 +51,7 @@ public:
     /// @param pin_font ピンフォント
     void drawPlaceNames(
         PlaceNameManager& place_name_manager,
-        GraphicVisualizationList& visible,
+        FeatureVisibilityManager& visible,
         double julian_day,
         double width,
         double height,

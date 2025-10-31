@@ -28,7 +28,7 @@
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/GraphicVisualizationList.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -78,7 +78,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
-            paxs::GraphicVisualizationList& visible
+            paxs::FeatureVisibilityManager& visible
             ) {
             if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // 地図上に画像を描画する

@@ -23,7 +23,7 @@
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_SAPIENTICA/TouchStateManager.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
@@ -133,7 +133,7 @@ namespace paxs {
         }
 
         /// @brief 更新処理
-        void update(paxs::TouchStateManager& tm_) override {
+        void update(paxs::InputStateManager& input_state_manager) override {
             if (!visible_ || !enabled_) return;
 
             const std::uint_least32_t new_language_key = (*select_language_ptr).cgetKey();
@@ -143,7 +143,7 @@ namespace paxs {
             }
 
             // ヘッダーのクリック判定
-            if (tm_.get(rect.leftClicked())) {
+            if (input_state_manager.get(rect.leftClicked())) {
                 is_open = !is_open;
             }
 
@@ -155,7 +155,7 @@ namespace paxs {
                 const std::size_t start_index = getDropdownStartIndex();
                 for (std::size_t i = start_index; i < items_key.size(); ++i) {
                     const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };
-                    if (tm_.get(rect_tmp.leftClicked())) {
+                    if (input_state_manager.get(rect_tmp.leftClicked())) {
                         onItemSelected(i);
                         is_open = false;
                         break;

@@ -17,21 +17,16 @@
 #include <string>
 #include <utility>
 
-#include <PAX_GRAPHICA/Font.hpp>
-#include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/Network.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/Init.hpp>
-
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 // マクロ分岐の可能性があるため別の include とは別で記載
@@ -409,108 +404,6 @@ namespace paxs {
             }
         }
 
-        void drawXYZ(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y)const {
-            // 拡大率が描画範囲外の場合はここで処理を終了
-            if (magnification_z < draw_min_z) return;
-            if (magnification_z > draw_max_z) return;
-
-            static paxg::Font tmp_font{ 16, "", 3 };
-            tmp_font.setOutline(0, 0.5, paxg::Color{ 255, 255, 255 });
-            for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-                const std::size_t i2 = (i + z_num) & (z_num - 1); // 描画用の添え字
-                for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    const std::size_t j2 = (j + z_num) & (z_num - 1); // 描画用の添え字
-                    const MapVec2D map_pos =
-                        MapVec2D{ j * 360.0 / z_num - 180.0, (360.0 - i * 360.0 / z_num) - 180.0 };
-                    tmp_font.draw(
-                        std::string("X:" + std::to_string(j2) + "\nY:" + std::to_string(i2) + "\nZ:" + std::to_string(z) + "\nL:" + std::to_string(static_cast<std::size_t>(40075016.68 / (1 << z)))),
-                        paxg::Vec2i(static_cast<int>(10 + (map_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                            static_cast<int>(5 + double(paxg::Window::height()) - ((map_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))))
-                        , paxg::Color{ 0, 0, 0 }
-                    );
-                }
-            }
-        }
-        void draw(
-            const double map_view_width, // 経度幅
-            const double map_view_height, // 緯度幅
-            const double map_view_center_x, // 中央の経度
-            const double map_view_center_y, // 中央の緯度
-            const int date // ユリウス日
-        )const {
-
-            // 拡大率が描画範囲外の場合はここで処理を終了
-            if (magnification_z < draw_min_z) return;
-            if (magnification_z > draw_max_z) return;
-            // 描画する期間じゃない場合はここで処理を終了
-            if (min_date != 99999999 && min_date > date) return;
-            if (max_date != 99999999 && max_date < date) return;
-
-            paxg::Vec2f pos = paxg::Vec2f(
-                static_cast<float>((360.0 / z_num) / map_view_width * static_cast<double>(paxg::Window::width()))
-                , static_cast<float>((360.0 / z_num) / map_view_height * static_cast<double>(paxg::Window::height()))
-            );
-
-            const std::uint_least64_t index_z = textureIndexZ(static_cast<std::uint_least64_t>(z));
-            for (int i = start_cell.y; i <= end_cell.y; ++i) {
-                const std::uint_least64_t index_zy = textureIndexY(static_cast<std::uint_least64_t>((i + z_num) & (z_num - 1))) + index_z;
-                for (int j = start_cell.x; j <= end_cell.x; ++j) {
-                    const std::uint_least64_t index_zyx = static_cast<std::uint_least64_t>((j + z_num) & (z_num - 1)) + index_zy;
-                    if (texture_list.find(index_zyx) != texture_list.end()) { // テクスチャがある場合
-                        const MapVec2D map_pos =
-                            MapVec2D{ j * 360.0 / z_num - 180.0, (360.0 - i * 360.0 / z_num) - 180.0 };
-                        texture_list.at(index_zyx).resizedDraw(pos,
-                            paxg::Vec2f(
-                                static_cast<float>((map_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                                static_cast<float>(double(paxg::Window::height()) - ((map_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                            ));
-                    }
-                }
-            }
-        }
-        void drawLine(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
-            , const double thickness, const paxg::Color& color
-        )const {
-
-            // 拡大率が描画範囲外の場合はここで処理を終了
-            if (magnification_z < draw_min_z) return;
-            if (magnification_z > draw_max_z) return;
-            const MapVec2D map_start_pos =
-                MapVec2D{ start_cell.x * 360.0 / z_num - 180.0, (360.0 - start_cell.y * 360.0 / z_num) - 180.0 };
-
-            double pos_x = (map_start_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width());
-            double pos_y = double(paxg::Window::height()) - ((map_start_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()));
-            const double move_x = (360.0 / z_num) / map_view_width * double(paxg::Window::width());
-            const double move_y = (360.0 / z_num) / map_view_height * double(paxg::Window::height());
-
-            for (int i = start_cell.y; i <= end_cell.y; ++i, pos_y += move_y) {
-                paxg::Line(
-                    0, static_cast<float>(pos_y), static_cast<float>(paxg::Window::width()), static_cast<float>(pos_y)
-                ).draw(thickness, color);
-            }
-            for (int j = start_cell.x; j <= end_cell.x; ++j, pos_x += move_x) {
-                paxg::Line(
-                    static_cast<float>(pos_x), 0, static_cast<float>(pos_x), static_cast<float>(paxg::Window::height())
-                ).draw(thickness, color);
-            }
-        }
-        // セル単位での枠の描画
-        void drawLineCell(const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y
-            , const double inner_thickness, const double outer_thickness, const paxg::Color& color
-        )const {
-            for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
-                for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
-                    const MapVec2D map_pos =
-                        MapVec2D{ j * 360.0 / z_num - 180.0, (360.0 - i * 360.0 / z_num) - 180.0 };
-                    paxg::Rect(
-                        static_cast<float>((map_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                        static_cast<float>(double(paxg::Window::height()) - ((map_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()))),
-                        static_cast<float>((360.0 / z_num) / map_view_width * double(paxg::Window::width())),
-                        static_cast<float>((360.0 / z_num) / map_view_height * double(paxg::Window::height()))
-                    ).drawFrame(inner_thickness, outer_thickness, color);
-                }
-            }
-        }
         MapVec2 getStartCell()const {
             return start_cell;
         }
@@ -534,6 +427,29 @@ namespace paxs {
         }
         std::uint_least32_t getMenuBarMap() const {
             return menu_bar_map;
+        }
+        unsigned int getMagnificationZ() const {
+            return magnification_z;
+        }
+        unsigned int getDrawMinZ() const {
+            return draw_min_z;
+        }
+        unsigned int getDrawMaxZ() const {
+            return draw_max_z;
+        }
+        int getMinDate() const {
+            return min_date;
+        }
+        int getMaxDate() const {
+            return max_date;
+        }
+        /// @brief 指定座標のテクスチャを取得
+        const paxg::Texture* getTextureAt(unsigned int z_, unsigned int y_, unsigned int x_) const {
+            const std::uint_least64_t index = textureIndex(z_, y_, x_);
+            if (texture_list.find(index) != texture_list.end()) {
+                return &texture_list.at(index);
+            }
+            return nullptr;
         }
         void setDefaultZ(const unsigned int default_z_) {
             default_z = default_z_;

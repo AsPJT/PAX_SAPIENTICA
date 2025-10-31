@@ -26,7 +26,7 @@
 #include <PAX_MAHOROBA/Core/Init.hpp>
 
 #include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_SAPIENTICA/TouchStateManager.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 namespace paxs {
 
@@ -167,7 +167,7 @@ namespace paxs {
         }
 
         // 更新処理
-        void update(paxs::TouchStateManager& tm_) override {
+        void update(paxs::InputStateManager& input_state_manager) override {
             if (isEmpty()) return;
             if (language_ptr == nullptr) return; // 言語がない場合は処理をしない
             if (select_language_ptr == nullptr) return; // 選択されている言語がない場合は処理をしない
@@ -180,7 +180,7 @@ namespace paxs {
                 updateLanguage();
             }
             // 左クリックで開く
-            if (tm_.get(
+            if (input_state_manager.get(
                 rect.leftClicked()
             )) {
                 is_open = (not is_open);
@@ -192,7 +192,7 @@ namespace paxs {
                 // その項目の選択肢
                 for (std::size_t i = 0; i < items_key.size(); ++i) {
                     const paxg::Rect rect_tmp{ pos, rect.w(), rect.h() };
-                    if (tm_.get(
+                    if (input_state_manager.get(
                         rect_tmp.leftClicked()
                     )) { // もし選択肢が左クリックされていたら
                         if (i < is_items.size()) {

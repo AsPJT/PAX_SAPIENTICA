@@ -25,7 +25,7 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/TouchStateManager.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
 
@@ -243,9 +243,9 @@ namespace paxs {
 
     public:
         // IUIWidget インターフェースの実装
-        void update(paxs::TouchStateManager& tm) override {
+        void update(paxs::InputStateManager& input_state_manager) override {
             // CalendarRendererは入力処理を行わないため、空実装
-            (void)tm;
+            (void)input_state_manager;
         }
 
         void draw() override {

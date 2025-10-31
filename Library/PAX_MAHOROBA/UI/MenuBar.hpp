@@ -16,6 +16,8 @@
 #include <PAX_MAHOROBA/UI/MenuItem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
+
 namespace paxs {
     /// @brief メニューバーを管理
     /// @brief Manages menu bar
@@ -55,7 +57,7 @@ namespace paxs {
                 paxg::Vec2i{ static_cast<int>(start_x), 0 }));
         }
 
-        void update(paxs::TouchStateManager& tm_) override {
+        void update(paxs::InputStateManager& input_state_manager) override {
             start_x = 0;
 
             // 更新前の開閉状態を記録
@@ -68,7 +70,7 @@ namespace paxs {
             // 各メニュー項目を更新
             for (std::size_t i = 0; i < menu_items.size(); ++i) {
                 if (visible_ && enabled_) {
-                    menu_items[i].update(tm_);
+                    menu_items[i].update(input_state_manager);
                 }
                 menu_items[i].setRectX(start_x);
                 start_x += static_cast<std::size_t>(menu_items[i].getRect().w());

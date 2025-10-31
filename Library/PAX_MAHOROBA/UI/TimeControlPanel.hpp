@@ -22,7 +22,7 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/TouchStateManager.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
 
@@ -46,24 +46,24 @@ namespace paxs {
             int base_x,
             int base_y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
-            paxs::TouchStateManager& tm,
+            paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi
         ) {
             int icon_start_x = base_x;
             int icon_start_y = 0;
 
             // 再生コントロール（逆再生/停止/再生）
-            drawPlaybackControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi);
+            drawPlaybackControls(icon_start_x, base_y + icon_start_y, texture_dictionary, input_state_manager, koyomi);
             icon_start_y += arrow_icon_move_y;
             icon_start_x = base_x;
 
             // 時間移動（過去へ: 日/月/年/10年/世紀/千年紀/万年紀）
-            drawBackwardTimeControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi);
+            drawBackwardTimeControls(icon_start_x, base_y + icon_start_y, texture_dictionary, input_state_manager, koyomi);
             icon_start_y += icon_move_y;
             icon_start_x = base_x;
 
             // 時間移動（未来へ: 日/月/年/10年/世紀/千年紀/万年紀）
-            drawForwardTimeControls(icon_start_x, base_y + icon_start_y, texture_dictionary, tm, koyomi);
+            drawForwardTimeControls(icon_start_x, base_y + icon_start_y, texture_dictionary, input_state_manager, koyomi);
         }
 
         // 時間操作パネルの高さを取得
@@ -77,13 +77,13 @@ namespace paxs {
             int start_x,
             int y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
-            paxs::TouchStateManager& tm,
+            paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi
         ) {
             int x = start_x;
 
             // 逆再生ボタン
-            drawIconButton(x, y, arrow_time_icon_size, "texture_reverse_playback", texture_dictionary, tm,
+            drawIconButton(x, y, arrow_time_icon_size, "texture_reverse_playback", texture_dictionary, input_state_manager,
                 [&koyomi]() {
                     koyomi.move_forward_in_time = false;
                     koyomi.go_back_in_time = true;
@@ -91,7 +91,7 @@ namespace paxs {
             x -= arrow_icon_move_x;
 
             // 停止ボタン
-            drawIconButton(x, y, arrow_time_icon_size, "texture_stop", texture_dictionary, tm,
+            drawIconButton(x, y, arrow_time_icon_size, "texture_stop", texture_dictionary, input_state_manager,
                 [&koyomi]() {
                     koyomi.move_forward_in_time = false;
                     koyomi.go_back_in_time = false;
@@ -99,7 +99,7 @@ namespace paxs {
             x -= arrow_icon_move_x;
 
             // 再生ボタン
-            drawIconButton(x, y, arrow_time_icon_size, "texture_playback", texture_dictionary, tm,
+            drawIconButton(x, y, arrow_time_icon_size, "texture_playback", texture_dictionary, input_state_manager,
                 [&koyomi]() {
                     koyomi.move_forward_in_time = true;
                     koyomi.go_back_in_time = false;
@@ -111,37 +111,37 @@ namespace paxs {
             int start_x,
             int y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
-            paxs::TouchStateManager& tm,
+            paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi
         ) {
             int x = start_x;
 
             // 日
-            drawTimeButton(x, y, "texture_d_l", -1, texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_d_l", -1, texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 月
-            drawTimeButton(x, y, "texture_m_l", -(365.2422 / 12.0), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_m_l", -(365.2422 / 12.0), texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 年
-            drawTimeButton(x, y, "texture_y_l", -365.2422, texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_y_l", -365.2422, texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 10年
-            drawTimeButton(x, y, "texture_10y_l", -(365.2422 * 10), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_10y_l", -(365.2422 * 10), texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 世紀（100年）
-            drawTimeButton(x, y, "texture_c_l", -(365.2422 * 100), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_c_l", -(365.2422 * 100), texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 千年紀（1000年）
-            drawTimeButton(x, y, "texture_10c_l", -(365.2422 * 1000), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_10c_l", -(365.2422 * 1000), texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 万年紀（10000年）
-            drawTimeButton(x, y, "texture_100c_l", -(365.2422 * 10000), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_100c_l", -(365.2422 * 10000), texture_dictionary, input_state_manager, koyomi);
         }
 
         // 未来への時間移動ボタンを描画
@@ -149,37 +149,37 @@ namespace paxs {
             int start_x,
             int y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
-            paxs::TouchStateManager& tm,
+            paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi
         ) {
             int x = start_x;
 
             // 日
-            drawTimeButton(x, y, "texture_d_r", 1, texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_d_r", 1, texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 月
-            drawTimeButton(x, y, "texture_m_r", (365.2422 / 12.0), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_m_r", (365.2422 / 12.0), texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 年
-            drawTimeButton(x, y, "texture_y_r", 365.2422, texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_y_r", 365.2422, texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 10年
-            drawTimeButton(x, y, "texture_10y_r", (365.2422 * 10), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_10y_r", (365.2422 * 10), texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 世紀（100年）
-            drawTimeButton(x, y, "texture_c_r", (365.2422 * 100), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_c_r", (365.2422 * 100), texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 千年紀（1000年）
-            drawTimeButton(x, y, "texture_10c_r", (365.2422 * 1000), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_10c_r", (365.2422 * 1000), texture_dictionary, input_state_manager, koyomi);
             x -= icon_move_x;
 
             // 万年紀（10000年）
-            drawTimeButton(x, y, "texture_100c_r", (365.2422 * 10000), texture_dictionary, tm, koyomi);
+            drawTimeButton(x, y, "texture_100c_r", (365.2422 * 10000), texture_dictionary, input_state_manager, koyomi);
         }
 
         // アイコンボタンを描画（汎用）
@@ -190,13 +190,13 @@ namespace paxs {
             int size,
             const char* texture_key,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
-            paxs::TouchStateManager& tm,
+            paxs::InputStateManager& input_state_manager,
             Callback&& callback
         ) {
             paxg::Vec2i pos(paxg::Window::width() - x, y);
             texture_dictionary.at(MurMur3::calcHash(texture_key)).resizedDraw(size, pos);
 
-            if (tm.get(paxg::Rect{ pos, paxg::Vec2i(size, size) }.leftClicked())) {
+            if (input_state_manager.get(paxg::Rect{ pos, paxg::Vec2i(size, size) }.leftClicked())) {
                 callback();
             }
         }
@@ -208,33 +208,33 @@ namespace paxs {
             const char* texture_key,
             double day_delta,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
-            paxs::TouchStateManager& tm,
+            paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi
         ) {
             paxg::Vec2i pos(paxg::Window::width() - x, y);
             texture_dictionary.at(MurMur3::calcHash(texture_key)).resizedDraw(time_icon_size, pos);
 
-            if (tm.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+            if (input_state_manager.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                 koyomi.jdn.getDay() += day_delta;
                 koyomi.calcDate();
             }
         }
 
         // 状態更新（クリック判定などの入力処理）
-        void updateState(paxs::TouchStateManager& tm) {
+        void updateState(paxs::InputStateManager& input_state_manager) {
             int icon_start_x = pos_.x();
             int icon_start_y = pos_.y();
 
             // 再生コントロールの更新
-            updatePlaybackControls(icon_start_x, icon_start_y, tm);
+            updatePlaybackControls(icon_start_x, icon_start_y, input_state_manager);
             icon_start_y += arrow_icon_move_y;
 
             // 時間移動（過去へ）の更新
-            updateBackwardTimeControls(icon_start_x, icon_start_y, tm);
+            updateBackwardTimeControls(icon_start_x, icon_start_y, input_state_manager);
             icon_start_y += icon_move_y;
 
             // 時間移動（未来へ）の更新
-            updateForwardTimeControls(icon_start_x, icon_start_y, tm);
+            updateForwardTimeControls(icon_start_x, icon_start_y, input_state_manager);
         }
 
         // 全てのコントロールを描画
@@ -255,12 +255,12 @@ namespace paxs {
         }
 
         // 再生コントロールの更新処理
-        void updatePlaybackControls(int start_x, int y, paxs::TouchStateManager& tm) {
+        void updatePlaybackControls(int start_x, int y, paxs::InputStateManager& input_state_manager) {
             int x = start_x;
 
             // 逆再生ボタン
             paxg::Vec2i pos1(paxg::Window::width() - x, y);
-            if (tm.get(paxg::Rect{ pos1, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+            if (input_state_manager.get(paxg::Rect{ pos1, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
                 koyomi_->move_forward_in_time = false;
                 koyomi_->go_back_in_time = true;
             }
@@ -268,7 +268,7 @@ namespace paxs {
 
             // 停止ボタン
             paxg::Vec2i pos2(paxg::Window::width() - x, y);
-            if (tm.get(paxg::Rect{ pos2, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+            if (input_state_manager.get(paxg::Rect{ pos2, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
                 koyomi_->move_forward_in_time = false;
                 koyomi_->go_back_in_time = false;
             }
@@ -276,7 +276,7 @@ namespace paxs {
 
             // 再生ボタン
             paxg::Vec2i pos3(paxg::Window::width() - x, y);
-            if (tm.get(paxg::Rect{ pos3, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+            if (input_state_manager.get(paxg::Rect{ pos3, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
                 koyomi_->move_forward_in_time = true;
                 koyomi_->go_back_in_time = false;
             }
@@ -302,7 +302,7 @@ namespace paxs {
         }
 
         // 過去への時間移動の更新処理
-        void updateBackwardTimeControls(int start_x, int y, paxs::TouchStateManager& tm) {
+        void updateBackwardTimeControls(int start_x, int y, paxs::InputStateManager& input_state_manager) {
             const struct { const char* key; double delta; } buttons[] = {
                 {"texture_d_l", -1},
                 {"texture_m_l", -(365.2422 / 12.0)},
@@ -316,7 +316,7 @@ namespace paxs {
             int x = start_x;
             for (const auto& btn : buttons) {
                 paxg::Vec2i pos(paxg::Window::width() - x, y);
-                if (tm.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                if (input_state_manager.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_->jdn.getDay() += btn.delta;
                     koyomi_->calcDate();
                 }
@@ -340,7 +340,7 @@ namespace paxs {
         }
 
         // 未来への時間移動の更新処理
-        void updateForwardTimeControls(int start_x, int y, paxs::TouchStateManager& tm) {
+        void updateForwardTimeControls(int start_x, int y, paxs::InputStateManager& input_state_manager) {
             const struct { const char* key; double delta; } buttons[] = {
                 {"texture_d_r", 1},
                 {"texture_m_r", (365.2422 / 12.0)},
@@ -354,7 +354,7 @@ namespace paxs {
             int x = start_x;
             for (const auto& btn : buttons) {
                 paxg::Vec2i pos(paxg::Window::width() - x, y);
-                if (tm.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                if (input_state_manager.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                     koyomi_->jdn.getDay() += btn.delta;
                     koyomi_->calcDate();
                 }
@@ -389,7 +389,7 @@ namespace paxs {
 
     public:
         // IUIWidget インターフェースの実装
-        void update(paxs::TouchStateManager& tm) override;
+        void update(paxs::InputStateManager& input_state_manager) override;
         void draw() override;
 
         paxg::Rect getRect() const override {
@@ -422,11 +422,11 @@ namespace paxs {
     };
 
     // IUIWidget メソッドの実装（クラス外定義）
-    inline void TimeControlPanel::update(paxs::TouchStateManager& tm) {
+    inline void TimeControlPanel::update(paxs::InputStateManager& input_state_manager) {
         if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return;
 
         // クリック判定などの更新処理
-        updateState(tm);
+        updateState(input_state_manager);
     }
 
     inline void TimeControlPanel::draw() {
