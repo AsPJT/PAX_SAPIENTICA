@@ -413,9 +413,12 @@ namespace paxs {
         bool handleInput(const InputEvent& event) override {
             if (!enabled_ || !visible_) return false;
 
-            // キーボードとマウスホイールイベントは座標に依存しないためスキップ
-            // Skip keyboard and mouse wheel events as they are coordinate-independent
-            if (event.type == InputEventType::Keyboard || event.type == InputEventType::MouseWheel) {
+            // 座標に依存しないイベント（キーボード、マウスホイール、ウィンドウイベント）はスキップ
+            // Skip coordinate-independent events (Keyboard, MouseWheel, Window events)
+            if (event.type == InputEventType::Keyboard ||
+                event.type == InputEventType::MouseWheel ||
+                event.type == InputEventType::WindowResize ||
+                event.type == InputEventType::WindowFocus) {
                 return false;
             }
 

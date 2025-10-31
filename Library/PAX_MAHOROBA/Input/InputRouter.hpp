@@ -260,6 +260,81 @@ namespace paxs {
 
 			return false;
 		}
+
+		/// @brief ウィンドウリサイズイベントをルーティング
+		/// @brief Route window resize event
+		/// @param width 新しいウィンドウ幅 / New window width
+		/// @param height 新しいウィンドウ高さ / New window height
+		/// @return イベントが処理された場合true / true if event was handled
+		///
+		/// ウィンドウリサイズは座標に依存しないため、ヒットテストをスキップして
+		/// 全ハンドラーに順番に通知します。
+		/// Window resize is coordinate-independent, so hit test is skipped and
+		/// all handlers are notified in order.
+		bool routeWindowResizeEvent(int width, int height) {
+			InputEvent event(width, height);
+
+			// ソートされていない場合は自動的にソート
+			// Sort automatically if not sorted
+			if (!is_sorted_) {
+				sort();
+			}
+
+			// 前面から順にイベントを通知（ヒットテストなし）
+			// Notify from front to back (without hit test)
+			for (IInputHandler* handler : handlers_) {
+				if (handler == nullptr || !handler->isEnabled()) continue;
+
+				// ウィンドウイベントはヒットテストをスキップ
+				// Skip hit test for window events
+				if (handler->handleInput(event)) {
+					// イベントが処理されたら伝播を停止
+					// Stop propagation if event was handled
+					return true;
+				}
+			}
+
+			// どのハンドラーも処理しなかった
+			// No handler processed the event
+			return false;
+		}
+
+		/// @brief ウィンドウフォーカスイベントをルーティング
+		/// @brief Route window focus event
+		/// @param has_focus フォーカス状態（true=取得、false=喪失）/ Focus state (true=gained, false=lost)
+		/// @return イベントが処理された場合true / true if event was handled
+		///
+		/// フォーカスイベントは座標に依存しないため、ヒットテストをスキップして
+		/// 全ハンドラーに順番に通知します。
+		/// Focus events are coordinate-independent, so hit test is skipped and
+		/// all handlers are notified in order.
+		bool routeWindowFocusEvent(bool has_focus) {
+			InputEvent event = InputEvent::createFocusEvent(has_focus);
+
+			// ソートされていない場合は自動的にソート
+			// Sort automatically if not sorted
+			if (!is_sorted_) {
+				sort();
+			}
+
+			// 前面から順にイベントを通知（ヒットテストなし）
+			// Notify from front to back (without hit test)
+			for (IInputHandler* handler : handlers_) {
+				if (handler == nullptr || !handler->isEnabled()) continue;
+
+				// ウィンドウイベントはヒットテストをスキップ
+				// Skip hit test for window events
+				if (handler->handleInput(event)) {
+					// イベントが処理されたら伝播を停止
+					// Stop propagation if event was handled
+					return true;
+				}
+			}
+
+			// どのハンドラーも処理しなかった
+			// No handler processed the event
+			return false;
+		}
 	};
 
 } // namespace paxs

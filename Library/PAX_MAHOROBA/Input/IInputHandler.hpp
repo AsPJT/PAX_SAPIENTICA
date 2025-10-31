@@ -20,9 +20,11 @@ namespace paxs {
 	/// @brief 入力イベントの種類
 	/// @brief Input event type
 	enum class InputEventType {
-		Mouse,      ///< マウス/タッチ入力 / Mouse/Touch input
-		Keyboard,   ///< キーボード入力 / Keyboard input
-		MouseWheel  ///< マウスホイール入力 / Mouse wheel input
+		Mouse,         ///< マウス/タッチ入力 / Mouse/Touch input
+		Keyboard,      ///< キーボード入力 / Keyboard input
+		MouseWheel,    ///< マウスホイール入力 / Mouse wheel input
+		WindowResize,  ///< ウィンドウリサイズ / Window resize
+		WindowFocus    ///< ウィンドウフォーカス / Window focus
 	};
 
 	/// @brief 入力イベントの構造体
@@ -44,6 +46,18 @@ namespace paxs {
 		/// @brief Mouse/Touch Y coordinate
 		int y = 0;
 
+		/// @brief ウィンドウの幅（WindowResizeイベント用）
+		/// @brief Window width (for WindowResize event)
+		int window_width = 0;
+
+		/// @brief ウィンドウの高さ（WindowResizeイベント用）
+		/// @brief Window height (for WindowResize event)
+		int window_height = 0;
+
+		/// @brief フォーカス状態（WindowFocusイベント用、true=フォーカス取得、false=フォーカス喪失）
+		/// @brief Focus state (for WindowFocus event, true=gained focus, false=lost focus)
+		bool has_focus = true;
+
 		/// @brief デフォルトコンストラクタ
 		/// @brief Default constructor
 		InputEvent() = default;
@@ -62,6 +76,24 @@ namespace paxs {
 		/// @param manager 入力状態マネージャー / Input state manager
 		InputEvent(InputEventType event_type, InputStateManager* manager)
 			: type(event_type), input_state_manager(manager), x(0), y(0) {}
+
+		/// @brief コンストラクタ（ウィンドウリサイズイベント用）
+		/// @brief Constructor (for WindowResize event)
+		/// @param width ウィンドウの幅 / Window width
+		/// @param height ウィンドウの高さ / Window height
+		InputEvent(int width, int height)
+			: type(InputEventType::WindowResize), input_state_manager(nullptr),
+			  x(0), y(0), window_width(width), window_height(height) {}
+
+		/// @brief コンストラクタ（ウィンドウフォーカスイベント用）
+		/// @brief Constructor (for WindowFocus event)
+		/// @param focus フォーカス状態 / Focus state
+		static InputEvent createFocusEvent(bool focus) {
+			InputEvent event;
+			event.type = InputEventType::WindowFocus;
+			event.has_focus = focus;
+			return event;
+		}
 	};
 
 	/// @brief 入力処理可能オブジェクトの基底インターフェース

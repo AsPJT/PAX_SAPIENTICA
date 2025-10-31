@@ -83,12 +83,6 @@ namespace paxs {
 			// Register components to input router (UI has priority)
 			input_router_.registerHandler(&ui_manager_);
 			input_router_.registerHandler(&map_controller_);
-
-			// MapViewportInputHandlerが設定されている場合は登録
-			// Register MapViewportInputHandler if set
-			if (map_viewport_input_handler_ != nullptr) {
-				input_router_.registerHandler(map_viewport_input_handler_);
-			}
 		}
 
 		/// @brief MapViewportInputHandlerを設定
