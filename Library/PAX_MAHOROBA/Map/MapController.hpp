@@ -65,6 +65,14 @@ namespace paxs {
         bool visible_ = true;
         bool enabled_ = true;
 
+        // 描画に必要なデータをキャッシュ（updateData()で更新、render()で使用）
+        MapViewport cached_map_viewport_;
+        paxs::Koyomi cached_koyomi_;
+#ifdef PAXS_USING_SIMULATOR
+        std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
+#endif
+        paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
+
     public:
         MapController()
             :texture_manager_(std::make_unique<TextureManager>())
@@ -95,8 +103,39 @@ namespace paxs {
             select_language_ = &select_language;
         }
 
-        /// @brief 更新処理（統合版）
-        /// @brief Update and render (integrated version)
+        /// @brief データ更新（描画は行わない）
+        /// @brief Update data (no drawing)
+        void updateData(
+            MapViewport& map_viewport,
+            const paxs::Koyomi& koyomi,
+#ifdef PAXS_USING_SIMULATOR
+            std::unique_ptr<paxs::SettlementSimulator>& simulator,
+#endif
+            paxs::FeatureVisibilityManager& visible
+            ) {
+            // データ更新
+            texture_manager_->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
+
+#ifdef PAXS_USING_SIMULATOR
+            // 入力処理を更新
+            if (visible[MurMur3::calcHash("Map")] || visible[MurMur3::calcHash("Simulation")]) {
+                if (simulator) {
+                    settlement_input_handler_.update();
+                }
+            }
+#endif
+
+            // 描画用にデータをキャッシュ
+            cached_map_viewport_ = map_viewport;
+            cached_koyomi_ = koyomi;
+#ifdef PAXS_USING_SIMULATOR
+            cached_simulator_ = &simulator;
+#endif
+            cached_visible_ = &visible;
+        }
+
+        /// @brief 既存のupdate()メソッド（後方互換性のため維持）
+        /// @brief Existing update() method (kept for backward compatibility)
         void update(
             MapViewport& map_viewport,
             const paxs::Koyomi& koyomi,
@@ -105,10 +144,27 @@ namespace paxs {
 #endif
             paxs::FeatureVisibilityManager& visible
             ) {
-            if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
-                // 地図上に画像を描画する
-                texture_manager_->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
+            updateData(map_viewport, koyomi,
+#ifdef PAXS_USING_SIMULATOR
+                simulator,
+#endif
+                visible);
+            render();
+        }
 
+        // IRenderable の実装
+        // IRenderable implementation
+
+        /// @brief レンダリング処理
+        /// @brief Render
+        void render() override {
+            if (!visible_ || cached_visible_ == nullptr) return;
+
+            paxs::FeatureVisibilityManager& visible = *cached_visible_;
+            MapViewport& map_viewport = cached_map_viewport_;
+            paxs::Koyomi& koyomi = cached_koyomi_;
+
+            if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
                 // フォントを取得
                 paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
 
@@ -147,16 +203,15 @@ namespace paxs {
                 );
 
 #ifdef PAXS_USING_SIMULATOR
-                if (simulator) {
-                    // 入力処理を更新
-                    settlement_input_handler_.update();
+                if (cached_simulator_ && *cached_simulator_) {
+                    auto& simulator = **cached_simulator_;
 
                     // エージェントを描画
                     renderer_.drawSettlements(
                         *settlement_renderer,
                         julian_day,
-                        simulator->getSettlementGrids(),
-                        simulator->getMarriagePosList(),
+                        simulator.getSettlementGrids(),
+                        simulator.getMarriagePosList(),
                         width,
                         height,
                         center_x,
@@ -174,14 +229,13 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             else if (visible[MurMur3::calcHash("Simulation")]) {
                 // シミュレーションのみ表示の場合
-                if (settlement_renderer.get() != nullptr && simulator.get() != nullptr) {
-                    // 入力処理を更新
-                    settlement_input_handler_.update();
+                if (settlement_renderer.get() != nullptr && cached_simulator_ && *cached_simulator_ && (*cached_simulator_).get() != nullptr) {
+                    auto& simulator = **cached_simulator_;
 
                     settlement_renderer->draw(
                         koyomi.jdn.cgetDay(),
-                        simulator->getSettlementGrids(),
-                        simulator->getMarriagePosList(),
+                        simulator.getSettlementGrids(),
+                        simulator.getMarriagePosList(),
                         map_viewport.getWidth(),
                         map_viewport.getHeight(),
                         map_viewport.getCenterX(),
@@ -194,18 +248,6 @@ namespace paxs {
                 }
             }
 #endif
-        }
-
-        // IRenderable の実装
-        // IRenderable implementation
-
-        /// @brief レンダリング処理（既存のupdate()内で描画済み）
-        /// @brief Render (already drawn in update())
-        void render() override {
-            // 既存の動作を維持するため、update()内で描画を実施
-            // Drawing is done in update() to maintain existing behavior
-            // 将来的には描画処理をここに移動予定
-            // TODO: Move drawing logic here in the future
         }
 
         /// @brief レンダリングレイヤーを取得

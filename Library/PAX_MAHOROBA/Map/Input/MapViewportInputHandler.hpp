@@ -53,6 +53,7 @@ namespace paxs {
 
         /// @brief マウスホイールによるズーム処理
         /// @brief Handle zoom by mouse wheel
+        /// @note Public access for selective input processing
         void handleMouseWheelZoom(MapViewport& viewport) {
             double height = viewport.getHeight();
             const double min_height = viewport.getMinHeight();
@@ -183,6 +184,7 @@ namespace paxs {
 
         /// @brief キーボードによるズーム処理（Q/Eキー）
         /// @brief Handle zoom by keyboard (Q/E keys)
+        /// @note Public access for selective input processing
         void handleKeyboardZoom(MapViewport& viewport) {
             double height = viewport.getHeight();
             const double min_height = viewport.getMinHeight();

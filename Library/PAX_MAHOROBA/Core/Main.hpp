@@ -113,12 +113,34 @@ namespace paxs {
                 更新処理関連
             ##########################################################################################*/
 
-            if (!visible[MurMur3::calcHash(2, "3D")]) {
-                map_viewport_input_handler.update(map_viewport); // 入力処理を更新
-            }
-
             graphics_manager.getUILayer().updateLanguage(select_language);
             graphics_manager.getUILayer().syncVisibilityFromMenu(visible);
+
+            // 入力処理（UIが優先）
+            // Input processing (UI has priority)
+            if (!visible[MurMur3::calcHash(2, "3D")]) {
+                // マウス位置を取得
+                int mouse_x = paxg::Mouse::getInstance()->getPosX();
+                int mouse_y = paxg::Mouse::getInstance()->getPosY();
+
+                // UIがヒットしているかチェック
+                bool ui_hit = graphics_manager.getUILayer().hitTest(mouse_x, mouse_y);
+                bool mouse_dragging = paxg::Mouse::getInstance()->pressedLeft2();
+
+                // UIの上でマウスドラッグしている場合は、地図のマウスドラッグを無効化
+                // キーボード入力とマウスホイールは常に有効
+                if (ui_hit && mouse_dragging) {
+                    // UIがマウスドラッグを処理中の場合
+                    // キーボードとマウスホイールのみ処理
+                    map_viewport_input_handler.handleKeyboardZoom(map_viewport);
+                    map_viewport_input_handler.handleMouseWheelZoom(map_viewport);
+                    map_viewport.applyConstraints();
+                } else {
+                    // UIがヒットしていない、またはマウスドラッグしていない場合
+                    // 全ての入力処理を実行
+                    map_viewport_input_handler.update(map_viewport);
+                }
+            }
 
             if (!visible[MurMur3::calcHash(2, "3D")]) {
                 // グラフィック統合更新（タイル + UI）

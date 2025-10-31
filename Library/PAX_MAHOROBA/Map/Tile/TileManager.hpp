@@ -45,6 +45,11 @@ namespace paxs {
         // 可視性管理
         bool visible_ = true;
 
+        // 描画に必要なデータを保持（updateData()で更新、render()で使用）
+        const paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
+        MapViewport cached_map_viewport_;
+        cal::JDN_F64 cached_jdn_ = 0.0;
+
     public:
         // XYZ Tiles を追加（TileRepositoryに委譲）
         void add(const std::string& file_path) {
@@ -57,9 +62,9 @@ namespace paxs {
             xyz_tile_list.emplace_back(tile_repository_.createGridLineTile());
         }
 
-        // 地図の辞書を更新
-        void update(const paxs::FeatureVisibilityManager& visible, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
-
+        /// @brief データ更新（描画は行わない）
+        /// @brief Update data (no drawing)
+        void updateData(const paxs::FeatureVisibilityManager& visible, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
             const double map_viewport_width = map_viewport.getWidth();
             const double map_viewport_height = map_viewport.getHeight();
             const double map_viewport_center_x = map_viewport.getCenterX();
@@ -71,22 +76,30 @@ namespace paxs {
                 xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
             }
 
-            // 描画処理（既存の動作を維持）
-            // Drawing (maintains existing behavior)
-            tile_renderer_.drawBackground();
-            tile_renderer_.drawTiles(xyz_tile_list, visible, map_viewport, jdn);
+            // 描画用にデータをキャッシュ
+            cached_visible_ = &visible;
+            cached_map_viewport_ = map_viewport;
+            cached_jdn_ = jdn;
+        }
+
+        /// @brief 既存のupdate()メソッド（後方互換性のため維持）
+        /// @brief Existing update() method (kept for backward compatibility)
+        void update(const paxs::FeatureVisibilityManager& visible, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
+            updateData(visible, map_viewport, jdn);
+            render();
         }
 
         // IRenderable の実装
         // IRenderable implementation
 
-        /// @brief レンダリング処理（既存のupdate()内で描画済み）
-        /// @brief Render (already drawn in update())
+        /// @brief レンダリング処理
+        /// @brief Render
         void render() override {
-            // 既存の動作を維持するため、update()内で描画を実施
-            // Drawing is done in update() to maintain existing behavior
-            // 将来的には描画処理をここに移動予定
-            // TODO: Move drawing logic here in the future
+            if (!visible_ || cached_visible_ == nullptr) return;
+
+            // 描画処理
+            tile_renderer_.drawBackground();
+            tile_renderer_.drawTiles(xyz_tile_list, *cached_visible_, cached_map_viewport_, cached_jdn_);
         }
 
         /// @brief レンダリングレイヤーを取得

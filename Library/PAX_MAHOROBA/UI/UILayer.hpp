@@ -62,6 +62,17 @@ namespace paxs {
         bool enabled_ = true;
         FontManager* font_manager_ = nullptr; // 文字表示専用クラス（依存性注入）
 
+        // 描画に必要なデータをキャッシュ（updateData()で更新、render()で使用）
+        MapViewport cached_map_viewport_;
+        const SelectLanguage* cached_select_language_ = nullptr;
+        const paxs::Language* cached_language_text_ = nullptr;
+#ifdef PAXS_USING_SIMULATOR
+        std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
+#endif
+        paxs::InputStateManager* cached_input_state_manager_ = nullptr;
+        paxs::Koyomi cached_koyomi_;
+        paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
+
         std::size_t map_viewport_width_str_index;
         std::size_t map_viewport_center_x_str_index;
         std::size_t map_viewport_center_y_str_index;
@@ -221,12 +232,14 @@ namespace paxs {
             size_change_count_ = 0;
         }
 
-        void update(
+        /// @brief データ更新（描画は行わない）
+        /// @brief Update data (no drawing)
+        void updateData(
             MapViewport& map_viewport,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator>& simulator, // コンパイル時の分岐により使わない場合あり
+            std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
             paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi,
@@ -234,29 +247,25 @@ namespace paxs {
             ) {
             map_viewport.getCoordinate().toEquirectangularDegY();
 
-            // 画像の拡大縮小の方式を設定
-            const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
-
             // UIレイアウトを計算
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
-            // HeaderPanelに影テクスチャを設定
+            // 各パネルに影テクスチャを設定
             header_panel.setShadowTextures(shadow_texture, internal_texture);
-
 #ifdef PAXS_USING_SIMULATOR
             simulation_panel.setShadowTextures(shadow_texture, internal_texture);
-            // シミュレーションのボタン
-            simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible, map_viewport, font_manager_->getLanguageFonts(), select_language, language_text, ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
+                map_viewport, font_manager_->getLanguageFonts(), select_language, language_text,
+                ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 #endif
 
+            // CalendarPanelの可視性と設定
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
-                // カレンダーを描画
 #ifdef PAXS_USING_SIMULATOR
                 bool is_simulator_active = (simulator != nullptr);
 #else
                 bool is_simulator_active = false;
 #endif
-                // CalendarPanelの設定
                 calendar_panel.setShadowTextures(shadow_texture, internal_texture);
                 calendar_panel.setLayout(ui_layout, key_value_tsv.get());
                 calendar_panel.setCalendarParams(koyomi, select_language, language_text, is_simulator_active);
@@ -266,9 +275,9 @@ namespace paxs {
                 calendar_panel.setVisible(false);
             }
 
+            // DebugInfoPanelの可視性と設定
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
                 int debug_start_y = ui_layout.getDebugStartY();
-                // DebugInfoPanelの設定
                 debug_info_panel.setShadowTextures(shadow_texture, internal_texture);
                 debug_info_panel.setBackgroundRect(
                     ui_layout.rect_start_x,
@@ -277,57 +286,102 @@ namespace paxs {
                     ui_layout.next_rect_end_y
                 );
                 debug_info_panel.setVisible(true);
-
-                // マップ情報とシミュレーション統計を描画
-                debug_info_panel.renderMapAndSimulationInfo(
-                    map_viewport, debug_start_y, select_language, language_text, visible
-#ifdef PAXS_USING_SIMULATOR
-                    , simulator
-#endif
-                );
             } else {
                 debug_info_panel.setVisible(false);
             }
 
-#ifdef PAXS_USING_SIMULATOR
-            simulation_panel.drawPulldownBackground(simulator, visible);
-#endif
-
-            // IUIWidget を実装したウィジェットを更新
+            // ウィジェットを更新（入力処理）
             for (auto* widget : widgets) {
                 if (widget) {
                     widget->update(input_state_manager);
                 }
             }
 
-            // IUIWidget を実装したウィジェットを描画
+            // 描画用にデータをキャッシュ
+            cached_map_viewport_ = map_viewport;
+            cached_select_language_ = &select_language;
+            cached_language_text_ = &language_text;
+#ifdef PAXS_USING_SIMULATOR
+            cached_simulator_ = &simulator;
+#endif
+            cached_input_state_manager_ = &input_state_manager;
+            cached_koyomi_ = koyomi;
+            cached_visible_ = &visible;
+        }
+
+        /// @brief 既存のupdate()メソッド（後方互換性のため維持）
+        /// @brief Existing update() method (kept for backward compatibility)
+        void update(
+            MapViewport& map_viewport,
+            const SelectLanguage& select_language,
+            const paxs::Language& language_text,
+#ifdef PAXS_USING_SIMULATOR
+            std::unique_ptr<paxs::SettlementSimulator>& simulator,
+#endif
+            paxs::InputStateManager& input_state_manager,
+            paxs::Koyomi& koyomi,
+            paxs::FeatureVisibilityManager& visible
+            ) {
+            updateData(map_viewport, select_language, language_text,
+#ifdef PAXS_USING_SIMULATOR
+                simulator,
+#endif
+                input_state_manager, koyomi, visible);
+            render();
+        }
+
+        // IRenderable の実装
+        // IRenderable implementation
+
+        /// @brief レンダリング処理
+        /// @brief Render
+        void render() override {
+            if (!visible_ || cached_visible_ == nullptr) return;
+
+            // 画像の拡大縮小の方式を設定
+            const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
+
+            paxs::FeatureVisibilityManager& visible = *cached_visible_;
+            MapViewport& map_viewport = cached_map_viewport_;
+            const SelectLanguage& select_language = *cached_select_language_;
+            const paxs::Language& language_text = *cached_language_text_;
+            paxs::Koyomi& koyomi = cached_koyomi_;
+
+            // マップ情報とシミュレーション統計を描画
+            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+                int debug_start_y = ui_layout.getDebugStartY();
+                debug_info_panel.renderMapAndSimulationInfo(
+                    map_viewport, debug_start_y, select_language, language_text, visible
+#ifdef PAXS_USING_SIMULATOR
+                    , *cached_simulator_
+#endif
+                );
+            }
+
+#ifdef PAXS_USING_SIMULATOR
+            if (cached_simulator_ && *cached_simulator_) {
+                simulation_panel.drawPulldownBackground(*cached_simulator_, visible);
+            }
+#endif
+
+            // ウィジェットを描画
             for (auto* widget : widgets) {
                 if (widget) {
                     widget->draw();
                 }
             }
 
+            // 考古学的遺物の型式情報を描画
             if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]
 #ifdef PAXS_USING_SIMULATOR
-                && simulator == nullptr
+                && (!cached_simulator_ || *cached_simulator_ == nullptr)
 #endif
                 ) {
                 int debug_start_y = ui_layout.getDebugStartY();
-                // 考古学的遺物の型式情報を描画
                 debug_info_panel.renderArchaeologicalInfo(
                     koyomi, ui_layout, debug_start_y, select_language, language_text
                 );
             }
-        }
-
-        // IRenderable の実装
-        // IRenderable implementation
-
-        /// @brief レンダリング処理（既存のdraw処理を呼び出す）
-        /// @brief Render (calls existing draw processing)
-        void render() override {
-            // update()内で描画が実施されているため、ここでは何もしない
-            // Drawing is performed in update(), so nothing is done here
         }
 
         /// @brief レイヤーを取得

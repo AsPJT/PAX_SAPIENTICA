@@ -127,7 +127,8 @@ namespace paxs {
 			old_height_ = current_height;
 		}
 
-		/// @brief 更新・描画処理
+		/// @brief 更新・描画処理（レイヤーベースシステム使用）
+		/// @brief Update and render (using layer-based system)
 		void update(
 			MapViewport& map_viewport,
 			const SelectLanguage& select_language,
@@ -142,11 +143,11 @@ namespace paxs {
 			// ウィンドウサイズ変更の処理
 			handleWindowResize(map_viewport);
 
-			// 地図タイルを更新・描画
-			tile_manager_.update(visible, map_viewport, koyomi.jdn.cgetDay());
+			// データ更新のみ実施（描画は分離）
+			// Update data only (drawing is separated)
+			tile_manager_.updateData(visible, map_viewport, koyomi.jdn.cgetDay());
 
-			// 地図コントローラーを更新・描画
-			map_controller_.update(
+			map_controller_.updateData(
 				map_viewport,
 				koyomi,
 #ifdef PAXS_USING_SIMULATOR
@@ -155,8 +156,7 @@ namespace paxs {
 				visible
 			);
 
-			// UIを更新・描画
-			ui_manager_.update(
+			ui_manager_.updateData(
 				map_viewport,
 				select_language,
 				language_text,
@@ -167,6 +167,10 @@ namespace paxs {
 				koyomi,
 				visible
 			);
+
+			// レイヤーベース描画（Z順序自動管理）
+			// Layer-based rendering (automatic Z-order management)
+			render_layer_manager_.renderAll();
 		}
 	};
 
