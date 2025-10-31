@@ -14,6 +14,8 @@
 
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/RenderTexture.hpp>
+#include <PAX_GRAPHICA/System.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -23,6 +25,7 @@
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 
+#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
@@ -39,19 +42,13 @@ namespace paxs {
         /// @param select_language 選択言語
         /// @param language_text 言語テキスト
         /// @param language_fonts フォント管理
-        /// @param font_size フォントサイズ
-        /// @param font_thickness フォント太さ
         void init(
             const SelectLanguage* select_language,
             const paxs::Language* language_text,
-            paxs::LanguageFonts& language_fonts,
-            std::uint_least8_t font_size,
-            std::uint_least8_t font_thickness
+            paxs::LanguageFonts& language_fonts
         ) {
             select_language_ = select_language;
             language_text_ = language_text;
-            font_size_ = font_size;
-            font_thickness_ = font_thickness;
 
             // 言語選択プルダウンを初期化
             language_selector_ = paxs::Pulldown(
@@ -59,17 +56,17 @@ namespace paxs {
                 language_text,
                 paxs::LanguageKeys::ALL_LANGUAGE_HASHES,
                 language_fonts,
-                font_size,
-                font_thickness,
+                static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                 paxg::Vec2i{ 3000, 0 },
                 paxs::PulldownDisplayType::SelectedValue,
                 true
             );
 
             // メニューバーにメニュー項目を追加
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, language_fonts, font_size, font_thickness, MurMur3::calcHash("view"));
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, language_fonts, font_size, font_thickness, MurMur3::calcHash("place_names"));
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, language_fonts, font_size, font_thickness, MurMur3::calcHash("map"));
+            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("view"));
+            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("place_names"));
+            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("map"));
 
             calculateLayout();
         }
@@ -77,6 +74,12 @@ namespace paxs {
         /// @brief 影用のテクスチャを設定
         /// @brief Set textures for shadow rendering
         void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex);
+
+        /// @brief GitHubアイコンのテクスチャを設定
+        /// @brief Set GitHub icon texture
+        void setGitHubTexture(const paxg::Texture* texture) {
+            github_texture_ = texture;
+        }
 
         /// @brief レイアウトを計算（画面サイズ変更時に呼び出し）
         void calculateLayout() {
@@ -121,6 +124,11 @@ namespace paxs {
             // メニューバーと言語選択を更新
             menu_bar_.update(input_state_manager);
             language_selector_.update(input_state_manager);
+
+            // GitHubアイコンのクリック判定
+            if (input_state_manager.get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
+                paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
+            }
         }
 
         void draw() override {
@@ -132,6 +140,11 @@ namespace paxs {
             // メニューバーと言語選択を描画
             menu_bar_.draw();
             language_selector_.draw();
+
+            // GitHubアイコンを描画
+            if (github_texture_) {
+                github_texture_->resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
+            }
         }
 
         paxg::Rect getRect() const override {
@@ -168,12 +181,13 @@ namespace paxs {
         // 設定値
         const SelectLanguage* select_language_ = nullptr;
         const paxs::Language* language_text_ = nullptr;
-        std::uint_least8_t font_size_ = 24;
-        std::uint_least8_t font_thickness_ = 3;
 
         // 影描画用テクスチャ（外部から注入）
         paxg::RenderTexture* shadow_texture_ = nullptr;
         paxg::RenderTexture* internal_texture_ = nullptr;
+
+        // GitHubアイコンテクスチャ（外部から注入）
+        const paxg::Texture* github_texture_ = nullptr;
 
         /// @brief 背景パネルを描画
         /// @brief Draw background panel

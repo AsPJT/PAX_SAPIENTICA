@@ -18,7 +18,7 @@
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarRenderer.hpp>
-#include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/TimeControlWidget.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
@@ -48,7 +48,7 @@ namespace paxs {
 		/// @brief Set layout and texture references
 		/// @param layout レイアウト情報
 		/// @param texture_dict アイコンテクスチャ辞書
-		void setLayout(const CalendarUILayout& layout, const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dict) {
+		void setLayout(const UILayout& layout, const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dict) {
 			ui_layout_ = &layout;
 			texture_dictionary_ = &texture_dict;
 		}
@@ -57,13 +57,11 @@ namespace paxs {
 		/// @brief Set calendar rendering parameters
 		void setCalendarParams(
 			const paxs::Koyomi& koyomi,
-			int font_size,
-			int font_buffer_thickness,
 			const SelectLanguage& select_language,
 			const paxs::Language& language_text,
 			bool is_simulator_active
 		) {
-			calendar_renderer_.setRenderParams(koyomi, *ui_layout_, font_size, font_buffer_thickness, select_language, language_text, is_simulator_active);
+			calendar_renderer_.setRenderParams(koyomi, *ui_layout_, select_language, language_text, is_simulator_active);
 		}
 
 		/// @brief 時間操作ウィジェットの参照を設定
@@ -155,7 +153,7 @@ namespace paxs {
 		TimeControlWidget time_control_widget_;   // 時間操作ウィジェット
 		CalendarRenderer calendar_renderer_;      // カレンダー表示
 
-		const CalendarUILayout* ui_layout_ = nullptr;
+		const UILayout* ui_layout_ = nullptr;
 		const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;
 
 		// 影描画用テクスチャ（外部から注入）

@@ -98,7 +98,7 @@ namespace paxs {
             [&](const std::string& path_) {sr.input(path_); });
 #endif
         // 可視性の初期状態をメニューに反映
-        graphics_manager.getUIManager().initializeMenuFromVisibility(visible);
+        graphics_manager.getUILayer().initializeMenuFromVisibility(visible);
 
         paxs::PaxSapienticaInit::endLoadingScreen();
         /*##########################################################################################
@@ -117,8 +117,8 @@ namespace paxs {
                 map_viewport_input_handler.update(map_viewport); // 入力処理を更新
             }
 
-            graphics_manager.getUIManager().updateLanguage(select_language);
-            graphics_manager.getUIManager().syncVisibilityFromMenu(visible);
+            graphics_manager.getUILayer().updateLanguage(select_language);
+            graphics_manager.getUILayer().syncVisibilityFromMenu(visible);
 
             if (!visible[MurMur3::calcHash(2, "3D")]) {
                 // グラフィック統合更新（タイル + UI）

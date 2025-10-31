@@ -9,16 +9,18 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_CALENDAR_UI_LAYOUT_HPP
-#define PAX_MAHOROBA_CALENDAR_UI_LAYOUT_HPP
+#ifndef PAX_MAHOROBA_UI_LAYOUT_HPP
+#define PAX_MAHOROBA_UI_LAYOUT_HPP
 
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/FontConfig.hpp>
+
 namespace paxs {
 
-    // カレンダーUIのレイアウト情報
+    // UIのレイアウト情報
     // パネルの位置とサイズを計算・保持
-    struct CalendarUILayout {
+    struct UILayout {
         // カレンダーテキストの位置
         int koyomi_font_y;
         int koyomi_font_en_y;
@@ -40,26 +42,22 @@ namespace paxs {
         int next_rect_end_y;
 
         // レイアウトを計算
-        // pulldown_font_size: プルダウンのフォントサイズ
-        // koyomi_font_size: カレンダーのフォントサイズ
         // date_list_size: 表示する暦の数
         // time_control_panel_height: 時間操作パネルの高さ
         void calculate(
-            int pulldown_font_size,
-            int koyomi_font_size,
             std::size_t date_list_size,
             int time_control_panel_height
         ) {
             // 暦の位置
-            koyomi_font_y = pulldown_font_size + 43;
-            koyomi_font_en_y = pulldown_font_size + 43;
+            koyomi_font_y = FontConfig::PULLDOWN_FONT_SIZE + 43;
+            koyomi_font_en_y = FontConfig::PULLDOWN_FONT_SIZE + 43;
 
             koyomi_font_x = paxg::Window::width() - 270;
             koyomi_font_en_x = koyomi_font_x - 20;
             rect_start_x = koyomi_font_en_x - 165;
             rect_len_x = paxg::Window::width() - rect_start_x - 15;
 
-            koyomi_height = static_cast<int>(date_list_size) * (koyomi_font_size * 4 / 3); // 暦の縦の幅
+            koyomi_height = static_cast<int>(date_list_size) * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3); // 暦の縦の幅
 
             // 時間操作パネルの位置とサイズ
             time_control_base_x = rect_len_x - 10;
@@ -78,4 +76,4 @@ namespace paxs {
 
 } // namespace paxs
 
-#endif // !PAX_MAHOROBA_CALENDAR_UI_LAYOUT_HPP
+#endif // !PAX_MAHOROBA_UI_LAYOUT_HPP

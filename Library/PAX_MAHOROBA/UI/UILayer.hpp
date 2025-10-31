@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_UI_MANAGER_HPP
-#define PAX_MAHOROBA_UI_MANAGER_HPP
+#ifndef PAX_MAHOROBA_UI_LAYER_HPP
+#define PAX_MAHOROBA_UI_LAYER_HPP
 
 #include <limits>
 #include <string>
@@ -27,7 +27,7 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
-#include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
@@ -47,8 +47,8 @@
 
 namespace paxs {
 
-    // UIの統合管理を担当するクラス
-    class UIManager {
+    // UIレイヤーの統合管理を担当するクラス
+    class UILayer {
     private:
         FontManager* font_manager_ = nullptr; // 文字表示専用クラス（依存性注入）
 
@@ -69,7 +69,7 @@ namespace paxs {
         std::vector<IUIWidget*> widgets;
 
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
-        paxs::CalendarUILayout ui_layout;
+        paxs::UILayout ui_layout;
         paxs::CalendarPanel calendar_panel;        // カレンダーパネル（時間操作 + カレンダー表示）
         paxs::DebugInfoPanel debug_info_panel;     // デバッグ情報パネル
 
@@ -99,13 +99,16 @@ namespace paxs {
             map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
             xyz_tile_z_str_index = (MurMur3::calcHash(17, "debug_xyz_tiles_z"));
 
-            header_panel.init(&select_language, &language_text, font_manager_->getLanguageFonts(), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS));
+            header_panel.init(&select_language, &language_text, font_manager_->getLanguageFonts());
 
             // 暦の時間操作のアイコン
             key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
 
+            // HeaderPanelにGitHubアイコンを設定
+            header_panel.setGitHubTexture(&key_value_tsv.get().at(MurMur3::calcHash("texture_github")));
+
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.init(select_language, simulation_text, font_manager_->getLanguageFonts(), FontConfig::PULLDOWN_FONT_SIZE, FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
+            simulation_panel.init(select_language, simulation_text, font_manager_->getLanguageFonts());
 #endif
 
             // 影
@@ -225,7 +228,7 @@ namespace paxs {
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
 
             // UIレイアウトを計算
-            ui_layout.calculate(FontConfig::PULLDOWN_FONT_SIZE, FontConfig::KOYOMI_FONT_SIZE, koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+            ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
             // HeaderPanelに影テクスチャを設定
             header_panel.setShadowTextures(shadow_texture, internal_texture);
@@ -246,7 +249,7 @@ namespace paxs {
                 // CalendarPanelの設定
                 calendar_panel.setShadowTextures(shadow_texture, internal_texture);
                 calendar_panel.setLayout(ui_layout, key_value_tsv.get());
-                calendar_panel.setCalendarParams(koyomi, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS, select_language, language_text, is_simulator_active);
+                calendar_panel.setCalendarParams(koyomi, select_language, language_text, is_simulator_active);
                 calendar_panel.setTimeControlParams(koyomi);
                 calendar_panel.setVisible(true);
             } else {
@@ -267,8 +270,7 @@ namespace paxs {
 
                 // マップ情報とシミュレーション統計を描画
                 debug_info_panel.renderMapAndSimulationInfo(
-                    map_viewport, debug_start_y, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS,
-                    select_language, language_text, visible
+                    map_viewport, debug_start_y, select_language, language_text, visible
 #ifdef PAXS_USING_SIMULATOR
                     , simulator
 #endif
@@ -280,14 +282,6 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             simulation_panel.drawPulldownBackground(simulator, visible);
 #endif
-
-            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
-
-            texture_dictionary.at(MurMur3::calcHash("texture_github")).resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
-            if (input_state_manager.get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
-                // Web ページをブラウザで開く
-                paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
-            }
 
             // IUIWidget を実装したウィジェットを更新
             for (auto* widget : widgets) {
@@ -311,8 +305,7 @@ namespace paxs {
                 int debug_start_y = ui_layout.getDebugStartY();
                 // 考古学的遺物の型式情報を描画
                 debug_info_panel.renderArchaeologicalInfo(
-                    koyomi, ui_layout, debug_start_y, FontConfig::KOYOMI_FONT_SIZE, FontConfig::KOYOMI_FONT_BUFFER_THICKNESS,
-                    select_language, language_text
+                    koyomi, ui_layout, debug_start_y, select_language, language_text
                 );
             }
         }
@@ -320,4 +313,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_MAHOROBA_UI_MANAGER_HPP
+#endif // !PAX_MAHOROBA_UI_LAYER_HPP

@@ -18,7 +18,7 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
-#include <PAX_MAHOROBA/UI/UIManager.hpp>
+#include <PAX_MAHOROBA/UI/UILayer.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
@@ -38,7 +38,7 @@ namespace paxs {
 	private:
 		FontManager font_manager_;
 		TileManager tile_manager_;
-		UIManager ui_manager_;
+		UILayer ui_manager_;
 		MapController map_controller_;
 
 		// ウィンドウサイズ変更の検知用
@@ -65,9 +65,9 @@ namespace paxs {
 		/// @brief TileManagerへのアクセス（初期化用）
 		TileManager& getTileManager() { return tile_manager_; }
 
-		/// @brief UIManagerへのアクセス
-		UIManager& getUIManager() { return ui_manager_; }
-		const UIManager& getUIManager() const { return ui_manager_; }
+		/// @brief UILayerへのアクセス
+		UILayer& getUILayer() { return ui_manager_; }
+		const UILayer& getUILayer() const { return ui_manager_; }
 
 		/// @brief MapControllerへのアクセス
 		MapController& getMapController() { return map_controller_; }
@@ -88,7 +88,7 @@ namespace paxs {
 					map_viewport.setWidth(map_viewport.getHeight() / double(current_height) * double(current_width));
 				}
 
-				// UIManagerのテクスチャを再初期化
+				// UILayerのテクスチャを再初期化
 				ui_manager_.handleWindowResize();
 			}
 			else {

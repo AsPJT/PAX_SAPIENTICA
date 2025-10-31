@@ -33,6 +33,7 @@
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
@@ -251,14 +252,10 @@ namespace paxs {
 		/// @param select_language 選択された言語
 		/// @param simulation_text シミュレーション関連のテキスト
 		/// @param language_fonts 言語フォント
-		/// @param pulldown_font_size プルダウンのフォントサイズ
-		/// @param pulldown_font_buffer_thickness_size プルダウンのフォント太さ
 		void init(
 			const SelectLanguage& select_language,
 			const paxs::Language& simulation_text,
-			LanguageFonts& language_fonts,
-			int pulldown_font_size,
-			int pulldown_font_buffer_thickness_size
+			LanguageFonts& language_fonts
 		) {
 			// シミュレーションモデルのファイルを読み込む
 			const std::string models_path = "Data/Simulations/Models.txt";
@@ -289,7 +286,7 @@ namespace paxs {
 			}
 
 			// シミュレーションモデルのプルダウンメニューを初期化
-			simulation_pulldown = paxs::Pulldown(&select_language, &simulation_text, simulation_key, language_fonts, static_cast<std::uint_least8_t>(pulldown_font_size), static_cast<std::uint_least8_t>(pulldown_font_buffer_thickness_size), paxg::Vec2i{ 3000, 0 }, paxs::PulldownDisplayType::SelectedValue, false);
+			simulation_pulldown = paxs::Pulldown(&select_language, &simulation_text, simulation_key, language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), paxg::Vec2i{ 3000, 0 }, paxs::PulldownDisplayType::SelectedValue, false);
 			pulldown_y_ = 600;
 			simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), pulldown_y_ });
 
