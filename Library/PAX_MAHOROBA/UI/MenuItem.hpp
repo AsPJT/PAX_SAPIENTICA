@@ -100,6 +100,12 @@ namespace paxs {
         }
 
     public:
+        void setIsItems(const std::size_t i, const bool new_value) {
+            if (is_items.size() == 0) return;
+            const std::size_t actual_index = i + 1; // ヘッダー分をオフセット
+            if (actual_index < is_items.size()) is_items[actual_index] = new_value;
+        }
+
         /// @brief 項目の状態を取得（インデックス指定）
         /// @details MenuItemでは最初の項目がヘッダー名なので、+1してアクセス
         bool getIsItems(const std::size_t i) const {

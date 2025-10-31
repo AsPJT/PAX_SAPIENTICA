@@ -55,7 +55,9 @@ namespace paxs {
         visible.emplace(MurMur3::calcHash("Calendar"), true); // 暦
         visible.emplace(MurMur3::calcHash("Map"), true); // 地図
         visible.emplace(MurMur3::calcHash("UI"), true); // UI
-        //visible.emplace(MurMur3::calcHash("License"), false); // ライセンス
+        visible.emplace(MurMur3::calcHash("Simulation"), true); // シミュレーション
+        visible.emplace(MurMur3::calcHash("License"), false); // ライセンス
+        visible.emplace(MurMur3::calcHash("Debug"), false); // デバッグ
         visible.emplace(MurMur3::calcHash("3D"), false); // 3D
 
         MapViewport map_viewport{};
@@ -105,6 +107,19 @@ namespace paxs {
         AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationRange"),
             [&](const std::string& path_) {sr.input(path_); });
 #endif
+        {
+            auto* view_menu = ui_manager.menu_bar.getMenuItem(MurMur3::calcHash("view"));
+            if (view_menu) {
+                view_menu->setIsItems(std::size_t(0), visible.isVisible(MurMur3::calcHash("Calendar")));
+                view_menu->setIsItems(std::size_t(1), visible.isVisible(MurMur3::calcHash("Map")));
+                view_menu->setIsItems(std::size_t(2), visible.isVisible(MurMur3::calcHash("UI")));
+                view_menu->setIsItems(std::size_t(3), visible.isVisible(MurMur3::calcHash("Simulation")));
+                view_menu->setIsItems(std::size_t(4), visible.isVisible(MurMur3::calcHash("License")));
+                view_menu->setIsItems(std::size_t(5), visible.isVisible(MurMur3::calcHash("Debug")));
+                view_menu->setIsItems(std::size_t(6), visible.isVisible(MurMur3::calcHash("3D")));
+            }
+        }
+
         paxs::PaxSapienticaInit::endLoadingScreen();
         /*##########################################################################################
             ループ開始
@@ -142,7 +157,7 @@ namespace paxs {
             old_height = paxg::Window::height();
 
 
-            if (visible[MurMur3::calcHash(2, "3D")]) {
+            if (!visible[MurMur3::calcHash(2, "3D")]) {
                 map_viewport.update(); // キーボード入力を更新
             }
 
@@ -186,7 +201,7 @@ namespace paxs {
                 }
             }
 
-            if (visible[MurMur3::calcHash(2, "3D")]) {
+            if (!visible[MurMur3::calcHash(2, "3D")]) {
 
             tile_manager.update(ui_manager.menu_bar, map_viewport, koyomi.jdn.cgetDay()); // 地図の辞書を更新
                 // 地図を更新
@@ -214,7 +229,7 @@ namespace paxs {
 #endif
                 );
             }
-            else if (!visible[MurMur3::calcHash(2, "3D")]) {
+            else if (visible[MurMur3::calcHash(2, "3D")]) {
                 g3d_model.updateRotation(); // 3D モデルを回転させる
             }
 
