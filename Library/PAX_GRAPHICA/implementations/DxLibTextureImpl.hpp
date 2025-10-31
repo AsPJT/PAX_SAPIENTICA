@@ -18,7 +18,9 @@
 
 #include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/TextureImpl.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 namespace paxg {
 
     class DxLibTextureImpl : public TextureImpl {
@@ -40,13 +42,19 @@ namespace paxg {
 
         DxLibTextureImpl(const paxg::String& path) {
             std::string path_str = convertSvgToPng(path.string);
-            texture = DxLib::LoadGraph(path_str.c_str());
+            texture = DxLib::LoadGraph((paxs::AppConfig::getInstance()->getRootPath() + path_str).c_str());
+            if (texture == -1) {
+                PAXS_WARNING("[DxLibTextureImpl] Failed to load texture: " + path_str);
+            }
             DxLib::GetGraphSize(texture, &cachedWidth, &cachedHeight);
         }
 
         DxLibTextureImpl(const std::string& path) {
             std::string path_str = convertSvgToPng(path);
-            texture = DxLib::LoadGraph(path_str.c_str());
+            texture = DxLib::LoadGraph((paxs::AppConfig::getInstance()->getRootPath() + path_str).c_str());
+            if (texture == -1) {
+                PAXS_WARNING("[DxLibTextureImpl] Failed to load texture: " + path_str);
+            }
             DxLib::GetGraphSize(texture, &cachedWidth, &cachedHeight);
         }
 

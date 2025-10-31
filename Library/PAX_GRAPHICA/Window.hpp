@@ -80,6 +80,8 @@ namespace paxg {
             getImpl().setPosition(pos);
         }
 
+        /// @brief Set the window icon
+        /// @param path Path to the icon file (relative to root path)
         static void setIcon(const std::string& path) {
             getImpl().setIcon(path);
         }
@@ -130,6 +132,12 @@ namespace paxg {
 
         static void setResizable(bool resizable) {
             getImpl().setResizable(resizable);
+        }
+
+        /// @brief ウィンドウの装飾（タイトルバー等）を設定
+        /// @param decorated true: 表示, false: 非表示
+        static void setDecorated(bool decorated) {
+            getImpl().setDecorated(decorated);
         }
 
         static paxg::Vec2i center() {

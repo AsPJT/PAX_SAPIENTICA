@@ -22,6 +22,8 @@
 
 #include <PAX_GRAPHICA/WindowImpl.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
+
 namespace paxg {
 
     class DxLibWindowImpl : public WindowImpl {
@@ -97,7 +99,7 @@ namespace paxg {
                 // アイコンファイルを読み込む（.icoファイルのみ対応）
                 HICON hIcon = (HICON)LoadImageA(
                     NULL,
-                    path.c_str(),
+                    (paxs::AppConfig::getInstance()->getRootPath() + path).c_str(),
                     IMAGE_ICON,
                     0, 0,
                     LR_LOADFROMFILE | LR_DEFAULTSIZE
@@ -159,6 +161,10 @@ namespace paxg {
 
         void setResizable(bool resizable) override {
             DxLib::SetWindowSizeChangeEnableFlag(resizable ? TRUE : FALSE);
+        }
+
+        void setDecorated(bool decorated) override {
+            DxLib::SetWindowStyleMode(decorated ? 1 : 8); // 1: 通常ウィンドウ, 8: 枠なし
         }
 
         Vec2i center() const override {

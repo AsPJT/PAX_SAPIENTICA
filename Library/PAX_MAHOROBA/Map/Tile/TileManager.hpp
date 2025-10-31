@@ -1,0 +1,81 @@
+﻿/*##########################################################################################
+
+    PAX SAPIENTICA Library 💀🌿🌏
+
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
+
+#ifndef PAX_MAHOROBA_TILE_MANAGER_HPP
+#define PAX_MAHOROBA_TILE_MANAGER_HPP
+
+#include <string>
+#include <vector>
+
+#include <PAX_GRAPHICA/Key.hpp>
+#include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
+#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar.hpp>
+#include <PAX_MAHOROBA/UI/Pulldown.hpp>
+#include <PAX_MAHOROBA/Map/Tile/TileRenderer.hpp>
+#include <PAX_MAHOROBA/Map/Tile/TileRepository.hpp>
+#include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>
+
+#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
+
+namespace paxs {
+
+    class TileManager {
+    private:
+        // 描画する XYZ タイルを管理
+        std::vector<XYZTile> xyz_tile_list;
+
+        // タイル描画を担当
+        TileRenderer tile_renderer_;
+
+        // タイルデータ読み込みを担当
+        TileRepository tile_repository_;
+
+    public:
+        // XYZ Tiles を追加（TileRepositoryに委譲）
+        void add(const std::string& file_path) {
+            std::vector<XYZTile> loaded_tiles = tile_repository_.loadFromFile(file_path);
+            xyz_tile_list.insert(xyz_tile_list.end(), loaded_tiles.begin(), loaded_tiles.end());
+        }
+
+        // グリッド線を追加（TileRepositoryに委譲）
+        void addGridLine() {
+            xyz_tile_list.emplace_back(tile_repository_.createGridLineTile());
+        }
+
+        // 地図の辞書を更新
+        void update(const paxs::MenuBar& menu_bar, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
+
+            const double map_viewport_width = map_viewport.getWidth();
+            const double map_viewport_height = map_viewport.getHeight();
+            const double map_viewport_center_x = map_viewport.getCenterX();
+            const double map_viewport_center_y = map_viewport.getCenterY();
+
+            // 更新処理
+            const auto* map_menu = menu_bar.cgetMenuItem(MurMur3::calcHash("map"));
+            for (auto&& xyzi : xyz_tile_list) {
+                if (xyzi.getMenuBarMap() != 0 && map_menu && map_menu->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
+                xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
+            }
+
+            // 描画処理（TileRendererに委譲）
+            tile_renderer_.drawBackground();
+            tile_renderer_.drawTiles(xyz_tile_list, menu_bar, map_viewport, jdn);
+        }
+    };
+}
+
+#endif // !PAX_MAHOROBA_TILE_MANAGER_HPP

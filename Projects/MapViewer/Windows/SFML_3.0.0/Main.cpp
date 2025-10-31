@@ -13,7 +13,7 @@
 #define PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
 #include <omp.h>
-#include <PAX_MAHOROBA/Main.hpp>
+#include <PAX_MAHOROBA/Core/Main.hpp>
 
 // その他の処理 (Windows)
 int main() {

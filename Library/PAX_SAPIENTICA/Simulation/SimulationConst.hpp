@@ -16,7 +16,6 @@
 #include <cstdint>
 #include <random>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -247,7 +246,7 @@ namespace paxs {
         }
 
         // 項目の ID を返す
-        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
+        std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
         }
 
@@ -279,7 +278,7 @@ namespace paxs {
             // BOM を削除
             life_span_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = life_span_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = life_span_tsv.splitHashMapMurMur3('\t');
 #ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
 #endif
@@ -352,7 +351,7 @@ namespace paxs {
             // BOM を削除
             probability_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
             marriage_probability.agricultural.clear();
             marriage_probability.hunter_gatherer.clear();
 #ifdef PAXS_DEVELOPMENT
@@ -404,7 +403,7 @@ namespace paxs {
             // BOM を削除
             probability_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = probability_tsv.splitHashMapMurMur3('\t');
             childbearing_probability.agricultural.clear();
             childbearing_probability.hunter_gatherer.clear();
 #ifdef PAXS_DEVELOPMENT

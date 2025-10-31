@@ -20,6 +20,7 @@
 #include <PAX_GRAPHICA/TextureImpl.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 namespace paxg {
 
     class SFMLTextureImpl : public TextureImpl {
@@ -37,14 +38,14 @@ namespace paxg {
 
         SFMLTextureImpl(const paxg::String& path) {
             std::string path_str = convertSvgToPng(path.string);
-            if (!texture.loadFromFile(path_str)) {
+            if (!texture.loadFromFile(paxs::AppConfig::getInstance()->getRootPath() + path_str)) {
                 PAXS_WARNING("Failed to load texture: " + path_str);
             }
         }
 
         SFMLTextureImpl(const std::string& path) {
             std::string path_str = convertSvgToPng(path);
-            if (!texture.loadFromFile(path_str)) {
+            if (!texture.loadFromFile(paxs::AppConfig::getInstance()->getRootPath() + path_str)) {
                 PAXS_WARNING("Failed to load texture: " + path_str);
             }
         }

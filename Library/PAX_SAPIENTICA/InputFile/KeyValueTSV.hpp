@@ -19,9 +19,9 @@
 ##########################################################################################*/
 
 #include <string>
-#include <unordered_map>
 
 #include <PAX_SAPIENTICA/InputFile.hpp>
+#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 
 namespace paxs {
@@ -29,10 +29,10 @@ namespace paxs {
     template<typename Value>
     class KeyValueTSV {
     private:
-        std::unordered_map<std::uint_least32_t, Value> path_list;
+        UnorderedMap<std::uint_least32_t, Value> path_list;
     private:
         // 項目の ID を返す
-        inline std::size_t inputPathGetMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
+        inline std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
         }
     public:
@@ -41,10 +41,10 @@ namespace paxs {
             path_list.emplace(key_, value_);
         }
         bool contains(const std::uint_least32_t key_) {
-            return (path_list.find(key_) != path_list.end());
+            return path_list.contains(key_);
         }
 
-        std::unordered_map<std::uint_least32_t, Value>& get() {
+        UnorderedMap<std::uint_least32_t, Value>& get() {
             return path_list;
         }
 
@@ -65,7 +65,7 @@ namespace paxs {
             // BOM を削除
             pifs.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
             const std::size_t file_path = inputPathGetMenuIndex(menu, MurMur3::calcHash("value"));
             if (file_path == SIZE_MAX) {
@@ -99,7 +99,7 @@ namespace paxs {
         }
 
         Value operator[](std::uint_least32_t key_) const {
-            return (path_list.find(key_) == path_list.end()) ? Value{} : path_list.at(key_);
+            return path_list.contains(key_) ? path_list.at(key_) : Value{};
         }
 
     };

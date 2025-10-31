@@ -20,7 +20,6 @@
 #include <filesystem>
 #include <memory>
 #include <random>
-#include <unordered_map>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
@@ -593,11 +592,11 @@ namespace paxs {
 
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr std::unordered_map<SettlementGridsType, SettlementGrid>&
+        constexpr paxs::UnorderedMap<SettlementGridsType, SettlementGrid>&
             getSettlementGrids() noexcept { return settlement_grids; }
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr const std::unordered_map<SettlementGridsType, SettlementGrid>&
+        constexpr const paxs::UnorderedMap<SettlementGridsType, SettlementGrid>&
             cgetSettlementGrids() const noexcept { return settlement_grids; }
 
         /// @brief Get processing_time.
@@ -621,7 +620,7 @@ namespace paxs {
         double move_processing_time = 0.0;
         double marriage_processing_time = 0.0;
 
-        std::unordered_map<SettlementGridsType, SettlementGrid> settlement_grids;
+        paxs::UnorderedMap<SettlementGridsType, SettlementGrid> settlement_grids;
         std::shared_ptr<Environment> environment;
 
         std::unique_ptr<paxs::JapanProvinces> japan_provinces;
@@ -737,7 +736,7 @@ namespace paxs {
             std::uint_least8_t district_id_max = 0;
 
             // 地区と人口のマップ
-            std::unordered_map<std::uint_least8_t, std::uint_least32_t> district_population_map;
+            paxs::UnorderedMap<std::uint_least8_t, std::uint_least32_t> district_population_map;
             for (auto& district : japan_provinces->cgetDistrictList()) {
                 if (((is_ad200)? district.init_pop : district.immigrant) == 0) {
                     continue;

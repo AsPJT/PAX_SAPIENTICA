@@ -115,9 +115,19 @@ namespace paxg {
         void setRadius(const float r) { radius_ = r; }
         void setRotation(const float rot) { rotation_ = rot; }
 
+#if defined(PAXS_USING_SIV3D)
+        static constexpr float circumRadiusToSiv3dSides(const float circumRadius) {
+            // Siv3Dは sides を受け取って内部で ×(1/√3) してるので、逆にこっちは ×√3 する
+            return circumRadius * 1.7320508075688772f; // std::sqrt(3.0f) の定数化
+        }
+#endif
+
         /// @brief Draw the triangle with specified color (defaults to black)
         void draw(const paxg::Color& color = paxg::Color(0, 0, 0)) const {
 #if defined(PAXS_USING_SIV3D)
+            const float siv3dSides = circumRadiusToSiv3dSides(radius_);
+            s3d::Triangle{ { center_x_, center_y_ }, siv3dSides, rotation_ }
+                .draw(s3d::ColorF{ color.color });
             s3d::Triangle{ center_x_, center_y_, radius_, rotation_ }.draw(s3d::ColorF{ color.color });
 
 #elif defined(PAXS_USING_SFML)
@@ -150,8 +160,6 @@ namespace paxg {
             }
 
             triangle.setFillColor(color.color);
-            triangle.setOutlineColor(color.color);
-            triangle.setOutlineThickness(0);
             paxg::Window::window().draw(triangle);
 
 #elif defined(PAXS_USING_DXLIB)

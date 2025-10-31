@@ -9,15 +9,14 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
-#define PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
+#ifndef PAX_SAPIENTICA_LANGUAGE_HPP
+#define PAX_SAPIENTICA_LANGUAGE_HPP
 
 #include <cstddef>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <vector>
-#include <unordered_map>
 
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -40,9 +39,9 @@ namespace paxs {
 
     private:
         std::vector<std::uint_least32_t> ordered_languages{}; // 登録順の言語
-        std::unordered_map<std::uint_least32_t, std::size_t> unordered_languages{}; // 非順序の言語
-        std::unordered_map<std::uint_least64_t, std::string> texts_and_languages{}; // テキストを辞書で管理
-        std::unordered_map<std::uint_least32_t, std::uint_least64_t> text_key{}; // テキストを辞書で管理 (１つの言語のみ)
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> unordered_languages{}; // 非順序の言語
+        paxs::UnorderedMap<std::uint_least64_t, std::string> texts_and_languages{}; // テキストを辞書で管理
+        paxs::UnorderedMap<std::uint_least32_t, std::uint_least64_t> text_key{}; // テキストを辞書で管理 (１つの言語のみ)
     public:
         // key が存在しているか
         bool isIndex(const std::uint_least64_t key) const {
@@ -77,7 +76,7 @@ namespace paxs {
     private:
 
         // 項目の ID を返す
-        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
+        std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
         }
 
@@ -93,7 +92,7 @@ namespace paxs {
             // BOM を削除
             pifs.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
             std::vector<std::uint_least32_t> menu_v = pifs.splitHashMapMurMur3Vector('\t');
 
             const std::size_t key = getMenuIndex(menu, MurMur3::calcHash("key"));
@@ -137,4 +136,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
+#endif // !PAX_SAPIENTICA_LANGUAGE_HPP

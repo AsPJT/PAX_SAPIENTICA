@@ -27,6 +27,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 
 namespace paxg{
@@ -37,7 +38,7 @@ namespace paxg{
         Font(const int size_, const std::string& path, const int buffer_thickness) {
             font = (path.size() == 0) ?
                 s3d::Font(s3d::FontMethod::SDF, size_) :
-                s3d::Font(s3d::FontMethod::SDF, size_, s3d::Unicode::FromUTF8(path));
+                s3d::Font(s3d::FontMethod::SDF, size_, s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath() + path));
             font.setBufferThickness(buffer_thickness);
         }
         bool is_outline = false;
@@ -238,7 +239,7 @@ namespace paxg{
         Font(const int size_, const std::string& path, const int /*buffer_thickness*/) {
             size = size_;
             if (path.size() == 0) return;
-            if (!font.openFromFile(path)) {
+            if (!font.openFromFile(paxs::AppConfig::getInstance()->getRootPath() + path)) {
                 PAXS_WARNING(path + " is missing.");
             }
         }

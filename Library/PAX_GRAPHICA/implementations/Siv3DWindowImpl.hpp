@@ -104,6 +104,14 @@ namespace paxg {
             }
         }
 
+        void setDecorated(bool decorated) override {
+            if (decorated) {
+                s3d::Window::SetStyle(s3d::WindowStyle::Sizable);
+            } else {
+                s3d::Window::SetStyle(s3d::WindowStyle::Frameless);
+            }
+        }
+
         Vec2i center() const override {
             return Vec2i(s3d::Scene::Center().x, s3d::Scene::Center().y);
         }

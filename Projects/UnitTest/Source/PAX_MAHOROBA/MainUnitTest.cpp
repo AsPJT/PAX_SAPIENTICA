@@ -15,7 +15,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include <PAX_MAHOROBA/Main.hpp>
+#include <PAX_MAHOROBA/Core/Main.hpp>
 
 using namespace paxs;
 
@@ -62,8 +62,8 @@ TEST(MainTest, RequiredHeadersIncluded) {
 	const std::uint_least32_t hash = MurMur3::calcHash("TestString");
 	EXPECT_NE(hash, 0u);
 
-	// GraphicVisualizationListが使用可能か確認
-	GraphicVisualizationList visible;
+	// FeatureVisibilityManagerが使用可能か確認
+	FeatureVisibilityManager visible;
 	visible.emplace(MurMur3::calcHash("Test"), true);
 	EXPECT_TRUE(visible[MurMur3::calcHash("Test")]);
 }
@@ -71,7 +71,7 @@ TEST(MainTest, RequiredHeadersIncluded) {
 // Main.hppで初期化される可視化設定のテスト（startMain関数内の初期化ロジック）
 TEST(MainTest, VisibilityInitialization) {
 	// Main.hpp:56-61 の初期化ロジックをテスト
-	GraphicVisualizationList visible{};
+	FeatureVisibilityManager visible{};
 	visible.emplace(MurMur3::calcHash("Calendar"), true);
 	visible.emplace(MurMur3::calcHash("Map"), true);
 	visible.emplace(MurMur3::calcHash("UI"), true);
@@ -95,7 +95,7 @@ TEST(MainTest, HashKeyConsistency) {
 
 // Main.hppのview関連の可視化キーテスト（177-183行目）
 TEST(MainTest, ViewMenuKeys) {
-	GraphicVisualizationList visible;
+	FeatureVisibilityManager visible;
 
 	// View メニューで使用される全てのキーが正しく処理できることを確認
 	const std::vector<std::string> view_keys = {
@@ -114,7 +114,7 @@ TEST(MainTest, ViewMenuKeys) {
 
 // Main.hppのplace_names関連の可視化キーテスト（185-196行目）
 TEST(MainTest, PlaceNamesMenuKeys) {
-	GraphicVisualizationList visible;
+	FeatureVisibilityManager visible;
 
 	// Place names メニューで使用される全てのキーが正しく処理できることを確認
 	const std::vector<std::string> place_names_keys = {

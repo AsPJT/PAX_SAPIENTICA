@@ -10,7 +10,7 @@
 ##########################################################################################*/
 
 #define _CRT_SECURE_NO_WARNINGS
-#include <PAX_MAHOROBA/Main.hpp>
+#include <PAX_MAHOROBA/Core/Main.hpp>
 
 int main() {
     paxs::startMain();
