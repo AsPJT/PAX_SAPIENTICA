@@ -16,6 +16,7 @@
 #include <array>
 #include <cmath>
 
+#include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>

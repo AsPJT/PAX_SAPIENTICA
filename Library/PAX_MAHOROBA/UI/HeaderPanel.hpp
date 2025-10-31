@@ -23,7 +23,7 @@
 
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
-#include <PAX_SAPIENTICA/Key/MenuKeys.hpp>
+#include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 

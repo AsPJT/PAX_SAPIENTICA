@@ -13,7 +13,7 @@
 #define PAX_MAHOROBA_MAP_RENDERER_HPP
 
 #include <PAX_GRAPHICA/Font.hpp>
-#include <PAX_MAHOROBA/Map/Location/PersonLocation.hpp>
+#include <PAX_MAHOROBA/Map/Location/PersonNameManager.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameManager.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>

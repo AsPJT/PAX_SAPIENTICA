@@ -23,8 +23,8 @@
 
 #include <PAX_MAHOROBA/Map/Location/PlaceNameManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Map/Location/LocationRange.hpp>
-#include <PAX_MAHOROBA/Map/Location/PersonLocation.hpp>
+#include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
+#include <PAX_MAHOROBA/Map/Location/PersonNameManager.hpp>
 #include <PAX_MAHOROBA/Map/MapRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 
