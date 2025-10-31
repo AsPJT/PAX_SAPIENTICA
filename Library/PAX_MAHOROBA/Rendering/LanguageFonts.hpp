@@ -16,7 +16,6 @@
 
 #include <PAX_GRAPHICA/Font.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {

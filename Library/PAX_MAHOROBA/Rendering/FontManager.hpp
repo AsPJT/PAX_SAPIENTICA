@@ -19,7 +19,6 @@
 
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 
@@ -60,12 +59,10 @@ namespace paxs {
 
         void init(const SelectLanguage& select_language, int pulldown_font_size, int pulldown_font_buffer_thickness_size) {
             language_fonts.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
-            setLanguageFont(pulldown_font_size, AppConfig::getInstance()->getRootPath(), pulldown_font_buffer_thickness_size);
+            setLanguageFont(pulldown_font_size, pulldown_font_buffer_thickness_size);
 
-            const std::string path = (AppConfig::getInstance()->getRootPath());
-
-            pin_font = paxg::Font{ 14, (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
-            en_font = paxg::Font{ 20, (path + "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"), 2 };
+            pin_font = paxg::Font{ 14, "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", 2 };
+            en_font = paxg::Font{ 20, "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", 2 };
         }
 
         // 言語ごとのフォントを取得・追加
@@ -81,11 +78,10 @@ namespace paxs {
     private:
         void setLanguageFont(
             const int font_size_,
-            const std::string& path,
             const int buffer_thickness) {
             for (std::size_t i = 0; i < path_list.size(); ++i) {
                 language_fonts.add(
-                    (path + path_list[i]),
+                    path_list[i],
                     paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i],
                     static_cast<std::uint_least8_t>(font_size_),
                     static_cast<std::uint_least8_t>(buffer_thickness)

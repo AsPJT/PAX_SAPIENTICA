@@ -256,7 +256,7 @@ namespace paxs {
         }
 
         /// @brief ドロップダウンリストを描画
-        void drawDropdownList() {
+        virtual void drawDropdownList() {
             paxg::Vec2i pos = rect.pos();
             pos.setY(static_cast<int>(pos.y() + rect.h()));
 

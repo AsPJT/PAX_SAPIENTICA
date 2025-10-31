@@ -124,6 +124,59 @@ namespace paxs {
         bool getIsItemsKey(const std::uint_least32_t key) const {
             return getIsItems(key);
         }
+
+    protected:
+        /// @brief ドロップダウンリストを描画（チェックマーク付き）
+        void drawDropdownList() override {
+            paxg::Vec2i pos = rect.pos();
+            pos.setY(static_cast<int>(pos.y() + rect.h()));
+
+            const std::size_t start_index = getDropdownStartIndex();
+            const std::size_t display_item_count = items_key.size() - start_index;
+            const paxg::Rect back_rect{ pos, all_rect_x, static_cast<float>(rect.h() * display_item_count) };
+            back_rect.drawShadow({ 1, 1 }, 4, 1).draw();
+
+            constexpr int checkmark_width = 20; // チェックマークの幅
+
+            for (std::size_t i = start_index; i < items_key.size(); ++i) {
+                const std::string* i_str = (*language_ptr).getStringPtr(items_key[i], (*select_language_ptr).cgetKey());
+                if (i_str == nullptr || i_str->size() == 0) continue;
+
+                const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };
+                if (rect_tmp.mouseOver()) {
+                    rect_tmp.draw(paxg::Color{ 135, 206, 235 });
+                }
+
+                // チェックマークを描画（ONの場合のみ）
+                if (i < is_items.size() && is_items[i]) {
+                    const int check_x = pos.x() + 5;
+                    const int check_y = static_cast<int>(pos.y() + rect.h() / 2.0f);
+
+                    // シンプルなチェックマーク "✓" を描画
+                    const std::uint_least32_t select_font_key = (*select_language_ptr).cgetKey();
+                    paxg::Font* check_font = (*font).getAndAdd(select_font_key, font_size, font_buffer_thickness_size);
+                    if (check_font != nullptr) {
+                        (*check_font).draw(
+                            "✓",
+                            paxg::Vec2i(check_x, pos.y() + padding.y()),
+                            paxg::Color{ 0, 0, 0 });
+                    }
+                }
+
+                // テキストを描画（チェックマークの分だけ右にずらす）
+                const std::uint_least32_t select_font_key = getItemFontKey(i);
+                paxg::Font* one_font = (*font).getAndAdd(select_font_key, font_size, font_buffer_thickness_size);
+                if (one_font == nullptr) continue;
+
+                (*one_font).draw(
+                    *i_str,
+                    paxg::Vec2i(pos.x() + padding.x() + checkmark_width, pos.y() + padding.y()),
+                    paxg::Color{ 0, 0, 0 });
+                pos.setY(static_cast<int>(pos.y() + rect.h()));
+            }
+
+            back_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
+        }
     };
 
 } // namespace paxs

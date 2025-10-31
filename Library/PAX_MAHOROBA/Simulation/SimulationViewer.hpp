@@ -408,12 +408,68 @@ namespace paxs {
 		/// @brief 描画処理（IUIWidget）
 		void draw() override {
 			if (!visible_) return;
-			if (!simulator_ptr_ || !visible_list_) return;
+			if (!simulator_ptr_ || !visible_list_ || !koyomi_) return;
 
-			// プルダウンの描画のみ（背景はUIManagerで描画される）
+			// プルダウンの描画
 			drawPulldown(*simulator_ptr_, *visible_list_);
+
+			// シミュレーションコントロールボタンの描画
+			if (visible_list_->at(MurMur3::calcHash("Simulation")) &&
+			    visible_list_->at(MurMur3::calcHash("UI")) &&
+			    visible_list_->at(MurMur3::calcHash("Calendar"))) {
+				drawSimulationControls();
+			}
 		}
 
+	private:
+		/// @brief シミュレーションコントロールボタンを描画
+		void drawSimulationControls() {
+			if (!simulator_ptr_ || !koyomi_) return;
+
+			const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
+			const int time_icon_size = 40;
+			const int debug_start_y = debug_start_y_;
+
+			// シミュレーションが初期化されていない場合
+			if (simulator_ptr_->get() == nullptr) {
+				// 地形データ読み込みボタン
+				texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
+					time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
+			}
+			// シミュレーションが初期化されている場合
+			else {
+				// シミュレーションが再生中の場合
+				if (koyomi_->is_agent_update) {
+					// 停止ボタン
+					texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
+						time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
+				}
+				// シミュレーションが停止中の場合
+				else {
+					// シミュレーション入力データ初期化ボタン
+					texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
+						time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60));
+
+					// 人間データ初期化ボタン (Simulation Init)
+					texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
+						time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y));
+
+					// 地形データ削除ボタン
+					texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
+						time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
+
+					// 再生ボタン
+					texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
+						time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
+
+					// 1ステップ実行ボタン
+					texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
+						time_icon_size, paxg::Vec2i(paxg::Window::width() - 240, debug_start_y));
+				}
+			}
+		}
+
+	public:
 		/// @brief 矩形を取得
 		paxg::Rect getRect() const override {
 			// シミュレーションビューアの矩形を返す

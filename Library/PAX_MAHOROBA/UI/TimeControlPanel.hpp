@@ -39,10 +39,10 @@ namespace paxs {
         int arrow_icon_move_y = int(arrow_time_icon_size * 1.1);
         int icon_move_y = int(time_icon_size * 1.1);
 
-        // 時間操作パネルを更新・描画
+        // 時間操作パネルを更新・描画（レガシーメソッド - 互換性のため残す）
         // base_x: パネル右端のX座標
         // base_y: パネル上端のY座標
-        void update(
+        void updateAndDraw(
             int base_x,
             int base_y,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
@@ -220,6 +220,163 @@ namespace paxs {
             }
         }
 
+        // 状態更新（クリック判定などの入力処理）
+        void updateState(paxs::TouchStateManager& tm) {
+            int icon_start_x = pos_.x();
+            int icon_start_y = pos_.y();
+
+            // 再生コントロールの更新
+            updatePlaybackControls(icon_start_x, icon_start_y, tm);
+            icon_start_y += arrow_icon_move_y;
+
+            // 時間移動（過去へ）の更新
+            updateBackwardTimeControls(icon_start_x, icon_start_y, tm);
+            icon_start_y += icon_move_y;
+
+            // 時間移動（未来へ）の更新
+            updateForwardTimeControls(icon_start_x, icon_start_y, tm);
+        }
+
+        // 全てのコントロールを描画
+        void drawAllControls() {
+            int icon_start_x = pos_.x();
+            int icon_start_y = pos_.y();
+
+            // 再生コントロールの描画
+            drawPlaybackControlsOnly(icon_start_x, icon_start_y);
+            icon_start_y += arrow_icon_move_y;
+
+            // 時間移動（過去へ）の描画
+            drawBackwardTimeControlsOnly(icon_start_x, icon_start_y);
+            icon_start_y += icon_move_y;
+
+            // 時間移動（未来へ）の描画
+            drawForwardTimeControlsOnly(icon_start_x, icon_start_y);
+        }
+
+        // 再生コントロールの更新処理
+        void updatePlaybackControls(int start_x, int y, paxs::TouchStateManager& tm) {
+            int x = start_x;
+
+            // 逆再生ボタン
+            paxg::Vec2i pos1(paxg::Window::width() - x, y);
+            if (tm.get(paxg::Rect{ pos1, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+                koyomi_->move_forward_in_time = false;
+                koyomi_->go_back_in_time = true;
+            }
+            x -= arrow_icon_move_x;
+
+            // 停止ボタン
+            paxg::Vec2i pos2(paxg::Window::width() - x, y);
+            if (tm.get(paxg::Rect{ pos2, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+                koyomi_->move_forward_in_time = false;
+                koyomi_->go_back_in_time = false;
+            }
+            x -= arrow_icon_move_x;
+
+            // 再生ボタン
+            paxg::Vec2i pos3(paxg::Window::width() - x, y);
+            if (tm.get(paxg::Rect{ pos3, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+                koyomi_->move_forward_in_time = true;
+                koyomi_->go_back_in_time = false;
+            }
+        }
+
+        // 再生コントロールの描画のみ
+        void drawPlaybackControlsOnly(int start_x, int y) {
+            int x = start_x;
+
+            // 逆再生ボタン
+            paxg::Vec2i pos1(paxg::Window::width() - x, y);
+            texture_dictionary_->at(MurMur3::calcHash("texture_reverse_playback")).resizedDraw(arrow_time_icon_size, pos1);
+            x -= arrow_icon_move_x;
+
+            // 停止ボタン
+            paxg::Vec2i pos2(paxg::Window::width() - x, y);
+            texture_dictionary_->at(MurMur3::calcHash("texture_stop")).resizedDraw(arrow_time_icon_size, pos2);
+            x -= arrow_icon_move_x;
+
+            // 再生ボタン
+            paxg::Vec2i pos3(paxg::Window::width() - x, y);
+            texture_dictionary_->at(MurMur3::calcHash("texture_playback")).resizedDraw(arrow_time_icon_size, pos3);
+        }
+
+        // 過去への時間移動の更新処理
+        void updateBackwardTimeControls(int start_x, int y, paxs::TouchStateManager& tm) {
+            const struct { const char* key; double delta; } buttons[] = {
+                {"texture_d_l", -1},
+                {"texture_m_l", -(365.2422 / 12.0)},
+                {"texture_y_l", -365.2422},
+                {"texture_10y_l", -(365.2422 * 10)},
+                {"texture_c_l", -(365.2422 * 100)},
+                {"texture_10c_l", -(365.2422 * 1000)},
+                {"texture_100c_l", -(365.2422 * 10000)}
+            };
+
+            int x = start_x;
+            for (const auto& btn : buttons) {
+                paxg::Vec2i pos(paxg::Window::width() - x, y);
+                if (tm.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                    koyomi_->jdn.getDay() += btn.delta;
+                    koyomi_->calcDate();
+                }
+                x -= icon_move_x;
+            }
+        }
+
+        // 過去への時間移動の描画のみ
+        void drawBackwardTimeControlsOnly(int start_x, int y) {
+            const char* texture_keys[] = {
+                "texture_d_l", "texture_m_l", "texture_y_l", "texture_10y_l",
+                "texture_c_l", "texture_10c_l", "texture_100c_l"
+            };
+
+            int x = start_x;
+            for (const char* key : texture_keys) {
+                paxg::Vec2i pos(paxg::Window::width() - x, y);
+                texture_dictionary_->at(MurMur3::calcHash(key)).resizedDraw(time_icon_size, pos);
+                x -= icon_move_x;
+            }
+        }
+
+        // 未来への時間移動の更新処理
+        void updateForwardTimeControls(int start_x, int y, paxs::TouchStateManager& tm) {
+            const struct { const char* key; double delta; } buttons[] = {
+                {"texture_d_r", 1},
+                {"texture_m_r", (365.2422 / 12.0)},
+                {"texture_y_r", 365.2422},
+                {"texture_10y_r", (365.2422 * 10)},
+                {"texture_c_r", (365.2422 * 100)},
+                {"texture_10c_r", (365.2422 * 1000)},
+                {"texture_100c_r", (365.2422 * 10000)}
+            };
+
+            int x = start_x;
+            for (const auto& btn : buttons) {
+                paxg::Vec2i pos(paxg::Window::width() - x, y);
+                if (tm.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                    koyomi_->jdn.getDay() += btn.delta;
+                    koyomi_->calcDate();
+                }
+                x -= icon_move_x;
+            }
+        }
+
+        // 未来への時間移動の描画のみ
+        void drawForwardTimeControlsOnly(int start_x, int y) {
+            const char* texture_keys[] = {
+                "texture_d_r", "texture_m_r", "texture_y_r", "texture_10y_r",
+                "texture_c_r", "texture_10c_r", "texture_100c_r"
+            };
+
+            int x = start_x;
+            for (const char* key : texture_keys) {
+                paxg::Vec2i pos(paxg::Window::width() - x, y);
+                texture_dictionary_->at(MurMur3::calcHash(key)).resizedDraw(time_icon_size, pos);
+                x -= icon_move_x;
+            }
+        }
+
     private:
         // IUIWidget用の状態管理
         bool visible_ = true;
@@ -232,17 +389,8 @@ namespace paxs {
 
     public:
         // IUIWidget インターフェースの実装
-        void update(paxs::TouchStateManager& tm) override {
-            if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return;
-
-            // 元のupdate()ロジックを呼び出し
-            update(pos_.x(), pos_.y(), *texture_dictionary_, tm, *koyomi_);
-        }
-
-        void draw() override {
-            // TimeControlPanelは update() 内で描画も行うため、draw()は空実装
-            // 将来的には update() と draw() を分離することが望ましい
-        }
+        void update(paxs::TouchStateManager& tm) override;
+        void draw() override;
 
         paxg::Rect getRect() const override {
             return paxg::Rect{
@@ -272,6 +420,21 @@ namespace paxs {
             koyomi_ = &koyomi;
         }
     };
+
+    // IUIWidget メソッドの実装（クラス外定義）
+    inline void TimeControlPanel::update(paxs::TouchStateManager& tm) {
+        if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return;
+
+        // クリック判定などの更新処理
+        updateState(tm);
+    }
+
+    inline void TimeControlPanel::draw() {
+        if (!visible_ || !texture_dictionary_ || !koyomi_) return;
+
+        // 描画処理を実行
+        drawAllControls();
+    }
 
 } // namespace paxs
 

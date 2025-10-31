@@ -12,7 +12,6 @@
 #ifndef PAX_MAHOROBA_INIT_LOGO_HPP
 #define PAX_MAHOROBA_INIT_LOGO_HPP
 
-#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -52,12 +51,12 @@ namespace paxs {
 
             // アプリケーションアイコンを設定
 #ifdef PAXS_USING_SFML
-            paxg::Window::setIcon(paxs::AppConfig::getInstance()->getRootPath() + "Images/Logo/LogoRed.png");
+            paxg::Window::setIcon("Images/Logo/LogoRed.png");
 #endif
 #ifdef PAXS_USING_DXLIB
             DxLib::DxLib_Init();
             // DxLib は初期化後にアイコンを設定
-            paxg::Window::setIcon(paxs::AppConfig::getInstance()->getRootPath() + "Images/Logo/LogoRed.ico");
+            paxg::Window::setIcon("Images/Logo/LogoRed.ico");
 #endif // PAXS_USING_DXLIB
 
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)

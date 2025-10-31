@@ -13,6 +13,8 @@
 #define PAX_SAPIENTICA_APP_CONFIG_HPP
 
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 
 namespace paxs {
 
@@ -46,6 +48,8 @@ namespace paxs {
                 func_(
                     AppConfig::getInstance()->getRootPath()
                     + AppConfig::getInstance()->getDataSettings(key_));
+            } else {
+                PAXS_WARNING("Data settings for key " + std::to_string(key_) + " is missing.");
             }
         }
         template<typename Func_>
@@ -54,6 +58,8 @@ namespace paxs {
             if (AppConfig::getInstance()->isDataSettings(key_)) {
                 func_(
                     AppConfig::getInstance()->getDataSettings(key_));
+            } else {
+                PAXS_WARNING("Data settings for key " + std::to_string(key_) + " is missing.");
             }
         }
 

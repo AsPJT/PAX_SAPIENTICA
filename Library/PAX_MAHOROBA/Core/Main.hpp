@@ -25,11 +25,9 @@
 #endif
 
 #include <PAX_GRAPHICA/Vec2.hpp>
-
 #include <PAX_GRAPHICA/3DModel.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
-#include <PAX_GRAPHICA/ScopedRenderState.hpp>
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
