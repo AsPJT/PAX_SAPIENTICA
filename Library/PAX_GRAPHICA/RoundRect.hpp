@@ -75,12 +75,10 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
         int x0{}, y0{}, w0{}, h0{}, r0{};
         constexpr RoundRect() = default;
-        // [修正] コンストラクタを #else と同様に修正
         RoundRect(const int x, const int y, const int w, const int h) :
             x0(x), y0(y), w0(w), h0(h), r0(w / 5) {}
         RoundRect(const int x, const int y, const int w, const int h, const int r) :
             x0(x), y0(y), w0(w), h0(h), r0(r) {}
-        // [修正] 引数を Vec2i に (Siv3D, #else との互換性のため)
         RoundRect(const Vec2i& pos, const Vec2i& size)
             : x0(static_cast<int>(pos.x())), y0(static_cast<int>(pos.y())),
             w0(static_cast<int>(size.x())), h0(static_cast<int>(size.y())), r0(w0 / 5) {}
@@ -98,7 +96,6 @@ namespace paxg {
 
         // operator sf::RectangleShape() const { return rect; } // [削除] rect メンバはもうない
 
-        // [修正] セッター/ゲッターを #else と同様に修正
         void setX(const int x_) { x0 = x_; }
         void setY(const int y_) { y0 = y_; }
         void setW(const int w_) { w0 = w_; }
@@ -178,58 +175,74 @@ namespace paxg {
         }
 #endif
 
-        // [追加] SFML描画用のヘルパー関数
+        // SFML描画用のヘルパー関数
 #if defined(PAXS_USING_SFML)
     private:
-        void drawInternal(float x, float y, float w, float h, float r, const sf::Color& c) const {
-            // r が大きすぎる場合は補正
-            r = std::min(r, w / 2.0f);
-            r = std::min(r, h / 2.0f);
-            r = std::max(r, 0.0f); // r がマイナスにならないように
+        unsigned calcCornerPointCount(float r) const {
+            // r が小さいならそこまで分割しない。大きいなら増やす。
+            // 好きに調整してOK
+            if (r < 6.f)  return 4;   // ほぼ角の丸み分かる程度
+            if (r < 12.f) return 6;
+            if (r < 24.f) return 8;
+            if (r < 48.f) return 12;
+            return 16;                // ここから上はかなりなめらか
+        }
+        void drawInternal(float x, float y, float w, float h, float r, const sf::Color& c) const
+        {
+            r = std::min(r, w * 0.5f);
+            r = std::min(r, h * 0.5f);
 
-            // r が 0 なら通常の四角形を描画
-            if (r == 0.0f) {
-                sf::RectangleShape rect(sf::Vector2f(w, h));
-                rect.setPosition({ x, y });
+            if (r <= 0.f) {
+                sf::RectangleShape rect({w, h});
+                rect.setPosition({x, y});
                 rect.setFillColor(c);
                 Window::window().draw(rect);
                 return;
             }
 
-            // 2つの長方形（中央の十字）と4つの円（角）で角丸を表現
+            // 半径に応じて分割数を決める
+            const unsigned cornerPointCount = calcCornerPointCount(r);
+            const unsigned totalPoints = 4 * (cornerPointCount + 1);
 
-            // 1. 中央の水平な長方形
-            sf::RectangleShape rect_h(sf::Vector2f(w - 2.0f * r, h));
-            rect_h.setPosition({ x + r, y });
-            rect_h.setFillColor(c);
-            Window::window().draw(rect_h);
+            sf::ConvexShape shape;
+            shape.setPointCount(totalPoints);
+            shape.setFillColor(c);
 
-            // 2. 中央の垂直な長方形
-            sf::RectangleShape rect_v(sf::Vector2f(w, h - 2.0f * r));
-            rect_v.setPosition({ x, y + r });
-            rect_v.setFillColor(c);
-            Window::window().draw(rect_v);
+            const float left   = x;
+            const float top    = y;
+            const float right  = x + w;
+            const float bottom = y + h;
 
-            // 3. 四隅の円
-            sf::CircleShape corner(r);
-            corner.setFillColor(c);
+            const sf::Vector2f c_tl(left + r,  top + r);
+            const sf::Vector2f c_tr(right - r, top + r);
+            const sf::Vector2f c_br(right - r, bottom - r);
+            const sf::Vector2f c_bl(left + r,  bottom - r);
 
-            // 左上
-            corner.setPosition({ x, y });
-            Window::window().draw(corner);
+            auto putCorner = [&](unsigned startIndex,
+                                const sf::Vector2f& center,
+                                float startDeg)
+            {
+                for (unsigned i = 0; i <= cornerPointCount; ++i) {
+                    float ang = startDeg + 90.f * (static_cast<float>(i) / cornerPointCount);
+                    float rad = ang * 3.14159265358979323846f / 180.f;
+                    float px = center.x + std::cos(rad) * r;
+                    float py = center.y + std::sin(rad) * r;
+                    shape.setPoint(startIndex + i, {px, py});
+                }
+            };
 
-            // 右上
-            corner.setPosition({ x + w - 2.0f * r, y });
-            Window::window().draw(corner);
+            unsigned idx = 0;
+            putCorner(idx, c_tl, 180.f);
+            idx += cornerPointCount + 1;
+            putCorner(idx, c_tr, 270.f);
+            idx += cornerPointCount + 1;
+            putCorner(idx, c_br,   0.f);
+            idx += cornerPointCount + 1;
+            putCorner(idx, c_bl,  90.f);
 
-            // 左下
-            corner.setPosition({ x, y + h - 2.0f * r });
-            Window::window().draw(corner);
-
-            // 右下
-            corner.setPosition({ x + w - 2.0f * r, y + h - 2.0f * r });
-            Window::window().draw(corner);
+            Window::window().draw(shape);
         }
+
     public:
 #endif
 
@@ -243,7 +256,6 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
-            // [修正] ヘルパー関数を呼び出す
             drawInternal(static_cast<float>(x0), static_cast<float>(y0),
                 static_cast<float>(w0), static_cast<float>(h0),
                 static_cast<float>(r0), sf::Color::White);
@@ -262,7 +274,6 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_SFML)
         void draw(const paxg::Color& c_) const {
-            // [修正] ヘルパー関数を呼び出す
             drawInternal(static_cast<float>(x0), static_cast<float>(y0),
                 static_cast<float>(w0), static_cast<float>(h0),
                 static_cast<float>(r0), c_.color);
@@ -284,7 +295,6 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_SFML)
         const RoundRect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
-            // [修正] 角丸の影を描画するようにロジックを全体的に変更
             const float base_x = static_cast<float>(x0);
             const float base_y = static_cast<float>(y0);
             const float base_w = static_cast<float>(w0);
@@ -320,7 +330,7 @@ namespace paxg {
                 int alpha = 40 * (spread + blur_size - i + 1) / (spread + blur_size + 1);
                 DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
-                // [修正] DxLibの実装も影が広がるように修正 (Siv3D/SFMLの挙動に合わせる)
+                // DxLibの実装も影が広がるように
                 DxLib::DrawRoundRect(
                     static_cast<int>(x0 + offset.x() - i),
                     static_cast<int>(y0 + offset.y() - i),
@@ -351,7 +361,7 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
-            // [修正] (x0, y0) が中心になるように座標を計算してヘルパーを呼び出す
+            // (x0, y0) が中心になるように座標を計算してヘルパーを呼び出す
             drawInternal(static_cast<float>(x0) - static_cast<float>(w0) / 2.0f,
                 static_cast<float>(y0) - static_cast<float>(h0) / 2.0f,
                 static_cast<float>(w0), static_cast<float>(h0),
@@ -371,7 +381,7 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_SFML)
         void drawAt(const paxg::Color& c_) const {
-            // [修正] (x0, y0) が中心になるように座標を計算してヘルパーを呼び出す
+            // (x0, y0) が中心になるように座標を計算してヘルパーを呼び出す
             drawInternal(static_cast<float>(x0) - static_cast<float>(w0) / 2.0f,
                 static_cast<float>(y0) - static_cast<float>(h0) / 2.0f,
                 static_cast<float>(w0), static_cast<float>(h0),
@@ -408,7 +418,6 @@ namespace paxg {
         }
 #elif defined(PAXS_USING_SFML)
         void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& c_) const {
-            // [修正] rect.getSize(), rect.getPosition() を x0, y0, w0, h0 に置き換え
             const float x = static_cast<float>(x0);
             const float y = static_cast<float>(y0);
             const float w = static_cast<float>(w0);
@@ -467,7 +476,6 @@ namespace paxg {
             // 1 フレーム前にタッチされている
             if (paxg::Mouse::getInstance()->upLeft()) {
                 int mx = sf::Mouse::getPosition(Window::window()).x, my = sf::Mouse::getPosition(Window::window()).y;
-                // [修正] rect.getPosition(), rect.getSize() を x0, y0, w0, h0 に置き換え
                 return (mx >= x0 &&
                     my >= y0 &&
                     mx < x0 + w0 &&
