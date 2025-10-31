@@ -120,11 +120,6 @@ namespace paxs {
             return is_items.front();
         }
 
-        /// @brief 項目の状態を取得（キー指定、getIsItemsKeyエイリアス）
-        bool getIsItemsKey(const std::uint_least32_t key) const {
-            return getIsItems(key);
-        }
-
     protected:
         /// @brief ドロップダウンリストを描画（チェックマーク付き）
         void drawDropdownList() override {
