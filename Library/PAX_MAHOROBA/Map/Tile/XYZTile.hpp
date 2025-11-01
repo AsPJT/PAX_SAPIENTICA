@@ -48,8 +48,6 @@ namespace paxs {
     private:
         // XYZ タイルの 1 つのセルのメルカトル座標を保持
         // 基本的に Z = 19 は無い
-        using MapVec2 = Vector2<int>;
-        using MapVec2D = Vector2<double>;
 
         // XYZ タイルの画像の情報を保持
         paxs::UnorderedMap<std::uint_least64_t, paxg::Texture> texture_list{};
@@ -68,9 +66,9 @@ namespace paxs {
         double current_map_view_height = -1.0;
 
         // XYZ タイルの画面上の始点セル
-        MapVec2 start_cell{};
+        Vector2<int> start_cell{};
         // XYZ タイルの画面上の終点セル
-        MapVec2 end_cell{};
+        Vector2<int> end_cell{};
 
         // 99999999 の場合は固定なし
         int min_date = 99999999;
@@ -166,14 +164,14 @@ namespace paxs {
             // 画像を更新する必要があるか
             bool need_update = false;
 
-            const MapVec2 new_start_cell{
+            const Vector2<int> new_start_cell{
                 int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num + z_num) - static_cast<int>(z_num),
                 int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num + z_num) - static_cast<int>(z_num) };
             if (new_start_cell != start_cell) {
                 start_cell = new_start_cell;
                 need_update = true;
             }
-            const MapVec2 new_end_cell = MapVec2{
+            const Vector2<int> new_end_cell = Vector2<int>{
                 int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * z_num + z_num) - static_cast<int>(z_num),
                 int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * z_num + z_num) - static_cast<int>(z_num) };
             if (new_end_cell != end_cell) {
@@ -404,10 +402,10 @@ namespace paxs {
             }
         }
 
-        MapVec2 getStartCell()const {
+        Vector2<int> getStartCell()const {
             return start_cell;
         }
-        MapVec2 getEndCell()const {
+        Vector2<int> getEndCell()const {
             return end_cell;
         }
         unsigned int getDefaultZ()const {

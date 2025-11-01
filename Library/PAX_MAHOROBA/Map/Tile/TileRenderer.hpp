@@ -36,8 +36,6 @@ namespace paxs {
     /// @brief 地図タイルの描画処理を担当
     class TileRenderer {
     private:
-        using MapVec2 = Vector2<int>;
-        using MapVec2D = Vector2<double>;
 
     public:
         TileRenderer() = default;
@@ -109,8 +107,8 @@ namespace paxs {
 
             const unsigned int z = tile.getZ();
             const unsigned int z_num = tile.getZNum();
-            const MapVec2 start_cell = tile.getStartCell();
-            const MapVec2 end_cell = tile.getEndCell();
+            const Vector2<int> start_cell = tile.getStartCell();
+            const Vector2<int> end_cell = tile.getEndCell();
 
             paxg::Vec2f tile_size = paxg::Vec2f(
                 static_cast<float>((360.0 / z_num) / map_view_width * static_cast<double>(paxg::Window::width())),
@@ -121,7 +119,7 @@ namespace paxs {
                 for (int j = start_cell.x; j <= end_cell.x; ++j) {
                     const auto* texture = tile.getTextureAt(z, (i + z_num) & (z_num - 1), (j + z_num) & (z_num - 1));
                     if (texture) {
-                        const MapVec2D map_pos = MapVec2D{
+                        const Vector2<double> map_pos = Vector2<double>{
                             j * 360.0 / z_num - 180.0,
                             (360.0 - i * 360.0 / z_num) - 180.0
                         };
@@ -151,10 +149,10 @@ namespace paxs {
             if (magnification_z > tile.getDrawMaxZ()) return;
 
             const unsigned int z_num = tile.getZNum();
-            const MapVec2 start_cell = tile.getStartCell();
-            const MapVec2 end_cell = tile.getEndCell();
+            const Vector2<int> start_cell = tile.getStartCell();
+            const Vector2<int> end_cell = tile.getEndCell();
 
-            const MapVec2D map_start_pos = MapVec2D{
+            const Vector2<double> map_start_pos = Vector2<double>{
                 start_cell.x * 360.0 / z_num - 180.0,
                 (360.0 - start_cell.y * 360.0 / z_num) - 180.0
             };
@@ -194,14 +192,14 @@ namespace paxs {
 
             const unsigned int z = tile.getZ();
             const unsigned int z_num = tile.getZNum();
-            const MapVec2 start_cell = tile.getStartCell();
-            const MapVec2 end_cell = tile.getEndCell();
+            const Vector2<int> start_cell = tile.getStartCell();
+            const Vector2<int> end_cell = tile.getEndCell();
 
             for (int i = start_cell.y; i <= end_cell.y; ++i) {
                 const std::size_t i2 = (i + z_num) & (z_num - 1);
                 for (int j = start_cell.x; j <= end_cell.x; ++j) {
                     const std::size_t j2 = (j + z_num) & (z_num - 1);
-                    const MapVec2D map_pos = MapVec2D{
+                    const Vector2<double> map_pos = Vector2<double>{
                         j * 360.0 / z_num - 180.0,
                         (360.0 - i * 360.0 / z_num) - 180.0
                     };
