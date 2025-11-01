@@ -37,7 +37,7 @@ namespace paxs {
         int time_control_base_y;
         int time_control_height;
 
-        // デバッグ情報パネルの位置
+        // シミュレーション情報パネルの位置
         int next_rect_start_y;
         int next_rect_end_y;
 
@@ -68,8 +68,8 @@ namespace paxs {
             next_rect_end_y = 280;
         }
 
-        // デバッグ情報の開始Y座標を取得
-        int getDebugStartY() const {
+        // シミュレーション情報の開始Y座標を取得
+        int getSimulationStartY() const {
             return koyomi_font_y + next_rect_start_y + 10;
         }
     };

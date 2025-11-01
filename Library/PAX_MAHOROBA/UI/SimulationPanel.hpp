@@ -464,31 +464,15 @@ namespace paxs {
         void drawBackground() {
             if (bg_width_ <= 0 || bg_height_ <= 0) return;
 
-#ifdef PAXS_USING_SIV3D
-            // Siv3D: Use high-quality shadow renderer with Gaussian blur
-            if (shadow_texture_ && internal_texture_) {
-                paxs::ShadowRenderer::renderShadowWithPanels(
-                    *shadow_texture_,
-                    *internal_texture_,
-                    [this]() {
-                        // 影の形状を描画
-                        paxg::RoundRect{ bg_start_x_, bg_start_y_,
-                                        bg_width_, bg_height_, 10 }.draw();
-                    },
-                    [this]() {
-                        // パネル本体を描画
-                        paxg::RoundRect{ bg_start_x_, bg_start_y_,
-                                        bg_width_, bg_height_, 10 }
-                            .draw(paxg::Color{243, 243, 243});
-                    }
-                );
-            }
-#else
-            // SFML/DxLib: Use simple shadow with drawShadow method
-            paxg::RoundRect{ bg_start_x_, bg_start_y_,
-                            bg_width_, bg_height_, 10 }
-                .drawShadow({1, 1}, 4, 1).draw(paxg::Color{243, 243, 243});
-#endif
+            // PanelBackgroundを使用してバッチ描画に参加
+            background_.draw(
+                bg_start_x_,
+                bg_start_y_,
+                bg_width_,
+                bg_height_,
+                10,  // corner_radius
+                paxg::Color{243, 243, 243}  // bg_color
+            );
         }
 
         /// @brief Z拡大率を描画

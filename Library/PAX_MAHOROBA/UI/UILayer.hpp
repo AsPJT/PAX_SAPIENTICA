@@ -256,10 +256,10 @@ namespace paxs {
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 
             // SimulationPanelの背景を設定
-            int debug_start_y = ui_layout.getDebugStartY();
+            int simulation_start_y = ui_layout.getSimulationStartY();
             simulation_panel.setBackgroundRect(
                 ui_layout.rect_start_x,
-                debug_start_y - 15,
+                simulation_start_y - 15,
                 ui_layout.rect_len_x,
                 ui_layout.next_rect_end_y
             );
@@ -333,9 +333,9 @@ namespace paxs {
 
             // マップ情報とシミュレーション統計を描画
             if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))) {
-                int debug_start_y = ui_layout.getDebugStartY();
+                int simulation_start_y = ui_layout.getSimulationStartY();
                 debug_info_panel.renderMapAndSimulationInfo(
-                    map_viewport, debug_start_y, select_language, language_text, visible
+                    map_viewport, simulation_start_y, select_language, language_text, visible
 #ifdef PAXS_USING_SIMULATOR
                     , *cached_simulator_
 #endif
@@ -360,9 +360,9 @@ namespace paxs {
                 && (!cached_simulator_ || *cached_simulator_ == nullptr)
 #endif
                 ) {
-                int debug_start_y = ui_layout.getDebugStartY();
+                int simulation_start_y = ui_layout.getSimulationStartY();
                 debug_info_panel.renderArchaeologicalInfo(
-                    koyomi, ui_layout, debug_start_y, select_language, language_text
+                    koyomi, ui_layout, simulation_start_y, select_language, language_text
                 );
             }
 
