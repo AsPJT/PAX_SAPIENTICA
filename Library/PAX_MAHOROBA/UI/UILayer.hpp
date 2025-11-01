@@ -280,8 +280,13 @@ namespace paxs {
             simulation_bg_.setLayout(ui_layout.simulation_panel);
 
             settlement_status_bg_.setShadowTextures(shadow_texture, internal_texture);
-            // SettlementStatusPanelのレイアウトは動的（テキストサイズに依存）
-            // 後でコンテンツ側から設定
+            // SettlementStatusPanelのレイアウト（固定位置）
+            PanelLayout settlement_status_layout;
+            settlement_status_layout.x = 40;
+            settlement_status_layout.y = 80;
+            settlement_status_layout.width = 300;   // テキスト幅 + パディング
+            settlement_status_layout.height = 60;   // テキスト高さ + パディング
+            settlement_status_bg_.setLayout(settlement_status_layout);
 #endif
 #ifdef PAXS_USING_SIMULATOR
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
