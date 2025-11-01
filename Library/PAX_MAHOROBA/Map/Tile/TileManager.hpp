@@ -15,25 +15,23 @@
 #include <string>
 #include <vector>
 
-#include <PAX_GRAPHICA/Key.hpp>
-#include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
-
-#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/UI/MenuBar.hpp>
-#include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRepository.hpp>
-#include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>
+#include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 
-    class TileManager {
+    /// @brief タイル管理クラス
+    /// @brief Tile manager class
+    ///
+    /// IRenderable を継承し、レイヤーベースシステムに対応します。
+    /// Inherits IRenderable to support layer-based system.
+    class TileManager : public IRenderable {
     private:
         // 描画する XYZ タイルを管理
         std::vector<XYZTile> xyz_tile_list;
@@ -43,6 +41,14 @@ namespace paxs {
 
         // タイルデータ読み込みを担当
         TileRepository tile_repository_;
+
+        // 可視性管理
+        bool visible_ = true;
+
+        // 描画に必要なデータを保持（updateData()で更新、render()で使用）
+        const paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
+        MapViewport cached_map_viewport_;
+        cal::JDN_F64 cached_jdn_ = 0.0;
 
     public:
         // XYZ Tiles を追加（TileRepositoryに委譲）
@@ -56,24 +62,55 @@ namespace paxs {
             xyz_tile_list.emplace_back(tile_repository_.createGridLineTile());
         }
 
-        // 地図の辞書を更新
-        void update(const paxs::MenuBar& menu_bar, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
-
+        /// @brief データ更新（描画は行わない）
+        /// @brief Update data (no drawing)
+        void updateData(const paxs::FeatureVisibilityManager& visible, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
             const double map_viewport_width = map_viewport.getWidth();
             const double map_viewport_height = map_viewport.getHeight();
             const double map_viewport_center_x = map_viewport.getCenterX();
             const double map_viewport_center_y = map_viewport.getCenterY();
 
             // 更新処理
-            const auto* map_menu = menu_bar.cgetMenuItem(MurMur3::calcHash("map"));
             for (auto&& xyzi : xyz_tile_list) {
-                if (xyzi.getMenuBarMap() != 0 && map_menu && map_menu->getIsItemsKey(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
+                if (xyzi.getMenuBarMap() != 0 && visible.isVisible(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
                 xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
             }
 
-            // 描画処理（TileRendererに委譲）
+            // 描画用にデータをキャッシュ
+            cached_visible_ = &visible;
+            cached_map_viewport_ = map_viewport;
+            cached_jdn_ = jdn;
+        }
+
+        // IRenderable の実装
+        // IRenderable implementation
+
+        /// @brief レンダリング処理
+        /// @brief Render
+        void render() override {
+            if (!visible_ || cached_visible_ == nullptr) return;
+
+            // 描画処理
             tile_renderer_.drawBackground();
-            tile_renderer_.drawTiles(xyz_tile_list, menu_bar, map_viewport, jdn);
+            tile_renderer_.drawTiles(xyz_tile_list, *cached_visible_, cached_map_viewport_, cached_jdn_);
+        }
+
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        RenderLayer getLayer() const override {
+            return RenderLayer::MapBase;
+        }
+
+        /// @brief 可視性を取得
+        /// @brief Get visibility
+        bool isVisible() const override {
+            return visible_;
+        }
+
+        /// @brief 可視性を設定
+        /// @brief Set visibility
+        void setVisible(bool visible) override {
+            visible_ = visible;
         }
     };
 }

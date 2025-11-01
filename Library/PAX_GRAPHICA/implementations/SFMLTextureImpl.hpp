@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -15,12 +15,14 @@
 #if defined(PAXS_USING_SFML)
 
 #include <SFML/Graphics.hpp>
-
 #include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/TextureImpl.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+
+#include <algorithm> // std::min を使用するために追加
+#include <cmath>     // std::min がfloatで曖昧な場合のため (fminでも可)
+
 namespace paxg {
 
     class SFMLTextureImpl : public TextureImpl {
@@ -69,78 +71,107 @@ namespace paxg {
 
         void drawAt(const Vec2f& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setPosition({pos.x() - (width() / 2.0f), pos.y() - (height() / 2.0f)});
+            sprite.setPosition({ pos.x() - (width() / 2.0f), pos.y() - (height() / 2.0f) });
             paxg::Window::window().draw(sprite);
         }
 
         void drawAt(const Vec2i& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setPosition({static_cast<float>(pos.x() - (width() / 2)),
-                              static_cast<float>(pos.y() - (height() / 2))});
+            sprite.setPosition({ static_cast<float>(pos.x() - (width() / 2)),
+                                static_cast<float>(pos.y() - (height() / 2)) });
             paxg::Window::window().draw(sprite);
         }
 
         void resizedDrawAt(const Vec2i& resize, const Vec2i& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setScale({static_cast<float>(resize.x()) / texture.getSize().x,
-                           static_cast<float>(resize.y()) / texture.getSize().y});
-            sprite.setPosition({static_cast<float>(pos.x() - (resize.x() / 2)),
-                              static_cast<float>(pos.y() - (resize.y() / 2))});
+            sprite.setScale({ static_cast<float>(resize.x()) / texture.getSize().x,
+                             static_cast<float>(resize.y()) / texture.getSize().y });
+            sprite.setPosition({ static_cast<float>(pos.x() - (resize.x() / 2)),
+                                static_cast<float>(pos.y() - (resize.y() / 2)) });
             paxg::Window::window().draw(sprite);
         }
 
         void resizedDrawAt(int resize, const Vec2i& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
-                           static_cast<float>(resize) / texture.getSize().y});
-            sprite.setPosition({static_cast<float>(pos.x() - (resize / 2)),
-                              static_cast<float>(pos.y() - (resize / 2))});
+
+            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
+            float scale_x = static_cast<float>(resize) / texture.getSize().x;
+            float scale_y = static_cast<float>(resize) / texture.getSize().y;
+            float scale = std::min(scale_x, scale_y);
+            sprite.setScale({ scale, scale });
+
+            // スケーリング後の実際の幅と高さでセンタリングする
+            float new_width = static_cast<float>(width()) * scale;
+            float new_height = static_cast<float>(height()) * scale;
+
+            sprite.setPosition({ static_cast<float>(pos.x()) - (new_width / 2.0f),
+                                static_cast<float>(pos.y()) - (new_height / 2.0f) });
             paxg::Window::window().draw(sprite);
         }
 
         void resizedDrawAt(const Vec2f& resize, const Vec2f& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setScale({resize.x() / texture.getSize().x, resize.y() / texture.getSize().y});
-            sprite.setPosition({pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2)});
+            sprite.setScale({ resize.x() / texture.getSize().x, resize.y() / texture.getSize().y });
+            sprite.setPosition({ pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2) });
             paxg::Window::window().draw(sprite);
         }
 
         void resizedDrawAt(int resize, const Vec2f& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
-                           static_cast<float>(resize) / texture.getSize().y});
-            sprite.setPosition({pos.x() - (resize / 2.0f), pos.y() - (resize / 2.0f)});
+
+            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
+            float scale_x = static_cast<float>(resize) / texture.getSize().x;
+            float scale_y = static_cast<float>(resize) / texture.getSize().y;
+            float scale = std::min(scale_x, scale_y);
+            sprite.setScale({ scale, scale });
+
+            // スケーリング後の実際の幅と高さでセンタリングする
+            float new_width = static_cast<float>(width()) * scale;
+            float new_height = static_cast<float>(height()) * scale;
+
+            sprite.setPosition({ pos.x() - (new_width / 2.0f),
+                                pos.y() - (new_height / 2.0f) });
             paxg::Window::window().draw(sprite);
         }
 
         void resizedDraw(const Vec2i& resize, const Vec2i& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setScale({static_cast<float>(resize.x()) / texture.getSize().x,
-                           static_cast<float>(resize.y()) / texture.getSize().y});
-            sprite.setPosition({static_cast<float>(pos.x()), static_cast<float>(pos.y())});
+            sprite.setScale({ static_cast<float>(resize.x()) / texture.getSize().x,
+                             static_cast<float>(resize.y()) / texture.getSize().y });
+            sprite.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y()) });
             paxg::Window::window().draw(sprite);
         }
 
         void resizedDraw(int resize, const Vec2i& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
-                           static_cast<float>(resize) / texture.getSize().y});
-            sprite.setPosition({static_cast<float>(pos.x()), static_cast<float>(pos.y())});
+
+            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
+            float scale_x = static_cast<float>(resize) / texture.getSize().x;
+            float scale_y = static_cast<float>(resize) / texture.getSize().y;
+            float scale = std::min(scale_x, scale_y);
+            sprite.setScale({ scale, scale });
+
+            sprite.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y()) });
             paxg::Window::window().draw(sprite);
         }
 
         void resizedDraw(const Vec2f& resize, const Vec2f& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setScale({resize.x() / texture.getSize().x, resize.y() / texture.getSize().y});
-            sprite.setPosition({pos.x(), pos.y()});
+            sprite.setScale({ resize.x() / texture.getSize().x, resize.y() / texture.getSize().y });
+            sprite.setPosition({ pos.x(), pos.y() });
             paxg::Window::window().draw(sprite);
         }
 
         void resizedDraw(int resize, const Vec2f& pos) const override {
             sf::Sprite sprite(texture);
-            sprite.setScale({static_cast<float>(resize) / texture.getSize().x,
-                           static_cast<float>(resize) / texture.getSize().y});
-            sprite.setPosition({pos.x(), pos.y()});
+
+            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
+            float scale_x = static_cast<float>(resize) / texture.getSize().x;
+            float scale_y = static_cast<float>(resize) / texture.getSize().y;
+            float scale = std::min(scale_x, scale_y);
+            sprite.setScale({ scale, scale });
+
+            sprite.setPosition({ pos.x(), pos.y() });
             paxg::Window::window().draw(sprite);
         }
 

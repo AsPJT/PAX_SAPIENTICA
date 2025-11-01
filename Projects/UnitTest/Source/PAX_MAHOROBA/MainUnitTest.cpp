@@ -65,7 +65,7 @@ TEST(MainTest, RequiredHeadersIncluded) {
 	// FeatureVisibilityManagerが使用可能か確認
 	FeatureVisibilityManager visible;
 	visible.emplace(MurMur3::calcHash("Test"), true);
-	EXPECT_TRUE(visible[MurMur3::calcHash("Test")]);
+	EXPECT_TRUE(visible.isVisible(MurMur3::calcHash("Test")));
 }
 
 // Main.hppで初期化される可視化設定のテスト（startMain関数内の初期化ロジック）
@@ -78,10 +78,10 @@ TEST(MainTest, VisibilityInitialization) {
 	visible.emplace(MurMur3::calcHash("3D"), false);
 
 	// 初期状態の確認
-	EXPECT_TRUE(visible[MurMur3::calcHash("Calendar")]);
-	EXPECT_TRUE(visible[MurMur3::calcHash("Map")]);
-	EXPECT_TRUE(visible[MurMur3::calcHash("UI")]);
-	EXPECT_FALSE(visible[MurMur3::calcHash("3D")]);
+	EXPECT_TRUE(visible.isVisible(MurMur3::calcHash("Calendar")));
+	EXPECT_TRUE(visible.isVisible(MurMur3::calcHash("Map")));
+	EXPECT_TRUE(visible.isVisible(MurMur3::calcHash("UI")));
+	EXPECT_FALSE(visible.isVisible(MurMur3::calcHash("3D")));
 }
 
 // Main.hppで使用されるハッシュキーの整合性テスト
@@ -104,11 +104,11 @@ TEST(MainTest, ViewMenuKeys) {
 
 	for (const auto& key : view_keys) {
 		const std::uint_least32_t hash = MurMur3::calcHash(key.c_str());
-		visible.set(hash, true);
-		EXPECT_TRUE(visible[hash]) << "Failed for key: " << key;
+		visible.setVisibility(hash, true);
+		EXPECT_TRUE(visible.isVisible(hash)) << "Failed for key: " << key;
 
-		visible.set(hash, false);
-		EXPECT_FALSE(visible[hash]) << "Failed for key: " << key;
+		visible.setVisibility(hash, false);
+		EXPECT_FALSE(visible.isVisible(hash)) << "Failed for key: " << key;
 	}
 }
 
@@ -125,11 +125,11 @@ TEST(MainTest, PlaceNamesMenuKeys) {
 
 	for (const auto& key : place_names_keys) {
 		const std::uint_least32_t hash = MurMur3::calcHash(key.c_str());
-		visible.set(hash, true);
-		EXPECT_TRUE(visible[hash]) << "Failed for key: " << key;
+		visible.setVisibility(hash, true);
+		EXPECT_TRUE(visible.isVisible(hash)) << "Failed for key: " << key;
 
-		visible.set(hash, false);
-		EXPECT_FALSE(visible[hash]) << "Failed for key: " << key;
+		visible.setVisibility(hash, false);
+		EXPECT_FALSE(visible.isVisible(hash)) << "Failed for key: " << key;
 	}
 }
 

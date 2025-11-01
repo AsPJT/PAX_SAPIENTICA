@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -18,6 +18,7 @@
 
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
+#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 
@@ -25,8 +26,10 @@ namespace paxs {
 
     // 文字表示（フォント描画）のみを担当するクラス
     class FontManager {
-    public:
-        LanguageFonts language_fonts;
+    private:
+        LanguageFonts language_fonts_;
+        paxg::Font pin_font_{};
+        paxg::Font en_font_{};
 
         static constexpr std::array path_list = {
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
@@ -53,39 +56,55 @@ namespace paxs {
             "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"
         };
 
-        paxg::Font pin_font{};
-        paxg::Font en_font{};
-
-        void init(const SelectLanguage& select_language, int pulldown_font_size, int pulldown_font_buffer_thickness_size) {
-            language_fonts.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
-            setLanguageFont(pulldown_font_size, pulldown_font_buffer_thickness_size);
-
-            pin_font = paxg::Font{ 14, "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", 2 };
-            en_font = paxg::Font{ 20, "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", 2 };
-        }
-
-        // 言語ごとのフォントを取得・追加
-        paxg::Font* getFont(std::uint_least32_t language_key, std::uint_least8_t font_size, std::uint_least8_t buffer_thickness) {
-            return language_fonts.getAndAdd(language_key, font_size, buffer_thickness);
-        }
-
-        // LanguageFontsへの直接アクセス
-        LanguageFonts& getLanguageFonts() {
-            return language_fonts;
-        }
-
-    private:
         void setLanguageFont(
             const int font_size_,
             const int buffer_thickness) {
             for (std::size_t i = 0; i < path_list.size(); ++i) {
-                language_fonts.add(
+                language_fonts_.add(
                     path_list[i],
                     paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i],
                     static_cast<std::uint_least8_t>(font_size_),
                     static_cast<std::uint_least8_t>(buffer_thickness)
                 );
             }
+        }
+
+    public:
+        void init(const SelectLanguage& select_language) {
+            language_fonts_.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
+            setLanguageFont(FontConfig::PULLDOWN_FONT_SIZE, FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
+
+            pin_font_ = paxg::Font{ 14, "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", 2 };
+            en_font_ = paxg::Font{ 20, "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", 2 };
+        }
+
+        // LanguageFontsへのアクセス
+        LanguageFonts& getLanguageFonts() {
+            return language_fonts_;
+        }
+
+        // 言語ごとのフォントを取得・追加
+        paxg::Font* getFont(std::uint_least32_t language_key, std::uint_least8_t font_size, std::uint_least8_t buffer_thickness) {
+            return language_fonts_.getAndAdd(language_key, font_size, buffer_thickness);
+        }
+
+        // メインフォントを取得（カレンダー・地名・人名描画用）
+        paxg::Font* getMainFont(const SelectLanguage& select_language) {
+            return language_fonts_.getAndAdd(
+                select_language.cgetKey(),
+                FontConfig::KOYOMI_FONT_SIZE,
+                FontConfig::KOYOMI_FONT_BUFFER_THICKNESS
+            );
+        }
+
+        // ピンインフォントを取得
+        paxg::Font& getPinFont() {
+            return pin_font_;
+        }
+
+        // 英語フォントを取得
+        paxg::Font& getEnFont() {
+            return en_font_;
         }
     };
 

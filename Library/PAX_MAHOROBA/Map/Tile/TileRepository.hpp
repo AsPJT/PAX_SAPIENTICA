@@ -15,12 +15,10 @@
 #include <string>
 #include <vector>
 
-#include <PAX_MAHOROBA/Map/Tile/XYZTiles.hpp>
+#include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {

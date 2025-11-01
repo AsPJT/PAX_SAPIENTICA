@@ -17,16 +17,20 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
+#include <PAX_GRAPHICA/RenderTexture.hpp>
+#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/UI/Calendar/CalendarUILayout.hpp>
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
@@ -38,7 +42,7 @@
 namespace paxs {
 
     // デバッグ情報パネルを表示するクラス
-    class DebugInfoPanel : public IUIWidget {
+    class DebugInfoPanel : public IWidget {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
@@ -46,17 +50,19 @@ namespace paxs {
             visible_ = true;
         }
 
-        // IUIWidget インターフェースの実装（コンポーネント情報）
+        // IWidget インターフェースの実装（コンポーネント情報）
         const char* getName() const override {
             return "DebugInfoPanel";
         }
 
+        /// @brief レンダリングレイヤーを取得（デバッグ情報は最前面）
+        /// @brief Get rendering layer (debug info is front-most)
+        RenderLayer getLayer() const override {
+            return RenderLayer::Debug;
+        }
+
         bool isAvailable() const override {
-#ifdef PAXS_USING_SIMULATOR
             return true;
-#else
-            return true; // デバッグ情報は常に利用可能
-#endif
         }
 
         // setEnabled/isEnabledは下部で実装済み
@@ -69,8 +75,6 @@ namespace paxs {
         void renderMapAndSimulationInfo(
             MapViewport& map_viewport,
             int debug_start_y,
-            int koyomi_font_size,
-            int koyomi_font_buffer_thickness_size,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
             const paxs::FeatureVisibilityManager& visible
@@ -81,7 +85,7 @@ namespace paxs {
             if (!visible_ || language_fonts_ == nullptr) return;
 
             // 暦描画フォントを指定
-            paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+            paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
             if (one_font == nullptr) return;
 
             // マップの拡大率
@@ -98,7 +102,7 @@ namespace paxs {
 #else
             {
 #endif
-                if (visible[MurMur3::calcHash(8, "Simulation")]) {
+                if (visible.isVisible(MurMur3::calcHash(8, "Simulation"))) {
                     (*one_font).drawTopRight(std::to_string(map_viewport.getCenterX()),
                         paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
                     (*one_font).drawTopRight(std::to_string(map_viewport.getCenterY()),
@@ -169,17 +173,15 @@ namespace paxs {
         // 考古学的遺物の型式情報を描画
         void renderArchaeologicalInfo(
             const paxs::Koyomi& koyomi,
-            const paxs::CalendarUILayout& ui_layout,
+            const paxs::UILayout& ui_layout,
             int debug_start_y,
-            int koyomi_font_size,
-            int koyomi_font_buffer_thickness_size,
             const SelectLanguage& select_language,
             const paxs::Language& language_text
         ) {
             if (!visible_ || language_fonts_ == nullptr) return;
 
             // 暦描画フォントを指定
-            paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(koyomi_font_size), static_cast<std::uint_least8_t>(koyomi_font_buffer_thickness_size));
+            paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
             if (one_font == nullptr) return;
 
             std::string dotaku = "";
@@ -295,21 +297,24 @@ namespace paxs {
 
     private:
         paxs::LanguageFonts* language_fonts_ = nullptr;
+
         bool visible_ = true;
         bool enabled_ = true;
         paxg::Vec2i pos_{0, 0};
 
     public:
-        // IUIWidget インターフェースの実装
-        void update(paxs::InputStateManager& input_state_manager) override {
-            // DebugInfoPanelは入力処理を行わないため、空実装
-            (void)input_state_manager;
+        // IWidget インターフェースの実装
+        bool handleInput(const InputEvent& event) override {
+            // DebugInfoPanelは入力処理を行わない
+            (void)event;
+            return false;
         }
 
-        void draw() override {
-            // DebugInfoPanelは2つのrenderメソッドがあるため、
+        void render() override {
+            if (!visible_) return;
+
+            // DebugInfoPanelのコンテンツは2つのrenderメソッドがあるため、
             // UIManagerから直接render呼び出しを継続
-            // draw()は空実装（将来的な統合のためのプレースホルダー）
         }
 
         paxg::Rect getRect() const override {

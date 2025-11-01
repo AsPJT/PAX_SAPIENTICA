@@ -62,6 +62,13 @@ namespace paxg {
         bool getLeft() const {
             return left;
         }
+        bool getRight() const {
+            return right;
+        }
+        bool getMiddle() const {
+            return middle;
+        }
+
         // 離した瞬間
         bool upLeft() const {
             return (left_before_1frame && !left);
@@ -85,17 +92,24 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             wheel_rot_vol = static_cast<int>(s3d::Mouse::Wheel());
             left = s3d::MouseL.pressed();
+            right = s3d::MouseR.pressed();
+            middle = s3d::MouseM.pressed();
             pos_x = s3d::Cursor::Pos().x;
             pos_y = s3d::Cursor::Pos().y;
 #elif defined(PAXS_USING_DXLIB)
             wheel_rot_vol = DxLib::GetMouseWheelRotVol();
-            left = ((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) != 0);
+            int mouse_input = DxLib::GetMouseInput();
+            left = ((mouse_input & MOUSE_INPUT_LEFT) != 0);
+            right = ((mouse_input & MOUSE_INPUT_RIGHT) != 0);
+            middle = ((mouse_input & MOUSE_INPUT_MIDDLE) != 0);
             if (DxLib::GetMousePoint(&pos_x, &pos_y) == -1) {
                 pos_x = pos_y = 0;
             }
 #elif defined(PAXS_USING_SFML)
             wheel_rot_vol = static_cast<int>(paxg::SFML_Event::getInstance()->wheel_delta);
             left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
+            right = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right);
+            middle = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle);
             auto mouse_pos = sf::Mouse::getPosition(Window::window());
             pos_x = mouse_pos.x;
             pos_y = mouse_pos.y;
@@ -131,8 +145,8 @@ namespace paxg {
         bool left_before_1frame = false; // 1 フレーム前の左クリック判定
 
         bool left = false;
-        //bool right = false; // 未使用
-        //bool middle = false; // 未使用
+        bool right = false;
+        bool middle = false;
 
         int wheel_rot_vol = 0;
 

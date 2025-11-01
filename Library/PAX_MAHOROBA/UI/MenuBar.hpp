@@ -14,7 +14,7 @@
 
 #include <vector>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuItem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
@@ -25,7 +25,7 @@ namespace paxs {
     /// @brief Manages menu bar
     /// @details MenuItem（固定ヘッダー型のドロップダウン）を複数保持し、
     ///          メニューバーとしての振る舞いを提供
-    class MenuBar : public IUIWidget {
+    class MenuBar : public IWidget {
     public:
 
         /// @brief メニュー項目を追加
@@ -59,7 +59,10 @@ namespace paxs {
                 paxg::Vec2i{ static_cast<int>(start_x), 0 }));
         }
 
-        void update(paxs::InputStateManager& input_state_manager) override {
+        bool handleInput(const InputEvent& event) override {
+            if (!visible_ || !enabled_) return false;
+            if (event.input_state_manager == nullptr) return false;
+
             start_x = 0;
 
             // 更新前の開閉状態を記録
@@ -69,16 +72,17 @@ namespace paxs {
                 was_open.push_back(item.isOpen());
             }
 
+            bool handled = false;
             // 各メニュー項目を更新
             for (std::size_t i = 0; i < menu_items.size(); ++i) {
-                if (visible_ && enabled_) {
-                    menu_items[i].update(input_state_manager);
+                if (menu_items[i].handleInput(event)) {
+                    handled = true;
                 }
                 menu_items[i].setRectX(start_x);
                 start_x += static_cast<std::size_t>(menu_items[i].getRect().w());
 
                 // このメニュー項目が新しく開かれた場合、他のメニュー項目を閉じる
-                if (visible_ && enabled_ && !was_open[i] && menu_items[i].isOpen()) {
+                if (!was_open[i] && menu_items[i].isOpen()) {
                     for (std::size_t j = 0; j < menu_items.size(); ++j) {
                         if (j != i && menu_items[j].isOpen()) {
                             menu_items[j].close();
@@ -86,11 +90,12 @@ namespace paxs {
                     }
                 }
             }
+            return handled;
         }
-        void draw() override {
+        void render() override {
             if (!visible_) return;
             for (auto& item : menu_items) {
-                item.draw();
+                item.render();
             }
         }
 
@@ -114,12 +119,12 @@ namespace paxs {
 
         std::size_t start_x = 0;
 
-        // IUIWidget インターフェース用の状態
+        // IWidget インターフェース用の状態
         bool visible_ = true;
         bool enabled_ = true;
 
     public:
-        // IUIWidget インターフェースの実装
+        // IWidget インターフェースの実装
         void setPos(const paxg::Vec2i& pos) override {
             // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
             // 必要に応じて各Pulldownの位置を調整することは可能
@@ -140,6 +145,12 @@ namespace paxs {
         bool isEnabled() const override { return enabled_; }
 
         const char* getName() const override { return "MenuBar"; }
+
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        RenderLayer getLayer() const override {
+            return RenderLayer::UIContent;
+        }
         bool isAvailable() const override { return true; }
     };
 } // namespace paxs

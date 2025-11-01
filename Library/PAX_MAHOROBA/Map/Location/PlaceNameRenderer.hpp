@@ -19,9 +19,8 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Map/Location/LocationPoint.hpp>
-
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
@@ -62,7 +61,7 @@ namespace paxs {
 				if (lll.min_year > jdn) continue;
 				if (lll.max_year < jdn) continue;
 
-				if (!visible[lll.lpe]) continue;
+				if (!visible.isVisible(lll.lpe)) continue;
 
 				// 地名を描画
 				for (std::size_t i = 0; i < location_point_list.size(); ++i) {
@@ -219,7 +218,7 @@ namespace paxs {
 				// 名前を描画
 				if (lli.place_name.find(first_language) != lli.place_name.end()) {
 					font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
-					font.drawAt(lli.place_name.at(first_language), draw_pos, paxg::Color(90, 90, 90));
+					font.drawAt(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
 				}
 			}
 			// 日本語名がない場合
@@ -227,18 +226,18 @@ namespace paxs {
 				// 名前を描画
 				if (lli.place_name.find(second_language) != lli.place_name.end()) {
 					en_font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
-					en_font.drawAt(lli.place_name.at(second_language), draw_pos, paxg::Color(90, 90, 90));
+					en_font.drawAt(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
 				}
 			}
 			// 英語名がある場合
 			else {
 				// 名前（英語）を描画
 				en_font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
-				en_font.drawBottomCenter(lli.place_name.at(second_language), draw_pos, paxg::Color(90, 90, 90));
+				en_font.drawBottomCenter(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
 				// 名前を描画
 				if (lli.place_name.find(first_language) != lli.place_name.end()) {
 					font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
-					font.drawTopCenter(lli.place_name.at(first_language), draw_pos, paxg::Color(90, 90, 90));
+					font.drawTopCenter(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
 				}
 			}
 		}

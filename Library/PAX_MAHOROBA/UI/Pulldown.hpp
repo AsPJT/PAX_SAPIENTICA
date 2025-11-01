@@ -21,7 +21,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Core/Init.hpp>
 
@@ -49,7 +49,7 @@ namespace paxs {
     /// @details 2つのモードで動作:
     ///          - SelectedValue: 選択した値がヘッダーに表示される（言語選択など）
     ///          - FixedHeader: 固定のヘッダー名が表示される（メニューバーなど）
-    class Pulldown : public IUIWidget {
+    class Pulldown : public IWidget {
     public:
         Pulldown() = default;
         // X を指定したサイズに変更
@@ -166,13 +166,16 @@ namespace paxs {
             return items_key.empty();
         }
 
-        // 更新処理
-        void update(paxs::InputStateManager& input_state_manager) override {
-            if (isEmpty()) return;
-            if (language_ptr == nullptr) return; // 言語がない場合は処理をしない
-            if (select_language_ptr == nullptr) return; // 選択されている言語がない場合は処理をしない
-            if (font == nullptr) return;
-            if (!visible_ || !enabled_) return; // 非表示または無効の場合は処理をしない
+        // 入力処理
+        bool handleInput(const InputEvent& event) override {
+            if (isEmpty()) return false;
+            if (language_ptr == nullptr) return false; // 言語がない場合は処理をしない
+            if (select_language_ptr == nullptr) return false; // 選択されている言語がない場合は処理をしない
+            if (font == nullptr) return false;
+            if (!visible_ || !enabled_) return false; // 非表示または無効の場合は処理をしない
+            if (event.input_state_manager == nullptr) return false;
+            paxs::InputStateManager& input_state_manager = *event.input_state_manager;
+
             // 言語が変わっていたら更新処理
             if (old_language_key != (*select_language_ptr).cgetKey()) {
                 language_index = (*select_language_ptr).cget();
@@ -184,6 +187,7 @@ namespace paxs {
                 rect.leftClicked()
             )) {
                 is_open = (not is_open);
+                return true;
             }
             paxg::Vec2i pos = paxg::Vec2i(
                 static_cast<int>(rect.pos().x()),
@@ -200,15 +204,16 @@ namespace paxs {
                             index = i;
                             is_items[i] = !(is_items[i]);
                             is_open = false;
-                            break;
+                            return true;
                         }
                     }
                     pos.setY(static_cast<int>(pos.y() + rect.h()));
                 }
             }
+            return false;
         }
         // 描画
-        void draw() override {
+        void render() override {
             if (isEmpty()) {
                 return;
             }
@@ -340,7 +345,7 @@ namespace paxs {
         bool isOpen() const { return is_open; }
         void close() { is_open = false; }
 
-        // IUIWidget インターフェースの実装
+        // IWidget インターフェースの実装
         void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
         paxg::Rect getRect() const override { return rect; }
 
@@ -351,6 +356,13 @@ namespace paxs {
         bool isEnabled() const override { return enabled_; }
 
         const char* getName() const override { return "Pulldown"; }
+
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        RenderLayer getLayer() const override {
+            return is_open ? RenderLayer::UIOverlay : RenderLayer::UIContent;
+        }
+
         bool isAvailable() const override { return true; }
 
     private:
@@ -376,7 +388,7 @@ namespace paxs {
         int down_button_size = 20;
         bool is_open = false;
 
-        // IUIWidget インターフェース用の状態
+        // IWidget インターフェース用の状態
         bool visible_ = true;
         bool enabled_ = true;
     };

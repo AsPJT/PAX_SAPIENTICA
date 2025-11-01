@@ -178,6 +178,64 @@ namespace paxs {
         bool isPressed() const {
             return key.pressed();
         }
+
+        /// @brief 修飾キー（Shift）が押されているかチェック
+        /// @brief Check if Shift modifier key is pressed
+        static bool isShiftPressed() {
+#if defined(PAXS_USING_SIV3D)
+            return s3d::KeyShift.pressed();
+#elif defined(PAXS_USING_DXLIB)
+            return (DxLib::CheckHitKey(KEY_INPUT_LSHIFT) == 1 || DxLib::CheckHitKey(KEY_INPUT_RSHIFT) == 1);
+#elif defined(PAXS_USING_SFML)
+            return (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RShift));
+#else
+            return false;
+#endif
+        }
+
+        /// @brief 修飾キー（Ctrl）が押されているかチェック
+        /// @brief Check if Ctrl modifier key is pressed
+        static bool isCtrlPressed() {
+#if defined(PAXS_USING_SIV3D)
+            return s3d::KeyControl.pressed();
+#elif defined(PAXS_USING_DXLIB)
+            return (DxLib::CheckHitKey(KEY_INPUT_LCONTROL) == 1 || DxLib::CheckHitKey(KEY_INPUT_RCONTROL) == 1);
+#elif defined(PAXS_USING_SFML)
+            return (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RControl));
+#else
+            return false;
+#endif
+        }
+
+        /// @brief 修飾キー（Alt）が押されているかチェック
+        /// @brief Check if Alt modifier key is pressed
+        static bool isAltPressed() {
+#if defined(PAXS_USING_SIV3D)
+            return s3d::KeyAlt.pressed();
+#elif defined(PAXS_USING_DXLIB)
+            return (DxLib::CheckHitKey(KEY_INPUT_LALT) == 1 || DxLib::CheckHitKey(KEY_INPUT_RALT) == 1);
+#elif defined(PAXS_USING_SFML)
+            return (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LAlt) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RAlt));
+#else
+            return false;
+#endif
+        }
+
+        /// @brief 修飾キー（Command/Super、macOS用）が押されているかチェック
+        /// @brief Check if Command/Super modifier key is pressed (for macOS)
+        static bool isCommandPressed() {
+#if defined(PAXS_USING_SIV3D)
+            return s3d::KeyCommand.pressed();
+#elif defined(PAXS_USING_DXLIB)
+            // DxLib does not support Command key
+            return false;
+#elif defined(PAXS_USING_SFML)
+            return (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LSystem) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::RSystem));
+#else
+            return false;
+#endif
+        }
+
     private:
         InputKey key{};
     };

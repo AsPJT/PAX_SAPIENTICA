@@ -16,25 +16,25 @@
 TEST (FeatureVisibilityManagerUnitTest, emplace) {
     paxs::FeatureVisibilityManager fvm;
     fvm.emplace(0, true);
-    ASSERT_TRUE(fvm[0]);
+    ASSERT_TRUE(fvm.isVisible(0));
 }
 
 TEST (FeatureVisibilityManagerUnitTest, toggle) {
     paxs::FeatureVisibilityManager fvm;
     fvm.emplace(0, true);
     fvm.toggle(0);
-    ASSERT_FALSE(fvm[0]);
+    ASSERT_FALSE(fvm.isVisible(0));
 }
 
 TEST (FeatureVisibilityManagerUnitTest, setVisibility) {
     paxs::FeatureVisibilityManager fvm;
     fvm.emplace(0, true);
     fvm.setVisibility(0, false);
-    ASSERT_FALSE(fvm[0]);
+    ASSERT_FALSE(fvm.isVisible(0));
 }
 
 TEST (FeatureVisibilityManagerUnitTest, operator) {
     paxs::FeatureVisibilityManager fvm;
     fvm.emplace(0, true);
-    ASSERT_TRUE(fvm[0]);
+    ASSERT_TRUE(fvm.isVisible(0));
 }
