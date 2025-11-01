@@ -66,13 +66,14 @@ namespace paxs {
 
         /// @brief マウスホイールによるズーム処理
         /// @brief Handle zoom by mouse wheel
-        /// @note Public access for selective input processing
-        void handleMouseWheelZoom(MapViewport& viewport) {
+        /// @param viewport MapViewport参照 / MapViewport reference
+        /// @param event 入力イベント / Input event
+        void handleMouseWheelZoom(MapViewport& viewport, const InputEvent& event) {
             double height = viewport.getHeight();
             const double min_height = viewport.getMinHeight();
             const double max_height = viewport.getMaxHeight();
 
-            height *= (1.0 + (paxg::Mouse::getInstance()->getWheelRotVol() / MapViewportConstants::mouse_wheel_sensitivity));
+            height *= (1.0 + (event.wheel_rotation / MapViewportConstants::mouse_wheel_sensitivity));
             height = (std::clamp)(height, min_height, max_height);
 
             viewport.setHeight(height);
@@ -81,17 +82,21 @@ namespace paxs {
 
         /// @brief マウスドラッグによる移動処理（デスクトップ）
         /// @brief Handle movement by mouse drag (desktop)
-        void handleMouseDrag(MapViewport& viewport) {
+        /// @param viewport MapViewport参照 / MapViewport reference
+        /// @param event 入力イベント / Input event
+        void handleMouseDrag(MapViewport& viewport, const InputEvent& event) {
 #ifndef __ANDROID__
-            if (paxg::Mouse::getInstance()->pressedLeft2()) {
+            // 左ボタンが押されている場合のみドラッグ処理
+            // Only process drag if left button is pressed
+            if (event.isLeftButtonPressed()) {
                 const double height = viewport.getHeight();
                 double center_x = viewport.getCenterX();
                 double center_y = viewport.getCenterY();
 
                 center_x += height / static_cast<double>(paxg::Window::height()) *
-                    static_cast<double>(paxg::Mouse::getInstance()->getPosXBefore1Frame() - paxg::Mouse::getInstance()->getPosX());
+                    static_cast<double>(event.prev_x - event.x);
                 center_y += height / static_cast<double>(paxg::Window::height()) *
-                    static_cast<double>(paxg::Mouse::getInstance()->getPosY() - paxg::Mouse::getInstance()->getPosYBefore1Frame());
+                    static_cast<double>(event.y - event.prev_y);
 
                 // 経度の範囲調整
                 if (center_x < MapViewportConstants::longitude_min) {
@@ -229,18 +234,6 @@ namespace paxs {
             }
         }
 
-        /// @brief 全ての入力処理を実行し、制約を適用
-        /// @brief Execute all input processing and apply constraints
-        void update(MapViewport& viewport) {
-            handleMouseWheelZoom(viewport);
-            handleMouseDrag(viewport);
-            handleTouchInput(viewport);
-            handleKeyboardZoom(viewport);
-
-            // 入力処理後に境界制約を適用
-            viewport.applyConstraints();
-        }
-
         /// @brief MapViewportへの参照を設定
         /// @brief Set reference to MapViewport
         /// @param viewport MapViewportへの参照 / Reference to MapViewport
@@ -276,16 +269,32 @@ namespace paxs {
                 case InputEventType::MouseWheel:
                     // マウスホイール入力（ズーム）
                     // Mouse wheel input (zoom)
-                    handleMouseWheelZoom(*viewport_);
+                    handleMouseWheelZoom(*viewport_, event);
                     viewport_->applyConstraints();
                     return false; // 他のハンドラーにも処理を継続
 
                 case InputEventType::Mouse:
                     // マウス/タッチ入力（パンと移動）
                     // Mouse/Touch input (pan and move)
-                    handleMouseDrag(*viewport_);
+                    handleMouseDrag(*viewport_, event);
                     handleTouchInput(*viewport_);
                     viewport_->applyConstraints();
+                    return false; // 他のハンドラーにも処理を継続
+
+                case InputEventType::WindowResize:
+                    // ウィンドウリサイズイベント
+                    // Window resize event
+                    // MapViewportのサイズをウィンドウに合わせて調整
+                    // Adjust MapViewport size to match window
+                    {
+                        int new_width = event.window_width;
+                        int new_height = event.window_height;
+                        int old_height = paxg::Window::height();
+
+                        if (old_height > 0 && new_height > 0) {
+                            viewport_->setWidth(viewport_->getHeight() / double(new_height) * double(new_width));
+                        }
+                    }
                     return false; // 他のハンドラーにも処理を継続
 
                 default:

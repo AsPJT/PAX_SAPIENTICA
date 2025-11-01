@@ -53,10 +53,6 @@ namespace paxs {
 		// MapViewport input handler (managed by GraphicsManager)
 		MapViewportInputHandler* map_viewport_input_handler_ = nullptr;
 
-		// ウィンドウサイズ変更の検知用
-		int old_width_ = 0;
-		int old_height_ = 0;
-
 	public:
 		GraphicsManager() = default;
 
@@ -69,9 +65,6 @@ namespace paxs {
 			font_manager_.init(select_language);
 			ui_manager_.init(font_manager_, select_language, language_text, simulation_text);
 			map_controller_.init(font_manager_, select_language);
-
-			old_width_ = paxg::Window::width();
-			old_height_ = paxg::Window::height();
 
 			// レイヤーシステムに各コンポーネントを登録
 			// Register components to layer system
@@ -122,31 +115,6 @@ namespace paxs {
 		InputRouter& getInputRouter() { return input_router_; }
 		const InputRouter& getInputRouter() const { return input_router_; }
 
-		/// @brief ウィンドウサイズ変更を検知してMapViewportを更新
-		void handleWindowResize(MapViewport& map_viewport) {
-			const int current_width = paxg::Window::width();
-			const int current_height = paxg::Window::height();
-
-			if (old_height_ != current_height || old_width_ != current_width) {
-				// MapViewportのサイズ調整
-				if (old_height_ != current_height) {
-					map_viewport.setHeight(current_height * map_viewport.getHeight() / old_height_);
-					map_viewport.setWidth(map_viewport.getHeight() / double(current_height) * double(current_width));
-				}
-				if (old_width_ != current_width) {
-					map_viewport.setWidth(map_viewport.getHeight() / double(current_height) * double(current_width));
-				}
-
-				// UILayerのテクスチャを再初期化
-				ui_manager_.handleWindowResize();
-			}
-			else {
-				ui_manager_.resetSizeChangeCount();
-			}
-
-			old_width_ = current_width;
-			old_height_ = current_height;
-		}
 
 		/// @brief 更新・描画処理（レイヤーベースシステム使用）
 		/// @brief Update and render (using layer-based system)
@@ -161,9 +129,6 @@ namespace paxs {
 			paxs::InputStateManager& input_state_manager,
 			paxs::FeatureVisibilityManager& visible
 		) {
-			// ウィンドウサイズ変更の処理
-			handleWindowResize(map_viewport);
-
 			// データ更新のみ実施（描画は分離）
 			// Update data only (drawing is separated)
 			tile_manager_.updateData(visible, map_viewport, koyomi.jdn.cgetDay());

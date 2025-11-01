@@ -135,14 +135,44 @@ namespace paxs {
 
                 // マウス/タッチ入力（座標ベース）
                 // Mouse/Touch input (coordinate-based)
-                int mouse_x = paxg::Mouse::getInstance()->getPosX();
-                int mouse_y = paxg::Mouse::getInstance()->getPosY();
+                paxg::Mouse* mouse = paxg::Mouse::getInstance();
+                int mouse_x = mouse->getPosX();
+                int mouse_y = mouse->getPosY();
+
+                // InputEventを作成してマウスボタンと修飾キーを設定
+                // Create InputEvent and set mouse buttons and modifier keys
+                paxs::InputEvent event(&input_state_manager, mouse_x, mouse_y);
+
+                // マウスボタン情報を設定
+                // Set mouse button information
+                if (mouse->getLeft()) event.mouse_buttons |= paxs::InputEvent::MOUSE_BUTTON_LEFT;
+                if (mouse->getRight()) event.mouse_buttons |= paxs::InputEvent::MOUSE_BUTTON_RIGHT;
+                if (mouse->getMiddle()) event.mouse_buttons |= paxs::InputEvent::MOUSE_BUTTON_MIDDLE;
+
+                // 修飾キー情報を設定
+                // Set modifier key information
+                if (paxs::Key::isShiftPressed()) event.modifier_keys |= paxs::InputEvent::MODIFIER_SHIFT;
+                if (paxs::Key::isCtrlPressed()) event.modifier_keys |= paxs::InputEvent::MODIFIER_CTRL;
+                if (paxs::Key::isAltPressed()) event.modifier_keys |= paxs::InputEvent::MODIFIER_ALT;
+                if (paxs::Key::isCommandPressed()) event.modifier_keys |= paxs::InputEvent::MODIFIER_COMMAND;
+
+                // マウスホイール回転量と前フレーム座標を設定
+                // Set mouse wheel rotation and previous frame coordinates
+                event.wheel_rotation = mouse->getWheelRotVol();
+                event.prev_x = mouse->getPosXBefore1Frame();
+                event.prev_y = mouse->getPosYBefore1Frame();
 
                 // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
-                graphics_manager.getInputRouter().routeInput(&input_state_manager, mouse_x, mouse_y);
+                graphics_manager.getInputRouter().routeInput(event);
             }
 
             if (!visible[MurMur3::calcHash(2, "3D")]) {
+                // ウィンドウリサイズイベントをInputRouter経由でルーティング
+                // Route window resize event through InputRouter
+                int current_width = paxg::Window::width();
+                int current_height = paxg::Window::height();
+                graphics_manager.getInputRouter().routeWindowResizeEvent(current_width, current_height);
+
                 // グラフィック統合更新（タイル + UI）
                 graphics_manager.update(
                     map_viewport,
