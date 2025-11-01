@@ -58,24 +58,24 @@ namespace paxs {
         PanelLayout settlement_status_panel;
 
         // カレンダーテキストの位置
-        int koyomi_font_y;
-        int koyomi_font_en_y;
-        int koyomi_font_x;
-        int koyomi_font_en_x;
+        int koyomi_font_y = 0;
+        int koyomi_font_en_y = 0;
+        int koyomi_font_x = 0;
+        int koyomi_font_en_x = 0;
 
         // パネルの位置とサイズ
-        int rect_start_x;
-        int rect_len_x;
-        int koyomi_height;
+        int rect_start_x = 0;
+        int rect_len_x = 0;
+        int koyomi_height = 0;
 
         // 時間操作パネルの位置
-        int time_control_base_x;
-        int time_control_base_y;
-        int time_control_height;
+        int time_control_base_x = 0;
+        int time_control_base_y = 0;
+        int time_control_height = 0;
 
         // シミュレーション情報パネルの位置
-        int next_rect_start_y;
-        int next_rect_end_y;
+        int next_rect_start_y = 0;
+        int next_rect_end_y = 0;
 
         // レイアウトを計算
         // date_list_size: 表示する暦の数

@@ -73,11 +73,11 @@ namespace paxs {
         paxs::Koyomi cached_koyomi_;
         paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
 
-        std::size_t map_viewport_width_str_index;
-        std::size_t map_viewport_center_x_str_index;
-        std::size_t map_viewport_center_y_str_index;
-        std::size_t map_viewport_center_lat_str_index;
-        std::size_t xyz_tile_z_str_index;
+        std::size_t map_viewport_width_str_index = 0;
+        std::size_t map_viewport_center_x_str_index = 0;
+        std::size_t map_viewport_center_y_str_index = 0;
+        std::size_t map_viewport_center_lat_str_index = 0;
+        std::size_t xyz_tile_z_str_index = 0;
 
         // UI の影
         paxg::RenderTexture shadow_texture{};
@@ -108,6 +108,8 @@ namespace paxs {
 #endif
 
     public:
+        UILayer() = default;
+
         void init(
             FontManager& font_manager,
             const SelectLanguage& select_language,
