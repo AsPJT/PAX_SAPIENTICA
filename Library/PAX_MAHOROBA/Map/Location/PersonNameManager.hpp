@@ -20,6 +20,7 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Map/Location/PersonNameRenderer.hpp>
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -29,7 +30,8 @@
 namespace paxs {
 
     /// @brief GUI に描画する地物の情報を管理するクラス (Application Layer)
-    class PersonNameManager {
+    /// @brief Class to manage geographic information for GUI rendering (Application Layer)
+    class PersonNameManager : public IRenderable {
     public:
         PersonNameManager() = default;
 
@@ -54,16 +56,70 @@ namespace paxs {
             key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ value_ }; });
         }
 
-        /// @brief 描画
-        void draw(const double jdn,
-            const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-            paxg::Font& font, paxg::Font& en_font, paxg::Font& pin_font) {
-            renderer_.draw(location_point_list_list, key_value_tsv.get(), jdn,
-                map_view_width, map_view_height, map_view_center_x, map_view_center_y,
-                font, en_font, pin_font);
+        // IRenderable の実装
+        // IRenderable implementation
+
+        /// @brief レンダリング処理
+        /// @brief Render
+        void render() override {
+            if (!visible_) return;
+            if (cached_font_ == nullptr || cached_en_font_ == nullptr || cached_pin_font_ == nullptr) return;
+
+            renderer_.draw(location_point_list_list, key_value_tsv.get(), cached_jdn_,
+                cached_map_view_width_, cached_map_view_height_,
+                cached_map_view_center_x_, cached_map_view_center_y_,
+                *cached_font_, *cached_en_font_, *cached_pin_font_);
+        }
+
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        RenderLayer getLayer() const override {
+            return RenderLayer::MapContent;
+        }
+
+        /// @brief 可視性を取得
+        /// @brief Get visibility
+        bool isVisible() const override {
+            return visible_;
+        }
+
+        /// @brief 可視性を設定
+        /// @brief Set visibility
+        void setVisible(bool visible) override {
+            visible_ = visible;
+        }
+
+        /// @brief 描画パラメータを設定（MapContentManager から呼び出される）
+        /// @brief Set drawing parameters (called from MapContentManager)
+        void setDrawParams(
+            const double jdn,
+            const double map_view_width, const double map_view_height,
+            const double map_view_center_x, const double map_view_center_y,
+            paxg::Font& font, paxg::Font& en_font, paxg::Font& pin_font
+        ) {
+            cached_jdn_ = jdn;
+            cached_map_view_width_ = map_view_width;
+            cached_map_view_height_ = map_view_height;
+            cached_map_view_center_x_ = map_view_center_x;
+            cached_map_view_center_y_ = map_view_center_y;
+            cached_font_ = &font;
+            cached_en_font_ = &en_font;
+            cached_pin_font_ = &pin_font;
         }
 
     private:
+        // 可視性管理
+        bool visible_ = true;
+
+        // 描画に必要なデータをキャッシュ（setDrawParams()で更新、render()で使用）
+        double cached_jdn_ = 0.0;
+        double cached_map_view_width_ = 0.0;
+        double cached_map_view_height_ = 0.0;
+        double cached_map_view_center_x_ = 0.0;
+        double cached_map_view_center_y_ = 0.0;
+        paxg::Font* cached_font_ = nullptr;
+        paxg::Font* cached_en_font_ = nullptr;
+        paxg::Font* cached_pin_font_ = nullptr;
         std::vector<PersonLocationList> location_point_list_list{}; // 地物の一覧
         // アイコンのテクスチャ
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;

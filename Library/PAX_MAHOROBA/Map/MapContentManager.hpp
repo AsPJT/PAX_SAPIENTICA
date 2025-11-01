@@ -137,6 +137,35 @@ namespace paxs {
             }
 #endif
             cached_visible_ = &visible;
+
+            // PersonNameManager と PlaceNameManager に描画パラメータを設定
+            // Set drawing parameters to PersonNameManager and PlaceNameManager
+            if (font_manager_ && select_language_) {
+                paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
+
+                person_name_manager_.setDrawParams(
+                    koyomi.jdn.cgetDay(),
+                    map_viewport.getWidth(),
+                    map_viewport.getHeight(),
+                    map_viewport.getCenterX(),
+                    map_viewport.getCenterY(),
+                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
+                    font_manager_->getEnFont(),
+                    font_manager_->getPinFont()
+                );
+
+                place_name_manager_.setDrawParams(
+                    visible,
+                    koyomi.jdn.cgetDay(),
+                    map_viewport.getWidth(),
+                    map_viewport.getHeight(),
+                    map_viewport.getCenterX(),
+                    map_viewport.getCenterY(),
+                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
+                    font_manager_->getEnFont(),
+                    font_manager_->getPinFont()
+                );
+            }
         }
 
         // IRenderable の実装
@@ -148,55 +177,20 @@ namespace paxs {
             if (!visible_ || cached_visible_ == nullptr) return;
 
             paxs::FeatureVisibilityManager& visible = *cached_visible_;
-            MapViewport& map_viewport = cached_map_viewport_;
-            paxs::Koyomi& koyomi = cached_koyomi_;
 
             if (visible.isVisible(MurMur3::calcHash("Map"))) { // 地図が「可視」の場合は描画する
-                // フォントを取得
-                paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
-
-                // 描画処理（旧Presenterの処理を統合）
-                const double width = map_viewport.getWidth();
-                const double height = map_viewport.getHeight();
-                const double center_x = map_viewport.getCenterX();
-                const double center_y = map_viewport.getCenterY();
-                const double julian_day = koyomi.jdn.cgetDay();
-
-                // 地名を描画
-                place_name_manager_.draw(
-                    visible,
-                    julian_day,
-                    width,
-                    height,
-                    center_x,
-                    center_y,
-                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
-                    font_manager_->getEnFont(),
-                    font_manager_->getPinFont()
-                );
-
-                // 人名を描画
-                person_name_manager_.draw(
-                    julian_day,
-                    width,
-                    height,
-                    center_x,
-                    center_y,
-                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
-                    font_manager_->getEnFont(),
-                    font_manager_->getPinFont()
-                );
-
-#ifdef PAXS_USING_SIMULATOR
-                // SettlementRenderer は RenderLayerManager が自動的に render() を呼ぶため、
-                // ここでは呼び出さない
-                // SettlementRenderer::render() is automatically called by RenderLayerManager,
-                // so we don't call it here
-#endif
+                // PersonNameManager と PlaceNameManager を描画
+                // Render PersonNameManager and PlaceNameManager
+                person_name_manager_.render();
+                place_name_manager_.render();
             }
+
 #ifdef PAXS_USING_SIMULATOR
-            // シミュレーションのみ表示の場合も、SettlementRenderer は RenderLayerManager が呼ぶ
-            // For simulation-only display, SettlementRenderer is also called by RenderLayerManager
+            // SettlementRenderer を描画（シミュレーション表示時）
+            // Render SettlementRenderer (when simulation is visible)
+            if (visible.isVisible(MurMur3::calcHash("Simulation")) && settlement_renderer) {
+                settlement_renderer->render();
+            }
 #endif
         }
 
@@ -254,12 +248,6 @@ namespace paxs {
         }
 
 #ifdef PAXS_USING_SIMULATOR
-        /// @brief SettlementRenderer への参照を取得（GraphicsManager での登録用）
-        /// @brief Get reference to SettlementRenderer (for registration in GraphicsManager)
-        SettlementRenderer* getSettlementRenderer() {
-            return settlement_renderer.get();
-        }
-
         /// @brief SettlementInputHandler への参照を取得（GraphicsManager での登録用）
         /// @brief Get reference to SettlementInputHandler (for registration in GraphicsManager)
         SettlementInputHandler& getSettlementInputHandler() {

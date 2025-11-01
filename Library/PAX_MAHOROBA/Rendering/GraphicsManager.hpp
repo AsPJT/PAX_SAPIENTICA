@@ -78,12 +78,6 @@ namespace paxs {
 			render_layer_manager_.registerRenderable(&ui_manager_);
 
 #ifdef PAXS_USING_SIMULATOR
-			// SettlementRenderer を RenderLayerManager に登録（MapContent層）
-			// Register SettlementRenderer to RenderLayerManager (MapContent layer)
-			if (map_content_manager_.getSettlementRenderer() != nullptr) {
-				render_layer_manager_.registerRenderable(map_content_manager_.getSettlementRenderer());
-			}
-
 			// SettlementStatusWidget を RenderLayerManager に登録（UIContent層）
 			// Register SettlementStatusWidget to RenderLayerManager (UIContent layer)
 			render_layer_manager_.registerRenderable(&settlement_status_widget_);
