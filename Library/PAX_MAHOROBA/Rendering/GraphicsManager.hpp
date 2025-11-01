@@ -15,10 +15,10 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Input/InputRouter.hpp>
+#include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
-#include <PAX_MAHOROBA/Map/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>

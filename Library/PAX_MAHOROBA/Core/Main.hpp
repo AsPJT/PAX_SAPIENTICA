@@ -31,7 +31,7 @@
 
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Map/Input/MapViewportInputHandler.hpp>
+#include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/GraphicsManager.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>

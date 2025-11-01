@@ -15,8 +15,8 @@
 #include <memory>
 
 #ifdef PAXS_USING_SIMULATOR
+#include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/SettlementRenderer.hpp>
-#include <PAX_MAHOROBA/Map/Location/Input/SettlementInputHandler.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
