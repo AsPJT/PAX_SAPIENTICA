@@ -58,7 +58,7 @@ namespace paxs {
         paxs::LanguageFonts* language_fonts_ = nullptr;
 
         // カレンダーを描画（言語に応じて自動選択）
-        void render(
+        void renderInternal(
             const paxs::Koyomi& koyomi,
             const paxs::UILayout& ui_layout,
             const SelectLanguage& select_language,
@@ -241,16 +241,17 @@ namespace paxs {
 
     public:
         // IUIWidget インターフェースの実装
-        void update(paxs::InputStateManager& input_state_manager) override {
-            // CalendarRendererは入力処理を行わないため、空実装
-            (void)input_state_manager;
+        bool handleInput(const InputEvent& event) override {
+            // CalendarRendererは入力処理を行わない
+            (void)event;
+            return false;
         }
 
-        void draw() override {
+        void render() override {
             if (!visible_ || !koyomi_ || !ui_layout_ || !select_language_ || !language_text_) return;
 
-            // 保存された引数でrender()を呼び出し
-            render(*koyomi_, *ui_layout_, *select_language_, *language_text_, is_simulator_active_);
+            // 保存された引数でrenderInternal()を呼び出し
+            renderInternal(*koyomi_, *ui_layout_, *select_language_, *language_text_, is_simulator_active_);
         }
 
         paxg::Rect getRect() const override {

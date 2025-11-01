@@ -48,31 +48,8 @@ namespace paxs {
         /// @brief 指定した機能の可視状態を取得
         /// @param feature_id 機能ID（ハッシュ値）
         /// @return 可視状態（登録されていない場合はtrue）
-        bool operator[](const std::uint_least32_t& feature_id) const {
-            return (visible_features.find(feature_id) != visible_features.end()) ? visible_features.at(feature_id) : true;
-        }
-
-        /// @brief 指定した機能の可視状態を取得
-        /// @param feature_id 機能ID（ハッシュ値）
-        /// @return 可視状態（登録されていない場合はtrue）
         bool isVisible(const std::uint_least32_t& feature_id) const {
             return (visible_features.find(feature_id) != visible_features.end()) ? visible_features.at(feature_id) : true;
-        }
-
-        // 後方互換性のためのエイリアス
-        /// @deprecated toggle() を使用してください
-        void setNot(const std::uint_least32_t& feature_id) {
-            toggle(feature_id);
-        }
-
-        /// @deprecated setVisibility() を使用してください
-        void set(const std::uint_least32_t& feature_id, const bool is_visible) {
-            setVisibility(feature_id, is_visible);
-        }
-
-        /// @deprecated isVisible() を使用してください
-        bool at(const std::uint_least32_t& feature_id) const {
-            return isVisible(feature_id);
         }
     };
 

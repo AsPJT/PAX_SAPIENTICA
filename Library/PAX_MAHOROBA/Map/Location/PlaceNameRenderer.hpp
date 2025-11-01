@@ -61,7 +61,7 @@ namespace paxs {
 				if (lll.min_year > jdn) continue;
 				if (lll.max_year < jdn) continue;
 
-				if (!visible[lll.lpe]) continue;
+				if (!visible.isVisible(lll.lpe)) continue;
 
 				// 地名を描画
 				for (std::size_t i = 0; i < location_point_list.size(); ++i) {

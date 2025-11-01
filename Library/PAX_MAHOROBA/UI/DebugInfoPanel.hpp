@@ -118,7 +118,7 @@ namespace paxs {
 #else
             {
 #endif
-                if (visible[MurMur3::calcHash(8, "Simulation")]) {
+                if (visible.isVisible(MurMur3::calcHash(8, "Simulation"))) {
                     (*one_font).drawTopRight(std::to_string(map_viewport.getCenterX()),
                         paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
                     (*one_font).drawTopRight(std::to_string(map_viewport.getCenterY()),
@@ -362,12 +362,13 @@ namespace paxs {
 
     public:
         // IUIWidget インターフェースの実装
-        void update(paxs::InputStateManager& input_state_manager) override {
-            // DebugInfoPanelは入力処理を行わないため、空実装
-            (void)input_state_manager;
+        bool handleInput(const InputEvent& event) override {
+            // DebugInfoPanelは入力処理を行わない
+            (void)event;
+            return false;
         }
 
-        void draw() override {
+        void render() override {
             if (!visible_) return;
 
             // 背景パネルを描画

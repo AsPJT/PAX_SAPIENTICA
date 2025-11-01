@@ -315,7 +315,7 @@ namespace paxs {
         ) {
             if (!input_state_manager_) return;  // Null check
 			// シミュレーションのボタン
-			if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
+			if (visible.isVisible(MurMur3::calcHash("Simulation")) && visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Calendar"))) {
 				simulation(simulator, koyomi, debug_start_y);
 			}
 		}
@@ -329,14 +329,14 @@ namespace paxs {
 			paxs::FeatureVisibilityManager& visible
 		) {
 			// シミュレーションのボタン
-			if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
+			if (visible.isVisible(MurMur3::calcHash("Simulation")) && visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Calendar"))) {
 				if (simulator == nullptr) {
 					// 画面サイズに合わせて位置を更新
 					simulation_pulldown.setPos(paxg::Vec2i{
 						static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
 						pulldown_y_
 					});
-					simulation_pulldown.draw(); // シミュレーション選択
+					simulation_pulldown.render(); // シミュレーション選択
 				}
 			}
 		}
@@ -350,7 +350,7 @@ namespace paxs {
 			paxs::FeatureVisibilityManager& visible
 		) {
 			// シミュレーションのボタン
-			if (visible[MurMur3::calcHash("Simulation")] && visible[MurMur3::calcHash("UI")] && visible[MurMur3::calcHash("Calendar")]) {
+			if (visible.isVisible(MurMur3::calcHash("Simulation")) && visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Calendar"))) {
 				if (simulator == nullptr) {
 					const float panel_height = static_cast<float>(simulation_pulldown.getRect().h());
 					const float panel_width = static_cast<float>(paxg::Window::width());
@@ -438,30 +438,33 @@ namespace paxs {
 			debug_start_y_ = debug_start_y;
 		}
 
-		/// @brief 更新処理（IUIWidget）
-		void update(paxs::InputStateManager& input_state_manager) override {
-			if (!visible_ || !enabled_) return;
-			if (!simulator_ptr_ || !koyomi_ || !visible_list_) return;
+		/// @brief 入力処理（IUIWidget）
+		bool handleInput(const InputEvent& event) override {
+			if (!visible_ || !enabled_) return false;
+			if (!simulator_ptr_ || !koyomi_ || !visible_list_) return false;
+			if (event.input_state_manager == nullptr) return false;
 
             // Temporarily set input_state_manager_ for this update cycle
-            input_state_manager_ = &input_state_manager;
+            input_state_manager_ = event.input_state_manager;
 
             // 既存のupdate()を呼び出し
             update(*simulator_ptr_, *koyomi_, debug_start_y_, *visible_list_);
 
             // プルダウンの更新
-			if (visible_list_->at(MurMur3::calcHash("Simulation")) &&
-			    visible_list_->at(MurMur3::calcHash("UI")) &&
-			    visible_list_->at(MurMur3::calcHash("Calendar"))) {
+			if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) &&
+			    visible_list_->isVisible(MurMur3::calcHash("UI")) &&
+			    visible_list_->isVisible(MurMur3::calcHash("Calendar"))) {
 				if (*simulator_ptr_ == nullptr) {
-					simulation_pulldown.update(input_state_manager);
+					simulation_pulldown.handleInput(event);
 					simulation_model_index = simulation_pulldown.getIndex();
+					return true;
 				}
 			}
+			return true;
 		}
 
 		/// @brief 描画処理（IUIWidget）
-		void draw() override {
+		void render() override {
 			if (!visible_) return;
 			if (!simulator_ptr_ || !visible_list_ || !koyomi_) return;
 
@@ -469,9 +472,9 @@ namespace paxs {
 			drawPulldown(*simulator_ptr_, *visible_list_);
 
 			// シミュレーションコントロールボタンの描画
-			if (visible_list_->at(MurMur3::calcHash("Simulation")) &&
-			    visible_list_->at(MurMur3::calcHash("UI")) &&
-			    visible_list_->at(MurMur3::calcHash("Calendar"))) {
+			if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) &&
+			    visible_list_->isVisible(MurMur3::calcHash("UI")) &&
+			    visible_list_->isVisible(MurMur3::calcHash("Calendar"))) {
 				drawSimulationControls();
 			}
 		}

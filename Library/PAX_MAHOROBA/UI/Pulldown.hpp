@@ -166,13 +166,16 @@ namespace paxs {
             return items_key.empty();
         }
 
-        // 更新処理
-        void update(paxs::InputStateManager& input_state_manager) override {
-            if (isEmpty()) return;
-            if (language_ptr == nullptr) return; // 言語がない場合は処理をしない
-            if (select_language_ptr == nullptr) return; // 選択されている言語がない場合は処理をしない
-            if (font == nullptr) return;
-            if (!visible_ || !enabled_) return; // 非表示または無効の場合は処理をしない
+        // 入力処理
+        bool handleInput(const InputEvent& event) override {
+            if (isEmpty()) return false;
+            if (language_ptr == nullptr) return false; // 言語がない場合は処理をしない
+            if (select_language_ptr == nullptr) return false; // 選択されている言語がない場合は処理をしない
+            if (font == nullptr) return false;
+            if (!visible_ || !enabled_) return false; // 非表示または無効の場合は処理をしない
+            if (event.input_state_manager == nullptr) return false;
+            paxs::InputStateManager& input_state_manager = *event.input_state_manager;
+
             // 言語が変わっていたら更新処理
             if (old_language_key != (*select_language_ptr).cgetKey()) {
                 language_index = (*select_language_ptr).cget();
@@ -184,6 +187,7 @@ namespace paxs {
                 rect.leftClicked()
             )) {
                 is_open = (not is_open);
+                return true;
             }
             paxg::Vec2i pos = paxg::Vec2i(
                 static_cast<int>(rect.pos().x()),
@@ -200,15 +204,16 @@ namespace paxs {
                             index = i;
                             is_items[i] = !(is_items[i]);
                             is_open = false;
-                            break;
+                            return true;
                         }
                     }
                     pos.setY(static_cast<int>(pos.y() + rect.h()));
                 }
             }
+            return false;
         }
         // 描画
-        void draw() override {
+        void render() override {
             if (isEmpty()) {
                 return;
             }

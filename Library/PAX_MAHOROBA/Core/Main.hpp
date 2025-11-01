@@ -122,7 +122,7 @@ namespace paxs {
 
             // 入力処理（InputRouterを使用した統合的な入力処理）
             // Input processing (unified input processing using InputRouter)
-            if (!visible[MurMur3::calcHash(2, "3D")]) {
+            if (!visible.isVisible(MurMur3::calcHash(2, "3D"))) {
                 // キーボード入力（座標に依存しない）
                 // Keyboard input (coordinate-independent)
                 // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
@@ -166,7 +166,7 @@ namespace paxs {
                 graphics_manager.getInputRouter().routeInput(event);
             }
 
-            if (!visible[MurMur3::calcHash(2, "3D")]) {
+            if (!visible.isVisible(MurMur3::calcHash(2, "3D"))) {
                 // ウィンドウリサイズイベントをInputRouter経由でルーティング
                 // Route window resize event through InputRouter
                 int current_width = paxg::Window::width();
@@ -193,7 +193,7 @@ namespace paxs {
 #endif
                 );
             }
-            else if (visible[MurMur3::calcHash(2, "3D")]) {
+            else if (visible.isVisible(MurMur3::calcHash(2, "3D"))) {
                 g3d_model.updateRotation(); // 3D モデルを回転させる
             }
             paxg::TouchInput::updateState();

@@ -53,9 +53,7 @@ namespace paxs {
     /// @brief Integrated management class for UI layer
     ///
     /// IRenderable と IInputHandler を継承し、レイヤーベースシステムに対応します。
-    /// 子ウィジェットへの処理委譲を行います。
     /// Inherits IRenderable and IInputHandler to support layer-based system.
-    /// Delegates processing to child widgets.
     class UILayer : public IRenderable, public IInputHandler {
     private:
         bool visible_ = true;
@@ -174,47 +172,47 @@ namespace paxs {
             // View メニューの状態を同期
             auto* view_menu = header_panel.getMenuBar().getMenuItem(MurMur3::calcHash("view"));
             if (view_menu) {
-                visible.set(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
-                visible.set(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
-                visible.set(MurMur3::calcHash("UI"), view_menu->getIsItems(std::size_t(2)));
-                visible.set(MurMur3::calcHash("Simulation"), view_menu->getIsItems(std::size_t(3)));
-                visible.set(MurMur3::calcHash("License"), view_menu->getIsItems(std::size_t(4)));
-                visible.set(MurMur3::calcHash("Debug"), view_menu->getIsItems(std::size_t(5)));
-                visible.set(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
+                visible.setVisibility(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
+                visible.setVisibility(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
+                visible.setVisibility(MurMur3::calcHash("UI"), view_menu->getIsItems(std::size_t(2)));
+                visible.setVisibility(MurMur3::calcHash("Simulation"), view_menu->getIsItems(std::size_t(3)));
+                visible.setVisibility(MurMur3::calcHash("License"), view_menu->getIsItems(std::size_t(4)));
+                visible.setVisibility(MurMur3::calcHash("Debug"), view_menu->getIsItems(std::size_t(5)));
+                visible.setVisibility(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
             }
 
             // Place Names メニューの状態を同期
             auto* place_names_menu = header_panel.getMenuBar().getMenuItem(MurMur3::calcHash("place_names"));
             if (place_names_menu) {
-                visible.set(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
-                visible.set(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
-                visible.set(MurMur3::calcHash("tumulus"), place_names_menu->getIsItems(std::size_t(2)));
-                visible.set(MurMur3::calcHash("dolmen"), place_names_menu->getIsItems(std::size_t(3)));
-                visible.set(MurMur3::calcHash("kamekanbo"), place_names_menu->getIsItems(std::size_t(4)));
-                visible.set(MurMur3::calcHash("stone_coffin"), place_names_menu->getIsItems(std::size_t(5)));
-                visible.set(MurMur3::calcHash("doken"), place_names_menu->getIsItems(std::size_t(6)));
-                visible.set(MurMur3::calcHash("dotaku"), place_names_menu->getIsItems(std::size_t(7)));
-                visible.set(MurMur3::calcHash("bronze_mirror"), place_names_menu->getIsItems(std::size_t(8)));
-                visible.set(MurMur3::calcHash("human_bone"), place_names_menu->getIsItems(std::size_t(9)));
-                visible.set(MurMur3::calcHash("mtdna"), place_names_menu->getIsItems(std::size_t(10)));
-                visible.set(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
+                visible.setVisibility(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
+                visible.setVisibility(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
+                visible.setVisibility(MurMur3::calcHash("tumulus"), place_names_menu->getIsItems(std::size_t(2)));
+                visible.setVisibility(MurMur3::calcHash("dolmen"), place_names_menu->getIsItems(std::size_t(3)));
+                visible.setVisibility(MurMur3::calcHash("kamekanbo"), place_names_menu->getIsItems(std::size_t(4)));
+                visible.setVisibility(MurMur3::calcHash("stone_coffin"), place_names_menu->getIsItems(std::size_t(5)));
+                visible.setVisibility(MurMur3::calcHash("doken"), place_names_menu->getIsItems(std::size_t(6)));
+                visible.setVisibility(MurMur3::calcHash("dotaku"), place_names_menu->getIsItems(std::size_t(7)));
+                visible.setVisibility(MurMur3::calcHash("bronze_mirror"), place_names_menu->getIsItems(std::size_t(8)));
+                visible.setVisibility(MurMur3::calcHash("human_bone"), place_names_menu->getIsItems(std::size_t(9)));
+                visible.setVisibility(MurMur3::calcHash("mtdna"), place_names_menu->getIsItems(std::size_t(10)));
+                visible.setVisibility(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
             }
 
             // Map メニューの状態を同期
             auto* map_menu = header_panel.getMenuBar().getMenuItem(MurMur3::calcHash("map"));
             if (map_menu) {
-                visible.set(MurMur3::calcHash("menu_bar_map_base"), map_menu->getIsItems(std::size_t(0)));
-                visible.set(MurMur3::calcHash("menu_bar_map_land_and_sea"), map_menu->getIsItems(std::size_t(1)));
-                visible.set(MurMur3::calcHash("menu_bar_map_land_and_water"), map_menu->getIsItems(std::size_t(2)));
-                visible.set(MurMur3::calcHash("menu_bar_map_soil"), map_menu->getIsItems(std::size_t(3)));
-                visible.set(MurMur3::calcHash("menu_bar_map_soil_temperature"), map_menu->getIsItems(std::size_t(4)));
-                visible.set(MurMur3::calcHash("menu_bar_map_ryosei_country"), map_menu->getIsItems(std::size_t(5)));
-                visible.set(MurMur3::calcHash("menu_bar_map_ryosei_line"), map_menu->getIsItems(std::size_t(6)));
-                visible.set(MurMur3::calcHash("menu_bar_map_slope"), map_menu->getIsItems(std::size_t(7)));
-                visible.set(MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"), map_menu->getIsItems(std::size_t(8)));
-                visible.set(MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"), map_menu->getIsItems(std::size_t(9)));
-                visible.set(MurMur3::calcHash("menu_bar_map_line1"), map_menu->getIsItems(std::size_t(10)));
-                visible.set(MurMur3::calcHash("menu_bar_map_line2"), map_menu->getIsItems(std::size_t(11)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_base"), map_menu->getIsItems(std::size_t(0)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_land_and_sea"), map_menu->getIsItems(std::size_t(1)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_land_and_water"), map_menu->getIsItems(std::size_t(2)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_soil"), map_menu->getIsItems(std::size_t(3)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_soil_temperature"), map_menu->getIsItems(std::size_t(4)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_country"), map_menu->getIsItems(std::size_t(5)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_line"), map_menu->getIsItems(std::size_t(6)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_slope"), map_menu->getIsItems(std::size_t(7)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"), map_menu->getIsItems(std::size_t(8)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"), map_menu->getIsItems(std::size_t(9)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_line1"), map_menu->getIsItems(std::size_t(10)));
+                visible.setVisibility(MurMur3::calcHash("menu_bar_map_line2"), map_menu->getIsItems(std::size_t(11)));
             }
         }
 
@@ -260,7 +258,7 @@ namespace paxs {
 #endif
 
             // CalendarPanelの可視性と設定
-            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))) {
 #ifdef PAXS_USING_SIMULATOR
                 bool is_simulator_active = (simulator != nullptr);
 #else
@@ -276,7 +274,7 @@ namespace paxs {
             }
 
             // DebugInfoPanelの可視性と設定
-            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))) {
                 int debug_start_y = ui_layout.getDebugStartY();
                 debug_info_panel.setShadowTextures(shadow_texture, internal_texture);
                 debug_info_panel.setBackgroundRect(
@@ -291,9 +289,11 @@ namespace paxs {
             }
 
             // ウィジェットを更新（入力処理）
+            InputEvent event;
+            event.input_state_manager = &input_state_manager;
             for (auto* widget : widgets) {
                 if (widget) {
-                    widget->update(input_state_manager);
+                    widget->handleInput(event);
                 }
             }
 
@@ -307,27 +307,6 @@ namespace paxs {
             cached_input_state_manager_ = &input_state_manager;
             cached_koyomi_ = koyomi;
             cached_visible_ = &visible;
-        }
-
-        /// @brief 既存のupdate()メソッド（後方互換性のため維持）
-        /// @brief Existing update() method (kept for backward compatibility)
-        void update(
-            MapViewport& map_viewport,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text,
-#ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
-#endif
-            paxs::InputStateManager& input_state_manager,
-            paxs::Koyomi& koyomi,
-            paxs::FeatureVisibilityManager& visible
-            ) {
-            updateData(map_viewport, select_language, language_text,
-#ifdef PAXS_USING_SIMULATOR
-                simulator,
-#endif
-                input_state_manager, koyomi, visible);
-            render();
         }
 
         // IRenderable の実装
@@ -348,7 +327,7 @@ namespace paxs {
             paxs::Koyomi& koyomi = cached_koyomi_;
 
             // マップ情報とシミュレーション統計を描画
-            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]) {
+            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))) {
                 int debug_start_y = ui_layout.getDebugStartY();
                 debug_info_panel.renderMapAndSimulationInfo(
                     map_viewport, debug_start_y, select_language, language_text, visible
@@ -367,12 +346,12 @@ namespace paxs {
             // ウィジェットを描画
             for (auto* widget : widgets) {
                 if (widget) {
-                    widget->draw();
+                    widget->render();
                 }
             }
 
             // 考古学的遺物の型式情報を描画
-            if (visible[MurMur3::calcHash(8, "Calendar")] && visible[MurMur3::calcHash(2, "UI")]
+            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))
 #ifdef PAXS_USING_SIMULATOR
                 && (!cached_simulator_ || *cached_simulator_ == nullptr)
 #endif

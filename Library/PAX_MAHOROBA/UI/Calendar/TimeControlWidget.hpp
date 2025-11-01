@@ -215,8 +215,8 @@ namespace paxs {
 
     public:
         // IUIWidget インターフェースの実装
-        void update(paxs::InputStateManager& input_state_manager) override;
-        void draw() override;
+        bool handleInput(const InputEvent& event) override;
+        void render() override;
 
         paxg::Rect getRect() const override {
             return paxg::Rect{
@@ -257,14 +257,16 @@ namespace paxs {
     };
 
     // IUIWidget メソッドの実装（クラス外定義）
-    inline void TimeControlWidget::update(paxs::InputStateManager& input_state_manager) {
-        if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return;
+    inline bool TimeControlWidget::handleInput(const InputEvent& event) {
+        if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return false;
+        if (event.input_state_manager == nullptr) return false;
 
         // クリック判定などの更新処理
-        updateState(input_state_manager);
+        updateState(*event.input_state_manager);
+        return true;
     }
 
-    inline void TimeControlWidget::draw() {
+    inline void TimeControlWidget::render() {
         if (!visible_ || !texture_dictionary_ || !koyomi_) return;
 
         // 描画処理を実行

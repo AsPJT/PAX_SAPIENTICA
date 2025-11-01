@@ -82,13 +82,6 @@ namespace paxs {
             cached_jdn_ = jdn;
         }
 
-        /// @brief 既存のupdate()メソッド（後方互換性のため維持）
-        /// @brief Existing update() method (kept for backward compatibility)
-        void update(const paxs::FeatureVisibilityManager& visible, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
-            updateData(visible, map_viewport, jdn);
-            render();
-        }
-
         // IRenderable の実装
         // IRenderable implementation
 

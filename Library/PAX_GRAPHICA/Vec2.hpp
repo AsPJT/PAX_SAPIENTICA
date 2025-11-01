@@ -98,7 +98,6 @@ namespace paxg {
         }
     };
 
-    // 既存コードとの互換性のためのエイリアス
     using Vec2i = Vec2<int>;
     using Vec2f = Vec2<float>;
 }

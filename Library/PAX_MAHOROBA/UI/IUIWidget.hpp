@@ -31,11 +31,6 @@ namespace paxs {
     public:
         virtual ~IUIWidget() = default;
 
-        // 基本操作（既存のインターフェース - 後方互換性のため維持）
-        // Basic operations (legacy interface - kept for backward compatibility)
-        virtual void update(InputStateManager& input_state_manager) = 0;
-        virtual void draw() = 0;
-
         // 位置・サイズ管理
         virtual paxg::Rect getRect() const = 0;
         virtual void setPos(const paxg::Vec2i& pos) = 0;
@@ -52,33 +47,16 @@ namespace paxs {
         virtual const char* getName() const = 0;
         virtual bool isAvailable() const = 0;
 
-        // IRenderable の実装（デフォルト実装を提供）
-        // IRenderable implementation (provides default implementation)
-
-        /// @brief レンダリング処理（既存のdraw()を呼び出す）
-        /// @brief Render (calls existing draw())
-        void render() override {
-            draw();
-        }
+        // IRenderable の実装
+        // IRenderable implementation
+        // render() は各サブクラスで実装必須
+        // render() must be implemented by each subclass
 
         // getLayer() は各サブクラスで実装必須
         // getLayer() must be implemented by each subclass
-        // setVisible(), isVisible() は既に定義済み
 
-        // IInputHandler の実装（デフォルト実装を提供）
-        // IInputHandler implementation (provides default implementation)
-
-        /// @brief 入力処理（既存のupdate()を呼び出す）
-        /// @brief Handle input (calls existing update())
-        /// @param event 入力イベント / Input event
-        /// @return 処理した場合true / true if handled
-        bool handleInput(const InputEvent& event) override {
-            if (event.input_state_manager != nullptr) {
-                update(*event.input_state_manager);
-                return true; // UIウィジェットは常に処理済みとする
-            }
-            return false;
-        }
+        // IInputHandler の実装
+        // IInputHandler implementation
 
         /// @brief ヒットテスト（getRect()を使用）
         /// @brief Hit test (uses getRect())
@@ -92,8 +70,8 @@ namespace paxs {
                     y >= rect.y() && y < rect.y() + rect.h());
         }
 
-        // getLayer() は各サブクラスで実装
-        // getLayer() is implemented by subclasses
+        // handleInput() は各サブクラスで実装必須
+        // handleInput() must be implemented by each subclass
     };
 
 }

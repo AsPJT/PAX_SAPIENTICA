@@ -59,7 +59,10 @@ namespace paxs {
                 paxg::Vec2i{ static_cast<int>(start_x), 0 }));
         }
 
-        void update(paxs::InputStateManager& input_state_manager) override {
+        bool handleInput(const InputEvent& event) override {
+            if (!visible_ || !enabled_) return false;
+            if (event.input_state_manager == nullptr) return false;
+
             start_x = 0;
 
             // 更新前の開閉状態を記録
@@ -69,16 +72,17 @@ namespace paxs {
                 was_open.push_back(item.isOpen());
             }
 
+            bool handled = false;
             // 各メニュー項目を更新
             for (std::size_t i = 0; i < menu_items.size(); ++i) {
-                if (visible_ && enabled_) {
-                    menu_items[i].update(input_state_manager);
+                if (menu_items[i].handleInput(event)) {
+                    handled = true;
                 }
                 menu_items[i].setRectX(start_x);
                 start_x += static_cast<std::size_t>(menu_items[i].getRect().w());
 
                 // このメニュー項目が新しく開かれた場合、他のメニュー項目を閉じる
-                if (visible_ && enabled_ && !was_open[i] && menu_items[i].isOpen()) {
+                if (!was_open[i] && menu_items[i].isOpen()) {
                     for (std::size_t j = 0; j < menu_items.size(); ++j) {
                         if (j != i && menu_items[j].isOpen()) {
                             menu_items[j].close();
@@ -86,11 +90,12 @@ namespace paxs {
                     }
                 }
             }
+            return handled;
         }
-        void draw() override {
+        void render() override {
             if (!visible_) return;
             for (auto& item : menu_items) {
-                item.draw();
+                item.render();
             }
         }
 

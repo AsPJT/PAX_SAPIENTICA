@@ -166,9 +166,11 @@ namespace paxs {
 #endif
 		}
 
-		/// @brief 更新処理
-		void update(paxs::InputStateManager& input_state_manager) override {
-			if (!visible_ || !enabled_) return;
+		/// @brief 入力処理
+		bool handleInput(const InputEvent& event) override {
+			if (!visible_ || !enabled_) return false;
+			if (event.input_state_manager == nullptr) return false;
+			paxs::InputStateManager& input_state_manager = *event.input_state_manager;
 
 			const std::uint_least32_t new_language_key = (*select_language_ptr).cgetKey();
 			if (old_language_key != new_language_key) {
@@ -179,6 +181,7 @@ namespace paxs {
 			// ヘッダーのクリック判定
 			if (input_state_manager.get(rect.leftClicked())) {
 				is_open = !is_open;
+				return true;
 			}
 
 			// ドロップダウンリストのクリック判定
@@ -195,15 +198,16 @@ namespace paxs {
 							is_items[i] = !is_items[i];
 						}
 						is_open = false;
-						break;
+						return true;
 					}
 					pos.setY(static_cast<int>(pos.y() + rect.h()));
 				}
 			}
+			return false;
 		}
 
 		/// @brief 描画処理
-		void draw() override {
+		void render() override {
 			if (isEmpty() || !visible_) return;
 			if (language_ptr == nullptr || select_language_ptr == nullptr) return;
 			if (items_key.size() == 0) return;

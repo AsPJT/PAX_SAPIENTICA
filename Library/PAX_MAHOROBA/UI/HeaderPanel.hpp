@@ -116,30 +116,33 @@ namespace paxs {
         }
 
         // IUIWidget インターフェースの実装
-        void update(paxs::InputStateManager& input_state_manager) override {
-            if (!visible_ || !enabled_) return;
+        bool handleInput(const InputEvent& event) override {
+            if (!visible_ || !enabled_) return false;
+            if (event.input_state_manager == nullptr) return false;
 
             calculateLayout();  // 毎フレーム位置を更新
 
             // メニューバーと言語選択を更新
-            menu_bar_.update(input_state_manager);
-            language_selector_.update(input_state_manager);
+            menu_bar_.handleInput(event);
+            language_selector_.handleInput(event);
 
             // GitHubアイコンのクリック判定
-            if (input_state_manager.get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
+            if (event.input_state_manager->get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
                 paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
+                return true;
             }
+            return true;
         }
 
-        void draw() override {
+        void render() override {
             if (!visible_) return;
 
             // 背景パネルを描画（影付き）
             drawBackground();
 
             // メニューバーと言語選択を描画
-            menu_bar_.draw();
-            language_selector_.draw();
+            menu_bar_.render();
+            language_selector_.render();
 
             // GitHubアイコンを描画
             if (github_texture_) {

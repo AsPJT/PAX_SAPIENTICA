@@ -94,20 +94,20 @@ namespace paxs {
 			return true;
 		}
 
-		void update(paxs::InputStateManager& input_state_manager) override {
-			if (!visible_ || !enabled_) return;
-			time_control_widget_.update(input_state_manager);
+		bool handleInput(const InputEvent& event) override {
+			if (!visible_ || !enabled_) return false;
+			return time_control_widget_.handleInput(event);
 		}
 
-		void draw() override {
+		void render() override {
 			if (!visible_ || !ui_layout_) return;
 
 			// 背景パネルを描画
 			drawBackground();
 
 			// コンポーネントを描画
-			time_control_widget_.draw();
-			calendar_renderer_.draw();
+			time_control_widget_.render();
+			calendar_renderer_.render();
 		}
 
 		/// @brief 時間操作ウィジェットとカレンダーレンダラーの可視性を設定

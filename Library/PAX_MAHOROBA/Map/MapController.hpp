@@ -118,7 +118,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // 入力処理を更新
-            if (visible[MurMur3::calcHash("Map")] || visible[MurMur3::calcHash("Simulation")]) {
+            if (visible.isVisible(MurMur3::calcHash("Map")) || visible.isVisible(MurMur3::calcHash("Simulation"))) {
                 if (simulator) {
                     settlement_input_handler_.update();
                 }
@@ -134,24 +134,6 @@ namespace paxs {
             cached_visible_ = &visible;
         }
 
-        /// @brief 既存のupdate()メソッド（後方互換性のため維持）
-        /// @brief Existing update() method (kept for backward compatibility)
-        void update(
-            MapViewport& map_viewport,
-            const paxs::Koyomi& koyomi,
-#ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
-#endif
-            paxs::FeatureVisibilityManager& visible
-            ) {
-            updateData(map_viewport, koyomi,
-#ifdef PAXS_USING_SIMULATOR
-                simulator,
-#endif
-                visible);
-            render();
-        }
-
         // IRenderable の実装
         // IRenderable implementation
 
@@ -164,7 +146,7 @@ namespace paxs {
             MapViewport& map_viewport = cached_map_viewport_;
             paxs::Koyomi& koyomi = cached_koyomi_;
 
-            if (visible[MurMur3::calcHash("Map")]) { // 地図が「可視」の場合は描画する
+            if (visible.isVisible(MurMur3::calcHash("Map"))) { // 地図が「可視」の場合は描画する
                 // フォントを取得
                 paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
 
@@ -227,7 +209,7 @@ namespace paxs {
 #endif
             }
 #ifdef PAXS_USING_SIMULATOR
-            else if (visible[MurMur3::calcHash("Simulation")]) {
+            else if (visible.isVisible(MurMur3::calcHash("Simulation"))) {
                 // シミュレーションのみ表示の場合
                 if (settlement_renderer.get() != nullptr && cached_simulator_ && *cached_simulator_ && (*cached_simulator_).get() != nullptr) {
                     auto& simulator = **cached_simulator_;
