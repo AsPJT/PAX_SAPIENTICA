@@ -355,9 +355,20 @@ namespace paxs {
             const paxs::Language& language_text = *cached_language_text_;
             paxs::Koyomi& koyomi = cached_koyomi_;
 
-            // バッチ描画開始（Siv3D用）
+            // 1. バッチ描画開始（Siv3D用）
             PanelBackground::beginBatch();
 
+            // 2. 背景ウィジェットを描画（バッチに登録）
+            for (auto* widget : widgets) {
+                if (widget && widget->getLayer() == RenderLayer::UIBackground) {
+                    widget->render();
+                }
+            }
+
+            // 3. バッチ描画終了（すべての背景を一括描画）
+            PanelBackground::endBatch(&shadow_texture, &internal_texture);
+
+            // 4. UIコンテンツを描画
             // マップ情報とシミュレーション統計を描画
             if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))) {
                 int simulation_start_y = ui_layout.getSimulationStartY();
@@ -369,9 +380,9 @@ namespace paxs {
                 );
             }
 
-            // ウィジェットを描画
+            // コンテンツウィジェットを描画
             for (auto* widget : widgets) {
-                if (widget) {
+                if (widget && widget->getLayer() != RenderLayer::UIBackground) {
                     widget->render();
                 }
             }
@@ -387,9 +398,6 @@ namespace paxs {
                     koyomi, ui_layout, simulation_start_y, select_language, language_text
                 );
             }
-
-            // バッチ描画終了（すべての影を一括描画）
-            PanelBackground::endBatch(&shadow_texture, &internal_texture);
         }
 
         /// @brief レイヤーを取得

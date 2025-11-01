@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -49,8 +49,11 @@ namespace paxs {
         // render() は各サブクラスで実装必須
         // render() must be implemented by each subclass
 
-        // getLayer() は各サブクラスで実装必須
-        // getLayer() must be implemented by each subclass
+        /// @brief このオブジェクトが属するレンダリングレイヤーを取得
+        /// @brief Get the rendering layer this object belongs to
+        /// @return レンダリングレイヤー / Rendering layer
+        ///
+        RenderLayer getLayer() const override = 0;
 
         // IInputHandler の実装
         // IInputHandler implementation
