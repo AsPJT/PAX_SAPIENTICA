@@ -245,11 +245,11 @@ namespace paxs {
             if (!visible_ || !enabled_ || cached_visible_ == nullptr) return false;
 
 #ifdef PAXS_USING_SIMULATOR
-            // 集落の入力処理（Phase 14でhandleInput()に移行予定）
-            // Settlement input processing (will migrate to handleInput() in Phase 14)
+            // 集落の入力処理
+            // Settlement input processing
             if (cached_visible_->isVisible(MurMur3::calcHash("Map")) || cached_visible_->isVisible(MurMur3::calcHash("Simulation"))) {
                 if (cached_simulator_ && *cached_simulator_) {
-                    settlement_input_handler_.update();
+                    settlement_input_handler_.handleInput(event);
                 }
             }
 #endif
