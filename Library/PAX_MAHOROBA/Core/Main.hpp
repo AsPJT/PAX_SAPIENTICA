@@ -125,12 +125,12 @@ namespace paxs {
             if (!visible.isVisible(MurMur3::calcHash(2, "3D"))) {
                 // キーボード入力（座標に依存しない）
                 // Keyboard input (coordinate-independent)
-                // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
+                // 優先順位: UI (400) → MapContentManager (200) → MapViewportInputHandler (0)
                 graphics_manager.getInputRouter().routeKeyboardInput(&input_state_manager);
 
                 // マウスホイール入力（座標に依存しない）
                 // Mouse wheel input (coordinate-independent)
-                // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
+                // 優先順位: UI (400) → MapContentManager (200) → MapViewportInputHandler (0)
                 graphics_manager.getInputRouter().routeMouseWheelInput(&input_state_manager);
 
                 // マウス/タッチ入力（座標ベース）
@@ -162,7 +162,7 @@ namespace paxs {
                 event.prev_x = mouse->getPosXBefore1Frame();
                 event.prev_y = mouse->getPosYBefore1Frame();
 
-                // 優先順位: UI (400) → MapController (200) → MapViewportInputHandler (0)
+                // 優先順位: UI (400) → MapContentManager (200) → MapViewportInputHandler (0)
                 graphics_manager.getInputRouter().routeInput(event);
             }
 

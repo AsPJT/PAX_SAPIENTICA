@@ -51,9 +51,6 @@ namespace paxs {
 
     /// @brief UIレイヤーの統合管理を担当するクラス
     /// @brief Integrated management class for UI layer
-    ///
-    /// IRenderable と IInputHandler を継承し、レイヤーベースシステムに対応します。
-    /// Inherits IRenderable and IInputHandler to support layer-based system.
     class UILayer : public IRenderable, public IInputHandler {
     private:
         bool visible_ = true;

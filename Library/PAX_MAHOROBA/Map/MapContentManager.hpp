@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_MAP_CONTROLLER_HPP
-#define PAX_MAHOROBA_MAP_CONTROLLER_HPP
+#ifndef PAX_MAHOROBA_MAP_CONTENT_MANAGER_HPP
+#define PAX_MAHOROBA_MAP_CONTENT_MANAGER_HPP
 
 #include <memory>
 
@@ -26,7 +26,6 @@
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonNameManager.hpp>
-#include <PAX_MAHOROBA/Map/MapRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
@@ -39,12 +38,12 @@
 
 namespace paxs {
 
-    /// @brief 地図コントローラー（統合制御クラス）
-    /// @brief Map Controller (Integrated Control Class)
+    /// @brief 地図コンテンツ管理クラス
+    /// @brief Map Content Manager
     ///
-    /// IRenderable と IInputHandler を継承し、レイヤーベースシステムに対応します。
-    /// Inherits IRenderable and IInputHandler to support layer-based system.
-    class MapController : public IRenderable, public IInputHandler {
+    /// 地図上のコンテンツ（地名、人名、集落等）の管理と描画を統合的に担当します。
+    /// Manages and renders map content (place names, person names, settlements, etc.) in an integrated manner.
+    class MapContentManager : public IRenderable, public IInputHandler {
     private:
         std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
 
@@ -55,7 +54,6 @@ namespace paxs {
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
 #endif
         paxs::map::MapDomainLogic map_domain_logic_; // ドメインロジック
-        MapRenderer renderer_; // 描画処理
 
         // 依存性注入された参照
         FontManager* font_manager_ = nullptr;
@@ -74,7 +72,7 @@ namespace paxs {
         paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
 
     public:
-        MapController()
+        MapContentManager()
             :texture_manager_(std::make_unique<TextureManager>())
 #ifdef PAXS_USING_SIMULATOR
             ,settlement_renderer(std::make_unique<SettlementRenderer>())
@@ -116,15 +114,6 @@ namespace paxs {
             // データ更新
             texture_manager_->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
 
-#ifdef PAXS_USING_SIMULATOR
-            // 入力処理を更新
-            if (visible.isVisible(MurMur3::calcHash("Map")) || visible.isVisible(MurMur3::calcHash("Simulation"))) {
-                if (simulator) {
-                    settlement_input_handler_.update();
-                }
-            }
-#endif
-
             // 描画用にデータをキャッシュ
             cached_map_viewport_ = map_viewport;
             cached_koyomi_ = koyomi;
@@ -158,8 +147,7 @@ namespace paxs {
                 const double julian_day = koyomi.jdn.cgetDay();
 
                 // 地名を描画
-                renderer_.drawPlaceNames(
-                    place_name_manager_,
+                place_name_manager_.draw(
                     visible,
                     julian_day,
                     width,
@@ -172,8 +160,7 @@ namespace paxs {
                 );
 
                 // 人名を描画
-                renderer_.drawPersonNames(
-                    person_name_manager_,
+                person_name_manager_.draw(
                     julian_day,
                     width,
                     height,
@@ -189,8 +176,7 @@ namespace paxs {
                     auto& simulator = **cached_simulator_;
 
                     // エージェントを描画
-                    renderer_.drawSettlements(
-                        *settlement_renderer,
+                    settlement_renderer->draw(
                         julian_day,
                         simulator.getSettlementGrids(),
                         simulator.getMarriagePosList(),
@@ -204,7 +190,7 @@ namespace paxs {
                     );
 
                     // エージェントのテキストを描画
-                    renderer_.drawSettlementText(*settlement_renderer, settlement_input_handler_.getSelectDraw());
+                    settlement_renderer->drawText(settlement_input_handler_.getSelectDraw());
                 }
 #endif
             }
@@ -256,8 +242,18 @@ namespace paxs {
         /// @brief 入力処理
         /// @brief Handle input
         bool handleInput(const InputEvent& event) override {
-            // TODO: 入力処理の実装
-            // 現在は update() 内で処理されている
+            if (!visible_ || !enabled_ || cached_visible_ == nullptr) return false;
+
+#ifdef PAXS_USING_SIMULATOR
+            // 集落の入力処理（Phase 14でhandleInput()に移行予定）
+            // Settlement input processing (will migrate to handleInput() in Phase 14)
+            if (cached_visible_->isVisible(MurMur3::calcHash("Map")) || cached_visible_->isVisible(MurMur3::calcHash("Simulation"))) {
+                if (cached_simulator_ && *cached_simulator_) {
+                    settlement_input_handler_.update();
+                }
+            }
+#endif
+            // 入力を消費しない（背後のハンドラーにも伝播させる）
             return false;
         }
 
@@ -277,4 +273,4 @@ namespace paxs {
     };
 }
 
-#endif // !PAX_MAHOROBA_MAP_CONTROLLER_HPP
+#endif // !PAX_MAHOROBA_MAP_CONTENT_MANAGER_HPP

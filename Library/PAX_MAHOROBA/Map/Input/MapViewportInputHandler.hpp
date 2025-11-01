@@ -316,7 +316,7 @@ namespace paxs {
         /// @brief Get layer
         /// @return Backgroundレイヤー（最低優先度） / Background layer (lowest priority)
         RenderLayer getLayer() const override {
-            // 最も低い優先度（UI、MapControllerの後）
+            // 最も低い優先度（UI、MapContentManagerの後）
             return RenderLayer::Background;
         }
 

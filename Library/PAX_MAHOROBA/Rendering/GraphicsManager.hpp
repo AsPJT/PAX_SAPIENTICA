@@ -15,7 +15,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Input/InputRouter.hpp>
-#include <PAX_MAHOROBA/Map/MapController.hpp>
+#include <PAX_MAHOROBA/Map/MapContentManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
 #include <PAX_MAHOROBA/Map/Input/MapViewportInputHandler.hpp>
@@ -42,7 +42,7 @@ namespace paxs {
 		FontManager font_manager_;
 		TileManager tile_manager_;
 		UILayer ui_manager_;
-		MapController map_controller_;
+		MapContentManager map_content_manager_;
 
 		// レイヤーベースシステム（フェーズ1: 並行運用）
 		// Layer-based system (Phase 1: parallel operation)
@@ -64,18 +64,18 @@ namespace paxs {
 		) {
 			font_manager_.init(select_language);
 			ui_manager_.init(font_manager_, select_language, language_text, simulation_text);
-			map_controller_.init(font_manager_, select_language);
+			map_content_manager_.init(font_manager_, select_language);
 
 			// レイヤーシステムに各コンポーネントを登録
 			// Register components to layer system
 			render_layer_manager_.registerRenderable(&tile_manager_);
-			render_layer_manager_.registerRenderable(&map_controller_);
+			render_layer_manager_.registerRenderable(&map_content_manager_);
 			render_layer_manager_.registerRenderable(&ui_manager_);
 
 			// 入力ルーターに各コンポーネントを登録（UIが優先）
 			// Register components to input router (UI has priority)
 			input_router_.registerHandler(&ui_manager_);
-			input_router_.registerHandler(&map_controller_);
+			input_router_.registerHandler(&map_content_manager_);
 		}
 
 		/// @brief MapViewportInputHandlerを設定
@@ -101,9 +101,10 @@ namespace paxs {
 		UILayer& getUILayer() { return ui_manager_; }
 		const UILayer& getUILayer() const { return ui_manager_; }
 
-		/// @brief MapControllerへのアクセス
-		MapController& getMapController() { return map_controller_; }
-		const MapController& getMapController() const { return map_controller_; }
+		/// @brief MapContentManagerへのアクセス
+		/// @brief Access to MapContentManager
+		MapContentManager& getMapContentManager() { return map_content_manager_; }
+		const MapContentManager& getMapContentManager() const { return map_content_manager_; }
 
 		/// @brief RenderLayerManagerへのアクセス
 		/// @brief Access to RenderLayerManager
@@ -133,7 +134,7 @@ namespace paxs {
 			// Update data only (drawing is separated)
 			tile_manager_.updateData(visible, map_viewport, koyomi.jdn.cgetDay());
 
-			map_controller_.updateData(
+			map_content_manager_.updateData(
 				map_viewport,
 				koyomi,
 #ifdef PAXS_USING_SIMULATOR

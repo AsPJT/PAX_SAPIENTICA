@@ -24,9 +24,6 @@ namespace paxs {
 
     /// @brief UIウィジェットの共通インターフェース
     /// @brief Common interface for UI widgets
-    ///
-    /// IRenderable と IInputHandler を継承し、レイヤーベースシステムに対応します。
-    /// Inherits IRenderable and IInputHandler to support layer-based system.
     class IUIWidget : public IRenderable, public IInputHandler {
     public:
         virtual ~IUIWidget() = default;
