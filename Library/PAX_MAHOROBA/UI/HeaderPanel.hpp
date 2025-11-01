@@ -21,7 +21,6 @@
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar.hpp>
-#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
@@ -71,9 +70,6 @@ namespace paxs {
             calculateLayout();
         }
 
-        /// @brief 影用のテクスチャを設定
-        /// @brief Set textures for shadow rendering
-        void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex);
 
         /// @brief GitHubアイコンのテクスチャを設定
         /// @brief Set GitHub icon texture
@@ -137,9 +133,6 @@ namespace paxs {
         void render() override {
             if (!visible_) return;
 
-            // 背景パネルを描画（影付き）
-            drawBackground();
-
             // メニューバーと言語選択を描画
             menu_bar_.render();
             language_selector_.render();
@@ -191,27 +184,9 @@ namespace paxs {
         const SelectLanguage* select_language_ = nullptr;
         const paxs::Language* language_text_ = nullptr;
 
-        PanelBackground background_;  // 背景と影の描画
-
         // GitHubアイコンテクスチャ（外部から注入）
         const paxg::Texture* github_texture_ = nullptr;
-
-        /// @brief 背景パネルを描画
-        /// @brief Draw background panel
-        void drawBackground() {
-            background_.drawRect(
-                0, 0,
-                paxg::Window::width(),
-                getHeight(),
-                paxg::Color{243, 243, 243}
-            );
-        }
     };
-
-    // Inline implementations
-    inline void HeaderPanel::setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
-        background_.setShadowTextures(shadow_tex, internal_tex);
-    }
 
 } // namespace paxs
 

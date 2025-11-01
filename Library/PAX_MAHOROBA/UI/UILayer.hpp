@@ -32,6 +32,7 @@
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
+#include <PAX_MAHOROBA/UI/HeaderPanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/SimulationPanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/SettlementStatusPanelBackground.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
@@ -86,6 +87,7 @@ namespace paxs {
         paxs::HeaderPanel header_panel;  // ヘッダーパネル（メニューバー + 言語選択）
 
         // 背景コンポーネント
+        paxs::HeaderPanelBackground header_bg_;
         paxs::CalendarPanelBackground calendar_bg_;
 #ifdef PAXS_USING_SIMULATOR
         paxs::SimulationPanelBackground simulation_bg_;
@@ -146,6 +148,7 @@ namespace paxs {
             // IWidget を実装したウィジェットを登録
             widgets.clear();
             // 背景コンポーネント（RenderLayer::UIBackground = 300）
+            widgets.push_back(&header_bg_);
             widgets.push_back(&calendar_bg_);
 #ifdef PAXS_USING_SIMULATOR
             widgets.push_back(&simulation_bg_);
@@ -266,6 +269,9 @@ namespace paxs {
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
             // 背景コンポーネントに影テクスチャとレイアウトを設定
+            header_bg_.setShadowTextures(shadow_texture, internal_texture);
+            header_bg_.setHeight(header_panel.getHeight());
+
             calendar_bg_.setShadowTextures(shadow_texture, internal_texture);
             calendar_bg_.setLayout(ui_layout.calendar_panel);
 
@@ -277,9 +283,6 @@ namespace paxs {
             // SettlementStatusPanelのレイアウトは動的（テキストサイズに依存）
             // 後でコンテンツ側から設定
 #endif
-
-            // 各パネルに影テクスチャを設定
-            header_panel.setShadowTextures(shadow_texture, internal_texture);
 #ifdef PAXS_USING_SIMULATOR
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
                 map_viewport, font_manager_->getLanguageFonts(), select_language, language_text,
