@@ -72,12 +72,6 @@ namespace paxs {
 			time_control_widget_.setPos(paxg::Vec2i{ui_layout_->time_control_base_x, ui_layout_->koyomi_font_y + ui_layout_->time_control_base_y});
 		}
 
-		/// @brief 影用のテクスチャを設定
-		/// @brief Set textures for shadow rendering
-		void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
-			background_.setShadowTextures(shadow_tex, internal_tex);
-		}
-
 		/// @brief IWidget インターフェースの実装
 		const char* getName() const override {
 			return "CalendarPanel";
@@ -100,9 +94,6 @@ namespace paxs {
 
 		void render() override {
 			if (!visible_ || !ui_layout_) return;
-
-			// 背景パネルを描画
-			drawBackground();
 
 			// コンポーネントを描画
 			time_control_widget_.render();
@@ -157,21 +148,9 @@ namespace paxs {
 
 		TimeControlWidget time_control_widget_;   // 時間操作ウィジェット
 		CalendarWidget calendar_widget_;          // カレンダー表示ウィジェット
-		PanelBackground background_;              // 背景と影の描画
 
 		const UILayout* ui_layout_ = nullptr;
 		const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;
-
-		/// @brief 背景パネルを描画
-		/// @brief Draw background panel
-		void drawBackground() {
-			background_.draw(
-				ui_layout_->rect_start_x,
-				ui_layout_->koyomi_font_y - 15,
-				ui_layout_->rect_len_x,
-				ui_layout_->next_rect_start_y
-			);
-		}
 	};
 
 } // namespace paxs

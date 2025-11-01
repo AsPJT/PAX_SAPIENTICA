@@ -35,12 +35,6 @@ namespace paxs {
     public:
         SettlementStatusPanel() = default;
 
-        /// @brief 影用のテクスチャを設定
-        /// @brief Set textures for shadow rendering
-        void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
-            background_.setShadowTextures(shadow_tex, internal_tex);
-        }
-
         // IRenderable の実装
         void render() override {
             if (!visible_) return;
@@ -50,18 +44,6 @@ namespace paxs {
             constexpr int font_space = 20;  // 文字端から背景端までの幅
 
             std::string text = getStatusText(select_draw_);
-
-            const int text_width = select_font_.width(text);
-            const int text_height = select_font_.height();
-
-            // 背景を描画
-            background_.draw(
-                start_x, start_y,
-                text_width + font_space * 2,
-                text_height + font_space * 2,
-                10,  // corner_radius
-                paxg::Color{255, 255, 255}  // bg_color
-            );
 
             // テキストを描画
             select_font_.draw(text, paxg::Vec2i{ start_x + font_space, start_y + font_space },
@@ -127,7 +109,6 @@ namespace paxs {
         bool enabled_ = true;
         paxg::Vec2i pos_{ 0, 0 };
         paxg::Font select_font_{ 30, "", 3 };  // 選択肢を表示するフォント
-        PanelBackground background_;  // 背景と影の描画
 
         /// @brief 表示モードに応じたテキストを取得
         /// @brief Get text according to display mode

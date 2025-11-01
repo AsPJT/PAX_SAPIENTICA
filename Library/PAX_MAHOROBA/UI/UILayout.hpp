@@ -18,9 +18,45 @@
 
 namespace paxs {
 
+    /// @brief パネルのレイアウト情報
+    /// @brief Panel layout information
+    struct PanelLayout {
+        // パネルの境界
+        int x = 0;
+        int y = 0;
+        int width = 0;
+        int height = 0;
+
+        // コンテンツ領域（パディング考慮後）
+        int content_x = 0;
+        int content_y = 0;
+        int content_width = 0;
+        int content_height = 0;
+
+        // パディング
+        int padding_top = 15;
+        int padding_bottom = 15;
+        int padding_left = 15;
+        int padding_right = 15;
+
+        /// @brief コンテンツ領域を計算
+        /// @brief Calculate content area
+        void calculateContentArea() {
+            content_x = x + padding_left;
+            content_y = y + padding_top;
+            content_width = width - padding_left - padding_right;
+            content_height = height - padding_top - padding_bottom;
+        }
+    };
+
     // UIのレイアウト情報
     // パネルの位置とサイズを計算・保持
     struct UILayout {
+        // 各パネルのレイアウト
+        PanelLayout calendar_panel;
+        PanelLayout simulation_panel;
+        PanelLayout settlement_status_panel;
+
         // カレンダーテキストの位置
         int koyomi_font_y;
         int koyomi_font_en_y;
@@ -66,6 +102,24 @@ namespace paxs {
 
             next_rect_start_y = time_control_base_y + time_control_height + 50;
             next_rect_end_y = 280;
+
+            // CalendarPanelのレイアウト
+            calendar_panel.x = rect_start_x;
+            calendar_panel.y = koyomi_font_y - 15;
+            calendar_panel.width = rect_len_x;
+            calendar_panel.height = next_rect_start_y;
+            calendar_panel.calculateContentArea();
+
+            // SimulationPanelのレイアウト
+            int simulation_start_y = getSimulationStartY();
+            simulation_panel.x = rect_start_x;
+            simulation_panel.y = simulation_start_y - 15;
+            simulation_panel.width = rect_len_x;
+            simulation_panel.height = next_rect_end_y;
+            simulation_panel.calculateContentArea();
+
+            // SettlementStatusPanelのレイアウトは動的（テキストサイズに依存）
+            // コンテンツ側で計算してsetLayout()で設定
         }
 
         // シミュレーション情報の開始Y座標を取得

@@ -66,16 +66,6 @@ namespace paxs {
         const paxs::Language* language_text_ = nullptr;
 
         // 影描画用テクスチャ（外部から注入）
-        paxg::RenderTexture* shadow_texture_ = nullptr;
-        paxg::RenderTexture* internal_texture_ = nullptr;
-
-        // 背景の位置とサイズ
-        int bg_start_x_ = 0;
-        int bg_start_y_ = 0;
-        int bg_width_ = 0;
-        int bg_height_ = 0;
-
-        PanelBackground background_;  // 背景と影の描画
         /// @brief シミュレーションを初期化する
         /// @brief Initialize the simulation
         /// @param simulator シミュレータのユニークポインタ
@@ -300,23 +290,6 @@ namespace paxs {
             key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
         }
 
-        /// @brief 影用のテクスチャを設定
-        /// @brief Set textures for shadow rendering
-        void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
-            shadow_texture_ = &shadow_tex;
-            internal_texture_ = &internal_tex;
-            background_.setShadowTextures(shadow_tex, internal_tex);
-        }
-
-        /// @brief 背景の位置とサイズを設定
-        /// @brief Set background position and size
-        void setBackgroundRect(int start_x, int start_y, int width, int height) {
-            bg_start_x_ = start_x;
-            bg_start_y_ = start_y;
-            bg_width_ = width;
-            bg_height_ = height;
-        }
-
         /// @brief シミュレーションの更新と描画
         /// @brief Update and draw simulation
         /// @param simulator シミュレータのユニークポインタ
@@ -445,8 +418,6 @@ namespace paxs {
             if (!visible_) return;
             if (!simulator_ptr_ || !visible_list_ || !koyomi_) return;
 
-            drawBackground();
-
             // プルダウンの描画
             drawPulldown(*simulator_ptr_, *visible_list_);
 
@@ -459,22 +430,6 @@ namespace paxs {
         }
 
     private:
-        /// @brief シミュレーションパネルの背景を描画
-        /// @brief Draw simulation panel background
-        void drawBackground() {
-            if (bg_width_ <= 0 || bg_height_ <= 0) return;
-
-            // PanelBackgroundを使用してバッチ描画に参加
-            background_.draw(
-                bg_start_x_,
-                bg_start_y_,
-                bg_width_,
-                bg_height_,
-                10,  // corner_radius
-                paxg::Color{243, 243, 243}  // bg_color
-            );
-        }
-
         /// @brief Z拡大率を描画
         /// @brief Draw Z magnification
         void drawZMagnification() {

@@ -28,9 +28,12 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/CalendarPanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
+#include <PAX_MAHOROBA/UI/SimulationPanelBackground.hpp>
+#include <PAX_MAHOROBA/UI/SettlementStatusPanelBackground.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
@@ -81,6 +84,13 @@ namespace paxs {
         int size_change_count_ = 0;
 
         paxs::HeaderPanel header_panel;  // ヘッダーパネル（メニューバー + 言語選択）
+
+        // 背景コンポーネント
+        paxs::CalendarPanelBackground calendar_bg_;
+#ifdef PAXS_USING_SIMULATOR
+        paxs::SimulationPanelBackground simulation_bg_;
+        paxs::SettlementStatusPanelBackground settlement_status_bg_;
+#endif
 
         // IWidget を実装したウィジェットの統合管理
         std::vector<IWidget*> widgets;
@@ -135,10 +145,18 @@ namespace paxs {
 
             // IWidget を実装したウィジェットを登録
             widgets.clear();
+            // 背景コンポーネント（RenderLayer::UIBackground = 300）
+            widgets.push_back(&calendar_bg_);
+#ifdef PAXS_USING_SIMULATOR
+            widgets.push_back(&simulation_bg_);
+            widgets.push_back(&settlement_status_bg_);
+#endif
+            // コンテンツコンポーネント（RenderLayer::UIContent = 400）
             widgets.push_back(&calendar_panel);
             widgets.push_back(&debug_info_panel);
 #ifdef PAXS_USING_SIMULATOR
             widgets.push_back(&simulation_panel);
+            widgets.push_back(&settlement_status_panel);
 #endif
             widgets.push_back(&header_panel);
 
@@ -247,40 +265,49 @@ namespace paxs {
             // UIレイアウトを計算
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
+            // 背景コンポーネントに影テクスチャとレイアウトを設定
+            calendar_bg_.setShadowTextures(shadow_texture, internal_texture);
+            calendar_bg_.setLayout(ui_layout.calendar_panel);
+
+#ifdef PAXS_USING_SIMULATOR
+            simulation_bg_.setShadowTextures(shadow_texture, internal_texture);
+            simulation_bg_.setLayout(ui_layout.simulation_panel);
+
+            settlement_status_bg_.setShadowTextures(shadow_texture, internal_texture);
+            // SettlementStatusPanelのレイアウトは動的（テキストサイズに依存）
+            // 後でコンテンツ側から設定
+#endif
+
             // 各パネルに影テクスチャを設定
             header_panel.setShadowTextures(shadow_texture, internal_texture);
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.setShadowTextures(shadow_texture, internal_texture);
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
                 map_viewport, font_manager_->getLanguageFonts(), select_language, language_text,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 
-            // SimulationPanelの背景を設定
-            int simulation_start_y = ui_layout.getSimulationStartY();
-            simulation_panel.setBackgroundRect(
-                ui_layout.rect_start_x,
-                simulation_start_y - 15,
-                ui_layout.rect_len_x,
-                ui_layout.next_rect_end_y
-            );
+            // SimulationPanel背景の可視性を同期
+            simulation_bg_.setVisible(simulation_panel.isVisible());
 
-            settlement_status_panel.setShadowTextures(shadow_texture, internal_texture);
+            // SettlementStatusPanel背景の可視性を同期
+            settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
 
             // CalendarPanelの可視性と設定
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))) {
+            bool calendar_visible = visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"));
+            if (calendar_visible) {
 #ifdef PAXS_USING_SIMULATOR
                 bool is_simulator_active = (simulator != nullptr);
 #else
                 bool is_simulator_active = false;
 #endif
-                calendar_panel.setShadowTextures(shadow_texture, internal_texture);
                 calendar_panel.setLayout(ui_layout, key_value_tsv.get());
                 calendar_panel.setCalendarParams(koyomi, select_language, language_text, is_simulator_active);
                 calendar_panel.setTimeControlParams(koyomi);
                 calendar_panel.setVisible(true);
+                calendar_bg_.setVisible(true);
             } else {
                 calendar_panel.setVisible(false);
+                calendar_bg_.setVisible(false);
             }
 
             // DebugInfoPanelの可視性と設定
@@ -341,11 +368,6 @@ namespace paxs {
 #endif
                 );
             }
-
-#ifdef PAXS_USING_SIMULATOR
-            // Settlement ステータスパネルを描画
-            settlement_status_panel.render();
-#endif
 
             // ウィジェットを描画
             for (auto* widget : widgets) {
