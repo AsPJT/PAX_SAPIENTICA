@@ -40,7 +40,7 @@ namespace paxs {
         void emplace(const std::uint_least32_t key_, const Value& value_) {
             path_list.emplace(key_, value_);
         }
-        bool contains(const std::uint_least32_t key_) {
+        bool contains(const std::uint_least32_t key_) const {
             return path_list.contains(key_);
         }
 

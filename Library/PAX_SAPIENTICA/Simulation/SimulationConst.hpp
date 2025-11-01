@@ -445,7 +445,10 @@ namespace paxs {
             if (str.size() == 0) return; std::cout << model_name_;
 
             KeyValueTSV<std::string> kvt;
-            kvt.input(str);
+            if (!kvt.input(str)) {
+                PAXS_WARNING("Failed to read Simulation Constants TSV file: " + str);
+                return;
+            }
 
             stoiFunc(kvt, MurMur3::calcHash("start_julian_day"), [&](const std::string& str_) {start_julian_day = std::stoi(str_); });
             stoiFunc(kvt, MurMur3::calcHash("area"), [&](const std::string& str_) {area = MurMur3::calcHash(str_.size(), str_.c_str()); });

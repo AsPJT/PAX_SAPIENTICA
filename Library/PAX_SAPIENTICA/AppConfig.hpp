@@ -35,10 +35,17 @@ namespace paxs {
         }
 
         std::string getDataSettings(const std::uint_least32_t key_) const {
+            if (!data_settings.contains(key_)) {
+                PAXS_WARNING("Data settings key " + std::to_string(key_) + " not found.");
+                return std::string{};
+            }
             return data_settings[key_];
         }
         // 指定したキーのデータ設定が存在している場合は true を返す
         bool isDataSettings(const std::uint_least32_t key_) const {
+            if (!data_settings.contains(key_)) {
+                return false;
+            }
             return (data_settings[key_].size() != 0);
         }
         template<typename Func_>
@@ -70,10 +77,16 @@ namespace paxs {
 
         AppConfig() {
             KeyValueTSV<std::string> key_value_tsv;
-            key_value_tsv.input("Config.tsv");
+            if (!key_value_tsv.input("Config.tsv")) {
+                PAXS_ERROR("Failed to load AppConfig: Config.tsv");
+                return;
+            }
             root_path = key_value_tsv[MurMur3::calcHash("asset_file")];
 
-            data_settings.input(root_path + "Data/Settings.tsv");
+            if (!data_settings.input(root_path + "Data/Settings.tsv")) {
+                PAXS_ERROR("Failed to load AppConfig Data Settings: " + root_path + "Data/Settings.tsv");
+                return;
+            }
         }
 
         ~AppConfig() {

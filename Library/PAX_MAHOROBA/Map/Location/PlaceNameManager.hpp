@@ -53,7 +53,9 @@ namespace paxs {
 				[&](const std::string& path_) {str = path_; });
 			if (str.size() == 0) return;
 
-			key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ value_ }; });
+			if (!key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
+                PAXS_ERROR("Failed to load texture KeyValueTSV: " + str);
+			}
 		}
 
 		// IRenderable の実装

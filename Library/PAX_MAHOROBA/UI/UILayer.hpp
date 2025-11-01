@@ -134,7 +134,9 @@ namespace paxs {
             header_panel.init(&select_language, &language_text, font_manager_->getLanguageFonts());
 
             // 暦の時間操作のアイコン
-            key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
+            if (!key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
+                PAXS_ERROR("Failed to load texture KeyValueTSV: Data/MenuIcon/MenuIcons.tsv");
+            }
 
             // HeaderPanelにGitHubアイコンを設定
             header_panel.setGitHubTexture(&key_value_tsv.get().at(MurMur3::calcHash("texture_github")));
