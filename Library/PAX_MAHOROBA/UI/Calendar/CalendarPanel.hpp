@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
-#include <PAX_MAHOROBA/UI/Calendar/CalendarRenderer.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/CalendarWidget.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/TimeControlWidget.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
@@ -41,7 +41,7 @@ namespace paxs {
 		/// @brief Initialize
 		/// @param fonts LanguageFontsへの参照
 		void init(paxs::LanguageFonts& fonts) {
-			calendar_renderer_.init(fonts);
+			calendar_widget_.init(fonts);
 		}
 
 		/// @brief レイアウトとテクスチャの参照を設定
@@ -61,7 +61,7 @@ namespace paxs {
 			const paxs::Language& language_text,
 			bool is_simulator_active
 		) {
-			calendar_renderer_.setRenderParams(koyomi, *ui_layout_, select_language, language_text, is_simulator_active);
+			calendar_widget_.setRenderParams(koyomi, *ui_layout_, select_language, language_text, is_simulator_active);
 		}
 
 		/// @brief 時間操作ウィジェットの参照を設定
@@ -107,15 +107,15 @@ namespace paxs {
 
 			// コンポーネントを描画
 			time_control_widget_.render();
-			calendar_renderer_.render();
+			calendar_widget_.render();
 		}
 
-		/// @brief 時間操作ウィジェットとカレンダーレンダラーの可視性を設定
-		/// @brief Set visibility of time control widget and calendar renderer
+		/// @brief 時間操作ウィジェットとカレンダーウィジェットの可視性を設定
+		/// @brief Set visibility of time control widget and calendar widget
 		void setVisible(bool visible) override {
 			visible_ = visible;
 			time_control_widget_.setVisible(visible);
-			calendar_renderer_.setVisible(visible);
+			calendar_widget_.setVisible(visible);
 		}
 
 		bool isVisible() const override {
@@ -157,7 +157,7 @@ namespace paxs {
 		paxg::Vec2i pos_{0, 0};
 
 		TimeControlWidget time_control_widget_;   // 時間操作ウィジェット
-		CalendarRenderer calendar_renderer_;      // カレンダー表示
+		CalendarWidget calendar_widget_;          // カレンダー表示ウィジェット
 
 		const UILayout* ui_layout_ = nullptr;
 		const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;

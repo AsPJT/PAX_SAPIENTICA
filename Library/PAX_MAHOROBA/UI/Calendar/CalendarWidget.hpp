@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_CALENDAR_RENDERER_HPP
-#define PAX_MAHOROBA_CALENDAR_RENDERER_HPP
+#ifndef PAX_MAHOROBA_CALENDAR_WIDGET_HPP
+#define PAX_MAHOROBA_CALENDAR_WIDGET_HPP
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
@@ -29,8 +29,12 @@
 
 namespace paxs {
 
-    // カレンダー表示を担当するクラス
-    class CalendarRenderer : public IUIWidget {
+    /// @brief カレンダー表示ウィジェット
+    /// @brief Calendar display widget
+    ///
+    /// カレンダー情報の描画を担当します。
+    /// Handles rendering of calendar information.
+    class CalendarWidget : public IUIWidget {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
@@ -39,7 +43,7 @@ namespace paxs {
 
         // IUIWidget インターフェースの実装（コンポーネント情報）
         const char* getName() const override {
-            return "CalendarRenderer";
+            return "CalendarWidget";
         }
 
         /// @brief レンダリングレイヤーを取得
@@ -242,7 +246,8 @@ namespace paxs {
     public:
         // IUIWidget インターフェースの実装
         bool handleInput(const InputEvent& event) override {
-            // CalendarRendererは入力処理を行わない
+            // CalendarWidgetは入力処理を行わない（読み取り専用）
+            // CalendarWidget does not handle input (read-only)
             (void)event;
             return false;
         }
@@ -275,7 +280,8 @@ namespace paxs {
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
 
-        // CalendarRenderer固有の参照設定メソッド
+        // CalendarWidget固有の参照設定メソッド
+        // CalendarWidget-specific method to set render parameters
         void setRenderParams(
             const paxs::Koyomi& koyomi,
             const paxs::UILayout& ui_layout,
@@ -293,4 +299,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_MAHOROBA_CALENDAR_RENDERER_HPP
+#endif // !PAX_MAHOROBA_CALENDAR_WIDGET_HPP
