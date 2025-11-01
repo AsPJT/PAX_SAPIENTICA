@@ -24,7 +24,6 @@
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/3DModel.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>

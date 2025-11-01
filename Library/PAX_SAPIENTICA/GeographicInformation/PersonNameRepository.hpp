@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_PERSON_NAME_REPOSITORY_HPP
-#define PAX_MAHOROBA_PERSON_NAME_REPOSITORY_HPP
+#ifndef PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_PERSON_NAME_REPOSITORY_HPP
+#define PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_PERSON_NAME_REPOSITORY_HPP
 
 #include <algorithm>
 #include <cstdint>
@@ -306,4 +306,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_MAHOROBA_PERSON_NAME_REPOSITORY_HPP
+#endif // !PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_PERSON_NAME_REPOSITORY_HPP

@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Map/Location/PersonNameRenderer.hpp>
-#include <PAX_MAHOROBA/Map/Location/PersonNameRepository.hpp>
+#include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>

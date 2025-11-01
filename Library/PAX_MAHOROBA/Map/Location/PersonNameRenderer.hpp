@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Map/Location/PersonNameRepository.hpp>
+#include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
 
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
