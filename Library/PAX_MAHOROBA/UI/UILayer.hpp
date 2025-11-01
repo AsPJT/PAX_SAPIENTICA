@@ -254,6 +254,16 @@ namespace paxs {
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
                 map_viewport, font_manager_->getLanguageFonts(), select_language, language_text,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+
+            // SimulationPanelの背景を設定
+            int debug_start_y = ui_layout.getDebugStartY();
+            simulation_panel.setBackgroundRect(
+                ui_layout.rect_start_x,
+                debug_start_y - 15,
+                ui_layout.rect_len_x,
+                ui_layout.next_rect_end_y
+            );
+
             settlement_status_panel.setShadowTextures(shadow_texture, internal_texture);
 #endif
 
@@ -275,14 +285,6 @@ namespace paxs {
 
             // DebugInfoPanelの可視性と設定
             if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))) {
-                int debug_start_y = ui_layout.getDebugStartY();
-                debug_info_panel.setShadowTextures(shadow_texture, internal_texture);
-                debug_info_panel.setBackgroundRect(
-                    ui_layout.rect_start_x,
-                    debug_start_y - 15,
-                    ui_layout.rect_len_x,
-                    ui_layout.next_rect_end_y
-                );
                 debug_info_panel.setVisible(true);
             } else {
                 debug_info_panel.setVisible(false);
@@ -341,10 +343,6 @@ namespace paxs {
             }
 
 #ifdef PAXS_USING_SIMULATOR
-            if (cached_simulator_ && *cached_simulator_) {
-                simulation_panel.drawPulldownBackground(*cached_simulator_, visible);
-            }
-
             // Settlement ステータスパネルを描画
             settlement_status_panel.render();
 #endif

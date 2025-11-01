@@ -65,6 +65,16 @@ namespace paxs {
         const SelectLanguage* select_language_ = nullptr;
         const paxs::Language* language_text_ = nullptr;
 
+        // 影描画用テクスチャ（外部から注入）
+        paxg::RenderTexture* shadow_texture_ = nullptr;
+        paxg::RenderTexture* internal_texture_ = nullptr;
+
+        // 背景の位置とサイズ
+        int bg_start_x_ = 0;
+        int bg_start_y_ = 0;
+        int bg_width_ = 0;
+        int bg_height_ = 0;
+
         PanelBackground background_;  // 背景と影の描画
         /// @brief シミュレーションを初期化する
         /// @brief Initialize the simulation
@@ -293,7 +303,18 @@ namespace paxs {
         /// @brief 影用のテクスチャを設定
         /// @brief Set textures for shadow rendering
         void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
+            shadow_texture_ = &shadow_tex;
+            internal_texture_ = &internal_tex;
             background_.setShadowTextures(shadow_tex, internal_tex);
+        }
+
+        /// @brief 背景の位置とサイズを設定
+        /// @brief Set background position and size
+        void setBackgroundRect(int start_x, int start_y, int width, int height) {
+            bg_start_x_ = start_x;
+            bg_start_y_ = start_y;
+            bg_width_ = width;
+            bg_height_ = height;
         }
 
         /// @brief シミュレーションの更新と描画
@@ -332,30 +353,6 @@ namespace paxs {
                         pulldown_y_
                     });
                     simulation_pulldown.render(); // シミュレーション選択
-                }
-            }
-        }
-
-        /// @brief シミュレーションプルダウンの背景描画
-        /// @brief Draw simulation pulldown background
-        /// @param simulator シミュレータのユニークポインタ
-        /// @param visible 可視性フラグ
-        void drawPulldownBackground(
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
-            paxs::FeatureVisibilityManager& visible
-        ) {
-            // シミュレーションのボタン
-            if (visible.isVisible(MurMur3::calcHash("Simulation")) && visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Calendar"))) {
-                if (simulator == nullptr) {
-                    const float panel_height = static_cast<float>(simulation_pulldown.getRect().h());
-                    const float panel_width = static_cast<float>(paxg::Window::width());
-
-                    background_.drawRect(
-                        0, 0,
-                        static_cast<int>(panel_width),
-                        static_cast<int>(panel_height),
-                        paxg::Color{243, 243, 243}
-                    );
                 }
             }
         }
@@ -448,6 +445,8 @@ namespace paxs {
             if (!visible_) return;
             if (!simulator_ptr_ || !visible_list_ || !koyomi_) return;
 
+            drawBackground();
+
             // プルダウンの描画
             drawPulldown(*simulator_ptr_, *visible_list_);
 
@@ -460,6 +459,38 @@ namespace paxs {
         }
 
     private:
+        /// @brief シミュレーションパネルの背景を描画
+        /// @brief Draw simulation panel background
+        void drawBackground() {
+            if (bg_width_ <= 0 || bg_height_ <= 0) return;
+
+#ifdef PAXS_USING_SIV3D
+            // Siv3D: Use high-quality shadow renderer with Gaussian blur
+            if (shadow_texture_ && internal_texture_) {
+                paxs::ShadowRenderer::renderShadowWithPanels(
+                    *shadow_texture_,
+                    *internal_texture_,
+                    [this]() {
+                        // 影の形状を描画
+                        paxg::RoundRect{ bg_start_x_, bg_start_y_,
+                                        bg_width_, bg_height_, 10 }.draw();
+                    },
+                    [this]() {
+                        // パネル本体を描画
+                        paxg::RoundRect{ bg_start_x_, bg_start_y_,
+                                        bg_width_, bg_height_, 10 }
+                            .draw(paxg::Color{243, 243, 243});
+                    }
+                );
+            }
+#else
+            // SFML/DxLib: Use simple shadow with drawShadow method
+            paxg::RoundRect{ bg_start_x_, bg_start_y_,
+                            bg_width_, bg_height_, 10 }
+                .drawShadow({1, 1}, 4, 1).draw(paxg::Color{243, 243, 243});
+#endif
+        }
+
         /// @brief Z拡大率を描画
         /// @brief Draw Z magnification
         void drawZMagnification() {
