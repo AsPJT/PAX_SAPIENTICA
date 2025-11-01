@@ -24,7 +24,7 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
@@ -47,7 +47,7 @@
 namespace paxs {
     /// @brief シミュレーションのパネルクラス
     /// @brief Simulation panel class
-    class SimulationPanel : public IUIWidget {
+    class SimulationPanel : public IWidget {
     private:
         bool visible_ = true;
         bool enabled_ = true;
@@ -358,7 +358,7 @@ namespace paxs {
         }
 
         // ========================================
-        // IUIWidget インターフェース実装
+        // IWidget インターフェース実装
         // ========================================
 
         /// @brief コンポーネント名を取得
@@ -415,7 +415,7 @@ namespace paxs {
             debug_start_y_ = debug_start_y;
         }
 
-        /// @brief 入力処理（IUIWidget）
+        /// @brief 入力処理（IWidget）
         bool handleInput(const InputEvent& event) override {
             if (!visible_ || !enabled_) return false;
             if (!simulator_ptr_ || !koyomi_ || !visible_list_) return false;
@@ -440,7 +440,7 @@ namespace paxs {
             return true;
         }
 
-        /// @brief 描画処理（IUIWidget）
+        /// @brief 描画処理（IWidget）
         void render() override {
             if (!visible_) return;
             if (!simulator_ptr_ || !visible_list_ || !koyomi_) return;

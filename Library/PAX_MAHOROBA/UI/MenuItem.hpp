@@ -19,7 +19,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/Language.hpp>
@@ -32,7 +32,7 @@ namespace paxs {
 	/// @brief Dropdown item for menu bar
 	/// @details 固定のヘッダー名を表示し、項目選択時に状態を切り替える
 	///          例：「ファイル」「編集」「表示」などのメニュー
-	class MenuItem : public IUIWidget {
+	class MenuItem : public IWidget {
 	private:
 		// 言語関連
 		const SelectLanguage* select_language_ptr = nullptr;
@@ -285,7 +285,7 @@ namespace paxs {
 			return getIsItems(item_index_key.at(key));
 		}
 
-		// IUIWidget インターフェースの実装
+		// IWidget インターフェースの実装
 		void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
 		paxg::Rect getRect() const override { return rect; }
 		void setVisible(bool visible) override { visible_ = visible; }

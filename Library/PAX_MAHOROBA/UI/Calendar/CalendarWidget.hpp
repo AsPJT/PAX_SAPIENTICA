@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -34,14 +34,14 @@ namespace paxs {
     ///
     /// カレンダー情報の描画を担当します。
     /// Handles rendering of calendar information.
-    class CalendarWidget : public IUIWidget {
+    class CalendarWidget : public IWidget {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
             language_fonts_ = &fonts;
         }
 
-        // IUIWidget インターフェースの実装（コンポーネント情報）
+        // IWidget インターフェースの実装（コンポーネント情報）
         const char* getName() const override {
             return "CalendarWidget";
         }
@@ -231,7 +231,7 @@ namespace paxs {
         }
 
     private:
-        // IUIWidget用の状態管理
+        // IWidget用の状態管理
         bool visible_ = true;
         bool enabled_ = true;
         paxg::Vec2i pos_{0, 0};
@@ -244,7 +244,7 @@ namespace paxs {
         bool is_simulator_active_ = false;
 
     public:
-        // IUIWidget インターフェースの実装
+        // IWidget インターフェースの実装
         bool handleInput(const InputEvent& event) override {
             // CalendarWidgetは入力処理を行わない（読み取り専用）
             // CalendarWidget does not handle input (read-only)

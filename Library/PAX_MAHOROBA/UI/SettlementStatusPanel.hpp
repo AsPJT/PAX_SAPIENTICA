@@ -21,7 +21,7 @@
 #include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
 namespace paxs {
@@ -31,7 +31,7 @@ namespace paxs {
     ///
     /// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
     /// UI panel that displays the current Settlement display mode (population, farming, mtDNA, etc.).
-    class SettlementStatusPanel : public IUIWidget {
+    class SettlementStatusPanel : public IWidget {
     public:
         SettlementStatusPanel() = default;
 
@@ -91,7 +91,7 @@ namespace paxs {
             return enabled_;
         }
 
-        // IUIWidget の実装
+        // IWidget の実装
         paxg::Rect getRect() const override {
             constexpr int start_x = 40;
             constexpr int start_y = 80;

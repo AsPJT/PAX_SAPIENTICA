@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
@@ -28,7 +28,7 @@ namespace paxs {
 
     /// @brief 時間操作ウィジェット - 再生/一時停止/逆再生、時間移動アイコンを管理
     /// @brief Time Control Widget - Manages playback/pause/reverse and time navigation icons
-    class TimeControlWidget : public IUIWidget {
+    class TimeControlWidget : public IWidget {
     public:
         // 時間操作アイコンのサイズ
         int arrow_time_icon_size = 40; // 再生/停止/逆再生アイコンの大きさ
@@ -204,7 +204,7 @@ namespace paxs {
         }
 
     private:
-        // IUIWidget用の状態管理
+        // IWidget用の状態管理
         bool visible_ = true;
         bool enabled_ = true;
         paxg::Vec2i pos_{0, 0};
@@ -214,7 +214,7 @@ namespace paxs {
         paxs::Koyomi* koyomi_ = nullptr;
 
     public:
-        // IUIWidget インターフェースの実装
+        // IWidget インターフェースの実装
         bool handleInput(const InputEvent& event) override;
         void render() override;
 
@@ -256,7 +256,7 @@ namespace paxs {
         }
     };
 
-    // IUIWidget メソッドの実装（クラス外定義）
+    // IWidget メソッドの実装（クラス外定義）
     inline bool TimeControlWidget::handleInput(const InputEvent& event) {
         if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return false;
         if (event.input_state_manager == nullptr) return false;

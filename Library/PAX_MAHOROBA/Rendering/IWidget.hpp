@@ -1,4 +1,4 @@
-﻿/*##########################################################################################
+/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_I_UI_WIDGET_HPP
-#define PAX_MAHOROBA_I_UI_WIDGET_HPP
+#ifndef PAX_MAHOROBA_I_WIDGET_HPP
+#define PAX_MAHOROBA_I_WIDGET_HPP
 
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -22,11 +22,11 @@
 
 namespace paxs {
 
-    /// @brief UIウィジェットの共通インターフェース
-    /// @brief Common interface for UI widgets
-    class IUIWidget : public IRenderable, public IInputHandler {
+    /// @brief ウィジェット（UI、マップオブジェクト等）の共通インターフェース
+    /// @brief Common interface for widgets (UI, map objects, etc.)
+    class IWidget : public IRenderable, public IInputHandler {
     public:
-        virtual ~IUIWidget() = default;
+        virtual ~IWidget() = default;
 
         // 位置・サイズ管理
         virtual paxg::Rect getRect() const = 0;
@@ -73,4 +73,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_MAHOROBA_I_UI_WIDGET_HPP
+#endif // !PAX_MAHOROBA_I_WIDGET_HPP

@@ -14,7 +14,7 @@
 
 #include <vector>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuItem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
@@ -25,7 +25,7 @@ namespace paxs {
     /// @brief Manages menu bar
     /// @details MenuItem（固定ヘッダー型のドロップダウン）を複数保持し、
     ///          メニューバーとしての振る舞いを提供
-    class MenuBar : public IUIWidget {
+    class MenuBar : public IWidget {
     public:
 
         /// @brief メニュー項目を追加
@@ -119,12 +119,12 @@ namespace paxs {
 
         std::size_t start_x = 0;
 
-        // IUIWidget インターフェース用の状態
+        // IWidget インターフェース用の状態
         bool visible_ = true;
         bool enabled_ = true;
 
     public:
-        // IUIWidget インターフェースの実装
+        // IWidget インターフェースの実装
         void setPos(const paxg::Vec2i& pos) override {
             // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
             // 必要に応じて各Pulldownの位置を調整することは可能

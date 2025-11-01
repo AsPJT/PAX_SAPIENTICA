@@ -20,7 +20,7 @@
 #include <PAX_MAHOROBA/UI/Calendar/CalendarWidget.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/TimeControlWidget.hpp>
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -33,7 +33,7 @@ namespace paxs {
 
 	/// @brief カレンダーパネル - 時間操作とカレンダー表示を統合管理
 	/// @brief Calendar Panel - Integrates time control and calendar display with shared background
-	class CalendarPanel : public IUIWidget {
+	class CalendarPanel : public IWidget {
 	public:
 		CalendarPanel() = default;
 
@@ -78,7 +78,7 @@ namespace paxs {
 			background_.setShadowTextures(shadow_tex, internal_tex);
 		}
 
-		/// @brief IUIWidget インターフェースの実装
+		/// @brief IWidget インターフェースの実装
 		const char* getName() const override {
 			return "CalendarPanel";
 		}
@@ -150,7 +150,7 @@ namespace paxs {
 		}
 
 	private:
-		// IUIWidget 状態
+		// IWidget 状態
 		bool visible_ = true;
 		bool enabled_ = true;
 		paxg::Vec2i pos_{0, 0};

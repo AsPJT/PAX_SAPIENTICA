@@ -31,7 +31,7 @@
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
@@ -82,8 +82,8 @@ namespace paxs {
 
         paxs::HeaderPanel header_panel;  // ヘッダーパネル（メニューバー + 言語選択）
 
-        // IUIWidget を実装したウィジェットの統合管理
-        std::vector<IUIWidget*> widgets;
+        // IWidget を実装したウィジェットの統合管理
+        std::vector<IWidget*> widgets;
 
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
         paxs::UILayout ui_layout;
@@ -133,7 +133,7 @@ namespace paxs {
             shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
             internal_texture = paxg::RenderTexture{ shadow_texture.size() };
 
-            // IUIWidget を実装したウィジェットを登録
+            // IWidget を実装したウィジェットを登録
             widgets.clear();
             widgets.push_back(&calendar_panel);
             widgets.push_back(&debug_info_panel);

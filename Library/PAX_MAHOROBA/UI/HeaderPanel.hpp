@@ -19,7 +19,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
@@ -36,7 +36,7 @@ namespace paxs {
 
     /// @brief ヘッダーパネル - アプリ上部のUI（メニューバー + 言語選択）を管理
     /// @brief Header Panel - Manages top UI elements (MenuBar + Language Selector)
-    class HeaderPanel : public IUIWidget {
+    class HeaderPanel : public IWidget {
     public:
         /// @brief 初期化
         /// @param select_language 選択言語
@@ -115,7 +115,7 @@ namespace paxs {
             return language_selector_.getKey();
         }
 
-        // IUIWidget インターフェースの実装
+        // IWidget インターフェースの実装
         bool handleInput(const InputEvent& event) override {
             if (!visible_ || !enabled_) return false;
             if (event.input_state_manager == nullptr) return false;

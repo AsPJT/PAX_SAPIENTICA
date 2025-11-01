@@ -23,7 +23,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
@@ -42,7 +42,7 @@
 namespace paxs {
 
     // デバッグ情報パネルを表示するクラス
-    class DebugInfoPanel : public IUIWidget {
+    class DebugInfoPanel : public IWidget {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
@@ -50,7 +50,7 @@ namespace paxs {
             visible_ = true;
         }
 
-        // IUIWidget インターフェースの実装（コンポーネント情報）
+        // IWidget インターフェースの実装（コンポーネント情報）
         const char* getName() const override {
             return "DebugInfoPanel";
         }
@@ -303,7 +303,7 @@ namespace paxs {
         paxg::Vec2i pos_{0, 0};
 
     public:
-        // IUIWidget インターフェースの実装
+        // IWidget インターフェースの実装
         bool handleInput(const InputEvent& event) override {
             // DebugInfoPanelは入力処理を行わない
             (void)event;

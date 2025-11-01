@@ -21,7 +21,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>
 
-#include <PAX_MAHOROBA/UI/IUIWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Core/Init.hpp>
 
@@ -49,7 +49,7 @@ namespace paxs {
     /// @details 2つのモードで動作:
     ///          - SelectedValue: 選択した値がヘッダーに表示される（言語選択など）
     ///          - FixedHeader: 固定のヘッダー名が表示される（メニューバーなど）
-    class Pulldown : public IUIWidget {
+    class Pulldown : public IWidget {
     public:
         Pulldown() = default;
         // X を指定したサイズに変更
@@ -345,7 +345,7 @@ namespace paxs {
         bool isOpen() const { return is_open; }
         void close() { is_open = false; }
 
-        // IUIWidget インターフェースの実装
+        // IWidget インターフェースの実装
         void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
         paxg::Rect getRect() const override { return rect; }
 
@@ -388,7 +388,7 @@ namespace paxs {
         int down_button_size = 20;
         bool is_open = false;
 
-        // IUIWidget インターフェース用の状態
+        // IWidget インターフェース用の状態
         bool visible_ = true;
         bool enabled_ = true;
     };
