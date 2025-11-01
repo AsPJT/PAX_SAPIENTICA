@@ -172,14 +172,16 @@ namespace paxs {
 		/// @brief マウスホイール入力イベントをルーティング
 		/// @brief Route mouse wheel input event
 		/// @param input_state_manager 入力状態マネージャー / Input state manager
+		/// @param wheel_rotation マウスホイールの回転量 / Mouse wheel rotation amount
 		/// @return イベントが処理された場合true / true if event was handled
 		///
 		/// マウスホイール入力は座標に依存しないため、ヒットテストをスキップして
 		/// 全ハンドラーに順番に処理を試みさせます。
 		/// Mouse wheel input is coordinate-independent, so hit test is skipped and
 		/// all handlers are given a chance to process it in order.
-		bool routeMouseWheelInput(InputStateManager* input_state_manager) {
+		bool routeMouseWheelInput(InputStateManager* input_state_manager, int wheel_rotation = 0) {
 			InputEvent event(InputEventType::MouseWheel, input_state_manager);
+			event.wheel_rotation = wheel_rotation;
 
 			// ソートされていない場合は自動的にソート
 			// Sort automatically if not sorted

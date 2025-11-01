@@ -130,7 +130,11 @@ namespace paxs {
                 // マウスホイール入力（座標に依存しない）
                 // Mouse wheel input (coordinate-independent)
                 // 優先順位: UI (400) → MapContentManager (200) → MapViewportInputHandler (0)
-                graphics_manager.getInputRouter().routeMouseWheelInput(&input_state_manager);
+                {
+                    paxg::Mouse* mouse = paxg::Mouse::getInstance();
+                    int wheel_rotation = mouse->getWheelRotVol();
+                    graphics_manager.getInputRouter().routeMouseWheelInput(&input_state_manager, wheel_rotation);
+                }
 
                 // マウス/タッチ入力（座標ベース）
                 // Mouse/Touch input (coordinate-based)

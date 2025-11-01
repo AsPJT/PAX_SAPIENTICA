@@ -19,6 +19,7 @@
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
 
 #include <PAX_SAPIENTICA/MapUtility.hpp>
@@ -29,11 +30,73 @@
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する
     /// @brief Visualize simulation settlements
-    class SettlementRenderer {
-    private:
-        // 選択肢を表示するフォント（全プラットフォーム対応）
-        paxg::Font select_font{ 30, "", 3 };
+    class SettlementRenderer : public IRenderable {
     public:
+        SettlementRenderer() = default;
+
+        // IRenderable の実装
+        void render() override {
+            if (!visible_) return;
+
+            // キャッシュされたデータが有効かチェック
+            if (cached_agents_ == nullptr || cached_marriage_pos_list_ == nullptr) return;
+
+            // キャッシュされたパラメータで draw() を呼び出し
+            draw(cached_jdn_, *cached_agents_, *cached_marriage_pos_list_,
+                 cached_map_view_width_, cached_map_view_height_,
+                 cached_map_view_center_x_, cached_map_view_center_y_,
+                 select_draw_, is_line_, is_arrow_);
+        }
+
+        RenderLayer getLayer() const override {
+            return RenderLayer::MapContent;
+        }
+
+        bool isVisible() const override {
+            return visible_;
+        }
+
+        void setVisible(bool visible) override {
+            visible_ = visible;
+        }
+
+        /// @brief 描画パラメータを設定（MapContentManager から呼び出される）
+        /// @brief Set drawing parameters (called from MapContentManager)
+        void setDrawParams(
+            double jdn,
+            paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>& agents,
+            const std::vector<GridType4>& marriage_pos_list,
+            double map_view_width, double map_view_height,
+            double map_view_center_x, double map_view_center_y,
+            std::size_t select_draw, bool is_line, bool is_arrow
+        ) {
+            cached_jdn_ = jdn;
+            cached_agents_ = &agents;
+            cached_marriage_pos_list_ = &marriage_pos_list;
+            cached_map_view_width_ = map_view_width;
+            cached_map_view_height_ = map_view_height;
+            cached_map_view_center_x_ = map_view_center_x;
+            cached_map_view_center_y_ = map_view_center_y;
+            select_draw_ = select_draw;
+            is_line_ = is_line;
+            is_arrow_ = is_arrow;
+        }
+
+    private:
+        // 可視性管理
+        bool visible_ = true;
+
+        // 描画に必要なデータをキャッシュ（setDrawParams()で更新、render()で使用）
+        double cached_jdn_ = 0.0;
+        paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* cached_agents_ = nullptr;
+        const std::vector<GridType4>* cached_marriage_pos_list_ = nullptr;
+        double cached_map_view_width_ = 0.0;
+        double cached_map_view_height_ = 0.0;
+        double cached_map_view_center_x_ = 0.0;
+        double cached_map_view_center_y_ = 0.0;
+        std::size_t select_draw_ = 1;
+        bool is_line_ = false;
+        bool is_arrow_ = true;
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
         /// @brief 座標をメルカトル座標で取得
@@ -44,45 +107,8 @@ namespace paxs {
             return MapUtility::convertToMercatorCoordinate(start_position, position, z);
         }
 
-    public:
-
-        /// @brief 選択項目のテキストを描画
-        /// @brief Draw text for selected item
-        void drawText(std::size_t select_draw) {
-            constexpr int start_x = 40; // 背景端の左上の X 座標
-            constexpr int start_y = 80; // 背景端の左上の Y 座標
-            constexpr int font_space = 20; // 文字端から背景端までの幅
-            std::string text = ""; // 表示するテキスト
-            switch (select_draw)
-            {
-            case 1:
-                text = reinterpret_cast<const char*>(u8"1. 人口 Population");
-                break;
-            case 2:
-                text = reinterpret_cast<const char*>(u8"2. 農耕文化 Farming");
-                break;
-            case 3:
-                text = reinterpret_cast<const char*>(u8"3. mtDNA haplogroup");
-                break;
-            case 4:
-                text = reinterpret_cast<const char*>(u8"4. SNP / Genome");
-                break;
-            case 5:
-                text = reinterpret_cast<const char*>(u8"5. 言語 Language");
-                break;
-            case 6:
-                text = reinterpret_cast<const char*>(u8"6. 青銅 Bronze");
-                break;
-            };
-            // 選択項目を描画
-            const int text_width = select_font.width(text);
-            const int text_height = select_font.height();
-            paxg::RoundRect{ start_x, start_y, text_width + font_space * 2, text_height + font_space * 2, 10 }.draw();
-            select_font.draw(text, paxg::Vec2i{ start_x + font_space, start_y + font_space }, paxg::Color{ 0, 0, 0 });
-        }
-
-        /// @brief エージェント（集落）を描画
-        /// @brief Draw agents (settlements) without input processing
+        /// @brief エージェント（集落）を描画（private化）
+        /// @brief Draw agents (settlements) - made private
         /// @param jdn ユリウス日
         /// @param agents 集落グリッド
         /// @param marriage_pos_list 婚姻移動のリスト

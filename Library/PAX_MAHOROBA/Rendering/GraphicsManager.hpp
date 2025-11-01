@@ -30,6 +30,7 @@
 #include <PAX_SAPIENTICA/Language.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
+#include <PAX_MAHOROBA/UI/SettlementStatusWidget.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
@@ -43,6 +44,10 @@ namespace paxs {
 		TileManager tile_manager_;
 		UILayer ui_manager_;
 		MapContentManager map_content_manager_;
+
+#ifdef PAXS_USING_SIMULATOR
+		SettlementStatusWidget settlement_status_widget_;  // Settlement 表示モードステータス
+#endif
 
 		// レイヤーベースシステム（フェーズ1: 並行運用）
 		// Layer-based system (Phase 1: parallel operation)
@@ -72,10 +77,32 @@ namespace paxs {
 			render_layer_manager_.registerRenderable(&map_content_manager_);
 			render_layer_manager_.registerRenderable(&ui_manager_);
 
+#ifdef PAXS_USING_SIMULATOR
+			// SettlementRenderer を RenderLayerManager に登録（MapContent層）
+			// Register SettlementRenderer to RenderLayerManager (MapContent layer)
+			if (map_content_manager_.getSettlementRenderer() != nullptr) {
+				render_layer_manager_.registerRenderable(map_content_manager_.getSettlementRenderer());
+			}
+
+			// SettlementStatusWidget を RenderLayerManager に登録（UIContent層）
+			// Register SettlementStatusWidget to RenderLayerManager (UIContent layer)
+			render_layer_manager_.registerRenderable(&settlement_status_widget_);
+#endif
+
 			// 入力ルーターに各コンポーネントを登録（UIが優先）
 			// Register components to input router (UI has priority)
 			input_router_.registerHandler(&ui_manager_);
 			input_router_.registerHandler(&map_content_manager_);
+
+#ifdef PAXS_USING_SIMULATOR
+			// SettlementInputHandler を InputRouter に登録（MapContent層）
+			// Register SettlementInputHandler to InputRouter (MapContent layer)
+			input_router_.registerHandler(&map_content_manager_.getSettlementInputHandler());
+
+			// SettlementStatusWidget を InputRouter に登録（UIContent層、入力処理なし）
+			// Register SettlementStatusWidget to InputRouter (UIContent layer, no input handling)
+			input_router_.registerHandler(&settlement_status_widget_);
+#endif
 		}
 
 		/// @brief MapViewportInputHandlerを設定
@@ -154,6 +181,18 @@ namespace paxs {
 				koyomi,
 				visible
 			);
+
+#ifdef PAXS_USING_SIMULATOR
+			// SettlementStatusWidget の表示モードを更新
+			// Update SettlementStatusWidget display mode
+			settlement_status_widget_.setSelectDraw(
+				map_content_manager_.getSettlementInputHandler().getSelectDraw()
+			);
+
+			// シミュレーターが初期化されている場合のみ表示
+			// Show only when simulator is initialized
+			settlement_status_widget_.setVisible(simulator != nullptr);
+#endif
 
 			// レイヤーベース描画（Z順序自動管理）
 			// Layer-based rendering (automatic Z-order management)

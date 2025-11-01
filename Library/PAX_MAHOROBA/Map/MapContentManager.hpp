@@ -119,6 +119,22 @@ namespace paxs {
             cached_koyomi_ = koyomi;
 #ifdef PAXS_USING_SIMULATOR
             cached_simulator_ = &simulator;
+
+            // SettlementRenderer に描画パラメータを設定
+            if (settlement_renderer && simulator) {
+                settlement_renderer->setDrawParams(
+                    koyomi.jdn.cgetDay(),
+                    simulator->getSettlementGrids(),
+                    simulator->getMarriagePosList(),
+                    map_viewport.getWidth(),
+                    map_viewport.getHeight(),
+                    map_viewport.getCenterX(),
+                    map_viewport.getCenterY(),
+                    settlement_input_handler_.getSelectDraw(),
+                    settlement_input_handler_.getIsLine(),
+                    settlement_input_handler_.getIsArrow()
+                );
+            }
 #endif
             cached_visible_ = &visible;
         }
@@ -172,49 +188,15 @@ namespace paxs {
                 );
 
 #ifdef PAXS_USING_SIMULATOR
-                if (cached_simulator_ && *cached_simulator_) {
-                    auto& simulator = **cached_simulator_;
-
-                    // エージェントを描画
-                    settlement_renderer->draw(
-                        julian_day,
-                        simulator.getSettlementGrids(),
-                        simulator.getMarriagePosList(),
-                        width,
-                        height,
-                        center_x,
-                        center_y,
-                        settlement_input_handler_.getSelectDraw(),
-                        settlement_input_handler_.getIsLine(),
-                        settlement_input_handler_.getIsArrow()
-                    );
-
-                    // エージェントのテキストを描画
-                    settlement_renderer->drawText(settlement_input_handler_.getSelectDraw());
-                }
+                // SettlementRenderer は RenderLayerManager が自動的に render() を呼ぶため、
+                // ここでは呼び出さない
+                // SettlementRenderer::render() is automatically called by RenderLayerManager,
+                // so we don't call it here
 #endif
             }
 #ifdef PAXS_USING_SIMULATOR
-            else if (visible.isVisible(MurMur3::calcHash("Simulation"))) {
-                // シミュレーションのみ表示の場合
-                if (settlement_renderer.get() != nullptr && cached_simulator_ && *cached_simulator_ && (*cached_simulator_).get() != nullptr) {
-                    auto& simulator = **cached_simulator_;
-
-                    settlement_renderer->draw(
-                        koyomi.jdn.cgetDay(),
-                        simulator.getSettlementGrids(),
-                        simulator.getMarriagePosList(),
-                        map_viewport.getWidth(),
-                        map_viewport.getHeight(),
-                        map_viewport.getCenterX(),
-                        map_viewport.getCenterY(),
-                        settlement_input_handler_.getSelectDraw(),
-                        settlement_input_handler_.getIsLine(),
-                        settlement_input_handler_.getIsArrow()
-                    );
-                    settlement_renderer->drawText(settlement_input_handler_.getSelectDraw());
-                }
-            }
+            // シミュレーションのみ表示の場合も、SettlementRenderer は RenderLayerManager が呼ぶ
+            // For simulation-only display, SettlementRenderer is also called by RenderLayerManager
 #endif
         }
 
@@ -270,6 +252,20 @@ namespace paxs {
         bool isEnabled() const override {
             return enabled_;
         }
+
+#ifdef PAXS_USING_SIMULATOR
+        /// @brief SettlementRenderer への参照を取得（GraphicsManager での登録用）
+        /// @brief Get reference to SettlementRenderer (for registration in GraphicsManager)
+        SettlementRenderer* getSettlementRenderer() {
+            return settlement_renderer.get();
+        }
+
+        /// @brief SettlementInputHandler への参照を取得（GraphicsManager での登録用）
+        /// @brief Get reference to SettlementInputHandler (for registration in GraphicsManager)
+        SettlementInputHandler& getSettlementInputHandler() {
+            return settlement_input_handler_;
+        }
+#endif
     };
 }
 
