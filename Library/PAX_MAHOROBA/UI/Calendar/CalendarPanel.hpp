@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -21,7 +21,7 @@
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/TimeControlWidget.hpp>
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
-#include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
+#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
@@ -75,8 +75,7 @@ namespace paxs {
 		/// @brief 影用のテクスチャを設定
 		/// @brief Set textures for shadow rendering
 		void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
-			shadow_texture_ = &shadow_tex;
-			internal_texture_ = &internal_tex;
+			background_.setShadowTextures(shadow_tex, internal_tex);
 		}
 
 		/// @brief IUIWidget インターフェースの実装
@@ -158,41 +157,20 @@ namespace paxs {
 
 		TimeControlWidget time_control_widget_;   // 時間操作ウィジェット
 		CalendarWidget calendar_widget_;          // カレンダー表示ウィジェット
+		PanelBackground background_;              // 背景と影の描画
 
 		const UILayout* ui_layout_ = nullptr;
 		const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;
 
-		// 影描画用テクスチャ（外部から注入）
-		paxg::RenderTexture* shadow_texture_ = nullptr;
-		paxg::RenderTexture* internal_texture_ = nullptr;
-
 		/// @brief 背景パネルを描画
 		/// @brief Draw background panel
 		void drawBackground() {
-#ifdef PAXS_USING_SIV3D
-			// Siv3D: Use high-quality shadow renderer with Gaussian blur
-			if (shadow_texture_ && internal_texture_) {
-				paxs::ShadowRenderer::renderShadowWithPanels(
-					*shadow_texture_,
-					*internal_texture_,
-					[this]() {
-						// 影の形状を描画
-						paxg::RoundRect{ ui_layout_->rect_start_x, ui_layout_->koyomi_font_y - 15,
-										 ui_layout_->rect_len_x, ui_layout_->next_rect_start_y, 10 }.draw();
-					},
-					[this]() {
-						// パネル本体を描画
-						paxg::RoundRect{ ui_layout_->rect_start_x, ui_layout_->koyomi_font_y - 15,
-										 ui_layout_->rect_len_x, ui_layout_->next_rect_start_y, 10 }.draw(paxg::Color{255, 255, 255});
-					}
-				);
-			}
-#else
-			// SFML/DxLib: Use simple shadow with drawShadow method
-			paxg::RoundRect{ ui_layout_->rect_start_x, ui_layout_->koyomi_font_y - 15,
-							 ui_layout_->rect_len_x, ui_layout_->next_rect_start_y, 10 }
-				.drawShadow({1, 1}, 4, 1).draw(paxg::Color{255, 255, 255});
-#endif
+			background_.draw(
+				ui_layout_->rect_start_x,
+				ui_layout_->koyomi_font_y - 15,
+				ui_layout_->rect_len_x,
+				ui_layout_->next_rect_start_y
+			);
 		}
 	};
 

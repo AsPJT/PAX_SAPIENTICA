@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -21,9 +21,9 @@
 
 #include <PAX_MAHOROBA/UI/IUIWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar.hpp>
+#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 
 #include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
@@ -191,9 +191,7 @@ namespace paxs {
         const SelectLanguage* select_language_ = nullptr;
         const paxs::Language* language_text_ = nullptr;
 
-        // 影描画用テクスチャ（外部から注入）
-        paxg::RenderTexture* shadow_texture_ = nullptr;
-        paxg::RenderTexture* internal_texture_ = nullptr;
+        PanelBackground background_;  // 背景と影の描画
 
         // GitHubアイコンテクスチャ（外部から注入）
         const paxg::Texture* github_texture_ = nullptr;
@@ -201,35 +199,18 @@ namespace paxs {
         /// @brief 背景パネルを描画
         /// @brief Draw background panel
         void drawBackground() {
-#ifdef PAXS_USING_SIV3D
-            // Siv3D: Use high-quality shadow renderer with Gaussian blur
-            if (shadow_texture_ && internal_texture_) {
-                paxs::ShadowRenderer::renderShadowWithPanels(
-                    *shadow_texture_,
-                    *internal_texture_,
-                    [this]() {
-                        // 影の形状を描画
-                        paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(getHeight()) }.draw();
-                    },
-                    [this]() {
-                        // パネル本体を描画
-                        paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(getHeight()) }
-                            .draw(paxg::Color{243, 243, 243});
-                    }
-                );
-            }
-#else
-            // SFML/DxLib: Use simple shadow with drawShadow method
-            paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(getHeight()) }
-                .drawShadow({1, 1}, 4, 1).draw(paxg::Color{243, 243, 243});
-#endif
+            background_.drawRect(
+                0, 0,
+                paxg::Window::width(),
+                getHeight(),
+                paxg::Color{243, 243, 243}
+            );
         }
     };
 
     // Inline implementations
     inline void HeaderPanel::setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
-        shadow_texture_ = &shadow_tex;
-        internal_texture_ = &internal_tex;
+        background_.setShadowTextures(shadow_tex, internal_tex);
     }
 
 } // namespace paxs
