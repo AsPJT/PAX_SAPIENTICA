@@ -15,7 +15,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Input/InputRouter.hpp>
-#include <PAX_MAHOROBA/Map/MapContentManager.hpp>
+#include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
 #include <PAX_MAHOROBA/Map/Input/MapViewportInputHandler.hpp>
@@ -30,7 +30,6 @@
 #include <PAX_SAPIENTICA/Language.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/UI/SettlementStatusWidget.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
@@ -43,11 +42,7 @@ namespace paxs {
 		FontManager font_manager_;
 		TileManager tile_manager_;
 		UILayer ui_manager_;
-		MapContentManager map_content_manager_;
-
-#ifdef PAXS_USING_SIMULATOR
-		SettlementStatusWidget settlement_status_widget_;  // Settlement 表示モードステータス
-#endif
+		MapContentLayer map_content_layer_;
 
 		// レイヤーベースシステム（フェーズ1: 並行運用）
 		// Layer-based system (Phase 1: parallel operation)
@@ -69,33 +64,23 @@ namespace paxs {
 		) {
 			font_manager_.init(select_language);
 			ui_manager_.init(font_manager_, select_language, language_text, simulation_text);
-			map_content_manager_.init(font_manager_, select_language);
+			map_content_layer_.init(font_manager_, select_language);
 
 			// レイヤーシステムに各コンポーネントを登録
 			// Register components to layer system
 			render_layer_manager_.registerRenderable(&tile_manager_);
-			render_layer_manager_.registerRenderable(&map_content_manager_);
+			render_layer_manager_.registerRenderable(&map_content_layer_);
 			render_layer_manager_.registerRenderable(&ui_manager_);
-
-#ifdef PAXS_USING_SIMULATOR
-			// SettlementStatusWidget を RenderLayerManager に登録（UIContent層）
-			// Register SettlementStatusWidget to RenderLayerManager (UIContent layer)
-			render_layer_manager_.registerRenderable(&settlement_status_widget_);
-#endif
 
 			// 入力ルーターに各コンポーネントを登録（UIが優先）
 			// Register components to input router (UI has priority)
 			input_router_.registerHandler(&ui_manager_);
-			input_router_.registerHandler(&map_content_manager_);
+			input_router_.registerHandler(&map_content_layer_);
 
 #ifdef PAXS_USING_SIMULATOR
 			// SettlementInputHandler を InputRouter に登録（MapContent層）
 			// Register SettlementInputHandler to InputRouter (MapContent layer)
-			input_router_.registerHandler(&map_content_manager_.getSettlementInputHandler());
-
-			// SettlementStatusWidget を InputRouter に登録（UIContent層、入力処理なし）
-			// Register SettlementStatusWidget to InputRouter (UIContent layer, no input handling)
-			input_router_.registerHandler(&settlement_status_widget_);
+			input_router_.registerHandler(&map_content_layer_.getSettlementInputHandler());
 #endif
 		}
 
@@ -122,10 +107,10 @@ namespace paxs {
 		UILayer& getUILayer() { return ui_manager_; }
 		const UILayer& getUILayer() const { return ui_manager_; }
 
-		/// @brief MapContentManagerへのアクセス
-		/// @brief Access to MapContentManager
-		MapContentManager& getMapContentManager() { return map_content_manager_; }
-		const MapContentManager& getMapContentManager() const { return map_content_manager_; }
+		/// @brief MapContentLayerへのアクセス
+		/// @brief Access to MapContentLayer
+		MapContentLayer& getMapContentLayer() { return map_content_layer_; }
+		const MapContentLayer& getMapContentLayer() const { return map_content_layer_; }
 
 		/// @brief RenderLayerManagerへのアクセス
 		/// @brief Access to RenderLayerManager
@@ -155,7 +140,7 @@ namespace paxs {
 			// Update data only (drawing is separated)
 			tile_manager_.updateData(visible, map_viewport, koyomi.jdn.cgetDay());
 
-			map_content_manager_.updateData(
+			map_content_layer_.updateData(
 				map_viewport,
 				koyomi,
 #ifdef PAXS_USING_SIMULATOR
@@ -177,15 +162,15 @@ namespace paxs {
 			);
 
 #ifdef PAXS_USING_SIMULATOR
-			// SettlementStatusWidget の表示モードを更新
-			// Update SettlementStatusWidget display mode
-			settlement_status_widget_.setSelectDraw(
-				map_content_manager_.getSettlementInputHandler().getSelectDraw()
+			// SettlementStatusPanel の表示モードを更新
+			// Update SettlementStatusPanel display mode
+			ui_manager_.getSettlementStatusPanel().setSelectDraw(
+				map_content_layer_.getSettlementInputHandler().getSelectDraw()
 			);
 
 			// シミュレーターが初期化されている場合のみ表示
 			// Show only when simulator is initialized
-			settlement_status_widget_.setVisible(simulator != nullptr);
+			ui_manager_.getSettlementStatusPanel().setVisible(simulator != nullptr);
 #endif
 
 			// レイヤーベース描画（Z順序自動管理）

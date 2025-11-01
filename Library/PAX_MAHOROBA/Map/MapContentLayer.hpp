@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_MAP_CONTENT_MANAGER_HPP
-#define PAX_MAHOROBA_MAP_CONTENT_MANAGER_HPP
+#ifndef PAX_MAHOROBA_MAP_CONTENT_LAYER_HPP
+#define PAX_MAHOROBA_MAP_CONTENT_LAYER_HPP
 
 #include <memory>
 
@@ -38,12 +38,12 @@
 
 namespace paxs {
 
-    /// @brief 地図コンテンツ管理クラス
-    /// @brief Map Content Manager
+    /// @brief 地図コンテンツレイヤークラス
+    /// @brief Map Content Layer
     ///
     /// 地図上のコンテンツ（地名、人名、集落等）の管理と描画を統合的に担当します。
     /// Manages and renders map content (place names, person names, settlements, etc.) in an integrated manner.
-    class MapContentManager : public IRenderable, public IInputHandler {
+    class MapContentLayer : public IRenderable, public IInputHandler {
     private:
         std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
 
@@ -72,7 +72,7 @@ namespace paxs {
         paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
 
     public:
-        MapContentManager()
+        MapContentLayer()
             :texture_manager_(std::make_unique<TextureManager>())
 #ifdef PAXS_USING_SIMULATOR
             ,settlement_renderer(std::make_unique<SettlementRenderer>())
@@ -257,4 +257,4 @@ namespace paxs {
     };
 }
 
-#endif // !PAX_MAHOROBA_MAP_CONTENT_MANAGER_HPP
+#endif // !PAX_MAHOROBA_MAP_CONTENT_LAYER_HPP

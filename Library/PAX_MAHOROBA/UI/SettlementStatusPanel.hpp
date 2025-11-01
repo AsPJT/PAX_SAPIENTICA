@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_UI_SETTLEMENT_STATUS_WIDGET_HPP
-#define PAX_MAHOROBA_UI_SETTLEMENT_STATUS_WIDGET_HPP
+#ifndef PAX_MAHOROBA_UI_SETTLEMENT_STATUS_PANEL_HPP
+#define PAX_MAHOROBA_UI_SETTLEMENT_STATUS_PANEL_HPP
 
 #include <cstddef>
 #include <string>
@@ -24,14 +24,14 @@
 
 namespace paxs {
 
-	/// @brief Settlement 表示モードステータスウィジェット
-	/// @brief Settlement display mode status widget
+	/// @brief Settlement 表示モードステータスパネル
+	/// @brief Settlement display mode status panel
 	///
-	/// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIウィジェット。
-	/// UI widget that displays the current Settlement display mode (population, farming, mtDNA, etc.).
-	class SettlementStatusWidget : public IUIWidget {
+	/// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
+	/// UI panel that displays the current Settlement display mode (population, farming, mtDNA, etc.).
+	class SettlementStatusPanel : public IUIWidget {
 	public:
-		SettlementStatusWidget() = default;
+		SettlementStatusPanel() = default;
 
 		// IRenderable の実装
 		void render() override {
@@ -94,7 +94,7 @@ namespace paxs {
 		}
 
 		const char* getName() const override {
-			return "SettlementStatusWidget";
+			return "SettlementStatusPanel";
 		}
 
 		bool isAvailable() const override {
@@ -141,4 +141,4 @@ namespace paxs {
 
 } // namespace paxs
 
-#endif // !PAX_MAHOROBA_UI_SETTLEMENT_STATUS_WIDGET_HPP
+#endif // !PAX_MAHOROBA_UI_SETTLEMENT_STATUS_PANEL_HPP

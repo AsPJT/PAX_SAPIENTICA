@@ -19,6 +19,7 @@
 
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_MAHOROBA/UI/SimulationPanel.hpp>
+#include <PAX_MAHOROBA/UI/SettlementStatusPanel.hpp>
 #endif
 
 #include <PAX_GRAPHICA/RenderTexture.hpp>
@@ -90,7 +91,8 @@ namespace paxs {
         paxs::DebugInfoPanel debug_info_panel;     // デバッグ情報パネル
 
 #ifdef PAXS_USING_SIMULATOR
-        paxs::SimulationPanel simulation_panel;
+        paxs::SimulationPanel simulation_panel;    // シミュレーションパネル
+        paxs::SettlementStatusPanel settlement_status_panel;  // Settlement 表示モードステータス
 #endif
 
     public:
@@ -324,7 +326,7 @@ namespace paxs {
             paxs::Koyomi& koyomi = cached_koyomi_;
 
             // マップ情報とシミュレーション統計を描画
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))) {
+            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))) {
                 int debug_start_y = ui_layout.getDebugStartY();
                 debug_info_panel.renderMapAndSimulationInfo(
                     map_viewport, debug_start_y, select_language, language_text, visible
@@ -338,6 +340,9 @@ namespace paxs {
             if (cached_simulator_ && *cached_simulator_) {
                 simulation_panel.drawPulldownBackground(*cached_simulator_, visible);
             }
+
+            // Settlement ステータスパネルを描画
+            settlement_status_panel.render();
 #endif
 
             // ウィジェットを描画
@@ -348,7 +353,7 @@ namespace paxs {
             }
 
             // 考古学的遺物の型式情報を描画
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))
+            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))
 #ifdef PAXS_USING_SIMULATOR
                 && (!cached_simulator_ || *cached_simulator_ == nullptr)
 #endif
@@ -378,6 +383,12 @@ namespace paxs {
         void setVisible(bool visible) override {
             visible_ = visible;
         }
+
+#ifdef PAXS_USING_SIMULATOR
+        /// @brief SettlementStatusPanelへのアクセス
+        /// @brief Access to SettlementStatusPanel
+        SettlementStatusPanel& getSettlementStatusPanel() { return settlement_status_panel; }
+#endif
 
         // IInputHandler の実装
         // IInputHandler implementation
