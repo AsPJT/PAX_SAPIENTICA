@@ -254,6 +254,7 @@ namespace paxs {
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
                 map_viewport, font_manager_->getLanguageFonts(), select_language, language_text,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            settlement_status_panel.setShadowTextures(shadow_texture, internal_texture);
 #endif
 
             // CalendarPanelの可視性と設定
@@ -325,6 +326,9 @@ namespace paxs {
             const paxs::Language& language_text = *cached_language_text_;
             paxs::Koyomi& koyomi = cached_koyomi_;
 
+            // バッチ描画開始（Siv3D用）
+            PanelBackground::beginBatch();
+
             // マップ情報とシミュレーション統計を描画
             if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))) {
                 int debug_start_y = ui_layout.getDebugStartY();
@@ -363,6 +367,9 @@ namespace paxs {
                     koyomi, ui_layout, debug_start_y, select_language, language_text
                 );
             }
+
+            // バッチ描画終了（すべての影を一括描画）
+            PanelBackground::endBatch(&shadow_texture, &internal_texture);
         }
 
         /// @brief レイヤーを取得
