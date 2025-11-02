@@ -48,6 +48,10 @@ namespace paxs {
             return path_list;
         }
 
+        const UnorderedMap<std::uint_least32_t, Value>& get() const {
+            return path_list;
+        }
+
         // ルートパスを読み込む true 成功
         template<typename Func>
         bool input(const std::string& str_, Func&& func) {

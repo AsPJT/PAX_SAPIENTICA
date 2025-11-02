@@ -19,7 +19,9 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
+#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
@@ -29,24 +31,33 @@ namespace paxs {
     /// @brief シミュレーション制御ボタンコンポーネント
     /// @brief Simulation control buttons component
     class SimulationControlButtons {
+    private:
+        paxs::KeyValueTSV<paxg::Texture> key_value_tsv_;
+
     public:
-        SimulationControlButtons() = default;
+        /// @brief コンストラクタ（テクスチャを読み込む）
+        /// @brief Constructor (load textures)
+        SimulationControlButtons() {
+            if (!key_value_tsv_.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv",
+                [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
+                PAXS_ERROR("Failed to load texture KeyValueTSV: Data/MenuIcon/MenuIcons.tsv");
+            }
+        }
 
         /// @brief シミュレーション制御ボタンを描画
         /// @brief Draw simulation control buttons
-        /// @param simulator シミュレータのユニークポインタ
+        /// @param simulator_ptr シミュレータのユニークポインタ
         /// @param koyomi 暦情報
-        /// @param texture_dictionary テクスチャ辞書
         /// @param debug_start_y 描画開始Y座標
         void draw(
             const std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr,
             const paxs::Koyomi* koyomi,
-            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
             int debug_start_y
         ) const {
             if (!simulator_ptr || !koyomi) return;
 
             constexpr int time_icon_size = 40;
+            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv_.get();
 
             // シミュレーションが初期化されていない場合
             if (simulator_ptr->get() == nullptr) {

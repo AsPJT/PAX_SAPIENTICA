@@ -56,43 +56,32 @@ namespace paxs {
             return true; // カレンダー表示は常に利用可能
         }
 
-        // setEnabled/isEnabledは下部で実装済み
-
     private:
         paxs::LanguageFonts* language_fonts_ = nullptr;
 
         // カレンダーを描画（言語に応じて自動選択）
-        void renderInternal(
-            const paxs::Koyomi& koyomi,
-            const paxs::UILayout& ui_layout,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text,
-            bool is_simulator_active
-        ) {
+        void renderInternal() {
+            if (!koyomi_ || !ui_layout_ || !select_language_ || !language_text_) return;
+
             // 日本語・中国語・台湾語の場合はアジア式カレンダー
-            if (select_language.cgetKey() == MurMur3::calcHash("ja-JP")
-                || select_language.cgetKey() == MurMur3::calcHash("zh-TW")
-                || select_language.cgetKey() == MurMur3::calcHash("zh-CN")) {
-                renderAsianCalendar(koyomi, ui_layout, select_language, language_text);
+            if (select_language_->cgetKey() == MurMur3::calcHash("ja-JP")
+                || select_language_->cgetKey() == MurMur3::calcHash("zh-TW")
+                || select_language_->cgetKey() == MurMur3::calcHash("zh-CN")) {
+                renderAsianCalendar();
             }
             else {
                 // その他の言語は西洋式カレンダー
-                renderWesternCalendar(koyomi, ui_layout, select_language, language_text, is_simulator_active);
+                renderWesternCalendar();
             }
         }
 
         // 日本語・中国語のカレンダーを描画
-        void renderAsianCalendar(
-            const paxs::Koyomi& koyomi,
-            const paxs::UILayout& ui_layout,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text
-        ) {
+        void renderAsianCalendar() {
             if (language_fonts_ == nullptr) return;
 
-            for (std::size_t i = 0; i < koyomi.date_list.size(); ++i) {
+            for (std::size_t i = 0; i < koyomi_->date_list.size(); ++i) {
                 cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
-                std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi.date_list[i].date);
+                std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi_->date_list[i].date);
 
                 int date_year = 0;
                 int date_month = 0;
@@ -100,14 +89,14 @@ namespace paxs {
                 bool date_lm = false;
 
                 // 暦の読み方を返す
-                const std::string* const text_str = language_text.getStringPtr(
-                    koyomi.date_list[i].calendar_name_key,
-                    select_language.cgetKey()
+                const std::string* const text_str = language_text_->getStringPtr(
+                    koyomi_->date_list[i].calendar_name_key,
+                    select_language_->cgetKey()
                 );
                 if (text_str == nullptr) continue;
 
                 // 暦描画フォントを指定
-                paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
+                paxg::Font* one_font = language_fonts_->getAndAdd(select_language_->cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
                 if (one_font == nullptr) continue;
 
                 switch (output_type) {
@@ -117,31 +106,31 @@ namespace paxs {
                         date_month = int(x.cgetMonth());
                         date_day = int(x.cgetDay());
                         date_lm = x.isLeapMonth();
-                        }, koyomi.date_list[i].date);
+                        }, koyomi_->date_list[i].date);
                     if (date_day <= 0 || date_month <= 0) break;
 
                     (*one_font).drawTopRight(*text_str,
-                        paxg::Vec2i(static_cast<int>(ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"年"), paxg::Vec2i(static_cast<int>(int(120 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"月"), paxg::Vec2i(static_cast<int>(int(220 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"日"), paxg::Vec2i(static_cast<int>(int(300 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        paxg::Vec2i(static_cast<int>(ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"年"), paxg::Vec2i(static_cast<int>(int(120 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"月"), paxg::Vec2i(static_cast<int>(int(220 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"日"), paxg::Vec2i(static_cast<int>(int(300 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
 
-                    (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(85 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::to_string(date_month), paxg::Vec2i(static_cast<int>(int(190 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(270 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(85 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_month), paxg::Vec2i(static_cast<int>(int(190 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(270 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     if (date_lm) {
                         (*one_font).drawTopRight(reinterpret_cast<const char*>(u8"閏"), paxg::Vec2i(static_cast<int>((
-                            (date_month < 10) ? int(167 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x : int(152 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x
-                            )), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                            (date_month < 10) ? int(167 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x : int(152 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x
+                            )), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     }
                     break;
                 case paxs::cal::DateOutputType::name_and_value:
                     (*one_font).drawTopRight(*text_str,
-                        paxg::Vec2i(static_cast<int>(ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        paxg::Vec2i(static_cast<int>(ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     std::visit([&](const auto& x) {
                         date_day = int(x.cgetDay());
-                        }, koyomi.date_list[i].date);
-                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(300 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_x), static_cast<int>(ui_layout.koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        }, koyomi_->date_list[i].date);
+                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(300 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_x), static_cast<int>(ui_layout_->koyomi_font_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     break;
                 default:
                     break;
@@ -150,18 +139,12 @@ namespace paxs {
         }
 
         // 英語のカレンダーを描画
-        void renderWesternCalendar(
-            const paxs::Koyomi& koyomi,
-            const paxs::UILayout& ui_layout,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text,
-            bool is_simulator_active
-        ) {
+        void renderWesternCalendar() {
             if (language_fonts_ == nullptr) return;
 
-            for (std::size_t i = 0; i < koyomi.date_list.size(); ++i) {
+            for (std::size_t i = 0; i < koyomi_->date_list.size(); ++i) {
                 cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
-                std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi.date_list[i].date);
+                std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi_->date_list[i].date);
 
                 int date_year = 0;
                 int date_month = 0;
@@ -170,16 +153,16 @@ namespace paxs {
                 const int en_cal_name_pos_x = 85;
 
                 // 暦描画フォントを指定
-                paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
+                paxg::Font* one_font = language_fonts_->getAndAdd(select_language_->cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
                 if (one_font == nullptr) continue;
                 // 年描画フォントを指定
-                paxg::Font* big_year_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE * 3), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
+                paxg::Font* big_year_font = language_fonts_->getAndAdd(select_language_->cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE * 3), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
                 if (big_year_font == nullptr) continue;
 
                 // 暦の読み方を返す
-                const std::string* const text_str = language_text.getStringPtr(
-                    koyomi.date_list[i].calendar_name_key,
-                    select_language.cgetKey()
+                const std::string* const text_str = language_text_->getStringPtr(
+                    koyomi_->date_list[i].calendar_name_key,
+                    select_language_->cgetKey()
                 );
                 if (text_str == nullptr) continue;
 
@@ -190,39 +173,39 @@ namespace paxs {
                         date_month = int(x.cgetMonth());
                         date_day = int(x.cgetDay());
                         date_lm = x.isLeapMonth();
-                        }, koyomi.date_list[i].date);
+                        }, koyomi_->date_list[i].date);
                     if (date_day <= 0 || date_month <= 0) break;
 
                     if (text_str != nullptr) (*one_font).drawTopRight(*text_str,
-                        paxg::Vec2i(static_cast<int>(ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        paxg::Vec2i(static_cast<int>(ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
 
-                    (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(95 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(235 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight("th", paxg::Vec2i(static_cast<int>(int(315 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(95 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(235 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight("th", paxg::Vec2i(static_cast<int>(int(315 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
 
-                    (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::string(koyomi.month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(280 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::string(koyomi_->month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(280 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
 
-                    if (!is_simulator_active) {
-                        if (i == 1) (*big_year_font).drawTopRight(std::to_string(date_year)/* + " AD"*/, paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x + 100 - 70), static_cast<int>(550 - 30 + ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    if (!is_simulator_active_) {
+                        if (i == 1) (*big_year_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x + 100 - 70), static_cast<int>(550 - 30 + ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     }
 
                     if (date_lm) {
                         (*one_font).drawTopRight("int.", paxg::Vec2i(static_cast<int>((
-                            int(152 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x
-                            )), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                            int(152 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x
+                            )), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     }
                     break;
                 case paxs::cal::DateOutputType::name_and_value:
                 {
                     if (text_str != nullptr) (*one_font).drawTopRight(*text_str,
-                        paxg::Vec2i(static_cast<int>(ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        paxg::Vec2i(static_cast<int>(ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                 }
                 std::visit([&](const auto& x) {
                     date_day = int(x.cgetDay());
-                    }, koyomi.date_list[i].date);
-                (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(315 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout.koyomi_font_en_x), static_cast<int>(ui_layout.koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    }, koyomi_->date_list[i].date);
+                (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(315 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                 break;
                 default:
                     break;
@@ -246,17 +229,16 @@ namespace paxs {
     public:
         // IWidget インターフェースの実装
         bool handleInput(const InputEvent& event) override {
-            // CalendarWidgetは入力処理を行わない（読み取り専用）
-            // CalendarWidget does not handle input (read-only)
+            // CalendarWidgetは入力処理を行わない
             (void)event;
             return false;
         }
 
         void render() override {
-            if (!visible_ || !koyomi_ || !ui_layout_ || !select_language_ || !language_text_) return;
+            if (!visible_) return;
 
-            // 保存された引数でrenderInternal()を呼び出し
-            renderInternal(*koyomi_, *ui_layout_, *select_language_, *language_text_, is_simulator_active_);
+            // メンバー変数を使用してrenderInternal()を呼び出し
+            renderInternal();
         }
 
         paxg::Rect getRect() const override {
@@ -281,7 +263,6 @@ namespace paxs {
         bool isEnabled() const override { return enabled_; }
 
         // CalendarWidget固有の参照設定メソッド
-        // CalendarWidget-specific method to set render parameters
         void setRenderParams(
             const paxs::Koyomi& koyomi,
             const paxs::UILayout& ui_layout,
