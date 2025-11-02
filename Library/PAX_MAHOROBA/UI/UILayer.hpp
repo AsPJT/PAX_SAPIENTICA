@@ -283,6 +283,7 @@ namespace paxs {
 
             settlement_status_bg_.setShadowTextures(shadow_texture, internal_texture);
             // SettlementStatusPanelのレイアウト（固定位置）
+            // TODO: UILayoutに統合
             PanelLayout settlement_status_layout;
             settlement_status_layout.x = 40;
             settlement_status_layout.y = 80;
@@ -291,19 +292,16 @@ namespace paxs {
             settlement_status_bg_.setLayout(&settlement_status_layout);
 #endif
 #ifdef PAXS_USING_SIMULATOR
-            // SimulationPanelの可視性を設定
             bool simulation_visible = visible.isVisible(MurMur3::calcHash("Simulation")) &&
                                     visible.isVisible(MurMur3::calcHash(2, "UI"));
             simulation_panel.setVisible(simulation_visible);
 
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
-                map_viewport, font_manager_->getLanguageFonts(), select_language, language_text,
+                font_manager_->getLanguageFonts(), select_language, language_text,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 
-            // SimulationPanel背景の可視性を同期
             simulation_bg_.setVisible(simulation_panel.isVisible());
 
-            // SettlementStatusPanel背景の可視性を同期
             settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
 
@@ -325,12 +323,7 @@ namespace paxs {
                 calendar_bg_.setVisible(false);
             }
 
-            // DebugInfoPanelの可視性と設定
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))) {
-                debug_info_panel.setVisible(true);
-            } else {
-                debug_info_panel.setVisible(false);
-            }
+            debug_info_panel.setVisible(visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Debug")));
 
             // ウィジェットを更新（入力処理）
             InputEvent event;
@@ -384,11 +377,10 @@ namespace paxs {
             PanelBackground::endBatch(&shadow_texture, &internal_texture);
 
             // 4. UIコンテンツを描画
-            // マップ情報とシミュレーション統計を描画
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))) {
-                int simulation_start_y = ui_layout.getSimulationStartY();
+            // デバッグ情報パネルのコンテンツを描画
+            if (visible.isVisible(MurMur3::calcHash("Debug"))) {
                 debug_info_panel.renderMapAndSimulationInfo(
-                    map_viewport, simulation_start_y, select_language, language_text, visible
+                    map_viewport, select_language, language_text
 #ifdef PAXS_USING_SIMULATOR
                     , *cached_simulator_
 #endif
@@ -400,18 +392,6 @@ namespace paxs {
                 if (widget && widget->getLayer() != RenderLayer::UIBackground) {
                     widget->render();
                 }
-            }
-
-            // 考古学的遺物の型式情報を描画
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))
-#ifdef PAXS_USING_SIMULATOR
-                && (!cached_simulator_ || *cached_simulator_ == nullptr)
-#endif
-                ) {
-                int simulation_start_y = ui_layout.getSimulationStartY();
-                debug_info_panel.renderArchaeologicalInfo(
-                    koyomi, ui_layout, simulation_start_y, select_language, language_text
-                );
             }
         }
 
@@ -451,14 +431,12 @@ namespace paxs {
             if (!enabled_ || !visible_) return false;
 
             // ウィンドウリサイズイベントを処理
-            // Handle window resize event
             if (event.type == InputEventType::WindowResize) {
                 handleWindowResize();
                 return false; // 他のハンドラーにも処理を継続
             }
 
             // 座標に依存しないイベント（キーボード、マウスホイール、フォーカス）はスキップ
-            // Skip coordinate-independent events (Keyboard, MouseWheel, Focus)
             if (event.type == InputEventType::Keyboard ||
                 event.type == InputEventType::MouseWheel ||
                 event.type == InputEventType::WindowFocus) {
@@ -466,7 +444,6 @@ namespace paxs {
             }
 
             // 子ウィジェットに順番に入力イベントを渡す（マウス/タッチのみ）
-            // Pass input event to child widgets in order (Mouse/Touch only)
             for (auto* widget : widgets) {
                 if (widget && widget->isEnabled() && widget->isVisible()) {
                     if (widget->hitTest(event.x, event.y)) {
@@ -478,7 +455,6 @@ namespace paxs {
             }
 
             // HeaderPanelは常に処理を試みる（メニューバーは画面上部に固定）
-            // HeaderPanel always attempts to process (menu bar is fixed at top of screen)
             if (header_panel.isEnabled() && header_panel.isVisible()) {
                 if (header_panel.hitTest(event.x, event.y)) {
                     if (header_panel.handleInput(event)) {
@@ -499,7 +475,6 @@ namespace paxs {
             if (!visible_ || !enabled_) return false;
 
             // いずれかの子ウィジェットがヒットすればtrue
-            // Return true if any child widget is hit
             for (const auto* widget : widgets) {
                 if (widget && widget->isVisible() && widget->isEnabled()) {
                     if (widget->hitTest(x, y)) {
@@ -509,7 +484,6 @@ namespace paxs {
             }
 
             // HeaderPanelのヒットテスト
-            // HeaderPanel hit test
             if (header_panel.isVisible() && header_panel.isEnabled()) {
                 if (header_panel.hitTest(x, y)) {
                     return true;

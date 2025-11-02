@@ -20,17 +20,13 @@
 #include <vector>
 
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/SimulationControlButtons.hpp>
-#include <PAX_MAHOROBA/UI/ZMagnificationDisplay.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -62,7 +58,6 @@ namespace paxs {
         paxs::InputStateManager* input_state_manager_ = nullptr;
         paxs::Koyomi* koyomi_ = nullptr;
         paxs::FeatureVisibilityManager* visible_list_ = nullptr;
-        MapViewport* map_viewport_ = nullptr;
         LanguageFonts* language_fonts_ = nullptr;
         const SelectLanguage* select_language_ = nullptr;
         const paxs::Language* language_text_ = nullptr;
@@ -168,7 +163,6 @@ namespace paxs {
                     texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
                         time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
                     if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        // if (s3d::SimpleGUI::Button(U"Sim Stop", s3d::Vec2{ 330, 60 })) {
                         koyomi.is_agent_update = false;
 
                         koyomi.move_forward_in_time = false; // 一時停止
@@ -247,7 +241,6 @@ namespace paxs {
 
         // UI コンポーネント
         SimulationControlButtons control_buttons_;
-        ZMagnificationDisplay z_magnification_display_;
 
         /// @brief シミュレーションパネルの初期化
         /// @brief Initialize the simulation panel
@@ -379,7 +372,6 @@ namespace paxs {
             paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi,
             paxs::FeatureVisibilityManager& visible_list,
-            MapViewport& map_viewport,
             LanguageFonts& language_fonts,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
@@ -389,7 +381,6 @@ namespace paxs {
             input_state_manager_ = &input_state_manager;
             koyomi_ = &koyomi;
             visible_list_ = &visible_list;
-            map_viewport_ = &map_viewport;
             language_fonts_ = &language_fonts;
             select_language_ = &select_language;
             language_text_ = &language_text;
@@ -440,9 +431,6 @@ namespace paxs {
     private:
         /// @brief シミュレーションコントロールボタンを描画
         void drawSimulationControls() {
-            // Z拡大率の表示
-            z_magnification_display_.draw(map_viewport_, language_fonts_, select_language_, language_text_, debug_start_y_);
-
             // シミュレーション制御ボタンの描画
             control_buttons_.draw(simulator_ptr_, koyomi_, key_value_tsv.get(), debug_start_y_);
         }
