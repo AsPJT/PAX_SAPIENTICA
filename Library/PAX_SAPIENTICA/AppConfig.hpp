@@ -79,7 +79,10 @@ namespace paxs {
             KeyValueTSV<std::string> key_value_tsv;
             if (!key_value_tsv.input("Config.tsv")) {
                 PAXS_ERROR("Failed to load AppConfig: Config.tsv");
-                return;
+                key_value_tsv.emplace(
+                    MurMur3::calcHash("asset_file"),
+                    "./"
+                ); // デフォルト値
             }
             root_path = key_value_tsv[MurMur3::calcHash("asset_file")];
 

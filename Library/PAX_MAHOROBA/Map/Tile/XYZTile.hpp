@@ -19,15 +19,15 @@
 
 #include <PAX_GRAPHICA/Network.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Core/Init.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/Map/TileCache.hpp>
 #include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 
 // マクロ分岐の可能性があるため別の include とは別で記載
@@ -50,9 +50,9 @@ namespace paxs {
         // XYZ タイルの 1 つのセルのメルカトル座標を保持
         // 基本的に Z = 19 は無い
 
+        paxs::TileCache<paxg::Texture> tile_cache_;
+
         // XYZ タイルの画像の情報を保持
-        paxs::UnorderedMap<std::uint_least64_t, paxg::Texture> texture_list{};
-        paxs::UnorderedMap<std::uint_least64_t, unsigned char> is_texture_list{}; // テクスチャが読み込まれているか
 
         std::string texture_url = ""; // URL
         std::string binary_file_name_format = ""; // バイナリデータ
@@ -91,20 +91,6 @@ namespace paxs {
         bool menu_bar_map_bool = true;
 
     private:
-        // テクスチャ UnorderedMap の添え字を XYZ から生成
-        constexpr std::uint_least64_t textureIndex(std::uint_least64_t z_, std::uint_least64_t y_, std::uint_least64_t x_) const {
-            return (z_ << 48) + (y_ << 24) + (x_);
-        }
-        constexpr std::uint_least64_t textureIndexZY(std::uint_least64_t z_, std::uint_least64_t y_) const {
-            return (z_ << 48) + (y_ << 24);
-        }
-        constexpr std::uint_least64_t textureIndexZ(std::uint_least64_t z_) const {
-            return (z_ << 48);
-        }
-        constexpr std::uint_least64_t textureIndexY(std::uint_least64_t y_) const {
-            return (y_ << 24);
-        }
-
         // Ｘ、Ｙ、Ｚの３つの文字列に変換された数値を入れ、画像を保存するフォルダを作成する
         void createTextureFolder(const std::string& x_value, const std::string& y_value, const std::string& z_value) const {
             std::string new_folder_path = texture_full_path_folder;
@@ -195,7 +181,8 @@ namespace paxs {
             paxs::StringExtensions::replace(local_file_path_zn, "{z}", z_value);
             if (map_name.size() != 0) paxs::StringExtensions::replace(local_file_path_zn, "{n}", map_name);
 
-            const std::uint_least64_t index_z = textureIndexZ(static_cast<std::uint_least64_t>(z));
+            const std::uint_least64_t index_z = tile_cache_.encodeKeyZ(static_cast<std::uint_least64_t>(z));
+
             // ファイルを保存
             for (int i = start_cell.y, k = 0; i <= end_cell.y; ++i) {
 
@@ -203,14 +190,14 @@ namespace paxs {
                 std::string local_file_path_zny = local_file_path_zn;
                 paxs::StringExtensions::replace(local_file_path_zny, "{y}", y_value);
 
-                const std::uint_least64_t index_zy = textureIndexY(static_cast<std::uint_least64_t>((i + z_num) & (z_num - 1))) + index_z;
+                const std::uint_least64_t index_zy = tile_cache_.encodeKeyY(static_cast<std::uint_least64_t>((i + z_num) & (z_num - 1))) + index_z;
+
                 for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 
                     // 画像を格納する index を生成
                     const std::uint_least64_t index_zyx = static_cast<std::uint_least64_t>((j + z_num) & (z_num - 1)) + index_zy;
 
-                    // 画像が 1 度でも読み込みに試行した場合は終了
-                    if (is_texture_list.find(index_zyx) != is_texture_list.end()) {
+                    if (tile_cache_.hasAttempted(index_zyx)) {
                         continue;
                     }
 
@@ -230,8 +217,7 @@ namespace paxs {
 
                         // テクスチャが読み込めた場合
                         if (!!new_tex) {
-                            texture_list.insert({ index_zyx, std::move(new_tex) });
-                            is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
+                            tile_cache_.insert(index_zyx, std::move(new_tex));
                             continue;
                         }
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
@@ -254,12 +240,11 @@ namespace paxs {
                             if (std::filesystem::exists(local_file_path)) {
                                 paxg::Texture new_url_tex{ paxs::StringExtensions::removeRelativePathPrefix(local_file_path) };
                                 if (!new_url_tex) {
-                                    is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
+                                    PAXS_WARNING("XYZTile: Failed to load texture from downloaded file: " + local_file_path);
+                                    tile_cache_.insertFailure(index_zyx);
                                 }
                                 else {
-                                    // URL から取得した新しい地図へ更新
-                                    texture_list.insert({ index_zyx, std::move(new_url_tex) });
-                                    is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
+                                    tile_cache_.insert(index_zyx, std::move(new_url_tex));
                                 }
                             }
                         }
@@ -279,7 +264,7 @@ namespace paxs {
                             static unsigned char xyz_tiles[256 * 256]{};
                             // テクスチャが読み込めない場合
                             if (!i8bbs.calc(xyz_tiles)) {
-                                is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
+                                tile_cache_.insertFailure(index_zyx);
                                 continue;
                             }
                             struct RGBAa {
@@ -324,22 +309,19 @@ namespace paxs {
 
                             // ファイル読み込みができるかどうか
                             if (std::filesystem::exists(local_file_path)) {
-                                // 画像として読み込み
-
-                                // 新しいテクスチャ
                                 paxg::Texture bin_tex(paxs::StringExtensions::removeRelativePathPrefix(local_file_path));
                                 if (!bin_tex) {
-                                    is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
+                                    PAXS_WARNING("XYZTile: Failed to load texture from binary generated file: " + local_file_path);
+                                    tile_cache_.insertFailure(index_zyx);
                                 }
                                 else {
-                                    texture_list.insert({ index_zyx, std::move(bin_tex) });
-                                    is_texture_list.insert({ index_zyx, 0 }); // 読み込み成功
+                                    tile_cache_.insert(index_zyx, std::move(bin_tex));
                                 }
                             }
                         }
                         else
                         {
-                            is_texture_list.insert({ index_zyx, 1 }); // 読み込み失敗
+                            tile_cache_.insertFailure(index_zyx);
                         }
                 } // for (j)
             } // for (i)
@@ -447,11 +429,7 @@ namespace paxs {
         }
         /// @brief 指定座標のテクスチャを取得
         const paxg::Texture* getTextureAt(unsigned int z_, unsigned int y_, unsigned int x_) const {
-            const std::uint_least64_t index = textureIndex(z_, y_, x_);
-            if (texture_list.find(index) != texture_list.end()) {
-                return &texture_list.at(index);
-            }
-            return nullptr;
+            return tile_cache_.getTextureAt(z_, y_, x_);
         }
         void setDefaultZ(const unsigned int default_z_) {
             default_z = default_z_;
