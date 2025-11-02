@@ -29,6 +29,8 @@
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
+#include <PAX_MAHOROBA/UI/SimulationControlButtons.hpp>
+#include <PAX_MAHOROBA/UI/ZMagnificationDisplay.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -243,6 +245,10 @@ namespace paxs {
 
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
 
+        // UI コンポーネント
+        SimulationControlButtons control_buttons_;
+        ZMagnificationDisplay z_magnification_display_;
+
         /// @brief シミュレーションパネルの初期化
         /// @brief Initialize the simulation panel
         /// @param select_language 選択された言語
@@ -432,88 +438,13 @@ namespace paxs {
         }
 
     private:
-        /// @brief Z拡大率を描画
-        /// @brief Draw Z magnification
-        void drawZMagnification() {
-            if (!map_viewport_ || !language_fonts_ || !select_language_ || !language_text_) return;
-
-            // XYZ Tile Z magnification の計算
-            const int magnification_z = static_cast<int>(-std::log2(map_viewport_->getHeight()) + 12.5);
-
-            // フォントサイズを設定
-            constexpr int font_size = 22;
-            constexpr int font_buffer_thickness = 2;
-
-            paxg::Font* font = language_fonts_->getAndAdd(select_language_->cgetKey(),
-                static_cast<std::uint_least8_t>(font_size),
-                static_cast<std::uint_least8_t>(font_buffer_thickness));
-            if (font == nullptr) return;
-
-            // ラベルテキストを取得
-            const std::string* label_text_ptr = language_text_->getStringPtr(
-                MurMur3::calcHash("debug_xyz_tiles_z"),
-                select_language_->cgetKey()
-            );
-            if (label_text_ptr == nullptr) return;
-
-            // Z拡大率のラベルを描画
-            font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
-            font->drawTopRight(*label_text_ptr,
-                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y_), paxg::Color(0, 0, 0));
-
-            // Z拡大率の値を描画
-            font->drawTopRight(std::to_string(magnification_z),
-                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y_ + 30), paxg::Color(0, 0, 0));
-        }
-
         /// @brief シミュレーションコントロールボタンを描画
         void drawSimulationControls() {
-            if (!simulator_ptr_ || !koyomi_) return;
-
-            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
-            const int time_icon_size = 40;
-            const int debug_start_y = debug_start_y_;
-
             // Z拡大率の表示
-            drawZMagnification();
+            z_magnification_display_.draw(map_viewport_, language_fonts_, select_language_, language_text_, debug_start_y_);
 
-            // シミュレーションが初期化されていない場合
-            if (simulator_ptr_->get() == nullptr) {
-                // 地形データ読み込みボタン
-                texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
-                    time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
-            }
-            // シミュレーションが初期化されている場合
-            else {
-                // シミュレーションが再生中の場合
-                if (koyomi_->is_agent_update) {
-                    // 停止ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
-                }
-                // シミュレーションが停止中の場合
-                else {
-                    // シミュレーション入力データ初期化ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60));
-
-                    // 人間データ初期化ボタン (Simulation Init)
-                    texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y));
-
-                    // 地形データ削除ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
-
-                    // 再生ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
-
-                    // 1ステップ実行ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 240, debug_start_y));
-                }
-            }
+            // シミュレーション制御ボタンの描画
+            control_buttons_.draw(simulator_ptr_, koyomi_, key_value_tsv.get(), debug_start_y_);
         }
 
     public:
