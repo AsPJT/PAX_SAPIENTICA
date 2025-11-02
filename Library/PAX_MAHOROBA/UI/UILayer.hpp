@@ -291,6 +291,12 @@ namespace paxs {
             settlement_status_bg_.setLayout(&settlement_status_layout);
 #endif
 #ifdef PAXS_USING_SIMULATOR
+            // SimulationPanelの可視性を設定
+            bool simulation_visible = visible.isVisible(MurMur3::calcHash("Simulation")) &&
+                                    visible.isVisible(MurMur3::calcHash(2, "UI")) &&
+                                    visible.isVisible(MurMur3::calcHash(8, "Calendar"));
+            simulation_panel.setVisible(simulation_visible);
+
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
                 map_viewport, font_manager_->getLanguageFonts(), select_language, language_text,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
