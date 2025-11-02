@@ -34,17 +34,21 @@ namespace paxs {
 		// Map content layer (markers, agents, routes, etc.)
 		MapContent = 200,
 
+		// 360度写真レイヤー（全画面没入型ビューア）
+		// 360-degree photo layer (full-screen immersive viewer)
+		Map3D = 300,
+
 		// UI背景レイヤー（パネル背景、影など）
 		// UI background layer (panel backgrounds, shadows, etc.)
-		UIBackground = 300,
+		UIBackground = 400,
 
 		// UIコンテンツレイヤー（ボタン、テキスト、アイコンなど）
 		// UI content layer (buttons, text, icons, etc.)
-		UIContent = 400,
+		UIContent = 500,
 
 		// UIオーバーレイレイヤー（プルダウンメニュー、ツールチップなど）
 		// UI overlay layer (dropdown menus, tooltips, etc.)
-		UIOverlay = 500,
+		UIOverlay = 600,
 
 		// デバッグ情報レイヤー（最前面）
 		// Debug info layer (front-most)

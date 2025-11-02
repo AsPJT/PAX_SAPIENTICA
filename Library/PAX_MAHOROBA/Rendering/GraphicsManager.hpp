@@ -20,6 +20,7 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
+#include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>
 
@@ -28,6 +29,7 @@
 #include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
@@ -43,6 +45,7 @@ namespace paxs {
 		TileManager tile_manager_;
 		UILayer ui_manager_;
 		MapContentLayer map_content_layer_;
+		Photo360Layer photo360_layer_;  // 360度写真レイヤー
 
 		// レイヤーベースシステム（フェーズ1: 並行運用）
 		// Layer-based system (Phase 1: parallel operation)
@@ -70,6 +73,7 @@ namespace paxs {
 			// Register components to layer system
 			render_layer_manager_.registerRenderable(&tile_manager_);
 			render_layer_manager_.registerRenderable(&map_content_layer_);
+			render_layer_manager_.registerRenderable(&photo360_layer_);
 			render_layer_manager_.registerRenderable(&ui_manager_);
 
 			// 入力ルーターに各コンポーネントを登録（UIが優先）
@@ -123,8 +127,8 @@ namespace paxs {
 		const InputRouter& getInputRouter() const { return input_router_; }
 
 
-		/// @brief 更新・描画処理（レイヤーベースシステム使用）
-		/// @brief Update and render (using layer-based system)
+		/// @brief 更新・描画処理
+		/// @brief Update and render
 		void update(
 			MapViewport& map_viewport,
 			const SelectLanguage& select_language,
@@ -173,9 +177,15 @@ namespace paxs {
 			ui_manager_.getSettlementStatusPanel().setVisible(simulator != nullptr);
 #endif
 
-			// レイヤーベース描画（Z順序自動管理）
-			// Layer-based rendering (automatic Z-order management)
-			render_layer_manager_.renderAll();
+			// 3Dモード時は360度写真とUIのみ描画、通常モードは全レイヤー描画
+			if (visible.isVisible(paxs::MurMur3::calcHash(2, "3D"))) {
+				// 3Dモード: 360度写真を描画してからUIを描画
+				photo360_layer_.render();
+				ui_manager_.render();
+			} else {
+				// 通常モード: レイヤーベース描画（Z順序自動管理）
+				render_layer_manager_.renderAll();
+			}
 		}
 	};
 
