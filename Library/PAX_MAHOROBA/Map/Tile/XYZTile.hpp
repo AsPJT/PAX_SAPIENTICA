@@ -24,6 +24,7 @@
 #include <PAX_MAHOROBA/Core/Init.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
@@ -59,8 +60,6 @@ namespace paxs {
         std::string map_file_path_name = ""; // パス名 例） "Data/Map/XYZTile/Standard/Image/Land/2023/"
         std::string file_name_format = ("{z}/{x}/{y}");
         std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
-
-        //const std::string* p_root_path = nullptr; // 初めのパス名 例） root_path
 
         // 1フレーム前のマップの高さ
         double current_map_view_height = -1.0;
@@ -145,7 +144,8 @@ namespace paxs {
         ) {
             // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
             if (current_map_view_height != map_view_height) {
-                magnification_z = int(-std::log2(map_view_height) + 12.5);
+                magnification_z = TileCoordinate::calculateZoomLevel(map_view_height);
+
                 if (default_z == 999) {
                     z = magnification_z;
                     if (z < min_z) z = min_z;
@@ -164,16 +164,22 @@ namespace paxs {
             // 画像を更新する必要があるか
             bool need_update = false;
 
-            const Vector2<int> new_start_cell{
-                int((((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num + z_num) - static_cast<int>(z_num),
-                int(((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num + z_num) - static_cast<int>(z_num) };
+            TileCoordinate coord(z, z_num);
+            const Vector2<int> new_start_cell = coord.calculateStartCell(
+                map_view_center_x, map_view_center_y,
+                map_view_width, map_view_height
+            );
+
             if (new_start_cell != start_cell) {
                 start_cell = new_start_cell;
                 need_update = true;
             }
-            const Vector2<int> new_end_cell = Vector2<int>{
-                int((((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * z_num + z_num) - static_cast<int>(z_num),
-                int(((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * z_num + z_num) - static_cast<int>(z_num) };
+
+            const Vector2<int> new_end_cell = coord.calculateEndCell(
+                map_view_center_x, map_view_center_y,
+                map_view_width, map_view_height
+            );
+
             if (new_end_cell != end_cell) {
                 end_cell = new_end_cell;
                 need_update = true;
@@ -344,7 +350,6 @@ namespace paxs {
             const bool menu_bar_map_bool_,
             const std::uint_least32_t texture_root_path_type_,
             const std::uint_least32_t binary_root_path_type_,
-            //const std::string* p_root_path_, // 例 "./../../"
             const std::string& map_binary_name_,
             const std::string& map_file_path_name_,
             const std::string& file_name_format_,
@@ -355,7 +360,6 @@ namespace paxs {
             , menu_bar_map(menu_bar_map_)
             , menu_bar_map_bool(menu_bar_map_bool_)
             , draw_type(draw_type_)
-            //, p_root_path(p_root_path_) // ルートパスを指定するための相対パス 例） "./../../"
             , map_file_path_name(map_file_path_name_)
             , texture_url(texture_url_)
         {
