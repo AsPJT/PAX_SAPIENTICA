@@ -28,13 +28,10 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
-#include <PAX_MAHOROBA/UI/Calendar/CalendarPanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
-#include <PAX_MAHOROBA/UI/HeaderPanelBackground.hpp>
-#include <PAX_MAHOROBA/UI/SimulationPanelBackground.hpp>
-#include <PAX_MAHOROBA/UI/SettlementStatusPanelBackground.hpp>
+#include <PAX_MAHOROBA/UI/UIPanelBackground.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
@@ -87,11 +84,11 @@ namespace paxs {
         paxs::HeaderPanel header_panel;  // ヘッダーパネル（メニューバー + 言語選択）
 
         // 背景コンポーネント
-        paxs::HeaderPanelBackground header_bg_;
-        paxs::CalendarPanelBackground calendar_bg_;
+        paxs::UIPanelBackground header_bg_{"HeaderBackground"};
+        paxs::UIPanelBackground calendar_bg_{"CalendarBackground"};
 #ifdef PAXS_USING_SIMULATOR
-        paxs::SimulationPanelBackground simulation_bg_;
-        paxs::SettlementStatusPanelBackground settlement_status_bg_;
+        paxs::UIPanelBackground simulation_bg_{"SimulationBackground"};
+        paxs::UIPanelBackground settlement_status_bg_{"SettlementStatusBackground"};
 #endif
 
         // IWidget を実装したウィジェットの統合管理
@@ -274,14 +271,15 @@ namespace paxs {
 
             // 背景コンポーネントに影テクスチャとレイアウトを設定
             header_bg_.setShadowTextures(shadow_texture, internal_texture);
+            header_bg_.setLayout(nullptr);  // 画面幅全体を使用
             header_bg_.setHeight(header_panel.getHeight());
 
             calendar_bg_.setShadowTextures(shadow_texture, internal_texture);
-            calendar_bg_.setLayout(ui_layout.calendar_panel);
+            calendar_bg_.setLayout(&ui_layout.calendar_panel);
 
 #ifdef PAXS_USING_SIMULATOR
             simulation_bg_.setShadowTextures(shadow_texture, internal_texture);
-            simulation_bg_.setLayout(ui_layout.simulation_panel);
+            simulation_bg_.setLayout(&ui_layout.simulation_panel);
 
             settlement_status_bg_.setShadowTextures(shadow_texture, internal_texture);
             // SettlementStatusPanelのレイアウト（固定位置）
@@ -290,7 +288,7 @@ namespace paxs {
             settlement_status_layout.y = 80;
             settlement_status_layout.width = 300;   // テキスト幅 + パディング
             settlement_status_layout.height = 60;   // テキスト高さ + パディング
-            settlement_status_bg_.setLayout(settlement_status_layout);
+            settlement_status_bg_.setLayout(&settlement_status_layout);
 #endif
 #ifdef PAXS_USING_SIMULATOR
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
