@@ -24,11 +24,8 @@
 
 namespace paxs {
 
-    /// @brief 集落の描画を管理するクラス (Application Layer)
-    /// @brief Class to manage settlement rendering (Application Layer)
-    ///
-    /// PersonNameManager/PlaceNameManagerと同じ構造で統一
-    /// Unified structure with PersonNameManager/PlaceNameManager
+    /// @brief 集落の描画を管理するクラス
+    /// @brief Class to manage settlement rendering
     class SettlementManager : public IRenderable {
     public:
         SettlementManager()

@@ -1,16 +1,16 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_PERSON_NAME_MANAGER_HPP
-#define PAX_MAHOROBA_PERSON_NAME_MANAGER_HPP
+#ifndef PAX_MAHOROBA_GEOGRAPHIC_FEATURE_MANAGER_HPP
+#define PAX_MAHOROBA_GEOGRAPHIC_FEATURE_MANAGER_HPP
 
 #include <cstdint>
 #include <string>
@@ -19,37 +19,37 @@
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
-#include <PAX_MAHOROBA/Map/Location/PersonNameRenderer.hpp>
+#include <PAX_MAHOROBA/Map/Location/GeographicFeatureRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
-#include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
+#include <PAX_SAPIENTICA/GeographicInformation/PlaceNameRepository.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 
 namespace paxs {
 
-    /// @brief GUI に描画する地物の情報を管理するクラス (Application Layer)
-    /// @brief Class to manage geographic information for GUI rendering (Application Layer)
-    class PersonNameManager : public IRenderable {
+    /// @brief GUI に描画する地理的特徴(地名とアイコン)の描画を管理するクラス
+    /// @brief Class to manage geographic information for GUI rendering
+    class GeographicFeatureManager : public IRenderable {
     public:
-        PersonNameManager() = default;
+        GeographicFeatureManager() = default;
 
-        /// @brief 地物を追加
+        // 地理的特徴データを追加
         void add() {
-            repository_.loadPersonNameList(
-                [this](const std::string& file_path, double min_view, double max_view,
-                       int min_year, int max_year, std::uint_least32_t lpe,
-                       std::uint_least32_t place_texture) {
-                    inputPlace(file_path, min_view, max_view, min_year, max_year, lpe, place_texture);
+            // リポジトリに委譲してデータを読み込む
+            repository_.loadPlaceNameList(
+                [this](const std::string& file_path, double min_view, double max_view, int min_year, int max_year,
+                       std::uint_least32_t lpe, std::uint_least32_t place_texture, double zoom) {
+                    inputPlace(file_path, min_view, max_view, min_year, max_year, lpe, place_texture, zoom);
                 }
             );
         }
 
-        /// @brief 初期化
         void init() {
             std::string str = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Portraits"),
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("MiniIcons"),
                 [&](const std::string& path_) {str = path_; });
             if (str.size() == 0) return;
 
@@ -65,12 +65,23 @@ namespace paxs {
         /// @brief Render
         void render() override {
             if (!visible_) return;
+            if (cached_visible_ == nullptr) return;
             if (cached_font_ == nullptr || cached_en_font_ == nullptr || cached_pin_font_ == nullptr) return;
 
-            renderer_.draw(location_point_list_list, key_value_tsv.get(), cached_jdn_,
-                cached_map_view_width_, cached_map_view_height_,
-                cached_map_view_center_x_, cached_map_view_center_y_,
-                *cached_font_, *cached_en_font_, *cached_pin_font_);
+            // 描画処理をレンダラーに委譲
+            renderer_.draw(
+                location_point_list_list,
+                key_value_tsv.get(),
+                *cached_visible_,
+                cached_jdn_,
+                cached_map_view_width_,
+                cached_map_view_height_,
+                cached_map_view_center_x_,
+                cached_map_view_center_y_,
+                *cached_font_,
+                *cached_en_font_,
+                *cached_pin_font_
+            );
         }
 
         /// @brief レンダリングレイヤーを取得
@@ -94,11 +105,13 @@ namespace paxs {
         /// @brief 描画パラメータを設定（MapContentManager から呼び出される）
         /// @brief Set drawing parameters (called from MapContentManager)
         void setDrawParams(
+            paxs::FeatureVisibilityManager& visible,
             const double jdn,
             const double map_view_width, const double map_view_height,
             const double map_view_center_x, const double map_view_center_y,
             paxg::Font& font, paxg::Font& en_font, paxg::Font& pin_font
         ) {
+            cached_visible_ = &visible;
             cached_jdn_ = jdn;
             cached_map_view_width_ = map_view_width;
             cached_map_view_height_ = map_view_height;
@@ -114,6 +127,7 @@ namespace paxs {
         bool visible_ = true;
 
         // 描画に必要なデータをキャッシュ（setDrawParams()で更新、render()で使用）
+        paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
         double cached_jdn_ = 0.0;
         double cached_map_view_width_ = 0.0;
         double cached_map_view_height_ = 0.0;
@@ -122,31 +136,37 @@ namespace paxs {
         paxg::Font* cached_font_ = nullptr;
         paxg::Font* cached_en_font_ = nullptr;
         paxg::Font* cached_pin_font_ = nullptr;
-        std::vector<PersonLocationList> location_point_list_list{}; // 地物の一覧
+
+        std::vector<LocationPointList> location_point_list_list{}; // 地理的特徴の一覧
         // アイコンのテクスチャ
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
-        PersonNameRenderer renderer_; // 描画処理を担当
-        PersonNameRepository repository_; // データ読み込みを担当
+        // 描画処理を担当
+        GeographicFeatureRenderer renderer_;
+        // データ読み込みを担当
+        PlaceNameRepository repository_;
 
-        /// @brief 地名を読み込み
+        // 地理的特徴データを読み込み（リポジトリに委譲）
         void inputPlace(
             const std::string& str_,
-            const double min_view_,  // 可視化する地図の最小範囲
-            const double max_view_,  // 可視化する地図の最大範囲
-            const int min_year_,  // 可視化する時代（古い年～）
-            const int max_year_,  // 可視化する時代（～新しい年）
-            const std::uint_least32_t lpe_,  // 対象となる地物の種別
-            const std::uint_least32_t place_texture_ // 出典
+            const double min_view_,
+            const double max_view_,
+            const int min_year_,
+            const int max_year_,
+            const std::uint_least32_t lpe_,
+            const std::uint_least32_t place_texture_,
+            const double zoom_
         ) {
-            PersonLocationList loaded = repository_.loadPersonFromFile(
-                str_, min_view_, max_view_, min_year_, max_year_, lpe_, place_texture_
+            // リポジトリからLocationPointListを取得して追加
+            LocationPointList loaded = repository_.loadPlaceFromFile(
+                str_, min_view_, max_view_, min_year_, max_year_, lpe_, place_texture_, zoom_
             );
-            if (loaded.person_location_list.size() > 0) {
+
+            // 空でない場合のみ追加
+            if (loaded.location_point_list.size() > 0) {
                 location_point_list_list.emplace_back(loaded);
             }
         }
     };
-
 }
 
-#endif // !PAX_MAHOROBA_PERSON_NAME_MANAGER_HPP
+#endif // !PAX_MAHOROBA_GEOGRAPHIC_FEATURE_MANAGER_HPP

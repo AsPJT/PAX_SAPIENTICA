@@ -21,17 +21,16 @@
 #endif
 
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
-#include <PAX_MAHOROBA/Map/Location/PlaceNameManager.hpp>
+#include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
-#include <PAX_MAHOROBA/Map/Location/PersonNameManager.hpp>
+#include <PAX_MAHOROBA/Map/Location/PersonPortraitManager.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -40,15 +39,12 @@ namespace paxs {
 
     /// @brief 地図コンテンツレイヤークラス
     /// @brief Map Content Layer
-    ///
-    /// 地図上のコンテンツ（地名、人名、集落等）の管理と描画を統合的に担当します。
-    /// Manages and renders map content (place names, person names, settlements, etc.) in an integrated manner.
     class MapContentLayer : public IRenderable, public IInputHandler {
     private:
         std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
 
-        PlaceNameManager place_name_manager_{}; // 地名
-        PersonNameManager person_name_manager_{}; // 人名
+        GeographicFeatureManager geographic_feature_manager_{}; // 地理的特徴(地名とアイコン)
+        PersonPortraitManager person_portrait_manager_{}; // 人物の肖像画と名前
 #ifdef PAXS_USING_SIMULATOR
         SettlementManager settlement_manager_{}; // 集落管理
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
@@ -82,11 +78,11 @@ namespace paxs {
         }
 
         void init(FontManager& font_manager, const SelectLanguage& select_language) {
-            // 地名
-            place_name_manager_.init();
-            place_name_manager_.add();
-            person_name_manager_.init();
-            person_name_manager_.add();
+            // 地理的特徴と人物の肖像画を初期化
+            geographic_feature_manager_.init();
+            geographic_feature_manager_.add();
+            person_portrait_manager_.init();
+            person_portrait_manager_.add();
 
             // フォント管理への参照を保存
             font_manager_ = &font_manager;
@@ -130,12 +126,12 @@ namespace paxs {
 #endif
             cached_visible_ = &visible;
 
-            // PersonNameManager と PlaceNameManager に描画パラメータを設定
-            // Set drawing parameters to PersonNameManager and PlaceNameManager
+            // PersonPortraitManager と GeographicFeatureManager に描画パラメータを設定
+            // Set drawing parameters to PersonPortraitManager and GeographicFeatureManager
             if (font_manager_ && select_language_) {
                 paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
 
-                person_name_manager_.setDrawParams(
+                person_portrait_manager_.setDrawParams(
                     koyomi.jdn.cgetDay(),
                     map_viewport.getWidth(),
                     map_viewport.getHeight(),
@@ -146,7 +142,7 @@ namespace paxs {
                     font_manager_->getPinFont()
                 );
 
-                place_name_manager_.setDrawParams(
+                geographic_feature_manager_.setDrawParams(
                     visible,
                     koyomi.jdn.cgetDay(),
                     map_viewport.getWidth(),
@@ -171,8 +167,8 @@ namespace paxs {
             paxs::FeatureVisibilityManager& visible = *cached_visible_;
 
             if (visible.isVisible(MurMur3::calcHash("Map"))) { // 地図が「可視」の場合は描画する
-                person_name_manager_.render();
-                place_name_manager_.render();
+                person_portrait_manager_.render();
+                geographic_feature_manager_.render();
             }
 
 #ifdef PAXS_USING_SIMULATOR

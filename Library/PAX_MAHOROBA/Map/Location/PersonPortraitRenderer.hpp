@@ -1,16 +1,16 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]      2023-2024 As Project
+    [Production]    2023-2024 As Project
+    [Contact Us]    wanotaitei@gmail.com            https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]       Distributed under the CC0 1.0.  https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_PERSON_NAME_RENDERER_HPP
-#define PAX_MAHOROBA_PERSON_NAME_RENDERER_HPP
+#ifndef PAX_MAHOROBA_PERSON_PORTRAIT_RENDERER_HPP
+#define PAX_MAHOROBA_PERSON_PORTRAIT_RENDERER_HPP
 
 #include <cstdint>
 #include <vector>
@@ -23,18 +23,19 @@
 #include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
 
 #include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
-
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
 
-    /// @brief 人物名の描画を担当するクラス (Presentation Layer)
-    class PersonNameRenderer {
+    /// @brief 人物の肖像画と名前の描画を担当するクラス
+    /// @brief Class responsible for rendering person portraits and names
+    class PersonPortraitRenderer {
     public:
-        PersonNameRenderer() = default;
+        PersonPortraitRenderer() = default;
 
-        /// @brief 人物名を描画
+        /// @brief 人物の肖像画と名前を描画
+        /// @brief Draw person portraits and names
         void draw(
             const std::vector<PersonLocationList>& location_point_list_list,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
@@ -58,7 +59,7 @@ namespace paxs {
                 if (lll.min_year > jdn) continue;
                 if (lll.max_year < jdn) continue;
 
-                // 人物名を描画
+                // 人物の肖像画と名前を描画
                 for (std::size_t i = 0; i < person_location_list.size(); ++i) {
                     auto& lli = person_location_list[i];
                     // 時間の範囲外を除去
@@ -83,7 +84,7 @@ namespace paxs {
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_width || lli.max_view < map_view_width) {
-                        drawPersonIconOnly(
+                        drawPortraitOnly(
                             texture, lll, lli,
                             now_coordinate_x, now_coordinate_y,
                             map_view_width, map_view_height,
@@ -92,8 +93,8 @@ namespace paxs {
                         continue;
                     }
 
-                    // アイコンとテキストを描画
-                    drawPersonIconAndText(
+                    // 肖像画とテキストを描画
+                    drawPortraitAndText(
                         texture, lll, lli,
                         now_coordinate_x, now_coordinate_y,
                         map_view_width, map_view_height,
@@ -106,8 +107,9 @@ namespace paxs {
         }
 
     private:
-        /// @brief アイコンのみを描画
-        void drawPersonIconOnly(
+        /// @brief 肖像画のみを描画
+        /// @brief Draw portrait only
+        void drawPortraitOnly(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const PersonLocationList& lll,
             const PersonLocationPoint& lli,
@@ -138,8 +140,9 @@ namespace paxs {
             }
         }
 
-        /// @brief アイコンとテキストを描画
-        void drawPersonIconAndText(
+        /// @brief 肖像画とテキストを描画
+        /// @brief Draw portrait and text
+        void drawPortraitAndText(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const PersonLocationList& lll,
             const PersonLocationPoint& lli,
@@ -176,6 +179,7 @@ namespace paxs {
         }
 
         /// @brief 人物名のテキストを描画
+        /// @brief Draw person name text
         void drawPersonNameText(
             const PersonLocationPoint& lli,
             paxg::Font& font,
@@ -194,4 +198,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_MAHOROBA_PERSON_NAME_RENDERER_HPP
+#endif // !PAX_MAHOROBA_PERSON_PORTRAIT_RENDERER_HPP
