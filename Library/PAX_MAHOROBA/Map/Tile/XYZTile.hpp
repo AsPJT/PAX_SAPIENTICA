@@ -30,6 +30,7 @@
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Map/TileCache.hpp>
 #include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
+#include <PAX_SAPIENTICA/Map/TileMetadata.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
@@ -43,12 +44,12 @@ namespace paxs {
 
         paxs::TileCache<paxg::Texture> tile_cache_;
 
-        // XYZ タイルの画像の情報を保持
+        // XYZ タイルの設定情報
+        paxs::TileMetadata metadata_;
 
-        std::string texture_url = ""; // URL
+        // XYZ タイルの画像の情報を保持
         std::string binary_file_name_format = ""; // バイナリデータ
         std::string map_name = ""; // 地図名
-        std::string map_file_path_name = ""; // パス名 例） "Data/Map/XYZTile/Standard/Image/Land/2023/"
         std::string file_name_format = ("{z}/{x}/{y}");
         std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
 
@@ -73,14 +74,6 @@ namespace paxs {
         unsigned int draw_max_z = 999; // 描画最大 Z
         unsigned int z_num = (1 << z); // 2 の z 乗 // std::pow(2, z) と等価
 
-        std::uint_least32_t draw_type = paxs::MurMur3::calcHash("texture");
-
-        std::uint_least32_t texture_root_path_type = paxs::MurMur3::calcHash("asset_file");
-        std::uint_least32_t binary_root_path_type = paxs::MurMur3::calcHash("asset_file");
-
-        std::uint_least32_t menu_bar_map = 0;
-        bool menu_bar_map_bool = true;
-
     private:
         // フルパスのフォルダまでのパスを返す
         std::string setFullPathFolder() const {
@@ -100,35 +93,37 @@ namespace paxs {
             return std::string(str.c_str());
         }
 
-    public:
-        XYZTile() = default;
+        // Phase 6: update() メソッド分割のためのヘルパーメソッド
 
-        // タイルを更新
-        void update(const double map_view_width, // 描画される地図の経度幅
-            const double map_view_height, // 描画される地図の緯度幅
-            const double map_view_center_x, // 描画される地図の中心経度
-            const double map_view_center_y // 描画される地図の中心緯度
-        ) {
-            // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
-            if (current_map_view_height != map_view_height) {
-                magnification_z = TileCoordinate::calculateZoomLevel(map_view_height);
+        /// @brief ズームレベルを更新
+        void updateZoomLevel(const double map_view_height) {
+            magnification_z = TileCoordinate::calculateZoomLevel(map_view_height);
 
-                if (default_z == 999) {
-                    z = magnification_z;
-                    if (z < min_z) z = min_z;
-                    else if (z > max_z) z = max_z;
-                }
-                else {
-                    z = default_z;
-                }
-                z_num = (1 << z); // std::pow(2, z) と等価
-                current_map_view_height = map_view_height;
+            if (default_z == 999) {
+                z = magnification_z;
+                if (z < min_z) z = min_z;
+                else if (z > max_z) z = max_z;
             }
-            // 拡大率が描画範囲外の場合はここで処理を終了
-            if (magnification_z < draw_min_z) return;
-            if (magnification_z > draw_max_z) return;
+            else {
+                z = default_z;
+            }
+            z_num = (1 << z); // std::pow(2, z) と等価
+            current_map_view_height = map_view_height;
+        }
 
-            // 画像を更新する必要があるか
+        /// @brief 描画範囲内かどうかをチェック
+        bool isInDrawRange() const {
+            return magnification_z >= draw_min_z && magnification_z <= draw_max_z;
+        }
+
+        /// @brief タイル範囲を更新
+        /// @return タイル範囲が変更された場合true
+        bool updateTileRange(
+            const double map_view_width,
+            const double map_view_height,
+            const double map_view_center_x,
+            const double map_view_center_y
+        ) {
             bool need_update = false;
 
             TileCoordinate coord(z, z_num);
@@ -152,9 +147,11 @@ namespace paxs {
                 need_update = true;
             }
 
-            if (!need_update) return; // 地図が前回と同じ場所の場合は更新処理をしない
-            // もしタイルが更新されていたら更新処理
+            return need_update;
+        }
 
+        /// @brief 表示範囲内のタイルを読み込む
+        void loadVisibleTiles() {
             if (map_name.size() == 0) return;
 
             const std::string z_value = std::to_string(z); // Z の値
@@ -196,9 +193,9 @@ namespace paxs {
                     ));
 
                     // 2. UrlTileLoader（URL からダウンロード）
-                    if (!texture_url.empty()) {
+                    if (!metadata_.texture_url.empty()) {
                         loaders.push_back(std::make_unique<UrlTileLoader>(
-                            texture_url,
+                            metadata_.texture_url,
                             file_name_format,
                             map_name,
                             texture_full_path_folder
@@ -235,6 +232,33 @@ namespace paxs {
             } // for (i)
         }
 
+    public:
+        XYZTile() = default;
+
+        // タイルを更新
+        void update(const double map_view_width, // 描画される地図の経度幅
+            const double map_view_height, // 描画される地図の緯度幅
+            const double map_view_center_x, // 描画される地図の中心経度
+            const double map_view_center_y // 描画される地図の中心緯度
+        ) {
+            // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
+            if (current_map_view_height != map_view_height) {
+                updateZoomLevel(map_view_height);
+            }
+
+            // 拡大率が描画範囲外の場合はここで処理を終了
+            if (!isInDrawRange()) return;
+
+            // タイル範囲を更新（範囲が変わっていない場合は処理をスキップ）
+            if (!updateTileRange(map_view_width, map_view_height,
+                                 map_view_center_x, map_view_center_y)) {
+                return; // 地図が前回と同じ場所の場合は更新処理をしない
+            }
+
+            // 表示範囲内のタイルを読み込む
+            loadVisibleTiles();
+        }
+
         XYZTile(
             const std::uint_least32_t menu_bar_map_,
             const bool menu_bar_map_bool_,
@@ -246,13 +270,18 @@ namespace paxs {
             const std::uint_least32_t draw_type_,
             const std::string& texture_url_
         )
-            : texture_root_path_type(texture_root_path_type_), binary_root_path_type(binary_root_path_type_)
-            , menu_bar_map(menu_bar_map_)
-            , menu_bar_map_bool(menu_bar_map_bool_)
-            , draw_type(draw_type_)
-            , map_file_path_name(map_file_path_name_)
-            , texture_url(texture_url_)
         {
+            // TileMetadata を初期化
+            metadata_.menu_bar_map = menu_bar_map_;
+            metadata_.menu_bar_map_bool = menu_bar_map_bool_;
+            metadata_.texture_root_path_type = texture_root_path_type_;
+            metadata_.binary_root_path_type = binary_root_path_type_;
+            metadata_.map_binary_name = map_binary_name_;
+            metadata_.map_file_path_name = map_file_path_name_;
+            metadata_.file_name_format = file_name_format_;
+            metadata_.draw_type = draw_type_;
+            metadata_.texture_url = texture_url_;
+
             // バイナリデータを定義
             if (map_binary_name_.size() != 0 && texture_root_path_type_ != 0 &&
                 file_name_format_.size() != 0) {
@@ -310,13 +339,13 @@ namespace paxs {
             return z_num;
         }
         std::uint_least32_t getDrawType() const {
-            return draw_type;
+            return metadata_.draw_type;
         }
         bool getMenuBarMapBool() const {
-            return menu_bar_map_bool;
+            return metadata_.menu_bar_map_bool;
         }
         std::uint_least32_t getMenuBarMap() const {
-            return menu_bar_map;
+            return metadata_.menu_bar_map;
         }
         unsigned int getMagnificationZ() const {
             return magnification_z;
@@ -359,7 +388,7 @@ namespace paxs {
             max_date = max_date_;
         }
         void setMapURL(const std::string& texture_url_) {
-            texture_url = texture_url_;
+            metadata_.texture_url = texture_url_;
         }
         void setMapName(const std::string& map_name_) {
             map_name = map_name_;
