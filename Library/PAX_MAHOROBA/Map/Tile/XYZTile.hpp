@@ -14,34 +14,25 @@
 
 #include <cmath>
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include <PAX_GRAPHICA/Network.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Core/Init.hpp>
+#include <PAX_MAHOROBA/Map/Tile/ITileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/BinaryTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/UrlTileLoader.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Map/TileCache.hpp>
 #include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
-
-// マクロ分岐の可能性があるため別の include とは別で記載
-//#ifdef USING_BINARY_TEXTURE
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb/stb_image_write.h>
-
-#include <cstddef>
-#include <memory>
-#include <new>
-
-#include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
-
-//#endif
 
 namespace paxs {
 
@@ -91,16 +82,6 @@ namespace paxs {
         bool menu_bar_map_bool = true;
 
     private:
-        // Ｘ、Ｙ、Ｚの３つの文字列に変換された数値を入れ、画像を保存するフォルダを作成する
-        void createTextureFolder(const std::string& x_value, const std::string& y_value, const std::string& z_value) const {
-            std::string new_folder_path = texture_full_path_folder;
-            paxs::StringExtensions::replace(new_folder_path, "{x}", x_value);
-            paxs::StringExtensions::replace(new_folder_path, "{y}", y_value);
-            paxs::StringExtensions::replace(new_folder_path, "{z}", z_value);
-            if (map_name.size() != 0) paxs::StringExtensions::replace(new_folder_path, "{n}", map_name);
-            std::filesystem::create_directories(new_folder_path);
-        }
-
         // フルパスのフォルダまでのパスを返す
         std::string setFullPathFolder() const {
             std::size_t slash_index = 99999999;
@@ -206,123 +187,50 @@ namespace paxs {
                     std::string local_file_path = local_file_path_zny;
                     paxs::StringExtensions::replace(local_file_path, "{x}", x_value);
 
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
-                    // 何もしない
-#else
-                    // ファイル読み込みができるかどうか
-                    if (std::filesystem::exists(local_file_path)) {
-#endif
-                        // 新しいテクスチャ
-                        paxg::Texture new_tex(paxs::StringExtensions::removeRelativePathPrefix(local_file_path));
+                    std::vector<std::unique_ptr<ITileLoader>> loaders;
 
-                        // テクスチャが読み込めた場合
-                        if (!!new_tex) {
-                            tile_cache_.insert(index_zyx, std::move(new_tex));
-                            continue;
-                        }
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
-                        // 何もしない
-#else
+                    // 1. FileTileLoader（ローカルファイル読み込み）
+                    loaders.push_back(std::make_unique<FileTileLoader>(
+                        file_name_format,
+                        map_name
+                    ));
+
+                    // 2. UrlTileLoader（URL からダウンロード）
+                    if (!texture_url.empty()) {
+                        loaders.push_back(std::make_unique<UrlTileLoader>(
+                            texture_url,
+                            file_name_format,
+                            map_name,
+                            texture_full_path_folder
+                        ));
                     }
-#endif
-                    // 新しいテクスチャが読み込めなかった場合
-                    // URL の記載がある場合
-                    if (texture_url.size() != 0) {
-                        std::string new_path = texture_url;
-                        paxs::StringExtensions::replace(new_path, "{x}", x_value);
-                        paxs::StringExtensions::replace(new_path, "{y}", y_value);
-                        paxs::StringExtensions::replace(new_path, "{z}", z_value);
 
-                        createTextureFolder(x_value, y_value, z_value); // 画像保存用のフォルダを作成
-                        if (paxg::Network::downloadFile(new_path, local_file_path)) {
+                    // 3. BinaryTileLoader（バイナリデータから PNG 生成）
+                    if (!binary_file_name_format.empty() && !texture_full_path_folder.empty()) {
+                        loaders.push_back(std::make_unique<BinaryTileLoader>(
+                            binary_file_name_format,
+                            file_name_format,
+                            map_name,
+                            texture_full_path_folder,
+                            current_map_view_height
+                        ));
+                    }
 
-                            // ファイル読み込みができるかどうか
-                            if (std::filesystem::exists(local_file_path)) {
-                                paxg::Texture new_url_tex{ paxs::StringExtensions::removeRelativePathPrefix(local_file_path) };
-                                if (!new_url_tex) {
-                                    PAXS_WARNING("XYZTile: Failed to load texture from downloaded file: " + local_file_path);
-                                    tile_cache_.insertFailure(index_zyx);
-                                }
-                                else {
-                                    tile_cache_.insert(index_zyx, std::move(new_url_tex));
-                                }
-                            }
+                    // Try loaders in sequence
+                    bool loaded = false;
+                    for (auto& loader : loaders) {
+                        auto texture = loader->load(z, (j + z_num) & (z_num - 1), (i + z_num) & (z_num - 1));
+                        if (texture) {
+                            tile_cache_.insert(index_zyx, std::move(*texture));
+                            loaded = true;
+                            break;
                         }
                     }
-                    else if (binary_file_name_format.size() != 0 && // 画像の元になるバイナリデータがある場合
-                             texture_full_path_folder.size() != 0) { // フルパスがある場合
-                        std::string new_path = binary_file_name_format;
-                        paxs::StringExtensions::replace(new_path, "{x}", x_value);
-                        paxs::StringExtensions::replace(new_path, "{y}", y_value);
-                            paxs::StringExtensions::replace(new_path, "{z}", z_value);
-                            if (map_name.size() != 0) paxs::StringExtensions::replace(new_path, "{n}", map_name);
 
-                            paxs::Input8BitBinary i8bbs(new_path,
-                                AppConfig::getInstance()->getRootPath()
-                            );
-
-                            static unsigned char xyz_tiles[256 * 256]{};
-                            // テクスチャが読み込めない場合
-                            if (!i8bbs.calc(xyz_tiles)) {
-                                tile_cache_.insertFailure(index_zyx);
-                                continue;
-                            }
-                            struct RGBAa {
-                                unsigned char r, g, b, a; //赤, 緑, 青, 透過
-                                RGBAa() = default;
-                                constexpr RGBAa(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_) :r(r_), g(g_), b(b_), a(a_) {}
-                            };
-                            RGBAa rgba[256][256]{};
-                            // 読み込んで画像として保存
-                            for (std::size_t row{}; row < 256; ++row)
-                                for (std::size_t col{}; col < 256; ++col) {
-                                    const unsigned char color = xyz_tiles[row * 256 + col];
-                                    if (color >= 251 || color == 0) {
-                                        rgba[row][col].r = 0;
-                                        rgba[row][col].g = 0;
-                                        rgba[row][col].b = 0;
-                                        rgba[row][col].a = 0; //透過
-                                    }
-                                    else {
-                                        if (color >= 181) { // 25.64100582
-                                            rgba[row][col].r = static_cast<unsigned char>(180 - 15.0 * (256.0 - color) / (256.0 - 181.0));
-                                            rgba[row][col].g = static_cast<unsigned char>(220 - 10.0 * (256.0 - color) / (256.0 - 181.0));
-                                            rgba[row][col].b = static_cast<unsigned char>(185 - 15.0 * (256.0 - color) / (256.0 - 181.0));
-                                        }
-                                        else if (color >= 127) { // 9.090276921
-                                            rgba[row][col].r = static_cast<unsigned char>(200 - 30.0 * (181.0 - color) / (181.0 - 127.0));
-                                            rgba[row][col].g = static_cast<unsigned char>(235 - 20.0 * (181.0 - color) / (181.0 - 127.0));
-                                            rgba[row][col].b = static_cast<unsigned char>(210 - 30.0 * (181.0 - color) / (181.0 - 127.0));
-                                        }
-                                        else {
-                                            rgba[row][col].r = static_cast<unsigned char>(235 - 40.0 * color / 127.0);
-                                            rgba[row][col].g = static_cast<unsigned char>(235);
-                                            rgba[row][col].b = static_cast<unsigned char>(240 - 40.0 * color / 127.0);
-                                        }
-
-                                        rgba[row][col].a = 255; //不透過
-                                    }
-                                }
-                            createTextureFolder(x_value, y_value, z_value); // 画像保存用のフォルダを作成
-                            stbi_write_png(local_file_path.c_str(), 256, 256, static_cast<int>(sizeof(RGBAa)), rgba, 0);
-                            current_map_view_height = 11111;
-
-                            // ファイル読み込みができるかどうか
-                            if (std::filesystem::exists(local_file_path)) {
-                                paxg::Texture bin_tex(paxs::StringExtensions::removeRelativePathPrefix(local_file_path));
-                                if (!bin_tex) {
-                                    PAXS_WARNING("XYZTile: Failed to load texture from binary generated file: " + local_file_path);
-                                    tile_cache_.insertFailure(index_zyx);
-                                }
-                                else {
-                                    tile_cache_.insert(index_zyx, std::move(bin_tex));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            tile_cache_.insertFailure(index_zyx);
-                        }
+                    // If all loaders failed
+                    if (!loaded) {
+                        tile_cache_.insertFailure(index_zyx);
+                    }
                 } // for (j)
             } // for (i)
         }
@@ -380,11 +288,9 @@ namespace paxs {
 #else
                 file_name_format = AppConfig::getInstance()->getRootPath() + map_file_path_name_ + file_name_format_ + std::string(".png");
 #endif
-                //if (file_name_format.size() != 0) printfDx("2. %s\n", file_name_format.c_str());
             }
             if (file_name_format.size() != 0) {
                 texture_full_path_folder = setFullPathFolder();
-                //if (texture_full_path_folder.size() != 0) printfDx("3. %s\n", texture_full_path_folder.c_str());
             }
         }
 
