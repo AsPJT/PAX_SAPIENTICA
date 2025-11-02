@@ -19,6 +19,8 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
+
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -67,19 +69,20 @@ namespace paxs {
 				for (std::size_t i = 0; i < location_point_list.size(); ++i) {
 					const auto& lli = location_point_list[i];
 					// 空間の範囲外を除去
-					if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
-						|| lli.coordinate.x > (map_view_center_x + map_view_width / 1.6)
-						|| lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
-						|| lli.coordinate.y > (map_view_center_y + map_view_height / 1.6)) continue;
+					if (!LocationRendererHelper::isInViewBounds(
+						lli.coordinate.x, lli.coordinate.y,
+						map_view_width, map_view_height,
+						map_view_center_x, map_view_center_y)) continue;
 					// 時間の範囲外を除去
 					if (lli.min_year > jdn) continue;
 					if (lli.max_year < jdn) continue;
 
 					// 描画位置
-					const paxg::Vec2i draw_pos = paxg::Vec2i{
-						static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-						static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-					};
+					const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+						lli.coordinate.x, lli.coordinate.y,
+						map_view_width, map_view_height,
+						map_view_center_x, map_view_center_y
+					);
 
 					// 範囲外の場合（アイコンのみ描画）
 					if (lli.min_view > map_view_height || lli.max_view < map_view_height) {
@@ -101,23 +104,13 @@ namespace paxs {
 			const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
 			const paxg::Vec2i& draw_pos
 		) const {
-			// エージェントを描画
-			if (lli.lpe == MurMur3::calcHash("agent1")) {
-				if (texture.find(MurMur3::calcHash("BlueCircle")) != texture.end()) {
-					texture.at(MurMur3::calcHash("BlueCircle")).resizedDrawAt(15, draw_pos);
-				}
-				return;
-			}
-			// エージェントを描画
-			else if (lli.lpe == MurMur3::calcHash("agent2")) {
-				if (texture.find(MurMur3::calcHash("RedCircle")) != texture.end()) {
-					texture.at(MurMur3::calcHash("RedCircle")).resizedDrawAt(15, draw_pos);
-				}
+			// エージェントアイコン描画
+			if (LocationRendererHelper::drawAgentIcon(texture, lli.lpe, draw_pos)) {
 				return;
 			}
 
+			// 通常のテクスチャ描画
 			const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
-			// 描画
 			if (texture.find(place_tex) != texture.end()) {
 				const int len = int(lli.overall_length / 2 * lli.zoom);
 				drawTextureMultiple(texture.at(place_tex), len, draw_pos, lli.x_size, lli.y_size, true);

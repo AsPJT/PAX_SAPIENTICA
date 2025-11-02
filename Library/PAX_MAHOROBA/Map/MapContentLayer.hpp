@@ -16,7 +16,7 @@
 
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
-#include <PAX_MAHOROBA/Map/Location/SettlementRenderer.hpp>
+#include <PAX_MAHOROBA/Map/Location/SettlementManager.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
@@ -50,7 +50,7 @@ namespace paxs {
         PlaceNameManager place_name_manager_{}; // 地名
         PersonNameManager person_name_manager_{}; // 人名
 #ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<SettlementRenderer> settlement_renderer; // 集落描画
+        SettlementManager settlement_manager_{}; // 集落管理
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
 #endif
         paxs::map::MapDomainLogic map_domain_logic_; // ドメインロジック
@@ -74,19 +74,11 @@ namespace paxs {
     public:
         MapContentLayer()
             :texture_manager_(std::make_unique<TextureManager>())
-#ifdef PAXS_USING_SIMULATOR
-            ,settlement_renderer(std::make_unique<SettlementRenderer>())
-#endif
         {
             // メモリ割り当てチェック
             if (!texture_manager_) {
                 PAXS_ERROR("Failed to allocate TextureManager");
             }
-#ifdef PAXS_USING_SIMULATOR
-            if (!settlement_renderer) {
-                PAXS_ERROR("Failed to allocate SettlementRenderer");
-            }
-#endif
         }
 
         void init(FontManager& font_manager, const SelectLanguage& select_language) {
@@ -120,9 +112,9 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             cached_simulator_ = &simulator;
 
-            // SettlementRenderer に描画パラメータを設定
-            if (settlement_renderer && simulator) {
-                settlement_renderer->setDrawParams(
+            // SettlementManager に描画パラメータを設定
+            if (simulator) {
+                settlement_manager_.setDrawParams(
                     koyomi.jdn.cgetDay(),
                     simulator->getSettlementGrids(),
                     simulator->getMarriagePosList(),
@@ -179,17 +171,15 @@ namespace paxs {
             paxs::FeatureVisibilityManager& visible = *cached_visible_;
 
             if (visible.isVisible(MurMur3::calcHash("Map"))) { // 地図が「可視」の場合は描画する
-                // PersonNameManager と PlaceNameManager を描画
-                // Render PersonNameManager and PlaceNameManager
                 person_name_manager_.render();
                 place_name_manager_.render();
             }
 
 #ifdef PAXS_USING_SIMULATOR
-            // SettlementRenderer を描画（シミュレーション表示時）
-            // Render SettlementRenderer (when simulation is visible)
-            if (visible.isVisible(MurMur3::calcHash("Simulation")) && settlement_renderer) {
-                settlement_renderer->render();
+            // SettlementManager を描画（シミュレーション表示時）
+            // Render SettlementManager (when simulation is visible)
+            if (visible.isVisible(MurMur3::calcHash("Simulation"))) {
+                settlement_manager_.render();
             }
 #endif
         }

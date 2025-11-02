@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -19,6 +19,8 @@
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
 
 #include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
 
@@ -116,30 +118,21 @@ namespace paxs {
             double map_view_center_x,
             double map_view_center_y
         ) const {
-            // 描画位置（後で変える）
-            const paxg::Vec2i draw_pos = paxg::Vec2i{
-                static_cast<int>((now_coordinate_x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                static_cast<int>(double(paxg::Window::height()) - ((now_coordinate_y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-            };
+            // 描画位置
+            const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+                now_coordinate_x, now_coordinate_y,
+                map_view_width, map_view_height,
+                map_view_center_x, map_view_center_y
+            );
 
-            // エージェントを描画
-            if (lli.lpe == MurMur3::calcHash("agent1")) {
-                if (texture.find(MurMur3::calcHash("BlueCircle")) != texture.end()) {
-                    texture.at(MurMur3::calcHash("BlueCircle")).resizedDrawAt(15, draw_pos);
-                }
+            // エージェントアイコン描画
+            if (LocationRendererHelper::drawAgentIcon(texture, lli.lpe, draw_pos)) {
                 return;
             }
-            // エージェントを描画
-            else if (lli.lpe == MurMur3::calcHash("agent2")) {
-                if (texture.find(MurMur3::calcHash("RedCircle")) != texture.end()) {
-                    texture.at(MurMur3::calcHash("RedCircle")).resizedDrawAt(15, draw_pos);
-                }
-                return;
-            }
+
+            // 通常のテクスチャ描画
             const int len = int(lli.overall_length / 2);
-
             const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
-            // 描画
             if (texture.find(place_tex) != texture.end()) {
                 texture.at(place_tex).resizedDrawAt(len, draw_pos);
             }
@@ -162,10 +155,11 @@ namespace paxs {
             std::uint_least32_t en_us_language
         ) const {
             // 描画位置
-            const paxg::Vec2i draw_pos = paxg::Vec2i{
-                static_cast<int>((now_coordinate_x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                static_cast<int>(double(paxg::Window::height()) - ((now_coordinate_y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-            };
+            const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+                now_coordinate_x, now_coordinate_y,
+                map_view_width, map_view_height,
+                map_view_center_x, map_view_center_y
+            );
 
             const paxg::Vec2i draw_font_pos = paxg::Vec2i{
                 draw_pos.x(), draw_pos.y() - 60
@@ -190,31 +184,11 @@ namespace paxs {
             std::uint_least32_t ja_jp_language,
             std::uint_least32_t en_us_language
         ) const {
-            // 英語名がない場合
-            if (lli.place_name.find(en_us_language) == lli.place_name.end()) {
-                // 日本語名を描画
-                if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
-                    font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    font.drawTopCenter(lli.place_name.at(ja_jp_language), draw_font_pos, paxg::Color(0, 0, 0));
-                }
-            }
-            // 英語名がある場合
-            else {
-                // 日本語名がある場合
-                if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
-                    // 名前（英語）を描画
-                    en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    en_font.drawBottomCenter(lli.place_name.at(en_us_language), draw_font_pos, paxg::Color(0, 0, 0));
-                    // 日本語名を描画
-                    font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    font.drawTopCenter(lli.place_name.at(ja_jp_language), draw_font_pos, paxg::Color(0, 0, 0));
-                }
-                else {
-                    // 名前（英語）を描画
-                    en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    en_font.drawTopCenter(lli.place_name.at(en_us_language), draw_font_pos, paxg::Color(0, 0, 0));
-                }
-            }
+            (void)ja_jp_language;  // 未使用警告を抑制
+            (void)en_us_language;  // 未使用警告を抑制
+            LocationRendererHelper::drawBilingualText(
+                lli.place_name, draw_font_pos, font, en_font, "topCenter"
+            );
         }
     };
 
