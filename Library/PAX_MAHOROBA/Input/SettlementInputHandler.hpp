@@ -35,7 +35,7 @@ namespace paxs {
 
         /// @brief 入力処理
         /// @brief Handle input
-        bool handleInput(const InputEvent& event) override {
+        bool handleInput([[maybe_unused]] const InputEvent& event) override {
             if (!visible_ || !enabled_) return false;
 
             // 既存のupdate()ロジックを呼び出す

@@ -190,7 +190,7 @@ namespace paxg {
                 ));
 
                 int alpha = shadow_alpha * (spread + blur_size - i + 1) / (spread + blur_size + 1);
-                shadow.setFillColor(sf::Color(0, 0, 0, alpha));
+                shadow.setFillColor(sf::Color(0, 0, 0, static_cast<uint8_t>(alpha)));
                 Window::window().draw(shadow);
             }
             return *this;

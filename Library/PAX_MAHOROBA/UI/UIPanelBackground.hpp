@@ -50,12 +50,6 @@ namespace paxs {
             , corner_radius_(corner_radius)
         {}
 
-        /// @brief 影用のテクスチャを設定
-        /// @brief Set textures for shadow rendering
-        void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
-            background_.setShadowTextures(shadow_tex, internal_tex);
-        }
-
         /// @brief レイアウトを設定（通常のパネル用）
         /// @brief Set layout (for normal panels)
         /// @param layout レイアウト情報（nullptrの場合は画面幅全体を使用）

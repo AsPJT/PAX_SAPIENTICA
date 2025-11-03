@@ -34,13 +34,14 @@ namespace paxs {
 	public:
 		PanelBackground() = default;
 
-		/// @brief 影用のテクスチャを設定
-		/// @brief Set textures for shadow rendering
-		/// @param shadow_tex 影テクスチャ / Shadow texture
-		/// @param internal_tex 内部テクスチャ / Internal texture
-		void setShadowTextures(paxg::RenderTexture& shadow_tex, paxg::RenderTexture& internal_tex) {
-			shadow_texture_ = &shadow_tex;
-			internal_texture_ = &internal_tex;
+		/// @brief 影用のテクスチャを初期化（静的メソッド）
+		/// @brief Initialize textures for shadow rendering (static method)
+		/// @param size テクスチャサイズ / Texture size
+		static void initShadowTextures(const paxs::Vector2<int>& size) {
+#ifdef PAXS_USING_SIV3D
+			shadow_texture_ = paxg::RenderTexture{ size, paxg::ColorF{ 1.0, 0.0 } };
+			internal_texture_ = paxg::RenderTexture{ size };
+#endif
 		}
 
 		/// @brief バッチ描画の開始（Siv3D用）
@@ -50,8 +51,8 @@ namespace paxs {
 		/// Call this at the beginning of the frame to batch render multiple panel shadows.
 		static void beginBatch() {
 #ifdef PAXS_USING_SIV3D
-			getShadowShapesMap().clear();
-			getPanelShapesMap().clear();
+			shadow_shapes_map_.clear();
+			panel_shapes_map_.clear();
 #endif
 		}
 
@@ -60,31 +61,28 @@ namespace paxs {
 		///
 		/// 登録されたすべてのパネルの影をレイヤー順に描画します。
 		/// Renders all registered panel shadows in layer order.
-		static void endBatch(paxg::RenderTexture* shadow_tex, paxg::RenderTexture* internal_tex) {
+		static void endBatch() {
 #ifdef PAXS_USING_SIV3D
-			if (!shadow_tex || !internal_tex) return;
+			// テクスチャが初期化されているか確認
+			if (shadow_texture_.size().x <= 0 || shadow_texture_.size().y <= 0) return;
 
 			// レイヤー順（小→大）に描画
-			// Render in layer order (low to high)
-			for (auto& [layer, shapes] : getShadowShapesMap()) {
+			for (auto& [layer, shapes] : shadow_shapes_map_) {
 				if (shapes.empty()) continue;
 
 				// このレイヤーのすべての影を一度に描画
-				// Render all shadows for this layer at once
 				paxs::ShadowRenderer::renderShadowWithPanels(
-					*shadow_tex,
-					*internal_tex,
+					shadow_texture_,
+					internal_texture_,
 					[&shapes]() {
 						// すべての影の形状を描画
-						// Draw all shadow shapes
 						for (const auto& draw_func : shapes) {
 							draw_func();
 						}
 					},
 					[layer]() {
 						// すべてのパネル本体を描画
-						// Draw all panel bodies
-						for (const auto& draw_func : getPanelShapesMap()[layer]) {
+						for (const auto& draw_func : panel_shapes_map_[layer]) {
 							draw_func();
 						}
 					}
@@ -110,16 +108,14 @@ namespace paxs {
 		) const {
 #ifdef PAXS_USING_SIV3D
 			// Siv3D: バッチ描画に登録（レイヤー別）
-			// Register for batch rendering (per layer)
-			getShadowShapesMap()[layer].push_back([x, y, width, height, corner_radius]() {
+			shadow_shapes_map_[layer].push_back([x, y, width, height, corner_radius]() {
 				paxg::RoundRect{ x, y, width, height, corner_radius }.draw();
 			});
-			getPanelShapesMap()[layer].push_back([x, y, width, height, corner_radius, bg_color]() {
+			panel_shapes_map_[layer].push_back([x, y, width, height, corner_radius, bg_color]() {
 				paxg::RoundRect{ x, y, width, height, corner_radius }.draw(bg_color);
 			});
 #else
 			// SFML/DxLib: 即座に描画
-			// Draw immediately
 			paxg::RoundRect{ x, y, width, height, corner_radius }
 				.drawShadow({1, 1}, 4, 1).draw(bg_color);
 #endif
@@ -140,38 +136,28 @@ namespace paxs {
 		) const {
 #ifdef PAXS_USING_SIV3D
 			// Siv3D: バッチ描画に登録（レイヤー別）
-			// Register for batch rendering (per layer)
-			getShadowShapesMap()[layer].push_back([x, y, width, height]() {
+			shadow_shapes_map_[layer].push_back([x, y, width, height]() {
 				paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }.draw();
 			});
-			getPanelShapesMap()[layer].push_back([x, y, width, height, bg_color]() {
+			panel_shapes_map_[layer].push_back([x, y, width, height, bg_color]() {
 				paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }.draw(bg_color);
 			});
 #else
 			// SFML/DxLib: 即座に描画
-			// Draw immediately
 			paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }
 				.drawShadow({1, 1}, 4, 1).draw(bg_color);
 #endif
 		}
 
 	private:
-		// 影描画用テクスチャ（外部から注入）
-		paxg::RenderTexture* shadow_texture_ = nullptr;
-		paxg::RenderTexture* internal_texture_ = nullptr;
-
 #ifdef PAXS_USING_SIV3D
-		// バッチ描画用の静的コンテナ（レイヤー別）
-		// Static containers for batch rendering (per layer)
-		static std::map<RenderLayer, std::vector<std::function<void()>>>& getShadowShapesMap() {
-			static std::map<RenderLayer, std::vector<std::function<void()>>> shadow_shapes_map;
-			return shadow_shapes_map;
-		}
+		// 影描画用テクスチャ（全インスタンスで共有）
+		inline static paxg::RenderTexture shadow_texture_{};
+		inline static paxg::RenderTexture internal_texture_{};
 
-		static std::map<RenderLayer, std::vector<std::function<void()>>>& getPanelShapesMap() {
-			static std::map<RenderLayer, std::vector<std::function<void()>>> panel_shapes_map;
-			return panel_shapes_map;
-		}
+		// バッチ描画用の静的コンテナ（レイヤー別）
+		inline static std::map<RenderLayer, std::vector<std::function<void()>>> shadow_shapes_map_;
+		inline static std::map<RenderLayer, std::vector<std::function<void()>>> panel_shapes_map_;
 #endif
 	};
 

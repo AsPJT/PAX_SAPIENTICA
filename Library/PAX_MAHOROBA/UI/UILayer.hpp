@@ -75,10 +75,6 @@ namespace paxs {
         std::size_t map_viewport_center_lat_str_index = 0;
         std::size_t xyz_tile_z_str_index = 0;
 
-        // UI の影
-        paxg::RenderTexture shadow_texture{};
-        paxg::RenderTexture internal_texture{};
-
         paxs::HeaderPanel header_panel;  // ヘッダーパネル（メニューバー + 言語選択）
 
         // 背景コンポーネント
@@ -141,9 +137,8 @@ namespace paxs {
             settlement_status_panel.init(font_manager_->getLanguageFonts(), select_language);
 #endif
 
-            // 影
-            shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
-            internal_texture = paxg::RenderTexture{ shadow_texture.size() };
+            // 影テクスチャを初期化
+            PanelBackground::initShadowTextures(paxg::Window::Size());
 
             // IWidget を実装したウィジェットを登録
             widgets.clear();
@@ -239,8 +234,7 @@ namespace paxs {
         /// @brief ウィンドウサイズ変更時のテクスチャ再初期化
         void handleWindowResize() {
             // ウィンドウサイズ変更時に影テクスチャを再作成
-            shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
-            internal_texture = paxg::RenderTexture{ shadow_texture.size() };
+            PanelBackground::initShadowTextures(paxg::Window::Size());
         }
 
         /// @brief データ更新（描画は行わない）
@@ -261,19 +255,14 @@ namespace paxs {
             // UIレイアウトを計算
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
-            // 背景コンポーネントに影テクスチャとレイアウトを設定
-            header_bg_.setShadowTextures(shadow_texture, internal_texture);
+            // 背景コンポーネントにレイアウトを設定
             header_bg_.setLayout(nullptr);  // 画面幅全体を使用
             header_bg_.setHeight(header_panel.getHeight());
 
-            calendar_bg_.setShadowTextures(shadow_texture, internal_texture);
             calendar_bg_.setLayout(&ui_layout.calendar_panel);
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_bg_.setShadowTextures(shadow_texture, internal_texture);
             simulation_bg_.setLayout(&ui_layout.simulation_panel);
-
-            settlement_status_bg_.setShadowTextures(shadow_texture, internal_texture);
             // SettlementStatusPanelのレイアウト（固定位置）
             // TODO: UILayoutに統合
             PanelLayout settlement_status_layout;
@@ -361,7 +350,7 @@ namespace paxs {
             }
 
             // 3. バッチ描画終了（すべての背景を一括描画）
-            PanelBackground::endBatch(&shadow_texture, &internal_texture);
+            PanelBackground::endBatch();
 
             // 4. UIコンテンツを描画
             // デバッグ情報パネルのコンテンツを描画

@@ -221,7 +221,7 @@ namespace paxs {
 
         /// @brief ヒットテスト
         /// @brief Hit test
-        bool hitTest(int x, int y) const override {
+        bool hitTest([[maybe_unused]] int x, [[maybe_unused]] int y) const override {
             // 地図全体が対象なので常にtrue
             // Always true as the entire map is the target
             return visible_ && enabled_;

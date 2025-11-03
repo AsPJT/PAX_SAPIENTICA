@@ -258,7 +258,7 @@ namespace paxg{
             return DxLib::GetFontLineSpaceToHandle(font);
         }
         int width(const std::string& str_) {
-            if (font == -1) return static_cast<int>(str_.size() * h * 0.5);
+            if (font == -1) return static_cast<int>(static_cast<double>(str_.size()) * h * 0.5);
             // DxLibで実際の文字列幅を取得（フォントハンドルを使用）
             int w = 0, h_temp = 0;
             DxLib::GetDrawStringSizeToHandle(&w, &h_temp, NULL, str_.c_str(), static_cast<int>(str_.size()), font, FALSE);

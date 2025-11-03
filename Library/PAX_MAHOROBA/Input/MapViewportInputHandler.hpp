@@ -120,7 +120,7 @@ namespace paxs {
 
         /// @brief タッチ入力による移動・ズーム処理（Android）
         /// @brief Handle movement and zoom by touch input (Android)
-        void handleTouchInput(MapViewport& viewport) {
+        void handleTouchInput([[maybe_unused]] MapViewport& viewport) {
 #ifdef __ANDROID__
             old_touch_num = touch_num;
             old_pos = pos;
