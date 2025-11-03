@@ -56,6 +56,14 @@ namespace paxg {
         }
 
     public:
+        /// @brief ライブラリ初期化前の設定を行う（DxLib_Init前など）
+        /// @brief Pre-initialization settings (before DxLib_Init, etc.)
+        static void PreInit() {
+            getImpl().preInit();
+        }
+
+        /// @brief メイン初期化
+        /// @brief Main initialization
         static void Init(int width, int height, const std::string& title) {
             getImpl().init(width, height, title);
         }

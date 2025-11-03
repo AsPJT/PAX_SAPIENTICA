@@ -24,7 +24,14 @@ namespace paxg {
     public:
         virtual ~WindowImpl() = default;
 
+        /// @brief ライブラリ初期化前の設定（DxLib_Init前など）
+        /// @brief Pre-initialization settings (before DxLib_Init, etc.)
+        virtual void preInit() {}
+
+        /// @brief メイン初期化
+        /// @brief Main initialization
         virtual void init(int width, int height, const std::string& title) = 0;
+
         virtual bool update() = 0;
 
         virtual void setTitle(const std::string& title) = 0;
