@@ -181,6 +181,8 @@ namespace paxs {
             ui_manager_.getSettlementStatusPanel().setVisible(simulator != nullptr);
 #endif
 
+            photo360_layer_.setVisible(visible_.isVisible(paxs::MurMur3::calcHash(2, "3D")));
+
             // 3Dモード時は360度写真とUIのみ描画、通常モードは全レイヤー描画
             if (visible_.isVisible(paxs::MurMur3::calcHash(2, "3D"))) {
                 // 3Dモード: 360度写真を描画してからUIを描画
