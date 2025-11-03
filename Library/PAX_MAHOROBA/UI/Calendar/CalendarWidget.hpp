@@ -25,7 +25,6 @@
 #include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
 
@@ -155,9 +154,6 @@ namespace paxs {
                 // 暦描画フォントを指定
                 paxg::Font* one_font = language_fonts_->getAndAdd(select_language_->cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
                 if (one_font == nullptr) continue;
-                // 年描画フォントを指定
-                paxg::Font* big_year_font = language_fonts_->getAndAdd(select_language_->cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE * 3), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
-                if (big_year_font == nullptr) continue;
 
                 // 暦の読み方を返す
                 const std::string* const text_str = language_text_->getStringPtr(
@@ -186,10 +182,6 @@ namespace paxs {
                     (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     (*one_font).drawTopRight(std::string(koyomi_->month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(280 * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x), static_cast<int>(ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-
-                    if (!is_simulator_active_) {
-                        if (i == 1) (*big_year_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_->koyomi_font_en_x + 100 - 70), static_cast<int>(550 - 30 + ui_layout_->koyomi_font_en_y + i * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    }
 
                     if (date_lm) {
                         (*one_font).drawTopRight("int.", paxg::Vec2i(static_cast<int>((
@@ -224,7 +216,6 @@ namespace paxs {
         const paxs::UILayout* ui_layout_ = nullptr;
         const SelectLanguage* select_language_ = nullptr;
         const paxs::Language* language_text_ = nullptr;
-        bool is_simulator_active_ = false;
 
     public:
         // IWidget インターフェースの実装
@@ -267,14 +258,12 @@ namespace paxs {
             const paxs::Koyomi& koyomi,
             const paxs::UILayout& ui_layout,
             const SelectLanguage& select_language,
-            const paxs::Language& language_text,
-            bool is_simulator_active
+            const paxs::Language& language_text
         ) {
             koyomi_ = &koyomi;
             ui_layout_ = &ui_layout;
             select_language_ = &select_language;
             language_text_ = &language_text;
-            is_simulator_active_ = is_simulator_active;
         }
     };
 

@@ -103,6 +103,8 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             , std::unique_ptr<paxs::SettlementSimulator>& simulator
 #endif
+            , const paxs::Koyomi* koyomi = nullptr
+            , bool is_simulator_active = false
         ) {
             if (!visible_ || language_fonts_ == nullptr) return;
 
@@ -175,7 +177,7 @@ namespace paxs {
                 );
                 font->draw(
                     std::to_string(simulator->cgetPopulationNum()),
-                    paxg::Vec2i(text_x + 100, text_y + line_height * current_line++),
+                    paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
 
@@ -188,11 +190,44 @@ namespace paxs {
                 );
                 font->draw(
                     std::to_string(simulator->cgetSettlement()),
-                    paxg::Vec2i(text_x + 100, text_y + line_height * current_line++),
+                    paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
             }
 #endif
+
+            // 大きな年号を描画（シミュレーション非アクティブ時のみ）
+            if (koyomi != nullptr && !is_simulator_active && !koyomi->date_list.empty()) {
+                // グレゴリオ暦の年を取得（date_list[1]がグレゴリオ暦）
+                if (koyomi->date_list.size() > 1) {
+                    int date_year = 0;
+                    std::visit([&](const auto& x) {
+                        date_year = int(x.cgetYear());
+                    }, koyomi->date_list[1].date);
+
+                    if (date_year > 0) {
+                        // 大きな年号フォントを取得（通常の3倍サイズ）
+                        paxg::Font* big_year_font = language_fonts_->getAndAdd(
+                            select_language.cgetKey(),
+                            static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE * 3),
+                            static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+                        );
+                        if (big_year_font != nullptr) {
+                            big_year_font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
+
+                            // パネル内の下部に配置
+                            int big_year_x = text_x;
+                            int big_year_y = pos_.y() + panel_height_ - 80;  // パネル下部から80px上
+
+                            big_year_font->draw(
+                                std::to_string(date_year),
+                                paxg::Vec2i(big_year_x, big_year_y),
+                                paxg::Color(0, 0, 0)
+                            );
+                        }
+                    }
+                }
+            }
         }
 
     public:

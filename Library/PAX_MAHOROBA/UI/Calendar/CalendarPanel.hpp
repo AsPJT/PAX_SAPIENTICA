@@ -57,10 +57,9 @@ namespace paxs {
 		void setCalendarParams(
 			const paxs::Koyomi& koyomi,
 			const SelectLanguage& select_language,
-			const paxs::Language& language_text,
-			bool is_simulator_active
+			const paxs::Language& language_text
 		) {
-			calendar_widget_.setRenderParams(koyomi, *ui_layout_, select_language, language_text, is_simulator_active);
+			calendar_widget_.setRenderParams(koyomi, *ui_layout_, select_language, language_text);
 		}
 
 		/// @brief 時間操作ウィジェットの参照を設定

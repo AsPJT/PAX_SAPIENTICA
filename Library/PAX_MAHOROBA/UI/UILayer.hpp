@@ -308,13 +308,8 @@ namespace paxs {
             // CalendarPanelの可視性と設定
             bool calendar_visible = visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"));
             if (calendar_visible) {
-#ifdef PAXS_USING_SIMULATOR
-                bool is_simulator_active = (simulator != nullptr);
-#else
-                bool is_simulator_active = false;
-#endif
                 calendar_panel.setLayout(ui_layout, key_value_tsv.get());
-                calendar_panel.setCalendarParams(koyomi, select_language, language_text, is_simulator_active);
+                calendar_panel.setCalendarParams(koyomi, select_language, language_text);
                 calendar_panel.setTimeControlParams(koyomi);
                 calendar_panel.setVisible(true);
                 calendar_bg_.setVisible(true);
@@ -379,12 +374,16 @@ namespace paxs {
             // 4. UIコンテンツを描画
             // デバッグ情報パネルのコンテンツを描画
             if (visible.isVisible(MurMur3::calcHash("Debug"))) {
-                debug_info_panel.renderMapAndSimulationInfo(
-                    map_viewport, select_language, language_text
 #ifdef PAXS_USING_SIMULATOR
-                    , *cached_simulator_
-#endif
+                bool is_simulator_active = (*cached_simulator_ != nullptr);
+                debug_info_panel.renderMapAndSimulationInfo(
+                    map_viewport, select_language, language_text, *cached_simulator_, &koyomi, is_simulator_active
                 );
+#else
+                debug_info_panel.renderMapAndSimulationInfo(
+                    map_viewport, select_language, language_text, &koyomi, false
+                );
+#endif
             }
 
             // コンテンツウィジェットを描画
