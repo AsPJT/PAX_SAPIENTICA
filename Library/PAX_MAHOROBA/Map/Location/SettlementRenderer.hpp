@@ -148,9 +148,9 @@ namespace paxs {
 
                     // 経緯度の範囲外を除去
                     if (!LocationRendererHelper::isInViewBounds(
-						lli.coordinate.x, lli.coordinate.y,
-						map_view_width, map_view_height,
-						map_view_center_x, map_view_center_y)) continue;
+                        lli.coordinate.x, lli.coordinate.y,
+                        map_view_width, map_view_height,
+                        map_view_center_x, map_view_center_y)) continue;
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
@@ -159,10 +159,10 @@ namespace paxs {
 
                         // 描画位置
                         const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
-							lli.coordinate.x, lli.coordinate.y,
-							map_view_width, map_view_height,
-							map_view_center_x, map_view_center_y
-						);
+                            lli.coordinate.x, lli.coordinate.y,
+                            map_view_width, map_view_height,
+                            map_view_center_x, map_view_center_y
+                        );
 
                         // エージェント
                         // if (lli.lpe == MurMur3::calcHash("agent1"))
@@ -299,9 +299,9 @@ namespace paxs {
 
                         // 経緯度の範囲外を除去
                         if (!LocationRendererHelper::isInViewBounds(
-						lli.coordinate.x, lli.coordinate.y,
-						map_view_width, map_view_height,
-						map_view_center_x, map_view_center_y)) continue;
+                        lli.coordinate.x, lli.coordinate.y,
+                        map_view_width, map_view_height,
+                        map_view_center_x, map_view_center_y)) continue;
 
                         // 範囲内の場合
                         if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
@@ -392,9 +392,9 @@ namespace paxs {
 
                     // 経緯度の範囲外を除去
                     if (!LocationRendererHelper::isInViewBounds(
-						lli.coordinate.x, lli.coordinate.y,
-						map_view_width, map_view_height,
-						map_view_center_x, map_view_center_y)) continue;
+                        lli.coordinate.x, lli.coordinate.y,
+                        map_view_width, map_view_height,
+                        map_view_center_x, map_view_center_y)) continue;
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
