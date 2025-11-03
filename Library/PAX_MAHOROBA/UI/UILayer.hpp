@@ -79,7 +79,6 @@ namespace paxs {
         // UI の影
         paxg::RenderTexture shadow_texture{};
         paxg::RenderTexture internal_texture{};
-        int size_change_count_ = 0;
 
         paxs::HeaderPanel header_panel;  // ヘッダーパネル（メニューバー + 言語選択）
 
@@ -240,16 +239,9 @@ namespace paxs {
 
         /// @brief ウィンドウサイズ変更時のテクスチャ再初期化
         void handleWindowResize() {
-            if (size_change_count_ < 1) {
-                shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
-                internal_texture = paxg::RenderTexture{ shadow_texture.size() };
-            }
-            if (size_change_count_ >= 100) size_change_count_ = 100;
-            ++size_change_count_;
-        }
-
-        void resetSizeChangeCount() {
-            size_change_count_ = 0;
+            // ウィンドウサイズ変更時に影テクスチャを再作成
+            shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
+            internal_texture = paxg::RenderTexture{ shadow_texture.size() };
         }
 
         /// @brief データ更新（描画は行わない）

@@ -66,6 +66,10 @@ namespace paxs {
         // シミュレーションモデル用辞書
         paxs::Language simulation_text;
 
+        // ウィンドウリサイズ検知用
+        int last_window_width_ = 0;
+        int last_window_height_ = 0;
+
     public:
         GraphicsManager() {
             // 可視性の初期化
@@ -140,8 +144,14 @@ namespace paxs {
 #endif
             paxs::InputStateManager& input_state_manager
         ) {
-            // ウィンドウリサイズイベントをInputRouter経由でルーティング
-            input_router_.routeWindowResizeEvent(paxg::Window::width(), paxg::Window::height());
+            // ウィンドウサイズ変更を検知してイベントを発行
+            const int current_width = paxg::Window::width();
+            const int current_height = paxg::Window::height();
+            if (current_width != last_window_width_ || current_height != last_window_height_) {
+                input_router_.routeWindowResizeEvent(current_width, current_height);
+                last_window_width_ = current_width;
+                last_window_height_ = current_height;
+            }
 
             // メニューから可視性を同期
             ui_manager_.updateLanguage(select_language_);
