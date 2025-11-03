@@ -26,41 +26,34 @@ namespace paxs {
 
     /// @brief URLからタイルをダウンロードして読み込むローダー
     /// @brief Loader for downloading and loading tiles from URL
-    class UrlTileLoader : public ITileLoader {
+    class UrlTileLoader {
     public:
-        /// @brief コンストラクタ
-        /// @param texture_url テクスチャURL（例: "https://example.com/{z}/{x}/{y}.png"）
-        /// @param file_name_format ローカル保存先ファイル名フォーマット
-        /// @param map_name 地図名
-        /// @param texture_full_path_folder フルパスフォルダ
-        UrlTileLoader(
-            const std::string& texture_url,
-            const std::string& file_name_format,
-            const std::string& map_name,
-            const std::string& texture_full_path_folder
-        ) : texture_url_(texture_url),
-            file_name_format_(file_name_format),
-            map_name_(map_name),
-            texture_full_path_folder_(texture_full_path_folder) {}
-
         /// @brief タイルを読み込む（URLからダウンロード）
-        std::unique_ptr<paxg::Texture> load(
-            unsigned int z,
-            unsigned int x,
-            unsigned int y
-        ) override {
-            // URLパスを構築
-            std::string url_path = buildUrlPath(z, x, y);
+        /// @brief Load a tile (download from URL)
+        /// @param url_path_with_zy Z と Y が既に置換された URL パス
+        /// @param local_path_with_zy Z と Y が既に置換されたローカルパス
+        /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス
+        /// @param x_value X 座標の文字列
+        /// @return 読み込みに成功した場合はテクスチャのunique_ptr、失敗した場合はnullptr
+        static std::unique_ptr<paxg::Texture> load(
+            const std::string& url_path_with_zy,
+            const std::string& local_path_with_zy,
+            const std::string& folder_path_with_zyx,
+            const std::string& x_value
+        ) {
+            // URL と ローカルパスの X を置換
+            std::string url_path = url_path_with_zy;
+            paxs::StringExtensions::replace(url_path, "{x}", x_value);
 
-            // ローカル保存先パスを構築
-            std::string local_path = buildLocalPath(z, x, y);
+            std::string local_path = local_path_with_zy;
+            paxs::StringExtensions::replace(local_path, "{x}", x_value);
 
             // 保存先フォルダを作成
-            createTextureFolder(std::to_string(x), std::to_string(y), std::to_string(z));
+            std::filesystem::create_directories(folder_path_with_zyx);
 
             // ダウンロード
             if (!paxg::Network::downloadFile(url_path, local_path)) {
-                // ダウンロード失敗（静かに失敗）
+                // ダウンロード失敗
                 return nullptr;
             }
 
@@ -83,49 +76,11 @@ namespace paxs {
             return texture;
         }
 
-        /// @brief ローダー名を取得
-        std::string getLoaderName() const override {
-            return "UrlTileLoader";
-        }
-
     private:
-        /// @brief URLパスを構築
-        std::string buildUrlPath(unsigned int z, unsigned int x, unsigned int y) const {
-            std::string path = texture_url_;
-            paxs::StringExtensions::replace(path, "{z}", std::to_string(z));
-            paxs::StringExtensions::replace(path, "{x}", std::to_string(x));
-            paxs::StringExtensions::replace(path, "{y}", std::to_string(y));
-            return path;
-        }
-
-        /// @brief ローカル保存先パスを構築
-        std::string buildLocalPath(unsigned int z, unsigned int x, unsigned int y) const {
-            std::string path = file_name_format_;
-            paxs::StringExtensions::replace(path, "{z}", std::to_string(z));
-            paxs::StringExtensions::replace(path, "{x}", std::to_string(x));
-            paxs::StringExtensions::replace(path, "{y}", std::to_string(y));
-            if (!map_name_.empty()) {
-                paxs::StringExtensions::replace(path, "{n}", map_name_);
-            }
-            return path;
-        }
-
-        /// @brief テクスチャ保存フォルダを作成
-        void createTextureFolder(const std::string& x_value, const std::string& y_value, const std::string& z_value) const {
-            std::string new_folder_path = texture_full_path_folder_;
-            paxs::StringExtensions::replace(new_folder_path, "{x}", x_value);
-            paxs::StringExtensions::replace(new_folder_path, "{y}", y_value);
-            paxs::StringExtensions::replace(new_folder_path, "{z}", z_value);
-            if (!map_name_.empty()) {
-                paxs::StringExtensions::replace(new_folder_path, "{n}", map_name_);
-            }
-            std::filesystem::create_directories(new_folder_path);
-        }
-
-        std::string texture_url_;
-        std::string file_name_format_;
-        std::string map_name_;
-        std::string texture_full_path_folder_;
+        // インスタンス化を禁止
+        UrlTileLoader() = delete;
+        UrlTileLoader(const UrlTileLoader&) = delete;
+        UrlTileLoader& operator=(const UrlTileLoader&) = delete;
     };
 
 } // namespace paxs

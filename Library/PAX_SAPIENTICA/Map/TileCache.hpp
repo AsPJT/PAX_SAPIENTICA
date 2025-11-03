@@ -13,6 +13,7 @@
 #define PAX_SAPIENTICA_MAP_TILE_CACHE_HPP
 
 #include <cstdint>
+#include <memory>
 
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
@@ -60,10 +61,12 @@ namespace paxs {
 
         /// @brief テクスチャを挿入（成功時）
         /// @param key エンコードされたキー
-        /// @param texture テクスチャ（ムーブセマンティクス）
-        void insert(std::uint_least64_t key, TextureType&& texture) {
-            texture_list_.insert({key, std::move(texture)});
-            is_texture_list_.insert({key, 0});  // 0 = 成功
+        /// @param texture_ptr テクスチャのunique_ptr
+        void insert(std::uint_least64_t key, std::unique_ptr<TextureType>&& texture_ptr) {
+            if (texture_ptr) {
+                texture_list_.insert({key, std::move(*texture_ptr)});
+                is_texture_list_.insert({key, 0});  // 0 = 成功
+            }
         }
 
         /// @brief 失敗を記録（テクスチャなし）

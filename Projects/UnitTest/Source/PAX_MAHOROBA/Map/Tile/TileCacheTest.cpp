@@ -261,7 +261,7 @@ TEST_F(TileCacheTest, TileCacheClassBasicFunctionality) {
 
     // テクスチャを挿入（成功）
     std::uint_least64_t key1 = paxs::TileCache<DummyTexture>::encodeKey(5, 10, 15);
-    DummyTexture tex1(100);
+    auto tex1 = std::make_unique<DummyTexture>(100);
     cache.insert(key1, std::move(tex1));
 
     EXPECT_EQ(cache.size(), 1ULL);
@@ -304,7 +304,7 @@ TEST_F(TileCacheTest, TileCacheGetTextureAt) {
 
     // テクスチャを挿入
     unsigned int z = 5, y = 10, x = 15;
-    DummyTexture tex(999);
+    auto tex = std::make_unique<DummyTexture>(999);
     std::uint_least64_t key = paxs::TileCache<DummyTexture>::encodeKey(z, y, x);
     cache.insert(key, std::move(tex));
 
@@ -324,7 +324,7 @@ TEST_F(TileCacheTest, TileCacheClear) {
     // 複数のテクスチャを挿入
     for (unsigned int i = 0; i < 10; ++i) {
         std::uint_least64_t key = paxs::TileCache<DummyTexture>::encodeKey(5, i, i);
-        DummyTexture tex(static_cast<int>(i));
+        auto tex = std::make_unique<DummyTexture>(static_cast<int>(i));
         cache.insert(key, std::move(tex));
     }
 

@@ -93,8 +93,6 @@ namespace paxs {
             return std::string(str.c_str());
         }
 
-        // Phase 6: update() メソッド分割のためのヘルパーメソッド
-
         /// @brief ズームレベルを更新
         void updateZoomLevel(const double map_view_height) {
             magnification_z = TileCoordinate::calculateZoomLevel(map_view_height);
@@ -170,6 +168,31 @@ namespace paxs {
 
                 const std::uint_least64_t index_zy = tile_cache_.encodeKeyY(static_cast<std::uint_least64_t>((i + z_num) & (z_num - 1))) + index_z;
 
+                // URL と Binary のパスを Y 置換まで事前計算（X ループ外）
+                std::string url_path_zny;
+                std::string binary_path_zny;
+                std::string texture_folder_path_zny;
+
+                if (!metadata_.texture_url.empty()) {
+                    url_path_zny = metadata_.texture_url;
+                    paxs::StringExtensions::replace(url_path_zny, "{z}", z_value);
+                    paxs::StringExtensions::replace(url_path_zny, "{y}", y_value);
+                }
+
+                if (!binary_file_name_format.empty()) {
+                    binary_path_zny = binary_file_name_format;
+                    paxs::StringExtensions::replace(binary_path_zny, "{z}", z_value);
+                    paxs::StringExtensions::replace(binary_path_zny, "{y}", y_value);
+                    if (map_name.size() != 0) paxs::StringExtensions::replace(binary_path_zny, "{n}", map_name);
+                }
+
+                if (!texture_full_path_folder.empty()) {
+                    texture_folder_path_zny = texture_full_path_folder;
+                    paxs::StringExtensions::replace(texture_folder_path_zny, "{z}", z_value);
+                    paxs::StringExtensions::replace(texture_folder_path_zny, "{y}", y_value);
+                    if (map_name.size() != 0) paxs::StringExtensions::replace(texture_folder_path_zny, "{n}", map_name);
+                }
+
                 for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
 
                     // 画像を格納する index を生成
@@ -181,53 +204,56 @@ namespace paxs {
 
                     const std::string x_value = std::to_string((j + z_num) & (z_num - 1)); // X の値
 
-                    std::string local_file_path = local_file_path_zny;
-                    paxs::StringExtensions::replace(local_file_path, "{x}", x_value);
-
-                    std::vector<std::unique_ptr<ITileLoader>> loaders;
-
                     // 1. FileTileLoader（ローカルファイル読み込み）
-                    loaders.push_back(std::make_unique<FileTileLoader>(
-                        file_name_format,
-                        map_name
-                    ));
+                    auto texture = FileTileLoader::load(
+                        local_file_path_zny,
+                        x_value
+                    );
+
+                    if (texture) {
+                        tile_cache_.insert(index_zyx, std::move(texture));
+                        continue;
+                    }
 
                     // 2. UrlTileLoader（URL からダウンロード）
                     if (!metadata_.texture_url.empty()) {
-                        loaders.push_back(std::make_unique<UrlTileLoader>(
-                            metadata_.texture_url,
-                            file_name_format,
-                            map_name,
-                            texture_full_path_folder
-                        ));
+                        std::string texture_folder_path_znyx = texture_folder_path_zny;
+                        paxs::StringExtensions::replace(texture_folder_path_znyx, "{x}", x_value);
+
+                        texture = UrlTileLoader::load(
+                            url_path_zny,
+                            local_file_path_zny,
+                            texture_folder_path_znyx,
+                            x_value
+                        );
+
+                        if (texture) {
+                            tile_cache_.insert(index_zyx, std::move(texture));
+                            continue;
+                        }
                     }
 
                     // 3. BinaryTileLoader（バイナリデータから PNG 生成）
                     if (!binary_file_name_format.empty() && !texture_full_path_folder.empty()) {
-                        loaders.push_back(std::make_unique<BinaryTileLoader>(
-                            binary_file_name_format,
-                            file_name_format,
-                            map_name,
-                            texture_full_path_folder,
-                            current_map_view_height
-                        ));
-                    }
+                        std::string texture_folder_path_znyx = texture_folder_path_zny;
+                        paxs::StringExtensions::replace(texture_folder_path_znyx, "{x}", x_value);
 
-                    // Try loaders in sequence
-                    bool loaded = false;
-                    for (auto& loader : loaders) {
-                        auto texture = loader->load(z, (j + z_num) & (z_num - 1), (i + z_num) & (z_num - 1));
+                        texture = BinaryTileLoader::load(
+                            binary_path_zny,
+                            local_file_path_zny,
+                            texture_folder_path_znyx,
+                            x_value,
+                            current_map_view_height
+                        );
+
                         if (texture) {
-                            tile_cache_.insert(index_zyx, std::move(*texture));
-                            loaded = true;
-                            break;
+                            tile_cache_.insert(index_zyx, std::move(texture));
+                            continue;
                         }
                     }
 
-                    // If all loaders failed
-                    if (!loaded) {
-                        tile_cache_.insertFailure(index_zyx);
-                    }
+                    // すべてのローダーが失敗した場合
+                    tile_cache_.insertFailure(index_zyx);
                 } // for (j)
             } // for (i)
         }
