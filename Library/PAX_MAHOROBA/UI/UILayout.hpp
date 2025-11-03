@@ -12,9 +12,8 @@
 #ifndef PAX_MAHOROBA_UI_LAYOUT_HPP
 #define PAX_MAHOROBA_UI_LAYOUT_HPP
 
+#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-
-#include <PAX_SAPIENTICA/FontConfig.hpp>
 
 namespace paxs {
 
@@ -85,15 +84,15 @@ namespace paxs {
             int time_control_panel_height
         ) {
             // 暦の位置
-            koyomi_font_y = FontConfig::PULLDOWN_FONT_SIZE + 43;
-            koyomi_font_en_y = FontConfig::PULLDOWN_FONT_SIZE + 43;
+            koyomi_font_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
+            koyomi_font_en_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
 
             koyomi_font_x = paxg::Window::width() - 270;
             koyomi_font_en_x = koyomi_font_x - 20;
             rect_start_x = koyomi_font_en_x - 165;
             rect_len_x = paxg::Window::width() - rect_start_x - 15;
 
-            koyomi_height = static_cast<int>(date_list_size) * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3); // 暦の縦の幅
+            koyomi_height = static_cast<int>(date_list_size) * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3); // 暦の縦の幅
 
             // 時間操作パネルの位置とサイズ
             time_control_base_x = rect_len_x - 10;

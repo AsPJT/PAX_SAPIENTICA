@@ -400,6 +400,24 @@ namespace paxg{
         }
 #endif
     };
+
+    /// @brief フォント設定の定数
+    /// @brief Font configuration constants
+    struct FontConfig {
+        // プルダウンメニューのフォント設定
+        static constexpr int PULLDOWN_FONT_SIZE =
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            40;
+#else
+            24;
+#endif
+        static constexpr int PULLDOWN_FONT_BUFFER_THICKNESS = 3;
+
+        // 暦表示のフォント設定
+        static constexpr int KOYOMI_FONT_SIZE = 22;
+        static constexpr int KOYOMI_FONT_BUFFER_THICKNESS = 3;
+    };
+
 }
 
 #endif // !PAX_GRAPHICA_FONT_HPP

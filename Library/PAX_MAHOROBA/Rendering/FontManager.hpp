@@ -18,7 +18,6 @@
 
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
-#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 
@@ -72,7 +71,7 @@ namespace paxs {
     public:
         void init(const SelectLanguage& select_language) {
             language_fonts_.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
-            setLanguageFont(FontConfig::PULLDOWN_FONT_SIZE, FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
+            setLanguageFont(paxg::FontConfig::PULLDOWN_FONT_SIZE, paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
 
             pin_font_ = paxg::Font{ 14, "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", 2 };
             en_font_ = paxg::Font{ 20, "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf", 2 };
@@ -92,8 +91,8 @@ namespace paxs {
         paxg::Font* getMainFont(const SelectLanguage& select_language) {
             return language_fonts_.getAndAdd(
                 select_language.cgetKey(),
-                FontConfig::KOYOMI_FONT_SIZE,
-                FontConfig::KOYOMI_FONT_BUFFER_THICKNESS
+                paxg::FontConfig::KOYOMI_FONT_SIZE,
+                paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS
             );
         }
 

@@ -24,7 +24,6 @@
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
-#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
@@ -55,17 +54,17 @@ namespace paxs {
                 language_text,
                 paxs::LanguageKeys::ALL_LANGUAGE_HASHES,
                 language_fonts,
-                static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE),
-                static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                 paxg::Vec2i{ 3000, 0 },
                 paxs::PulldownDisplayType::SelectedValue,
                 true
             );
 
             // メニューバーにメニュー項目を追加
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("view"));
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("place_names"));
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("map"));
+            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("view"));
+            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("place_names"));
+            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("map"));
 
             calculateLayout();
         }

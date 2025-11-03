@@ -25,7 +25,6 @@
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
-#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 
 namespace paxs {
@@ -59,8 +58,8 @@ namespace paxs {
             // フォントを取得
             paxg::Font* font = language_fonts_->getAndAdd(
                 select_language_->cgetKey(),
-                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE),
-                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+                static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
             if (font == nullptr) return;
 

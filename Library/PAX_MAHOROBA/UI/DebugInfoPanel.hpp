@@ -32,7 +32,6 @@
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
@@ -114,8 +113,8 @@ namespace paxs {
             // フォントを取得
             paxg::Font* font = language_fonts_->getAndAdd(
                 select_language.cgetKey(),
-                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE),
-                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+                static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
             if (font == nullptr) return;
 
@@ -209,8 +208,8 @@ namespace paxs {
                         // 大きな年号フォントを取得（通常の3倍サイズ）
                         paxg::Font* big_year_font = language_fonts_->getAndAdd(
                             select_language.cgetKey(),
-                            static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE * 3),
-                            static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+                            static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE * 3),
+                            static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                         );
                         if (big_year_font != nullptr) {
                             big_year_font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
