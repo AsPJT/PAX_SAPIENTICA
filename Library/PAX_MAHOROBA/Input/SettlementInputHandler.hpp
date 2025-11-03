@@ -35,14 +35,14 @@ namespace paxs {
 
         /// @brief 入力処理
         /// @brief Handle input
-        bool handleInput([[maybe_unused]] const InputEvent& event) override {
-            if (!visible_ || !enabled_) return false;
+        InputHandlingResult handleInput([[maybe_unused]] const InputEvent& event) override {
+            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
 
             // 既存のupdate()ロジックを呼び出す
             update();
 
             // 入力を消費しない（背後のハンドラーにも伝播させる）
-            return false;
+            return InputHandlingResult::NotHandled();
         }
 
         /// @brief ヒットテスト

@@ -233,10 +233,10 @@ namespace paxs {
 
     public:
         // IWidget インターフェースの実装
-        bool handleInput(const InputEvent& event) override {
+        InputHandlingResult handleInput(const InputEvent& event) override {
             // DebugInfoPanelは入力処理を行わない
             (void)event;
-            return false;
+            return InputHandlingResult::NotHandled();
         }
 
         void render() const override {

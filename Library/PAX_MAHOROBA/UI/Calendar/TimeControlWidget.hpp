@@ -215,7 +215,7 @@ namespace paxs {
 
     public:
         // IWidget インターフェースの実装
-        bool handleInput(const InputEvent& event) override;
+        InputHandlingResult handleInput(const InputEvent& event) override;
         void render() const override;
 
         paxg::Rect getRect() const override {
@@ -257,13 +257,13 @@ namespace paxs {
     };
 
     // IWidget メソッドの実装（クラス外定義）
-    inline bool TimeControlWidget::handleInput(const InputEvent& event) {
-        if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return false;
-        if (event.input_state_manager == nullptr) return false;
+    inline InputHandlingResult TimeControlWidget::handleInput(const InputEvent& event) {
+        if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return InputHandlingResult::NotHandled();
+        if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
 
         // クリック判定などの更新処理
         updateState(*event.input_state_manager);
-        return true;
+        return InputHandlingResult::Handled();
     }
 
     inline void TimeControlWidget::render() const {

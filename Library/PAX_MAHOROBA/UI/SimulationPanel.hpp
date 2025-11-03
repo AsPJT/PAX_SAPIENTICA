@@ -345,10 +345,10 @@ namespace paxs {
         }
 
         /// @brief 入力処理（IWidget）
-        bool handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return false;
-            if (!simulator_ptr_ || !koyomi_ || !visible_list_) return false;
-            if (event.input_state_manager == nullptr) return false;
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
+            if (!simulator_ptr_ || !koyomi_ || !visible_list_) return InputHandlingResult::NotHandled();
+            if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
 
             // Temporarily set input_state_manager_ for this update cycle
             input_state_manager_ = event.input_state_manager;
@@ -362,10 +362,10 @@ namespace paxs {
                 if (*simulator_ptr_ == nullptr) {
                     simulation_pulldown.handleInput(event);
                     simulation_model_index = simulation_pulldown.getIndex();
-                    return true;
+                    return InputHandlingResult::Handled();
                 }
             }
-            return true;
+            return InputHandlingResult::Handled();
         }
 
         /// @brief 描画処理（IWidget）

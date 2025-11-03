@@ -125,8 +125,11 @@ namespace paxs {
             return visible_;
         }
 
-        bool handleInput(const InputEvent&) override {
-            return false;  // 背景は入力を処理しない
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (event.type == InputEventType::Mouse) {
+                return InputHandlingResult::Handled();
+            }
+            return InputHandlingResult::NotHandled();
         }
 
         void render() const override {

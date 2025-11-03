@@ -84,8 +84,8 @@ namespace paxs {
             return true;
         }
 
-        bool handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return false;
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
             return time_control_widget_.handleInput(event);
         }
 

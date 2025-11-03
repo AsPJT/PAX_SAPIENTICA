@@ -401,22 +401,23 @@ namespace paxs {
         /// @brief Handle input (delegate to child widgets)
         /// @param event 入力イベント / Input event
         /// @return 処理した場合true / true if handled
-        bool handleInput(const InputEvent& event) override {
-            if (!enabled_ || !visible_) return false;
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (!enabled_ || !visible_) return InputHandlingResult::NotHandled();
 
             // 座標に依存しないイベント（キーボード、マウスホイール、フォーカス）はスキップ
             if (event.type == InputEventType::Keyboard ||
                 event.type == InputEventType::MouseWheel ||
                 event.type == InputEventType::WindowFocus) {
-                return false;
+                return InputHandlingResult::NotHandled();
             }
 
             // 子ウィジェットに順番に入力イベントを渡す（マウス/タッチのみ）
             for (auto* widget : widgets) {
                 if (widget && widget->isEnabled() && widget->isVisible()) {
                     if (widget->hitTest(event.x, event.y)) {
-                        if (widget->handleInput(event)) {
-                            return true;  // 処理された
+                        InputHandlingResult result = widget->handleInput(event);
+                        if (result.handled) {
+                            return result;  // 処理された
                         }
                     }
                 }
@@ -425,13 +426,14 @@ namespace paxs {
             // HeaderPanelは常に処理を試みる（メニューバーは画面上部に固定）
             if (header_panel.isEnabled() && header_panel.isVisible()) {
                 if (header_panel.hitTest(event.x, event.y)) {
-                    if (header_panel.handleInput(event)) {
-                        return true;
+                    InputHandlingResult result = header_panel.handleInput(event);
+                    if (result.handled) {
+                        return result;
                     }
                 }
             }
 
-            return false;
+            return InputHandlingResult::NotHandled();
         }
 
         /// @brief ヒットテスト（子ウィジェットのいずれかにヒット）

@@ -59,9 +59,9 @@ namespace paxs {
                 paxg::Vec2i{ static_cast<int>(start_x), 0 }));
         }
 
-        bool handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return false;
-            if (event.input_state_manager == nullptr) return false;
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
+            if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
 
             start_x = 0;
 
@@ -75,7 +75,7 @@ namespace paxs {
             bool handled = false;
             // 各メニュー項目を更新
             for (std::size_t i = 0; i < menu_items.size(); ++i) {
-                if (menu_items[i].handleInput(event)) {
+                if (menu_items[i].handleInput(event).handled) {
                     handled = true;
                 }
                 menu_items[i].setRectX(start_x);
@@ -90,7 +90,7 @@ namespace paxs {
                     }
                 }
             }
-            return handled;
+            return handled ? InputHandlingResult::Handled() : InputHandlingResult::NotHandled();
         }
         void render() const override {
             if (!visible_) return;

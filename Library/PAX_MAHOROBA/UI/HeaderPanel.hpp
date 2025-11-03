@@ -110,9 +110,9 @@ namespace paxs {
         }
 
         // IWidget インターフェースの実装
-        bool handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return false;
-            if (event.input_state_manager == nullptr) return false;
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
+            if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
 
             calculateLayout();  // 毎フレーム位置を更新
 
@@ -125,9 +125,9 @@ namespace paxs {
             const float github_y = (language_selector_.getRect().h() - 28.0f) / 2.0f;  // 中央配置
             if (event.input_state_manager->get(paxg::Rect(github_x, github_y, 28.0f, 28.0f).leftClicked())) {
                 paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
-                return true;
+                return InputHandlingResult::Handled();
             }
-            return true;
+            return InputHandlingResult::Handled();
         }
 
         void render() const override {

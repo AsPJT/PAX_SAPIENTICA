@@ -163,13 +163,13 @@ namespace paxs {
         }
 
         // 入力処理
-        bool handleInput(const InputEvent& event) override {
-            if (isEmpty()) return false;
-            if (language_ptr == nullptr) return false; // 言語がない場合は処理をしない
-            if (select_language_ptr == nullptr) return false; // 選択されている言語がない場合は処理をしない
-            if (font == nullptr) return false;
-            if (!visible_ || !enabled_) return false; // 非表示または無効の場合は処理をしない
-            if (event.input_state_manager == nullptr) return false;
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (isEmpty()) return InputHandlingResult::NotHandled();
+            if (language_ptr == nullptr) return InputHandlingResult::NotHandled(); // 言語がない場合は処理をしない
+            if (select_language_ptr == nullptr) return InputHandlingResult::NotHandled(); // 選択されている言語がない場合は処理をしない
+            if (font == nullptr) return InputHandlingResult::NotHandled();
+            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled(); // 非表示または無効の場合は処理をしない
+            if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
             paxs::InputStateManager& input_state_manager = *event.input_state_manager;
 
             // 言語が変わっていたら更新処理
@@ -183,7 +183,7 @@ namespace paxs {
                 rect.leftClicked()
             )) {
                 is_open = (not is_open);
-                return true;
+                return InputHandlingResult::Handled();
             }
             paxg::Vec2i pos = paxg::Vec2i(
                 static_cast<int>(rect.pos().x()),
@@ -200,13 +200,13 @@ namespace paxs {
                             index = i;
                             is_items[i] = !(is_items[i]);
                             is_open = false;
-                            return true;
+                            return InputHandlingResult::Handled();
                         }
                     }
                     pos.setY(static_cast<int>(pos.y() + rect.h()));
                 }
             }
-            return false;
+            return InputHandlingResult::NotHandled();
         }
         // 描画
         void render() const override {

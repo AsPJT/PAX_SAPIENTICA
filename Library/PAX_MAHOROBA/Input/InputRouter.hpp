@@ -37,6 +37,10 @@ namespace paxs {
         /// @brief Sorted flag (for optimization)
         bool is_sorted_ = false;
 
+        /// @brief ドラッグキャプチャ中のハンドラー（nullptrでない場合、このハンドラーのみに入力を送る）
+        /// @brief Handler that has captured drag input (if not nullptr, only this handler receives input)
+        IInputHandler* drag_captured_handler_ = nullptr;
+
     public:
         /// @brief デフォルトコンストラクタ
         /// @brief Default constructor
@@ -96,8 +100,25 @@ namespace paxs {
         /// @return イベントが処理された場合true / true if event was handled
         ///
         /// 前面から順に各ハンドラーにイベントを渡し、処理されたら伝播を停止します。
+        /// ドラッグキャプチャ中の場合は、キャプチャしたハンドラーのみに送信します。
         /// Passes the event to each handler from front to back, stopping propagation if handled.
         bool routeInput(const InputEvent& event) {
+            // ドラッグキャプチャ中の場合、キャプチャしたハンドラーのみに送信
+            if (drag_captured_handler_ != nullptr) {
+                if (drag_captured_handler_->isEnabled()) {
+                    drag_captured_handler_->handleInput(event);
+                }
+
+                // ボタンが離されたらキャプチャを解除
+                if (event.left_button_state == MouseButtonState::Released ||
+                    event.right_button_state == MouseButtonState::Released ||
+                    event.middle_button_state == MouseButtonState::Released) {
+                    drag_captured_handler_ = nullptr;
+                }
+
+                return true; // キャプチャ中は他のハンドラーに伝播しない
+            }
+
             // ソートされていない場合は自動的にソート
             if (!is_sorted_) {
                 sort();
@@ -111,8 +132,15 @@ namespace paxs {
                 if (!handler->hitTest(event.x, event.y)) continue;
 
                 // ハンドラーに入力イベントを渡す
-                if (handler->handleInput(event)) {
-                    // イベントが処理されたら伝播を停止
+                InputHandlingResult result = handler->handleInput(event);
+
+                // ドラッグキャプチャが要求された場合
+                if (result.request_drag_capture) {
+                    drag_captured_handler_ = handler;
+                }
+
+                // イベントが処理された場合は伝播を停止
+                if (result.handled) {
                     return true;
                 }
             }
@@ -157,7 +185,8 @@ namespace paxs {
 
                 // キーボード入力はヒットテストをスキップ
                 // Skip hit test for keyboard input
-                if (handler->handleInput(event)) {
+                InputHandlingResult result = handler->handleInput(event);
+                if (result.handled) {
                     // イベントが処理されたら伝播を停止
                     // Stop propagation if event was handled
                     return true;
@@ -196,7 +225,8 @@ namespace paxs {
 
                 // マウスホイール入力はヒットテストをスキップ
                 // Skip hit test for mouse wheel input
-                if (handler->handleInput(event)) {
+                InputHandlingResult result = handler->handleInput(event);
+                if (result.handled) {
                     // イベントが処理されたら伝播を停止
                     // Stop propagation if event was handled
                     return true;
@@ -231,12 +261,30 @@ namespace paxs {
                 if (!handler->hitTest(event.x, event.y)) continue;
 
                 // ハンドラーに入力イベントを渡す
-                if (handler->handleInput(event)) {
+                InputHandlingResult result = handler->handleInput(event);
+
+                // ドラッグキャプチャが要求された場合
+                if (result.request_drag_capture) {
+                    drag_captured_handler_ = handler;
+                }
+
+                if (result.handled) {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        /// @brief ドラッグキャプチャを解除する
+        void releaseDragCapture() {
+            drag_captured_handler_ = nullptr;
+        }
+
+        /// @brief ドラッグがキャプチャされているかチェック
+        /// @return キャプチャされている場合true / true if captured
+        bool isDragCaptured() const {
+            return drag_captured_handler_ != nullptr;
         }
 
         /// @brief 特定レイヤーのみに入力イベントをルーティング
@@ -255,7 +303,14 @@ namespace paxs {
                 if (!handler->hitTest(event.x, event.y)) continue;
 
                 // ハンドラーに入力イベントを渡す
-                if (handler->handleInput(event)) {
+                InputHandlingResult result = handler->handleInput(event);
+
+                // ドラッグキャプチャが要求された場合
+                if (result.request_drag_capture) {
+                    drag_captured_handler_ = handler;
+                }
+
+                if (result.handled) {
                     return true;
                 }
             }
@@ -289,7 +344,8 @@ namespace paxs {
 
                 // ウィンドウイベントはヒットテストをスキップ
                 // Skip hit test for window events
-                if (handler->handleInput(event)) {
+                InputHandlingResult result = handler->handleInput(event);
+                if (result.handled) {
                     // イベントが処理されたら伝播を停止
                     // Stop propagation if event was handled
                     return true;
@@ -326,7 +382,8 @@ namespace paxs {
 
                 // ウィンドウイベントはヒットテストをスキップ
                 // Skip hit test for window events
-                if (handler->handleInput(event)) {
+                InputHandlingResult result = handler->handleInput(event);
+                if (result.handled) {
                     // イベントが処理されたら伝播を停止
                     // Stop propagation if event was handled
                     return true;

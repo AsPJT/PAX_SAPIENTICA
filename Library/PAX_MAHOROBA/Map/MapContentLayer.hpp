@@ -203,8 +203,8 @@ namespace paxs {
 
         /// @brief 入力処理
         /// @brief Handle input
-        bool handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_ || cached_visible_ == nullptr) return false;
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (!visible_ || !enabled_ || cached_visible_ == nullptr) return InputHandlingResult::NotHandled();
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
@@ -216,7 +216,7 @@ namespace paxs {
             }
 #endif
             // 入力を消費しない（背後のハンドラーにも伝播させる）
-            return false;
+            return InputHandlingResult::NotHandled();
         }
 
         /// @brief ヒットテスト

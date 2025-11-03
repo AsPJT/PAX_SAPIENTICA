@@ -107,6 +107,21 @@ namespace paxs {
             event.prev_x = mouse->getPosXBefore1Frame();
             event.prev_y = mouse->getPosYBefore1Frame();
 
+            // マウスボタンの状態変化を設定
+            if (mouse->downLeft()) {
+                event.left_button_state = paxs::MouseButtonState::Pressed;
+            } else if (mouse->upLeft()) {
+                event.left_button_state = paxs::MouseButtonState::Released;
+            } else if (mouse->getLeft()) {
+                event.left_button_state = paxs::MouseButtonState::Held;
+            } else {
+                event.left_button_state = paxs::MouseButtonState::None;
+            }
+
+            // 右ボタンと中ボタンは現時点では状態変化を追跡しない（将来の拡張用）
+            event.right_button_state = paxs::MouseButtonState::None;
+            event.middle_button_state = paxs::MouseButtonState::None;
+
             graphics_manager.getInputRouter().routeInput(event);
 
             graphics_manager.update(

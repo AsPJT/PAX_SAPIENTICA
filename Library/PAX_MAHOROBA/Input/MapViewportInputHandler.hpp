@@ -54,6 +54,9 @@ namespace paxs {
         /// @brief Reference to MapViewport (for input processing)
         MapViewport* viewport_ = nullptr;
 
+        /// @brief ドラッグ中フラグ（地図上でドラッグが開始されたか）
+        bool is_dragging_ = false;
+
     public:
         MapViewportInputHandler()
             : enl_keys{Key(PAXG_KEY_Q)}, esc_keys{Key(PAXG_KEY_E)}
@@ -247,14 +250,16 @@ namespace paxs {
         /// @brief 入力処理（IInputHandlerインターフェース）
         /// @brief Handle input (IInputHandler interface)
         /// @param event 入力イベント / Input event
-        /// @return 処理した場合true / true if handled
+        /// @return 入力処理結果 / Input handling result
         ///
         /// MapViewportInputHandlerは画面全体の入力を処理するため、
         /// hitTest()がtrueを返す場合は常に処理を行います。
         /// MapViewportInputHandler handles input for the entire screen,
         /// so it always processes if hitTest() returns true.
-        bool handleInput(const InputEvent& event) override {
-            if (!enabled_ || viewport_ == nullptr) return false;
+        InputHandlingResult handleInput(const InputEvent& event) override {
+            if (!enabled_ || viewport_ == nullptr) {
+                return InputHandlingResult::NotHandled();
+            }
 
             // イベントタイプに応じて処理を分岐
             // Branch processing according to event type
@@ -264,22 +269,38 @@ namespace paxs {
                     // Keyboard input (zoom with Q/E keys)
                     handleKeyboardZoom(*viewport_);
                     viewport_->applyConstraints();
-                    return false; // 他のハンドラーにも処理を継続
+                    return InputHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
 
                 case InputEventType::MouseWheel:
                     // マウスホイール入力（ズーム）
                     // Mouse wheel input (zoom)
                     handleMouseWheelZoom(*viewport_, event);
                     viewport_->applyConstraints();
-                    return false; // 他のハンドラーにも処理を継続
+                    return InputHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
 
                 case InputEventType::Mouse:
                     // マウス/タッチ入力（パンと移動）
                     // Mouse/Touch input (pan and move)
-                    handleMouseDrag(*viewport_, event);
+
+                    // ドラッグ開始判定：左ボタンが押された瞬間
+                    if (event.left_button_state == MouseButtonState::Pressed) {
+                        is_dragging_ = true;
+                        // ドラッグキャプチャを要求（UIの上でもドラッグを継続）
+                        return InputHandlingResult::HandledWithCapture();
+                    }
+                    // ドラッグ終了判定：左ボタンが離された瞬間
+                    else if (event.left_button_state == MouseButtonState::Released) {
+                        is_dragging_ = false;
+                    }
+
+                    // ドラッグ中のみ地図を移動
+                    if (is_dragging_) {
+                        handleMouseDrag(*viewport_, event);
+                    }
+
                     handleTouchInput(*viewport_);
                     viewport_->applyConstraints();
-                    return false; // 他のハンドラーにも処理を継続
+                    return InputHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
 
                 case InputEventType::WindowResize:
                     // ウィンドウリサイズイベント
@@ -295,10 +316,10 @@ namespace paxs {
                             viewport_->setWidth(viewport_->getHeight() / double(new_height) * double(new_width));
                         }
                     }
-                    return false; // 他のハンドラーにも処理を継続
+                    return InputHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
 
                 default:
-                    return false;
+                    return InputHandlingResult::NotHandled();
             }
         }
 

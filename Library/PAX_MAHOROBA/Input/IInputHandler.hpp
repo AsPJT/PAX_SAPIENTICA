@@ -27,6 +27,14 @@ namespace paxs {
         WindowFocus    ///< ウィンドウフォーカス / Window focus
     };
 
+    /// @brief マウスボタンの状態変化
+    enum class MouseButtonState {
+        None,       ///< 状態変化なし / No change
+        Pressed,    ///< 押された瞬間 / Just pressed
+        Released,   ///< 離された瞬間 / Just released
+        Held        ///< 押され続けている / Held down
+    };
+
     /// @brief 入力イベントの構造体
     /// @brief Input event structure
     struct InputEvent {
@@ -77,6 +85,15 @@ namespace paxs {
         /// @brief 前フレームのY座標（ドラッグ処理用）
         /// @brief Previous frame Y coordinate (for drag processing)
         int prev_y = 0;
+
+        /// @brief 左マウスボタンの状態
+        MouseButtonState left_button_state = MouseButtonState::None;
+
+        /// @brief 右マウスボタンの状態
+        MouseButtonState right_button_state = MouseButtonState::None;
+
+        /// @brief 中マウスボタンの状態
+        MouseButtonState middle_button_state = MouseButtonState::None;
 
         // マウスボタンのビットフラグ定数
         // Mouse button bit flag constants
@@ -171,13 +188,45 @@ namespace paxs {
         }
     };
 
+    /// @brief 入力処理結果
+    /// @brief Input handling result
+    struct InputHandlingResult {
+        /// @brief イベントが処理されたか（伝播を停止するか）
+        bool handled = false;
+
+        /// @brief ドラッグキャプチャを要求するか
+        bool request_drag_capture = false;
+
+        /// @brief デフォルトコンストラクタ（処理しない）
+        InputHandlingResult() = default;
+
+        /// @param handled_ イベントが処理されたか / Whether event was handled
+        /// @param request_capture_ ドラッグキャプチャを要求するか / Whether to request drag capture
+        InputHandlingResult(bool handled_, bool request_capture_ = false)
+            : handled(handled_), request_drag_capture(request_capture_) {}
+
+        /// @brief 処理済み（伝播停止）を返す
+        /// @brief Return handled (stop propagation)
+        static InputHandlingResult Handled() {
+            return InputHandlingResult(true, false);
+        }
+
+        /// @brief 処理済み＋ドラッグキャプチャ要求を返す
+        static InputHandlingResult HandledWithCapture() {
+            return InputHandlingResult(true, true);
+        }
+
+        /// @brief 未処理（伝播継続）を返す
+        static InputHandlingResult NotHandled() {
+            return InputHandlingResult(false, false);
+        }
+    };
+
     /// @brief 入力処理可能オブジェクトの基底インターフェース
     /// @brief Base interface for input-handling objects
     ///
     /// このインターフェースを実装することで、オブジェクトはInputRouterによって
     /// Z順序の逆順（前面→背面）で入力イベントを受け取るようになります。
-    /// By implementing this interface, objects receive input events from InputRouter
-    /// in reverse Z-order (foreground → background).
     class IInputHandler {
     public:
         /// @brief 仮想デストラクタ
@@ -187,9 +236,9 @@ namespace paxs {
         /// @brief 入力イベントを処理する
         /// @brief Handle input event
         /// @param event 入力イベント / Input event
-        /// @return イベントを処理した場合true（伝播を停止）、処理しなかった場合false（伝播を継続）
-        /// @return true if event was handled (stop propagation), false to continue propagation
-        virtual bool handleInput(const InputEvent& event) = 0;
+        /// @return 入力処理結果（処理の有無とドラッグキャプチャ要求）
+        /// @return Input handling result (handled status and drag capture request)
+        virtual InputHandlingResult handleInput(const InputEvent& event) = 0;
 
         /// @brief 指定座標がこのオブジェクトの範囲内かどうかをチェック（ヒットテスト）
         /// @brief Check if the specified coordinates are within this object's bounds (hit test)
