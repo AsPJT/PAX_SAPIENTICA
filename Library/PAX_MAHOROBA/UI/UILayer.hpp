@@ -22,7 +22,6 @@
 #include <PAX_MAHOROBA/UI/SettlementStatusPanel.hpp>
 #endif
 
-#include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
 #include <PAX_GRAPHICA/System.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>

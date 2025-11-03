@@ -14,7 +14,6 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarWidget.hpp>

@@ -113,6 +113,14 @@ namespace paxg {
             return impl->getNativeHandle();
         }
 
+        /// @brief Resize the render texture
+        /// @param new_size New size as Vector2<int>
+        void resize(const paxs::Vector2<int>& new_size) {
+            if (impl) {
+                impl->resize(new_size.x, new_size.y);
+            }
+        }
+
 #if defined(PAXS_USING_SIV3D)
         /// @brief Get the internal Siv3D render texture (Siv3D only)
         /// @return Reference to the internal s3d::RenderTexture

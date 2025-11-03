@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_UI_UI_PANEL_BACKGROUND_HPP
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>

@@ -39,8 +39,16 @@ namespace paxs {
 		/// @param size テクスチャサイズ / Texture size
 		static void initShadowTextures(const paxs::Vector2<int>& size) {
 #ifdef PAXS_USING_SIV3D
-			shadow_texture_ = paxg::RenderTexture{ size, paxg::ColorF{ 1.0, 0.0 } };
-			internal_texture_ = paxg::RenderTexture{ size };
+			// 初回または未初期化の場合は新規作成
+			if (shadow_texture_.size().x <= 0 || shadow_texture_.size().y <= 0) {
+				shadow_texture_ = paxg::RenderTexture{ size, paxg::ColorF{ 1.0, 0.0 } };
+				internal_texture_ = paxg::RenderTexture{ size };
+			}
+			// サイズが異なる場合はリサイズ
+			else if (shadow_texture_.size() != size) {
+				shadow_texture_.resize(size);
+				internal_texture_.resize(size);
+			}
 #endif
 		}
 
