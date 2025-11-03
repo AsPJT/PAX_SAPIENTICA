@@ -22,7 +22,11 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
+
+#include <PAX_SAPIENTICA/FontConfig.hpp>
+#include <PAX_SAPIENTICA/Language.hpp>
 
 namespace paxs {
 
@@ -35,19 +39,34 @@ namespace paxs {
     public:
         SettlementStatusPanel() = default;
 
+        /// @brief 初期化（LanguageFontsへの参照を設定）
+        /// @brief Initialize (set reference to LanguageFonts)
+        void init(paxs::LanguageFonts& fonts, const SelectLanguage& select_language) {
+            language_fonts_ = &fonts;
+            select_language_ = &select_language;
+        }
+
         // IRenderable の実装
         void render() override {
-            if (!visible_) return;
+            if (!visible_ || language_fonts_ == nullptr || select_language_ == nullptr) return;
 
             constexpr int start_x = 40;  // 背景端の左上の X 座標
             constexpr int start_y = 80;  // 背景端の左上の Y 座標
             constexpr int font_space = 20;  // 文字端から背景端までの幅
 
-            std::string text = getStatusText(select_draw_);
+            const std::string text = getStatusText(select_draw_);
+
+            // フォントを取得
+            paxg::Font* font = language_fonts_->getAndAdd(
+                select_language_->cgetKey(),
+                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE),
+                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+            );
+            if (font == nullptr) return;
 
             // テキストを描画
-            select_font_.draw(text, paxg::Vec2i{ start_x + font_space, start_y + font_space },
-                              paxg::Color{ 0, 0, 0 });
+            font->draw(text, paxg::Vec2i{ start_x + font_space, start_y + font_space },
+                      paxg::Color{ 0, 0, 0 });
         }
 
         RenderLayer getLayer() const override {
@@ -108,7 +127,10 @@ namespace paxs {
         bool visible_ = false;  // シミュレーション初期化後に表示 / Show after simulation init
         bool enabled_ = true;
         paxg::Vec2i pos_{ 0, 0 };
-        paxg::Font select_font_{ 30, "", 3 };  // 選択肢を表示するフォント
+
+        // フォント管理
+        paxs::LanguageFonts* language_fonts_ = nullptr;
+        const SelectLanguage* select_language_ = nullptr;
 
         /// @brief 表示モードに応じたテキストを取得
         /// @brief Get text according to display mode

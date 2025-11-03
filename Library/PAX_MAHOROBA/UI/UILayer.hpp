@@ -140,6 +140,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             simulation_panel.init(select_language, simulation_text, font_manager_->getLanguageFonts());
+            settlement_status_panel.init(font_manager_->getLanguageFonts(), select_language);
 #endif
 
             // 影
