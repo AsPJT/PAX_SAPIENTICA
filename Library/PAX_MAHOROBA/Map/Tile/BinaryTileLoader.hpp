@@ -80,7 +80,7 @@ namespace paxs {
             // RGBA構造体
             struct RGBAa {
                 unsigned char r, g, b, a; //赤, 緑, 青, 透過
-                RGBAa() = default;
+                RGBAa() : r(0), g(0), b(0), a(0) {}
                 constexpr RGBAa(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_)
                     : r(r_), g(g_), b(b_), a(a_) {}
             };
