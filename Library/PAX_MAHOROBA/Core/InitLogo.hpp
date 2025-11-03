@@ -142,6 +142,12 @@ namespace paxs {
 #if defined(PAXS_USING_SIV3D)
             paxg::Window::setDecorated(true);
 #endif
+
+#ifdef PAXS_USING_SFML
+            // SFMLでは黒画面のフラッシュを防ぐため、背景色でクリア＆表示
+            paxg::Window::clear();
+            paxg::Window::display();
+#endif
         }
     };
 
