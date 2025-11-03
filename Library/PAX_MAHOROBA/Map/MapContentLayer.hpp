@@ -15,23 +15,22 @@
 #include <memory>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/Map/Location/SettlementRenderer.hpp>
-#include <PAX_MAHOROBA/Map/Location/Input/SettlementInputHandler.hpp>
+#include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
+#include <PAX_MAHOROBA/Map/Location/SettlementManager.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
-#include <PAX_MAHOROBA/Map/Location/PlaceNameManager.hpp>
+#include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
-#include <PAX_MAHOROBA/Map/Location/PersonNameManager.hpp>
+#include <PAX_MAHOROBA/Map/Location/PersonPortraitManager.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -40,17 +39,14 @@ namespace paxs {
 
     /// @brief 地図コンテンツレイヤークラス
     /// @brief Map Content Layer
-    ///
-    /// 地図上のコンテンツ（地名、人名、集落等）の管理と描画を統合的に担当します。
-    /// Manages and renders map content (place names, person names, settlements, etc.) in an integrated manner.
     class MapContentLayer : public IRenderable, public IInputHandler {
     private:
         std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
 
-        PlaceNameManager place_name_manager_{}; // 地名
-        PersonNameManager person_name_manager_{}; // 人名
+        GeographicFeatureManager geographic_feature_manager_{}; // 地理的特徴(地名とアイコン)
+        PersonPortraitManager person_portrait_manager_{}; // 人物の肖像画と名前
 #ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<SettlementRenderer> settlement_renderer; // 集落描画
+        SettlementManager settlement_manager_{}; // 集落管理
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
 #endif
         paxs::map::MapDomainLogic map_domain_logic_; // ドメインロジック
@@ -74,27 +70,19 @@ namespace paxs {
     public:
         MapContentLayer()
             :texture_manager_(std::make_unique<TextureManager>())
-#ifdef PAXS_USING_SIMULATOR
-            ,settlement_renderer(std::make_unique<SettlementRenderer>())
-#endif
         {
             // メモリ割り当てチェック
             if (!texture_manager_) {
                 PAXS_ERROR("Failed to allocate TextureManager");
             }
-#ifdef PAXS_USING_SIMULATOR
-            if (!settlement_renderer) {
-                PAXS_ERROR("Failed to allocate SettlementRenderer");
-            }
-#endif
         }
 
         void init(FontManager& font_manager, const SelectLanguage& select_language) {
-            // 地名
-            place_name_manager_.init();
-            place_name_manager_.add();
-            person_name_manager_.init();
-            person_name_manager_.add();
+            // 地理的特徴と人物の肖像画を初期化
+            geographic_feature_manager_.init();
+            geographic_feature_manager_.add();
+            person_portrait_manager_.init();
+            person_portrait_manager_.add();
 
             // フォント管理への参照を保存
             font_manager_ = &font_manager;
@@ -120,9 +108,9 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             cached_simulator_ = &simulator;
 
-            // SettlementRenderer に描画パラメータを設定
-            if (settlement_renderer && simulator) {
-                settlement_renderer->setDrawParams(
+            // SettlementManager に描画パラメータを設定
+            if (simulator) {
+                settlement_manager_.setDrawParams(
                     koyomi.jdn.cgetDay(),
                     simulator->getSettlementGrids(),
                     simulator->getMarriagePosList(),
@@ -138,12 +126,12 @@ namespace paxs {
 #endif
             cached_visible_ = &visible;
 
-            // PersonNameManager と PlaceNameManager に描画パラメータを設定
-            // Set drawing parameters to PersonNameManager and PlaceNameManager
+            // PersonPortraitManager と GeographicFeatureManager に描画パラメータを設定
+            // Set drawing parameters to PersonPortraitManager and GeographicFeatureManager
             if (font_manager_ && select_language_) {
                 paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
 
-                person_name_manager_.setDrawParams(
+                person_portrait_manager_.setDrawParams(
                     koyomi.jdn.cgetDay(),
                     map_viewport.getWidth(),
                     map_viewport.getHeight(),
@@ -154,7 +142,7 @@ namespace paxs {
                     font_manager_->getPinFont()
                 );
 
-                place_name_manager_.setDrawParams(
+                geographic_feature_manager_.setDrawParams(
                     visible,
                     koyomi.jdn.cgetDay(),
                     map_viewport.getWidth(),
@@ -179,17 +167,15 @@ namespace paxs {
             paxs::FeatureVisibilityManager& visible = *cached_visible_;
 
             if (visible.isVisible(MurMur3::calcHash("Map"))) { // 地図が「可視」の場合は描画する
-                // PersonNameManager と PlaceNameManager を描画
-                // Render PersonNameManager and PlaceNameManager
-                person_name_manager_.render();
-                place_name_manager_.render();
+                person_portrait_manager_.render();
+                geographic_feature_manager_.render();
             }
 
 #ifdef PAXS_USING_SIMULATOR
-            // SettlementRenderer を描画（シミュレーション表示時）
-            // Render SettlementRenderer (when simulation is visible)
-            if (visible.isVisible(MurMur3::calcHash("Simulation")) && settlement_renderer) {
-                settlement_renderer->render();
+            // SettlementManager を描画（シミュレーション表示時）
+            // Render SettlementManager (when simulation is visible)
+            if (visible.isVisible(MurMur3::calcHash("Simulation"))) {
+                settlement_manager_.render();
             }
 #endif
         }

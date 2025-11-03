@@ -28,11 +28,7 @@ namespace paxs {
 
 	/// @brief UIパネルの背景と影を描画するクラス
 	/// @brief Class for rendering UI panel background and shadow
-	///
-	/// 各UIパネル（CalendarPanel、HeaderPanel、SimulationPanel等）で使用される
-	/// 背景と影の描画処理を共通化します。
 	/// Siv3Dでは影を一度にまとめて描画することで、影の重複を防ぎます。
-	/// Provides common background and shadow rendering for UI panels.
 	/// For Siv3D, renders all shadows at once to prevent shadow duplication.
 	class PanelBackground {
 	public:

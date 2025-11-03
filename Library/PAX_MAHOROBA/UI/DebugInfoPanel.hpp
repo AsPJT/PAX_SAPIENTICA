@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_DEBUG_INFO_PANEL_HPP
 
 #include <array>
+#include <cmath>
 #include <string>
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -23,6 +24,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
+#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
@@ -41,13 +43,34 @@
 
 namespace paxs {
 
-    // デバッグ情報パネルを表示するクラス
+    /// @brief デバッグ情報パネルを表示するクラス
+    /// @brief Debug information panel class
     class DebugInfoPanel : public IWidget {
+    private:
+        paxs::LanguageFonts* language_fonts_ = nullptr;
+        PanelBackground background_;  // 背景
+        bool visible_ = true;
+        bool enabled_ = true;
+        paxg::Vec2i pos_{10, 0};  // 左下の位置（Y座標は後で設定）
+        int panel_width_ = 300;   // パネル幅
+        int panel_height_ = 250;  // パネル高さ
+
     public:
-        // 初期化（LanguageFontsへの参照を設定）
+        /// @brief 初期化（LanguageFontsへの参照を設定）
+        /// @brief Initialize (set reference to LanguageFonts)
         void init(paxs::LanguageFonts& fonts) {
             language_fonts_ = &fonts;
             visible_ = true;
+
+            // 背景を初期化（左下に配置）
+            updateBackgroundPosition();
+        }
+
+        /// @brief 背景の位置を更新
+        /// @brief Update background position
+        void updateBackgroundPosition() {
+            int y = paxg::Window::height() - panel_height_ - 10;  // 左下
+            pos_ = paxg::Vec2i(pos_.x(), y);
         }
 
         // IWidget インターフェースの実装（コンポーネント情報）
@@ -55,10 +78,10 @@ namespace paxs {
             return "DebugInfoPanel";
         }
 
-        /// @brief レンダリングレイヤーを取得（デバッグ情報は最前面）
-        /// @brief Get rendering layer (debug info is front-most)
+        /// @brief レンダリングレイヤーを取得（背景レイヤー）
+        /// @brief Get rendering layer (background layer)
         RenderLayer getLayer() const override {
-            return RenderLayer::Debug;
+            return RenderLayer::UIBackground;
         }
 
         bool isAvailable() const override {
@@ -71,236 +94,141 @@ namespace paxs {
         void setVisible(bool visible) override { visible_ = visible; }
         bool isVisible() const override { return visible_; }
 
-        // マップ情報とシミュレーション統計を描画
+        /// @brief マップ情報とシミュレーション統計を描画
+        /// @brief Render map information and simulation statistics
         void renderMapAndSimulationInfo(
             MapViewport& map_viewport,
-            int debug_start_y,
             const SelectLanguage& select_language,
-            const paxs::Language& language_text,
-            const paxs::FeatureVisibilityManager& visible
+            const paxs::Language& language_text
 #ifdef PAXS_USING_SIMULATOR
             , std::unique_ptr<paxs::SettlementSimulator>& simulator
 #endif
+            , const paxs::Koyomi* koyomi = nullptr
+            , bool is_simulator_active = false
         ) {
             if (!visible_ || language_fonts_ == nullptr) return;
 
-            // 暦描画フォントを指定
-            paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
-            if (one_font == nullptr) return;
+            // 背景位置を更新（ウィンドウサイズ変更に対応）
+            updateBackgroundPosition();
+
+            // フォントを取得
+            paxg::Font* font = language_fonts_->getAndAdd(
+                select_language.cgetKey(),
+                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE),
+                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+            );
+            if (font == nullptr) return;
+
+            font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
+
+            int text_x = pos_.x() + 15;  // パネル内の左端
+            int text_y = pos_.y() + 15;  // パネル内の上端
+            int line_height = 25;
+            int current_line = 0;
+
+            // タイトル
+            font->draw(
+                (select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                    reinterpret_cast<const char*>(u8"デバッグ情報") : "Debug Info",
+                paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                paxg::Color(0, 0, 0)
+            );
 
             // マップの拡大率
-            (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-            (*one_font).drawTopRight(((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                reinterpret_cast<const char*>(u8"拡大率") :
-                "Zoom rate"),
-                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y), paxg::Color(0, 0, 0));
-            (*one_font).drawTopRight(std::to_string(map_viewport.getHeight()),
-                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 30), paxg::Color(0, 0, 0));
+            font->draw(
+                (select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                    reinterpret_cast<const char*>(u8"拡大率: ") : "Zoom: ",
+                paxg::Vec2i(text_x, text_y + line_height * current_line),
+                paxg::Color(0, 0, 0)
+            );
+            font->draw(
+                std::to_string(map_viewport.getHeight()),
+                paxg::Vec2i(text_x + 100, text_y + line_height * current_line++),
+                paxg::Color(0, 0, 0)
+            );
 
-#ifdef PAXS_USING_SIMULATOR
-            if (simulator == nullptr) {
-#else
-            {
-#endif
-                if (visible.isVisible(MurMur3::calcHash(8, "Simulation"))) {
-                    (*one_font).drawTopRight(std::to_string(map_viewport.getCenterX()),
-                        paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::to_string(map_viewport.getCenterY()),
-                        paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
-                }
+            // XYZ Tiles Z拡大率
+            const int z_magnification = static_cast<int>(-std::log2(map_viewport.getHeight()) + 12.5);
+            const std::string* xyz_label_ptr = language_text.getStringPtr(
+                MurMur3::calcHash("debug_xyz_tiles_z"),
+                select_language.cgetKey()
+            );
+            if (xyz_label_ptr != nullptr) {
+                font->draw(
+                    (*xyz_label_ptr + ":").c_str(),
+                    paxg::Vec2i(text_x, text_y + line_height * current_line),
+                    paxg::Color(0, 0, 0)
+                );
             }
+            font->draw(
+                std::to_string(z_magnification),
+                paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
+                paxg::Color(0, 0, 0)
+            );
+
 #ifdef PAXS_USING_SIMULATOR
             if (simulator != nullptr) {
-                (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                (*one_font).drawTopRight(
-                    ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"人口数") :
-                        "Population"),
-                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 60), paxg::Color(0, 0, 0));
-                (*one_font).drawTopRight(
+                // 人口数
+                font->draw(
+                    (select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                        reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
+                    paxg::Vec2i(text_x, text_y + line_height * current_line),
+                    paxg::Color(0, 0, 0)
+                );
+                font->draw(
                     std::to_string(simulator->cgetPopulationNum()),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 60), paxg::Color(0, 0, 0));
+                    paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
+                    paxg::Color(0, 0, 0)
+                );
 
-                (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                (*one_font).drawTopRight(
-                    ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"集落数") :
-                        "Settlements"),
-                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 90), paxg::Color(0, 0, 0));
-                (*one_font).drawTopRight(
+                // 集落数
+                font->draw(
+                    (select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                        reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
+                    paxg::Vec2i(text_x, text_y + line_height * current_line),
+                    paxg::Color(0, 0, 0)
+                );
+                font->draw(
                     std::to_string(simulator->cgetSettlement()),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 90), paxg::Color(0, 0, 0));
-
-                (*one_font).drawTopRight(
-                    ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"渡来数") :
-                        "Total Immigrants"),
-                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 120), paxg::Color(0, 0, 0));
-                (*one_font).drawTopRight(
-                    std::to_string(simulator->emigrationSize()),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 120), paxg::Color(0, 0, 0));
-
-                (*one_font).drawTopRight(
-                    ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"全ての処理時間（秒）") :
-                        "All Processing Time [s]"),
-                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 150), paxg::Color(0, 0, 0));
-                (*one_font).drawTopRight(
-                    std::to_string(simulator->cgetProcessingTime()),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 150), paxg::Color(0, 0, 0));
-
-                (*one_font).drawTopRight(
-                    ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"集団移動の処理時間（秒）") :
-                        "Move Processing Time [s]"),
-                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 180), paxg::Color(0, 0, 0));
-                (*one_font).drawTopRight(
-                    std::to_string(simulator->cgetMoveProcessingTime()),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 180), paxg::Color(0, 0, 0));
-
-                (*one_font).drawTopRight(
-                    ((select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"婚姻の処理時間（秒）") :
-                        "Marriage Processing Time [s]"),
-                    paxg::Vec2i(paxg::Window::width() - 140, debug_start_y + 210), paxg::Color(0, 0, 0));
-                (*one_font).drawTopRight(
-                    std::to_string(simulator->cgetMarriageProcessingTime()),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 210), paxg::Color(0, 0, 0));
+                    paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
+                    paxg::Color(0, 0, 0)
+                );
             }
 #endif
-        }
 
-        // 考古学的遺物の型式情報を描画
-        void renderArchaeologicalInfo(
-            const paxs::Koyomi& koyomi,
-            const paxs::UILayout& ui_layout,
-            int debug_start_y,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text
-        ) {
-            if (!visible_ || language_fonts_ == nullptr) return;
+            // 大きな年号を描画（シミュレーション非アクティブ時のみ）
+            if (koyomi != nullptr && !is_simulator_active && !koyomi->date_list.empty()) {
+                // グレゴリオ暦の年を取得（date_list[1]がグレゴリオ暦）
+                if (koyomi->date_list.size() > 1) {
+                    int date_year = 0;
+                    std::visit([&](const auto& x) {
+                        date_year = int(x.cgetYear());
+                    }, koyomi->date_list[1].date);
 
-            // 暦描画フォントを指定
-            paxg::Font* one_font = language_fonts_->getAndAdd(select_language.cgetKey(), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
-            if (one_font == nullptr) return;
+                    if (date_year > 0) {
+                        // 大きな年号フォントを取得（通常の3倍サイズ）
+                        paxg::Font* big_year_font = language_fonts_->getAndAdd(
+                            select_language.cgetKey(),
+                            static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE * 3),
+                            static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+                        );
+                        if (big_year_font != nullptr) {
+                            big_year_font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
 
-            std::string dotaku = "";
-            std::string doken = "";
+                            // パネル内の下部に配置
+                            int big_year_x = text_x;
+                            int big_year_y = pos_.y() + panel_height_ - 80;  // パネル下部から80px上
 
-            static std::array<int, 12> yayoi_year = { {
-            -230, -190, -150, -100, -50, -20, 10, 40, 80, 120, 160, 200
-            } };
-            static std::array<std::string, 12> dotaku_name = { {
-                    "",
-                    reinterpret_cast<const char*>(u8"Ⅰ式　菱環紐1式"),
-    reinterpret_cast<const char*>(u8"Ⅰ式　菱環紐2式"),
-    reinterpret_cast<const char*>(u8"Ⅱ式　外縁付鈕1式"),
-    reinterpret_cast<const char*>(u8"Ⅱ式　外縁付鈕2式"),
-    reinterpret_cast<const char*>(u8"Ⅲ式　扁平鈕1式"),
-    reinterpret_cast<const char*>(u8"Ⅲ式　扁平鈕2式"),
-    reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕1式"),
-    reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕2式"),
-    reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕3式"),
-    reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕4式"),
-    reinterpret_cast<const char*>(u8"Ⅳ式　突線鈕5式")
-                        } };
-            static std::array<std::string, 12> doken_name = { {
-                    "",
-                    reinterpret_cast<const char*>(u8"細形"),
-    reinterpret_cast<const char*>(u8""),
-    reinterpret_cast<const char*>(u8"中細形a類"),
-    reinterpret_cast<const char*>(u8"中細形b類"),
-    reinterpret_cast<const char*>(u8"中細形c類／平形Ⅰ"),
-    reinterpret_cast<const char*>(u8"中広形／平形Ⅱ"),
-    reinterpret_cast<const char*>(u8""),
-    reinterpret_cast<const char*>(u8""),
-    reinterpret_cast<const char*>(u8""),
-    reinterpret_cast<const char*>(u8""),
-    reinterpret_cast<const char*>(u8"")
-                        } };
-
-            std::string sueki_nakamura = "";
-            std::string sueki_tanabe = "";
-
-            static std::array<int, 18> sueki_year = { {
-            1380,1390,1410,1430,1440,1450,1460,1470,1490,1500,1520,1530,1550,1560,1590,1620,1645,1670
-            } };
-            static std::array<std::string, 18> sueki_name = { {
-    "","TG232","TK73","TK216","ON46","ON46/TK208","TK208","TK23","TK23/TK47","TK47",
-    "MT15","TK10","TK10/MT85","MT85","TK43","TK209",reinterpret_cast<const char*>(u8"TK217古"),reinterpret_cast<const char*>(u8"TK217新")
-                        } };
-            static std::array<std::string, 18> sueki_nakamura_name = { {
-    "",reinterpret_cast<const char*>(u8"I-1前"),reinterpret_cast<const char*>(u8"I-1後"),"I-2","I-3","I-3","I-3","I-4","I-4/I-5","I-5",
-    "II-1","II-2","II-2/II-3","II-3","II-4","II-5","II-6","III-1"
-                        } };
-#ifndef PAXS_USING_SIMULATOR
-            {
-                int date_year = 0;
-                std::visit([&](const auto& x) { date_year = int(x.cgetYear()); }, koyomi.date_list[1].date);
-                for (std::size_t i = 0; i < sueki_year.size(); ++i) {
-                    if (date_year < sueki_year[i]) {
-                        sueki_tanabe = sueki_name[i];
-                        sueki_nakamura = sueki_nakamura_name[i];
-                        break;
-                    }
-                }
-                dotaku = "";
-                for (std::size_t i = 0; i < yayoi_year.size(); ++i) {
-                    if (date_year < yayoi_year[i]) {
-                        dotaku = dotaku_name[i];
-                        doken = doken_name[i];
-                        break;
+                            big_year_font->draw(
+                                std::to_string(date_year),
+                                paxg::Vec2i(big_year_x, big_year_y),
+                                paxg::Color(0, 0, 0)
+                            );
+                        }
                     }
                 }
             }
-            if (dotaku.size() != 0) {
-                (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                (*one_font).draw(reinterpret_cast<const char*>(u8"銅鐸 型式"),
-                    paxg::Vec2i(ui_layout.rect_start_x + 10, debug_start_y + 140), paxg::Color(0, 0, 0));
-                (*one_font).drawTopRight(
-                    std::string(dotaku),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 140), paxg::Color(0, 0, 0));
-            }
-            if (doken.size() != 0) {
-                (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                (*one_font).draw(reinterpret_cast<const char*>(u8"銅剣 型式"),
-                    paxg::Vec2i(ui_layout.rect_start_x + 10, debug_start_y + 170), paxg::Color(0, 0, 0));
-                (*one_font).drawTopRight(
-                    std::string(doken),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 170), paxg::Color(0, 0, 0));
-            }
-
-            const std::string* sueki_nakamura_str = language_text.getStringPtr(koyomi.sueki_nakamura_key, select_language.cgetKey());
-            if (sueki_nakamura.size() != 0) {
-                if (sueki_nakamura_str != nullptr) {
-                    (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    (*one_font).draw(*sueki_nakamura_str,
-                        paxg::Vec2i(ui_layout.rect_start_x + 10, debug_start_y + 140), paxg::Color(0, 0, 0));
-                }
-                (*one_font).drawTopRight(
-                    std::string(sueki_nakamura),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 140), paxg::Color(0, 0, 0));
-            }
-            if (sueki_tanabe.size() != 0) {
-                const std::string* sueki_tanabe_str = language_text.getStringPtr(koyomi.sueki_tanabe_key, select_language.cgetKey());
-                if (sueki_nakamura_str != nullptr) {
-                    (*one_font).draw(*sueki_tanabe_str,
-                        paxg::Vec2i(ui_layout.rect_start_x + 10, debug_start_y + 170), paxg::Color(0, 0, 0));
-                }
-                (*one_font).setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                (*one_font).drawTopRight(
-                    std::string(sueki_tanabe),
-                    paxg::Vec2i(paxg::Window::width() - 40, debug_start_y + 170), paxg::Color(0, 0, 0));
-            }
-#endif
         }
-
-    private:
-        paxs::LanguageFonts* language_fonts_ = nullptr;
-
-        bool visible_ = true;
-        bool enabled_ = true;
-        paxg::Vec2i pos_{0, 0};
 
     public:
         // IWidget インターフェースの実装
@@ -313,18 +241,29 @@ namespace paxs {
         void render() override {
             if (!visible_) return;
 
-            // DebugInfoPanelのコンテンツは2つのrenderメソッドがあるため、
-            // UIManagerから直接render呼び出しを継続
+            // 背景を描画（バッチ描画に登録）
+            background_.draw(
+                pos_.x(), pos_.y(),
+                panel_width_, panel_height_,
+                10,  // 角丸半径
+                paxg::Color{255, 255, 255},  // 背景色
+                RenderLayer::UIBackground
+            );
         }
 
         paxg::Rect getRect() const override {
-            // デバッグパネルの領域を返す
             return paxg::Rect{
                 static_cast<float>(pos_.x()),
                 static_cast<float>(pos_.y()),
-                static_cast<float>(paxg::Window::width()),
-                300.0f // おおよその高さ
+                static_cast<float>(panel_width_),
+                static_cast<float>(panel_height_)
             };
+        }
+
+        /// @brief 背景を取得（UILayerのバッチ描画用）
+        /// @brief Get background (for UILayer batch rendering)
+        PanelBackground& getBackground() {
+            return background_;
         }
 
         void setPos(const paxg::Vec2i& pos) override {

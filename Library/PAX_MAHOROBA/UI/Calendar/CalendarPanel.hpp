@@ -24,7 +24,6 @@
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -58,10 +57,9 @@ namespace paxs {
 		void setCalendarParams(
 			const paxs::Koyomi& koyomi,
 			const SelectLanguage& select_language,
-			const paxs::Language& language_text,
-			bool is_simulator_active
+			const paxs::Language& language_text
 		) {
-			calendar_widget_.setRenderParams(koyomi, *ui_layout_, select_language, language_text, is_simulator_active);
+			calendar_widget_.setRenderParams(koyomi, *ui_layout_, select_language, language_text);
 		}
 
 		/// @brief 時間操作ウィジェットの参照を設定

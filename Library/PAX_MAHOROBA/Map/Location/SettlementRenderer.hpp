@@ -1,11 +1,11 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -18,6 +18,7 @@
 #include <PAX_GRAPHICA/Spline2D.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
+#include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
@@ -142,10 +143,10 @@ namespace paxs {
                     };
 
                     // 経緯度の範囲外を除去
-                    if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                        || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
-                        || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                        || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+                    if (!LocationRendererHelper::isInViewBounds(
+						lli.coordinate.x, lli.coordinate.y,
+						map_view_width, map_view_height,
+						map_view_center_x, map_view_center_y)) continue;
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
@@ -153,10 +154,11 @@ namespace paxs {
                         if (lli.max_year < jdn) continue;
 
                         // 描画位置
-                        const paxg::Vec2i draw_pos = paxg::Vec2i{
-    static_cast<int>((lli.coordinate.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-        static_cast<int>(double(paxg::Window::height()) - ((lli.coordinate.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        };
+                        const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+							lli.coordinate.x, lli.coordinate.y,
+							map_view_width, map_view_height,
+							map_view_center_x, map_view_center_y
+						);
 
                         // エージェント
                         // if (lli.lpe == MurMur3::calcHash("agent1"))
@@ -292,10 +294,10 @@ namespace paxs {
                         };
 
                         // 経緯度の範囲外を除去
-                        if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                            || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
-                            || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                            || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+                        if (!LocationRendererHelper::isInViewBounds(
+						lli.coordinate.x, lli.coordinate.y,
+						map_view_width, map_view_height,
+						map_view_center_x, map_view_center_y)) continue;
 
                         // 範囲内の場合
                         if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
@@ -385,10 +387,10 @@ namespace paxs {
                     };
 
                     // 経緯度の範囲外を除去
-                    if (lli.coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                        || lli.coordinate.x >(map_view_center_x + map_view_width / 1.6)
-                        || lli.coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                        || lli.coordinate.y >(map_view_center_y + map_view_height / 1.6)) continue;
+                    if (!LocationRendererHelper::isInViewBounds(
+						lli.coordinate.x, lli.coordinate.y,
+						map_view_width, map_view_height,
+						map_view_center_x, map_view_center_y)) continue;
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {

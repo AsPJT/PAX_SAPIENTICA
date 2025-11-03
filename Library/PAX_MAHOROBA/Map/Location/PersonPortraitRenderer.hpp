@@ -1,16 +1,16 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]      2023-2024 As Project
+    [Production]    2023-2024 As Project
+    [Contact Us]    wanotaitei@gmail.com            https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]       Distributed under the CC0 1.0.  https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_PERSON_NAME_RENDERER_HPP
-#define PAX_MAHOROBA_PERSON_NAME_RENDERER_HPP
+#ifndef PAX_MAHOROBA_PERSON_PORTRAIT_RENDERER_HPP
+#define PAX_MAHOROBA_PERSON_PORTRAIT_RENDERER_HPP
 
 #include <cstdint>
 #include <vector>
@@ -20,19 +20,22 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
+#include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
 
+#include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
 
-    /// @brief 人物名の描画を担当するクラス (Presentation Layer)
-    class PersonNameRenderer {
+    /// @brief 人物の肖像画と名前の描画を担当するクラス
+    /// @brief Class responsible for rendering person portraits and names
+    class PersonPortraitRenderer {
     public:
-        PersonNameRenderer() = default;
+        PersonPortraitRenderer() = default;
 
-        /// @brief 人物名を描画
+        /// @brief 人物の肖像画と名前を描画
+        /// @brief Draw person portraits and names
         void draw(
             const std::vector<PersonLocationList>& location_point_list_list,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
@@ -56,7 +59,7 @@ namespace paxs {
                 if (lll.min_year > jdn) continue;
                 if (lll.max_year < jdn) continue;
 
-                // 人物名を描画
+                // 人物の肖像画と名前を描画
                 for (std::size_t i = 0; i < person_location_list.size(); ++i) {
                     auto& lli = person_location_list[i];
                     // 時間の範囲外を除去
@@ -81,7 +84,7 @@ namespace paxs {
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_width || lli.max_view < map_view_width) {
-                        drawPersonIconOnly(
+                        drawPortraitOnly(
                             texture, lll, lli,
                             now_coordinate_x, now_coordinate_y,
                             map_view_width, map_view_height,
@@ -90,8 +93,8 @@ namespace paxs {
                         continue;
                     }
 
-                    // アイコンとテキストを描画
-                    drawPersonIconAndText(
+                    // 肖像画とテキストを描画
+                    drawPortraitAndText(
                         texture, lll, lli,
                         now_coordinate_x, now_coordinate_y,
                         map_view_width, map_view_height,
@@ -104,8 +107,9 @@ namespace paxs {
         }
 
     private:
-        /// @brief アイコンのみを描画
-        void drawPersonIconOnly(
+        /// @brief 肖像画のみを描画
+        /// @brief Draw portrait only
+        void drawPortraitOnly(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const PersonLocationList& lll,
             const PersonLocationPoint& lli,
@@ -116,37 +120,29 @@ namespace paxs {
             double map_view_center_x,
             double map_view_center_y
         ) const {
-            // 描画位置（後で変える）
-            const paxg::Vec2i draw_pos = paxg::Vec2i{
-                static_cast<int>((now_coordinate_x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                static_cast<int>(double(paxg::Window::height()) - ((now_coordinate_y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-            };
+            // 描画位置
+            const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+                now_coordinate_x, now_coordinate_y,
+                map_view_width, map_view_height,
+                map_view_center_x, map_view_center_y
+            );
 
-            // エージェントを描画
-            if (lli.lpe == MurMur3::calcHash("agent1")) {
-                if (texture.find(MurMur3::calcHash("BlueCircle")) != texture.end()) {
-                    texture.at(MurMur3::calcHash("BlueCircle")).resizedDrawAt(15, draw_pos);
-                }
+            // エージェントアイコン描画
+            if (LocationRendererHelper::drawAgentIcon(texture, lli.lpe, draw_pos)) {
                 return;
             }
-            // エージェントを描画
-            else if (lli.lpe == MurMur3::calcHash("agent2")) {
-                if (texture.find(MurMur3::calcHash("RedCircle")) != texture.end()) {
-                    texture.at(MurMur3::calcHash("RedCircle")).resizedDrawAt(15, draw_pos);
-                }
-                return;
-            }
+
+            // 通常のテクスチャ描画
             const int len = int(lli.overall_length / 2);
-
             const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
-            // 描画
             if (texture.find(place_tex) != texture.end()) {
                 texture.at(place_tex).resizedDrawAt(len, draw_pos);
             }
         }
 
-        /// @brief アイコンとテキストを描画
-        void drawPersonIconAndText(
+        /// @brief 肖像画とテキストを描画
+        /// @brief Draw portrait and text
+        void drawPortraitAndText(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const PersonLocationList& lll,
             const PersonLocationPoint& lli,
@@ -162,10 +158,11 @@ namespace paxs {
             std::uint_least32_t en_us_language
         ) const {
             // 描画位置
-            const paxg::Vec2i draw_pos = paxg::Vec2i{
-                static_cast<int>((now_coordinate_x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                static_cast<int>(double(paxg::Window::height()) - ((now_coordinate_y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-            };
+            const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+                now_coordinate_x, now_coordinate_y,
+                map_view_width, map_view_height,
+                map_view_center_x, map_view_center_y
+            );
 
             const paxg::Vec2i draw_font_pos = paxg::Vec2i{
                 draw_pos.x(), draw_pos.y() - 60
@@ -182,6 +179,7 @@ namespace paxs {
         }
 
         /// @brief 人物名のテキストを描画
+        /// @brief Draw person name text
         void drawPersonNameText(
             const PersonLocationPoint& lli,
             paxg::Font& font,
@@ -190,34 +188,14 @@ namespace paxs {
             std::uint_least32_t ja_jp_language,
             std::uint_least32_t en_us_language
         ) const {
-            // 英語名がない場合
-            if (lli.place_name.find(en_us_language) == lli.place_name.end()) {
-                // 日本語名を描画
-                if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
-                    font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    font.drawTopCenter(lli.place_name.at(ja_jp_language), draw_font_pos, paxg::Color(0, 0, 0));
-                }
-            }
-            // 英語名がある場合
-            else {
-                // 日本語名がある場合
-                if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
-                    // 名前（英語）を描画
-                    en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    en_font.drawBottomCenter(lli.place_name.at(en_us_language), draw_font_pos, paxg::Color(0, 0, 0));
-                    // 日本語名を描画
-                    font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    font.drawTopCenter(lli.place_name.at(ja_jp_language), draw_font_pos, paxg::Color(0, 0, 0));
-                }
-                else {
-                    // 名前（英語）を描画
-                    en_font.setOutline(0, 0.6, paxg::Color(255, 255, 255));
-                    en_font.drawTopCenter(lli.place_name.at(en_us_language), draw_font_pos, paxg::Color(0, 0, 0));
-                }
-            }
+            (void)ja_jp_language;  // 未使用警告を抑制
+            (void)en_us_language;  // 未使用警告を抑制
+            LocationRendererHelper::drawBilingualText(
+                lli.place_name, draw_font_pos, font, en_font, "topCenter"
+            );
         }
     };
 
 }
 
-#endif // !PAX_MAHOROBA_PERSON_NAME_RENDERER_HPP
+#endif // !PAX_MAHOROBA_PERSON_PORTRAIT_RENDERER_HPP

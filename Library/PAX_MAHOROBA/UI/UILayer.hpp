@@ -28,13 +28,10 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
-#include <PAX_MAHOROBA/UI/Calendar/CalendarPanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
-#include <PAX_MAHOROBA/UI/HeaderPanelBackground.hpp>
-#include <PAX_MAHOROBA/UI/SimulationPanelBackground.hpp>
-#include <PAX_MAHOROBA/UI/SettlementStatusPanelBackground.hpp>
+#include <PAX_MAHOROBA/UI/UIPanelBackground.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
@@ -82,16 +79,15 @@ namespace paxs {
         // UI の影
         paxg::RenderTexture shadow_texture{};
         paxg::RenderTexture internal_texture{};
-        int size_change_count_ = 0;
 
         paxs::HeaderPanel header_panel;  // ヘッダーパネル（メニューバー + 言語選択）
 
         // 背景コンポーネント
-        paxs::HeaderPanelBackground header_bg_;
-        paxs::CalendarPanelBackground calendar_bg_;
+        paxs::UIPanelBackground header_bg_{"HeaderBackground"};
+        paxs::UIPanelBackground calendar_bg_{"CalendarBackground"};
 #ifdef PAXS_USING_SIMULATOR
-        paxs::SimulationPanelBackground simulation_bg_;
-        paxs::SettlementStatusPanelBackground settlement_status_bg_;
+        paxs::UIPanelBackground simulation_bg_{"SimulationBackground"};
+        paxs::UIPanelBackground settlement_status_bg_{"SettlementStatusBackground"};
 #endif
 
         // IWidget を実装したウィジェットの統合管理
@@ -134,13 +130,16 @@ namespace paxs {
             header_panel.init(&select_language, &language_text, font_manager_->getLanguageFonts());
 
             // 暦の時間操作のアイコン
-            key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
+            if (!key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
+                PAXS_ERROR("Failed to load texture KeyValueTSV: Data/MenuIcon/MenuIcons.tsv");
+            }
 
             // HeaderPanelにGitHubアイコンを設定
             header_panel.setGitHubTexture(&key_value_tsv.get().at(MurMur3::calcHash("texture_github")));
 
 #ifdef PAXS_USING_SIMULATOR
             simulation_panel.init(select_language, simulation_text, font_manager_->getLanguageFonts());
+            settlement_status_panel.init(font_manager_->getLanguageFonts(), select_language);
 #endif
 
             // 影
@@ -240,16 +239,9 @@ namespace paxs {
 
         /// @brief ウィンドウサイズ変更時のテクスチャ再初期化
         void handleWindowResize() {
-            if (size_change_count_ < 1) {
-                shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
-                internal_texture = paxg::RenderTexture{ shadow_texture.size() };
-            }
-            if (size_change_count_ >= 100) size_change_count_ = 100;
-            ++size_change_count_;
-        }
-
-        void resetSizeChangeCount() {
-            size_change_count_ = 0;
+            // ウィンドウサイズ変更時に影テクスチャを再作成
+            shadow_texture = paxg::RenderTexture{ paxg::Window::Size(), paxg::ColorF{ 1.0, 0.0 } };
+            internal_texture = paxg::RenderTexture{ shadow_texture.size() };
         }
 
         /// @brief データ更新（描画は行わない）
@@ -272,46 +264,45 @@ namespace paxs {
 
             // 背景コンポーネントに影テクスチャとレイアウトを設定
             header_bg_.setShadowTextures(shadow_texture, internal_texture);
+            header_bg_.setLayout(nullptr);  // 画面幅全体を使用
             header_bg_.setHeight(header_panel.getHeight());
 
             calendar_bg_.setShadowTextures(shadow_texture, internal_texture);
-            calendar_bg_.setLayout(ui_layout.calendar_panel);
+            calendar_bg_.setLayout(&ui_layout.calendar_panel);
 
 #ifdef PAXS_USING_SIMULATOR
             simulation_bg_.setShadowTextures(shadow_texture, internal_texture);
-            simulation_bg_.setLayout(ui_layout.simulation_panel);
+            simulation_bg_.setLayout(&ui_layout.simulation_panel);
 
             settlement_status_bg_.setShadowTextures(shadow_texture, internal_texture);
             // SettlementStatusPanelのレイアウト（固定位置）
+            // TODO: UILayoutに統合
             PanelLayout settlement_status_layout;
             settlement_status_layout.x = 40;
             settlement_status_layout.y = 80;
             settlement_status_layout.width = 300;   // テキスト幅 + パディング
             settlement_status_layout.height = 60;   // テキスト高さ + パディング
-            settlement_status_bg_.setLayout(settlement_status_layout);
+            settlement_status_bg_.setLayout(&settlement_status_layout);
 #endif
 #ifdef PAXS_USING_SIMULATOR
+            bool simulation_visible = visible.isVisible(MurMur3::calcHash("Simulation")) &&
+                                    visible.isVisible(MurMur3::calcHash(2, "UI"));
+            simulation_panel.setVisible(simulation_visible);
+
             simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
-                map_viewport, font_manager_->getLanguageFonts(), select_language, language_text,
+                font_manager_->getLanguageFonts(), select_language, language_text,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 
-            // SimulationPanel背景の可視性を同期
             simulation_bg_.setVisible(simulation_panel.isVisible());
 
-            // SettlementStatusPanel背景の可視性を同期
             settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
 
             // CalendarPanelの可視性と設定
             bool calendar_visible = visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"));
             if (calendar_visible) {
-#ifdef PAXS_USING_SIMULATOR
-                bool is_simulator_active = (simulator != nullptr);
-#else
-                bool is_simulator_active = false;
-#endif
                 calendar_panel.setLayout(ui_layout, key_value_tsv.get());
-                calendar_panel.setCalendarParams(koyomi, select_language, language_text, is_simulator_active);
+                calendar_panel.setCalendarParams(koyomi, select_language, language_text);
                 calendar_panel.setTimeControlParams(koyomi);
                 calendar_panel.setVisible(true);
                 calendar_bg_.setVisible(true);
@@ -320,12 +311,7 @@ namespace paxs {
                 calendar_bg_.setVisible(false);
             }
 
-            // DebugInfoPanelの可視性と設定
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI"))) {
-                debug_info_panel.setVisible(true);
-            } else {
-                debug_info_panel.setVisible(false);
-            }
+            debug_info_panel.setVisible(visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Debug")));
 
             // ウィジェットを更新（入力処理）
             InputEvent event;
@@ -379,15 +365,18 @@ namespace paxs {
             PanelBackground::endBatch(&shadow_texture, &internal_texture);
 
             // 4. UIコンテンツを描画
-            // マップ情報とシミュレーション統計を描画
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))) {
-                int simulation_start_y = ui_layout.getSimulationStartY();
-                debug_info_panel.renderMapAndSimulationInfo(
-                    map_viewport, simulation_start_y, select_language, language_text, visible
+            // デバッグ情報パネルのコンテンツを描画
+            if (visible.isVisible(MurMur3::calcHash("Debug"))) {
 #ifdef PAXS_USING_SIMULATOR
-                    , *cached_simulator_
-#endif
+                bool is_simulator_active = (*cached_simulator_ != nullptr);
+                debug_info_panel.renderMapAndSimulationInfo(
+                    map_viewport, select_language, language_text, *cached_simulator_, &koyomi, is_simulator_active
                 );
+#else
+                debug_info_panel.renderMapAndSimulationInfo(
+                    map_viewport, select_language, language_text, &koyomi, false
+                );
+#endif
             }
 
             // コンテンツウィジェットを描画
@@ -395,18 +384,6 @@ namespace paxs {
                 if (widget && widget->getLayer() != RenderLayer::UIBackground) {
                     widget->render();
                 }
-            }
-
-            // 考古学的遺物の型式情報を描画
-            if (visible.isVisible(MurMur3::calcHash(8, "Calendar")) && visible.isVisible(MurMur3::calcHash(2, "UI")) && visible.isVisible(MurMur3::calcHash("Debug"))
-#ifdef PAXS_USING_SIMULATOR
-                && (!cached_simulator_ || *cached_simulator_ == nullptr)
-#endif
-                ) {
-                int simulation_start_y = ui_layout.getSimulationStartY();
-                debug_info_panel.renderArchaeologicalInfo(
-                    koyomi, ui_layout, simulation_start_y, select_language, language_text
-                );
             }
         }
 
@@ -446,14 +423,12 @@ namespace paxs {
             if (!enabled_ || !visible_) return false;
 
             // ウィンドウリサイズイベントを処理
-            // Handle window resize event
             if (event.type == InputEventType::WindowResize) {
                 handleWindowResize();
                 return false; // 他のハンドラーにも処理を継続
             }
 
             // 座標に依存しないイベント（キーボード、マウスホイール、フォーカス）はスキップ
-            // Skip coordinate-independent events (Keyboard, MouseWheel, Focus)
             if (event.type == InputEventType::Keyboard ||
                 event.type == InputEventType::MouseWheel ||
                 event.type == InputEventType::WindowFocus) {
@@ -461,7 +436,6 @@ namespace paxs {
             }
 
             // 子ウィジェットに順番に入力イベントを渡す（マウス/タッチのみ）
-            // Pass input event to child widgets in order (Mouse/Touch only)
             for (auto* widget : widgets) {
                 if (widget && widget->isEnabled() && widget->isVisible()) {
                     if (widget->hitTest(event.x, event.y)) {
@@ -473,7 +447,6 @@ namespace paxs {
             }
 
             // HeaderPanelは常に処理を試みる（メニューバーは画面上部に固定）
-            // HeaderPanel always attempts to process (menu bar is fixed at top of screen)
             if (header_panel.isEnabled() && header_panel.isVisible()) {
                 if (header_panel.hitTest(event.x, event.y)) {
                     if (header_panel.handleInput(event)) {
@@ -494,7 +467,6 @@ namespace paxs {
             if (!visible_ || !enabled_) return false;
 
             // いずれかの子ウィジェットがヒットすればtrue
-            // Return true if any child widget is hit
             for (const auto* widget : widgets) {
                 if (widget && widget->isVisible() && widget->isEnabled()) {
                     if (widget->hitTest(x, y)) {
@@ -504,7 +476,6 @@ namespace paxs {
             }
 
             // HeaderPanelのヒットテスト
-            // HeaderPanel hit test
             if (header_panel.isVisible() && header_panel.isEnabled()) {
                 if (header_panel.hitTest(x, y)) {
                     return true;

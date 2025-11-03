@@ -28,9 +28,6 @@ namespace paxs {
 
     /// @brief タイル管理クラス
     /// @brief Tile manager class
-    ///
-    /// IRenderable を継承し、レイヤーベースシステムに対応します。
-    /// Inherits IRenderable to support layer-based system.
     class TileManager : public IRenderable {
     private:
         // 描画する XYZ タイルを管理

@@ -20,22 +20,19 @@
 #include <vector>
 
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
+#include <PAX_MAHOROBA/UI/SimulationControlButtons.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/FontConfig.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
@@ -60,7 +57,6 @@ namespace paxs {
         paxs::InputStateManager* input_state_manager_ = nullptr;
         paxs::Koyomi* koyomi_ = nullptr;
         paxs::FeatureVisibilityManager* visible_list_ = nullptr;
-        MapViewport* map_viewport_ = nullptr;
         LanguageFonts* language_fonts_ = nullptr;
         const SelectLanguage* select_language_ = nullptr;
         const paxs::Language* language_text_ = nullptr;
@@ -70,35 +66,26 @@ namespace paxs {
         /// @brief Initialize the simulation
         /// @param simulator シミュレータのユニークポインタ
         /// @param koyomi 暦情報
-        void simulationInit(
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
-            paxs::Koyomi& koyomi
-        ) const {
+        void simulationInit() const {
+            if (!simulator_ptr_ || !koyomi_) return;
             const std::string model_name =
                 (simulation_model_index >= simulation_model_name.size()) ?
                 "Sample" : simulation_model_name[simulation_model_index];
 
-            simulator->init();
-            koyomi.steps.setDay(0); // ステップ数を 0 にする
-            koyomi.jdn.setDay(static_cast<double>(SimulationConstants::getInstance(model_name)->start_julian_day)); // シミュレーション初期時の日付に設定
-            koyomi.calcDate();
-            koyomi.is_agent_update = false;
-            koyomi.move_forward_in_time = false; // 一時停止
-            koyomi.go_back_in_time = false;
+            (*simulator_ptr_)->init();
+            koyomi_->steps.setDay(0); // ステップ数を 0 にする
+            koyomi_->jdn.setDay(static_cast<double>(SimulationConstants::getInstance(model_name)->start_julian_day)); // シミュレーション初期時の日付に設定
+            koyomi_->calcDate();
+            koyomi_->is_agent_update = false;
+            koyomi_->move_forward_in_time = false; // 一時停止
+            koyomi_->go_back_in_time = false;
     }
 
-        /// @brief シミュレーションのUI描画と操作処理
-        /// @brief Simulation UI drawing and operation processing
-        /// @param simulator シミュレータのユニークポインタ
-        /// @param koyomi 暦情報
-        /// @param debug_start_y UIの開始Y座標
-        void simulation(
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
-            paxs::Koyomi& koyomi,
-            int debug_start_y
-        ) {
+        /// @brief シミュレーションの入力処理
+        /// @brief Simulation input processing
+        void updateSimulation() {
+            if (!simulator_ptr_ || !koyomi_) return;
             if (!input_state_manager_) return;  // Null check
-            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
             const int time_icon_size = 40; // 時間操作アイコンの大きさ
 
             const std::string model_name =
@@ -109,10 +96,8 @@ namespace paxs {
             std::string japan_provinces_path = "Data/Simulations/" + model_name;
 
             // シミュレーションが初期化されていない場合
-            if (simulator.get() == nullptr) {
-                texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
-                    time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
-                if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+            if (simulator_ptr_->get() == nullptr) {
+                if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
 
                     AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationXYZTiles"),
                         [&](const std::string& path_) {map_list_path = path_; });
@@ -131,10 +116,10 @@ namespace paxs {
                     }
 #endif
                     std::random_device seed_gen;
-                    simulator = std::make_unique<paxs::SettlementSimulator>(
+                    *simulator_ptr_ = std::make_unique<paxs::SettlementSimulator>(
                         map_list_path, japan_provinces_path,
                         seed_gen());
-                    simulationInit(simulator, koyomi);
+                    simulationInit();
                 }
             }
             // シミュレーションが初期化されている場合
@@ -143,90 +128,78 @@ namespace paxs {
                 const int total_steps = constants->total_steps;
 
                 // 規定ステップ数に達したかチェック
-                if (total_steps > 0 && koyomi.steps.getDay() >= static_cast<std::size_t>(total_steps)) {
+                if (total_steps > 0 && koyomi_->steps.getDay() >= static_cast<std::size_t>(total_steps)) {
                     // 残り実行回数を減らす
                     m_remaining_iterations--;
 
                     if (m_remaining_iterations > 0) {
                         // まだ実行回数が残っている場合、シミュレーションを初期化して自動で再開
-                        simulationInit(simulator, koyomi);
-                        koyomi.is_agent_update = true;
-                        koyomi.move_forward_in_time = true;
+                        simulationInit();
+                        koyomi_->is_agent_update = true;
+                        koyomi_->move_forward_in_time = true;
                     }
                     else {
                         // 全ての実行が終了した場合、シミュレーションを停止
-                        koyomi.is_agent_update = false;
-                        koyomi.move_forward_in_time = false;
+                        koyomi_->is_agent_update = false;
+                        koyomi_->move_forward_in_time = false;
                         m_remaining_iterations = 0; //念のため0にリセット
                     }
                 }
                 // シミュレーションが再生されている場合
-                if (koyomi.is_agent_update) {
+                if (koyomi_->is_agent_update) {
                     // シミュレーションを停止
-                    texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        // if (s3d::SimpleGUI::Button(U"Sim Stop", s3d::Vec2{ 330, 60 })) {
-                        koyomi.is_agent_update = false;
+                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                        koyomi_->is_agent_update = false;
 
-                        koyomi.move_forward_in_time = false; // 一時停止
-                        koyomi.go_back_in_time = false;
+                        koyomi_->move_forward_in_time = false; // 一時停止
+                        koyomi_->go_back_in_time = false;
                     }
                 }
                 // シミュレーションが再生されていない場合
                 else {
                     // シミュレーション入力データを初期化
-                    texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60));
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y_ + 60), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                         SimulationConstants::getInstance(model_name)->init(model_name);
                     }
                     // 人間データを初期化
-                    texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y));
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        simulationInit(simulator, koyomi);
+                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                        simulationInit();
 
-                        koyomi.steps.setDay(0); // ステップ数を 0 にする
-                        koyomi.calcDate();
+                        koyomi_->steps.setDay(0); // ステップ数を 0 にする
+                        koyomi_->calcDate();
                     }
                     // 地形データを削除
-                    texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        simulator.reset();
+                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                        simulator_ptr_->reset();
 
-                        koyomi.steps.setDay(0); // ステップ数を 0 にする
-                        koyomi.calcDate();
+                        koyomi_->steps.setDay(0); // ステップ数を 0 にする
+                        koyomi_->calcDate();
                     }
 
                     // シミュレーションを再生
-                    texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
                         // if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
-                        koyomi.is_agent_update = true;
+                        koyomi_->is_agent_update = true;
 
                         // 実行回数をセット
                         m_remaining_iterations = SimulationConstants::getInstance(model_name)->num_iterations;
 
-                        koyomi.move_forward_in_time = true; // 再生
-                        koyomi.go_back_in_time = false;
+                        koyomi_->move_forward_in_time = true; // 再生
+                        koyomi_->go_back_in_time = false;
                     }
                     // シミュレーションを 1 Step 実行
-                    texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 240, debug_start_y));
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 240, debug_start_y), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        simulator->step(); // シミュレーションを 1 ステップ実行する
-                        koyomi.steps.getDay()++; // ステップ数を増やす
-                        koyomi.calcDate();
+                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 240, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                        (*simulator_ptr_)->step(); // シミュレーションを 1 ステップ実行する
+                        koyomi_->steps.getDay()++; // ステップ数を増やす
+                        koyomi_->calcDate();
 
-                        koyomi.move_forward_in_time = false; // 一時停止
-                        koyomi.go_back_in_time = false;
+                        koyomi_->move_forward_in_time = false; // 一時停止
+                        koyomi_->go_back_in_time = false;
                     }
                 }
             }
         }
+
 
     public:
         // シミュレーションの Key
@@ -241,7 +214,8 @@ namespace paxs {
 
         paxs::Pulldown simulation_pulldown;
 
-        paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
+        // UI コンポーネント
+        SimulationControlButtons control_buttons_;
 
         /// @brief シミュレーションパネルの初期化
         /// @brief Initialize the simulation panel
@@ -285,41 +259,25 @@ namespace paxs {
             simulation_pulldown = paxs::Pulldown(&select_language, &simulation_text, simulation_key, language_fonts, static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), paxg::Vec2i{ 3000, 0 }, paxs::PulldownDisplayType::SelectedValue, false);
             pulldown_y_ = 600;
             simulation_pulldown.setPos(paxg::Vec2i{ static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200), pulldown_y_ });
-
-            // 暦の時間操作のアイコン
-            key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; });
         }
 
-        /// @brief シミュレーションの更新と描画
-        /// @brief Update and draw simulation
-        /// @param simulator シミュレータのユニークポインタ
-        /// @param koyomi 暦情報
-        /// @param debug_start_y UIの開始Y座標
-        /// @param visible 可視性フラグ
-        void update(
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
-            paxs::Koyomi& koyomi,
-            int debug_start_y,
-            paxs::FeatureVisibilityManager& visible
-        ) {
-            if (!input_state_manager_) return;  // Null check
+        /// @brief シミュレーションの更新
+        /// @brief Update simulation
+        void update() {
+            if (!input_state_manager_ || !visible_list_) return;  // Null check
             // シミュレーションのボタン
-            if (visible.isVisible(MurMur3::calcHash("Simulation")) && visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Calendar"))) {
-                simulation(simulator, koyomi, debug_start_y);
+            if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) && visible_list_->isVisible(MurMur3::calcHash("UI"))) {
+                updateSimulation();
             }
         }
 
         /// @brief シミュレーションプルダウンの描画
         /// @brief Draw simulation pulldown
-        /// @param simulator シミュレータのユニークポインタ
-        /// @param visible 可視性フラグ
-        void drawPulldown(
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
-            paxs::FeatureVisibilityManager& visible
-        ) {
+        void drawPulldown() {
+            if (!simulator_ptr_ || !visible_list_) return;  // Null check
             // シミュレーションのボタン
-            if (visible.isVisible(MurMur3::calcHash("Simulation")) && visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Calendar"))) {
-                if (simulator == nullptr) {
+            if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) && visible_list_->isVisible(MurMur3::calcHash("UI"))) {
+                if (*simulator_ptr_ == nullptr) {
                     // 画面サイズに合わせて位置を更新
                     simulation_pulldown.setPos(paxg::Vec2i{
                         static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
@@ -371,7 +329,6 @@ namespace paxs {
             paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi,
             paxs::FeatureVisibilityManager& visible_list,
-            MapViewport& map_viewport,
             LanguageFonts& language_fonts,
             const SelectLanguage& select_language,
             const paxs::Language& language_text,
@@ -381,7 +338,6 @@ namespace paxs {
             input_state_manager_ = &input_state_manager;
             koyomi_ = &koyomi;
             visible_list_ = &visible_list;
-            map_viewport_ = &map_viewport;
             language_fonts_ = &language_fonts;
             select_language_ = &select_language;
             language_text_ = &language_text;
@@ -398,12 +354,11 @@ namespace paxs {
             input_state_manager_ = event.input_state_manager;
 
             // 既存のupdate()を呼び出し
-            update(*simulator_ptr_, *koyomi_, debug_start_y_, *visible_list_);
+            update();
 
             // プルダウンの更新
             if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) &&
-                visible_list_->isVisible(MurMur3::calcHash("UI")) &&
-                visible_list_->isVisible(MurMur3::calcHash("Calendar"))) {
+                visible_list_->isVisible(MurMur3::calcHash("UI"))) {
                 if (*simulator_ptr_ == nullptr) {
                     simulation_pulldown.handleInput(event);
                     simulation_model_index = simulation_pulldown.getIndex();
@@ -419,102 +374,15 @@ namespace paxs {
             if (!simulator_ptr_ || !visible_list_ || !koyomi_) return;
 
             // プルダウンの描画
-            drawPulldown(*simulator_ptr_, *visible_list_);
+            drawPulldown();
 
             // シミュレーションコントロールボタンの描画
             if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) &&
-                visible_list_->isVisible(MurMur3::calcHash("UI")) &&
-                visible_list_->isVisible(MurMur3::calcHash("Calendar"))) {
-                drawSimulationControls();
+                visible_list_->isVisible(MurMur3::calcHash("UI"))) {
+                control_buttons_.draw(simulator_ptr_, koyomi_, debug_start_y_);
             }
         }
 
-    private:
-        /// @brief Z拡大率を描画
-        /// @brief Draw Z magnification
-        void drawZMagnification() {
-            if (!map_viewport_ || !language_fonts_ || !select_language_ || !language_text_) return;
-
-            // XYZ Tile Z magnification の計算
-            const int magnification_z = static_cast<int>(-std::log2(map_viewport_->getHeight()) + 12.5);
-
-            // フォントサイズを設定
-            constexpr int font_size = 22;
-            constexpr int font_buffer_thickness = 2;
-
-            paxg::Font* font = language_fonts_->getAndAdd(select_language_->cgetKey(),
-                static_cast<std::uint_least8_t>(font_size),
-                static_cast<std::uint_least8_t>(font_buffer_thickness));
-            if (font == nullptr) return;
-
-            // ラベルテキストを取得
-            const std::string* label_text_ptr = language_text_->getStringPtr(
-                MurMur3::calcHash("debug_xyz_tiles_z"),
-                select_language_->cgetKey()
-            );
-            if (label_text_ptr == nullptr) return;
-
-            // Z拡大率のラベルを描画
-            font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
-            font->drawTopRight(*label_text_ptr,
-                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y_), paxg::Color(0, 0, 0));
-
-            // Z拡大率の値を描画
-            font->drawTopRight(std::to_string(magnification_z),
-                paxg::Vec2i(paxg::Window::width() - 40, debug_start_y_ + 30), paxg::Color(0, 0, 0));
-        }
-
-        /// @brief シミュレーションコントロールボタンを描画
-        void drawSimulationControls() {
-            if (!simulator_ptr_ || !koyomi_) return;
-
-            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv.get();
-            const int time_icon_size = 40;
-            const int debug_start_y = debug_start_y_;
-
-            // Z拡大率の表示
-            drawZMagnification();
-
-            // シミュレーションが初期化されていない場合
-            if (simulator_ptr_->get() == nullptr) {
-                // 地形データ読み込みボタン
-                texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
-                    time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
-            }
-            // シミュレーションが初期化されている場合
-            else {
-                // シミュレーションが再生中の場合
-                if (koyomi_->is_agent_update) {
-                    // 停止ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
-                }
-                // シミュレーションが停止中の場合
-                else {
-                    // シミュレーション入力データ初期化ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y + 60));
-
-                    // 人間データ初期化ボタン (Simulation Init)
-                    texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y));
-
-                    // 地形データ削除ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y));
-
-                    // 再生ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y));
-
-                    // 1ステップ実行ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
-                        time_icon_size, paxg::Vec2i(paxg::Window::width() - 240, debug_start_y));
-                }
-            }
-        }
-
-    public:
         /// @brief 矩形を取得
         paxg::Rect getRect() const override {
             // シミュレーションパネルの矩形を返す
