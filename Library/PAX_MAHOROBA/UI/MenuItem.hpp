@@ -312,7 +312,7 @@ namespace paxs {
 
 			(*one_font).draw(
 				*str,
-				paxg::Vec2i(rect.x() + padding.x(), rect.y() + padding.y()),
+				paxg::Vec2i(static_cast<int>(rect.x() + padding.x()), static_cast<int>(rect.y() + padding.y())),
 				paxg::Color{ 0, 0, 0 });
 		}
 

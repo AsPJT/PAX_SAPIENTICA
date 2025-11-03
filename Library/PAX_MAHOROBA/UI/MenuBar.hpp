@@ -126,6 +126,7 @@ namespace paxs {
     public:
         // IWidget インターフェースの実装
         void setPos(const paxg::Vec2i& pos) override {
+            (void)pos; // 未使用パラメータの警告を抑制
             // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
             // 必要に応じて各Pulldownの位置を調整することは可能
         }

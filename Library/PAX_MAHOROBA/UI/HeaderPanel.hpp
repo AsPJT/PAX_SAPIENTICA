@@ -85,7 +85,7 @@ namespace paxs {
         }
 
         /// @brief ヘッダーの高さを取得
-        int getHeight() const {
+        float getHeight() const {
             return language_selector_.getRect().h();
         }
 
@@ -100,7 +100,7 @@ namespace paxs {
         }
 
         /// @brief 言語選択のインデックスを取得
-        int getLanguageIndex() const {
+        std::size_t getLanguageIndex() const {
             return language_selector_.getIndex();
         }
 
@@ -149,8 +149,7 @@ namespace paxs {
             return paxg::Rect{
                 0,
                 0,
-                static_cast<float>(paxg::Window::width()),
-                static_cast<float>(getHeight())
+                static_cast<float>(paxg::Window::width()), getHeight()
             };
         }
 

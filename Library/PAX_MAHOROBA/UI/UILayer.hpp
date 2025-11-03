@@ -177,7 +177,7 @@ namespace paxs {
 
         /// @brief 選択言語を更新（HeaderPanelから取得）
         void updateLanguage(SelectLanguage& select_language) {
-            select_language.set(std::size_t(header_panel.getLanguageIndex()));
+            select_language.set(header_panel.getLanguageIndex());
             select_language.setKey(std::uint_least32_t(header_panel.getLanguageKey()));
         }
 
@@ -251,7 +251,7 @@ namespace paxs {
 
             // 背景コンポーネントにレイアウトを設定
             header_bg_.setLayout(nullptr);  // 画面幅全体を使用
-            header_bg_.setHeight(header_panel.getHeight());
+            header_bg_.setHeight(static_cast<int>(header_panel.getHeight()));
 
             calendar_bg_.setLayout(&ui_layout.calendar_panel);
 
