@@ -129,7 +129,7 @@ namespace paxs {
             return false;  // 背景は入力を処理しない
         }
 
-        void render() override {
+        void render() const override {
             if (!visible_) return;
 
             if (use_layout_) {

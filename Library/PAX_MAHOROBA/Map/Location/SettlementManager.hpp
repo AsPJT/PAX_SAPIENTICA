@@ -41,7 +41,7 @@ namespace paxs {
 
         /// @brief レンダリング処理
         /// @brief Render
-        void render() override {
+        void render() const override {
             if (!visible_) return;
             if (!renderer_) return;
 

@@ -30,9 +30,16 @@ namespace paxs {
         /// @brief カスタム設定でコンストラクタ
         explicit Model3DRenderer(const paxg::Graphics3DModelConfig& cfg) : model3d_(cfg) {}
 
-        /// @brief 3Dモデルを更新・描画
-        void render() {
+        /// @brief 3Dモデルの状態を更新
+        /// @brief Update 3D model state
+        void update() {
             model3d_.updateRotation();
+        }
+
+        /// @brief 3Dモデルを描画
+        /// @brief Render 3D model
+        void render() const {
+            model3d_.render();
         }
 
         /// @brief 設定を取得

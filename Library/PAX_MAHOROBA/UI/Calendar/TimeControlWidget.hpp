@@ -64,7 +64,7 @@ namespace paxs {
         }
 
         // 全てのコントロールを描画
-        void drawAllControls() {
+        void drawAllControls() const {
             int icon_start_x = pos_.x();
             int icon_start_y = pos_.y();
 
@@ -109,7 +109,7 @@ namespace paxs {
         }
 
         // 再生コントロールの描画のみ
-        void drawPlaybackControlsOnly(int start_x, int y) {
+        void drawPlaybackControlsOnly(int start_x, int y) const {
             int x = start_x;
 
             // 逆再生ボタン
@@ -151,7 +151,7 @@ namespace paxs {
         }
 
         // 過去への時間移動の描画のみ
-        void drawBackwardTimeControlsOnly(int start_x, int y) {
+        void drawBackwardTimeControlsOnly(int start_x, int y) const {
             const char* texture_keys[] = {
                 "texture_d_l", "texture_m_l", "texture_y_l", "texture_10y_l",
                 "texture_c_l", "texture_10c_l", "texture_100c_l"
@@ -189,7 +189,7 @@ namespace paxs {
         }
 
         // 未来への時間移動の描画のみ
-        void drawForwardTimeControlsOnly(int start_x, int y) {
+        void drawForwardTimeControlsOnly(int start_x, int y) const {
             const char* texture_keys[] = {
                 "texture_d_r", "texture_m_r", "texture_y_r", "texture_10y_r",
                 "texture_c_r", "texture_10c_r", "texture_100c_r"
@@ -216,7 +216,7 @@ namespace paxs {
     public:
         // IWidget インターフェースの実装
         bool handleInput(const InputEvent& event) override;
-        void render() override;
+        void render() const override;
 
         paxg::Rect getRect() const override {
             return paxg::Rect{
@@ -266,7 +266,7 @@ namespace paxs {
         return true;
     }
 
-    inline void TimeControlWidget::render() {
+    inline void TimeControlWidget::render() const {
         if (!visible_ || !texture_dictionary_ || !koyomi_) return;
 
         // 描画処理を実行

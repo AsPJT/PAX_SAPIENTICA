@@ -52,7 +52,7 @@ namespace paxs {
 		paxg::Rect rect{};
 		paxg::Vec2i padding{ 6, 2 };
 		float all_rect_x{}; // 全ての項目の文字幅
-		int down_button_size = 20;
+		static constexpr int down_button_size = 20;
 
 		// 状態
 		bool is_open = false;
@@ -203,7 +203,7 @@ namespace paxs {
 		}
 
 		/// @brief 描画処理
-		void render() override {
+		void render() const override {
 			if (isEmpty() || !visible_) return;
 			if (language_ptr == nullptr || select_language_ptr == nullptr) return;
 			if (items_key.size() == 0) return;
@@ -300,7 +300,7 @@ namespace paxs {
 	private:
 		/// @brief ヘッダー部分のテキストを描画
 		/// @details 最初の項目（メニュー名）を常に表示
-		void drawHeader() {
+		void drawHeader() const {
 			if (items_key.size() == 0) return;
 
 			const std::string* str = (*language_ptr).getStringPtr(items_key.front(), (*select_language_ptr).cgetKey());
@@ -317,7 +317,7 @@ namespace paxs {
 		}
 
 		/// @brief ドロップダウンリストを描画（チェックマーク付き）
-		void drawDropdownList() {
+		void drawDropdownList() const {
 			paxg::Vec2i pos = rect.pos();
 			pos.setY(static_cast<int>(pos.y() + rect.h()));
 

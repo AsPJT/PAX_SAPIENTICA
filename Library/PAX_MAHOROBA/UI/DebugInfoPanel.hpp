@@ -49,9 +49,9 @@ namespace paxs {
         PanelBackground background_;  // 背景
         bool visible_ = true;
         bool enabled_ = true;
-        paxg::Vec2i pos_{10, 0};  // 左下の位置（Y座標は後で設定）
-        int panel_width_ = 300;   // パネル幅
-        int panel_height_ = 250;  // パネル高さ
+        mutable paxg::Vec2i pos_{10, 0};  // 左下の位置（Y座標は後で設定）
+        static constexpr int panel_width_ = 300;   // パネル幅
+        static constexpr int panel_height_ = 250;  // パネル高さ
 
     public:
         /// @brief 初期化（LanguageFontsへの参照を設定）
@@ -66,7 +66,7 @@ namespace paxs {
 
         /// @brief 背景の位置を更新
         /// @brief Update background position
-        void updateBackgroundPosition() {
+        void updateBackgroundPosition() const {
             int y = paxg::Window::height() - panel_height_ - 10;  // 左下
             pos_ = paxg::Vec2i(pos_.x(), y);
         }
@@ -95,15 +95,15 @@ namespace paxs {
         /// @brief マップ情報とシミュレーション統計を描画
         /// @brief Render map information and simulation statistics
         void renderMapAndSimulationInfo(
-            MapViewport& map_viewport,
+            const MapViewport& map_viewport,
             const SelectLanguage& select_language,
             const paxs::Language& language_text
 #ifdef PAXS_USING_SIMULATOR
-            , std::unique_ptr<paxs::SettlementSimulator>& simulator
+            , const std::unique_ptr<paxs::SettlementSimulator>& simulator
 #endif
             , const paxs::Koyomi* koyomi = nullptr
             , bool is_simulator_active = false
-        ) {
+        ) const {
             if (!visible_ || language_fonts_ == nullptr) return;
 
             // 背景位置を更新（ウィンドウサイズ変更に対応）
@@ -119,9 +119,9 @@ namespace paxs {
 
             font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
 
-            int text_x = pos_.x() + 15;  // パネル内の左端
-            int text_y = pos_.y() + 15;  // パネル内の上端
-            int line_height = 25;
+            const int text_x = pos_.x() + 15;  // パネル内の左端
+            const int text_y = pos_.y() + 15;  // パネル内の上端
+            constexpr int line_height = 25;
             int current_line = 0;
 
             // タイトル
@@ -147,7 +147,7 @@ namespace paxs {
 
             // XYZ Tiles Z拡大率
             const int z_magnification = static_cast<int>(-std::log2(map_viewport.getHeight()) + 12.5);
-            const std::string* xyz_label_ptr = language_text.getStringPtr(
+            const std::string* const xyz_label_ptr = language_text.getStringPtr(
                 MurMur3::calcHash("debug_xyz_tiles_z"),
                 select_language.cgetKey()
             );
@@ -198,10 +198,13 @@ namespace paxs {
             if (koyomi != nullptr && !is_simulator_active && !koyomi->date_list.empty()) {
                 // グレゴリオ暦の年を取得（date_list[1]がグレゴリオ暦）
                 if (koyomi->date_list.size() > 1) {
-                    int date_year = 0;
-                    std::visit([&](const auto& x) {
-                        date_year = int(x.cgetYear());
-                    }, koyomi->date_list[1].date);
+                    const int date_year = [&]() {
+                        int year = 0;
+                        std::visit([&](const auto& x) {
+                            year = int(x.cgetYear());
+                        }, koyomi->date_list[1].date);
+                        return year;
+                    }();
 
                     if (date_year > 0) {
                         // 大きな年号フォントを取得（通常の3倍サイズ）
@@ -214,8 +217,8 @@ namespace paxs {
                             big_year_font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
 
                             // パネル内の下部に配置
-                            int big_year_x = text_x;
-                            int big_year_y = pos_.y() + panel_height_ - 80;  // パネル下部から80px上
+                            const int big_year_x = text_x;
+                            const int big_year_y = pos_.y() + panel_height_ - 80;  // パネル下部から80px上
 
                             big_year_font->draw(
                                 std::to_string(date_year),
@@ -236,7 +239,7 @@ namespace paxs {
             return false;
         }
 
-        void render() override {
+        void render() const override {
             if (!visible_) return;
 
             // 背景を描画（バッチ描画に登録）

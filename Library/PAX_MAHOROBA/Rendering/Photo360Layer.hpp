@@ -22,7 +22,7 @@ namespace paxs {
     /// PAX_GRAPHICA/Photo360.hpp のラッパークラス
     class Photo360Layer : public IRenderable {
     private:
-        paxg::Photo360 photo360_;
+        mutable paxg::Photo360 photo360_;
         bool visible_ = true;
 
     public:
@@ -33,7 +33,7 @@ namespace paxs {
         explicit Photo360Layer(const paxg::Photo360Config& cfg) : photo360_(cfg) {}
 
         /// @brief 360度写真を更新・描画
-        void render() override {
+        void render() const override {
             photo360_.updateAndRender();
         }
 

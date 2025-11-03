@@ -97,6 +97,12 @@ namespace paxs {
         }
 
     private:
+        // 描画定数
+        static constexpr int TEXTURE_SPACING_HORIZONTAL = 4;  // テクスチャの水平間隔
+        static constexpr int TEXTURE_SPACING_HORIZONTAL_ZOOMED = 6;  // ズーム時のテクスチャの水平間隔
+        static constexpr int TEXTURE_SPACING_VERTICAL = 4;  // テクスチャの垂直間隔
+        static constexpr std::uint_least16_t ZOOM_SPLIT_COUNT = 10;  // ズーム時の分割数
+
         /// @brief アイコンのみ描画（範囲外時）
         void drawIconOnly(
             const LocationPoint& lli,
@@ -154,27 +160,27 @@ namespace paxs {
                 }
                 else {
                     for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
-                        tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x(), draw_pos.y() + static_cast<int>(iy) * 4 });
+                        tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x(), draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
                     }
                 }
             }
             else {
                 if (is_zoomed) {
                     // ズーム時は分割表示
-                    const std::uint_least16_t split_count = 10;
+                    constexpr std::uint_least16_t split_count = ZOOM_SPLIT_COUNT;
                     if (y_size <= 1) {
                         for (std::uint_least16_t ix = 0, ixx = 0, iyy = 0; ix < x_size; ++ix, ++ixx) {
                             if (ix != 0 && ix % split_count == 0) {
                                 ixx = 0;
                                 ++iyy;
                             }
-                            tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ixx) * 6, draw_pos.y() + static_cast<int>(iyy) * 4 });
+                            tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ixx) * TEXTURE_SPACING_HORIZONTAL_ZOOMED, draw_pos.y() + static_cast<int>(iyy) * TEXTURE_SPACING_VERTICAL });
                         }
                     }
                     else {
                         for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
                             for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                                tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * 4, draw_pos.y() + static_cast<int>(iy) * 4 });
+                                tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
                             }
                         }
                     }
@@ -183,13 +189,13 @@ namespace paxs {
                     // 通常時
                     if (y_size <= 1) {
                         for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                            tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * 4, draw_pos.y() });
+                            tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() });
                         }
                     }
                     else {
                         for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
                             for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                                tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * 4, draw_pos.y() + static_cast<int>(iy) * 4 });
+                                tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
                             }
                         }
                     }

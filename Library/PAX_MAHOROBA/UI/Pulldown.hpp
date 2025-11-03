@@ -209,7 +209,7 @@ namespace paxs {
             return false;
         }
         // 描画
-        void render() override {
+        void render() const override {
             if (isEmpty()) {
                 return;
             }
@@ -381,7 +381,7 @@ namespace paxs {
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
         float all_rect_x{}; // 全ての項目の文字幅
-        int down_button_size = 20;
+        static constexpr int down_button_size = 20;
         bool is_open = false;
 
         // IWidget インターフェース用の状態

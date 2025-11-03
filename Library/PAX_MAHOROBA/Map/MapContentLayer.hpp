@@ -161,7 +161,7 @@ namespace paxs {
 
         /// @brief レンダリング処理
         /// @brief Render
-        void render() override {
+        void render() const override {
             if (!visible_ || cached_visible_ == nullptr) return;
 
             paxs::FeatureVisibilityManager& visible = *cached_visible_;

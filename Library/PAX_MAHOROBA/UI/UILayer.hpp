@@ -321,17 +321,17 @@ namespace paxs {
 
         /// @brief レンダリング処理
         /// @brief Render
-        void render() override {
+        void render() const override {
             if (!visible_ || cached_visible_ == nullptr) return;
 
             // 画像の拡大縮小の方式を設定
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
 
             paxs::FeatureVisibilityManager& visible = *cached_visible_;
-            MapViewport& map_viewport = cached_map_viewport_;
+            const MapViewport& map_viewport = cached_map_viewport_;
             const SelectLanguage& select_language = *cached_select_language_;
             const paxs::Language& language_text = *cached_language_text_;
-            paxs::Koyomi& koyomi = cached_koyomi_;
+            const paxs::Koyomi& koyomi = cached_koyomi_;
 
             // 1. バッチ描画開始（Siv3D用）
             PanelBackground::beginBatch();

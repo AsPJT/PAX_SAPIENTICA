@@ -89,7 +89,7 @@ namespace paxs {
 			return time_control_widget_.handleInput(event);
 		}
 
-		void render() override {
+		void render() const override {
 			if (!visible_ || !ui_layout_) return;
 
 			// コンポーネントを描画

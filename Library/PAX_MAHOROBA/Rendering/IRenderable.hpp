@@ -34,7 +34,7 @@ namespace paxs {
 		///
 		/// この関数は、RenderLayerManagerによってZ順序に従って呼び出されます。
 		/// This function is called by the RenderLayerManager in Z-order.
-		virtual void render() = 0;
+		virtual void render() const = 0;
 
 		/// @brief このオブジェクトが属するレンダリングレイヤーを取得
 		/// @brief Get the rendering layer this object belongs to

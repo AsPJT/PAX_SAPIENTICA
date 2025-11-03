@@ -36,7 +36,7 @@ namespace paxs {
         SettlementRenderer() = default;
 
         // IRenderable の実装
-        void render() override {
+        void render() const override {
             if (!visible_) return;
 
             // キャッシュされたデータが有効かチェック
@@ -84,6 +84,10 @@ namespace paxs {
         }
 
     private:
+        // 描画定数
+        static constexpr double MAX_POPULATION_VISUALIZATION = 75.0;  // 人口可視化の最大値
+        static constexpr double MTDNA_SCALE_FACTOR = 27.0;  // mtDNA可視化のスケール因子
+
         // 可視性管理
         bool visible_ = true;
 
@@ -173,22 +177,22 @@ namespace paxs {
                                 break;
                             case 2:
                                 //const float
-                                pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0;
+                                pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * MAX_POPULATION_VISUALIZATION;
                                 break;
                             case 3:
                                 //const float
-                                pop_original = settlement.getMostMtDNA() / 27.0 * 75.0;
+                                pop_original = settlement.getMostMtDNA() / MTDNA_SCALE_FACTOR * MAX_POPULATION_VISUALIZATION;
                                 break;
                             case 4:
                                 //const double
-                                pop_original = settlement.getSNP() * 75.0;
+                                pop_original = settlement.getSNP() * MAX_POPULATION_VISUALIZATION;
                                 break;
                             case 6:
                                 pop_original = static_cast<double>(settlement.getBronze());
                                 break;
                             }
 
-                            const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
+                            const std::uint_least8_t pop = (pop_original >= MAX_POPULATION_VISUALIZATION) ? static_cast<std::uint_least8_t>(MAX_POPULATION_VISUALIZATION) : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,
                                 1.0f + (settlement.getPopulation() / 10.0f)//2.0f
                             ).draw(SimulationColor::getSettlementColor(pop));

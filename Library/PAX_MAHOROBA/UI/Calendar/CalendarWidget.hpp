@@ -58,7 +58,7 @@ namespace paxs {
         paxs::LanguageFonts* language_fonts_ = nullptr;
 
         // カレンダーを描画（言語に応じて自動選択）
-        void renderInternal() {
+        void renderInternal() const {
             if (!koyomi_ || !ui_layout_ || !select_language_ || !language_text_) return;
 
             // 日本語・中国語・台湾語の場合はアジア式カレンダー
@@ -74,7 +74,7 @@ namespace paxs {
         }
 
         // 日本語・中国語のカレンダーを描画
-        void renderAsianCalendar() {
+        void renderAsianCalendar() const {
             if (language_fonts_ == nullptr) return;
 
             for (std::size_t i = 0; i < koyomi_->date_list.size(); ++i) {
@@ -137,7 +137,7 @@ namespace paxs {
         }
 
         // 英語のカレンダーを描画
-        void renderWesternCalendar() {
+        void renderWesternCalendar() const {
             if (language_fonts_ == nullptr) return;
 
             for (std::size_t i = 0; i < koyomi_->date_list.size(); ++i) {
@@ -224,7 +224,7 @@ namespace paxs {
             return false;
         }
 
-        void render() override {
+        void render() const override {
             if (!visible_) return;
 
             // メンバー変数を使用してrenderInternal()を呼び出し

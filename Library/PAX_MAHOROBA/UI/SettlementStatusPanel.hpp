@@ -45,7 +45,7 @@ namespace paxs {
         }
 
         // IRenderable の実装
-        void render() override {
+        void render() const override {
             if (!visible_ || language_fonts_ == nullptr || select_language_ == nullptr) return;
 
             constexpr int start_x = 40;  // 背景端の左上の X 座標

@@ -130,7 +130,7 @@ namespace paxs {
             return true;
         }
 
-        void render() override {
+        void render() const override {
             if (!visible_) return;
 
             // メニューバーと言語選択を描画

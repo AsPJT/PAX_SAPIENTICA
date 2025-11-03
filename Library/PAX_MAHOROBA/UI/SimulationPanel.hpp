@@ -212,7 +212,7 @@ namespace paxs {
         // シミュレーションの繰り返し回数
         int m_remaining_iterations = 0;
 
-        paxs::Pulldown simulation_pulldown;
+        mutable paxs::Pulldown simulation_pulldown;
 
         // UI コンポーネント
         SimulationControlButtons control_buttons_;
@@ -273,7 +273,7 @@ namespace paxs {
 
         /// @brief シミュレーションプルダウンの描画
         /// @brief Draw simulation pulldown
-        void drawPulldown() {
+        void drawPulldown() const {
             if (!simulator_ptr_ || !visible_list_) return;  // Null check
             // シミュレーションのボタン
             if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) && visible_list_->isVisible(MurMur3::calcHash("UI"))) {
@@ -369,7 +369,7 @@ namespace paxs {
         }
 
         /// @brief 描画処理（IWidget）
-        void render() override {
+        void render() const override {
             if (!visible_) return;
             if (!simulator_ptr_ || !visible_list_ || !koyomi_) return;
 

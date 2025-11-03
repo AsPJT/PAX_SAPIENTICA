@@ -63,7 +63,7 @@ namespace paxs {
 
         /// @brief レンダリング処理
         /// @brief Render
-        void render() override {
+        void render() const override {
             if (!visible_) return;
             if (cached_visible_ == nullptr) return;
             if (cached_font_ == nullptr || cached_en_font_ == nullptr || cached_pin_font_ == nullptr) return;

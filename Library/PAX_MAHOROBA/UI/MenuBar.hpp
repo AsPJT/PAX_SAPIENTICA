@@ -92,7 +92,7 @@ namespace paxs {
             }
             return handled;
         }
-        void render() override {
+        void render() const override {
             if (!visible_) return;
             for (auto& item : menu_items) {
                 item.render();
