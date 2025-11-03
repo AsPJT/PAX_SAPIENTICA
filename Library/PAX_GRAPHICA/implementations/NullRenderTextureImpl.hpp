@@ -41,9 +41,6 @@ namespace paxg {
         void draw(int, int) const override {}
         void draw(int, int, double, double, double, double) const override {}
         void* getNativeHandle() override { return nullptr; }
-        void resize(int new_width, int new_height) override {
-            size = paxs::Vector2<int>(new_width, new_height);
-        }
     };
 
 } // namespace paxg

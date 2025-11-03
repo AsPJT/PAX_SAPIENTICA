@@ -136,8 +136,8 @@ namespace paxs {
             settlement_status_panel.init(font_manager_->getLanguageFonts(), select_language);
 #endif
 
-            // 影テクスチャを初期化
-            PanelBackground::initShadowTextures(paxg::Window::Size());
+            // 影描画用のRenderTextureを最大画面サイズで初期化（一回のみ）
+            PanelBackground::initShadowTextures(paxs::Vector2<int>{3840, 2160});
 
             // IWidget を実装したウィジェットを登録
             widgets.clear();
@@ -230,11 +230,6 @@ namespace paxs {
             }
         }
 
-        /// @brief ウィンドウサイズ変更時のテクスチャ再初期化
-        void handleWindowResize() {
-            // ウィンドウサイズ変更時に影テクスチャを再作成
-            PanelBackground::initShadowTextures(paxg::Window::Size());
-        }
 
         /// @brief データ更新（描画は行わない）
         /// @brief Update data (no drawing)
@@ -408,12 +403,6 @@ namespace paxs {
         /// @return 処理した場合true / true if handled
         bool handleInput(const InputEvent& event) override {
             if (!enabled_ || !visible_) return false;
-
-            // ウィンドウリサイズイベントを処理
-            if (event.type == InputEventType::WindowResize) {
-                handleWindowResize();
-                return false; // 他のハンドラーにも処理を継続
-            }
 
             // 座標に依存しないイベント（キーボード、マウスホイール、フォーカス）はスキップ
             if (event.type == InputEventType::Keyboard ||

@@ -84,10 +84,6 @@ namespace paxg {
         const s3d::RenderTexture& getInternal() const {
             return render_texture;
         }
-
-        void resize(int new_width, int new_height) override {
-            render_texture.resized(s3d::Size(new_width, new_height));
-        }
     };
 
 } // namespace paxg

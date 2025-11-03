@@ -56,11 +56,6 @@ namespace paxg {
         /// @brief Get native handle for render target operations (platform-specific)
         /// @return Pointer to platform-specific data
         virtual void* getNativeHandle() = 0;
-
-        /// @brief Resize the render texture
-        /// @param new_width New width
-        /// @param new_height New height
-        virtual void resize(int new_width, int new_height) = 0;
     };
 
 } // namespace paxg

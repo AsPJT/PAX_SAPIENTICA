@@ -37,17 +37,14 @@ namespace paxs {
 		/// @brief 影用のテクスチャを初期化（静的メソッド）
 		/// @brief Initialize textures for shadow rendering (static method)
 		/// @param size テクスチャサイズ / Texture size
+		///
+		/// UI初期化時に一度だけ呼び出してください。
+		/// Should be called only once during UI initialization.
 		static void initShadowTextures(const paxs::Vector2<int>& size) {
 #ifdef PAXS_USING_SIV3D
-			// 初回または未初期化の場合は新規作成
 			if (shadow_texture_.size().x <= 0 || shadow_texture_.size().y <= 0) {
 				shadow_texture_ = paxg::RenderTexture{ size, paxg::ColorF{ 1.0, 0.0 } };
 				internal_texture_ = paxg::RenderTexture{ size };
-			}
-			// サイズが異なる場合はリサイズ
-			else if (shadow_texture_.size() != size) {
-				shadow_texture_.resize(size);
-				internal_texture_.resize(size);
 			}
 #endif
 		}
