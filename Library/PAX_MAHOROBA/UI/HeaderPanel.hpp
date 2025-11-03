@@ -122,8 +122,10 @@ namespace paxs {
             menu_bar_.handleInput(event);
             language_selector_.handleInput(event);
 
-            // GitHubアイコンのクリック判定
-            if (event.input_state_manager->get(paxg::Rect(static_cast<float>(paxg::Window::width() - 280), 3.0f, 28.0f, 28.0f).leftClicked())) {
+            // GitHubアイコンのクリック判定（言語セレクターの左、HeaderPanel中央に配置）
+            const float github_x = static_cast<float>(paxg::Window::width() - language_selector_.getRect().w() - 32);
+            const float github_y = (language_selector_.getRect().h() - 28.0f) / 2.0f;  // 中央配置
+            if (event.input_state_manager->get(paxg::Rect(github_x, github_y, 28.0f, 28.0f).leftClicked())) {
                 paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
                 return true;
             }
@@ -137,9 +139,11 @@ namespace paxs {
             menu_bar_.render();
             language_selector_.render();
 
-            // GitHubアイコンを描画
+            // GitHubアイコンを描画（言語セレクターの左、HeaderPanel中央に配置）
             if (github_texture_) {
-                github_texture_->resizedDraw(24, paxg::Vec2i{ paxg::Window::width() - 280, 3 });
+                const int github_x = paxg::Window::width() - static_cast<int>(language_selector_.getRect().w()) - 32;
+                const int github_y = static_cast<int>((language_selector_.getRect().h() - 24) / 2);  // 中央配置
+                github_texture_->resizedDraw(24, paxg::Vec2i{ github_x, github_y });
             }
         }
 

@@ -137,14 +137,41 @@ namespace paxg{
 #elif defined(PAXS_USING_DXLIB)
         int font{ -1 }; int h{ 0 };
         Font(const int size_, const std::string& path, const int buffer_thickness) {
-            font = DxLib::CreateFontToHandle(NULL, size_, -1,
-                (buffer_thickness <= 0) ? DX_FONTTYPE_NORMAL :
+            // 文字コードをUTF-8に統一
+            DxLib::SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
+
+            if (path.size() == 0) {
+                // デフォルトフォントを使用
+                font = DxLib::CreateFontToHandle(NULL, size_, -1,
+                    (buffer_thickness <= 0) ? DX_FONTTYPE_NORMAL :
 #ifdef __ANDROID__
-                DX_FONTTYPE_EDGE
+                    DX_FONTTYPE_EDGE
 #else
-                DX_FONTTYPE_ANTIALIASING_EDGE_4X4
+                    DX_FONTTYPE_ANTIALIASING_8X8
 #endif
-            );
+                );
+            } else {
+                // 外部フォントファイルを使用
+                const std::string full_path = paxs::AppConfig::getInstance()->getRootPath() + path;
+                int font_data_handle = DxLib::LoadFontDataToHandle(full_path.c_str(), buffer_thickness);
+
+                if (font_data_handle == -1) {
+                    PAXS_WARNING("Failed to load font data: " + full_path);
+                    // フォールバック: デフォルトフォント
+                    font = DxLib::CreateFontToHandle(NULL, size_, -1,
+                        (buffer_thickness <= 0) ? DX_FONTTYPE_NORMAL : DX_FONTTYPE_ANTIALIASING_8X8);
+                } else {
+                    font = DxLib::CreateFontToHandle(NULL, size_, -1,
+                        (buffer_thickness <= 0) ? DX_FONTTYPE_NORMAL : DX_FONTTYPE_ANTIALIASING_8X8,
+                        -1, -1, FALSE, font_data_handle);
+                }
+            }
+
+            // フォント間隔を0に明示（他のライブラリと同じ挙動にする）
+            if (font != -1) {
+                DxLib::SetFontSpaceToHandle(font, 0);
+            }
+
             h = size_;
         }
         void setOutline(const double inner, const double outer, const paxg::Color& color) const {
@@ -226,11 +253,16 @@ namespace paxg{
         }
 
         int height() const {
-            return h;
+            if (font == -1) return h;
+            // DxLibで実際の行高さを取得（他のライブラリと同じ挙動にする）
+            return DxLib::GetFontLineSpaceToHandle(font);
         }
         int width(const std::string& str_) {
-            return DxLib::GetDrawStringWidth(str_.c_str(), int(str_.size()));
-            // return str_.size() * h;
+            if (font == -1) return static_cast<int>(str_.size() * h * 0.5);
+            // DxLibで実際の文字列幅を取得（フォントハンドルを使用）
+            int w = 0, h_temp = 0;
+            DxLib::GetDrawStringSizeToHandle(&w, &h_temp, NULL, str_.c_str(), static_cast<int>(str_.size()), font, FALSE);
+            return w;
         }
 
 #elif defined(PAXS_USING_SFML)
