@@ -23,7 +23,6 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
@@ -46,7 +45,6 @@ namespace paxs {
     class DebugInfoPanel : public IWidget {
     private:
         paxs::LanguageFonts* language_fonts_ = nullptr;
-        PanelBackground background_;  // 背景
         bool visible_ = true;
         bool enabled_ = true;
         mutable paxg::Vec2i pos_{10, 0};  // 左下の位置（Y座標は後で設定）
@@ -240,16 +238,8 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!visible_) return;
-
-            // 背景を描画（バッチ描画に登録）
-            background_.draw(
-                pos_.x(), pos_.y(),
-                panel_width_, panel_height_,
-                10,  // 角丸半径
-                paxg::Color{255, 255, 255},  // 背景色
-                RenderLayer::UIBackground
-            );
+            // 背景はUILayerのUIPanelBackgroundが描画するため、ここでは何もしない
+            // Background is rendered by UILayer's UIPanelBackground, so nothing to do here
         }
 
         paxg::Rect getRect() const override {
@@ -261,11 +251,6 @@ namespace paxs {
             };
         }
 
-        /// @brief 背景を取得（UILayerのバッチ描画用）
-        /// @brief Get background (for UILayer batch rendering)
-        PanelBackground& getBackground() {
-            return background_;
-        }
 
         void setPos(const paxg::Vec2i& pos) override {
             pos_ = pos;

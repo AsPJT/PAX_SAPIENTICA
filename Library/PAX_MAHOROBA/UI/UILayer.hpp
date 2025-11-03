@@ -79,6 +79,7 @@ namespace paxs {
         // 背景コンポーネント
         paxs::UIPanelBackground header_bg_{"HeaderBackground"};
         paxs::UIPanelBackground calendar_bg_{"CalendarBackground"};
+        paxs::UIPanelBackground debug_info_bg_{"DebugInfoBackground"};
 #ifdef PAXS_USING_SIMULATOR
         paxs::UIPanelBackground simulation_bg_{"SimulationBackground"};
         paxs::UIPanelBackground settlement_status_bg_{"SettlementStatusBackground"};
@@ -144,6 +145,7 @@ namespace paxs {
             // 背景コンポーネント（RenderLayer::UIBackground = 300）
             widgets.push_back(&header_bg_);
             widgets.push_back(&calendar_bg_);
+            widgets.push_back(&debug_info_bg_);
 #ifdef PAXS_USING_SIMULATOR
             widgets.push_back(&simulation_bg_);
             widgets.push_back(&settlement_status_bg_);
@@ -294,6 +296,17 @@ namespace paxs {
             }
 
             debug_info_panel.setVisible(visible.isVisible(MurMur3::calcHash("UI")) && visible.isVisible(MurMur3::calcHash("Debug")));
+
+            // DebugInfoPanelのレイアウト設定
+            debug_info_panel.updateBackgroundPosition();
+            paxg::Rect debug_rect = debug_info_panel.getRect();
+            PanelLayout debug_info_layout;
+            debug_info_layout.x = static_cast<int>(debug_rect.x());
+            debug_info_layout.y = static_cast<int>(debug_rect.y());
+            debug_info_layout.width = static_cast<int>(debug_rect.w());
+            debug_info_layout.height = static_cast<int>(debug_rect.h());
+            debug_info_bg_.setLayout(&debug_info_layout);
+            debug_info_bg_.setVisible(debug_info_panel.isVisible());
 
             // ウィジェットを更新（入力処理）
             InputEvent event;
