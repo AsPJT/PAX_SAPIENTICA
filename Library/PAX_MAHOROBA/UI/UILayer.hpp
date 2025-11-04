@@ -12,6 +12,7 @@
 #ifndef PAX_MAHOROBA_UI_LAYER_HPP
 #define PAX_MAHOROBA_UI_LAYER_HPP
 
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <variant>
@@ -34,15 +35,16 @@
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
-#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -51,7 +53,7 @@ namespace paxs {
 
     /// @brief UIレイヤーの統合管理を担当するクラス
     /// @brief Integrated management class for UI layer
-    class UILayer : public IRenderable, public IInputHandler {
+    class UILayer : public IRenderable, public IMouseEventHandler {
     private:
         bool visible_ = true;
         bool enabled_ = true;
@@ -64,7 +66,6 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
 #endif
-        paxs::InputStateManager* cached_input_state_manager_ = nullptr;
         paxs::Koyomi cached_koyomi_;
         paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
 
@@ -242,7 +243,6 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
-            paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi,
             paxs::FeatureVisibilityManager& visible
             ) {
@@ -273,7 +273,7 @@ namespace paxs {
                                     visible.isVisible(MurMur3::calcHash(2, "UI"));
             simulation_panel.setVisible(simulation_visible);
 
-            simulation_panel.setReferences(simulator, input_state_manager, koyomi, visible,
+            simulation_panel.setReferences(simulator, koyomi, visible,
                 font_manager_->getLanguageFonts(), select_language, language_text,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 
@@ -308,15 +308,6 @@ namespace paxs {
             debug_info_bg_.setLayout(&debug_info_layout);
             debug_info_bg_.setVisible(debug_info_panel.isVisible());
 
-            // ウィジェットを更新（入力処理）
-            InputEvent event;
-            event.input_state_manager = &input_state_manager;
-            for (auto* widget : widgets) {
-                if (widget) {
-                    widget->handleInput(event);
-                }
-            }
-
             // 描画用にデータをキャッシュ
             cached_map_viewport_ = map_viewport;
             cached_select_language_ = &select_language;
@@ -324,7 +315,6 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             cached_simulator_ = &simulator;
 #endif
-            cached_input_state_manager_ = &input_state_manager;
             cached_koyomi_ = koyomi;
             cached_visible_ = &visible;
         }
@@ -350,9 +340,16 @@ namespace paxs {
             PanelBackground::beginBatch();
 
             // 2. 背景ウィジェットを描画（バッチに登録）
-            for (auto* widget : widgets) {
-                if (widget && widget->getLayer() == RenderLayer::UIBackground) {
-                    widget->render();
+            {
+                auto sorted_widgets = widgets;
+                std::stable_sort(sorted_widgets.begin(), sorted_widgets.end(),
+                    [](const IWidget* a, const IWidget* b) {
+                        return a->getLayer() > b->getLayer();  // 降順　UIOverlay > UIContent
+                    });
+                for (auto* widget : sorted_widgets) {
+                    if (widget && widget->getLayer() == RenderLayer::UIBackground) {
+                        widget->render();
+                    }
                 }
             }
 
@@ -374,7 +371,7 @@ namespace paxs {
 #endif
             }
 
-            // コンテンツウィジェットを描画
+
             for (auto* widget : widgets) {
                 if (widget && widget->getLayer() != RenderLayer::UIBackground) {
                     widget->render();
@@ -407,28 +404,33 @@ namespace paxs {
         SettlementStatusPanel& getSettlementStatusPanel() { return settlement_status_panel; }
 #endif
 
-        // IInputHandler の実装
-        // IInputHandler implementation
+        /// @brief マウスイベント処理（IMouseEventHandler インターフェース）
+        /// @brief Handle mouse event (IMouseEventHandler interface)
+        /// @param event マウスイベント / Mouse event
+        /// @return イベント処理結果 / Event handling result
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            return handleMouseInput(event);
+        }
 
-        /// @brief 入力処理（子ウィジェットに委譲）
-        /// @brief Handle input (delegate to child widgets)
-        /// @param event 入力イベント / Input event
+        /// @brief マウス入力処理（子ウィジェットに委譲）
+        /// @brief Handle mouse input (delegate to child widgets)
+        /// @param event マウスイベント / Mouse event
         /// @return 処理した場合true / true if handled
-        InputHandlingResult handleInput(const InputEvent& event) override {
-            if (!enabled_ || !visible_) return InputHandlingResult::NotHandled();
+        EventHandlingResult handleMouseInput(const MouseEvent& event) {
+            if (!enabled_ || !visible_) return EventHandlingResult::NotHandled();
 
-            // 座標に依存しないイベント（キーボード、マウスホイール、フォーカス）はスキップ
-            if (event.type == InputEventType::Keyboard ||
-                event.type == InputEventType::MouseWheel ||
-                event.type == InputEventType::WindowFocus) {
-                return InputHandlingResult::NotHandled();
-            }
+            // レイヤーは動的に変わる可能性がある（MenuItem/Pulldownのis_openフラグ等）ため、毎回ソート
+            auto sorted_widgets = widgets;
+                std::stable_sort(sorted_widgets.begin(), sorted_widgets.end(),
+                    [](const IWidget* a, const IWidget* b) {
+                        return a->getLayer() > b->getLayer();  // 降順　UIOverlay > UIContent
+                    });
 
-            // 子ウィジェットに順番に入力イベントを渡す（マウス/タッチのみ）
-            for (auto* widget : widgets) {
+            // レイヤー順に入力イベントを処理
+            for (auto* widget : sorted_widgets) {
                 if (widget && widget->isEnabled() && widget->isVisible()) {
                     if (widget->hitTest(event.x, event.y)) {
-                        InputHandlingResult result = widget->handleInput(event);
+                        EventHandlingResult result = widget->handleMouseInput(event);
                         if (result.handled) {
                             return result;  // 処理された
                         }
@@ -436,17 +438,7 @@ namespace paxs {
                 }
             }
 
-            // HeaderPanelは常に処理を試みる（メニューバーは画面上部に固定）
-            if (header_panel.isEnabled() && header_panel.isVisible()) {
-                if (header_panel.hitTest(event.x, event.y)) {
-                    InputHandlingResult result = header_panel.handleInput(event);
-                    if (result.handled) {
-                        return result;
-                    }
-                }
-            }
-
-            return InputHandlingResult::NotHandled();
+            return EventHandlingResult::NotHandled();
         }
 
         /// @brief ヒットテスト（子ウィジェットのいずれかにヒット）

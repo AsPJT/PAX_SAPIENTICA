@@ -14,7 +14,8 @@
 
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Input/InputRouter.hpp>
+#include <PAX_MAHOROBA/Input/EventRouter.hpp>
+#include <PAX_MAHOROBA/Input/MouseEventRouter.hpp>
 #include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
@@ -26,7 +27,6 @@
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -48,7 +48,10 @@ namespace paxs {
 
         // レイヤーベースシステム
         RenderLayerManager render_layer_manager_;
-        InputRouter input_router_;
+
+        // 入力管理システム
+        EventRouter event_router_;     // 座標に依存しないイベント（キーボード、リサイズ等）
+        MouseEventRouter mouse_event_router_;     // マウス入力のみ（レイヤーベース）
 
         // MapViewportの入力処理
         MapViewportInputHandler* map_viewport_input_handler_ = nullptr;
@@ -104,13 +107,16 @@ namespace paxs {
             render_layer_manager_.registerRenderable(&photo360_layer_);
             render_layer_manager_.registerRenderable(&ui_manager_);
 
-            // 入力ルーターに各コンポーネントを登録（UIが優先）
-            input_router_.registerHandler(&ui_manager_);
-            input_router_.registerHandler(&map_content_layer_);
+            // EventRouterに各コンポーネントを登録（座標に依存しないイベント用）
+            event_router_.registerHandler(&map_content_layer_);
+
+            // InputRouterに各コンポーネントを登録（マウス入力専用、UIが優先）
+            mouse_event_router_.registerHandler(&ui_manager_);
+            mouse_event_router_.registerHandler(&map_content_layer_);
 
 #ifdef PAXS_USING_SIMULATOR
-            // SettlementInputHandler を InputRouter に登録
-            input_router_.registerHandler(&map_content_layer_.getSettlementInputHandler());
+            // SettlementInputHandler を EventRouter に登録（キーボードイベントのみ）
+            event_router_.registerHandler(&map_content_layer_.getSettlementInputHandler());
 #endif
 
             // 可視性の初期状態をメニューに反映
@@ -125,29 +131,40 @@ namespace paxs {
             map_viewport_input_handler_ = handler;
             if (handler != nullptr) {
                 handler->setViewport(viewport);
-                // InputRouterに登録（最低優先度）
-                input_router_.registerHandler(handler);
+                // EventRouterに登録（キーボード、マウスホイール用）
+                event_router_.registerHandler(handler);
+                // InputRouterに登録（マウス入力用、最低優先度）
+                mouse_event_router_.registerHandler(handler);
             }
         }
 
+        /// @brief EventRouterへのアクセス
+        EventRouter& getEventRouter() { return event_router_; }
+        const EventRouter& getEventRouter() const { return event_router_; }
+
         /// @brief InputRouterへのアクセス
-        InputRouter& getInputRouter() { return input_router_; }
-        const InputRouter& getInputRouter() const { return input_router_; }
+        MouseEventRouter& getInputRouter() { return mouse_event_router_; }
+        const MouseEventRouter& getInputRouter() const { return mouse_event_router_; }
+
+        /// @brief MapViewportInputHandlerへのアクセス
+        MapViewportInputHandler* getMapViewportInputHandler() const {
+            return map_viewport_input_handler_;
+        }
 
         /// @brief 更新・描画処理
         void update(
             MapViewport& map_viewport,
-            paxs::Koyomi& koyomi,
+            paxs::Koyomi& koyomi
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
+            , std::unique_ptr<paxs::SettlementSimulator>& simulator
 #endif
-            paxs::InputStateManager& input_state_manager
         ) {
-            // ウィンドウサイズ変更を検知してイベントを発行
+            // ウィンドウサイズ変更を検知してイベントをブロードキャスト
             const int current_width = paxg::Window::width();
             const int current_height = paxg::Window::height();
             if (current_width != last_window_width_ || current_height != last_window_height_) {
-                input_router_.routeWindowResizeEvent(current_width, current_height);
+                ResizeEvent resize_event(current_width, current_height);
+                event_router_.broadcastEvent(resize_event);
                 last_window_width_ = current_width;
                 last_window_height_ = current_height;
             }
@@ -175,7 +192,6 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
                 simulator,
 #endif
-                input_state_manager,
                 koyomi,
                 visible_
             );

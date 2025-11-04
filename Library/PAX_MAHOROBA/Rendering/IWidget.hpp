@@ -15,16 +15,14 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
-
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
 
     /// @brief ウィジェット（UI、マップオブジェクト等）の共通インターフェース
     /// @brief Common interface for widgets (UI, map objects, etc.)
-    class IWidget : public IRenderable, public IInputHandler {
+    class IWidget : public IRenderable, public IMouseEventHandler {
     public:
         virtual ~IWidget() = default;
 
@@ -46,8 +44,10 @@ namespace paxs {
 
         // IRenderable の実装
         // IRenderable implementation
-        // render() は各サブクラスで実装必須
-        // render() must be implemented by each subclass
+
+        /// @brief レンダリング処理
+        /// @brief Rendering process
+        void render() const override = 0;
 
         /// @brief このオブジェクトが属するレンダリングレイヤーを取得
         /// @brief Get the rendering layer this object belongs to
@@ -70,8 +70,13 @@ namespace paxs {
                     y >= rect.y() && y < rect.y() + rect.h());
         }
 
-        // handleInput() は各サブクラスで実装必須
-        // handleInput() must be implemented by each subclass
+        // handleMouseInput() は各サブクラスで実装必須
+        // handleMouseInput() must be implemented by each subclass
+        /// @brief マウス入力処理
+        /// @brief Handle mouse input
+        /// @param event マウスイベント / Mouse event
+        /// @return イベント処理結果 / Event handling result
+        virtual EventHandlingResult handleMouseInput(const MouseEvent& event) = 0;
     };
 
 }

@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -16,8 +16,7 @@
 
 #include <PAX_GRAPHICA/Key.hpp>
 
-#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
-#include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
+#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
 
 namespace paxs {
 
@@ -25,40 +24,27 @@ namespace paxs {
     /// @brief Settlement input handler
     ///
     /// 集落の表示モード切替などの入力処理を担当します。
-    /// Handles input for settlement display mode switching.
-    class SettlementInputHandler : public IInputHandler {
+    /// キーボードイベント（1-6キー、L、Kキー）を処理するためIEventHandlerを継承します。
+    class SettlementInputHandler : public IEventHandler {
     public:
         SettlementInputHandler() = default;
 
-        // IInputHandler の実装
-        // IInputHandler implementation
+        // IEventHandler の実装
+        // IEventHandler implementation
 
-        /// @brief 入力処理
-        /// @brief Handle input
-        InputHandlingResult handleInput([[maybe_unused]] const InputEvent& event) override {
-            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
+        /// @brief キーボードイベント処理
+        /// @brief Handle keyboard event
+        /// @param event キーボードイベント / Keyboard event
+        /// @return イベント処理結果 / Event handling result
+        EventHandlingResult handleEvent(const KeyboardEvent& event) override {
+            (void)event;
+            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
 
             // 既存のupdate()ロジックを呼び出す
             update();
 
             // 入力を消費しない（背後のハンドラーにも伝播させる）
-            return InputHandlingResult::NotHandled();
-        }
-
-        /// @brief ヒットテスト
-        /// @brief Hit test
-        bool hitTest(int x, int y) const override {
-            // 集落は画面全体を対象とするのでtrue
-            (void)x;
-            (void)y;
-            return visible_ && enabled_;
-        }
-
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
-        RenderLayer getLayer() const override {
-            // MapContentManagerと同じレイヤー
-            return RenderLayer::MapContent;
+            return EventHandlingResult::NotHandled();
         }
 
         void setVisible(bool visible) { visible_ = visible; }

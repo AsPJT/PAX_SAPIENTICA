@@ -39,7 +39,6 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
     /// @brief シミュレーションのパネルクラス
@@ -54,7 +53,6 @@ namespace paxs {
 
         // 外部参照（UIManagerから設定される）
         std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
-        paxs::InputStateManager* input_state_manager_ = nullptr;
         paxs::Koyomi* koyomi_ = nullptr;
         paxs::FeatureVisibilityManager* visible_list_ = nullptr;
         LanguageFonts* language_fonts_ = nullptr;
@@ -83,9 +81,8 @@ namespace paxs {
 
         /// @brief シミュレーションの入力処理
         /// @brief Simulation input processing
-        void updateSimulation() {
+        void updateSimulation(const MouseEvent& event) {
             if (!simulator_ptr_ || !koyomi_) return;
-            if (!input_state_manager_) return;  // Null check
             const int time_icon_size = 40; // 時間操作アイコンの大きさ
 
             const std::string model_name =
@@ -97,7 +94,11 @@ namespace paxs {
 
             // シミュレーションが初期化されていない場合
             if (simulator_ptr_->get() == nullptr) {
-                if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                if (event.left_button_state == MouseButtonState::Released) {
+                    float btn_x = static_cast<float>(paxg::Window::width() - 360);
+                    float btn_y = static_cast<float>(debug_start_y_);
+                    if (event.x >= btn_x && event.x < btn_x + time_icon_size &&
+                        event.y >= btn_y && event.y < btn_y + time_icon_size) {
 
                     AppConfig::getInstance()->calcDataSettingsNotPath(MurMur3::calcHash("SimulationXYZTiles"),
                         [&](const std::string& path_) {map_list_path = path_; });
@@ -120,6 +121,7 @@ namespace paxs {
                         map_list_path, japan_provinces_path,
                         seed_gen());
                     simulationInit();
+                    }
                 }
             }
             // シミュレーションが初期化されている場合
@@ -148,53 +150,75 @@ namespace paxs {
                 // シミュレーションが再生されている場合
                 if (koyomi_->is_agent_update) {
                     // シミュレーションを停止
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        koyomi_->is_agent_update = false;
+                    if (event.left_button_state == MouseButtonState::Released) {
+                        float btn_x = static_cast<float>(paxg::Window::width() - 300);
+                        float btn_y = static_cast<float>(debug_start_y_);
+                        if (event.x >= btn_x && event.x < btn_x + time_icon_size &&
+                            event.y >= btn_y && event.y < btn_y + time_icon_size) {
+                            koyomi_->is_agent_update = false;
 
-                        koyomi_->move_forward_in_time = false; // 一時停止
-                        koyomi_->go_back_in_time = false;
+                            koyomi_->move_forward_in_time = false; // 一時停止
+                            koyomi_->go_back_in_time = false;
+                        }
                     }
                 }
                 // シミュレーションが再生されていない場合
                 else {
-                    // シミュレーション入力データを初期化
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y_ + 60), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        SimulationConstants::getInstance(model_name)->init(model_name);
-                    }
-                    // 人間データを初期化
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 420, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        simulationInit();
+                    if (event.left_button_state == MouseButtonState::Released) {
+                        // シミュレーション入力データを初期化
+                        float reload_x = static_cast<float>(paxg::Window::width() - 420);
+                        float reload_y = static_cast<float>(debug_start_y_ + 60);
+                        if (event.x >= reload_x && event.x < reload_x + time_icon_size &&
+                            event.y >= reload_y && event.y < reload_y + time_icon_size) {
+                            SimulationConstants::getInstance(model_name)->init(model_name);
+                        }
+                        // 人間データを初期化
+                        float init_x = static_cast<float>(paxg::Window::width() - 420);
+                        float init_y = static_cast<float>(debug_start_y_);
+                        if (event.x >= init_x && event.x < init_x + time_icon_size &&
+                            event.y >= init_y && event.y < init_y + time_icon_size) {
+                            simulationInit();
 
-                        koyomi_->steps.setDay(0); // ステップ数を 0 にする
-                        koyomi_->calcDate();
-                    }
-                    // 地形データを削除
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 360, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        simulator_ptr_->reset();
+                            koyomi_->steps.setDay(0); // ステップ数を 0 にする
+                            koyomi_->calcDate();
+                        }
+                        // 地形データを削除
+                        float delete_x = static_cast<float>(paxg::Window::width() - 360);
+                        float delete_y = static_cast<float>(debug_start_y_);
+                        if (event.x >= delete_x && event.x < delete_x + time_icon_size &&
+                            event.y >= delete_y && event.y < delete_y + time_icon_size) {
+                            simulator_ptr_->reset();
 
-                        koyomi_->steps.setDay(0); // ステップ数を 0 にする
-                        koyomi_->calcDate();
-                    }
+                            koyomi_->steps.setDay(0); // ステップ数を 0 にする
+                            koyomi_->calcDate();
+                        }
 
-                    // シミュレーションを再生
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 300, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        // if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
-                        koyomi_->is_agent_update = true;
+                        // シミュレーションを再生
+                        float play_x = static_cast<float>(paxg::Window::width() - 300);
+                        float play_y = static_cast<float>(debug_start_y_);
+                        if (event.x >= play_x && event.x < play_x + time_icon_size &&
+                            event.y >= play_y && event.y < play_y + time_icon_size) {
+                            // if (s3d::SimpleGUI::Button(U"Sim Start", s3d::Vec2{ 190, 60 })) {
+                            koyomi_->is_agent_update = true;
 
-                        // 実行回数をセット
-                        m_remaining_iterations = SimulationConstants::getInstance(model_name)->num_iterations;
+                            // 実行回数をセット
+                            m_remaining_iterations = SimulationConstants::getInstance(model_name)->num_iterations;
 
-                        koyomi_->move_forward_in_time = true; // 再生
-                        koyomi_->go_back_in_time = false;
-                    }
-                    // シミュレーションを 1 Step 実行
-                    if (input_state_manager_->get(paxg::Rect{ paxg::Vec2i(paxg::Window::width() - 240, debug_start_y_), paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
-                        (*simulator_ptr_)->step(); // シミュレーションを 1 ステップ実行する
-                        koyomi_->steps.getDay()++; // ステップ数を増やす
-                        koyomi_->calcDate();
+                            koyomi_->move_forward_in_time = true; // 再生
+                            koyomi_->go_back_in_time = false;
+                        }
+                        // シミュレーションを 1 Step 実行
+                        float step_x = static_cast<float>(paxg::Window::width() - 240);
+                        float step_y = static_cast<float>(debug_start_y_);
+                        if (event.x >= step_x && event.x < step_x + time_icon_size &&
+                            event.y >= step_y && event.y < step_y + time_icon_size) {
+                            (*simulator_ptr_)->step(); // シミュレーションを 1 ステップ実行する
+                            koyomi_->steps.getDay()++; // ステップ数を増やす
+                            koyomi_->calcDate();
 
-                        koyomi_->move_forward_in_time = false; // 一時停止
-                        koyomi_->go_back_in_time = false;
+                            koyomi_->move_forward_in_time = false; // 一時停止
+                            koyomi_->go_back_in_time = false;
+                        }
                     }
                 }
             }
@@ -263,11 +287,11 @@ namespace paxs {
 
         /// @brief シミュレーションの更新
         /// @brief Update simulation
-        void update() {
-            if (!input_state_manager_ || !visible_list_) return;  // Null check
+        void update(const MouseEvent& event) {
+            if (!visible_list_) return;  // Null check
             // シミュレーションのボタン
             if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) && visible_list_->isVisible(MurMur3::calcHash("UI"))) {
-                updateSimulation();
+                updateSimulation(event);
             }
         }
 
@@ -300,6 +324,10 @@ namespace paxs {
         /// @brief レンダリングレイヤーを取得
         /// @brief Get rendering layer
         RenderLayer getLayer() const override {
+            // シミュレーションプルダウンが開いている場合はUIOverlayを返す
+            if (simulation_pulldown.isOpen()) {
+                return RenderLayer::UIOverlay;
+            }
             return RenderLayer::UIContent;
         }
 
@@ -318,15 +346,44 @@ namespace paxs {
             return enabled_;
         }
 
+        /// @brief ヒットテスト（ボタンとプルダウンに委譲）
+        /// @brief Hit test (delegated to buttons and pulldown)
+        bool hitTest(int x, int y) const override {
+            if (!isVisible() || !isEnabled()) return false;
+            if (!simulator_ptr_ || !visible_list_) return false;
+
+            // 可視性チェック
+            if (!visible_list_->isVisible(MurMur3::calcHash("Simulation")) ||
+                !visible_list_->isVisible(MurMur3::calcHash("UI"))) {
+                return false;
+            }
+
+            // SimulationControlButtonsに委譲
+            if (control_buttons_.hitTest(x, y)) {
+                return true;
+            }
+
+            // Pulldownに委譲（初期化されていない場合のみ）
+            if (*simulator_ptr_ == nullptr) {
+                if (simulation_pulldown.hitTest(x, y)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// @brief 外部参照を設定
         /// @param simulator シミュレータのユニークポインタへの参照
-        /// @param input_state_manager 入力状態マネージャー
+        /// @param simulator シミュレータ
         /// @param koyomi 暦情報
         /// @param visible_list 可視性リスト
+        /// @param language_fonts フォント管理
+        /// @param select_language 選択言語
+        /// @param language_text 言語テキスト
         /// @param debug_start_y UIの開始Y座標
         void setReferences(
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
-            paxs::InputStateManager& input_state_manager,
             paxs::Koyomi& koyomi,
             paxs::FeatureVisibilityManager& visible_list,
             LanguageFonts& language_fonts,
@@ -335,37 +392,52 @@ namespace paxs {
             int debug_start_y
         ) {
             simulator_ptr_ = &simulator;
-            input_state_manager_ = &input_state_manager;
             koyomi_ = &koyomi;
             visible_list_ = &visible_list;
             language_fonts_ = &language_fonts;
             select_language_ = &select_language;
             language_text_ = &language_text;
             debug_start_y_ = debug_start_y;
+
+            // SimulationControlButtonsにも参照を設定
+            control_buttons_.setReferences(simulator_ptr_, koyomi_, debug_start_y);
         }
 
-        /// @brief 入力処理（IWidget）
-        InputHandlingResult handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
-            if (!simulator_ptr_ || !koyomi_ || !visible_list_) return InputHandlingResult::NotHandled();
-            if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
+        /// @brief 入力処理（IWidget）- ボタンとプルダウンに委譲
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
+            if (!simulator_ptr_ || !koyomi_ || !visible_list_) return EventHandlingResult::NotHandled();
 
-            // Temporarily set input_state_manager_ for this update cycle
-            input_state_manager_ = event.input_state_manager;
+            // 可視性チェック
+            if (!visible_list_->isVisible(MurMur3::calcHash("Simulation")) ||
+                !visible_list_->isVisible(MurMur3::calcHash("UI"))) {
+                return EventHandlingResult::NotHandled();
+            }
 
-            // 既存のupdate()を呼び出し
-            update();
-
-            // プルダウンの更新
-            if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) &&
-                visible_list_->isVisible(MurMur3::calcHash("UI"))) {
-                if (*simulator_ptr_ == nullptr) {
-                    simulation_pulldown.handleInput(event);
-                    simulation_model_index = simulation_pulldown.getIndex();
-                    return InputHandlingResult::Handled();
+            // プルダウンの更新（初期化されていない場合のみ）
+            if (*simulator_ptr_ == nullptr) {
+                EventHandlingResult result = simulation_pulldown.handleMouseInput(event);
+                simulation_model_index = simulation_pulldown.getIndex();
+                if (result.handled) {
+                    return EventHandlingResult::Handled();
                 }
             }
-            return InputHandlingResult::Handled();
+
+            // SimulationControlButtonsのhitTestをチェック
+            if (control_buttons_.hitTest(event.x, event.y)) {
+                // ボタンエリア内のすべてのマウスイベントを消費
+                if (event.left_button_state == MouseButtonState::Pressed ||
+                    event.left_button_state == MouseButtonState::Held ||
+                    event.left_button_state == MouseButtonState::Released) {
+                    // Releasedの時だけ実際のボタン処理を実行
+                    if (event.left_button_state == MouseButtonState::Released) {
+                        update(event);
+                    }
+                    return EventHandlingResult::Handled();
+                }
+            }
+
+            return EventHandlingResult::NotHandled();
         }
 
         /// @brief 描画処理（IWidget）
@@ -376,10 +448,10 @@ namespace paxs {
             // プルダウンの描画
             drawPulldown();
 
-            // シミュレーションコントロールボタンの描画
+            // SimulationControlButtonsの描画（IWidget::render()を使用）
             if (visible_list_->isVisible(MurMur3::calcHash("Simulation")) &&
                 visible_list_->isVisible(MurMur3::calcHash("UI"))) {
-                control_buttons_.draw(simulator_ptr_, koyomi_, debug_start_y_);
+                control_buttons_.render();
             }
         }
 

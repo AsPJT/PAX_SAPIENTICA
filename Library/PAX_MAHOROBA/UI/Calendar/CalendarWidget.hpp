@@ -218,10 +218,10 @@ namespace paxs {
 
     public:
         // IWidget インターフェースの実装
-        InputHandlingResult handleInput(const InputEvent& event) override {
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
             // CalendarWidgetは入力処理を行わない
             (void)event;
-            return InputHandlingResult::NotHandled();
+            return EventHandlingResult::NotHandled();
         }
 
         void render() const override {

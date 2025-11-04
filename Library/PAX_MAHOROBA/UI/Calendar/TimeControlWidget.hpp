@@ -22,7 +22,6 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
 
@@ -47,20 +46,20 @@ namespace paxs {
 
     private:
         // 状態更新（クリック判定などの入力処理）
-        void updateState(paxs::InputStateManager& input_state_manager) {
+        void updateState(const MouseEvent& event) {
             int icon_start_x = pos_.x();
             int icon_start_y = pos_.y();
 
             // 再生コントロールの更新
-            updatePlaybackControls(icon_start_x, icon_start_y, input_state_manager);
+            updatePlaybackControls(icon_start_x, icon_start_y, event);
             icon_start_y += arrow_icon_move_y;
 
             // 時間移動（過去へ）の更新
-            updateBackwardTimeControls(icon_start_x, icon_start_y, input_state_manager);
+            updateBackwardTimeControls(icon_start_x, icon_start_y, event);
             icon_start_y += icon_move_y;
 
             // 時間移動（未来へ）の更新
-            updateForwardTimeControls(icon_start_x, icon_start_y, input_state_manager);
+            updateForwardTimeControls(icon_start_x, icon_start_y, event);
         }
 
         // 全てのコントロールを描画
@@ -81,28 +80,36 @@ namespace paxs {
         }
 
         // 再生コントロールの更新処理
-        void updatePlaybackControls(int start_x, int y, paxs::InputStateManager& input_state_manager) {
+        void updatePlaybackControls(int start_x, int y, const MouseEvent& event) {
+            if (event.left_button_state != MouseButtonState::Released) return;
+
             int x = start_x;
 
             // 逆再生ボタン
-            paxg::Vec2i pos1(paxg::Window::width() - x, y);
-            if (input_state_manager.get(paxg::Rect{ pos1, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+            float px1 = static_cast<float>(paxg::Window::width() - x);
+            float py1 = static_cast<float>(y);
+            if (event.x >= px1 && event.x < px1 + arrow_time_icon_size &&
+                event.y >= py1 && event.y < py1 + arrow_time_icon_size) {
                 koyomi_->move_forward_in_time = false;
                 koyomi_->go_back_in_time = true;
             }
             x -= arrow_icon_move_x;
 
             // 停止ボタン
-            paxg::Vec2i pos2(paxg::Window::width() - x, y);
-            if (input_state_manager.get(paxg::Rect{ pos2, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+            float px2 = static_cast<float>(paxg::Window::width() - x);
+            float py2 = static_cast<float>(y);
+            if (event.x >= px2 && event.x < px2 + arrow_time_icon_size &&
+                event.y >= py2 && event.y < py2 + arrow_time_icon_size) {
                 koyomi_->move_forward_in_time = false;
                 koyomi_->go_back_in_time = false;
             }
             x -= arrow_icon_move_x;
 
             // 再生ボタン
-            paxg::Vec2i pos3(paxg::Window::width() - x, y);
-            if (input_state_manager.get(paxg::Rect{ pos3, paxg::Vec2i(arrow_time_icon_size, arrow_time_icon_size) }.leftClicked())) {
+            float px3 = static_cast<float>(paxg::Window::width() - x);
+            float py3 = static_cast<float>(y);
+            if (event.x >= px3 && event.x < px3 + arrow_time_icon_size &&
+                event.y >= py3 && event.y < py3 + arrow_time_icon_size) {
                 koyomi_->move_forward_in_time = true;
                 koyomi_->go_back_in_time = false;
             }
@@ -128,7 +135,9 @@ namespace paxs {
         }
 
         // 過去への時間移動の更新処理
-        void updateBackwardTimeControls(int start_x, int y, paxs::InputStateManager& input_state_manager) {
+        void updateBackwardTimeControls(int start_x, int y, const MouseEvent& event) {
+            if (event.left_button_state != MouseButtonState::Released) return;
+
             const struct { const char* key; double delta; } buttons[] = {
                 {"texture_d_l", -1},
                 {"texture_m_l", -(365.2422 / 12.0)},
@@ -141,8 +150,10 @@ namespace paxs {
 
             int x = start_x;
             for (const auto& btn : buttons) {
-                paxg::Vec2i pos(paxg::Window::width() - x, y);
-                if (input_state_manager.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                float px = static_cast<float>(paxg::Window::width() - x);
+                float py = static_cast<float>(y);
+                if (event.x >= px && event.x < px + time_icon_size &&
+                    event.y >= py && event.y < py + time_icon_size) {
                     koyomi_->jdn.getDay() += btn.delta;
                     koyomi_->calcDate();
                 }
@@ -166,7 +177,9 @@ namespace paxs {
         }
 
         // 未来への時間移動の更新処理
-        void updateForwardTimeControls(int start_x, int y, paxs::InputStateManager& input_state_manager) {
+        void updateForwardTimeControls(int start_x, int y, const MouseEvent& event) {
+            if (event.left_button_state != MouseButtonState::Released) return;
+
             const struct { const char* key; double delta; } buttons[] = {
                 {"texture_d_r", 1},
                 {"texture_m_r", (365.2422 / 12.0)},
@@ -179,8 +192,10 @@ namespace paxs {
 
             int x = start_x;
             for (const auto& btn : buttons) {
-                paxg::Vec2i pos(paxg::Window::width() - x, y);
-                if (input_state_manager.get(paxg::Rect{ pos, paxg::Vec2i(time_icon_size, time_icon_size) }.leftClicked())) {
+                float px = static_cast<float>(paxg::Window::width() - x);
+                float py = static_cast<float>(y);
+                if (event.x >= px && event.x < px + time_icon_size &&
+                    event.y >= py && event.y < py + time_icon_size) {
                     koyomi_->jdn.getDay() += btn.delta;
                     koyomi_->calcDate();
                 }
@@ -215,7 +230,7 @@ namespace paxs {
 
     public:
         // IWidget インターフェースの実装
-        InputHandlingResult handleInput(const InputEvent& event) override;
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override;
         void render() const override;
 
         paxg::Rect getRect() const override {
@@ -257,13 +272,12 @@ namespace paxs {
     };
 
     // IWidget メソッドの実装（クラス外定義）
-    inline InputHandlingResult TimeControlWidget::handleInput(const InputEvent& event) {
-        if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return InputHandlingResult::NotHandled();
-        if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
+    inline EventHandlingResult TimeControlWidget::handleMouseInput(const MouseEvent& event) {
+        if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return EventHandlingResult::NotHandled();
 
         // クリック判定などの更新処理
-        updateState(*event.input_state_manager);
-        return InputHandlingResult::Handled();
+        updateState(event);
+        return EventHandlingResult::Handled();
     }
 
     inline void TimeControlWidget::render() const {

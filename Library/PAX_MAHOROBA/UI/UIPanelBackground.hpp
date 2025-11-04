@@ -125,11 +125,14 @@ namespace paxs {
             return visible_;
         }
 
-        InputHandlingResult handleInput(const InputEvent& event) override {
-            if (event.type == InputEventType::Mouse) {
-                return InputHandlingResult::Handled();
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+            // パネル背景上のすべてのマウスイベントを消費（背後へのクリック防止）
+            if (event.left_button_state == MouseButtonState::Pressed ||
+                event.left_button_state == MouseButtonState::Held ||
+                event.left_button_state == MouseButtonState::Released) {
+                return EventHandlingResult::Handled();
             }
-            return InputHandlingResult::NotHandled();
+            return EventHandlingResult::NotHandled();
         }
 
         void render() const override {

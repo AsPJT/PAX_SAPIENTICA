@@ -80,10 +80,10 @@ namespace paxs {
         }
 
         // IInputHandler の実装
-        InputHandlingResult handleInput(const InputEvent& event) override {
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
             // このウィジェットは入力を処理しない（表示のみ）
             (void)event;
-            return InputHandlingResult::NotHandled();
+            return EventHandlingResult::NotHandled();
         }
 
         bool isEnabled() const override {

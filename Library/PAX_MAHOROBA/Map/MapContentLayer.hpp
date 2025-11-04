@@ -20,7 +20,8 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
-#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
@@ -39,7 +40,12 @@ namespace paxs {
 
     /// @brief 地図コンテンツレイヤークラス
     /// @brief Map Content Layer
-    class MapContentLayer : public IRenderable, public IInputHandler {
+    ///
+    /// IEventHandlerとIInputHandlerの両方を継承し、キーボードイベント
+    /// （集落表示モード切替）とマウス入力の両方を処理します。
+    /// Inherits both IEventHandler and IInputHandler to handle keyboard events
+    /// (settlement display mode switching) and mouse input.
+    class MapContentLayer : public IRenderable, public IEventHandler, public IMouseEventHandler {
     private:
         std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
 
@@ -201,22 +207,24 @@ namespace paxs {
         // IInputHandler の実装
         // IInputHandler implementation
 
-        /// @brief 入力処理
-        /// @brief Handle input
-        InputHandlingResult handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_ || cached_visible_ == nullptr) return InputHandlingResult::NotHandled();
+        /// @brief キーボードイベント処理
+        /// @brief Handle keyboard event
+        /// @param event キーボードイベント / Keyboard event
+        /// @return イベント処理結果 / Event handling result
+        EventHandlingResult handleEvent(const KeyboardEvent& event) override {
+            if (!visible_ || !enabled_ || cached_visible_ == nullptr) return EventHandlingResult::NotHandled();
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
             // Settlement input processing
             if (cached_visible_->isVisible(MurMur3::calcHash("Map")) || cached_visible_->isVisible(MurMur3::calcHash("Simulation"))) {
                 if (cached_simulator_ && *cached_simulator_) {
-                    settlement_input_handler_.handleInput(event);
+                    settlement_input_handler_.handleEvent(event);
                 }
             }
 #endif
             // 入力を消費しない（背後のハンドラーにも伝播させる）
-            return InputHandlingResult::NotHandled();
+            return EventHandlingResult::NotHandled();
         }
 
         /// @brief ヒットテスト

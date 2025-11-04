@@ -23,7 +23,6 @@
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -84,9 +83,9 @@ namespace paxs {
             return true;
         }
 
-        InputHandlingResult handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
-            return time_control_widget_.handleInput(event);
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
+            return time_control_widget_.handleMouseInput(event);
         }
 
         void render() const override {

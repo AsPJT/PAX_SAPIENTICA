@@ -23,7 +23,6 @@
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
@@ -110,24 +109,31 @@ namespace paxs {
         }
 
         // IWidget インターフェースの実装
-        InputHandlingResult handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
-            if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
 
             calculateLayout();  // 毎フレーム位置を更新
 
             // メニューバーと言語選択を更新
-            menu_bar_.handleInput(event);
-            language_selector_.handleInput(event);
+            EventHandlingResult menu_result = menu_bar_.handleMouseInput(event);
+            EventHandlingResult lang_result = language_selector_.handleMouseInput(event);
 
             // GitHubアイコンのクリック判定（言語セレクターの左、HeaderPanel中央に配置）
-            const float github_x = static_cast<float>(paxg::Window::width() - language_selector_.getRect().w() - 32);
-            const float github_y = (language_selector_.getRect().h() - 28.0f) / 2.0f;  // 中央配置
-            if (event.input_state_manager->get(paxg::Rect(github_x, github_y, 28.0f, 28.0f).leftClicked())) {
-                paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
-                return InputHandlingResult::Handled();
+            if (event.left_button_state == MouseButtonState::Released) {
+                const float github_x = static_cast<float>(paxg::Window::width() - language_selector_.getRect().w() - 32);
+                const float github_y = (language_selector_.getRect().h() - 28.0f) / 2.0f;  // 中央配置
+                if (event.x >= github_x && event.x < github_x + 28.0f &&
+                    event.y >= github_y && event.y < github_y + 28.0f) {
+                    paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
+                    return EventHandlingResult::Handled();
+                }
             }
-            return InputHandlingResult::Handled();
+
+            // いずれかの子コンポーネントがイベントを処理した場合はHandledを返す
+            if (menu_result.handled || lang_result.handled) {
+                return EventHandlingResult::Handled();
+            }
+            return EventHandlingResult::NotHandled();
         }
 
         void render() const override {
@@ -168,9 +174,42 @@ namespace paxs {
         /// @brief レンダリングレイヤーを取得
         /// @brief Get rendering layer
         RenderLayer getLayer() const override {
+            // MenuBarまたは言語選択が開いている場合はUIOverlayを返す
+            if (menu_bar_.getLayer() == RenderLayer::UIOverlay || language_selector_.isOpen()) {
+                return RenderLayer::UIOverlay;
+            }
             return RenderLayer::UIContent;
         }
         bool isAvailable() const override { return true; }
+
+        /// @brief ヒットテスト（MenuBarやPulldownが開いている場合は拡張）
+        /// @brief Hit test (extended when MenuBar or Pulldown is open)
+        bool hitTest(int x, int y) const override {
+            if (!isVisible() || !isEnabled()) return false;
+
+            // MenuBarのhitTestを優先（ドロップダウン項目を含む）
+            if (menu_bar_.hitTest(x, y)) {
+                return true;
+            }
+
+            // 言語選択のhitTest
+            if (language_selector_.hitTest(x, y)) {
+                return true;
+            }
+
+            // GitHubアイコンのhitTest
+            const float github_x = static_cast<float>(paxg::Window::width() - language_selector_.getRect().w() - 32);
+            const float github_y = (language_selector_.getRect().h() - 28.0f) / 2.0f;
+            if (x >= github_x && x < github_x + 28.0f &&
+                y >= github_y && y < github_y + 28.0f) {
+                return true;
+            }
+
+            // 基本のHeaderPanel領域
+            const paxg::Rect rect = getRect();
+            return (x >= rect.x() && x < rect.x() + rect.w() &&
+                    y >= rect.y() && y < rect.y() + rect.h());
+        }
 
     private:
         // 状態管理

@@ -23,7 +23,6 @@
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/Language.hpp>
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
@@ -163,10 +162,8 @@ namespace paxs {
         }
 
         /// @brief 入力処理
-        InputHandlingResult handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
-            if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
-            paxs::InputStateManager& input_state_manager = *event.input_state_manager;
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
 
             const std::uint_least32_t new_language_key = (*select_language_ptr).cgetKey();
             if (old_language_key != new_language_key) {
@@ -174,32 +171,76 @@ namespace paxs {
                 updateLanguage();
             }
 
-            // ヘッダーのクリック判定
-            if (input_state_manager.get(rect.leftClicked())) {
-                is_open = !is_open;
-                return InputHandlingResult::Handled();
-            }
+            // Pressed/Heldイベント：メニュー範囲内ならイベントを消費（ドラッグ防止）
+            if (event.left_button_state == MouseButtonState::Pressed ||
+                event.left_button_state == MouseButtonState::Held) {
+                float rx = rect.x();
+                float ry = rect.y();
+                float rw = rect.w();
+                float rh = rect.h();
 
-            // ドロップダウンリストのクリック判定
-            if (is_open) {
-                paxg::Vec2i pos = rect.pos();
-                pos.setY(static_cast<int>(pos.y() + rect.h()));
+                // ヘッダー部分
+                if (event.x >= rx && event.x < rx + rw && event.y >= ry && event.y < ry + rh) {
+                    return EventHandlingResult::Handled();
+                }
 
-                // 最初の項目（ヘッダー）をスキップ
-                for (std::size_t i = 1; i < items_key.size(); ++i) {
-                    const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };
-                    if (input_state_manager.get(rect_tmp.leftClicked())) {
-                        // 項目の状態を切り替え
-                        if (i < is_items.size()) {
-                            is_items[i] = !is_items[i];
-                        }
-                        is_open = false;
-                        return InputHandlingResult::Handled();
-                    }
+                // ドロップダウン項目（開いている場合）
+                if (is_open) {
+                    paxg::Vec2i pos = rect.pos();
                     pos.setY(static_cast<int>(pos.y() + rect.h()));
+
+                    for (std::size_t i = 1; i < items_key.size(); ++i) {
+                        float item_rx = static_cast<float>(pos.x());
+                        float item_ry = static_cast<float>(pos.y());
+                        float item_rw = all_rect_x;
+                        float item_rh = rect.h();
+                        if (event.x >= item_rx && event.x < item_rx + item_rw &&
+                            event.y >= item_ry && event.y < item_ry + item_rh) {
+                            return EventHandlingResult::Handled();
+                        }
+                        pos.setY(static_cast<int>(pos.y() + rect.h()));
+                    }
                 }
             }
-            return InputHandlingResult::NotHandled();
+
+            // Releasedイベント：実際の処理を行う
+            if (event.left_button_state == MouseButtonState::Released) {
+                float rx = rect.x();
+                float ry = rect.y();
+                float rw = rect.w();
+                float rh = rect.h();
+
+                // ヘッダーのクリック判定
+                if (event.x >= rx && event.x < rx + rw && event.y >= ry && event.y < ry + rh) {
+                    is_open = !is_open;
+                    return EventHandlingResult::Handled();
+                }
+
+                // ドロップダウンリストのクリック判定
+                if (is_open) {
+                    paxg::Vec2i pos = rect.pos();
+                    pos.setY(static_cast<int>(pos.y() + rect.h()));
+
+                    // 最初の項目（ヘッダー）をスキップ
+                    for (std::size_t i = 1; i < items_key.size(); ++i) {
+                        float item_rx = static_cast<float>(pos.x());
+                        float item_ry = static_cast<float>(pos.y());
+                        float item_rw = all_rect_x;
+                        float item_rh = rect.h();
+                        if (event.x >= item_rx && event.x < item_rx + item_rw &&
+                            event.y >= item_ry && event.y < item_ry + item_rh) {
+                            // 項目の状態を切り替え
+                            if (i < is_items.size()) {
+                                is_items[i] = !is_items[i];
+                            }
+                            is_open = false;
+                            return EventHandlingResult::Handled();
+                        }
+                        pos.setY(static_cast<int>(pos.y() + rect.h()));
+                    }
+                }
+            }
+            return EventHandlingResult::NotHandled();
         }
 
         /// @brief 描画処理
@@ -296,6 +337,39 @@ namespace paxs {
             return is_open ? RenderLayer::UIOverlay : RenderLayer::UIContent;
         }
         bool isAvailable() const override { return true; }
+
+        /// @brief ヒットテスト（メニューが開いている場合は全項目を含む）
+        /// @brief Hit test (includes all items when menu is open)
+        /// @param x X座標 / X coordinate
+        /// @param y Y座標 / Y coordinate
+        /// @return 範囲内ならtrue / true if within bounds
+        bool hitTest(int x, int y) const override {
+            if (!isVisible() || !isEnabled()) return false;
+
+            // ヘッダー部分のヒットテスト
+            const paxg::Rect header_rect = getRect();
+            if (x >= header_rect.x() && x < header_rect.x() + header_rect.w() &&
+                y >= header_rect.y() && y < header_rect.y() + header_rect.h()) {
+                return true;
+            }
+
+            // メニューが開いている場合は、ドロップダウン項目のヒットテストも行う
+            if (is_open) {
+                paxg::Vec2i pos = header_rect.pos();
+                pos.setY(static_cast<int>(pos.y() + header_rect.h()));
+
+                for (std::size_t i = 1; i < items_key.size(); ++i) {
+                    const paxg::Rect item_rect{ pos, all_rect_x, header_rect.h() };
+                    if (x >= item_rect.x() && x < item_rect.x() + item_rect.w() &&
+                        y >= item_rect.y() && y < item_rect.y() + item_rect.h()) {
+                        return true;
+                    }
+                    pos.setY(static_cast<int>(pos.y() + header_rect.h()));
+                }
+            }
+
+            return false;
+        }
 
     private:
         /// @brief ヘッダー部分のテキストを描画

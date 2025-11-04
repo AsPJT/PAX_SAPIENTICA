@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -24,7 +24,8 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 namespace paxs {
@@ -32,11 +33,13 @@ namespace paxs {
     /// @brief MapViewport の入力処理を担当するクラス（UI層）
     /// @brief Handles input processing for MapViewport (UI layer)
     ///
-    /// IInputHandlerを継承し、レイヤーベースの入力システムに対応します。
+    /// IEventHandlerとIInputHandlerの両方を継承し、座標に依存しないイベント（キーボード、
+    /// マウスホイール、リサイズ）と座標ベースのマウス入力の両方を処理します。
     /// 画面全体のパン・ズーム操作を担当するため、hitTest()は常にtrueを返します。
-    /// Inherits IInputHandler to support layer-based input system.
+    /// Inherits both IEventHandler and IInputHandler to handle coordinate-independent events
+    /// (keyboard, mouse wheel, resize) and coordinate-based mouse input.
     /// Handles pan/zoom for the entire screen, so hitTest() always returns true.
-    class MapViewportInputHandler : public IInputHandler {
+    class MapViewportInputHandler : public IEventHandler, public IMouseEventHandler {
     private:
         std::array<Key, 1> enl_keys; // 拡大キー
         std::array<Key, 1> esc_keys; // 縮小キー
@@ -70,8 +73,8 @@ namespace paxs {
         /// @brief マウスホイールによるズーム処理
         /// @brief Handle zoom by mouse wheel
         /// @param viewport MapViewport参照 / MapViewport reference
-        /// @param event 入力イベント / Input event
-        void handleMouseWheelZoom(MapViewport& viewport, const InputEvent& event) {
+        /// @param event マウスホイールイベント / Mouse wheel event
+        void handleMouseWheelZoom(MapViewport& viewport, const MouseWheelEvent& event) {
             double height = viewport.getHeight();
             const double min_height = viewport.getMinHeight();
             const double max_height = viewport.getMaxHeight();
@@ -86,12 +89,12 @@ namespace paxs {
         /// @brief マウスドラッグによる移動処理（デスクトップ）
         /// @brief Handle movement by mouse drag (desktop)
         /// @param viewport MapViewport参照 / MapViewport reference
-        /// @param event 入力イベント / Input event
-        void handleMouseDrag(MapViewport& viewport, const InputEvent& event) {
+        /// @param event マウスイベント / Mouse event
+        void handleMouseDrag(MapViewport& viewport, const MouseEvent& event) {
 #ifndef __ANDROID__
             // 左ボタンが押されている場合のみドラッグ処理
             // Only process drag if left button is pressed
-            if (event.isLeftButtonPressed()) {
+            if (event.left_button_state == MouseButtonState::Held || event.left_button_state == MouseButtonState::Pressed) {
                 const double height = viewport.getHeight();
                 double center_x = viewport.getCenterX();
                 double center_y = viewport.getCenterY();
@@ -244,83 +247,110 @@ namespace paxs {
             viewport_ = viewport;
         }
 
+        /// @brief ドラッグ中かどうかを取得
+        /// @brief Get whether dragging is in progress
+        /// @return ドラッグ中ならtrue / true if dragging
+        bool isDragging() const {
+            return is_dragging_;
+        }
+
         // IInputHandler の実装
         // IInputHandler implementation
 
-        /// @brief 入力処理（IInputHandlerインターフェース）
-        /// @brief Handle input (IInputHandler interface)
-        /// @param event 入力イベント / Input event
-        /// @return 入力処理結果 / Input handling result
-        ///
-        /// MapViewportInputHandlerは画面全体の入力を処理するため、
-        /// hitTest()がtrueを返す場合は常に処理を行います。
-        /// MapViewportInputHandler handles input for the entire screen,
-        /// so it always processes if hitTest() returns true.
-        InputHandlingResult handleInput(const InputEvent& event) override {
+        /// @brief キーボードイベント処理
+        /// @brief Handle keyboard event
+        /// @param event キーボードイベント / Keyboard event
+        /// @return イベント処理結果 / Event handling result
+        EventHandlingResult handleEvent(const KeyboardEvent& event) override {
+            (void)event;
             if (!enabled_ || viewport_ == nullptr) {
-                return InputHandlingResult::NotHandled();
+                return EventHandlingResult::NotHandled();
             }
 
-            // イベントタイプに応じて処理を分岐
-            // Branch processing according to event type
-            switch (event.type) {
-                case InputEventType::Keyboard:
-                    // キーボード入力（Q/Eキーによるズーム）
-                    // Keyboard input (zoom with Q/E keys)
-                    handleKeyboardZoom(*viewport_);
-                    viewport_->applyConstraints();
-                    return InputHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
+            // キーボード入力（Q/Eキーによるズーム）
+            // Keyboard input (zoom with Q/E keys)
+            handleKeyboardZoom(*viewport_);
+            viewport_->applyConstraints();
+            return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
+        }
 
-                case InputEventType::MouseWheel:
-                    // マウスホイール入力（ズーム）
-                    // Mouse wheel input (zoom)
-                    handleMouseWheelZoom(*viewport_, event);
-                    viewport_->applyConstraints();
-                    return InputHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
-
-                case InputEventType::Mouse:
-                    // マウス/タッチ入力（パンと移動）
-                    // Mouse/Touch input (pan and move)
-
-                    // ドラッグ開始判定：左ボタンが押された瞬間
-                    if (event.left_button_state == MouseButtonState::Pressed) {
-                        is_dragging_ = true;
-                        // ドラッグキャプチャを要求（UIの上でもドラッグを継続）
-                        return InputHandlingResult::HandledWithCapture();
-                    }
-                    // ドラッグ終了判定：左ボタンが離された瞬間
-                    else if (event.left_button_state == MouseButtonState::Released) {
-                        is_dragging_ = false;
-                    }
-
-                    // ドラッグ中のみ地図を移動
-                    if (is_dragging_) {
-                        handleMouseDrag(*viewport_, event);
-                    }
-
-                    handleTouchInput(*viewport_);
-                    viewport_->applyConstraints();
-                    return InputHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
-
-                case InputEventType::WindowResize:
-                    // ウィンドウリサイズイベント
-                    // Window resize event
-                    // MapViewportのサイズをウィンドウに合わせて調整
-                    // Adjust MapViewport size to match window
-                    {
-                        int new_width = event.window_width;
-                        int new_height = event.window_height;
-                        int old_height = paxg::Window::height();
-
-                        if (old_height > 0 && new_height > 0) {
-                            viewport_->setWidth(viewport_->getHeight() / double(new_height) * double(new_width));
-                        }
-                    }
-                    return InputHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
-
-                default:
-                    return InputHandlingResult::NotHandled();
+        /// @brief マウスホイールイベント処理
+        /// @brief Handle mouse wheel event
+        /// @param event マウスホイールイベント / Mouse wheel event
+        /// @return イベント処理結果 / Event handling result
+        EventHandlingResult handleEvent(const MouseWheelEvent& event) override {
+            if (!enabled_ || viewport_ == nullptr) {
+                return EventHandlingResult::NotHandled();
             }
+
+            // マウスホイール入力（ズーム）
+            // Mouse wheel input (zoom)
+            handleMouseWheelZoom(*viewport_, event);
+            viewport_->applyConstraints();
+            return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
+        }
+
+        /// @brief マウスイベント処理
+        /// @brief Handle mouse event
+        /// @param event マウスイベント / Mouse event
+        /// @return イベント処理結果 / Event handling result
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            if (!enabled_ || viewport_ == nullptr) {
+                return EventHandlingResult::NotHandled();
+            }
+
+            // マウス/タッチ入力（パンと移動）
+            // Mouse/Touch input (pan and move)
+
+            // ドラッグ開始判定：左ボタンが押された瞬間（Down時）
+            if (event.left_button_state == MouseButtonState::Pressed) {
+                is_dragging_ = true;
+                // ドラッグフラグを立てて処理完了（UIには渡さない）
+                return EventHandlingResult::Handled();
+            }
+            // ドラッグ中（Held状態）：ドラッグフラグONの時にドラッグ処理
+            else if (event.left_button_state == MouseButtonState::Held && is_dragging_) {
+                handleMouseDrag(*viewport_, event);
+                // ドラッグキャプチャを要求（UIの上でもドラッグを継続）
+                return EventHandlingResult::HandledWithCapture();
+            }
+            // ドラッグ終了判定：左ボタンが離された瞬間（Up時）
+            else if (event.left_button_state == MouseButtonState::Released) {
+                if (is_dragging_) {
+                    // ドラッグフラグON + Up時：フラグを外して処理完了（UIには渡さない）
+                    is_dragging_ = false;
+                    return EventHandlingResult::Handled();
+                }
+                // ドラッグフラグOFFの場合は NotHandled でUIに処理させる
+                return EventHandlingResult::NotHandled();
+            }
+
+            handleTouchInput(*viewport_);
+            viewport_->applyConstraints();
+            return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
+        }
+
+        /// @brief リサイズイベント処理
+        /// @brief Handle resize event
+        /// @param event リサイズイベント / Resize event
+        /// @return イベント処理結果 / Event handling result
+        EventHandlingResult handleEvent(const ResizeEvent& event) override {
+            if (!enabled_ || viewport_ == nullptr) {
+                return EventHandlingResult::NotHandled();
+            }
+
+            // ウィンドウリサイズイベント
+            // Window resize event
+            // MapViewportのサイズをウィンドウに合わせて調整
+            // Adjust MapViewport size to match window
+            int new_width = event.width;
+            int new_height = event.height;
+            int old_height = paxg::Window::height();
+
+            if (old_height > 0 && new_height > 0) {
+                viewport_->setWidth(viewport_->getHeight() / double(new_height) * double(new_width));
+            }
+            return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
         /// @brief ヒットテスト（画面全体を対象）

@@ -18,8 +18,6 @@
 #include <PAX_MAHOROBA/UI/MenuItem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
-#include <PAX_SAPIENTICA/InputStateManager.hpp>
-
 namespace paxs {
     /// @brief メニューバーを管理
     /// @brief Manages menu bar
@@ -59,9 +57,8 @@ namespace paxs {
                 paxg::Vec2i{ static_cast<int>(start_x), 0 }));
         }
 
-        InputHandlingResult handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_) return InputHandlingResult::NotHandled();
-            if (event.input_state_manager == nullptr) return InputHandlingResult::NotHandled();
+        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
 
             start_x = 0;
 
@@ -72,14 +69,20 @@ namespace paxs {
                 was_open.push_back(item.isOpen());
             }
 
-            bool handled = false;
-            // 各メニュー項目を更新
+            // 各メニュー項目の位置を先に設定
             for (std::size_t i = 0; i < menu_items.size(); ++i) {
-                if (menu_items[i].handleInput(event).handled) {
-                    handled = true;
-                }
                 menu_items[i].setRectX(start_x);
                 start_x += static_cast<std::size_t>(menu_items[i].getRect().w());
+            }
+
+            start_x = 0; // リセット / Reset for later use
+            bool handled = false;
+
+            // 各メニュー項目を更新
+            for (std::size_t i = 0; i < menu_items.size(); ++i) {
+                if (menu_items[i].handleMouseInput(event).handled) {
+                    handled = true;
+                }
 
                 // このメニュー項目が新しく開かれた場合、他のメニュー項目を閉じる
                 if (!was_open[i] && menu_items[i].isOpen()) {
@@ -90,7 +93,7 @@ namespace paxs {
                     }
                 }
             }
-            return handled ? InputHandlingResult::Handled() : InputHandlingResult::NotHandled();
+            return handled ? EventHandlingResult::Handled() : EventHandlingResult::NotHandled();
         }
         void render() const override {
             if (!visible_) return;
@@ -150,9 +153,28 @@ namespace paxs {
         /// @brief レンダリングレイヤーを取得
         /// @brief Get rendering layer
         RenderLayer getLayer() const override {
+            // いずれかのMenuItemが開いている場合はUIOverlayを返す
+            for (const auto& item : menu_items) {
+                if (item.isOpen()) {
+                    return RenderLayer::UIOverlay;
+                }
+            }
             return RenderLayer::UIContent;
         }
         bool isAvailable() const override { return true; }
+
+        /// @brief ヒットテスト（各MenuItemに委譲）
+        /// @brief Hit test (delegates to each MenuItem)
+        bool hitTest(int x, int y) const override {
+            if (!isVisible() || !isEnabled()) return false;
+            // 各MenuItemのhitTestを呼び出す
+            for (const auto& item : menu_items) {
+                if (item.hitTest(x, y)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     };
 } // namespace paxs
 
