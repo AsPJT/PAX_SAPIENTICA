@@ -81,11 +81,10 @@ namespace paxs {
                     str = &direct_str;
                 } else {
                     // 言語辞書から取得
-                    str = Fonts().getText(items_key[i], LanguageDomain::UI);
+                    str = Fonts().getText(items_key[i], language_domain);
                 }
 
-                if (str == nullptr) continue;
-                if (str->size() == 0) continue;
+                if (str == nullptr || str->size() == 0) continue;
 
                 const std::uint_least32_t font_key = ((is_one_font && !use_direct_text) ? items_key[i] : select_key);
                 paxg::Font* item_font = Fonts().getFont(font_key, font_size, font_buffer_thickness_size);
@@ -128,31 +127,36 @@ namespace paxs {
         /// @param display_type_ 表示タイプ（SelectedValue or FixedHeader）
         /// @param is_one_font_ 単一フォントを使用するか
         Pulldown(
-            const std::span<const std::uint_least32_t> items_key_,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
+            const LanguageDomain language_domain_,
             const paxg::Vec2i& pos_ = { 0,0 },
             PulldownDisplayType display_type_ = PulldownDisplayType::SelectedValue,
             const bool is_one_font_ = false)
             :
-            items_key(items_key_)
-            , font_size(font_size_)
+            font_size(font_size_)
             , font_buffer_thickness_size(font_buffer_thickness_size_)
+            , language_domain(language_domain_)
             , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
             , display_type(display_type_)
             , is_one_font(is_one_font_) {
+        }
+
+        void setItemsKey(const std::span<const std::uint_least32_t> items_key_) {
+            items_key = items_key_;
 
             updateLanguage();
 
             // Key List を作成
-            for (std::size_t i = 0; i < items_key_.size(); ++i) {
-                item_index_key.emplace(items_key_[i], i);
+            for (std::size_t i = 0; i < items_key.size(); ++i) {
+                item_index_key.emplace(items_key[i], i);
                 is_items.emplace_back(true);
             }
         }
+
         // からか判定
         bool isEmpty() const {
-            return items_key.empty() && display_text_list.empty();
+            return items_key.empty();
         }
 
         // 入力処理
@@ -243,8 +247,7 @@ namespace paxs {
         // 描画
         void render() const override {
             if (!visible_ || isEmpty()) return;
-            const bool use_direct_text = !display_text_list.empty();
-            const std::size_t item_count = use_direct_text ? display_text_list.size() : items_key.size();
+            const std::size_t item_count = items_key.size();
             if (item_count == 0) return;
 
             const std::size_t item_index = index;
@@ -262,24 +265,16 @@ namespace paxs {
 
             paxg::Vec2i pos = rect.pos();
 
-            const std::uint_least32_t select_key = ((is_one_font && !use_direct_text) ? items_key[item_index] : Fonts().getSelectedLanguage().cgetKey());
+            const std::uint_least32_t select_key = (is_one_font ? items_key[item_index] : Fonts().getSelectedLanguage().cgetKey());
 
             // 種別によって描画処理を変える
             if (display_type == PulldownDisplayType::SelectedValue) {
                 const std::string* str = nullptr;
                 std::string direct_str;
 
-                if (use_direct_text) {
-                    if (index < display_text_list.size()) {
-                        direct_str = display_text_list[index];
-                        str = &direct_str;
-                    }
-                } else {
-                    str = Fonts().getText(items_key[index], LanguageDomain::UI);
-                }
+                str = Fonts().getText(items_key[index], language_domain);
 
-                if (str == nullptr) return;
-                if (str->size() == 0) return;
+                if (str == nullptr || str->size() == 0) return;
 
                 paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
                 if (one_font == nullptr) return;
@@ -292,17 +287,9 @@ namespace paxs {
                 const std::string* str0 = nullptr;
                 std::string direct_str;
 
-                if (use_direct_text) {
-                    if (!display_text_list.empty()) {
-                        direct_str = display_text_list.front();
-                        str0 = &direct_str;
-                    }
-                } else {
-                    str0 = Fonts().getText(items_key.front(), LanguageDomain::UI);
-                }
+                str0 = Fonts().getText(items_key.front(), language_domain);
 
-                if (str0 == nullptr) return;
-                if (str0->size() == 0) return;
+                if (str0 == nullptr || str0->size() == 0) return;
 
                 paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
                 if (one_font == nullptr) return;
@@ -325,24 +312,16 @@ namespace paxs {
                 const std::string* i_str = nullptr;
                 std::string direct_str;
 
-                if (use_direct_text) {
-                    if (i < display_text_list.size()) {
-                        direct_str = display_text_list[i];
-                        i_str = &direct_str;
-                    }
-                } else {
-                    i_str = Fonts().getText(items_key[i], LanguageDomain::UI);
-                }
+                i_str = Fonts().getText(items_key[i], language_domain);
 
-                if (i_str == nullptr) continue;
-                if (i_str->size() == 0) continue;
+                if (i_str == nullptr || i_str->size() == 0) continue;
 
                 const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };
                 if (rect_tmp.mouseOver()) { // マウスカーソルが四角形の上にある場合
                     // 四角形の色を変える
                     rect_tmp.draw(paxg::Color{ 135, 206, 235 });
                 }
-                const std::uint_least32_t select_font_key = ((is_one_font && !use_direct_text) ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
+                const std::uint_least32_t select_font_key = ((is_one_font) ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
 
                 paxg::Font* one_font = Fonts().getFont(select_font_key, font_size, font_buffer_thickness_size);
                 if (one_font == nullptr) continue;
@@ -447,6 +426,8 @@ namespace paxs {
         PulldownDisplayType display_type{}; // 表示タイプ (SelectedValue or FixedHeader)
         bool is_one_font = false;
 
+        const LanguageDomain language_domain{}; // 言語ドメイン
+
         size_t index = 0;
         paxg::Vec2i padding{ 6, 2 };
         float all_rect_x{}; // 全ての項目の文字幅
@@ -456,15 +437,6 @@ namespace paxs {
         // IWidget インターフェース用の状態
         bool visible_ = true;
         bool enabled_ = true;
-
-    public:
-        /// @brief 直接文字列リストを設定（言語辞書を使用しない場合）
-        /// @brief Set direct text list (when not using language dictionary)
-        /// @param text_list 表示する文字列のリスト / List of strings to display
-        void setDirectTextList(const std::vector<std::string>& text_list) {
-            display_text_list = text_list;
-            updateLanguage();
-        }
     };
 }
 

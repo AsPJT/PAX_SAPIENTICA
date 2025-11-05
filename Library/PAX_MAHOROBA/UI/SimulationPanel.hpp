@@ -172,9 +172,9 @@ namespace paxs {
             const paxs::FeatureVisibilityManager* visibility_manager
         ) : visibility_manager_ptr(visibility_manager),
             simulation_pulldown(
-                simulation_key,
                 static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                paxs::LanguageDomain::SIMULATION,
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
                 false
@@ -203,7 +203,7 @@ namespace paxs {
                 }
             }
 
-            simulation_pulldown.setDirectTextList(simulation_model_name);
+            simulation_pulldown.setItemsKey(simulation_key);
         }
 
         // TODO: 移行

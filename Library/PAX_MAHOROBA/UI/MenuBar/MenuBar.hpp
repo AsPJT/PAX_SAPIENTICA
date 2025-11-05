@@ -38,14 +38,16 @@ namespace paxs {
         /// @brief コンストラクタ
         MenuBar() :
             language_selector_(
-                paxs::LanguageKeys::ALL_LANGUAGE_HASHES,
                 static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                paxs::LanguageDomain::UI,
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
                 true
             )
-        {}
+        {
+            language_selector_.setItemsKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES);
+        }
 
         void init() {
             // GitHubボタンを初期化
