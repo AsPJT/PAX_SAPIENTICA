@@ -17,8 +17,6 @@
 
 #include <PAX_GRAPHICA/Font.hpp>
 
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
-
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
@@ -54,8 +52,12 @@ namespace paxs {
         // シングルトンインスタンス
         static FontSystem* instance_;
 
-        // 多言語フォント管理
-        LanguageFonts language_fonts_;
+        // フォントキャッシュ（language_key + size + thickness → Font）
+        paxs::UnorderedMap<std::uint_least64_t, paxg::Font> font_cache_;
+
+        // 言語ごとのフォントパス
+        paxs::UnorderedMap<std::uint_least32_t, std::string> language_font_paths_;
+        std::string default_font_path_;
 
         // 言語辞書管理
         paxs::UnorderedMap<LanguageDomain, paxs::Language> languages_;
@@ -105,6 +107,17 @@ namespace paxs {
                             paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS);
         }
 
+        /// @brief フォントキャッシュキーを生成
+        /// @brief Create font cache key
+        constexpr std::uint_least64_t createFontCacheKey(
+            std::uint_least32_t language_key,
+            std::uint_least8_t size,
+            std::uint_least8_t buffer_thickness) const {
+            return (static_cast<std::uint_least64_t>(language_key) << 32)
+                + (static_cast<std::uint_least64_t>(size) << 8)
+                + (static_cast<std::uint_least64_t>(buffer_thickness));
+        }
+
         /// @brief 言語フォントの設定
         /// @brief Setup language fonts
         void setupLanguageFonts() {
@@ -133,15 +146,9 @@ namespace paxs {
                 "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"
             };
 
-            // プルダウンメニュー用のフォントを全言語で登録
-            const auto& pulldown_profile = profiles_.at(FontProfiles::PULLDOWN);
+            // 言語ごとのフォントパスを登録
             for (std::size_t i = 0; i < path_list.size(); ++i) {
-                language_fonts_.add(
-                    path_list[i],
-                    paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i],
-                    pulldown_profile.size,
-                    pulldown_profile.buffer_thickness
-                );
+                language_font_paths_[paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i]] = path_list[i];
             }
         }
 
@@ -174,7 +181,7 @@ namespace paxs {
             }
 
             // デフォルトフォントパスの設定
-            language_fonts_.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
+            default_font_path_ = "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf";
 
             // デフォルトプロファイルの登録
             registerDefaultProfiles();
@@ -231,7 +238,7 @@ namespace paxs {
                 return nullptr;
             }
             const auto& profile = profiles_.at(profile_name);
-            return language_fonts_.getAndAdd(language_key, profile.size, profile.buffer_thickness);
+            return getFont(language_key, profile.size, profile.buffer_thickness);
         }
 
         /// @brief 現在の選択言語でフォントを取得（サイズとバッファー厚を直接指定）
@@ -252,7 +259,31 @@ namespace paxs {
         paxg::Font* getFont(std::uint_least32_t language_key,
                             std::uint_least8_t size,
                             std::uint_least8_t buffer_thickness) {
-            return language_fonts_.getAndAdd(language_key, size, buffer_thickness);
+            const std::uint_least64_t cache_key = createFontCacheKey(language_key, size, buffer_thickness);
+
+            // キャッシュに存在すればそれを返す
+            auto it = font_cache_.find(cache_key);
+            if (it != font_cache_.end()) {
+                return &(it->second);
+            }
+
+            // フォントパスを取得
+            std::string font_path;
+            auto path_it = language_font_paths_.find(language_key);
+            if (path_it != language_font_paths_.end()) {
+                font_path = path_it->second;
+            } else {
+                // パスが見つからない場合はデフォルトフォントを使用
+                font_path = default_font_path_;
+            }
+
+            // 新しいフォントを作成してキャッシュに追加
+            font_cache_.emplace(
+                cache_key,
+                paxg::Font(static_cast<int>(size), font_path, static_cast<int>(buffer_thickness))
+            );
+
+            return &(font_cache_.at(cache_key));
         }
 
         // ========================================
@@ -345,31 +376,6 @@ namespace paxs {
             return profiles_.find(name) != profiles_.end();
         }
 
-        // ========================================
-        // 内部アクセス（移行期間用）
-        // Internal access (for migration period)
-        // ========================================
-
-        /// @brief LanguageFontsへの直接アクセス（レガシーコード用）
-        /// @brief Direct access to LanguageFonts (for legacy code)
-        /// @deprecated Phase 3 で削除予定 / Will be removed in Phase 3
-        LanguageFonts& getLanguageFonts() { return language_fonts_; }
-        const LanguageFonts& getLanguageFonts() const { return language_fonts_; }
-
-        /// @brief Language辞書への直接アクセス（レガシーコード用）
-        /// @brief Direct access to Language dictionary (for legacy code)
-        /// @deprecated Phase 3 で削除予定 / Will be removed in Phase 3
-        paxs::Language& getLanguage(LanguageDomain domain) {
-            return languages_[domain];
-        }
-        const paxs::Language& getLanguage(LanguageDomain domain) const {
-            return languages_.at(domain);
-        }
-
-        /// @brief SelectLanguageへの直接アクセス（レガシーコード用）
-        /// @brief Direct access to SelectLanguage (for legacy code)
-        /// @deprecated Phase 3 で削除予定 / Will be removed in Phase 3
-        SelectLanguage& getMutableSelectedLanguage() { return select_language_; }
     };
 
     // 静的メンバーの定義

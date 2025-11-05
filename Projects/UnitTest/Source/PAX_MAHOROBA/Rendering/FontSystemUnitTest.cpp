@@ -140,30 +140,6 @@ TEST_F(FontSystemTest, EmptyProfileName) {
     EXPECT_EQ(font, nullptr);
 }
 
-// レガシーAPI - LanguageFonts アクセステスト
-TEST_F(FontSystemTest, LegacyLanguageFontsAccess) {
-    Fonts().initialize();
-
-    // LanguageFonts への直接アクセスが可能
-    LanguageFonts& lang_fonts = Fonts().getLanguageFonts();
-    const LanguageFonts& const_lang_fonts = Fonts().getLanguageFonts();
-
-    // 参照が取得できることを確認
-    EXPECT_EQ(&lang_fonts, &const_lang_fonts);
-}
-
-// レガシーAPI - SelectLanguage アクセステスト
-TEST_F(FontSystemTest, LegacySelectLanguageAccess) {
-    Fonts().initialize();
-
-    // SelectLanguage への直接アクセスが可能
-    SelectLanguage& select_lang = Fonts().getMutableSelectedLanguage();
-
-    // 言語を設定
-    select_lang.set(2);
-    EXPECT_EQ(Fonts().getSelectedLanguage().cget(), 2);
-}
-
 // 初期化・シャットダウンサイクルテスト
 TEST_F(FontSystemTest, InitializeShutdownCycle) {
     // 初回初期化

@@ -155,8 +155,8 @@ namespace paxs {
             }
 
             // 言語選択を更新（HeaderPanelから取得 → FontSystem経由）
-            Fonts().getMutableSelectedLanguage().set(header_panel_.getLanguageIndex());
-            Fonts().getMutableSelectedLanguage().setKey(std::uint_least32_t(header_panel_.getLanguageKey()));
+            Fonts().setLanguage(header_panel_.getLanguageIndex());
+            Fonts().setLanguageByKey(std::uint_least32_t(header_panel_.getLanguageKey()));
 
             // メニューから可視性を同期
             header_panel_.syncVisibilityFromMenu(&visible_manager_);
