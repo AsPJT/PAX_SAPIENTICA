@@ -53,7 +53,7 @@ namespace paxs {
         }
 
         RenderLayer getLayer() const override {
-            return RenderLayer::Header;
+            return RenderLayer::MenuBar;
         }
 
         void setEnabled(bool enabled) override {

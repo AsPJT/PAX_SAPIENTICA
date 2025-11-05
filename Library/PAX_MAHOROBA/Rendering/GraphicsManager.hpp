@@ -24,12 +24,11 @@
 #include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
-#include <PAX_MAHOROBA/UI/HeaderPanel.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -45,7 +44,7 @@ namespace paxs {
     private:
         FontManager font_manager_;
         TileManager tile_manager_;
-        HeaderPanel header_panel_;      // ヘッダーパネル（メニューバー + 言語選択）
+        MenuBar header_panel_;      // ヘッダーパネル（メニューバー + 言語選択）
         std::unique_ptr<UILayer> ui_layer_;
         MapContentLayer map_content_layer_;
         Photo360Layer photo360_layer_;  // 360度写真レイヤー
@@ -229,7 +228,7 @@ namespace paxs {
             if (visible_manager_.isVisible(paxs::MurMur3::calcHash(2, "3D"))) {
                 // 3Dモード: 360度写真を描画してからUIを描画
                 photo360_layer_.render();
-                ui_layer_->render();
+                header_panel_.render();
             } else {
                 // 通常モード: レイヤーベース描画（Z順序自動管理）
                 render_layer_manager_.renderAll();

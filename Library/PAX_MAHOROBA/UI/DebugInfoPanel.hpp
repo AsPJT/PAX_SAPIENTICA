@@ -18,14 +18,12 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
-#include <PAX_GRAPHICA/RoundRect.hpp>
+#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -90,8 +88,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             const std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
-            const paxs::Koyomi* koyomi = nullptr,
-            bool is_simulator_active = false
+            const paxs::Koyomi* koyomi = nullptr
         ) const {
             if (!isVisible()) return;
 
@@ -181,7 +178,7 @@ namespace paxs {
 #endif
 
             // 大きな年号を描画（シミュレーション非アクティブ時のみ）
-            if (koyomi != nullptr && !is_simulator_active && !koyomi->date_list.empty()) {
+            if (koyomi != nullptr && !koyomi->date_list.empty()) {
                 // グレゴリオ暦の年を取得（date_list[1]がグレゴリオ暦）
                 if (koyomi->date_list.size() > 1) {
                     const int date_year = [&]() {

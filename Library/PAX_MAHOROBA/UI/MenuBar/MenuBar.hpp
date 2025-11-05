@@ -19,14 +19,12 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/UI/GitHubButton.hpp>
-#include <PAX_MAHOROBA/UI/MenuBar.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar/GitHubButton.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar/MenuSystem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
@@ -34,9 +32,8 @@
 
 namespace paxs {
 
-    /// @brief ヘッダーパネル - アプリ上部のUI（メニューバー + 言語選択）を管理
-    /// @brief Header Panel - Manages top UI elements (MenuBar + Language Selector)
-    class HeaderPanel : public IWidget{
+    /// @brief アプリ上部のUI（メニュー + 言語選択）を管理
+    class MenuBar : public IWidget{
     public:
         /// @brief 初期化
         /// @param select_language 選択言語
@@ -95,12 +92,12 @@ namespace paxs {
         }
 
         /// @brief メニューバーの取得（読み取り専用）
-        const MenuBar& getMenuBar() const {
+        const MenuSystem& getMenuSystem() const {
             return menu_bar_;
         }
 
         /// @brief メニューバーの取得（変更可能）- TileManager用
-        MenuBar& getMenuBar() {
+        MenuSystem& getMenuSystem() {
             return menu_bar_;
         }
 
@@ -115,9 +112,8 @@ namespace paxs {
         }
 
         /// @brief 可視性状態をメニューに反映（初期化時に呼び出し）
-        /// @brief Initialize menu from visibility state
         void initializeMenuFromVisibility(paxs::FeatureVisibilityManager* visible_manager) {
-            auto* view_menu = menu_bar_.getMenuItem(MurMur3::calcHash("view"));
+            auto* view_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("view"));
             if (view_menu) {
                 view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MurMur3::calcHash("Calendar")));
                 view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MurMur3::calcHash("Map")));
@@ -130,10 +126,9 @@ namespace paxs {
         }
 
         /// @brief メニュー状態を可視性に反映（毎フレーム呼び出し）
-        /// @brief Sync visibility from menu state
         void syncVisibilityFromMenu(paxs::FeatureVisibilityManager* visible_manager) {
             // View メニューの状態を同期
-            auto* view_menu = menu_bar_.getMenuItem(MurMur3::calcHash("view"));
+            auto* view_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("view"));
             if (view_menu) {
                 visible_manager->setVisibility(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
                 visible_manager->setVisibility(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
@@ -145,7 +140,7 @@ namespace paxs {
             }
 
             // Place Names メニューの状態を同期
-            auto* place_names_menu = menu_bar_.getMenuItem(MurMur3::calcHash("place_names"));
+            auto* place_names_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("place_names"));
             if (place_names_menu) {
                 visible_manager->setVisibility(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
                 visible_manager->setVisibility(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
@@ -162,7 +157,7 @@ namespace paxs {
             }
 
             // Map メニューの状態を同期
-            auto* map_menu = menu_bar_.getMenuItem(MurMur3::calcHash("map"));
+            auto* map_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("map"));
             if (map_menu) {
                 visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_base"), map_menu->getIsItems(std::size_t(0)));
                 visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_sea"), map_menu->getIsItems(std::size_t(1)));
@@ -205,7 +200,7 @@ namespace paxs {
         /// @brief Get rendering layer
         /// @note ヘッダーパネルは常に最前面（Header）で描画される
         RenderLayer getLayer() const override {
-            return RenderLayer::Header;
+            return RenderLayer::MenuBar;
         }
 
         paxg::Rect getRect() const override {
@@ -230,7 +225,7 @@ namespace paxs {
         }
 
         const char* getName() const override {
-            return "HeaderPanel";
+            return "MenuBar";
         }
 
         bool isHit(int x, int y) const override {
@@ -271,7 +266,7 @@ namespace paxs {
 
         // 子ウィジェット
         mutable paxs::Pulldown language_selector_;
-        mutable paxs::MenuBar menu_bar_;
+        mutable paxs::MenuSystem menu_bar_;
         mutable paxs::GitHubButton github_button_;
 
         // 設定値

@@ -121,7 +121,7 @@ namespace paxs {
 
     private:
         std::size_t select_draw_ = 1;  // 表示モード (1-6)
-        bool visible_ = false;  // シミュレーション初期化後に表示 / Show after simulation init
+        bool visible_ = false;  // シミュレーション初期化後に表示
         paxg::Vec2i pos_{ 0, 0 };
 
         // フォント管理

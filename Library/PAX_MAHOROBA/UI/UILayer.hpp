@@ -248,33 +248,18 @@ namespace paxs {
             }
         }
 
-        /// @brief レイヤーを取得
-        /// @brief Get layer
-        /// @return UIContentレイヤー / UIContent layer
         RenderLayer getLayer() const override {
             return RenderLayer::UIContent;
         }
 
-        /// @brief 可視性を取得
-        /// @brief Get visibility
         bool isVisible() const override {
             return feature_visibility_manager_ptr->isVisible(MurMur3::calcHash(2, "UI"));
         }
+        void setVisible(bool /*visible*/) override {}
 
-        /// @brief 可視性を設定
-        /// @brief Set visibility
-        void setVisible(bool visible) override {
-            (void)visible;
-        }
-
-        /// @brief 有効/無効を設定
-        /// @brief Set enabled/disabled
         void setEnabled(bool enabled) override {
             enabled_ = enabled;
         }
-
-        /// @brief 有効/無効を取得
-        /// @brief Get enabled/disabled
         bool isEnabled() const override {
             return enabled_;
         }
@@ -287,9 +272,7 @@ namespace paxs {
             return paxg::Rect{ 0, 0, 0, 0 };
         }
 
-        void setPos(const paxg::Vec2i& pos) override {
-            (void)pos;
-        }
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
 
         bool isHit(int x, int y) const override {
             for (const IWidget* panel : panels) {
@@ -321,8 +304,6 @@ namespace paxs {
         }
 
 #ifdef PAXS_USING_SIMULATOR
-        /// @brief SettlementStatusPanelへのアクセス
-        /// @brief Access to SettlementStatusPanel
         SettlementStatusPanel& getSettlementStatusPanel() { return settlement_status_panel; }
 #endif
     };

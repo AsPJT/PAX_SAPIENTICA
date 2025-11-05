@@ -60,7 +60,6 @@ namespace paxs {
         }
 
         /// @brief データ更新（描画は行わない）
-        /// @brief Update data (no drawing)
         void updateData(const paxs::FeatureVisibilityManager& visible, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
             const double map_viewport_width = map_viewport.getWidth();
             const double map_viewport_height = map_viewport.getHeight();
@@ -68,9 +67,9 @@ namespace paxs {
             const double map_viewport_center_y = map_viewport.getCenterY();
 
             // 更新処理
-            for (auto&& xyzi : xyz_tile_list) {
-                if (xyzi.getMenuBarMap() != 0 && visible.isVisible(xyzi.getMenuBarMap()) != xyzi.getMenuBarMapBool()) continue;
-                xyzi.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
+            for (auto&& xyz_tile : xyz_tile_list) {
+                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) continue;
+                xyz_tile.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
             }
 
             // 描画用にデータをキャッシュ

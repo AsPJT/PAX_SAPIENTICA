@@ -15,15 +15,14 @@
 #include <vector>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/UI/MenuItem.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar/DropDownMenu.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
 namespace paxs {
-    /// @brief メニューバーを管理
-    /// @details MenuItem（固定ヘッダー型のドロップダウン）を複数持つ
-    class MenuBar : public IWidget {
+    /// @brief DropDownMenu（固定ヘッダー型）を複数持つ
+    class MenuSystem : public IWidget {
     public:
-        MenuBar() = default;
+        MenuSystem() = default;
 
         /// @brief メニュー項目を追加
         /// @param select_language_ptr_ 選択されている言語
@@ -42,11 +41,11 @@ namespace paxs {
             std::uint_least8_t font_buffer_thickness_size_,
             const std::uint_least32_t menu_key_) {
 
-            if (menu_items.size() != 0) {
-                start_x += static_cast<std::size_t>(menu_items.back().getRect().w());
+            if (menu_list.size() != 0) {
+                start_x += static_cast<std::size_t>(menu_list.back().getRect().w());
             }
-            menu_item_key.emplace(menu_key_, menu_items.size());
-            menu_items.emplace_back(paxs::MenuItem(
+            menu_list_key.emplace(menu_key_, menu_list.size());
+            menu_list.emplace_back(paxs::DropDownMenu(
                 select_language_ptr_,
                 language_ptr_,
                 items_key_,
@@ -64,19 +63,19 @@ namespace paxs {
                 return EventHandlingResult::Handled();
             }
 
-            for (std::size_t i = 0; i < menu_items.size(); ++i) {
-                if (menu_items[i].isHitHeader(event.x, event.y)) {
-                    const bool was_open = menu_items[i].isOpen();
+            for (std::size_t i = 0; i < menu_list.size(); ++i) {
+                if (menu_list[i].isHitHeader(event.x, event.y)) {
+                    const bool was_open = menu_list[i].isOpen();
                     // 全部閉じる
-                    for (auto& mi : menu_items) mi.setVisible(false);
+                    for (auto& mi : menu_list) mi.setVisible(false);
                     // 今クリックしたやつだけトグル
-                    menu_items[i].setVisible(!was_open);
+                    menu_list[i].setVisible(!was_open);
                     return EventHandlingResult::Handled();
                 }
             }
 
             // 開いてる子のドロップダウンにイベントを渡す
-            for (paxs::MenuItem& mi : menu_items) {
+            for (paxs::DropDownMenu& mi : menu_list) {
                 if (mi.isOpen()) {
                     paxs::EventHandlingResult r = mi.handleEvent(event);
                     if (r.handled) return r;
@@ -87,7 +86,7 @@ namespace paxs {
         }
 
         void render() const override {
-            for (auto& item : menu_items) {
+            for (auto& item : menu_list) {
                 item.render();
             }
         }
@@ -95,21 +94,21 @@ namespace paxs {
         /// @brief メニュー項目を取得
         /// @param key メニュー項目のキー
         /// @return メニュー項目のポインタ（存在しない場合はnullptr）
-        paxs::MenuItem* getMenuItem(const std::uint_least32_t key) {
-            return (menu_item_key.find(key) != menu_item_key.end()) ? &menu_items[menu_item_key.at(key)] : nullptr;
+        paxs::DropDownMenu* getDropDownMenu(const std::uint_least32_t key) {
+            return (menu_list_key.find(key) != menu_list_key.end()) ? &menu_list[menu_list_key.at(key)] : nullptr;
         }
-        const paxs::MenuItem* cgetMenuItem(const std::uint_least32_t key) const {
-            return (menu_item_key.find(key) != menu_item_key.end()) ? &menu_items[menu_item_key.at(key)] : nullptr;
+        const paxs::DropDownMenu* cgetDropDownMenu(const std::uint_least32_t key) const {
+            return (menu_list_key.find(key) != menu_list_key.end()) ? &menu_list[menu_list_key.at(key)] : nullptr;
         }
 
     private:
         // メニューバーに付属するメニュー項目が左から順番に格納されている
-        std::vector<paxs::MenuItem> menu_items;
+        std::vector<paxs::DropDownMenu> menu_list;
 
         paxg::Rect bar_rect_{0,0,0,0};
 
         // 各メニュー項目に紐づけられた Key (Hash)
-        paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu_item_key{};
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu_list_key{};
 
         std::size_t start_x = 0;
 
@@ -117,7 +116,7 @@ namespace paxs {
         float x = 0.f;
         float h = 0.f;
 
-        for (paxs::MenuItem& mi : menu_items) {
+        for (paxs::DropDownMenu& mi : menu_list) {
             const float w = mi.getRect().w();
             const float item_h = mi.getRect().h();
 
@@ -143,20 +142,20 @@ namespace paxs {
         void setEnabled(bool /*enabled*/) override {}
         bool isEnabled() const override { return true; }
 
-        const char* getName() const override { return "MenuBar"; }
+        const char* getName() const override { return "MenuSystem"; }
 
         RenderLayer getLayer() const override {
-            return RenderLayer::Header;
+            return RenderLayer::MenuBar;
         }
 
         bool isHit(int x, int y) const override {
             // ヘッダー列に当たっていたらtrue
-            for (auto const& mi : menu_items) {
+            for (auto const& mi : menu_list) {
                 if (mi.isHitHeader(x, y)) return true;
             }
 
             // 開いてる子がヒットしていないかも見る
-            for (auto const& mi : menu_items) {
+            for (auto const& mi : menu_list) {
                 if (mi.isHit(x, y)) {
                     return true;
                 }

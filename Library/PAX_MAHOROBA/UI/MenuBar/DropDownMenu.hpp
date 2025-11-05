@@ -28,7 +28,7 @@
 namespace paxs {
 
     /// @brief メニューバー用のドロップダウン項目
-    class MenuItem : public IWidget {
+    class DropDownMenu : public IWidget {
     private:
         // 言語関連
         const SelectLanguage* select_language_ptr = nullptr;
@@ -57,7 +57,7 @@ namespace paxs {
         std::uint_least32_t old_language_key = 0;
 
     public:
-        MenuItem() = default;
+        DropDownMenu() = default;
 
         /// @brief コンストラクタ
         /// @param select_language_ptr_ 選択されている言語
@@ -67,7 +67,7 @@ namespace paxs {
         /// @param font_size_ フォントサイズ
         /// @param font_buffer_thickness_size_ フォントの太さ
         /// @param pos_ 表示位置
-        MenuItem(
+        DropDownMenu(
             const SelectLanguage* select_language_ptr_,
             const Language* language_ptr_,
             const std::span<const std::uint_least32_t> items_key_,
@@ -264,10 +264,10 @@ namespace paxs {
         bool isVisible() const override { return visible_; }
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
-        const char* getName() const override { return "MenuItem"; }
+        const char* getName() const override { return "DropDownMenu"; }
 
         RenderLayer getLayer() const override {
-            return RenderLayer::Header;
+            return RenderLayer::MenuBar;
         }
 
         bool isHitHeader(int x, int y) const {
@@ -279,7 +279,7 @@ namespace paxs {
         bool isHit(int x, int y) const override {
             if (!visible_ || !enabled_) return false;
 
-            // ヘッダーは親(MenuBar)が判定するのでここでは見ない
+            // ヘッダーは親(MenuSystem)が判定するのでここでは見ない
 
             paxg::Vec2i pos = rect.pos();
             pos.setY((int)(pos.y() + rect.h()));
