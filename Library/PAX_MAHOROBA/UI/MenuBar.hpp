@@ -20,11 +20,10 @@
 
 namespace paxs {
     /// @brief メニューバーを管理
-    /// @brief Manages menu bar
-    /// @details MenuItem（固定ヘッダー型のドロップダウン）を複数保持し、
-    ///          メニューバーとしての振る舞いを提供
+    /// @details MenuItem（固定ヘッダー型のドロップダウン）を複数持つ
     class MenuBar : public IWidget {
     public:
+        MenuBar() = default;
 
         /// @brief メニュー項目を追加
         /// @param select_language_ptr_ 選択されている言語
@@ -55,48 +54,39 @@ namespace paxs {
                 font_size_,
                 font_buffer_thickness_size_,
                 paxg::Vec2i{ static_cast<int>(start_x), 0 }));
+
+            layout();
         }
 
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
-            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
-
-            start_x = 0;
-
-            // 更新前の開閉状態を記録
-            std::vector<bool> was_open;
-            was_open.reserve(menu_items.size());
-            for (const auto& item : menu_items) {
-                was_open.push_back(item.isOpen());
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            if (event.left_button_state == MouseButtonState::Held ||
+                event.left_button_state == MouseButtonState::Released) {
+                return EventHandlingResult::Handled();
             }
 
-            // 各メニュー項目の位置を先に設定
             for (std::size_t i = 0; i < menu_items.size(); ++i) {
-                menu_items[i].setRectX(start_x);
-                start_x += static_cast<std::size_t>(menu_items[i].getRect().w());
-            }
-
-            start_x = 0; // リセット / Reset for later use
-            bool handled = false;
-
-            // 各メニュー項目を更新
-            for (std::size_t i = 0; i < menu_items.size(); ++i) {
-                if (menu_items[i].handleMouseInput(event).handled) {
-                    handled = true;
-                }
-
-                // このメニュー項目が新しく開かれた場合、他のメニュー項目を閉じる
-                if (!was_open[i] && menu_items[i].isOpen()) {
-                    for (std::size_t j = 0; j < menu_items.size(); ++j) {
-                        if (j != i && menu_items[j].isOpen()) {
-                            menu_items[j].close();
-                        }
-                    }
+                if (menu_items[i].isHitHeader(event.x, event.y)) {
+                    const bool was_open = menu_items[i].isOpen();
+                    // 全部閉じる
+                    for (auto& mi : menu_items) mi.setVisible(false);
+                    // 今クリックしたやつだけトグル
+                    menu_items[i].setVisible(!was_open);
+                    return EventHandlingResult::Handled();
                 }
             }
-            return handled ? EventHandlingResult::Handled() : EventHandlingResult::NotHandled();
+
+            // 開いてる子のドロップダウンにイベントを渡す
+            for (paxs::MenuItem& mi : menu_items) {
+                if (mi.isOpen()) {
+                    paxs::EventHandlingResult r = mi.handleEvent(event);
+                    if (r.handled) return r;
+                }
+            }
+
+            return EventHandlingResult::NotHandled();
         }
+
         void render() const override {
-            if (!visible_) return;
             for (auto& item : menu_items) {
                 item.render();
             }
@@ -114,66 +104,68 @@ namespace paxs {
 
     private:
         // メニューバーに付属するメニュー項目が左から順番に格納されている
-        // 例） | ファイル | 編集 | 表示 |
         std::vector<paxs::MenuItem> menu_items;
+
+        paxg::Rect bar_rect_{0,0,0,0};
 
         // 各メニュー項目に紐づけられた Key (Hash)
         paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu_item_key{};
 
         std::size_t start_x = 0;
 
-        // IWidget インターフェース用の状態
-        bool visible_ = true;
-        bool enabled_ = true;
+    void layout() {
+        float x = 0.f;
+        float h = 0.f;
+
+        for (paxs::MenuItem& mi : menu_items) {
+            const float w = mi.getRect().w();
+            const float item_h = mi.getRect().h();
+
+            mi.setPos(paxg::Vec2i{static_cast<int>(x), 0});
+
+            x += w;               // 幅ぶんだけ進む
+            h = std::max(h, item_h);
+        }
+
+        // メニューバー全体のrectも左上(0,0)から幅xだけにする
+        bar_rect_ = paxg::Rect{0.f, 0.f, x, h};
+    }
 
     public:
-        // IWidget インターフェースの実装
         void setPos(const paxg::Vec2i& pos) override {
             (void)pos; // 未使用パラメータの警告を抑制
             // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
-            // 必要に応じて各Pulldownの位置を調整することは可能
         }
 
-        paxg::Rect getRect() const override {
-            if (menu_items.empty()) return paxg::Rect{0, 0, 0, 0};
-            // メニューバー全体の矩形を返す
-            float total_width = static_cast<float>(start_x);
-            float height = menu_items.front().getRect().h();
-            return paxg::Rect{0, 0, total_width, height};
-        }
+        void setVisible(bool /*visible*/) override {}
+        bool isVisible() const override { return true; }
 
-        void setVisible(bool visible) override { visible_ = visible; }
-        bool isVisible() const override { return visible_; }
-
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
+        void setEnabled(bool /*enabled*/) override {}
+        bool isEnabled() const override { return true; }
 
         const char* getName() const override { return "MenuBar"; }
 
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
         RenderLayer getLayer() const override {
-            // いずれかのMenuItemが開いている場合はUIOverlayを返す
-            for (const auto& item : menu_items) {
-                if (item.isOpen()) {
-                    return RenderLayer::UIOverlay;
-                }
-            }
-            return RenderLayer::UIContent;
+            return RenderLayer::Header;
         }
-        bool isAvailable() const override { return true; }
 
-        /// @brief ヒットテスト（各MenuItemに委譲）
-        /// @brief Hit test (delegates to each MenuItem)
-        bool hitTest(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
-            // 各MenuItemのhitTestを呼び出す
-            for (const auto& item : menu_items) {
-                if (item.hitTest(x, y)) {
+        bool isHit(int x, int y) const override {
+            // ヘッダー列に当たっていたらtrue
+            for (auto const& mi : menu_items) {
+                if (mi.isHitHeader(x, y)) return true;
+            }
+
+            // 開いてる子がヒットしていないかも見る
+            for (auto const& mi : menu_items) {
+                if (mi.isHit(x, y)) {
                     return true;
                 }
             }
             return false;
+        }
+
+        paxg::Rect getRect() const override {
+            return bar_rect_;
         }
     };
 } // namespace paxs

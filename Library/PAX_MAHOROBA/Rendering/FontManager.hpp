@@ -69,7 +69,7 @@ namespace paxs {
         }
 
     public:
-        void init([[maybe_unused]] const SelectLanguage& select_language) {
+        FontManager() {
             language_fonts_.setDefaultPath("Data/Font/noto-sans-sc/NotoSansSC-Regular.otf");
             setLanguageFont(paxg::FontConfig::PULLDOWN_FONT_SIZE, paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
 
@@ -79,6 +79,9 @@ namespace paxs {
 
         // LanguageFontsへのアクセス
         LanguageFonts& getLanguageFonts() {
+            return language_fonts_;
+        }
+        const LanguageFonts& getLanguageFonts() const {
             return language_fonts_;
         }
 

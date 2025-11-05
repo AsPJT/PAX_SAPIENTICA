@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -27,31 +27,22 @@
 
 namespace paxs {
 
-    /// @brief カレンダー表示ウィジェット
-    /// @brief Calendar display widget
+    /// @brief カレンダーコンテンツ
+    /// @brief Calendar content
     ///
     /// カレンダー情報の描画を担当します。
     /// Handles rendering of calendar information.
-    class CalendarWidget : public IWidget {
+    class CalendarContent : public IRenderable {
     public:
         // 初期化（LanguageFontsへの参照を設定）
         void init(paxs::LanguageFonts& fonts) {
             language_fonts_ = &fonts;
         }
 
-        // IWidget インターフェースの実装（コンポーネント情報）
-        const char* getName() const override {
-            return "CalendarWidget";
-        }
-
         /// @brief レンダリングレイヤーを取得
         /// @brief Get rendering layer
         RenderLayer getLayer() const override {
             return RenderLayer::UIContent;
-        }
-
-        bool isAvailable() const override {
-            return true; // カレンダー表示は常に利用可能
         }
 
     private:
@@ -205,10 +196,8 @@ namespace paxs {
         }
 
     private:
-        // IWidget用の状態管理
         bool visible_ = true;
         bool enabled_ = true;
-        paxg::Vec2i pos_{0, 0};
 
         // 描画に必要な参照（render呼び出し時に設定される）
         const paxs::Koyomi* koyomi_ = nullptr;
@@ -217,13 +206,6 @@ namespace paxs {
         const paxs::Language* language_text_ = nullptr;
 
     public:
-        // IWidget インターフェースの実装
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
-            // CalendarWidgetは入力処理を行わない
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
-
         void render() const override {
             if (!visible_) return;
 
@@ -231,26 +213,8 @@ namespace paxs {
             renderInternal();
         }
 
-        paxg::Rect getRect() const override {
-            if (!ui_layout_) return paxg::Rect{0, 0, 0, 0};
-            return paxg::Rect{
-                static_cast<float>(pos_.x()),
-                static_cast<float>(ui_layout_->koyomi_font_y),
-                static_cast<float>(ui_layout_->koyomi_font_en_x + 400),
-                static_cast<float>(paxg::FontConfig::KOYOMI_FONT_SIZE * 4 * 7) // 7行分
-            };
-        }
-
-        void setPos(const paxg::Vec2i& pos) override {
-            pos_ = pos;
-        }
-
         void setVisible(bool visible) override { visible_ = visible; }
         bool isVisible() const override { return visible_; }
-
-        // setEnabled/isEnabledは下部で実装済み
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
 
         // CalendarWidget固有の参照設定メソッド
         void setRenderParams(

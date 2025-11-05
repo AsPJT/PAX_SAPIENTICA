@@ -50,6 +50,10 @@ namespace paxs {
         // UI overlay layer (dropdown menus, tooltips, etc.)
         UIOverlay = 600,
 
+        // ヘッダーレイヤー（メニューバー、言語選択など）
+        // Header layer (menu bar, language selection, etc.)
+        Header = 700,
+
         // デバッグ情報レイヤー（最前面）
         // Debug info layer (front-most)
         Debug = 1000

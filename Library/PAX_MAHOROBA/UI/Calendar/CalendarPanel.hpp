@@ -16,13 +16,15 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 
-#include <PAX_MAHOROBA/UI/Calendar/CalendarWidget.hpp>
+#include <PAX_MAHOROBA/Input/Events.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/CalendarContent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/UI/Calendar/TimeControlWidget.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/TimeControlButtons.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -32,21 +34,22 @@ namespace paxs {
     /// @brief Calendar Panel - Integrates time control and calendar display with shared background
     class CalendarPanel : public IWidget {
     public:
-        CalendarPanel() = default;
+        CalendarPanel(const UILayout& ui_layout)
+            : ui_layout_(&ui_layout)
+        {}
 
         /// @brief 初期化
         /// @brief Initialize
         /// @param fonts LanguageFontsへの参照
-        void init(paxs::LanguageFonts& fonts) {
+        void init(paxs::LanguageFonts& fonts, const paxs::FeatureVisibilityManager* visibility_manager) {
             calendar_widget_.init(fonts);
+            visibility_manager_ptr = visibility_manager;
         }
 
-        /// @brief レイアウトとテクスチャの参照を設定
-        /// @brief Set layout and texture references
-        /// @param layout レイアウト情報
+        /// @brief テクスチャの参照を設定
+        /// @brief Set texture references
         /// @param texture_dict アイコンテクスチャ辞書
-        void setLayout(const UILayout& layout, const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dict) {
-            ui_layout_ = &layout;
+        void setTextureDictionary(const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dict) {
             texture_dictionary_ = &texture_dict;
         }
 
@@ -68,28 +71,14 @@ namespace paxs {
             time_control_widget_.setPos(paxg::Vec2i{ui_layout_->time_control_base_x, ui_layout_->koyomi_font_y + ui_layout_->time_control_base_y});
         }
 
-        /// @brief IWidget インターフェースの実装
-        const char* getName() const override {
-            return "CalendarPanel";
-        }
-
         /// @brief レンダリングレイヤーを取得
         /// @brief Get rendering layer
         RenderLayer getLayer() const override {
             return RenderLayer::UIContent;
         }
 
-        bool isAvailable() const override {
-            return true;
-        }
-
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
-            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
-            return time_control_widget_.handleMouseInput(event);
-        }
-
         void render() const override {
-            if (!visible_ || !ui_layout_) return;
+            if (!isVisible() || !ui_layout_) return;
 
             // コンポーネントを描画
             time_control_widget_.render();
@@ -99,13 +88,26 @@ namespace paxs {
         /// @brief 時間操作ウィジェットとカレンダーウィジェットの可視性を設定
         /// @brief Set visibility of time control widget and calendar widget
         void setVisible(bool visible) override {
-            visible_ = visible;
-            time_control_widget_.setVisible(visible);
-            calendar_widget_.setVisible(visible);
+            (void)visible;
         }
 
         bool isVisible() const override {
-            return visible_;
+            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Calendar")) &&
+                   visibility_manager_ptr->isVisible(MurMur3::calcHash("UI"));
+        }
+
+        /// @brief 時間操作ウィジェットの高さを取得
+        /// @brief Get height of time control widget
+        int getTimeControlHeight() const {
+            return time_control_widget_.getHeight();
+        }
+
+        paxg::Rect getRect() const override {
+            return paxg::Rect{0, 0, 0, 0};
+        }
+
+        void setPos(const paxg::Vec2i& pos) override {
+            (void)pos;
         }
 
         void setEnabled(bool enabled) override {
@@ -116,36 +118,37 @@ namespace paxs {
             return enabled_;
         }
 
-        paxg::Rect getRect() const override {
-            if (!ui_layout_) return paxg::Rect{0, 0, 0, 0};
-            return paxg::Rect{
-                static_cast<float>(ui_layout_->rect_start_x),
-                static_cast<float>(ui_layout_->koyomi_font_y - 15),
-                static_cast<float>(ui_layout_->rect_len_x),
-                static_cast<float>(ui_layout_->next_rect_start_y)
-            };
+        const char* getName() const override {
+            return "CalendarPanel";
         }
 
-        void setPos(const paxg::Vec2i& pos) override {
-            pos_ = pos;
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            if (!isVisible() || !isEnabled()) {
+                return EventHandlingResult::NotHandled();
+            }
+            // 時間操作ウィジェットのマウス入力処理
+            if (time_control_widget_.isHit(event.x, event.y)) {
+                return time_control_widget_.handleEvent(event);
+            }
+            return EventHandlingResult::NotHandled();
         }
 
-        /// @brief 時間操作ウィジェットの高さを取得
-        /// @brief Get height of time control widget
-        int getTimeControlHeight() const {
-            return time_control_widget_.getHeight();
+        bool isHit(int x, int y) const override {
+            if (!isVisible() || !isEnabled()) return false;
+            // 時間操作ウィジェットのヒットテスト
+            return time_control_widget_.isHit(x, y);
         }
 
     private:
-        // IWidget 状態
-        bool visible_ = true;
+        // IRenderable 状態
         bool enabled_ = true;
-        paxg::Vec2i pos_{0, 0};
 
-        TimeControlWidget time_control_widget_;   // 時間操作ウィジェット
-        CalendarWidget calendar_widget_;          // カレンダー表示ウィジェット
+        const paxs::FeatureVisibilityManager* visibility_manager_ptr = nullptr;
 
-        const UILayout* ui_layout_ = nullptr;
+        TimeControlButtons time_control_widget_;   // 時間操作ウィジェット
+        CalendarContent calendar_widget_;          // カレンダー表示ウィジェット
+
+        const UILayout* ui_layout_;
         const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;
     };
 

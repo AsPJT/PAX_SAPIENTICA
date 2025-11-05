@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_I_WIDGET_HPP
-#define PAX_MAHOROBA_I_WIDGET_HPP
+#ifndef PAX_MAHOROBA_I_BUTTON_HPP
+#define PAX_MAHOROBA_I_BUTTON_HPP
 
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -20,27 +20,28 @@
 
 namespace paxs {
 
-    /// @brief ウィジェット（UI、マップオブジェクト等）の共通インターフェース
-    /// @brief Common interface for widgets (UI, map objects, etc.)
     class IWidget : public IRenderable, public IMouseEventHandler {
     public:
         virtual ~IWidget() = default;
 
         // 位置・サイズ管理
+        // Position and size management
         virtual paxg::Rect getRect() const = 0;
         virtual void setPos(const paxg::Vec2i& pos) = 0;
 
         // 可視性管理
+        // Visibility management
         void setVisible(bool visible) override = 0;
         bool isVisible() const override = 0;
 
         // 有効/無効管理
+        // Enable/disable management
         virtual void setEnabled(bool enabled) = 0;
         bool isEnabled() const override = 0;
 
         // コンポーネント情報
+        // Component information
         virtual const char* getName() const = 0;
-        virtual bool isAvailable() const = 0;
 
         // IRenderable の実装
         // IRenderable implementation
@@ -52,33 +53,24 @@ namespace paxs {
         /// @brief このオブジェクトが属するレンダリングレイヤーを取得
         /// @brief Get the rendering layer this object belongs to
         /// @return レンダリングレイヤー / Rendering layer
-        ///
         RenderLayer getLayer() const override = 0;
 
-        // IInputHandler の実装
-        // IInputHandler implementation
+        // IMouseEventHandler の実装
+        // IMouseEventHandler implementation
 
         /// @brief ヒットテスト（getRect()を使用）
         /// @brief Hit test (uses getRect())
         /// @param x X座標 / X coordinate
         /// @param y Y座標 / Y coordinate
         /// @return 範囲内ならtrue / true if within bounds
-        bool hitTest(int x, int y) const override {
+        bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
             const paxg::Rect rect = getRect();
             return (x >= rect.x() && x < rect.x() + rect.w() &&
-                    y >= rect.y() && y < rect.y() + rect.h());
+                y >= rect.y() && y < rect.y() + rect.h());
         }
-
-        // handleMouseInput() は各サブクラスで実装必須
-        // handleMouseInput() must be implemented by each subclass
-        /// @brief マウス入力処理
-        /// @brief Handle mouse input
-        /// @param event マウスイベント / Mouse event
-        /// @return イベント処理結果 / Event handling result
-        virtual EventHandlingResult handleMouseInput(const MouseEvent& event) = 0;
     };
 
 }
 
-#endif // !PAX_MAHOROBA_I_WIDGET_HPP
+#endif // !PAX_MAHOROBA_I_BUTTON_HPP

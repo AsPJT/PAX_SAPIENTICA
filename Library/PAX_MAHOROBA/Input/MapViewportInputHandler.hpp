@@ -358,7 +358,7 @@ namespace paxs {
         /// @param x X座標 / X coordinate
         /// @param y Y座標 / Y coordinate
         /// @return 常にtrue（画面全体が対象） / Always true (entire screen is target)
-        bool hitTest(int /*x*/, int /*y*/) const override {
+        bool isHit(int /*x*/, int /*y*/) const override {
             // 画面全体が対象なので常にtrue
             return enabled_;
         }

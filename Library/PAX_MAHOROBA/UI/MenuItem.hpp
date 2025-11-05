@@ -28,9 +28,6 @@
 namespace paxs {
 
     /// @brief メニューバー用のドロップダウン項目
-    /// @brief Dropdown item for menu bar
-    /// @details 固定のヘッダー名を表示し、項目選択時に状態を切り替える
-    ///          例：「ファイル」「編集」「表示」などのメニュー
     class MenuItem : public IWidget {
     private:
         // 言語関連
@@ -54,8 +51,7 @@ namespace paxs {
         static constexpr int down_button_size = 20;
 
         // 状態
-        bool is_open = false;
-        bool visible_ = true;
+        bool visible_ = false;  // ドロップダウンの表示状態（MenuBarが制御）
         bool enabled_ = true;
 
         std::uint_least32_t old_language_key = 0;
@@ -161,97 +157,36 @@ namespace paxs {
 #endif
         }
 
-        /// @brief 入力処理
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
-            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
+        /// @brief 入力処理（
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            paxg::Vec2i pos = rect.pos();
+            pos.setY((int)(pos.y() + rect.h()));
 
-            const std::uint_least32_t new_language_key = (*select_language_ptr).cgetKey();
-            if (old_language_key != new_language_key) {
-                old_language_key = new_language_key;
-                updateLanguage();
-            }
-
-            // Pressed/Heldイベント：メニュー範囲内ならイベントを消費（ドラッグ防止）
-            if (event.left_button_state == MouseButtonState::Pressed ||
-                event.left_button_state == MouseButtonState::Held) {
-                float rx = rect.x();
-                float ry = rect.y();
-                float rw = rect.w();
-                float rh = rect.h();
-
-                // ヘッダー部分
-                if (event.x >= rx && event.x < rx + rw && event.y >= ry && event.y < ry + rh) {
+            for (std::size_t i = 1; i < items_key.size(); ++i) {
+                const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
+                if (item_rect.contains(event.x, event.y)) {
+                    // もともとやってたトグル処理
+                    if (i < is_items.size()) {
+                        is_items[i] = !is_items[i];
+                    }
+                    // 押されたら閉じる
+                    visible_ = false;
                     return EventHandlingResult::Handled();
                 }
-
-                // ドロップダウン項目（開いている場合）
-                if (is_open) {
-                    paxg::Vec2i pos = rect.pos();
-                    pos.setY(static_cast<int>(pos.y() + rect.h()));
-
-                    for (std::size_t i = 1; i < items_key.size(); ++i) {
-                        float item_rx = static_cast<float>(pos.x());
-                        float item_ry = static_cast<float>(pos.y());
-                        float item_rw = all_rect_x;
-                        float item_rh = rect.h();
-                        if (event.x >= item_rx && event.x < item_rx + item_rw &&
-                            event.y >= item_ry && event.y < item_ry + item_rh) {
-                            return EventHandlingResult::Handled();
-                        }
-                        pos.setY(static_cast<int>(pos.y() + rect.h()));
-                    }
-                }
-            }
-
-            // Releasedイベント：実際の処理を行う
-            if (event.left_button_state == MouseButtonState::Released) {
-                float rx = rect.x();
-                float ry = rect.y();
-                float rw = rect.w();
-                float rh = rect.h();
-
-                // ヘッダーのクリック判定
-                if (event.x >= rx && event.x < rx + rw && event.y >= ry && event.y < ry + rh) {
-                    is_open = !is_open;
-                    return EventHandlingResult::Handled();
-                }
-
-                // ドロップダウンリストのクリック判定
-                if (is_open) {
-                    paxg::Vec2i pos = rect.pos();
-                    pos.setY(static_cast<int>(pos.y() + rect.h()));
-
-                    // 最初の項目（ヘッダー）をスキップ
-                    for (std::size_t i = 1; i < items_key.size(); ++i) {
-                        float item_rx = static_cast<float>(pos.x());
-                        float item_ry = static_cast<float>(pos.y());
-                        float item_rw = all_rect_x;
-                        float item_rh = rect.h();
-                        if (event.x >= item_rx && event.x < item_rx + item_rw &&
-                            event.y >= item_ry && event.y < item_ry + item_rh) {
-                            // 項目の状態を切り替え
-                            if (i < is_items.size()) {
-                                is_items[i] = !is_items[i];
-                            }
-                            is_open = false;
-                            return EventHandlingResult::Handled();
-                        }
-                        pos.setY(static_cast<int>(pos.y() + rect.h()));
-                    }
-                }
+                pos.setY((int)(pos.y() + rect.h()));
             }
             return EventHandlingResult::NotHandled();
         }
 
         /// @brief 描画処理
         void render() const override {
-            if (isEmpty() || !visible_) return;
+            if (isEmpty()) return;
             if (language_ptr == nullptr || select_language_ptr == nullptr) return;
             if (items_key.size() == 0) return;
 
-            // ヘッダーの背景と枠を描画
+            // ヘッダーの背景と枠を描画（常に表示）
             rect.draw(paxg::Color{ 243, 243, 243 });
-            rect.drawFrame(1, 0, is_open ? paxg::Color{ 255, 165, 0 } : paxg::Color{ 128, 128, 128 });
+            rect.drawFrame(1, 0, visible_ ? paxg::Color{ 255, 165, 0 } : paxg::Color{ 128, 128, 128 });
 
             // 下向き三角形を描画
             constexpr float radius = 8.0f;
@@ -264,8 +199,8 @@ namespace paxs {
             // ヘッダー部分のテキストを描画
             drawHeader();
 
-            // ドロップダウンリストを描画
-            if (is_open) {
+            // ドロップダウンリストを描画（visible_がtrueの時のみ）
+            if (visible_) {
                 drawDropdownList();
             }
         }
@@ -274,10 +209,10 @@ namespace paxs {
         bool isEmpty() const { return items_key.size() == 0; }
 
         /// @brief プルダウンの開閉状態を取得
-        bool isOpen() const { return is_open; }
+        bool isOpen() const { return visible_; }
 
         /// @brief プルダウンを閉じる
-        void close() { is_open = false; }
+        void close() { visible_ = false; }
 
         /// @brief 項目の状態を設定（インデックス指定）
         void setIsItems(const std::size_t i, const bool new_value) {
@@ -331,43 +266,31 @@ namespace paxs {
         bool isEnabled() const override { return enabled_; }
         const char* getName() const override { return "MenuItem"; }
 
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
         RenderLayer getLayer() const override {
-            return is_open ? RenderLayer::UIOverlay : RenderLayer::UIContent;
+            return RenderLayer::Header;
         }
-        bool isAvailable() const override { return true; }
 
-        /// @brief ヒットテスト（メニューが開いている場合は全項目を含む）
-        /// @brief Hit test (includes all items when menu is open)
-        /// @param x X座標 / X coordinate
-        /// @param y Y座標 / Y coordinate
-        /// @return 範囲内ならtrue / true if within bounds
-        bool hitTest(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
-
-            // ヘッダー部分のヒットテスト
+        bool isHitHeader(int x, int y) const {
             const paxg::Rect header_rect = getRect();
-            if (x >= header_rect.x() && x < header_rect.x() + header_rect.w() &&
-                y >= header_rect.y() && y < header_rect.y() + header_rect.h()) {
-                return true;
-            }
+            bool result = header_rect.contains(static_cast<float>(x), static_cast<float>(y));
+            return result;
+        }
 
-            // メニューが開いている場合は、ドロップダウン項目のヒットテストも行う
-            if (is_open) {
-                paxg::Vec2i pos = header_rect.pos();
-                pos.setY(static_cast<int>(pos.y() + header_rect.h()));
+        bool isHit(int x, int y) const override {
+            if (!visible_ || !enabled_) return false;
 
-                for (std::size_t i = 1; i < items_key.size(); ++i) {
-                    const paxg::Rect item_rect{ pos, all_rect_x, header_rect.h() };
-                    if (x >= item_rect.x() && x < item_rect.x() + item_rect.w() &&
-                        y >= item_rect.y() && y < item_rect.y() + item_rect.h()) {
-                        return true;
-                    }
-                    pos.setY(static_cast<int>(pos.y() + header_rect.h()));
+            // ヘッダーは親(MenuBar)が判定するのでここでは見ない
+
+            paxg::Vec2i pos = rect.pos();
+            pos.setY((int)(pos.y() + rect.h()));
+
+            for (std::size_t i = 1; i < items_key.size(); ++i) {
+                const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
+                if (item_rect.contains((float)x, (float)y)) {
+                    return true;
                 }
+                pos.setY((int)(pos.y() + rect.h()));
             }
-
             return false;
         }
 

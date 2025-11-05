@@ -40,11 +40,6 @@ namespace paxs {
 
     /// @brief 地図コンテンツレイヤークラス
     /// @brief Map Content Layer
-    ///
-    /// IEventHandlerとIInputHandlerの両方を継承し、キーボードイベント
-    /// （集落表示モード切替）とマウス入力の両方を処理します。
-    /// Inherits both IEventHandler and IInputHandler to handle keyboard events
-    /// (settlement display mode switching) and mouse input.
     class MapContentLayer : public IRenderable, public IEventHandler, public IMouseEventHandler {
     private:
         std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
@@ -65,8 +60,8 @@ namespace paxs {
         bool visible_ = true;
         bool enabled_ = true;
 
-        // 描画に必要なデータをキャッシュ（updateData()で更新、render()で使用）
-        MapViewport cached_map_viewport_;
+        const MapViewport* map_viewport_ptr = nullptr;
+
         paxs::Koyomi cached_koyomi_;
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
@@ -83,7 +78,8 @@ namespace paxs {
             }
         }
 
-        void init(FontManager& font_manager, const SelectLanguage& select_language) {
+        void init(FontManager* font_manager, const SelectLanguage* select_language,
+            const MapViewport* map_viewport) {
             // 地理的特徴と人物の肖像画を初期化
             geographic_feature_manager_.init();
             geographic_feature_manager_.add();
@@ -91,14 +87,14 @@ namespace paxs {
             person_portrait_manager_.add();
 
             // フォント管理への参照を保存
-            font_manager_ = &font_manager;
-            select_language_ = &select_language;
+            font_manager_ = font_manager;
+            select_language_ = select_language;
+            map_viewport_ptr = map_viewport;
         }
 
         /// @brief データ更新（描画は行わない）
         /// @brief Update data (no drawing)
         void updateData(
-            MapViewport& map_viewport,
             const paxs::Koyomi& koyomi,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
@@ -106,10 +102,9 @@ namespace paxs {
             paxs::FeatureVisibilityManager& visible
             ) {
             // データ更新
-            texture_manager_->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
+            texture_manager_->update(map_viewport_ptr->getCenterX(), map_viewport_ptr->getCenterY(), map_viewport_ptr->getWidth(), map_viewport_ptr->getHeight());
 
             // 描画用にデータをキャッシュ
-            cached_map_viewport_ = map_viewport;
             cached_koyomi_ = koyomi;
 #ifdef PAXS_USING_SIMULATOR
             cached_simulator_ = &simulator;
@@ -120,10 +115,10 @@ namespace paxs {
                     koyomi.jdn.cgetDay(),
                     simulator->getSettlementGrids(),
                     simulator->getMarriagePosList(),
-                    map_viewport.getWidth(),
-                    map_viewport.getHeight(),
-                    map_viewport.getCenterX(),
-                    map_viewport.getCenterY(),
+                    map_viewport_ptr->getWidth(),
+                    map_viewport_ptr->getHeight(),
+                    map_viewport_ptr->getCenterX(),
+                    map_viewport_ptr->getCenterY(),
                     settlement_input_handler_.getSelectDraw(),
                     settlement_input_handler_.getIsLine(),
                     settlement_input_handler_.getIsArrow()
@@ -139,10 +134,10 @@ namespace paxs {
 
                 person_portrait_manager_.setDrawParams(
                     koyomi.jdn.cgetDay(),
-                    map_viewport.getWidth(),
-                    map_viewport.getHeight(),
-                    map_viewport.getCenterX(),
-                    map_viewport.getCenterY(),
+                    map_viewport_ptr->getWidth(),
+                    map_viewport_ptr->getHeight(),
+                    map_viewport_ptr->getCenterX(),
+                    map_viewport_ptr->getCenterY(),
                     (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
                     font_manager_->getEnFont(),
                     font_manager_->getPinFont()
@@ -151,10 +146,10 @@ namespace paxs {
                 geographic_feature_manager_.setDrawParams(
                     visible,
                     koyomi.jdn.cgetDay(),
-                    map_viewport.getWidth(),
-                    map_viewport.getHeight(),
-                    map_viewport.getCenterX(),
-                    map_viewport.getCenterY(),
+                    map_viewport_ptr->getWidth(),
+                    map_viewport_ptr->getHeight(),
+                    map_viewport_ptr->getCenterX(),
+                    map_viewport_ptr->getCenterY(),
                     (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
                     font_manager_->getEnFont(),
                     font_manager_->getPinFont()
@@ -212,7 +207,7 @@ namespace paxs {
         /// @param event キーボードイベント / Keyboard event
         /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const KeyboardEvent& event) override {
-            if (!visible_ || !enabled_ || cached_visible_ == nullptr) return EventHandlingResult::NotHandled();
+            if (cached_visible_ == nullptr) return EventHandlingResult::NotHandled();
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
@@ -229,9 +224,8 @@ namespace paxs {
 
         /// @brief ヒットテスト
         /// @brief Hit test
-        bool hitTest([[maybe_unused]] int x, [[maybe_unused]] int y) const override {
+        bool isHit([[maybe_unused]] int x, [[maybe_unused]] int y) const override {
             // 地図全体が対象なので常にtrue
-            // Always true as the entire map is the target
             return visible_ && enabled_;
         }
 
@@ -239,6 +233,12 @@ namespace paxs {
         /// @brief Get enabled state
         bool isEnabled() const override {
             return enabled_;
+        }
+
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            // TODO: マウスイベント処理
+            (void)event;
+            return EventHandlingResult::NotHandled();
         }
 
 #ifdef PAXS_USING_SIMULATOR

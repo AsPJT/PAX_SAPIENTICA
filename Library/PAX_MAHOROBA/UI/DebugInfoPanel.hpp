@@ -43,32 +43,31 @@ namespace paxs {
     /// @brief Debug information panel class
     class DebugInfoPanel : public IWidget {
     private:
-        paxs::LanguageFonts* language_fonts_ = nullptr;
-        bool visible_ = true;
+        paxs::LanguageFonts* language_fonts_ptr = nullptr;
+        const paxs::Language* language_text_ptr = nullptr;
+        const SelectLanguage* select_language_ptr = nullptr;
+        const MapViewport* map_viewport_ptr = nullptr;
+        const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
+
         bool enabled_ = true;
-        mutable paxg::Vec2i pos_{10, 0};  // 左下の位置（Y座標は後で設定）
-        static constexpr int panel_width_ = 300;   // パネル幅
-        static constexpr int panel_height_ = 250;  // パネル高さ
+        const UILayout* ui_layout_ = nullptr;
 
     public:
-        /// @brief 初期化（LanguageFontsへの参照を設定）
-        /// @brief Initialize (set reference to LanguageFonts)
-        void init(paxs::LanguageFonts& fonts) {
-            language_fonts_ = &fonts;
-            visible_ = true;
+        DebugInfoPanel() = default;
+        DebugInfoPanel(const UILayout& ui_layout, const paxs::FeatureVisibilityManager* visible_manager)
+            : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager) {}
 
-            // 背景を初期化（左下に配置）
-            updateBackgroundPosition();
+        /// @brief 初期化
+        void init(paxs::LanguageFonts* fonts,
+            const paxs::Language* language_text,
+            const SelectLanguage* select_language,
+            const MapViewport* map_viewport) {
+            language_fonts_ptr = fonts;
+            language_text_ptr = language_text;
+            select_language_ptr = select_language;
+            map_viewport_ptr = map_viewport;
         }
 
-        /// @brief 背景の位置を更新
-        /// @brief Update background position
-        void updateBackgroundPosition() const {
-            int y = paxg::Window::height() - panel_height_ - 10;  // 左下
-            pos_ = paxg::Vec2i(pos_.x(), y);
-        }
-
-        // IWidget インターフェースの実装（コンポーネント情報）
         const char* getName() const override {
             return "DebugInfoPanel";
         }
@@ -76,39 +75,29 @@ namespace paxs {
         /// @brief レンダリングレイヤーを取得（背景レイヤー）
         /// @brief Get rendering layer (background layer)
         RenderLayer getLayer() const override {
-            return RenderLayer::UIBackground;
+            return RenderLayer::UIContent;
         }
-
-        bool isAvailable() const override {
-            return true;
-        }
-
-        // setEnabled/isEnabledは下部で実装済み
 
         // 可視性の設定・取得
-        void setVisible(bool visible) override { visible_ = visible; }
-        bool isVisible() const override { return visible_; }
+        void setVisible(bool visible) override {
+            (void)visible;
+        }
+        bool isVisible() const override { return visible_manager_ptr->isVisible(MurMur3::calcHash("UI")) && visible_manager_ptr->isVisible(MurMur3::calcHash("Debug")); }
 
         /// @brief マップ情報とシミュレーション統計を描画
         /// @brief Render map information and simulation statistics
         void renderMapAndSimulationInfo(
-            const MapViewport& map_viewport,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text
 #ifdef PAXS_USING_SIMULATOR
-            , const std::unique_ptr<paxs::SettlementSimulator>& simulator
+            const std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
-            , const paxs::Koyomi* koyomi = nullptr
-            , bool is_simulator_active = false
+            const paxs::Koyomi* koyomi = nullptr,
+            bool is_simulator_active = false
         ) const {
-            if (!visible_ || language_fonts_ == nullptr) return;
-
-            // 背景位置を更新（ウィンドウサイズ変更に対応）
-            updateBackgroundPosition();
+            if (!isVisible()) return;
 
             // フォントを取得
-            paxg::Font* font = language_fonts_->getAndAdd(
-                select_language.cgetKey(),
+            paxg::Font* font = language_fonts_ptr->getAndAdd(
+                select_language_ptr->cgetKey(),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
@@ -116,14 +105,14 @@ namespace paxs {
 
             font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
 
-            const int text_x = pos_.x() + 15;  // パネル内の左端
-            const int text_y = pos_.y() + 15;  // パネル内の上端
+            const int text_x = ui_layout_->debug_info_panel.x + 15; // パネル内の左端
+            const int text_y = ui_layout_->debug_info_panel.y + 15; // パネル内の上端
             constexpr int line_height = 25;
             int current_line = 0;
 
             // タイトル
             font->draw(
-                (select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (select_language_ptr->cgetKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"デバッグ情報") : "Debug Info",
                 paxg::Vec2i(text_x, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
@@ -131,22 +120,22 @@ namespace paxs {
 
             // マップの拡大率
             font->draw(
-                (select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (select_language_ptr->cgetKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"拡大率: ") : "Zoom: ",
                 paxg::Vec2i(text_x, text_y + line_height * current_line),
                 paxg::Color(0, 0, 0)
             );
             font->draw(
-                std::to_string(map_viewport.getHeight()),
+                std::to_string(map_viewport_ptr->getHeight()),
                 paxg::Vec2i(text_x + 100, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
             // XYZ Tiles Z拡大率
-            const int z_magnification = static_cast<int>(-std::log2(map_viewport.getHeight()) + 12.5);
-            const std::string* const xyz_label_ptr = language_text.getStringPtr(
+            const int z_magnification = static_cast<int>(-std::log2(map_viewport_ptr->getHeight()) + 12.5);
+            const std::string* const xyz_label_ptr = language_text_ptr->getStringPtr(
                 MurMur3::calcHash("debug_xyz_tiles_z"),
-                select_language.cgetKey()
+                select_language_ptr->cgetKey()
             );
             if (xyz_label_ptr != nullptr) {
                 font->draw(
@@ -165,7 +154,7 @@ namespace paxs {
             if (simulator != nullptr) {
                 // 人口数
                 font->draw(
-                    (select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                    (select_language_ptr->cgetKey() == MurMur3::calcHash("ja-JP")) ?
                         reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
                     paxg::Vec2i(text_x, text_y + line_height * current_line),
                     paxg::Color(0, 0, 0)
@@ -178,7 +167,7 @@ namespace paxs {
 
                 // 集落数
                 font->draw(
-                    (select_language.cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                    (select_language_ptr->cgetKey() == MurMur3::calcHash("ja-JP")) ?
                         reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
                     paxg::Vec2i(text_x, text_y + line_height * current_line),
                     paxg::Color(0, 0, 0)
@@ -205,8 +194,8 @@ namespace paxs {
 
                     if (date_year > 0) {
                         // 大きな年号フォントを取得（通常の3倍サイズ）
-                        paxg::Font* big_year_font = language_fonts_->getAndAdd(
-                            select_language.cgetKey(),
+                        paxg::Font* big_year_font = language_fonts_ptr->getAndAdd(
+                            select_language_ptr->cgetKey(),
                             static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE * 3),
                             static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                         );
@@ -215,7 +204,7 @@ namespace paxs {
 
                             // パネル内の下部に配置
                             const int big_year_x = text_x;
-                            const int big_year_y = pos_.y() + panel_height_ - 80;  // パネル下部から80px上
+                            const int big_year_y = ui_layout_->debug_info_panel.y + ui_layout_->debug_info_panel.height - 80;  // パネル下部から80px上
 
                             big_year_font->draw(
                                 std::to_string(date_year),
@@ -230,32 +219,35 @@ namespace paxs {
 
     public:
         // IWidget インターフェースの実装
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
             // DebugInfoPanelは入力処理を行わない
             (void)event;
             return EventHandlingResult::NotHandled();
         }
 
         void render() const override {
-            // 背景はUILayerのUIPanelBackgroundが描画するため、ここでは何もしない
-            // Background is rendered by UILayer's UIPanelBackground, so nothing to do here
+            // TODO: 描画処理
+            // renderMapAndSimulationInfo();
         }
 
         paxg::Rect getRect() const override {
             return paxg::Rect{
-                static_cast<float>(pos_.x()),
-                static_cast<float>(pos_.y()),
-                static_cast<float>(panel_width_),
-                static_cast<float>(panel_height_)
+                static_cast<float>(ui_layout_->debug_info_panel.x),
+                static_cast<float>(ui_layout_->debug_info_panel.y),
+                static_cast<float>(ui_layout_->debug_info_panel.width),
+                static_cast<float>(ui_layout_->debug_info_panel.height)
             };
         }
 
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
 
-        void setPos(const paxg::Vec2i& pos) override {
-            pos_ = pos;
+        bool isHit(int x, int y) const override {
+            if (!isVisible() || !isEnabled()) return false;
+            return (x >= ui_layout_->debug_info_panel.x && x < ui_layout_->debug_info_panel.x + ui_layout_->debug_info_panel.width &&
+                y >= ui_layout_->debug_info_panel.y && y < ui_layout_->debug_info_panel.y + ui_layout_->debug_info_panel.height);
+            // TODO: child
         }
 
-        // setEnabled/isEnabledは下部で実装済み
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         bool isEnabled() const override { return enabled_; }
     };

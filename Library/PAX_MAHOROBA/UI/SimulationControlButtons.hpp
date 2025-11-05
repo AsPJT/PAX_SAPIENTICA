@@ -34,12 +34,11 @@
 namespace paxs {
 
     /// @brief シミュレーション制御ボタンコンポーネント
-    /// @brief Simulation control buttons component
     class SimulationControlButtons : public IWidget {
     private:
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv_;
 
-        // 外部参照（SimulationPanelから設定）
+        // 外部参照
         std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
         paxs::Koyomi* koyomi_ = nullptr;
         int debug_start_y_ = 0;
@@ -47,20 +46,48 @@ namespace paxs {
         bool visible_ = true;
         bool enabled_ = true;
 
+        // ボタンサイズ
         static constexpr int TIME_ICON_SIZE = 40;
 
+        // 右端からの固定オフセット
+        static constexpr int X_LOAD_OR_DELETE  = 360; // 地形データ読み込み/削除
+        static constexpr int X_INIT_OR_RELOAD  = 420; // 人間データ初期化/リロード
+        static constexpr int X_PLAY_OR_STOP    = 300; // 再生/停止
+        static constexpr int X_STEP            = 240; // 1ステップ
+        static constexpr int RELOAD_OFFSET_Y   = 60;  // リロードだけ+60
+
     public:
+        // どのボタンかを識別するID
+        enum class ButtonId {
+            None,
+            // 未初期化のとき
+            LoadGeographicData,
+            // 初期化済 & 再生中
+            Stop,
+            // 初期化済 & 停止中
+            ReloadInputData,
+            InitHumanData,
+            DeleteGeographicData,
+            Play,
+            Step,
+        };
+
+        using ClickCallback = std::function<void(ButtonId)>;
+
+        void setOnClick(ClickCallback cb) {
+            on_click_ = std::move(cb);
+        }
+
         /// @brief コンストラクタ（テクスチャを読み込む）
-        /// @brief Constructor (load textures)
         SimulationControlButtons() {
-            if (!key_value_tsv_.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv",
-                [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
+            if (!key_value_tsv_.input(
+                    paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv",
+                    [](const std::string& value_) { return paxg::Texture{ value_ }; })) {
                 PAXS_ERROR("Failed to load texture KeyValueTSV: Data/MenuIcon/MenuIcons.tsv");
             }
         }
 
         /// @brief 外部参照を設定
-        /// @brief Set external references
         void setReferences(
             std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr,
             paxs::Koyomi* koyomi,
@@ -71,18 +98,12 @@ namespace paxs {
             debug_start_y_ = debug_start_y;
         }
 
-        // IWidget インターフェース実装
-
         const char* getName() const override {
             return "SimulationControlButtons";
         }
 
         RenderLayer getLayer() const override {
             return RenderLayer::UIContent;
-        }
-
-        bool isAvailable() const override {
-            return true;
         }
 
         void setEnabled(bool enabled) override {
@@ -94,12 +115,12 @@ namespace paxs {
         }
 
         paxg::Rect getRect() const override {
-            // ダミーの矩形（実際のhitTestは個別ボタンで判定）
-            return paxg::Rect{0, 0, 0, 0};
+            // 固定配置なのでダミーでOK
+            return paxg::Rect{0.f, 0.f, 0.f, 0.f};
         }
 
         void setPos(const paxg::Vec2i& /*pos*/) override {
-            // ボタンは画面右端に固定配置なので位置設定は無視
+            // 位置は固定なので無視
         }
 
         void setVisible(bool visible) override {
@@ -110,149 +131,143 @@ namespace paxs {
             return visible_;
         }
 
-        /// @brief ヒットテスト（状態に応じたボタン位置を個別判定）
-        /// @brief Hit test (individual button positions based on state)
-        bool hitTest(int x, int y) const override {
+        /// @brief ヒットテスト
+        bool isHit(int x, int y) const override {
             if (!visible_ || !enabled_) return false;
             if (!simulator_ptr_ || !koyomi_) return false;
 
-            // シミュレーションが初期化されていない場合
-            if (simulator_ptr_->get() == nullptr) {
-                // 地形データ読み込みボタン (Window.width - 360, debug_start_y, 40x40)
-                float btn_x = static_cast<float>(paxg::Window::width() - 360);
-                float btn_y = static_cast<float>(debug_start_y_);
-                if (x >= btn_x && x < btn_x + TIME_ICON_SIZE &&
-                    y >= btn_y && y < btn_y + TIME_ICON_SIZE) {
-                    return true;
-                }
-            }
-            // シミュレーションが初期化されている場合
-            else {
-                // 再生中の場合
-                if (koyomi_->is_agent_update) {
-                    // 停止ボタン (Window.width - 300, debug_start_y, 40x40)
-                    float btn_x = static_cast<float>(paxg::Window::width() - 300);
-                    float btn_y = static_cast<float>(debug_start_y_);
-                    if (x >= btn_x && x < btn_x + TIME_ICON_SIZE &&
-                        y >= btn_y && y < btn_y + TIME_ICON_SIZE) {
-                        return true;
-                    }
-                }
-                // 停止中の場合
-                else {
-                    // リロードボタン (Window.width - 420, debug_start_y + 60, 40x40)
-                    float reload_x = static_cast<float>(paxg::Window::width() - 420);
-                    float reload_y = static_cast<float>(debug_start_y_ + 60);
-                    if (x >= reload_x && x < reload_x + TIME_ICON_SIZE &&
-                        y >= reload_y && y < reload_y + TIME_ICON_SIZE) {
-                        return true;
-                    }
-
-                    // 人間データ初期化ボタン (Window.width - 420, debug_start_y, 40x40)
-                    float init_x = static_cast<float>(paxg::Window::width() - 420);
-                    float init_y = static_cast<float>(debug_start_y_);
-                    if (x >= init_x && x < init_x + TIME_ICON_SIZE &&
-                        y >= init_y && y < init_y + TIME_ICON_SIZE) {
-                        return true;
-                    }
-
-                    // 地形データ削除ボタン (Window.width - 360, debug_start_y, 40x40)
-                    float delete_x = static_cast<float>(paxg::Window::width() - 360);
-                    float delete_y = static_cast<float>(debug_start_y_);
-                    if (x >= delete_x && x < delete_x + TIME_ICON_SIZE &&
-                        y >= delete_y && y < delete_y + TIME_ICON_SIZE) {
-                        return true;
-                    }
-
-                    // 再生ボタン (Window.width - 300, debug_start_y, 40x40)
-                    float play_x = static_cast<float>(paxg::Window::width() - 300);
-                    float play_y = static_cast<float>(debug_start_y_);
-                    if (x >= play_x && x < play_x + TIME_ICON_SIZE &&
-                        y >= play_y && y < play_y + TIME_ICON_SIZE) {
-                        return true;
-                    }
-
-                    // 1ステップボタン (Window.width - 240, debug_start_y, 40x40)
-                    float step_x = static_cast<float>(paxg::Window::width() - 240);
-                    float step_y = static_cast<float>(debug_start_y_);
-                    if (x >= step_x && x < step_x + TIME_ICON_SIZE &&
-                        y >= step_y && y < step_y + TIME_ICON_SIZE) {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return hitTestButton(x, y) != ButtonId::None;
         }
 
         /// @brief マウス入力処理（実際の処理はSimulationPanelに委譲）
-        /// @brief Handle mouse input (actual handling delegated to SimulationPanel)
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
             if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
             if (!simulator_ptr_ || !koyomi_) return EventHandlingResult::NotHandled();
 
-            // hitTest内のボタンエリアでのクリックをHandledとして返す
-            // 実際のボタン処理はSimulationPanel.updateSimulation()で行われる
-            if (hitTest(event.x, event.y)) {
-                if (event.left_button_state == MouseButtonState::Pressed ||
-                    event.left_button_state == MouseButtonState::Held ||
-                    event.left_button_state == MouseButtonState::Released) {
-                    return EventHandlingResult::Handled();
+            // どのボタンかだけここで判断
+            const ButtonId id = hitTestButton(event.x, event.y);
+            if (id == ButtonId::None) {
+                return EventHandlingResult::NotHandled();
+            }
+
+            if (event.left_button_state == MouseButtonState::Pressed) {
+                if (on_click_) {
+                    on_click_(id);
                 }
+                return EventHandlingResult::Handled();
+            } else {
+                return EventHandlingResult::Handled();
             }
 
             return EventHandlingResult::NotHandled();
         }
 
         /// @brief 描画処理
-        /// @brief Rendering
         void render() const override {
             if (!visible_) return;
             if (!simulator_ptr_ || !koyomi_) return;
 
-            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary = key_value_tsv_.get();
+            const auto& texture_dictionary = key_value_tsv_.get();
+            const auto width = paxg::Window::width();
+            const int base_y = debug_start_y_;
 
             // シミュレーションが初期化されていない場合
             if (simulator_ptr_->get() == nullptr) {
                 // 地形データ読み込みボタン
                 texture_dictionary.at(MurMur3::calcHash("texture_load_geographic_data2")).resizedDraw(
-                    TIME_ICON_SIZE, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y_));
+                    TIME_ICON_SIZE,
+                    paxg::Vec2i(width - X_LOAD_OR_DELETE, base_y)
+                );
+                return;
             }
+
             // シミュレーションが初期化されている場合
-            else {
-                // シミュレーションが再生中の場合
-                if (koyomi_->is_agent_update) {
-                    // 停止ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
-                        TIME_ICON_SIZE, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y_));
-                }
-                // シミュレーションが停止中の場合
-                else {
-                    // シミュレーション入力データ初期化ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
-                        TIME_ICON_SIZE, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y_ + 60));
+            if (koyomi_->is_agent_update) {
+                // 再生中 → 停止ボタン
+                texture_dictionary.at(MurMur3::calcHash("texture_stop")).resizedDraw(
+                    TIME_ICON_SIZE,
+                    paxg::Vec2i(width - X_PLAY_OR_STOP, base_y)
+                );
+            } else {
+                // 停止中 → 複数ボタン表示
+                texture_dictionary.at(MurMur3::calcHash("texture_reload")).resizedDraw(
+                    TIME_ICON_SIZE,
+                    paxg::Vec2i(width - X_INIT_OR_RELOAD, base_y + RELOAD_OFFSET_Y)
+                );
 
-                    // 人間データ初期化ボタン (Simulation Init)
-                    texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
-                        TIME_ICON_SIZE, paxg::Vec2i(paxg::Window::width() - 420, debug_start_y_));
+                texture_dictionary.at(MurMur3::calcHash("texture_load_agent_data2")).resizedDraw(
+                    TIME_ICON_SIZE,
+                    paxg::Vec2i(width - X_INIT_OR_RELOAD, base_y)
+                );
 
-                    // 地形データ削除ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
-                        TIME_ICON_SIZE, paxg::Vec2i(paxg::Window::width() - 360, debug_start_y_));
+                texture_dictionary.at(MurMur3::calcHash("texture_delete_geographic_data")).resizedDraw(
+                    TIME_ICON_SIZE,
+                    paxg::Vec2i(width - X_LOAD_OR_DELETE, base_y)
+                );
 
-                    // 再生ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
-                        TIME_ICON_SIZE, paxg::Vec2i(paxg::Window::width() - 300, debug_start_y_));
+                texture_dictionary.at(MurMur3::calcHash("texture_playback")).resizedDraw(
+                    TIME_ICON_SIZE,
+                    paxg::Vec2i(width - X_PLAY_OR_STOP, base_y)
+                );
 
-                    // 1ステップ実行ボタン
-                    texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
-                        TIME_ICON_SIZE, paxg::Vec2i(paxg::Window::width() - 240, debug_start_y_));
-                }
+                texture_dictionary.at(MurMur3::calcHash("texture_1step")).resizedDraw(
+                    TIME_ICON_SIZE,
+                    paxg::Vec2i(width - X_STEP, base_y)
+                );
             }
         }
 
+    private:
+        // クリック時コールバック
+        ClickCallback on_click_;
+
+        ButtonId hitTestButton(int mx, int my) const {
+            const auto width = paxg::Window::width();
+            const int base_y = debug_start_y_;
+
+            // 未初期化の場合：地形データ読み込みだけ出てる
+            if (simulator_ptr_->get() == nullptr) {
+                if (hitRect(mx, my, width - X_LOAD_OR_DELETE, base_y, TIME_ICON_SIZE, TIME_ICON_SIZE)) {
+                    return ButtonId::LoadGeographicData;
+                }
+                return ButtonId::None;
+            }
+
+            // 初期化済み
+            if (koyomi_->is_agent_update) {
+                // 再生中 → 停止だけ
+                if (hitRect(mx, my, width - X_PLAY_OR_STOP, base_y, TIME_ICON_SIZE, TIME_ICON_SIZE)) {
+                    return ButtonId::Stop;
+                }
+                return ButtonId::None;
+            }
+
+            // 停止中 → 複数ボタン
+            if (hitRect(mx, my, width - X_INIT_OR_RELOAD, base_y + RELOAD_OFFSET_Y, TIME_ICON_SIZE, TIME_ICON_SIZE)) {
+                return ButtonId::ReloadInputData;
+            }
+            if (hitRect(mx, my, width - X_INIT_OR_RELOAD, base_y, TIME_ICON_SIZE, TIME_ICON_SIZE)) {
+                return ButtonId::InitHumanData;
+            }
+            if (hitRect(mx, my, width - X_LOAD_OR_DELETE, base_y, TIME_ICON_SIZE, TIME_ICON_SIZE)) {
+                return ButtonId::DeleteGeographicData;
+            }
+            if (hitRect(mx, my, width - X_PLAY_OR_STOP, base_y, TIME_ICON_SIZE, TIME_ICON_SIZE)) {
+                return ButtonId::Play;
+            }
+            if (hitRect(mx, my, width - X_STEP, base_y, TIME_ICON_SIZE, TIME_ICON_SIZE)) {
+                return ButtonId::Step;
+            }
+
+            return ButtonId::None;
+        }
+
+        static constexpr bool hitRect(int mx, int my, int rx, int ry, int w, int h) {
+            return (mx >= rx && mx < rx + w && my >= ry && my < ry + h);
+        }
     };
 
-}
+} // namespace paxs
+
 
 #endif // !PAX_MAHOROBA_UI_SIMULATION_CONTROL_BUTTONS_HPP

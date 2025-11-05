@@ -31,7 +31,7 @@ namespace paxs {
     private:
         /// @brief 登録されたマウスイベントハンドラーのリスト
         /// @brief List of registered mouse event handlers
-        std::vector<IMouseEventHandler*> handlers_;
+        std::vector<IMouseEventHandler*> handlers;
 
         /// @brief ソート済みフラグ（最適化用）
         /// @brief Sorted flag (for optimization)
@@ -51,7 +51,7 @@ namespace paxs {
         /// @param handler 登録するハンドラー / Handler to register
         void registerHandler(IMouseEventHandler* handler) {
             if (handler == nullptr) return;
-            handlers_.push_back(handler);
+            handlers.push_back(handler);
             is_sorted_ = false;  // 新規登録があったらソートフラグをリセット
         }
 
@@ -59,9 +59,9 @@ namespace paxs {
         /// @brief Unregister an mouse event handler
         /// @param handler 登録解除するハンドラー / Handler to unregister
         void unregisterHandler(IMouseEventHandler* handler) {
-            auto it = std::find(handlers_.begin(), handlers_.end(), handler);
-            if (it != handlers_.end()) {
-                handlers_.erase(it);
+            auto it = std::find(handlers.begin(), handlers.end(), handler);
+            if (it != handlers.end()) {
+                handlers.erase(it);
                 // ソートフラグはそのまま（削除してもソート順は維持される）
             }
         }
@@ -69,7 +69,7 @@ namespace paxs {
         /// @brief すべての登録を解除
         /// @brief Unregister all handlers
         void clear() {
-            handlers_.clear();
+            handlers.clear();
             is_sorted_ = false;
         }
 
@@ -77,7 +77,7 @@ namespace paxs {
         /// @brief Get the number of registered handlers
         /// @return ハンドラー数 / Number of handlers
         std::size_t size() const {
-            return handlers_.size();
+            return handlers.size();
         }
 
         /// @brief 優先度（レイヤーの逆順）でソート
@@ -86,7 +86,7 @@ namespace paxs {
         /// レイヤー値が大きい順（前面→背面）にソートします。
         /// Sorts in descending layer value order (foreground → background).
         void sort() {
-            std::stable_sort(handlers_.begin(), handlers_.end(),
+            std::stable_sort(handlers.begin(), handlers.end(),
                 [](const IMouseEventHandler* a, const IMouseEventHandler* b) {
                     // 逆順（前面が先）
                     return a->getLayer() > b->getLayer();
@@ -101,7 +101,6 @@ namespace paxs {
         ///
         /// 前面から順に各ハンドラーにイベントを渡し、処理されたら伝播を停止します。
         /// ドラッグキャプチャ中の場合は、キャプチャしたハンドラーのみに送信します。
-        /// Passes the event to each handler from front to back, stopping propagation if handled.
         bool routeEvent(const MouseEvent& event) {
             // ドラッグキャプチャ中の場合、キャプチャしたハンドラーのみに送信
             if (captured_handler_ != nullptr) {
@@ -125,11 +124,11 @@ namespace paxs {
             }
 
             // 前面から順にマウスイベントを処理
-            for (IMouseEventHandler* handler : handlers_) {
+            for (IMouseEventHandler* handler : handlers) {
                 if (handler == nullptr || !handler->isEnabled()) continue;
 
                 // ヒットテストを実行（座標がハンドラーの範囲内かチェック）
-                if (!handler->hitTest(event.x, event.y)) continue;
+                if (!handler->isHit(event.x, event.y)) continue;
 
                 // ハンドラーにマウスイベントを渡す
                 EventHandlingResult result = handler->handleEvent(event);
@@ -162,14 +161,14 @@ namespace paxs {
             }
 
             // 指定範囲のレイヤーのみ処理
-            for (IMouseEventHandler* handler : handlers_) {
+            for (IMouseEventHandler* handler : handlers) {
                 if (handler == nullptr || !handler->isEnabled()) continue;
 
                 RenderLayer layer = handler->getLayer();
                 if (layer < min_layer || layer > max_layer) continue;
 
                 // ヒットテストを実行
-                if (!handler->hitTest(event.x, event.y)) continue;
+                if (!handler->isHit(event.x, event.y)) continue;
 
                 // ハンドラーにマウスイベントを渡す
                 EventHandlingResult result = handler->handleEvent(event);
@@ -205,13 +204,13 @@ namespace paxs {
         /// @return イベントが処理された場合true / true if event was handled
         bool routeInputLayer(const MouseEvent& event, RenderLayer target_layer) {
             // ソート不要（特定レイヤーのみフィルタリング）
-            for (IMouseEventHandler* handler : handlers_) {
+            for (IMouseEventHandler* handler : handlers) {
                 if (handler == nullptr || !handler->isEnabled()) continue;
 
                 if (handler->getLayer() != target_layer) continue;
 
                 // ヒットテストを実行
-                if (!handler->hitTest(event.x, event.y)) continue;
+                if (!handler->isHit(event.x, event.y)) continue;
 
                 // ハンドラーにマウスイベントを渡す
                 EventHandlingResult result = handler->handleEvent(event);

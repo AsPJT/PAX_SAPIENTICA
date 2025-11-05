@@ -33,17 +33,14 @@ namespace paxs {
         /// @brief Handle mouse event
         /// @param event マウスイベント / Mouse event
         /// @return イベント処理結果 / Event handling result
-        virtual EventHandlingResult handleEvent(const MouseEvent& event) {
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
+        virtual EventHandlingResult handleEvent(const MouseEvent& event) = 0;
 
         /// @brief 指定座標がこのオブジェクトの範囲内かどうかをチェック（ヒットテスト）
         /// @brief Check if the specified coordinates are within this object's bounds (hit test)
         /// @param x X座標 / X coordinate
         /// @param y Y座標 / Y coordinate
         /// @return 範囲内ならtrue / true if within bounds
-        virtual bool hitTest(int x, int y) const = 0;
+        virtual bool isHit(int x, int y) const = 0;
 
         /// @brief このオブジェクトが属する入力処理レイヤーを取得
         /// @brief Get the input handling layer this object belongs to

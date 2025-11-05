@@ -12,9 +12,12 @@
 #ifndef PAX_MAHOROBA_UI_INPUT_HANDLER_HPP
 #define PAX_MAHOROBA_UI_INPUT_HANDLER_HPP
 
+#include <algorithm>
+#include <vector>
+
 #include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
+#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
-#include <PAX_MAHOROBA/UI/UILayer.hpp>
 
 namespace paxs {
 
@@ -22,44 +25,61 @@ namespace paxs {
     /// @brief Handles input processing for UI
     class UIInputHandler : public IMouseEventHandler {
     private:
-        bool enabled_ = true; // 入力処理の有効/無効
-        UILayer* ui_layer_ = nullptr; // UILayerへの参照（入力を委譲）
+        /// @brief 登録されたウィジェットのリスト
+        /// @brief List of registered widgets
+        std::vector<IMouseEventHandler*> registered_widgets_;
 
+        bool is_sorted_ = false;
+
+        void sortWidgets() {
+            if (is_sorted_) return;
+            std::sort(registered_widgets_.begin(), registered_widgets_.end(),
+                [](IMouseEventHandler* a, IMouseEventHandler* b) {
+                    return static_cast<std::uint16_t>(a->getLayer()) > static_cast<std::uint16_t>(b->getLayer());
+                });
+            is_sorted_ = true;
+        }
     public:
         UIInputHandler() = default;
 
-        /// @brief UILayerを設定
-        /// @brief Set UILayer
-        /// @param ui_layer UILayerへのポインタ / Pointer to UILayer
-        void setUILayer(UILayer* ui_layer) {
-            ui_layer_ = ui_layer;
+        /// @brief ウィジェットを登録
+        /// @brief Register a widget
+        /// @param widget 登録するウィジェット / Widget to register
+        void registerWidget(IMouseEventHandler* widget) {
+            if (widget == nullptr) return;
+            registered_widgets_.push_back(widget);
+            is_sorted_ = false;
         }
-
-        // IInputHandler の実装
-        // IInputHandler implementation
 
         /// @brief マウスイベント処理（IInputHandlerインターフェース）
         /// @brief Handle mouse event (IInputHandler interface)
         /// @param event マウスイベント / Mouse event
         /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!enabled_ || ui_layer_ == nullptr) {
-                return EventHandlingResult::NotHandled();
-            }
+            sortWidgets();
 
-            // UILayerに入力処理を委譲
-            return ui_layer_->handleMouseInput(event);
+            for (IMouseEventHandler* handler : registered_widgets_) {
+                if (handler->isHit(event.x, event.y)) {
+                    EventHandlingResult result = handler->handleEvent(event);
+                    if (result.handled) {
+                        return result; // イベントが処理されたら終了
+                    }
+                }
+            }
+            return EventHandlingResult::NotHandled();
         }
 
-        /// @brief ヒットテスト（画面全体を対象）
-        /// @brief Hit test (targets entire screen)
+        /// @brief ヒットテスト
+        /// @brief Hit test
         /// @param x X座標 / X coordinate
         /// @param y Y座標 / Y coordinate
-        /// @return 常にtrue（UI層は画面全体をカバー）/ Always true (UI layer covers entire screen)
-        bool hitTest(int x, int y) const override {
-            (void)x;
-            (void)y;
-            return true; // UI層は画面全体をカバー
+        bool isHit(int x, int y) const override {
+            for (const IMouseEventHandler* handler : registered_widgets_) {
+                if (handler->isHit(x, y)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// @brief レンダリングレイヤーを取得
@@ -69,18 +89,12 @@ namespace paxs {
             return RenderLayer::UIContent;
         }
 
-        /// @brief 入力処理が有効かどうかを取得
-        /// @brief Check if input handling is enabled
-        /// @return 入力処理が有効ならtrue / true if input handling is enabled
         bool isEnabled() const override {
-            return enabled_;
+            return true;
         }
 
-        /// @brief 入力処理の有効/無効を設定
-        /// @brief Set enabled state
-        /// @param enabled 有効にする場合true / true to enable
         void setEnabled(bool enabled) {
-            enabled_ = enabled;
+            (void)enabled;
         }
     };
 

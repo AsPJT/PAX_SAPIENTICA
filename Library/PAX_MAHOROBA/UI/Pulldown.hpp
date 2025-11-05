@@ -51,6 +51,7 @@ namespace paxs {
     class Pulldown : public IWidget {
     public:
         Pulldown() = default;
+
         // X を指定したサイズに変更
         void setRectX(const std::size_t x = 0) {
             rect.setX(static_cast<float>(x));
@@ -162,7 +163,7 @@ namespace paxs {
         }
 
         // 入力処理
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
             if (isEmpty()) return EventHandlingResult::NotHandled();
             if (language_ptr == nullptr) return EventHandlingResult::NotHandled(); // 言語がない場合は処理をしない
             if (select_language_ptr == nullptr) return EventHandlingResult::NotHandled(); // 選択されている言語がない場合は処理をしない
@@ -285,8 +286,6 @@ namespace paxs {
             const std::uint_least32_t select_key = ((is_one_font) ? items_key[item_index] : (*select_language_ptr).cgetKey());
 
             // 種別によって描画処理を変える
-            // SelectedValue: 選択された値を表示（言語選択など）
-            // FixedHeader: 固定のヘッダー名を表示（メニューバーなど）
             if (display_type == PulldownDisplayType::SelectedValue) {
                 const std::string* str = (*language_ptr).getStringPtr(items_key[index], (*select_language_ptr).cgetKey());
                 if (str == nullptr) {
@@ -395,18 +394,17 @@ namespace paxs {
 
         /// @brief レンダリングレイヤーを取得
         /// @brief Get rendering layer
+        /// @note プルダウンは常に最前面（UIOverlay）で描画・入力処理される
         RenderLayer getLayer() const override {
-            return is_open ? RenderLayer::UIOverlay : RenderLayer::UIContent;
+            return RenderLayer::UIOverlay;
         }
-
-        bool isAvailable() const override { return true; }
 
         /// @brief ヒットテスト（プルダウンが開いている場合は全項目を含む）
         /// @brief Hit test (includes all items when pulldown is open)
         /// @param x X座標 / X coordinate
         /// @param y Y座標 / Y coordinate
         /// @return 範囲内ならtrue / true if within bounds
-        bool hitTest(int x, int y) const override {
+        bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
 
             // ヘッダー部分のヒットテスト
@@ -418,12 +416,14 @@ namespace paxs {
 
             // プルダウンが開いている場合は、ドロップダウン項目のヒットテストも行う
             if (is_open) {
+                // ドロップダウン項目の幅は all_rect_x（全項目中の最大幅）
+                const float item_width = all_rect_x;
                 paxg::Vec2i pos = paxg::Vec2i(
                     static_cast<int>(header_rect.x()),
                     static_cast<int>(header_rect.y() + header_rect.h()));
 
                 for (std::size_t i = 0; i < items_key.size(); ++i) {
-                    const paxg::Rect item_rect{ pos, header_rect.w(), header_rect.h() };
+                    const paxg::Rect item_rect{ pos, item_width, header_rect.h() };
                     if (x >= item_rect.x() && x < item_rect.x() + item_rect.w() &&
                         y >= item_rect.y() && y < item_rect.y() + item_rect.h()) {
                         return true;

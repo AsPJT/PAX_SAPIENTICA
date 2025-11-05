@@ -23,16 +23,8 @@
 
 namespace paxs {
 
-    /// @brief UIパネルの背景を描画するウィジェット
-    /// @brief UI panel background rendering widget
-    ///
-    /// PanelBackgroundクラス（低レベル描画ヘルパー）をラップし、
-    /// IWidgetインターフェースとレイアウト管理機能を提供します。
-    /// Wraps PanelBackground class (low-level drawing helper) and provides
-    /// IWidget interface and layout management functionality.
-    ///
-    /// 薄灰色（{243, 243, 243}）を標準背景色として使用します。
-    /// Uses light gray ({243, 243, 243}) as the standard background color.
+    /// @brief UIパネルの背景を描画するクラス
+    /// @brief UI panel background rendering class
     class UIPanelBackground : public IWidget {
     public:
         /// @brief コンストラクタ
@@ -41,33 +33,21 @@ namespace paxs {
         /// @param corner_radius 角の丸み半径（デフォルト: 10）
         UIPanelBackground(
             const char* name,
+            const PanelLayout* layout,
             const paxg::Color& bg_color = paxg::Color{243, 243, 243},
             int corner_radius = 10
         )
             : name_(name)
             , bg_color_(bg_color)
             , corner_radius_(corner_radius)
+            , layout_(layout)
         {}
-
-        /// @brief レイアウトを設定（通常のパネル用）
-        /// @brief Set layout (for normal panels)
-        /// @param layout レイアウト情報（nullptrの場合は画面幅全体を使用）
-        void setLayout(const PanelLayout* layout) {
-            if (layout) {
-                layout_ = *layout;
-                use_layout_ = true;
-            } else {
-                use_layout_ = false;
-            }
-        }
 
         /// @brief 高さを設定（画面幅全体を使用するパネル用）
         /// @brief Set height (for panels that use full screen width)
         void setHeight(int height) {
-            layout_.height = height;
+            (void)height;
         }
-
-        // IWidget インターフェース実装
 
         const char* getName() const override {
             return name_;
@@ -75,10 +55,6 @@ namespace paxs {
 
         RenderLayer getLayer() const override {
             return RenderLayer::UIBackground;
-        }
-
-        bool isAvailable() const override {
-            return true;
         }
 
         void setEnabled(bool enabled) override {
@@ -90,31 +66,27 @@ namespace paxs {
         }
 
         paxg::Rect getRect() const override {
-            if (use_layout_) {
+            if (layout_) {
                 return paxg::Rect{
-                    static_cast<float>(layout_.x),
-                    static_cast<float>(layout_.y),
-                    static_cast<float>(layout_.width),
-                    static_cast<float>(layout_.height)
+                    static_cast<float>(layout_->x),
+                    static_cast<float>(layout_->y),
+                    static_cast<float>(layout_->width),
+                    static_cast<float>(layout_->height)
                 };
             }
             else {
-                // 画面幅全体を使用（ヘッダーパネル等）
+                PAXS_WARNING("UIPanelBackground::getRect: layout is not set, returning full width rect");
                 return paxg::Rect{
                     0.0f,
                     0.0f,
-                    static_cast<float>(paxg::Window::width()),
-                    static_cast<float>(layout_.height)
+                    0.0f,
+                    0.0f
                 };
             }
         }
 
         void setPos(const paxg::Vec2i& pos) override {
-            if (use_layout_) {
-                layout_.x = pos.x();
-                layout_.y = pos.y();
-            }
-            // use_layout_ == false の場合は位置指定を無視（常に画面上部）
+            (void)pos;
         }
 
         void setVisible(bool visible) override {
@@ -125,7 +97,7 @@ namespace paxs {
             return visible_;
         }
 
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
             // パネル背景上のすべてのマウスイベントを消費（背後へのクリック防止）
             if (event.left_button_state == MouseButtonState::Pressed ||
                 event.left_button_state == MouseButtonState::Held ||
@@ -138,39 +110,29 @@ namespace paxs {
         void render() const override {
             if (!visible_) return;
 
-            if (use_layout_) {
-                // レイアウトを使用する場合
-                if (layout_.width <= 0 || layout_.height <= 0) return;
+            if (layout_) {
+                if (layout_->width <= 0 || layout_->height <= 0) return;
 
                 background_.draw(
-                    layout_.x,
-                    layout_.y,
-                    layout_.width,
-                    layout_.height,
+                    layout_->x,
+                    layout_->y,
+                    layout_->width,
+                    layout_->height,
                     corner_radius_,
                     bg_color_
                 );
             }
             else {
-                // 画面幅全体を使用する場合（ヘッダーパネル等）
-                if (layout_.height <= 0) return;
-
-                background_.drawRect(
-                    0, 0,
-                    paxg::Window::width(),
-                    layout_.height,
-                    bg_color_
-                );
+                PAXS_WARNING(std::string("UIPanelBackground::render: ") + name_ + " layout is not set, skipping render");
             }
         }
 
     private:
         const char* name_;                  // パネル名
         PanelBackground background_;        // 背景描画ヘルパー（低レベル描画）
-        PanelLayout layout_;                // レイアウト情報
+        const PanelLayout* layout_;                // レイアウト情報
         paxg::Color bg_color_;              // 背景色
         int corner_radius_;                 // 角の丸み半径
-        bool use_layout_ = true;            // レイアウト使用フラグ
         bool visible_ = true;               // 可視性
         bool enabled_ = true;               // 有効性
     };

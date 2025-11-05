@@ -19,10 +19,14 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/UI/GitHubButton.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
@@ -32,7 +36,7 @@ namespace paxs {
 
     /// @brief ヘッダーパネル - アプリ上部のUI（メニューバー + 言語選択）を管理
     /// @brief Header Panel - Manages top UI elements (MenuBar + Language Selector)
-    class HeaderPanel : public IWidget {
+    class HeaderPanel : public IWidget{
     public:
         /// @brief 初期化
         /// @param select_language 選択言語
@@ -59,6 +63,9 @@ namespace paxs {
                 true
             );
 
+            // GitHubボタンを初期化
+            github_button_.setLanguageSelector(&language_selector_);
+
             // メニューバーにメニュー項目を追加
             menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("view"));
             menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("place_names"));
@@ -67,15 +74,14 @@ namespace paxs {
             calculateLayout();
         }
 
-
-        /// @brief GitHubアイコンのテクスチャを設定
-        /// @brief Set GitHub icon texture
-        void setGitHubTexture(const paxg::Texture* texture) {
-            github_texture_ = texture;
+        /// @brief GitHubボタンの取得（MouseEventRouterへの登録用）
+        /// @brief Get GitHub button (for MouseEventRouter registration)
+        paxs::GitHubButton& getGitHubButton() {
+            return github_button_;
         }
 
-        /// @brief レイアウトを計算（画面サイズ変更時に呼び出し）
-        void calculateLayout() {
+        /// @brief レイアウトを計算
+        void calculateLayout() const {
             // 言語選択プルダウンを右端に配置
             language_selector_.setPos(paxg::Vec2i{
                 static_cast<int>(paxg::Window::width() - language_selector_.getRect().w()),
@@ -108,124 +114,169 @@ namespace paxs {
             return language_selector_.getKey();
         }
 
-        // IWidget インターフェースの実装
-        EventHandlingResult handleMouseInput(const MouseEvent& event) override {
-            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
+        /// @brief 可視性状態をメニューに反映（初期化時に呼び出し）
+        /// @brief Initialize menu from visibility state
+        void initializeMenuFromVisibility(paxs::FeatureVisibilityManager* visible_manager) {
+            auto* view_menu = menu_bar_.getMenuItem(MurMur3::calcHash("view"));
+            if (view_menu) {
+                view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MurMur3::calcHash("Calendar")));
+                view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MurMur3::calcHash("Map")));
+                view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MurMur3::calcHash("UI")));
+                view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MurMur3::calcHash("Simulation")));
+                view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MurMur3::calcHash("License")));
+                view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(MurMur3::calcHash("Debug")));
+                view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(MurMur3::calcHash("3D")));
+            }
+        }
 
-            calculateLayout();  // 毎フレーム位置を更新
-
-            // メニューバーと言語選択を更新
-            EventHandlingResult menu_result = menu_bar_.handleMouseInput(event);
-            EventHandlingResult lang_result = language_selector_.handleMouseInput(event);
-
-            // GitHubアイコンのクリック判定（言語セレクターの左、HeaderPanel中央に配置）
-            if (event.left_button_state == MouseButtonState::Released) {
-                const float github_x = static_cast<float>(paxg::Window::width() - language_selector_.getRect().w() - 32);
-                const float github_y = (language_selector_.getRect().h() - 28.0f) / 2.0f;  // 中央配置
-                if (event.x >= github_x && event.x < github_x + 28.0f &&
-                    event.y >= github_y && event.y < github_y + 28.0f) {
-                    paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
-                    return EventHandlingResult::Handled();
-                }
+        /// @brief メニュー状態を可視性に反映（毎フレーム呼び出し）
+        /// @brief Sync visibility from menu state
+        void syncVisibilityFromMenu(paxs::FeatureVisibilityManager* visible_manager) {
+            // View メニューの状態を同期
+            auto* view_menu = menu_bar_.getMenuItem(MurMur3::calcHash("view"));
+            if (view_menu) {
+                visible_manager->setVisibility(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
+                visible_manager->setVisibility(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
+                visible_manager->setVisibility(MurMur3::calcHash("UI"), view_menu->getIsItems(std::size_t(2)));
+                visible_manager->setVisibility(MurMur3::calcHash("Simulation"), view_menu->getIsItems(std::size_t(3)));
+                visible_manager->setVisibility(MurMur3::calcHash("License"), view_menu->getIsItems(std::size_t(4)));
+                visible_manager->setVisibility(MurMur3::calcHash("Debug"), view_menu->getIsItems(std::size_t(5)));
+                visible_manager->setVisibility(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
             }
 
-            // いずれかの子コンポーネントがイベントを処理した場合はHandledを返す
-            if (menu_result.handled || lang_result.handled) {
-                return EventHandlingResult::Handled();
+            // Place Names メニューの状態を同期
+            auto* place_names_menu = menu_bar_.getMenuItem(MurMur3::calcHash("place_names"));
+            if (place_names_menu) {
+                visible_manager->setVisibility(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
+                visible_manager->setVisibility(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
+                visible_manager->setVisibility(MurMur3::calcHash("tumulus"), place_names_menu->getIsItems(std::size_t(2)));
+                visible_manager->setVisibility(MurMur3::calcHash("dolmen"), place_names_menu->getIsItems(std::size_t(3)));
+                visible_manager->setVisibility(MurMur3::calcHash("kamekanbo"), place_names_menu->getIsItems(std::size_t(4)));
+                visible_manager->setVisibility(MurMur3::calcHash("stone_coffin"), place_names_menu->getIsItems(std::size_t(5)));
+                visible_manager->setVisibility(MurMur3::calcHash("doken"), place_names_menu->getIsItems(std::size_t(6)));
+                visible_manager->setVisibility(MurMur3::calcHash("dotaku"), place_names_menu->getIsItems(std::size_t(7)));
+                visible_manager->setVisibility(MurMur3::calcHash("bronze_mirror"), place_names_menu->getIsItems(std::size_t(8)));
+                visible_manager->setVisibility(MurMur3::calcHash("human_bone"), place_names_menu->getIsItems(std::size_t(9)));
+                visible_manager->setVisibility(MurMur3::calcHash("mtdna"), place_names_menu->getIsItems(std::size_t(10)));
+                visible_manager->setVisibility(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
             }
-            return EventHandlingResult::NotHandled();
+
+            // Map メニューの状態を同期
+            auto* map_menu = menu_bar_.getMenuItem(MurMur3::calcHash("map"));
+            if (map_menu) {
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_base"), map_menu->getIsItems(std::size_t(0)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_sea"), map_menu->getIsItems(std::size_t(1)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_water"), map_menu->getIsItems(std::size_t(2)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_soil"), map_menu->getIsItems(std::size_t(3)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_soil_temperature"), map_menu->getIsItems(std::size_t(4)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_country"), map_menu->getIsItems(std::size_t(5)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_line"), map_menu->getIsItems(std::size_t(6)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_slope"), map_menu->getIsItems(std::size_t(7)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"), map_menu->getIsItems(std::size_t(8)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"), map_menu->getIsItems(std::size_t(9)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_line1"), map_menu->getIsItems(std::size_t(10)));
+                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_line2"), map_menu->getIsItems(std::size_t(11)));
+            }
         }
 
         void render() const override {
-            if (!visible_) return;
+            if (!isVisible()) {
+                return;
+            }
+
+            // 背景を描画
+            paxg::Rect background_rect = getRect();
+            background_rect.drawShadow({ 0, 1 }, 2, 1).draw(paxg::Color{ 243, 243, 243 });
+            background_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
 
             // メニューバーと言語選択を描画
+            calculateLayout();
             menu_bar_.render();
             language_selector_.render();
 
-            // GitHubアイコンを描画（言語セレクターの左、HeaderPanel中央に配置）
-            if (github_texture_) {
-                const int github_x = paxg::Window::width() - static_cast<int>(language_selector_.getRect().w()) - 32;
-                const int github_y = static_cast<int>((language_selector_.getRect().h() - 24) / 2);  // 中央配置
-                github_texture_->resizedDraw(24, paxg::Vec2i{ github_x, github_y });
-            }
+            // GitHubボタンを描画
+            github_button_.render();
+        }
+
+        void setVisible(bool visible) override { (void)visible; }
+        bool isVisible() const override { return true; }
+
+        /// @brief レンダリングレイヤーを取得
+        /// @brief Get rendering layer
+        /// @note ヘッダーパネルは常に最前面（Header）で描画される
+        RenderLayer getLayer() const override {
+            return RenderLayer::Header;
         }
 
         paxg::Rect getRect() const override {
             return paxg::Rect{
-                0,
-                0,
-                static_cast<float>(paxg::Window::width()), getHeight()
+                0.f,
+                0.f,
+                static_cast<float>(paxg::Window::width()),
+                getHeight()
             };
         }
 
         void setPos(const paxg::Vec2i& pos) override {
-            (void)pos;  // ヘッダーは常に画面上部なので位置指定は無視
+            (void)pos;
         }
 
-        void setVisible(bool visible) override { visible_ = visible; }
-        bool isVisible() const override { return visible_; }
-
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
-
-        const char* getName() const override { return "HeaderPanel"; }
-
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
-        RenderLayer getLayer() const override {
-            // MenuBarまたは言語選択が開いている場合はUIOverlayを返す
-            if (menu_bar_.getLayer() == RenderLayer::UIOverlay || language_selector_.isOpen()) {
-                return RenderLayer::UIOverlay;
-            }
-            return RenderLayer::UIContent;
+        void setEnabled(bool enabled) override {
+            (void)enabled;
         }
-        bool isAvailable() const override { return true; }
 
-        /// @brief ヒットテスト（MenuBarやPulldownが開いている場合は拡張）
-        /// @brief Hit test (extended when MenuBar or Pulldown is open)
-        bool hitTest(int x, int y) const override {
+        bool isEnabled() const override {
+            return true;
+        }
+
+        const char* getName() const override {
+            return "HeaderPanel";
+        }
+
+        bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
-
-            // MenuBarのhitTestを優先（ドロップダウン項目を含む）
-            if (menu_bar_.hitTest(x, y)) {
-                return true;
-            }
-
-            // 言語選択のhitTest
-            if (language_selector_.hitTest(x, y)) {
-                return true;
-            }
-
-            // GitHubアイコンのhitTest
-            const float github_x = static_cast<float>(paxg::Window::width() - language_selector_.getRect().w() - 32);
-            const float github_y = (language_selector_.getRect().h() - 28.0f) / 2.0f;
-            if (x >= github_x && x < github_x + 28.0f &&
-                y >= github_y && y < github_y + 28.0f) {
-                return true;
-            }
-
-            // 基本のHeaderPanel領域
+            if (menu_bar_.isHit(x, y)) return true;
+            if (language_selector_.isHit(x, y)) return true;
             const paxg::Rect rect = getRect();
-            return (x >= rect.x() && x < rect.x() + rect.w() &&
-                    y >= rect.y() && y < rect.y() + rect.h());
+            return rect.contains(static_cast<float>(x), static_cast<float>(y));
+        }
+
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            // メニューバーのマウス入力処理
+            if (menu_bar_.isHit(event.x, event.y)) {
+                return menu_bar_.handleEvent(event);
+            }
+
+            // 言語選択プルダウンのマウス入力処理
+            if (language_selector_.isHit(event.x, event.y)) {
+                return language_selector_.handleEvent(event);
+            }
+
+            // GitHubボタンのマウス入力処理
+            if (github_button_.isHit(event.x, event.y)) {
+                return github_button_.handleEvent(event);
+            }
+
+            // Headerの範囲内か
+            if (getRect().contains(static_cast<float>(event.x), static_cast<float>(event.y))) {
+                return EventHandlingResult::Handled();
+            }
+
+            return EventHandlingResult::NotHandled();
         }
 
     private:
         // 状態管理
         bool visible_ = true;
-        bool enabled_ = true;
 
         // 子ウィジェット
-        paxs::Pulldown language_selector_;
-        paxs::MenuBar menu_bar_;
+        mutable paxs::Pulldown language_selector_;
+        mutable paxs::MenuBar menu_bar_;
+        mutable paxs::GitHubButton github_button_;
 
         // 設定値
         const SelectLanguage* select_language_ = nullptr;
         const paxs::Language* language_text_ = nullptr;
-
-        // GitHubアイコンテクスチャ（外部から注入）
-        const paxg::Texture* github_texture_ = nullptr;
     };
 
 } // namespace paxs

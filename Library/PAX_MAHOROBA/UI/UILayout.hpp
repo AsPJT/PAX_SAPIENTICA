@@ -55,6 +55,7 @@ namespace paxs {
         PanelLayout calendar_panel;
         PanelLayout simulation_panel;
         PanelLayout settlement_status_panel;
+        PanelLayout debug_info_panel;
 
         // カレンダーテキストの位置
         int koyomi_font_y = 0;
@@ -76,9 +77,19 @@ namespace paxs {
         int next_rect_start_y = 0;
         int next_rect_end_y = 0;
 
+        // デバッグ情報パネルの位置
+        const int debug_info_panel_x = 10;
+        const int debug_info_panel_y = 10;
+        const int debug_info_panel_width = 300;
+        const int debug_info_panel_height = 250;
+
+        // シミュレーション情報パネルの位置
+        const int simulation_info_panel_x = 40;
+        const int simulation_info_panel_y = 80;
+        const int simulation_info_panel_width = 300; // テキスト幅 + パディング
+        const int simulation_info_panel_height = 60; // テキスト高さ + パディング
+
         // レイアウトを計算
-        // date_list_size: 表示する暦の数
-        // time_control_panel_height: 時間操作パネルの高さ
         void calculate(
             std::size_t date_list_size,
             int time_control_panel_height
@@ -117,8 +128,12 @@ namespace paxs {
             simulation_panel.height = next_rect_end_y;
             simulation_panel.calculateContentArea();
 
-            // SettlementStatusPanelのレイアウトは動的（テキストサイズに依存）
-            // コンテンツ側で計算してsetLayout()で設定
+            // DebugInfoPanelのレイアウト
+            debug_info_panel.x = debug_info_panel_x;
+            debug_info_panel.y = paxg::Window::height() - debug_info_panel_height - debug_info_panel_y;
+            debug_info_panel.width = debug_info_panel_width;
+            debug_info_panel.height = debug_info_panel_height;
+            debug_info_panel.calculateContentArea();
         }
 
         // シミュレーション情報の開始Y座標を取得

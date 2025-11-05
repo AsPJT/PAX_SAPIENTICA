@@ -36,22 +36,20 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/MouseClickStateManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <memory>
 
 namespace paxs {
 
     // 主要な実行時定数・変数
     void startMain() { // フォルダ階層
         paxs::PaxSapienticaInit::firstInit(); // 初期化とロゴの表示
-
         MapViewport map_viewport{};
-        MapViewportInputHandler map_viewport_input_handler{}; // 地図ビューポートの入力処理
+        std::unique_ptr<paxs::MapViewportInputHandler> map_viewport_input_handler = std::make_unique<MapViewportInputHandler>(); // 地図ビューポートの入力処理
+        std::unique_ptr<paxs::UIInputHandler> ui_input_handler = std::make_unique<paxs::UIInputHandler>(); // UIの入力処理
         paxs::Koyomi koyomi{}; // 暦を管理する
         paxs::GraphicsManager graphics_manager{}; // グラフィック統合管理
 
-        graphics_manager.init();
-
-        // MapViewportInputHandlerをGraphicsManagerに登録
-        graphics_manager.setMapViewportInputHandler(&map_viewport_input_handler, &map_viewport);
+        graphics_manager.init(map_viewport_input_handler.get(), &map_viewport, ui_input_handler.get());
 
         map_viewport.setWidth(map_viewport.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
 
@@ -63,10 +61,8 @@ namespace paxs {
 
         paxs::PaxSapienticaInit::endLoadingScreen();
 
-        // マウスボタンごとの状態管理（Down/Held/Up/None検出用）
+        // マウスボタンの状態管理
         paxs::MouseClickStateManager left_button_state_manager;
-        paxs::MouseClickStateManager right_button_state_manager;
-        paxs::MouseClickStateManager middle_button_state_manager;
 
         /*##########################################################################################
             ループ開始
@@ -116,54 +112,6 @@ namespace paxs {
                 }
                 else if (left_state == paxs::MouseClickStateManager::State::Up) {
                     event.left_button_state = paxs::MouseButtonState::Released;
-                }
-
-                graphics_manager.getInputRouter().routeEvent(event);
-            }
-
-            // 右ボタンの状態を更新してイベントを発行
-            paxs::MouseClickStateManager::State right_state = right_button_state_manager.update(current_right_button);
-            if (right_state != paxs::MouseClickStateManager::State::None) {
-                paxs::MouseEvent event(mouse_x, mouse_y);
-                if (paxs::Key::isShiftPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_SHIFT;
-                if (paxs::Key::isCtrlPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_CTRL;
-                if (paxs::Key::isAltPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_ALT;
-                if (paxs::Key::isCommandPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_COMMAND;
-                event.prev_x = mouse->getPosXBefore1Frame();
-                event.prev_y = mouse->getPosYBefore1Frame();
-
-                if (right_state == paxs::MouseClickStateManager::State::Down) {
-                    event.right_button_state = paxs::MouseButtonState::Pressed;
-                }
-                else if (right_state == paxs::MouseClickStateManager::State::Held) {
-                    event.right_button_state = paxs::MouseButtonState::Held;
-                }
-                else if (right_state == paxs::MouseClickStateManager::State::Up) {
-                    event.right_button_state = paxs::MouseButtonState::Released;
-                }
-
-                graphics_manager.getInputRouter().routeEvent(event);
-            }
-
-            // 中ボタンの状態を更新してイベントを発行
-            paxs::MouseClickStateManager::State middle_state = middle_button_state_manager.update(current_middle_button);
-            if (middle_state != paxs::MouseClickStateManager::State::None) {
-                paxs::MouseEvent event(mouse_x, mouse_y);
-                if (paxs::Key::isShiftPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_SHIFT;
-                if (paxs::Key::isCtrlPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_CTRL;
-                if (paxs::Key::isAltPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_ALT;
-                if (paxs::Key::isCommandPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_COMMAND;
-                event.prev_x = mouse->getPosXBefore1Frame();
-                event.prev_y = mouse->getPosYBefore1Frame();
-
-                if (middle_state == paxs::MouseClickStateManager::State::Down) {
-                    event.middle_button_state = paxs::MouseButtonState::Pressed;
-                }
-                else if (middle_state == paxs::MouseClickStateManager::State::Held) {
-                    event.middle_button_state = paxs::MouseButtonState::Held;
-                }
-                else if (middle_state == paxs::MouseClickStateManager::State::Up) {
-                    event.middle_button_state = paxs::MouseButtonState::Released;
                 }
 
                 graphics_manager.getInputRouter().routeEvent(event);

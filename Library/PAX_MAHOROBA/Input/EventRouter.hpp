@@ -29,7 +29,7 @@ namespace paxs {
     private:
         /// @brief 登録されたイベントハンドラーのリスト
         /// @brief List of registered event handlers
-        std::vector<IEventHandler*> handlers_;
+        std::vector<IEventHandler*> handlers;
 
     public:
         /// @brief デフォルトコンストラクタ
@@ -41,7 +41,7 @@ namespace paxs {
         /// @param handler 登録するイベントハンドラー / Event handler to register
         void registerHandler(IEventHandler* handler) {
             if (handler != nullptr) {
-                handlers_.push_back(handler);
+                handlers.push_back(handler);
             }
         }
 
@@ -49,23 +49,23 @@ namespace paxs {
         /// @brief Unregister event handler
         /// @param handler 登録解除するイベントハンドラー / Event handler to unregister
         void unregisterHandler(IEventHandler* handler) {
-            handlers_.erase(
-                std::remove(handlers_.begin(), handlers_.end(), handler),
-                handlers_.end()
+            handlers.erase(
+                std::remove(handlers.begin(), handlers.end(), handler),
+                handlers.end()
             );
         }
 
         /// @brief 全ハンドラーをクリア
         /// @brief Clear all handlers
         void clear() {
-            handlers_.clear();
+            handlers.clear();
         }
 
         /// @brief 登録されているハンドラー数を取得
         /// @brief Get the number of registered handlers
         /// @return ハンドラー数 / Number of handlers
         std::size_t size() const {
-            return handlers_.size();
+            return handlers.size();
         }
 
         /// @brief キーボードイベントをブロードキャスト
@@ -77,7 +77,7 @@ namespace paxs {
         /// Keyboard events are coordinate-independent, so all handlers are notified in order.
         bool broadcastEvent(const KeyboardEvent& event) {
             bool handled = false;
-            for (IEventHandler* handler : handlers_) {
+            for (IEventHandler* handler : handlers) {
                 if (handler != nullptr && handler->isEnabled()) {
                     EventHandlingResult result = handler->handleEvent(event);
                     if (result.handled) {
@@ -99,7 +99,7 @@ namespace paxs {
         /// Mouse wheel events are coordinate-independent, so all handlers are notified in order.
         bool broadcastEvent(const MouseWheelEvent& event) {
             bool handled = false;
-            for (IEventHandler* handler : handlers_) {
+            for (IEventHandler* handler : handlers) {
                 if (handler != nullptr && handler->isEnabled()) {
                     EventHandlingResult result = handler->handleEvent(event);
                     if (result.handled) {
@@ -121,7 +121,7 @@ namespace paxs {
         /// Resize events are coordinate-independent, so all handlers are notified in order.
         bool broadcastEvent(const ResizeEvent& event) {
             bool handled = false;
-            for (IEventHandler* handler : handlers_) {
+            for (IEventHandler* handler : handlers) {
                 if (handler != nullptr && handler->isEnabled()) {
                     EventHandlingResult result = handler->handleEvent(event);
                     if (result.handled) {
@@ -141,7 +141,7 @@ namespace paxs {
         /// Focus events are coordinate-independent, so all handlers are notified in order.
         bool broadcastEvent(const FocusEvent& event) {
             bool handled = false;
-            for (IEventHandler* handler : handlers_) {
+            for (IEventHandler* handler : handlers) {
                 if (handler != nullptr && handler->isEnabled()) {
                     EventHandlingResult result = handler->handleEvent(event);
                     if (result.handled) {
