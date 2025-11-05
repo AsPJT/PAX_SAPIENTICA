@@ -106,13 +106,13 @@ namespace paxs {
         float x = 0.f;
         float h = 0.f;
 
-        for (paxs::DropDownMenu& mi : menu_list) {
-            const float w = mi.getRect().w();
-            const float item_h = mi.getRect().h();
+        for (paxs::DropDownMenu& menu : menu_list) {
+            const float w = menu.getRect().w();
+            const float item_h = menu.getRect().h();
 
-            mi.setPos(paxg::Vec2i{static_cast<int>(x), 0});
+            menu.setRectX(x);
 
-            x += w;               // 幅ぶんだけ進む
+            x += w; // 幅ぶんだけ進む
             h = std::max(h, item_h);
         }
 
@@ -155,6 +155,14 @@ namespace paxs {
 
         paxg::Rect getRect() const override {
             return bar_rect_;
+        }
+
+        // TODO: 言語更新の時に
+        void updateMenuWidth() {
+            for (paxs::DropDownMenu& menu : menu_list) {
+                menu.updateLanguage();
+            }
+            layout();
         }
     };
 } // namespace paxs

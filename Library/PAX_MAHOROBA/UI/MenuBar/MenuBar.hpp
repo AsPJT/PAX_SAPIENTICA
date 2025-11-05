@@ -54,15 +54,15 @@ namespace paxs {
             github_button_.setLanguageSelector(&language_selector_);
 
             // メニューバーにメニュー項目を追加（FontSystem経由）
-            menu_bar_.add(paxs::MenuBarKeys::VIEW_MENU_HASHES,
+            menu_system.add(paxs::MenuBarKeys::VIEW_MENU_HASHES,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MurMur3::calcHash("view"));
-            menu_bar_.add(paxs::MenuBarKeys::FEATURE_MENU_HASHES,
+            menu_system.add(paxs::MenuBarKeys::FEATURE_MENU_HASHES,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MurMur3::calcHash("place_names"));
-            menu_bar_.add(paxs::MenuBarKeys::MAP_MENU_HASHES,
+            menu_system.add(paxs::MenuBarKeys::MAP_MENU_HASHES,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MurMur3::calcHash("map"));
@@ -83,6 +83,8 @@ namespace paxs {
                 static_cast<int>(paxg::Window::width() - language_selector_.getRect().w()),
                 0
             });
+            // menu幅を設定
+            menu_system.updateMenuWidth();
         }
 
         /// @brief ヘッダーの高さを取得
@@ -92,12 +94,12 @@ namespace paxs {
 
         /// @brief メニューバーの取得（読み取り専用）
         const MenuSystem& getMenuSystem() const {
-            return menu_bar_;
+            return menu_system;
         }
 
         /// @brief メニューバーの取得（変更可能）- TileManager用
         MenuSystem& getMenuSystem() {
-            return menu_bar_;
+            return menu_system;
         }
 
         /// @brief 言語選択のインデックスを取得
@@ -122,7 +124,7 @@ namespace paxs {
             visible_manager->emplace(MurMur3::calcHash("3D"), false); // 360度写真
 
             // View メニューの状態を初期化
-            paxs::DropDownMenu* view_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("view"));
+            paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(MurMur3::calcHash("view"));
             if (!view_menu) {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
                 return;
@@ -139,7 +141,7 @@ namespace paxs {
         /// @brief メニュー状態を可視性に反映（毎フレーム呼び出し）
         void syncVisibilityFromMenu(paxs::FeatureVisibilityManager* visible_manager) {
             // View メニューの状態を同期
-            paxs::DropDownMenu* view_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("view"));
+            const paxs::DropDownMenu* view_menu = menu_system.cgetDropDownMenu(MurMur3::calcHash("view"));
             if (!view_menu) {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
                 return;
@@ -153,7 +155,7 @@ namespace paxs {
             visible_manager->setVisibility(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
 
             // Place Names メニューの状態を同期
-            paxs::DropDownMenu* place_names_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("place_names"));
+            const paxs::DropDownMenu* place_names_menu = menu_system.cgetDropDownMenu(MurMur3::calcHash("place_names"));
             if (!place_names_menu) {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'place_names' menu not found.");
                 return;
@@ -172,7 +174,7 @@ namespace paxs {
             visible_manager->setVisibility(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
 
             // Map メニューの状態を同期
-            paxs::DropDownMenu* map_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("map"));
+            const paxs::DropDownMenu* map_menu = menu_system.cgetDropDownMenu(MurMur3::calcHash("map"));
             if (!map_menu) {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'map' menu not found.");
                 return;
@@ -203,7 +205,7 @@ namespace paxs {
 
             // メニューバーと言語選択を描画
             calculateLayout();
-            menu_bar_.render();
+            menu_system.render();
             language_selector_.render();
 
             // GitHubボタンを描画
@@ -247,7 +249,7 @@ namespace paxs {
 
         bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
-            if (menu_bar_.isHit(x, y)) return true;
+            if (menu_system.isHit(x, y)) return true;
             if (language_selector_.isHit(x, y)) return true;
             const paxg::Rect rect = getRect();
             return rect.contains(static_cast<float>(x), static_cast<float>(y));
@@ -255,8 +257,8 @@ namespace paxs {
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             // メニューバーのマウス入力処理
-            if (menu_bar_.isHit(event.x, event.y)) {
-                return menu_bar_.handleEvent(event);
+            if (menu_system.isHit(event.x, event.y)) {
+                return menu_system.handleEvent(event);
             }
 
             // 言語選択プルダウンのマウス入力処理
@@ -283,7 +285,7 @@ namespace paxs {
 
         // 子ウィジェット
         mutable paxs::Pulldown language_selector_;
-        mutable paxs::MenuSystem menu_bar_;
+        mutable paxs::MenuSystem menu_system;
         mutable paxs::GitHubButton github_button_;
     };
 

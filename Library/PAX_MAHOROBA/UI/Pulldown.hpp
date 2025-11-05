@@ -53,9 +53,7 @@ namespace paxs {
         }
         // 言語変更による更新処理
         void updateLanguage() {
-            const std::uint_least32_t select_key = Fonts().getSelectedLanguage().cgetKey();
-
-            paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
+            paxg::Font* one_font = Fonts().getFont(font_size, font_buffer_thickness_size);
             if (one_font == nullptr) {
                 rect.setH(static_cast<float>(font_size) * 2.f);
             }
@@ -67,26 +65,18 @@ namespace paxs {
             rect.setW(0);
             all_rect_x = 0;
 
-            // 直接文字列リストが設定されている場合はそれを使用
-            const bool use_direct_text = !display_text_list.empty();
-            const std::size_t item_count = use_direct_text ? display_text_list.size() : items_key.size();
+            const std::size_t item_count = items_key.size();
 
             for (std::size_t i = 0; i < item_count; ++i) {
                 const std::string* str = nullptr;
                 std::string direct_str;
 
-                if (use_direct_text) {
-                    // 直接文字列を使用
-                    direct_str = display_text_list[i];
-                    str = &direct_str;
-                } else {
-                    // 言語辞書から取得
-                    str = Fonts().getText(items_key[i], language_domain);
-                }
+                // 言語辞書から取得
+                str = Fonts().getText(items_key[i], language_domain);
 
                 if (str == nullptr || str->size() == 0) continue;
 
-                const std::uint_least32_t font_key = ((is_one_font && !use_direct_text) ? items_key[i] : select_key);
+                const std::uint_least32_t font_key = (is_one_font ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
                 paxg::Font* item_font = Fonts().getFont(font_key, font_size, font_buffer_thickness_size);
                 if (item_font == nullptr) continue;
 
@@ -133,8 +123,7 @@ namespace paxs {
             const paxg::Vec2i& pos_ = { 0,0 },
             PulldownDisplayType display_type_ = PulldownDisplayType::SelectedValue,
             const bool is_one_font_ = false)
-            :
-            font_size(font_size_)
+            : font_size(font_size_)
             , font_buffer_thickness_size(font_buffer_thickness_size_)
             , language_domain(language_domain_)
             , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
@@ -413,7 +402,6 @@ namespace paxs {
 
     private:
         std::span<const std::uint_least32_t> items_key{}; // 項目の Key 一覧
-        std::vector<std::string> display_text_list; // 表示する文字列リスト（言語辞書を経由しない場合）
 
         std::size_t language_index = 0; // 言語の要素番号
         std::uint_least32_t old_language_key = 0; // 選択されている言語の Key

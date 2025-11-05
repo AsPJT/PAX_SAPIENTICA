@@ -89,8 +89,7 @@ namespace paxs {
 
         /// @brief 言語変更による更新処理
         void updateLanguage() {
-            const std::uint_least32_t select_key = Fonts().getSelectedLanguage().cgetKey();
-            paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
+            paxg::Font* one_font = Fonts().getFont(font_size, font_buffer_thickness_size);
             if (one_font == nullptr) {
                 rect.setH(static_cast<float>(font_size) * 2.f);
             }
@@ -103,10 +102,9 @@ namespace paxs {
             all_rect_x = 0;
             for (std::size_t i = 0; i < items_key.size(); ++i) {
                 const std::string* str = Fonts().getText(items_key[i], LanguageDomain::UI);
-                if (str == nullptr) continue;
-                if (str->size() == 0) continue;
+                if (str == nullptr || str->size() == 0) continue;
 
-                paxg::Font* item_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
+                paxg::Font* item_font = Fonts().getFont(font_size, font_buffer_thickness_size);
                 if (item_font == nullptr) continue;
 
                 all_rect_x = (std::max)(all_rect_x, static_cast<float>((*item_font).width(*str)));
@@ -124,12 +122,10 @@ namespace paxs {
             constexpr int checkmark_width = 20;
             all_rect_x += checkmark_width;
 
-#ifdef PAXS_USING_DXLIB
-#ifdef __ANDROID__
+#if defined(PAXS_USING_DXLIB) && (__ANDROID__)
             all_rect_x *= 2.5f;
             rect.setW(rect.w() * 2.0f);
             rect.setH(rect.h() * 1.4f);
-#endif
 #elif defined(PAXS_USING_SFML)
             rect.setH(rect.h() * 1.2f);
 #endif
@@ -158,8 +154,7 @@ namespace paxs {
 
         /// @brief 描画処理
         void render() const override {
-            if (isEmpty()) return;
-            if (items_key.size() == 0) return;
+            if (isEmpty() || items_key.size() == 0) return;
 
             // ヘッダーの背景と枠を描画（常に表示）
             rect.draw(paxg::Color{ 243, 243, 243 });
@@ -280,8 +275,7 @@ namespace paxs {
             const std::string* str = Fonts().getText(items_key.front(), LanguageDomain::UI);
             if (str == nullptr || str->size() == 0) return;
 
-            const std::uint_least32_t select_key = Fonts().getSelectedLanguage().cgetKey();
-            paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
+            paxg::Font* one_font = Fonts().getFont(font_size, font_buffer_thickness_size);
             if (one_font == nullptr) return;
 
             (*one_font).draw(
@@ -316,8 +310,7 @@ namespace paxs {
                     const int check_x = pos.x() + 5;
 
                     // シンプルなチェックマーク "✓" を描画
-                    const std::uint_least32_t select_font_key = Fonts().getSelectedLanguage().cgetKey();
-                    paxg::Font* check_font = Fonts().getFont(select_font_key, font_size, font_buffer_thickness_size);
+                    paxg::Font* check_font = Fonts().getFont(font_size, font_buffer_thickness_size);
                     if (check_font != nullptr) {
                         (*check_font).draw(
                             reinterpret_cast<const char*>(u8"✓"),
@@ -327,8 +320,7 @@ namespace paxs {
                 }
 
                 // テキストを描画（チェックマークの分だけ右にずらす）
-                const std::uint_least32_t select_font_key = Fonts().getSelectedLanguage().cgetKey();
-                paxg::Font* one_font = Fonts().getFont(select_font_key, font_size, font_buffer_thickness_size);
+                paxg::Font* one_font = Fonts().getFont(font_size, font_buffer_thickness_size);
                 if (one_font == nullptr) continue;
 
                 (*one_font).draw(

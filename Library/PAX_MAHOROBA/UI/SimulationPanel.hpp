@@ -267,6 +267,7 @@ namespace paxs {
                 static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
                 pulldown_y_
             });
+            simulation_pulldown.updateLanguage();
             if (simulator_ptr_->get() == nullptr) {
                 simulation_pulldown.render();
             }

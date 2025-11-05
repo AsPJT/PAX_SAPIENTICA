@@ -84,7 +84,6 @@ namespace paxs {
 
             // フォントを取得
             paxg::Font* font = Fonts().getFont(
-                Fonts().getSelectedLanguage().cgetKey(),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
@@ -182,7 +181,6 @@ namespace paxs {
                     if (date_year > 0) {
                         // 大きな年号フォントを取得（通常の3倍サイズ）
                         paxg::Font* big_year_font = Fonts().getFont(
-                            Fonts().getSelectedLanguage().cgetKey(),
                             static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE * 3),
                             static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                         );
