@@ -28,6 +28,7 @@
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -111,67 +112,85 @@ namespace paxs {
             return language_selector_.getKey();
         }
 
-        /// @brief 可視性状態をメニューに反映（初期化時に呼び出し）
-        void initializeMenuFromVisibility(paxs::FeatureVisibilityManager* visible_manager) {
-            auto* view_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("view"));
-            if (view_menu) {
-                view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MurMur3::calcHash("Calendar")));
-                view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MurMur3::calcHash("Map")));
-                view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MurMur3::calcHash("UI")));
-                view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MurMur3::calcHash("Simulation")));
-                view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MurMur3::calcHash("License")));
-                view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(MurMur3::calcHash("Debug")));
-                view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(MurMur3::calcHash("3D")));
+        /// @brief 可視性状態を反映
+        void initializeVisibility(paxs::FeatureVisibilityManager* visible_manager) {
+            // 可視性の初期化
+            visible_manager->emplace(MurMur3::calcHash("Calendar"), true); // 暦
+            visible_manager->emplace(MurMur3::calcHash("Map"), true); // 地図
+            visible_manager->emplace(MurMur3::calcHash("UI"), true); // UI
+            visible_manager->emplace(MurMur3::calcHash("Simulation"), true); // シミュレーション
+            visible_manager->emplace(MurMur3::calcHash("License"), false); // ライセンス
+            visible_manager->emplace(MurMur3::calcHash("Debug"), false); // デバッグ
+            visible_manager->emplace(MurMur3::calcHash("3D"), false); // 360度写真
+
+            // View メニューの状態を初期化
+            paxs::DropDownMenu* view_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("view"));
+            if (!view_menu) {
+                PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
+                return;
             }
+            view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MurMur3::calcHash("Calendar")));
+            view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MurMur3::calcHash("Map")));
+            view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MurMur3::calcHash("UI")));
+            view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MurMur3::calcHash("Simulation")));
+            view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MurMur3::calcHash("License")));
+            view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(MurMur3::calcHash("Debug")));
+            view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(MurMur3::calcHash("3D")));
         }
 
         /// @brief メニュー状態を可視性に反映（毎フレーム呼び出し）
         void syncVisibilityFromMenu(paxs::FeatureVisibilityManager* visible_manager) {
             // View メニューの状態を同期
-            auto* view_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("view"));
-            if (view_menu) {
-                visible_manager->setVisibility(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
-                visible_manager->setVisibility(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
-                visible_manager->setVisibility(MurMur3::calcHash("UI"), view_menu->getIsItems(std::size_t(2)));
-                visible_manager->setVisibility(MurMur3::calcHash("Simulation"), view_menu->getIsItems(std::size_t(3)));
-                visible_manager->setVisibility(MurMur3::calcHash("License"), view_menu->getIsItems(std::size_t(4)));
-                visible_manager->setVisibility(MurMur3::calcHash("Debug"), view_menu->getIsItems(std::size_t(5)));
-                visible_manager->setVisibility(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
+            paxs::DropDownMenu* view_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("view"));
+            if (!view_menu) {
+                PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
+                return;
             }
+            visible_manager->setVisibility(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
+            visible_manager->setVisibility(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
+            visible_manager->setVisibility(MurMur3::calcHash("UI"), view_menu->getIsItems(std::size_t(2)));
+            visible_manager->setVisibility(MurMur3::calcHash("Simulation"), view_menu->getIsItems(std::size_t(3)));
+            visible_manager->setVisibility(MurMur3::calcHash("License"), view_menu->getIsItems(std::size_t(4)));
+            visible_manager->setVisibility(MurMur3::calcHash("Debug"), view_menu->getIsItems(std::size_t(5)));
+            visible_manager->setVisibility(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
 
             // Place Names メニューの状態を同期
-            auto* place_names_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("place_names"));
-            if (place_names_menu) {
-                visible_manager->setVisibility(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
-                visible_manager->setVisibility(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
-                visible_manager->setVisibility(MurMur3::calcHash("tumulus"), place_names_menu->getIsItems(std::size_t(2)));
-                visible_manager->setVisibility(MurMur3::calcHash("dolmen"), place_names_menu->getIsItems(std::size_t(3)));
-                visible_manager->setVisibility(MurMur3::calcHash("kamekanbo"), place_names_menu->getIsItems(std::size_t(4)));
-                visible_manager->setVisibility(MurMur3::calcHash("stone_coffin"), place_names_menu->getIsItems(std::size_t(5)));
-                visible_manager->setVisibility(MurMur3::calcHash("doken"), place_names_menu->getIsItems(std::size_t(6)));
-                visible_manager->setVisibility(MurMur3::calcHash("dotaku"), place_names_menu->getIsItems(std::size_t(7)));
-                visible_manager->setVisibility(MurMur3::calcHash("bronze_mirror"), place_names_menu->getIsItems(std::size_t(8)));
-                visible_manager->setVisibility(MurMur3::calcHash("human_bone"), place_names_menu->getIsItems(std::size_t(9)));
-                visible_manager->setVisibility(MurMur3::calcHash("mtdna"), place_names_menu->getIsItems(std::size_t(10)));
-                visible_manager->setVisibility(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
+            paxs::DropDownMenu* place_names_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("place_names"));
+            if (!place_names_menu) {
+                PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'place_names' menu not found.");
+                return;
             }
+            visible_manager->setVisibility(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
+            visible_manager->setVisibility(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
+            visible_manager->setVisibility(MurMur3::calcHash("tumulus"), place_names_menu->getIsItems(std::size_t(2)));
+            visible_manager->setVisibility(MurMur3::calcHash("dolmen"), place_names_menu->getIsItems(std::size_t(3)));
+            visible_manager->setVisibility(MurMur3::calcHash("kamekanbo"), place_names_menu->getIsItems(std::size_t(4)));
+            visible_manager->setVisibility(MurMur3::calcHash("stone_coffin"), place_names_menu->getIsItems(std::size_t(5)));
+            visible_manager->setVisibility(MurMur3::calcHash("doken"), place_names_menu->getIsItems(std::size_t(6)));
+            visible_manager->setVisibility(MurMur3::calcHash("dotaku"), place_names_menu->getIsItems(std::size_t(7)));
+            visible_manager->setVisibility(MurMur3::calcHash("bronze_mirror"), place_names_menu->getIsItems(std::size_t(8)));
+            visible_manager->setVisibility(MurMur3::calcHash("human_bone"), place_names_menu->getIsItems(std::size_t(9)));
+            visible_manager->setVisibility(MurMur3::calcHash("mtdna"), place_names_menu->getIsItems(std::size_t(10)));
+            visible_manager->setVisibility(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
 
             // Map メニューの状態を同期
-            auto* map_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("map"));
-            if (map_menu) {
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_base"), map_menu->getIsItems(std::size_t(0)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_sea"), map_menu->getIsItems(std::size_t(1)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_water"), map_menu->getIsItems(std::size_t(2)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_soil"), map_menu->getIsItems(std::size_t(3)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_soil_temperature"), map_menu->getIsItems(std::size_t(4)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_country"), map_menu->getIsItems(std::size_t(5)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_line"), map_menu->getIsItems(std::size_t(6)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_slope"), map_menu->getIsItems(std::size_t(7)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"), map_menu->getIsItems(std::size_t(8)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"), map_menu->getIsItems(std::size_t(9)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_line1"), map_menu->getIsItems(std::size_t(10)));
-                visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_line2"), map_menu->getIsItems(std::size_t(11)));
+            paxs::DropDownMenu* map_menu = menu_bar_.getDropDownMenu(MurMur3::calcHash("map"));
+            if (!map_menu) {
+                PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'map' menu not found.");
+                return;
             }
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_base"), map_menu->getIsItems(std::size_t(0)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_sea"), map_menu->getIsItems(std::size_t(1)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_water"), map_menu->getIsItems(std::size_t(2)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_soil"), map_menu->getIsItems(std::size_t(3)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_soil_temperature"), map_menu->getIsItems(std::size_t(4)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_country"), map_menu->getIsItems(std::size_t(5)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_line"), map_menu->getIsItems(std::size_t(6)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_slope"), map_menu->getIsItems(std::size_t(7)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"), map_menu->getIsItems(std::size_t(8)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"), map_menu->getIsItems(std::size_t(9)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_line1"), map_menu->getIsItems(std::size_t(10)));
+            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_line2"), map_menu->getIsItems(std::size_t(11)));
         }
 
         void render() const override {

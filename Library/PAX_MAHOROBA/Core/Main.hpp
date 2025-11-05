@@ -32,10 +32,8 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/GraphicsManager.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/MouseClickStateManager.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <memory>
 
 namespace paxs {

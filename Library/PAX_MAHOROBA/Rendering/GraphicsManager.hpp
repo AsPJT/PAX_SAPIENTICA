@@ -94,15 +94,6 @@ namespace paxs {
     public:
         GraphicsManager()
         {
-            // 可視性の初期化
-            visible_manager_.emplace(MurMur3::calcHash("Calendar"), true); // 暦
-            visible_manager_.emplace(MurMur3::calcHash("Map"), true); // 地図
-            visible_manager_.emplace(MurMur3::calcHash("UI"), true); // UI
-            visible_manager_.emplace(MurMur3::calcHash("Simulation"), true); // シミュレーション
-            visible_manager_.emplace(MurMur3::calcHash("License"), false); // ライセンス
-            visible_manager_.emplace(MurMur3::calcHash("Debug"), false); // デバッグ
-            visible_manager_.emplace(MurMur3::calcHash("3D"), false); // 360度写真
-
             // 言語辞書を初期化
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
                 [&](const std::string& path_) { language_text.add(path_); });
@@ -150,8 +141,8 @@ namespace paxs {
             event_router_.registerHandler(&map_content_layer_.getSettlementInputHandler());
 #endif
 
-            // 可視性の初期状態をメニューに反映
-            header_panel_.initializeMenuFromVisibility(&visible_manager_);
+            // 可視性の初期状態を反映
+            header_panel_.initializeVisibility(&visible_manager_);
 
             setMapViewportInputHandler(handler, viewport);
         }
