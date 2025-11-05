@@ -18,11 +18,10 @@
 
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -34,11 +33,6 @@ namespace paxs {
     /// Handles rendering of calendar information.
     class CalendarContent : public IRenderable {
     public:
-        // 初期化（LanguageFontsへの参照を設定）
-        void init(paxs::LanguageFonts& fonts) {
-            language_fonts_ = &fonts;
-        }
-
         /// @brief レンダリングレイヤーを取得
         /// @brief Get rendering layer
         RenderLayer getLayer() const override {
@@ -46,16 +40,16 @@ namespace paxs {
         }
 
     private:
-        paxs::LanguageFonts* language_fonts_ = nullptr;
-
         // カレンダーを描画（言語に応じて自動選択）
         void renderInternal() const {
-            if (!koyomi_ || !ui_layout_ || !select_language_ || !language_text_) return;
+            if (!koyomi_ || !ui_layout_) return;
+
+            const std::uint_least32_t current_language = Fonts().getSelectedLanguage().cgetKey();
 
             // 日本語・中国語・台湾語の場合はアジア式カレンダー
-            if (select_language_->cgetKey() == MurMur3::calcHash("ja-JP")
-                || select_language_->cgetKey() == MurMur3::calcHash("zh-TW")
-                || select_language_->cgetKey() == MurMur3::calcHash("zh-CN")) {
+            if (current_language == MurMur3::calcHash("ja-JP")
+                || current_language == MurMur3::calcHash("zh-TW")
+                || current_language == MurMur3::calcHash("zh-CN")) {
                 renderAsianCalendar();
             }
             else {
@@ -66,8 +60,6 @@ namespace paxs {
 
         // 日本語・中国語のカレンダーを描画
         void renderAsianCalendar() const {
-            if (language_fonts_ == nullptr) return;
-
             for (std::size_t i = 0; i < koyomi_->date_list.size(); ++i) {
                 cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
                 std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi_->date_list[i].date);
@@ -78,14 +70,18 @@ namespace paxs {
                 bool date_lm = false;
 
                 // 暦の読み方を返す
-                const std::string* const text_str = language_text_->getStringPtr(
+                const std::string* const text_str = Fonts().getText(
                     koyomi_->date_list[i].calendar_name_key,
-                    select_language_->cgetKey()
+                    LanguageDomain::UI
                 );
                 if (text_str == nullptr) continue;
 
                 // 暦描画フォントを指定
-                paxg::Font* one_font = language_fonts_->getAndAdd(select_language_->cgetKey(), static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
+                paxg::Font* one_font = Fonts().getFont(
+                    Fonts().getSelectedLanguage().cgetKey(),
+                    static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
+                    static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+                );
                 if (one_font == nullptr) continue;
 
                 switch (output_type) {
@@ -129,8 +125,6 @@ namespace paxs {
 
         // 英語のカレンダーを描画
         void renderWesternCalendar() const {
-            if (language_fonts_ == nullptr) return;
-
             for (std::size_t i = 0; i < koyomi_->date_list.size(); ++i) {
                 cal::DateOutputType output_type = cal::DateOutputType::name_and_value;
                 std::visit([&](const auto& x) { output_type = x.getDateOutputType(); }, koyomi_->date_list[i].date);
@@ -142,13 +136,17 @@ namespace paxs {
                 const int en_cal_name_pos_x = 85;
 
                 // 暦描画フォントを指定
-                paxg::Font* one_font = language_fonts_->getAndAdd(select_language_->cgetKey(), static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS));
+                paxg::Font* one_font = Fonts().getFont(
+                    Fonts().getSelectedLanguage().cgetKey(),
+                    static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
+                    static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+                );
                 if (one_font == nullptr) continue;
 
                 // 暦の読み方を返す
-                const std::string* const text_str = language_text_->getStringPtr(
+                const std::string* const text_str = Fonts().getText(
                     koyomi_->date_list[i].calendar_name_key,
-                    select_language_->cgetKey()
+                    LanguageDomain::UI
                 );
                 if (text_str == nullptr) continue;
 
@@ -202,8 +200,6 @@ namespace paxs {
         // 描画に必要な参照（render呼び出し時に設定される）
         const paxs::Koyomi* koyomi_ = nullptr;
         const paxs::UILayout* ui_layout_ = nullptr;
-        const SelectLanguage* select_language_ = nullptr;
-        const paxs::Language* language_text_ = nullptr;
 
     public:
         void render() const override {
@@ -219,14 +215,10 @@ namespace paxs {
         // CalendarWidget固有の参照設定メソッド
         void setRenderParams(
             const paxs::Koyomi& koyomi,
-            const paxs::UILayout& ui_layout,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text
+            const paxs::UILayout& ui_layout
         ) {
             koyomi_ = &koyomi;
             ui_layout_ = &ui_layout;
-            select_language_ = &select_language;
-            language_text_ = &language_text;
         }
     };
 

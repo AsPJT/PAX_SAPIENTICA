@@ -31,7 +31,6 @@
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/UIPanelBackground.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -40,7 +39,6 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -53,12 +51,9 @@ namespace paxs {
     private:
         bool enabled_ = true;
         const FeatureVisibilityManager* feature_visibility_manager_ptr = nullptr;
-        FontManager* font_manager_ = nullptr; // 文字表示専用クラス（依存性注入）
 
         // 描画に必要なデータをキャッシュ（updateData()で更新、render()で使用）
         const MapViewport* cached_map_viewport_ptr = nullptr;
-        const SelectLanguage* cached_select_language_ptr = nullptr;
-        const paxs::Language* cached_language_text_ptr = nullptr;
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
 #endif
@@ -101,20 +96,16 @@ namespace paxs {
         }
 
     public:
-        UILayer(FontManager* font_manager,
-            const SelectLanguage* select_language,
-            const paxs::Language* language_text,
-            const paxs::Language* simulation_text,
+        UILayer(
             paxs::FeatureVisibilityManager* visible_manager,
             const MapViewport* map_viewport)
-            : font_manager_(font_manager),
-              feature_visibility_manager_ptr(visible_manager),
+            : feature_visibility_manager_ptr(visible_manager),
               visible_manager_ptr(visible_manager),
               calendar_panel(ui_layout),
               debug_info_panel(ui_layout, visible_manager),
 #ifdef PAXS_USING_SIMULATOR
-              settlement_status_panel(select_language, visible_manager),
-              simulation_panel(select_language, simulation_text, font_manager_->getLanguageFonts(), visible_manager),
+              settlement_status_panel(visible_manager),
+              simulation_panel(visible_manager),
 #endif
               calendar_bg_("CalendarBackground", &ui_layout.calendar_panel),
               debug_info_bg_("DebugInfoBackground", &ui_layout.debug_info_panel)
@@ -124,10 +115,10 @@ namespace paxs {
 #endif
         {
             // CalendarPanel の初期化
-            calendar_panel.init(font_manager_->getLanguageFonts(), visible_manager_ptr);
+            calendar_panel.init(visible_manager_ptr);
 
             // DebugInfoPanel の初期化
-            debug_info_panel.init(&(font_manager_->getLanguageFonts()), language_text, select_language, map_viewport);
+            debug_info_panel.init(map_viewport);
             map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
             map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
             map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
@@ -139,7 +130,7 @@ namespace paxs {
             }
 
 #ifdef PAXS_USING_SIMULATOR
-            settlement_status_panel.init(&font_manager_->getLanguageFonts());
+            settlement_status_panel.init();
 #endif
 
             // 影描画用のRenderTextureを最大画面サイズで初期化（一回のみ）
@@ -167,8 +158,6 @@ namespace paxs {
         /// @brief データ更新（描画は行わない）
         /// @brief Update data (no drawing)
         void updateData(
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
 #endif
@@ -183,7 +172,6 @@ namespace paxs {
             simulation_panel.setVisible(simulation_visible);
 
             simulation_panel.setReferences(simulator, koyomi,
-                font_manager_->getLanguageFonts(), select_language, language_text,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 
             simulation_panel.updateSimulationAuto();
@@ -196,7 +184,7 @@ namespace paxs {
             // CalendarPanelの可視性と設定
             if (calendar_panel.isVisible()) {
                 calendar_panel.setTextureDictionary(key_value_tsv.get());
-                calendar_panel.setCalendarParams(koyomi, select_language, language_text);
+                calendar_panel.setCalendarParams(koyomi);
                 calendar_panel.setTimeControlParams(koyomi);
             }
 
@@ -204,9 +192,6 @@ namespace paxs {
 
             debug_info_bg_.setVisible(debug_info_panel.isVisible());
 
-            // 描画用にデータをキャッシュ
-            cached_select_language_ptr = &select_language;
-            cached_language_text_ptr = &language_text;
 #ifdef PAXS_USING_SIMULATOR
             cached_simulator_ = &simulator;
 #endif
@@ -221,8 +206,6 @@ namespace paxs {
             // 画像の拡大縮小の方式を設定
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
 
-            const SelectLanguage& select_language = *cached_select_language_ptr;
-            const paxs::Language& language_text = *cached_language_text_ptr;
             const paxs::Koyomi& koyomi = cached_koyomi_;
 
             // 1. バッチ描画開始（Siv3D用）

@@ -18,16 +18,15 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/GitHubButton.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuSystem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -36,38 +35,35 @@ namespace paxs {
     /// @brief アプリ上部のUI（メニュー + 言語選択）を管理
     class MenuBar : public IWidget{
     public:
-        /// @brief 初期化
-        /// @param select_language 選択言語
-        /// @param language_text 言語テキスト
-        /// @param language_fonts フォント管理
-        void init(
-            const SelectLanguage* select_language,
-            const paxs::Language* language_text,
-            paxs::LanguageFonts& language_fonts
-        ) {
-            select_language_ = select_language;
-            language_text_ = language_text;
-
-            // 言語選択プルダウンを初期化
-            language_selector_ = paxs::Pulldown(
-                select_language,
-                language_text,
+        /// @brief コンストラクタ
+        MenuBar() :
+            language_selector_(
                 paxs::LanguageKeys::ALL_LANGUAGE_HASHES,
-                language_fonts,
                 static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
-                paxg::Vec2i{ 3000, 0 },
+                paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
                 true
-            );
+            )
+        {}
 
+        void init() {
             // GitHubボタンを初期化
             github_button_.setLanguageSelector(&language_selector_);
 
-            // メニューバーにメニュー項目を追加
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::VIEW_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("view"));
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::FEATURE_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("place_names"));
-            menu_bar_.add(select_language, language_text, paxs::MenuBarKeys::MAP_MENU_HASHES, language_fonts, static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE), static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS), MurMur3::calcHash("map"));
+            // メニューバーにメニュー項目を追加（FontSystem経由）
+            menu_bar_.add(paxs::MenuBarKeys::VIEW_MENU_HASHES,
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                          MurMur3::calcHash("view"));
+            menu_bar_.add(paxs::MenuBarKeys::FEATURE_MENU_HASHES,
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                          MurMur3::calcHash("place_names"));
+            menu_bar_.add(paxs::MenuBarKeys::MAP_MENU_HASHES,
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                          MurMur3::calcHash("map"));
 
             calculateLayout();
         }
@@ -287,10 +283,6 @@ namespace paxs {
         mutable paxs::Pulldown language_selector_;
         mutable paxs::MenuSystem menu_bar_;
         mutable paxs::GitHubButton github_button_;
-
-        // 設定値
-        const SelectLanguage* select_language_ = nullptr;
-        const paxs::Language* language_text_ = nullptr;
     };
 
 } // namespace paxs

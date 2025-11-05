@@ -12,12 +12,38 @@
 #ifndef PAX_SAPIENTICA_UNORDERED_MAP_HPP
 #define PAX_SAPIENTICA_UNORDERED_MAP_HPP
 
+#include <sstream>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
 
 namespace paxs {
+    template <class T>
+    concept StreamInsertable = requires(std::ostream& os, const T& value) {
+        { os << value } -> std::same_as<std::ostream&>;
+    };
+
+    template <class T>
+    std::string to_string_any(const T& v) {
+        if constexpr (std::is_arithmetic_v<T>) {
+            // int, double など数値なら std::to_string に任せる
+            return std::to_string(v);
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            // すでに std::string ならそのまま返す
+            return v;
+        } else if constexpr (std::is_same_v<T, const char*>) {
+            return std::string(v);
+        } else if constexpr (StreamInsertable<T>) {
+            // ostream に流せる型ならそれを使う
+            std::ostringstream oss;
+            oss << v;
+            return oss.str();
+        } else {
+            return "<unprintable type>";
+        }
+    }
 
     /// @brief ログ機能を持つ unordered_map のラッパークラス
     /// @tparam Key キーの型
@@ -27,25 +53,6 @@ namespace paxs {
     private:
         std::unordered_map<Key, Value> map_;
         std::string name_; // マップの名前（ログ出力時に使用）
-
-        template <class T>
-        std::string to_string_any(const T& v) {
-            if constexpr (std::is_arithmetic_v<T>) {
-                // int, double など数値なら std::to_string に任せる
-                return std::to_string(v);
-            } else if constexpr (std::is_same_v<T, std::string>) {
-                // すでに std::string ならそのまま返す
-                return v;
-            } else if constexpr (std::is_same_v<T, const char*>) {
-                return std::string(v);
-            } else {
-                // それ以外は << があればそれで文字列化してみる
-                std::ostringstream oss;
-                oss << v;
-                return oss.str();
-            }
-        }
-
     public:
         // コンストラクタ
         UnorderedMap() : name_("UnnamedMap") {}
@@ -77,7 +84,7 @@ namespace paxs {
         /// @brief 要素にアクセス（存在しない場合は例外を投げる）
         Value& at(const Key& key) {
             if (map_.find(key) == map_.end()) {
-                PAXS_ERROR("[" + name_ + "] at: key not found (key=" + std::to_string(key) + ")");
+                PAXS_ERROR("[" + name_ + "] at: key not found (key=" + to_string_any(key) + ")");
             }
             return map_.at(key);
         }
@@ -85,7 +92,7 @@ namespace paxs {
         /// @brief 要素にアクセス（const版）
         const Value& at(const Key& key) const {
             if (map_.find(key) == map_.end()) {
-                PAXS_ERROR("[" + name_ + "] at (const): key not found (key=" + std::to_string(key) + ")");
+                PAXS_ERROR("[" + name_ + "] at (const): key not found (key=" + to_string_any(key) + ")");
             }
             return map_.at(key);
         }

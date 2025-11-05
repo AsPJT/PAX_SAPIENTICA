@@ -15,7 +15,6 @@
 #include <cstdint>
 #include <vector>
 
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -42,10 +41,7 @@ namespace paxs {
             const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
-            const double map_view_center_y,
-            paxg::Font& font,
-            paxg::Font& en_font,
-            paxg::Font& /*pin_font*/
+            const double map_view_center_y
         ) const {
             const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
@@ -91,7 +87,7 @@ namespace paxs {
                     }
 
                     // 範囲内の場合（アイコン + テキスト描画）
-                    drawIconAndText(lli, lll, texture, draw_pos, font, en_font, first_language, second_language);
+                    drawIconAndText(lli, lll, texture, draw_pos, first_language, second_language);
                 }
             }
         }
@@ -129,8 +125,6 @@ namespace paxs {
             const LocationPointList& lll,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const paxg::Vec2i& draw_pos,
-            paxg::Font& font,
-            paxg::Font& en_font,
             const std::uint_least32_t first_language,
             const std::uint_least32_t second_language
         ) const {
@@ -142,7 +136,7 @@ namespace paxs {
             }
 
             // テキスト描画
-            drawPlaceNameText(lli, draw_pos, font, en_font, first_language, second_language);
+            drawPlaceNameText(lli, draw_pos, first_language, second_language);
         }
 
         /// @brief テクスチャを複数描画
@@ -207,36 +201,37 @@ namespace paxs {
         void drawPlaceNameText(
             const LocationPoint& lli,
             const paxg::Vec2i& draw_pos,
-            paxg::Font& font,
-            paxg::Font& en_font,
             const std::uint_least32_t first_language,
             const std::uint_least32_t second_language
         ) const {
+            paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+            paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
+
             // 英語名がない場合
             if (lli.place_name.find(second_language) == lli.place_name.end()) {
                 // 名前を描画
                 if (lli.place_name.find(first_language) != lli.place_name.end()) {
-                    font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
-                    font.drawAt(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
+                    font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    font->drawAt(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }
             // 日本語名がない場合
             else if (lli.place_name.find(first_language) == lli.place_name.end()) {
                 // 名前を描画
                 if (lli.place_name.find(second_language) != lli.place_name.end()) {
-                    en_font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
-                    en_font.drawAt(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
+                    en_font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    en_font->drawAt(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }
             // 英語名がある場合
             else {
                 // 名前（英語）を描画
-                en_font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
-                en_font.drawBottomCenter(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
+                en_font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                en_font->drawBottomCenter(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
                 // 名前を描画
                 if (lli.place_name.find(first_language) != lli.place_name.end()) {
-                    font.setOutline(0, 0.6, paxg::Color(240, 245, 250));
-                    font.drawTopCenter(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
+                    font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    font->drawTopCenter(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }
         }

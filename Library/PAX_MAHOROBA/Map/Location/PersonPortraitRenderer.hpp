@@ -16,7 +16,6 @@
 #include <vector>
 
 #include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -43,10 +42,7 @@ namespace paxs {
             const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
-            const double map_view_center_y,
-            paxg::Font& font,
-            paxg::Font& en_font,
-            paxg::Font& /*pin_font*/
+            const double map_view_center_y
         ) const {
             const std::uint_least32_t ja_jp_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t en_us_language = MurMur3::calcHash("en-US");
@@ -99,7 +95,6 @@ namespace paxs {
                         now_coordinate_x, now_coordinate_y,
                         map_view_width, map_view_height,
                         map_view_center_x, map_view_center_y,
-                        font, en_font,
                         ja_jp_language, en_us_language
                     );
                 }
@@ -152,8 +147,6 @@ namespace paxs {
             double map_view_height,
             double map_view_center_x,
             double map_view_center_y,
-            paxg::Font& font,
-            paxg::Font& en_font,
             std::uint_least32_t ja_jp_language,
             std::uint_least32_t en_us_language
         ) const {
@@ -175,15 +168,13 @@ namespace paxs {
             }
 
             // テキストを描画
-            drawPersonNameText(lli, font, en_font, draw_font_pos, ja_jp_language, en_us_language);
+            drawPersonNameText(lli, draw_font_pos, ja_jp_language, en_us_language);
         }
 
         /// @brief 人物名のテキストを描画
         /// @brief Draw person name text
         void drawPersonNameText(
             const PersonLocationPoint& lli,
-            paxg::Font& font,
-            paxg::Font& en_font,
             const paxg::Vec2i& draw_font_pos,
             std::uint_least32_t ja_jp_language,
             std::uint_least32_t en_us_language
@@ -191,7 +182,7 @@ namespace paxs {
             (void)ja_jp_language;  // 未使用警告を抑制
             (void)en_us_language;  // 未使用警告を抑制
             LocationRendererHelper::drawBilingualText(
-                lli.place_name, draw_font_pos, font, en_font, "topCenter"
+                lli.place_name, draw_font_pos, "topCenter"
             );
         }
     };

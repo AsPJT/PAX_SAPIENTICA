@@ -21,6 +21,8 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
@@ -62,15 +64,11 @@ namespace paxs {
         /// @brief Draw bilingual text (Japanese/English)
         /// @param place_name 言語別の名前マップ
         /// @param draw_pos 描画位置
-        /// @param font 日本語フォント
-        /// @param en_font 英語フォント
         /// @param text_mode 描画モード ("topCenter", "at", "bottomCenter")
         /// @param outline_color アウトラインの色（デフォルト: 白）
         static void drawBilingualText(
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& place_name,
             const paxg::Vec2i& draw_pos,
-            paxg::Font& font,
-            paxg::Font& en_font,
             const char* text_mode = "topCenter",
             const paxg::Color& outline_color = paxg::Color(255, 255, 255)
         ) {
@@ -80,9 +78,12 @@ namespace paxs {
             const bool has_ja = (place_name.find(ja_jp) != place_name.end());
             const bool has_en = (place_name.find(en_us) != place_name.end());
 
+            paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+            paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
+
             // 日本語のみ
             if (has_ja && !has_en) {
-                font.setOutline(0, 0.6, outline_color);
+                font->setOutline(0, 0.6, outline_color);
                 drawTextByMode(font, place_name.at(ja_jp), draw_pos, paxg::Color(0, 0, 0), text_mode);
             }
             // 英語のみ
@@ -91,7 +92,7 @@ namespace paxs {
                 paxg::Color en_outline = (std::strcmp(text_mode, "at") == 0)
                     ? paxg::Color(240, 245, 250)
                     : outline_color;
-                en_font.setOutline(0, 0.6, en_outline);
+                en_font->setOutline(0, 0.6, en_outline);
                 drawTextByMode(en_font, place_name.at(en_us), draw_pos, paxg::Color(0, 0, 0), text_mode);
             }
             // 両方ある場合
@@ -100,11 +101,11 @@ namespace paxs {
                 paxg::Color en_outline = (std::strcmp(text_mode, "at") == 0)
                     ? paxg::Color(240, 245, 250)
                     : outline_color;
-                en_font.setOutline(0, 0.6, en_outline);
-                en_font.drawBottomCenter(place_name.at(en_us), draw_pos, paxg::Color(0, 0, 0));
+                en_font->setOutline(0, 0.6, en_outline);
+                en_font->drawBottomCenter(place_name.at(en_us), draw_pos, paxg::Color(0, 0, 0));
                 // 日本語を上に
-                font.setOutline(0, 0.6, outline_color);
-                font.drawTopCenter(place_name.at(ja_jp), draw_pos, paxg::Color(0, 0, 0));
+                font->setOutline(0, 0.6, outline_color);
+                font->drawTopCenter(place_name.at(ja_jp), draw_pos, paxg::Color(0, 0, 0));
             }
         }
 
@@ -163,18 +164,18 @@ namespace paxs {
         /// @brief モードに応じてテキスト描画
         /// @brief Draw text according to specified mode
         static void drawTextByMode(
-            paxg::Font& font,
+            paxg::Font* font,
             const std::string& text,
             const paxg::Vec2i& pos,
             const paxg::Color& color,
             const char* mode
         ) {
             if (std::strcmp(mode, "topCenter") == 0) {
-                font.drawTopCenter(text, pos, color);
+                font->drawTopCenter(text, pos, color);
             } else if (std::strcmp(mode, "at") == 0) {
-                font.drawAt(text, pos, color);
+                font->drawAt(text, pos, color);
             } else if (std::strcmp(mode, "bottomCenter") == 0) {
-                font.drawBottomCenter(text, pos, color);
+                font->drawBottomCenter(text, pos, color);
             }
         }
     };

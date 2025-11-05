@@ -20,9 +20,8 @@
 #include <PAX_GRAPHICA/Triangle.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 
 namespace paxs {
@@ -30,11 +29,8 @@ namespace paxs {
     /// @brief メニューバー用のドロップダウン項目
     class DropDownMenu : public IWidget {
     private:
-        // 言語関連
-        const SelectLanguage* select_language_ptr = nullptr;
-        const Language* language_ptr = nullptr;
+        // 項目
         std::span<const std::uint_least32_t> items_key{};
-        LanguageFonts* font = nullptr;
 
         // フォント設定
         std::uint_least8_t font_size = 16;
@@ -60,26 +56,17 @@ namespace paxs {
         DropDownMenu() = default;
 
         /// @brief コンストラクタ
-        /// @param select_language_ptr_ 選択されている言語
-        /// @param language_ptr_ 言語データ
         /// @param items_key_ 項目のキー一覧（最初の項目がヘッダー名）
-        /// @param font_ フォント
         /// @param font_size_ フォントサイズ
         /// @param font_buffer_thickness_size_ フォントの太さ
         /// @param pos_ 表示位置
         DropDownMenu(
-            const SelectLanguage* select_language_ptr_,
-            const Language* language_ptr_,
             const std::span<const std::uint_least32_t> items_key_,
-            LanguageFonts& font_,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
             const paxg::Vec2i& pos_ = { 0, 0 })
         {
-            select_language_ptr = select_language_ptr_;
-            language_ptr = language_ptr_;
             items_key = items_key_;
-            font = &font_;
             font_size = font_size_;
             font_buffer_thickness_size = font_buffer_thickness_size_;
             rect = paxg::Rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()), 0, 0 };
@@ -102,40 +89,31 @@ namespace paxs {
 
         /// @brief 言語変更による更新処理
         void updateLanguage() {
-            if (language_ptr == nullptr) return;
-            if (select_language_ptr == nullptr) return;
-
-            if (font == nullptr) {
+            const std::uint_least32_t select_key = Fonts().getSelectedLanguage().cgetKey();
+            paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
+            if (one_font == nullptr) {
                 rect.setH(static_cast<float>(font_size) * 2.f);
             }
             else {
-                const std::uint_least32_t select_key = (*select_language_ptr).cgetKey();
-                paxg::Font* one_font = (*font).getAndAdd(select_key, font_size, font_buffer_thickness_size);
-                if (one_font == nullptr) {
-                    rect.setH(static_cast<float>(font_size) * 2.f);
-                }
-                else {
-                    const float height = static_cast<float>(((*one_font).height()) + padding.y() * 2);
-                    rect.setH(height);
-                }
+                const float height = static_cast<float>(((*one_font).height()) + padding.y() * 2);
+                rect.setH(height);
             }
 
             rect.setW(0);
             all_rect_x = 0;
             for (std::size_t i = 0; i < items_key.size(); ++i) {
-                const std::string* str = (*language_ptr).getStringPtr(items_key[i], (*select_language_ptr).cgetKey());
+                const std::string* str = Fonts().getText(items_key[i], LanguageDomain::UI);
                 if (str == nullptr) continue;
                 if (str->size() == 0) continue;
 
-                const std::uint_least32_t select_key = (*select_language_ptr).cgetKey();
-                paxg::Font* one_font = (*font).getAndAdd(select_key, font_size, font_buffer_thickness_size);
-                if (one_font == nullptr) continue;
+                paxg::Font* item_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
+                if (item_font == nullptr) continue;
 
-                all_rect_x = (std::max)(all_rect_x, static_cast<float>((*one_font).width(*str)));
+                all_rect_x = (std::max)(all_rect_x, static_cast<float>((*item_font).width(*str)));
 
                 // 最初の項目（ヘッダー）の幅を使用
                 if (i == 0) {
-                    rect.setW(static_cast<float>((*one_font).width(*str)));
+                    rect.setW(static_cast<float>((*item_font).width(*str)));
                 }
             }
 
@@ -181,7 +159,6 @@ namespace paxs {
         /// @brief 描画処理
         void render() const override {
             if (isEmpty()) return;
-            if (language_ptr == nullptr || select_language_ptr == nullptr) return;
             if (items_key.size() == 0) return;
 
             // ヘッダーの背景と枠を描画（常に表示）
@@ -300,11 +277,11 @@ namespace paxs {
         void drawHeader() const {
             if (items_key.size() == 0) return;
 
-            const std::string* str = (*language_ptr).getStringPtr(items_key.front(), (*select_language_ptr).cgetKey());
+            const std::string* str = Fonts().getText(items_key.front(), LanguageDomain::UI);
             if (str == nullptr || str->size() == 0) return;
 
-            const std::uint_least32_t select_key = (*select_language_ptr).cgetKey();
-            paxg::Font* one_font = (*font).getAndAdd(select_key, font_size, font_buffer_thickness_size);
+            const std::uint_least32_t select_key = Fonts().getSelectedLanguage().cgetKey();
+            paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
             if (one_font == nullptr) return;
 
             (*one_font).draw(
@@ -326,7 +303,7 @@ namespace paxs {
             constexpr int checkmark_width = 20; // チェックマークの幅
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
-                const std::string* i_str = (*language_ptr).getStringPtr(items_key[i], (*select_language_ptr).cgetKey());
+                const std::string* i_str = Fonts().getText(items_key[i], LanguageDomain::UI);
                 if (i_str == nullptr || i_str->size() == 0) continue;
 
                 const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };
@@ -339,8 +316,8 @@ namespace paxs {
                     const int check_x = pos.x() + 5;
 
                     // シンプルなチェックマーク "✓" を描画
-                    const std::uint_least32_t select_font_key = (*select_language_ptr).cgetKey();
-                    paxg::Font* check_font = (*font).getAndAdd(select_font_key, font_size, font_buffer_thickness_size);
+                    const std::uint_least32_t select_font_key = Fonts().getSelectedLanguage().cgetKey();
+                    paxg::Font* check_font = Fonts().getFont(select_font_key, font_size, font_buffer_thickness_size);
                     if (check_font != nullptr) {
                         (*check_font).draw(
                             reinterpret_cast<const char*>(u8"✓"),
@@ -350,8 +327,8 @@ namespace paxs {
                 }
 
                 // テキストを描画（チェックマークの分だけ右にずらす）
-                const std::uint_least32_t select_font_key = (*select_language_ptr).cgetKey();
-                paxg::Font* one_font = (*font).getAndAdd(select_font_key, font_size, font_buffer_thickness_size);
+                const std::uint_least32_t select_font_key = Fonts().getSelectedLanguage().cgetKey();
+                paxg::Font* one_font = Fonts().getFont(select_font_key, font_size, font_buffer_thickness_size);
                 if (one_font == nullptr) continue;
 
                 (*one_font).draw(

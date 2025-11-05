@@ -16,7 +16,6 @@
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/DropDownMenu.hpp>
-#include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
 namespace paxs {
     /// @brief DropDownMenu（固定ヘッダー型）を複数持つ
@@ -25,18 +24,12 @@ namespace paxs {
         MenuSystem() = default;
 
         /// @brief メニュー項目を追加
-        /// @param select_language_ptr_ 選択されている言語
-        /// @param language_ptr_ 言語データ
         /// @param items_key_ 項目のキー一覧（最初の項目がメニュー名）
-        /// @param font_menu_bar フォント
         /// @param font_size_ フォントサイズ
         /// @param font_buffer_thickness_size_ フォントの太さ
         /// @param menu_key_ メニューのキー（識別用）
         void add(
-            const SelectLanguage* select_language_ptr_,
-            const Language* language_ptr_,
             const std::span<const std::uint_least32_t> items_key_,
-            LanguageFonts& font_menu_bar,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
             const std::uint_least32_t menu_key_) {
@@ -46,10 +39,7 @@ namespace paxs {
             }
             menu_list_key.emplace(menu_key_, menu_list.size());
             menu_list.emplace_back(paxs::DropDownMenu(
-                select_language_ptr_,
-                language_ptr_,
                 items_key_,
-                font_menu_bar,
                 font_size_,
                 font_buffer_thickness_size_,
                 paxg::Vec2i{ static_cast<int>(start_x), 0 }));

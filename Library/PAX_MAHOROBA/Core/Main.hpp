@@ -23,28 +23,30 @@
 #include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #endif
 
+#include <memory>
+
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/GraphicsManager.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/MouseClickStateManager.hpp>
-#include <memory>
 
 namespace paxs {
 
-    // 主要な実行時定数・変数
-    void startMain() { // フォルダ階層
+    void startMain() {
         paxs::PaxSapienticaInit::firstInit(); // 初期化とロゴの表示
         MapViewport map_viewport{};
         std::unique_ptr<paxs::MapViewportInputHandler> map_viewport_input_handler = std::make_unique<MapViewportInputHandler>(); // 地図ビューポートの入力処理
         std::unique_ptr<paxs::UIInputHandler> ui_input_handler = std::make_unique<paxs::UIInputHandler>(); // UIの入力処理
         paxs::Koyomi koyomi{}; // 暦を管理する
+        Fonts().initialize(); // フォントシステムを初期化
         paxs::GraphicsManager graphics_manager{}; // グラフィック統合管理
 
         graphics_manager.init(map_viewport_input_handler.get(), &map_viewport, ui_input_handler.get());

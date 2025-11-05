@@ -23,12 +23,11 @@
 
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
@@ -41,9 +40,6 @@ namespace paxs {
     /// @brief Debug information panel class
     class DebugInfoPanel : public IWidget {
     private:
-        paxs::LanguageFonts* language_fonts_ptr = nullptr;
-        const paxs::Language* language_text_ptr = nullptr;
-        const SelectLanguage* select_language_ptr = nullptr;
         const MapViewport* map_viewport_ptr = nullptr;
         const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
 
@@ -56,13 +52,7 @@ namespace paxs {
             : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager) {}
 
         /// @brief 初期化
-        void init(paxs::LanguageFonts* fonts,
-            const paxs::Language* language_text,
-            const SelectLanguage* select_language,
-            const MapViewport* map_viewport) {
-            language_fonts_ptr = fonts;
-            language_text_ptr = language_text;
-            select_language_ptr = select_language;
+        void init(const MapViewport* map_viewport) {
             map_viewport_ptr = map_viewport;
         }
 
@@ -93,8 +83,8 @@ namespace paxs {
             if (!isVisible()) return;
 
             // フォントを取得
-            paxg::Font* font = language_fonts_ptr->getAndAdd(
-                select_language_ptr->cgetKey(),
+            paxg::Font* font = Fonts().getFont(
+                Fonts().getSelectedLanguage().cgetKey(),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
@@ -109,7 +99,7 @@ namespace paxs {
 
             // タイトル
             font->draw(
-                (select_language_ptr->cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"デバッグ情報") : "Debug Info",
                 paxg::Vec2i(text_x, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
@@ -117,7 +107,7 @@ namespace paxs {
 
             // マップの拡大率
             font->draw(
-                (select_language_ptr->cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"拡大率: ") : "Zoom: ",
                 paxg::Vec2i(text_x, text_y + line_height * current_line),
                 paxg::Color(0, 0, 0)
@@ -130,9 +120,9 @@ namespace paxs {
 
             // XYZ Tiles Z拡大率
             const int z_magnification = static_cast<int>(-std::log2(map_viewport_ptr->getHeight()) + 12.5);
-            const std::string* const xyz_label_ptr = language_text_ptr->getStringPtr(
+            const std::string* const xyz_label_ptr = Fonts().getText(
                 MurMur3::calcHash("debug_xyz_tiles_z"),
-                select_language_ptr->cgetKey()
+                LanguageDomain::UI
             );
             if (xyz_label_ptr != nullptr) {
                 font->draw(
@@ -151,7 +141,7 @@ namespace paxs {
             if (simulator != nullptr) {
                 // 人口数
                 font->draw(
-                    (select_language_ptr->cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                    (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
                         reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
                     paxg::Vec2i(text_x, text_y + line_height * current_line),
                     paxg::Color(0, 0, 0)
@@ -164,7 +154,7 @@ namespace paxs {
 
                 // 集落数
                 font->draw(
-                    (select_language_ptr->cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                    (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
                         reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
                     paxg::Vec2i(text_x, text_y + line_height * current_line),
                     paxg::Color(0, 0, 0)
@@ -191,8 +181,8 @@ namespace paxs {
 
                     if (date_year > 0) {
                         // 大きな年号フォントを取得（通常の3倍サイズ）
-                        paxg::Font* big_year_font = language_fonts_ptr->getAndAdd(
-                            select_language_ptr->cgetKey(),
+                        paxg::Font* big_year_font = Fonts().getFont(
+                            Fonts().getSelectedLanguage().cgetKey(),
                             static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE * 3),
                             static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                         );

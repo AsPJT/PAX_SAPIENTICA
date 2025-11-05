@@ -27,12 +27,10 @@
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonPortraitManager.hpp>
-#include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -51,10 +49,6 @@ namespace paxs {
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
 #endif
         paxs::map::MapDomainLogic map_domain_logic_; // ドメインロジック
-
-        // 依存性注入された参照
-        FontManager* font_manager_ = nullptr;
-        const SelectLanguage* select_language_ = nullptr;
 
         // 可視性・有効性管理
         bool visible_ = true;
@@ -78,17 +72,13 @@ namespace paxs {
             }
         }
 
-        void init(FontManager* font_manager, const SelectLanguage* select_language,
-            const MapViewport* map_viewport) {
+        void init(const MapViewport* map_viewport) {
             // 地理的特徴と人物の肖像画を初期化
             geographic_feature_manager_.init();
             geographic_feature_manager_.add();
             person_portrait_manager_.init();
             person_portrait_manager_.add();
 
-            // フォント管理への参照を保存
-            font_manager_ = font_manager;
-            select_language_ = select_language;
             map_viewport_ptr = map_viewport;
         }
 
@@ -127,34 +117,22 @@ namespace paxs {
 #endif
             cached_visible_ = &visible;
 
-            // PersonPortraitManager と GeographicFeatureManager に描画パラメータを設定
-            // Set drawing parameters to PersonPortraitManager and GeographicFeatureManager
-            if (font_manager_ && select_language_) {
-                paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
+            person_portrait_manager_.setDrawParams(
+                koyomi.jdn.cgetDay(),
+                map_viewport_ptr->getWidth(),
+                map_viewport_ptr->getHeight(),
+                map_viewport_ptr->getCenterX(),
+                map_viewport_ptr->getCenterY()
+            );
 
-                person_portrait_manager_.setDrawParams(
-                    koyomi.jdn.cgetDay(),
-                    map_viewport_ptr->getWidth(),
-                    map_viewport_ptr->getHeight(),
-                    map_viewport_ptr->getCenterX(),
-                    map_viewport_ptr->getCenterY(),
-                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
-                    font_manager_->getEnFont(),
-                    font_manager_->getPinFont()
-                );
-
-                geographic_feature_manager_.setDrawParams(
-                    visible,
-                    koyomi.jdn.cgetDay(),
-                    map_viewport_ptr->getWidth(),
-                    map_viewport_ptr->getHeight(),
-                    map_viewport_ptr->getCenterX(),
-                    map_viewport_ptr->getCenterY(),
-                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
-                    font_manager_->getEnFont(),
-                    font_manager_->getPinFont()
-                );
-            }
+            geographic_feature_manager_.setDrawParams(
+                visible,
+                koyomi.jdn.cgetDay(),
+                map_viewport_ptr->getWidth(),
+                map_viewport_ptr->getHeight(),
+                map_viewport_ptr->getCenterX(),
+                map_viewport_ptr->getCenterY()
+            );
         }
 
         // IRenderable の実装

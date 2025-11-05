@@ -25,7 +25,6 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/SimulationControlButtons.hpp>
 
@@ -33,11 +32,9 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
@@ -45,24 +42,18 @@ namespace paxs {
     class SimulationPanel : public IWidget {
     private:
         bool enabled_ = true;
-        int debug_start_y_ = 0;
-        int pulldown_y_ = 600; // プルダウンのY座標
+        const int pulldown_y_ = 600; // プルダウンのY座標
 
         // 外部参照
         std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
         paxs::Koyomi* koyomi_ = nullptr;
-        LanguageFonts* language_fonts_ = nullptr;
-        const SelectLanguage* select_language_ = nullptr;
-        const paxs::Language* language_text_ = nullptr;
         const paxs::FeatureVisibilityManager* visibility_manager_ptr = nullptr;
 
         static constexpr int TIME_ICON_SIZE = 40;
 
         void simulationInit() const {
             if (!simulator_ptr_ || !koyomi_) return;
-            const std::string model_name =
-                (simulation_model_index >= simulation_model_name.size()) ?
-                "Sample" : simulation_model_name[simulation_model_index];
+            const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
 
             (*simulator_ptr_)->init();
             koyomi_->steps.setDay(0);
@@ -77,9 +68,7 @@ namespace paxs {
         void onControlButtonClicked(SimulationControlButtons::ButtonId id) {
             if (!simulator_ptr_ || !koyomi_) return;
 
-            const std::string model_name =
-                (simulation_model_index >= simulation_model_name.size()) ?
-                "Sample" : simulation_model_name[simulation_model_index];
+            const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
 
             // よく使うパスを先に作る（必要な場合だけ使う）
             auto make_paths = [&]() {
@@ -173,21 +162,26 @@ namespace paxs {
         // モデルリスト
         std::vector<std::uint_least32_t> simulation_key;
         std::vector<std::string> simulation_model_name;
-        std::size_t simulation_model_index = 0;
         int m_remaining_iterations = 0;
 
         mutable paxs::Pulldown simulation_pulldown;
         SimulationControlButtons control_buttons_;
 
-        // コンストラクタは今のまま
+        // コンストラクタ
         SimulationPanel(
-            const SelectLanguage* select_language,
-            const paxs::Language* simulation_text,
-            LanguageFonts& language_fonts,
             const paxs::FeatureVisibilityManager* visibility_manager
-        ) : visibility_manager_ptr(visibility_manager) {
+        ) : visibility_manager_ptr(visibility_manager),
+            simulation_pulldown(
+                simulation_key,
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                paxg::Vec2i{3000, 0},
+                paxs::PulldownDisplayType::SelectedValue,
+                false
+            )
+        {
 
-            // Models.txt 読み込み（元のまま）
+            // Models.txt 読み込み
             const std::string models_path = "Data/Simulations/Models.txt";
             paxs::InputFile models_tsv(AppConfig::getInstance()->getRootPath() + models_path);
             if (models_tsv.fail()) {
@@ -209,22 +203,7 @@ namespace paxs {
                 }
             }
 
-            simulation_pulldown = paxs::Pulldown(
-                select_language,
-                simulation_text,
-                simulation_key,
-                language_fonts,
-                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
-                paxg::Vec2i{3000, 0},
-                paxs::PulldownDisplayType::SelectedValue,
-                false
-            );
-            pulldown_y_ = 600;
-            simulation_pulldown.setPos(paxg::Vec2i{
-                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
-                pulldown_y_
-            });
+            simulation_pulldown.setDirectTextList(simulation_model_name);
         }
 
         // TODO: 移行
@@ -232,9 +211,7 @@ namespace paxs {
             if (!simulator_ptr_ || !koyomi_) return;
             if (simulator_ptr_->get() == nullptr) return;
 
-            const std::string model_name =
-                (simulation_model_index >= simulation_model_name.size()) ?
-                "Sample" : simulation_model_name[simulation_model_index];
+            const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
             const auto* constants = SimulationConstants::getInstance(model_name);
             const int total_steps = constants->total_steps;
 
@@ -263,20 +240,13 @@ namespace paxs {
         void setReferences(
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
             paxs::Koyomi& koyomi,
-            LanguageFonts& language_fonts,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text,
             int debug_start_y
         ) {
             simulator_ptr_ = &simulator;
             koyomi_ = &koyomi;
-            language_fonts_ = &language_fonts;
-            select_language_ = &select_language;
-            language_text_ = &language_text;
-            debug_start_y_ = debug_start_y;
 
             // ボタン側にも参照を渡す
-            control_buttons_.setReferences(simulator_ptr_, koyomi_, debug_start_y_);
+            control_buttons_.setReferences(simulator_ptr_, koyomi_, debug_start_y);
             // ここで「押されたときの処理」を紐づける
             control_buttons_.setOnClick([this](SimulationControlButtons::ButtonId id) {
                 this->onControlButtonClicked(id);
@@ -293,12 +263,10 @@ namespace paxs {
         }
 
         void drawPulldown() const {
-            if (!isVisible() || !simulator_ptr_) return;
             simulation_pulldown.setPos(paxg::Vec2i{
                 static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
                 pulldown_y_
             });
-            // シミュがまだ無いときだけ選択させる仕様ならそのままでOK
             if (simulator_ptr_->get() == nullptr) {
                 simulation_pulldown.render();
             }
@@ -325,7 +293,6 @@ namespace paxs {
             }
 
             return EventHandlingResult::NotHandled();
-
         }
 
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
@@ -334,7 +301,6 @@ namespace paxs {
             return visibility_manager_ptr->isVisible(MurMur3::calcHash("Simulation")) &&
                    visibility_manager_ptr->isVisible(MurMur3::calcHash("UI"));
         }
-
         void setVisible(bool /*visible*/) override {}
 
         paxg::Rect getRect() const override {

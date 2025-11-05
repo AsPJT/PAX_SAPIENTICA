@@ -21,7 +21,7 @@
 #include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
-#include <PAX_MAHOROBA/Rendering/FontManager.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
@@ -29,7 +29,6 @@
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
@@ -42,7 +41,6 @@ namespace paxs {
     /// @brief Graphics integrated management class
     class GraphicsManager {
     private:
-        FontManager font_manager_;
         TileManager tile_manager_;
         MenuBar header_panel_;      // ヘッダーパネル（メニューバー + 言語選択）
         std::unique_ptr<UILayer> ui_layer_;
@@ -62,15 +60,6 @@ namespace paxs {
 
         // 機能の可視性管理
         FeatureVisibilityManager visible_manager_;
-
-        // 選択言語
-        SelectLanguage select_language_;
-
-        // 言語選択メニュー用辞書
-        paxs::Language language_text;
-
-        // シミュレーションモデル用辞書
-        paxs::Language simulation_text;
 
         // ウィンドウリサイズ検知用
         int last_window_width_ = 0;
@@ -92,31 +81,20 @@ namespace paxs {
         }
 
     public:
-        GraphicsManager()
-        {
-            // 言語辞書を初期化
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
-                [&](const std::string& path_) { language_text.add(path_); });
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationModels"),
-                [&](const std::string& path_) { simulation_text.add(path_); });
-        }
+        GraphicsManager() = default;
 
         /// @brief 初期化
         void init(MapViewportInputHandler* handler, MapViewport* viewport, UIInputHandler* ui_input_handler) {
-            // HeaderPanelを初期化
-            header_panel_.init(&select_language_, &language_text, font_manager_.getLanguageFonts());
+            // HeaderPanelを初期化（依存性注入なし）
+            header_panel_.init();
 
             // UILayerを依存性注入で初期化
             ui_layer_ = std::make_unique<UILayer>(
-                &font_manager_,
-                &select_language_,
-                &language_text,
-                &simulation_text,
                 &visible_manager_,
                 viewport
             );
 
-            map_content_layer_.init(&font_manager_, &select_language_, viewport);
+            map_content_layer_.init(viewport);
 
             // XYZタイルを初期化
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
@@ -176,9 +154,9 @@ namespace paxs {
                 last_window_height_ = current_height;
             }
 
-            // 言語選択を更新（HeaderPanelから取得）
-            select_language_.set(header_panel_.getLanguageIndex());
-            select_language_.setKey(std::uint_least32_t(header_panel_.getLanguageKey()));
+            // 言語選択を更新（HeaderPanelから取得 → FontSystem経由）
+            Fonts().getMutableSelectedLanguage().set(header_panel_.getLanguageIndex());
+            Fonts().getMutableSelectedLanguage().setKey(std::uint_least32_t(header_panel_.getLanguageKey()));
 
             // メニューから可視性を同期
             header_panel_.syncVisibilityFromMenu(&visible_manager_);
@@ -195,8 +173,6 @@ namespace paxs {
             );
 
             ui_layer_->updateData(
-                select_language_,
-                language_text,
 #ifdef PAXS_USING_SIMULATOR
                 simulator,
 #endif

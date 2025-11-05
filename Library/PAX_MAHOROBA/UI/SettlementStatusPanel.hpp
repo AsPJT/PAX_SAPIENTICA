@@ -21,11 +21,10 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 
 namespace paxs {
 
@@ -36,20 +35,19 @@ namespace paxs {
     /// UI panel that displays the current Settlement display mode (population, farming, mtDNA, etc.).
     class SettlementStatusPanel : public IWidget {
     public:
-        SettlementStatusPanel(const SelectLanguage* select_language
-            , const paxs::FeatureVisibilityManager* visible_manager)
-            : select_language_ptr(select_language)
-            , visible_manager_ptr(visible_manager) {}
+        SettlementStatusPanel(
+            const paxs::FeatureVisibilityManager* visible_manager)
+            : visible_manager_ptr(visible_manager) {}
 
-        /// @brief 初期化（LanguageFontsへの参照を設定）
-        /// @brief Initialize (set reference to LanguageFonts)
-        void init(paxs::LanguageFonts* fonts) {
-            language_fonts_ptr = fonts;
+        /// @brief 初期化
+        /// @brief Initialize
+        void init() {
+            // FontSystemを使用するため何もしない
         }
 
         // IRenderable の実装
         void render() const override {
-            if (!visible_ || language_fonts_ptr == nullptr || select_language_ptr == nullptr) return;
+            if (!visible_) return;
 
             constexpr int start_x = 40;  // 背景端の左上の X 座標
             constexpr int start_y = 80;  // 背景端の左上の Y 座標
@@ -58,8 +56,8 @@ namespace paxs {
             const std::string text = getStatusText(select_draw_);
 
             // フォントを取得
-            paxg::Font* font = language_fonts_ptr->getAndAdd(
-                select_language_ptr->cgetKey(),
+            paxg::Font* font = Fonts().getFont(
+                Fonts().getSelectedLanguage().cgetKey(),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
@@ -124,9 +122,7 @@ namespace paxs {
         bool visible_ = false;  // シミュレーション初期化後に表示
         paxg::Vec2i pos_{ 0, 0 };
 
-        // フォント管理
-        paxs::LanguageFonts* language_fonts_ptr = nullptr;
-        const SelectLanguage* select_language_ptr = nullptr;
+        // 可視性管理
         const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
 
         /// @brief 表示モードに応じたテキストを取得

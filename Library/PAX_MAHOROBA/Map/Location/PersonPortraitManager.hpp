@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Map/Location/PersonPortraitRenderer.hpp>
@@ -67,12 +66,10 @@ namespace paxs {
         /// @brief Render
         void render() const override {
             if (!visible_) return;
-            if (cached_font_ == nullptr || cached_en_font_ == nullptr || cached_pin_font_ == nullptr) return;
 
             renderer_.draw(location_point_list_list, key_value_tsv.get(), cached_jdn_,
                 cached_map_view_width_, cached_map_view_height_,
-                cached_map_view_center_x_, cached_map_view_center_y_,
-                *cached_font_, *cached_en_font_, *cached_pin_font_);
+                cached_map_view_center_x_, cached_map_view_center_y_);
         }
 
         /// @brief レンダリングレイヤーを取得
@@ -98,17 +95,13 @@ namespace paxs {
         void setDrawParams(
             const double jdn,
             const double map_view_width, const double map_view_height,
-            const double map_view_center_x, const double map_view_center_y,
-            paxg::Font& font, paxg::Font& en_font, paxg::Font& pin_font
+            const double map_view_center_x, const double map_view_center_y
         ) {
             cached_jdn_ = jdn;
             cached_map_view_width_ = map_view_width;
             cached_map_view_height_ = map_view_height;
             cached_map_view_center_x_ = map_view_center_x;
             cached_map_view_center_y_ = map_view_center_y;
-            cached_font_ = &font;
-            cached_en_font_ = &en_font;
-            cached_pin_font_ = &pin_font;
         }
 
     private:
@@ -121,9 +114,6 @@ namespace paxs {
         double cached_map_view_height_ = 0.0;
         double cached_map_view_center_x_ = 0.0;
         double cached_map_view_center_y_ = 0.0;
-        paxg::Font* cached_font_ = nullptr;
-        paxg::Font* cached_en_font_ = nullptr;
-        paxg::Font* cached_pin_font_ = nullptr;
         std::vector<PersonLocationList> location_point_list_list{}; // 人物の一覧
         // アイコンのテクスチャ
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;

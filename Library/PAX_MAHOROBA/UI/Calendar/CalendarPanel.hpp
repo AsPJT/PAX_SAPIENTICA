@@ -25,7 +25,6 @@
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
@@ -40,9 +39,7 @@ namespace paxs {
 
         /// @brief 初期化
         /// @brief Initialize
-        /// @param fonts LanguageFontsへの参照
-        void init(paxs::LanguageFonts& fonts, const paxs::FeatureVisibilityManager* visibility_manager) {
-            calendar_widget_.init(fonts);
+        void init(const paxs::FeatureVisibilityManager* visibility_manager) {
             visibility_manager_ptr = visibility_manager;
         }
 
@@ -56,11 +53,9 @@ namespace paxs {
         /// @brief カレンダー描画パラメータを設定
         /// @brief Set calendar rendering parameters
         void setCalendarParams(
-            const paxs::Koyomi& koyomi,
-            const SelectLanguage& select_language,
-            const paxs::Language& language_text
+            const paxs::Koyomi& koyomi
         ) {
-            calendar_widget_.setRenderParams(koyomi, *ui_layout_, select_language, language_text);
+            calendar_widget_.setRenderParams(koyomi, *ui_layout_);
         }
 
         /// @brief 時間操作ウィジェットの参照を設定
