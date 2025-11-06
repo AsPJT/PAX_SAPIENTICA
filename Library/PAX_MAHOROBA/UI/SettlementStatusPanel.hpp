@@ -28,25 +28,14 @@ namespace paxs {
     /// @brief Settlement display mode status panel
     ///
     /// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
-    /// UI panel that displays the current Settlement display mode (population, farming, mtDNA, etc.).
     class SettlementStatusPanel : public IWidget {
     public:
         SettlementStatusPanel(
             const paxs::FeatureVisibilityManager* visible_manager)
             : visible_manager_ptr(visible_manager) {}
 
-        /// @brief 初期化
-        /// @brief Initialize
-        void init() {
-            // FontSystemを使用するため何もしない
-        }
-
         void render() const override {
             if (!visible_) return;
-
-            constexpr int start_x = 40;  // 背景端の左上の X 座標
-            constexpr int start_y = 80;  // 背景端の左上の Y 座標
-            constexpr int font_space = 20;  // 文字端から背景端までの幅
 
             const std::string text = getStatusText(select_draw_);
 
@@ -59,7 +48,7 @@ namespace paxs {
             if (font == nullptr) return;
 
             // テキストを描画
-            font->draw(text, paxg::Vec2i{ start_x + font_space, start_y + font_space },
+            font->draw(text, paxg::Vec2i{ start_x + font_space_x, start_y + font_space_y },
                       paxg::Color{ 0, 0, 0 });
         }
 
@@ -107,15 +96,24 @@ namespace paxs {
             visible_ = enabled;
         }
 
+        bool isHit(int x, int y) const override {
+            return false;  // このパネルはヒットテストを行わない
+        }
+
         EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
             // このパネルはマウス入力を処理しない
             return EventHandlingResult::NotHandled();
         }
 
     private:
+        static constexpr int start_x = 40;  // 背景端の左上の X 座標
+        static constexpr int start_y = 80;  // 背景端の左上の Y 座標
+        static constexpr int font_space_x = 20;  // 文字端から背景端までの幅
+        static constexpr int font_space_y = 18;  // 文字端から背景端までの高さ
+
         std::size_t select_draw_ = 1;  // 表示モード (1-6)
         bool visible_ = false;  // シミュレーション初期化後に表示
-        paxg::Vec2i pos_{ 0, 0 };
+        paxg::Vec2i pos_{ start_x, start_y };
 
         // 可視性管理
         const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;

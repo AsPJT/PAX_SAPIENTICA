@@ -117,10 +117,6 @@ namespace paxs {
             map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
             map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
 
-#ifdef PAXS_USING_SIMULATOR
-            settlement_status_panel.init();
-#endif
-
             // 影描画用のRenderTextureを最大画面サイズで初期化（一回のみ）
             PanelBackgroundRenderer::initShadowTextures(paxs::Vector2<int>{3840, 2160});
 

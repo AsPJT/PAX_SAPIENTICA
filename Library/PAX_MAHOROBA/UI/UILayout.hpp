@@ -64,8 +64,8 @@ namespace paxs {
         // 各パネルのレイアウト
         PanelLayout calendar_panel;
         PanelLayout simulation_panel;
-        PanelLayout settlement_status_panel;
         PanelLayout debug_info_panel;
+        PanelLayout settlement_status_panel;
 
         // カレンダーテキストの位置
         int koyomi_font_y = 0;
@@ -99,6 +99,20 @@ namespace paxs {
         const int simulation_info_panel_width = 300; // テキスト幅 + パディング
         const int simulation_info_panel_height = 60; // テキスト高さ + パディング
 
+        // 集落パラメータパネルの位置
+        const int settlement_status_panel_x = 40;
+        const int settlement_status_panel_y = 80;
+        const int settlement_status_panel_width = 300; // テキスト幅 + パディング
+        const int settlement_status_panel_height = 60; // テキスト高さ + パディ
+
+        UILayout() {
+            settlement_status_panel.x = settlement_status_panel_x;
+            settlement_status_panel.y = settlement_status_panel_y;
+            settlement_status_panel.width = settlement_status_panel_width;
+            settlement_status_panel.height = settlement_status_panel_height;
+            settlement_status_panel.calculateContentArea();
+        }
+
         // レイアウトを計算
         void calculate(
             std::size_t date_list_size,
@@ -131,9 +145,9 @@ namespace paxs {
             calendar_panel.calculateContentArea();
 
             // SimulationPanelのレイアウト
-            int simulation_start_y = getSimulationStartY();
+            const int simulation_start_y = koyomi_font_y + next_rect_start_y - 5;
             simulation_panel.x = rect_start_x;
-            simulation_panel.y = simulation_start_y - 15;
+            simulation_panel.y = simulation_start_y;
             simulation_panel.width = rect_len_x;
             simulation_panel.height = next_rect_end_y;
             simulation_panel.calculateContentArea();
@@ -144,11 +158,6 @@ namespace paxs {
             debug_info_panel.width = debug_info_panel_width;
             debug_info_panel.height = debug_info_panel_height;
             debug_info_panel.calculateContentArea();
-        }
-
-        // シミュレーション情報の開始Y座標を取得
-        int getSimulationStartY() const {
-            return koyomi_font_y + next_rect_start_y + 10;
         }
     };
 
