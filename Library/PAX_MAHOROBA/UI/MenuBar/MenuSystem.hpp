@@ -113,7 +113,7 @@ namespace paxs {
             menu.setRectX(x);
 
             x += w; // 幅ぶんだけ進む
-            h = std::max(h, item_h);
+            h = (std::max)(h, item_h);
         }
 
         // メニューバー全体のrectも左上(0,0)から幅xだけにする
