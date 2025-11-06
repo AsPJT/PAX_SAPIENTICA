@@ -64,8 +64,8 @@ namespace paxg {
             rect.h = size_.y();
         }
         bool contains(const float x_, const float y_) const {
-            return rect.left() <= x_ && x_ <= rect.right() &&
-                   rect.top() <= y_ && y_ <= rect.bottom();
+            return (rect.x <= x_) && (x_ <= (rect.x + rect.w)) &&
+                (rect.y <= y_) && (y_ <= (rect.y + rect.h));
         }
 
 #elif defined(PAXS_USING_SFML)
