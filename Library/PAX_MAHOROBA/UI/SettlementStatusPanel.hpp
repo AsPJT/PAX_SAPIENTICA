@@ -13,20 +13,14 @@
 #define PAX_MAHOROBA_UI_SETTLEMENT_STATUS_PANEL_HPP
 
 #include <cstddef>
-#include <string>
 
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/RenderTexture.hpp>
-#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/Rendering/LanguageFonts.hpp>
-#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
-#include <PAX_SAPIENTICA/FontConfig.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 
@@ -34,38 +28,27 @@ namespace paxs {
     /// @brief Settlement display mode status panel
     ///
     /// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
-    /// UI panel that displays the current Settlement display mode (population, farming, mtDNA, etc.).
     class SettlementStatusPanel : public IWidget {
     public:
-        SettlementStatusPanel() = default;
+        SettlementStatusPanel(
+            const paxs::FeatureVisibilityManager* visible_manager)
+            : visible_manager_ptr(visible_manager) {}
 
-        /// @brief 初期化（LanguageFontsへの参照を設定）
-        /// @brief Initialize (set reference to LanguageFonts)
-        void init(paxs::LanguageFonts& fonts, const SelectLanguage& select_language) {
-            language_fonts_ = &fonts;
-            select_language_ = &select_language;
-        }
-
-        // IRenderable の実装
-        void render() override {
-            if (!visible_ || language_fonts_ == nullptr || select_language_ == nullptr) return;
-
-            constexpr int start_x = 40;  // 背景端の左上の X 座標
-            constexpr int start_y = 80;  // 背景端の左上の Y 座標
-            constexpr int font_space = 20;  // 文字端から背景端までの幅
+        void render() const override {
+            if (!visible_) return;
 
             const std::string text = getStatusText(select_draw_);
 
             // フォントを取得
-            paxg::Font* font = language_fonts_->getAndAdd(
-                select_language_->cgetKey(),
-                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_SIZE),
-                static_cast<std::uint_least8_t>(FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
+            paxg::Font* font = Fonts().getFont(
+                Fonts().getSelectedLanguage().cgetKey(),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
             if (font == nullptr) return;
 
             // テキストを描画
-            font->draw(text, paxg::Vec2i{ start_x + font_space, start_y + font_space },
+            font->draw(text, paxg::Vec2i{ start_x + font_space_x, start_y + font_space_y },
                       paxg::Color{ 0, 0, 0 });
         }
 
@@ -81,40 +64,6 @@ namespace paxs {
             visible_ = visible;
         }
 
-        // IInputHandler の実装
-        bool handleInput(const InputEvent& event) override {
-            // このウィジェットは入力を処理しない（表示のみ）
-            (void)event;
-            return false;
-        }
-
-        bool isEnabled() const override {
-            return enabled_;
-        }
-
-        // IWidget の実装
-        paxg::Rect getRect() const override {
-            constexpr int start_x = 40;
-            constexpr int start_y = 80;
-            return paxg::Rect{ start_x, start_y, 300, 60 };  // 概算サイズ
-        }
-
-        void setPos(const paxg::Vec2i& pos) override {
-            pos_ = pos;
-        }
-
-        void setEnabled(bool enabled) override {
-            enabled_ = enabled;
-        }
-
-        const char* getName() const override {
-            return "SettlementStatusPanel";
-        }
-
-        bool isAvailable() const override {
-            return true;
-        }
-
         /// @brief 表示モードを設定
         /// @brief Set display mode
         /// @param select_draw 表示モード (1-6)
@@ -122,15 +71,52 @@ namespace paxs {
             select_draw_ = select_draw;
         }
 
-    private:
-        std::size_t select_draw_ = 1;  // 表示モード (1-6)
-        bool visible_ = false;  // シミュレーション初期化後に表示 / Show after simulation init
-        bool enabled_ = true;
-        paxg::Vec2i pos_{ 0, 0 };
+        const char* getName() const override {
+            return "SettlementStatusPanel";
+        }
 
-        // フォント管理
-        paxs::LanguageFonts* language_fonts_ = nullptr;
-        const SelectLanguage* select_language_ = nullptr;
+        paxg::Rect getRect() const override {
+            return paxg::Rect{
+                static_cast<float>(pos_.x()),
+                static_cast<float>(pos_.y()),
+                300.0f,  // width
+                60.0f    // height
+            };
+        }
+
+        void setPos(const paxg::Vec2i& pos) override {
+            pos_ = pos;
+        }
+
+        bool isEnabled() const override {
+            return visible_;
+        }
+
+        void setEnabled(bool enabled) override {
+            visible_ = enabled;
+        }
+
+        bool isHit(int x, int y) const override {
+            return false;  // このパネルはヒットテストを行わない
+        }
+
+        EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
+            // このパネルはマウス入力を処理しない
+            return EventHandlingResult::NotHandled();
+        }
+
+    private:
+        static constexpr int start_x = 40;  // 背景端の左上の X 座標
+        static constexpr int start_y = 80;  // 背景端の左上の Y 座標
+        static constexpr int font_space_x = 20;  // 文字端から背景端までの幅
+        static constexpr int font_space_y = 18;  // 文字端から背景端までの高さ
+
+        std::size_t select_draw_ = 1;  // 表示モード (1-6)
+        bool visible_ = false;  // シミュレーション初期化後に表示
+        paxg::Vec2i pos_{ start_x, start_y };
+
+        // 可視性管理
+        const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
 
         /// @brief 表示モードに応じたテキストを取得
         /// @brief Get text according to display mode

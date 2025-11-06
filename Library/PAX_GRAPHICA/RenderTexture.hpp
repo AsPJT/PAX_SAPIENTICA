@@ -32,13 +32,11 @@ namespace paxg {
         std::shared_ptr<RenderTextureImpl> impl;
 
     public:
-        /// @brief Default constructor (creates window-sized render texture)
-        RenderTexture() {
-#if defined(PAXS_USING_SIV3D)
-            impl = std::make_shared<Siv3DRenderTextureImpl>();
-#else
-            impl = std::make_shared<NullRenderTextureImpl>();
-#endif
+        /// @brief Default constructor (creates empty render texture without implementation)
+        /// @brief デフォルトコンストラクタ（実装を持たない空の状態で初期化、遅延初期化用）
+        RenderTexture() : impl(nullptr) {
+            // implを持たない状態で初期化
+            // 後でサイズ付きコンストラクタで代入することを想定
         }
 
         /// @brief Constructor with size and color
@@ -63,8 +61,9 @@ namespace paxg {
         }
 
         /// @brief Get the size of the render texture
-        /// @return The size as a 2D vector
+        /// @return The size as a 2D vector (returns {0, 0} if not initialized)
         paxs::Vector2<int> size() const {
+            if (!impl) return paxs::Vector2<int>{0, 0};
             return impl->getSize();
         }
 

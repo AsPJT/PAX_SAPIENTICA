@@ -20,94 +20,18 @@
 #include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
 
 #include <PAX_SAPIENTICA/MapUtility.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する
     /// @brief Visualize simulation settlements
-    class SettlementRenderer : public IRenderable {
+    class SettlementRenderer {
     public:
-        SettlementRenderer() = default;
-
-        // IRenderable の実装
-        void render() override {
-            if (!visible_) return;
-
-            // キャッシュされたデータが有効かチェック
-            if (cached_agents_ == nullptr || cached_marriage_pos_list_ == nullptr) return;
-
-            // キャッシュされたパラメータで draw() を呼び出し
-            draw(cached_jdn_, *cached_agents_, *cached_marriage_pos_list_,
-                 cached_map_view_width_, cached_map_view_height_,
-                 cached_map_view_center_x_, cached_map_view_center_y_,
-                 select_draw_, is_line_, is_arrow_);
-        }
-
-        RenderLayer getLayer() const override {
-            return RenderLayer::MapContent;
-        }
-
-        bool isVisible() const override {
-            return visible_;
-        }
-
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-
-        /// @brief 描画パラメータを設定（MapContentManager から呼び出される）
-        /// @brief Set drawing parameters (called from MapContentManager)
-        void setDrawParams(
-            double jdn,
-            paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>& agents,
-            const std::vector<GridType4>& marriage_pos_list,
-            double map_view_width, double map_view_height,
-            double map_view_center_x, double map_view_center_y,
-            std::size_t select_draw, bool is_line, bool is_arrow
-        ) {
-            cached_jdn_ = jdn;
-            cached_agents_ = &agents;
-            cached_marriage_pos_list_ = &marriage_pos_list;
-            cached_map_view_width_ = map_view_width;
-            cached_map_view_height_ = map_view_height;
-            cached_map_view_center_x_ = map_view_center_x;
-            cached_map_view_center_y_ = map_view_center_y;
-            select_draw_ = select_draw;
-            is_line_ = is_line;
-            is_arrow_ = is_arrow;
-        }
-
-    private:
-        // 可視性管理
-        bool visible_ = true;
-
-        // 描画に必要なデータをキャッシュ（setDrawParams()で更新、render()で使用）
-        double cached_jdn_ = 0.0;
-        paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* cached_agents_ = nullptr;
-        const std::vector<GridType4>* cached_marriage_pos_list_ = nullptr;
-        double cached_map_view_width_ = 0.0;
-        double cached_map_view_height_ = 0.0;
-        double cached_map_view_center_x_ = 0.0;
-        double cached_map_view_center_y_ = 0.0;
-        std::size_t select_draw_ = 1;
-        bool is_line_ = false;
-        bool is_arrow_ = true;
-
-        /// @brief Get the mercator coordinate from the XYZTile coordinate.
-        /// @brief 座標をメルカトル座標で取得
-        paxs::Vector2<double> getLocation(
-            const paxs::Vector2<int>& start_position,
-            const paxs::Vector2<int>& position,
-            const int z) const noexcept {
-            return MapUtility::convertToMercatorCoordinate(start_position, position, z);
-        }
-
         /// @brief エージェント（集落）を描画（private化）
         /// @brief Draw agents (settlements) - made private
         /// @param jdn ユリウス日
@@ -120,15 +44,15 @@ namespace paxs {
         /// @param select_draw 表示モード (1-6)
         /// @param is_line グリッド線を表示するか
         /// @param is_arrow 移動矢印を表示するか
-        void draw(const double jdn,
-            paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>& agents,
-            const std::vector<GridType4>& marriage_pos_list,
+        static void draw(const double jdn,
+            const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
+            const std::vector<GridType4>* marriage_pos_list,
             const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
-            std::size_t select_draw, bool is_line, bool is_arrow
-        ) const {
+            const std::size_t select_draw, const bool is_line, const bool is_arrow
+        ) {
 
             // 地名を描画
-            for (const auto& agent : agents) {
+            for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
                     // エージェントの初期設定を定義
                     const auto lli = LocationPoint{
@@ -144,9 +68,9 @@ namespace paxs {
 
                     // 経緯度の範囲外を除去
                     if (!LocationRendererHelper::isInViewBounds(
-						lli.coordinate.x, lli.coordinate.y,
-						map_view_width, map_view_height,
-						map_view_center_x, map_view_center_y)) continue;
+                        lli.coordinate.x, lli.coordinate.y,
+                        map_view_width, map_view_height,
+                        map_view_center_x, map_view_center_y)) continue;
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
@@ -155,10 +79,10 @@ namespace paxs {
 
                         // 描画位置
                         const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
-							lli.coordinate.x, lli.coordinate.y,
-							map_view_width, map_view_height,
-							map_view_center_x, map_view_center_y
-						);
+                            lli.coordinate.x, lli.coordinate.y,
+                            map_view_width, map_view_height,
+                            map_view_center_x, map_view_center_y
+                        );
 
                         // エージェント
                         // if (lli.lpe == MurMur3::calcHash("agent1"))
@@ -173,22 +97,22 @@ namespace paxs {
                                 break;
                             case 2:
                                 //const float
-                                pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * 75.0;
+                                pop_original = settlement.getFarmingPopulation() / float(settlement.getPopulation()) * MAX_POPULATION_VISUALIZATION;
                                 break;
                             case 3:
                                 //const float
-                                pop_original = settlement.getMostMtDNA() / 27.0 * 75.0;
+                                pop_original = settlement.getMostMtDNA() / MTDNA_SCALE_FACTOR * MAX_POPULATION_VISUALIZATION;
                                 break;
                             case 4:
                                 //const double
-                                pop_original = settlement.getSNP() * 75.0;
+                                pop_original = settlement.getSNP() * MAX_POPULATION_VISUALIZATION;
                                 break;
                             case 6:
                                 pop_original = static_cast<double>(settlement.getBronze());
                                 break;
                             }
 
-                            const std::uint_least8_t pop = (pop_original >= 75) ? 75 : static_cast<std::uint_least8_t>(pop_original);
+                            const std::uint_least8_t pop = (pop_original >= MAX_POPULATION_VISUALIZATION) ? static_cast<std::uint_least8_t>(MAX_POPULATION_VISUALIZATION) : static_cast<std::uint_least8_t>(pop_original);
                             paxg::Circle(draw_pos,
                                 1.0f + (settlement.getPopulation() / 10.0f)//2.0f
                             ).draw(SimulationColor::getSettlementColor(pop));
@@ -279,7 +203,7 @@ namespace paxs {
 
             // 移動線を描画
             if (is_arrow) {
-                for (const auto& agent : agents) {
+                for (const auto& agent : *agents) {
                     for (const auto& settlement : agent.second.cgetSettlements()) {
                         // エージェントの初期設定を定義
                         const auto lli = LocationPoint{
@@ -295,9 +219,9 @@ namespace paxs {
 
                         // 経緯度の範囲外を除去
                         if (!LocationRendererHelper::isInViewBounds(
-						lli.coordinate.x, lli.coordinate.y,
-						map_view_width, map_view_height,
-						map_view_center_x, map_view_center_y)) continue;
+                        lli.coordinate.x, lli.coordinate.y,
+                        map_view_width, map_view_height,
+                        map_view_center_x, map_view_center_y)) continue;
 
                         // 範囲内の場合
                         if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
@@ -373,7 +297,7 @@ namespace paxs {
                     }
                 }
                 // 移動線を描画
-                for (const auto& marriage_pos : marriage_pos_list) {
+                for (const auto& marriage_pos : *marriage_pos_list) {
                     // エージェントの初期設定を定義
                     const auto lli = LocationPoint{
                         paxs::UnorderedMap < std::uint_least32_t, std::string>(),
@@ -388,9 +312,9 @@ namespace paxs {
 
                     // 経緯度の範囲外を除去
                     if (!LocationRendererHelper::isInViewBounds(
-						lli.coordinate.x, lli.coordinate.y,
-						map_view_width, map_view_height,
-						map_view_center_x, map_view_center_y)) continue;
+                        lli.coordinate.x, lli.coordinate.y,
+                        map_view_width, map_view_height,
+                        map_view_center_x, map_view_center_y)) continue;
 
                     // 範囲内の場合
                     if (lli.min_view > map_view_height || lli.max_view < map_view_height || lli.min_year > jdn || lli.max_year < jdn) {
@@ -419,6 +343,21 @@ namespace paxs {
                     }
                 }
             }
+        }
+    private:
+        // 描画定数
+        static constexpr double MAX_POPULATION_VISUALIZATION = 75.0;  // 人口可視化の最大値
+        static constexpr double MTDNA_SCALE_FACTOR = 27.0;  // mtDNA可視化のスケール因子
+
+        SettlementRenderer() = default;
+
+        /// @brief Get the mercator coordinate from the XYZTile coordinate.
+        /// @brief 座標をメルカトル座標で取得
+        static paxs::Vector2<double> getLocation(
+            const paxs::Vector2<int>& start_position,
+            const paxs::Vector2<int>& position,
+            const int z) {
+            return MapUtility::convertToMercatorCoordinate(start_position, position, z);
         }
 
     };

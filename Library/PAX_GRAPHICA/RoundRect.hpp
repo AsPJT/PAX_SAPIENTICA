@@ -313,7 +313,7 @@ namespace paxg {
                 const float r = base_r + i;
 
                 int alpha = shadow_alpha * (spread + blur_size - i + 1) / (spread + blur_size + 1);
-                sf::Color shadow_color(0, 0, 0, alpha);
+                sf::Color shadow_color(0, 0, 0, static_cast<uint8_t>(alpha));
 
                 // ヘルパー関数で角丸の影を描画
                 drawInternal(x, y, w, h, r, shadow_color);

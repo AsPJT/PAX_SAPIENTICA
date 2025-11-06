@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -14,7 +14,7 @@
 
 #include <cstdint>
 
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
 
@@ -25,6 +25,9 @@ namespace paxs {
         paxs::UnorderedMap<std::uint_least32_t, bool> visible_features{}; // 機能の可視性を管理する辞書
 
     public:
+        FeatureVisibilityManager() = default;
+        ~FeatureVisibilityManager() = default;
+
         /// @brief 新しい機能を登録
         /// @param feature_id 機能ID（ハッシュ値）
         /// @param is_visible 初期可視状態

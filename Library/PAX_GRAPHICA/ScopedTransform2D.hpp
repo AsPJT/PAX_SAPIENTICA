@@ -39,7 +39,6 @@ namespace paxg {
             (void)x;
             (void)y;
             // Other libraries don't support scoped transformations
-            // TODO: Implement transformation for SFML/DxLib if needed
 #endif
         }
 

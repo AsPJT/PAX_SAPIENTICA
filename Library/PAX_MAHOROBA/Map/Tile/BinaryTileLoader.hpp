@@ -36,34 +36,26 @@ namespace paxs {
 
     /// @brief バイナリデータからPNGに変換してタイルを読み込むローダー
     /// @brief Loader for converting binary data to PNG and loading tiles
-    class BinaryTileLoader : public ITileLoader {
+    class BinaryTileLoader {
     public:
-        /// @brief コンストラクタ
-        /// @param binary_file_name_format バイナリファイル名フォーマット
-        /// @param file_name_format 出力PNG保存先フォーマット
-        /// @param map_name 地図名
-        /// @param texture_full_path_folder フルパスフォルダ
-        /// @param current_map_view_height_ref 現在のマップビュー高さへの参照（更新用）
-        BinaryTileLoader(
-            const std::string& binary_file_name_format,
-            const std::string& file_name_format,
-            const std::string& map_name,
-            const std::string& texture_full_path_folder,
-            double& current_map_view_height_ref
-        ) : binary_file_name_format_(binary_file_name_format),
-            file_name_format_(file_name_format),
-            map_name_(map_name),
-            texture_full_path_folder_(texture_full_path_folder),
-            current_map_view_height_ref_(current_map_view_height_ref) {}
-
         /// @brief タイルを読み込む（バイナリ→PNG変換）
-        std::unique_ptr<paxg::Texture> load(
-            unsigned int z,
-            unsigned int x,
-            unsigned int y
-        ) override {
-            // バイナリファイルパスを構築
-            std::string binary_path = buildBinaryPath(z, x, y);
+        /// @brief Load a tile (binary to PNG conversion)
+        /// @param binary_path_with_zy Z と Y が既に置換されたバイナリパス
+        /// @param local_path_with_zy Z と Y が既に置換されたローカルパス
+        /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス
+        /// @param x_value X 座標の文字列
+        /// @param current_map_view_height 現在のマップビュー高さ
+        /// @return 読み込みに成功した場合はテクスチャのunique_ptr、失敗した場合はnullptr
+        static std::unique_ptr<paxg::Texture> load(
+            const std::string& binary_path_with_zy,
+            const std::string& local_path_with_zy,
+            const std::string& folder_path_with_zyx,
+            const std::string& x_value,
+            double current_map_view_height
+        ) {
+            // バイナリパスと出力パスの X を置換
+            std::string binary_path = binary_path_with_zy;
+            paxs::StringExtensions::replace(binary_path, "{x}", x_value);
 
             // バイナリファイルを読み込み
             paxs::Input8BitBinary i8bbs(binary_path,
@@ -118,17 +110,18 @@ namespace paxs {
                 }
             }
 
-            // 出力PNGパスを構築
-            std::string local_file_path = buildLocalPath(z, x, y);
+            // 出力PNGパスの X を置換
+            std::string local_file_path = local_path_with_zy;
+            paxs::StringExtensions::replace(local_file_path, "{x}", x_value);
 
             // 保存先フォルダを作成
-            createTextureFolder(std::to_string(x), std::to_string(y), std::to_string(z));
+            std::filesystem::create_directories(folder_path_with_zyx);
 
             // PNGファイルとして保存
             stbi_write_png(local_file_path.c_str(), 256, 256, static_cast<int>(sizeof(RGBAa)), rgba, 0);
 
-            // current_map_view_heightを更新（元のロジックを保持）
-            current_map_view_height_ref_ = 11111;
+            // Note: current_map_view_heightはこの時点では使用されていない
+            (void)current_map_view_height;
 
             // ファイル存在チェック
             if (!std::filesystem::exists(local_file_path)) {
@@ -149,53 +142,11 @@ namespace paxs {
             return texture;
         }
 
-        /// @brief ローダー名を取得
-        std::string getLoaderName() const override {
-            return "BinaryTileLoader";
-        }
-
     private:
-        /// @brief バイナリファイルパスを構築
-        std::string buildBinaryPath(unsigned int z, unsigned int x, unsigned int y) const {
-            std::string path = binary_file_name_format_;
-            paxs::StringExtensions::replace(path, "{z}", std::to_string(z));
-            paxs::StringExtensions::replace(path, "{x}", std::to_string(x));
-            paxs::StringExtensions::replace(path, "{y}", std::to_string(y));
-            if (!map_name_.empty()) {
-                paxs::StringExtensions::replace(path, "{n}", map_name_);
-            }
-            return path;
-        }
-
-        /// @brief ローカル保存先パスを構築
-        std::string buildLocalPath(unsigned int z, unsigned int x, unsigned int y) const {
-            std::string path = file_name_format_;
-            paxs::StringExtensions::replace(path, "{z}", std::to_string(z));
-            paxs::StringExtensions::replace(path, "{x}", std::to_string(x));
-            paxs::StringExtensions::replace(path, "{y}", std::to_string(y));
-            if (!map_name_.empty()) {
-                paxs::StringExtensions::replace(path, "{n}", map_name_);
-            }
-            return path;
-        }
-
-        /// @brief テクスチャ保存フォルダを作成
-        void createTextureFolder(const std::string& x_value, const std::string& y_value, const std::string& z_value) const {
-            std::string new_folder_path = texture_full_path_folder_;
-            paxs::StringExtensions::replace(new_folder_path, "{x}", x_value);
-            paxs::StringExtensions::replace(new_folder_path, "{y}", y_value);
-            paxs::StringExtensions::replace(new_folder_path, "{z}", z_value);
-            if (!map_name_.empty()) {
-                paxs::StringExtensions::replace(new_folder_path, "{n}", map_name_);
-            }
-            std::filesystem::create_directories(new_folder_path);
-        }
-
-        std::string binary_file_name_format_;
-        std::string file_name_format_;
-        std::string map_name_;
-        std::string texture_full_path_folder_;
-        double& current_map_view_height_ref_;
+        // インスタンス化を禁止
+        BinaryTileLoader() = delete;
+        BinaryTileLoader(const BinaryTileLoader&) = delete;
+        BinaryTileLoader& operator=(const BinaryTileLoader&) = delete;
     };
 
 } // namespace paxs

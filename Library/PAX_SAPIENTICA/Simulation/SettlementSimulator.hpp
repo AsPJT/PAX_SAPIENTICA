@@ -29,16 +29,14 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusDisplayer.hpp>
+#include <PAX_SAPIENTICA/TimeUtility.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
 namespace paxs {
 
     // シミュレーション出力フォルダ用の時刻取得
     std::string calcDateTime() {
-        static char buffer[20];
-        std::time_t t = std::time(nullptr);
-        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H-%M-%S", std::localtime(&t));
-        return buffer;
+        return TimeUtility::getCurrentDateTime("%Y-%m-%d-%H-%M-%S");
     }
 
     class SettlementSimulator {

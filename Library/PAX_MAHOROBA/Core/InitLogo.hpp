@@ -30,10 +30,13 @@ namespace paxs {
 //            s3d::detail::Console_impl{}.open(); // コンソールを開く s3d::Console::Open()
 //#endif
 
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            // === Phase 1: ライブラリ初期化前の設定 ===
+            paxg::Window::PreInit();
 
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            // Android: 初期化処理は不要
 #else
-            // ウィンドウのサイズを変える
+            // ウィンドウのサイズを設定
             paxg::Window::setSize(1280, 720);
 #endif
 
@@ -45,18 +48,21 @@ namespace paxs {
             paxg::Window::setTitle(
                 std::string("PAX SAPIENTICA v") + std::string(PAX_SAPIENTICA_LIBRARY_VERSION_NAME));
 
-            // ウィンドウのサイズを変更可能にする
-            paxg::Window::setResizable(true);
+            // === Phase 2: ライブラリ初期化 ===
+#ifdef PAXS_USING_DXLIB
+            DxLib::DxLib_Init();
+#endif
+
+            // === Phase 3: ライブラリ初期化後の設定 ===
 
             // アプリケーションアイコンを設定
 #ifdef PAXS_USING_SFML
             paxg::Window::setIcon("Images/Logo/LogoRed.png");
 #endif
 #ifdef PAXS_USING_DXLIB
-            DxLib::DxLib_Init();
             // DxLib は初期化後にアイコンを設定
             paxg::Window::setIcon("Images/Logo/LogoRed.ico");
-#endif // PAXS_USING_DXLIB
+#endif
 
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
             // DxLibのアンドロイド版の画面サイズを変更
@@ -67,7 +73,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_DXLIB
             DxLib::SetDrawScreen(DX_SCREEN_BACK);
-#endif // PAXS_USING_DXLIB
+#endif
 
 #ifdef PAXS_USING_SIV3D
             // 一度 update を呼んでシーンサイズを反映させる
@@ -76,8 +82,8 @@ namespace paxs {
 
 #ifdef PAXS_USING_SFML
             paxg::Window::setFPS(60);
-
 #endif
+
             // ローディング画面を表示
             displayLoadingScreen();
         }
@@ -135,6 +141,12 @@ namespace paxs {
             // 注意: SFMLでは実行時の変更が不安定なため無効化
 #if defined(PAXS_USING_SIV3D)
             paxg::Window::setDecorated(true);
+#endif
+
+#ifdef PAXS_USING_SFML
+            // SFMLでは黒画面のフラッシュを防ぐため、背景色でクリア＆表示
+            paxg::Window::clear();
+            paxg::Window::display();
 #endif
         }
     };

@@ -1,11 +1,11 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -18,6 +18,8 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+
+#include <PAX_SAPIENTICA/TimeUtility.hpp>
 
 namespace paxs {
 
@@ -37,11 +39,7 @@ namespace paxs {
         /// @brief Get the current date and time as a string.
         /// @brief 現在の日時を文字列として取得する。
         static std::string currentDateTime() noexcept {
-            const auto now = std::chrono::system_clock::now();
-            const auto in_time_t = std::chrono::system_clock::to_time_t(now);
-            std::stringstream ss;
-            ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %X"); // localtime の非推奨
-            return ss.str();
+            return TimeUtility::getCurrentDateTime("%Y-%m-%d %X");
         }
 
         /// @brief Logs the message.

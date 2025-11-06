@@ -12,9 +12,9 @@
 #ifndef PAX_MAHOROBA_UI_LAYOUT_HPP
 #define PAX_MAHOROBA_UI_LAYOUT_HPP
 
+#include <PAX_GRAPHICA/Font.hpp>
+#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-
-#include <PAX_SAPIENTICA/FontConfig.hpp>
 
 namespace paxs {
 
@@ -47,6 +47,15 @@ namespace paxs {
             content_width = width - padding_left - padding_right;
             content_height = height - padding_top - padding_bottom;
         }
+
+        paxg::Rect getRect() const {
+            return paxg::Rect{
+                static_cast<float>(x),
+                static_cast<float>(y),
+                static_cast<float>(width),
+                static_cast<float>(height)
+            };
+        }
     };
 
     // UIのレイアウト情報
@@ -55,6 +64,7 @@ namespace paxs {
         // 各パネルのレイアウト
         PanelLayout calendar_panel;
         PanelLayout simulation_panel;
+        PanelLayout debug_info_panel;
         PanelLayout settlement_status_panel;
 
         // カレンダーテキストの位置
@@ -77,23 +87,47 @@ namespace paxs {
         int next_rect_start_y = 0;
         int next_rect_end_y = 0;
 
+        // デバッグ情報パネルの位置
+        const int debug_info_panel_x = 10;
+        const int debug_info_panel_y = 10;
+        const int debug_info_panel_width = 300;
+        const int debug_info_panel_height = 250;
+
+        // シミュレーション情報パネルの位置
+        const int simulation_info_panel_x = 40;
+        const int simulation_info_panel_y = 80;
+        const int simulation_info_panel_width = 300; // テキスト幅 + パディング
+        const int simulation_info_panel_height = 60; // テキスト高さ + パディング
+
+        // 集落パラメータパネルの位置
+        const int settlement_status_panel_x = 40;
+        const int settlement_status_panel_y = 80;
+        const int settlement_status_panel_width = 300; // テキスト幅 + パディング
+        const int settlement_status_panel_height = 60; // テキスト高さ + パディ
+
+        UILayout() {
+            settlement_status_panel.x = settlement_status_panel_x;
+            settlement_status_panel.y = settlement_status_panel_y;
+            settlement_status_panel.width = settlement_status_panel_width;
+            settlement_status_panel.height = settlement_status_panel_height;
+            settlement_status_panel.calculateContentArea();
+        }
+
         // レイアウトを計算
-        // date_list_size: 表示する暦の数
-        // time_control_panel_height: 時間操作パネルの高さ
         void calculate(
             std::size_t date_list_size,
             int time_control_panel_height
         ) {
             // 暦の位置
-            koyomi_font_y = FontConfig::PULLDOWN_FONT_SIZE + 43;
-            koyomi_font_en_y = FontConfig::PULLDOWN_FONT_SIZE + 43;
+            koyomi_font_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
+            koyomi_font_en_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
 
             koyomi_font_x = paxg::Window::width() - 270;
             koyomi_font_en_x = koyomi_font_x - 20;
             rect_start_x = koyomi_font_en_x - 165;
             rect_len_x = paxg::Window::width() - rect_start_x - 15;
 
-            koyomi_height = static_cast<int>(date_list_size) * (FontConfig::KOYOMI_FONT_SIZE * 4 / 3); // 暦の縦の幅
+            koyomi_height = static_cast<int>(date_list_size) * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3); // 暦の縦の幅
 
             // 時間操作パネルの位置とサイズ
             time_control_base_x = rect_len_x - 10;
@@ -111,20 +145,19 @@ namespace paxs {
             calendar_panel.calculateContentArea();
 
             // SimulationPanelのレイアウト
-            int simulation_start_y = getSimulationStartY();
+            const int simulation_start_y = koyomi_font_y + next_rect_start_y - 5;
             simulation_panel.x = rect_start_x;
-            simulation_panel.y = simulation_start_y - 15;
+            simulation_panel.y = simulation_start_y;
             simulation_panel.width = rect_len_x;
             simulation_panel.height = next_rect_end_y;
             simulation_panel.calculateContentArea();
 
-            // SettlementStatusPanelのレイアウトは動的（テキストサイズに依存）
-            // コンテンツ側で計算してsetLayout()で設定
-        }
-
-        // シミュレーション情報の開始Y座標を取得
-        int getSimulationStartY() const {
-            return koyomi_font_y + next_rect_start_y + 10;
+            // DebugInfoPanelのレイアウト
+            debug_info_panel.x = debug_info_panel_x;
+            debug_info_panel.y = paxg::Window::height() - debug_info_panel_height - debug_info_panel_y;
+            debug_info_panel.width = debug_info_panel_width;
+            debug_info_panel.height = debug_info_panel_height;
+            debug_info_panel.calculateContentArea();
         }
     };
 

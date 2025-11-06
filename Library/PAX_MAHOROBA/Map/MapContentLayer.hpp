@@ -20,18 +20,17 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #endif
 
-#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonPortraitManager.hpp>
-#include <PAX_MAHOROBA/Rendering/FontManager.hpp>
 
 #include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -39,7 +38,7 @@ namespace paxs {
 
     /// @brief 地図コンテンツレイヤークラス
     /// @brief Map Content Layer
-    class MapContentLayer : public IRenderable, public IInputHandler {
+    class MapContentLayer : public IRenderable, public IEventHandler, public IMouseEventHandler {
     private:
         std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
 
@@ -51,16 +50,12 @@ namespace paxs {
 #endif
         paxs::map::MapDomainLogic map_domain_logic_; // ドメインロジック
 
-        // 依存性注入された参照
-        FontManager* font_manager_ = nullptr;
-        const SelectLanguage* select_language_ = nullptr;
-
         // 可視性・有効性管理
         bool visible_ = true;
         bool enabled_ = true;
 
-        // 描画に必要なデータをキャッシュ（updateData()で更新、render()で使用）
-        MapViewport cached_map_viewport_;
+        const MapViewport* map_viewport_ptr = nullptr;
+
         paxs::Koyomi cached_koyomi_;
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
@@ -77,22 +72,16 @@ namespace paxs {
             }
         }
 
-        void init(FontManager& font_manager, const SelectLanguage& select_language) {
+        void init(const MapViewport* map_viewport) {
             // 地理的特徴と人物の肖像画を初期化
             geographic_feature_manager_.init();
-            geographic_feature_manager_.add();
             person_portrait_manager_.init();
-            person_portrait_manager_.add();
 
-            // フォント管理への参照を保存
-            font_manager_ = &font_manager;
-            select_language_ = &select_language;
+            map_viewport_ptr = map_viewport;
         }
 
         /// @brief データ更新（描画は行わない）
-        /// @brief Update data (no drawing)
         void updateData(
-            MapViewport& map_viewport,
             const paxs::Koyomi& koyomi,
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
@@ -100,10 +89,9 @@ namespace paxs {
             paxs::FeatureVisibilityManager& visible
             ) {
             // データ更新
-            texture_manager_->update(map_viewport.getCenterX(), map_viewport.getCenterY(), map_viewport.getWidth(), map_viewport.getHeight());
+            texture_manager_->update(map_viewport_ptr->getCenterX(), map_viewport_ptr->getCenterY(), map_viewport_ptr->getWidth(), map_viewport_ptr->getHeight());
 
             // 描画用にデータをキャッシュ
-            cached_map_viewport_ = map_viewport;
             cached_koyomi_ = koyomi;
 #ifdef PAXS_USING_SIMULATOR
             cached_simulator_ = &simulator;
@@ -114,10 +102,10 @@ namespace paxs {
                     koyomi.jdn.cgetDay(),
                     simulator->getSettlementGrids(),
                     simulator->getMarriagePosList(),
-                    map_viewport.getWidth(),
-                    map_viewport.getHeight(),
-                    map_viewport.getCenterX(),
-                    map_viewport.getCenterY(),
+                    map_viewport_ptr->getWidth(),
+                    map_viewport_ptr->getHeight(),
+                    map_viewport_ptr->getCenterX(),
+                    map_viewport_ptr->getCenterY(),
                     settlement_input_handler_.getSelectDraw(),
                     settlement_input_handler_.getIsLine(),
                     settlement_input_handler_.getIsArrow()
@@ -126,42 +114,25 @@ namespace paxs {
 #endif
             cached_visible_ = &visible;
 
-            // PersonPortraitManager と GeographicFeatureManager に描画パラメータを設定
-            // Set drawing parameters to PersonPortraitManager and GeographicFeatureManager
-            if (font_manager_ && select_language_) {
-                paxg::Font* main_font = font_manager_->getMainFont(*select_language_);
+            person_portrait_manager_.setDrawParams(
+                koyomi.jdn.cgetDay(),
+                map_viewport_ptr->getWidth(),
+                map_viewport_ptr->getHeight(),
+                map_viewport_ptr->getCenterX(),
+                map_viewport_ptr->getCenterY()
+            );
 
-                person_portrait_manager_.setDrawParams(
-                    koyomi.jdn.cgetDay(),
-                    map_viewport.getWidth(),
-                    map_viewport.getHeight(),
-                    map_viewport.getCenterX(),
-                    map_viewport.getCenterY(),
-                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
-                    font_manager_->getEnFont(),
-                    font_manager_->getPinFont()
-                );
-
-                geographic_feature_manager_.setDrawParams(
-                    visible,
-                    koyomi.jdn.cgetDay(),
-                    map_viewport.getWidth(),
-                    map_viewport.getHeight(),
-                    map_viewport.getCenterX(),
-                    map_viewport.getCenterY(),
-                    (main_font == nullptr) ? font_manager_->getPinFont() : (*main_font),
-                    font_manager_->getEnFont(),
-                    font_manager_->getPinFont()
-                );
-            }
+            geographic_feature_manager_.setDrawParams(
+                visible,
+                koyomi.jdn.cgetDay(),
+                map_viewport_ptr->getWidth(),
+                map_viewport_ptr->getHeight(),
+                map_viewport_ptr->getCenterX(),
+                map_viewport_ptr->getCenterY()
+            );
         }
 
-        // IRenderable の実装
-        // IRenderable implementation
-
-        /// @brief レンダリング処理
-        /// @brief Render
-        void render() override {
+        void render() const override {
             if (!visible_ || cached_visible_ == nullptr) return;
 
             paxs::FeatureVisibilityManager& visible = *cached_visible_;
@@ -198,44 +169,42 @@ namespace paxs {
             visible_ = visible;
         }
 
-        // IInputHandler の実装
-        // IInputHandler implementation
-
-        /// @brief 入力処理
-        /// @brief Handle input
-        bool handleInput(const InputEvent& event) override {
-            if (!visible_ || !enabled_ || cached_visible_ == nullptr) return false;
+        /// @brief キーボードイベント処理
+        /// @param event キーボードイベント / Keyboard event
+        /// @return イベント処理結果 / Event handling result
+        EventHandlingResult handleEvent(const KeyboardEvent& event) override {
+            if (cached_visible_ == nullptr) return EventHandlingResult::NotHandled();
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
             // Settlement input processing
             if (cached_visible_->isVisible(MurMur3::calcHash("Map")) || cached_visible_->isVisible(MurMur3::calcHash("Simulation"))) {
                 if (cached_simulator_ && *cached_simulator_) {
-                    settlement_input_handler_.handleInput(event);
+                    settlement_input_handler_.handleEvent(event);
                 }
             }
 #endif
             // 入力を消費しない（背後のハンドラーにも伝播させる）
-            return false;
+            return EventHandlingResult::NotHandled();
         }
 
-        /// @brief ヒットテスト
-        /// @brief Hit test
-        bool hitTest(int x, int y) const override {
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            // TODO: マウスイベント処理
+            (void)event;
+            return EventHandlingResult::NotHandled();
+        }
+
+        bool isHit([[maybe_unused]] int x, [[maybe_unused]] int y) const override {
             // 地図全体が対象なので常にtrue
-            // Always true as the entire map is the target
             return visible_ && enabled_;
         }
 
-        /// @brief 有効性を取得
-        /// @brief Get enabled state
         bool isEnabled() const override {
             return enabled_;
         }
 
 #ifdef PAXS_USING_SIMULATOR
         /// @brief SettlementInputHandler への参照を取得（GraphicsManager での登録用）
-        /// @brief Get reference to SettlementInputHandler (for registration in GraphicsManager)
         SettlementInputHandler& getSettlementInputHandler() {
             return settlement_input_handler_;
         }

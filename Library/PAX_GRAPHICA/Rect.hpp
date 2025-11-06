@@ -63,6 +63,10 @@ namespace paxg {
             rect.w = size_.x();
             rect.h = size_.y();
         }
+        bool contains(const float x_, const float y_) const {
+            return (rect.x <= x_) && (x_ <= (rect.x + rect.w)) &&
+                (rect.y <= y_) && (y_ <= (rect.y + rect.h));
+        }
 
 #elif defined(PAXS_USING_SFML)
         sf::RectangleShape rect{};
@@ -86,6 +90,10 @@ namespace paxg {
         void setSize(const float w_, const float h_) { rect.setSize(sf::Vector2f(w_, h_)); }
         void setPos(const Vec2i& pos_) { rect.setPosition({ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()) }); }
         void setSize(const Vec2i& size_) { rect.setSize(sf::Vector2f(static_cast<float>(size_.x()), static_cast<float>(size_.y()))); }
+        bool contains(const float x_, const float y_) const {
+            return x_ >= rect.getPosition().x && x_ <= (rect.getPosition().x + rect.getSize().x) &&
+                   y_ >= rect.getPosition().y && y_ <= (rect.getPosition().y + rect.getSize().y);
+        }
 #else
         float x0{}, y0{}, w0{}, h0{};
         constexpr Rect() = default;
@@ -123,6 +131,10 @@ namespace paxg {
         void setSize(const Vec2i& size_) {
             w0 = static_cast<float>(size_.x());
             h0 = static_cast<float>(size_.y());
+        }
+        bool contains(const float x_, const float y_) const {
+            return x0 <= x_ && x_ <= x0 + w0 &&
+                   y0 <= y_ && y_ <= y0 + h0;
         }
 #endif
 
@@ -190,7 +202,7 @@ namespace paxg {
                 ));
 
                 int alpha = shadow_alpha * (spread + blur_size - i + 1) / (spread + blur_size + 1);
-                shadow.setFillColor(sf::Color(0, 0, 0, alpha));
+                shadow.setFillColor(sf::Color(0, 0, 0, static_cast<uint8_t>(alpha)));
                 Window::window().draw(shadow);
             }
             return *this;

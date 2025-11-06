@@ -25,6 +25,27 @@
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 
 namespace paxg {
+    namespace MinWindow {
+        static const int MIN_WIN_WIDTH  = 800;
+        static const int MIN_WIN_HEIGHT = 600;
+
+        LRESULT CALLBACK MyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+        {
+            switch (msg)
+            {
+            case WM_GETMINMAXINFO:
+            {
+                MINMAXINFO* pInfo = reinterpret_cast<MINMAXINFO*>(lParam);
+                pInfo->ptMinTrackSize.x = MIN_WIN_WIDTH;   // 最小幅
+                pInfo->ptMinTrackSize.y = MIN_WIN_HEIGHT;  // 最小高さ
+                return 0; // 自分で処理したよ、という意味
+            }
+            }
+
+            // それ以外はDxLibに任せる
+            return 0;
+        }
+    } // namespace MinWindow
 
     class DxLibWindowImpl : public WindowImpl {
     private:
@@ -52,6 +73,31 @@ namespace paxg {
         }
 
     public:
+        /// @brief DxLib_Init() の前に呼び出される初期化処理
+        /// @brief Pre-initialization called before DxLib_Init()
+        void preInit() override {
+#if !defined(__ANDROID__) && !defined(__APPLE__) && !defined(__LINUX__)
+            // ウィンドウモードを通常ウィンドウに設定（DxLib_Init の前）
+            DxLib::ChangeWindowMode(TRUE);
+
+            // ウィンドウサイズ変更を許可（DxLib_Init の前に設定する必要がある）
+            // Enable window resizing (must be set before DxLib_Init)
+            DxLib::SetWindowSizeChangeEnableFlag(TRUE, FALSE);
+
+            // 最大化ボックス（最大化ボタン）を有効化
+            DxLib::SetWindowMaximizeButtonBehavior(1); // 1: 通常の最大化, 0: 無効
+
+            // ウィンドウサイズの拡張率を設定（最大化やリサイズ時の拡大率）
+            // Set window size extend rate (for maximization and resizing)
+            // 1.0 = 拡大なし（デフォルト解像度のまま）
+            DxLib::SetWindowSizeExtendRate(1.0);
+
+            DxLib::SetHookWinProc(MinWindow::MyWndProc);
+#endif
+        }
+
+        /// @brief メイン初期化処理
+        /// @brief Main initialization
         void init(int width, int height, const std::string& title) override {
             DxLib::SetGraphMode(width, height, 32);
 #if !defined(__ANDROID__) && !defined(__APPLE__) && !defined(__LINUX__)

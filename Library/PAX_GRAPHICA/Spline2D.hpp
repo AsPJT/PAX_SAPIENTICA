@@ -76,11 +76,9 @@ namespace paxg {
 #elif defined(PAXS_USING_DXLIB)
             (void)thickness; // 未使用パラメータの警告を抑制
             (void)color;     // 未使用パラメータの警告を抑制
-            // TODO: DxLibでのスプライン曲線描画を実装
 #elif defined(PAXS_USING_SFML)
             (void)thickness; // 未使用パラメータの警告を抑制
             (void)color;     // 未使用パラメータの警告を抑制
-            // TODO: SFMLでのスプライン曲線描画を実装
 #else
             (void)thickness; // 未使用パラメータの警告を抑制
             (void)color;     // 未使用パラメータの警告を抑制

@@ -18,10 +18,10 @@
 #include <variant>
 #include <vector>
 
+#include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
-#include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
 

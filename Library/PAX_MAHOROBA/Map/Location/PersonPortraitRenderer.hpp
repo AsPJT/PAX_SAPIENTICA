@@ -16,7 +16,6 @@
 #include <vector>
 
 #include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -24,7 +23,7 @@
 
 #include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
 
@@ -32,22 +31,17 @@ namespace paxs {
     /// @brief Class responsible for rendering person portraits and names
     class PersonPortraitRenderer {
     public:
-        PersonPortraitRenderer() = default;
-
         /// @brief 人物の肖像画と名前を描画
         /// @brief Draw person portraits and names
-        void draw(
+        static void draw(
             const std::vector<PersonLocationList>& location_point_list_list,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const double jdn,
             const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
-            const double map_view_center_y,
-            paxg::Font& font,
-            paxg::Font& en_font,
-            paxg::Font& /*pin_font*/
-        ) const {
+            const double map_view_center_y
+        ) {
             const std::uint_least32_t ja_jp_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t en_us_language = MurMur3::calcHash("en-US");
 
@@ -99,7 +93,6 @@ namespace paxs {
                         now_coordinate_x, now_coordinate_y,
                         map_view_width, map_view_height,
                         map_view_center_x, map_view_center_y,
-                        font, en_font,
                         ja_jp_language, en_us_language
                     );
                 }
@@ -107,9 +100,11 @@ namespace paxs {
         }
 
     private:
+        PersonPortraitRenderer() = default;
+
         /// @brief 肖像画のみを描画
         /// @brief Draw portrait only
-        void drawPortraitOnly(
+        static void drawPortraitOnly(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const PersonLocationList& lll,
             const PersonLocationPoint& lli,
@@ -119,7 +114,7 @@ namespace paxs {
             double map_view_height,
             double map_view_center_x,
             double map_view_center_y
-        ) const {
+        ) {
             // 描画位置
             const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
                 now_coordinate_x, now_coordinate_y,
@@ -142,7 +137,7 @@ namespace paxs {
 
         /// @brief 肖像画とテキストを描画
         /// @brief Draw portrait and text
-        void drawPortraitAndText(
+        static void drawPortraitAndText(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const PersonLocationList& lll,
             const PersonLocationPoint& lli,
@@ -152,11 +147,9 @@ namespace paxs {
             double map_view_height,
             double map_view_center_x,
             double map_view_center_y,
-            paxg::Font& font,
-            paxg::Font& en_font,
             std::uint_least32_t ja_jp_language,
             std::uint_least32_t en_us_language
-        ) const {
+        ) {
             // 描画位置
             const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
                 now_coordinate_x, now_coordinate_y,
@@ -175,23 +168,21 @@ namespace paxs {
             }
 
             // テキストを描画
-            drawPersonNameText(lli, font, en_font, draw_font_pos, ja_jp_language, en_us_language);
+            drawPersonNameText(lli, draw_font_pos, ja_jp_language, en_us_language);
         }
 
         /// @brief 人物名のテキストを描画
         /// @brief Draw person name text
-        void drawPersonNameText(
+        static void drawPersonNameText(
             const PersonLocationPoint& lli,
-            paxg::Font& font,
-            paxg::Font& en_font,
             const paxg::Vec2i& draw_font_pos,
             std::uint_least32_t ja_jp_language,
             std::uint_least32_t en_us_language
-        ) const {
+        ) {
             (void)ja_jp_language;  // 未使用警告を抑制
             (void)en_us_language;  // 未使用警告を抑制
             LocationRendererHelper::drawBilingualText(
-                lli.place_name, draw_font_pos, font, en_font, "topCenter"
+                lli.place_name, draw_font_pos, "topCenter"
             );
         }
     };

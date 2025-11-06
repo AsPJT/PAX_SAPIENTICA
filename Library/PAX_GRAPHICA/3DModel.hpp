@@ -67,10 +67,10 @@ namespace paxg {
         s3d::Model model_;
 
         // 描画するテクスチャの設定
-        s3d::MSRenderTexture renderTexture_;
+        mutable s3d::MSRenderTexture renderTexture_;
 
         // カメラ
-        s3d::DebugCamera3D camera_;
+        mutable s3d::DebugCamera3D camera_;
 #endif
 
     public:
@@ -110,16 +110,24 @@ namespace paxg {
 #endif
         }
 
+        /// @brief 回転角度を更新
+        /// @brief Update rotation angle
         void updateRotation() {
+#ifdef PAXS_USING_SIV3D
+            // モデルの回転更新
+            ++rotation_;
+            if (rotation_ >= 360) rotation_ = 0;
+#endif
+        }
+
+        /// @brief 3Dモデルを描画
+        /// @brief Render 3D model
+        void render() const {
 #ifdef PAXS_USING_SIV3D
             s3d::Graphics3D::SetCameraTransform(camera_); // カメラ情報を設定
 
             // 3D シーンの描画
             const s3d::ScopedRenderTarget3D target{ renderTexture_.clear(backgroundColor_) };
-
-            // モデルの回転更新
-            ++rotation_;
-            if (rotation_ >= 360) rotation_ = 0;
 
             // 3Dモデルの描画
             const s3d::ScopedRenderStates3D renderStates{
@@ -134,10 +142,11 @@ namespace paxg {
             // RenderTexture を 2D シーンに描画
             s3d::Graphics3D::Flush(); // 現在までの 3D 描画を実行
 
-            static int count = 0;
             // 画面サイズが変更されたら幅を変える
-            if (count >= 3) {
-                count = 0;
+            // 毎フレームチェックすると重いため、3フレームに1回チェック
+            static int resize_check_count = 0;
+            if (resize_check_count >= 3) {
+                resize_check_count = 0;
                 if (renderTexture_.width() != s3d::Scene::Width()
                     || renderTexture_.height() != s3d::Scene::Height()) {
                     renderTexture_ = s3d::MSRenderTexture{
@@ -147,7 +156,7 @@ namespace paxg {
                     };
                 }
             }
-            ++count;
+            ++resize_check_count;
 
             renderTexture_.resolve(); // テクスチャを描画可能にする
             renderTexture_.draw(0, 0); // 指定した大きさで描画
