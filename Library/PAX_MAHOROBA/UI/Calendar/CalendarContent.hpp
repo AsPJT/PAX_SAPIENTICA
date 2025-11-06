@@ -26,11 +26,7 @@
 
 namespace paxs {
 
-    /// @brief カレンダーコンテンツ
-    /// @brief Calendar content
-    ///
-    /// カレンダー情報の描画を担当します。
-    /// Handles rendering of calendar information.
+    /// @brief カレンダーコンテンツの描画クラス
     class CalendarContent : public IRenderable {
     public:
         /// @brief レンダリングレイヤーを取得

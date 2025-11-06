@@ -27,6 +27,10 @@ namespace paxs {
     /// @brief 集落の描画を管理するクラス
     /// @brief Class to manage settlement rendering
     class SettlementManager : public IRenderable {
+    private:
+        bool visible_ = true;
+        std::unique_ptr<SettlementRenderer> renderer_;
+
     public:
         SettlementManager()
             : renderer_(std::make_unique<SettlementRenderer>())
@@ -36,33 +40,19 @@ namespace paxs {
             }
         }
 
-        // IRenderable の実装
-        // IRenderable implementation
-
-        /// @brief レンダリング処理
-        /// @brief Render
         void render() const override {
-            if (!visible_) return;
-            if (!renderer_) return;
-
-            // 描画処理をレンダラーに委譲
+            if (!visible_ || !renderer_) return;
             renderer_->render();
         }
 
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
         RenderLayer getLayer() const override {
             return RenderLayer::MapContent;
         }
 
-        /// @brief 可視性を取得
-        /// @brief Get visibility
         bool isVisible() const override {
             return visible_;
         }
 
-        /// @brief 可視性を設定
-        /// @brief Set visibility
         void setVisible(bool visible) override {
             visible_ = visible;
             if (renderer_) {
@@ -70,8 +60,7 @@ namespace paxs {
             }
         }
 
-        /// @brief 描画パラメータを設定(MapContentLayer から呼び出される)
-        /// @brief Set drawing parameters (called from MapContentLayer)
+        /// @brief 描画パラメータを設定
         void setDrawParams(
             double jdn,
             paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>& agents,
@@ -82,7 +71,6 @@ namespace paxs {
         ) {
             if (!renderer_) return;
 
-            // レンダラーに描画パラメータを渡す
             renderer_->setDrawParams(
                 jdn,
                 agents,
@@ -92,19 +80,6 @@ namespace paxs {
                 select_draw, is_line, is_arrow
             );
         }
-
-        /// @brief SettlementRendererへの参照を取得
-        /// @brief Get reference to SettlementRenderer
-        SettlementRenderer* getRenderer() {
-            return renderer_.get();
-        }
-
-    private:
-        // 可視性管理
-        bool visible_ = true;
-
-        // 描画処理を担当
-        std::unique_ptr<SettlementRenderer> renderer_;
     };
 }
 

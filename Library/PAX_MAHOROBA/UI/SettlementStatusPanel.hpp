@@ -13,16 +13,12 @@
 #define PAX_MAHOROBA_UI_SETTLEMENT_STATUS_PANEL_HPP
 
 #include <cstddef>
-#include <string>
 
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
 
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 

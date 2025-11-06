@@ -28,7 +28,7 @@ namespace paxs {
 
         // 地図タイルレイヤー（地形、衛星画像など）
         // Map tile layer (terrain, satellite images, etc.)
-        MapBase = 100,
+        MapTile = 100,
 
         // 地図コンテンツレイヤー（マーカー、エージェント、ルートなど）
         // Map content layer (markers, agents, routes, etc.)

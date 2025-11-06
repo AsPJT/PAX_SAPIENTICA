@@ -32,7 +32,7 @@ namespace paxs {
     /// For Siv3D, renders all shadows at once to prevent shadow duplication.
     class PanelBackground {
     public:
-        PanelBackground() = default;
+        PanelBackground() = delete;
 
         /// @brief 影用のテクスチャを初期化（静的メソッド）
         /// @brief Initialize textures for shadow rendering (static method)
@@ -107,12 +107,12 @@ namespace paxs {
         /// @param corner_radius 角の丸み半径 / Corner radius (default: 10)
         /// @param bg_color 背景色 / Background color (default: white)
         /// @param layer レンダリングレイヤー / Rendering layer (default: UIBackground)
-        void draw(
+        static void draw(
             int x, int y, int width, int height,
             int corner_radius = 10,
             const paxg::Color& bg_color = paxg::Color{255, 255, 255},
             RenderLayer layer = RenderLayer::UIBackground
-        ) const {
+        ) {
 #ifdef PAXS_USING_SIV3D
             // Siv3D: バッチ描画に登録（レイヤー別）
             shadow_shapes_map_[layer].push_back([x, y, width, height, corner_radius]() {
@@ -137,11 +137,11 @@ namespace paxs {
         /// @param height パネルの高さ / Panel height
         /// @param bg_color 背景色 / Background color (default: white)
         /// @param layer レンダリングレイヤー / Rendering layer (default: UIBackground)
-        void drawRect(
+        static void drawRect(
             int x, int y, int width, int height,
             const paxg::Color& bg_color = paxg::Color{255, 255, 255},
             RenderLayer layer = RenderLayer::UIBackground
-        ) const {
+        ) {
 #ifdef PAXS_USING_SIV3D
             // Siv3D: バッチ描画に登録（レイヤー別）
             shadow_shapes_map_[layer].push_back([x, y, width, height]() {

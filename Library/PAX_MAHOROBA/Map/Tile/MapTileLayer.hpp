@@ -21,25 +21,18 @@
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 
-    /// @brief タイル管理クラス
-    /// @brief Tile manager class
-    class TileManager : public IRenderable {
+    class MapTileLayer : public IRenderable {
     private:
-        // 描画する XYZ タイルを管理
         std::vector<XYZTile> xyz_tile_list;
-
-        // タイル描画を担当
         TileRenderer tile_renderer_;
-
-        // タイルデータ読み込みを担当
         TileRepository tile_repository_;
 
-        // 可視性管理
         bool visible_ = true;
 
         // 描画に必要なデータを保持（updateData()で更新、render()で使用）
@@ -48,14 +41,14 @@ namespace paxs {
         cal::JDN_F64 cached_jdn_ = 0.0;
 
     public:
-        // XYZ Tiles を追加（TileRepositoryに委譲）
-        void add(const std::string& file_path) {
-            std::vector<XYZTile> loaded_tiles = tile_repository_.loadFromFile(file_path);
-            xyz_tile_list.insert(xyz_tile_list.end(), loaded_tiles.begin(), loaded_tiles.end());
-        }
-
-        // グリッド線を追加（TileRepositoryに委譲）
-        void addGridLine() {
+        void init() {
+            // XYZタイルを初期化
+            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
+                [&](const std::string& path) {
+                    std::vector<XYZTile> loaded_tiles = tile_repository_.loadFromFile(path);
+                    xyz_tile_list.insert(xyz_tile_list.end(), loaded_tiles.begin(), loaded_tiles.end());
+                });
+            // グリッド線を追加
             xyz_tile_list.emplace_back(tile_repository_.createGridLineTile());
         }
 
@@ -78,33 +71,18 @@ namespace paxs {
             cached_jdn_ = jdn;
         }
 
-        // IRenderable の実装
-        // IRenderable implementation
-
-        /// @brief レンダリング処理
-        /// @brief Render
         void render() const override {
             if (!visible_ || cached_visible_ == nullptr) return;
 
-            // 描画処理
             tile_renderer_.drawBackground();
             tile_renderer_.drawTiles(xyz_tile_list, *cached_visible_, cached_map_viewport_, cached_jdn_);
         }
-
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
         RenderLayer getLayer() const override {
-            return RenderLayer::MapBase;
+            return RenderLayer::MapTile;
         }
-
-        /// @brief 可視性を取得
-        /// @brief Get visibility
         bool isVisible() const override {
             return visible_;
         }
-
-        /// @brief 可視性を設定
-        /// @brief Set visibility
         void setVisible(bool visible) override {
             visible_ = visible;
         }

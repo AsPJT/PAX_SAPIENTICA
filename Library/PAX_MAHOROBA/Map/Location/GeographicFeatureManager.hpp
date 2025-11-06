@@ -35,17 +35,6 @@ namespace paxs {
     public:
         GeographicFeatureManager() = default;
 
-        // 地理的特徴データを追加
-        void add() {
-            // リポジトリに委譲してデータを読み込む
-            repository_.loadPlaceNameList(
-                [this](const std::string& file_path, double min_view, double max_view, int min_year, int max_year,
-                       std::uint_least32_t lpe, std::uint_least32_t place_texture, double zoom) {
-                    inputPlace(file_path, min_view, max_view, min_year, max_year, lpe, place_texture, zoom);
-                }
-            );
-        }
-
         void init() {
             std::string str = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("MiniIcons"),
@@ -55,16 +44,17 @@ namespace paxs {
             if (!key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
                 PAXS_ERROR("Failed to load texture KeyValueTSV: " + str);
             }
+            // リポジトリに委譲してデータを読み込む
+            repository_.loadPlaceNameList(
+                [this](const std::string& file_path, double min_view, double max_view, int min_year, int max_year,
+                       std::uint_least32_t lpe, std::uint_least32_t place_texture, double zoom) {
+                    inputPlace(file_path, min_view, max_view, min_year, max_year, lpe, place_texture, zoom);
+                }
+            );
         }
 
-        // IRenderable の実装
-        // IRenderable implementation
-
-        /// @brief レンダリング処理
-        /// @brief Render
         void render() const override {
-            if (!visible_) return;
-            if (cached_visible_ == nullptr) return;
+            if (!visible_ || cached_visible_ == nullptr) return;
 
             // 描画処理をレンダラーに委譲
             renderer_.draw(
@@ -79,26 +69,19 @@ namespace paxs {
             );
         }
 
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
         RenderLayer getLayer() const override {
             return RenderLayer::MapContent;
         }
 
-        /// @brief 可視性を取得
-        /// @brief Get visibility
         bool isVisible() const override {
             return visible_;
         }
 
-        /// @brief 可視性を設定
-        /// @brief Set visibility
         void setVisible(bool visible) override {
             visible_ = visible;
         }
 
-        /// @brief 描画パラメータを設定（MapContentManager から呼び出される）
-        /// @brief Set drawing parameters (called from MapContentManager)
+        /// @brief 描画パラメータを設定
         void setDrawParams(
             paxs::FeatureVisibilityManager& visible,
             const double jdn,

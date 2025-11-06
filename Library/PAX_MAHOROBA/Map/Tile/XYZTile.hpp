@@ -19,9 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include <PAX_GRAPHICA/Texture.hpp>
-
-#include <PAX_MAHOROBA/Core/Init.hpp>
 #include <PAX_MAHOROBA/Map/Tile/ITileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/BinaryTileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>

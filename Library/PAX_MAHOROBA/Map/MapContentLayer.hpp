@@ -75,15 +75,12 @@ namespace paxs {
         void init(const MapViewport* map_viewport) {
             // 地理的特徴と人物の肖像画を初期化
             geographic_feature_manager_.init();
-            geographic_feature_manager_.add();
             person_portrait_manager_.init();
-            person_portrait_manager_.add();
 
             map_viewport_ptr = map_viewport;
         }
 
         /// @brief データ更新（描画は行わない）
-        /// @brief Update data (no drawing)
         void updateData(
             const paxs::Koyomi& koyomi,
 #ifdef PAXS_USING_SIMULATOR
@@ -135,11 +132,6 @@ namespace paxs {
             );
         }
 
-        // IRenderable の実装
-        // IRenderable implementation
-
-        /// @brief レンダリング処理
-        /// @brief Render
         void render() const override {
             if (!visible_ || cached_visible_ == nullptr) return;
 
@@ -177,11 +169,7 @@ namespace paxs {
             visible_ = visible;
         }
 
-        // IInputHandler の実装
-        // IInputHandler implementation
-
         /// @brief キーボードイベント処理
-        /// @brief Handle keyboard event
         /// @param event キーボードイベント / Keyboard event
         /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const KeyboardEvent& event) override {
@@ -200,28 +188,23 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        /// @brief ヒットテスト
-        /// @brief Hit test
-        bool isHit([[maybe_unused]] int x, [[maybe_unused]] int y) const override {
-            // 地図全体が対象なので常にtrue
-            return visible_ && enabled_;
-        }
-
-        /// @brief 有効性を取得
-        /// @brief Get enabled state
-        bool isEnabled() const override {
-            return enabled_;
-        }
-
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             // TODO: マウスイベント処理
             (void)event;
             return EventHandlingResult::NotHandled();
         }
 
+        bool isHit([[maybe_unused]] int x, [[maybe_unused]] int y) const override {
+            // 地図全体が対象なので常にtrue
+            return visible_ && enabled_;
+        }
+
+        bool isEnabled() const override {
+            return enabled_;
+        }
+
 #ifdef PAXS_USING_SIMULATOR
         /// @brief SettlementInputHandler への参照を取得（GraphicsManager での登録用）
-        /// @brief Get reference to SettlementInputHandler (for registration in GraphicsManager)
         SettlementInputHandler& getSettlementInputHandler() {
             return settlement_input_handler_;
         }

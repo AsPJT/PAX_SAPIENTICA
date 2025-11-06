@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_MAP_VIEWPORT_HPP
 #define PAX_MAHOROBA_MAP_VIEWPORT_HPP
 
-#include <algorithm>
-#include <array>
-#include <cmath>
-
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 

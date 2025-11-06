@@ -19,6 +19,7 @@
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -71,6 +72,13 @@ namespace paxs {
             Century10Forward,
             Century100Forward,
         };
+
+        bool enabled_ = true;
+        paxg::Vec2i pos_{0, 0};
+
+        paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
+        const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;
+        paxs::Koyomi* koyomi_ = nullptr;
 
         // 状態更新（クリック判定などの入力処理）
         void updateState(const MouseEvent& event) {
@@ -281,28 +289,34 @@ namespace paxs {
             }
         }
 
-    private:
-        bool visible_ = true;
-        bool enabled_ = true;
-        paxg::Vec2i pos_{0, 0};
-
-        // 描画に必要な参照（nullptrチェック必須）
-        const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_dictionary_ = nullptr;
-        paxs::Koyomi* koyomi_ = nullptr;
-
     public:
-        TimeControlButtons() = default;
+        TimeControlButtons() {
+            // 暦の時間操作のアイコン
+            if (!key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
+                PAXS_ERROR("Failed to load texture KeyValueTSV: Data/MenuIcon/MenuIcons.tsv");
+            }
+            texture_dictionary_ = &key_value_tsv.get();
+        }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) {
+            if (!enabled_ || !texture_dictionary_ || !koyomi_) {
                 return EventHandlingResult::NotHandled();
             }
             updateState(event);
             return EventHandlingResult::Handled();
         }
 
+        void setReferences(paxs::Koyomi& koyomi) {
+            koyomi_ = &koyomi;
+        }
+
+        bool isHit(int x, int y) const override {
+            if (!enabled_ || !texture_dictionary_ || !koyomi_) return false;
+            return hitTestButton(x, y) != ButtonId::None;
+        }
+
         void render() const override {
-            if (!visible_ || !texture_dictionary_ || !koyomi_) return;
+            if (!enabled_ || !texture_dictionary_ || !koyomi_) return;
             drawAllControls();
         }
 
@@ -315,34 +329,15 @@ namespace paxs {
             };
         }
 
-        void setPos(const paxg::Vec2i& pos) override {
-            pos_ = pos;
-        }
-
-        void setVisible(bool visible) override { visible_ = visible; }
-        bool isVisible() const override { return visible_; }
-
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
-
-        const char* getName() const override { return "TimeControlPanel"; }
-
         RenderLayer getLayer() const override {
             return RenderLayer::UIContent;
         }
-
-        void setReferences(
-            const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_dictionary,
-            paxs::Koyomi& koyomi
-        ) {
-            texture_dictionary_ = &texture_dictionary;
-            koyomi_ = &koyomi;
-        }
-
-        bool isHit(int x, int y) const override {
-            if (!visible_ || !enabled_ || !texture_dictionary_ || !koyomi_) return false;
-            return hitTestButton(x, y) != ButtonId::None;
-        }
+        void setVisible(bool /*visible*/) override {}
+        bool isVisible() const override { return true; }
+        bool isEnabled() const override { return enabled_; }
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        void setPos(const paxg::Vec2i& pos) override { pos_ = pos; }
+        const char* getName() const override { return "TimeControlPanel"; }
     };
 
 } // namespace paxs

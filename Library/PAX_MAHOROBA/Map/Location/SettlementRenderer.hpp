@@ -35,7 +35,6 @@ namespace paxs {
     public:
         SettlementRenderer() = default;
 
-        // IRenderable の実装
         void render() const override {
             if (!visible_) return;
 
@@ -88,7 +87,6 @@ namespace paxs {
         static constexpr double MAX_POPULATION_VISUALIZATION = 75.0;  // 人口可視化の最大値
         static constexpr double MTDNA_SCALE_FACTOR = 27.0;  // mtDNA可視化のスケール因子
 
-        // 可視性管理
         bool visible_ = true;
 
         // 描画に必要なデータをキャッシュ（setDrawParams()で更新、render()で使用）

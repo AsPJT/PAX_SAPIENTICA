@@ -12,12 +12,10 @@
 #ifndef PAX_MAHOROBA_DEBUG_INFO_PANEL_HPP
 #define PAX_MAHOROBA_DEBUG_INFO_PANEL_HPP
 
-#include <array>
 #include <cmath>
 #include <string>
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
@@ -42,8 +40,6 @@ namespace paxs {
     private:
         const MapViewport* map_viewport_ptr = nullptr;
         const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
-
-        bool enabled_ = true;
         const UILayout* ui_layout_ = nullptr;
 
     public:
@@ -66,10 +62,6 @@ namespace paxs {
             return RenderLayer::UIContent;
         }
 
-        // 可視性の設定・取得
-        void setVisible(bool visible) override {
-            (void)visible;
-        }
         bool isVisible() const override { return visible_manager_ptr->isVisible(MurMur3::calcHash("UI")) && visible_manager_ptr->isVisible(MurMur3::calcHash("Debug")); }
 
         /// @brief マップ情報とシミュレーション統計を描画
@@ -216,25 +208,19 @@ namespace paxs {
         }
 
         paxg::Rect getRect() const override {
-            return paxg::Rect{
-                static_cast<float>(ui_layout_->debug_info_panel.x),
-                static_cast<float>(ui_layout_->debug_info_panel.y),
-                static_cast<float>(ui_layout_->debug_info_panel.width),
-                static_cast<float>(ui_layout_->debug_info_panel.height)
-            };
+            return ui_layout_->debug_info_panel.getRect();
         }
-
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
 
         bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
-            return (x >= ui_layout_->debug_info_panel.x && x < ui_layout_->debug_info_panel.x + ui_layout_->debug_info_panel.width &&
-                y >= ui_layout_->debug_info_panel.y && y < ui_layout_->debug_info_panel.y + ui_layout_->debug_info_panel.height);
+            return false;
             // TODO: child
         }
 
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
+        void setVisible(bool /*visible*/) override {}
+        void setEnabled(bool /*enabled*/) override {}
+        bool isEnabled() const override { return true; }
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
     };
 
 }

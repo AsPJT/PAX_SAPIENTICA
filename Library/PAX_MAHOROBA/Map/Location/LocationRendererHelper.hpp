@@ -14,9 +14,7 @@
 
 #include <cstdint>
 #include <cstring>
-#include <string>
 
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>

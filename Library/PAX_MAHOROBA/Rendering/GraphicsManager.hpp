@@ -20,7 +20,7 @@
 #include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Map/Tile/TileManager.hpp>
+#include <PAX_MAHOROBA/Map/Tile/MapTileLayer.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
@@ -41,13 +41,12 @@ namespace paxs {
     /// @brief Graphics integrated management class
     class GraphicsManager {
     private:
-        TileManager tile_manager_;
-        MenuBar header_panel_;      // ヘッダーパネル（メニューバー + 言語選択）
+        MenuBar menu_bar_;
         std::unique_ptr<UILayer> ui_layer_;
+        Photo360Layer photo360_layer_;
         MapContentLayer map_content_layer_;
-        Photo360Layer photo360_layer_;  // 360度写真レイヤー
+        MapTileLayer map_tile_layer_;
 
-        // レイヤーベースシステム
         RenderLayerManager render_layer_manager_;
 
         // 入力管理システム
@@ -66,7 +65,6 @@ namespace paxs {
         int last_window_height_ = 0;
 
         /// @brief MapViewportInputHandlerを設定
-        /// @brief Set MapViewportInputHandler
         /// @param handler MapViewportInputHandlerへのポインタ / Pointer to MapViewportInputHandler
         /// @param viewport MapViewportへのポインタ / Pointer to MapViewport
         void setMapViewportInputHandler(MapViewportInputHandler* handler, MapViewport* viewport) {
@@ -83,12 +81,9 @@ namespace paxs {
     public:
         GraphicsManager() = default;
 
-        /// @brief 初期化
         void init(MapViewportInputHandler* handler, MapViewport* viewport, UIInputHandler* ui_input_handler) {
-            // HeaderPanelを初期化（依存性注入なし）
-            header_panel_.init();
+            menu_bar_.init();
 
-            // UILayerを依存性注入で初期化
             ui_layer_ = std::make_unique<UILayer>(
                 &visible_manager_,
                 viewport
@@ -96,20 +91,17 @@ namespace paxs {
 
             map_content_layer_.init(viewport);
 
-            // XYZタイルを初期化
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
-                [&](const std::string& path_) { tile_manager_.add(path_); });
-            tile_manager_.addGridLine(); // グリッド線を追加（描画順が最後なので最後に追加）
+            map_tile_layer_.init();
 
             // レイヤーシステムに各コンポーネントを登録
-            render_layer_manager_.registerRenderable(&tile_manager_);
+            render_layer_manager_.registerRenderable(&map_tile_layer_);
             render_layer_manager_.registerRenderable(&map_content_layer_);
             render_layer_manager_.registerRenderable(&photo360_layer_);
-            render_layer_manager_.registerRenderable(&header_panel_);
+            render_layer_manager_.registerRenderable(&menu_bar_);
             render_layer_manager_.registerRenderable(ui_layer_.get());
 
-            // UIInputHandlerにUILayer内のウィジェットを登録
-            ui_input_handler->registerWidget(&header_panel_);
+            // UIInputHandlerにウィジェットを登録
+            ui_input_handler->registerWidget(&menu_bar_);
             ui_input_handler->registerWidget(ui_layer_.get());
 
             event_router_.registerHandler(&map_content_layer_);
@@ -120,7 +112,7 @@ namespace paxs {
 #endif
 
             // 可視性の初期状態を反映
-            header_panel_.initializeVisibility(&visible_manager_);
+            menu_bar_.initializeVisibility(&visible_manager_);
 
             setMapViewportInputHandler(handler, viewport);
         }
@@ -155,14 +147,14 @@ namespace paxs {
             }
 
             // 言語選択を更新（HeaderPanelから取得 → FontSystem経由）
-            Fonts().setLanguage(header_panel_.getLanguageIndex());
-            Fonts().setLanguageByKey(std::uint_least32_t(header_panel_.getLanguageKey()));
+            Fonts().setLanguage(menu_bar_.getLanguageIndex());
+            Fonts().setLanguageByKey(std::uint_least32_t(menu_bar_.getLanguageKey()));
 
             // メニューから可視性を同期
-            header_panel_.syncVisibilityFromMenu(&visible_manager_);
+            menu_bar_.syncVisibilityFromMenu(&visible_manager_);
 
             // データ更新のみ実施
-            tile_manager_.updateData(visible_manager_, map_viewport, koyomi.jdn.cgetDay());
+            map_tile_layer_.updateData(visible_manager_, map_viewport, koyomi.jdn.cgetDay());
 
             map_content_layer_.updateData(
                 koyomi,
@@ -195,7 +187,7 @@ namespace paxs {
             if (visible_manager_.isVisible(paxs::MurMur3::calcHash(2, "3D"))) {
                 // 3Dモード: 360度写真を描画してからUIを描画
                 photo360_layer_.render();
-                header_panel_.render();
+                menu_bar_.render();
             } else {
                 // 通常モード: レイヤーベース描画（Z順序自動管理）
                 render_layer_manager_.renderAll();

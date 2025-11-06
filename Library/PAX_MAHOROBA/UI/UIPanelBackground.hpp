@@ -15,7 +15,6 @@
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/PanelBackground.hpp>
@@ -26,6 +25,13 @@ namespace paxs {
     /// @brief UIパネルの背景を描画するクラス
     /// @brief UI panel background rendering class
     class UIPanelBackground : public IWidget {
+    private:
+        const char* name_;
+        const PanelLayout* layout;
+        const paxg::Color bg_color_;
+        const int corner_radius_;
+        bool visible_ = true;
+
     public:
         /// @brief コンストラクタ
         /// @param name パネル名（"HeaderBackground"等）
@@ -40,61 +46,15 @@ namespace paxs {
             : name_(name)
             , bg_color_(bg_color)
             , corner_radius_(corner_radius)
-            , layout_(layout)
+            , layout(layout)
         {}
 
-        /// @brief 高さを設定（画面幅全体を使用するパネル用）
-        /// @brief Set height (for panels that use full screen width)
-        void setHeight(int height) {
-            (void)height;
-        }
-
-        const char* getName() const override {
-            return name_;
-        }
-
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIBackground;
-        }
-
-        void setEnabled(bool enabled) override {
-            enabled_ = enabled;
-        }
-
-        bool isEnabled() const override {
-            return enabled_;
-        }
-
         paxg::Rect getRect() const override {
-            if (layout_) {
-                return paxg::Rect{
-                    static_cast<float>(layout_->x),
-                    static_cast<float>(layout_->y),
-                    static_cast<float>(layout_->width),
-                    static_cast<float>(layout_->height)
-                };
+            if (layout) {
+                return layout->getRect();
             }
-            else {
-                PAXS_WARNING("UIPanelBackground::getRect: layout is not set, returning full width rect");
-                return paxg::Rect{
-                    0.0f,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                };
-            }
-        }
-
-        void setPos(const paxg::Vec2i& pos) override {
-            (void)pos;
-        }
-
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-
-        bool isVisible() const override {
-            return visible_;
+            PAXS_WARNING("UIPanelBackground::getRect: layout is not set, returning full width rect");
+            return paxg::Rect{};
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
@@ -109,33 +69,40 @@ namespace paxs {
 
         void render() const override {
             if (!visible_) return;
-
-            if (layout_) {
-                if (layout_->width <= 0 || layout_->height <= 0) return;
-
-                background_.draw(
-                    layout_->x,
-                    layout_->y,
-                    layout_->width,
-                    layout_->height,
-                    corner_radius_,
-                    bg_color_
-                );
-            }
-            else {
+            if (!layout) {
                 PAXS_WARNING(std::string("UIPanelBackground::render: ") + name_ + " layout is not set, skipping render");
+                return;
             }
+
+            if (layout->width <= 0 || layout->height <= 0) {
+                PAXS_WARNING(std::string("UIPanelBackground::render: ") + name_ + " has non-positive dimensions, skipping render");
+                return;
+            }
+
+            PanelBackground::draw(
+                layout->x, layout->y,
+                layout->width, layout->height,
+                corner_radius_, bg_color_
+            );
         }
 
-    private:
-        const char* name_;                  // パネル名
-        PanelBackground background_;        // 背景描画ヘルパー（低レベル描画）
-        const PanelLayout* layout_;                // レイアウト情報
-        paxg::Color bg_color_;              // 背景色
-        int corner_radius_;                 // 角の丸み半径
-        bool visible_ = true;               // 可視性
-        bool enabled_ = true;               // 有効性
-    };
+        const char* getName() const override {
+            return name_;
+        }
+        RenderLayer getLayer() const override {
+            return RenderLayer::UIBackground;
+        }
+        void setVisible(bool visible) override {
+            visible_ = visible;
+        }
+        bool isVisible() const override {
+            return visible_;
+        }
+
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        void setEnabled(bool /*enabled*/) override {}
+        bool isEnabled() const override { return true; }
+};
 
 } // namespace paxs
 

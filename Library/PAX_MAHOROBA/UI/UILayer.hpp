@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <limits>
 #include <string>
-#include <variant>
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
@@ -33,12 +32,9 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
@@ -49,7 +45,6 @@ namespace paxs {
     /// @brief Integrated management class for UI layer
     class UILayer : public IWidget{
     private:
-        bool enabled_ = true;
         const FeatureVisibilityManager* feature_visibility_manager_ptr = nullptr;
 
         // 描画に必要なデータをキャッシュ（updateData()で更新、render()で使用）
@@ -65,19 +60,17 @@ namespace paxs {
         std::size_t map_viewport_center_y_str_index = 0;
         std::size_t map_viewport_center_lat_str_index = 0;
 
-        // データとレイアウト
-        paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
         paxs::UILayout ui_layout;
 
-        paxs::CalendarPanel calendar_panel;        // カレンダーパネル（時間操作 + カレンダー表示）
-        paxs::DebugInfoPanel debug_info_panel;     // デバッグ情報パネル
+        paxs::CalendarPanel calendar_panel;
+        paxs::DebugInfoPanel debug_info_panel;
 
 #ifdef PAXS_USING_SIMULATOR
-        paxs::SimulationPanel simulation_panel;    // シミュレーションパネル
-        paxs::SettlementStatusPanel settlement_status_panel;  // Settlement 表示モードステータス
+        paxs::SimulationPanel simulation_panel;
+        paxs::SettlementStatusPanel settlement_status_panel;
 #endif
 
-        // 背景コンポーネント（コンストラクタ初期化リストで初期化）
+        // 背景コンポーネント
         paxs::UIPanelBackground calendar_bg_;
         paxs::UIPanelBackground debug_info_bg_;
 #ifdef PAXS_USING_SIMULATOR
@@ -123,11 +116,6 @@ namespace paxs {
             map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
             map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
             map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
-
-            // 暦の時間操作のアイコン
-            if (!key_value_tsv.input(paxs::AppConfig::getInstance()->getRootPath() + "Data/MenuIcon/MenuIcons.tsv", [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
-                PAXS_ERROR("Failed to load texture KeyValueTSV: Data/MenuIcon/MenuIcons.tsv");
-            }
 
 #ifdef PAXS_USING_SIMULATOR
             settlement_status_panel.init();
@@ -183,7 +171,6 @@ namespace paxs {
 
             // CalendarPanelの可視性と設定
             if (calendar_panel.isVisible()) {
-                calendar_panel.setTextureDictionary(key_value_tsv.get());
                 calendar_panel.setCalendarParams(koyomi);
                 calendar_panel.setTimeControlParams(koyomi);
             }
@@ -231,32 +218,6 @@ namespace paxs {
             }
         }
 
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-
-        bool isVisible() const override {
-            return feature_visibility_manager_ptr->isVisible(MurMur3::calcHash(2, "UI"));
-        }
-        void setVisible(bool /*visible*/) override {}
-
-        void setEnabled(bool enabled) override {
-            enabled_ = enabled;
-        }
-        bool isEnabled() const override {
-            return enabled_;
-        }
-
-        const char* getName() const override {
-            return "UILayer";
-        }
-
-        paxg::Rect getRect() const override {
-            return paxg::Rect{ 0, 0, 0, 0 };
-        }
-
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
-
         bool isHit(int x, int y) const override {
             for (const IWidget* panel : panels) {
                 if (panel) {
@@ -289,6 +250,23 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
         SettlementStatusPanel& getSettlementStatusPanel() { return settlement_status_panel; }
 #endif
+
+        bool isVisible() const override {
+            return feature_visibility_manager_ptr->isVisible(MurMur3::calcHash(2, "UI"));
+        }
+        paxg::Rect getRect() const override {
+            return paxg::Rect{ 0, 0, 0, 0 };
+        }
+        const char* getName() const override {
+            return "UILayer";
+        }
+        RenderLayer getLayer() const override {
+            return RenderLayer::UIContent;
+        }
+        void setVisible(bool /*visible*/) override {}
+        void setEnabled(bool /*enabled*/) override {}
+        bool isEnabled() const override { return true; }
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
     };
 
 }

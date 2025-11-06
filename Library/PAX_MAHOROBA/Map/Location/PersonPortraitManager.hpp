@@ -37,13 +37,6 @@ namespace paxs {
         /// @brief 人物データを追加
         /// @brief Add person data
         void add() {
-            repository_.loadPersonNameList(
-                [this](const std::string& file_path, double min_view, double max_view,
-                       int min_year, int max_year, std::uint_least32_t lpe,
-                       std::uint_least32_t place_texture) {
-                    inputPersonData(file_path, min_view, max_view, min_year, max_year, lpe, place_texture);
-                }
-            );
         }
 
         /// @brief 初期化
@@ -57,13 +50,16 @@ namespace paxs {
             if (!key_value_tsv.input(str, [&](const std::string& value_) { return paxg::Texture{ value_ }; })) {
                 PAXS_ERROR("Failed to load texture KeyValueTSV: " + str);
             }
+            // リポジトリに委譲してデータを読み込む
+            repository_.loadPersonNameList(
+                [this](const std::string& file_path, double min_view, double max_view,
+                       int min_year, int max_year, std::uint_least32_t lpe,
+                       std::uint_least32_t place_texture) {
+                    inputPersonData(file_path, min_view, max_view, min_year, max_year, lpe, place_texture);
+                }
+            );
         }
 
-        // IRenderable の実装
-        // IRenderable implementation
-
-        /// @brief レンダリング処理
-        /// @brief Render
         void render() const override {
             if (!visible_) return;
 
@@ -72,26 +68,19 @@ namespace paxs {
                 cached_map_view_center_x_, cached_map_view_center_y_);
         }
 
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
         RenderLayer getLayer() const override {
             return RenderLayer::MapContent;
         }
 
-        /// @brief 可視性を取得
-        /// @brief Get visibility
         bool isVisible() const override {
             return visible_;
         }
 
-        /// @brief 可視性を設定
-        /// @brief Set visibility
         void setVisible(bool visible) override {
             visible_ = visible;
         }
 
-        /// @brief 描画パラメータを設定(MapContentLayer から呼び出される)
-        /// @brief Set drawing parameters (called from MapContentLayer)
+        /// @brief 描画パラメータを設定
         void setDrawParams(
             const double jdn,
             const double map_view_width, const double map_view_height,

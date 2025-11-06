@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_UI_LAYOUT_HPP
 
 #include <PAX_GRAPHICA/Font.hpp>
+#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxs {
@@ -45,6 +46,15 @@ namespace paxs {
             content_y = y + padding_top;
             content_width = width - padding_left - padding_right;
             content_height = height - padding_top - padding_bottom;
+        }
+
+        paxg::Rect getRect() const {
+            return paxg::Rect{
+                static_cast<float>(x),
+                static_cast<float>(y),
+                static_cast<float>(width),
+                static_cast<float>(height)
+            };
         }
     };
 

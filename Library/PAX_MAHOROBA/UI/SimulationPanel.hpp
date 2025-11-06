@@ -21,7 +21,6 @@
 
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
@@ -41,15 +40,17 @@ namespace paxs {
 
     class SimulationPanel : public IWidget {
     private:
-        bool enabled_ = true;
-        const int pulldown_y_ = 600; // プルダウンのY座標
-
-        // 外部参照
+        const paxs::FeatureVisibilityManager* visibility_manager_ptr = nullptr;
         std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
         paxs::Koyomi* koyomi_ = nullptr;
-        const paxs::FeatureVisibilityManager* visibility_manager_ptr = nullptr;
 
-        static constexpr int TIME_ICON_SIZE = 40;
+        const int pulldown_y = 600; // プルダウンのY座標
+
+        int m_remaining_iterations = 0;
+        bool enabled_ = true;
+
+        mutable paxs::Pulldown simulation_pulldown;
+        SimulationControlButtons control_buttons_;
 
         void simulationInit() const {
             if (!simulator_ptr_ || !koyomi_) return;
@@ -162,10 +163,6 @@ namespace paxs {
         // モデルリスト
         std::vector<std::uint_least32_t> simulation_key;
         std::vector<std::string> simulation_model_name;
-        int m_remaining_iterations = 0;
-
-        mutable paxs::Pulldown simulation_pulldown;
-        SimulationControlButtons control_buttons_;
 
         // コンストラクタ
         SimulationPanel(
@@ -208,8 +205,7 @@ namespace paxs {
 
         // TODO: 移行
         void updateSimulationAuto() {
-            if (!simulator_ptr_ || !koyomi_) return;
-            if (simulator_ptr_->get() == nullptr) return;
+            if (!simulator_ptr_ || !koyomi_ || simulator_ptr_->get() == nullptr) return;
 
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
             const auto* constants = SimulationConstants::getInstance(model_name);
@@ -255,8 +251,7 @@ namespace paxs {
 
         // 描画
         void render() const override {
-            if (!isVisible()) return;
-            if (!simulator_ptr_ || !koyomi_) return;
+            if (!isVisible() || !simulator_ptr_ || !koyomi_) return;
 
             drawPulldown();
             control_buttons_.render();
@@ -265,7 +260,7 @@ namespace paxs {
         void drawPulldown() const {
             simulation_pulldown.setPos(paxg::Vec2i{
                 static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
-                pulldown_y_
+                pulldown_y
             });
             simulation_pulldown.updateLanguage();
             if (simulator_ptr_->get() == nullptr) {
@@ -296,24 +291,9 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-
         bool isVisible() const override {
             return visibility_manager_ptr->isVisible(MurMur3::calcHash("Simulation")) &&
                    visibility_manager_ptr->isVisible(MurMur3::calcHash("UI"));
-        }
-        void setVisible(bool /*visible*/) override {}
-
-        paxg::Rect getRect() const override {
-            return paxg::Rect{0, 0, 0, 0};
-        }
-
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
-
-        const char* getName() const override {
-            return "SimulationPanel";
         }
 
         bool isHit(int x, int y) const override {
@@ -322,6 +302,18 @@ namespace paxs {
             if (control_buttons_.isHit(x, y)) return true;
             return false;
         }
+
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
+
+        const char* getName() const override {
+            return "SimulationPanel";
+        }
+
+        paxg::Rect getRect() const override { return paxg::Rect{};}
+        void setVisible(bool /*visible*/) override {}
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        bool isEnabled() const override { return enabled_; }
     };
 }
 
