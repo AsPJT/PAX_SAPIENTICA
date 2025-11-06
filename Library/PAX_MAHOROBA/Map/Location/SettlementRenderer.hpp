@@ -26,7 +26,7 @@
 #include <PAX_SAPIENTICA/MapUtility.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する

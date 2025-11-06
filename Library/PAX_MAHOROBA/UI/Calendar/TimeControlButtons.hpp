@@ -21,8 +21,8 @@
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
 

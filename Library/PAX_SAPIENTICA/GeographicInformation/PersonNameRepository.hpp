@@ -22,7 +22,7 @@
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
     // 人物の位置情報

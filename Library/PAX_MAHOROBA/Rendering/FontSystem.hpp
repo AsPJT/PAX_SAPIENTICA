@@ -21,7 +21,7 @@
 #include <PAX_SAPIENTICA/Language.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
 

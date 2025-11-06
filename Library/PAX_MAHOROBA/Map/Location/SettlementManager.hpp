@@ -20,7 +20,7 @@
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
-#include <PAX_SAPIENTICA/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
 
