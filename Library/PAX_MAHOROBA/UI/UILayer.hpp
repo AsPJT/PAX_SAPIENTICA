@@ -220,7 +220,7 @@ namespace paxs {
                         return true;
                     }
                 } else {
-                    PAXS_WARNING(std::string("UILayer::isHit: ") + panel->getName() + " is nullptr");
+                    PAXS_WARNING("UILayer::isHit: panel is nullptr");
                 }
             }
             return false;
@@ -236,7 +236,7 @@ namespace paxs {
                         }
                     }
                 } else {
-                    PAXS_WARNING(std::string("UILayer::handleEvent: ") + panel->getName() + " is nullptr");
+                    PAXS_WARNING("UILayer::handleEvent: panel is nullptr");
                 }
             }
             return EventHandlingResult::NotHandled();
