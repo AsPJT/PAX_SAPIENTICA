@@ -41,7 +41,7 @@ namespace paxs {
         /// @param handler 登録するイベントハンドラー / Event handler to register
         void registerHandler(IEventHandler* handler) {
             if (handler != nullptr) {
-                handlers.push_back(handler);
+                handlers.emplace_back(handler);
             }
         }
 

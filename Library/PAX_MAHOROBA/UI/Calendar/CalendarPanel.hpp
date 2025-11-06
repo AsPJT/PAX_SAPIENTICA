@@ -56,13 +56,8 @@ namespace paxs {
         void render() const override {
             if (!isVisible() || !ui_layout_) return;
 
-            // コンポーネントを描画
             time_control_widget_.render();
             calendar_widget_.render();
-        }
-
-        bool isVisible() const override {
-            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Calendar"));
         }
 
         /// @brief 時間操作ウィジェットの高さを取得
@@ -84,14 +79,11 @@ namespace paxs {
             return time_control_widget_.isHit(x, y);
         }
 
-        const char* getName() const override {
-            return "CalendarPanel";
+        bool isVisible() const override {
+            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Calendar"));
         }
-
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-
+        const char* getName() const override { return "CalendarPanel"; }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
         void setVisible(bool /*visible*/) override {}
         void setEnabled(bool /*enabled*/) override {}
         bool isEnabled() const override { return true; }

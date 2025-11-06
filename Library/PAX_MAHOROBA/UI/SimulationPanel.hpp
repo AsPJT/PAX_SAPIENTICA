@@ -160,7 +160,6 @@ namespace paxs {
         }
 
     public:
-        // モデルリスト
         std::vector<std::uint_least32_t> simulation_key;
         std::vector<std::string> simulation_model_name;
 
@@ -249,7 +248,6 @@ namespace paxs {
             });
         }
 
-        // 描画
         void render() const override {
             if (!isVisible() || !simulator_ptr_ || !koyomi_) return;
 
@@ -291,10 +289,6 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        bool isVisible() const override {
-            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Simulation"));
-        }
-
         bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
             if (simulation_pulldown.isHit(x, y)) return true;
@@ -302,12 +296,13 @@ namespace paxs {
             return false;
         }
 
-        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-
         const char* getName() const override {
             return "SimulationPanel";
         }
-
+        bool isVisible() const override {
+            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Simulation"));
+        }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
         paxg::Rect getRect() const override { return paxg::Rect{};}
         void setVisible(bool /*visible*/) override {}
         void setPos(const paxg::Vec2i& /*pos*/) override {}

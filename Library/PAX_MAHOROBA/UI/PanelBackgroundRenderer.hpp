@@ -113,10 +113,10 @@ namespace paxs {
         ) {
 #ifdef PAXS_USING_SIV3D
             // Siv3D: バッチ描画に登録（レイヤー別）
-            shadow_shapes_map_[layer].push_back([x, y, width, height, corner_radius]() {
+            shadow_shapes_map_[layer].emplace_back([x, y, width, height, corner_radius]() {
                 paxg::RoundRect{ x, y, width, height, corner_radius }.draw();
             });
-            panel_shapes_map_[layer].push_back([x, y, width, height, corner_radius, bg_color]() {
+            panel_shapes_map_[layer].emplace_back([x, y, width, height, corner_radius, bg_color]() {
                 paxg::RoundRect{ x, y, width, height, corner_radius }.draw(bg_color);
             });
 #else
@@ -142,10 +142,10 @@ namespace paxs {
         ) {
 #ifdef PAXS_USING_SIV3D
             // Siv3D: バッチ描画に登録（レイヤー別）
-            shadow_shapes_map_[layer].push_back([x, y, width, height]() {
+            shadow_shapes_map_[layer].emplace_back([x, y, width, height]() {
                 paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }.draw();
             });
-            panel_shapes_map_[layer].push_back([x, y, width, height, bg_color]() {
+            panel_shapes_map_[layer].emplace_back([x, y, width, height, bg_color]() {
                 paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }.draw(bg_color);
             });
 #else

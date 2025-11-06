@@ -13,8 +13,6 @@
 #define PAX_MAHOROBA_UI_LAYER_HPP
 
 #include <algorithm>
-#include <limits>
-#include <string>
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
@@ -142,8 +140,6 @@ namespace paxs {
             cached_koyomi_ = koyomi;
         }
 
-        /// @brief レンダリング処理
-        /// @brief Render
         void render() const override {
             if (!isVisible()) return;
 
@@ -154,11 +150,9 @@ namespace paxs {
             PanelBackgroundRenderer::beginBatch();
 
             // 2. 背景コンポーネントを描画（バッチに登録）
-            {
-                for (auto* panel : panels) {
-                    if (panel && panel->getLayer() == RenderLayer::UIBackground) {
-                        panel->render();
-                    }
+            for (auto* panel : panels) {
+                if (panel && panel->getLayer() == RenderLayer::UIBackground) {
+                    panel->render();
                 }
             }
 
@@ -206,15 +200,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
         SettlementStatusPanel& getSettlementStatusPanel() { return settlement_status_panel; }
 #endif
-        paxg::Rect getRect() const override {
-            return paxg::Rect{ 0, 0, 0, 0 };
-        }
-        const char* getName() const override {
-            return "UILayer";
-        }
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
+
         bool isVisible() const override {
             return visible_manager_ptr->isVisible(MurMur3::calcHash("UI"));
         }
@@ -222,6 +208,9 @@ namespace paxs {
         void setVisible(bool /*visible*/) override {}
         bool isEnabled() const override { return true; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
+        paxg::Rect getRect() const override { return paxg::Rect{}; }
+        const char* getName() const override { return "UILayer"; }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
     };
 
 }

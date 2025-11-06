@@ -28,7 +28,6 @@
 #include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonPortraitManager.hpp>
 
-#include <PAX_SAPIENTICA/Map/MapDomainLogic.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
@@ -48,7 +47,6 @@ namespace paxs {
         SettlementManager settlement_manager_{}; // 集落管理
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
 #endif
-        paxs::map::MapDomainLogic map_domain_logic_; // ドメインロジック
 
         // 可視性・有効性管理
         bool visible_ = true;
@@ -151,24 +149,6 @@ namespace paxs {
 #endif
         }
 
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
-        RenderLayer getLayer() const override {
-            return RenderLayer::MapContent;
-        }
-
-        /// @brief 可視性を取得
-        /// @brief Get visibility
-        bool isVisible() const override {
-            return visible_;
-        }
-
-        /// @brief 可視性を設定
-        /// @brief Set visibility
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-
         /// @brief キーボードイベント処理
         /// @param event キーボードイベント / Keyboard event
         /// @return イベント処理結果 / Event handling result
@@ -177,7 +157,6 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
-            // Settlement input processing
             if (cached_visible_->isVisible(MurMur3::calcHash("Map")) || cached_visible_->isVisible(MurMur3::calcHash("Simulation"))) {
                 if (cached_simulator_ && *cached_simulator_) {
                     settlement_input_handler_.handleEvent(event);
@@ -199,6 +178,15 @@ namespace paxs {
             return visible_ && enabled_;
         }
 
+        RenderLayer getLayer() const override {
+            return RenderLayer::MapContent;
+        }
+        bool isVisible() const override {
+            return visible_;
+        }
+        void setVisible(bool visible) override {
+            visible_ = visible;
+        }
         bool isEnabled() const override {
             return enabled_;
         }

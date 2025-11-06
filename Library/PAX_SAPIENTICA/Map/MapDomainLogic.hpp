@@ -16,7 +16,6 @@
 #include <cstdint>
 
 namespace paxs {
-namespace map {
 
 /// @brief 地図の可視領域を表す構造体
 /// @brief Structure representing the visible area of the map
@@ -36,12 +35,11 @@ struct VisibleArea {
                 lat >= min_lat && lat <= max_lat);
     }
 };
-
+// TODO: 追加
 /// @brief 地図のドメインモデル（UI非依存のロジック）
 /// @brief Map domain model (UI-independent logic)
 class MapDomainLogic {
 public:
-    MapDomainLogic() = default;
 
     /// @brief MapViewから可視領域を計算する
     /// @brief Calculate visible area from MapView
@@ -50,12 +48,12 @@ public:
     /// @param width 幅
     /// @param height 高さ
     /// @return 可視領域
-    VisibleArea calculateVisibleArea(
+    static VisibleArea calculateVisibleArea(
         double center_x,
         double center_y,
         double width,
         double height
-    ) const {
+    ) {
         // メルカトル座標から可視領域を計算
         const double half_width = width / 2.0;
         const double half_height = height / 2.0;
@@ -75,11 +73,11 @@ public:
     /// @param lat 緯度
     /// @param area 可視領域
     /// @return 可視領域内ならtrue
-    bool isInVisibleArea(
+    static bool isInVisibleArea(
         double lon,
         double lat,
         const VisibleArea& area
-    ) const {
+    ) {
         return area.contains(lon, lat);
     }
 
@@ -90,12 +88,12 @@ public:
     /// @param x2 点2のX座標
     /// @param y2 点2のY座標
     /// @return 距離
-    double calculateDistance(
+    static double calculateDistance(
         double x1,
         double y1,
         double x2,
         double y2
-    ) const {
+    ) {
         const double dx = x2 - x1;
         const double dy = y2 - y1;
         return std::sqrt(dx * dx + dy * dy);
@@ -106,19 +104,17 @@ public:
     /// @param current_zoom 現在のズームレベル
     /// @param required_zoom 必要なズームレベル
     /// @return 表示すべきならtrue
-    bool shouldDisplay(
+    static bool shouldDisplay(
         double current_zoom,
         double required_zoom
-    ) const {
+    ) {
         return current_zoom >= required_zoom;
     }
 
 private:
-    // UI非依存の純粋なロジックのみ
-    // 状態は持たない（Stateless）
+    MapDomainLogic() = default;
 };
 
-} // namespace map
 } // namespace paxs
 
 #endif // !PAX_SAPIENTICA_MAP_MAP_MODEL_HPP

@@ -254,9 +254,6 @@ namespace paxs {
             return is_dragging_;
         }
 
-        // IInputHandler の実装
-        // IInputHandler implementation
-
         /// @brief キーボードイベント処理
         /// @brief Handle keyboard event
         /// @param event キーボードイベント / Keyboard event
@@ -268,7 +265,6 @@ namespace paxs {
             }
 
             // キーボード入力（Q/Eキーによるズーム）
-            // Keyboard input (zoom with Q/E keys)
             handleKeyboardZoom(*viewport_);
             viewport_->applyConstraints();
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
@@ -284,7 +280,6 @@ namespace paxs {
             }
 
             // マウスホイール入力（ズーム）
-            // Mouse wheel input (zoom)
             handleMouseWheelZoom(*viewport_, event);
             viewport_->applyConstraints();
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
@@ -352,33 +347,16 @@ namespace paxs {
             }
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
-
-        /// @brief ヒットテスト（画面全体を対象）
-        /// @brief Hit test (targets entire screen)
-        /// @param x X座標 / X coordinate
-        /// @param y Y座標 / Y coordinate
-        /// @return 常にtrue（画面全体が対象） / Always true (entire screen is target)
         bool isHit(int /*x*/, int /*y*/) const override {
             // 画面全体が対象なので常にtrue
             return enabled_;
         }
-
-        /// @brief レイヤーを取得
-        /// @brief Get layer
-        /// @return Backgroundレイヤー（最低優先度） / Background layer (lowest priority)
         RenderLayer getLayer() const override {
-            // 最も低い優先度（UI、MapContentManagerの後）
             return RenderLayer::Background;
         }
-
-        /// @brief 有効性を取得
-        /// @brief Get enabled state
         bool isEnabled() const override {
             return enabled_;
         }
-
-        /// @brief 有効性を設定
-        /// @brief Set enabled state
         void setEnabled(bool enabled) {
             enabled_ = enabled;
         }

@@ -47,7 +47,7 @@ namespace paxs {
         /// @param widget 登録するウィジェット / Widget to register
         void registerWidget(IMouseEventHandler* widget) {
             if (widget == nullptr) return;
-            registered_widgets_.push_back(widget);
+            registered_widgets_.emplace_back(widget);
             is_sorted_ = false;
         }
 
