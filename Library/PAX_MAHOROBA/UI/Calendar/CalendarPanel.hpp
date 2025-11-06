@@ -36,14 +36,8 @@ namespace paxs {
         const UILayout* ui_layout_;
 
     public:
-        CalendarPanel(const UILayout& ui_layout)
-            : ui_layout_(&ui_layout) {}
-
-        /// @brief 初期化
-        /// @brief Initialize
-        void init(const paxs::FeatureVisibilityManager* visibility_manager) {
-            visibility_manager_ptr = visibility_manager;
-        }
+        CalendarPanel(const UILayout& ui_layout, const paxs::FeatureVisibilityManager* visibility_manager)
+            : ui_layout_(&ui_layout), visibility_manager_ptr(visibility_manager) {}
 
         /// @brief カレンダー描画パラメータを設定
         /// @brief Set calendar rendering parameters
@@ -68,8 +62,7 @@ namespace paxs {
         }
 
         bool isVisible() const override {
-            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Calendar")) &&
-                   visibility_manager_ptr->isVisible(MurMur3::calcHash("UI"));
+            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Calendar"));
         }
 
         /// @brief 時間操作ウィジェットの高さを取得

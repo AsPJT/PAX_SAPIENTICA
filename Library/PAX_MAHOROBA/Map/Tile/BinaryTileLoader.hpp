@@ -21,16 +21,13 @@
 #include <stb/stb_image_write.h>
 
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_MAHOROBA/Core/Init.hpp>
+
 #include <PAX_MAHOROBA/Map/Tile/ITileLoader.hpp>
+
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
-
-//#ifdef USING_BINARY_TEXTURE
-
-//#endif
 
 namespace paxs {
 

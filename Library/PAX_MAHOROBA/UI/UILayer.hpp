@@ -45,39 +45,24 @@ namespace paxs {
     /// @brief Integrated management class for UI layer
     class UILayer : public IWidget{
     private:
-        const FeatureVisibilityManager* feature_visibility_manager_ptr = nullptr;
-
-        // 描画に必要なデータをキャッシュ（updateData()で更新、render()で使用）
-        const MapViewport* cached_map_viewport_ptr = nullptr;
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
 #endif
         paxs::Koyomi cached_koyomi_;
         paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
 
-        std::size_t map_viewport_width_str_index = 0;
-        std::size_t map_viewport_center_x_str_index = 0;
-        std::size_t map_viewport_center_y_str_index = 0;
-        std::size_t map_viewport_center_lat_str_index = 0;
-
         paxs::UILayout ui_layout;
 
         paxs::CalendarPanel calendar_panel;
-        paxs::DebugInfoPanel debug_info_panel;
-
-#ifdef PAXS_USING_SIMULATOR
-        paxs::SimulationPanel simulation_panel;
-        paxs::SettlementStatusPanel settlement_status_panel;
-#endif
-
-        // 背景コンポーネント
         paxs::UIPanelBackground calendar_bg_;
+        paxs::DebugInfoPanel debug_info_panel;
         paxs::UIPanelBackground debug_info_bg_;
 #ifdef PAXS_USING_SIMULATOR
+        paxs::SimulationPanel simulation_panel;
         paxs::UIPanelBackground simulation_bg_;
+        paxs::SettlementStatusPanel settlement_status_panel;
         paxs::UIPanelBackground settlement_status_bg_;
 #endif
-
         std::vector<IWidget*> panels;
 
         void sortPanelsByLayer() {
@@ -92,10 +77,9 @@ namespace paxs {
         UILayer(
             paxs::FeatureVisibilityManager* visible_manager,
             const MapViewport* map_viewport)
-            : feature_visibility_manager_ptr(visible_manager),
-              visible_manager_ptr(visible_manager),
-              calendar_panel(ui_layout),
-              debug_info_panel(ui_layout, visible_manager),
+            : visible_manager_ptr(visible_manager),
+              calendar_panel(ui_layout, visible_manager),
+              debug_info_panel(ui_layout, visible_manager, map_viewport),
 #ifdef PAXS_USING_SIMULATOR
               settlement_status_panel(visible_manager),
               simulation_panel(visible_manager),
@@ -107,39 +91,22 @@ namespace paxs {
               , settlement_status_bg_("SettlementStatusBackground", &ui_layout.settlement_status_panel)
 #endif
         {
-            // CalendarPanel の初期化
-            calendar_panel.init(visible_manager_ptr);
-
-            // DebugInfoPanel の初期化
-            debug_info_panel.init(map_viewport);
-            map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
-            map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
-            map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
-            map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
-
             // 影描画用のRenderTextureを最大画面サイズで初期化（一回のみ）
             PanelBackgroundRenderer::initShadowTextures(paxs::Vector2<int>{3840, 2160});
 
-            panels.clear();
-            // 背景コンポーネント（RenderLayer::UIBackground = 300）
-            panels.push_back(&calendar_bg_);
-            panels.push_back(&debug_info_bg_);
+            panels.emplace_back(&calendar_panel);
+            panels.emplace_back(&calendar_bg_);
+            panels.emplace_back(&debug_info_panel);
+            panels.emplace_back(&debug_info_bg_);
 #ifdef PAXS_USING_SIMULATOR
-            panels.push_back(&simulation_bg_);
-            panels.push_back(&settlement_status_bg_);
-#endif
-            // コンテンツコンポーネント（RenderLayer::UIContent = 400）
-            panels.push_back(&calendar_panel);
-            panels.push_back(&debug_info_panel);
-#ifdef PAXS_USING_SIMULATOR
-            panels.push_back(&simulation_panel);
-            panels.push_back(&settlement_status_panel);
+            panels.emplace_back(&simulation_panel);
+            panels.emplace_back(&simulation_bg_);
+            panels.emplace_back(&settlement_status_panel);
+            panels.emplace_back(&settlement_status_bg_);
 #endif
             sortPanelsByLayer();
         }
 
-        /// @brief データ更新（描画は行わない）
-        /// @brief Update data (no drawing)
         void updateData(
 #ifdef PAXS_USING_SIMULATOR
             std::unique_ptr<paxs::SettlementSimulator>& simulator,
@@ -150,17 +117,12 @@ namespace paxs {
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
 #ifdef PAXS_USING_SIMULATOR
-            bool simulation_visible = visible_manager_ptr->isVisible(MurMur3::calcHash("Simulation")) &&
-                                    visible_manager_ptr->isVisible(MurMur3::calcHash(2, "UI"));
-            simulation_panel.setVisible(simulation_visible);
-
             simulation_panel.setReferences(simulator, koyomi,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 
             simulation_panel.updateSimulationAuto();
 
             simulation_bg_.setVisible(simulation_panel.isVisible());
-
             settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
 
@@ -171,9 +133,9 @@ namespace paxs {
             }
 
             calendar_bg_.setVisible(calendar_panel.isVisible());
-
             debug_info_bg_.setVisible(debug_info_panel.isVisible());
 
+            // TODO: fix
 #ifdef PAXS_USING_SIMULATOR
             cached_simulator_ = &simulator;
 #endif
@@ -183,12 +145,10 @@ namespace paxs {
         /// @brief レンダリング処理
         /// @brief Render
         void render() const override {
-            if (!isVisible() || visible_manager_ptr == nullptr) return;
+            if (!isVisible()) return;
 
             // 画像の拡大縮小の方式を設定
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
-
-            const paxs::Koyomi& koyomi = cached_koyomi_;
 
             // 1. バッチ描画開始（Siv3D用）
             PanelBackgroundRenderer::beginBatch();
@@ -214,6 +174,7 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
+            if (!isVisible()) return false;
             for (const IWidget* panel : panels) {
                 if (panel) {
                     if (panel->isHit(x, y)) {
@@ -245,10 +206,6 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
         SettlementStatusPanel& getSettlementStatusPanel() { return settlement_status_panel; }
 #endif
-
-        bool isVisible() const override {
-            return feature_visibility_manager_ptr->isVisible(MurMur3::calcHash(2, "UI"));
-        }
         paxg::Rect getRect() const override {
             return paxg::Rect{ 0, 0, 0, 0 };
         }
@@ -258,8 +215,11 @@ namespace paxs {
         RenderLayer getLayer() const override {
             return RenderLayer::UIContent;
         }
-        void setVisible(bool /*visible*/) override {}
+        bool isVisible() const override {
+            return visible_manager_ptr->isVisible(MurMur3::calcHash("UI"));
+        }
         void setEnabled(bool /*enabled*/) override {}
+        void setVisible(bool /*visible*/) override {}
         bool isEnabled() const override { return true; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
     };

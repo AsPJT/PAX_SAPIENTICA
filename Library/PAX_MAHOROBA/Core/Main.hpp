@@ -42,18 +42,16 @@ namespace paxs {
 
     void startMain() {
         paxs::PaxSapienticaInit::firstInit(); // 初期化とロゴの表示
-        MapViewport map_viewport{};
         std::unique_ptr<paxs::MapViewportInputHandler> map_viewport_input_handler = std::make_unique<MapViewportInputHandler>(); // 地図ビューポートの入力処理
         std::unique_ptr<paxs::UIInputHandler> ui_input_handler = std::make_unique<paxs::UIInputHandler>(); // UIの入力処理
         paxs::Koyomi koyomi{}; // 暦を管理する
         Fonts().initialize(); // フォントシステムを初期化
-        paxs::GraphicsManager graphics_manager{}; // グラフィック統合管理
 
-        graphics_manager.init(map_viewport_input_handler.get(), &map_viewport, ui_input_handler.get());
-
+        MapViewport map_viewport{};
         map_viewport.setWidth(map_viewport.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
 
-        koyomi.init();
+        paxs::GraphicsManager graphics_manager(map_viewport_input_handler.get(), &map_viewport, ui_input_handler.get());
+
 
 #ifdef PAXS_USING_SIMULATOR
         std::unique_ptr<paxs::SettlementSimulator> simulator{};

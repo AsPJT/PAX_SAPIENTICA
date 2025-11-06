@@ -42,7 +42,7 @@ namespace paxs {
     class GraphicsManager {
     private:
         MenuBar menu_bar_;
-        std::unique_ptr<UILayer> ui_layer_;
+        UILayer ui_layer_;
         Photo360Layer photo360_layer_;
         MapContentLayer map_content_layer_;
         MapTileLayer map_tile_layer_;
@@ -79,30 +79,22 @@ namespace paxs {
         }
 
     public:
-        GraphicsManager() = default;
-
-        void init(MapViewportInputHandler* handler, MapViewport* viewport, UIInputHandler* ui_input_handler) {
-            menu_bar_.init();
-
-            ui_layer_ = std::make_unique<UILayer>(
-                &visible_manager_,
-                viewport
-            );
-
+        GraphicsManager(MapViewportInputHandler* handler, MapViewport* viewport, UIInputHandler* ui_input_handler)
+        : ui_layer_(&visible_manager_, viewport) {
             map_content_layer_.init(viewport);
-
-            map_tile_layer_.init();
+            menu_bar_.initializeVisibility(&visible_manager_);
+            setMapViewportInputHandler(handler, viewport);
 
             // レイヤーシステムに各コンポーネントを登録
             render_layer_manager_.registerRenderable(&map_tile_layer_);
             render_layer_manager_.registerRenderable(&map_content_layer_);
             render_layer_manager_.registerRenderable(&photo360_layer_);
             render_layer_manager_.registerRenderable(&menu_bar_);
-            render_layer_manager_.registerRenderable(ui_layer_.get());
+            render_layer_manager_.registerRenderable(&ui_layer_);
 
             // UIInputHandlerにウィジェットを登録
             ui_input_handler->registerWidget(&menu_bar_);
-            ui_input_handler->registerWidget(ui_layer_.get());
+            ui_input_handler->registerWidget(&ui_layer_);
 
             event_router_.registerHandler(&map_content_layer_);
             mouse_event_router_.registerHandler(ui_input_handler);
@@ -110,11 +102,6 @@ namespace paxs {
             // SettlementInputHandler を EventRouter に登録（キーボードイベントのみ）
             event_router_.registerHandler(&map_content_layer_.getSettlementInputHandler());
 #endif
-
-            // 可視性の初期状態を反映
-            menu_bar_.initializeVisibility(&visible_manager_);
-
-            setMapViewportInputHandler(handler, viewport);
         }
 
         /// @brief EventRouterへのアクセス
@@ -122,11 +109,6 @@ namespace paxs {
 
         /// @brief InputRouterへのアクセス
         MouseEventRouter& getInputRouter() { return mouse_event_router_; }
-
-        /// @brief MapViewportInputHandlerへのアクセス
-        MapViewportInputHandler* getMapViewportInputHandler() const {
-            return map_viewport_input_handler_;
-        }
 
         /// @brief 更新・描画処理
         void update(
@@ -164,7 +146,7 @@ namespace paxs {
                 visible_manager_
             );
 
-            ui_layer_->updateData(
+            ui_layer_.updateData(
 #ifdef PAXS_USING_SIMULATOR
                 simulator,
 #endif
@@ -173,12 +155,12 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // SettlementStatusPanel の表示モードを更新
-            ui_layer_->getSettlementStatusPanel().setSelectDraw(
+            ui_layer_.getSettlementStatusPanel().setSelectDraw(
                 map_content_layer_.getSettlementInputHandler().getSelectDraw()
             );
 
             // シミュレーターが初期化されている場合のみ表示
-            ui_layer_->getSettlementStatusPanel().setVisible(simulator != nullptr);
+            ui_layer_.getSettlementStatusPanel().setVisible(simulator != nullptr);
 #endif
 
             photo360_layer_.setVisible(visible_manager_.isVisible(paxs::MurMur3::calcHash(2, "3D")));

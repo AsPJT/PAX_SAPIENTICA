@@ -31,7 +31,7 @@
 
 namespace paxs {
 
-    /// @brief アプリ上部のUI（メニュー + 言語選択）を管理
+    /// @brief アプリ上部のメニューバー
     class MenuBar : public IWidget{
     public:
         /// @brief コンストラクタ
@@ -46,11 +46,9 @@ namespace paxs {
             )
         {
             language_selector_.setItemsKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES);
-        }
 
-        void init() {
             // GitHubボタンを初期化
-            github_button_.setLanguageSelector(&language_selector_);
+            github_button_.init(language_selector_);
 
             // メニューバーにメニュー項目を追加（FontSystem経由）
             menu_system.add(paxs::MenuBarKeys::VIEW_MENU_HASHES,
@@ -67,12 +65,6 @@ namespace paxs {
                           MurMur3::calcHash("map"));
 
             calculateLayout();
-        }
-
-        /// @brief GitHubボタンの取得（MouseEventRouterへの登録用）
-        /// @brief Get GitHub button (for MouseEventRouter registration)
-        paxs::GitHubButton& getGitHubButton() {
-            return github_button_;
         }
 
         /// @brief レイアウトを計算

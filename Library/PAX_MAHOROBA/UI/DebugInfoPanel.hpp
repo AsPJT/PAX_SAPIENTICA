@@ -12,9 +12,6 @@
 #ifndef PAX_MAHOROBA_DEBUG_INFO_PANEL_HPP
 #define PAX_MAHOROBA_DEBUG_INFO_PANEL_HPP
 
-#include <cmath>
-#include <string>
-
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -35,7 +32,6 @@
 namespace paxs {
 
     /// @brief デバッグ情報パネルを表示するクラス
-    /// @brief Debug information panel class
     class DebugInfoPanel : public IWidget {
     private:
         const MapViewport* map_viewport_ptr = nullptr;
@@ -43,15 +39,17 @@ namespace paxs {
         const UILayout* ui_layout_ = nullptr;
         Koyomi* koyomi_ = nullptr;
 
-    public:
-        DebugInfoPanel() = default;
-        DebugInfoPanel(const UILayout& ui_layout, const paxs::FeatureVisibilityManager* visible_manager)
-            : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager) {}
+        // TODO: 表示
+        std::size_t map_viewport_width_str_index = MurMur3::calcHash(25, "debug_magnification_power");
+        std::size_t map_viewport_center_x_str_index = MurMur3::calcHash(24, "debug_mercator_longitude");
+        std::size_t map_viewport_center_y_str_index = MurMur3::calcHash(23, "debug_mercator_latitude");
+        std::size_t map_viewport_center_lat_str_index = MurMur3::calcHash(14, "debug_latitude");
 
-        /// @brief 初期化
-        void init(const MapViewport* map_viewport) {
-            map_viewport_ptr = map_viewport;
-        }
+    public:
+        DebugInfoPanel(const UILayout& ui_layout,
+            const paxs::FeatureVisibilityManager* visible_manager,
+            const MapViewport* map_viewport
+        ) : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager), map_viewport_ptr(map_viewport) {}
 
         const char* getName() const override {
             return "DebugInfoPanel";
@@ -63,7 +61,7 @@ namespace paxs {
             return RenderLayer::UIContent;
         }
 
-        bool isVisible() const override { return visible_manager_ptr->isVisible(MurMur3::calcHash("UI")) && visible_manager_ptr->isVisible(MurMur3::calcHash("Debug")); }
+        bool isVisible() const override { return visible_manager_ptr->isVisible(MurMur3::calcHash("Debug")); }
 
 
     public:

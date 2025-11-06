@@ -40,7 +40,7 @@ namespace paxs {
         cal::JDN_F64 cached_jdn_ = 0.0;
 
     public:
-        void init() {
+        MapTileLayer() {
             // XYZタイルを初期化
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
                 [&](const std::string& path) {

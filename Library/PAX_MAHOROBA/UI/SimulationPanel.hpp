@@ -292,8 +292,7 @@ namespace paxs {
         }
 
         bool isVisible() const override {
-            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Simulation")) &&
-                   visibility_manager_ptr->isVisible(MurMur3::calcHash("UI"));
+            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Simulation"));
         }
 
         bool isHit(int x, int y) const override {
