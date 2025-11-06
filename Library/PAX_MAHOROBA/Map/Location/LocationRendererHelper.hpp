@@ -159,6 +159,8 @@ namespace paxs {
         }
 
     private:
+        LocationRendererHelper() = default;
+
         /// @brief モードに応じてテキスト描画
         /// @brief Draw text according to specified mode
         static void drawTextByMode(

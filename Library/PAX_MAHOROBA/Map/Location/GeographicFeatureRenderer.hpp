@@ -27,13 +27,11 @@
 
 namespace paxs {
 
-    /// @brief 地理的特徴(地名とアイコン)の描画を担当するクラス
+    /// @brief 地物の描画を担当するクラス
     class GeographicFeatureRenderer {
     public:
-        GeographicFeatureRenderer() = default;
-
-        /// @brief 地理的特徴(地名とアイコン)を描画
-        void draw(
+        /// @brief 地物を描画
+        static void draw(
             const std::vector<LocationPointList>& location_point_list_list,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             FeatureVisibilityManager& visible,
@@ -42,7 +40,7 @@ namespace paxs {
             const double map_view_height,
             const double map_view_center_x,
             const double map_view_center_y
-        ) const {
+        ) {
             const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
 
@@ -99,13 +97,15 @@ namespace paxs {
         static constexpr int TEXTURE_SPACING_VERTICAL = 4;  // テクスチャの垂直間隔
         static constexpr std::uint_least16_t ZOOM_SPLIT_COUNT = 10;  // ズーム時の分割数
 
+        GeographicFeatureRenderer() = default;
+
         /// @brief アイコンのみ描画（範囲外時）
-        void drawIconOnly(
+        static void drawIconOnly(
             const LocationPoint& lli,
             const LocationPointList& lll,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const paxg::Vec2i& draw_pos
-        ) const {
+        ) {
             // エージェントアイコン描画
             if (LocationRendererHelper::drawAgentIcon(texture, lli.lpe, draw_pos)) {
                 return;
@@ -120,14 +120,14 @@ namespace paxs {
         }
 
         /// @brief アイコンとテキストを描画（範囲内時）
-        void drawIconAndText(
+        static void drawIconAndText(
             const LocationPoint& lli,
             const LocationPointList& lll,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             const paxg::Vec2i& draw_pos,
             const std::uint_least32_t first_language,
             const std::uint_least32_t second_language
-        ) const {
+        ) {
             const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
             // 描画
             if (texture.find(place_tex) != texture.end()) {
@@ -140,14 +140,14 @@ namespace paxs {
         }
 
         /// @brief テクスチャを複数描画
-        void drawTextureMultiple(
+        static void drawTextureMultiple(
             const paxg::Texture& tex,
             const int len,
             const paxg::Vec2i& draw_pos,
             const std::uint_least16_t x_size,
             const std::uint_least16_t y_size,
             const bool is_zoomed
-        ) const {
+        ) {
             if (x_size <= 1) {
                 if (y_size <= 1) {
                     tex.resizedDrawAt(len, draw_pos);
@@ -198,12 +198,12 @@ namespace paxs {
         }
 
         /// @brief 地名のテキストを描画
-        void drawPlaceNameText(
+        static void drawPlaceNameText(
             const LocationPoint& lli,
             const paxg::Vec2i& draw_pos,
             const std::uint_least32_t first_language,
             const std::uint_least32_t second_language
-        ) const {
+        ) {
             paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
             paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
 
@@ -236,7 +236,6 @@ namespace paxs {
             }
         }
     };
-
 }
 
 #endif // !PAX_MAHOROBA_GEOGRAPHIC_FEATURE_RENDERER_HPP

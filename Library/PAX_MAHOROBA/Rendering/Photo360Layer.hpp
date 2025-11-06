@@ -68,8 +68,6 @@ namespace paxs {
             photo360_.setViewRotation(x, y, z);
         }
 
-        // IRenderable インターフェースの実装
-
         /// @brief レンダリングレイヤーを取得
         RenderLayer getLayer() const override {
             return RenderLayer::Map3D;

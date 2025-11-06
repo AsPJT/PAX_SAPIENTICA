@@ -32,16 +32,11 @@
 
 namespace paxs {
 
-    /// @brief タイル描画クラス (Presentation Layer)
-    /// @brief 地図タイルの描画処理を担当
+    /// @brief 地図タイル描画クラス
     class TileRenderer {
-    private:
-
     public:
-        TileRenderer() = default;
-
         /// @brief 地図の背景を描画
-        void drawBackground() const {
+        static void drawBackground() {
             paxg::Rect{ 0, 0, static_cast<float>(paxg::Window::width()), static_cast<float>(paxg::Window::height()) }
                 .draw(paxs::BackgroundColor::LightBlue);
         }
@@ -51,12 +46,12 @@ namespace paxs {
         /// @param visible 可視性管理
         /// @param map_viewport マップビューポート
         /// @param jdn ユリウス日
-        void drawTiles(
+        static void drawTiles(
             const std::vector<XYZTile>& tiles,
             const FeatureVisibilityManager& visible,
             const MapViewport& map_viewport,
             cal::JDN_F64 jdn
-        ) const {
+        ) {
             const double map_viewport_width = map_viewport.getWidth();
             const double map_viewport_height = map_viewport.getHeight();
             const double map_viewport_center_x = map_viewport.getCenterX();
@@ -87,15 +82,17 @@ namespace paxs {
         }
 
     private:
+        TileRenderer() = default;
+
         /// @brief タイルのテクスチャを描画
-        void drawTileTextures(
+        static void drawTileTextures(
             const XYZTile& tile,
             const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
             const double map_view_center_y,
             const int date
-        ) const {
+        ) {
             // 拡大率が描画範囲外の場合は終了
             const unsigned int magnification_z = tile.getMagnificationZ();
             if (magnification_z < tile.getDrawMinZ()) return;
@@ -134,7 +131,7 @@ namespace paxs {
         }
 
         /// @brief タイルのグリッド線を描画
-        void drawTileGridLines(
+        static void drawTileGridLines(
             const XYZTile& tile,
             const double map_view_width,
             const double map_view_height,
@@ -142,7 +139,7 @@ namespace paxs {
             const double map_view_center_y,
             const double thickness,
             const paxg::Color& color
-        ) const {
+        ) {
             // 拡大率が描画範囲外の場合は終了
             const unsigned int magnification_z = tile.getMagnificationZ();
             if (magnification_z < tile.getDrawMinZ()) return;
@@ -180,13 +177,13 @@ namespace paxs {
         }
 
         /// @brief タイルのデバッグ情報を描画
-        void drawTileDebugInfo(
+        static void drawTileDebugInfo(
             const XYZTile& tile,
             const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
             const double map_view_center_y
-        ) const {
+        ) {
             static paxg::Font tmp_font{ 16, "", 3 };
             tmp_font.setOutline(0, 0.5, paxg::Color{ 255, 255, 255 });
 

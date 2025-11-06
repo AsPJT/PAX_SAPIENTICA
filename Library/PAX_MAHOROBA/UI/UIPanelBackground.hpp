@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/UI/PanelBackground.hpp>
+#include <PAX_MAHOROBA/UI/PanelBackgroundRenderer.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 namespace paxs {
@@ -79,7 +79,7 @@ namespace paxs {
                 return;
             }
 
-            PanelBackground::draw(
+            PanelBackgroundRenderer::draw(
                 layout->x, layout->y,
                 layout->width, layout->height,
                 corner_radius_, bg_color_

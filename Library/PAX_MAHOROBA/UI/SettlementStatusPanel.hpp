@@ -41,7 +41,6 @@ namespace paxs {
             // FontSystemを使用するため何もしない
         }
 
-        // IRenderable の実装
         void render() const override {
             if (!visible_) return;
 

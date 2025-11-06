@@ -30,7 +30,6 @@ namespace paxs {
     class MapTileLayer : public IRenderable {
     private:
         std::vector<XYZTile> xyz_tile_list;
-        TileRenderer tile_renderer_;
         TileRepository tile_repository_;
 
         bool visible_ = true;
@@ -74,8 +73,8 @@ namespace paxs {
         void render() const override {
             if (!visible_ || cached_visible_ == nullptr) return;
 
-            tile_renderer_.drawBackground();
-            tile_renderer_.drawTiles(xyz_tile_list, *cached_visible_, cached_map_viewport_, cached_jdn_);
+            TileRenderer::drawBackground();
+            TileRenderer::drawTiles(xyz_tile_list, *cached_visible_, cached_map_viewport_, cached_jdn_);
         }
         RenderLayer getLayer() const override {
             return RenderLayer::MapTile;

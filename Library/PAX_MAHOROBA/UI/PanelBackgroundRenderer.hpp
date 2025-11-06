@@ -30,10 +30,8 @@ namespace paxs {
     /// @brief Class for rendering UI panel background and shadow
     /// Siv3Dでは影を一度にまとめて描画することで、影の重複を防ぎます。
     /// For Siv3D, renders all shadows at once to prevent shadow duplication.
-    class PanelBackground {
+    class PanelBackgroundRenderer {
     public:
-        PanelBackground() = delete;
-
         /// @brief 影用のテクスチャを初期化（静的メソッド）
         /// @brief Initialize textures for shadow rendering (static method)
         /// @param size テクスチャサイズ / Texture size

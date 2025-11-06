@@ -34,11 +34,6 @@ namespace paxs {
     public:
         PersonPortraitManager() = default;
 
-        /// @brief 人物データを追加
-        /// @brief Add person data
-        void add() {
-        }
-
         /// @brief 初期化
         /// @brief Initialize
         void init() {
@@ -60,22 +55,12 @@ namespace paxs {
             );
         }
 
-        void render() const override {
-            if (!visible_) return;
-
-            renderer_.draw(location_point_list_list, key_value_tsv.get(), cached_jdn_,
-                cached_map_view_width_, cached_map_view_height_,
-                cached_map_view_center_x_, cached_map_view_center_y_);
-        }
-
         RenderLayer getLayer() const override {
             return RenderLayer::MapContent;
         }
-
         bool isVisible() const override {
             return visible_;
         }
-
         void setVisible(bool visible) override {
             visible_ = visible;
         }
@@ -93,6 +78,14 @@ namespace paxs {
             cached_map_view_center_y_ = map_view_center_y;
         }
 
+        void render() const override {
+            if (!visible_) return;
+
+            PersonPortraitRenderer::draw(location_point_list_list, key_value_tsv.get(), cached_jdn_,
+                cached_map_view_width_, cached_map_view_height_,
+                cached_map_view_center_x_, cached_map_view_center_y_);
+        }
+
     private:
         // 可視性管理
         bool visible_ = true;
@@ -106,7 +99,6 @@ namespace paxs {
         std::vector<PersonLocationList> location_point_list_list{}; // 人物の一覧
         // アイコンのテクスチャ
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
-        PersonPortraitRenderer renderer_; // 描画処理を担当
         PersonNameRepository repository_; // データ読み込みを担当
 
         /// @brief 人物データを読み込み

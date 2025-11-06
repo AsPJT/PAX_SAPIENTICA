@@ -57,7 +57,7 @@ namespace paxs {
             if (!visible_ || cached_visible_ == nullptr) return;
 
             // 描画処理をレンダラーに委譲
-            renderer_.draw(
+            GeographicFeatureRenderer::draw(
                 location_point_list_list,
                 key_value_tsv.get(),
                 *cached_visible_,
@@ -67,18 +67,6 @@ namespace paxs {
                 cached_map_view_center_x_,
                 cached_map_view_center_y_
             );
-        }
-
-        RenderLayer getLayer() const override {
-            return RenderLayer::MapContent;
-        }
-
-        bool isVisible() const override {
-            return visible_;
-        }
-
-        void setVisible(bool visible) override {
-            visible_ = visible;
         }
 
         /// @brief 描画パラメータを設定
@@ -96,6 +84,16 @@ namespace paxs {
             cached_map_view_center_y_ = map_view_center_y;
         }
 
+        RenderLayer getLayer() const override {
+            return RenderLayer::MapContent;
+        }
+        bool isVisible() const override {
+            return visible_;
+        }
+        void setVisible(bool visible) override {
+            visible_ = visible;
+        }
+
     private:
         // 可視性管理
         bool visible_ = true;
@@ -111,8 +109,6 @@ namespace paxs {
         std::vector<LocationPointList> location_point_list_list{}; // 地理的特徴の一覧
         // アイコンのテクスチャ
         paxs::KeyValueTSV<paxg::Texture> key_value_tsv;
-        // 描画処理を担当
-        GeographicFeatureRenderer renderer_;
         // データ読み込みを担当
         PlaceNameRepository repository_;
 

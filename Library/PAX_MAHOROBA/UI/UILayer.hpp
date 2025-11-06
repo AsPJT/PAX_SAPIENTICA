@@ -122,9 +122,8 @@ namespace paxs {
 #endif
 
             // 影描画用のRenderTextureを最大画面サイズで初期化（一回のみ）
-            PanelBackground::initShadowTextures(paxs::Vector2<int>{3840, 2160});
+            PanelBackgroundRenderer::initShadowTextures(paxs::Vector2<int>{3840, 2160});
 
-            // IRenderable を実装したコンポーネントを登録
             panels.clear();
             // 背景コンポーネント（RenderLayer::UIBackground = 300）
             panels.push_back(&calendar_bg_);
@@ -196,7 +195,7 @@ namespace paxs {
             const paxs::Koyomi& koyomi = cached_koyomi_;
 
             // 1. バッチ描画開始（Siv3D用）
-            PanelBackground::beginBatch();
+            PanelBackgroundRenderer::beginBatch();
 
             // 2. 背景コンポーネントを描画（バッチに登録）
             {
@@ -208,7 +207,7 @@ namespace paxs {
             }
 
             // 3. バッチ描画終了（すべての背景を一括描画）
-            PanelBackground::endBatch();
+            PanelBackgroundRenderer::endBatch();
 
             // 4. コンテンツコンポーネントを描画
             for (auto* panel : panels) {
