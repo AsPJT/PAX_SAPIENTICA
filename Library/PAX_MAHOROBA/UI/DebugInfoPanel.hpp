@@ -41,6 +41,7 @@ namespace paxs {
         const MapViewport* map_viewport_ptr = nullptr;
         const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
         const UILayout* ui_layout_ = nullptr;
+        Koyomi* koyomi_ = nullptr;
 
     public:
         DebugInfoPanel() = default;
@@ -64,28 +65,27 @@ namespace paxs {
 
         bool isVisible() const override { return visible_manager_ptr->isVisible(MurMur3::calcHash("UI")) && visible_manager_ptr->isVisible(MurMur3::calcHash("Debug")); }
 
-        /// @brief マップ情報とシミュレーション統計を描画
-        /// @brief Render map information and simulation statistics
-        void renderMapAndSimulationInfo(
-#ifdef PAXS_USING_SIMULATOR
-            const std::unique_ptr<paxs::SettlementSimulator>& simulator,
-#endif
-            const paxs::Koyomi* koyomi = nullptr
-        ) const {
+
+    public:
+        // IWidget インターフェースの実装
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            // DebugInfoPanelは入力処理を行わない
+            (void)event;
+            return EventHandlingResult::NotHandled();
+        }
+
+        void render() const override {
             if (!isVisible()) return;
 
-            // フォントを取得
-            paxg::Font* font = Fonts().getFont(
-                static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
-                static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
-            );
+            paxg::Font* font = Fonts().getFont(paxs::FontProfiles::KOYOMI);
             if (font == nullptr) return;
 
             font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
 
             const int text_x = ui_layout_->debug_info_panel.x + 15; // パネル内の左端
             const int text_y = ui_layout_->debug_info_panel.y + 15; // パネル内の上端
-            constexpr int line_height = 25;
+            const int line_height = 25;
+
             int current_line = 0;
 
             // タイトル
@@ -129,44 +129,45 @@ namespace paxs {
             );
 
 #ifdef PAXS_USING_SIMULATOR
-            if (simulator != nullptr) {
-                // 人口数
-                font->draw(
-                    (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
-                    paxg::Vec2i(text_x, text_y + line_height * current_line),
-                    paxg::Color(0, 0, 0)
-                );
-                font->draw(
-                    std::to_string(simulator->cgetPopulationNum()),
-                    paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
-                    paxg::Color(0, 0, 0)
-                );
+            // TODO: simulator ポインタの取得
+            // if (simulator != nullptr) {
+            //     // 人口数
+            //     font->draw(
+            //         (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+            //             reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
+            //         paxg::Vec2i(text_x, text_y + line_height * current_line),
+            //         paxg::Color(0, 0, 0)
+            //     );
+            //     font->draw(
+            //         std::to_string(simulator->cgetPopulationNum()),
+            //         paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
+            //         paxg::Color(0, 0, 0)
+            //     );
 
-                // 集落数
-                font->draw(
-                    (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
-                    paxg::Vec2i(text_x, text_y + line_height * current_line),
-                    paxg::Color(0, 0, 0)
-                );
-                font->draw(
-                    std::to_string(simulator->cgetSettlement()),
-                    paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
-                    paxg::Color(0, 0, 0)
-                );
-            }
+            //     // 集落数
+            //     font->draw(
+            //         (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+            //             reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
+            //         paxg::Vec2i(text_x, text_y + line_height * current_line),
+            //         paxg::Color(0, 0, 0)
+            //     );
+            //     font->draw(
+            //         std::to_string(simulator->cgetSettlement()),
+            //         paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
+            //         paxg::Color(0, 0, 0)
+            //     );
+            // }
 #endif
 
-            // 大きな年号を描画（シミュレーション非アクティブ時のみ）
-            if (koyomi != nullptr && !koyomi->date_list.empty()) {
+            // 大きな年号を描画
+            if (koyomi_ != nullptr && !koyomi_->date_list.empty()) {
                 // グレゴリオ暦の年を取得（date_list[1]がグレゴリオ暦）
-                if (koyomi->date_list.size() > 1) {
+                if (koyomi_->date_list.size() > 1) {
                     const int date_year = [&]() {
                         int year = 0;
                         std::visit([&](const auto& x) {
                             year = int(x.cgetYear());
-                        }, koyomi->date_list[1].date);
+                        }, koyomi_->date_list[1].date);
                         return year;
                     }();
 
@@ -192,19 +193,6 @@ namespace paxs {
                     }
                 }
             }
-        }
-
-    public:
-        // IWidget インターフェースの実装
-        EventHandlingResult handleEvent(const MouseEvent& event) override {
-            // DebugInfoPanelは入力処理を行わない
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
-
-        void render() const override {
-            // TODO: 描画処理
-            // renderMapAndSimulationInfo();
         }
 
         paxg::Rect getRect() const override {
