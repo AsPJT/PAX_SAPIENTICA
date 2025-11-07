@@ -46,6 +46,8 @@ namespace paxs {
         std::unique_ptr<paxs::UIInputHandler> ui_input_handler = std::make_unique<paxs::UIInputHandler>(); // UIの入力処理
         paxs::Koyomi koyomi{}; // 暦を管理する
         Fonts().initialize(); // フォントシステムを初期化
+        // マウスボタンの状態管理
+        paxs::MouseClickStateManager left_button_state_manager;
 
         MapViewport map_viewport{};
 
@@ -57,9 +59,6 @@ namespace paxs {
 #endif
 
         paxs::PaxSapienticaInit::endLoadingScreen();
-
-        // マウスボタンの状態管理
-        paxs::MouseClickStateManager left_button_state_manager;
 
         /*##########################################################################################
             ループ開始
