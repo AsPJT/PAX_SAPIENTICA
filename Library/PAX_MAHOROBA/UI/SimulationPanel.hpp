@@ -25,7 +25,7 @@
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
-#include <PAX_MAHOROBA/UI/SimulationControlButtons.hpp>
+#include <PAX_MAHOROBA/UI/SimulationControlButton.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -66,7 +66,7 @@ namespace paxs {
             koyomi_->go_back_in_time = false;
         }
 
-        void onControlButtonClicked(SimulationControlButtons::ButtonId id) {
+        void onControlButtonClicked(SimulationControlButton::Id id) {
             if (!simulator_ptr_ || !koyomi_) return;
 
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
@@ -87,7 +87,7 @@ namespace paxs {
             };
 
             switch (id) {
-            case SimulationControlButtons::ButtonId::LoadGeographicData: {
+            case SimulationControlButton::Id::LoadGeographicData: {
                 // 元の「未初期化時に地形データ読み込みを押したとき」の処理
                 auto [map_list_path, japan_provinces_path] = make_paths();
                 SimulationConstants::getInstance(model_name)->init(model_name);
@@ -105,33 +105,33 @@ namespace paxs {
                 simulationInit();
                 break;
             }
-            case SimulationControlButtons::ButtonId::Stop: {
+            case SimulationControlButton::Id::Stop: {
                 // 再生中 → 停止
                 koyomi_->is_agent_update = false;
                 koyomi_->move_forward_in_time = false;
                 koyomi_->go_back_in_time = false;
                 break;
             }
-            case SimulationControlButtons::ButtonId::ReloadInputData: {
+            case SimulationControlButton::Id::ReloadInputData: {
                 // シミュレーション入力データ初期化
                 SimulationConstants::getInstance(model_name)->init(model_name);
                 break;
             }
-            case SimulationControlButtons::ButtonId::InitHumanData: {
+            case SimulationControlButton::Id::InitHumanData: {
                 // 人間データ初期化
                 simulationInit();
                 koyomi_->steps.setDay(0);
                 koyomi_->calcDate();
                 break;
             }
-            case SimulationControlButtons::ButtonId::DeleteGeographicData: {
+            case SimulationControlButton::Id::DeleteGeographicData: {
                 // 地形データ削除
                 simulator_ptr_->reset();
                 koyomi_->steps.setDay(0);
                 koyomi_->calcDate();
                 break;
             }
-            case SimulationControlButtons::ButtonId::Play: {
+            case SimulationControlButton::Id::Play: {
                 // 再生
                 if (simulator_ptr_->get() == nullptr) {
                     // 読み込み前なら何もしない
@@ -143,7 +143,7 @@ namespace paxs {
                 koyomi_->go_back_in_time = false;
                 break;
             }
-            case SimulationControlButtons::ButtonId::Step: {
+            case SimulationControlButton::Id::Step: {
                 // 1ステップ実行
                 if (simulator_ptr_->get() == nullptr) break;
                 simulator_ptr_->get()->step();
@@ -153,7 +153,7 @@ namespace paxs {
                 koyomi_->go_back_in_time = false;
                 break;
             }
-            case SimulationControlButtons::ButtonId::None:
+            case SimulationControlButton::Id::None:
             default:
                 break;
             }
@@ -243,7 +243,7 @@ namespace paxs {
             // ボタン側にも参照を渡す
             control_buttons_.setReferences(simulator_ptr_, koyomi_, debug_start_y);
             // ここで「押されたときの処理」を紐づける
-            control_buttons_.setOnClick([this](SimulationControlButtons::ButtonId id) {
+            control_buttons_.setOnClick([this](SimulationControlButton::Id id) {
                 this->onControlButtonClicked(id);
             });
         }
@@ -296,12 +296,10 @@ namespace paxs {
             return false;
         }
 
-        const char* getName() const override {
-            return "SimulationPanel";
-        }
         bool isVisible() const override {
             return visibility_manager_ptr->isVisible(MurMur3::calcHash("Simulation"));
         }
+        const char* getName() const override { return "SimulationPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
         paxg::Rect getRect() const override { return paxg::Rect{};}
         void setVisible(bool /*visible*/) override {}

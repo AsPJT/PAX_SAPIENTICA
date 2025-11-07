@@ -42,32 +42,16 @@ namespace paxs {
             });
         }
 
-        const char* getName() const override {
-            return name;
-        }
-        void setEnabled(bool enabled) override {
-            enabled_ = enabled;
-        }
-        bool isEnabled() const override {
-            return enabled_;
-        }
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-        bool isVisible() const override {
-            return visible_;
-        }
-        paxg::Rect getRect() const override {
-            return rect;
-        }
-        void setPos(const paxg::Vec2i& pos) override {
-            rect.setPos(pos);
-        }
+        paxg::Rect getRect() const override { return rect; }
+        const char* getName() const override { return name; }
+        bool isEnabled() const override { return enabled_; }
+        bool isVisible() const override { return visible_; }
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        void setVisible(bool visible) override { visible_ = visible; }
+        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
 
     protected:
-        void setSize(const paxg::Vec2i& size) {
-            rect.setSize(size);
-        }
+        void setSize(const paxg::Vec2i& size) { rect.setSize(size); }
 
     private:
         const std::uint_least32_t icon_texture_path_hash;
@@ -76,7 +60,6 @@ namespace paxs {
         paxg::Rect rect;
         bool enabled_ = true;
         bool visible_ = true;
-
 
         inline static paxs::KeyValueTSV<paxg::Texture> icon_textures;
 

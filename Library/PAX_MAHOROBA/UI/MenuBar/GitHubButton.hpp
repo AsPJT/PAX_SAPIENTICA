@@ -27,7 +27,6 @@ namespace paxs {
     /// @brief GitHubリポジトリへのリンクボタン
     class GitHubButton : public IconButton {
     private:
-        bool enabled_ = true;
         static constexpr int ICON_SIZE = 24;
     public:
         GitHubButton() : IconButton("GitHubButton", MurMur3::calcHash("texture_github")) {}
