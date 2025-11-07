@@ -45,6 +45,9 @@ target_compile_definitions(SimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
 add_executable(SettlementSimulatorTest Source/SettlementSimulatorTest.cpp)
 target_compile_definitions(SettlementSimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
 
+add_executable(AppStateManagerTest AppStateManagerTest.cpp)
+target_link_libraries(AppStateManagerTest PRIVATE gtest_main)
+
 add_custom_target(CopyTSV ALL
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/Data/Config.tsv" ${CMAKE_CURRENT_BINARY_DIR}
 )

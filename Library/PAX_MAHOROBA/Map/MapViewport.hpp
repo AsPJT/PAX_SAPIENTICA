@@ -15,6 +15,9 @@
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
+
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>
 
@@ -68,8 +71,32 @@ namespace paxs {
         double width = (height) / double(paxg::Window::height()) * double(paxg::Window::width()); // マップの高さ
         double expansion_size = MapViewportConstants::default_expansion_size; // マップの拡大量
 
+        // イベントバスへのポインタ（オプション）
+        EventBus* event_bus_ = nullptr;
+
+        /// @brief ビューポート変更イベントを発行
+        /// @brief Notify viewport change event
+        void notifyViewportChanged() {
+            if (event_bus_ != nullptr) {
+                // ズームレベルを計算（heightから推定）
+                const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
+                event_bus_->publish(ViewportChangedEvent(
+                    center.getX(),
+                    center.getY(),
+                    zoom_level
+                ));
+            }
+        }
+
     public:
         MapViewport() = default;
+
+        /// @brief EventBusを設定
+        /// @brief Set EventBus for event notification
+        /// @param event_bus イベントバス
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+        }
         /// @brief ビューポートの境界制約を適用（Domain層の責任）
         /// @brief Apply boundary constraints to viewport (Domain layer responsibility)
         void applyConstraints() {
@@ -115,14 +142,23 @@ namespace paxs {
 #endif
         }
         void setSize(const double new_height) {
-            height = new_height;
-            width = height / double(paxg::Window::height()) * double(paxg::Window::width());
+            if (height != new_height) {
+                height = new_height;
+                width = height / double(paxg::Window::height()) * double(paxg::Window::width());
+                notifyViewportChanged();
+            }
         }
         void setCenterX(const double x_) {
-            center.setX(x_);
+            if (center.getX() != x_) {
+                center.setX(x_);
+                notifyViewportChanged();
+            }
         }
         void setCenterY(const double y_) {
-            center.setY(y_);
+            if (center.getY() != y_) {
+                center.setY(y_);
+                notifyViewportChanged();
+            }
         }
 
         Coordinate& getCoordinate() {

@@ -44,8 +44,14 @@ namespace paxs {
         /// @brief 指定した機能の可視状態を設定
         /// @param feature_id 機能ID（ハッシュ値）
         /// @param is_visible 可視状態
-        void setVisibility(const std::uint_least32_t& feature_id, const bool is_visible) {
+        /// @return 値が変更されたらtrue
+        bool setVisibility(const std::uint_least32_t& feature_id, const bool is_visible) {
+            auto it = visible_features.find(feature_id);
+            if (it != visible_features.end() && it->second == is_visible) {
+                return false; // 変更なし
+            }
             visible_features[feature_id] = is_visible;
+            return true; // 変更あり
         }
 
         /// @brief 指定した機能の可視状態を取得
