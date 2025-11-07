@@ -91,6 +91,14 @@ namespace paxs {
             initialize(map_list_path, provinces_path, 0, current_model_name_);
         }
 
+        /// @brief シミュレーションを初期化（集落データをクリア）
+        /// @brief Initialize simulation (clear settlement data)
+        void initSimulation() {
+            if (simulator_) {
+                simulator_->init();
+            }
+        }
+
         /// @brief シミュレーションを1ステップ実行
         /// @brief Execute one step of simulation
         void step() {
@@ -153,22 +161,6 @@ namespace paxs {
         const auto& getMarriagePositions() const {
             static const std::vector<GridType4> empty_vec;
             return simulator_ ? simulator_->getMarriagePosList() : empty_vec;
-        }
-
-        /// @brief 内部のSettlementSimulatorへのポインタを取得（レガシーコード用）
-        /// @brief Get pointer to internal SettlementSimulator (for legacy code)
-        /// @deprecated 将来的に削除予定。新しいコードではSimulationManagerのAPIを使用すること
-        ///             Will be removed in the future. New code should use SimulationManager API
-        paxs::SettlementSimulator* getSimulator() {
-            return simulator_.get();
-        }
-
-        /// @brief 内部のSettlementSimulatorへのconstポインタを取得（レガシーコード用）
-        /// @brief Get const pointer to internal SettlementSimulator (for legacy code)
-        /// @deprecated 将来的に削除予定。新しいコードではSimulationManagerのAPIを使用すること
-        ///             Will be removed in the future. New code should use SimulationManager API
-        const paxs::SettlementSimulator* getSimulator() const {
-            return simulator_.get();
         }
     };
 

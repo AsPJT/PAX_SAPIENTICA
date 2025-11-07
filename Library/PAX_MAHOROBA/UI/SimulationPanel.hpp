@@ -56,9 +56,7 @@ namespace paxs {
             if (!simulation_manager_ptr_ || !koyomi_) return;
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
 
-            if (simulation_manager_ptr_->getSimulator()) {
-                simulation_manager_ptr_->getSimulator()->init();
-            }
+            simulation_manager_ptr_->initSimulation();
             koyomi_->steps.setDay(0);
             koyomi_->jdn.setDay(static_cast<double>(
                 SimulationConstants::getInstance(model_name)->start_julian_day));
