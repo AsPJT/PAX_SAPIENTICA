@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -33,13 +33,31 @@ namespace paxg {
         int m_height = 720;
 
     public:
-        SFMLWindowImpl() : m_window(sf::VideoMode({1280, 720}), "PAX SAPIENTICA Library") {}
+        SFMLWindowImpl() {
+            sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+            sf::ContextSettings settings;
+            settings.antiAliasingLevel = 16;
+            m_window.create(
+                sf::VideoMode({ 1280, 720 }, desktop.bitsPerPixel)
+                , "PAX SAPIENTICA Library"
+                , sf::Style::Default
+                , sf::State::Windowed
+                , settings);
+        }
 
         // For backward compatibility with existing drawing code
         sf::RenderWindow& getWindow() { return m_window; }
 
         void init(int width, int height, const std::string& title) override {
-            m_window.create(sf::VideoMode({static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, 24), title);
+            sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+            sf::ContextSettings settings;
+            settings.antiAliasingLevel = 16;
+            m_window.create(
+                sf::VideoMode({static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, desktop.bitsPerPixel)
+                , title
+                , sf::Style::Default
+                , sf::State::Windowed
+                , settings);
         }
 
         bool update() override {
