@@ -322,7 +322,7 @@ namespace paxs {
         /// @brief Handle resize event
         /// @param event リサイズイベント / Resize event
         /// @return イベント処理結果 / Event handling result
-        EventHandlingResult handleEvent(const ResizeEvent& event) override {
+        EventHandlingResult handleEvent(const ResizeEvent& /*event*/) override {
             if (!enabled_ || viewport_ == nullptr) {
                 return EventHandlingResult::NotHandled();
             }

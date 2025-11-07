@@ -83,8 +83,8 @@ namespace paxs {
         }
 
         /// @brief X 座標を設定
-        void setRectX(const std::size_t x = 0) {
-            rect.setX(static_cast<float>(x));
+        void setRectX(const float x = 0) {
+            rect.setX(x);
         }
 
         /// @brief 言語変更による更新処理
@@ -138,7 +138,7 @@ namespace paxs {
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
-                if (item_rect.contains(event.x, event.y)) {
+                if (item_rect.contains(static_cast<float>(event.x), static_cast<float>(event.y))) {
                     // もともとやってたトグル処理
                     if (i < is_items.size()) {
                         is_items[i] = !is_items[i];

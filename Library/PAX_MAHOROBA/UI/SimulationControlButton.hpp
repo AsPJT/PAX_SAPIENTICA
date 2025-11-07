@@ -62,7 +62,7 @@ namespace paxs {
             // 左クリックが押されたら
             if (event.left_button_state == MouseButtonState::Pressed) {
                 const auto r = getRect();
-                if (r.contains(event.x, event.y)) {
+                if (r.contains(static_cast<float>(event.x), static_cast<float>(event.y))) {
                     if (on_click_) {
                         on_click_(id_);
                     }
@@ -120,9 +120,14 @@ namespace paxs {
                buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].render();
                return;
             }
+            if (koyomi_->is_agent_update) {
+                // 再生中 → 停止ボタンのみ表示
+                buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].render();
+                return;
+            }
             for (const auto& btn : buttons_) {
-                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData) {
-                    // 読み込みボタンは非表示
+                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
+                    // 読み込みボタンと停止ボタンは非表示
                     continue;
                 }
                 btn.render();
@@ -136,9 +141,13 @@ namespace paxs {
             if (simulator_ptr_->get() == nullptr) {
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].isHit(x, y);
             }
+            if (koyomi_->is_agent_update) {
+                // 再生中 → 停止ボタンのみ有効
+                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].isHit(x, y);
+            }
             for (const auto& btn : buttons_) {
-                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData) {
-                    // 読み込みボタンは非表示
+                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
+                    // 読み込みボタンと停止ボタンは非表示
                     continue;
                 }
                 if (btn.isHit(x, y)) {
@@ -152,9 +161,13 @@ namespace paxs {
             if (simulator_ptr_->get() == nullptr) {
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].handleEvent(event);
             }
+            if (koyomi_->is_agent_update) {
+                // 再生中 → 停止ボタンのみ有効
+                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].handleEvent(event);
+            }
             for (auto& btn : buttons_) {
-                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData) {
-                    // 読み込みボタンは非表示
+                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
+                    // 読み込みボタンと停止ボタンは非表示
                     continue;
                 }
                 EventHandlingResult r = btn.handleEvent(event);

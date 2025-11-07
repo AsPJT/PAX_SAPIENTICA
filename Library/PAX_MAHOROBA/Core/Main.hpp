@@ -87,8 +87,6 @@ namespace paxs {
 
             // 現在のボタン状態を取得
             bool current_left_button = mouse->getLeft();
-            bool current_right_button = mouse->getRight();
-            bool current_middle_button = mouse->getMiddle();
 
             // 左ボタンの状態を更新してイベントを発行
             paxs::MouseClickStateManager::State left_state = left_button_state_manager.update(current_left_button);

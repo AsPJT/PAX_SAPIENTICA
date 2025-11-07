@@ -96,7 +96,7 @@ namespace paxs {
             visible_ = enabled;
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(int /*x*/, int /*y*/) const override {
             return false;  // このパネルはヒットテストを行わない
         }
 

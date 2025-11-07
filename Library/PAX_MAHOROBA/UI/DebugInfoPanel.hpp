@@ -199,6 +199,7 @@ namespace paxs {
 
         bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
+            (void)x; (void)y;
             return false;
             // TODO: child
         }
