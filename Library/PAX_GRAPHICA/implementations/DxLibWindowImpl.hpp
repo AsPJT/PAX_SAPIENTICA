@@ -23,12 +23,10 @@
 #include <PAX_GRAPHICA/WindowImpl.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/AppConst.hpp>
 
 namespace paxg {
     namespace MinWindow {
-        static const int MIN_WIN_WIDTH  = 800;
-        static const int MIN_WIN_HEIGHT = 600;
-
         LRESULT CALLBACK MyWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             switch (msg)
@@ -36,8 +34,8 @@ namespace paxg {
             case WM_GETMINMAXINFO:
             {
                 MINMAXINFO* pInfo = reinterpret_cast<MINMAXINFO*>(lParam);
-                pInfo->ptMinTrackSize.x = MIN_WIN_WIDTH;   // 最小幅
-                pInfo->ptMinTrackSize.y = MIN_WIN_HEIGHT;  // 最小高さ
+                pInfo->ptMinTrackSize.x = paxs::AppConst::min_window_size.x;   // 最小幅
+                pInfo->ptMinTrackSize.y = paxs::AppConst::min_window_size.y;  // 最小高さ
                 return 0; // 自分で処理したよ、という意味
             }
             }
