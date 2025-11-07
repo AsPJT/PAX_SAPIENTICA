@@ -74,6 +74,10 @@ namespace paxs {
                 static_cast<int>(paxg::Window::width() - language_selector_.getRect().w()),
                 0
             });
+            github_button_.setPos(paxg::Vec2i{
+                static_cast<int>(language_selector_.getRect().x() - github_button_.getRect().w() - 8),
+                static_cast<int>((language_selector_.getRect().h() - github_button_.getRect().h()) / 2)
+            });
             // menu幅を設定
             menu_system.updateMenuWidth();
         }
