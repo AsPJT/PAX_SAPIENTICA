@@ -16,7 +16,7 @@
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 
 namespace paxs {
 
@@ -94,11 +94,11 @@ namespace paxs {
         RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
 
         void setReferences(
-            std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr,
+            SimulationManager* simulation_manager_ptr,
             paxs::Koyomi* koyomi,
             int debug_start_y
         ) {
-            simulator_ptr_ = simulator_ptr;
+            simulation_manager_ptr_ = simulation_manager_ptr;
             koyomi_ = koyomi;
             debug_start_y_ = debug_start_y;
 
@@ -116,7 +116,7 @@ namespace paxs {
         void render() const override {
             if (!visible_) return;
 
-            if (simulator_ptr_->get() == nullptr) {
+            if (!simulation_manager_ptr_->isActive()) {
                buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].render();
                return;
             }
@@ -138,7 +138,7 @@ namespace paxs {
             if (!isVisible() || !isEnabled()) {
                 return false;
             }
-            if (simulator_ptr_->get() == nullptr) {
+            if (!simulation_manager_ptr_->isActive()) {
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].isHit(x, y);
             }
             if (koyomi_->is_agent_update) {
@@ -158,7 +158,7 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (simulator_ptr_->get() == nullptr) {
+            if (!simulation_manager_ptr_->isActive()) {
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].handleEvent(event);
             }
             if (koyomi_->is_agent_update) {
@@ -188,7 +188,7 @@ namespace paxs {
     private:
         std::vector<SimulationControlButton> buttons_;
 
-        std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
+        SimulationManager* simulation_manager_ptr_ = nullptr;
         paxs::Koyomi* koyomi_ = nullptr;
         int debug_start_y_ = 0;
 

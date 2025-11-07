@@ -19,7 +19,7 @@
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #endif
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -185,7 +185,7 @@ namespace paxs {
 
         void update(
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator>& simulator // コンパイル時の分岐により使わない場合あり
+            SimulationManager& simulation_manager // コンパイル時の分岐により使わない場合あり
 #endif
         ) {
             static int calendar_update_counter = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
@@ -197,10 +197,10 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
                     // エージェント機能
                     // TODO: fix
-                    if (is_agent_update && simulator.get() != nullptr) {
+                    if (is_agent_update && simulation_manager.isActive()) {
                         jdn += (days_per_year / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
                         calcDate(); // 日付計算
-                        simulator->step(); // シミュレーションを 1 ステップ実行する
+                        simulation_manager.step(); // シミュレーションを 1 ステップ実行する
                         steps.getDay()++; // ステップ数を増やす
                     }
                     else

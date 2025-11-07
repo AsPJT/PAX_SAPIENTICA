@@ -32,7 +32,7 @@
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #endif
 
 namespace paxs {
@@ -88,8 +88,8 @@ namespace paxs {
             render_layer_manager_.registerRenderable(&map_tile_layer_);
             render_layer_manager_.registerRenderable(&map_content_layer_);
             render_layer_manager_.registerRenderable(&photo360_layer_);
-            render_layer_manager_.registerRenderable(&menu_bar_);
             render_layer_manager_.registerRenderable(&ui_layer_);
+            render_layer_manager_.registerRenderable(&menu_bar_);
 
             // UIInputHandlerにウィジェットを登録
             ui_input_handler->registerWidget(&menu_bar_);
@@ -114,7 +114,7 @@ namespace paxs {
             MapViewport& map_viewport,
             paxs::Koyomi& koyomi
 #ifdef PAXS_USING_SIMULATOR
-            , std::unique_ptr<paxs::SettlementSimulator>& simulator
+            , SimulationManager& simulation_manager
 #endif
         ) {
             // ウィンドウサイズ変更を検知してイベントをブロードキャスト
@@ -140,14 +140,14 @@ namespace paxs {
             map_content_layer_.updateData(
                 koyomi,
 #ifdef PAXS_USING_SIMULATOR
-                simulator,
+                simulation_manager,
 #endif
                 visible_manager_
             );
 
             ui_layer_.updateData(
 #ifdef PAXS_USING_SIMULATOR
-                simulator,
+                simulation_manager,
 #endif
                 koyomi
             );
@@ -159,7 +159,7 @@ namespace paxs {
             );
 
             // シミュレーターが初期化されている場合のみ表示
-            ui_layer_.getSettlementStatusPanel().setVisible(simulator != nullptr);
+            ui_layer_.getSettlementStatusPanel().setVisible(simulation_manager.isActive());
 #endif
 
             photo360_layer_.setVisible(visible_manager_.isVisible(paxs::MurMur3::calcHash(2, "3D")));

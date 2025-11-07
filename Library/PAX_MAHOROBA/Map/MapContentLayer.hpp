@@ -17,7 +17,7 @@
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/SettlementManager.hpp>
-#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #endif
 
 #include <PAX_MAHOROBA/Input/IEventHandler.hpp>
@@ -56,7 +56,7 @@ namespace paxs {
 
         paxs::Koyomi cached_koyomi_;
 #ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
+        SimulationManager* cached_simulation_manager_ = nullptr;
 #endif
         paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
 
@@ -74,7 +74,7 @@ namespace paxs {
         void updateData(
             const paxs::Koyomi& koyomi,
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
+            SimulationManager& simulation_manager,
 #endif
             paxs::FeatureVisibilityManager& visible
             ) {
@@ -84,14 +84,14 @@ namespace paxs {
             // 描画用にデータをキャッシュ
             cached_koyomi_ = koyomi;
 #ifdef PAXS_USING_SIMULATOR
-            cached_simulator_ = &simulator;
+            cached_simulation_manager_ = &simulation_manager;
 
             // SettlementManager に描画パラメータを設定
-            if (simulator) {
+            if (simulation_manager.isActive()) {
                 settlement_manager_.setDrawParams(
                     koyomi.jdn.cgetDay(),
-                    simulator->getSettlementGrids(),
-                    simulator->getMarriagePosList(),
+                    simulation_manager.getSettlementGrids(),
+                    simulation_manager.getMarriagePositions(),
                     map_viewport_ptr->getWidth(),
                     map_viewport_ptr->getHeight(),
                     map_viewport_ptr->getCenterX(),
@@ -150,7 +150,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
             if (cached_visible_->isVisible(MurMur3::calcHash("Map")) || cached_visible_->isVisible(MurMur3::calcHash("Simulation"))) {
-                if (cached_simulator_ && *cached_simulator_) {
+                if (cached_simulation_manager_ && cached_simulation_manager_->isActive()) {
                     settlement_input_handler_.handleEvent(event);
                 }
             }

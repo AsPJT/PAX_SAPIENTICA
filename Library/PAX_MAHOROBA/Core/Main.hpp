@@ -20,7 +20,7 @@
 #endif
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #endif
 
 #include <memory>
@@ -53,7 +53,7 @@ namespace paxs {
 
 
 #ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<paxs::SettlementSimulator> simulator{};
+        paxs::SimulationManager simulation_manager;
 #endif
 
         paxs::PaxSapienticaInit::endLoadingScreen();
@@ -116,13 +116,13 @@ namespace paxs {
                 map_viewport,
                 koyomi
 #ifdef PAXS_USING_SIMULATOR
-                , simulator
+                , simulation_manager
 #endif
             );
 
             koyomi.update(
 #ifdef PAXS_USING_SIMULATOR
-                simulator
+                simulation_manager
 #endif
             );
 

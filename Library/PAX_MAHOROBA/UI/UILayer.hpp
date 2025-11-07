@@ -44,7 +44,7 @@ namespace paxs {
     class UILayer : public IWidget{
     private:
 #ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
+        SimulationManager* cached_simulation_manager_ = nullptr;
 #endif
         paxs::Koyomi cached_koyomi_;
         paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
@@ -107,7 +107,7 @@ namespace paxs {
 
         void updateData(
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
+            SimulationManager& simulation_manager,
 #endif
             paxs::Koyomi& koyomi
             ) {
@@ -115,7 +115,7 @@ namespace paxs {
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.setReferences(simulator, koyomi,
+            simulation_panel.setReferences(simulation_manager, koyomi,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
 
             simulation_panel.updateSimulationAuto();
@@ -135,7 +135,7 @@ namespace paxs {
 
             // TODO: fix
 #ifdef PAXS_USING_SIMULATOR
-            cached_simulator_ = &simulator;
+            cached_simulation_manager_ = &simulation_manager;
 #endif
             cached_koyomi_ = koyomi;
         }

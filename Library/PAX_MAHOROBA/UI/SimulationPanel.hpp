@@ -32,7 +32,7 @@
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
@@ -41,7 +41,7 @@ namespace paxs {
     class SimulationPanel : public IWidget {
     private:
         const paxs::FeatureVisibilityManager* visibility_manager_ptr = nullptr;
-        std::unique_ptr<paxs::SettlementSimulator>* simulator_ptr_ = nullptr;
+        SimulationManager* simulation_manager_ptr_ = nullptr;
         paxs::Koyomi* koyomi_ = nullptr;
 
         const int pulldown_y = 600; // プルダウンのY座標
@@ -53,10 +53,12 @@ namespace paxs {
         SimulationControlButtons control_buttons_;
 
         void simulationInit() const {
-            if (!simulator_ptr_ || !koyomi_) return;
+            if (!simulation_manager_ptr_ || !koyomi_) return;
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
 
-            (*simulator_ptr_)->init();
+            if (simulation_manager_ptr_->getSimulator()) {
+                simulation_manager_ptr_->getSimulator()->init();
+            }
             koyomi_->steps.setDay(0);
             koyomi_->jdn.setDay(static_cast<double>(
                 SimulationConstants::getInstance(model_name)->start_julian_day));
@@ -67,7 +69,7 @@ namespace paxs {
         }
 
         void onControlButtonClicked(SimulationControlButton::Id id) {
-            if (!simulator_ptr_ || !koyomi_) return;
+            if (!simulation_manager_ptr_ || !koyomi_) return;
 
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
 
@@ -100,8 +102,7 @@ namespace paxs {
                 }
 #endif
                 std::random_device seed_gen;
-                *simulator_ptr_ = std::make_unique<paxs::SettlementSimulator>(
-                    map_list_path, japan_provinces_path, seed_gen());
+                simulation_manager_ptr_->initialize(map_list_path, japan_provinces_path, seed_gen(), model_name);
                 simulationInit();
                 break;
             }
@@ -126,14 +127,15 @@ namespace paxs {
             }
             case SimulationControlButton::Id::DeleteGeographicData: {
                 // 地形データ削除
-                simulator_ptr_->reset();
+                auto [map_list_path, japan_provinces_path] = make_paths();
+                simulation_manager_ptr_->reset(map_list_path, japan_provinces_path);
                 koyomi_->steps.setDay(0);
                 koyomi_->calcDate();
                 break;
             }
             case SimulationControlButton::Id::Play: {
                 // 再生
-                if (simulator_ptr_->get() == nullptr) {
+                if (!simulation_manager_ptr_->isActive()) {
                     // 読み込み前なら何もしない
                     break;
                 }
@@ -145,8 +147,8 @@ namespace paxs {
             }
             case SimulationControlButton::Id::Step: {
                 // 1ステップ実行
-                if (simulator_ptr_->get() == nullptr) break;
-                simulator_ptr_->get()->step();
+                if (!simulation_manager_ptr_->isActive()) break;
+                simulation_manager_ptr_->step();
                 koyomi_->steps.getDay()++;
                 koyomi_->calcDate();
                 koyomi_->move_forward_in_time = false;
@@ -204,7 +206,7 @@ namespace paxs {
 
         // TODO: 移行
         void updateSimulationAuto() {
-            if (!simulator_ptr_ || !koyomi_ || simulator_ptr_->get() == nullptr) return;
+            if (!simulation_manager_ptr_ || !koyomi_ || !simulation_manager_ptr_->isActive()) return;
 
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
             const auto* constants = SimulationConstants::getInstance(model_name);
@@ -233,15 +235,15 @@ namespace paxs {
 
         // 外部参照のセット
         void setReferences(
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
+            SimulationManager& simulation_manager,
             paxs::Koyomi& koyomi,
             int debug_start_y
         ) {
-            simulator_ptr_ = &simulator;
+            simulation_manager_ptr_ = &simulation_manager;
             koyomi_ = &koyomi;
 
             // ボタン側にも参照を渡す
-            control_buttons_.setReferences(simulator_ptr_, koyomi_, debug_start_y);
+            control_buttons_.setReferences(simulation_manager_ptr_, koyomi_, debug_start_y);
             // ここで「押されたときの処理」を紐づける
             control_buttons_.setOnClick([this](SimulationControlButton::Id id) {
                 this->onControlButtonClicked(id);
@@ -249,7 +251,7 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!isVisible() || !simulator_ptr_ || !koyomi_) return;
+            if (!isVisible() || !simulation_manager_ptr_ || !koyomi_) return;
 
             drawPulldown();
             control_buttons_.render();
@@ -261,7 +263,7 @@ namespace paxs {
                 pulldown_y
             });
             simulation_pulldown.updateLanguage();
-            if (simulator_ptr_->get() == nullptr) {
+            if (!simulation_manager_ptr_->isActive()) {
                 simulation_pulldown.render();
             }
         }
