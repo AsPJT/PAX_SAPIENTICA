@@ -32,11 +32,7 @@ namespace paxs {
     /// @brief Class to manage person portraits and names rendering
     class PersonPortraitManager : public IRenderable {
     public:
-        PersonPortraitManager() = default;
-
-        /// @brief 初期化
-        /// @brief Initialize
-        void init() {
+        PersonPortraitManager() {
             std::string str = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Portraits"),
                 [&](const std::string& path_) {str = path_; });

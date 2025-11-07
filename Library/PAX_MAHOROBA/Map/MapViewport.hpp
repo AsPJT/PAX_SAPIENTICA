@@ -114,12 +114,9 @@ namespace paxs {
             }
 #endif
         }
-
-        void setWidth(const double width_) {
-            width = width_;
-        }
-        void setHeight(const double height_) {
-            height = height_;
+        void setSize(const double new_height) {
+            height = new_height;
+            width = height / double(paxg::Window::height()) * double(paxg::Window::width());
         }
         void setCenterX(const double x_) {
             center.setX(x_);

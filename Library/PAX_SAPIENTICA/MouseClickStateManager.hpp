@@ -37,9 +37,6 @@ namespace paxs {
 
     public:
         /// @brief 状態を初期化する
-        /// @brief Initialize the state
-        /// @details 内部の状態フラグをリセットして、新しい入力イベントを受け付けられるようにします
-        /// @details Resets the internal state flags to allow new input events
         constexpr void init() noexcept {
             previous_state_ = false;
             current_state_ = false;

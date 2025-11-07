@@ -80,8 +80,7 @@ namespace paxs {
 
     public:
         GraphicsManager(MapViewportInputHandler* handler, MapViewport* viewport, UIInputHandler* ui_input_handler)
-        : ui_layer_(&visible_manager_, viewport) {
-            map_content_layer_.init(viewport);
+        : ui_layer_(&visible_manager_, viewport), map_content_layer_(viewport) {
             menu_bar_.initializeVisibility(&visible_manager_);
             setMapViewportInputHandler(handler, viewport);
 

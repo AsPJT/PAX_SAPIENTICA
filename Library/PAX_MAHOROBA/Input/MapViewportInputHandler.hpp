@@ -35,10 +35,6 @@ namespace paxs {
     ///
     /// IEventHandlerとIInputHandlerの両方を継承し、座標に依存しないイベント（キーボード、
     /// マウスホイール、リサイズ）と座標ベースのマウス入力の両方を処理します。
-    /// 画面全体のパン・ズーム操作を担当するため、hitTest()は常にtrueを返します。
-    /// Inherits both IEventHandler and IInputHandler to handle coordinate-independent events
-    /// (keyboard, mouse wheel, resize) and coordinate-based mouse input.
-    /// Handles pan/zoom for the entire screen, so hitTest() always returns true.
     class MapViewportInputHandler : public IEventHandler, public IMouseEventHandler {
     private:
         std::array<Key, 1> enl_keys; // 拡大キー
@@ -82,8 +78,7 @@ namespace paxs {
             height *= (1.0 + (event.wheel_rotation / MapViewportConstants::mouse_wheel_sensitivity));
             height = (std::clamp)(height, min_height, max_height);
 
-            viewport.setHeight(height);
-            viewport.setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
+            viewport.setSize(height);
         }
 
         /// @brief マウスドラッグによる移動処理（デスクトップ）
@@ -223,8 +218,7 @@ namespace paxs {
                         height = min_height;
                     }
                 }
-                viewport.setHeight(height);
-                viewport.setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
+                viewport.setSize(height);
             }
 
             // E キー：ズームアウト
@@ -235,8 +229,7 @@ namespace paxs {
                         height = max_height;
                     }
                 }
-                viewport.setHeight(height);
-                viewport.setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
+                viewport.setSize(height);
             }
         }
 
@@ -335,31 +328,16 @@ namespace paxs {
             }
 
             // ウィンドウリサイズイベント
-            // Window resize event
-            // MapViewportのサイズをウィンドウに合わせて調整
-            // Adjust MapViewport size to match window
-            int new_width = event.width;
-            int new_height = event.height;
-            int old_height = paxg::Window::height();
-
-            if (old_height > 0 && new_height > 0) {
-                viewport_->setWidth(viewport_->getHeight() / double(new_height) * double(new_width));
-            }
+            viewport_->setSize(viewport_->getHeight());
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
         bool isHit(int /*x*/, int /*y*/) const override {
             // 画面全体が対象なので常にtrue
             return enabled_;
         }
-        RenderLayer getLayer() const override {
-            return RenderLayer::Background;
-        }
-        bool isEnabled() const override {
-            return enabled_;
-        }
-        void setEnabled(bool enabled) {
-            enabled_ = enabled;
-        }
+        bool isEnabled() const override { return enabled_; }
+        void setEnabled(bool enabled) { enabled_ = enabled; }
+        RenderLayer getLayer() const override { return RenderLayer::Background; }
     };
 
 }

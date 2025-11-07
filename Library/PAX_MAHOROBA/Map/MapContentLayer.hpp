@@ -61,21 +61,13 @@ namespace paxs {
         paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
 
     public:
-        MapContentLayer()
-            :texture_manager_(std::make_unique<TextureManager>())
+        MapContentLayer(const MapViewport* map_viewport)
+            : map_viewport_ptr(map_viewport), texture_manager_(std::make_unique<TextureManager>())
         {
             // メモリ割り当てチェック
             if (!texture_manager_) {
                 PAXS_ERROR("Failed to allocate TextureManager");
             }
-        }
-
-        void init(const MapViewport* map_viewport) {
-            // 地理的特徴と人物の肖像画を初期化
-            geographic_feature_manager_.init();
-            person_portrait_manager_.init();
-
-            map_viewport_ptr = map_viewport;
         }
 
         /// @brief データ更新（描画は行わない）

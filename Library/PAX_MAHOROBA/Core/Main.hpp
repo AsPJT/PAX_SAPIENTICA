@@ -48,7 +48,6 @@ namespace paxs {
         Fonts().initialize(); // フォントシステムを初期化
 
         MapViewport map_viewport{};
-        map_viewport.setWidth(map_viewport.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
 
         paxs::GraphicsManager graphics_manager(map_viewport_input_handler.get(), &map_viewport, ui_input_handler.get());
 

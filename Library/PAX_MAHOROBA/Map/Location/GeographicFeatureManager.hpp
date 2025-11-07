@@ -33,9 +33,7 @@ namespace paxs {
     /// @brief Class to manage geographic information for GUI rendering
     class GeographicFeatureManager : public IRenderable {
     public:
-        GeographicFeatureManager() = default;
-
-        void init() {
+        GeographicFeatureManager() {
             std::string str = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("MiniIcons"),
                 [&](const std::string& path_) {str = path_; });
