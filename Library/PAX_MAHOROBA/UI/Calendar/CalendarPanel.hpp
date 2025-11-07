@@ -16,7 +16,7 @@
 
 #include <PAX_MAHOROBA/UI/Calendar/CalendarContent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/UI/Calendar/TimeControlButtons.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/TimeControlButton.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -67,11 +67,7 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            // 時間操作ウィジェットのマウス入力処理
-            if (time_control_widget_.isHit(event.x, event.y)) {
-                return time_control_widget_.handleEvent(event);
-            }
-            return EventHandlingResult::NotHandled();
+            return time_control_widget_.handleEvent(event);
         }
 
         bool isHit(int x, int y) const override {

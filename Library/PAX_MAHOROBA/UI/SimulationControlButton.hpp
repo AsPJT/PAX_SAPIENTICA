@@ -56,20 +56,13 @@ namespace paxs {
         SimulationControlButton::Id getId() const { return id_; }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!isVisible() || !isEnabled()) {
-                return EventHandlingResult::NotHandled();
-            }
             // 左クリックが押されたら
             if (event.left_button_state == MouseButtonState::Pressed) {
-                const auto r = getRect();
-                if (r.contains(static_cast<float>(event.x), static_cast<float>(event.y))) {
-                    if (on_click_) {
-                        on_click_(id_);
-                    }
-                    return EventHandlingResult::Handled();
+                if (on_click_) {
+                    on_click_(id_);
                 }
             }
-            return EventHandlingResult::NotHandled();
+            return EventHandlingResult::Handled();
         }
 
         void placeFromRight(int offset_from_right, int y, int size) {
@@ -170,9 +163,8 @@ namespace paxs {
                     // 読み込みボタンと停止ボタンは非表示
                     continue;
                 }
-                EventHandlingResult r = btn.handleEvent(event);
-                if (r.handled) {
-                    return r;
+                if (btn.isHit(event.x, event.y)) {
+                    return btn.handleEvent(event);
                 }
             }
             return EventHandlingResult::NotHandled();
