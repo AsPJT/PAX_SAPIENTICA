@@ -20,6 +20,8 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #endif
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Input/IEventHandler.hpp>
 #include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
@@ -54,11 +56,16 @@ namespace paxs {
 
         const MapViewport* map_viewport_ptr = nullptr;
 
+        // TODO: イベント駆動完全移行時にAppStateManagerから直接取得するよう変更
         paxs::Koyomi cached_koyomi_;
 #ifdef PAXS_USING_SIMULATOR
         SimulationManager* cached_simulation_manager_ = nullptr;
 #endif
         paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
+
+        // イベント駆動用（オプション）
+        EventBus* event_bus_ = nullptr;
+        bool needs_update_ = false;
 
     public:
         MapContentLayer(const MapViewport* map_viewport)
@@ -67,6 +74,16 @@ namespace paxs {
             // メモリ割り当てチェック
             if (!texture_manager_) {
                 PAXS_ERROR("Failed to allocate TextureManager");
+            }
+        }
+
+        /// @brief イベントバスを設定してイベント駆動を有効化
+        /// @brief Set EventBus to enable event-driven updates
+        /// @param event_bus EventBusへのポインタ
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+            if (event_bus_ != nullptr) {
+                subscribeToEvents();
             }
         }
 
@@ -189,6 +206,50 @@ namespace paxs {
             return settlement_input_handler_;
         }
 #endif
+
+    private:
+        /// @brief イベントを購読
+        /// @brief Subscribe to events
+        void subscribeToEvents() {
+            if (event_bus_ == nullptr) return;
+
+            // ビューポート変更イベントの購読
+            event_bus_->subscribe<ViewportChangedEvent>(
+                [this](const ViewportChangedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+
+            // 日付変更イベントの購読
+            event_bus_->subscribe<DateChangedEvent>(
+                [this](const DateChangedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+
+            // 機能可視性変更イベントの購読
+            event_bus_->subscribe<FeatureVisibilityChangedEvent>(
+                [this](const FeatureVisibilityChangedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+
+#ifdef PAXS_USING_SIMULATOR
+            // シミュレーション状態変更イベントの購読
+            event_bus_->subscribe<SimulationStateChangedEvent>(
+                [this](const SimulationStateChangedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+
+            // シミュレーションステップ実行イベントの購読
+            event_bus_->subscribe<SimulationStepExecutedEvent>(
+                [this](const SimulationStepExecutedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+#endif
+        }
     };
 }
 

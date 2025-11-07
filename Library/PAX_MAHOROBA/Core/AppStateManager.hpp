@@ -155,9 +155,9 @@ public:
                 auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
                 event_bus_.publish(DateChangedEvent(
                     new_jdn,
-                    gregorian_date.year,
-                    gregorian_date.month,
-                    gregorian_date.day
+                    gregorian_date.cgetYear(),
+                    gregorian_date.cgetMonth(),
+                    gregorian_date.cgetDay()
                 ));
             }
         }
@@ -239,9 +239,9 @@ private:
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
         event_bus_.publish(DateChangedEvent(
             koyomi_.jdn.cgetDay(),
-            gregorian_date.year,
-            gregorian_date.month,
-            gregorian_date.day
+            gregorian_date.cgetYear(),
+            gregorian_date.cgetMonth(),
+            gregorian_date.cgetDay()
         ));
     }
 
@@ -290,9 +290,9 @@ private:
         // ドメインロジック実行
         for (int i = 0; i < event.steps; ++i) {
             simulation_manager_.step();
-            koyomi_.steps.addDay(1);
+            koyomi_.steps.setDay(koyomi_.steps.cgetDay() + 1);
         }
-        koyomi_.jdn.addDay(event.steps);
+        koyomi_.jdn += event.steps;
 
         // 状態変更イベント発行
         event_bus_.publish(SimulationStepExecutedEvent(
@@ -303,9 +303,9 @@ private:
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
         event_bus_.publish(DateChangedEvent(
             koyomi_.jdn.cgetDay(),
-            gregorian_date.year,
-            gregorian_date.month,
-            gregorian_date.day
+            gregorian_date.cgetYear(),
+            gregorian_date.cgetMonth(),
+            gregorian_date.cgetDay()
         ));
     }
 #endif

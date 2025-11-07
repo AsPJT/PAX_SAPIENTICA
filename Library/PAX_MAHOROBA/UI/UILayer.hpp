@@ -23,6 +23,8 @@
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
@@ -51,6 +53,10 @@ namespace paxs {
         paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
 
         paxs::UILayout ui_layout;
+
+        // イベント駆動用（オプション）
+        EventBus* event_bus_ = nullptr;
+        bool needs_update_ = false;
 
         paxs::CalendarPanel calendar_panel;
         paxs::UIPanelBackground calendar_bg_;
@@ -104,6 +110,16 @@ namespace paxs {
             panels.emplace_back(&settlement_status_bg_);
 #endif
             sortPanelsByLayer();
+        }
+
+        /// @brief イベントバスを設定してイベント駆動を有効化
+        /// @brief Set EventBus to enable event-driven updates
+        /// @param event_bus EventBusへのポインタ
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+            if (event_bus_ != nullptr) {
+                subscribeToEvents();
+            }
         }
 
         void updateData(
@@ -212,6 +228,51 @@ namespace paxs {
         paxg::Rect getRect() const override { return paxg::Rect{}; }
         const char* getName() const override { return "UILayer"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
+
+    private:
+        /// @brief イベントを購読
+        /// @brief Subscribe to events
+        void subscribeToEvents() {
+            if (event_bus_ == nullptr) return;
+
+            // ウィンドウリサイズイベントの購読
+            event_bus_->subscribe<WindowResizedEvent>(
+                [this](const WindowResizedEvent& event) {
+                    needs_update_ = true;
+                    // UI レイアウトの再計算が必要
+                }
+            );
+
+            // 日付変更イベントの購読
+            event_bus_->subscribe<DateChangedEvent>(
+                [this](const DateChangedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+
+            // 言語変更イベントの購読
+            event_bus_->subscribe<LanguageChangedEvent>(
+                [this](const LanguageChangedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+
+#ifdef PAXS_USING_SIMULATOR
+            // シミュレーション状態変更イベントの購読
+            event_bus_->subscribe<SimulationStateChangedEvent>(
+                [this](const SimulationStateChangedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+
+            // シミュレーションステップ実行イベントの購読
+            event_bus_->subscribe<SimulationStepExecutedEvent>(
+                [this](const SimulationStepExecutedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+#endif
+        }
     };
 
 }

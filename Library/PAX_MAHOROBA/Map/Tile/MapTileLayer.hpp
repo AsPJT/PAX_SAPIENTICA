@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRepository.hpp>
@@ -27,6 +29,8 @@
 
 namespace paxs {
 
+    /// @brief 地図タイルレイヤー
+    /// @brief Map tile layer
     class MapTileLayer : public IRenderable {
     private:
         std::vector<XYZTile> xyz_tile_list;
@@ -35,9 +39,14 @@ namespace paxs {
         bool visible_ = true;
 
         // 描画に必要なデータを保持（updateData()で更新、render()で使用）
+        // TODO: イベント駆動完全移行時にAppStateManagerから直接取得するよう変更
         const paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
         MapViewport cached_map_viewport_;
         cal::JDN_F64 cached_jdn_ = 0.0;
+
+        // イベント駆動用（オプション）
+        EventBus* event_bus_ = nullptr;
+        bool needs_update_ = false;
 
     public:
         MapTileLayer() {
@@ -49,6 +58,16 @@ namespace paxs {
                 });
             // グリッド線を追加
             xyz_tile_list.emplace_back(tile_repository_.createGridLineTile());
+        }
+
+        /// @brief イベントバスを設定してイベント駆動を有効化
+        /// @brief Set EventBus to enable event-driven updates
+        /// @param event_bus EventBusへのポインタ
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+            if (event_bus_ != nullptr) {
+                subscribeToEvents();
+            }
         }
 
         /// @brief データ更新（描画は行わない）
@@ -84,6 +103,36 @@ namespace paxs {
         }
         void setVisible(bool visible) override {
             visible_ = visible;
+        }
+
+    private:
+        /// @brief イベントを購読
+        /// @brief Subscribe to events
+        void subscribeToEvents() {
+            if (event_bus_ == nullptr) return;
+
+            // ビューポート変更イベントの購読
+            event_bus_->subscribe<ViewportChangedEvent>(
+                [this](const ViewportChangedEvent& event) {
+                    needs_update_ = true;
+                    // 必要に応じてタイルの読み込みをトリガー
+                }
+            );
+
+            // 日付変更イベントの購読
+            event_bus_->subscribe<DateChangedEvent>(
+                [this](const DateChangedEvent& event) {
+                    needs_update_ = true;
+                }
+            );
+
+            // レイヤー可視性変更イベントの購読
+            event_bus_->subscribe<MapLayerVisibilityChangedEvent>(
+                [this](const MapLayerVisibilityChangedEvent& event) {
+                    // 地図タイルレイヤー関連の可視性変更を処理
+                    needs_update_ = true;
+                }
+            );
         }
     };
 }
