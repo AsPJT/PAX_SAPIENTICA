@@ -17,9 +17,11 @@
 namespace paxs {
     namespace AppConst {
         // 画面の最小サイズ
-        constexpr paxs::Vector2<int> min_window_size{1280, 720};
+        constexpr paxs::Vector2<int> min_window_size{ 1280, 720 };
+        // デフォルトの画面サイズ
+        constexpr paxs::Vector2<int> default_window_size{ 1280, 720 };
         // 画面の最大サイズ
-        constexpr paxs::Vector2<int> max_window_size{3840, 2160};
+        constexpr paxs::Vector2<int> max_window_size{ 3840, 2160 };
     }
 }
 

@@ -68,7 +68,7 @@ namespace paxs {
             paxg::Window::setIcon("Images/Logo/LogoRed.ico");
 #ifdef __ANDROID__
             // DxLibのアンドロイド版の画面サイズを変更
-            int w{ 1280 }, h{ 720 };
+            int w{ paxs::AppConst::default_window_size.x }, h{ paxs::AppConst::default_window_size.y };
             DxLib::GetAndroidDisplayResolution(&w, &h);
             DxLib::SetGraphMode(w, h, 32);
 #endif

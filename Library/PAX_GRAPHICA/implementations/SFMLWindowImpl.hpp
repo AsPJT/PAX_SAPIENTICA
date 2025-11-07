@@ -20,6 +20,7 @@
 #include <PAX_GRAPHICA/SFML_Event.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/AppConst.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 namespace paxg {
 
@@ -29,8 +30,8 @@ namespace paxg {
         paxg::Color backgroundColor{145, 190, 240};
         bool m_isDecorated = true;
         std::string m_title = "PAX SAPIENTICA Library";
-        int m_width = 1280;
-        int m_height = 720;
+        int m_width = paxs::AppConst::default_window_size.x;
+        int m_height = paxs::AppConst::default_window_size.y;
 
     public:
         SFMLWindowImpl() {
@@ -38,8 +39,8 @@ namespace paxg {
             sf::ContextSettings settings;
             settings.antiAliasingLevel = 16;
             m_window.create(
-                sf::VideoMode({ 1280, 720 }, desktop.bitsPerPixel)
-                , "PAX SAPIENTICA Library"
+                sf::VideoMode({ paxs::AppConst::default_window_size.x, paxs::AppConst::default_window_size.y }, desktop.bitsPerPixel)
+                , m_title
                 , sf::Style::Default
                 , sf::State::Windowed
                 , settings);

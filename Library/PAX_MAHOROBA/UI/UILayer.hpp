@@ -30,6 +30,7 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
+#include <PAX_SAPIENTICA/AppConst.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
@@ -90,7 +91,7 @@ namespace paxs {
 #endif
         {
             // 影描画用のRenderTextureを最大画面サイズで初期化（一回のみ）
-            PanelBackgroundRenderer::initShadowTextures(paxs::Vector2<int>{3840, 2160});
+            PanelBackgroundRenderer::initShadowTextures(paxs::AppConst::max_window_size);
 
             panels.emplace_back(&calendar_panel);
             panels.emplace_back(&calendar_bg_);
