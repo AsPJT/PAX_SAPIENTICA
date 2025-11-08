@@ -63,8 +63,30 @@ namespace paxs {
             EventBus::getInstance().subscribe<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent&) {
                     simulation_pulldown.updateLanguage();
+                    calculateLayout();
                 }
             );
+
+            // ウィンドウリサイズイベントを購読してレイアウトを再計算
+            EventBus::getInstance().subscribe<WindowResizedEvent>(
+                [this](const WindowResizedEvent&) {
+                    calculateLayout();
+                }
+            );
+        }
+
+        /// @brief レイアウトを再計算
+        void calculateLayout() {
+#ifdef PAXS_USING_SIMULATOR
+            // プルダウンの位置を更新
+            simulation_pulldown.setPos(paxg::Vec2i{
+                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - pulldown_right_margin),
+                pulldown_y_position
+            });
+
+            // ボタンのレイアウトも更新
+            control_buttons_.layoutButtons();
+#endif
         }
 
         void simulationInit() const {
@@ -207,7 +229,6 @@ namespace paxs {
             subscribeToEvents();
         }
 
-        /// @brief Phase 5: ビジネスロジックはSimulationControllerに移動
         /// @brief 残り実行回数を取得（表示用）
         int getRemainingIterations() const {
 #ifdef PAXS_USING_SIMULATOR
@@ -226,6 +247,9 @@ namespace paxs {
             control_buttons_.setOnClick([this](SimulationControlButton::Id id) {
                 this->onControlButtonClicked(id);
             });
+
+            // 初期レイアウト計算
+            calculateLayout();
         }
 
         void render() const override {
@@ -236,11 +260,6 @@ namespace paxs {
         }
 
         void drawPulldown() const {
-            simulation_pulldown.setPos(paxg::Vec2i{
-                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - pulldown_right_margin),
-                pulldown_y_position
-            });
-
 #ifdef PAXS_USING_SIMULATOR
             const auto& simulation_manager = app_state_manager_->getSimulationManager();
             if (!simulation_manager.isActive()) {

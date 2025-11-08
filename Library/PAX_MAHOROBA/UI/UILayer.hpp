@@ -250,10 +250,6 @@ namespace paxs {
         /// @brief Subscribe to events
         void subscribeToEvents() {
             if (event_bus_ == nullptr) return;
-
-            // Phase 4: UILayerは完全にイベント駆動化済み
-            // イベントハンドラーで即座に更新処理を実行
-
             // ウィンドウリサイズイベントの購読
             event_bus_->subscribe<WindowResizedEvent>(
                 [this](const WindowResizedEvent& event) {

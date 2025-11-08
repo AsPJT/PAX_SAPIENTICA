@@ -60,10 +60,6 @@ TEST_F(UIComponentsEventDrivenTest, MenuBarUsesAppStateManagerForVisibility) {
     EXPECT_EQ(visibility_manager.isVisible(calendar_key), !initial_state);
 }
 
-/// @brief Phase 4: MenuBarはコールバック駆動になったため、
-/// @brief AppStateManagerなしでの動作テストは不要
-/// @brief 旧テスト「MenuBarWorksWithoutAppStateManager」は削除
-
 /// @brief 時間再生制御イベントが正しく発行されることをテスト
 TEST_F(UIComponentsEventDrivenTest, TimePlaybackControlEventIsPublished) {
     bool event_received = false;

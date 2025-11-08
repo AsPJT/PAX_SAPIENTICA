@@ -170,53 +170,6 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        paxg::Rect getRect() const override { return {}; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
-        bool isEnabled() const override { return enabled_; }
-        bool isVisible() const override { return visible_; }
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        void setVisible(bool visible) override { visible_ = visible; }
-
-    private:
-        std::vector<SimulationControlButton> buttons_;
-
-        SimulationManager* simulation_manager_ptr_ = nullptr;
-        paxs::Koyomi* koyomi_ = nullptr;
-        int debug_start_y_ = 0;
-
-        bool visible_ = true;
-        bool enabled_ = true;
-
-        static constexpr int TIME_ICON_SIZE = 40;
-
-        // 右端からの固定オフセット
-        static constexpr int X_LOAD_OR_DELETE = 360; // 地形データ読み込み/削除
-        static constexpr int X_INIT_OR_RELOAD = 420; // 人間データ初期化/リロード
-        static constexpr int X_PLAY_OR_STOP   = 300; // 再生/停止
-        static constexpr int X_STEP           = 240; // 1ステップ
-        static constexpr int RELOAD_OFFSET_Y  = 60;  // リロードだけ+60
-
-        ClickCallback on_click_;
-
-    private:
-        void buildButtons() {
-            buttons_.emplace_back(SimulationControlButton::Id::LoadGeographicData);
-            buttons_.emplace_back(SimulationControlButton::Id::Stop);
-            buttons_.emplace_back(SimulationControlButton::Id::ReloadInputData);
-            buttons_.emplace_back(SimulationControlButton::Id::InitHumanData);
-            buttons_.emplace_back(SimulationControlButton::Id::DeleteGeographicData);
-            buttons_.emplace_back(SimulationControlButton::Id::Play);
-            buttons_.emplace_back(SimulationControlButton::Id::Step);
-
-            if (on_click_) {
-                for (auto& btn : buttons_) {
-                    btn.setOnClick(on_click_);
-                }
-            }
-
-            layoutButtons();
-        }
-
         void layoutButtons() {
             // 基本のY位置
             const int base_y = debug_start_y_;
@@ -250,6 +203,52 @@ namespace paxs {
                     break;
                 }
             }
+        }
+
+        paxg::Rect getRect() const override { return {}; }
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        bool isEnabled() const override { return enabled_; }
+        bool isVisible() const override { return visible_; }
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        void setVisible(bool visible) override { visible_ = visible; }
+
+    private:
+        std::vector<SimulationControlButton> buttons_;
+
+        SimulationManager* simulation_manager_ptr_ = nullptr;
+        paxs::Koyomi* koyomi_ = nullptr;
+        int debug_start_y_ = 0;
+
+        bool visible_ = true;
+        bool enabled_ = true;
+
+        static constexpr int TIME_ICON_SIZE = 40;
+
+        // 右端からの固定オフセット
+        static constexpr int X_LOAD_OR_DELETE = 360; // 地形データ読み込み/削除
+        static constexpr int X_INIT_OR_RELOAD = 420; // 人間データ初期化/リロード
+        static constexpr int X_PLAY_OR_STOP   = 300; // 再生/停止
+        static constexpr int X_STEP           = 240; // 1ステップ
+        static constexpr int RELOAD_OFFSET_Y  = 60;  // リロードだけ+60
+
+        ClickCallback on_click_;
+
+        void buildButtons() {
+            buttons_.emplace_back(SimulationControlButton::Id::LoadGeographicData);
+            buttons_.emplace_back(SimulationControlButton::Id::Stop);
+            buttons_.emplace_back(SimulationControlButton::Id::ReloadInputData);
+            buttons_.emplace_back(SimulationControlButton::Id::InitHumanData);
+            buttons_.emplace_back(SimulationControlButton::Id::DeleteGeographicData);
+            buttons_.emplace_back(SimulationControlButton::Id::Play);
+            buttons_.emplace_back(SimulationControlButton::Id::Step);
+
+            if (on_click_) {
+                for (auto& btn : buttons_) {
+                    btn.setOnClick(on_click_);
+                }
+            }
+
+            layoutButtons();
         }
     };
 } // namespace paxs

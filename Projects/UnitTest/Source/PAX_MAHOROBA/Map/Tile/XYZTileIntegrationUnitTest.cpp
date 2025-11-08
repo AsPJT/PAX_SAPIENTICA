@@ -18,7 +18,6 @@
 namespace paxs {
 
 // XYZTile の統合テスト
-// migration_plan.md Phase 1 の一部
 // 実際のファイル読み込みや動作を検証
 class XYZTileIntegrationTest : public ::testing::Test {
 protected:
@@ -105,6 +104,7 @@ TEST_F(XYZTileIntegrationTest, DISABLED_ConstructorBasic) {
     // 将来的には以下のようなシンプルな作成が可能になることを期待:
     // XYZTile tile(TileMetadata{...});
     // EXPECT_NO_THROW(tile.update(360.0, 360.0, 0.0, 0.0));
+    // TODO:
 }
 
 // テスト3: update() メソッドが例外を投げないか
@@ -112,6 +112,7 @@ TEST_F(XYZTileIntegrationTest, DISABLED_UpdateDoesNotThrow) {
     // NOTE: DISABLED_ - Phase 2以降で有効化
     // XYZTile tile(...);
     // EXPECT_NO_THROW(tile.update(360.0, 360.0, 0.0, 0.0));
+    // TODO:
 }
 
 // テスト4: 存在しないタイルに対してエラーログが出ないことを確認
