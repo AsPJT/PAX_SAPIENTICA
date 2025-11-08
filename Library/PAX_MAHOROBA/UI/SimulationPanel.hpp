@@ -47,7 +47,9 @@ namespace paxs {
         EventBus* event_bus_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
 
-        const int pulldown_y = 600; // プルダウンのY座標
+        // UI配置定数
+        static constexpr int pulldown_y_position = 600;
+        static constexpr int pulldown_right_margin = 200;
 
         bool enabled_ = true;
 
@@ -235,8 +237,8 @@ namespace paxs {
 
         void drawPulldown() const {
             simulation_pulldown.setPos(paxg::Vec2i{
-                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
-                pulldown_y
+                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - pulldown_right_margin),
+                pulldown_y_position
             });
 
 #ifdef PAXS_USING_SIMULATOR

@@ -102,8 +102,11 @@ namespace paxs {
                 map_content_layer_.getSettlementInputHandler().getSelectDraw()
             );
 
-            // シミュレーターが初期化されている場合のみ表示
-            ui_layer_.getSettlementStatusPanel().setVisible(simulation_manager.isActive());
+            // シミュレーターが初期化されている かつ Simulation可視フラグがONの場合のみ表示
+            const bool simulation_visible = visible_manager.isVisible(paxs::MurMur3::calcHash("Simulation"));
+            ui_layer_.getSettlementStatusPanel().setVisible(
+                simulation_manager.isActive() && simulation_visible
+            );
 
             // SettlementStatusPanelの背景をパネルと同期
             ui_layer_.syncSettlementStatusBackground();

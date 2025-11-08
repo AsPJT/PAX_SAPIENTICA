@@ -38,6 +38,10 @@ namespace paxs {
 
     /// @brief アプリ上部のメニューバー
     class MenuBar : public IWidget{
+    private:
+        // UI配置定数
+        static constexpr int github_button_margin = 8;
+
     public:
         /// @brief コンストラクタ
         MenuBar() :
@@ -89,7 +93,7 @@ namespace paxs {
                 0
             });
             github_button_.setPos(paxg::Vec2i{
-                static_cast<int>(language_selector_.getRect().x() - github_button_.getRect().w() - 8),
+                static_cast<int>(language_selector_.getRect().x() - github_button_.getRect().w() - github_button_margin),
                 static_cast<int>((language_selector_.getRect().h() - github_button_.getRect().h()) / 2)
             });
         }
