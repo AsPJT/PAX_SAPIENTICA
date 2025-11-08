@@ -35,7 +35,7 @@ protected:
     void TearDown() override {
         // テスト環境のクリーンアップ
         // EventBusの購読を全てクリア（テスト間の影響を防ぐ）
-        event_bus_.clear();
+        event_bus_.clearForTesting();
     }
 };
 

@@ -25,7 +25,7 @@ protected:
 
     void TearDown() override {
         // 各テスト後にクリーンアップ
-        Fonts().shutdown();
+        Fonts().clearForTesting();
     }
 };
 
@@ -148,7 +148,7 @@ TEST_F(FontSystemTest, InitializeShutdownCycle) {
     EXPECT_TRUE(Fonts().isInitialized());
 
     // シャットダウン
-    Fonts().shutdown();
+    Fonts().clearForTesting();
     EXPECT_FALSE(Fonts().isInitialized());
 
     // 再初期化

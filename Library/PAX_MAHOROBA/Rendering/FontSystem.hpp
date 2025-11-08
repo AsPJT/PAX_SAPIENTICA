@@ -202,13 +202,13 @@ namespace paxs {
             initialized_ = true;
         }
 
-        /// @brief リソース解放
-        /// @brief Release resources
-        /// @details アプリケーション終了時に呼び出す / Call at application termination
-        static void shutdown() {
+        /// @brief リソース解放（テスト用）
+        /// @brief Release resources (for testing)
+        /// @details テストで状態をリセットしたい場合のみ使用 / Use only for resetting state in tests
+        static void clearForTesting() {
             if (instance_ != nullptr) {
-                delete instance_;
-                instance_ = nullptr;
+                instance_->font_cache_.clear();
+                instance_->initialized_ = false;
             }
         }
 

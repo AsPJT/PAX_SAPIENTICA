@@ -20,11 +20,11 @@ namespace paxs {
 class AppStateManagerTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        event_bus_.clear();
+        event_bus_.clearForTesting();
     }
 
     void TearDown() override {
-        event_bus_.clear();
+        event_bus_.clearForTesting();
     }
 
     EventBus& event_bus_ = EventBus::getInstance();

@@ -136,7 +136,9 @@ public:
 
     /// @brief 全購読を解除（テスト用）
     /// @brief Clear all subscriptions (for testing)
-    void clear() {
+    /// @details テストで状態をリセットしたい場合のみ使用 / Use only for resetting state in tests
+    /// @details Meyer's singletonは自動破棄されるため、このメソッドはテスト専用
+    void clearForTesting() {
         subscribers_.clear();
         while (!event_queue_.empty()) {
             event_queue_.pop();

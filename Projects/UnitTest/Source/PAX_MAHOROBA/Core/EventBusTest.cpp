@@ -20,12 +20,12 @@ class EventBusTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // 各テスト前にEventBusをクリア
-        EventBus::getInstance().clear();
+        EventBus::getInstance().clearForTesting();
     }
 
     void TearDown() override {
         // 各テスト後にEventBusをクリア
-        EventBus::getInstance().clear();
+        EventBus::getInstance().clearForTesting();
     }
 };
 
@@ -178,7 +178,7 @@ TEST_F(EventBusTest, ClearMethod) {
     EXPECT_EQ(EventBus::getInstance().getQueueSize(), 1);
 
     // クリア
-    EventBus::getInstance().clear();
+    EventBus::getInstance().clearForTesting();
 
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<FeatureVisibilityChangedEvent>(), 0);
     EXPECT_EQ(EventBus::getInstance().getQueueSize(), 0);
