@@ -29,6 +29,7 @@
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/SimulationControlButton.hpp>
+#include <PAX_MAHOROBA/UI/SimulationStatsWidget.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -55,6 +56,7 @@ namespace paxs {
 
         paxs::Pulldown simulation_pulldown;
         SimulationControlButtons control_buttons_;
+        SimulationStatsWidget stats_widget_;
 
         /// @brief イベント購読を設定
         /// @brief Subscribe to events
@@ -86,6 +88,11 @@ namespace paxs {
 
             // ボタンのレイアウトも更新
             control_buttons_.layoutButtons();
+
+            stats_widget_.setPos(paxg::Vec2i{
+                static_cast<int>(paxg::Window::width() - 250),
+                pulldown_y_position
+            });
 #endif
         }
 
@@ -225,6 +232,11 @@ namespace paxs {
 
             simulation_pulldown.setItemsKey(simulation_key);
 
+#ifdef PAXS_USING_SIMULATOR
+            // 統計ウィジェットの初期化
+            stats_widget_.setSimulationManager(&app_state_manager.getSimulationManager());
+#endif
+
             // イベント購読を設定
             subscribeToEvents();
         }
@@ -257,6 +269,11 @@ namespace paxs {
 
             drawPulldown();
             control_buttons_.render();
+
+#ifdef PAXS_USING_SIMULATOR
+            // シミュレーション統計情報を表示
+            stats_widget_.render();
+#endif
         }
 
         void drawPulldown() const {
@@ -297,6 +314,9 @@ namespace paxs {
             if (!isVisible() || !isEnabled()) return false;
             if (simulation_pulldown.isHit(x, y)) return true;
             if (control_buttons_.isHit(x, y)) return true;
+#ifdef PAXS_USING_SIMULATOR
+            if (stats_widget_.isHit(x, y)) return true;
+#endif
             return false;
         }
 

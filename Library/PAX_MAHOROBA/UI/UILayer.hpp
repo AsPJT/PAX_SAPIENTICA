@@ -21,7 +21,6 @@
 #endif
 
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
-#include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>

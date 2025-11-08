@@ -25,10 +25,6 @@
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
-#ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
-#endif
-
 namespace paxs {
 
     /// @brief デバッグ情報パネルを表示するクラス
@@ -127,37 +123,6 @@ namespace paxs {
                 paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
-
-#ifdef PAXS_USING_SIMULATOR
-            // TODO: simulator ポインタの取得
-            // if (simulator != nullptr) {
-            //     // 人口数
-            //     font->draw(
-            //         (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
-            //             reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
-            //         paxg::Vec2i(text_x, text_y + line_height * current_line),
-            //         paxg::Color(0, 0, 0)
-            //     );
-            //     font->draw(
-            //         std::to_string(simulator->cgetPopulationNum()),
-            //         paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
-            //         paxg::Color(0, 0, 0)
-            //     );
-
-            //     // 集落数
-            //     font->draw(
-            //         (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
-            //             reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
-            //         paxg::Vec2i(text_x, text_y + line_height * current_line),
-            //         paxg::Color(0, 0, 0)
-            //     );
-            //     font->draw(
-            //         std::to_string(simulator->cgetSettlement()),
-            //         paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
-            //         paxg::Color(0, 0, 0)
-            //     );
-            // }
-#endif
 
             // 大きな年号を描画
             if (koyomi_ != nullptr && !koyomi_->date_list.empty()) {

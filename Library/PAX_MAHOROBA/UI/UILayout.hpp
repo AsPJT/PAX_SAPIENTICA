@@ -69,7 +69,7 @@ namespace paxs {
 
         // カレンダーテキストの位置
         const int koyomi_font_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
-        int koyomi_font_en_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
+        const int koyomi_font_en_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
         int koyomi_font_x = 0;
         int koyomi_font_en_x = 0;
 
