@@ -140,6 +140,7 @@ namespace paxs {
             // ビューポート変更イベントの購読
             event_bus_->subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
+                    (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にタイルデータを更新
                         updateTileData();
@@ -150,6 +151,7 @@ namespace paxs {
             // 日付変更イベントの購読
             event_bus_->subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
+                    (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にタイルデータを更新
                         updateTileData();
@@ -160,6 +162,7 @@ namespace paxs {
             // レイヤー可視性変更イベントの購読
             event_bus_->subscribe<MapLayerVisibilityChangedEvent>(
                 [this](const MapLayerVisibilityChangedEvent& event) {
+                    (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にタイルデータを更新
                         updateTileData();

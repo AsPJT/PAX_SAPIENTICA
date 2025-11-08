@@ -253,6 +253,7 @@ namespace paxs {
             // ウィンドウリサイズイベントの購読
             event_bus_->subscribe<WindowResizedEvent>(
                 [this](const WindowResizedEvent& event) {
+                    (void)event;
                     // UIレイアウトを再計算
                     if (app_state_manager_) {
                         const auto& koyomi = app_state_manager_->getKoyomi();
@@ -264,6 +265,7 @@ namespace paxs {
             // 日付変更イベントの購読
             event_bus_->subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
+                    (void)event;
                     // CalendarPanelの日付表示を更新
                     if (calendar_panel.isVisible() && app_state_manager_) {
                         const auto& koyomi = app_state_manager_->getKoyomi();
@@ -280,6 +282,7 @@ namespace paxs {
             // 言語変更イベントの購読
             event_bus_->subscribe<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent& event) {
+                    (void)event;
                     // 言語変更時はレイアウト再計算が必要
                     if (app_state_manager_) {
                         const auto& koyomi = app_state_manager_->getKoyomi();
@@ -291,6 +294,7 @@ namespace paxs {
             // 機能可視性変更イベントの購読
             event_bus_->subscribe<FeatureVisibilityChangedEvent>(
                 [this](const FeatureVisibilityChangedEvent& event) {
+                    (void)event;
                     // 背景の可視性をパネルと同期
                     // UILayer全体の可視性はrender()でチェックされるため、ここでは個別パネルの可視性のみ考慮
                     calendar_bg_.setVisible(calendar_panel.isVisible());
@@ -306,6 +310,7 @@ namespace paxs {
             // シミュレーション状態変更イベントの購読
             event_bus_->subscribe<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
+                    (void)event;
                     // シミュレーション状態変更時の処理
                     if (app_state_manager_) {
                         const auto& koyomi = app_state_manager_->getKoyomi();
@@ -321,6 +326,7 @@ namespace paxs {
             // シミュレーションステップ実行イベントの購読
             event_bus_->subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
+                    (void)event;
                 }
             );
 #endif

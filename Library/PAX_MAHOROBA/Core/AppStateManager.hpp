@@ -369,6 +369,7 @@ private:
 #ifdef PAXS_USING_SIMULATOR
     /// @brief シミュレーション初期化コマンドを処理
     void handleSimulationInit(const SimulationInitCommandEvent& event) {
+        (void)event;
         // ドメインロジック実行
         simulation_manager_.initSimulation();
         koyomi_.steps.setDay(0);
@@ -409,6 +410,7 @@ private:
 
     /// @brief シミュレーション一時停止コマンドを処理
     void handleSimulationPause(const SimulationPauseCommandEvent& event) {
+        (void)event;
         // ドメインロジック実行
         koyomi_.move_forward_in_time = false;
         koyomi_.go_back_in_time = false;
@@ -422,6 +424,7 @@ private:
 
     /// @brief シミュレーション停止コマンドを処理
     void handleSimulationStop(const SimulationStopCommandEvent& event) {
+        (void)event;
         // ドメインロジック実行
         koyomi_.is_agent_update = false;
         koyomi_.move_forward_in_time = false;
@@ -486,6 +489,7 @@ private:
 
     /// @brief シミュレーション入力データ再読み込みコマンドを処理
     void handleReloadInputData(const ReloadInputDataCommandEvent& event) {
+        (void)event;
 
         // 状態変更イベント発行
         event_bus_.publish(DataLoadingCompletedEvent("SimulationInputData", true));
@@ -493,6 +497,7 @@ private:
 
     /// @brief 人間データ初期化コマンドを処理
     void handleInitHumanData(const InitHumanDataCommandEvent& event) {
+        (void)event;
         // ドメインロジック実行
         simulation_manager_.initSimulation();
         koyomi_.steps.setDay(0);

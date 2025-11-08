@@ -61,6 +61,7 @@ namespace paxs {
 
             // 言語選択のコールバックを設定
             language_selector_.setOnSelectionChanged([this](std::size_t index, bool is_selected) {
+                (void)is_selected;
                 handleLanguageChanged(index);
             });
 

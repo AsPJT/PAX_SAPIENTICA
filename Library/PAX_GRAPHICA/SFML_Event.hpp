@@ -55,8 +55,8 @@ namespace paxg {
                     unsigned w = resized->size.x;
                     unsigned h = resized->size.y;
 
-                    if (w < paxs::AppConst::min_window_size.x)  w = paxs::AppConst::min_window_size.x;
-                    if (h < paxs::AppConst::min_window_size.y) h = paxs::AppConst::min_window_size.y;
+                    if (w < static_cast<unsigned>(paxs::AppConst::min_window_size.x))  w = static_cast<unsigned>(paxs::AppConst::min_window_size.x);
+                    if (h < static_cast<unsigned>(paxs::AppConst::min_window_size.y)) h = static_cast<unsigned>(paxs::AppConst::min_window_size.y);
 
                     const auto currentSize = window.getSize();
                     if (currentSize.x != w || currentSize.y != h) {

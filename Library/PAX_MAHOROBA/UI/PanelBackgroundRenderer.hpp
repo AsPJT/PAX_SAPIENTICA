@@ -45,7 +45,7 @@ namespace paxs {
                 internal_texture_ = paxg::RenderTexture{ size };
             }
 #else
-            (void)size; // 未使用パラメータの警告を抑制
+            (void)size;
 #endif
         }
 
@@ -121,7 +121,7 @@ namespace paxs {
             });
 #else
             // SFML/DxLib: 即座に描画
-            (void)layer; // 未使用パラメータの警告を抑制
+            (void)layer;
             paxg::RoundRect{ x, y, width, height, corner_radius }
                 .drawShadow({1, 1}, 4, 1).draw(bg_color);
 #endif
@@ -150,7 +150,7 @@ namespace paxs {
             });
 #else
             // SFML/DxLib: 即座に描画
-            (void)layer; // 未使用パラメータの警告を抑制
+            (void)layer;
             paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }
                 .drawShadow({1, 1}, 4, 1).draw(bg_color);
 #endif

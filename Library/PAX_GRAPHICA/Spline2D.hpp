@@ -49,7 +49,7 @@ namespace paxg {
             }
             spline = s3d::Spline2D(siv3d_points);
 #else
-            (void)points; // 未使用パラメータの警告を抑制
+            (void)points;
 #endif
         }
 
@@ -63,7 +63,7 @@ namespace paxg {
             }
             spline = s3d::Spline2D(siv3d_points);
 #else
-            (void)points; // 未使用パラメータの警告を抑制
+            (void)points;
 #endif
         }
 
@@ -74,14 +74,14 @@ namespace paxg {
 #ifdef PAXS_USING_SIV3D
             spline.draw(thickness, s3d::ColorF(color.color));
 #elif defined(PAXS_USING_DXLIB)
-            (void)thickness; // 未使用パラメータの警告を抑制
-            (void)color;     // 未使用パラメータの警告を抑制
+            (void)thickness;
+            (void)color;
 #elif defined(PAXS_USING_SFML)
-            (void)thickness; // 未使用パラメータの警告を抑制
-            (void)color;     // 未使用パラメータの警告を抑制
+            (void)thickness;
+            (void)color;
 #else
-            (void)thickness; // 未使用パラメータの警告を抑制
-            (void)color;     // 未使用パラメータの警告を抑制
+            (void)thickness;
+            (void)color;
 #endif
         }
 

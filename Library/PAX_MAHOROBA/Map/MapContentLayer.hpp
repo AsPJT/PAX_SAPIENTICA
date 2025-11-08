@@ -214,6 +214,7 @@ namespace paxs {
             // ビューポート変更イベントの購読
             event_bus_->subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
+                    (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
                         updateContentData();
@@ -224,6 +225,7 @@ namespace paxs {
             // 日付変更イベントの購読
             event_bus_->subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
+                    (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
                         updateContentData();
@@ -234,6 +236,7 @@ namespace paxs {
             // 機能可視性変更イベントの購読
             event_bus_->subscribe<FeatureVisibilityChangedEvent>(
                 [this](const FeatureVisibilityChangedEvent& event) {
+                    (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
                         updateContentData();
@@ -245,6 +248,7 @@ namespace paxs {
             // シミュレーション状態変更イベントの購読
             event_bus_->subscribe<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
+                    (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
                         updateContentData();
@@ -255,6 +259,7 @@ namespace paxs {
             // シミュレーションステップ実行イベントの購読
             event_bus_->subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
+                    (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
                         updateContentData();
