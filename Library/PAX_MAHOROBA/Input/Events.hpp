@@ -81,16 +81,6 @@ namespace paxs {
         explicit MouseWheelEvent(int rotation) : wheel_rotation(rotation) {}
     };
 
-    /// @brief ウィンドウフォーカスイベント
-    /// @brief Window focus event
-    struct FocusEvent {
-        /// @brief フォーカス状態
-        bool has_focus = false;
-
-        FocusEvent() = default;
-        explicit FocusEvent(bool focus) : has_focus(focus) {}
-    };
-
     /// @brief イベント処理結果
     /// @brief Event handling result
     struct EventHandlingResult {

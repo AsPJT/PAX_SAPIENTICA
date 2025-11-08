@@ -64,15 +64,20 @@ public:
     /// @brief 入力を処理
     /// @brief Process input
     /// @details 1. ウィンドウリサイズ検知
-    ///          2. キーボードイベント
-    ///          3. マウスホイールイベント
-    ///          4. マウスイベント
+    ///          2. キーボードイベント（フォーカスがある場合のみ）
+    ///          3. マウスホイールイベント（フォーカスがある場合のみ）
+    ///          4. マウスイベント（フォーカスがある場合のみ）
     void processInput() {
         // マウス入力を更新（毎フレーム最初に呼ぶ必要がある）
         paxg::Mouse::getInstance()->calledFirstEveryFrame();
 
         // 1. ウィンドウリサイズ検知
         detectWindowResize();
+
+        // ウィンドウがフォーカスを持っていない場合、入力イベントは処理しない
+        if (!paxg::Window::hasFocus()) {
+            return;
+        }
 
         // 2. キーボードイベント（既存のEventRouterを通じて配信）
         KeyboardEvent keyboard_event;
