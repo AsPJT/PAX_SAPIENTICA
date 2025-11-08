@@ -276,7 +276,6 @@ namespace paxs {
             background_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
 
             // メニューバーと言語選択を描画
-            calculateLayout();
             menu_system.render();
             language_selector_.render();
 
@@ -358,8 +357,15 @@ namespace paxs {
             // 言語変更イベントを購読してメニューの言語を更新
             EventBus::getInstance().subscribe<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent&) {
-                    // メニュー幅のみ更新（レイアウトは render() で毎フレーム計算される）
                     menu_system.updateMenuWidth();
+                    calculateLayout();
+                }
+            );
+
+            // ウィンドウリサイズイベントを購読してレイアウトを再計算
+            EventBus::getInstance().subscribe<WindowResizedEvent>(
+                [this](const WindowResizedEvent&) {
+                    calculateLayout();
                 }
             );
         }
