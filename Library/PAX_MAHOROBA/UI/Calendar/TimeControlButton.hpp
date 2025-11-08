@@ -147,7 +147,7 @@ namespace paxs {
         const char* getName() const override { return "TimeControlButtons"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 
-        void setReferences(paxs::Koyomi& koyomi) {
+        void setReferences(const paxs::Koyomi& koyomi) {
             koyomi_ = &koyomi;
         }
 
@@ -211,7 +211,7 @@ namespace paxs {
 
     private:
         std::vector<TimeControlButton> buttons_;
-        paxs::Koyomi* koyomi_ = nullptr;
+        const paxs::Koyomi* koyomi_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
         paxg::Vec2i pos_{0, 0};
         bool visible_ = true;

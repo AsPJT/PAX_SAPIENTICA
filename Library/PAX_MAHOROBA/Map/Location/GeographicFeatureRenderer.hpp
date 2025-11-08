@@ -34,7 +34,7 @@ namespace paxs {
         static void draw(
             const std::vector<LocationPointList>& location_point_list_list,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
-            FeatureVisibilityManager& visible,
+            const FeatureVisibilityManager& visible,
             const double jdn,
             const double map_view_width,
             const double map_view_height,

@@ -151,9 +151,9 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションパネルの参照を設定（一度のみ）
-            auto& simulation_manager = const_cast<SimulationManager&>(app_state_manager_->getSimulationManager());
-            auto& koyomi_ref = const_cast<Koyomi&>(koyomi);
-            simulation_panel.getControlButtons().setReferences(&simulation_manager, &koyomi_ref,
+            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+            const auto& koyomi_sim = app_state_manager_->getKoyomi();
+            simulation_panel.getControlButtons().setReferences(&simulation_manager, &koyomi_sim,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
             simulation_panel.setupCallback();
 
@@ -163,9 +163,8 @@ namespace paxs {
 
             // CalendarPanelの初期設定
             if (calendar_panel.isVisible()) {
-                auto& koyomi_ref = const_cast<Koyomi&>(koyomi);
                 calendar_panel.setCalendarParams(koyomi);
-                calendar_panel.setTimeControlParams(koyomi_ref, app_state_manager_);
+                calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
             }
 
             // 背景の可視性をパネルと同期
@@ -269,9 +268,8 @@ namespace paxs {
                     // CalendarPanelの日付表示を更新
                     if (calendar_panel.isVisible() && app_state_manager_) {
                         const auto& koyomi = app_state_manager_->getKoyomi();
-                        auto& koyomi_ref = const_cast<Koyomi&>(koyomi);
                         calendar_panel.setCalendarParams(koyomi);
-                        calendar_panel.setTimeControlParams(koyomi_ref, app_state_manager_);
+                        calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
 
                         // レイアウトも再計算（日付リストのサイズが変わる可能性があるため）
                         ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());

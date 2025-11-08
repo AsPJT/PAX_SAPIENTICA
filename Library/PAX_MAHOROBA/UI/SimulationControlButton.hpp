@@ -87,8 +87,8 @@ namespace paxs {
         RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
 
         void setReferences(
-            SimulationManager* simulation_manager_ptr,
-            paxs::Koyomi* koyomi,
+            const SimulationManager* simulation_manager_ptr,
+            const paxs::Koyomi* koyomi,
             int debug_start_y
         ) {
             simulation_manager_ptr_ = simulation_manager_ptr;
@@ -215,8 +215,8 @@ namespace paxs {
     private:
         std::vector<SimulationControlButton> buttons_;
 
-        SimulationManager* simulation_manager_ptr_ = nullptr;
-        paxs::Koyomi* koyomi_ = nullptr;
+        const SimulationManager* simulation_manager_ptr_ = nullptr;
+        const paxs::Koyomi* koyomi_ = nullptr;
         int debug_start_y_ = 0;
 
         bool visible_ = true;

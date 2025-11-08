@@ -89,7 +89,6 @@ namespace paxs {
         void render() {
             // AppStateManagerから最新データを取得
             auto& visible_manager = app_state_.getVisibilityManager();
-            auto& koyomi = app_state_.getKoyomi();
 
 #ifdef PAXS_USING_SIMULATOR
             auto& simulation_manager = app_state_.getSimulationManager();

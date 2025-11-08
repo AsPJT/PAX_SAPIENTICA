@@ -197,7 +197,7 @@ namespace paxs {
 
             // 地理的特徴の描画パラメータ設定
             geographic_feature_manager_.setDrawParams(
-                const_cast<FeatureVisibilityManager&>(visible),
+                visible,
                 koyomi.jdn.cgetDay(),
                 map_viewport_ptr->getWidth(),
                 map_viewport_ptr->getHeight(),

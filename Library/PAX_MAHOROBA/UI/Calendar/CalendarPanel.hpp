@@ -48,7 +48,7 @@ namespace paxs {
             calendar_widget_.setRenderParams(koyomi, *ui_layout_);
         }
 
-        void setTimeControlParams(paxs::Koyomi& koyomi, AppStateManager* app_state_manager = nullptr) {
+        void setTimeControlParams(const paxs::Koyomi& koyomi, AppStateManager* app_state_manager = nullptr) {
             if (!ui_layout_) return;
             time_control_widget_.setReferences(koyomi);
             if (app_state_manager) {
