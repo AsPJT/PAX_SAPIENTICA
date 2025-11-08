@@ -38,6 +38,7 @@ namespace paxs {
         TileRepository tile_repository_;
 
         bool visible_ = true;
+        bool initial_tiles_preloaded_ = false;
 
         EventBus* event_bus_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
@@ -62,6 +63,8 @@ namespace paxs {
                 subscribeToEvents();
                 // 初回更新を即座に実行
                 updateTileData();
+                // 初期タイルをプリロード
+                preloadInitialTiles();
             }
         }
 
@@ -87,6 +90,28 @@ namespace paxs {
         }
 
     private:
+        /// @brief 初期タイルをプリロード
+        /// @brief Preload initial tiles before first render
+        void preloadInitialTiles() {
+            if (initial_tiles_preloaded_ || !app_state_manager_) return;
+
+            const auto& visible = app_state_manager_->getVisibilityManager();
+            const auto& map_viewport = app_state_manager_->getMapViewport();
+
+            const double map_viewport_width = map_viewport.getWidth();
+            const double map_viewport_height = map_viewport.getHeight();
+            const double map_viewport_center_x = map_viewport.getCenterX();
+            const double map_viewport_center_y = map_viewport.getCenterY();
+
+            // 初期ビューポート範囲のタイルをプリロード
+            for (auto&& xyz_tile : xyz_tile_list) {
+                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) continue;
+                xyz_tile.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
+            }
+
+            initial_tiles_preloaded_ = true;
+        }
+
         /// @brief タイルデータを更新
         /// @brief Update tile data
         void updateTileData() {
