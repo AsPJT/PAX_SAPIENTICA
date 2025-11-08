@@ -116,6 +116,9 @@ namespace paxs {
             // 画像をリサイズして描画
             loading_texture.resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{x, y});
 
+            // PAX SAPIENTICA 用の背景
+            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LightBlue);
+            paxg::Window::setLetterbox(paxs::BackgroundColor::LightBlue);
             // 画面を更新
 #ifdef PAXS_USING_SFML
             paxg::Window::display();
@@ -123,9 +126,6 @@ namespace paxs {
 #if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
             paxg::Window::update();
 #endif
-            // PAX SAPIENTICA 用の背景
-            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LightBlue);
-            paxg::Window::setLetterbox(paxs::BackgroundColor::LightBlue);
         }
 
         // ローディング画面を終了し、通常のウィンドウに戻す
@@ -133,8 +133,10 @@ namespace paxs {
             // ウィンドウの装飾を再表示
             // 注意: SFMLでは実行時の変更が不安定なため無効化
 #if defined(PAXS_USING_SIV3D)
-            paxg::Window::setDecorated(true);
             paxg::Window::update();
+            paxg::Window::update();
+            paxg::Window::update();
+            paxg::Window::setDecorated(true);
 #endif
 
 #ifdef PAXS_USING_SFML
