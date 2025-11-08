@@ -157,8 +157,6 @@ namespace paxs {
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
             simulation_panel.setupCallback();
 
-            simulation_panel.updateSimulationAuto();
-
             // 背景の可視性をパネルと同期
             simulation_bg_.setVisible(simulation_panel.isVisible());
 #endif
@@ -317,8 +315,6 @@ namespace paxs {
                         const auto& koyomi = app_state_manager_->getKoyomi();
                         ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
-                        // シミュレーションパネルの自動更新
-                        simulation_panel.updateSimulationAuto();
 
                         // 背景の可視性をパネルと同期
                         simulation_bg_.setVisible(simulation_panel.isVisible());
@@ -329,8 +325,6 @@ namespace paxs {
             // シミュレーションステップ実行イベントの購読
             event_bus_->subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
-                    // シミュレーションステップ実行時の更新
-                    simulation_panel.updateSimulationAuto();
                 }
             );
 #endif

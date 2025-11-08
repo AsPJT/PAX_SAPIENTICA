@@ -85,9 +85,7 @@ namespace paxs {
         }
 
         /// @brief 描画処理のみを実行
-        /// @brief Render only (no update logic)
         /// @details データはAppStateManagerから直接取得し、イベント駆動で更新される
-        ///          Data is obtained directly from AppStateManager and updated via events
         void render() {
             // AppStateManagerから最新データを取得
             auto& visible_manager = const_cast<FeatureVisibilityManager&>(app_state_.getVisibilityManager());

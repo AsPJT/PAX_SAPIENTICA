@@ -49,7 +49,6 @@ namespace paxs {
 
         const int pulldown_y = 600; // プルダウンのY座標
 
-        int m_remaining_iterations = 0;
         bool enabled_ = true;
 
         mutable paxs::Pulldown simulation_pulldown;
@@ -140,8 +139,8 @@ namespace paxs {
             }
             case SimulationControlButton::Id::Play: {
                 // 再生コマンドを発行（読み込み済みチェックはAppStateManagerで行う）
-                m_remaining_iterations = SimulationConstants::getInstance(model_name)->num_iterations;
-                app_state_manager_->executeSimulationPlay(m_remaining_iterations);
+                const int iterations = SimulationConstants::getInstance(model_name)->num_iterations;
+                app_state_manager_->executeSimulationPlay(iterations);
                 break;
             }
             case SimulationControlButton::Id::Step: {
@@ -206,37 +205,14 @@ namespace paxs {
             subscribeToEvents();
         }
 
-        // TODO: 移行
-        void updateSimulationAuto() {
+        /// @brief Phase 5: ビジネスロジックはSimulationControllerに移動
+        /// @brief 残り実行回数を取得（表示用）
+        int getRemainingIterations() const {
 #ifdef PAXS_USING_SIMULATOR
-            if (!app_state_manager_) return;
-
-            const auto& simulation_manager = app_state_manager_->getSimulationManager();
-            const auto& koyomi = app_state_manager_->getKoyomi();
-
-            if (!simulation_manager.isActive()) return;
-
-            const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
-            const auto* constants = SimulationConstants::getInstance(model_name);
-            const int total_steps = constants->total_steps;
-
-            // 規定ステップ数に達したかチェック
-            if (total_steps > 0 &&
-                koyomi.steps.cgetDay() >= static_cast<std::size_t>(total_steps)) {
-
-                // 残り実行回数を減らす
-                m_remaining_iterations--;
-
-                if (m_remaining_iterations > 0) {
-                    // まだ実行回数が残っている場合、シミュレーションを初期化して自動で再開
-                    simulationInit();
-                    app_state_manager_->executeSimulationPlay(m_remaining_iterations);
-                } else {
-                    // 全ての実行が終了した場合、シミュレーションを停止
-                    app_state_manager_->executeSimulationStop();
-                    m_remaining_iterations = 0;
-                }
-            }
+            if (!app_state_manager_) return 0;
+            return app_state_manager_->getSimulationController().getRemainingIterations();
+#else
+            return 0;
 #endif
         }
 

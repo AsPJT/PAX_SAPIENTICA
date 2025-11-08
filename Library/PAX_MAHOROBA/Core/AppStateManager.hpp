@@ -21,6 +21,7 @@
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
+#include <PAX_MAHOROBA/Core/SimulationController.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #endif
 
@@ -39,6 +40,7 @@ public:
         , map_viewport_()
 #ifdef PAXS_USING_SIMULATOR
         , simulation_manager_()
+        , simulation_controller_(event_bus)
 #endif
         , visibility_manager_() {
 
@@ -64,6 +66,9 @@ public:
     /// @brief シミュレーションマネージャーを取得
     const SimulationManager& getSimulationManager() const { return simulation_manager_; }
     SimulationManager& getSimulationManager() { return simulation_manager_; }
+
+    /// @brief シミュレーションコントローラーを取得
+    const SimulationController& getSimulationController() const { return simulation_controller_; }
 #endif
 
     /// @brief 機能可視性マネージャーを取得
@@ -216,6 +221,9 @@ public:
                 ));
             }
         }
+
+        // SimulationControllerの更新（自動繰り返し実行制御）
+        simulation_controller_.update(simulation_manager_, koyomi_, "");
     }
 #endif
 
@@ -227,6 +235,7 @@ private:
     MapViewport map_viewport_;
 #ifdef PAXS_USING_SIMULATOR
     SimulationManager simulation_manager_;
+    SimulationController simulation_controller_;
 #endif
     FeatureVisibilityManager visibility_manager_;
 
@@ -382,6 +391,11 @@ private:
         // ドメインロジック実行
         koyomi_.is_agent_update = true;
         koyomi_.move_forward_in_time = true;
+
+        // SimulationControllerに自動実行を開始（iterations > 1の場合）
+        if (event.iterations > 1) {
+            simulation_controller_.startAutoExecution(event.iterations, "");
+        }
 
         // 状態変更イベント発行
         event_bus_.publish(SimulationStateChangedEvent(

@@ -56,7 +56,6 @@ namespace paxs {
         }
 
         /// @brief マウスイベントハンドラーの登録を解除
-        /// @brief Unregister an mouse event handler
         /// @param handler 登録解除するハンドラー / Handler to unregister
         void unregisterHandler(IMouseEventHandler* handler) {
             auto it = std::find(handlers.begin(), handlers.end(), handler);
