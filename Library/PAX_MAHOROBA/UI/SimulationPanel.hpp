@@ -301,7 +301,7 @@ namespace paxs {
         }
 
         bool isVisible() const override {
-            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Simulation"));
+            return visibility_manager_ptr->isVisible(FeatureVisibilityManager::View::Simulation);
         }
         const char* getName() const override { return "SimulationPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }

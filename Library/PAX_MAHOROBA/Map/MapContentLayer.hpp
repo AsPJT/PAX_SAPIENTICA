@@ -34,7 +34,6 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
 
@@ -87,7 +86,7 @@ namespace paxs {
             // AppStateManagerから最新データを直接取得して描画のみ実行
             const auto& visible = app_state_manager_->getVisibilityManager();
 
-            if (visible.isVisible(MurMur3::calcHash("Map"))) { // 地図が「可視」の場合は描画する
+            if (visible.isVisible(FeatureVisibilityManager::View::Map)) { // 地図が「可視」の場合は描画する
                 person_portrait_manager_.render();
                 geographic_feature_manager_.render();
             }
@@ -95,7 +94,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             // SettlementManager を描画（シミュレーション表示時）
             // Render SettlementManager (when simulation is visible)
-            if (visible.isVisible(MurMur3::calcHash("Simulation"))) {
+            if (visible.isVisible(FeatureVisibilityManager::View::Simulation)) {
                 settlement_manager_.render();
             }
 #endif
@@ -111,7 +110,8 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
-            if (visible.isVisible(MurMur3::calcHash("Map")) || visible.isVisible(MurMur3::calcHash("Simulation"))) {
+            if (visible.isVisible(FeatureVisibilityManager::View::Map) ||
+                visible.isVisible(FeatureVisibilityManager::View::Simulation)) {
                 const auto& simulation_manager = app_state_manager_->getSimulationManager();
                 if (simulation_manager.isActive()) {
                     settlement_input_handler_.handleEvent(event);

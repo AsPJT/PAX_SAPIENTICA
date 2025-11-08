@@ -61,7 +61,9 @@ namespace paxs {
             return RenderLayer::UIContent;
         }
 
-        bool isVisible() const override { return visible_manager_ptr->isVisible(MurMur3::calcHash("Debug")); }
+        bool isVisible() const override {
+            return visible_manager_ptr->isVisible(FeatureVisibilityManager::View::Debug);
+        }
 
 
     public:

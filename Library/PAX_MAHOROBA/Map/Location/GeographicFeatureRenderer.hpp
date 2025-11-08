@@ -41,9 +41,6 @@ namespace paxs {
             const double map_view_center_x,
             const double map_view_center_y
         ) {
-            const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
-            const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
-
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& location_point_list = location_point_list_list[h].location_point_list;
 
@@ -85,7 +82,7 @@ namespace paxs {
                     }
 
                     // 範囲内の場合（アイコン + テキスト描画）
-                    drawIconAndText(lli, lll, texture, draw_pos, first_language, second_language);
+                    drawIconAndText(lli, lll, texture, draw_pos);
                 }
             }
         }
@@ -124,9 +121,7 @@ namespace paxs {
             const LocationPoint& lli,
             const LocationPointList& lll,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
-            const paxg::Vec2i& draw_pos,
-            const std::uint_least32_t first_language,
-            const std::uint_least32_t second_language
+            const paxg::Vec2i& draw_pos
         ) {
             const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
             // 描画
@@ -136,7 +131,7 @@ namespace paxs {
             }
 
             // テキスト描画
-            drawPlaceNameText(lli, draw_pos, first_language, second_language);
+            drawPlaceNameText(lli, draw_pos);
         }
 
         /// @brief テクスチャを複数描画
@@ -200,10 +195,11 @@ namespace paxs {
         /// @brief 地名のテキストを描画
         static void drawPlaceNameText(
             const LocationPoint& lli,
-            const paxg::Vec2i& draw_pos,
-            const std::uint_least32_t first_language,
-            const std::uint_least32_t second_language
+            const paxg::Vec2i& draw_pos
         ) {
+            const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
+            const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
+
             paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
             paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
 

@@ -138,13 +138,14 @@ namespace paxs {
         /// @brief 可視性状態を反映
         void initializeVisibility(paxs::FeatureVisibilityManager* visible_manager) {
             // 可視性の初期化
-            visible_manager->emplace(MurMur3::calcHash("Calendar"), true); // 暦
-            visible_manager->emplace(MurMur3::calcHash("Map"), true); // 地図
-            visible_manager->emplace(MurMur3::calcHash("UI"), true); // UI
-            visible_manager->emplace(MurMur3::calcHash("Simulation"), true); // シミュレーション
-            visible_manager->emplace(MurMur3::calcHash("License"), false); // ライセンス
-            visible_manager->emplace(MurMur3::calcHash("Debug"), false); // デバッグ
-            visible_manager->emplace(MurMur3::calcHash("3D"), false); // 360度写真
+            using View = FeatureVisibilityManager::View;
+            visible_manager->emplace(View::Calendar, true); // 暦
+            visible_manager->emplace(View::Map, true); // 地図
+            visible_manager->emplace(View::UI, true); // UI
+            visible_manager->emplace(View::Simulation, true); // シミュレーション
+            visible_manager->emplace(View::License, false); // ライセンス
+            visible_manager->emplace(View::Debug, false); // デバッグ
+            visible_manager->emplace(View::View3D, false); // 360度写真
 
             // View メニューの状態を初期化
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(MurMur3::calcHash("view"));
@@ -152,13 +153,14 @@ namespace paxs {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
                 return;
             }
-            view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MurMur3::calcHash("Calendar")));
-            view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MurMur3::calcHash("Map")));
-            view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MurMur3::calcHash("UI")));
-            view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MurMur3::calcHash("Simulation")));
-            view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MurMur3::calcHash("License")));
-            view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(MurMur3::calcHash("Debug")));
-            view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(MurMur3::calcHash("3D")));
+            using View = FeatureVisibilityManager::View;
+            view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(View::Calendar));
+            view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(View::Map));
+            view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(View::UI));
+            view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(View::Simulation));
+            view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(View::License));
+            view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(View::Debug));
+            view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(View::View3D));
         }
 
         /// @brief 言語変更時のハンドラー（コールバック駆動）
@@ -183,57 +185,63 @@ namespace paxs {
 
             if (menu_key == MurMur3::calcHash("view")) {
                 // View メニュー
-                const std::array<std::uint_least32_t, 7> feature_keys = {
-                    MurMur3::calcHash("Calendar"),
-                    MurMur3::calcHash("Map"),
-                    MurMur3::calcHash("UI"),
-                    MurMur3::calcHash("Simulation"),
-                    MurMur3::calcHash("License"),
-                    MurMur3::calcHash("Debug"),
-                    MurMur3::calcHash("3D")
+                using View = FeatureVisibilityManager::View;
+                const std::array<View, 7> view_items = {
+                    View::Calendar,
+                    View::Map,
+                    View::UI,
+                    View::Simulation,
+                    View::License,
+                    View::Debug,
+                    View::View3D
                 };
-                if (actual_index < feature_keys.size()) {
-                    app_state_manager_->setFeatureVisibility(feature_keys[actual_index], is_checked);
+                if (actual_index < view_items.size()) {
+                    app_state_manager_->setFeatureVisibility(
+                        static_cast<std::uint_least32_t>(view_items[actual_index]), is_checked);
                 }
             }
             else if (menu_key == MurMur3::calcHash("place_names")) {
                 // Place Names メニュー
-                const std::array<std::uint_least32_t, 12> feature_keys = {
-                    MurMur3::calcHash("place_name"),
-                    MurMur3::calcHash("site"),
-                    MurMur3::calcHash("tumulus"),
-                    MurMur3::calcHash("dolmen"),
-                    MurMur3::calcHash("kamekanbo"),
-                    MurMur3::calcHash("stone_coffin"),
-                    MurMur3::calcHash("doken"),
-                    MurMur3::calcHash("dotaku"),
-                    MurMur3::calcHash("bronze_mirror"),
-                    MurMur3::calcHash("human_bone"),
-                    MurMur3::calcHash("mtdna"),
-                    MurMur3::calcHash("ydna")
+                using PlaceNames = FeatureVisibilityManager::PlaceNames;
+                const std::array<PlaceNames, 12> place_name_items = {
+                    PlaceNames::PlaceName,
+                    PlaceNames::Site,
+                    PlaceNames::Tumulus,
+                    PlaceNames::Dolmen,
+                    PlaceNames::Kamekanbo,
+                    PlaceNames::StoneCoffin,
+                    PlaceNames::Doken,
+                    PlaceNames::Dotaku,
+                    PlaceNames::BronzeMirror,
+                    PlaceNames::HumanBone,
+                    PlaceNames::MtDNA,
+                    PlaceNames::YDna
                 };
-                if (actual_index < feature_keys.size()) {
-                    app_state_manager_->setFeatureVisibility(feature_keys[actual_index], is_checked);
+                if (actual_index < place_name_items.size()) {
+                    app_state_manager_->setFeatureVisibility(
+                        static_cast<std::uint_least32_t>(place_name_items[actual_index]), is_checked);
                 }
             }
             else if (menu_key == MurMur3::calcHash("map")) {
                 // Map メニュー
-                const std::array<std::uint_least32_t, 12> feature_keys = {
-                    MurMur3::calcHash("menu_bar_map_base"),
-                    MurMur3::calcHash("menu_bar_map_land_and_sea"),
-                    MurMur3::calcHash("menu_bar_map_land_and_water"),
-                    MurMur3::calcHash("menu_bar_map_soil"),
-                    MurMur3::calcHash("menu_bar_map_soil_temperature"),
-                    MurMur3::calcHash("menu_bar_map_ryosei_country"),
-                    MurMur3::calcHash("menu_bar_map_ryosei_line"),
-                    MurMur3::calcHash("menu_bar_map_slope"),
-                    MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
-                    MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
-                    MurMur3::calcHash("menu_bar_map_line1"),
-                    MurMur3::calcHash("menu_bar_map_line2")
+                using MapLayers = FeatureVisibilityManager::MapLayers;
+                const std::array<MapLayers, 12> map_layer_items = {
+                    MapLayers::Base,
+                    MapLayers::LandAndSea,
+                    MapLayers::LandAndWater,
+                    MapLayers::Soil,
+                    MapLayers::SoilTemperature,
+                    MapLayers::RyoseiCountry,
+                    MapLayers::RyoseiLine,
+                    MapLayers::Slope,
+                    MapLayers::LakesAndRivers1,
+                    MapLayers::LakesAndRivers2,
+                    MapLayers::Line1,
+                    MapLayers::Line2
                 };
-                if (actual_index < feature_keys.size()) {
-                    app_state_manager_->setFeatureVisibility(feature_keys[actual_index], is_checked);
+                if (actual_index < map_layer_items.size()) {
+                    app_state_manager_->setFeatureVisibility(
+                        static_cast<std::uint_least32_t>(map_layer_items[actual_index]), is_checked);
                 }
             }
         }

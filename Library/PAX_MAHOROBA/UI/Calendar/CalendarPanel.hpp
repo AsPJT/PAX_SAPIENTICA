@@ -22,7 +22,6 @@
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
 
@@ -80,7 +79,7 @@ namespace paxs {
         }
 
         bool isVisible() const override {
-            return visibility_manager_ptr->isVisible(MurMur3::calcHash("Calendar"));
+            return visibility_manager_ptr->isVisible(FeatureVisibilityManager::View::Calendar);
         }
         const char* getName() const override { return "CalendarPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }

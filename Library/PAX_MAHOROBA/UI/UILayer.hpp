@@ -38,8 +38,6 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-
 
 namespace paxs {
 
@@ -234,7 +232,7 @@ namespace paxs {
 #endif
 
         bool isVisible() const override {
-            return visible_manager_ptr->isVisible(MurMur3::calcHash("UI"));
+            return visible_manager_ptr->isVisible(FeatureVisibilityManager::View::UI);
         }
         void setEnabled(bool /*enabled*/) override {}
         void setVisible(bool /*visible*/) override {}
