@@ -185,7 +185,7 @@ namespace paxs {
             const double map_view_center_y
         ) {
             static paxg::Font tmp_font{ 16, "", 3 };
-            tmp_font.setOutline(0, 0.5, paxg::Color{ 255, 255, 255 });
+            tmp_font.setOutline(0, 0.5, paxg::Color{ 243, 243, 243 });
 
             const unsigned int z = tile.getZ();
             const unsigned int z_num = tile.getZNum();

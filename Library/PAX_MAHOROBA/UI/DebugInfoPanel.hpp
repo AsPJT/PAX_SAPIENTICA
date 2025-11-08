@@ -78,7 +78,7 @@ namespace paxs {
             paxg::Font* font = Fonts().getFont(paxs::FontProfiles::KOYOMI);
             if (font == nullptr) return;
 
-            font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
+            font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 
             const int text_x = ui_layout_->debug_info_panel.x + 15; // パネル内の左端
             const int text_y = ui_layout_->debug_info_panel.y + 15; // パネル内の上端
@@ -176,7 +176,7 @@ namespace paxs {
                             static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                         );
                         if (big_year_font != nullptr) {
-                            big_year_font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                            big_year_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 
                             // パネル内の下部に配置
                             const int big_year_x = text_x;

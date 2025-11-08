@@ -63,12 +63,12 @@ namespace paxs {
         /// @param place_name 言語別の名前マップ
         /// @param draw_pos 描画位置
         /// @param text_mode 描画モード ("topCenter", "at", "bottomCenter")
-        /// @param outline_color アウトラインの色（デフォルト: 白）
+        /// @param outline_color アウトラインの色（デフォルト: 243, 243, 243）
         static void drawBilingualText(
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& place_name,
             const paxg::Vec2i& draw_pos,
             const char* text_mode = "topCenter",
-            const paxg::Color& outline_color = paxg::Color(255, 255, 255)
+            const paxg::Color& outline_color = paxg::Color(243, 243, 243)
         ) {
             const std::uint_least32_t ja_jp = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t en_us = MurMur3::calcHash("en-US");
@@ -88,7 +88,7 @@ namespace paxs {
             else if (!has_ja && has_en) {
                 // PlaceNameRendererは異なるoutline_colorを使用
                 paxg::Color en_outline = (std::strcmp(text_mode, "at") == 0)
-                    ? paxg::Color(240, 245, 250)
+                    ? paxg::Color(243, 243, 243)
                     : outline_color;
                 en_font->setOutline(0, 0.6, en_outline);
                 drawTextByMode(en_font, place_name.at(en_us), draw_pos, paxg::Color(0, 0, 0), text_mode);
@@ -97,7 +97,7 @@ namespace paxs {
             else if (has_ja && has_en) {
                 // 英語を下に
                 paxg::Color en_outline = (std::strcmp(text_mode, "at") == 0)
-                    ? paxg::Color(240, 245, 250)
+                    ? paxg::Color(243, 243, 243)
                     : outline_color;
                 en_font->setOutline(0, 0.6, en_outline);
                 en_font->drawBottomCenter(place_name.at(en_us), draw_pos, paxg::Color(0, 0, 0));

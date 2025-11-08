@@ -211,7 +211,7 @@ namespace paxs {
             if (lli.place_name.find(second_language) == lli.place_name.end()) {
                 // 名前を描画
                 if (lli.place_name.find(first_language) != lli.place_name.end()) {
-                    font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                     font->drawAt(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }
@@ -219,18 +219,18 @@ namespace paxs {
             else if (lli.place_name.find(first_language) == lli.place_name.end()) {
                 // 名前を描画
                 if (lli.place_name.find(second_language) != lli.place_name.end()) {
-                    en_font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    en_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                     en_font->drawAt(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }
             // 英語名がある場合
             else {
                 // 名前（英語）を描画
-                en_font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                en_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                 en_font->drawBottomCenter(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
                 // 名前を描画
                 if (lli.place_name.find(first_language) != lli.place_name.end()) {
-                    font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                     font->drawTopCenter(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }
