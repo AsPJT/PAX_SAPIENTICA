@@ -82,6 +82,12 @@ namespace paxs {
             render_layer_manager_.registerRenderable(&menu_bar_);
         }
 
+        // コピー・ムーブ禁止（メンバー変数へのポインタをRenderLayerManagerに登録しているため）
+        GraphicsManager(const GraphicsManager&) = delete;
+        GraphicsManager& operator=(const GraphicsManager&) = delete;
+        GraphicsManager(GraphicsManager&&) = delete;
+        GraphicsManager& operator=(GraphicsManager&&) = delete;
+
         /// @brief 描画処理のみを実行
         /// @details データはAppStateManagerから直接取得し、イベント駆動で更新される
         void render() {

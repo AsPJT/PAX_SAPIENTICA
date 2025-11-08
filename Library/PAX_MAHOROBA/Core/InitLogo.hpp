@@ -15,8 +15,8 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Core/Init.hpp>
+#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 
 #include <PAX_SAPIENTICA/AppConst.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>

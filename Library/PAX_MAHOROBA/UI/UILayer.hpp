@@ -120,6 +120,12 @@ namespace paxs {
             }
         }
 
+        // コピー・ムーブ禁止（メンバー変数へのポインタをvector<IWidget*>に格納しているため）
+        UILayer(const UILayer&) = delete;
+        UILayer& operator=(const UILayer&) = delete;
+        UILayer(UILayer&&) = delete;
+        UILayer& operator=(UILayer&&) = delete;
+
         /// @brief イベントバスを設定してイベント駆動を有効化
         /// @brief Set EventBus to enable event-driven updates
         /// @param event_bus EventBusへのポインタ

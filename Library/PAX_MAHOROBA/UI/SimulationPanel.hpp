@@ -53,7 +53,7 @@ namespace paxs {
 
         bool enabled_ = true;
 
-        mutable paxs::Pulldown simulation_pulldown;
+        paxs::Pulldown simulation_pulldown;
         SimulationControlButtons control_buttons_;
 
         /// @brief イベント購読を設定

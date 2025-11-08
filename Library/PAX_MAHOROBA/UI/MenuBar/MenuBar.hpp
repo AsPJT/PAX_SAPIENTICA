@@ -87,7 +87,7 @@ namespace paxs {
         }
 
         /// @brief レイアウトを計算
-        void calculateLayout() const {
+        void calculateLayout() {
             // 言語選択プルダウンを右端に配置
             language_selector_.setPos(paxg::Vec2i{
                 static_cast<int>(paxg::Window::width() - language_selector_.getRect().w()),
@@ -382,13 +382,13 @@ namespace paxs {
         // 状態管理
         bool visible_ = true;
         AppStateManager* app_state_manager_ = nullptr;
-        mutable std::size_t previous_language_index_ = 0;
+        std::size_t previous_language_index_ = 0;
         bool events_subscribed_ = false;
 
         // 子ウィジェット
-        mutable paxs::Pulldown language_selector_;
-        mutable paxs::MenuSystem menu_system;
-        mutable paxs::GitHubButton github_button_;
+        paxs::Pulldown language_selector_;
+        paxs::MenuSystem menu_system;
+        paxs::GitHubButton github_button_;
     };
 
 } // namespace paxs

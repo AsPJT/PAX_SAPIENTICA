@@ -28,7 +28,6 @@
 #include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
-#include <PAX_MAHOROBA/Rendering/TextureManager.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonPortraitManager.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -41,8 +40,6 @@ namespace paxs {
     /// @brief Map Content Layer
     class MapContentLayer : public IRenderable, public IEventHandler, public IMouseEventHandler {
     private:
-        std::unique_ptr<TextureManager> texture_manager_; // 地図上に描画する画像の一覧
-
         GeographicFeatureManager geographic_feature_manager_{}; // 地理的特徴(地名とアイコン)
         PersonPortraitManager person_portrait_manager_{}; // 人物の肖像画と名前
 #ifdef PAXS_USING_SIMULATOR
@@ -61,13 +58,15 @@ namespace paxs {
 
     public:
         MapContentLayer(const MapViewport* map_viewport)
-            : map_viewport_ptr(map_viewport), texture_manager_(std::make_unique<TextureManager>())
+            : map_viewport_ptr(map_viewport)
         {
-            // メモリ割り当てチェック
-            if (!texture_manager_) {
-                PAXS_ERROR("Failed to allocate TextureManager");
-            }
         }
+
+        // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
+        MapContentLayer(const MapContentLayer&) = delete;
+        MapContentLayer& operator=(const MapContentLayer&) = delete;
+        MapContentLayer(MapContentLayer&&) = delete;
+        MapContentLayer& operator=(MapContentLayer&&) = delete;
 
         /// @brief AppStateManagerを設定してイベント駆動を有効化
         void setAppStateManager(AppStateManager* app_state_manager) {
@@ -161,10 +160,6 @@ namespace paxs {
 
             const auto& koyomi = app_state_manager_->getKoyomi();
             const auto& visible = app_state_manager_->getVisibilityManager();
-
-            // テクスチャ更新
-            texture_manager_->update(map_viewport_ptr->getCenterX(), map_viewport_ptr->getCenterY(),
-                                    map_viewport_ptr->getWidth(), map_viewport_ptr->getHeight());
 
 #ifdef PAXS_USING_SIMULATOR
             const auto& simulation_manager = app_state_manager_->getSimulationManager();
