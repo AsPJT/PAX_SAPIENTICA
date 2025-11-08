@@ -36,6 +36,8 @@ namespace paxg {
                 MINMAXINFO* pInfo = reinterpret_cast<MINMAXINFO*>(lParam);
                 pInfo->ptMinTrackSize.x = paxs::AppConst::min_window_size.x;   // 最小幅
                 pInfo->ptMinTrackSize.y = paxs::AppConst::min_window_size.y;  // 最小高さ
+                pInfo->ptMaxTrackSize.x = paxs::AppConst::full_hd_window_size.x;   // 最大幅
+                pInfo->ptMaxTrackSize.y = paxs::AppConst::full_hd_window_size.y;   // 最大高さ
                 return 0; // 自分で処理したよ、という意味
             }
             }
@@ -80,7 +82,7 @@ namespace paxg {
 
             // ウィンドウサイズ変更を許可（DxLib_Init の前に設定する必要がある）
             // Enable window resizing (must be set before DxLib_Init)
-            DxLib::SetWindowSizeChangeEnableFlag(TRUE, FALSE);
+            DxLib::SetWindowSizeChangeEnableFlag(TRUE, TRUE);
 
             // 最大化ボックス（最大化ボタン）を有効化
             DxLib::SetWindowMaximizeButtonBehavior(1); // 1: 通常の最大化, 0: 無効

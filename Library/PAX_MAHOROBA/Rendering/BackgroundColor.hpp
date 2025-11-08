@@ -20,6 +20,7 @@ namespace paxs {
         inline constexpr paxg::Color White = paxg::Color(255, 255, 255);
         inline constexpr paxg::Color Blue = paxg::Color(140, 180, 250);
         inline constexpr paxg::Color LightBlue = paxg::Color(145, 190, 240);
+        inline constexpr paxg::Color LogoBackground = paxg::Color(169, 38, 63);
     }
 }
 

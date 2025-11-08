@@ -20,6 +20,8 @@ namespace paxs {
         constexpr paxs::Vector2<int> min_window_size{ 1280, 720 };
         // デフォルトの画面サイズ
         constexpr paxs::Vector2<int> default_window_size{ 1280, 720 };
+        // Full HD
+        constexpr paxs::Vector2<int> full_hd_window_size{ 1920, 1080 };
         // 画面の最大サイズ
         constexpr paxs::Vector2<int> max_window_size{ 3840, 2160 };
     }

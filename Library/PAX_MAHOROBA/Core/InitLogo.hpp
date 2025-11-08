@@ -42,8 +42,8 @@ namespace paxs {
 #endif
 
             // PAX SAPIENTICA 用の背景
-            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LightBlue);
-            paxg::Window::setLetterbox(paxs::BackgroundColor::LightBlue);
+            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LogoBackground);
+            paxg::Window::setLetterbox(paxs::BackgroundColor::LogoBackground);
 
             // タイトルを変更
             paxg::Window::setTitle(
@@ -123,6 +123,9 @@ namespace paxs {
 #if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
             paxg::Window::update();
 #endif
+            // PAX SAPIENTICA 用の背景
+            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LightBlue);
+            paxg::Window::setLetterbox(paxs::BackgroundColor::LightBlue);
         }
 
         // ローディング画面を終了し、通常のウィンドウに戻す
@@ -131,6 +134,7 @@ namespace paxs {
             // 注意: SFMLでは実行時の変更が不安定なため無効化
 #if defined(PAXS_USING_SIV3D)
             paxg::Window::setDecorated(true);
+            paxg::Window::update();
 #endif
 
 #ifdef PAXS_USING_SFML
