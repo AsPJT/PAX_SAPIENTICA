@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_PULLDOWN_HPP
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 #include <string>
 #include <vector>
@@ -147,6 +148,11 @@ namespace paxs {
             return items_key.empty();
         }
 
+        /// @brief 選択変更時のコールバックを設定
+        void setOnSelectionChanged(std::function<void(std::size_t, bool)> callback) {
+            on_selection_changed_ = std::move(callback);
+        }
+
         // 入力処理
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             if (isEmpty()) return EventHandlingResult::NotHandled();
@@ -220,9 +226,18 @@ namespace paxs {
                             // もし選択肢が左クリックされていたら
                             if (i < is_items.size()) {
                                 // 項目をオンオフさせる
+                                const std::size_t old_index = index;
+                                const bool old_value = is_items[i];
+
                                 index = i;
                                 is_items[i] = !(is_items[i]);
                                 is_open = false;
+
+                                // ★コールバック呼び出し：選択が変更された場合のみ
+                                if (on_selection_changed_ && (old_index != index || old_value != is_items[i])) {
+                                    on_selection_changed_(index, is_items[i]);
+                                }
+
                                 return EventHandlingResult::Handled();
                             }
                         }
@@ -424,6 +439,9 @@ namespace paxs {
         // IWidget インターフェース用の状態
         bool visible_ = true;
         bool enabled_ = true;
+
+        // コールバック関数
+        std::function<void(std::size_t index, bool is_selected)> on_selection_changed_;
     };
 }
 

@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
@@ -38,16 +39,8 @@ namespace paxs {
 
         bool visible_ = true;
 
-        // 描画に必要なデータを保持（updateData()で更新、render()で使用）
-        // TODO: イベント駆動完全移行時にAppStateManagerから直接取得するよう変更
-        const paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
-        MapViewport cached_map_viewport_;
-        cal::JDN_F64 cached_jdn_ = 0.0;
-
-        // イベント駆動用
         EventBus* event_bus_ = nullptr;
-        // TODO: 使う
-        bool needs_update_ = false;
+        AppStateManager* app_state_manager_ = nullptr;
 
     public:
         MapTileLayer() {
@@ -61,40 +54,27 @@ namespace paxs {
             xyz_tile_list.emplace_back(tile_repository_.createGridLineTile());
         }
 
-        /// @brief イベントバスを設定してイベント駆動を有効化
-        /// @brief Set EventBus to enable event-driven updates
-        /// @param event_bus EventBusへのポインタ
-        void setEventBus(EventBus* event_bus) {
-            event_bus_ = event_bus;
-            if (event_bus_ != nullptr) {
+        /// @brief AppStateManagerを設定してイベント駆動を有効化
+        void setAppStateManager(AppStateManager* app_state_manager) {
+            app_state_manager_ = app_state_manager;
+            if (app_state_manager_ != nullptr) {
+                event_bus_ = &EventBus::getInstance();
                 subscribeToEvents();
+                // 初回更新を即座に実行
+                updateTileData();
             }
-        }
-
-        /// @brief データ更新（描画は行わない）
-        void updateData(const paxs::FeatureVisibilityManager& visible, const MapViewport& map_viewport, cal::JDN_F64 jdn) {
-            const double map_viewport_width = map_viewport.getWidth();
-            const double map_viewport_height = map_viewport.getHeight();
-            const double map_viewport_center_x = map_viewport.getCenterX();
-            const double map_viewport_center_y = map_viewport.getCenterY();
-
-            // 更新処理
-            for (auto&& xyz_tile : xyz_tile_list) {
-                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) continue;
-                xyz_tile.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
-            }
-
-            // 描画用にデータをキャッシュ
-            cached_visible_ = &visible;
-            cached_map_viewport_ = map_viewport;
-            cached_jdn_ = jdn;
         }
 
         void render() const override {
-            if (!visible_ || cached_visible_ == nullptr) return;
+            if (!visible_ || !app_state_manager_) return;
+
+            // AppStateManagerから最新データを直接取得して描画のみ実行
+            const auto& visible = app_state_manager_->getVisibilityManager();
+            const auto& map_viewport = app_state_manager_->getMapViewport();
+            const auto& koyomi = app_state_manager_->getKoyomi();
 
             TileRenderer::drawBackground();
-            TileRenderer::drawTiles(xyz_tile_list, *cached_visible_, cached_map_viewport_, cached_jdn_);
+            TileRenderer::drawTiles(xyz_tile_list, visible, map_viewport, koyomi.jdn.cgetDay());
         }
         RenderLayer getLayer() const override {
             return RenderLayer::MapTile;
@@ -107,6 +87,26 @@ namespace paxs {
         }
 
     private:
+        /// @brief タイルデータを更新
+        /// @brief Update tile data
+        void updateTileData() {
+            if (!app_state_manager_) return;
+
+            const auto& visible = app_state_manager_->getVisibilityManager();
+            const auto& map_viewport = app_state_manager_->getMapViewport();
+
+            const double map_viewport_width = map_viewport.getWidth();
+            const double map_viewport_height = map_viewport.getHeight();
+            const double map_viewport_center_x = map_viewport.getCenterX();
+            const double map_viewport_center_y = map_viewport.getCenterY();
+
+            // 更新処理
+            for (auto&& xyz_tile : xyz_tile_list) {
+                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) continue;
+                xyz_tile.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
+            }
+        }
+
         /// @brief イベントを購読
         /// @brief Subscribe to events
         void subscribeToEvents() {
@@ -115,23 +115,30 @@ namespace paxs {
             // ビューポート変更イベントの購読
             event_bus_->subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
-                    needs_update_ = true;
-                    // 必要に応じてタイルの読み込みをトリガー
+                    if (app_state_manager_) {
+                        // イベント受信時に即座にタイルデータを更新
+                        updateTileData();
+                    }
                 }
             );
 
             // 日付変更イベントの購読
             event_bus_->subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
-                    needs_update_ = true;
+                    if (app_state_manager_) {
+                        // イベント受信時に即座にタイルデータを更新
+                        updateTileData();
+                    }
                 }
             );
 
             // レイヤー可視性変更イベントの購読
             event_bus_->subscribe<MapLayerVisibilityChangedEvent>(
                 [this](const MapLayerVisibilityChangedEvent& event) {
-                    // 地図タイルレイヤー関連の可視性変更を処理
-                    needs_update_ = true;
+                    if (app_state_manager_) {
+                        // イベント受信時に即座にタイルデータを更新
+                        updateTileData();
+                    }
                 }
             );
         }

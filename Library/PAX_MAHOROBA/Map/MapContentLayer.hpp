@@ -20,6 +20,7 @@
 #include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #endif
 
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Input/IEventHandler.hpp>
@@ -56,17 +57,8 @@ namespace paxs {
 
         const MapViewport* map_viewport_ptr = nullptr;
 
-        // TODO: イベント駆動完全移行時にAppStateManagerから直接取得するよう変更
-        paxs::Koyomi cached_koyomi_;
-#ifdef PAXS_USING_SIMULATOR
-        SimulationManager* cached_simulation_manager_ = nullptr;
-#endif
-        paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
-
-        // イベント駆動用
         EventBus* event_bus_ = nullptr;
-        // TODO: 使う
-        bool needs_update_ = false;
+        AppStateManager* app_state_manager_ = nullptr;
 
     public:
         MapContentLayer(const MapViewport* map_viewport)
@@ -78,72 +70,22 @@ namespace paxs {
             }
         }
 
-        /// @brief イベントバスを設定してイベント駆動を有効化
-        /// @brief Set EventBus to enable event-driven updates
-        /// @param event_bus EventBusへのポインタ
-        void setEventBus(EventBus* event_bus) {
-            event_bus_ = event_bus;
-            if (event_bus_ != nullptr) {
+        /// @brief AppStateManagerを設定してイベント駆動を有効化
+        void setAppStateManager(AppStateManager* app_state_manager) {
+            app_state_manager_ = app_state_manager;
+            if (app_state_manager_ != nullptr) {
+                event_bus_ = &EventBus::getInstance();
                 subscribeToEvents();
+                // 初回更新を即座に実行
+                updateContentData();
             }
-        }
-
-        /// @brief データ更新（描画は行わない）
-        void updateData(
-            const paxs::Koyomi& koyomi,
-#ifdef PAXS_USING_SIMULATOR
-            SimulationManager& simulation_manager,
-#endif
-            paxs::FeatureVisibilityManager& visible
-            ) {
-            // データ更新
-            texture_manager_->update(map_viewport_ptr->getCenterX(), map_viewport_ptr->getCenterY(), map_viewport_ptr->getWidth(), map_viewport_ptr->getHeight());
-
-            // 描画用にデータをキャッシュ
-            cached_koyomi_ = koyomi;
-#ifdef PAXS_USING_SIMULATOR
-            cached_simulation_manager_ = &simulation_manager;
-
-            // SettlementManager に描画パラメータを設定
-            if (simulation_manager.isActive()) {
-                settlement_manager_.setDrawParams(
-                    koyomi.jdn.cgetDay(),
-                    simulation_manager.getSettlementGrids(),
-                    simulation_manager.getMarriagePositions(),
-                    map_viewport_ptr->getWidth(),
-                    map_viewport_ptr->getHeight(),
-                    map_viewport_ptr->getCenterX(),
-                    map_viewport_ptr->getCenterY(),
-                    settlement_input_handler_.getSelectDraw(),
-                    settlement_input_handler_.getIsLine(),
-                    settlement_input_handler_.getIsArrow()
-                );
-            }
-#endif
-            cached_visible_ = &visible;
-
-            person_portrait_manager_.setDrawParams(
-                koyomi.jdn.cgetDay(),
-                map_viewport_ptr->getWidth(),
-                map_viewport_ptr->getHeight(),
-                map_viewport_ptr->getCenterX(),
-                map_viewport_ptr->getCenterY()
-            );
-
-            geographic_feature_manager_.setDrawParams(
-                visible,
-                koyomi.jdn.cgetDay(),
-                map_viewport_ptr->getWidth(),
-                map_viewport_ptr->getHeight(),
-                map_viewport_ptr->getCenterX(),
-                map_viewport_ptr->getCenterY()
-            );
         }
 
         void render() const override {
-            if (!visible_ || cached_visible_ == nullptr) return;
+            if (!visible_ || !app_state_manager_) return;
 
-            paxs::FeatureVisibilityManager& visible = *cached_visible_;
+            // AppStateManagerから最新データを直接取得して描画のみ実行
+            const auto& visible = app_state_manager_->getVisibilityManager();
 
             if (visible.isVisible(MurMur3::calcHash("Map"))) { // 地図が「可視」の場合は描画する
                 person_portrait_manager_.render();
@@ -163,12 +105,15 @@ namespace paxs {
         /// @param event キーボードイベント / Keyboard event
         /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const KeyboardEvent& event) override {
-            if (cached_visible_ == nullptr) return EventHandlingResult::NotHandled();
+            if (!app_state_manager_) return EventHandlingResult::NotHandled();
+
+            const auto& visible = app_state_manager_->getVisibilityManager();
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
-            if (cached_visible_->isVisible(MurMur3::calcHash("Map")) || cached_visible_->isVisible(MurMur3::calcHash("Simulation"))) {
-                if (cached_simulation_manager_ && cached_simulation_manager_->isActive()) {
+            if (visible.isVisible(MurMur3::calcHash("Map")) || visible.isVisible(MurMur3::calcHash("Simulation"))) {
+                const auto& simulation_manager = app_state_manager_->getSimulationManager();
+                if (simulation_manager.isActive()) {
                     settlement_input_handler_.handleEvent(event);
                 }
             }
@@ -209,6 +154,58 @@ namespace paxs {
 #endif
 
     private:
+        /// @brief コンテンツデータを更新
+        /// @brief Update content data
+        void updateContentData() {
+            if (!app_state_manager_) return;
+
+            const auto& koyomi = app_state_manager_->getKoyomi();
+            const auto& visible = app_state_manager_->getVisibilityManager();
+
+            // テクスチャ更新
+            texture_manager_->update(map_viewport_ptr->getCenterX(), map_viewport_ptr->getCenterY(),
+                                    map_viewport_ptr->getWidth(), map_viewport_ptr->getHeight());
+
+#ifdef PAXS_USING_SIMULATOR
+            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+
+            // SettlementManager に描画パラメータを設定
+            if (simulation_manager.isActive()) {
+                settlement_manager_.setDrawParams(
+                    koyomi.jdn.cgetDay(),
+                    simulation_manager.getSettlementGrids(),
+                    simulation_manager.getMarriagePositions(),
+                    map_viewport_ptr->getWidth(),
+                    map_viewport_ptr->getHeight(),
+                    map_viewport_ptr->getCenterX(),
+                    map_viewport_ptr->getCenterY(),
+                    settlement_input_handler_.getSelectDraw(),
+                    settlement_input_handler_.getIsLine(),
+                    settlement_input_handler_.getIsArrow()
+                );
+            }
+#endif
+
+            // 人物肖像画の描画パラメータ設定
+            person_portrait_manager_.setDrawParams(
+                koyomi.jdn.cgetDay(),
+                map_viewport_ptr->getWidth(),
+                map_viewport_ptr->getHeight(),
+                map_viewport_ptr->getCenterX(),
+                map_viewport_ptr->getCenterY()
+            );
+
+            // 地理的特徴の描画パラメータ設定
+            geographic_feature_manager_.setDrawParams(
+                const_cast<FeatureVisibilityManager&>(visible),
+                koyomi.jdn.cgetDay(),
+                map_viewport_ptr->getWidth(),
+                map_viewport_ptr->getHeight(),
+                map_viewport_ptr->getCenterX(),
+                map_viewport_ptr->getCenterY()
+            );
+        }
+
         /// @brief イベントを購読
         /// @brief Subscribe to events
         void subscribeToEvents() {
@@ -217,21 +214,30 @@ namespace paxs {
             // ビューポート変更イベントの購読
             event_bus_->subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
-                    needs_update_ = true;
+                    if (app_state_manager_) {
+                        // イベント受信時に即座にコンテンツデータを更新
+                        updateContentData();
+                    }
                 }
             );
 
             // 日付変更イベントの購読
             event_bus_->subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
-                    needs_update_ = true;
+                    if (app_state_manager_) {
+                        // イベント受信時に即座にコンテンツデータを更新
+                        updateContentData();
+                    }
                 }
             );
 
             // 機能可視性変更イベントの購読
             event_bus_->subscribe<FeatureVisibilityChangedEvent>(
                 [this](const FeatureVisibilityChangedEvent& event) {
-                    needs_update_ = true;
+                    if (app_state_manager_) {
+                        // イベント受信時に即座にコンテンツデータを更新
+                        updateContentData();
+                    }
                 }
             );
 
@@ -239,14 +245,20 @@ namespace paxs {
             // シミュレーション状態変更イベントの購読
             event_bus_->subscribe<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
-                    needs_update_ = true;
+                    if (app_state_manager_) {
+                        // イベント受信時に即座にコンテンツデータを更新
+                        updateContentData();
+                    }
                 }
             );
 
             // シミュレーションステップ実行イベントの購読
             event_bus_->subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
-                    needs_update_ = true;
+                    if (app_state_manager_) {
+                        // イベント受信時に即座にコンテンツデータを更新
+                        updateContentData();
+                    }
                 }
             );
 #endif

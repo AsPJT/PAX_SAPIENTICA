@@ -70,6 +70,11 @@ namespace paxs {
 
             // AppStateManagerを設定
             menu_bar_.setAppStateManager(&const_cast<AppStateManager&>(app_state));
+            map_content_layer_.setAppStateManager(&const_cast<AppStateManager&>(app_state));
+            map_tile_layer_.setAppStateManager(&const_cast<AppStateManager&>(app_state));
+
+            // UILayerの初期化（一度のみ）
+            ui_layer_.initialize();
 
             // レイヤーシステムに各コンポーネントを登録
             render_layer_manager_.registerRenderable(&map_tile_layer_);
@@ -86,36 +91,12 @@ namespace paxs {
         void render() {
             // AppStateManagerから最新データを取得
             auto& visible_manager = const_cast<FeatureVisibilityManager&>(app_state_.getVisibilityManager());
-            const auto& map_viewport = app_state_.getMapViewport();
             auto& koyomi = const_cast<Koyomi&>(app_state_.getKoyomi());
 
 #ifdef PAXS_USING_SIMULATOR
             auto& simulation_manager = const_cast<SimulationManager&>(app_state_.getSimulationManager());
 #endif
 
-            // MenuBarの言語変更を検出してイベント発行
-            menu_bar_.updateLanguage();
-
-            // MenuBarの状態をFeatureVisibilityManagerに同期
-            menu_bar_.syncVisibilityFromMenu();
-
-            // データ更新（将来的にはイベント駆動に移行予定）
-            map_tile_layer_.updateData(visible_manager, map_viewport, koyomi.jdn.cgetDay());
-
-            map_content_layer_.updateData(
-                koyomi,
-#ifdef PAXS_USING_SIMULATOR
-                simulation_manager,
-#endif
-                visible_manager
-            );
-
-            ui_layer_.updateData(
-#ifdef PAXS_USING_SIMULATOR
-                simulation_manager,
-#endif
-                koyomi
-            );
 
 #ifdef PAXS_USING_SIMULATOR
             // SettlementStatusPanel の表示モードを更新
@@ -125,13 +106,17 @@ namespace paxs {
 
             // シミュレーターが初期化されている場合のみ表示
             ui_layer_.getSettlementStatusPanel().setVisible(simulation_manager.isActive());
+
+            // SettlementStatusPanelの背景をパネルと同期
+            ui_layer_.syncSettlementStatusBackground();
 #endif
 
+            // Photo360Layerの可視性設定
             photo360_layer_.setVisible(visible_manager.isVisible(paxs::MurMur3::calcHash(2, "3D")));
 
-            // 3Dモード時は360度写真とUIのみ描画、通常モードは全レイヤー描画
+            // 3Dモード時は360度写真とメニューバーのみ描画、通常モードは全レイヤー描画
             if (visible_manager.isVisible(paxs::MurMur3::calcHash(2, "3D"))) {
-                // 3Dモード: 360度写真を描画してからUIを描画
+                // 3Dモード: 360度写真を描画してからメニューバーを描画
                 photo360_layer_.render();
                 menu_bar_.render();
             } else {

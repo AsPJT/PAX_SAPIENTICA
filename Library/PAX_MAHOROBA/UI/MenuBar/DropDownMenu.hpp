@@ -12,6 +12,7 @@
 #ifndef PAX_MAHOROBA_MENU_ITEM_HPP
 #define PAX_MAHOROBA_MENU_ITEM_HPP
 
+#include <functional>
 #include <span>
 #include <string>
 #include <vector>
@@ -141,7 +142,13 @@ namespace paxs {
                 if (item_rect.contains(static_cast<float>(event.x), static_cast<float>(event.y))) {
                     // もともとやってたトグル処理
                     if (i < is_items.size()) {
+                        const bool old_value = is_items[i];
                         is_items[i] = !is_items[i];
+
+                        // ★コールバック呼び出し：チェック状態が変更された
+                        if (on_item_toggled_ && old_value != is_items[i]) {
+                            on_item_toggled_(i, is_items[i]);
+                        }
                     }
                     // 押されたら閉じる
                     visible_ = false;
@@ -185,6 +192,13 @@ namespace paxs {
 
         /// @brief プルダウンを閉じる
         void close() { visible_ = false; }
+
+        /// @brief 項目トグル時のコールバックを設定
+        /// @brief Set callback for item toggle
+        /// @param callback コールバック関数（引数: index, is_checked）
+        void setOnItemToggled(std::function<void(std::size_t, bool)> callback) {
+            on_item_toggled_ = std::move(callback);
+        }
 
         /// @brief 項目の状態を設定（インデックス指定）
         void setIsItems(const std::size_t i, const bool new_value) {
@@ -332,6 +346,9 @@ namespace paxs {
 
             back_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
         }
+
+        // コールバック関数
+        std::function<void(std::size_t index, bool is_checked)> on_item_toggled_;
     };
 
 } // namespace paxs

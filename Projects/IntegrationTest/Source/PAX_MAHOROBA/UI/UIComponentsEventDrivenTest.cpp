@@ -34,7 +34,8 @@ protected:
 
     void TearDown() override {
         // テスト環境のクリーンアップ
-        // Note: EventBusはシングルトンなので、テスト間でのクリーンアップは必要ない
+        // EventBusの購読を全てクリア（テスト間の影響を防ぐ）
+        event_bus_.clear();
     }
 };
 
@@ -59,18 +60,9 @@ TEST_F(UIComponentsEventDrivenTest, MenuBarUsesAppStateManagerForVisibility) {
     EXPECT_EQ(visibility_manager.isVisible(calendar_key), !initial_state);
 }
 
-/// @brief AppStateManagerなしでもMenuBarが動作することをテスト
-TEST_F(UIComponentsEventDrivenTest, MenuBarWorksWithoutAppStateManager) {
-    MenuBar menu_bar;
-    // AppStateManagerを設定しない
-
-    FeatureVisibilityManager visibility_manager;
-    menu_bar.initializeVisibility(&visibility_manager);
-
-    // syncVisibilityFromMenuが従来の方式で動作することを確認
-    // （エラーが発生しないことを確認）
-    EXPECT_NO_THROW(menu_bar.syncVisibilityFromMenu());
-}
+/// @brief Phase 4: MenuBarはコールバック駆動になったため、
+/// @brief AppStateManagerなしでの動作テストは不要
+/// @brief 旧テスト「MenuBarWorksWithoutAppStateManager」は削除
 
 /// @brief 時間再生制御イベントが正しく発行されることをテスト
 TEST_F(UIComponentsEventDrivenTest, TimePlaybackControlEventIsPublished) {

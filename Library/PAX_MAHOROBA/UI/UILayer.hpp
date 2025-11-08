@@ -47,10 +47,6 @@ namespace paxs {
     /// @brief Integrated management class for UI layer
     class UILayer : public IWidget{
     private:
-#ifdef PAXS_USING_SIMULATOR
-        SimulationManager* cached_simulation_manager_ = nullptr;
-#endif
-        paxs::Koyomi cached_koyomi_;
         paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
 
         paxs::UILayout ui_layout;
@@ -58,8 +54,6 @@ namespace paxs {
         // イベント駆動用（オプション）
         EventBus* event_bus_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
-        // TODO: 使う
-        bool needs_update_ = false;
 
         paxs::CalendarPanel calendar_panel;
         paxs::UIPanelBackground calendar_bg_;
@@ -121,6 +115,11 @@ namespace paxs {
             panels.emplace_back(&settlement_status_bg_);
 #endif
             sortPanelsByLayer();
+
+            // イベント購読を設定
+            if (event_bus_ != nullptr) {
+                subscribeToEvents();
+            }
         }
 
         /// @brief イベントバスを設定してイベント駆動を有効化
@@ -133,40 +132,47 @@ namespace paxs {
             }
         }
 
-        void updateData(
+        // TODO: イベントベースに移行
+        /// @brief SettlementStatusPanelの背景可視性を同期
+        void syncSettlementStatusBackground() {
 #ifdef PAXS_USING_SIMULATOR
-            SimulationManager& simulation_manager,
+            settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
-            paxs::Koyomi& koyomi
-            ) {
-            // UIレイアウトを計算
+        }
+
+        /// @brief UILayerの初期化（一度だけ呼び出す）
+        void initialize() {
+            if (!app_state_manager_) return;
+
+            const auto& koyomi = app_state_manager_->getKoyomi();
+
+            // UIレイアウトを初期計算
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.getControlButtons().setReferences(&simulation_manager, &koyomi,
+            // シミュレーションパネルの参照を設定（一度のみ）
+            auto& simulation_manager = const_cast<SimulationManager&>(app_state_manager_->getSimulationManager());
+            auto& koyomi_ref = const_cast<Koyomi&>(koyomi);
+            simulation_panel.getControlButtons().setReferences(&simulation_manager, &koyomi_ref,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
             simulation_panel.setupCallback();
 
             simulation_panel.updateSimulationAuto();
 
+            // 背景の可視性をパネルと同期
             simulation_bg_.setVisible(simulation_panel.isVisible());
-            settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
 
-            // CalendarPanelの可視性と設定
+            // CalendarPanelの初期設定
             if (calendar_panel.isVisible()) {
+                auto& koyomi_ref = const_cast<Koyomi&>(koyomi);
                 calendar_panel.setCalendarParams(koyomi);
-                calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
+                calendar_panel.setTimeControlParams(koyomi_ref, app_state_manager_);
             }
 
+            // 背景の可視性をパネルと同期
             calendar_bg_.setVisible(calendar_panel.isVisible());
             debug_info_bg_.setVisible(debug_info_panel.isVisible());
-
-            // TODO: fix
-#ifdef PAXS_USING_SIMULATOR
-            cached_simulation_manager_ = &simulation_manager;
-#endif
-            cached_koyomi_ = koyomi;
         }
 
         void render() const override {
@@ -247,25 +253,58 @@ namespace paxs {
         void subscribeToEvents() {
             if (event_bus_ == nullptr) return;
 
+            // Phase 4: UILayerは完全にイベント駆動化済み
+            // イベントハンドラーで即座に更新処理を実行
+
             // ウィンドウリサイズイベントの購読
             event_bus_->subscribe<WindowResizedEvent>(
                 [this](const WindowResizedEvent& event) {
-                    needs_update_ = true;
-                    // UI レイアウトの再計算が必要
+                    // UIレイアウトを再計算
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                    }
                 }
             );
 
             // 日付変更イベントの購読
             event_bus_->subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
-                    needs_update_ = true;
+                    // CalendarPanelの日付表示を更新
+                    if (calendar_panel.isVisible() && app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        auto& koyomi_ref = const_cast<Koyomi&>(koyomi);
+                        calendar_panel.setCalendarParams(koyomi);
+                        calendar_panel.setTimeControlParams(koyomi_ref, app_state_manager_);
+
+                        // レイアウトも再計算（日付リストのサイズが変わる可能性があるため）
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                    }
                 }
             );
 
             // 言語変更イベントの購読
             event_bus_->subscribe<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent& event) {
-                    needs_update_ = true;
+                    // 言語変更時はレイアウト再計算が必要
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                    }
+                }
+            );
+
+            // 機能可視性変更イベントの購読
+            event_bus_->subscribe<FeatureVisibilityChangedEvent>(
+                [this](const FeatureVisibilityChangedEvent& event) {
+                    // 背景の可視性をパネルと同期
+                    // UILayer全体の可視性はrender()でチェックされるため、ここでは個別パネルの可視性のみ考慮
+                    calendar_bg_.setVisible(calendar_panel.isVisible());
+                    debug_info_bg_.setVisible(debug_info_panel.isVisible());
+#ifdef PAXS_USING_SIMULATOR
+                    simulation_bg_.setVisible(simulation_panel.isVisible());
+                    // settlement_status_bg_はGraphicsManagerで制御
+#endif
                 }
             );
 
@@ -273,14 +312,25 @@ namespace paxs {
             // シミュレーション状態変更イベントの購読
             event_bus_->subscribe<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
-                    needs_update_ = true;
+                    // シミュレーション状態変更時の処理
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+
+                        // シミュレーションパネルの自動更新
+                        simulation_panel.updateSimulationAuto();
+
+                        // 背景の可視性をパネルと同期
+                        simulation_bg_.setVisible(simulation_panel.isVisible());
+                    }
                 }
             );
 
             // シミュレーションステップ実行イベントの購読
             event_bus_->subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
-                    needs_update_ = true;
+                    // シミュレーションステップ実行時の更新
+                    simulation_panel.updateSimulationAuto();
                 }
             );
 #endif
