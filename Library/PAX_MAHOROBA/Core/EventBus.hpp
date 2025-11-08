@@ -100,13 +100,14 @@ public:
     /// @brief Process all queued events
     void processQueue() {
         while (!event_queue_.empty()) {
-            const std::unique_ptr<Event>& event = event_queue_.front();
+            std::unique_ptr<Event>& event = event_queue_.front();
 
-            const std::type_index type_id = typeid(*event);
+            Event& event_ref = *event;
+            const std::type_index type_id(typeid(event_ref));
             auto it = subscribers_.find(type_id);
             if (it != subscribers_.end()) {
                 for (const auto& handler : it->second) {
-                    handler(*event);
+                    handler(event_ref);
                 }
             }
 
