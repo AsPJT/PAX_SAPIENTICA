@@ -59,10 +59,13 @@ namespace paxs {
                 AppConfig::getInstance()->getRootPath()
             );
 
-            static unsigned char xyz_tiles[256 * 256]{};
+            // スタックオーバーフロー回避のためヒープに確保
+            constexpr std::size_t tile_size = 256;
+            constexpr std::size_t tile_pixels = tile_size * tile_size;
+            std::vector<unsigned char> xyz_tiles(tile_pixels, 0);
 
             // バイナリデータが読み込めない場合（静かに失敗）
-            if (!i8bbs.calc(xyz_tiles)) {
+            if (!i8bbs.calc(xyz_tiles.data())) {
                 return nullptr;
             }
 
@@ -73,36 +76,40 @@ namespace paxs {
                 constexpr RGBAa(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_)
                     : r(r_), g(g_), b(b_), a(a_) {}
             };
-            RGBAa rgba[256][256]{};
+            // スタックオーバーフロー回避のためヒープに確保 (256KB)
+            std::vector<RGBAa> rgba(tile_pixels);
 
             // バイナリデータをRGBAに変換
-            for (std::size_t row{}; row < 256; ++row) {
-                for (std::size_t col{}; col < 256; ++col) {
-                    const unsigned char color = xyz_tiles[row * 256 + col];
+            for (std::size_t row{}; row < tile_size; ++row) {
+                for (std::size_t col{}; col < tile_size; ++col) {
+                    const std::size_t index = row * tile_size + col;
+                    const unsigned char color = xyz_tiles[index];
+                    RGBAa& pixel = rgba[index];
+
                     if (color >= 251 || color == 0) {
-                        rgba[row][col].r = 0;
-                        rgba[row][col].g = 0;
-                        rgba[row][col].b = 0;
-                        rgba[row][col].a = 0; //透過
+                        pixel.r = 0;
+                        pixel.g = 0;
+                        pixel.b = 0;
+                        pixel.a = 0; //透過
                     }
                     else {
                         if (color >= 181) { // 25.64100582
-                            rgba[row][col].r = static_cast<unsigned char>(180 - 15.0 * (256.0 - color) / (256.0 - 181.0));
-                            rgba[row][col].g = static_cast<unsigned char>(220 - 10.0 * (256.0 - color) / (256.0 - 181.0));
-                            rgba[row][col].b = static_cast<unsigned char>(185 - 15.0 * (256.0 - color) / (256.0 - 181.0));
+                            pixel.r = static_cast<unsigned char>(180 - 15.0 * (256.0 - color) / (256.0 - 181.0));
+                            pixel.g = static_cast<unsigned char>(220 - 10.0 * (256.0 - color) / (256.0 - 181.0));
+                            pixel.b = static_cast<unsigned char>(185 - 15.0 * (256.0 - color) / (256.0 - 181.0));
                         }
                         else if (color >= 127) { // 9.090276921
-                            rgba[row][col].r = static_cast<unsigned char>(200 - 30.0 * (181.0 - color) / (181.0 - 127.0));
-                            rgba[row][col].g = static_cast<unsigned char>(235 - 20.0 * (181.0 - color) / (181.0 - 127.0));
-                            rgba[row][col].b = static_cast<unsigned char>(210 - 30.0 * (181.0 - color) / (181.0 - 127.0));
+                            pixel.r = static_cast<unsigned char>(200 - 30.0 * (181.0 - color) / (181.0 - 127.0));
+                            pixel.g = static_cast<unsigned char>(235 - 20.0 * (181.0 - color) / (181.0 - 127.0));
+                            pixel.b = static_cast<unsigned char>(210 - 30.0 * (181.0 - color) / (181.0 - 127.0));
                         }
                         else {
-                            rgba[row][col].r = static_cast<unsigned char>(235 - 40.0 * color / 127.0);
-                            rgba[row][col].g = static_cast<unsigned char>(235);
-                            rgba[row][col].b = static_cast<unsigned char>(240 - 40.0 * color / 127.0);
+                            pixel.r = static_cast<unsigned char>(235 - 40.0 * color / 127.0);
+                            pixel.g = static_cast<unsigned char>(235);
+                            pixel.b = static_cast<unsigned char>(240 - 40.0 * color / 127.0);
                         }
 
-                        rgba[row][col].a = 255; //不透過
+                        pixel.a = 255; //不透過
                     }
                 }
             }
@@ -115,7 +122,7 @@ namespace paxs {
             std::filesystem::create_directories(folder_path_with_zyx);
 
             // PNGファイルとして保存
-            stbi_write_png(local_file_path.c_str(), 256, 256, static_cast<int>(sizeof(RGBAa)), rgba, 0);
+            stbi_write_png(local_file_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(RGBAa)), rgba.data(), 0);
 
             // Note: current_map_view_heightはこの時点では使用されていない
             (void)current_map_view_height;

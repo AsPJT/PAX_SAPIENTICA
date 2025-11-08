@@ -71,8 +71,11 @@ public:
     const SimulationController& getSimulationController() const { return simulation_controller_; }
 #endif
 
-    /// @brief 機能可視性マネージャーを取得
+    /// @brief 機能可視性マネージャーを取得（const版）
     const FeatureVisibilityManager& getVisibilityManager() const { return visibility_manager_; }
+
+    /// @brief 機能可視性マネージャーを取得（mutable版）
+    FeatureVisibilityManager& getVisibilityManager() { return visibility_manager_; }
 
     /// @brief 現在の言語インデックスを取得
     std::uint_least8_t getCurrentLanguageIndex() const { return current_language_index_; }
@@ -483,10 +486,6 @@ private:
 
     /// @brief シミュレーション入力データ再読み込みコマンドを処理
     void handleReloadInputData(const ReloadInputDataCommandEvent& event) {
-        // ドメインロジック実行
-        // Note: SimulationConstantsはここではincludeできないため、
-        // 実際の実装では適切な方法で初期化する必要があります
-        // SimulationConstants::getInstance(event.model_name)->init(event.model_name);
 
         // 状態変更イベント発行
         event_bus_.publish(DataLoadingCompletedEvent("SimulationInputData", true));

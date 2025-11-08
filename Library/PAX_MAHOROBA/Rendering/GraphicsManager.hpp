@@ -58,20 +58,20 @@ namespace paxs {
             , map_content_layer_(&app_state.getMapViewport())
             , photo360_layer_()
             , ui_layer_(
-                const_cast<FeatureVisibilityManager*>(&app_state.getVisibilityManager()),
+                &app_state.getVisibilityManager(),
                 &app_state.getMapViewport(),
                 &event_bus,
-                &const_cast<AppStateManager&>(app_state)
+                &app_state
               )
             , menu_bar_() {
 
             // FeatureVisibilityManagerの初期化
-            menu_bar_.initializeVisibility(const_cast<FeatureVisibilityManager*>(&app_state_.getVisibilityManager()));
+            menu_bar_.initializeVisibility(&app_state_.getVisibilityManager());
 
             // AppStateManagerを設定
-            menu_bar_.setAppStateManager(&const_cast<AppStateManager&>(app_state));
-            map_content_layer_.setAppStateManager(&const_cast<AppStateManager&>(app_state));
-            map_tile_layer_.setAppStateManager(&const_cast<AppStateManager&>(app_state));
+            menu_bar_.setAppStateManager(&app_state);
+            map_content_layer_.setAppStateManager(&app_state);
+            map_tile_layer_.setAppStateManager(&app_state);
 
             // UILayerの初期化（一度のみ）
             ui_layer_.initialize();
@@ -88,11 +88,11 @@ namespace paxs {
         /// @details データはAppStateManagerから直接取得し、イベント駆動で更新される
         void render() {
             // AppStateManagerから最新データを取得
-            auto& visible_manager = const_cast<FeatureVisibilityManager&>(app_state_.getVisibilityManager());
-            auto& koyomi = const_cast<Koyomi&>(app_state_.getKoyomi());
+            auto& visible_manager = app_state_.getVisibilityManager();
+            auto& koyomi = app_state_.getKoyomi();
 
 #ifdef PAXS_USING_SIMULATOR
-            auto& simulation_manager = const_cast<SimulationManager&>(app_state_.getSimulationManager());
+            auto& simulation_manager = app_state_.getSimulationManager();
 #endif
 
 

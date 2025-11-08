@@ -205,8 +205,11 @@ namespace paxs {
         /// @brief リソース解放
         /// @brief Release resources
         /// @details アプリケーション終了時に呼び出す / Call at application termination
-        void shutdown() {
-            initialized_ = false;
+        static void shutdown() {
+            if (instance_ != nullptr) {
+                delete instance_;
+                instance_ = nullptr;
+            }
         }
 
         /// @brief 初期化済みか確認
