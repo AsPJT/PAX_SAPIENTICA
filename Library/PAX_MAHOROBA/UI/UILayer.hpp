@@ -24,6 +24,7 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
@@ -56,6 +57,8 @@ namespace paxs {
 
         // イベント駆動用（オプション）
         EventBus* event_bus_ = nullptr;
+        AppStateManager* app_state_manager_ = nullptr;
+        // TODO: 使う
         bool needs_update_ = false;
 
         paxs::CalendarPanel calendar_panel;
@@ -81,13 +84,21 @@ namespace paxs {
     public:
         UILayer(
             paxs::FeatureVisibilityManager* visible_manager,
-            const MapViewport* map_viewport)
+            const MapViewport* map_viewport,
+            EventBus* event_bus = nullptr,
+            AppStateManager* app_state_manager = nullptr)
             : visible_manager_ptr(visible_manager),
+              event_bus_(event_bus),
+              app_state_manager_(app_state_manager),
               calendar_panel(ui_layout, visible_manager),
               debug_info_panel(ui_layout, visible_manager, map_viewport),
 #ifdef PAXS_USING_SIMULATOR
               settlement_status_panel(visible_manager),
-              simulation_panel(visible_manager),
+              simulation_panel(
+                  visible_manager,
+                  event_bus ? *event_bus : EventBus::getInstance(),
+                  *app_state_manager  // 必須パラメータ（nullptrチェックは後で追加予定）
+              ),
 #endif
               calendar_bg_("CalendarBackground", &ui_layout.calendar_panel),
               debug_info_bg_("DebugInfoBackground", &ui_layout.debug_info_panel)
@@ -132,8 +143,9 @@ namespace paxs {
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.setReferences(simulation_manager, koyomi,
+            simulation_panel.getControlButtons().setReferences(&simulation_manager, &koyomi,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_panel.setupCallback();
 
             simulation_panel.updateSimulationAuto();
 
@@ -144,7 +156,7 @@ namespace paxs {
             // CalendarPanelの可視性と設定
             if (calendar_panel.isVisible()) {
                 calendar_panel.setCalendarParams(koyomi);
-                calendar_panel.setTimeControlParams(koyomi);
+                calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
             }
 
             calendar_bg_.setVisible(calendar_panel.isVisible());

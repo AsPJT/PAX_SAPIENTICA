@@ -23,6 +23,8 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Input/IEventHandler.hpp>
 #include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
@@ -34,13 +36,15 @@ namespace paxs {
     /// @brief Handles input processing for MapViewport (UI layer)
     ///
     /// IEventHandlerとIInputHandlerの両方を継承し、座標に依存しないイベント（キーボード、
-    /// マウスホイール、リサイズ）と座標ベースのマウス入力の両方を処理します。
+    /// マウスホイール）と座標ベースのマウス入力を処理します。
+    /// WindowResizedEventはEventBus経由で購読します。
     class MapViewportInputHandler : public IEventHandler, public IMouseEventHandler {
     private:
         std::array<Key, 1> enl_keys; // 拡大キー
         std::array<Key, 1> esc_keys; // 縮小キー
 
         bool enabled_ = true; // 入力処理の有効/無効
+        bool events_subscribed_ = false; // イベント購読済みフラグ
 
 #ifdef __ANDROID__
         int touch_num = 0;
@@ -233,11 +237,23 @@ namespace paxs {
             }
         }
 
-        /// @brief MapViewportへの参照を設定
-        /// @brief Set reference to MapViewport
+        /// @brief MapViewportへの参照を設定してイベントを購読
+        /// @brief Set reference to MapViewport and subscribe to events
         /// @param viewport MapViewportへの参照 / Reference to MapViewport
         void setViewport(MapViewport* viewport) {
             viewport_ = viewport;
+
+            // WindowResizedEventを購読
+            if (viewport_ && !events_subscribed_) {
+                EventBus::getInstance().subscribe<WindowResizedEvent>(
+                    [this](const WindowResizedEvent&) {
+                        if (viewport_) {
+                            viewport_->setSize(viewport_->getHeight());
+                        }
+                    }
+                );
+                events_subscribed_ = true;
+            }
         }
 
         /// @brief ドラッグ中かどうかを取得
@@ -318,19 +334,6 @@ namespace paxs {
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
-        /// @brief リサイズイベント処理
-        /// @brief Handle resize event
-        /// @param event リサイズイベント / Resize event
-        /// @return イベント処理結果 / Event handling result
-        EventHandlingResult handleEvent(const ResizeEvent& /*event*/) override {
-            if (!enabled_ || viewport_ == nullptr) {
-                return EventHandlingResult::NotHandled();
-            }
-
-            // ウィンドウリサイズイベント
-            viewport_->setSize(viewport_->getHeight());
-            return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
-        }
         bool isHit(int /*x*/, int /*y*/) const override {
             // 画面全体が対象なので常にtrue
             return enabled_;

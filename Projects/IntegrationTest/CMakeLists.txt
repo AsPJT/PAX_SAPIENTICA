@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+enable_testing()
+
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Library
     ${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest/googletest/include
@@ -47,6 +49,15 @@ target_compile_definitions(SettlementSimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
 
 add_executable(AppStateManagerTest AppStateManagerTest.cpp)
 target_link_libraries(AppStateManagerTest PRIVATE gtest_main)
+
+add_executable(UIComponentsEventDrivenTest Source/PAX_MAHOROBA/UI/UIComponentsEventDrivenTest.cpp)
+target_link_libraries(UIComponentsEventDrivenTest PRIVATE gtest_main)
+add_test(
+    NAME UIComponentsEventDrivenTest
+    COMMAND UIComponentsEventDrivenTest
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+set_tests_properties(UIComponentsEventDrivenTest PROPERTIES LABELS "Integration")
 
 add_custom_target(CopyTSV ALL
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/Data/Config.tsv" ${CMAKE_CURRENT_BINARY_DIR}

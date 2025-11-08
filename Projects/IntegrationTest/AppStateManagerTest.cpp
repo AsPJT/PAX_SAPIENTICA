@@ -81,7 +81,7 @@ TEST_F(AppStateManagerTest, SetLanguagePublishesEvent) {
         }
     );
 
-    app_state.setLanguage(5);
+    app_state.setLanguage(5, 0); // 言語インデックス5、キーは0（テスト用ダミー値）
 
     EXPECT_EQ(received_index, 5);
     EXPECT_EQ(app_state.getCurrentLanguageIndex(), 5);
@@ -89,7 +89,7 @@ TEST_F(AppStateManagerTest, SetLanguagePublishesEvent) {
 
 TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
     AppStateManager app_state(event_bus_);
-    app_state.setLanguage(3);
+    app_state.setLanguage(3, 0); // 言語インデックス3、キーは0（テスト用ダミー値）
 
     int event_count = 0;
 
@@ -100,7 +100,7 @@ TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
     );
 
     // 同じ値を設定（イベントは発行されない）
-    app_state.setLanguage(3);
+    app_state.setLanguage(3, 0); // 言語インデックス3、キーは0（テスト用ダミー値）
 
     EXPECT_EQ(event_count, 0);
 }

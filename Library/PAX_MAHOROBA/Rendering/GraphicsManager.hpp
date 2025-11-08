@@ -27,10 +27,9 @@
 
 namespace paxs {
 
-    /// @brief グラフィック統合管理クラス（イベント駆動版）
-    /// @brief Graphics integrated management class (Event-driven version)
+    /// @brief グラフィック統合管理クラス
+    /// @brief Graphics integrated management class
     /// @details 責務を描画のみに限定し、入力処理や状態管理はInputManagerとAppStateManagerに委譲
-    ///          Responsibilities limited to rendering only, input and state management delegated to InputManager and AppStateManager
     class GraphicsManager {
     private:
         EventBus& event_bus_;
@@ -58,11 +57,19 @@ namespace paxs {
             , map_tile_layer_()
             , map_content_layer_(&app_state.getMapViewport())
             , photo360_layer_()
-            , ui_layer_(const_cast<FeatureVisibilityManager*>(&app_state.getVisibilityManager()), &app_state.getMapViewport())
+            , ui_layer_(
+                const_cast<FeatureVisibilityManager*>(&app_state.getVisibilityManager()),
+                &app_state.getMapViewport(),
+                &event_bus,
+                &const_cast<AppStateManager&>(app_state)
+              )
             , menu_bar_() {
 
             // FeatureVisibilityManagerの初期化
             menu_bar_.initializeVisibility(const_cast<FeatureVisibilityManager*>(&app_state_.getVisibilityManager()));
+
+            // AppStateManagerを設定
+            menu_bar_.setAppStateManager(&const_cast<AppStateManager&>(app_state));
 
             // レイヤーシステムに各コンポーネントを登録
             render_layer_manager_.registerRenderable(&map_tile_layer_);
@@ -86,12 +93,13 @@ namespace paxs {
             auto& simulation_manager = const_cast<SimulationManager&>(app_state_.getSimulationManager());
 #endif
 
+            // MenuBarの言語変更を検出してイベント発行
+            menu_bar_.updateLanguage();
+
             // MenuBarの状態をFeatureVisibilityManagerに同期
-            // Sync MenuBar state to FeatureVisibilityManager
-            menu_bar_.syncVisibilityFromMenu(&visible_manager);
+            menu_bar_.syncVisibilityFromMenu();
 
             // データ更新（将来的にはイベント駆動に移行予定）
-            // Data update (to be migrated to event-driven in future)
             map_tile_layer_.updateData(visible_manager, map_viewport, koyomi.jdn.cgetDay());
 
             map_content_layer_.updateData(
@@ -122,30 +130,27 @@ namespace paxs {
             photo360_layer_.setVisible(visible_manager.isVisible(paxs::MurMur3::calcHash(2, "3D")));
 
             // 3Dモード時は360度写真とUIのみ描画、通常モードは全レイヤー描画
-            // Render 360-degree photo and UI in 3D mode, all layers in normal mode
             if (visible_manager.isVisible(paxs::MurMur3::calcHash(2, "3D"))) {
                 // 3Dモード: 360度写真を描画してからUIを描画
-                // 3D mode: Render 360-degree photo then UI
                 photo360_layer_.render();
                 menu_bar_.render();
             } else {
                 // 通常モード: レイヤーベース描画（Z順序自動管理）
-                // Normal mode: Layer-based rendering (automatic Z-order management)
                 render_layer_manager_.renderAll();
             }
         }
 
-        /// @brief MenuBarへのアクセス（後方互換性のため）
-        /// @brief Access to MenuBar (for backward compatibility)
-        MenuBar& getMenuBar() { return menu_bar_; }
+        /// @brief 入力ハンドラーにウィジェットを登録
+        template<typename UIInputHandlerType, typename EventRouterType>
+        void registerToInputHandlers(UIInputHandlerType& ui_input_handler, EventRouterType& event_router) {
+            ui_input_handler.registerWidget(&menu_bar_);
+            ui_input_handler.registerWidget(&ui_layer_);
 
-        /// @brief UILayerへのアクセス（後方互換性のため）
-        /// @brief Access to UILayer (for backward compatibility)
-        UILayer& getUILayer() { return ui_layer_; }
-
-        /// @brief MapContentLayerへのアクセス（後方互換性のため）
-        /// @brief Access to MapContentLayer (for backward compatibility)
-        MapContentLayer& getMapContentLayer() { return map_content_layer_; }
+            event_router.registerHandler(&map_content_layer_);
+#ifdef PAXS_USING_SIMULATOR
+            event_router.registerHandler(&map_content_layer_.getSettlementInputHandler());
+#endif
+        }
     };
 }
 

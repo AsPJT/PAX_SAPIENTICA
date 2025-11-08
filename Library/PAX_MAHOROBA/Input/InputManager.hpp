@@ -145,10 +145,6 @@ private:
             // EventBus経由でWindowResizedEventを発行
             event_bus_.publish(WindowResizedEvent(current_width, current_height));
 
-            // 既存のEventRouter経由でResizeEventもブロードキャスト（後方互換性のため）
-            ResizeEvent resize_event(current_width, current_height);
-            event_router_.broadcastEvent(resize_event);
-
             last_window_width_ = current_width;
             last_window_height_ = current_height;
         }

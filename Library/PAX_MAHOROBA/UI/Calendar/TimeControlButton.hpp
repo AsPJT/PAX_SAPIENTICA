@@ -16,6 +16,8 @@
 
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
@@ -149,6 +151,10 @@ namespace paxs {
             koyomi_ = &koyomi;
         }
 
+        void setAppStateManager(AppStateManager* app_state_manager) {
+            app_state_manager_ = app_state_manager;
+        }
+
         void setOnClick() {
             // 各ボタンにコールバックを直接渡す
             for (auto& btn : buttons_) {
@@ -206,6 +212,7 @@ namespace paxs {
     private:
         std::vector<TimeControlButton> buttons_;
         paxs::Koyomi* koyomi_ = nullptr;
+        AppStateManager* app_state_manager_ = nullptr;
         paxg::Vec2i pos_{0, 0};
         bool visible_ = true;
         bool enabled_ = true;
@@ -280,20 +287,18 @@ namespace paxs {
         /// @brief ボタンアクションを実行
         /// @brief Execute button action
         void executeButtonAction(TimeControlButton::Id id) {
-            if (!koyomi_) return;
+            if (!app_state_manager_) return;
 
             using Id = TimeControlButton::Id;
+            using Action = TimePlaybackControlEvent::Action;
 
             // 再生コントロール
             if (id == Id::PlaybackReverse) {
-                koyomi_->move_forward_in_time = false;
-                koyomi_->go_back_in_time = true;
+                app_state_manager_->executeTimePlaybackControl(Action::Reverse);
             } else if (id == Id::PlaybackStop) {
-                koyomi_->move_forward_in_time = false;
-                koyomi_->go_back_in_time = false;
+                app_state_manager_->executeTimePlaybackControl(Action::Stop);
             } else if (id == Id::PlaybackForward) {
-                koyomi_->move_forward_in_time = true;
-                koyomi_->go_back_in_time = false;
+                app_state_manager_->executeTimePlaybackControl(Action::Forward);
             } else {
                 // 日付移動系
                 constexpr double day   = 1.0;
@@ -308,8 +313,7 @@ namespace paxs {
 
                 const int index = static_cast<int>(id) - static_cast<int>(Id::DayBackward);
                 if (index >= 0 && index < 14) {
-                    koyomi_->jdn.getDay() += days_map[index];
-                    koyomi_->calcDate();
+                    app_state_manager_->executeDateNavigation(days_map[index]);
                 }
             }
         }

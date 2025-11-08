@@ -44,8 +44,9 @@ namespace paxs {
         MapViewport cached_map_viewport_;
         cal::JDN_F64 cached_jdn_ = 0.0;
 
-        // イベント駆動用（オプション）
+        // イベント駆動用
         EventBus* event_bus_ = nullptr;
+        // TODO: 使う
         bool needs_update_ = false;
 
     public:

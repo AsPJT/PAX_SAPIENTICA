@@ -23,6 +23,9 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/SimulationControlButton.hpp>
@@ -41,8 +44,8 @@ namespace paxs {
     class SimulationPanel : public IWidget {
     private:
         const paxs::FeatureVisibilityManager* visibility_manager_ptr = nullptr;
-        SimulationManager* simulation_manager_ptr_ = nullptr;
-        paxs::Koyomi* koyomi_ = nullptr;
+        EventBus* event_bus_ = nullptr;
+        AppStateManager* app_state_manager_ = nullptr;
 
         const int pulldown_y = 600; // プルダウンのY座標
 
@@ -52,22 +55,30 @@ namespace paxs {
         mutable paxs::Pulldown simulation_pulldown;
         SimulationControlButtons control_buttons_;
 
+        /// @brief イベント購読を設定
+        /// @brief Subscribe to events
+        void subscribeToEvents() {
+            // 言語変更イベントを購読してプルダウンの言語を更新
+            EventBus::getInstance().subscribe<LanguageChangedEvent>(
+                [this](const LanguageChangedEvent&) {
+                    simulation_pulldown.updateLanguage();
+                }
+            );
+        }
+
         void simulationInit() const {
-            if (!simulation_manager_ptr_ || !koyomi_) return;
+#ifdef PAXS_USING_SIMULATOR
+            if (!app_state_manager_) return;
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
 
-            simulation_manager_ptr_->initSimulation();
-            koyomi_->steps.setDay(0);
-            koyomi_->jdn.setDay(static_cast<double>(
-                SimulationConstants::getInstance(model_name)->start_julian_day));
-            koyomi_->calcDate();
-            koyomi_->is_agent_update = false;
-            koyomi_->move_forward_in_time = false;
-            koyomi_->go_back_in_time = false;
+            // AppStateManagerを通じてシミュレーション初期化コマンドを発行
+            app_state_manager_->executeSimulationInit(model_name);
+#endif
         }
 
         void onControlButtonClicked(SimulationControlButton::Id id) {
-            if (!simulation_manager_ptr_ || !koyomi_) return;
+#ifdef PAXS_USING_SIMULATOR
+            if (!app_state_manager_) return;
 
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
 
@@ -88,7 +99,7 @@ namespace paxs {
 
             switch (id) {
             case SimulationControlButton::Id::LoadGeographicData: {
-                // 元の「未初期化時に地形データ読み込みを押したとき」の処理
+                // 地理データ読み込みコマンドを発行
                 auto [map_list_path, japan_provinces_path] = make_paths();
                 SimulationConstants::getInstance(model_name)->init(model_name);
 
@@ -100,63 +111,49 @@ namespace paxs {
                 }
 #endif
                 std::random_device seed_gen;
-                simulation_manager_ptr_->initialize(map_list_path, japan_provinces_path, seed_gen(), model_name);
-                simulationInit();
+                app_state_manager_->executeLoadGeographicData(
+                    model_name, map_list_path, japan_provinces_path, seed_gen()
+                );
                 break;
             }
             case SimulationControlButton::Id::Stop: {
-                // 再生中 → 停止
-                koyomi_->is_agent_update = false;
-                koyomi_->move_forward_in_time = false;
-                koyomi_->go_back_in_time = false;
+                // 停止コマンドを発行
+                app_state_manager_->executeSimulationStop();
                 break;
             }
             case SimulationControlButton::Id::ReloadInputData: {
-                // シミュレーション入力データ初期化
+                // シミュレーション入力データ再読み込みコマンドを発行
                 SimulationConstants::getInstance(model_name)->init(model_name);
+                app_state_manager_->executeReloadInputData(model_name);
                 break;
             }
             case SimulationControlButton::Id::InitHumanData: {
-                // 人間データ初期化
-                simulationInit();
-                koyomi_->steps.setDay(0);
-                koyomi_->calcDate();
+                // 人間データ初期化コマンドを発行
+                app_state_manager_->executeInitHumanData(model_name);
                 break;
             }
             case SimulationControlButton::Id::DeleteGeographicData: {
-                // 地形データ削除
+                // 地理データ削除コマンドを発行
                 auto [map_list_path, japan_provinces_path] = make_paths();
-                simulation_manager_ptr_->reset(map_list_path, japan_provinces_path);
-                koyomi_->steps.setDay(0);
-                koyomi_->calcDate();
+                app_state_manager_->executeDeleteGeographicData(map_list_path, japan_provinces_path);
                 break;
             }
             case SimulationControlButton::Id::Play: {
-                // 再生
-                if (!simulation_manager_ptr_->isActive()) {
-                    // 読み込み前なら何もしない
-                    break;
-                }
-                koyomi_->is_agent_update = true;
+                // 再生コマンドを発行（読み込み済みチェックはAppStateManagerで行う）
                 m_remaining_iterations = SimulationConstants::getInstance(model_name)->num_iterations;
-                koyomi_->move_forward_in_time = true;
-                koyomi_->go_back_in_time = false;
+                app_state_manager_->executeSimulationPlay(m_remaining_iterations);
                 break;
             }
             case SimulationControlButton::Id::Step: {
-                // 1ステップ実行
-                if (!simulation_manager_ptr_->isActive()) break;
-                simulation_manager_ptr_->step();
-                koyomi_->steps.getDay()++;
-                koyomi_->calcDate();
-                koyomi_->move_forward_in_time = false;
-                koyomi_->go_back_in_time = false;
+                // 1ステップ実行コマンドを発行
+                app_state_manager_->executeSimulationStep(1);
                 break;
             }
             case SimulationControlButton::Id::None:
             default:
                 break;
             }
+#endif
         }
 
     public:
@@ -165,8 +162,12 @@ namespace paxs {
 
         // コンストラクタ
         SimulationPanel(
-            const paxs::FeatureVisibilityManager* visibility_manager
+            const paxs::FeatureVisibilityManager* visibility_manager,
+            EventBus& event_bus,
+            AppStateManager& app_state_manager
         ) : visibility_manager_ptr(visibility_manager),
+            event_bus_(&event_bus),
+            app_state_manager_(&app_state_manager),
             simulation_pulldown(
                 static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
@@ -200,11 +201,20 @@ namespace paxs {
             }
 
             simulation_pulldown.setItemsKey(simulation_key);
+
+            // イベント購読を設定
+            subscribeToEvents();
         }
 
         // TODO: 移行
         void updateSimulationAuto() {
-            if (!simulation_manager_ptr_ || !koyomi_ || !simulation_manager_ptr_->isActive()) return;
+#ifdef PAXS_USING_SIMULATOR
+            if (!app_state_manager_) return;
+
+            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+            const auto& koyomi = app_state_manager_->getKoyomi();
+
+            if (!simulation_manager.isActive()) return;
 
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
             const auto* constants = SimulationConstants::getInstance(model_name);
@@ -212,7 +222,7 @@ namespace paxs {
 
             // 規定ステップ数に達したかチェック
             if (total_steps > 0 &&
-                koyomi_->steps.getDay() >= static_cast<std::size_t>(total_steps)) {
+                koyomi.steps.cgetDay() >= static_cast<std::size_t>(total_steps)) {
 
                 // 残り実行回数を減らす
                 m_remaining_iterations--;
@@ -220,36 +230,28 @@ namespace paxs {
                 if (m_remaining_iterations > 0) {
                     // まだ実行回数が残っている場合、シミュレーションを初期化して自動で再開
                     simulationInit();
-                    koyomi_->is_agent_update = true;
-                    koyomi_->move_forward_in_time = true;
+                    app_state_manager_->executeSimulationPlay(m_remaining_iterations);
                 } else {
                     // 全ての実行が終了した場合、シミュレーションを停止
-                    koyomi_->is_agent_update = false;
-                    koyomi_->move_forward_in_time = false;
+                    app_state_manager_->executeSimulationStop();
                     m_remaining_iterations = 0;
                 }
             }
+#endif
         }
 
-        // 外部参照のセット
-        void setReferences(
-            SimulationManager& simulation_manager,
-            paxs::Koyomi& koyomi,
-            int debug_start_y
-        ) {
-            simulation_manager_ptr_ = &simulation_manager;
-            koyomi_ = &koyomi;
+        /// @brief SimulationControlButtonsへのアクセス
+        SimulationControlButtons& getControlButtons() { return control_buttons_; }
 
-            // ボタン側にも参照を渡す
-            control_buttons_.setReferences(simulation_manager_ptr_, koyomi_, debug_start_y);
-            // ここで「押されたときの処理」を紐づける
+        /// @brief コールバックを設定
+        void setupCallback() {
             control_buttons_.setOnClick([this](SimulationControlButton::Id id) {
                 this->onControlButtonClicked(id);
             });
         }
 
         void render() const override {
-            if (!isVisible() || !simulation_manager_ptr_ || !koyomi_) return;
+            if (!isVisible() || !app_state_manager_) return;
 
             drawPulldown();
             control_buttons_.render();
@@ -260,10 +262,15 @@ namespace paxs {
                 static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - 200),
                 pulldown_y
             });
-            simulation_pulldown.updateLanguage();
-            if (!simulation_manager_ptr_->isActive()) {
+
+#ifdef PAXS_USING_SIMULATOR
+            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+            if (!simulation_manager.isActive()) {
                 simulation_pulldown.render();
             }
+#else
+            simulation_pulldown.render();
+#endif
         }
 
         // イベント処理

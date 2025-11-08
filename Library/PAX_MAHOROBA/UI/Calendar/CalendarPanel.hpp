@@ -14,6 +14,7 @@
 
 #include <PAX_GRAPHICA/Rect.hpp>
 
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarContent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/TimeControlButton.hpp>
@@ -47,9 +48,12 @@ namespace paxs {
             calendar_widget_.setRenderParams(koyomi, *ui_layout_);
         }
 
-        void setTimeControlParams(paxs::Koyomi& koyomi) {
+        void setTimeControlParams(paxs::Koyomi& koyomi, AppStateManager* app_state_manager = nullptr) {
             if (!ui_layout_) return;
             time_control_widget_.setReferences(koyomi);
+            if (app_state_manager) {
+                time_control_widget_.setAppStateManager(app_state_manager);
+            }
             time_control_widget_.setPos(paxg::Vec2i{ui_layout_->time_control_base_x, ui_layout_->koyomi_font_y + ui_layout_->time_control_base_y});
         }
 

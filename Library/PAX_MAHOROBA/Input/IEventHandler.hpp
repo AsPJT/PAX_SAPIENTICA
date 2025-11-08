@@ -48,15 +48,6 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        /// @brief リサイズイベント処理
-        /// @brief Handle resize event
-        /// @param event リサイズイベント / Resize event
-        /// @return イベント処理結果 / Event handling result
-        virtual EventHandlingResult handleEvent(const ResizeEvent& event) {
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
-
         /// @brief フォーカスイベント処理
         /// @brief Handle focus event
         /// @param event フォーカスイベント / Focus event

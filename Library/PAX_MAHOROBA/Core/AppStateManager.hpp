@@ -15,6 +15,7 @@
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
@@ -62,6 +63,7 @@ public:
 #ifdef PAXS_USING_SIMULATOR
     /// @brief シミュレーションマネージャーを取得
     const SimulationManager& getSimulationManager() const { return simulation_manager_; }
+    SimulationManager& getSimulationManager() { return simulation_manager_; }
 #endif
 
     /// @brief 機能可視性マネージャーを取得
@@ -76,11 +78,26 @@ public:
 
     /// @brief 言語を設定
     /// @param index 言語インデックス
-    void setLanguage(std::uint_least8_t index) {
+    /// @param language_key 言語キー（MurMur3ハッシュ値）
+    void setLanguage(std::uint_least8_t index, std::uint_least32_t language_key) {
         if (current_language_index_ != index) {
             current_language_index_ = index;
+            Fonts().setLanguage(static_cast<std::size_t>(index));
+            Fonts().setLanguageByKey(language_key);
             event_bus_.publish(LanguageChangedEvent(index));
         }
+    }
+
+    /// @brief 時間再生制御コマンドを実行
+    /// @param action 再生制御アクション
+    void executeTimePlaybackControl(TimePlaybackControlEvent::Action action) {
+        event_bus_.publish(TimePlaybackControlEvent(action));
+    }
+
+    /// @brief 日付移動コマンドを実行
+    /// @param days 移動日数
+    void executeDateNavigation(double days) {
+        event_bus_.publish(DateNavigationEvent(days));
     }
 
     /// @brief 機能の可視性を設定
@@ -134,6 +151,44 @@ public:
     void executeSimulationStep(int steps = 1) {
         event_bus_.publish(SimulationStepCommandEvent(steps));
     }
+
+    /// @brief 地理データ読み込みコマンドを実行
+    /// @param model_name モデル名
+    /// @param map_list_path マップリストパス
+    /// @param japan_provinces_path 都道府県パス
+    /// @param seed 乱数シード
+    void executeLoadGeographicData(
+        const std::string& model_name,
+        const std::string& map_list_path,
+        const std::string& japan_provinces_path,
+        unsigned int seed) {
+        event_bus_.publish(LoadGeographicDataCommandEvent(
+            model_name, map_list_path, japan_provinces_path, seed
+        ));
+    }
+
+    /// @brief シミュレーション入力データ再読み込みコマンドを実行
+    /// @param model_name モデル名
+    void executeReloadInputData(const std::string& model_name) {
+        event_bus_.publish(ReloadInputDataCommandEvent(model_name));
+    }
+
+    /// @brief 人間データ初期化コマンドを実行
+    /// @param model_name モデル名
+    void executeInitHumanData(const std::string& model_name) {
+        event_bus_.publish(InitHumanDataCommandEvent(model_name));
+    }
+
+    /// @brief 地理データ削除コマンドを実行
+    /// @param map_list_path マップリストパス
+    /// @param japan_provinces_path 都道府県パス
+    void executeDeleteGeographicData(
+        const std::string& map_list_path,
+        const std::string& japan_provinces_path) {
+        event_bus_.publish(DeleteGeographicDataCommandEvent(
+            map_list_path, japan_provinces_path
+        ));
+    }
 #endif
 
     // ============================================================================
@@ -180,6 +235,20 @@ private:
 
     /// @brief イベント購読を初期化
     void subscribeToEvents() {
+        // 時間再生制御コマンドの購読
+        event_bus_.subscribe<TimePlaybackControlEvent>(
+            [this](const TimePlaybackControlEvent& event) {
+                handleTimePlaybackControl(event);
+            }
+        );
+
+        // 日付移動コマンドの購読
+        event_bus_.subscribe<DateNavigationEvent>(
+            [this](const DateNavigationEvent& event) {
+                handleDateNavigation(event);
+            }
+        );
+
 #ifdef PAXS_USING_SIMULATOR
         // シミュレーション初期化コマンドの購読
         event_bus_.subscribe<SimulationInitCommandEvent>(
@@ -215,12 +284,75 @@ private:
                 handleSimulationStep(event);
             }
         );
+
+        // 地理データ読み込みコマンドの購読
+        event_bus_.subscribe<LoadGeographicDataCommandEvent>(
+            [this](const LoadGeographicDataCommandEvent& event) {
+                handleLoadGeographicData(event);
+            }
+        );
+
+        // シミュレーション入力データ再読み込みコマンドの購読
+        event_bus_.subscribe<ReloadInputDataCommandEvent>(
+            [this](const ReloadInputDataCommandEvent& event) {
+                handleReloadInputData(event);
+            }
+        );
+
+        // 人間データ初期化コマンドの購読
+        event_bus_.subscribe<InitHumanDataCommandEvent>(
+            [this](const InitHumanDataCommandEvent& event) {
+                handleInitHumanData(event);
+            }
+        );
+
+        // 地理データ削除コマンドの購読
+        event_bus_.subscribe<DeleteGeographicDataCommandEvent>(
+            [this](const DeleteGeographicDataCommandEvent& event) {
+                handleDeleteGeographicData(event);
+            }
+        );
 #endif
     }
 
     // ============================================================================
     // コマンドハンドラー（ドメインロジック実行）
     // ============================================================================
+
+    /// @brief 時間再生制御コマンドを処理
+    void handleTimePlaybackControl(const TimePlaybackControlEvent& event) {
+        using Action = TimePlaybackControlEvent::Action;
+
+        switch (event.action) {
+        case Action::Forward:
+            koyomi_.move_forward_in_time = true;
+            koyomi_.go_back_in_time = false;
+            break;
+        case Action::Reverse:
+            koyomi_.move_forward_in_time = false;
+            koyomi_.go_back_in_time = true;
+            break;
+        case Action::Stop:
+            koyomi_.move_forward_in_time = false;
+            koyomi_.go_back_in_time = false;
+            break;
+        }
+    }
+
+    /// @brief 日付移動コマンドを処理
+    void handleDateNavigation(const DateNavigationEvent& event) {
+        koyomi_.jdn.getDay() += event.days;
+        koyomi_.calcDate();
+
+        // 日付変更イベント発行
+        auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
+        event_bus_.publish(DateChangedEvent(
+            koyomi_.jdn.cgetDay(),
+            gregorian_date.cgetYear(),
+            gregorian_date.cgetMonth(),
+            gregorian_date.cgetDay()
+        ));
+    }
 
 #ifdef PAXS_USING_SIMULATOR
     /// @brief シミュレーション初期化コマンドを処理
@@ -298,6 +430,88 @@ private:
         event_bus_.publish(SimulationStepExecutedEvent(
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay()),
             static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
+        ));
+
+        auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
+        event_bus_.publish(DateChangedEvent(
+            koyomi_.jdn.cgetDay(),
+            gregorian_date.cgetYear(),
+            gregorian_date.cgetMonth(),
+            gregorian_date.cgetDay()
+        ));
+    }
+
+    /// @brief 地理データ読み込みコマンドを処理
+    void handleLoadGeographicData(const LoadGeographicDataCommandEvent& event) {
+        // ドメインロジック実行
+        simulation_manager_.initialize(
+            event.map_list_path,
+            event.japan_provinces_path,
+            event.seed,
+            event.model_name
+        );
+
+        // シミュレーション初期化
+        simulation_manager_.initSimulation();
+        koyomi_.steps.setDay(0);
+        koyomi_.calcDate();
+        koyomi_.is_agent_update = false;
+        koyomi_.move_forward_in_time = false;
+        koyomi_.go_back_in_time = false;
+
+        // 状態変更イベント発行
+        event_bus_.publish(DataLoadingCompletedEvent("GeographicData", true));
+        event_bus_.publish(SimulationStateChangedEvent(
+            SimulationStateChangedEvent::State::Stopped,
+            static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
+        ));
+    }
+
+    /// @brief シミュレーション入力データ再読み込みコマンドを処理
+    void handleReloadInputData(const ReloadInputDataCommandEvent& event) {
+        // ドメインロジック実行
+        // Note: SimulationConstantsはここではincludeできないため、
+        // 実際の実装では適切な方法で初期化する必要があります
+        // SimulationConstants::getInstance(event.model_name)->init(event.model_name);
+
+        // 状態変更イベント発行
+        event_bus_.publish(DataLoadingCompletedEvent("SimulationInputData", true));
+    }
+
+    /// @brief 人間データ初期化コマンドを処理
+    void handleInitHumanData(const InitHumanDataCommandEvent& event) {
+        // ドメインロジック実行
+        simulation_manager_.initSimulation();
+        koyomi_.steps.setDay(0);
+        koyomi_.calcDate();
+
+        // 状態変更イベント発行
+        event_bus_.publish(SimulationStateChangedEvent(
+            SimulationStateChangedEvent::State::Stopped, 0
+        ));
+
+        auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
+        event_bus_.publish(DateChangedEvent(
+            koyomi_.jdn.cgetDay(),
+            gregorian_date.cgetYear(),
+            gregorian_date.cgetMonth(),
+            gregorian_date.cgetDay()
+        ));
+    }
+
+    /// @brief 地理データ削除コマンドを処理
+    void handleDeleteGeographicData(const DeleteGeographicDataCommandEvent& event) {
+        // ドメインロジック実行
+        simulation_manager_.reset(
+            event.map_list_path,
+            event.japan_provinces_path
+        );
+        koyomi_.steps.setDay(0);
+        koyomi_.calcDate();
+
+        // 状態変更イベント発行
+        event_bus_.publish(SimulationStateChangedEvent(
+            SimulationStateChangedEvent::State::Stopped, 0
         ));
 
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();

@@ -189,6 +189,84 @@ struct SimulationStepCommandEvent : Event {
         : steps(step_count) {}
 };
 
+/// @brief 地理データ読み込みコマンドイベント
+/// @brief Load geographic data command event
+struct LoadGeographicDataCommandEvent : Event {
+    const std::string model_name;
+    const std::string map_list_path;
+    const std::string japan_provinces_path;
+    const unsigned int seed;
+
+    LoadGeographicDataCommandEvent(
+        const std::string& model,
+        const std::string& map_path,
+        const std::string& provinces_path,
+        unsigned int random_seed)
+        : model_name(model)
+        , map_list_path(map_path)
+        , japan_provinces_path(provinces_path)
+        , seed(random_seed) {}
+};
+
+/// @brief シミュレーション入力データ再読み込みコマンドイベント
+/// @brief Reload simulation input data command event
+struct ReloadInputDataCommandEvent : Event {
+    const std::string model_name;
+
+    explicit ReloadInputDataCommandEvent(const std::string& model)
+        : model_name(model) {}
+};
+
+/// @brief 人間データ初期化コマンドイベント
+/// @brief Initialize human data command event
+struct InitHumanDataCommandEvent : Event {
+    const std::string model_name;
+
+    explicit InitHumanDataCommandEvent(const std::string& model)
+        : model_name(model) {}
+};
+
+/// @brief 地理データ削除コマンドイベント
+/// @brief Delete geographic data command event
+struct DeleteGeographicDataCommandEvent : Event {
+    const std::string map_list_path;
+    const std::string japan_provinces_path;
+
+    DeleteGeographicDataCommandEvent(
+        const std::string& map_path,
+        const std::string& provinces_path)
+        : map_list_path(map_path)
+        , japan_provinces_path(provinces_path) {}
+};
+
+// ========================================
+// Time Control Events
+// ========================================
+
+/// @brief 時間再生制御イベント
+/// @brief Time playback control event
+struct TimePlaybackControlEvent : Event {
+    enum class Action {
+        Forward,   // 順再生
+        Reverse,   // 逆再生
+        Stop       // 停止
+    };
+
+    const Action action;
+
+    explicit TimePlaybackControlEvent(Action a)
+        : action(a) {}
+};
+
+/// @brief 日付移動イベント
+/// @brief Date navigation event
+struct DateNavigationEvent : Event {
+    const double days;  // 移動日数（負数で過去、正数で未来）
+
+    explicit DateNavigationEvent(double d)
+        : days(d) {}
+};
+
 // ========================================
 // UI Events
 // ========================================

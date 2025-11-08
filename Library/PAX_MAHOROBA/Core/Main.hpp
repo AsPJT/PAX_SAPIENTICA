@@ -65,17 +65,8 @@ namespace paxs {
         input_manager.registerHandler(map_viewport_input_handler.get());
         input_manager.getMouseEventRouter().registerHandler(ui_input_handler.get());
 
-        // UIInputHandlerにウィジェットを登録
-        ui_input_handler->registerWidget(&graphics_manager.getMenuBar());
-        ui_input_handler->registerWidget(&graphics_manager.getUILayer());
-
-        // MapContentLayerのハンドラーを登録
-        input_manager.getEventRouter().registerHandler(&graphics_manager.getMapContentLayer());
-#ifdef PAXS_USING_SIMULATOR
-        input_manager.getEventRouter().registerHandler(
-            &graphics_manager.getMapContentLayer().getSettlementInputHandler()
-        );
-#endif
+        // GraphicsManagerが内部のウィジェット/ハンドラーを登録
+        graphics_manager.registerToInputHandlers(*ui_input_handler, input_manager.getEventRouter());
 
         // ローディング画面終了
         paxs::PaxSapienticaInit::endLoadingScreen();

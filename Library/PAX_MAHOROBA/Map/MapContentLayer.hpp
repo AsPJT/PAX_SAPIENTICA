@@ -63,8 +63,9 @@ namespace paxs {
 #endif
         paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
 
-        // イベント駆動用（オプション）
+        // イベント駆動用
         EventBus* event_bus_ = nullptr;
+        // TODO: 使う
         bool needs_update_ = false;
 
     public:
