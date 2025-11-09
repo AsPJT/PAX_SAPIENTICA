@@ -153,32 +153,13 @@ namespace paxs {
 #endif
 
     private:
-        /// @brief すべてのコンテンツデータを更新
-        void updateAllContentData() {
+        /// @brief Settlement以外のコンテンツデータを更新
+        /// @brief Update non-settlement content data (person_portrait, geographic_feature)
+        void updateNonSettlementData() {
             if (!app_state_manager_) return;
 
             const auto& koyomi = app_state_manager_->getKoyomi();
             const auto& visible = app_state_manager_->getVisibilityManager();
-
-#ifdef PAXS_USING_SIMULATOR
-            const auto& simulation_manager = app_state_manager_->getSimulationManager();
-
-            // SettlementManager に描画パラメータを設定
-            if (simulation_manager.isActive()) {
-                settlement_manager_.setDrawParams(
-                    koyomi.jdn.cgetDay(),
-                    simulation_manager.getSettlementGrids(),
-                    simulation_manager.getMarriagePositions(),
-                    map_viewport_ptr->getWidth(),
-                    map_viewport_ptr->getHeight(),
-                    map_viewport_ptr->getCenterX(),
-                    map_viewport_ptr->getCenterY(),
-                    settlement_input_handler_.getSelectDraw(),
-                    settlement_input_handler_.getIsLine(),
-                    settlement_input_handler_.getIsArrow()
-                );
-            }
-#endif
 
             // 人物肖像画の描画パラメータ設定
             person_portrait_manager_.setDrawParams(
@@ -200,63 +181,77 @@ namespace paxs {
             );
         }
 
+#ifdef PAXS_USING_SIMULATOR
+        /// @brief Settlementデータのみ更新
+        /// @brief Update settlement data only
+        void updateSettlementData() {
+            if (!app_state_manager_) return;
+
+            const auto& koyomi = app_state_manager_->getKoyomi();
+            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+
+            // SettlementManager に描画パラメータを設定
+            if (simulation_manager.isActive()) {
+                settlement_manager_.setDrawParams(
+                    koyomi.jdn.cgetDay(),
+                    simulation_manager.getSettlementGrids(),
+                    simulation_manager.getMarriagePositions(),
+                    map_viewport_ptr->getWidth(),
+                    map_viewport_ptr->getHeight(),
+                    map_viewport_ptr->getCenterX(),
+                    map_viewport_ptr->getCenterY(),
+                    settlement_input_handler_.getSelectDraw(),
+                    settlement_input_handler_.getIsLine(),
+                    settlement_input_handler_.getIsArrow()
+                );
+            }
+        }
+#endif
+
+        /// @brief すべてのコンテンツデータを更新
+        /// @brief Update all content data
+        void updateAllContentData() {
+            updateNonSettlementData();
+#ifdef PAXS_USING_SIMULATOR
+            updateSettlementData();
+#endif
+        }
+
         /// @brief イベントを購読
         /// @brief Subscribe to events
         void subscribeToEvents() {
             if (event_bus_ == nullptr) return;
 
             // ビューポート変更イベントの購読
+            // すべてのコンテンツを更新（ビューポート変更時は全て再描画が必要）
             event_bus_->subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
                     (void)event;
                     if (app_state_manager_) {
-                        // イベント受信時に即座にコンテンツデータを更新
                         updateAllContentData();
                     }
                 }
             );
 
             // 日付変更イベントの購読
+            // Settlement以外のコンテンツを更新（人物肖像画、地理的特徴は日付依存）
             event_bus_->subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
                     (void)event;
                     if (app_state_manager_) {
-                        // イベント受信時に即座にコンテンツデータを更新
-                        updateAllContentData();
-                    }
-                }
-            );
-
-            // 機能可視性変更イベントの購読
-            event_bus_->subscribe<FeatureVisibilityChangedEvent>(
-                [this](const FeatureVisibilityChangedEvent& event) {
-                    (void)event;
-                    if (app_state_manager_) {
-                        // イベント受信時に即座にコンテンツデータを更新
-                        updateAllContentData();
+                        updateNonSettlementData();
                     }
                 }
             );
 
 #ifdef PAXS_USING_SIMULATOR
-            // シミュレーション状態変更イベントの購読
-            event_bus_->subscribe<SimulationStateChangedEvent>(
-                [this](const SimulationStateChangedEvent& event) {
-                    (void)event;
-                    if (app_state_manager_) {
-                        // イベント受信時に即座にコンテンツデータを更新
-                        updateAllContentData();
-                    }
-                }
-            );
-
             // シミュレーションステップ実行イベントの購読
+            // Settlementデータのみ更新（シミュレーション進行時）
             event_bus_->subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
                     (void)event;
                     if (app_state_manager_) {
-                        // イベント受信時に即座にコンテンツデータを更新
-                        updateAllContentData();
+                        updateSettlementData();
                     }
                 }
             );
