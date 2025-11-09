@@ -18,6 +18,7 @@
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
@@ -147,8 +148,9 @@ namespace paxs {
         const char* getName() const override { return "TimeControlButtons"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 
-        void setReferences(const paxs::Koyomi& koyomi) {
+        void setReferences(const paxs::Koyomi& koyomi, const UILayout& ui_layout) {
             koyomi_ = &koyomi;
+            ui_layout_ = &ui_layout;
         }
 
         void setAppStateManager(AppStateManager* app_state_manager) {
@@ -165,14 +167,14 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!visible_ || !koyomi_) return;
+            if (!visible_ || !koyomi_ || !ui_layout_) return;
             for (const auto& btn : buttons_) {
                 btn.render();
             }
         }
 
         bool isHit(int x, int y) const override {
-            if (!visible_ || !enabled_ || !koyomi_) return false;
+            if (!visible_ || !enabled_ || !koyomi_ || !ui_layout_) return false;
             for (const auto& btn : buttons_) {
                 if (btn.isHit(x, y)) {
                     return true;
@@ -209,9 +211,37 @@ namespace paxs {
         void setEnabled(bool enabled) override { enabled_ = enabled; }
         void setVisible(bool visible) override { visible_ = visible; }
 
+        /// @brief ボタンレイアウトを更新（UILayoutが変更された時に呼ぶ）
+        /// @brief Update button layout (call when UILayout has changed)
+        void layoutButtons() {
+            if (!ui_layout_) return;
+            const int offset_from_right_base = ui_layout_->time_control_base_x;
+            int current_y = ui_layout_->koyomi_font_y + ui_layout_->time_control_base_y;
+
+            // 各行のレイアウト設定 (type, icon_size, move_x, move_y)
+            struct RowLayout { ButtonType type; int icon_size; int move_x; int move_y; };
+            const RowLayout rows[] = {
+                {ButtonType::Playback, ARROW_TIME_ICON_SIZE, ARROW_ICON_MOVE_X, ARROW_ICON_MOVE_Y},
+                {ButtonType::Backward, TIME_ICON_SIZE, ICON_MOVE_X, ICON_MOVE_Y},
+                {ButtonType::Forward, TIME_ICON_SIZE, ICON_MOVE_X, 0}
+            };
+
+            for (const auto& row : rows) {
+                int offset_from_right = offset_from_right_base;
+                for (auto& btn : buttons_) {
+                    if (getButtonType(btn.getId()) == row.type) {
+                        btn.placeFromRight(offset_from_right, current_y, row.icon_size);
+                        offset_from_right -= row.move_x;
+                    }
+                }
+                current_y += row.move_y;
+            }
+        }
+
     private:
         std::vector<TimeControlButton> buttons_;
         const paxs::Koyomi* koyomi_ = nullptr;
+        const UILayout* ui_layout_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
         paxg::Vec2i pos_{0, 0};
         bool visible_ = true;
@@ -258,30 +288,6 @@ namespace paxs {
             if (id >= Id::DayBackward && id <= Id::Century100Backward) return ButtonType::Backward;
             if (id >= Id::DayForward && id <= Id::Century100Forward) return ButtonType::Forward;
             return ButtonType::None;
-        }
-
-        void layoutButtons() {
-            const int offset_from_right_base = pos_.x();
-            int current_y = pos_.y();
-
-            // 各行のレイアウト設定 (type, icon_size, move_x, move_y)
-            struct RowLayout { ButtonType type; int icon_size; int move_x; int move_y; };
-            const RowLayout rows[] = {
-                {ButtonType::Playback, ARROW_TIME_ICON_SIZE, ARROW_ICON_MOVE_X, ARROW_ICON_MOVE_Y},
-                {ButtonType::Backward, TIME_ICON_SIZE, ICON_MOVE_X, ICON_MOVE_Y},
-                {ButtonType::Forward, TIME_ICON_SIZE, ICON_MOVE_X, 0}
-            };
-
-            for (const auto& row : rows) {
-                int offset_from_right = offset_from_right_base;
-                for (auto& btn : buttons_) {
-                    if (getButtonType(btn.getId()) == row.type) {
-                        btn.placeFromRight(offset_from_right, current_y, row.icon_size);
-                        offset_from_right -= row.move_x;
-                    }
-                }
-                current_y += row.move_y;
-            }
         }
 
         /// @brief ボタンアクションを実行

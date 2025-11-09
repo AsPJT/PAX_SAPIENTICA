@@ -49,11 +49,16 @@ namespace paxs {
 
         void setTimeControlParams(const paxs::Koyomi& koyomi, AppStateManager* app_state_manager = nullptr) {
             if (!ui_layout_) return;
-            time_control_widget_.setReferences(koyomi);
+            time_control_widget_.setReferences(koyomi, *ui_layout_);
             if (app_state_manager) {
                 time_control_widget_.setAppStateManager(app_state_manager);
             }
-            time_control_widget_.setPos(paxg::Vec2i{ui_layout_->time_control_base_x, ui_layout_->koyomi_font_y + ui_layout_->time_control_base_y});
+        }
+
+        /// @brief ボタンレイアウトを更新（UILayoutが変更された時に呼ぶ）
+        /// @brief Update button layout (call when UILayout has changed)
+        void updateButtonLayout() {
+            time_control_widget_.layoutButtons();
         }
 
         void render() const override {

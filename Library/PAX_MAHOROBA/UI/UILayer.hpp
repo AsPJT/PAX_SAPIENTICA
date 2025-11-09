@@ -168,6 +168,7 @@ namespace paxs {
             if (calendar_panel.isVisible()) {
                 calendar_panel.setCalendarParams(koyomi);
                 calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
+                calendar_panel.updateButtonLayout();
             }
 
             // 背景の可視性をパネルと同期
@@ -260,6 +261,7 @@ namespace paxs {
                     if (app_state_manager_) {
                         const auto& koyomi = app_state_manager_->getKoyomi();
                         ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                        calendar_panel.updateButtonLayout();
                     }
                 }
             );
