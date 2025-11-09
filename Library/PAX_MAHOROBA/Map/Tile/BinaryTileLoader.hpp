@@ -39,14 +39,12 @@ namespace paxs {
         /// @param local_path_with_zy Z と Y が既に置換されたローカルパス
         /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス
         /// @param x_value X 座標の文字列
-        /// @param current_map_view_height 現在のマップビュー高さ
         /// @return 読み込みに成功した場合はテクスチャのunique_ptr、失敗した場合はnullptr
         static std::unique_ptr<paxg::Texture> load(
             const std::string& binary_path_with_zy,
             const std::string& local_path_with_zy,
             const std::string& folder_path_with_zyx,
-            const std::string& x_value,
-            double current_map_view_height
+            const std::string& x_value
         ) {
             // バイナリパスと出力パスの X を置換
             std::string binary_path = binary_path_with_zy;
@@ -121,9 +119,6 @@ namespace paxs {
 
             // PNGファイルとして保存
             stbi_write_png(local_file_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(RGBAa)), rgba.data(), 0);
-
-            // Note: current_map_view_heightはこの時点では使用されていない
-            (void)current_map_view_height;
 
             // ファイル存在チェック
             if (!std::filesystem::exists(local_file_path)) {

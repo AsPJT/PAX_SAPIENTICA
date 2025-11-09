@@ -52,8 +52,9 @@ namespace paxs {
         std::string file_name_format = ("{z}/{x}/{y}");
         std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
 
-        // 1フレーム前のマップの高さ
-        double current_map_view_height = -1.0;
+        // 1フレーム前のズームレベル（整数キャッシュ）
+        unsigned int cached_magnification_z = 0;
+        unsigned int cached_z = 0;
 
         // 1フレーム前のビューポート座標（タイル範囲の再計算判定用）
         double cached_map_view_width = -1.0;
@@ -110,7 +111,10 @@ namespace paxs {
                 z = default_z;
             }
             z_num = (1 << z); // std::pow(2, z) と等価
-            current_map_view_height = map_view_height;
+
+            // 整数ズームレベルをキャッシュ
+            cached_magnification_z = magnification_z;
+            cached_z = z;
         }
 
         /// @brief 描画範囲内かどうかをチェック
@@ -283,8 +287,7 @@ namespace paxs {
                             binary_path_zny,
                             local_file_path_zny,
                             texture_folder_path_znyx,
-                            x_value,
-                            current_map_view_height
+                            x_value
                         );
 
                         if (texture) {
@@ -308,17 +311,11 @@ namespace paxs {
             const double map_view_center_x, // 描画される地図の中心経度
             const double map_view_center_y // 描画される地図の中心緯度
         ) {
-            bool zoom_changed = false;
+            // ズームレベルを更新（毎フレーム実行）
+            updateZoomLevel(map_view_height);
 
-            // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
-            if (isDifferent(current_map_view_height, map_view_height)) {
-                const unsigned int old_mag_z = magnification_z;
-                const unsigned int old_z = z;
-                updateZoomLevel(map_view_height);
-
-                // ★ 実際にズームレベルが変わった場合のみzoom_changed=trueにする
-                zoom_changed = (old_mag_z != magnification_z || old_z != z);
-            }
+            // ★ 整数ズームレベルが変わった場合のみzoom_changed=trueにする
+            const bool zoom_changed = (cached_magnification_z != magnification_z || cached_z != z);
 
             // タイル範囲を常に更新（座標空間の不整合を防ぐため）
             const bool range_changed = updateTileRange(map_view_width, map_view_height,

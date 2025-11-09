@@ -94,15 +94,14 @@ namespace paxs {
             const int date
         ) {
             // 拡大率が描画範囲外の場合は終了
-            const unsigned int magnification_z = tile.getMagnificationZ();
-            if (magnification_z < tile.getDrawMinZ()) return;
-            if (magnification_z > tile.getDrawMaxZ()) return;
+            // ★ タイルロードと一致させるため、magnification_z ではなく z を使用
+            const unsigned int z = tile.getZ();
+            if (z < tile.getDrawMinZ()) return;
+            if (z > tile.getDrawMaxZ()) return;
 
             // 描画する期間外の場合は終了
             if (tile.getMinDate() != 99999999 && tile.getMinDate() > date) return;
             if (tile.getMaxDate() != 99999999 && tile.getMaxDate() < date) return;
-
-            const unsigned int z = tile.getZ();
             const unsigned int z_num = tile.getZNum();
             const Vector2<int> start_cell = tile.getStartCell();
             const Vector2<int> end_cell = tile.getEndCell();
@@ -141,9 +140,10 @@ namespace paxs {
             const paxg::Color& color
         ) {
             // 拡大率が描画範囲外の場合は終了
-            const unsigned int magnification_z = tile.getMagnificationZ();
-            if (magnification_z < tile.getDrawMinZ()) return;
-            if (magnification_z > tile.getDrawMaxZ()) return;
+            // ★ タイルロードと一致させるため、magnification_z ではなく z を使用
+            const unsigned int z = tile.getZ();
+            if (z < tile.getDrawMinZ()) return;
+            if (z > tile.getDrawMaxZ()) return;
 
             const unsigned int z_num = tile.getZNum();
             const Vector2<int> start_cell = tile.getStartCell();
