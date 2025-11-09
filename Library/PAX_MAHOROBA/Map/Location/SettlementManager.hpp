@@ -84,6 +84,18 @@ namespace paxs {
             is_line_ = is_line;
             is_arrow_ = is_arrow;
         }
+
+        /// @brief キャッシュをクリア（シミュレーションクリア時に呼ぶ）
+        /// @brief Clear cache (call when simulation is cleared)
+        void clearCache() {
+            cached_agents_ = nullptr;
+            cached_marriage_pos_list_ = nullptr;
+            cached_jdn_ = 0.0;
+            cached_map_view_width_ = 0.0;
+            cached_map_view_height_ = 0.0;
+            cached_map_view_center_x_ = 0.0;
+            cached_map_view_center_y_ = 0.0;
+        }
     };
 }
 

@@ -162,9 +162,9 @@ namespace paxs {
                 app_state_manager_->executeInitHumanData(model_name);
                 break;
             }
-            case SimulationControlButton::Id::Reset: {
-                // シミュレーションをリセット（初期化前の状態に戻す）
-                app_state_manager_->executeSimulationReset();
+            case SimulationControlButton::Id::Clear: {
+                // シミュレーションをクリア（初期化前の状態に戻す）
+                app_state_manager_->executeSimulationClear();
                 break;
             }
             case SimulationControlButton::Id::Play: {

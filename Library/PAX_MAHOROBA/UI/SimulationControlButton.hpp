@@ -28,7 +28,7 @@ namespace paxs {
             Stop, // 初期化済 & 再生中
             ReloadInputData, // 初期化済 & 停止中
             InitHumanData,
-            Reset, // シミュレーションを初期化前の状態に戻す
+            Clear, // シミュレーションを初期化前の状態に戻す
             Play,
             Step,
             None,
@@ -38,7 +38,7 @@ namespace paxs {
             {"SimulationStopButton", MurMur3::calcHash("texture_stop")},
             {"SimulationReloadInputDataButton", MurMur3::calcHash("texture_reload")},
             {"SimulationInitHumanDataButton", MurMur3::calcHash("texture_load_agent_data2")},
-            {"SimulationResetButton", MurMur3::calcHash("texture_delete_geographic_data")},
+            {"SimulationClearButton", MurMur3::calcHash("texture_delete_geographic_data")},
             {"SimulationPlayButton", MurMur3::calcHash("texture_playback")},
             {"SimulationStepButton", MurMur3::calcHash("texture_1step")},
         }};
@@ -186,7 +186,7 @@ namespace paxs {
                 case SimulationControlButton::Id::LoadGeographicData:
                     btn.placeFromRight(X_LOAD_OR_DELETE, base_y, TIME_ICON_SIZE);
                     break;
-                case SimulationControlButton::Id::Reset:
+                case SimulationControlButton::Id::Clear:
                     // 同じ位置に置いておいて、表示のON/OFFは外部状態で切る想定でもOK
                     btn.placeFromRight(X_LOAD_OR_DELETE, base_y, TIME_ICON_SIZE);
                     break;
@@ -245,7 +245,7 @@ namespace paxs {
             buttons_.emplace_back(SimulationControlButton::Id::Stop);
             buttons_.emplace_back(SimulationControlButton::Id::ReloadInputData);
             buttons_.emplace_back(SimulationControlButton::Id::InitHumanData);
-            buttons_.emplace_back(SimulationControlButton::Id::Reset);
+            buttons_.emplace_back(SimulationControlButton::Id::Clear);
             buttons_.emplace_back(SimulationControlButton::Id::Play);
             buttons_.emplace_back(SimulationControlButton::Id::Step);
 

@@ -78,9 +78,9 @@ namespace paxs {
             is_initialized_ = true;
         }
 
-        /// @brief シミュレーションをリセット（初期化前の状態に戻す）
-        /// @brief Reset simulation (return to uninitialized state)
-        void reset() {
+        /// @brief シミュレーションをクリア（初期化前の状態に戻す）
+        /// @brief Clear simulation (return to uninitialized state)
+        void clear() {
             simulator_.reset();       // シミュレータを破棄
             is_initialized_ = false;  // 初期化フラグをfalseに
             current_model_name_.clear(); // モデル名をクリア

@@ -187,10 +187,10 @@ public:
         event_bus_.publish(InitHumanDataCommandEvent(model_name));
     }
 
-    /// @brief シミュレーションリセットコマンドを実行
-    /// @brief Execute simulation reset command
-    void executeSimulationReset() {
-        event_bus_.publish(SimulationResetCommandEvent());
+    /// @brief シミュレーションクリアコマンドを実行
+    /// @brief Execute simulation clear command
+    void executeSimulationClear() {
+        event_bus_.publish(SimulationClearCommandEvent());
     }
 #endif
 
@@ -313,10 +313,10 @@ private:
             }
         );
 
-        // シミュレーションリセットコマンドの購読
-        event_bus_.subscribe<SimulationResetCommandEvent>(
-            [this](const SimulationResetCommandEvent& event) {
-                handleSimulationReset(event);
+        // シミュレーションクリアコマンドの購読
+        event_bus_.subscribe<SimulationClearCommandEvent>(
+            [this](const SimulationClearCommandEvent& event) {
+                handleSimulationClear(event);
             }
         );
 #endif
@@ -512,11 +512,11 @@ private:
         ));
     }
 
-    /// @brief シミュレーションリセットコマンドを処理
-    /// @brief Handle simulation reset command
-    void handleSimulationReset(const SimulationResetCommandEvent& /*event*/) {
+    /// @brief シミュレーションクリアコマンドを処理
+    /// @brief Handle simulation clear command
+    void handleSimulationClear(const SimulationClearCommandEvent& /*event*/) {
         // ドメインロジック実行：シミュレーションを初期化前の状態に戻す
-        simulation_manager_.reset();
+        simulation_manager_.clear();
         koyomi_.steps.setDay(0);
         koyomi_.calcDate();
 

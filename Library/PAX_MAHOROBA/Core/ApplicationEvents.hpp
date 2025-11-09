@@ -226,10 +226,10 @@ struct InitHumanDataCommandEvent : Event {
         : model_name(model) {}
 };
 
-/// @brief シミュレーションリセットコマンドイベント
-/// @brief Simulation reset command event
-struct SimulationResetCommandEvent : Event {
-    SimulationResetCommandEvent() = default;
+/// @brief シミュレーションクリアコマンドイベント
+/// @brief Simulation clear command event
+struct SimulationClearCommandEvent : Event {
+    SimulationClearCommandEvent() = default;
 };
 
 // ========================================

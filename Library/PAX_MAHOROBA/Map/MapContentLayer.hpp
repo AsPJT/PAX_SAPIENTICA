@@ -261,6 +261,15 @@ namespace paxs {
                     }
                 }
             );
+
+            // シミュレーションクリアイベントの購読
+            event_bus_->subscribe<SimulationClearCommandEvent>(
+                [this](const SimulationClearCommandEvent& event) {
+                    (void)event;
+                    // キャッシュをクリアして無効な参照を防ぐ
+                    settlement_manager_.clearCache();
+                }
+            );
 #endif
         }
     };
