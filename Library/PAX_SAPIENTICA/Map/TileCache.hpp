@@ -27,8 +27,8 @@ namespace paxs {
     template<typename TextureType>
     class TileCache {
     public:
-        /// @brief キャッシュサイズの上限（デフォルト: 500タイル = 約128MB）
-        static constexpr std::size_t default_max_cache_size = 500;
+        /// @brief キャッシュサイズの上限（デフォルト: 5000タイル = 約1280MB）
+        static constexpr std::size_t default_max_cache_size = 5000;
 
         /// @brief コンストラクタ
         /// @param max_size キャッシュサイズ上限
