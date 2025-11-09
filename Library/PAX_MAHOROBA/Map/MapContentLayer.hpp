@@ -73,6 +73,9 @@ namespace paxs {
             app_state_manager_ = app_state_manager;
             if (app_state_manager_ != nullptr) {
                 event_bus_ = &EventBus::getInstance();
+#ifdef PAXS_USING_SIMULATOR
+                settlement_input_handler_.setEventBus(event_bus_);
+#endif
                 subscribeToEvents();
                 // 初回更新を即座に実行
                 updateAllContentData();
@@ -272,6 +275,17 @@ namespace paxs {
                     (void)event;
                     // キャッシュをクリアして無効な参照を防ぐ
                     settlement_manager_.clearCache();
+                }
+            );
+
+            // 集落表示設定変更イベントの購読
+            // Settlement表示設定（select_draw, is_line, is_arrow）変更時
+            event_bus_->subscribe<SettlementDisplayChangedEvent>(
+                [this](const SettlementDisplayChangedEvent& event) {
+                    (void)event;
+                    if (app_state_manager_) {
+                        updateSettlementData();
+                    }
                 }
             );
 #endif

@@ -16,6 +16,8 @@
 
 #include <PAX_GRAPHICA/Key.hpp>
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Input/IEventHandler.hpp>
 
 namespace paxs {
@@ -28,6 +30,12 @@ namespace paxs {
     class SettlementInputHandler : public IEventHandler {
     public:
         SettlementInputHandler() = default;
+
+        /// @brief EventBusを設定
+        /// @brief Set EventBus
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+        }
 
         // IEventHandler の実装
         // IEventHandler implementation
@@ -69,23 +77,43 @@ namespace paxs {
         bool is_arrow_ = true;          // 移動線（矢印）を表示するか
         bool visible_ = true;
         bool enabled_ = true;
+        EventBus* event_bus_ = nullptr;
+
+        /// @brief 設定変更イベントを発行
+        /// @brief Notify settlement display settings changed
+        void notifyDisplayChanged() {
+            if (event_bus_ != nullptr) {
+                event_bus_->publish(SettlementDisplayChangedEvent(
+                    select_draw_,
+                    is_line_,
+                    is_arrow_
+                ));
+            }
+        }
 
         /// @brief キーボード入力を処理してSettlementRendererの状態を更新（内部メソッド）
         /// @brief Process keyboard input and update SettlementRenderer state (internal method)
         void update() {
+            bool changed = false;
+
             // 1-6キーで表示モードを切り替え
-            if (Key(PAXG_KEY_1).isPressed()) select_draw_ = 1;
-            else if (Key(PAXG_KEY_2).isPressed()) select_draw_ = 2;
-            else if (Key(PAXG_KEY_3).isPressed()) select_draw_ = 3;
-            else if (Key(PAXG_KEY_4).isPressed()) select_draw_ = 4;
-            else if (Key(PAXG_KEY_5).isPressed()) select_draw_ = 5;
-            else if (Key(PAXG_KEY_6).isPressed()) select_draw_ = 6;
+            if (Key(PAXG_KEY_1).isPressed()) { select_draw_ = 1; changed = true; }
+            else if (Key(PAXG_KEY_2).isPressed()) { select_draw_ = 2; changed = true; }
+            else if (Key(PAXG_KEY_3).isPressed()) { select_draw_ = 3; changed = true; }
+            else if (Key(PAXG_KEY_4).isPressed()) { select_draw_ = 4; changed = true; }
+            else if (Key(PAXG_KEY_5).isPressed()) { select_draw_ = 5; changed = true; }
+            else if (Key(PAXG_KEY_6).isPressed()) { select_draw_ = 6; changed = true; }
 
             // Lキーでグリッド線表示を切り替え
-            else if (Key(PAXG_KEY_L).isPressed()) is_line_ = !is_line_;
+            else if (Key(PAXG_KEY_L).isPressed()) { is_line_ = !is_line_; changed = true; }
 
             // Kキーで移動矢印表示を切り替え
-            else if (Key(PAXG_KEY_K).isPressed()) is_arrow_ = !is_arrow_;
+            else if (Key(PAXG_KEY_K).isPressed()) { is_arrow_ = !is_arrow_; changed = true; }
+
+            // 設定が変更された場合はイベントを発行
+            if (changed) {
+                notifyDisplayChanged();
+            }
         }
     };
 

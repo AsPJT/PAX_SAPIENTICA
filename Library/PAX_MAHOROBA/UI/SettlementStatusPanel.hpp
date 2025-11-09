@@ -37,7 +37,7 @@ namespace paxs {
         void render() const override {
             if (!visible_) return;
 
-            const std::string text = getStatusText(select_draw_);
+            const std::string text = getStatusText();
 
             // フォントを取得
             paxg::Font* font = Fonts().getFont(
@@ -122,8 +122,8 @@ namespace paxs {
         /// @brief Get text according to display mode
         /// @param select_draw 表示モード (1-6)
         /// @return 表示するテキスト / Text to display
-        std::string getStatusText(std::size_t select_draw) const {
-            switch (select_draw) {
+        std::string getStatusText() const {
+            switch (select_draw_) {
                 case 1:
                     return reinterpret_cast<const char*>(u8"1. 人口 Population");
                 case 2:

@@ -100,11 +100,6 @@ namespace paxs {
 
 
 #ifdef PAXS_USING_SIMULATOR
-            // SettlementStatusPanel の表示モードを更新
-            ui_layer_.getSettlementStatusPanel().setSelectDraw(
-                map_content_layer_.getSettlementInputHandler().getSelectDraw()
-            );
-
             // シミュレーターが初期化されている かつ Simulation可視フラグがONの場合のみ表示
             const bool simulation_visible = visible_manager.isVisible(FeatureVisibilityManager::View::Simulation);
             ui_layer_.getSettlementStatusPanel().setVisible(

@@ -146,6 +146,17 @@ struct SimulationStepExecutedEvent : Event {
         : current_step(step), total_population(population) {}
 };
 
+/// @brief 集落表示設定変更イベント
+/// @brief Settlement display settings changed event
+struct SettlementDisplayChangedEvent : Event {
+    const std::size_t select_draw;
+    const bool is_line;
+    const bool is_arrow;
+
+    SettlementDisplayChangedEvent(std::size_t draw, bool line, bool arrow)
+        : select_draw(draw), is_line(line), is_arrow(arrow) {}
+};
+
 // ========================================
 // Command Events (UI → Domain)
 // ========================================

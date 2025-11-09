@@ -330,6 +330,14 @@ namespace paxs {
                     (void)event;
                 }
             );
+
+            // 集落表示設定変更イベントの購読
+            event_bus_->subscribe<SettlementDisplayChangedEvent>(
+                [this](const SettlementDisplayChangedEvent& event) {
+                    // SettlementStatusPanelの表示モードを更新
+                    settlement_status_panel.setSelectDraw(event.select_draw);
+                }
+            );
 #endif
         }
     };
