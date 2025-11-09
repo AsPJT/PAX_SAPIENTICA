@@ -29,7 +29,7 @@ namespace paxs {
         constexpr const char* VIEW_SIMULATION = "menu_bar_view_simulation";
         constexpr const char* VIEW_LICENSE = "menu_bar_view_license";
         constexpr const char* VIEW_DEBUG = "menu_bar_view_debug";
-        constexpr const char* VIEW_3D = "menu_bar_view_3d";
+        // constexpr const char* VIEW_3D = "menu_bar_view_3d";
 
         /// @brief View メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array VIEW_MENU_HASHES = {
@@ -39,8 +39,8 @@ namespace paxs {
             MurMur3::calcHash(VIEW_UI),
             MurMur3::calcHash(VIEW_SIMULATION),
             MurMur3::calcHash(VIEW_LICENSE),
-            MurMur3::calcHash(VIEW_DEBUG),
-            MurMur3::calcHash(VIEW_3D)
+            MurMur3::calcHash(VIEW_DEBUG)
+            // MurMur3::calcHash(VIEW_3D)
         };
 
         // Feature メニュー
