@@ -144,7 +144,6 @@ namespace paxs {
             return bar_rect_;
         }
 
-        // TODO: 言語更新の時に
         void updateMenuWidth() {
             for (paxs::DropDownMenu& menu : menu_list) {
                 menu.updateLanguage();

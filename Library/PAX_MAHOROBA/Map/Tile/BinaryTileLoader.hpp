@@ -22,8 +22,6 @@
 
 #include <PAX_GRAPHICA/Texture.hpp>
 
-#include <PAX_MAHOROBA/Map/Tile/ITileLoader.hpp>
-
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>

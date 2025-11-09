@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include <PAX_MAHOROBA/Map/Tile/ITileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/BinaryTileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/UrlTileLoader.hpp>
@@ -36,6 +35,9 @@ namespace paxs {
 
     class XYZTile {
     private:
+        // 浮動小数点比較の許容誤差
+        static constexpr double VIEWPORT_EPSILON = 1e-9;
+
         // XYZ タイルの 1 つのセルのメルカトル座標を保持
         // 基本的に Z = 19 は無い
 
@@ -116,6 +118,14 @@ namespace paxs {
             return magnification_z >= draw_min_z && magnification_z <= draw_max_z;
         }
 
+        /// @brief 浮動小数点数が異なるかどうかを判定（許容誤差考慮）
+        /// @param a 値1
+        /// @param b 値2
+        /// @return 異なる場合true
+        static bool isDifferent(double a, double b) {
+            return std::abs(a - b) >= VIEWPORT_EPSILON;
+        }
+
         /// @brief タイル範囲を更新
         /// @param zoom_changed ズームレベルが変更されたかどうか
         /// @return タイル範囲が変更された場合true
@@ -147,9 +157,9 @@ namespace paxs {
             }
 
             // ビューポートが変わっていない場合はスキップ（浮動小数点の精度問題を回避）
-            if (cached_map_view_width == map_view_width &&
-                cached_map_view_center_x == map_view_center_x &&
-                cached_map_view_center_y == map_view_center_y) {
+            if (!isDifferent(cached_map_view_width, map_view_width) &&
+                !isDifferent(cached_map_view_center_x, map_view_center_x) &&
+                !isDifferent(cached_map_view_center_y, map_view_center_y)) {
                 return false;
             }
 
@@ -301,7 +311,7 @@ namespace paxs {
             bool zoom_changed = false;
 
             // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
-            if (current_map_view_height != map_view_height) {
+            if (isDifferent(current_map_view_height, map_view_height)) {
                 const unsigned int old_mag_z = magnification_z;
                 const unsigned int old_z = z;
                 updateZoomLevel(map_view_height);

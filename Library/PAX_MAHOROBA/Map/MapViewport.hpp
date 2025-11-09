@@ -25,6 +25,9 @@ namespace paxs {
 
     // Map viewport constants
     namespace MapViewportConstants {
+        // Floating-point comparison epsilon
+        static constexpr double coordinate_epsilon = 1e-9;
+
         // Map view default values
         static constexpr double default_movement_size = 200.0;
         static constexpr double default_expansion_size = 50.0;
@@ -94,6 +97,15 @@ namespace paxs {
                 ));
             }
         }
+
+        /// @brief 浮動小数点数が異なるかどうかを判定（許容誤差考慮）
+        /// @param a 値1
+        /// @param b 値2
+        /// @return 異なる場合true
+        static bool isDifferent(double a, double b) {
+            return std::abs(a - b) >= MapViewportConstants::coordinate_epsilon;
+        }
+
         /// @brief ビューポートの境界制約を適用（Domain層の責任）
         /// @brief Apply boundary constraints to viewport (Domain layer responsibility)
         /// @return 座標が変更された場合true
@@ -143,34 +155,34 @@ namespace paxs {
 #endif
 
             // 座標が変更されたかチェック
-            if (center.getX() != old_center_x || center.getY() != old_center_y) {
+            if (isDifferent(center.getX(), old_center_x) || isDifferent(center.getY(), old_center_y)) {
                 changed = true;
             }
 
             return changed;
         }
         void setSize(const double new_height) {
-            if (height != new_height) {
+            if (isDifferent(height, new_height)) {
                 height = new_height;
                 width = height / double(paxg::Window::height()) * double(paxg::Window::width());
                 notifyViewportChanged();
             }
         }
         void setCenterX(const double x_) {
-            if (center.getX() != x_) {
+            if (isDifferent(center.getX(), x_)) {
                 center.setX(x_);
                 notifyViewportChanged();
             }
         }
         void setCenterY(const double y_) {
-            if (center.getY() != y_) {
+            if (isDifferent(center.getY(), y_)) {
                 center.setY(y_);
                 notifyViewportChanged();
             }
         }
         /// @brief X座標とY座標を同時に設定（イベント通知は1回のみ）
         void setCenter(const double x_, const double y_) {
-            if (center.getX() != x_ || center.getY() != y_) {
+            if (isDifferent(center.getX(), x_) || isDifferent(center.getY(), y_)) {
                 center.setX(x_);
                 center.setY(y_);
                 notifyViewportChanged();
