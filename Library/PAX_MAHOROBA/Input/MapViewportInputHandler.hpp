@@ -74,7 +74,8 @@ namespace paxs {
         /// @brief Handle zoom by mouse wheel
         /// @param viewport MapViewport参照 / MapViewport reference
         /// @param event マウスホイールイベント / Mouse wheel event
-        void handleMouseWheelZoom(MapViewport& viewport, const MouseWheelEvent& event) {
+        /// @return ビューポートが変更された場合true / true if viewport was changed
+        bool handleMouseWheelZoom(MapViewport& viewport, const MouseWheelEvent& event) {
             double height = viewport.getHeight();
             const double min_height = viewport.getMinHeight();
             const double max_height = viewport.getMaxHeight();
@@ -83,6 +84,7 @@ namespace paxs {
             height = (std::clamp)(height, min_height, max_height);
 
             viewport.setSize(height);
+            return true; // 常にズームが変更される
         }
 
         /// @brief マウスドラッグによる移動処理（デスクトップ）
@@ -117,8 +119,8 @@ namespace paxs {
                     center_y += MapViewportConstants::longitude_max;
                 }
 
-                viewport.setCenterX(center_x);
-                viewport.setCenterY(center_y);
+                // X座標とY座標を同時に設定（イベント通知は1回のみ）
+                viewport.setCenter(center_x, center_y);
             }
 #endif
         }
@@ -166,8 +168,8 @@ namespace paxs {
                     center_y += MapViewportConstants::longitude_max;
                 }
 
-                viewport.setCenterX(center_x);
-                viewport.setCenterY(center_y);
+                // X座標とY座標を同時に設定（イベント通知は1回のみ）
+                viewport.setCenter(center_x, center_y);
             }
             // 2本指タッチ：ピンチズーム
             else if (old_touch_num == 2 && touch_num == 2) {
@@ -208,11 +210,13 @@ namespace paxs {
         /// @brief キーボードによるズーム処理（Q/Eキー）
         /// @brief Handle zoom by keyboard (Q/E keys)
         /// @note Public access for selective input processing
-        void handleKeyboardZoom(MapViewport& viewport) {
+        /// @return ビューポートが変更された場合true / true if viewport was changed
+        bool handleKeyboardZoom(MapViewport& viewport) {
             double height = viewport.getHeight();
             const double min_height = viewport.getMinHeight();
             const double max_height = viewport.getMaxHeight();
             const double expansion_size = viewport.getExpansionSize();
+            bool changed = false;
 
             // Q キー：ズームイン
             if (pressed(enl_keys)) {
@@ -223,6 +227,7 @@ namespace paxs {
                     }
                 }
                 viewport.setSize(height);
+                changed = true;
             }
 
             // E キー：ズームアウト
@@ -234,7 +239,10 @@ namespace paxs {
                     }
                 }
                 viewport.setSize(height);
+                changed = true;
             }
+
+            return changed;
         }
 
         /// @brief MapViewportへの参照を設定してイベントを購読
@@ -274,8 +282,13 @@ namespace paxs {
             }
 
             // キーボード入力（Q/Eキーによるズーム）
-            handleKeyboardZoom(*viewport_);
-            viewport_->applyConstraints();
+            bool changed = handleKeyboardZoom(*viewport_);
+            if (changed) {
+                // 境界制約を適用して、座標が変更された場合は通知
+                if (viewport_->applyConstraints()) {
+                    viewport_->notifyViewportChanged();
+                }
+            }
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
@@ -289,8 +302,13 @@ namespace paxs {
             }
 
             // マウスホイール入力（ズーム）
-            handleMouseWheelZoom(*viewport_, event);
-            viewport_->applyConstraints();
+            bool changed = handleMouseWheelZoom(*viewport_, event);
+            if (changed) {
+                // 境界制約を適用して、座標が変更された場合は通知
+                if (viewport_->applyConstraints()) {
+                    viewport_->notifyViewportChanged();
+                }
+            }
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
@@ -315,6 +333,10 @@ namespace paxs {
             // ドラッグ中（Held状態）：ドラッグフラグONの時にドラッグ処理
             else if (event.left_button_state == MouseButtonState::Held && is_dragging_) {
                 handleMouseDrag(*viewport_, event);
+                // 境界制約を適用して、座標が変更された場合は通知
+                if (viewport_->applyConstraints()) {
+                    viewport_->notifyViewportChanged();
+                }
                 // ドラッグキャプチャを要求（UIの上でもドラッグを継続）
                 return EventHandlingResult::HandledWithCapture();
             }
@@ -330,7 +352,10 @@ namespace paxs {
             }
 
             handleTouchInput(*viewport_);
-            viewport_->applyConstraints();
+            // タッチ入力後も境界制約を適用して、座標が変更された場合は通知
+            if (viewport_->applyConstraints()) {
+                viewport_->notifyViewportChanged();
+            }
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 

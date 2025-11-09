@@ -74,6 +74,14 @@ namespace paxs {
         // イベントバスへのポインタ（オプション）
         EventBus* event_bus_ = nullptr;
 
+    public:
+        MapViewport() = default;
+
+        /// @brief EventBusを設定
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+        }
+
         /// @brief ビューポート変更イベントを発行
         /// @brief Notify viewport change event
         void notifyViewportChanged() {
@@ -87,19 +95,16 @@ namespace paxs {
                 ));
             }
         }
-
-    public:
-        MapViewport() = default;
-
-        /// @brief EventBusを設定
-        /// @brief Set EventBus for event notification
-        /// @param event_bus イベントバス
-        void setEventBus(EventBus* event_bus) {
-            event_bus_ = event_bus;
-        }
         /// @brief ビューポートの境界制約を適用（Domain層の責任）
         /// @brief Apply boundary constraints to viewport (Domain layer responsibility)
-        void applyConstraints() {
+        /// @return 座標が変更された場合true
+        bool applyConstraints() {
+            bool changed = false;
+
+            // 高さの制約前の値を保存
+            const double old_center_x = center.getX();
+            const double old_center_y = center.getY();
+
             // 高さの制約
             height = (std::clamp)(height, min_height, max_height);
             width = height / double(paxg::Window::height()) * double(paxg::Window::width());
@@ -140,6 +145,13 @@ namespace paxs {
                 center.setY(south_max + height / 2);
             }
 #endif
+
+            // 座標が変更されたかチェック
+            if (center.getX() != old_center_x || center.getY() != old_center_y) {
+                changed = true;
+            }
+
+            return changed;
         }
         void setSize(const double new_height) {
             if (height != new_height) {
@@ -156,6 +168,14 @@ namespace paxs {
         }
         void setCenterY(const double y_) {
             if (center.getY() != y_) {
+                center.setY(y_);
+                notifyViewportChanged();
+            }
+        }
+        /// @brief X座標とY座標を同時に設定（イベント通知は1回のみ）
+        void setCenter(const double x_, const double y_) {
+            if (center.getX() != x_ || center.getY() != y_) {
+                center.setX(x_);
                 center.setY(y_);
                 notifyViewportChanged();
             }
