@@ -53,6 +53,11 @@ namespace paxs {
         // 1フレーム前のマップの高さ
         double current_map_view_height = -1.0;
 
+        // 1フレーム前のビューポート座標（タイル範囲の再計算判定用）
+        double cached_map_view_width = -1.0;
+        double cached_map_view_center_x = 0.0;
+        double cached_map_view_center_y = 0.0;
+
         // XYZ タイルの画面上の始点セル
         Vector2<int> start_cell{};
         // XYZ タイルの画面上の終点セル
@@ -112,14 +117,46 @@ namespace paxs {
         }
 
         /// @brief タイル範囲を更新
+        /// @param zoom_changed ズームレベルが変更されたかどうか
         /// @return タイル範囲が変更された場合true
         bool updateTileRange(
             const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
-            const double map_view_center_y
+            const double map_view_center_y,
+            const bool zoom_changed
         ) {
-            bool need_update = false;
+            // ズームレベルが変わった場合は必ず更新
+            if (zoom_changed) {
+                // キャッシュを更新
+                cached_map_view_width = map_view_width;
+                cached_map_view_center_x = map_view_center_x;
+                cached_map_view_center_y = map_view_center_y;
+
+                // タイル範囲を計算
+                TileCoordinate coord(z, z_num);
+                start_cell = coord.calculateStartCell(
+                    map_view_center_x, map_view_center_y,
+                    map_view_width, map_view_height
+                );
+                end_cell = coord.calculateEndCell(
+                    map_view_center_x, map_view_center_y,
+                    map_view_width, map_view_height
+                );
+                return true;
+            }
+
+            // ビューポートが変わっていない場合はスキップ（浮動小数点の精度問題を回避）
+            if (cached_map_view_width == map_view_width &&
+                cached_map_view_center_x == map_view_center_x &&
+                cached_map_view_center_y == map_view_center_y) {
+                return false;
+            }
+
+            // ビューポートが変わった場合はタイル範囲を再計算
+            cached_map_view_width = map_view_width;
+            cached_map_view_center_x = map_view_center_x;
+            cached_map_view_center_y = map_view_center_y;
 
             TileCoordinate coord(z, z_num);
             const Vector2<int> new_start_cell = coord.calculateStartCell(
@@ -127,22 +164,19 @@ namespace paxs {
                 map_view_width, map_view_height
             );
 
-            if (new_start_cell != start_cell) {
-                start_cell = new_start_cell;
-                need_update = true;
-            }
-
             const Vector2<int> new_end_cell = coord.calculateEndCell(
                 map_view_center_x, map_view_center_y,
                 map_view_width, map_view_height
             );
 
-            if (new_end_cell != end_cell) {
+            // 実際に範囲が変わったかチェック
+            if (new_start_cell != start_cell || new_end_cell != end_cell) {
+                start_cell = new_start_cell;
                 end_cell = new_end_cell;
-                need_update = true;
+                return true;
             }
 
-            return need_update;
+            return false;
         }
 
         /// @brief 表示範囲内のタイルを読み込む
@@ -264,22 +298,30 @@ namespace paxs {
             const double map_view_center_x, // 描画される地図の中心経度
             const double map_view_center_y // 描画される地図の中心緯度
         ) {
+            bool zoom_changed = false;
+
             // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
             if (current_map_view_height != map_view_height) {
+                const unsigned int old_mag_z = magnification_z;
+                const unsigned int old_z = z;
                 updateZoomLevel(map_view_height);
+
+                // ★ 実際にズームレベルが変わった場合のみzoom_changed=trueにする
+                zoom_changed = (old_mag_z != magnification_z || old_z != z);
             }
 
-            // 拡大率が描画範囲外の場合はここで処理を終了
+            // タイル範囲を常に更新（座標空間の不整合を防ぐため）
+            const bool range_changed = updateTileRange(map_view_width, map_view_height,
+                                                        map_view_center_x, map_view_center_y,
+                                                        zoom_changed);
+
+            // 拡大率が描画範囲外の場合はタイルロードをスキップ
             if (!isInDrawRange()) return;
 
-            // タイル範囲を更新（範囲が変わっていない場合は処理をスキップ）
-            if (!updateTileRange(map_view_width, map_view_height,
-                                 map_view_center_x, map_view_center_y)) {
-                return; // 地図が前回と同じ場所の場合は更新処理をしない
+            // ズームレベルが変わったか、範囲が変わった場合のみタイルをロード
+            if (zoom_changed || range_changed) {
+                loadVisibleTiles();
             }
-
-            // 表示範囲内のタイルを読み込む
-            loadVisibleTiles();
         }
 
         XYZTile(

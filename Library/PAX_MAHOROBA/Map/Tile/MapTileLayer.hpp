@@ -88,6 +88,25 @@ namespace paxs {
             visible_ = visible;
         }
 
+        /// @brief タイルデータを更新（メインループから明示的に呼び出し）
+        void updateTileData() {
+            if (!app_state_manager_) return;
+
+            const auto& visible = app_state_manager_->getVisibilityManager();
+            const auto& map_viewport = app_state_manager_->getMapViewport();
+
+            const double map_viewport_width = map_viewport.getWidth();
+            const double map_viewport_height = map_viewport.getHeight();
+            const double map_viewport_center_x = map_viewport.getCenterX();
+            const double map_viewport_center_y = map_viewport.getCenterY();
+
+            // 更新処理
+            for (auto&& xyz_tile : xyz_tile_list) {
+                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) continue;
+                xyz_tile.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
+            }
+        }
+
     private:
         /// @brief 初期タイルをプリロード
         /// @brief Preload initial tiles before first render
@@ -111,63 +130,12 @@ namespace paxs {
             initial_tiles_preloaded_ = true;
         }
 
-        /// @brief タイルデータを更新
-        /// @brief Update tile data
-        void updateTileData() {
-            if (!app_state_manager_) return;
-
-            const auto& visible = app_state_manager_->getVisibilityManager();
-            const auto& map_viewport = app_state_manager_->getMapViewport();
-
-            const double map_viewport_width = map_viewport.getWidth();
-            const double map_viewport_height = map_viewport.getHeight();
-            const double map_viewport_center_x = map_viewport.getCenterX();
-            const double map_viewport_center_y = map_viewport.getCenterY();
-
-            // 更新処理
-            for (auto&& xyz_tile : xyz_tile_list) {
-                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) continue;
-                xyz_tile.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
-            }
-        }
-
         /// @brief イベントを購読
         /// @brief Subscribe to events
         void subscribeToEvents() {
             if (event_bus_ == nullptr) return;
 
-            // ビューポート変更イベントの購読
-            event_bus_->subscribe<ViewportChangedEvent>(
-                [this](const ViewportChangedEvent& event) {
-                    (void)event;
-                    if (app_state_manager_) {
-                        // イベント受信時に即座にタイルデータを更新
-                        updateTileData();
-                    }
-                }
-            );
-
-            // 日付変更イベントの購読
-            event_bus_->subscribe<DateChangedEvent>(
-                [this](const DateChangedEvent& event) {
-                    (void)event;
-                    if (app_state_manager_) {
-                        // イベント受信時に即座にタイルデータを更新
-                        updateTileData();
-                    }
-                }
-            );
-
-            // レイヤー可視性変更イベントの購読
-            event_bus_->subscribe<MapLayerVisibilityChangedEvent>(
-                [this](const MapLayerVisibilityChangedEvent& event) {
-                    (void)event;
-                    if (app_state_manager_) {
-                        // イベント受信時に即座にタイルデータを更新
-                        updateTileData();
-                    }
-                }
-            );
+            // TODO: 必要に応じてイベント購読を追加
         }
     };
 }

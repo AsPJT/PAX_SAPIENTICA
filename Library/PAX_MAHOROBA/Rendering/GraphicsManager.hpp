@@ -88,6 +88,12 @@ namespace paxs {
         GraphicsManager(GraphicsManager&&) = delete;
         GraphicsManager& operator=(GraphicsManager&&) = delete;
 
+        /// @brief タイルデータを更新（描画前に呼び出し）
+        /// @brief Update tile data (called before rendering)
+        void updateTiles() {
+            map_tile_layer_.updateTileData();
+        }
+
         /// @brief 描画処理のみを実行
         /// @details データはAppStateManagerから直接取得し、イベント駆動で更新される
         void render() {
