@@ -66,6 +66,10 @@ namespace paxs {
         // XYZ タイルの画面上の終点セル
         Vector2<int> end_cell{};
 
+        // バイナリタイル読み込み用の再利用バッファ
+        std::vector<unsigned char> binary_buffer_;
+        std::vector<paxs::TileRGBA> rgba_buffer_;
+
         // 99999999 の場合は固定なし
         int min_date = 99999999;
         int max_date = 99999999;
@@ -287,7 +291,9 @@ namespace paxs {
                             binary_path_zny,
                             local_file_path_zny,
                             texture_folder_path_znyx,
-                            x_value
+                            x_value,
+                            binary_buffer_,  // バッファを渡す
+                            rgba_buffer_     // バッファを渡す
                         );
 
                         if (texture) {
@@ -312,15 +318,15 @@ namespace paxs {
             const double map_view_center_y // 描画される地図の中心緯度
         ) {
             // ズームレベルを更新（毎フレーム実行）
-            updateZoomLevel(map_view_height);
+                updateZoomLevel(map_view_height);
 
             // ★ 整数ズームレベルが変わった場合のみzoom_changed=trueにする
             const bool zoom_changed = (cached_magnification_z != magnification_z || cached_z != z);
 
             // タイル範囲を常に更新（座標空間の不整合を防ぐため）
             const bool range_changed = updateTileRange(map_view_width, map_view_height,
-                                                        map_view_center_x, map_view_center_y,
-                                                        zoom_changed);
+                map_view_center_x, map_view_center_y,
+                zoom_changed);
 
             // 拡大率が描画範囲外の場合はタイルロードをスキップ
             if (!isInDrawRange()) return;

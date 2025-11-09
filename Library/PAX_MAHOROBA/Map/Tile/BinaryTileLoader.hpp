@@ -16,6 +16,7 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <vector>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image_write.h>
@@ -29,6 +30,14 @@
 
 namespace paxs {
 
+    /// @brief RGBA構造体 (BinaryTileLoader で使用)
+    struct TileRGBA {
+        unsigned char r, g, b, a; //赤, 緑, 青, 透過
+        TileRGBA() : r(0), g(0), b(0), a(0) {}
+        constexpr TileRGBA(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_)
+            : r(r_), g(g_), b(b_), a(a_) {}
+    };
+
     /// @brief バイナリデータからPNGに変換してタイルを読み込むローダー
     /// @brief Loader for converting binary data to PNG and loading tiles
     class BinaryTileLoader {
@@ -39,12 +48,17 @@ namespace paxs {
         /// @param local_path_with_zy Z と Y が既に置換されたローカルパス
         /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス
         /// @param x_value X 座標の文字列
+        /// @param current_map_view_height 現在のマップビュー高さ
+        /// @param binary_buffer [in/out] バイナリデータ読み込み用の再利用バッファ (サイズ tile_pixels)
+        /// @param rgba_buffer [in/out] RGBA変換用の再利用バッファ (サイズ tile_pixels)
         /// @return 読み込みに成功した場合はテクスチャのunique_ptr、失敗した場合はnullptr
         static std::unique_ptr<paxg::Texture> load(
             const std::string& binary_path_with_zy,
             const std::string& local_path_with_zy,
             const std::string& folder_path_with_zyx,
-            const std::string& x_value
+            const std::string& x_value,
+            std::vector<unsigned char>& binary_buffer, // 引数で受け取る
+            std::vector<TileRGBA>& rgba_buffer         // 引数で受け取る
         ) {
             // バイナリパスと出力パスの X を置換
             std::string binary_path = binary_path_with_zy;
@@ -58,29 +72,28 @@ namespace paxs {
             // スタックオーバーフロー回避のためヒープに確保
             constexpr std::size_t tile_size = 256;
             constexpr std::size_t tile_pixels = tile_size * tile_size;
-            std::vector<unsigned char> xyz_tiles(tile_pixels, 0);
-
-            // バイナリデータが読み込めない場合（静かに失敗）
-            if (!i8bbs.calc(xyz_tiles.data())) {
-                return nullptr;
+            // バッファサイズチェック (呼び出し元で tile_pixels に初期化されている想定)
+            if (binary_buffer.size() < tile_pixels) {
+                // サイズが異なる場合、リサイズと初期化を行う
+                binary_buffer.assign(tile_pixels, 0);
+            }
+            if (rgba_buffer.size() < tile_pixels) {
+                // サイズが異なる場合、リサイズを行う
+                rgba_buffer.resize(tile_pixels);
             }
 
-            // RGBA構造体
-            struct RGBAa {
-                unsigned char r, g, b, a; //赤, 緑, 青, 透過
-                RGBAa() : r(0), g(0), b(0), a(0) {}
-                constexpr RGBAa(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_)
-                    : r(r_), g(g_), b(b_), a(a_) {}
-            };
-            // スタックオーバーフロー回避のためヒープに確保 (256KB)
-            std::vector<RGBAa> rgba(tile_pixels);
+
+            // バイナリデータが読み込めない場合（静かに失敗）
+            if (!i8bbs.calc(binary_buffer.data())) { // 引数のバッファを使用
+                return nullptr;
+            }
 
             // バイナリデータをRGBAに変換
             for (std::size_t row{}; row < tile_size; ++row) {
                 for (std::size_t col{}; col < tile_size; ++col) {
                     const std::size_t index = row * tile_size + col;
-                    const unsigned char color = xyz_tiles[index];
-                    RGBAa& pixel = rgba[index];
+                    const unsigned char color = binary_buffer[index]; // 引数のバッファを使用
+                    TileRGBA& pixel = rgba_buffer[index];           // 引数のバッファを使用
 
                     if (color >= 251 || color == 0) {
                         pixel.r = 0;
@@ -118,7 +131,7 @@ namespace paxs {
             std::filesystem::create_directories(folder_path_with_zyx);
 
             // PNGファイルとして保存
-            stbi_write_png(local_file_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(RGBAa)), rgba.data(), 0);
+            stbi_write_png(local_file_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data(), 0); // 引数のバッファを使用
 
             // ファイル存在チェック
             if (!std::filesystem::exists(local_file_path)) {
