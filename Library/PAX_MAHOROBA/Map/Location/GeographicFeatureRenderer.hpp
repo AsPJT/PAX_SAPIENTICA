@@ -30,7 +30,7 @@ namespace paxs {
     /// @brief 地物の描画を担当するクラス
     class GeographicFeatureRenderer {
     public:
-        /// @brief 地物を描画
+                /// @brief 地物を描画
         static void draw(
             const std::vector<LocationPointList>& location_point_list_list,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
@@ -45,11 +45,6 @@ namespace paxs {
                 const auto& location_point_list = location_point_list_list[h].location_point_list;
 
                 const auto& lll = location_point_list_list[h];
-                // 空間の範囲外を除去
-                if (lll.end_coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                    || lll.start_coordinate.x > (map_view_center_x + map_view_width / 1.6)
-                    || lll.end_coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                    || lll.start_coordinate.y > (map_view_center_y + map_view_height / 1.6)) continue;
                 // 時間の範囲外を除去
                 if (lll.min_year > jdn) continue;
                 if (lll.max_year < jdn) continue;
@@ -59,30 +54,36 @@ namespace paxs {
                 // 地名を描画
                 for (std::size_t i = 0; i < location_point_list.size(); ++i) {
                     const auto& lli = location_point_list[i];
-                    // 空間の範囲外を除去
-                    if (!LocationRendererHelper::isInViewBounds(
-                        lli.coordinate.x, lli.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y)) continue;
                     // 時間の範囲外を除去
                     if (lli.min_year > jdn) continue;
                     if (lli.max_year < jdn) continue;
 
-                    // 描画位置
-                    const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
-                        lli.coordinate.x, lli.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y
-                    );
+                    // 3つのX座標（中央、西、東）で描画を試みる
+                    for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
+                        const double current_x = lli.coordinate.x + (offset_mult * 360.0);
 
-                    // 範囲外の場合（アイコンのみ描画）
-                    if (lli.min_view > map_view_height || lli.max_view < map_view_height) {
-                        drawIconOnly(lli, lll, texture, draw_pos);
-                        continue;
+                        // 空間の範囲外を除去 (個々の地物ごとに行う)
+                        if (!LocationRendererHelper::isInViewBounds(
+                            current_x, lli.coordinate.y,
+                            map_view_width, map_view_height,
+                            map_view_center_x, map_view_center_y)) continue;
+
+                        // 描画位置
+                        const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+                            current_x, lli.coordinate.y,
+                            map_view_width, map_view_height,
+                            map_view_center_x, map_view_center_y
+                        );
+
+                        // 範囲外の場合（アイコンのみ描画）
+                        if (lli.min_view > map_view_height || lli.max_view < map_view_height) {
+                            drawIconOnly(lli, lll, texture, draw_pos);
+                            continue; // このループの continue
+                        }
+
+                        // 範囲内の場合（アイコン + テキスト描画）
+                        drawIconAndText(lli, lll, texture, draw_pos);
                     }
-
-                    // 範囲内の場合（アイコン + テキスト描画）
-                    drawIconAndText(lli, lll, texture, draw_pos);
                 }
             }
         }
