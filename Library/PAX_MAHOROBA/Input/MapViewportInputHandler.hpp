@@ -42,6 +42,10 @@ namespace paxs {
     private:
         std::array<Key, 1> enl_keys; // 拡大キー
         std::array<Key, 1> esc_keys; // 縮小キー
+        std::array<Key, 2> move_left_keys;  // 左移動キー (A, Left)
+        std::array<Key, 2> move_right_keys; // 右移動キー (D, Right)
+        std::array<Key, 2> move_up_keys;    // 上移動キー (W, Up)
+        std::array<Key, 2> move_down_keys;  // 下移動キー (S, Down)
 
         bool enabled_ = true; // 入力処理の有効/無効
         bool events_subscribed_ = false; // イベント購読済みフラグ
@@ -62,7 +66,11 @@ namespace paxs {
 
     public:
         MapViewportInputHandler()
-            : enl_keys{Key(PAXG_KEY_Q)}, esc_keys{Key(PAXG_KEY_E)}
+            : enl_keys{Key(PAXG_KEY_Q)}, esc_keys{Key(PAXG_KEY_E)},
+              move_left_keys{Key(PAXG_KEY_A), Key(PAXG_KEY_LEFT)},
+              move_right_keys{Key(PAXG_KEY_D), Key(PAXG_KEY_RIGHT)},
+              move_up_keys{Key(PAXG_KEY_W), Key(PAXG_KEY_UP)},
+              move_down_keys{Key(PAXG_KEY_S), Key(PAXG_KEY_DOWN)}
 #ifdef __ANDROID__
             , touch_num(0), old_touch_num(0)
             , pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
@@ -245,6 +253,60 @@ namespace paxs {
             return changed;
         }
 
+        /// @brief キーボードによる移動処理（WASD/矢印キー）
+        /// @param viewport MapViewport参照 / MapViewport reference
+        /// @return ビューポートが変更された場合true / true if viewport was changed
+        bool handleKeyboardMovement(MapViewport& viewport) {
+            bool changed = false;
+            double center_x = viewport.getCenterX();
+            double center_y = viewport.getCenterY();
+            const double width = viewport.getWidth();
+            const double movement_size = MapViewportConstants::default_movement_size;
+
+            // A/Left キー：左移動（X座標を減らす）
+            if (pressed(move_left_keys)) {
+                center_x -= (width / movement_size);
+                if (center_x < MapViewportConstants::longitude_min) {
+                    center_x += MapViewportConstants::longitude_range;
+                }
+                changed = true;
+            }
+
+            // D/Right キー：右移動（X座標を増やす）
+            if (pressed(move_right_keys)) {
+                center_x += (width / movement_size);
+                if (center_x >= MapViewportConstants::longitude_max) {
+                    center_x -= MapViewportConstants::longitude_range;
+                }
+                changed = true;
+            }
+
+            // S/Down キー：下移動（Y座標を減らす）
+            if (pressed(move_down_keys)) {
+                center_y -= (width / movement_size);
+                if (center_y < MapViewportConstants::longitude_min) {
+                    center_y += MapViewportConstants::longitude_range;
+                }
+                changed = true;
+            }
+
+            // W/Up キー：上移動（Y座標を増やす）
+            if (pressed(move_up_keys)) {
+                center_y += (width / movement_size);
+                if (center_y >= MapViewportConstants::longitude_max) {
+                    center_y -= MapViewportConstants::longitude_range;
+                }
+                changed = true;
+            }
+
+            // 座標が変更された場合はビューポートに設定
+            if (changed) {
+                viewport.setCenter(center_x, center_y);
+            }
+
+            return changed;
+        }
+
         /// @brief MapViewportへの参照を設定してイベントを購読
         /// @brief Set reference to MapViewport and subscribe to events
         /// @param viewport MapViewportへの参照 / Reference to MapViewport
@@ -282,13 +344,19 @@ namespace paxs {
             }
 
             // キーボード入力（Q/Eキーによるズーム）
-            bool changed = handleKeyboardZoom(*viewport_);
-            if (changed) {
+            bool zoom_changed = handleKeyboardZoom(*viewport_);
+
+            // キーボード入力（WASD/矢印キーによる移動）
+            bool movement_changed = handleKeyboardMovement(*viewport_);
+
+            // ズームまたは移動で変更があった場合、境界制約を適用
+            if (zoom_changed || movement_changed) {
                 // 境界制約を適用して、座標が変更された場合は通知
                 if (viewport_->applyConstraints()) {
                     viewport_->notifyViewportChanged();
                 }
             }
+
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 

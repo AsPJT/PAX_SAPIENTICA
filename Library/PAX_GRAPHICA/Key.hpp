@@ -250,23 +250,9 @@ namespace paxs {
 
     class Coordinate {
     public:
-        double movement_size; // マップの移動量
+        Coordinate(const paxs::MercatorDeg& coordinate_)
+            : coordinate(coordinate_){}
 
-        Coordinate(double movement_size, const paxs::MercatorDeg& coordinate_)
-            : movement_size(movement_size),
-              coordinate(coordinate_),
-              increase_x_keys{Key(PAXG_KEY_A), Key(PAXG_KEY_LEFT)},
-              decrease_x_keys{Key(PAXG_KEY_D), Key(PAXG_KEY_RIGHT)},
-              increase_y_keys{Key(PAXG_KEY_S), Key(PAXG_KEY_DOWN)},
-              decrease_y_keys{Key(PAXG_KEY_W), Key(PAXG_KEY_UP)}
-        {
-        }
-        void update(const double width) {
-            if (pressed(increase_x_keys)) increase_coordinate(coordinate.x, width);
-            if (pressed(decrease_x_keys)) decrease_coordinate(coordinate.x, width);
-            if (pressed(increase_y_keys)) increase_coordinate(coordinate.y, width);
-            if (pressed(decrease_y_keys)) decrease_coordinate(coordinate.y, width);
-        }
         double getX() const {
             return coordinate.x;
         }
@@ -289,23 +275,6 @@ namespace paxs {
 
     private:
         paxs::MercatorDeg coordinate; // マップ座標の中央
-        std::array<Key, 2> increase_x_keys;
-        std::array<Key, 2> decrease_x_keys;
-        std::array<Key, 2> increase_y_keys;
-        std::array<Key, 2> decrease_y_keys;
-
-        void increase_coordinate(double& value, const double width) {
-            value -= (width / movement_size);
-            if (value < CoordinateConstants::longitude_min) {
-                value += CoordinateConstants::longitude_range;
-            }
-        }
-        void decrease_coordinate(double& value, const double width) {
-            value += (width / movement_size);
-            if (value >= CoordinateConstants::longitude_max) {
-                value -= CoordinateConstants::longitude_range;
-            }
-        }
     };
 
 }

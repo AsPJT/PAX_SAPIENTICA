@@ -75,7 +75,7 @@ namespace paxs {
                 event_bus_ = &EventBus::getInstance();
                 subscribeToEvents();
                 // 初回更新を即座に実行
-                updateContentData();
+                updateAllContentData();
             }
         }
 
@@ -153,9 +153,8 @@ namespace paxs {
 #endif
 
     private:
-        /// @brief コンテンツデータを更新
-        /// @brief Update content data
-        void updateContentData() {
+        /// @brief すべてのコンテンツデータを更新
+        void updateAllContentData() {
             if (!app_state_manager_) return;
 
             const auto& koyomi = app_state_manager_->getKoyomi();
@@ -212,7 +211,7 @@ namespace paxs {
                     (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
-                        updateContentData();
+                        updateAllContentData();
                     }
                 }
             );
@@ -223,7 +222,7 @@ namespace paxs {
                     (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
-                        updateContentData();
+                        updateAllContentData();
                     }
                 }
             );
@@ -234,7 +233,7 @@ namespace paxs {
                     (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
-                        updateContentData();
+                        updateAllContentData();
                     }
                 }
             );
@@ -246,7 +245,7 @@ namespace paxs {
                     (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
-                        updateContentData();
+                        updateAllContentData();
                     }
                 }
             );
@@ -257,7 +256,7 @@ namespace paxs {
                     (void)event;
                     if (app_state_manager_) {
                         // イベント受信時に即座にコンテンツデータを更新
-                        updateContentData();
+                        updateAllContentData();
                     }
                 }
             );
