@@ -226,17 +226,10 @@ struct InitHumanDataCommandEvent : Event {
         : model_name(model) {}
 };
 
-/// @brief 地理データ削除コマンドイベント
-/// @brief Delete geographic data command event
-struct DeleteGeographicDataCommandEvent : Event {
-    const std::string map_list_path;
-    const std::string japan_provinces_path;
-
-    DeleteGeographicDataCommandEvent(
-        const std::string& map_path,
-        const std::string& provinces_path)
-        : map_list_path(map_path)
-        , japan_provinces_path(provinces_path) {}
+/// @brief シミュレーションリセットコマンドイベント
+/// @brief Simulation reset command event
+struct SimulationResetCommandEvent : Event {
+    SimulationResetCommandEvent() = default;
 };
 
 // ========================================

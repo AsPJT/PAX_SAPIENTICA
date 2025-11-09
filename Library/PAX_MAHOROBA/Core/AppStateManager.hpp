@@ -187,15 +187,10 @@ public:
         event_bus_.publish(InitHumanDataCommandEvent(model_name));
     }
 
-    /// @brief 地理データ削除コマンドを実行
-    /// @param map_list_path マップリストパス
-    /// @param japan_provinces_path 都道府県パス
-    void executeDeleteGeographicData(
-        const std::string& map_list_path,
-        const std::string& japan_provinces_path) {
-        event_bus_.publish(DeleteGeographicDataCommandEvent(
-            map_list_path, japan_provinces_path
-        ));
+    /// @brief シミュレーションリセットコマンドを実行
+    /// @brief Execute simulation reset command
+    void executeSimulationReset() {
+        event_bus_.publish(SimulationResetCommandEvent());
     }
 #endif
 
@@ -318,10 +313,10 @@ private:
             }
         );
 
-        // 地理データ削除コマンドの購読
-        event_bus_.subscribe<DeleteGeographicDataCommandEvent>(
-            [this](const DeleteGeographicDataCommandEvent& event) {
-                handleDeleteGeographicData(event);
+        // シミュレーションリセットコマンドの購読
+        event_bus_.subscribe<SimulationResetCommandEvent>(
+            [this](const SimulationResetCommandEvent& event) {
+                handleSimulationReset(event);
             }
         );
 #endif
@@ -517,13 +512,11 @@ private:
         ));
     }
 
-    /// @brief 地理データ削除コマンドを処理
-    void handleDeleteGeographicData(const DeleteGeographicDataCommandEvent& event) {
-        // ドメインロジック実行
-        simulation_manager_.reset(
-            event.map_list_path,
-            event.japan_provinces_path
-        );
+    /// @brief シミュレーションリセットコマンドを処理
+    /// @brief Handle simulation reset command
+    void handleSimulationReset(const SimulationResetCommandEvent& /*event*/) {
+        // ドメインロジック実行：シミュレーションを初期化前の状態に戻す
+        simulation_manager_.reset();
         koyomi_.steps.setDay(0);
         koyomi_.calcDate();
 

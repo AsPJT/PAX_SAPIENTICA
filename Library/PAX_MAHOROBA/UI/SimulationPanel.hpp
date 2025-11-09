@@ -162,10 +162,9 @@ namespace paxs {
                 app_state_manager_->executeInitHumanData(model_name);
                 break;
             }
-            case SimulationControlButton::Id::DeleteGeographicData: {
-                // 地理データ削除コマンドを発行
-                auto [map_list_path, japan_provinces_path] = make_paths();
-                app_state_manager_->executeDeleteGeographicData(map_list_path, japan_provinces_path);
+            case SimulationControlButton::Id::Reset: {
+                // シミュレーションをリセット（初期化前の状態に戻す）
+                app_state_manager_->executeSimulationReset();
                 break;
             }
             case SimulationControlButton::Id::Play: {
@@ -271,13 +270,17 @@ namespace paxs {
             control_buttons_.render();
 
 #ifdef PAXS_USING_SIMULATOR
-            // シミュレーション統計情報を表示
-            stats_widget_.render();
+            // シミュレーション統計情報を表示（シミュレーションがアクティブな場合のみ）
+            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+            if (simulation_manager.isActive()) {
+                stats_widget_.render();
+            }
 #endif
         }
 
         void drawPulldown() const {
 #ifdef PAXS_USING_SIMULATOR
+            if (!app_state_manager_) return;
             const auto& simulation_manager = app_state_manager_->getSimulationManager();
             if (!simulation_manager.isActive()) {
                 simulation_pulldown.render();
