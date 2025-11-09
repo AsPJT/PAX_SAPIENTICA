@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include <PAX_MAHOROBA/Map/Tile/ITileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/BinaryTileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/UrlTileLoader.hpp>
@@ -34,8 +33,82 @@
 
 namespace paxs {
 
+    /// @brief ビューポート状態
+    /// @brief Viewport state
+    struct ViewportState {
+        double width;
+        double height;
+        double center_x;
+        double center_y;
+
+        bool operator==(const ViewportState& other) const {
+            return !isDifferent(width, other.width) &&
+                   !isDifferent(center_x, other.center_x) &&
+                   !isDifferent(center_y, other.center_y);
+        }
+
+        bool operator!=(const ViewportState& other) const {
+            return !(*this == other);
+        }
+
+    private:
+        static constexpr double EPSILON = 1e-9;
+
+        static bool isDifferent(double a, double b) {
+            return std::abs(a - b) >= EPSILON;
+        }
+    };
+
+    /// @brief ズーム状態
+    /// @brief Zoom state
+    struct ZoomState {
+        unsigned int magnification_z;  ///< ビューポートから計算されたズームレベル
+        unsigned int actual_z;         ///< 実際に使用するズームレベル（データの制約考慮）
+        unsigned int z_num;            ///< 2^actual_z
+
+        bool operator==(const ZoomState& other) const {
+            return magnification_z == other.magnification_z &&
+                   actual_z == other.actual_z;
+        }
+
+        bool operator!=(const ZoomState& other) const {
+            return !(*this == other);
+        }
+    };
+
+    /// @brief タイル範囲
+    /// @brief Tile range
+    struct TileRange {
+        Vector2<int> start;  ///< 開始タイル座標
+        Vector2<int> end;    ///< 終了タイル座標
+
+        bool operator==(const TileRange& other) const {
+            return start == other.start && end == other.end;
+        }
+
+        bool operator!=(const TileRange& other) const {
+            return !(*this == other);
+        }
+    };
+
+    /// @brief タイル更新判定結果
+    /// @brief Tile update decision result
+    struct TileUpdateDecision {
+        bool should_reload_tiles;  ///< タイルを再ロードすべきか
+        bool zoom_changed;         ///< ズームレベルが変更されたか
+        bool range_changed;        ///< タイル範囲が変更されたか
+
+        TileUpdateDecision()
+            : should_reload_tiles(false)
+            , zoom_changed(false)
+            , range_changed(false) {}
+    };
+
     class XYZTile {
     private:
+        // 浮動小数点比較の許容誤差
+        static constexpr double VIEWPORT_EPSILON = 1e-9;
+
         // XYZ タイルの 1 つのセルのメルカトル座標を保持
         // 基本的に Z = 19 は無い
 
@@ -50,13 +123,14 @@ namespace paxs {
         std::string file_name_format = ("{z}/{x}/{y}");
         std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
 
-        // 1フレーム前のマップの高さ
-        double current_map_view_height = -1.0;
-
         // XYZ タイルの画面上の始点セル
         Vector2<int> start_cell{};
         // XYZ タイルの画面上の終点セル
         Vector2<int> end_cell{};
+
+        // バイナリタイル読み込み用の再利用バッファ
+        std::vector<unsigned char> binary_buffer_;
+        std::vector<paxs::TileRGBA> rgba_buffer_;
 
         // 99999999 の場合は固定なし
         int min_date = 99999999;
@@ -70,6 +144,11 @@ namespace paxs {
         unsigned int draw_min_z = 0; // 描画最小 Z
         unsigned int draw_max_z = 999; // 描画最大 Z
         unsigned int z_num = (1 << z); // 2 の z 乗 // std::pow(2, z) と等価
+
+        // ★ リファクタリング Phase 1: 新しい構造体変数（既存変数と並行して使用）
+        ViewportState current_viewport_{0.0, 0.0, 0.0, 0.0};
+        ZoomState current_zoom_{0, 0, 0};
+        TileRange current_range_{{0, 0}, {0, 0}};
 
     private:
         // フルパスのフォルダまでのパスを返す
@@ -90,60 +169,76 @@ namespace paxs {
             return std::string(str.c_str());
         }
 
-        /// @brief ズームレベルを更新
-        void updateZoomLevel(const double map_view_height) {
-            magnification_z = TileCoordinate::calculateZoomLevel(map_view_height);
 
+        /// @brief ビューポートから新しいズーム状態を計算
+        /// @param map_view_height ビューポートの高さ
+        /// @return 計算されたズーム状態
+        ZoomState calculateZoom(double map_view_height) const {
+            ZoomState zoom;
+            zoom.magnification_z = TileCoordinate::calculateZoomLevel(map_view_height);
+
+            // データが存在するZレベルに調整
             if (default_z == 999) {
-                z = magnification_z;
-                if (z < min_z) z = min_z;
-                else if (z > max_z) z = max_z;
+                zoom.actual_z = zoom.magnification_z;
+                if (zoom.actual_z < min_z) zoom.actual_z = min_z;
+                else if (zoom.actual_z > max_z) zoom.actual_z = max_z;
             }
             else {
-                z = default_z;
+                zoom.actual_z = default_z;
             }
-            z_num = (1 << z); // std::pow(2, z) と等価
-            current_map_view_height = map_view_height;
+
+            zoom.z_num = (1 << zoom.actual_z);
+            return zoom;
         }
 
-        /// @brief 描画範囲内かどうかをチェック
-        bool isInDrawRange() const {
-            return magnification_z >= draw_min_z && magnification_z <= draw_max_z;
+        /// @brief ビューポートとズーム状態から新しいタイル範囲を計算
+        /// @param viewport ビューポート状態
+        /// @param zoom ズーム状態
+        /// @return 計算されたタイル範囲
+        TileRange calculateTileRange(const ViewportState& viewport, const ZoomState& zoom) const {
+            TileCoordinate coord(zoom.actual_z, zoom.z_num);
+
+            TileRange range;
+            range.start = coord.calculateStartCell(
+                viewport.center_x, viewport.center_y,
+                viewport.width, viewport.height
+            );
+            range.end = coord.calculateEndCell(
+                viewport.center_x, viewport.center_y,
+                viewport.width, viewport.height
+            );
+
+            return range;
         }
 
-        /// @brief タイル範囲を更新
-        /// @return タイル範囲が変更された場合true
-        bool updateTileRange(
-            const double map_view_width,
-            const double map_view_height,
-            const double map_view_center_x,
-            const double map_view_center_y
+        /// @brief 変更を検出して更新判定を返す
+        /// @param new_zoom 新しいズーム状態
+        /// @param new_range 新しいタイル範囲
+        /// @return 更新判定結果
+        TileUpdateDecision detectChanges(
+            const ZoomState& new_zoom,
+            const TileRange& new_range
         ) {
-            bool need_update = false;
+            TileUpdateDecision decision;
 
-            TileCoordinate coord(z, z_num);
-            const Vector2<int> new_start_cell = coord.calculateStartCell(
-                map_view_center_x, map_view_center_y,
-                map_view_width, map_view_height
-            );
+            // ズーム変更チェック
+            decision.zoom_changed = (new_zoom != current_zoom_);
 
-            if (new_start_cell != start_cell) {
-                start_cell = new_start_cell;
-                need_update = true;
+            // タイル範囲変更チェック
+            decision.range_changed = (new_range != current_range_);
+
+            // 描画範囲チェック（magnification_zを使用）
+            if (new_zoom.magnification_z < draw_min_z || new_zoom.magnification_z > draw_max_z) {
+                decision.should_reload_tiles = false;
+                return decision;
             }
 
-            const Vector2<int> new_end_cell = coord.calculateEndCell(
-                map_view_center_x, map_view_center_y,
-                map_view_width, map_view_height
-            );
+            // ズームまたは範囲が変わった場合は再ロード
+            decision.should_reload_tiles = decision.zoom_changed || decision.range_changed;
 
-            if (new_end_cell != end_cell) {
-                end_cell = new_end_cell;
-                need_update = true;
-            }
-
-            return need_update;
+            return decision;
         }
+
 
         /// @brief 表示範囲内のタイルを読み込む
         void loadVisibleTiles() {
@@ -240,7 +335,8 @@ namespace paxs {
                             local_file_path_zny,
                             texture_folder_path_znyx,
                             x_value,
-                            current_map_view_height
+                            binary_buffer_,  // バッファを渡す
+                            rgba_buffer_     // バッファを渡す
                         );
 
                         if (texture) {
@@ -264,22 +360,34 @@ namespace paxs {
             const double map_view_center_x, // 描画される地図の中心経度
             const double map_view_center_y // 描画される地図の中心緯度
         ) {
-            // 拡大率が変わった場合、拡大率にあわせて取得する地図の大きさを変える
-            if (current_map_view_height != map_view_height) {
-                updateZoomLevel(map_view_height);
+            // ★ Phase 3: 新しい構造体ベースのロジックに完全移行
+            // 1. 新しい状態を計算
+            ViewportState new_viewport{
+                map_view_width, map_view_height,
+                map_view_center_x, map_view_center_y
+            };
+            ZoomState new_zoom = calculateZoom(map_view_height);
+            TileRange new_range = calculateTileRange(new_viewport, new_zoom);
+
+            // 2. 変更を検出
+            TileUpdateDecision decision = detectChanges(new_zoom, new_range);
+
+            // 3. 必要に応じてタイルをロード
+            if (decision.should_reload_tiles) {
+                // ★ 旧変数を更新してからloadVisibleTiles()を呼ぶ（互換性のため）
+                z = new_zoom.actual_z;
+                magnification_z = new_zoom.magnification_z;
+                z_num = new_zoom.z_num;
+                start_cell = new_range.start;
+                end_cell = new_range.end;
+
+                loadVisibleTiles();
             }
 
-            // 拡大率が描画範囲外の場合はここで処理を終了
-            if (!isInDrawRange()) return;
-
-            // タイル範囲を更新（範囲が変わっていない場合は処理をスキップ）
-            if (!updateTileRange(map_view_width, map_view_height,
-                                 map_view_center_x, map_view_center_y)) {
-                return; // 地図が前回と同じ場所の場合は更新処理をしない
-            }
-
-            // 表示範囲内のタイルを読み込む
-            loadVisibleTiles();
+            // 4. 状態を更新（常に最後に実行）
+            current_viewport_ = new_viewport;
+            current_zoom_ = new_zoom;
+            current_range_ = new_range;
         }
 
         XYZTile(

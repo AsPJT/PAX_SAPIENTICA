@@ -15,9 +15,10 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Core/Init.hpp>
+#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 
+#include <PAX_SAPIENTICA/AppConst.hpp>
 #include <PAX_SAPIENTICA/Version.hpp>
 
 namespace paxs {
@@ -37,12 +38,12 @@ namespace paxs {
             // Android: 初期化処理は不要
 #else
             // ウィンドウのサイズを設定
-            paxg::Window::setSize(1280, 720);
+            paxg::Window::setSize(paxs::AppConst::min_window_size.x, paxs::AppConst::min_window_size.y);
 #endif
 
             // PAX SAPIENTICA 用の背景
-            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LightBlue);
-            paxg::Window::setLetterbox(paxs::BackgroundColor::LightBlue);
+            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LogoBackground);
+            paxg::Window::setLetterbox(paxs::BackgroundColor::LogoBackground);
 
             // タイトルを変更
             paxg::Window::setTitle(
@@ -58,32 +59,21 @@ namespace paxs {
             // アプリケーションアイコンを設定
 #ifdef PAXS_USING_SFML
             paxg::Window::setIcon("Images/Logo/LogoRed.png");
-#endif
-#ifdef PAXS_USING_DXLIB
+            paxg::Window::setFPS(60);
+#elif defined(PAXS_USING_SIV3D)
+            // 一度 update を呼んでシーンサイズを反映させる
+            paxg::Window::update();
+#elif defined(PAXS_USING_DXLIB)
             // DxLib は初期化後にアイコンを設定
             paxg::Window::setIcon("Images/Logo/LogoRed.ico");
-#endif
-
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#ifdef __ANDROID__
             // DxLibのアンドロイド版の画面サイズを変更
-            int w{ 1280 }, h{ 720 };
+            int w{ paxs::AppConst::default_window_size.x }, h{ paxs::AppConst::default_window_size.y };
             DxLib::GetAndroidDisplayResolution(&w, &h);
             DxLib::SetGraphMode(w, h, 32);
 #endif
-
-#ifdef PAXS_USING_DXLIB
             DxLib::SetDrawScreen(DX_SCREEN_BACK);
 #endif
-
-#ifdef PAXS_USING_SIV3D
-            // 一度 update を呼んでシーンサイズを反映させる
-            paxg::Window::update();
-#endif
-
-#ifdef PAXS_USING_SFML
-            paxg::Window::setFPS(60);
-#endif
-
             // ローディング画面を表示
             displayLoadingScreen();
         }
@@ -133,6 +123,9 @@ namespace paxs {
 #if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB)
             paxg::Window::update();
 #endif
+            // PAX SAPIENTICA 用の背景
+            paxg::Window::setBackgroundColor(paxs::BackgroundColor::LightBlue);
+            paxg::Window::setLetterbox(paxs::BackgroundColor::LightBlue);
         }
 
         // ローディング画面を終了し、通常のウィンドウに戻す
@@ -140,6 +133,9 @@ namespace paxs {
             // ウィンドウの装飾を再表示
             // 注意: SFMLでは実行時の変更が不安定なため無効化
 #if defined(PAXS_USING_SIV3D)
+            paxg::Window::update();
+            paxg::Window::update();
+            paxg::Window::update();
             paxg::Window::setDecorated(true);
 #endif
 

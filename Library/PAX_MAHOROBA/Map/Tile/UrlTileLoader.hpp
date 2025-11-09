@@ -18,7 +18,6 @@
 
 #include <PAX_GRAPHICA/Network.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_MAHOROBA/Map/Tile/ITileLoader.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 

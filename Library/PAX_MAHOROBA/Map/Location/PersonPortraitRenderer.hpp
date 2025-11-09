@@ -31,8 +31,8 @@ namespace paxs {
     /// @brief Class responsible for rendering person portraits and names
     class PersonPortraitRenderer {
     public:
-        /// @brief 人物の肖像画と名前を描画
-        /// @brief Draw person portraits and names
+                /// @brief 人物の肖像画と名前を描画
+                /// @brief Draw person portraits and names
         static void draw(
             const std::vector<PersonLocationList>& location_point_list_list,
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
@@ -66,35 +66,50 @@ namespace paxs {
                     double jdn_displacement = jdn - lli.min_year;
 
                     // 年月日の正規化
-                    double year_normalization = jdn_displacement / view_year_displacement; // 0.0 から 1.0 の値をとる
+                    double year_normalization = (view_year_displacement == 0.0) ? 0.0 : (jdn_displacement / view_year_displacement); // 0.0 から 1.0 の値をとる (0除算を回避)
 
                     // 座標の変位
                     double coordinate_displacement_x = lli.end_coordinate.x - lli.start_coordinate.x;
                     double coordinate_displacement_y = lli.end_coordinate.y - lli.start_coordinate.y;
 
-                    // 今の座標
+                    // 今の座標 (補間されたX座標)
                     double now_coordinate_x = lli.start_coordinate.x + coordinate_displacement_x * year_normalization;
                     double now_coordinate_y = lli.start_coordinate.y + coordinate_displacement_y * year_normalization;
 
-                    // 範囲内の場合
-                    if (lli.min_view > map_view_width || lli.max_view < map_view_width) {
-                        drawPortraitOnly(
-                            texture, lll, lli,
-                            now_coordinate_x, now_coordinate_y,
-                            map_view_width, map_view_height,
-                            map_view_center_x, map_view_center_y
-                        );
-                        continue;
-                    }
+                    // 3 つのX座標（中央、西、東）で描画を試みる
+                    for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
+                        const double current_x = now_coordinate_x + (offset_mult * 360.0);
 
-                    // 肖像画とテキストを描画
-                    drawPortraitAndText(
-                        texture, lll, lli,
-                        now_coordinate_x, now_coordinate_y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y,
-                        ja_jp_language, en_us_language
-                    );
+                        // 範囲内かチェック (元々このクラスには無かったが、ラップ処理で必須)
+                        if (!LocationRendererHelper::isInViewBounds(
+                            current_x, now_coordinate_y,
+                            map_view_width, map_view_height,
+                            map_view_center_x, map_view_center_y,
+                            1.6 // GeographicFeatureRenderer のマージン係数を借用
+                        )) {
+                            continue;
+                        }
+
+                        // 範囲内の場合
+                        if (lli.min_view > map_view_width || lli.max_view < map_view_width) {
+                            drawPortraitOnly(
+                                texture, lll, lli,
+                                current_x, now_coordinate_y, // 修正したX座標を渡す
+                                map_view_width, map_view_height,
+                                map_view_center_x, map_view_center_y
+                            );
+                            continue; // このループの continue
+                        }
+
+                        // 肖像画とテキストを描画
+                        drawPortraitAndText(
+                            texture, lll, lli,
+                            current_x, now_coordinate_y, // 修正したX座標を渡す
+                            map_view_width, map_view_height,
+                            map_view_center_x, map_view_center_y,
+                            ja_jp_language, en_us_language
+                        );
+                    }
                 }
             }
         }

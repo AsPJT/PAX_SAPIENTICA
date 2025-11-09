@@ -16,23 +16,27 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <vector>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image_write.h>
 
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_MAHOROBA/Core/Init.hpp>
-#include <PAX_MAHOROBA/Map/Tile/ITileLoader.hpp>
+
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
-//#ifdef USING_BINARY_TEXTURE
-
-//#endif
-
 namespace paxs {
+
+    /// @brief RGBA構造体 (BinaryTileLoader で使用)
+    struct TileRGBA {
+        unsigned char r, g, b, a; //赤, 緑, 青, 透過
+        TileRGBA() : r(0), g(0), b(0), a(0) {}
+        constexpr TileRGBA(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_)
+            : r(r_), g(g_), b(b_), a(a_) {}
+    };
 
     /// @brief バイナリデータからPNGに変換してタイルを読み込むローダー
     /// @brief Loader for converting binary data to PNG and loading tiles
@@ -45,13 +49,16 @@ namespace paxs {
         /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス
         /// @param x_value X 座標の文字列
         /// @param current_map_view_height 現在のマップビュー高さ
+        /// @param binary_buffer [in/out] バイナリデータ読み込み用の再利用バッファ (サイズ tile_pixels)
+        /// @param rgba_buffer [in/out] RGBA変換用の再利用バッファ (サイズ tile_pixels)
         /// @return 読み込みに成功した場合はテクスチャのunique_ptr、失敗した場合はnullptr
         static std::unique_ptr<paxg::Texture> load(
             const std::string& binary_path_with_zy,
             const std::string& local_path_with_zy,
             const std::string& folder_path_with_zyx,
             const std::string& x_value,
-            double current_map_view_height
+            std::vector<unsigned char>& binary_buffer, // 引数で受け取る
+            std::vector<TileRGBA>& rgba_buffer         // 引数で受け取る
         ) {
             // バイナリパスと出力パスの X を置換
             std::string binary_path = binary_path_with_zy;
@@ -62,50 +69,56 @@ namespace paxs {
                 AppConfig::getInstance()->getRootPath()
             );
 
-            static unsigned char xyz_tiles[256 * 256]{};
+            // スタックオーバーフロー回避のためヒープに確保
+            constexpr std::size_t tile_size = 256;
+            constexpr std::size_t tile_pixels = tile_size * tile_size;
+            // バッファサイズチェック (呼び出し元で tile_pixels に初期化されている想定)
+            if (binary_buffer.size() < tile_pixels) {
+                // サイズが異なる場合、リサイズと初期化を行う
+                binary_buffer.assign(tile_pixels, 0);
+            }
+            if (rgba_buffer.size() < tile_pixels) {
+                // サイズが異なる場合、リサイズを行う
+                rgba_buffer.resize(tile_pixels);
+            }
+
 
             // バイナリデータが読み込めない場合（静かに失敗）
-            if (!i8bbs.calc(xyz_tiles)) {
+            if (!i8bbs.calc(binary_buffer.data())) { // 引数のバッファを使用
                 return nullptr;
             }
 
-            // RGBA構造体
-            struct RGBAa {
-                unsigned char r, g, b, a; //赤, 緑, 青, 透過
-                RGBAa() : r(0), g(0), b(0), a(0) {}
-                constexpr RGBAa(const unsigned char r_, const unsigned char g_, const unsigned char b_, const unsigned char a_)
-                    : r(r_), g(g_), b(b_), a(a_) {}
-            };
-            RGBAa rgba[256][256]{};
-
             // バイナリデータをRGBAに変換
-            for (std::size_t row{}; row < 256; ++row) {
-                for (std::size_t col{}; col < 256; ++col) {
-                    const unsigned char color = xyz_tiles[row * 256 + col];
+            for (std::size_t row{}; row < tile_size; ++row) {
+                for (std::size_t col{}; col < tile_size; ++col) {
+                    const std::size_t index = row * tile_size + col;
+                    const unsigned char color = binary_buffer[index]; // 引数のバッファを使用
+                    TileRGBA& pixel = rgba_buffer[index];           // 引数のバッファを使用
+
                     if (color >= 251 || color == 0) {
-                        rgba[row][col].r = 0;
-                        rgba[row][col].g = 0;
-                        rgba[row][col].b = 0;
-                        rgba[row][col].a = 0; //透過
+                        pixel.r = 0;
+                        pixel.g = 0;
+                        pixel.b = 0;
+                        pixel.a = 0; //透過
                     }
                     else {
                         if (color >= 181) { // 25.64100582
-                            rgba[row][col].r = static_cast<unsigned char>(180 - 15.0 * (256.0 - color) / (256.0 - 181.0));
-                            rgba[row][col].g = static_cast<unsigned char>(220 - 10.0 * (256.0 - color) / (256.0 - 181.0));
-                            rgba[row][col].b = static_cast<unsigned char>(185 - 15.0 * (256.0 - color) / (256.0 - 181.0));
+                            pixel.r = static_cast<unsigned char>(180 - 15.0 * (256.0 - color) / (256.0 - 181.0));
+                            pixel.g = static_cast<unsigned char>(220 - 10.0 * (256.0 - color) / (256.0 - 181.0));
+                            pixel.b = static_cast<unsigned char>(185 - 15.0 * (256.0 - color) / (256.0 - 181.0));
                         }
                         else if (color >= 127) { // 9.090276921
-                            rgba[row][col].r = static_cast<unsigned char>(200 - 30.0 * (181.0 - color) / (181.0 - 127.0));
-                            rgba[row][col].g = static_cast<unsigned char>(235 - 20.0 * (181.0 - color) / (181.0 - 127.0));
-                            rgba[row][col].b = static_cast<unsigned char>(210 - 30.0 * (181.0 - color) / (181.0 - 127.0));
+                            pixel.r = static_cast<unsigned char>(200 - 30.0 * (181.0 - color) / (181.0 - 127.0));
+                            pixel.g = static_cast<unsigned char>(235 - 20.0 * (181.0 - color) / (181.0 - 127.0));
+                            pixel.b = static_cast<unsigned char>(210 - 30.0 * (181.0 - color) / (181.0 - 127.0));
                         }
                         else {
-                            rgba[row][col].r = static_cast<unsigned char>(235 - 40.0 * color / 127.0);
-                            rgba[row][col].g = static_cast<unsigned char>(235);
-                            rgba[row][col].b = static_cast<unsigned char>(240 - 40.0 * color / 127.0);
+                            pixel.r = static_cast<unsigned char>(235 - 40.0 * color / 127.0);
+                            pixel.g = static_cast<unsigned char>(235);
+                            pixel.b = static_cast<unsigned char>(240 - 40.0 * color / 127.0);
                         }
 
-                        rgba[row][col].a = 255; //不透過
+                        pixel.a = 255; //不透過
                     }
                 }
             }
@@ -118,10 +131,7 @@ namespace paxs {
             std::filesystem::create_directories(folder_path_with_zyx);
 
             // PNGファイルとして保存
-            stbi_write_png(local_file_path.c_str(), 256, 256, static_cast<int>(sizeof(RGBAa)), rgba, 0);
-
-            // Note: current_map_view_heightはこの時点では使用されていない
-            (void)current_map_view_height;
+            stbi_write_png(local_file_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data(), 0); // 引数のバッファを使用
 
             // ファイル存在チェック
             if (!std::filesystem::exists(local_file_path)) {

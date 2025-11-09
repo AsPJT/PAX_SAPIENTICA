@@ -13,8 +13,6 @@
 #define PAX_MAHOROBA_UI_LAYER_HPP
 
 #include <algorithm>
-#include <limits>
-#include <string>
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
@@ -23,8 +21,10 @@
 #endif
 
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
-#include <PAX_GRAPHICA/Texture.hpp>
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
@@ -32,12 +32,11 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
+#include <PAX_SAPIENTICA/AppConst.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-
 
 namespace paxs {
 
@@ -45,39 +44,24 @@ namespace paxs {
     /// @brief Integrated management class for UI layer
     class UILayer : public IWidget{
     private:
-        const FeatureVisibilityManager* feature_visibility_manager_ptr = nullptr;
-
-        // 描画に必要なデータをキャッシュ（updateData()で更新、render()で使用）
-        const MapViewport* cached_map_viewport_ptr = nullptr;
-#ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<paxs::SettlementSimulator>* cached_simulator_ = nullptr;
-#endif
-        paxs::Koyomi cached_koyomi_;
         paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
-
-        std::size_t map_viewport_width_str_index = 0;
-        std::size_t map_viewport_center_x_str_index = 0;
-        std::size_t map_viewport_center_y_str_index = 0;
-        std::size_t map_viewport_center_lat_str_index = 0;
 
         paxs::UILayout ui_layout;
 
+        // イベント駆動用（オプション）
+        EventBus* event_bus_ = nullptr;
+        AppStateManager* app_state_manager_ = nullptr;
+
         paxs::CalendarPanel calendar_panel;
-        paxs::DebugInfoPanel debug_info_panel;
-
-#ifdef PAXS_USING_SIMULATOR
-        paxs::SimulationPanel simulation_panel;
-        paxs::SettlementStatusPanel settlement_status_panel;
-#endif
-
-        // 背景コンポーネント
         paxs::UIPanelBackground calendar_bg_;
+        paxs::DebugInfoPanel debug_info_panel;
         paxs::UIPanelBackground debug_info_bg_;
 #ifdef PAXS_USING_SIMULATOR
+        paxs::SimulationPanel simulation_panel;
         paxs::UIPanelBackground simulation_bg_;
+        paxs::SettlementStatusPanel settlement_status_panel;
         paxs::UIPanelBackground settlement_status_bg_;
 #endif
-
         std::vector<IWidget*> panels;
 
         void sortPanelsByLayer() {
@@ -91,14 +75,21 @@ namespace paxs {
     public:
         UILayer(
             paxs::FeatureVisibilityManager* visible_manager,
-            const MapViewport* map_viewport)
-            : feature_visibility_manager_ptr(visible_manager),
-              visible_manager_ptr(visible_manager),
-              calendar_panel(ui_layout),
-              debug_info_panel(ui_layout, visible_manager),
+            const MapViewport* map_viewport,
+            EventBus* event_bus = nullptr,
+            AppStateManager* app_state_manager = nullptr)
+            : visible_manager_ptr(visible_manager),
+              event_bus_(event_bus),
+              app_state_manager_(app_state_manager),
+              calendar_panel(ui_layout, visible_manager),
+              debug_info_panel(ui_layout, visible_manager, map_viewport),
 #ifdef PAXS_USING_SIMULATOR
               settlement_status_panel(visible_manager),
-              simulation_panel(visible_manager),
+              simulation_panel(
+                  visible_manager,
+                  event_bus ? *event_bus : EventBus::getInstance(),
+                  *app_state_manager  // 必須パラメータ（nullptrチェックは後で追加予定）
+              ),
 #endif
               calendar_bg_("CalendarBackground", &ui_layout.calendar_panel),
               debug_info_bg_("DebugInfoBackground", &ui_layout.debug_info_panel)
@@ -107,98 +98,97 @@ namespace paxs {
               , settlement_status_bg_("SettlementStatusBackground", &ui_layout.settlement_status_panel)
 #endif
         {
-            // CalendarPanel の初期化
-            calendar_panel.init(visible_manager_ptr);
-
-            // DebugInfoPanel の初期化
-            debug_info_panel.init(map_viewport);
-            map_viewport_width_str_index = (MurMur3::calcHash(25, "debug_magnification_power"));
-            map_viewport_center_x_str_index = (MurMur3::calcHash(24, "debug_mercator_longitude"));
-            map_viewport_center_y_str_index = (MurMur3::calcHash(23, "debug_mercator_latitude"));
-            map_viewport_center_lat_str_index = (MurMur3::calcHash(14, "debug_latitude"));
-
             // 影描画用のRenderTextureを最大画面サイズで初期化（一回のみ）
-            PanelBackgroundRenderer::initShadowTextures(paxs::Vector2<int>{3840, 2160});
+            PanelBackgroundRenderer::initShadowTextures(paxs::AppConst::max_window_size);
 
-            panels.clear();
-            // 背景コンポーネント（RenderLayer::UIBackground = 300）
-            panels.push_back(&calendar_bg_);
-            panels.push_back(&debug_info_bg_);
+            panels.emplace_back(&calendar_panel);
+            panels.emplace_back(&calendar_bg_);
+            panels.emplace_back(&debug_info_panel);
+            panels.emplace_back(&debug_info_bg_);
 #ifdef PAXS_USING_SIMULATOR
-            panels.push_back(&simulation_bg_);
-            panels.push_back(&settlement_status_bg_);
-#endif
-            // コンテンツコンポーネント（RenderLayer::UIContent = 400）
-            panels.push_back(&calendar_panel);
-            panels.push_back(&debug_info_panel);
-#ifdef PAXS_USING_SIMULATOR
-            panels.push_back(&simulation_panel);
-            panels.push_back(&settlement_status_panel);
+            panels.emplace_back(&simulation_panel);
+            panels.emplace_back(&simulation_bg_);
+            panels.emplace_back(&settlement_status_panel);
+            panels.emplace_back(&settlement_status_bg_);
 #endif
             sortPanelsByLayer();
+
+            // イベント購読を設定
+            if (event_bus_ != nullptr) {
+                subscribeToEvents();
+            }
         }
 
-        /// @brief データ更新（描画は行わない）
-        /// @brief Update data (no drawing)
-        void updateData(
+        // コピー・ムーブ禁止（メンバー変数へのポインタをvector<IWidget*>に格納しているため）
+        UILayer(const UILayer&) = delete;
+        UILayer& operator=(const UILayer&) = delete;
+        UILayer(UILayer&&) = delete;
+        UILayer& operator=(UILayer&&) = delete;
+
+        /// @brief イベントバスを設定してイベント駆動を有効化
+        /// @brief Set EventBus to enable event-driven updates
+        /// @param event_bus EventBusへのポインタ
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+            if (event_bus_ != nullptr) {
+                subscribeToEvents();
+            }
+        }
+
+        // TODO: イベントベースに移行
+        /// @brief SettlementStatusPanelの背景可視性を同期
+        void syncSettlementStatusBackground() {
 #ifdef PAXS_USING_SIMULATOR
-            std::unique_ptr<paxs::SettlementSimulator>& simulator,
+            settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
-            paxs::Koyomi& koyomi
-            ) {
-            // UIレイアウトを計算
+        }
+
+        /// @brief UILayerの初期化（一度だけ呼び出す）
+        void initialize() {
+            if (!app_state_manager_) return;
+
+            const auto& koyomi = app_state_manager_->getKoyomi();
+
+            // UIレイアウトを初期計算
             ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
 
 #ifdef PAXS_USING_SIMULATOR
-            bool simulation_visible = visible_manager_ptr->isVisible(MurMur3::calcHash("Simulation")) &&
-                                    visible_manager_ptr->isVisible(MurMur3::calcHash(2, "UI"));
-            simulation_panel.setVisible(simulation_visible);
-
-            simulation_panel.setReferences(simulator, koyomi,
+            // シミュレーションパネルの参照を設定（一度のみ）
+            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+            const auto& koyomi_sim = app_state_manager_->getKoyomi();
+            simulation_panel.getControlButtons().setReferences(&simulation_manager, &koyomi_sim,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_panel.setupCallback();
 
-            simulation_panel.updateSimulationAuto();
-
+            // 背景の可視性をパネルと同期
             simulation_bg_.setVisible(simulation_panel.isVisible());
-
-            settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
 
-            // CalendarPanelの可視性と設定
+            // CalendarPanelの初期設定
             if (calendar_panel.isVisible()) {
                 calendar_panel.setCalendarParams(koyomi);
-                calendar_panel.setTimeControlParams(koyomi);
+                calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
+                calendar_panel.updateButtonLayout();
             }
 
+            // 背景の可視性をパネルと同期
             calendar_bg_.setVisible(calendar_panel.isVisible());
-
             debug_info_bg_.setVisible(debug_info_panel.isVisible());
-
-#ifdef PAXS_USING_SIMULATOR
-            cached_simulator_ = &simulator;
-#endif
-            cached_koyomi_ = koyomi;
         }
 
-        /// @brief レンダリング処理
-        /// @brief Render
         void render() const override {
-            if (!isVisible() || visible_manager_ptr == nullptr) return;
+            if (!isVisible()) return;
 
             // 画像の拡大縮小の方式を設定
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampLinear };
-
-            const paxs::Koyomi& koyomi = cached_koyomi_;
 
             // 1. バッチ描画開始（Siv3D用）
             PanelBackgroundRenderer::beginBatch();
 
             // 2. 背景コンポーネントを描画（バッチに登録）
-            {
-                for (auto* panel : panels) {
-                    if (panel && panel->getLayer() == RenderLayer::UIBackground) {
-                        panel->render();
-                    }
+            for (auto* panel : panels) {
+                if (panel && panel->getLayer() == RenderLayer::UIBackground) {
+                    panel->render();
                 }
             }
 
@@ -214,6 +204,7 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
+            if (!isVisible()) return false;
             for (const IWidget* panel : panels) {
                 if (panel) {
                     if (panel->isHit(x, y)) {
@@ -247,21 +238,110 @@ namespace paxs {
 #endif
 
         bool isVisible() const override {
-            return feature_visibility_manager_ptr->isVisible(MurMur3::calcHash(2, "UI"));
+            return visible_manager_ptr->isVisible(FeatureVisibilityManager::View::UI);
         }
-        paxg::Rect getRect() const override {
-            return paxg::Rect{ 0, 0, 0, 0 };
-        }
-        const char* getName() const override {
-            return "UILayer";
-        }
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-        void setVisible(bool /*visible*/) override {}
         void setEnabled(bool /*enabled*/) override {}
+        void setVisible(bool /*visible*/) override {}
         bool isEnabled() const override { return true; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
+        paxg::Rect getRect() const override { return paxg::Rect{}; }
+        const char* getName() const override { return "UILayer"; }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
+
+    private:
+        /// @brief イベントを購読
+        /// @brief Subscribe to events
+        void subscribeToEvents() {
+            if (event_bus_ == nullptr) return;
+            // ウィンドウリサイズイベントの購読
+            event_bus_->subscribe<WindowResizedEvent>(
+                [this](const WindowResizedEvent& event) {
+                    (void)event;
+                    // UIレイアウトを再計算
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                        calendar_panel.updateButtonLayout();
+                    }
+                }
+            );
+
+            // 日付変更イベントの購読
+            event_bus_->subscribe<DateChangedEvent>(
+                [this](const DateChangedEvent& event) {
+                    (void)event;
+                    // CalendarPanelの日付表示を更新
+                    if (calendar_panel.isVisible() && app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        calendar_panel.setCalendarParams(koyomi);
+                        calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
+
+                        // レイアウトも再計算（日付リストのサイズが変わる可能性があるため）
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                    }
+                }
+            );
+
+            // 言語変更イベントの購読
+            event_bus_->subscribe<LanguageChangedEvent>(
+                [this](const LanguageChangedEvent& event) {
+                    (void)event;
+                    // 言語変更時はレイアウト再計算が必要
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                    }
+                }
+            );
+
+            // 機能可視性変更イベントの購読
+            event_bus_->subscribe<FeatureVisibilityChangedEvent>(
+                [this](const FeatureVisibilityChangedEvent& event) {
+                    (void)event;
+                    // 背景の可視性をパネルと同期
+                    // UILayer全体の可視性はrender()でチェックされるため、ここでは個別パネルの可視性のみ考慮
+                    calendar_bg_.setVisible(calendar_panel.isVisible());
+                    debug_info_bg_.setVisible(debug_info_panel.isVisible());
+#ifdef PAXS_USING_SIMULATOR
+                    simulation_bg_.setVisible(simulation_panel.isVisible());
+                    // settlement_status_bg_はGraphicsManagerで制御
+#endif
+                }
+            );
+
+#ifdef PAXS_USING_SIMULATOR
+            // シミュレーション状態変更イベントの購読
+            event_bus_->subscribe<SimulationStateChangedEvent>(
+                [this](const SimulationStateChangedEvent& event) {
+                    (void)event;
+                    // シミュレーション状態変更時の処理
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+
+
+                        // 背景の可視性をパネルと同期
+                        simulation_bg_.setVisible(simulation_panel.isVisible());
+                    }
+                }
+            );
+
+            // シミュレーションステップ実行イベントの購読
+            event_bus_->subscribe<SimulationStepExecutedEvent>(
+                [this](const SimulationStepExecutedEvent& event) {
+                    (void)event;
+                }
+            );
+
+            // 集落表示設定変更イベントの購読
+            event_bus_->subscribe<SettlementDisplayChangedEvent>(
+                [this](const SettlementDisplayChangedEvent& event) {
+                    // SettlementStatusPanelの表示モードを更新
+                    settlement_status_panel.setSelectDraw(event.select_draw);
+                }
+            );
+#endif
+        }
     };
 
 }

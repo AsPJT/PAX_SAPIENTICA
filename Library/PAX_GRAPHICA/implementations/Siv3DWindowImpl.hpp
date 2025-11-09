@@ -134,7 +134,7 @@ namespace paxg {
         }
 
         bool hasFocus() const override {
-            return s3d::System::GetUserActions() != s3d::UserAction::NoAction;
+            return true;
         }
 
         void clear() override {

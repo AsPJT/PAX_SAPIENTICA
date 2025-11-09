@@ -68,8 +68,8 @@ namespace paxs {
         PanelLayout settlement_status_panel;
 
         // カレンダーテキストの位置
-        int koyomi_font_y = 0;
-        int koyomi_font_en_y = 0;
+        const int koyomi_font_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
+        const int koyomi_font_en_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
         int koyomi_font_x = 0;
         int koyomi_font_en_x = 0;
 
@@ -119,9 +119,6 @@ namespace paxs {
             int time_control_panel_height
         ) {
             // 暦の位置
-            koyomi_font_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
-            koyomi_font_en_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
-
             koyomi_font_x = paxg::Window::width() - 270;
             koyomi_font_en_x = koyomi_font_x - 20;
             rect_start_x = koyomi_font_en_x - 165;

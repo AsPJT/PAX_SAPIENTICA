@@ -30,29 +30,21 @@ namespace paxs {
     /// @brief 地物の描画を担当するクラス
     class GeographicFeatureRenderer {
     public:
-        /// @brief 地物を描画
+                /// @brief 地物を描画
         static void draw(
             const std::vector<LocationPointList>& location_point_list_list,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
-            FeatureVisibilityManager& visible,
+            const FeatureVisibilityManager& visible,
             const double jdn,
             const double map_view_width,
             const double map_view_height,
             const double map_view_center_x,
             const double map_view_center_y
         ) {
-            const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
-            const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
-
             for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
                 const auto& location_point_list = location_point_list_list[h].location_point_list;
 
                 const auto& lll = location_point_list_list[h];
-                // 空間の範囲外を除去
-                if (lll.end_coordinate.x < (map_view_center_x - map_view_width / 1.6)
-                    || lll.start_coordinate.x > (map_view_center_x + map_view_width / 1.6)
-                    || lll.end_coordinate.y < (map_view_center_y - map_view_height / 1.6)
-                    || lll.start_coordinate.y > (map_view_center_y + map_view_height / 1.6)) continue;
                 // 時間の範囲外を除去
                 if (lll.min_year > jdn) continue;
                 if (lll.max_year < jdn) continue;
@@ -62,30 +54,36 @@ namespace paxs {
                 // 地名を描画
                 for (std::size_t i = 0; i < location_point_list.size(); ++i) {
                     const auto& lli = location_point_list[i];
-                    // 空間の範囲外を除去
-                    if (!LocationRendererHelper::isInViewBounds(
-                        lli.coordinate.x, lli.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y)) continue;
                     // 時間の範囲外を除去
                     if (lli.min_year > jdn) continue;
                     if (lli.max_year < jdn) continue;
 
-                    // 描画位置
-                    const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
-                        lli.coordinate.x, lli.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y
-                    );
+                    // 3つのX座標（中央、西、東）で描画を試みる
+                    for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
+                        const double current_x = lli.coordinate.x + (offset_mult * 360.0);
 
-                    // 範囲外の場合（アイコンのみ描画）
-                    if (lli.min_view > map_view_height || lli.max_view < map_view_height) {
-                        drawIconOnly(lli, lll, texture, draw_pos);
-                        continue;
+                        // 空間の範囲外を除去 (個々の地物ごとに行う)
+                        if (!LocationRendererHelper::isInViewBounds(
+                            current_x, lli.coordinate.y,
+                            map_view_width, map_view_height,
+                            map_view_center_x, map_view_center_y)) continue;
+
+                        // 描画位置
+                        const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+                            current_x, lli.coordinate.y,
+                            map_view_width, map_view_height,
+                            map_view_center_x, map_view_center_y
+                        );
+
+                        // 範囲外の場合（アイコンのみ描画）
+                        if (lli.min_view > map_view_height || lli.max_view < map_view_height) {
+                            drawIconOnly(lli, lll, texture, draw_pos);
+                            continue; // このループの continue
+                        }
+
+                        // 範囲内の場合（アイコン + テキスト描画）
+                        drawIconAndText(lli, lll, texture, draw_pos);
                     }
-
-                    // 範囲内の場合（アイコン + テキスト描画）
-                    drawIconAndText(lli, lll, texture, draw_pos, first_language, second_language);
                 }
             }
         }
@@ -124,9 +122,7 @@ namespace paxs {
             const LocationPoint& lli,
             const LocationPointList& lll,
             const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
-            const paxg::Vec2i& draw_pos,
-            const std::uint_least32_t first_language,
-            const std::uint_least32_t second_language
+            const paxg::Vec2i& draw_pos
         ) {
             const std::uint_least32_t place_tex = (lli.place_texture == 0) ? lll.place_texture : lli.place_texture;
             // 描画
@@ -136,7 +132,7 @@ namespace paxs {
             }
 
             // テキスト描画
-            drawPlaceNameText(lli, draw_pos, first_language, second_language);
+            drawPlaceNameText(lli, draw_pos);
         }
 
         /// @brief テクスチャを複数描画
@@ -200,10 +196,11 @@ namespace paxs {
         /// @brief 地名のテキストを描画
         static void drawPlaceNameText(
             const LocationPoint& lli,
-            const paxg::Vec2i& draw_pos,
-            const std::uint_least32_t first_language,
-            const std::uint_least32_t second_language
+            const paxg::Vec2i& draw_pos
         ) {
+            const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
+            const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
+
             paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
             paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
 
@@ -211,7 +208,7 @@ namespace paxs {
             if (lli.place_name.find(second_language) == lli.place_name.end()) {
                 // 名前を描画
                 if (lli.place_name.find(first_language) != lli.place_name.end()) {
-                    font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                     font->drawAt(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }
@@ -219,18 +216,18 @@ namespace paxs {
             else if (lli.place_name.find(first_language) == lli.place_name.end()) {
                 // 名前を描画
                 if (lli.place_name.find(second_language) != lli.place_name.end()) {
-                    en_font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    en_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                     en_font->drawAt(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }
             // 英語名がある場合
             else {
                 // 名前（英語）を描画
-                en_font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                en_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                 en_font->drawBottomCenter(lli.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
                 // 名前を描画
                 if (lli.place_name.find(first_language) != lli.place_name.end()) {
-                    font->setOutline(0, 0.6, paxg::Color(240, 245, 250));
+                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                     font->drawTopCenter(lli.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
                 }
             }

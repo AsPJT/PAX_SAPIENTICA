@@ -16,7 +16,6 @@
 namespace paxs {
 
 // XYZTile の座標計算ロジックをテストする
-// migration_plan.md Phase 1 の一部
 class TileCoordinateTest : public ::testing::Test {
 protected:
     // テストケース共通のセットアップ
@@ -209,7 +208,7 @@ TEST_F(TileCoordinateTest, StartEndConsistency) {
     }
 }
 
-// テスト7: TileCoordinateクラスの使用テスト（Phase 2で追加）
+// テスト7: TileCoordinateクラスの使用テスト
 TEST_F(TileCoordinateTest, TileCoordinateClassUsage) {
     // ズームレベル5でTileCoordinateを作成
     unsigned int z = 5;

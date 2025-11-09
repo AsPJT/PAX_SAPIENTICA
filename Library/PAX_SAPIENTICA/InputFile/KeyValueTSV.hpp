@@ -30,7 +30,9 @@ namespace paxs {
     class KeyValueTSV {
     private:
         UnorderedMap<std::uint_least32_t, Value> path_list;
-    private:
+        bool is_successfully_loaded{ false };
+        bool is_loaded{ false };
+
         // 項目の ID を返す
         inline std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
@@ -52,9 +54,19 @@ namespace paxs {
             return path_list;
         }
 
+        bool isLoaded() const {
+            return is_loaded;
+        }
+
+        bool isSuccessfullyLoaded() const {
+            return is_successfully_loaded;
+        }
+
         // ルートパスを読み込む true 成功
         template<typename Func>
         bool input(const std::string& str_, Func&& func) {
+            if (is_loaded) return true;
+            is_loaded = true;
 
             paxs::InputFile pifs(str_);
             if (pifs.fail()) {
@@ -96,6 +108,7 @@ namespace paxs {
                 // テクスチャを追加
                 path_list.emplace(MurMur3::calcHash(strvec[file_type].size(), strvec[file_type].c_str()), func(strvec[file_path]));
             }
+            is_successfully_loaded = true;
             return true;
         }
         bool input(const std::string& str_) {

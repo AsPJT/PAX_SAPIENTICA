@@ -12,12 +12,9 @@
 #ifndef PAX_GRAPHICA_SFML_EVENT_HPP
 #define PAX_GRAPHICA_SFML_EVENT_HPP
 
-#if defined(PAXS_USING_SIV3D)
-#include <Siv3D.hpp>
-#elif defined(PAXS_USING_DXLIB)
-#include <DxLib.h>
-#elif defined(PAXS_USING_SFML)
+#ifdef PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
+#include <PAX_SAPIENTICA/AppConst.hpp>
 #endif
 
 namespace paxg {
@@ -55,10 +52,20 @@ namespace paxg {
                     wheel_delta = -(mouseWheelScrolled->delta);
                 }
                 else if (const auto* resized = poll_event->getIf<sf::Event::Resized>()) {
+                    unsigned w = resized->size.x;
+                    unsigned h = resized->size.y;
+
+                    if (w < static_cast<unsigned>(paxs::AppConst::min_window_size.x))  w = static_cast<unsigned>(paxs::AppConst::min_window_size.x);
+                    if (h < static_cast<unsigned>(paxs::AppConst::min_window_size.y)) h = static_cast<unsigned>(paxs::AppConst::min_window_size.y);
+
+                    const auto currentSize = window.getSize();
+                    if (currentSize.x != w || currentSize.y != h) {
+                        window.setSize({ w, h });
+                    }
                     // sf::FloatRect は position と size で構築（SFML 3.0 の新しい構造）
                     sf::FloatRect visibleAreaUpdate(
                         {0.f, 0.f},
-                        {static_cast<float>(resized->size.x), static_cast<float>(resized->size.y)}
+                        {static_cast<float>(w), static_cast<float>(h)}
                     );
                     window.setView(sf::View(visibleAreaUpdate));
                 }

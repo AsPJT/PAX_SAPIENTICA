@@ -45,7 +45,7 @@ namespace paxs {
         /// @param renderable 登録するオブジェクト / Object to register
         void registerRenderable(IRenderable* renderable) {
             if (renderable == nullptr) return;
-            renderables_.push_back(renderable);
+            renderables_.emplace_back(renderable);
             is_sorted_ = false;  // 新規登録があったらソートフラグをリセット
         }
 

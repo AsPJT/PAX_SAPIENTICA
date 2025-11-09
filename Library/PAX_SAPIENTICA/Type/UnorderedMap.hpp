@@ -99,7 +99,6 @@ namespace paxs {
 
         /// @brief 要素にアクセス（存在しない場合はデフォルト構築）
         Value& operator[](const Key& key) {
-            bool exists = (map_.find(key) != map_.end());
             return map_[key];
         }
 

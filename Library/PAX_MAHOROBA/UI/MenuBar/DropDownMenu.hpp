@@ -12,6 +12,7 @@
 #ifndef PAX_MAHOROBA_MENU_ITEM_HPP
 #define PAX_MAHOROBA_MENU_ITEM_HPP
 
+#include <functional>
 #include <span>
 #include <string>
 #include <vector>
@@ -29,6 +30,27 @@ namespace paxs {
     /// @brief メニューバー用のドロップダウン項目
     class DropDownMenu : public IWidget {
     private:
+        // UI要素のサイズ定数
+        static constexpr int default_padding_x = 6;
+        static constexpr int default_padding_y = 2;
+        static constexpr int down_button_size = 20;
+        static constexpr int checkmark_width = 20;
+        static constexpr int checkmark_x_offset = 5;
+
+        // プラットフォーム固有の表示調整定数
+        static constexpr float android_width_scale = 2.5f;
+        static constexpr float android_rect_width_scale = 2.0f;
+        static constexpr float android_height_scale = 1.4f;
+        static constexpr float sfml_height_scale = 1.2f;
+
+        // 描画定数
+        static constexpr float arrow_radius = 8.0f;
+        static constexpr float arrow_rotation_pi = 3.1416f;  // π radians (down)
+        static constexpr int shadow_offset_x = 1;
+        static constexpr int shadow_offset_y = 1;
+        static constexpr int shadow_blur_radius = 4;
+        static constexpr int shadow_spread = 1;
+
         // 項目
         std::span<const std::uint_least32_t> items_key{};
 
@@ -42,9 +64,8 @@ namespace paxs {
 
         // レイアウト
         paxg::Rect rect{};
-        paxg::Vec2i padding{ 6, 2 };
+        paxg::Vec2i padding{ default_padding_x, default_padding_y };
         float all_rect_x{}; // 全ての項目の文字幅
-        static constexpr int down_button_size = 20;
 
         // 状態
         bool visible_ = false;  // ドロップダウンの表示状態（MenuBarが制御）
@@ -83,8 +104,8 @@ namespace paxs {
         }
 
         /// @brief X 座標を設定
-        void setRectX(const std::size_t x = 0) {
-            rect.setX(static_cast<float>(x));
+        void setRectX(const float x = 0) {
+            rect.setX(x);
         }
 
         /// @brief 言語変更による更新処理
@@ -119,15 +140,14 @@ namespace paxs {
             all_rect_x += (padding.x() * 2 + down_button_size);
 
             // チェックマークの幅を追加
-            constexpr int checkmark_width = 20;
             all_rect_x += checkmark_width;
 
 #if defined(PAXS_USING_DXLIB) && (__ANDROID__)
-            all_rect_x *= 2.5f;
-            rect.setW(rect.w() * 2.0f);
-            rect.setH(rect.h() * 1.4f);
+            all_rect_x *= android_width_scale;
+            rect.setW(rect.w() * android_rect_width_scale);
+            rect.setH(rect.h() * android_height_scale);
 #elif defined(PAXS_USING_SFML)
-            rect.setH(rect.h() * 1.2f);
+            rect.setH(rect.h() * sfml_height_scale);
 #endif
         }
 
@@ -138,10 +158,16 @@ namespace paxs {
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
-                if (item_rect.contains(event.x, event.y)) {
+                if (item_rect.contains(static_cast<float>(event.x), static_cast<float>(event.y))) {
                     // もともとやってたトグル処理
                     if (i < is_items.size()) {
+                        const bool old_value = is_items[i];
                         is_items[i] = !is_items[i];
+
+                        // ★コールバック呼び出し：チェック状態が変更された
+                        if (on_item_toggled_ && old_value != is_items[i]) {
+                            on_item_toggled_(i, is_items[i]);
+                        }
                     }
                     // 押されたら閉じる
                     visible_ = false;
@@ -161,8 +187,7 @@ namespace paxs {
             rect.drawFrame(1, 0, visible_ ? paxg::Color{ 255, 165, 0 } : paxg::Color{ 128, 128, 128 });
 
             // 下向き三角形を描画
-            constexpr float radius = 8.0f;
-            static constexpr paxg::TriangleShape down_arrow_shape(radius, 3.1416f);
+            static constexpr paxg::TriangleShape down_arrow_shape(arrow_radius, arrow_rotation_pi);
             const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x());
             const float center_y = static_cast<float>(rect.y() + rect.h() / 2.0);
             paxg::Triangle triangle(center_x, center_y, down_arrow_shape);
@@ -185,6 +210,13 @@ namespace paxs {
 
         /// @brief プルダウンを閉じる
         void close() { visible_ = false; }
+
+        /// @brief 項目トグル時のコールバックを設定
+        /// @brief Set callback for item toggle
+        /// @param callback コールバック関数（引数: index, is_checked）
+        void setOnItemToggled(std::function<void(std::size_t, bool)> callback) {
+            on_item_toggled_ = std::move(callback);
+        }
 
         /// @brief 項目の状態を設定（インデックス指定）
         void setIsItems(const std::size_t i, const bool new_value) {
@@ -292,9 +324,7 @@ namespace paxs {
             // 最初の項目（ヘッダー）をスキップ
             const std::size_t display_item_count = items_key.size() - 1;
             const paxg::Rect back_rect{ pos, all_rect_x, static_cast<float>(rect.h() * display_item_count) };
-            back_rect.drawShadow({ 1, 1 }, 4, 1).draw();
-
-            constexpr int checkmark_width = 20; // チェックマークの幅
+            back_rect.drawShadow({ shadow_offset_x, shadow_offset_y }, shadow_blur_radius, shadow_spread).draw();
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const std::string* i_str = Fonts().getText(items_key[i], LanguageDomain::UI);
@@ -307,7 +337,7 @@ namespace paxs {
 
                 // チェックマークを描画（ONの場合のみ）
                 if (i < is_items.size() && is_items[i]) {
-                    const int check_x = pos.x() + 5;
+                    const int check_x = pos.x() + checkmark_x_offset;
 
                     // シンプルなチェックマーク "✓" を描画
                     paxg::Font* check_font = Fonts().getFont(font_size, font_buffer_thickness_size);
@@ -332,6 +362,9 @@ namespace paxs {
 
             back_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
         }
+
+        // コールバック関数
+        std::function<void(std::size_t index, bool is_checked)> on_item_toggled_;
     };
 
 } // namespace paxs

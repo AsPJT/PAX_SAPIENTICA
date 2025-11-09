@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -20,6 +20,7 @@
 #include <PAX_GRAPHICA/SFML_Event.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/AppConst.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 namespace paxg {
 
@@ -29,17 +30,35 @@ namespace paxg {
         paxg::Color backgroundColor{145, 190, 240};
         bool m_isDecorated = true;
         std::string m_title = "PAX SAPIENTICA Library";
-        int m_width = 1280;
-        int m_height = 720;
+        int m_width = paxs::AppConst::default_window_size.x;
+        int m_height = paxs::AppConst::default_window_size.y;
 
     public:
-        SFMLWindowImpl() : m_window(sf::VideoMode({1280, 720}), "PAX SAPIENTICA Library") {}
+        SFMLWindowImpl() {
+            sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+            sf::ContextSettings settings;
+            settings.antiAliasingLevel = 16;
+            m_window.create(
+                sf::VideoMode({ paxs::AppConst::default_window_size.x, paxs::AppConst::default_window_size.y }, desktop.bitsPerPixel)
+                , m_title
+                , sf::Style::Default
+                , sf::State::Windowed
+                , settings);
+        }
 
         // For backward compatibility with existing drawing code
         sf::RenderWindow& getWindow() { return m_window; }
 
         void init(int width, int height, const std::string& title) override {
-            m_window.create(sf::VideoMode({static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, 24), title);
+            sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+            sf::ContextSettings settings;
+            settings.antiAliasingLevel = 16;
+            m_window.create(
+                sf::VideoMode({static_cast<unsigned int>(width), static_cast<unsigned int>(height)}, desktop.bitsPerPixel)
+                , title
+                , sf::Style::Default
+                , sf::State::Windowed
+                , settings);
         }
 
         bool update() override {

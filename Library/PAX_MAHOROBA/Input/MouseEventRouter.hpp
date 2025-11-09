@@ -51,12 +51,11 @@ namespace paxs {
         /// @param handler 登録するハンドラー / Handler to register
         void registerHandler(IMouseEventHandler* handler) {
             if (handler == nullptr) return;
-            handlers.push_back(handler);
+            handlers.emplace_back(handler);
             is_sorted_ = false;  // 新規登録があったらソートフラグをリセット
         }
 
         /// @brief マウスイベントハンドラーの登録を解除
-        /// @brief Unregister an mouse event handler
         /// @param handler 登録解除するハンドラー / Handler to unregister
         void unregisterHandler(IMouseEventHandler* handler) {
             auto it = std::find(handlers.begin(), handlers.end(), handler);

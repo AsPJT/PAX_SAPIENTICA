@@ -121,19 +121,6 @@ namespace paxs {
     }
 
     public:
-        void setPos(const paxg::Vec2i& pos) override {
-            (void)pos; // 未使用パラメータの警告を抑制
-            // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
-        }
-
-        void setVisible(bool /*visible*/) override {}
-        bool isVisible() const override { return true; }
-
-        void setEnabled(bool /*enabled*/) override {}
-        bool isEnabled() const override { return true; }
-
-        const char* getName() const override { return "MenuSystem"; }
-
         RenderLayer getLayer() const override {
             return RenderLayer::MenuBar;
         }
@@ -157,13 +144,22 @@ namespace paxs {
             return bar_rect_;
         }
 
-        // TODO: 言語更新の時に
         void updateMenuWidth() {
             for (paxs::DropDownMenu& menu : menu_list) {
                 menu.updateLanguage();
             }
             layout();
         }
+        void setPos(const paxg::Vec2i& /*pos*/) override {
+            // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
+        }
+
+        void setVisible(bool /*visible*/) override {}
+        bool isVisible() const override { return true; }
+        void setEnabled(bool /*enabled*/) override {}
+        bool isEnabled() const override { return true; }
+        const char* getName() const override { return "MenuSystem"; }
+
     };
 } // namespace paxs
 

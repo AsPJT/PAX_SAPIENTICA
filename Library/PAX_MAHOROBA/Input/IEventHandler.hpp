@@ -22,7 +22,7 @@ namespace paxs {
     /// キーボード、マウスホイール、ウィンドウリサイズ、フォーカスなど、
     /// 各種イベントを処理するための基底インターフェース。
     /// IInputHandlerはこのインターフェースを継承し、レイヤー・ヒットテストを追加します。
-    /// Base interface for handling various events (keyboard, mouse wheel, resize, focus).
+    /// Base interface for handling various events (keyboard, mouse wheel, resize).
     /// IInputHandler inherits this and adds layer-based routing and hit testing.
     class IEventHandler {
     public:
@@ -44,24 +44,6 @@ namespace paxs {
         /// @param event マウスホイールイベント / Mouse wheel event
         /// @return イベント処理結果 / Event handling result
         virtual EventHandlingResult handleEvent(const MouseWheelEvent& event) {
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
-
-        /// @brief リサイズイベント処理
-        /// @brief Handle resize event
-        /// @param event リサイズイベント / Resize event
-        /// @return イベント処理結果 / Event handling result
-        virtual EventHandlingResult handleEvent(const ResizeEvent& event) {
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
-
-        /// @brief フォーカスイベント処理
-        /// @brief Handle focus event
-        /// @param event フォーカスイベント / Focus event
-        /// @return イベント処理結果 / Event handling result
-        virtual EventHandlingResult handleEvent(const FocusEvent& event) {
             (void)event;
             return EventHandlingResult::NotHandled();
         }

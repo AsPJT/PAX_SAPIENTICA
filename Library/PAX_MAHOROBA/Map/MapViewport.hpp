@@ -15,6 +15,9 @@
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
+
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>
 
@@ -22,6 +25,9 @@ namespace paxs {
 
     // Map viewport constants
     namespace MapViewportConstants {
+        // Floating-point comparison epsilon
+        static constexpr double coordinate_epsilon = 1e-9;
+
         // Map view default values
         static constexpr double default_movement_size = 200.0;
         static constexpr double default_expansion_size = 50.0;
@@ -52,8 +58,7 @@ namespace paxs {
     private:
         // 中央の座標を指定
         Coordinate center = Coordinate(
-            MapViewportConstants::default_movement_size,
-            paxs::EquirectangularDeg(paxs::Vector2<double>(145, 48)) // 韓国 128, 37 // 日本 135, 35 // 北海道 // 東アジア 127, 31, 75.0 // 全世界 100, 0
+            paxs::MercatorDeg(paxs::EquirectangularDeg(paxs::Vector2<double>(145, 48))) // 韓国 128, 37 // 日本 135, 35 // 北海道 // 東アジア 127, 31, 75.0 // 全世界 100, 0
         ); // マップ座標の中央
         double height = MapViewportConstants::default_height; // 各国 16.0; // 全世界 240.0 // マップの高さ
 
@@ -68,17 +73,52 @@ namespace paxs {
         double width = (height) / double(paxg::Window::height()) * double(paxg::Window::width()); // マップの高さ
         double expansion_size = MapViewportConstants::default_expansion_size; // マップの拡大量
 
+        // イベントバスへのポインタ（オプション）
+        EventBus* event_bus_ = nullptr;
+
     public:
         MapViewport() = default;
+
+        /// @brief EventBusを設定
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+        }
+
+        /// @brief ビューポート変更イベントを発行
+        /// @brief Notify viewport change event
+        void notifyViewportChanged() {
+            if (event_bus_ != nullptr) {
+                // ズームレベルを計算（heightから推定）
+                const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
+                event_bus_->publish(ViewportChangedEvent(
+                    center.getX(),
+                    center.getY(),
+                    zoom_level
+                ));
+            }
+        }
+
+        /// @brief 浮動小数点数が異なるかどうかを判定（許容誤差考慮）
+        /// @param a 値1
+        /// @param b 値2
+        /// @return 異なる場合true
+        static bool isDifferent(double a, double b) {
+            return std::abs(a - b) >= MapViewportConstants::coordinate_epsilon;
+        }
+
         /// @brief ビューポートの境界制約を適用（Domain層の責任）
         /// @brief Apply boundary constraints to viewport (Domain layer responsibility)
-        void applyConstraints() {
+        /// @return 座標が変更された場合true
+        bool applyConstraints() {
+            bool changed = false;
+
             // 高さの制約
             height = (std::clamp)(height, min_height, max_height);
             width = height / double(paxg::Window::height()) * double(paxg::Window::width());
 
-            // 座標の更新
-            center.update(height);
+            // 境界制約適用前の座標を保存
+            const double old_center_x = center.getX();
+            const double old_center_y = center.getY();
 
 #ifdef PAXS_MAHOROBA
             constexpr double west_max = (208.0 / MapViewportConstants::tile_size) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
@@ -113,19 +153,40 @@ namespace paxs {
                 center.setY(south_max + height / 2);
             }
 #endif
-        }
 
-        void setWidth(const double width_) {
-            width = width_;
+            // 座標が変更されたかチェック
+            if (isDifferent(center.getX(), old_center_x) || isDifferent(center.getY(), old_center_y)) {
+                changed = true;
+            }
+
+            return changed;
         }
-        void setHeight(const double height_) {
-            height = height_;
+        void setSize(const double new_height) {
+            if (isDifferent(height, new_height)) {
+                height = new_height;
+                width = height / double(paxg::Window::height()) * double(paxg::Window::width());
+                notifyViewportChanged();
+            }
         }
         void setCenterX(const double x_) {
-            center.setX(x_);
+            if (isDifferent(center.getX(), x_)) {
+                center.setX(x_);
+                notifyViewportChanged();
+            }
         }
         void setCenterY(const double y_) {
-            center.setY(y_);
+            if (isDifferent(center.getY(), y_)) {
+                center.setY(y_);
+                notifyViewportChanged();
+            }
+        }
+        /// @brief X座標とY座標を同時に設定（イベント通知は1回のみ）
+        void setCenter(const double x_, const double y_) {
+            if (isDifferent(center.getX(), x_) || isDifferent(center.getY(), y_)) {
+                center.setX(x_);
+                center.setY(y_);
+                notifyViewportChanged();
+            }
         }
 
         Coordinate& getCoordinate() {

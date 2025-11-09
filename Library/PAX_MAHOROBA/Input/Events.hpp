@@ -81,28 +81,6 @@ namespace paxs {
         explicit MouseWheelEvent(int rotation) : wheel_rotation(rotation) {}
     };
 
-    /// @brief ウィンドウリサイズイベント
-    /// @brief Window resize event
-    struct ResizeEvent {
-        /// @brief 新しいウィンドウ幅
-        int width = 0;
-        /// @brief 新しいウィンドウ高さ
-        int height = 0;
-
-        ResizeEvent() = default;
-        ResizeEvent(int w, int h) : width(w), height(h) {}
-    };
-
-    /// @brief ウィンドウフォーカスイベント
-    /// @brief Window focus event
-    struct FocusEvent {
-        /// @brief フォーカス状態
-        bool has_focus = false;
-
-        FocusEvent() = default;
-        explicit FocusEvent(bool focus) : has_focus(focus) {}
-    };
-
     /// @brief イベント処理結果
     /// @brief Event handling result
     struct EventHandlingResult {

@@ -12,9 +12,6 @@
 #ifndef PAX_MAHOROBA_DEBUG_INFO_PANEL_HPP
 #define PAX_MAHOROBA_DEBUG_INFO_PANEL_HPP
 
-#include <cmath>
-#include <string>
-
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -28,14 +25,9 @@
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
-#ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
-#endif
-
 namespace paxs {
 
     /// @brief デバッグ情報パネルを表示するクラス
-    /// @brief Debug information panel class
     class DebugInfoPanel : public IWidget {
     private:
         const MapViewport* map_viewport_ptr = nullptr;
@@ -43,15 +35,17 @@ namespace paxs {
         const UILayout* ui_layout_ = nullptr;
         Koyomi* koyomi_ = nullptr;
 
-    public:
-        DebugInfoPanel() = default;
-        DebugInfoPanel(const UILayout& ui_layout, const paxs::FeatureVisibilityManager* visible_manager)
-            : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager) {}
+        // TODO: 表示
+        std::size_t map_viewport_width_str_index = MurMur3::calcHash(25, "debug_magnification_power");
+        std::size_t map_viewport_center_x_str_index = MurMur3::calcHash(24, "debug_mercator_longitude");
+        std::size_t map_viewport_center_y_str_index = MurMur3::calcHash(23, "debug_mercator_latitude");
+        std::size_t map_viewport_center_lat_str_index = MurMur3::calcHash(14, "debug_latitude");
 
-        /// @brief 初期化
-        void init(const MapViewport* map_viewport) {
-            map_viewport_ptr = map_viewport;
-        }
+    public:
+        DebugInfoPanel(const UILayout& ui_layout,
+            const paxs::FeatureVisibilityManager* visible_manager,
+            const MapViewport* map_viewport
+        ) : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager), map_viewport_ptr(map_viewport) {}
 
         const char* getName() const override {
             return "DebugInfoPanel";
@@ -63,7 +57,9 @@ namespace paxs {
             return RenderLayer::UIContent;
         }
 
-        bool isVisible() const override { return visible_manager_ptr->isVisible(MurMur3::calcHash("UI")) && visible_manager_ptr->isVisible(MurMur3::calcHash("Debug")); }
+        bool isVisible() const override {
+            return visible_manager_ptr->isVisible(FeatureVisibilityManager::View::Debug);
+        }
 
 
     public:
@@ -80,7 +76,7 @@ namespace paxs {
             paxg::Font* font = Fonts().getFont(paxs::FontProfiles::KOYOMI);
             if (font == nullptr) return;
 
-            font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
+            font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 
             const int text_x = ui_layout_->debug_info_panel.x + 15; // パネル内の左端
             const int text_y = ui_layout_->debug_info_panel.y + 15; // パネル内の上端
@@ -128,37 +124,6 @@ namespace paxs {
                 paxg::Color(0, 0, 0)
             );
 
-#ifdef PAXS_USING_SIMULATOR
-            // TODO: simulator ポインタの取得
-            // if (simulator != nullptr) {
-            //     // 人口数
-            //     font->draw(
-            //         (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
-            //             reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
-            //         paxg::Vec2i(text_x, text_y + line_height * current_line),
-            //         paxg::Color(0, 0, 0)
-            //     );
-            //     font->draw(
-            //         std::to_string(simulator->cgetPopulationNum()),
-            //         paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
-            //         paxg::Color(0, 0, 0)
-            //     );
-
-            //     // 集落数
-            //     font->draw(
-            //         (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
-            //             reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
-            //         paxg::Vec2i(text_x, text_y + line_height * current_line),
-            //         paxg::Color(0, 0, 0)
-            //     );
-            //     font->draw(
-            //         std::to_string(simulator->cgetSettlement()),
-            //         paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
-            //         paxg::Color(0, 0, 0)
-            //     );
-            // }
-#endif
-
             // 大きな年号を描画
             if (koyomi_ != nullptr && !koyomi_->date_list.empty()) {
                 // グレゴリオ暦の年を取得（date_list[1]がグレゴリオ暦）
@@ -178,7 +143,7 @@ namespace paxs {
                             static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                         );
                         if (big_year_font != nullptr) {
-                            big_year_font->setOutline(0, 0.6, paxg::Color(255, 255, 255));
+                            big_year_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 
                             // パネル内の下部に配置
                             const int big_year_x = text_x;
@@ -201,6 +166,7 @@ namespace paxs {
 
         bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
+            (void)x; (void)y;
             return false;
             // TODO: child
         }

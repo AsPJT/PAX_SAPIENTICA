@@ -33,9 +33,7 @@ namespace paxs {
     /// @brief Class to manage geographic information for GUI rendering
     class GeographicFeatureManager : public IRenderable {
     public:
-        GeographicFeatureManager() = default;
-
-        void init() {
+        GeographicFeatureManager() {
             std::string str = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("MiniIcons"),
                 [&](const std::string& path_) {str = path_; });
@@ -71,7 +69,7 @@ namespace paxs {
 
         /// @brief 描画パラメータを設定
         void setDrawParams(
-            paxs::FeatureVisibilityManager& visible,
+            const paxs::FeatureVisibilityManager& visible,
             const double jdn,
             const double map_view_width, const double map_view_height,
             const double map_view_center_x, const double map_view_center_y
@@ -99,7 +97,7 @@ namespace paxs {
         bool visible_ = true;
 
         // 描画に必要なデータをキャッシュ（setDrawParams()で更新、render()で使用）
-        paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
+        const paxs::FeatureVisibilityManager* cached_visible_ = nullptr;
         double cached_jdn_ = 0.0;
         double cached_map_view_width_ = 0.0;
         double cached_map_view_height_ = 0.0;

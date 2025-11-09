@@ -25,7 +25,6 @@ struct DummyTexture {
 };
 
 // XYZTile のキャッシュ管理ロジックをテストする
-// migration_plan.md Phase 1 の一部
 class TileCacheTest : public ::testing::Test {
 protected:
     void SetUp() override {
@@ -251,7 +250,7 @@ TEST_F(TileCacheTest, CacheClearBehavior) {
     EXPECT_TRUE(cache.find(encodeKey(1, 2, 3)) == cache.end());
 }
 
-// テスト9: TileCacheクラスの基本機能（Phase 3で追加）
+// テスト9: TileCacheクラスの基本機能
 TEST_F(TileCacheTest, TileCacheClassBasicFunctionality) {
     paxs::TileCache<DummyTexture> cache;
 
@@ -283,7 +282,7 @@ TEST_F(TileCacheTest, TileCacheClassBasicFunctionality) {
     EXPECT_EQ(cache.getTexture(key2), nullptr);  // テクスチャは存在しない
 }
 
-// テスト10: TileCacheのキーエンコーディング（Phase 3で追加）
+// テスト10: TileCacheのキーエンコーディング
 TEST_F(TileCacheTest, TileCacheKeyEncoding) {
     // encodeKey()の検証
     EXPECT_EQ(paxs::TileCache<DummyTexture>::encodeKey(0, 0, 0), 0ULL);
@@ -298,7 +297,7 @@ TEST_F(TileCacheTest, TileCacheKeyEncoding) {
               (5ULL << 48) + (10ULL << 24));
 }
 
-// テスト11: TileCacheのgetTextureAt（Phase 3で追加）
+// テスト11: TileCacheのgetTextureAt
 TEST_F(TileCacheTest, TileCacheGetTextureAt) {
     paxs::TileCache<DummyTexture> cache;
 
@@ -317,7 +316,7 @@ TEST_F(TileCacheTest, TileCacheGetTextureAt) {
     EXPECT_EQ(cache.getTextureAt(z, y, x + 1), nullptr);
 }
 
-// テスト12: TileCacheのクリア（Phase 3で追加）
+// テスト12: TileCacheのクリア
 TEST_F(TileCacheTest, TileCacheClear) {
     paxs::TileCache<DummyTexture> cache;
 

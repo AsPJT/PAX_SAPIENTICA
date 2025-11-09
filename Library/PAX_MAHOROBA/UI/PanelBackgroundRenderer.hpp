@@ -45,7 +45,7 @@ namespace paxs {
                 internal_texture_ = paxg::RenderTexture{ size };
             }
 #else
-            (void)size; // 未使用パラメータの警告を抑制
+            (void)size;
 #endif
         }
 
@@ -113,15 +113,15 @@ namespace paxs {
         ) {
 #ifdef PAXS_USING_SIV3D
             // Siv3D: バッチ描画に登録（レイヤー別）
-            shadow_shapes_map_[layer].push_back([x, y, width, height, corner_radius]() {
+            shadow_shapes_map_[layer].emplace_back([x, y, width, height, corner_radius]() {
                 paxg::RoundRect{ x, y, width, height, corner_radius }.draw();
             });
-            panel_shapes_map_[layer].push_back([x, y, width, height, corner_radius, bg_color]() {
+            panel_shapes_map_[layer].emplace_back([x, y, width, height, corner_radius, bg_color]() {
                 paxg::RoundRect{ x, y, width, height, corner_radius }.draw(bg_color);
             });
 #else
             // SFML/DxLib: 即座に描画
-            (void)layer; // 未使用パラメータの警告を抑制
+            (void)layer;
             paxg::RoundRect{ x, y, width, height, corner_radius }
                 .drawShadow({1, 1}, 4, 1).draw(bg_color);
 #endif
@@ -142,15 +142,15 @@ namespace paxs {
         ) {
 #ifdef PAXS_USING_SIV3D
             // Siv3D: バッチ描画に登録（レイヤー別）
-            shadow_shapes_map_[layer].push_back([x, y, width, height]() {
+            shadow_shapes_map_[layer].emplace_back([x, y, width, height]() {
                 paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }.draw();
             });
-            panel_shapes_map_[layer].push_back([x, y, width, height, bg_color]() {
+            panel_shapes_map_[layer].emplace_back([x, y, width, height, bg_color]() {
                 paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }.draw(bg_color);
             });
 #else
             // SFML/DxLib: 即座に描画
-            (void)layer; // 未使用パラメータの警告を抑制
+            (void)layer;
             paxg::Rect{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height) }
                 .drawShadow({1, 1}, 4, 1).draw(bg_color);
 #endif

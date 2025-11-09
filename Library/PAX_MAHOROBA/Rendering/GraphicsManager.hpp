@@ -14,184 +14,132 @@
 
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Input/EventRouter.hpp>
-#include <PAX_MAHOROBA/Input/MouseEventRouter.hpp>
-#include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
-#include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/MapTileLayer.hpp>
-#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>
 
-#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-
-#ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
-#endif
-
 namespace paxs {
 
     /// @brief グラフィック統合管理クラス
     /// @brief Graphics integrated management class
+    /// @details 責務を描画のみに限定し、入力処理や状態管理はInputManagerとAppStateManagerに委譲
     class GraphicsManager {
     private:
-        MenuBar menu_bar_;
-        std::unique_ptr<UILayer> ui_layer_;
-        Photo360Layer photo360_layer_;
-        MapContentLayer map_content_layer_;
-        MapTileLayer map_tile_layer_;
+        EventBus& event_bus_;
+        AppStateManager& app_state_;
 
         RenderLayerManager render_layer_manager_;
 
-        // 入力管理システム
-        EventRouter event_router_;     // 座標に依存しないイベント（キーボード、リサイズ等）
-        MouseEventRouter mouse_event_router_;     // マウス入力のみ（レイヤーベース）
-
-        // 入力ハンドラー
-        MapViewportInputHandler* map_viewport_input_handler_ = nullptr;
-        UIInputHandler ui_input_handler_;
-
-        // 機能の可視性管理
-        FeatureVisibilityManager visible_manager_;
-
-        // ウィンドウリサイズ検知用
-        int last_window_width_ = 0;
-        int last_window_height_ = 0;
-
-        /// @brief MapViewportInputHandlerを設定
-        /// @param handler MapViewportInputHandlerへのポインタ / Pointer to MapViewportInputHandler
-        /// @param viewport MapViewportへのポインタ / Pointer to MapViewport
-        void setMapViewportInputHandler(MapViewportInputHandler* handler, MapViewport* viewport) {
-            map_viewport_input_handler_ = handler;
-            if (handler != nullptr) {
-                handler->setViewport(viewport);
-                // EventRouterに登録（キーボード、マウスホイール用）
-                event_router_.registerHandler(handler);
-                // InputRouterに登録（マウス入力用、最低優先度）
-                mouse_event_router_.registerHandler(handler);
-            }
-        }
+        // 各レイヤー（イベント駆動版、将来的に更新予定）
+        // Each layer (event-driven version, to be updated in future)
+        MapTileLayer map_tile_layer_;
+        MapContentLayer map_content_layer_;
+        Photo360Layer photo360_layer_;
+        UILayer ui_layer_;
+        MenuBar menu_bar_;
 
     public:
-        GraphicsManager() = default;
+        /// @brief コンストラクタ
+        /// @brief Constructor
+        /// @param event_bus EventBus参照 / EventBus reference
+        /// @param app_state AppStateManager参照 / AppStateManager reference
+        GraphicsManager(EventBus& event_bus, AppStateManager& app_state)
+            : event_bus_(event_bus)
+            , app_state_(app_state)
+            , render_layer_manager_()
+            , map_tile_layer_()
+            , map_content_layer_(&app_state.getMapViewport())
+            , photo360_layer_()
+            , ui_layer_(
+                &app_state.getVisibilityManager(),
+                &app_state.getMapViewport(),
+                &event_bus,
+                &app_state
+              )
+            , menu_bar_() {
 
-        void init(MapViewportInputHandler* handler, MapViewport* viewport, UIInputHandler* ui_input_handler) {
-            menu_bar_.init();
+            // FeatureVisibilityManagerの初期化
+            menu_bar_.initializeVisibility(&app_state_.getVisibilityManager());
 
-            ui_layer_ = std::make_unique<UILayer>(
-                &visible_manager_,
-                viewport
-            );
+            // AppStateManagerを設定
+            menu_bar_.setAppStateManager(&app_state);
+            map_content_layer_.setAppStateManager(&app_state);
+            map_tile_layer_.setAppStateManager(&app_state);
 
-            map_content_layer_.init(viewport);
-
-            map_tile_layer_.init();
+            // UILayerの初期化（一度のみ）
+            ui_layer_.initialize();
 
             // レイヤーシステムに各コンポーネントを登録
             render_layer_manager_.registerRenderable(&map_tile_layer_);
             render_layer_manager_.registerRenderable(&map_content_layer_);
             render_layer_manager_.registerRenderable(&photo360_layer_);
+            render_layer_manager_.registerRenderable(&ui_layer_);
             render_layer_manager_.registerRenderable(&menu_bar_);
-            render_layer_manager_.registerRenderable(ui_layer_.get());
-
-            // UIInputHandlerにウィジェットを登録
-            ui_input_handler->registerWidget(&menu_bar_);
-            ui_input_handler->registerWidget(ui_layer_.get());
-
-            event_router_.registerHandler(&map_content_layer_);
-            mouse_event_router_.registerHandler(ui_input_handler);
-#ifdef PAXS_USING_SIMULATOR
-            // SettlementInputHandler を EventRouter に登録（キーボードイベントのみ）
-            event_router_.registerHandler(&map_content_layer_.getSettlementInputHandler());
-#endif
-
-            // 可視性の初期状態を反映
-            menu_bar_.initializeVisibility(&visible_manager_);
-
-            setMapViewportInputHandler(handler, viewport);
         }
 
-        /// @brief EventRouterへのアクセス
-        EventRouter& getEventRouter() { return event_router_; }
+        // コピー・ムーブ禁止（メンバー変数へのポインタをRenderLayerManagerに登録しているため）
+        GraphicsManager(const GraphicsManager&) = delete;
+        GraphicsManager& operator=(const GraphicsManager&) = delete;
+        GraphicsManager(GraphicsManager&&) = delete;
+        GraphicsManager& operator=(GraphicsManager&&) = delete;
 
-        /// @brief InputRouterへのアクセス
-        MouseEventRouter& getInputRouter() { return mouse_event_router_; }
-
-        /// @brief MapViewportInputHandlerへのアクセス
-        MapViewportInputHandler* getMapViewportInputHandler() const {
-            return map_viewport_input_handler_;
+        /// @brief タイルデータを更新（描画前に呼び出し）
+        /// @brief Update tile data (called before rendering)
+        void updateTiles() {
+            map_tile_layer_.updateTileData();
         }
 
-        /// @brief 更新・描画処理
-        void update(
-            MapViewport& map_viewport,
-            paxs::Koyomi& koyomi
+        /// @brief 描画処理のみを実行
+        /// @details データはAppStateManagerから直接取得し、イベント駆動で更新される
+        void render() {
+            // AppStateManagerから最新データを取得
+            auto& visible_manager = app_state_.getVisibilityManager();
+
 #ifdef PAXS_USING_SIMULATOR
-            , std::unique_ptr<paxs::SettlementSimulator>& simulator
+            auto& simulation_manager = app_state_.getSimulationManager();
 #endif
-        ) {
-            // ウィンドウサイズ変更を検知してイベントをブロードキャスト
-            const int current_width = paxg::Window::width();
-            const int current_height = paxg::Window::height();
-            if (current_width != last_window_width_ || current_height != last_window_height_) {
-                ResizeEvent resize_event(current_width, current_height);
-                event_router_.broadcastEvent(resize_event);
-                last_window_width_ = current_width;
-                last_window_height_ = current_height;
-            }
 
-            // 言語選択を更新（HeaderPanelから取得 → FontSystem経由）
-            Fonts().setLanguage(menu_bar_.getLanguageIndex());
-            Fonts().setLanguageByKey(std::uint_least32_t(menu_bar_.getLanguageKey()));
 
-            // メニューから可視性を同期
-            menu_bar_.syncVisibilityFromMenu(&visible_manager_);
-
-            // データ更新のみ実施
-            map_tile_layer_.updateData(visible_manager_, map_viewport, koyomi.jdn.cgetDay());
-
-            map_content_layer_.updateData(
-                koyomi,
 #ifdef PAXS_USING_SIMULATOR
-                simulator,
-#endif
-                visible_manager_
+            // シミュレーターが初期化されている かつ Simulation可視フラグがONの場合のみ表示
+            const bool simulation_visible = visible_manager.isVisible(FeatureVisibilityManager::View::Simulation);
+            ui_layer_.getSettlementStatusPanel().setVisible(
+                simulation_manager.isActive() && simulation_visible
             );
 
-            ui_layer_->updateData(
-#ifdef PAXS_USING_SIMULATOR
-                simulator,
-#endif
-                koyomi
-            );
-
-#ifdef PAXS_USING_SIMULATOR
-            // SettlementStatusPanel の表示モードを更新
-            ui_layer_->getSettlementStatusPanel().setSelectDraw(
-                map_content_layer_.getSettlementInputHandler().getSelectDraw()
-            );
-
-            // シミュレーターが初期化されている場合のみ表示
-            ui_layer_->getSettlementStatusPanel().setVisible(simulator != nullptr);
+            // SettlementStatusPanelの背景をパネルと同期
+            ui_layer_.syncSettlementStatusBackground();
 #endif
 
-            photo360_layer_.setVisible(visible_manager_.isVisible(paxs::MurMur3::calcHash(2, "3D")));
+            // Photo360Layerの可視性設定
+            photo360_layer_.setVisible(visible_manager.isVisible(FeatureVisibilityManager::View::View3D));
 
-            // 3Dモード時は360度写真とUIのみ描画、通常モードは全レイヤー描画
-            if (visible_manager_.isVisible(paxs::MurMur3::calcHash(2, "3D"))) {
-                // 3Dモード: 360度写真を描画してからUIを描画
+            // 3Dモード時は360度写真とメニューバーのみ描画、通常モードは全レイヤー描画
+            if (visible_manager.isVisible(FeatureVisibilityManager::View::View3D)) {
+                // 3Dモード: 360度写真を描画してからメニューバーを描画
                 photo360_layer_.render();
                 menu_bar_.render();
             } else {
                 // 通常モード: レイヤーベース描画（Z順序自動管理）
                 render_layer_manager_.renderAll();
             }
+        }
+
+        /// @brief 入力ハンドラーにウィジェットを登録
+        template<typename UIInputHandlerType, typename EventRouterType>
+        void registerToInputHandlers(UIInputHandlerType& ui_input_handler, EventRouterType& event_router) {
+            ui_input_handler.registerWidget(&menu_bar_);
+            ui_input_handler.registerWidget(&ui_layer_);
+
+            event_router.registerHandler(&map_content_layer_);
+#ifdef PAXS_USING_SIMULATOR
+            event_router.registerHandler(&map_content_layer_.getSettlementInputHandler());
+#endif
         }
     };
 }

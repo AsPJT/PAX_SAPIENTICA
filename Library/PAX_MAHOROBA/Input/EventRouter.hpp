@@ -41,7 +41,7 @@ namespace paxs {
         /// @param handler 登録するイベントハンドラー / Event handler to register
         void registerHandler(IEventHandler* handler) {
             if (handler != nullptr) {
-                handlers.push_back(handler);
+                handlers.emplace_back(handler);
             }
         }
 
@@ -106,46 +106,6 @@ namespace paxs {
                         handled = true;
                         // マウスホイールは複数のハンドラーが処理可能
                         // Multiple handlers can process mouse wheel events
-                    }
-                }
-            }
-            return handled;
-        }
-
-        /// @brief リサイズイベントをブロードキャスト
-        /// @brief Broadcast resize event to all handlers
-        /// @param event リサイズイベント / Resize event
-        /// @return いずれかのハンドラーが処理した場合true / true if any handler processed
-        ///
-        /// リサイズイベントは座標に依存しないため、全ハンドラーに順番に通知します。
-        /// Resize events are coordinate-independent, so all handlers are notified in order.
-        bool broadcastEvent(const ResizeEvent& event) {
-            bool handled = false;
-            for (IEventHandler* handler : handlers) {
-                if (handler != nullptr && handler->isEnabled()) {
-                    EventHandlingResult result = handler->handleEvent(event);
-                    if (result.handled) {
-                        handled = true;
-                    }
-                }
-            }
-            return handled;
-        }
-
-        /// @brief フォーカスイベントをブロードキャスト
-        /// @brief Broadcast focus event to all handlers
-        /// @param event フォーカスイベント / Focus event
-        /// @return いずれかのハンドラーが処理した場合true / true if any handler processed
-        ///
-        /// フォーカスイベントは座標に依存しないため、全ハンドラーに順番に通知します。
-        /// Focus events are coordinate-independent, so all handlers are notified in order.
-        bool broadcastEvent(const FocusEvent& event) {
-            bool handled = false;
-            for (IEventHandler* handler : handlers) {
-                if (handler != nullptr && handler->isEnabled()) {
-                    EventHandlingResult result = handler->handleEvent(event);
-                    if (result.handled) {
-                        handled = true;
                     }
                 }
             }

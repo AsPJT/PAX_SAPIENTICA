@@ -12,11 +12,16 @@
 #ifndef PAX_MAHOROBA_UI_HEADER_PANEL_HPP
 #define PAX_MAHOROBA_UI_HEADER_PANEL_HPP
 
+#include <array>
+
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/GitHubButton.hpp>
@@ -31,8 +36,12 @@
 
 namespace paxs {
 
-    /// @brief アプリ上部のUI（メニュー + 言語選択）を管理
+    /// @brief アプリ上部のメニューバー
     class MenuBar : public IWidget{
+    private:
+        // UI配置定数
+        static constexpr int github_button_margin = 8;
+
     public:
         /// @brief コンストラクタ
         MenuBar() :
@@ -46,11 +55,15 @@ namespace paxs {
             )
         {
             language_selector_.setItemsKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES);
-        }
 
-        void init() {
             // GitHubボタンを初期化
-            github_button_.setLanguageSelector(&language_selector_);
+            github_button_.init(language_selector_);
+
+            // 言語選択のコールバックを設定
+            language_selector_.setOnSelectionChanged([this](std::size_t index, bool is_selected) {
+                (void)is_selected;
+                handleLanguageChanged(index);
+            });
 
             // メニューバーにメニュー項目を追加（FontSystem経由）
             menu_system.add(paxs::MenuBarKeys::VIEW_MENU_HASHES,
@@ -66,24 +79,24 @@ namespace paxs {
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MurMur3::calcHash("map"));
 
-            calculateLayout();
-        }
+            // 各メニューにコールバックを設定
+            setupMenuCallbacks();
 
-        /// @brief GitHubボタンの取得（MouseEventRouterへの登録用）
-        /// @brief Get GitHub button (for MouseEventRouter registration)
-        paxs::GitHubButton& getGitHubButton() {
-            return github_button_;
+            calculateLayout();
+            menu_system.updateMenuWidth();
         }
 
         /// @brief レイアウトを計算
-        void calculateLayout() const {
+        void calculateLayout() {
             // 言語選択プルダウンを右端に配置
             language_selector_.setPos(paxg::Vec2i{
                 static_cast<int>(paxg::Window::width() - language_selector_.getRect().w()),
                 0
             });
-            // menu幅を設定
-            menu_system.updateMenuWidth();
+            github_button_.setPos(paxg::Vec2i{
+                static_cast<int>(language_selector_.getRect().x() - github_button_.getRect().w() - github_button_margin),
+                static_cast<int>((language_selector_.getRect().h() - github_button_.getRect().h()) / 2)
+            });
         }
 
         /// @brief ヘッダーの高さを取得
@@ -111,16 +124,28 @@ namespace paxs {
             return language_selector_.getKey();
         }
 
+        /// @brief AppStateManagerを設定
+        /// @brief Set AppStateManager
+        void setAppStateManager(AppStateManager* app_state_manager) {
+            app_state_manager_ = app_state_manager;
+            // AppStateManagerが設定されたら、イベント購読を開始
+            if (app_state_manager_ && !events_subscribed_) {
+                subscribeToEvents();
+                events_subscribed_ = true;
+            }
+        }
+
         /// @brief 可視性状態を反映
         void initializeVisibility(paxs::FeatureVisibilityManager* visible_manager) {
             // 可視性の初期化
-            visible_manager->emplace(MurMur3::calcHash("Calendar"), true); // 暦
-            visible_manager->emplace(MurMur3::calcHash("Map"), true); // 地図
-            visible_manager->emplace(MurMur3::calcHash("UI"), true); // UI
-            visible_manager->emplace(MurMur3::calcHash("Simulation"), true); // シミュレーション
-            visible_manager->emplace(MurMur3::calcHash("License"), false); // ライセンス
-            visible_manager->emplace(MurMur3::calcHash("Debug"), false); // デバッグ
-            visible_manager->emplace(MurMur3::calcHash("3D"), false); // 360度写真
+            using View = FeatureVisibilityManager::View;
+            visible_manager->emplace(View::Calendar, true); // 暦
+            visible_manager->emplace(View::Map, true); // 地図
+            visible_manager->emplace(View::UI, true); // UI
+            visible_manager->emplace(View::Simulation, true); // シミュレーション
+            visible_manager->emplace(View::License, false); // ライセンス
+            visible_manager->emplace(View::Debug, false); // デバッグ
+            visible_manager->emplace(View::View3D, false); // 360度写真
 
             // View メニューの状態を初期化
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(MurMur3::calcHash("view"));
@@ -128,68 +153,125 @@ namespace paxs {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
                 return;
             }
-            view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MurMur3::calcHash("Calendar")));
-            view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MurMur3::calcHash("Map")));
-            view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MurMur3::calcHash("UI")));
-            view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MurMur3::calcHash("Simulation")));
-            view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MurMur3::calcHash("License")));
-            view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(MurMur3::calcHash("Debug")));
-            view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(MurMur3::calcHash("3D")));
+            using View = FeatureVisibilityManager::View;
+            view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(View::Calendar));
+            view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(View::Map));
+            view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(View::UI));
+            view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(View::Simulation));
+            view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(View::License));
+            view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(View::Debug));
+            view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(View::View3D));
         }
 
-        /// @brief メニュー状態を可視性に反映（毎フレーム呼び出し）
-        void syncVisibilityFromMenu(paxs::FeatureVisibilityManager* visible_manager) {
-            // View メニューの状態を同期
-            const paxs::DropDownMenu* view_menu = menu_system.cgetDropDownMenu(MurMur3::calcHash("view"));
-            if (!view_menu) {
-                PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
-                return;
-            }
-            visible_manager->setVisibility(MurMur3::calcHash("Calendar"), view_menu->getIsItems(std::size_t(0)));
-            visible_manager->setVisibility(MurMur3::calcHash("Map"), view_menu->getIsItems(std::size_t(1)));
-            visible_manager->setVisibility(MurMur3::calcHash("UI"), view_menu->getIsItems(std::size_t(2)));
-            visible_manager->setVisibility(MurMur3::calcHash("Simulation"), view_menu->getIsItems(std::size_t(3)));
-            visible_manager->setVisibility(MurMur3::calcHash("License"), view_menu->getIsItems(std::size_t(4)));
-            visible_manager->setVisibility(MurMur3::calcHash("Debug"), view_menu->getIsItems(std::size_t(5)));
-            visible_manager->setVisibility(MurMur3::calcHash("3D"), view_menu->getIsItems(std::size_t(6)));
+        /// @brief 言語変更時のハンドラー（コールバック駆動）
+        /// @brief Language change handler (callback-driven)
+        void handleLanguageChanged(std::size_t new_index) {
+            if (!app_state_manager_) return;
 
-            // Place Names メニューの状態を同期
-            const paxs::DropDownMenu* place_names_menu = menu_system.cgetDropDownMenu(MurMur3::calcHash("place_names"));
-            if (!place_names_menu) {
-                PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'place_names' menu not found.");
-                return;
-            }
-            visible_manager->setVisibility(MurMur3::calcHash("place_name"), place_names_menu->getIsItems(std::size_t(0)));
-            visible_manager->setVisibility(MurMur3::calcHash("site"), place_names_menu->getIsItems(std::size_t(1)));
-            visible_manager->setVisibility(MurMur3::calcHash("tumulus"), place_names_menu->getIsItems(std::size_t(2)));
-            visible_manager->setVisibility(MurMur3::calcHash("dolmen"), place_names_menu->getIsItems(std::size_t(3)));
-            visible_manager->setVisibility(MurMur3::calcHash("kamekanbo"), place_names_menu->getIsItems(std::size_t(4)));
-            visible_manager->setVisibility(MurMur3::calcHash("stone_coffin"), place_names_menu->getIsItems(std::size_t(5)));
-            visible_manager->setVisibility(MurMur3::calcHash("doken"), place_names_menu->getIsItems(std::size_t(6)));
-            visible_manager->setVisibility(MurMur3::calcHash("dotaku"), place_names_menu->getIsItems(std::size_t(7)));
-            visible_manager->setVisibility(MurMur3::calcHash("bronze_mirror"), place_names_menu->getIsItems(std::size_t(8)));
-            visible_manager->setVisibility(MurMur3::calcHash("human_bone"), place_names_menu->getIsItems(std::size_t(9)));
-            visible_manager->setVisibility(MurMur3::calcHash("mtdna"), place_names_menu->getIsItems(std::size_t(10)));
-            visible_manager->setVisibility(MurMur3::calcHash("ydna"), place_names_menu->getIsItems(std::size_t(11)));
+            const std::uint_least32_t language_key = language_selector_.getKey();
+            // AppStateManager経由で言語変更イベントを発行
+            app_state_manager_->setLanguage(static_cast<std::uint_least8_t>(new_index), language_key);
+        }
 
-            // Map メニューの状態を同期
-            const paxs::DropDownMenu* map_menu = menu_system.cgetDropDownMenu(MurMur3::calcHash("map"));
-            if (!map_menu) {
-                PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'map' menu not found.");
-                return;
+        /// @brief メニュー項目トグル時のハンドラー（コールバック駆動）
+        /// @brief Menu item toggle handler (callback-driven)
+        void handleMenuItemToggled(const std::uint_least32_t menu_key, std::size_t item_index, bool is_checked) {
+            if (!app_state_manager_) return;
+
+            // メニューキーに応じて適切な機能キーを取得し、可視性を更新
+            // item_indexはDropDownMenuの内部インデックス（0はヘッダー、1以降が実際の項目）
+            // 実際の項目インデックスに変換するため-1する
+            const std::size_t actual_index = (item_index > 0) ? (item_index - 1) : 0;
+
+            if (menu_key == MurMur3::calcHash("view")) {
+                // View メニュー
+                using View = FeatureVisibilityManager::View;
+                const std::array<View, 7> view_items = {
+                    View::Calendar,
+                    View::Map,
+                    View::UI,
+                    View::Simulation,
+                    View::License,
+                    View::Debug,
+                    View::View3D
+                };
+                if (actual_index < view_items.size()) {
+                    app_state_manager_->setFeatureVisibility(
+                        static_cast<std::uint_least32_t>(view_items[actual_index]), is_checked);
+                }
             }
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_base"), map_menu->getIsItems(std::size_t(0)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_sea"), map_menu->getIsItems(std::size_t(1)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_land_and_water"), map_menu->getIsItems(std::size_t(2)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_soil"), map_menu->getIsItems(std::size_t(3)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_soil_temperature"), map_menu->getIsItems(std::size_t(4)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_country"), map_menu->getIsItems(std::size_t(5)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_ryosei_line"), map_menu->getIsItems(std::size_t(6)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_slope"), map_menu->getIsItems(std::size_t(7)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"), map_menu->getIsItems(std::size_t(8)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"), map_menu->getIsItems(std::size_t(9)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_line1"), map_menu->getIsItems(std::size_t(10)));
-            visible_manager->setVisibility(MurMur3::calcHash("menu_bar_map_line2"), map_menu->getIsItems(std::size_t(11)));
+            else if (menu_key == MurMur3::calcHash("place_names")) {
+                // Place Names メニュー
+                using PlaceNames = FeatureVisibilityManager::PlaceNames;
+                const std::array<PlaceNames, 12> place_name_items = {
+                    PlaceNames::PlaceName,
+                    PlaceNames::Site,
+                    PlaceNames::Tumulus,
+                    PlaceNames::Dolmen,
+                    PlaceNames::Kamekanbo,
+                    PlaceNames::StoneCoffin,
+                    PlaceNames::Doken,
+                    PlaceNames::Dotaku,
+                    PlaceNames::BronzeMirror,
+                    PlaceNames::HumanBone,
+                    PlaceNames::MtDNA,
+                    PlaceNames::YDna
+                };
+                if (actual_index < place_name_items.size()) {
+                    app_state_manager_->setFeatureVisibility(
+                        static_cast<std::uint_least32_t>(place_name_items[actual_index]), is_checked);
+                }
+            }
+            else if (menu_key == MurMur3::calcHash("map")) {
+                // Map メニュー
+                using MapLayers = FeatureVisibilityManager::MapLayers;
+                const std::array<MapLayers, 12> map_layer_items = {
+                    MapLayers::Base,
+                    MapLayers::LandAndSea,
+                    MapLayers::LandAndWater,
+                    MapLayers::Soil,
+                    MapLayers::SoilTemperature,
+                    MapLayers::RyoseiCountry,
+                    MapLayers::RyoseiLine,
+                    MapLayers::Slope,
+                    MapLayers::LakesAndRivers1,
+                    MapLayers::LakesAndRivers2,
+                    MapLayers::Line1,
+                    MapLayers::Line2
+                };
+                if (actual_index < map_layer_items.size()) {
+                    app_state_manager_->setFeatureVisibility(
+                        static_cast<std::uint_least32_t>(map_layer_items[actual_index]), is_checked);
+                }
+            }
+        }
+
+        /// @brief メニューコールバックをセットアップ
+        /// @brief Setup menu callbacks
+        void setupMenuCallbacks() {
+            // View メニューのコールバック
+            paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(MurMur3::calcHash("view"));
+            if (view_menu) {
+                view_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
+                    handleMenuItemToggled(MurMur3::calcHash("view"), index, is_checked);
+                });
+            }
+
+            // Place Names メニューのコールバック
+            paxs::DropDownMenu* place_names_menu = menu_system.getDropDownMenu(MurMur3::calcHash("place_names"));
+            if (place_names_menu) {
+                place_names_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
+                    handleMenuItemToggled(MurMur3::calcHash("place_names"), index, is_checked);
+                });
+            }
+
+            // Map メニューのコールバック
+            paxs::DropDownMenu* map_menu = menu_system.getDropDownMenu(MurMur3::calcHash("map"));
+            if (map_menu) {
+                map_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
+                    handleMenuItemToggled(MurMur3::calcHash("map"), index, is_checked);
+                });
+            }
         }
 
         void render() const override {
@@ -203,7 +285,6 @@ namespace paxs {
             background_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
 
             // メニューバーと言語選択を描画
-            calculateLayout();
             menu_system.render();
             language_selector_.render();
 
@@ -279,13 +360,35 @@ namespace paxs {
         }
 
     private:
+        /// @brief イベント購読を設定
+        /// @brief Subscribe to events
+        void subscribeToEvents() {
+            // 言語変更イベントを購読してメニューの言語を更新
+            EventBus::getInstance().subscribe<LanguageChangedEvent>(
+                [this](const LanguageChangedEvent&) {
+                    menu_system.updateMenuWidth();
+                    calculateLayout();
+                }
+            );
+
+            // ウィンドウリサイズイベントを購読してレイアウトを再計算
+            EventBus::getInstance().subscribe<WindowResizedEvent>(
+                [this](const WindowResizedEvent&) {
+                    calculateLayout();
+                }
+            );
+        }
+
         // 状態管理
         bool visible_ = true;
+        AppStateManager* app_state_manager_ = nullptr;
+        std::size_t previous_language_index_ = 0;
+        bool events_subscribed_ = false;
 
         // 子ウィジェット
-        mutable paxs::Pulldown language_selector_;
-        mutable paxs::MenuSystem menu_system;
-        mutable paxs::GitHubButton github_button_;
+        paxs::Pulldown language_selector_;
+        paxs::MenuSystem menu_system;
+        paxs::GitHubButton github_button_;
     };
 
 } // namespace paxs

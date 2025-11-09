@@ -19,118 +19,81 @@
 #define PAXS_USING_SIMULATOR
 #endif
 
-#ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
-#endif
-
 #include <memory>
 
-#include <PAX_GRAPHICA/Key.hpp>
-#include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
+#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
-#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+#include <PAX_MAHOROBA/Input/InputManager.hpp>
 #include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/GraphicsManager.hpp>
-
-#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/MouseClickStateManager.hpp>
 
 namespace paxs {
 
     void startMain() {
-        paxs::PaxSapienticaInit::firstInit(); // 初期化とロゴの表示
-        MapViewport map_viewport{};
-        std::unique_ptr<paxs::MapViewportInputHandler> map_viewport_input_handler = std::make_unique<MapViewportInputHandler>(); // 地図ビューポートの入力処理
-        std::unique_ptr<paxs::UIInputHandler> ui_input_handler = std::make_unique<paxs::UIInputHandler>(); // UIの入力処理
-        paxs::Koyomi koyomi{}; // 暦を管理する
-        Fonts().initialize(); // フォントシステムを初期化
-        paxs::GraphicsManager graphics_manager{}; // グラフィック統合管理
+        // 初期化とロゴの表示
+        paxs::PaxSapienticaInit::firstInit();
 
-        graphics_manager.init(map_viewport_input_handler.get(), &map_viewport, ui_input_handler.get());
+        // フォントシステムを初期化
+        Fonts().initialize();
 
-        map_viewport.setWidth(map_viewport.getHeight() / double(paxg::Window::height()) * double(paxg::Window::width()));
+        // 1. EventBus作成（シングルトン）
+        EventBus& event_bus = EventBus::getInstance();
 
-        koyomi.init();
+        // 2. AppStateManager作成（ドメインロジック集約）
+        AppStateManager app_state(event_bus);
 
-#ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<paxs::SettlementSimulator> simulator{};
-#endif
+        // 3. InputManager作成（入力処理統合）
+        InputManager input_manager(event_bus);
 
+        // 4. GraphicsManager作成（描画のみ）
+        GraphicsManager graphics_manager(event_bus, app_state);
+
+        // 5. 入力ハンドラー登録
+        std::unique_ptr<MapViewportInputHandler> map_viewport_input_handler =
+            std::make_unique<MapViewportInputHandler>();
+        map_viewport_input_handler->setViewport(&app_state.getMapViewport());
+
+        std::unique_ptr<UIInputHandler> ui_input_handler =
+            std::make_unique<UIInputHandler>();
+
+        // InputManagerに入力ハンドラーを登録
+        input_manager.registerHandler(map_viewport_input_handler.get());
+        input_manager.getMouseEventRouter().registerHandler(ui_input_handler.get());
+
+        // GraphicsManagerが内部のウィジェット/ハンドラーを登録
+        graphics_manager.registerToInputHandlers(*ui_input_handler, input_manager.getEventRouter());
+
+        // ローディング画面終了
         paxs::PaxSapienticaInit::endLoadingScreen();
-
-        // マウスボタンの状態管理
-        paxs::MouseClickStateManager left_button_state_manager;
 
         /*##########################################################################################
             ループ開始
         ##########################################################################################*/
         while (paxg::Window::update()) {
-            paxg::Mouse::getInstance()->calledFirstEveryFrame(); // 入力を更新
+            // 画像の拡大縮小の方式を設定
+            const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampNearest };
 
-            const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampNearest }; // 画像の拡大縮小の方式を設定
+            // 1. 入力処理（イベント収集・ルーティング）
+            input_manager.processInput();
 
-            // キーボード入力イベントをブロードキャスト（全ハンドラーに通知）
-            paxs::KeyboardEvent keyboard_event;
-            graphics_manager.getEventRouter().broadcastEvent(keyboard_event);
+            // 2. イベントキュー処理（遅延イベントの処理）
+            event_bus.processQueue();
 
-            // マウスホイール入力イベントをブロードキャスト（全ハンドラーに通知）
-            paxg::Mouse* mouse = paxg::Mouse::getInstance();
-            int wheel_rotation = mouse->getWheelRotVol();
-            if (wheel_rotation != 0) {
-                paxs::MouseWheelEvent wheel_event(wheel_rotation);
-                graphics_manager.getEventRouter().broadcastEvent(wheel_event);
-            }
+            // 3. 暦更新（シミュレーション実行中の場合）
+            app_state.updateKoyomi();
 
-            // マウス/タッチ入力（座標ベース）
-            int mouse_x = mouse->getPosX();
-            int mouse_y = mouse->getPosY();
+            // 4. タイルデータ更新（ビューポート変更に応じてタイルをロード）
+            graphics_manager.updateTiles();
 
-            // 現在のボタン状態を取得
-            bool current_left_button = mouse->getLeft();
-            bool current_right_button = mouse->getRight();
-            bool current_middle_button = mouse->getMiddle();
+            // 5. 描画のみ（更新は不要、データはAppStateManagerから直接取得）
+            graphics_manager.render();
 
-            // 左ボタンの状態を更新してイベントを発行
-            paxs::MouseClickStateManager::State left_state = left_button_state_manager.update(current_left_button);
-            if (left_state != paxs::MouseClickStateManager::State::None) {
-                paxs::MouseEvent event(mouse_x, mouse_y);
-                if (paxs::Key::isShiftPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_SHIFT;
-                if (paxs::Key::isCtrlPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_CTRL;
-                if (paxs::Key::isAltPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_ALT;
-                if (paxs::Key::isCommandPressed()) event.modifier_keys |= paxs::MouseEvent::MODIFIER_COMMAND;
-                event.prev_x = mouse->getPosXBefore1Frame();
-                event.prev_y = mouse->getPosYBefore1Frame();
-
-                if (left_state == paxs::MouseClickStateManager::State::Down) {
-                    event.left_button_state = paxs::MouseButtonState::Pressed;
-                }
-                else if (left_state == paxs::MouseClickStateManager::State::Held) {
-                    event.left_button_state = paxs::MouseButtonState::Held;
-                }
-                else if (left_state == paxs::MouseClickStateManager::State::Up) {
-                    event.left_button_state = paxs::MouseButtonState::Released;
-                }
-
-                graphics_manager.getInputRouter().routeEvent(event);
-            }
-
-            graphics_manager.update(
-                map_viewport,
-                koyomi
-#ifdef PAXS_USING_SIMULATOR
-                , simulator
-#endif
-            );
-
-            koyomi.update(
-#ifdef PAXS_USING_SIMULATOR
-                simulator
-#endif
-            );
-
+            // 6. タッチ入力の状態更新
             paxg::TouchInput::updateState();
         }
     }

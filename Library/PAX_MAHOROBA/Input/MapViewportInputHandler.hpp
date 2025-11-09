@@ -23,6 +23,8 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Input/IEventHandler.hpp>
 #include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
@@ -34,17 +36,19 @@ namespace paxs {
     /// @brief Handles input processing for MapViewport (UI layer)
     ///
     /// IEventHandlerとIInputHandlerの両方を継承し、座標に依存しないイベント（キーボード、
-    /// マウスホイール、リサイズ）と座標ベースのマウス入力の両方を処理します。
-    /// 画面全体のパン・ズーム操作を担当するため、hitTest()は常にtrueを返します。
-    /// Inherits both IEventHandler and IInputHandler to handle coordinate-independent events
-    /// (keyboard, mouse wheel, resize) and coordinate-based mouse input.
-    /// Handles pan/zoom for the entire screen, so hitTest() always returns true.
+    /// マウスホイール）と座標ベースのマウス入力を処理します。
+    /// WindowResizedEventはEventBus経由で購読します。
     class MapViewportInputHandler : public IEventHandler, public IMouseEventHandler {
     private:
         std::array<Key, 1> enl_keys; // 拡大キー
         std::array<Key, 1> esc_keys; // 縮小キー
+        std::array<Key, 2> move_left_keys;  // 左移動キー (A, Left)
+        std::array<Key, 2> move_right_keys; // 右移動キー (D, Right)
+        std::array<Key, 2> move_up_keys;    // 上移動キー (W, Up)
+        std::array<Key, 2> move_down_keys;  // 下移動キー (S, Down)
 
         bool enabled_ = true; // 入力処理の有効/無効
+        bool events_subscribed_ = false; // イベント購読済みフラグ
 
 #ifdef __ANDROID__
         int touch_num = 0;
@@ -62,7 +66,11 @@ namespace paxs {
 
     public:
         MapViewportInputHandler()
-            : enl_keys{Key(PAXG_KEY_Q)}, esc_keys{Key(PAXG_KEY_E)}
+            : enl_keys{Key(PAXG_KEY_Q)}, esc_keys{Key(PAXG_KEY_E)},
+              move_left_keys{Key(PAXG_KEY_A), Key(PAXG_KEY_LEFT)},
+              move_right_keys{Key(PAXG_KEY_D), Key(PAXG_KEY_RIGHT)},
+              move_up_keys{Key(PAXG_KEY_W), Key(PAXG_KEY_UP)},
+              move_down_keys{Key(PAXG_KEY_S), Key(PAXG_KEY_DOWN)}
 #ifdef __ANDROID__
             , touch_num(0), old_touch_num(0)
             , pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
@@ -74,7 +82,8 @@ namespace paxs {
         /// @brief Handle zoom by mouse wheel
         /// @param viewport MapViewport参照 / MapViewport reference
         /// @param event マウスホイールイベント / Mouse wheel event
-        void handleMouseWheelZoom(MapViewport& viewport, const MouseWheelEvent& event) {
+        /// @return ビューポートが変更された場合true / true if viewport was changed
+        bool handleMouseWheelZoom(MapViewport& viewport, const MouseWheelEvent& event) {
             double height = viewport.getHeight();
             const double min_height = viewport.getMinHeight();
             const double max_height = viewport.getMaxHeight();
@@ -82,8 +91,8 @@ namespace paxs {
             height *= (1.0 + (event.wheel_rotation / MapViewportConstants::mouse_wheel_sensitivity));
             height = (std::clamp)(height, min_height, max_height);
 
-            viewport.setHeight(height);
-            viewport.setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
+            viewport.setSize(height);
+            return true; // 常にズームが変更される
         }
 
         /// @brief マウスドラッグによる移動処理（デスクトップ）
@@ -118,8 +127,8 @@ namespace paxs {
                     center_y += MapViewportConstants::longitude_max;
                 }
 
-                viewport.setCenterX(center_x);
-                viewport.setCenterY(center_y);
+                // X座標とY座標を同時に設定（イベント通知は1回のみ）
+                viewport.setCenter(center_x, center_y);
             }
 #endif
         }
@@ -167,8 +176,8 @@ namespace paxs {
                     center_y += MapViewportConstants::longitude_max;
                 }
 
-                viewport.setCenterX(center_x);
-                viewport.setCenterY(center_y);
+                // X座標とY座標を同時に設定（イベント通知は1回のみ）
+                viewport.setCenter(center_x, center_y);
             }
             // 2本指タッチ：ピンチズーム
             else if (old_touch_num == 2 && touch_num == 2) {
@@ -209,11 +218,13 @@ namespace paxs {
         /// @brief キーボードによるズーム処理（Q/Eキー）
         /// @brief Handle zoom by keyboard (Q/E keys)
         /// @note Public access for selective input processing
-        void handleKeyboardZoom(MapViewport& viewport) {
+        /// @return ビューポートが変更された場合true / true if viewport was changed
+        bool handleKeyboardZoom(MapViewport& viewport) {
             double height = viewport.getHeight();
             const double min_height = viewport.getMinHeight();
             const double max_height = viewport.getMaxHeight();
             const double expansion_size = viewport.getExpansionSize();
+            bool changed = false;
 
             // Q キー：ズームイン
             if (pressed(enl_keys)) {
@@ -223,8 +234,8 @@ namespace paxs {
                         height = min_height;
                     }
                 }
-                viewport.setHeight(height);
-                viewport.setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
+                viewport.setSize(height);
+                changed = true;
             }
 
             // E キー：ズームアウト
@@ -235,16 +246,84 @@ namespace paxs {
                         height = max_height;
                     }
                 }
-                viewport.setHeight(height);
-                viewport.setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
+                viewport.setSize(height);
+                changed = true;
             }
+
+            return changed;
         }
 
-        /// @brief MapViewportへの参照を設定
-        /// @brief Set reference to MapViewport
+        /// @brief キーボードによる移動処理（WASD/矢印キー）
+        /// @param viewport MapViewport参照 / MapViewport reference
+        /// @return ビューポートが変更された場合true / true if viewport was changed
+        bool handleKeyboardMovement(MapViewport& viewport) {
+            bool changed = false;
+            double center_x = viewport.getCenterX();
+            double center_y = viewport.getCenterY();
+            const double width = viewport.getWidth();
+            const double movement_size = MapViewportConstants::default_movement_size;
+
+            // A/Left キー：左移動（X座標を減らす）
+            if (pressed(move_left_keys)) {
+                center_x -= (width / movement_size);
+                if (center_x < MapViewportConstants::longitude_min) {
+                    center_x += MapViewportConstants::longitude_range;
+                }
+                changed = true;
+            }
+
+            // D/Right キー：右移動（X座標を増やす）
+            if (pressed(move_right_keys)) {
+                center_x += (width / movement_size);
+                if (center_x >= MapViewportConstants::longitude_max) {
+                    center_x -= MapViewportConstants::longitude_range;
+                }
+                changed = true;
+            }
+
+            // S/Down キー：下移動（Y座標を減らす）
+            if (pressed(move_down_keys)) {
+                center_y -= (width / movement_size);
+                if (center_y < MapViewportConstants::longitude_min) {
+                    center_y += MapViewportConstants::longitude_range;
+                }
+                changed = true;
+            }
+
+            // W/Up キー：上移動（Y座標を増やす）
+            if (pressed(move_up_keys)) {
+                center_y += (width / movement_size);
+                if (center_y >= MapViewportConstants::longitude_max) {
+                    center_y -= MapViewportConstants::longitude_range;
+                }
+                changed = true;
+            }
+
+            // 座標が変更された場合はビューポートに設定
+            if (changed) {
+                viewport.setCenter(center_x, center_y);
+            }
+
+            return changed;
+        }
+
+        /// @brief MapViewportへの参照を設定してイベントを購読
+        /// @brief Set reference to MapViewport and subscribe to events
         /// @param viewport MapViewportへの参照 / Reference to MapViewport
         void setViewport(MapViewport* viewport) {
             viewport_ = viewport;
+
+            // WindowResizedEventを購読
+            if (viewport_ && !events_subscribed_) {
+                EventBus::getInstance().subscribe<WindowResizedEvent>(
+                    [this](const WindowResizedEvent&) {
+                        if (viewport_) {
+                            viewport_->setSize(viewport_->getHeight());
+                        }
+                    }
+                );
+                events_subscribed_ = true;
+            }
         }
 
         /// @brief ドラッグ中かどうかを取得
@@ -253,9 +332,6 @@ namespace paxs {
         bool isDragging() const {
             return is_dragging_;
         }
-
-        // IInputHandler の実装
-        // IInputHandler implementation
 
         /// @brief キーボードイベント処理
         /// @brief Handle keyboard event
@@ -268,9 +344,19 @@ namespace paxs {
             }
 
             // キーボード入力（Q/Eキーによるズーム）
-            // Keyboard input (zoom with Q/E keys)
-            handleKeyboardZoom(*viewport_);
-            viewport_->applyConstraints();
+            bool zoom_changed = handleKeyboardZoom(*viewport_);
+
+            // キーボード入力（WASD/矢印キーによる移動）
+            bool movement_changed = handleKeyboardMovement(*viewport_);
+
+            // ズームまたは移動で変更があった場合、境界制約を適用
+            if (zoom_changed || movement_changed) {
+                // 境界制約を適用して、座標が変更された場合は通知
+                if (viewport_->applyConstraints()) {
+                    viewport_->notifyViewportChanged();
+                }
+            }
+
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
@@ -284,9 +370,13 @@ namespace paxs {
             }
 
             // マウスホイール入力（ズーム）
-            // Mouse wheel input (zoom)
-            handleMouseWheelZoom(*viewport_, event);
-            viewport_->applyConstraints();
+            bool changed = handleMouseWheelZoom(*viewport_, event);
+            if (changed) {
+                // 境界制約を適用して、座標が変更された場合は通知
+                if (viewport_->applyConstraints()) {
+                    viewport_->notifyViewportChanged();
+                }
+            }
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
@@ -311,6 +401,10 @@ namespace paxs {
             // ドラッグ中（Held状態）：ドラッグフラグONの時にドラッグ処理
             else if (event.left_button_state == MouseButtonState::Held && is_dragging_) {
                 handleMouseDrag(*viewport_, event);
+                // 境界制約を適用して、座標が変更された場合は通知
+                if (viewport_->applyConstraints()) {
+                    viewport_->notifyViewportChanged();
+                }
                 // ドラッグキャプチャを要求（UIの上でもドラッグを継続）
                 return EventHandlingResult::HandledWithCapture();
             }
@@ -326,62 +420,20 @@ namespace paxs {
             }
 
             handleTouchInput(*viewport_);
-            viewport_->applyConstraints();
-            return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
-        }
-
-        /// @brief リサイズイベント処理
-        /// @brief Handle resize event
-        /// @param event リサイズイベント / Resize event
-        /// @return イベント処理結果 / Event handling result
-        EventHandlingResult handleEvent(const ResizeEvent& event) override {
-            if (!enabled_ || viewport_ == nullptr) {
-                return EventHandlingResult::NotHandled();
-            }
-
-            // ウィンドウリサイズイベント
-            // Window resize event
-            // MapViewportのサイズをウィンドウに合わせて調整
-            // Adjust MapViewport size to match window
-            int new_width = event.width;
-            int new_height = event.height;
-            int old_height = paxg::Window::height();
-
-            if (old_height > 0 && new_height > 0) {
-                viewport_->setWidth(viewport_->getHeight() / double(new_height) * double(new_width));
+            // タッチ入力後も境界制約を適用して、座標が変更された場合は通知
+            if (viewport_->applyConstraints()) {
+                viewport_->notifyViewportChanged();
             }
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
-        /// @brief ヒットテスト（画面全体を対象）
-        /// @brief Hit test (targets entire screen)
-        /// @param x X座標 / X coordinate
-        /// @param y Y座標 / Y coordinate
-        /// @return 常にtrue（画面全体が対象） / Always true (entire screen is target)
         bool isHit(int /*x*/, int /*y*/) const override {
             // 画面全体が対象なので常にtrue
             return enabled_;
         }
-
-        /// @brief レイヤーを取得
-        /// @brief Get layer
-        /// @return Backgroundレイヤー（最低優先度） / Background layer (lowest priority)
-        RenderLayer getLayer() const override {
-            // 最も低い優先度（UI、MapContentManagerの後）
-            return RenderLayer::Background;
-        }
-
-        /// @brief 有効性を取得
-        /// @brief Get enabled state
-        bool isEnabled() const override {
-            return enabled_;
-        }
-
-        /// @brief 有効性を設定
-        /// @brief Set enabled state
-        void setEnabled(bool enabled) {
-            enabled_ = enabled;
-        }
+        bool isEnabled() const override { return enabled_; }
+        void setEnabled(bool enabled) { enabled_ = enabled; }
+        RenderLayer getLayer() const override { return RenderLayer::Background; }
     };
 
 }

@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_PULLDOWN_HPP
 
 #include <algorithm>
+#include <functional>
 #include <limits>
 #include <string>
 #include <vector>
@@ -43,6 +44,24 @@ namespace paxs {
     ///          - SelectedValue: 選択した値がヘッダーに表示される（言語選択など）
     ///          - FixedHeader: 固定のヘッダー名が表示される（メニューバーなど）
     class Pulldown : public IWidget {
+    private:
+        // プラットフォーム固有の表示調整定数
+        static constexpr float android_width_scale = 2.5f;
+        static constexpr float android_rect_width_scale = 2.0f;
+        static constexpr float android_height_scale = 1.4f;
+        static constexpr float sfml_height_scale = 1.2f;
+
+        // UI要素のサイズ定数
+        static constexpr float arrow_radius = 8.0f;
+        static constexpr float arrow_rotation_pi = 3.1416f;  // π radians (down)
+        static constexpr int shadow_offset_x = 1;
+        static constexpr int shadow_offset_y = 1;
+        static constexpr int shadow_blur_radius = 4;
+        static constexpr int shadow_spread = 1;
+        static constexpr int default_padding_x = 6;
+        static constexpr int default_padding_y = 2;
+        static constexpr int down_button_size = 20;
+
     public:
         Pulldown() = default;
 
@@ -100,12 +119,12 @@ namespace paxs {
 
 #ifdef PAXS_USING_DXLIB
 #ifdef __ANDROID__
-            all_rect_x *= 2.5f;
-            rect.setW(rect.w() * 2.0f);
-            rect.setH(rect.h() * 1.4f);
+            all_rect_x *= android_width_scale;
+            rect.setW(rect.w() * android_rect_width_scale);
+            rect.setH(rect.h() * android_height_scale);
 #endif
 #elif defined(PAXS_USING_SFML)
-            rect.setH(rect.h() * 1.2f);
+            rect.setH(rect.h() * sfml_height_scale);
 #endif
         }
         /// @brief コンストラクタ
@@ -145,6 +164,11 @@ namespace paxs {
         // からか判定
         bool isEmpty() const {
             return items_key.empty();
+        }
+
+        /// @brief 選択変更時のコールバックを設定
+        void setOnSelectionChanged(std::function<void(std::size_t, bool)> callback) {
+            on_selection_changed_ = std::move(callback);
         }
 
         // 入力処理
@@ -220,9 +244,18 @@ namespace paxs {
                             // もし選択肢が左クリックされていたら
                             if (i < is_items.size()) {
                                 // 項目をオンオフさせる
+                                const std::size_t old_index = index;
+                                const bool old_value = is_items[i];
+
                                 index = i;
                                 is_items[i] = !(is_items[i]);
                                 is_open = false;
+
+                                // ★コールバック呼び出し：選択が変更された場合のみ
+                                if (on_selection_changed_ && (old_index != index || old_value != is_items[i])) {
+                                    on_selection_changed_(index, is_items[i]);
+                                }
+
                                 return EventHandlingResult::Handled();
                             }
                         }
@@ -244,8 +277,7 @@ namespace paxs {
             rect.drawFrame(1, 0, is_open ? paxg::Color{ 255, 165, 0 } : paxg::Color{ 128, 128, 128 });
 
             // 三角形を描画（下向き▼）
-            constexpr float radius = 8.0f;
-            static constexpr paxg::TriangleShape down_arrow_shape(radius, 3.1416f); // π radians = down
+            static constexpr paxg::TriangleShape down_arrow_shape(arrow_radius, arrow_rotation_pi);
             const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x());
             const float center_y = static_cast<float>(rect.y() + rect.h() / 2.0);
             paxg::Triangle triangle(center_x, center_y, down_arrow_shape);
@@ -293,7 +325,7 @@ namespace paxs {
             // 四角形を描画
             const paxg::Rect back_rect{ pos, all_rect_x, (rect.h() * item_count) };
             // 影を描画
-            back_rect.drawShadow({ 1, 1 }, 4, 1).draw();
+            back_rect.drawShadow({ shadow_offset_x, shadow_offset_y }, shadow_blur_radius, shadow_spread).draw();
             // FixedHeader モードの場合は最初の項目（ヘッダー名）をスキップ
             const std::size_t start_index = (display_type == PulldownDisplayType::FixedHeader) ? 1 : 0;
             for (std::size_t i = start_index; i < item_count; ++i) {
@@ -416,14 +448,16 @@ namespace paxs {
         const LanguageDomain language_domain{}; // 言語ドメイン
 
         size_t index = 0;
-        paxg::Vec2i padding{ 6, 2 };
+        paxg::Vec2i padding{ default_padding_x, default_padding_y };
         float all_rect_x{}; // 全ての項目の文字幅
-        static constexpr int down_button_size = 20;
         bool is_open = false;
 
         // IWidget インターフェース用の状態
         bool visible_ = true;
         bool enabled_ = true;
+
+        // コールバック関数
+        std::function<void(std::size_t index, bool is_selected)> on_selection_changed_;
     };
 }
 

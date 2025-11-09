@@ -173,11 +173,10 @@ namespace paxs {
         FontSystem& operator=(FontSystem&&) = delete;
 
         /// @brief 初期化
-        /// @brief Initialize
         /// @details アプリケーション起動時に1回だけ呼び出す / Call only once at application startup
         void initialize() {
             if (initialized_) {
-                return; // 多重初期化を防止 / Prevent multiple initialization
+                return;
             }
 
             // デフォルトフォントパスの設定
@@ -203,16 +202,17 @@ namespace paxs {
             initialized_ = true;
         }
 
-        /// @brief リソース解放
-        /// @brief Release resources
-        /// @details アプリケーション終了時に呼び出す / Call at application termination
-        void shutdown() {
-            initialized_ = false;
+        /// @brief リソース解放（テスト用）
+        /// @brief Release resources (for testing)
+        /// @details テストで状態をリセットしたい場合のみ使用 / Use only for resetting state in tests
+        static void clearForTesting() {
+            if (instance_ != nullptr) {
+                instance_->font_cache_.clear();
+                instance_->initialized_ = false;
+            }
         }
 
         /// @brief 初期化済みか確認
-        /// @brief Check if initialized
-        /// @return true if initialized, false otherwise
         bool isInitialized() const { return initialized_; }
 
         // ========================================
@@ -378,13 +378,9 @@ namespace paxs {
 
     };
 
-    // 静的メンバーの定義
-    // Static member definition
     inline FontSystem* FontSystem::instance_ = nullptr;
 
     /// @brief グローバルアクセス用ヘルパー関数
-    /// @brief Helper function for global access
-    /// @return FontSystem のシングルトンインスタンス / FontSystem singleton instance
     inline FontSystem& Fonts() {
         return FontSystem::getInstance();
     }
