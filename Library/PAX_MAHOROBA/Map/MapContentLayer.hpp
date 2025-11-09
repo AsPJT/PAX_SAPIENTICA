@@ -245,6 +245,16 @@ namespace paxs {
             );
 
 #ifdef PAXS_USING_SIMULATOR
+            // シミュレーション状態変更イベントの購読
+            event_bus_->subscribe<SimulationStateChangedEvent>(
+                [this](const SimulationStateChangedEvent& event) {
+                    (void)event;
+                    if (app_state_manager_) {
+                        updateSettlementData();
+                    }
+                }
+            );
+
             // シミュレーションステップ実行イベントの購読
             // Settlementデータのみ更新（シミュレーション進行時）
             event_bus_->subscribe<SimulationStepExecutedEvent>(
