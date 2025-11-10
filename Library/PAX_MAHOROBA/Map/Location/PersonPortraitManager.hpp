@@ -18,6 +18,8 @@
 
 #include <PAX_GRAPHICA/Texture.hpp>
 
+#include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
+#include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonPortraitRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
@@ -102,47 +104,40 @@ namespace paxs {
                     if (lli.min_year > cached_jdn_) continue;
                     if (lli.max_year < cached_jdn_) continue;
 
-                    // 描画する年月日の変位
-                    double view_year_displacement = lli.max_year - lli.min_year;
-                    double jdn_displacement = cached_jdn_ - lli.min_year;
-                    double year_normalization = (view_year_displacement == 0.0) ? 0.0 : (jdn_displacement / view_year_displacement);
+                    // 時間補間座標の計算
+                    const auto interpolated_pos = MapCoordinateConverter::interpolatePosition(
+                        lli.start_coordinate, lli.end_coordinate,
+                        cached_jdn_, lli.min_year, lli.max_year
+                    );
 
-                    // 座標の変位
-                    double coordinate_displacement_x = lli.end_coordinate.x - lli.start_coordinate.x;
-                    double coordinate_displacement_y = lli.end_coordinate.y - lli.start_coordinate.y;
+                    // スクリーン座標に変換（経度ラップ処理付き）
+                    const auto screen_positions = MapCoordinateConverter::toScreenPositions(
+                        interpolated_pos.x, interpolated_pos.y,
+                        cached_map_view_width_, cached_map_view_height_,
+                        cached_map_view_center_x_, cached_map_view_center_y_
+                    );
 
-                    // 今の座標
-                    double now_coordinate_x = lli.start_coordinate.x + coordinate_displacement_x * year_normalization;
-                    double now_coordinate_y = lli.start_coordinate.y + coordinate_displacement_y * year_normalization;
+                    // ヒット判定（肖像画のサイズは120または overall_length/2）
+                    const int hit_radius = (lli.min_view > cached_map_view_width_ || lli.max_view < cached_map_view_width_)
+                        ? static_cast<int>(lli.overall_length / 2)
+                        : 60;  // 120 / 2
 
-                    // 3つのX座標（中央、西、東）でヒット判定
-                    for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
-                        const double current_x = now_coordinate_x + (offset_mult * 360.0);
-
-                        // スクリーン座標に変換
-                        const int screen_x = static_cast<int>(
-                            (current_x - cached_map_view_center_x_) * cached_map_view_height_ + cached_map_view_width_ / 2.0
-                        );
-                        const int screen_y = static_cast<int>(
-                            (now_coordinate_y - cached_map_view_center_y_) * cached_map_view_height_ + cached_map_view_height_ / 2.0
-                        );
-
-                        // ヒット判定（肖像画のサイズは120または overall_length/2）
-                        const int hit_radius = (lli.min_view > cached_map_view_width_ || lli.max_view < cached_map_view_width_)
-                            ? static_cast<int>(lli.overall_length / 2)
-                            : 60;  // 120 / 2
-
-                        const int dx = mouse_x - screen_x;
-                        const int dy = mouse_y - screen_y;
-                        if (dx * dx + dy * dy <= hit_radius * hit_radius) {
-                            // ヒット！人物名を取得
-                            if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
-                                hit_person_name = lli.place_name.at(ja_jp_language);
-                            } else if (!lli.place_name.empty()) {
-                                hit_person_name = lli.place_name.begin()->second;
-                            }
-                            return true;
+                    // 3つのスクリーン座標でヒット判定
+                    const bool is_hit = MapContentHitTester::testMultiplePositions(
+                        mouse_x, mouse_y, screen_positions,
+                        [hit_radius](int mx, int my, const paxg::Vec2i& pos) {
+                            return MapContentHitTester::circleHitTest(mx, my, pos, hit_radius);
                         }
+                    );
+
+                    if (is_hit) {
+                        // ヒット！人物名を取得
+                        if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
+                            hit_person_name = lli.place_name.at(ja_jp_language);
+                        } else if (!lli.place_name.empty()) {
+                            hit_person_name = lli.place_name.begin()->second;
+                        }
+                        return true;
                     }
                 }
             }

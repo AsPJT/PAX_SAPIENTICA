@@ -446,7 +446,7 @@ namespace paxs {
                     break;
                 }
 #else
-                // アセットルートからの相対パスとして保持（getRootPathは使用時に前置）
+                // アセットルートからの相対パスとして保持
                 file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
 #endif
             }
