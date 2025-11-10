@@ -31,24 +31,16 @@ namespace paxs {
     public:
         SettlementInputHandler() = default;
 
-        /// @brief EventBusを設定
-        /// @brief Set EventBus
         void setEventBus(EventBus* event_bus) {
             event_bus_ = event_bus;
         }
 
-        /// @brief キーボードイベント処理
-        /// @brief Handle keyboard event
-        /// @param event キーボードイベント / Keyboard event
-        /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const KeyboardEvent& event) override {
             (void)event;
             update();
 
             return EventHandlingResult::NotHandled();
         }
-
-        bool isEnabled() const override { return true; }
 
         /// @brief 現在の表示モードを取得
         std::size_t getSelectDraw() const { return select_draw_; }

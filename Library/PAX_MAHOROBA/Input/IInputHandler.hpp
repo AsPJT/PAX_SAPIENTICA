@@ -76,11 +76,6 @@ namespace paxs {
         /// @brief Get the input handling layer this object belongs to
         /// @return レンダリングレイヤー（入力優先度として使用）/ Rendering layer (used as input priority)
         virtual RenderLayer getLayer() const = 0;
-
-        /// @brief オブジェクトが入力処理可能かどうかを取得
-        /// @brief Check if the object can handle input
-        /// @return 入力処理可能ならtrue / true if input handling is enabled
-        virtual bool isEnabled() const = 0;
     };
 
 } // namespace paxs

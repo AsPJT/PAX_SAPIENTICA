@@ -47,23 +47,6 @@ namespace paxs {
             const MapViewport* map_viewport
         ) : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager), map_viewport_ptr(map_viewport) {}
 
-        const char* getName() const override {
-            return "DebugInfoPanel";
-        }
-
-        /// @brief レンダリングレイヤーを取得（背景レイヤー）
-        /// @brief Get rendering layer (background layer)
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-
-        bool isVisible() const override {
-            return visible_manager_ptr->isVisible(ViewMenu::debug);
-        }
-
-
-    public:
-        // IWidget インターフェースの実装
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             // DebugInfoPanelは入力処理を行わない
             (void)event;
@@ -165,15 +148,18 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
+            if (!isVisible()) return false;
             (void)x; (void)y;
             return false;
             // TODO: child
         }
 
-        void setVisible(bool /*visible*/) override {}
-        void setEnabled(bool /*enabled*/) override {}
-        bool isEnabled() const override { return true; }
+        bool isVisible() const override {
+            return visible_manager_ptr->isVisible(ViewMenu::debug);
+        }
+
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
+        const char* getName() const override { return "DebugInfoPanel"; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
     };
 

@@ -79,8 +79,6 @@ namespace paxs {
         }
 
         RenderLayer getLayer() const override { return RenderLayer::UIContent;}
-        bool isEnabled() const override { return true; }
-        void setEnabled(bool /*enabled*/) {}
     };
 
 } // namespace paxs

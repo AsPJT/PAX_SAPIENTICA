@@ -86,22 +86,11 @@ namespace paxs {
             );
         }
 
-        const char* getName() const override {
-            return name_;
-        }
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIBackground;
-        }
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-        bool isVisible() const override {
-            return visible_;
-        }
-
+        const char* getName() const override { return name_; }
+        RenderLayer getLayer() const override { return RenderLayer::UIBackground; }
+        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
-        void setEnabled(bool /*enabled*/) override {}
-        bool isEnabled() const override { return true; }
 };
 
 } // namespace paxs

@@ -34,7 +34,7 @@ namespace paxs {
             return RenderLayer::MenuBar;
         }
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!isVisible() || !isEnabled()) {
+            if (!isVisible()) {
                 return EventHandlingResult::NotHandled();
             }
 

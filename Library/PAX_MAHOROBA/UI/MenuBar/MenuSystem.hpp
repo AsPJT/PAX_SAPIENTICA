@@ -20,6 +20,35 @@
 namespace paxs {
     /// @brief DropDownMenu（固定ヘッダー型）を複数持つ
     class MenuSystem : public IWidget {
+    private:
+        // メニューバーに付属するメニュー項目が左から順番に格納されている
+        std::vector<paxs::DropDownMenu> menu_list;
+
+        paxg::Rect bar_rect_{0,0,0,0};
+
+        // 各メニュー項目に紐づけられた Key (Hash)
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu_list_key{};
+
+        std::size_t start_x = 0;
+
+    void layout() {
+        float x = 0.f;
+        float h = 0.f;
+
+        for (paxs::DropDownMenu& menu : menu_list) {
+            const float w = menu.getRect().w();
+            const float item_h = menu.getRect().h();
+
+            menu.setRectX(x);
+
+            x += w; // 幅ぶんだけ進む
+            h = (std::max)(h, item_h);
+        }
+
+        // メニューバー全体のrectも左上(0,0)から幅xだけにする
+        bar_rect_ = paxg::Rect{0.f, 0.f, x, h};
+    }
+
     public:
         MenuSystem() = default;
 
@@ -91,40 +120,6 @@ namespace paxs {
             return (menu_list_key.find(key) != menu_list_key.end()) ? &menu_list[menu_list_key.at(key)] : nullptr;
         }
 
-    private:
-        // メニューバーに付属するメニュー項目が左から順番に格納されている
-        std::vector<paxs::DropDownMenu> menu_list;
-
-        paxg::Rect bar_rect_{0,0,0,0};
-
-        // 各メニュー項目に紐づけられた Key (Hash)
-        paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu_list_key{};
-
-        std::size_t start_x = 0;
-
-    void layout() {
-        float x = 0.f;
-        float h = 0.f;
-
-        for (paxs::DropDownMenu& menu : menu_list) {
-            const float w = menu.getRect().w();
-            const float item_h = menu.getRect().h();
-
-            menu.setRectX(x);
-
-            x += w; // 幅ぶんだけ進む
-            h = (std::max)(h, item_h);
-        }
-
-        // メニューバー全体のrectも左上(0,0)から幅xだけにする
-        bar_rect_ = paxg::Rect{0.f, 0.f, x, h};
-    }
-
-    public:
-        RenderLayer getLayer() const override {
-            return RenderLayer::MenuBar;
-        }
-
         bool isHit(int x, int y) const override {
             // ヘッダー列に当たっていたらtrue
             for (auto const& mi : menu_list) {
@@ -140,26 +135,18 @@ namespace paxs {
             return false;
         }
 
-        paxg::Rect getRect() const override {
-            return bar_rect_;
-        }
-
         void updateMenuWidth() {
             for (paxs::DropDownMenu& menu : menu_list) {
                 menu.updateLanguage();
             }
             layout();
         }
-        void setPos(const paxg::Vec2i& /*pos*/) override {
-            // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
-        }
 
-        void setVisible(bool /*visible*/) override {}
         bool isVisible() const override { return true; }
-        void setEnabled(bool /*enabled*/) override {}
-        bool isEnabled() const override { return true; }
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        paxg::Rect getRect() const override { return bar_rect_; }
         const char* getName() const override { return "MenuSystem"; }
-
+        RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
     };
 } // namespace paxs
 

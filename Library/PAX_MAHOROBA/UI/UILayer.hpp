@@ -334,9 +334,6 @@ namespace paxs {
         bool isVisible() const override {
             return visible_manager_ptr->isVisible(ViewMenu::ui);
         }
-        void setEnabled(bool /*enabled*/) override {}
-        void setVisible(bool /*visible*/) override {}
-        bool isEnabled() const override { return true; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
         paxg::Rect getRect() const override { return paxg::Rect{}; }
         const char* getName() const override { return "UILayer"; }

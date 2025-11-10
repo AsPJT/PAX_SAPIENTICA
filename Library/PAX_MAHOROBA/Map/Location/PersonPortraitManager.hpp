@@ -53,16 +53,6 @@ namespace paxs {
             );
         }
 
-        RenderLayer getLayer() const override {
-            return RenderLayer::MapContent;
-        }
-        bool isVisible() const override {
-            return visible_;
-        }
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-
         /// @brief 描画パラメータを設定
         void setDrawParams(
             const double jdn,
@@ -77,7 +67,7 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!visible_) return;
+            if (!isVisible()) return;
 
             PersonPortraitRenderer::draw(location_point_list_list, key_value_tsv.get(), cached_jdn_,
                 cached_map_view_width_, cached_map_view_height_,
@@ -85,7 +75,7 @@ namespace paxs {
         }
 
         bool isHit(int mouse_x, int mouse_y, std::string& hit_person_name) const {
-            if (!visible_) return false;
+            if (!isVisible()) return false;
 
             const std::uint_least32_t ja_jp_language = MurMur3::calcHash("ja-JP");
 
@@ -144,10 +134,12 @@ namespace paxs {
             return false;
         }
 
-    private:
-        // 可視性管理
-        bool visible_ = true;
+        RenderLayer getLayer() const override { return RenderLayer::MapContent; }
+        // TODO: isVisible() の実装を検討
+        bool isVisible() const override { return true; }
+        void setVisible(bool /*visible*/) override {}
 
+    private:
         // 描画に必要なデータをキャッシュ(setDrawParams()で更新、render()で使用)
         double cached_jdn_ = 0.0;
         double cached_map_view_width_ = 0.0;

@@ -34,8 +34,6 @@ namespace paxs {
     private:
         const SimulationManager* simulation_manager_ = nullptr;
         paxg::Vec2i pos_{0, 0};
-        bool visible_ = true;
-        bool enabled_ = true;
 
         static constexpr int line_height_ = 25;
         static constexpr int label_width_ = 130;
@@ -50,7 +48,7 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!visible_ || simulation_manager_ == nullptr) return;
+            if (simulation_manager_ == nullptr) return;
             if (!simulation_manager_->isActive()) return;
 
             paxg::Font* font = Fonts().getFont(
@@ -88,6 +86,10 @@ namespace paxs {
             );
         }
 
+        EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
+            return EventHandlingResult::NotHandled();
+        }
+
         paxg::Rect getRect() const override {
             return paxg::Rect{
                 static_cast<float>(pos_.x()),
@@ -97,30 +99,10 @@ namespace paxs {
             };
         }
 
-        void setPos(const paxg::Vec2i& pos) override {
-            pos_ = pos;
-        }
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-        void setEnabled(bool enabled) override {
-            enabled_ = enabled;
-        }
-        bool isVisible() const override {
-            return visible_;
-        }
-        bool isEnabled() const override {
-            return enabled_;
-        }
-        const char* getName() const override {
-            return "SimulationStatsWidget";
-        }
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-        EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
-            return EventHandlingResult::NotHandled();
-        }
+        bool isVisible() const override { return true; }
+        void setPos(const paxg::Vec2i& pos) override { pos_ = pos; }
+        const char* getName() const override { return "SimulationStatsWidget"; }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
     };
 
 }

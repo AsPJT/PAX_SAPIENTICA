@@ -28,8 +28,6 @@ namespace paxs {
     /// @brief Class to manage settlement rendering
     class SettlementManager : public IRenderable {
     private:
-        bool visible_ = true;
-
         double cached_jdn_ = 0.0;
         const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* cached_agents_ = nullptr;
         const std::vector<GridType4>* cached_marriage_pos_list_ = nullptr;
@@ -46,22 +44,12 @@ namespace paxs {
         SettlementManager() = default;
 
         void render() const override {
-            if (!visible_) return;
+            if (!isVisible()) return;
             if (!cached_agents_ || !cached_marriage_pos_list_) return;
             SettlementRenderer::draw(cached_jdn_, cached_agents_, cached_marriage_pos_list_,
                 cached_map_view_width_, cached_map_view_height_,
                 cached_map_view_center_x_, cached_map_view_center_y_,
                 select_draw_, is_line_, is_arrow_);
-        }
-
-        RenderLayer getLayer() const override {
-            return RenderLayer::MapContent;
-        }
-        bool isVisible() const override {
-            return visible_;
-        }
-        void setVisible(bool visible) override {
-            visible_ = visible;
         }
 
         /// @brief 描画パラメータを設定
@@ -96,6 +84,12 @@ namespace paxs {
             cached_map_view_center_x_ = 0.0;
             cached_map_view_center_y_ = 0.0;
         }
+
+        RenderLayer getLayer() const override { return RenderLayer::MapContent; }
+        // TODO: isVisible() の実装を検討
+        bool isVisible() const override { return true; }
+        void setVisible(bool /*visible*/) override {}
+
     };
 }
 

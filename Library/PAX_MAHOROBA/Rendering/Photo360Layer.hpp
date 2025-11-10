@@ -68,20 +68,9 @@ namespace paxs {
             photo360_.setViewRotation(x, y, z);
         }
 
-        /// @brief レンダリングレイヤーを取得
-        RenderLayer getLayer() const override {
-            return RenderLayer::Photo360;
-        }
-
-        /// @brief 可視性を取得
-        bool isVisible() const override {
-            return visible_;
-        }
-
-        /// @brief 可視性を設定
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
+        RenderLayer getLayer() const override { return RenderLayer::Photo360; }
+        bool isVisible() const override { return visible_; }
+        void setVisible(bool visible) override { visible_ = visible; }
     };
 
 }

@@ -63,7 +63,6 @@ namespace paxs {
             (void)event; // KeyboardEventは現在使用していない（直接キー状態を取得）
 
             // Photo360が表示中のみ処理
-            // Only process when Photo360 is visible
             if (!isEnabled()) {
                 return EventHandlingResult::NotHandled();
             }
@@ -170,7 +169,7 @@ namespace paxs {
         /// Returns true only when Photo360 is visible (ViewMenu::view_3d is true) and enabled.
         /// This automatically blocks input propagation to background handlers (Settlement, Map)
         /// when Photo360 is displayed.
-        bool isEnabled() const override {
+        bool isEnabled() const {
             return photo360_layer_ != nullptr
                 && photo360_layer_->isVisible()
                 && visibility_manager_ != nullptr

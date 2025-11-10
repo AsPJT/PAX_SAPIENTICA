@@ -107,7 +107,6 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!visible_) return;
             if (!simulation_manager_ptr_ || !koyomi_) return;
 
             if (!simulation_manager_ptr_->isActive()) {
@@ -129,7 +128,7 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) {
+            if (!isVisible()) {
                 return false;
             }
             if (!simulation_manager_ptr_ || !koyomi_) {
@@ -214,10 +213,7 @@ namespace paxs {
 
         paxg::Rect getRect() const override { return {}; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
-        bool isEnabled() const override { return enabled_; }
-        bool isVisible() const override { return visible_; }
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return true; }
 
     private:
         std::vector<SimulationControlButton> buttons_;
@@ -225,9 +221,6 @@ namespace paxs {
         const SimulationManager* simulation_manager_ptr_ = nullptr;
         const paxs::Koyomi* koyomi_ = nullptr;
         int debug_start_y_ = 0;
-
-        bool visible_ = true;
-        bool enabled_ = true;
 
         static constexpr int TIME_ICON_SIZE = 40;
 

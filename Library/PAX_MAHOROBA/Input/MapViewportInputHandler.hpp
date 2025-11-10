@@ -46,7 +46,6 @@ namespace paxs {
         std::array<paxg::Key, 2> move_up_keys;    // 上移動キー (W, Up)
         std::array<paxg::Key, 2> move_down_keys;  // 下移動キー (S, Down)
 
-        bool enabled_ = true; // 入力処理の有効/無効
         bool events_subscribed_ = false; // イベント購読済みフラグ
 
 #ifdef __ANDROID__
@@ -338,7 +337,7 @@ namespace paxs {
         /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const KeyboardEvent& event) override {
             (void)event;
-            if (!enabled_ || viewport_ == nullptr) {
+            if (viewport_ == nullptr) {
                 return EventHandlingResult::NotHandled();
             }
 
@@ -364,7 +363,7 @@ namespace paxs {
         /// @param event マウスホイールイベント / Mouse wheel event
         /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const MouseWheelEvent& event) override {
-            if (!enabled_ || viewport_ == nullptr) {
+            if (viewport_ == nullptr) {
                 return EventHandlingResult::NotHandled();
             }
 
@@ -384,7 +383,7 @@ namespace paxs {
         /// @param event マウスイベント / Mouse event
         /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!enabled_ || viewport_ == nullptr) {
+            if (viewport_ == nullptr) {
                 return EventHandlingResult::NotHandled();
             }
 
@@ -428,10 +427,8 @@ namespace paxs {
 
         bool isHit(int /*x*/, int /*y*/) const override {
             // 画面全体が対象なので常にtrue
-            return enabled_;
+            return true;
         }
-        bool isEnabled() const override { return enabled_; }
-        void setEnabled(bool enabled) { enabled_ = enabled; }
         RenderLayer getLayer() const override { return RenderLayer::Background; }
     };
 

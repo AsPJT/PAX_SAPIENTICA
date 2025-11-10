@@ -36,7 +36,6 @@ namespace paxs {
         std::vector<XYZTile> xyz_tile_list;
         TileRepository tile_repository_;
 
-        bool visible_ = true;
         bool initial_tiles_preloaded_ = false;
 
         EventBus* event_bus_ = nullptr;
@@ -68,7 +67,7 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!visible_ || !app_state_manager_) return;
+            if (!app_state_manager_) return;
 
             // AppStateManagerから最新データを直接取得して描画のみ実行
             const auto& visible = app_state_manager_->getVisibilityManager();
@@ -78,15 +77,9 @@ namespace paxs {
             TileRenderer::drawBackground();
             TileRenderer::drawTiles(xyz_tile_list, visible, map_viewport, koyomi.jdn.cgetDay());
         }
-        RenderLayer getLayer() const override {
-            return RenderLayer::MapTile;
-        }
-        bool isVisible() const override {
-            return visible_;
-        }
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
+        RenderLayer getLayer() const override { return RenderLayer::MapTile; }
+        bool isVisible() const override { return true; }
+        void setVisible(bool /*visible*/) override {}
 
         /// @brief タイルデータを更新（メインループから明示的に呼び出し）
         void updateTileData() {

@@ -28,14 +28,11 @@ namespace paxs {
 
     /// @brief カレンダーコンテンツの描画クラス
     class CalendarContent : public IRenderable {
-    public:
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-
     private:
+        // 描画に必要な参照（render呼び出し時に設定される）
+        const paxs::Koyomi* koyomi_ = nullptr;
+        const paxs::UILayout* ui_layout_ = nullptr;
+
         // カレンダーを描画（言語に応じて自動選択）
         void renderInternal() const {
             if (!koyomi_ || !ui_layout_) return;
@@ -189,24 +186,10 @@ namespace paxs {
             }
         }
 
-    private:
-        bool visible_ = true;
-        bool enabled_ = true;
-
-        // 描画に必要な参照（render呼び出し時に設定される）
-        const paxs::Koyomi* koyomi_ = nullptr;
-        const paxs::UILayout* ui_layout_ = nullptr;
-
     public:
         void render() const override {
-            if (!visible_) return;
-
-            // メンバー変数を使用してrenderInternal()を呼び出し
             renderInternal();
         }
-
-        void setVisible(bool visible) override { visible_ = visible; }
-        bool isVisible() const override { return visible_; }
 
         // CalendarWidget固有の参照設定メソッド
         void setRenderParams(
@@ -216,6 +199,10 @@ namespace paxs {
             koyomi_ = &koyomi;
             ui_layout_ = &ui_layout;
         }
+
+        void setVisible(bool /*visible*/) override {}
+        bool isVisible() const override { return true; }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
     };
 
 }

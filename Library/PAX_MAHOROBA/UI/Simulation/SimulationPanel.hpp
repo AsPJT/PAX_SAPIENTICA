@@ -52,8 +52,6 @@ namespace paxs {
         static constexpr int pulldown_y_position = 600;
         static constexpr int pulldown_right_margin = 200;
 
-        bool enabled_ = true;
-
         paxs::Pulldown simulation_pulldown;
         SimulationControlButtons control_buttons_;
         SimulationStatsWidget stats_widget_;
@@ -290,7 +288,7 @@ namespace paxs {
 
         // イベント処理
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!isVisible() || !isEnabled()) {
+            if (!isVisible()) {
                 return EventHandlingResult::NotHandled();
             }
 
@@ -312,7 +310,7 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
+            if (!isVisible()) return false;
             if (simulation_pulldown.isHit(x, y)) return true;
             if (control_buttons_.isHit(x, y)) return true;
             return false;
@@ -324,10 +322,7 @@ namespace paxs {
         const char* getName() const override { return "SimulationPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
         paxg::Rect getRect() const override { return paxg::Rect{};}
-        void setVisible(bool /*visible*/) override {}
         void setPos(const paxg::Vec2i& /*pos*/) override {}
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
     };
 }
 

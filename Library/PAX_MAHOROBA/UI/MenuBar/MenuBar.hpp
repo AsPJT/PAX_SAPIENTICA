@@ -296,16 +296,6 @@ namespace paxs {
             github_button_.render();
         }
 
-        void setVisible(bool visible) override { (void)visible; }
-        bool isVisible() const override { return true; }
-
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
-        /// @note ヘッダーパネルは常に最前面（Header）で描画される
-        RenderLayer getLayer() const override {
-            return RenderLayer::MenuBar;
-        }
-
         paxg::Rect getRect() const override {
             return paxg::Rect{
                 0.f,
@@ -315,24 +305,8 @@ namespace paxs {
             };
         }
 
-        void setPos(const paxg::Vec2i& pos) override {
-            (void)pos;
-        }
-
-        void setEnabled(bool enabled) override {
-            (void)enabled;
-        }
-
-        bool isEnabled() const override {
-            return true;
-        }
-
-        const char* getName() const override {
-            return "MenuBar";
-        }
-
         bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
+            if (!isVisible()) return false;
             if (getRect().contains(static_cast<float>(x), static_cast<float>(y))) return true;
             if (menu_system.isHit(x, y)) return true;
             return language_selector_.isHit(x, y);
@@ -361,6 +335,11 @@ namespace paxs {
 
             return EventHandlingResult::NotHandled();
         }
+
+        RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
+        bool isVisible() const override { return true; }
+        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        const char* getName() const override { return "MenuBar"; }
 
     private:
         /// @brief イベント購読を設定

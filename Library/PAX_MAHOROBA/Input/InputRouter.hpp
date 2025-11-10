@@ -100,7 +100,7 @@ namespace paxs {
 
             // 前面から順に処理
             for (IInputHandler* handler : handlers_) {
-                if (handler == nullptr || !handler->isEnabled()) continue;
+                if (handler == nullptr) continue;
 
                 EventHandlingResult result = handler->handleEvent(event);
 
@@ -123,9 +123,7 @@ namespace paxs {
         bool routeEvent(const MouseEvent& event) {
             // ドラッグキャプチャ中の場合、キャプチャしたハンドラーのみに送信
             if (captured_handler_ != nullptr) {
-                if (captured_handler_->isEnabled()) {
-                    captured_handler_->handleEvent(event);
-                }
+                captured_handler_->handleEvent(event);
 
                 // ボタンが離されたらキャプチャを解除
                 if (event.left_button_state == MouseButtonState::Released ||
@@ -144,7 +142,7 @@ namespace paxs {
 
             // 前面から順にマウスイベントを処理
             for (IInputHandler* handler : handlers_) {
-                if (handler == nullptr || !handler->isEnabled()) continue;
+                if (handler == nullptr) continue;
 
                 // ヒットテストを実行（座標がハンドラーの範囲内かチェック）
                 if (!handler->isHit(event.x, event.y)) continue;
@@ -182,7 +180,7 @@ namespace paxs {
 
             // 前面から順に処理
             for (IInputHandler* handler : handlers_) {
-                if (handler == nullptr || !handler->isEnabled()) continue;
+                if (handler == nullptr) continue;
 
                 EventHandlingResult result = handler->handleEvent(event);
 
@@ -209,7 +207,7 @@ namespace paxs {
 
             // 指定範囲のレイヤーのみ処理
             for (IInputHandler* handler : handlers_) {
-                if (handler == nullptr || !handler->isEnabled()) continue;
+                if (handler == nullptr) continue;
 
                 RenderLayer layer = handler->getLayer();
                 if (layer < min_layer || layer > max_layer) continue;
@@ -238,7 +236,7 @@ namespace paxs {
 
             // 指定範囲のレイヤーのみ処理
             for (IInputHandler* handler : handlers_) {
-                if (handler == nullptr || !handler->isEnabled()) continue;
+                if (handler == nullptr) continue;
 
                 RenderLayer layer = handler->getLayer();
                 if (layer < min_layer || layer > max_layer) continue;
@@ -270,7 +268,7 @@ namespace paxs {
         bool routeEventLayer(const KeyboardEvent& event, RenderLayer target_layer) {
             // ソート不要（特定レイヤーのみフィルタリング）
             for (IInputHandler* handler : handlers_) {
-                if (handler == nullptr || !handler->isEnabled()) continue;
+                if (handler == nullptr) continue;
 
                 if (handler->getLayer() != target_layer) continue;
 
@@ -292,7 +290,7 @@ namespace paxs {
         bool routeEventLayer(const MouseEvent& event, RenderLayer target_layer) {
             // ソート不要（特定レイヤーのみフィルタリング）
             for (IInputHandler* handler : handlers_) {
-                if (handler == nullptr || !handler->isEnabled()) continue;
+                if (handler == nullptr) continue;
 
                 if (handler->getLayer() != target_layer) continue;
 

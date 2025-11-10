@@ -145,9 +145,6 @@ namespace paxs {
             return ARROW_TIME_ICON_SIZE + TIME_ICON_SIZE * 2;
         }
 
-        const char* getName() const override { return "TimeControlButtons"; }
-        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-
         void setReferences(const paxs::Koyomi& koyomi, const UILayout& ui_layout) {
             koyomi_ = &koyomi;
             ui_layout_ = &ui_layout;
@@ -167,14 +164,14 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!visible_ || !koyomi_ || !ui_layout_) return;
+            if (!koyomi_ || !ui_layout_) return;
             for (const auto& btn : buttons_) {
                 btn.render();
             }
         }
 
         bool isHit(int x, int y) const override {
-            if (!visible_ || !enabled_ || !koyomi_ || !ui_layout_) return false;
+            if (!koyomi_ || !ui_layout_) return false;
             for (const auto& btn : buttons_) {
                 if (btn.isHit(x, y)) {
                     return true;
@@ -206,11 +203,6 @@ namespace paxs {
             layoutButtons();
         }
 
-        bool isEnabled() const override { return enabled_; }
-        bool isVisible() const override { return visible_; }
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        void setVisible(bool visible) override { visible_ = visible; }
-
         /// @brief ボタンレイアウトを更新（UILayoutが変更された時に呼ぶ）
         /// @brief Update button layout (call when UILayout has changed)
         void layoutButtons() {
@@ -238,14 +230,16 @@ namespace paxs {
             }
         }
 
+        bool isVisible() const override { return true; }
+        const char* getName() const override { return "TimeControlButtons"; }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
+
     private:
         std::vector<TimeControlButton> buttons_;
         const paxs::Koyomi* koyomi_ = nullptr;
         const UILayout* ui_layout_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
         paxg::Vec2i pos_{0, 0};
-        bool visible_ = true;
-        bool enabled_ = true;
         ClickCallback on_click_;
 
         void buildButtons() {

@@ -31,13 +31,8 @@ namespace paxs {
 
         // 可視性管理
         // Visibility management
-        void setVisible(bool visible) override = 0;
+        void setVisible(bool /*visible*/) override {}
         bool isVisible() const override = 0;
-
-        // 有効/無効管理
-        // Enable/disable management
-        virtual void setEnabled(bool enabled) = 0;
-        bool isEnabled() const override = 0;
 
         // コンポーネント情報
         // Component information
@@ -64,7 +59,7 @@ namespace paxs {
         /// @param y Y座標 / Y coordinate
         /// @return 範囲内ならtrue / true if within bounds
         bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
+            if (!isVisible()) return false;
             const paxg::Rect rect = getRect();
             return (x >= rect.x() && x < rect.x() + rect.w() &&
                 y >= rect.y() && y < rect.y() + rect.h());

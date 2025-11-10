@@ -64,7 +64,6 @@ namespace paxs {
         bool is_open = false;
 
         bool visible_ = true;
-        bool enabled_ = true;
 
         // コールバック関数
         std::function<void(std::size_t index, bool is_selected)> on_selection_changed_;
@@ -192,7 +191,7 @@ namespace paxs {
         // 入力処理
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             if (isEmpty()) return EventHandlingResult::NotHandled();
-            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled(); // 非表示または無効の場合は処理をしない
+            if (!visible_) return EventHandlingResult::NotHandled(); // 非表示または無効の場合は処理をしない
 
             // 言語が変わっていたら更新処理
             const std::uint_least32_t current_language_key = Fonts().getSelectedLanguage().cgetKey();
@@ -395,7 +394,7 @@ namespace paxs {
         void close() { is_open = false; }
 
         bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
+            if (!isVisible()) return false;
 
             // ヘッダー部分のヒットテスト
             const paxg::Rect header_rect = getRect();
@@ -429,12 +428,8 @@ namespace paxs {
         paxg::Rect getRect() const override { return rect; }
         void setVisible(bool visible) override { visible_ = visible; }
         bool isVisible() const override { return visible_; }
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
         const char* getName() const override { return "Pulldown"; }
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIOverlay;
-        }
+        RenderLayer getLayer() const override { return RenderLayer::UIOverlay; }
     };
 }
 

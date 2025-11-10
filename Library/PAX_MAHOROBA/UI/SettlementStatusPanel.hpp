@@ -52,27 +52,11 @@ namespace paxs {
                       paxg::Color{ 0, 0, 0 });
         }
 
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-
-        bool isVisible() const override {
-            return visible_;
-        }
-
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-
         /// @brief 表示モードを設定
         /// @brief Set display mode
         /// @param select_draw 表示モード (1-6)
         void setSelectDraw(std::size_t select_draw) {
             select_draw_ = select_draw;
-        }
-
-        const char* getName() const override {
-            return "SettlementStatusPanel";
         }
 
         paxg::Rect getRect() const override {
@@ -84,21 +68,12 @@ namespace paxs {
             };
         }
 
-        void setPos(const paxg::Vec2i& pos) override {
-            pos_ = pos;
-        }
-
-        bool isEnabled() const override {
-            return visible_;
-        }
-
-        void setEnabled(bool enabled) override {
-            visible_ = enabled;
-        }
-
-        bool isHit(int /*x*/, int /*y*/) const override {
-            return false;  // このパネルはヒットテストを行わない
-        }
+        bool isVisible() const override { return visible_; }
+        void setVisible(bool visible) override { visible_ = visible; }
+        void setPos(const paxg::Vec2i& pos) override { pos_ = pos; }
+        bool isHit(int /*x*/, int /*y*/) const override { return false; }
+        const char* getName() const override { return "SettlementStatusPanel"; }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 
         EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
             // このパネルはマウス入力を処理しない

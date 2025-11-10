@@ -44,10 +44,7 @@ namespace paxs {
 
         paxg::Rect getRect() const override { return rect; }
         const char* getName() const override { return name; }
-        bool isEnabled() const override { return enabled_; }
-        bool isVisible() const override { return visible_; }
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return true; }
         void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
 
     protected:
@@ -58,8 +55,6 @@ namespace paxs {
         const char* name;
 
         paxg::Rect rect;
-        bool enabled_ = true;
-        bool visible_ = true;
 
         inline static paxs::KeyValueTSV<paxg::Texture> icon_textures;
 

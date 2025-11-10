@@ -69,7 +69,6 @@ namespace paxs {
 
         // 状態
         bool visible_ = false;  // ドロップダウンの表示状態（MenuBarが制御）
-        bool enabled_ = true;
 
         std::uint_least32_t old_language_key = 0;
 
@@ -261,19 +260,6 @@ namespace paxs {
             return getIsItems(item_index_key.at(key));
         }
 
-        // IWidget インターフェースの実装
-        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
-        paxg::Rect getRect() const override { return rect; }
-        void setVisible(bool visible) override { visible_ = visible; }
-        bool isVisible() const override { return visible_; }
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
-        const char* getName() const override { return "DropDownMenu"; }
-
-        RenderLayer getLayer() const override {
-            return RenderLayer::MenuBar;
-        }
-
         bool isHitHeader(int x, int y) const {
             const paxg::Rect header_rect = getRect();
             bool result = header_rect.contains(static_cast<float>(x), static_cast<float>(y));
@@ -281,7 +267,7 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
-            if (!visible_ || !enabled_) return false;
+            if (!visible_) return false;
 
             // ヘッダーは親(MenuSystem)が判定するのでここでは見ない
 
@@ -297,6 +283,13 @@ namespace paxs {
             }
             return false;
         }
+
+        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
+        paxg::Rect getRect() const override { return rect; }
+        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_; }
+        const char* getName() const override { return "DropDownMenu"; }
+        RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
 
     private:
         /// @brief ヘッダー部分のテキストを描画

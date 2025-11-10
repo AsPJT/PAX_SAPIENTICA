@@ -79,7 +79,7 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
+            if (!isVisible()) return false;
             return time_control_widget_.isHit(x, y);
         }
 
@@ -88,9 +88,6 @@ namespace paxs {
         }
         const char* getName() const override { return "CalendarPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-        void setVisible(bool /*visible*/) override {}
-        void setEnabled(bool /*enabled*/) override {}
-        bool isEnabled() const override { return true; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
         paxg::Rect getRect() const override { return paxg::Rect{}; }
     };
