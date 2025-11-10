@@ -107,7 +107,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーターが初期化されている かつ Simulation可視フラグがONの場合のみ表示
-            const bool simulation_visible = visible_manager.isVisible(FeatureVisibilityManager::View::Simulation);
+            const bool simulation_visible = visible_manager.isVisible(ViewMenu::simulation);
             ui_layer_.getSettlementStatusPanel().setVisible(
                 simulation_manager.isActive() && simulation_visible
             );
@@ -117,10 +117,10 @@ namespace paxs {
 #endif
 
             // Photo360Layerの可視性設定
-            photo360_layer_.setVisible(visible_manager.isVisible(FeatureVisibilityManager::View::View3D));
+            photo360_layer_.setVisible(visible_manager.isVisible(ViewMenu::view_3d));
 
             // 3Dモード時は360度写真とメニューバーのみ描画、通常モードは全レイヤー描画
-            if (visible_manager.isVisible(FeatureVisibilityManager::View::View3D)) {
+            if (visible_manager.isVisible(ViewMenu::view_3d)) {
                 // 3Dモード: 360度写真を描画してからメニューバーを描画
                 photo360_layer_.render();
                 menu_bar_.render();

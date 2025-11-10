@@ -14,7 +14,7 @@
 
 #include <cstdint>
 
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
@@ -26,52 +26,6 @@ namespace paxs {
         paxs::UnorderedMap<std::uint_least32_t, bool> visible_features{}; // 機能の可視性を管理する辞書
 
     public:
-        /// @brief Viewメニューの項目識別子
-        /// @brief View menu item identifiers
-        enum class View : std::uint_least32_t {
-            Calendar   = MurMur3::calcHash("Calendar"),
-            Map        = MurMur3::calcHash("Map"),
-            UI         = MurMur3::calcHash("UI"),
-            Simulation = MurMur3::calcHash("Simulation"),
-            License    = MurMur3::calcHash("License"),
-            Debug      = MurMur3::calcHash("Debug"),
-            View3D     = MurMur3::calcHash("3D"),
-        };
-
-        /// @brief Place Namesメニューの項目識別子
-        /// @brief Place Names menu item identifiers
-        enum class PlaceNames : std::uint_least32_t {
-            PlaceName     = MurMur3::calcHash("place_name"),
-            Site          = MurMur3::calcHash("site"),
-            Tumulus       = MurMur3::calcHash("tumulus"),
-            Dolmen        = MurMur3::calcHash("dolmen"),
-            Kamekanbo     = MurMur3::calcHash("kamekanbo"),
-            StoneCoffin   = MurMur3::calcHash("stone_coffin"),
-            Doken         = MurMur3::calcHash("doken"),
-            Dotaku        = MurMur3::calcHash("dotaku"),
-            BronzeMirror  = MurMur3::calcHash("bronze_mirror"),
-            HumanBone     = MurMur3::calcHash("human_bone"),
-            MtDNA         = MurMur3::calcHash("mtdna"),
-            YDna          = MurMur3::calcHash("ydna"),
-        };
-
-        /// @brief Mapメニューの項目識別子（地図レイヤー）
-        /// @brief Map menu item identifiers (map layers)
-        enum class MapLayers : std::uint_least32_t {
-            // Base            = MurMur3::calcHash("menu_bar_map_base"),
-            // LandAndSea      = MurMur3::calcHash("menu_bar_map_land_and_sea"),
-            LandAndWater    = MurMur3::calcHash("menu_bar_map_land_and_water"),
-            Soil            = MurMur3::calcHash("menu_bar_map_soil"),
-            // SoilTemperature = MurMur3::calcHash("menu_bar_map_soil_temperature"),
-            // RyoseiCountry   = MurMur3::calcHash("menu_bar_map_ryosei_country"),
-            RyoseiLine      = MurMur3::calcHash("menu_bar_map_ryosei_line"),
-            Slope           = MurMur3::calcHash("menu_bar_map_slope"),
-            // LakesAndRivers1 = MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
-            // LakesAndRivers2 = MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
-            // Line1           = MurMur3::calcHash("menu_bar_map_line1"),
-            Line2           = MurMur3::calcHash("menu_bar_map_line2"),
-        };
-
         FeatureVisibilityManager() = default;
         ~FeatureVisibilityManager() = default;
 
@@ -82,10 +36,27 @@ namespace paxs {
             visible_features.emplace(feature_id, is_visible);
         }
 
+        /// @brief 新しい機能を登録（enum版）
+        /// @tparam T メニュー項目enum型（MenuItemEnumに登録されている型のみ）
+        /// @param item メニュー項目識別子
+        /// @param is_visible 初期可視状態
+        template<typename T, std::enable_if_t<is_menu_item_enum_v<T>, int> = 0>
+        void emplace(T item, bool is_visible) {
+            emplace(static_cast<std::uint_least32_t>(item), is_visible);
+        }
+
         /// @brief 指定した機能の可視状態を反転（ハッシュ値版）
         /// @param feature_id 機能ID（ハッシュ値）
         void toggle(const std::uint_least32_t& feature_id) {
             visible_features[feature_id] = !visible_features[feature_id];
+        }
+
+        /// @brief 指定した機能の可視状態を反転（enum版）
+        /// @tparam T メニュー項目enum型（MenuItemEnumに登録されている型のみ）
+        /// @param item メニュー項目識別子
+        template<typename T, std::enable_if_t<is_menu_item_enum_v<T>, int> = 0>
+        void toggle(T item) {
+            toggle(static_cast<std::uint_least32_t>(item));
         }
 
         /// @brief 指定した機能の可視状態を設定（ハッシュ値版）
@@ -101,6 +72,16 @@ namespace paxs {
             return true; // 変更あり
         }
 
+        /// @brief 指定した機能の可視状態を設定（enum版）
+        /// @tparam T メニュー項目enum型（MenuItemEnumに登録されている型のみ）
+        /// @param item メニュー項目識別子
+        /// @param is_visible 可視状態
+        /// @return 値が変更されたらtrue
+        template<typename T, std::enable_if_t<is_menu_item_enum_v<T>, int> = 0>
+        bool setVisibility(T item, bool is_visible) {
+            return setVisibility(static_cast<std::uint_least32_t>(item), is_visible);
+        }
+
         /// @brief 指定した機能の可視状態を取得（ハッシュ値版）
         /// @param feature_id 機能ID（ハッシュ値）
         /// @return 可視状態（登録されていない場合はtrue）
@@ -108,88 +89,13 @@ namespace paxs {
             return (visible_features.find(feature_id) != visible_features.end()) ? visible_features.at(feature_id) : true;
         }
 
-        /// @brief 指定した機能の可視状態を取得（View enum版）
-        /// @param view View項目識別子
+        /// @brief 指定した機能の可視状態を取得（enum版）
+        /// @tparam T メニュー項目enum型（MenuItemEnumに登録されている型のみ）
+        /// @param item メニュー項目識別子
         /// @return 可視状態（登録されていない場合はtrue）
-        bool isVisible(View view) const {
-            return isVisible(static_cast<std::uint_least32_t>(view));
-        }
-
-        /// @brief 指定した機能の可視状態を設定（View enum版）
-        /// @param view View項目識別子
-        /// @param is_visible 可視状態
-        /// @return 値が変更されたらtrue
-        bool setVisibility(View view, bool is_visible) {
-            return setVisibility(static_cast<std::uint_least32_t>(view), is_visible);
-        }
-
-        /// @brief 指定した機能の可視状態を反転（View enum版）
-        /// @param view View項目識別子
-        void toggle(View view) {
-            toggle(static_cast<std::uint_least32_t>(view));
-        }
-
-        /// @brief 機能を登録（View enum版）
-        /// @param view View項目識別子
-        /// @param is_visible 初期可視状態
-        void emplace(View view, bool is_visible) {
-            emplace(static_cast<std::uint_least32_t>(view), is_visible);
-        }
-
-        /// @brief 指定した機能の可視状態を取得（PlaceNames enum版）
-        /// @param place_name Place Names項目識別子
-        /// @return 可視状態（登録されていない場合はtrue）
-        bool isVisible(PlaceNames place_name) const {
-            return isVisible(static_cast<std::uint_least32_t>(place_name));
-        }
-
-        /// @brief 指定した機能の可視状態を設定（PlaceNames enum版）
-        /// @param place_name Place Names項目識別子
-        /// @param is_visible 可視状態
-        /// @return 値が変更されたらtrue
-        bool setVisibility(PlaceNames place_name, bool is_visible) {
-            return setVisibility(static_cast<std::uint_least32_t>(place_name), is_visible);
-        }
-
-        /// @brief 指定した機能の可視状態を反転（PlaceNames enum版）
-        /// @param place_name Place Names項目識別子
-        void toggle(PlaceNames place_name) {
-            toggle(static_cast<std::uint_least32_t>(place_name));
-        }
-
-        /// @brief 機能を登録（PlaceNames enum版）
-        /// @param place_name Place Names項目識別子
-        /// @param is_visible 初期可視状態
-        void emplace(PlaceNames place_name, bool is_visible) {
-            emplace(static_cast<std::uint_least32_t>(place_name), is_visible);
-        }
-
-        /// @brief 指定した機能の可視状態を取得（MapLayers enum版）
-        /// @param map_layer Map Layers項目識別子
-        /// @return 可視状態（登録されていない場合はtrue）
-        bool isVisible(MapLayers map_layer) const {
-            return isVisible(static_cast<std::uint_least32_t>(map_layer));
-        }
-
-        /// @brief 指定した機能の可視状態を設定（MapLayers enum版）
-        /// @param map_layer Map Layers項目識別子
-        /// @param is_visible 可視状態
-        /// @return 値が変更されたらtrue
-        bool setVisibility(MapLayers map_layer, bool is_visible) {
-            return setVisibility(static_cast<std::uint_least32_t>(map_layer), is_visible);
-        }
-
-        /// @brief 指定した機能の可視状態を反転（MapLayers enum版）
-        /// @param map_layer Map Layers項目識別子
-        void toggle(MapLayers map_layer) {
-            toggle(static_cast<std::uint_least32_t>(map_layer));
-        }
-
-        /// @brief 機能を登録（MapLayers enum版）
-        /// @param map_layer Map Layers項目識別子
-        /// @param is_visible 初期可視状態
-        void emplace(MapLayers map_layer, bool is_visible) {
-            emplace(static_cast<std::uint_least32_t>(map_layer), is_visible);
+        template<typename T, std::enable_if_t<is_menu_item_enum_v<T>, int> = 0>
+        bool isVisible(T item) const {
+            return isVisible(static_cast<std::uint_least32_t>(item));
         }
     };
 

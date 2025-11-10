@@ -84,7 +84,7 @@ namespace paxs {
         }
 
         bool isVisible() const override {
-            return visibility_manager_ptr->isVisible(FeatureVisibilityManager::View::Calendar);
+            return visibility_manager_ptr->isVisible(ViewMenu::calendar);
         }
         const char* getName() const override { return "CalendarPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }

@@ -58,7 +58,7 @@ namespace paxs {
         }
 
         bool isVisible() const override {
-            return visible_manager_ptr->isVisible(FeatureVisibilityManager::View::Debug);
+            return visible_manager_ptr->isVisible(ViewMenu::debug);
         }
 
 

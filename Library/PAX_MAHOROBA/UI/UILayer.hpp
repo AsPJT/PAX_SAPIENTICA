@@ -238,7 +238,7 @@ namespace paxs {
 #endif
 
         bool isVisible() const override {
-            return visible_manager_ptr->isVisible(FeatureVisibilityManager::View::UI);
+            return visible_manager_ptr->isVisible(ViewMenu::ui);
         }
         void setEnabled(bool /*enabled*/) override {}
         void setVisible(bool /*visible*/) override {}

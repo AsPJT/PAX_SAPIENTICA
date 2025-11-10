@@ -14,99 +14,146 @@
 
 #include <array>
 #include <cstdint>
+#include <type_traits>
 
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 
 namespace paxs {
 
+    /// @brief メニュー項目識別子の基底クラス（CRTP）
+    /// @brief Base class for menu item identifiers (CRTP)
+    template<typename Derived>
+    struct MenuItemEnum {
+        using enum_type = Derived;
+    };
+
     /// @brief メニューバー関連の文字列キー定数
     namespace MenuBarKeys {
         // View メニュー
-        constexpr const char* VIEW = "menu_bar_view";
-        constexpr const char* VIEW_CALENDAR = "menu_bar_view_calendar";
-        constexpr const char* VIEW_MAP = "menu_bar_view_map";
-        constexpr const char* VIEW_UI = "menu_bar_view_ui";
-        constexpr const char* VIEW_SIMULATION = "menu_bar_view_simulation";
-        constexpr const char* VIEW_LICENSE = "menu_bar_view_license";
-        constexpr const char* VIEW_DEBUG = "menu_bar_view_debug";
-        // constexpr const char* VIEW_3D = "menu_bar_view_3d";
+        constexpr const char* view = "menu_bar_view";
+        constexpr const char* view_calendar = "menu_bar_view_calendar";
+        constexpr const char* view_map = "menu_bar_view_map";
+        constexpr const char* view_ui = "menu_bar_view_ui";
+        constexpr const char* view_simulation = "menu_bar_view_simulation";
+        constexpr const char* view_license = "menu_bar_view_license";
+        constexpr const char* view_debug = "menu_bar_view_debug";
+        constexpr const char* view_3d = "menu_bar_view_3d";
 
         /// @brief View メニューの全項目ハッシュ配列（タイトル含む）
-        inline constexpr std::array VIEW_MENU_HASHES = {
-            MurMur3::calcHash(VIEW),
-            MurMur3::calcHash(VIEW_CALENDAR),
-            MurMur3::calcHash(VIEW_MAP),
-            MurMur3::calcHash(VIEW_UI),
-            MurMur3::calcHash(VIEW_SIMULATION),
-            MurMur3::calcHash(VIEW_LICENSE),
-            MurMur3::calcHash(VIEW_DEBUG)
-            // MurMur3::calcHash(VIEW_3D)
+        inline constexpr std::array view_menu_hashes = {
+            MurMur3::calcHash(view),
+            MurMur3::calcHash(view_calendar),
+            MurMur3::calcHash(view_map),
+            MurMur3::calcHash(view_ui),
+            MurMur3::calcHash(view_simulation),
+            MurMur3::calcHash(view_license),
+            MurMur3::calcHash(view_debug)
+            // MurMur3::calcHash(view_3d)
         };
 
         // Feature メニュー
-        constexpr const char* PLACE_NAMES = "place_names";
-        constexpr const char* PLACE_NAME = "place_names_place_name";
-        constexpr const char* SITE = "place_names_site";
-        constexpr const char* TUMULUS = "place_names_tumulus";
-        constexpr const char* DOLMEN = "place_names_dolmen";
-        constexpr const char* KAMEKANBO = "place_names_kamekanbo";
-        constexpr const char* STONE_COFFIN = "place_names_stone_coffin";
-        constexpr const char* DOKEN = "place_names_doken";
-        constexpr const char* DOTAKU = "place_names_dotaku";
-        constexpr const char* BRONZE_MIRROR = "place_names_bronze_mirror";
-        constexpr const char* HUMAN_BONE = "place_names_human_bone";
-        constexpr const char* MTDNA = "place_names_mtdna";
-        constexpr const char* YDNA = "place_names_ydna";
+        constexpr const char* place_names = "place_names";
+        constexpr const char* place_name = "place_names_place_name";
+        constexpr const char* site = "place_names_site";
+        constexpr const char* tumulus = "place_names_tumulus";
+        constexpr const char* dolmen = "place_names_dolmen";
+        constexpr const char* kamekanbo = "place_names_kamekanbo";
+        constexpr const char* stone_coffin = "place_names_stone_coffin";
+        constexpr const char* doken = "place_names_doken";
+        constexpr const char* dotaku = "place_names_dotaku";
+        constexpr const char* bronze_mirror = "place_names_bronze_mirror";
+        constexpr const char* human_bone = "place_names_human_bone";
+        constexpr const char* mtdna = "place_names_mtdna";
+        constexpr const char* ydna = "place_names_ydna";
 
         /// @brief Feature メニューの全項目ハッシュ配列（タイトル含む）
-        inline constexpr std::array FEATURE_MENU_HASHES = {
-            MurMur3::calcHash(PLACE_NAMES),
-            MurMur3::calcHash(PLACE_NAME),
-            MurMur3::calcHash(SITE),
-            MurMur3::calcHash(TUMULUS),
-            MurMur3::calcHash(DOLMEN),
-            MurMur3::calcHash(KAMEKANBO),
-            MurMur3::calcHash(STONE_COFFIN),
-            MurMur3::calcHash(DOKEN),
-            MurMur3::calcHash(DOTAKU),
-            MurMur3::calcHash(BRONZE_MIRROR),
-            MurMur3::calcHash(HUMAN_BONE),
-            MurMur3::calcHash(MTDNA),
-            MurMur3::calcHash(YDNA)
+        inline constexpr std::array feature_menu_hashes = {
+            MurMur3::calcHash(place_names),
+            MurMur3::calcHash(place_name),
+            MurMur3::calcHash(site),
+            MurMur3::calcHash(tumulus),
+            MurMur3::calcHash(dolmen),
+            MurMur3::calcHash(kamekanbo),
+            MurMur3::calcHash(stone_coffin),
+            MurMur3::calcHash(doken),
+            MurMur3::calcHash(dotaku),
+            MurMur3::calcHash(bronze_mirror),
+            MurMur3::calcHash(human_bone),
+            MurMur3::calcHash(mtdna),
+            MurMur3::calcHash(ydna)
         };
 
         // Map メニュー
-        constexpr const char* MAP = "menu_bar_map";
-        // constexpr const char* MAP_BASE = "menu_bar_map_base";
-        // constexpr const char* MAP_LAND_AND_SEA = "menu_bar_map_land_and_sea";
-        constexpr const char* MAP_LAND_AND_WATER = "menu_bar_map_land_and_water";
-        constexpr const char* MAP_SOIL = "menu_bar_map_soil";
-        // constexpr const char* MAP_SOIL_TEMPERATURE = "menu_bar_map_soil_temperature";
-        // constexpr const char* MAP_RYOSEI_COUNTRY = "menu_bar_map_ryosei_country";
-        constexpr const char* MAP_RYOSEI_LINE = "menu_bar_map_ryosei_line";
-        constexpr const char* MAP_SLOPE = "menu_bar_map_slope";
-        // constexpr const char* MAP_LAKES_AND_RIVERS1 = "menu_bar_map_lakes_and_rivers1";
-        // constexpr const char* MAP_LAKES_AND_RIVERS2 = "menu_bar_map_lakes_and_rivers2";
-        // constexpr const char* MAP_LINE1 = "menu_bar_map_line1";
-        constexpr const char* MAP_LINE2 = "menu_bar_map_line2";
+        constexpr const char* map = "menu_bar_map";
+        constexpr const char* map_land_and_water = "menu_bar_map_land_and_water";
+        constexpr const char* map_soil = "menu_bar_map_soil";
+        constexpr const char* map_ryosei_line = "menu_bar_map_ryosei_line";
+        constexpr const char* map_slope = "menu_bar_map_slope";
+        constexpr const char* map_line2 = "menu_bar_map_line2";
 
         /// @brief Map メニューの全項目ハッシュ配列（タイトル含む）
-        inline constexpr std::array MAP_MENU_HASHES = {
-            MurMur3::calcHash(MAP),
-            // MurMur3::calcHash(MAP_BASE),
-            // MurMur3::calcHash(MAP_LAND_AND_SEA),
-            MurMur3::calcHash(MAP_LAND_AND_WATER),
-            MurMur3::calcHash(MAP_SOIL),
-            // MurMur3::calcHash(MAP_SOIL_TEMPERATURE),
-            // MurMur3::calcHash(MAP_RYOSEI_COUNTRY),
-            MurMur3::calcHash(MAP_RYOSEI_LINE),
-            MurMur3::calcHash(MAP_SLOPE),
-            // MurMur3::calcHash(MAP_LAKES_AND_RIVERS1),
-            // MurMur3::calcHash(MAP_LAKES_AND_RIVERS2),
-            // MurMur3::calcHash(MAP_LINE1),
-            MurMur3::calcHash(MAP_LINE2)
+        inline constexpr std::array map_menu_hashes = {
+            MurMur3::calcHash(map),
+            MurMur3::calcHash(map_land_and_water),
+            MurMur3::calcHash(map_soil),
+            MurMur3::calcHash(map_ryosei_line),
+            MurMur3::calcHash(map_slope),
+            MurMur3::calcHash(map_line2)
         };
     }
+
+    /// @brief Viewメニューの項目識別子
+    /// @brief View menu item identifiers
+    enum class ViewMenu : std::uint_least32_t {
+        calendar   = MurMur3::calcHash(MenuBarKeys::view_calendar),
+        map        = MurMur3::calcHash(MenuBarKeys::view_map),
+        ui         = MurMur3::calcHash(MenuBarKeys::view_ui),
+        simulation = MurMur3::calcHash(MenuBarKeys::view_simulation),
+        license    = MurMur3::calcHash(MenuBarKeys::view_license),
+        debug      = MurMur3::calcHash(MenuBarKeys::view_debug),
+        view_3d    = MurMur3::calcHash(MenuBarKeys::view_3d),
+    };
+    template<> struct MenuItemEnum<ViewMenu> { using enum_type = ViewMenu; };
+
+    /// @brief Place Namesメニューの項目識別子
+    /// @brief Place Names menu item identifiers
+    enum class PlaceNamesMenu : std::uint_least32_t {
+        place_name     = MurMur3::calcHash("place_name"),
+        site           = MurMur3::calcHash("site"),
+        tumulus        = MurMur3::calcHash("tumulus"),
+        dolmen         = MurMur3::calcHash("dolmen"),
+        kamekanbo      = MurMur3::calcHash("kamekanbo"),
+        stone_coffin   = MurMur3::calcHash("stone_coffin"),
+        doken          = MurMur3::calcHash("doken"),
+        dotaku         = MurMur3::calcHash("dotaku"),
+        bronze_mirror  = MurMur3::calcHash("bronze_mirror"),
+        human_bone     = MurMur3::calcHash("human_bone"),
+        mtdna          = MurMur3::calcHash("mtdna"),
+        ydna           = MurMur3::calcHash("ydna"),
+    };
+    template<> struct MenuItemEnum<PlaceNamesMenu> { using enum_type = PlaceNamesMenu; };
+
+    /// @brief Mapメニューの項目識別子（地図レイヤー）
+    /// @brief Map menu item identifiers (map layers)
+    enum class MapLayersMenu : std::uint_least32_t {
+        land_and_water = MurMur3::calcHash("menu_bar_map_land_and_water"),
+        soil           = MurMur3::calcHash("menu_bar_map_soil"),
+        ryosei_line    = MurMur3::calcHash("menu_bar_map_ryosei_line"),
+        slope          = MurMur3::calcHash("menu_bar_map_slope"),
+        line2          = MurMur3::calcHash("menu_bar_map_line2"),
+    };
+    template<> struct MenuItemEnum<MapLayersMenu> { using enum_type = MapLayersMenu; };
+
+    /// @brief 型がMenuItemEnumに登録されているかチェック
+    /// @brief Check if type is registered in MenuItemEnum
+    template<typename T, typename = void>
+    struct is_menu_item_enum : std::false_type {};
+
+    template<typename T>
+    struct is_menu_item_enum<T, std::void_t<typename MenuItemEnum<T>::enum_type>> : std::true_type {};
+
+    template<typename T>
+    inline constexpr bool is_menu_item_enum_v = is_menu_item_enum<T>::value;
 
 }
 

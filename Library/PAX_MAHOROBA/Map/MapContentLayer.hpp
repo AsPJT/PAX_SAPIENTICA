@@ -88,7 +88,7 @@ namespace paxs {
             // AppStateManagerから最新データを直接取得して描画のみ実行
             const auto& visible = app_state_manager_->getVisibilityManager();
 
-            if (visible.isVisible(FeatureVisibilityManager::View::Map)) { // 地図が「可視」の場合は描画する
+            if (visible.isVisible(ViewMenu::map)) { // 地図が「可視」の場合は描画する
                 person_portrait_manager_.render();
                 geographic_feature_manager_.render();
             }
@@ -96,7 +96,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             // SettlementManager を描画（シミュレーション表示時）
             // Render SettlementManager (when simulation is visible)
-            if (visible.isVisible(FeatureVisibilityManager::View::Simulation)) {
+            if (visible.isVisible(ViewMenu::simulation)) {
                 settlement_manager_.render();
             }
 #endif
@@ -112,8 +112,8 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落の入力処理
-            if (visible.isVisible(FeatureVisibilityManager::View::Map) ||
-                visible.isVisible(FeatureVisibilityManager::View::Simulation)) {
+            if (visible.isVisible(ViewMenu::map) ||
+                visible.isVisible(ViewMenu::simulation)) {
                 const auto& simulation_manager = app_state_manager_->getSimulationManager();
                 if (simulation_manager.isActive()) {
                     settlement_input_handler_.handleEvent(event);

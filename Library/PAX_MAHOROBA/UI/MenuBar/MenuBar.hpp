@@ -66,15 +66,15 @@ namespace paxs {
             });
 
             // メニューバーにメニュー項目を追加（FontSystem経由）
-            menu_system.add(paxs::MenuBarKeys::VIEW_MENU_HASHES,
+            menu_system.add(paxs::MenuBarKeys::view_menu_hashes,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MurMur3::calcHash("view"));
-            menu_system.add(paxs::MenuBarKeys::FEATURE_MENU_HASHES,
+            menu_system.add(paxs::MenuBarKeys::feature_menu_hashes,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MurMur3::calcHash("place_names"));
-            menu_system.add(paxs::MenuBarKeys::MAP_MENU_HASHES,
+            menu_system.add(paxs::MenuBarKeys::map_menu_hashes,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MurMur3::calcHash("map"));
@@ -138,21 +138,19 @@ namespace paxs {
         /// @brief 可視性状態を反映
         void initializeVisibility(paxs::FeatureVisibilityManager* visible_manager) {
             // 可視性の初期化
-            using View = FeatureVisibilityManager::View;
-            visible_manager->emplace(View::Calendar, true); // 暦
-            visible_manager->emplace(View::Map, true); // 地図
-            visible_manager->emplace(View::UI, true); // UI
-            visible_manager->emplace(View::Simulation, true); // シミュレーション
-            visible_manager->emplace(View::License, false); // ライセンス
-            visible_manager->emplace(View::Debug, false); // デバッグ
-            visible_manager->emplace(View::View3D, false); // 360度写真
+            visible_manager->emplace(ViewMenu::calendar, true); // 暦
+            visible_manager->emplace(ViewMenu::map, true); // 地図
+            visible_manager->emplace(ViewMenu::ui, true); // UI
+            visible_manager->emplace(ViewMenu::simulation, true); // シミュレーション
+            visible_manager->emplace(ViewMenu::license, false); // ライセンス
+            visible_manager->emplace(ViewMenu::debug, false); // デバッグ
+            visible_manager->emplace(ViewMenu::view_3d, false); // 360度写真
 
-            using MapLayers = FeatureVisibilityManager::MapLayers;
-            visible_manager->emplace(MapLayers::LandAndWater, false); // 陸水境界
-            visible_manager->emplace(MapLayers::Soil, false); // 土壌
-            visible_manager->emplace(MapLayers::RyoseiLine, true); // 陸生国境界線
-            visible_manager->emplace(MapLayers::Slope, true); // 傾斜
-            visible_manager->emplace(MapLayers::Line2, false); // 線2
+            visible_manager->emplace(MapLayersMenu::land_and_water, false); // 陸水境界
+            visible_manager->emplace(MapLayersMenu::soil, false); // 土壌
+            visible_manager->emplace(MapLayersMenu::ryosei_line, true); // 陸生国境界線
+            visible_manager->emplace(MapLayersMenu::slope, true); // 傾斜
+            visible_manager->emplace(MapLayersMenu::line2, false); // 線2
 
             // View メニューの状態を初期化
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(MurMur3::calcHash("view"));
@@ -160,14 +158,13 @@ namespace paxs {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
                 return;
             }
-            using View = FeatureVisibilityManager::View;
-            view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(View::Calendar));
-            view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(View::Map));
-            view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(View::UI));
-            view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(View::Simulation));
-            view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(View::License));
-            view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(View::Debug));
-            view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(View::View3D));
+            view_menu->setIsItems(std::size_t(0), visible_manager->isVisible(ViewMenu::calendar));
+            view_menu->setIsItems(std::size_t(1), visible_manager->isVisible(ViewMenu::map));
+            view_menu->setIsItems(std::size_t(2), visible_manager->isVisible(ViewMenu::ui));
+            view_menu->setIsItems(std::size_t(3), visible_manager->isVisible(ViewMenu::simulation));
+            view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(ViewMenu::license));
+            view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(ViewMenu::debug));
+            view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(ViewMenu::view_3d));
 
             // Map メニューの状態を初期化
             paxs::DropDownMenu* map_menu = menu_system.getDropDownMenu(MurMur3::calcHash("map"));
@@ -175,12 +172,11 @@ namespace paxs {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'map' menu not found.");
                 return;
             }
-            using MapLayers = FeatureVisibilityManager::MapLayers;
-            map_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MapLayers::LandAndWater));
-            map_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MapLayers::Soil));
-            map_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MapLayers::RyoseiLine));
-            map_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MapLayers::Slope));
-            map_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MapLayers::Line2));
+            map_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MapLayersMenu::land_and_water));
+            map_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MapLayersMenu::soil));
+            map_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MapLayersMenu::ryosei_line));
+            map_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MapLayersMenu::slope));
+            map_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MapLayersMenu::line2));
         }
 
         /// @brief 言語変更時のハンドラー（コールバック駆動）
@@ -205,15 +201,14 @@ namespace paxs {
 
             if (menu_key == MurMur3::calcHash("view")) {
                 // View メニュー
-                using View = FeatureVisibilityManager::View;
-                const std::array<View, 7> view_items = {
-                    View::Calendar,
-                    View::Map,
-                    View::UI,
-                    View::Simulation,
-                    View::License,
-                    View::Debug,
-                    View::View3D
+                const std::array<ViewMenu, 7> view_items = {
+                    ViewMenu::calendar,
+                    ViewMenu::map,
+                    ViewMenu::ui,
+                    ViewMenu::simulation,
+                    ViewMenu::license,
+                    ViewMenu::debug,
+                    ViewMenu::view_3d
                 };
                 if (actual_index < view_items.size()) {
                     app_state_manager_->setFeatureVisibility(
@@ -222,20 +217,19 @@ namespace paxs {
             }
             else if (menu_key == MurMur3::calcHash("place_names")) {
                 // Place Names メニュー
-                using PlaceNames = FeatureVisibilityManager::PlaceNames;
-                const std::array<PlaceNames, 12> place_name_items = {
-                    PlaceNames::PlaceName,
-                    PlaceNames::Site,
-                    PlaceNames::Tumulus,
-                    PlaceNames::Dolmen,
-                    PlaceNames::Kamekanbo,
-                    PlaceNames::StoneCoffin,
-                    PlaceNames::Doken,
-                    PlaceNames::Dotaku,
-                    PlaceNames::BronzeMirror,
-                    PlaceNames::HumanBone,
-                    PlaceNames::MtDNA,
-                    PlaceNames::YDna
+                const std::array<PlaceNamesMenu, 12> place_name_items = {
+                    PlaceNamesMenu::place_name,
+                    PlaceNamesMenu::site,
+                    PlaceNamesMenu::tumulus,
+                    PlaceNamesMenu::dolmen,
+                    PlaceNamesMenu::kamekanbo,
+                    PlaceNamesMenu::stone_coffin,
+                    PlaceNamesMenu::doken,
+                    PlaceNamesMenu::dotaku,
+                    PlaceNamesMenu::bronze_mirror,
+                    PlaceNamesMenu::human_bone,
+                    PlaceNamesMenu::mtdna,
+                    PlaceNamesMenu::ydna
                 };
                 if (actual_index < place_name_items.size()) {
                     app_state_manager_->setFeatureVisibility(
@@ -244,13 +238,12 @@ namespace paxs {
             }
             else if (menu_key == MurMur3::calcHash("map")) {
                 // Map メニュー
-                using MapLayers = FeatureVisibilityManager::MapLayers;
-                const std::array<MapLayers, 5> map_layer_items = {
-                    MapLayers::LandAndWater,
-                    MapLayers::Soil,
-                    MapLayers::RyoseiLine,
-                    MapLayers::Slope,
-                    MapLayers::Line2
+                const std::array<MapLayersMenu, 5> map_layer_items = {
+                    MapLayersMenu::land_and_water,
+                    MapLayersMenu::soil,
+                    MapLayersMenu::ryosei_line,
+                    MapLayersMenu::slope,
+                    MapLayersMenu::line2
                 };
                 if (actual_index < map_layer_items.size()) {
                     app_state_manager_->setFeatureVisibility(
