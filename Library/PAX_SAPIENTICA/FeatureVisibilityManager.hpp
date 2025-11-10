@@ -58,17 +58,17 @@ namespace paxs {
         /// @brief Mapメニューの項目識別子（地図レイヤー）
         /// @brief Map menu item identifiers (map layers)
         enum class MapLayers : std::uint_least32_t {
-            Base            = MurMur3::calcHash("menu_bar_map_base"),
-            LandAndSea      = MurMur3::calcHash("menu_bar_map_land_and_sea"),
+            // Base            = MurMur3::calcHash("menu_bar_map_base"),
+            // LandAndSea      = MurMur3::calcHash("menu_bar_map_land_and_sea"),
             LandAndWater    = MurMur3::calcHash("menu_bar_map_land_and_water"),
             Soil            = MurMur3::calcHash("menu_bar_map_soil"),
-            SoilTemperature = MurMur3::calcHash("menu_bar_map_soil_temperature"),
-            RyoseiCountry   = MurMur3::calcHash("menu_bar_map_ryosei_country"),
+            // SoilTemperature = MurMur3::calcHash("menu_bar_map_soil_temperature"),
+            // RyoseiCountry   = MurMur3::calcHash("menu_bar_map_ryosei_country"),
             RyoseiLine      = MurMur3::calcHash("menu_bar_map_ryosei_line"),
             Slope           = MurMur3::calcHash("menu_bar_map_slope"),
-            LakesAndRivers1 = MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
-            LakesAndRivers2 = MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
-            Line1           = MurMur3::calcHash("menu_bar_map_line1"),
+            // LakesAndRivers1 = MurMur3::calcHash("menu_bar_map_lakes_and_rivers1"),
+            // LakesAndRivers2 = MurMur3::calcHash("menu_bar_map_lakes_and_rivers2"),
+            // Line1           = MurMur3::calcHash("menu_bar_map_line1"),
             Line2           = MurMur3::calcHash("menu_bar_map_line2"),
         };
 

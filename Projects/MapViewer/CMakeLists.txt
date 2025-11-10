@@ -10,10 +10,35 @@ include_directories(
     ${PROJECT_ROOT_DIR}/ExternalLibrary
 )
 
+# Determine OS-specific directory name (same as parent CMakeLists.txt)
+if(APPLE)
+    set(OS "macOS")
+elseif(UNIX)
+    set(OS "Ubuntu")
+elseif(WIN32)
+    set(OS "Windows")
+endif()
+
 set(TSV_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Config.tsv")
 set(DESTINATION_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 set(PAXS_BUILD_TYPE "Development" CACHE STRING "Choose the type of build (Development or Production)")
+
+# Find SFML if not already found (when building MapViewer directly)
+if(NOT SFML_FOUND)
+    # Add cmake module path
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+
+    if(WIN32 OR APPLE)
+        # Set SFML_ROOT_DIR for project-local SFML installation
+        if(NOT SFML_ROOT_DIR)
+            set(SFML_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0")
+        endif()
+        find_package(SFMLCustom REQUIRED)
+    elseif(UNIX)
+        find_package(SFML COMPONENTS Graphics QUIET)
+    endif()
+endif()
 
 if(PAXS_BUILD_TYPE STREQUAL "Development")
     set(BINARY_NAME "SFMLMapViewer")
@@ -51,17 +76,85 @@ if(WIN32)
     endif()
 elseif(APPLE)
     set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/Main.cpp")
-    add_executable(${BINARY_NAME} ${CPP_FILE})
-    target_link_libraries(${BINARY_NAME} SFML::Graphics curl)
-    add_custom_command(
-        TARGET ${BINARY_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${TSV_SOURCE_PATH} ${CMAKE_CURRENT_BINARY_DIR}
-    )
 
     if(PAXS_BUILD_TYPE STREQUAL "Production")
+        # Production: macOS .app bundle
+
+        # Read version information
+        file(READ ${PROJECT_ROOT_DIR}/Library/PAX_SAPIENTICA/Version.hpp VERSION_HPP)
+        string(REGEX MATCH "PAX_SAPIENTICA_LIBRARY_MAJOR \\(([0-9]+)\\)" _ ${VERSION_HPP})
+        set(PAX_SAPIENTICA_LIBRARY_MAJOR ${CMAKE_MATCH_1})
+        string(REGEX MATCH "PAX_SAPIENTICA_LIBRARY_MINOR \\(([0-9]+)\\)" _ ${VERSION_HPP})
+        set(PAX_SAPIENTICA_LIBRARY_MINOR ${CMAKE_MATCH_1})
+        string(REGEX MATCH "PAX_SAPIENTICA_LIBRARY_PATCHLEVEL \\(([0-9]+)\\)" _ ${VERSION_HPP})
+        set(PAX_SAPIENTICA_LIBRARY_PATCHLEVEL ${CMAKE_MATCH_1})
+        set(PAX_SAPIENTICA_LIBRARY_VERSION "${PAX_SAPIENTICA_LIBRARY_MAJOR}.${PAX_SAPIENTICA_LIBRARY_MINOR}.${PAX_SAPIENTICA_LIBRARY_PATCHLEVEL}")
+
+        add_executable(${BINARY_NAME} MACOSX_BUNDLE ${CPP_FILE})
+
         set_target_properties(${BINARY_NAME} PROPERTIES
-            INSTALL_RPATH "@executable_path/../Resources/SFML/lib"
+            MACOSX_BUNDLE TRUE
+            OUTPUT_NAME "PAX SAPIENTICA"
+            MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Info.plist.in"
+            INSTALL_RPATH "@executable_path/../Frameworks"
             BUILD_WITH_INSTALL_RPATH TRUE
+        )
+
+        target_link_libraries(${BINARY_NAME} PRIVATE SFML::Graphics curl)
+
+        # Copy SFML frameworks to the bundle
+        if(SFML_FOUND)
+            # Get SFML library paths
+            get_target_property(SFML_GRAPHICS_LIB SFML::Graphics IMPORTED_LOCATION_RELEASE)
+            if(NOT SFML_GRAPHICS_LIB)
+                get_target_property(SFML_GRAPHICS_LIB SFML::Graphics IMPORTED_LOCATION)
+            endif()
+
+            if(SFML_GRAPHICS_LIB)
+                get_filename_component(SFML_LIB_DIR ${SFML_GRAPHICS_LIB} DIRECTORY)
+                set(APP_FRAMEWORKS_DIR "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Frameworks")
+
+                add_custom_command(
+                    TARGET ${BINARY_NAME} POST_BUILD
+                    # MacOS/にProdConfig.tsvをコピー
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/ProdConfig.tsv"
+                        "$<TARGET_FILE_DIR:${BINARY_NAME}>/Config.tsv"
+
+                    # Resources/にappicon.icnsをコピー
+                    COMMAND ${CMAKE_COMMAND} -E make_directory
+                        "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources"
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/appicon.icns"
+                        "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources/appicon.icns"
+
+                    # SFML の dylib をコピーして install_name_tool でパスを修正
+                    COMMAND ${CMAKE_COMMAND} -E make_directory
+                        ${APP_FRAMEWORKS_DIR}
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        ${SFML_LIB_DIR}/libsfml-graphics.3.0.dylib
+                        ${APP_FRAMEWORKS_DIR}/
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        ${SFML_LIB_DIR}/libsfml-window.3.0.dylib
+                        ${APP_FRAMEWORKS_DIR}/
+                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        ${SFML_LIB_DIR}/libsfml-system.3.0.dylib
+                        ${APP_FRAMEWORKS_DIR}/
+
+                    COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-graphics.3.0.dylib @rpath/libsfml-graphics.3.0.dylib $<TARGET_FILE:${BINARY_NAME}>
+                    COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-window.3.0.dylib   @rpath/libsfml-window.3.0.dylib   $<TARGET_FILE:${BINARY_NAME}>
+                    COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-system.3.0.dylib   @rpath/libsfml-system.3.0.dylib   $<TARGET_FILE:${BINARY_NAME}>
+                    COMMENT "Copying SFML dylibs to app bundle and fixing install names..."
+                )
+            endif()
+        endif()
+    else()
+        # Development: standard executable
+        add_executable(${BINARY_NAME} ${CPP_FILE})
+        target_link_libraries(${BINARY_NAME} SFML::Graphics curl)
+        add_custom_command(
+            TARGET ${BINARY_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${TSV_SOURCE_PATH} ${CMAKE_CURRENT_BINARY_DIR}
         )
     endif()
 elseif(UNIX AND SFML_FOUND)

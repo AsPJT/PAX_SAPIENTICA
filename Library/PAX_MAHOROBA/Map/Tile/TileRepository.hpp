@@ -78,9 +78,10 @@ namespace paxs {
                 std::vector<std::string> strvec = pifs.split('\t');
 
                 // 描画の種類 例）画像 texture やグリッド grid など
-                const bool menu_bar_map_bool = (visible_menu_bar_index >= strvec.size()) ? false :
-                    ((strvec[visible_menu_bar_index].size() == 0) ? false :
-                        (strvec[visible_menu_bar_index] == "1"));
+                // const bool menu_bar_map_bool = (visible_menu_bar_index >= strvec.size()) ? false :
+                //     ((strvec[visible_menu_bar_index].size() == 0) ? false :
+                //         (strvec[visible_menu_bar_index] == "1"));
+                const bool menu_bar_map_bool = true;
 
                 // 描画の種類 例）画像 texture やグリッド grid など
                 const std::uint_least32_t draw_type = (draw_type_index >= strvec.size()) ? paxs::MurMur3::calcHash("texture") :
@@ -160,7 +161,7 @@ namespace paxs {
         /// @brief グリッド線タイルを作成
         /// @return グリッド線タイル
         XYZTile createGridLineTile() const {
-            XYZTile xyz_tile(MurMur3::calcHash("menu_bar_map_line2"), false,
+            XYZTile xyz_tile(MurMur3::calcHash("menu_bar_map_line2"), true,
                 paxs::MurMur3::calcHash("asset_file"), 0, "", "",
                 (""), paxs::MurMur3::calcHash("grid_and_string"), "");
             return xyz_tile;

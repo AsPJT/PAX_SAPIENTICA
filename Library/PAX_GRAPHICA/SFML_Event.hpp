@@ -39,6 +39,7 @@ namespace paxg {
 
 #if defined(PAXS_USING_SFML)
         float wheel_delta = 0.0f;
+        bool has_focus = true; // 起動時はフォーカスありとして初期化
 
         bool update(sf::RenderWindow& window) {
             wheel_delta = 0.0f;
@@ -47,6 +48,12 @@ namespace paxg {
             while (const auto& poll_event = window.pollEvent()) {
                 if (poll_event->is<sf::Event::Closed>()) {
                     return false; // 終了シグナル
+                }
+                else if (poll_event->is<sf::Event::FocusGained>()) {
+                    has_focus = true;
+                }
+                else if (poll_event->is<sf::Event::FocusLost>()) {
+                    has_focus = false;
                 }
                 else if (const auto* mouseWheelScrolled = poll_event->getIf<sf::Event::MouseWheelScrolled>()) {
                     wheel_delta = -(mouseWheelScrolled->delta);

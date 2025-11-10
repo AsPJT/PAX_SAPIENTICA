@@ -77,33 +77,33 @@ namespace paxs {
 
         // Map メニュー
         constexpr const char* MAP = "menu_bar_map";
-        constexpr const char* MAP_BASE = "menu_bar_map_base";
-        constexpr const char* MAP_LAND_AND_SEA = "menu_bar_map_land_and_sea";
+        // constexpr const char* MAP_BASE = "menu_bar_map_base";
+        // constexpr const char* MAP_LAND_AND_SEA = "menu_bar_map_land_and_sea";
         constexpr const char* MAP_LAND_AND_WATER = "menu_bar_map_land_and_water";
         constexpr const char* MAP_SOIL = "menu_bar_map_soil";
-        constexpr const char* MAP_SOIL_TEMPERATURE = "menu_bar_map_soil_temperature";
-        constexpr const char* MAP_RYOSEI_COUNTRY = "menu_bar_map_ryosei_country";
+        // constexpr const char* MAP_SOIL_TEMPERATURE = "menu_bar_map_soil_temperature";
+        // constexpr const char* MAP_RYOSEI_COUNTRY = "menu_bar_map_ryosei_country";
         constexpr const char* MAP_RYOSEI_LINE = "menu_bar_map_ryosei_line";
         constexpr const char* MAP_SLOPE = "menu_bar_map_slope";
-        constexpr const char* MAP_LAKES_AND_RIVERS1 = "menu_bar_map_lakes_and_rivers1";
-        constexpr const char* MAP_LAKES_AND_RIVERS2 = "menu_bar_map_lakes_and_rivers2";
-        constexpr const char* MAP_LINE1 = "menu_bar_map_line1";
+        // constexpr const char* MAP_LAKES_AND_RIVERS1 = "menu_bar_map_lakes_and_rivers1";
+        // constexpr const char* MAP_LAKES_AND_RIVERS2 = "menu_bar_map_lakes_and_rivers2";
+        // constexpr const char* MAP_LINE1 = "menu_bar_map_line1";
         constexpr const char* MAP_LINE2 = "menu_bar_map_line2";
 
         /// @brief Map メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array MAP_MENU_HASHES = {
             MurMur3::calcHash(MAP),
-            MurMur3::calcHash(MAP_BASE),
-            MurMur3::calcHash(MAP_LAND_AND_SEA),
+            // MurMur3::calcHash(MAP_BASE),
+            // MurMur3::calcHash(MAP_LAND_AND_SEA),
             MurMur3::calcHash(MAP_LAND_AND_WATER),
             MurMur3::calcHash(MAP_SOIL),
-            MurMur3::calcHash(MAP_SOIL_TEMPERATURE),
-            MurMur3::calcHash(MAP_RYOSEI_COUNTRY),
+            // MurMur3::calcHash(MAP_SOIL_TEMPERATURE),
+            // MurMur3::calcHash(MAP_RYOSEI_COUNTRY),
             MurMur3::calcHash(MAP_RYOSEI_LINE),
             MurMur3::calcHash(MAP_SLOPE),
-            MurMur3::calcHash(MAP_LAKES_AND_RIVERS1),
-            MurMur3::calcHash(MAP_LAKES_AND_RIVERS2),
-            MurMur3::calcHash(MAP_LINE1),
+            // MurMur3::calcHash(MAP_LAKES_AND_RIVERS1),
+            // MurMur3::calcHash(MAP_LAKES_AND_RIVERS2),
+            // MurMur3::calcHash(MAP_LINE1),
             MurMur3::calcHash(MAP_LINE2)
         };
     }

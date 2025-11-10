@@ -147,6 +147,13 @@ namespace paxs {
             visible_manager->emplace(View::Debug, false); // デバッグ
             visible_manager->emplace(View::View3D, false); // 360度写真
 
+            using MapLayers = FeatureVisibilityManager::MapLayers;
+            visible_manager->emplace(MapLayers::LandAndWater, false); // 陸水境界
+            visible_manager->emplace(MapLayers::Soil, false); // 土壌
+            visible_manager->emplace(MapLayers::RyoseiLine, true); // 陸生国境界線
+            visible_manager->emplace(MapLayers::Slope, true); // 傾斜
+            visible_manager->emplace(MapLayers::Line2, false); // 線2
+
             // View メニューの状態を初期化
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(MurMur3::calcHash("view"));
             if (!view_menu) {
@@ -161,6 +168,19 @@ namespace paxs {
             view_menu->setIsItems(std::size_t(4), visible_manager->isVisible(View::License));
             view_menu->setIsItems(std::size_t(5), visible_manager->isVisible(View::Debug));
             view_menu->setIsItems(std::size_t(6), visible_manager->isVisible(View::View3D));
+
+            // Map メニューの状態を初期化
+            paxs::DropDownMenu* map_menu = menu_system.getDropDownMenu(MurMur3::calcHash("map"));
+            if (!map_menu) {
+                PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'map' menu not found.");
+                return;
+            }
+            using MapLayers = FeatureVisibilityManager::MapLayers;
+            map_menu->setIsItems(std::size_t(0), visible_manager->isVisible(MapLayers::LandAndWater));
+            map_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MapLayers::Soil));
+            map_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MapLayers::RyoseiLine));
+            map_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MapLayers::Slope));
+            map_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MapLayers::Line2));
         }
 
         /// @brief 言語変更時のハンドラー（コールバック駆動）
@@ -225,18 +245,11 @@ namespace paxs {
             else if (menu_key == MurMur3::calcHash("map")) {
                 // Map メニュー
                 using MapLayers = FeatureVisibilityManager::MapLayers;
-                const std::array<MapLayers, 12> map_layer_items = {
-                    MapLayers::Base,
-                    MapLayers::LandAndSea,
+                const std::array<MapLayers, 5> map_layer_items = {
                     MapLayers::LandAndWater,
                     MapLayers::Soil,
-                    MapLayers::SoilTemperature,
-                    MapLayers::RyoseiCountry,
                     MapLayers::RyoseiLine,
                     MapLayers::Slope,
-                    MapLayers::LakesAndRivers1,
-                    MapLayers::LakesAndRivers2,
-                    MapLayers::Line1,
                     MapLayers::Line2
                 };
                 if (actual_index < map_layer_items.size()) {

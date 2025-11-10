@@ -185,7 +185,13 @@ namespace paxg {
         }
 
         bool hasFocus() const override {
-            return m_window.hasFocus();
+            // SFMLのhasFocus()とイベントベースのフォーカス状態の両方をチェック
+            // イベントベースの状態を優先（macOSでのフォーカス問題を回避）
+            bool event_focus = paxg::SFML_Event::getInstance()->has_focus;
+            bool window_focus = m_window.hasFocus();
+
+            // いずれかがtrueならフォーカスありとする（より寛容な判定）
+            return event_focus || window_focus;
         }
 
         void clear() override {

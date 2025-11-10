@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.asproject.paxsapientica</string>
+    <key>CFBundleName</key>
+    <string>PAX SAPIENTICA</string>
+    <key>CFBundleVersion</key>
+    <string>${PAX_SAPIENTICA_LIBRARY_VERSION}</string>
+    <key>CFBundleShortVersionString</key>
+    <string>${PAX_SAPIENTICA_LIBRARY_VERSION}</string>
+    <key>CFBundleExecutable</key>
+    <string>PAX SAPIENTICA</string>
+    <key>CFBundleIconFile</key>
+    <string>appicon</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.13</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.education</string>
+    <key>NSInputMonitoringUsageDescription</key>
+    <string>PAX SAPIENTICA needs to monitor keyboard input to provide interactive features.</string>
+</dict>
+</plist>
