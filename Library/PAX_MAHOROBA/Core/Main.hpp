@@ -63,10 +63,10 @@ namespace paxs {
 
         // InputManagerに入力ハンドラーを登録
         input_manager.registerHandler(map_viewport_input_handler.get());
-        input_manager.getMouseEventRouter().registerHandler(ui_input_handler.get());
+        input_manager.registerHandler(ui_input_handler.get());
 
         // GraphicsManagerが内部のウィジェット/ハンドラーを登録
-        graphics_manager.registerToInputHandlers(*ui_input_handler, input_manager.getEventRouter());
+        graphics_manager.registerToInputHandlers(*ui_input_handler, input_manager.getInputRouter());
 
         // ローディング画面終了
         paxs::PaxSapienticaInit::endLoadingScreen();

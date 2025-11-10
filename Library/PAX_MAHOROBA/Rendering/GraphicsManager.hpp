@@ -16,6 +16,7 @@
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
+#include <PAX_MAHOROBA/Input/Photo360InputHandler.hpp>
 #include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/MapTileLayer.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
@@ -40,6 +41,7 @@ namespace paxs {
         MapTileLayer map_tile_layer_;
         MapContentLayer map_content_layer_;
         Photo360Layer photo360_layer_;
+        Photo360InputHandler photo360_input_handler_;
         UILayer ui_layer_;
         MenuBar menu_bar_;
 
@@ -55,6 +57,10 @@ namespace paxs {
             , map_tile_layer_()
             , map_content_layer_(&app_state.getMapViewport())
             , photo360_layer_()
+            , photo360_input_handler_(
+                &photo360_layer_,
+                &app_state.getVisibilityManager()
+              )
             , ui_layer_(
                 &app_state.getVisibilityManager(),
                 &app_state.getMapViewport(),
@@ -131,14 +137,25 @@ namespace paxs {
         }
 
         /// @brief 入力ハンドラーにウィジェットを登録
-        template<typename UIInputHandlerType, typename EventRouterType>
-        void registerToInputHandlers(UIInputHandlerType& ui_input_handler, EventRouterType& event_router) {
+        /// @brief Register widgets to input handlers
+        /// @param ui_input_handler UI入力ハンドラー / UI input handler
+        /// @param input_router 統合入力ルーター / Unified input router
+        ///
+        /// 入力優先度:
+        /// Input priority:
+        /// - キーボード / Keyboard: Photo360 (Photo360:300) > Settlement (MapContent:200) > Map (MapTile:100)
+        /// - マウス / Mouse: UI (UIContent:500) > MapContent (MapContent:200) > MapViewport (MapTile:100)
+        template<typename UIInputHandlerType, typename InputRouterType>
+        void registerToInputHandlers(UIInputHandlerType& ui_input_handler, InputRouterType& input_router) {
+            // UIウィジェット登録（マウス入力最高優先度）
             ui_input_handler.registerWidget(&menu_bar_);
             ui_input_handler.registerWidget(&ui_layer_);
 
-            event_router.registerHandler(&map_content_layer_);
+            // 統合入力ルーターに登録（レイヤーベース優先度制御）
+            input_router.registerHandler(&photo360_input_handler_);
+            input_router.registerHandler(&map_content_layer_);
 #ifdef PAXS_USING_SIMULATOR
-            event_router.registerHandler(&map_content_layer_.getSettlementInputHandler());
+            input_router.registerHandler(&map_content_layer_.getSettlementInputHandler());
 #endif
         }
     };

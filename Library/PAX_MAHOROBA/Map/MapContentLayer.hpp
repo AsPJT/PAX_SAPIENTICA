@@ -23,8 +23,7 @@
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
-#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
-#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
@@ -38,7 +37,7 @@ namespace paxs {
 
     /// @brief 地図コンテンツレイヤークラス
     /// @brief Map Content Layer
-    class MapContentLayer : public IRenderable, public IEventHandler, public IMouseEventHandler {
+    class MapContentLayer : public IRenderable, public IInputHandler {
     private:
         GeographicFeatureManager geographic_feature_manager_{}; // 地理的特徴(地名とアイコン)
         PersonPortraitManager person_portrait_manager_{}; // 人物の肖像画と名前
@@ -125,7 +124,16 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            // TODO: マウスイベント処理
+            if (!enabled_ || !app_state_manager_) {
+                return EventHandlingResult::NotHandled();
+            }
+
+            const auto& visible = app_state_manager_->getVisibilityManager();
+
+            // 地図が表示されていない場合は処理しない
+            if (!visible.isVisible(ViewMenu::map)) {
+                return EventHandlingResult::NotHandled();
+            }
             (void)event;
             return EventHandlingResult::NotHandled();
         }

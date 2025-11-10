@@ -15,12 +15,12 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
 namespace paxs {
 
-    class IWidget : public IRenderable, public IMouseEventHandler {
+    class IWidget : public IRenderable, public IInputHandler {
     public:
         virtual ~IWidget() = default;
 
@@ -55,8 +55,8 @@ namespace paxs {
         /// @return レンダリングレイヤー / Rendering layer
         RenderLayer getLayer() const override = 0;
 
-        // IMouseEventHandler の実装
-        // IMouseEventHandler implementation
+        // IInputHandler の実装
+        // IInputHandler implementation
 
         /// @brief ヒットテスト（getRect()を使用）
         /// @brief Hit test (uses getRect())

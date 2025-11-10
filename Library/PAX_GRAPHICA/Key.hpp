@@ -33,7 +33,7 @@
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>
 
-namespace paxs {
+namespace paxg {
 
     // Coordinate constants
     namespace CoordinateConstants {

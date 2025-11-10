@@ -2,10 +2,10 @@
 
     PAX SAPIENTICA Library 💀🌿🌏
 
-    [Planning]      2023-2024 As Project
-    [Production]    2023-2024 As Project
-    [Contact Us]    wanotaitei@gmail.com            https://github.com/AsPJT/PAX_SAPIENTICA
-    [License]       Distributed under the CC0 1.0.  https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -26,8 +26,7 @@
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
-#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 namespace paxs {
@@ -35,17 +34,17 @@ namespace paxs {
     /// @brief MapViewport の入力処理を担当するクラス（UI層）
     /// @brief Handles input processing for MapViewport (UI layer)
     ///
-    /// IEventHandlerとIInputHandlerの両方を継承し、座標に依存しないイベント（キーボード、
+    /// IInputHandlerを継承し、座標に依存しないイベント（キーボード、
     /// マウスホイール）と座標ベースのマウス入力を処理します。
     /// WindowResizedEventはEventBus経由で購読します。
-    class MapViewportInputHandler : public IEventHandler, public IMouseEventHandler {
+    class MapViewportInputHandler : public IInputHandler {
     private:
-        std::array<Key, 1> enl_keys; // 拡大キー
-        std::array<Key, 1> esc_keys; // 縮小キー
-        std::array<Key, 2> move_left_keys;  // 左移動キー (A, Left)
-        std::array<Key, 2> move_right_keys; // 右移動キー (D, Right)
-        std::array<Key, 2> move_up_keys;    // 上移動キー (W, Up)
-        std::array<Key, 2> move_down_keys;  // 下移動キー (S, Down)
+        std::array<paxg::Key, 1> enl_keys; // 拡大キー
+        std::array<paxg::Key, 1> esc_keys; // 縮小キー
+        std::array<paxg::Key, 2> move_left_keys;  // 左移動キー (A, Left)
+        std::array<paxg::Key, 2> move_right_keys; // 右移動キー (D, Right)
+        std::array<paxg::Key, 2> move_up_keys;    // 上移動キー (W, Up)
+        std::array<paxg::Key, 2> move_down_keys;  // 下移動キー (S, Down)
 
         bool enabled_ = true; // 入力処理の有効/無効
         bool events_subscribed_ = false; // イベント購読済みフラグ
@@ -66,11 +65,11 @@ namespace paxs {
 
     public:
         MapViewportInputHandler()
-            : enl_keys{Key(PAXG_KEY_Q)}, esc_keys{Key(PAXG_KEY_E)},
-              move_left_keys{Key(PAXG_KEY_A), Key(PAXG_KEY_LEFT)},
-              move_right_keys{Key(PAXG_KEY_D), Key(PAXG_KEY_RIGHT)},
-              move_up_keys{Key(PAXG_KEY_W), Key(PAXG_KEY_UP)},
-              move_down_keys{Key(PAXG_KEY_S), Key(PAXG_KEY_DOWN)}
+            : enl_keys{paxg::Key(paxg::PAXG_KEY_Q)}, esc_keys{paxg::Key(paxg::PAXG_KEY_E)},
+              move_left_keys{paxg::Key(paxg::PAXG_KEY_A), paxg::Key(paxg::PAXG_KEY_LEFT)},
+              move_right_keys{paxg::Key(paxg::PAXG_KEY_D), paxg::Key(paxg::PAXG_KEY_RIGHT)},
+              move_up_keys{paxg::Key(paxg::PAXG_KEY_W), paxg::Key(paxg::PAXG_KEY_UP)},
+              move_down_keys{paxg::Key(paxg::PAXG_KEY_S), paxg::Key(paxg::PAXG_KEY_DOWN)}
 #ifdef __ANDROID__
             , touch_num(0), old_touch_num(0)
             , pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}

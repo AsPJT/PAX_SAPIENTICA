@@ -2,10 +2,10 @@
 
     PAX SAPIENTICA Library 💀🌿🌏
 
-    [Planning]      2023-2024 As Project
-    [Production]    2023-2024 As Project
-    [Contact Us]    wanotaitei@gmail.com            https://github.com/AsPJT/PAX_SAPIENTICA
-    [License]       Distributed under the CC0 1.0.  https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <vector>
 
-#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
@@ -23,18 +23,18 @@ namespace paxs {
 
     /// @brief UI入力処理を担当するクラス
     /// @brief Handles input processing for UI
-    class UIInputHandler : public IMouseEventHandler {
+    class UIInputHandler : public IInputHandler {
     private:
         /// @brief 登録されたウィジェットのリスト
         /// @brief List of registered widgets
-        std::vector<IMouseEventHandler*> registered_widgets_;
+        std::vector<IInputHandler*> registered_widgets_;
 
         bool is_sorted_ = false;
 
         void sortWidgets() {
             if (is_sorted_) return;
             std::sort(registered_widgets_.begin(), registered_widgets_.end(),
-                [](IMouseEventHandler* a, IMouseEventHandler* b) {
+                [](IInputHandler* a, IInputHandler* b) {
                     return static_cast<std::uint16_t>(a->getLayer()) > static_cast<std::uint16_t>(b->getLayer());
                 });
             is_sorted_ = true;
@@ -45,7 +45,7 @@ namespace paxs {
         /// @brief ウィジェットを登録
         /// @brief Register a widget
         /// @param widget 登録するウィジェット / Widget to register
-        void registerWidget(IMouseEventHandler* widget) {
+        void registerWidget(IInputHandler* widget) {
             if (widget == nullptr) return;
             registered_widgets_.emplace_back(widget);
             is_sorted_ = false;
@@ -58,7 +58,7 @@ namespace paxs {
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             sortWidgets();
 
-            for (IMouseEventHandler* handler : registered_widgets_) {
+            for (IInputHandler* handler : registered_widgets_) {
                 if (handler->isHit(event.x, event.y)) {
                     EventHandlingResult result = handler->handleEvent(event);
                     if (result.handled) {
@@ -74,7 +74,7 @@ namespace paxs {
         /// @param x X座標 / X coordinate
         /// @param y Y座標 / Y coordinate
         bool isHit(int x, int y) const override {
-            for (const IMouseEventHandler* handler : registered_widgets_) {
+            for (const IInputHandler* handler : registered_widgets_) {
                 if (handler->isHit(x, y)) {
                     return true;
                 }

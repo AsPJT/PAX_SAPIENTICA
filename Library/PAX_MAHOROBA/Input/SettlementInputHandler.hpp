@@ -2,10 +2,10 @@
 
     PAX SAPIENTICA Library 💀🌿🌏
 
-    [Planning]      2023-2024 As Project
-    [Production]    2023-2024 As Project
-    [Contact Us]    wanotaitei@gmail.com            https://github.com/AsPJT/PAX_SAPIENTICA
-    [License]       Distributed under the CC0 1.0.  https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -18,7 +18,7 @@
 
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
-#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 
 namespace paxs {
 
@@ -26,8 +26,8 @@ namespace paxs {
     /// @brief Settlement input handler
     ///
     /// 集落の表示モード切替などの入力処理を担当します。
-    /// キーボードイベント（1-6キー、L、Kキー）を処理するためIEventHandlerを継承します。
-    class SettlementInputHandler : public IEventHandler {
+    /// キーボードイベント（1-6キー、L、Kキー）を処理するためIInputHandlerを継承します。
+    class SettlementInputHandler : public IInputHandler {
     public:
         SettlementInputHandler() = default;
 
@@ -37,8 +37,8 @@ namespace paxs {
             event_bus_ = event_bus;
         }
 
-        // IEventHandler の実装
-        // IEventHandler implementation
+        // IInputHandler の実装
+        // IInputHandler implementation
 
         /// @brief キーボードイベント処理
         /// @brief Handle keyboard event
@@ -97,23 +97,27 @@ namespace paxs {
             bool changed = false;
 
             // 1-6キーで表示モードを切り替え
-            if (Key(PAXG_KEY_1).isPressed()) { select_draw_ = 1; changed = true; }
-            else if (Key(PAXG_KEY_2).isPressed()) { select_draw_ = 2; changed = true; }
-            else if (Key(PAXG_KEY_3).isPressed()) { select_draw_ = 3; changed = true; }
-            else if (Key(PAXG_KEY_4).isPressed()) { select_draw_ = 4; changed = true; }
-            else if (Key(PAXG_KEY_5).isPressed()) { select_draw_ = 5; changed = true; }
-            else if (Key(PAXG_KEY_6).isPressed()) { select_draw_ = 6; changed = true; }
+            if (paxg::Key(paxg::PAXG_KEY_1).isPressed()) { select_draw_ = 1; changed = true; }
+            else if (paxg::Key(paxg::PAXG_KEY_2).isPressed()) { select_draw_ = 2; changed = true; }
+            else if (paxg::Key(paxg::PAXG_KEY_3).isPressed()) { select_draw_ = 3; changed = true; }
+            else if (paxg::Key(paxg::PAXG_KEY_4).isPressed()) { select_draw_ = 4; changed = true; }
+            else if (paxg::Key(paxg::PAXG_KEY_5).isPressed()) { select_draw_ = 5; changed = true; }
+            else if (paxg::Key(paxg::PAXG_KEY_6).isPressed()) { select_draw_ = 6; changed = true; }
 
             // Lキーでグリッド線表示を切り替え
-            else if (Key(PAXG_KEY_L).isPressed()) { is_line_ = !is_line_; changed = true; }
+            else if (paxg::Key(paxg::PAXG_KEY_L).isPressed()) { is_line_ = !is_line_; changed = true; }
 
             // Kキーで移動矢印表示を切り替え
-            else if (Key(PAXG_KEY_K).isPressed()) { is_arrow_ = !is_arrow_; changed = true; }
+            else if (paxg::Key(paxg::PAXG_KEY_K).isPressed()) { is_arrow_ = !is_arrow_; changed = true; }
 
             // 設定が変更された場合はイベントを発行
             if (changed) {
                 notifyDisplayChanged();
             }
+        }
+
+        RenderLayer getLayer() const override {
+            return RenderLayer::MapContent;
         }
     };
 

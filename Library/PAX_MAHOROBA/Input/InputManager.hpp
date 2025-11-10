@@ -2,10 +2,10 @@
 
     PAX SAPIENTICA Library 💀🌿🌏
 
-    [Planning]      2023-2025 As Project
-    [Production]    2023-2025 As Project
-    [Contact Us]    wanotaitei@gmail.com         https://github.com/AsPJT/PAX_SAPIENTICA
-    [License]       Distributed under the CC0 1.0. https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -18,9 +18,8 @@
 
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
-#include <PAX_MAHOROBA/Input/EventRouter.hpp>
 #include <PAX_MAHOROBA/Input/Events.hpp>
-#include <PAX_MAHOROBA/Input/MouseEventRouter.hpp>
+#include <PAX_MAHOROBA/Input/InputRouter.hpp>
 
 #include <PAX_SAPIENTICA/MouseClickStateManager.hpp>
 
@@ -34,31 +33,26 @@ class InputManager {
 public:
     InputManager(EventBus& event_bus)
         : event_bus_(event_bus)
-        , event_router_()
-        , mouse_event_router_()
+        , input_router_()
         , last_window_width_(paxg::Window::width())
         , last_window_height_(paxg::Window::height()) {
     }
 
-    /// @brief EventRouterを取得
-    /// @brief Get EventRouter
-    /// @return EventRouter reference
-    EventRouter& getEventRouter() { return event_router_; }
-
-    /// @brief MouseEventRouterを取得
-    /// @brief Get MouseEventRouter
-    /// @return MouseEventRouter reference
-    MouseEventRouter& getMouseEventRouter() { return mouse_event_router_; }
+    /// @brief InputRouterを取得
+    /// @brief Get InputRouter
+    /// @return InputRouter reference
+    InputRouter& getInputRouter() { return input_router_; }
 
     /// @brief 入力ハンドラーを登録
-    /// @brief Register input handlers
-    /// @tparam T ハンドラーの型（EventHandlerとIInputHandlerを実装）
-    /// @param handler 登録するハンドラー
-    void registerHandler(auto* handler) {
-        // EventRouterに登録（キーボード、マウスホイール用）
-        event_router_.registerHandler(handler);
-        // MouseEventRouterに登録（マウス入力用）
-        mouse_event_router_.registerHandler(handler);
+    /// @brief Register input handler
+    /// @param handler 登録するハンドラー / Handler to register
+    ///
+    /// IInputHandlerを実装したハンドラーを登録します。
+    /// 全ての入力イベント（キーボード、マウス、マウスホイール）が統一されたルーターを通じて配信されます。
+    /// Registers a handler that implements IInputHandler.
+    /// All input events (keyboard, mouse, mouse wheel) are distributed through the unified router.
+    void registerHandler(IInputHandler* handler) {
+        input_router_.registerHandler(handler);
     }
 
     /// @brief 入力を処理
@@ -79,19 +73,19 @@ public:
             return;
         }
 
-        // 2. キーボードイベント（既存のEventRouterを通じて配信）
+        // 2. キーボードイベント（InputRouterを通じて配信）
         KeyboardEvent keyboard_event;
-        event_router_.broadcastEvent(keyboard_event);
+        input_router_.routeEvent(keyboard_event);
 
-        // 3. マウスホイールイベント（既存のEventRouterを通じて配信）
+        // 3. マウスホイールイベント（InputRouterを通じて配信）
         paxg::Mouse* mouse = paxg::Mouse::getInstance();
         const int wheel_rotation = mouse->getWheelRotVol();
         if (wheel_rotation != 0) {
             MouseWheelEvent wheel_event(wheel_rotation);
-            event_router_.broadcastEvent(wheel_event);
+            input_router_.routeEvent(wheel_event);
         }
 
-        // 4. マウスイベント（既存のMouseEventRouterを通じて配信）
+        // 4. マウスイベント（InputRouterを通じて配信）
         const int mouse_x = mouse->getPosX();
         const int mouse_y = mouse->getPosY();
         const bool current_left_button = mouse->getLeft();
@@ -102,10 +96,10 @@ public:
             MouseEvent event(mouse_x, mouse_y);
 
             // 修飾キーの設定
-            if (paxs::Key::isShiftPressed()) event.modifier_keys |= MouseEvent::MODIFIER_SHIFT;
-            if (paxs::Key::isCtrlPressed()) event.modifier_keys |= MouseEvent::MODIFIER_CTRL;
-            if (paxs::Key::isAltPressed()) event.modifier_keys |= MouseEvent::MODIFIER_ALT;
-            if (paxs::Key::isCommandPressed()) event.modifier_keys |= MouseEvent::MODIFIER_COMMAND;
+            if (paxg::Key::isShiftPressed()) event.modifier_keys |= MouseEvent::MODIFIER_SHIFT;
+            if (paxg::Key::isCtrlPressed()) event.modifier_keys |= MouseEvent::MODIFIER_CTRL;
+            if (paxg::Key::isAltPressed()) event.modifier_keys |= MouseEvent::MODIFIER_ALT;
+            if (paxg::Key::isCommandPressed()) event.modifier_keys |= MouseEvent::MODIFIER_COMMAND;
 
             // 前フレームの座標を設定
             event.prev_x = mouse->getPosXBefore1Frame();
@@ -122,16 +116,15 @@ public:
                 event.left_button_state = MouseButtonState::Released;
             }
 
-            mouse_event_router_.routeEvent(event);
+            input_router_.routeEvent(event);
         }
     }
 
 private:
     EventBus& event_bus_;
 
-    // 既存の入力ルーティングシステム
-    EventRouter event_router_;         // 座標に依存しないイベント（キーボード、リサイズ等）
-    MouseEventRouter mouse_event_router_;  // マウス入力のみ（レイヤーベース）
+    // 統合入力ルーティングシステム
+    InputRouter input_router_;  // 全ての入力イベント（キーボード、マウス、マウスホイール）
 
     // マウスボタン状態管理
     MouseClickStateManager left_button_state_manager_;

@@ -70,7 +70,7 @@ namespace paxs {
 
         /// @brief レンダリングレイヤーを取得
         RenderLayer getLayer() const override {
-            return RenderLayer::Map3D;
+            return RenderLayer::Photo360;
         }
 
         /// @brief 可視性を取得
