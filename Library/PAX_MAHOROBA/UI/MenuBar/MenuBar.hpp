@@ -46,8 +46,6 @@ namespace paxs {
         /// @brief コンストラクタ
         MenuBar() :
             language_selector_(
-                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                 paxs::LanguageDomain::UI,
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
@@ -335,10 +333,9 @@ namespace paxs {
 
         bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
+            if (getRect().contains(static_cast<float>(x), static_cast<float>(y))) return true;
             if (menu_system.isHit(x, y)) return true;
-            if (language_selector_.isHit(x, y)) return true;
-            const paxg::Rect rect = getRect();
-            return rect.contains(static_cast<float>(x), static_cast<float>(y));
+            return language_selector_.isHit(x, y);
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {

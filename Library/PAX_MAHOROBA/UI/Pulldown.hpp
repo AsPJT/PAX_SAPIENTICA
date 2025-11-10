@@ -45,6 +45,30 @@ namespace paxs {
     ///          - FixedHeader: 固定のヘッダー名が表示される（メニューバーなど）
     class Pulldown : public IWidget {
     private:
+        std::span<const std::uint_least32_t> items_key{}; // 項目の Key 一覧
+
+        std::size_t language_index = 0; // 言語の要素番号
+        std::uint_least32_t old_language_key = 0; // 選択されている言語の Key
+        std::vector<bool> is_items{}; // 項目が TRUE か FALSE になっているか格納
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
+
+        paxg::Rect rect{};
+        PulldownDisplayType display_type{}; // 表示タイプ (SelectedValue or FixedHeader)
+        bool is_one_font = false;
+
+        const LanguageDomain language_domain{}; // 言語ドメイン
+
+        size_t index = 0;
+        paxg::Vec2i padding{ default_padding_x, default_padding_y };
+        float all_rect_x{}; // 全ての項目の文字幅
+        bool is_open = false;
+
+        bool visible_ = true;
+        bool enabled_ = true;
+
+        // コールバック関数
+        std::function<void(std::size_t index, bool is_selected)> on_selection_changed_;
+
         // プラットフォーム固有の表示調整定数
         static constexpr float android_width_scale = 2.5f;
         static constexpr float android_rect_width_scale = 2.0f;
@@ -71,9 +95,9 @@ namespace paxs {
         }
         // 言語変更による更新処理
         void updateLanguage() {
-            paxg::Font* one_font = Fonts().getFont(font_size, font_buffer_thickness_size);
+            paxg::Font* one_font = Fonts().getFont(FontProfiles::PULLDOWN);
             if (one_font == nullptr) {
-                rect.setH(static_cast<float>(font_size) * 2.f);
+                rect.setH(static_cast<float>(paxg::FontConfig::PULLDOWN_FONT_SIZE) * 2.f);
             }
             else {
                 const float height = static_cast<float>(((*one_font).height()) + padding.y() * 2);
@@ -95,7 +119,7 @@ namespace paxs {
                 if (str == nullptr || str->size() == 0) continue;
 
                 const std::uint_least32_t font_key = (is_one_font ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
-                paxg::Font* item_font = Fonts().getFont(font_key, font_size, font_buffer_thickness_size);
+                paxg::Font* item_font = Fonts().getFont(font_key, FontProfiles::PULLDOWN);
                 if (item_font == nullptr) continue;
 
                 // 最大の文字数からプルダウンの各項目の幅を定義
@@ -129,21 +153,15 @@ namespace paxs {
         }
         /// @brief コンストラクタ
         /// @param items_key_ 項目のキー一覧
-        /// @param font_size_ フォントサイズ
-        /// @param font_buffer_thickness_size_ フォントの太さ
         /// @param pos_ 表示位置
         /// @param display_type_ 表示タイプ（SelectedValue or FixedHeader）
         /// @param is_one_font_ 単一フォントを使用するか
         Pulldown(
-            std::uint_least8_t font_size_,
-            std::uint_least8_t font_buffer_thickness_size_,
             const LanguageDomain language_domain_,
             const paxg::Vec2i& pos_ = { 0,0 },
             PulldownDisplayType display_type_ = PulldownDisplayType::SelectedValue,
             const bool is_one_font_ = false)
-            : font_size(font_size_)
-            , font_buffer_thickness_size(font_buffer_thickness_size_)
-            , language_domain(language_domain_)
+            : language_domain(language_domain_)
             , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
             , display_type(display_type_)
             , is_one_font(is_one_font_) {
@@ -296,7 +314,7 @@ namespace paxs {
 
                 if (str == nullptr || str->size() == 0) return;
 
-                paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
+                paxg::Font* one_font = Fonts().getFont(select_key, FontProfiles::PULLDOWN);
                 if (one_font == nullptr) return;
                 // 文字を描画
                 (*one_font).draw(
@@ -311,7 +329,7 @@ namespace paxs {
 
                 if (str0 == nullptr || str0->size() == 0) return;
 
-                paxg::Font* one_font = Fonts().getFont(select_key, font_size, font_buffer_thickness_size);
+                paxg::Font* one_font = Fonts().getFont(select_key, FontProfiles::PULLDOWN);
                 if (one_font == nullptr) return;
                 // 文字を描画
                 (*one_font).draw(
@@ -343,7 +361,7 @@ namespace paxs {
                 }
                 const std::uint_least32_t select_font_key = ((is_one_font) ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
 
-                paxg::Font* one_font = Fonts().getFont(select_font_key, font_size, font_buffer_thickness_size);
+                paxg::Font* one_font = Fonts().getFont(select_font_key, FontProfiles::PULLDOWN);
                 if (one_font == nullptr) continue;
                 // 文字を描画
                 (*one_font).draw(
@@ -376,30 +394,6 @@ namespace paxs {
         bool isOpen() const { return is_open; }
         void close() { is_open = false; }
 
-        // IWidget インターフェースの実装
-        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
-        paxg::Rect getRect() const override { return rect; }
-
-        void setVisible(bool visible) override { visible_ = visible; }
-        bool isVisible() const override { return visible_; }
-
-        void setEnabled(bool enabled) override { enabled_ = enabled; }
-        bool isEnabled() const override { return enabled_; }
-
-        const char* getName() const override { return "Pulldown"; }
-
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
-        /// @note プルダウンは常に最前面（UIOverlay）で描画・入力処理される
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIOverlay;
-        }
-
-        /// @brief ヒットテスト（プルダウンが開いている場合は全項目を含む）
-        /// @brief Hit test (includes all items when pulldown is open)
-        /// @param x X座標 / X coordinate
-        /// @param y Y座標 / Y coordinate
-        /// @return 範囲内ならtrue / true if within bounds
         bool isHit(int x, int y) const override {
             if (!isVisible() || !isEnabled()) return false;
 
@@ -431,33 +425,16 @@ namespace paxs {
             return false;
         }
 
-    private:
-        std::span<const std::uint_least32_t> items_key{}; // 項目の Key 一覧
-
-        std::size_t language_index = 0; // 言語の要素番号
-        std::uint_least32_t old_language_key = 0; // 選択されている言語の Key
-        std::uint_least8_t font_size = 16;
-        std::uint_least8_t font_buffer_thickness_size = 16;
-        std::vector<bool> is_items{}; // 項目が TRUE か FALSE になっているか格納
-        paxs::UnorderedMap<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
-
-        paxg::Rect rect{};
-        PulldownDisplayType display_type{}; // 表示タイプ (SelectedValue or FixedHeader)
-        bool is_one_font = false;
-
-        const LanguageDomain language_domain{}; // 言語ドメイン
-
-        size_t index = 0;
-        paxg::Vec2i padding{ default_padding_x, default_padding_y };
-        float all_rect_x{}; // 全ての項目の文字幅
-        bool is_open = false;
-
-        // IWidget インターフェース用の状態
-        bool visible_ = true;
-        bool enabled_ = true;
-
-        // コールバック関数
-        std::function<void(std::size_t index, bool is_selected)> on_selection_changed_;
+        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
+        paxg::Rect getRect() const override { return rect; }
+        void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_; }
+        void setEnabled(bool enabled) override { enabled_ = enabled; }
+        bool isEnabled() const override { return enabled_; }
+        const char* getName() const override { return "Pulldown"; }
+        RenderLayer getLayer() const override {
+            return RenderLayer::UIOverlay;
+        }
     };
 }
 

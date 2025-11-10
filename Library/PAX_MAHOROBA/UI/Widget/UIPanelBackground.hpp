@@ -17,8 +17,8 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
-#include <PAX_MAHOROBA/UI/PanelBackgroundRenderer.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
+#include <PAX_MAHOROBA/UI/Widget/PanelBackgroundRenderer.hpp>
 
 namespace paxs {
 

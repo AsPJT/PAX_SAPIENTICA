@@ -16,8 +16,8 @@
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/UI/SimulationPanel.hpp>
 #include <PAX_MAHOROBA/UI/SettlementStatusPanel.hpp>
+#include <PAX_MAHOROBA/UI/Simulation/SimulationPanel.hpp>
 #endif
 
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
@@ -28,7 +28,7 @@
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
-#include <PAX_MAHOROBA/UI/UIPanelBackground.hpp>
+#include <PAX_MAHOROBA/UI/Widget/UIPanelBackground.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
@@ -70,6 +70,100 @@ namespace paxs {
                     // 降順
                     return a->getLayer() > b->getLayer();
                 });
+        }
+
+        /// @brief イベントを購読
+        /// @brief Subscribe to events
+        void subscribeToEvents() {
+            if (event_bus_ == nullptr) return;
+            // ウィンドウリサイズイベントの購読
+            event_bus_->subscribe<WindowResizedEvent>(
+                [this](const WindowResizedEvent& event) {
+                    (void)event;
+                    // UIレイアウトを再計算
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                        calendar_panel.updateButtonLayout();
+                    }
+                }
+            );
+
+            // 日付変更イベントの購読
+            event_bus_->subscribe<DateChangedEvent>(
+                [this](const DateChangedEvent& event) {
+                    (void)event;
+                    // CalendarPanelの日付表示を更新
+                    if (calendar_panel.isVisible() && app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        calendar_panel.setCalendarParams(koyomi);
+                        calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
+
+                        // レイアウトも再計算（日付リストのサイズが変わる可能性があるため）
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                    }
+                }
+            );
+
+            // 言語変更イベントの購読
+            event_bus_->subscribe<LanguageChangedEvent>(
+                [this](const LanguageChangedEvent& event) {
+                    (void)event;
+                    // 言語変更時はレイアウト再計算が必要
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+                    }
+                }
+            );
+
+            // 機能可視性変更イベントの購読
+            event_bus_->subscribe<FeatureVisibilityChangedEvent>(
+                [this](const FeatureVisibilityChangedEvent& event) {
+                    (void)event;
+                    // 背景の可視性をパネルと同期
+                    // UILayer全体の可視性はrender()でチェックされるため、ここでは個別パネルの可視性のみ考慮
+                    calendar_bg_.setVisible(calendar_panel.isVisible());
+                    debug_info_bg_.setVisible(debug_info_panel.isVisible());
+#ifdef PAXS_USING_SIMULATOR
+                    simulation_bg_.setVisible(simulation_panel.isVisible());
+                    // settlement_status_bg_はGraphicsManagerで制御
+#endif
+                }
+            );
+
+#ifdef PAXS_USING_SIMULATOR
+            // シミュレーション状態変更イベントの購読
+            event_bus_->subscribe<SimulationStateChangedEvent>(
+                [this](const SimulationStateChangedEvent& event) {
+                    (void)event;
+                    // シミュレーション状態変更時の処理
+                    if (app_state_manager_) {
+                        const auto& koyomi = app_state_manager_->getKoyomi();
+                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
+
+
+                        // 背景の可視性をパネルと同期
+                        simulation_bg_.setVisible(simulation_panel.isVisible());
+                    }
+                }
+            );
+
+            // シミュレーションステップ実行イベントの購読
+            event_bus_->subscribe<SimulationStepExecutedEvent>(
+                [this](const SimulationStepExecutedEvent& event) {
+                    (void)event;
+                }
+            );
+
+            // 集落表示設定変更イベントの購読
+            event_bus_->subscribe<SettlementDisplayChangedEvent>(
+                [this](const SettlementDisplayChangedEvent& event) {
+                    // SettlementStatusPanelの表示モードを更新
+                    settlement_status_panel.setSelectDraw(event.select_draw);
+                }
+            );
+#endif
         }
 
     public:
@@ -247,101 +341,6 @@ namespace paxs {
         paxg::Rect getRect() const override { return paxg::Rect{}; }
         const char* getName() const override { return "UILayer"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-
-    private:
-        /// @brief イベントを購読
-        /// @brief Subscribe to events
-        void subscribeToEvents() {
-            if (event_bus_ == nullptr) return;
-            // ウィンドウリサイズイベントの購読
-            event_bus_->subscribe<WindowResizedEvent>(
-                [this](const WindowResizedEvent& event) {
-                    (void)event;
-                    // UIレイアウトを再計算
-                    if (app_state_manager_) {
-                        const auto& koyomi = app_state_manager_->getKoyomi();
-                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
-                        calendar_panel.updateButtonLayout();
-                    }
-                }
-            );
-
-            // 日付変更イベントの購読
-            event_bus_->subscribe<DateChangedEvent>(
-                [this](const DateChangedEvent& event) {
-                    (void)event;
-                    // CalendarPanelの日付表示を更新
-                    if (calendar_panel.isVisible() && app_state_manager_) {
-                        const auto& koyomi = app_state_manager_->getKoyomi();
-                        calendar_panel.setCalendarParams(koyomi);
-                        calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
-
-                        // レイアウトも再計算（日付リストのサイズが変わる可能性があるため）
-                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
-                    }
-                }
-            );
-
-            // 言語変更イベントの購読
-            event_bus_->subscribe<LanguageChangedEvent>(
-                [this](const LanguageChangedEvent& event) {
-                    (void)event;
-                    // 言語変更時はレイアウト再計算が必要
-                    if (app_state_manager_) {
-                        const auto& koyomi = app_state_manager_->getKoyomi();
-                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
-                    }
-                }
-            );
-
-            // 機能可視性変更イベントの購読
-            event_bus_->subscribe<FeatureVisibilityChangedEvent>(
-                [this](const FeatureVisibilityChangedEvent& event) {
-                    (void)event;
-                    // 背景の可視性をパネルと同期
-                    // UILayer全体の可視性はrender()でチェックされるため、ここでは個別パネルの可視性のみ考慮
-                    calendar_bg_.setVisible(calendar_panel.isVisible());
-                    debug_info_bg_.setVisible(debug_info_panel.isVisible());
-#ifdef PAXS_USING_SIMULATOR
-                    simulation_bg_.setVisible(simulation_panel.isVisible());
-                    // settlement_status_bg_はGraphicsManagerで制御
-#endif
-                }
-            );
-
-#ifdef PAXS_USING_SIMULATOR
-            // シミュレーション状態変更イベントの購読
-            event_bus_->subscribe<SimulationStateChangedEvent>(
-                [this](const SimulationStateChangedEvent& event) {
-                    (void)event;
-                    // シミュレーション状態変更時の処理
-                    if (app_state_manager_) {
-                        const auto& koyomi = app_state_manager_->getKoyomi();
-                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
-
-
-                        // 背景の可視性をパネルと同期
-                        simulation_bg_.setVisible(simulation_panel.isVisible());
-                    }
-                }
-            );
-
-            // シミュレーションステップ実行イベントの購読
-            event_bus_->subscribe<SimulationStepExecutedEvent>(
-                [this](const SimulationStepExecutedEvent& event) {
-                    (void)event;
-                }
-            );
-
-            // 集落表示設定変更イベントの購読
-            event_bus_->subscribe<SettlementDisplayChangedEvent>(
-                [this](const SettlementDisplayChangedEvent& event) {
-                    // SettlementStatusPanelの表示モードを更新
-                    settlement_status_panel.setSelectDraw(event.select_draw);
-                }
-            );
-#endif
-        }
     };
 
 }

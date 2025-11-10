@@ -44,7 +44,6 @@ namespace paxs {
         SimulationStatsWidget() = default;
 
         /// @brief SimulationManagerへの参照を設定
-        /// @brief Set reference to SimulationManager
         /// @param simulation_manager SimulationManagerへのポインタ
         void setSimulationManager(const SimulationManager* simulation_manager) {
             simulation_manager_ = simulation_manager;
@@ -98,39 +97,27 @@ namespace paxs {
             };
         }
 
-        bool isHit(int x, int y) const override {
-            if (!visible_ || !enabled_) return false;
-            return getRect().contains(static_cast<float>(x), static_cast<float>(y));
-        }
-
         void setPos(const paxg::Vec2i& pos) override {
             pos_ = pos;
         }
-
         void setVisible(bool visible) override {
             visible_ = visible;
         }
-
         void setEnabled(bool enabled) override {
             enabled_ = enabled;
         }
-
         bool isVisible() const override {
             return visible_;
         }
-
         bool isEnabled() const override {
             return enabled_;
         }
-
         const char* getName() const override {
             return "SimulationStatsWidget";
         }
-
         RenderLayer getLayer() const override {
             return RenderLayer::UIContent;
         }
-
         EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
             return EventHandlingResult::NotHandled();
         }

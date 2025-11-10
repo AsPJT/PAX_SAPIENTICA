@@ -28,8 +28,8 @@
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
-#include <PAX_MAHOROBA/UI/SimulationControlButton.hpp>
-#include <PAX_MAHOROBA/UI/SimulationStatsWidget.hpp>
+#include <PAX_MAHOROBA/UI/Simulation/SimulationControlButton.hpp>
+#include <PAX_MAHOROBA/UI/Simulation/SimulationStatsWidget.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -198,8 +198,6 @@ namespace paxs {
             event_bus_(&event_bus),
             app_state_manager_(&app_state_manager),
             simulation_pulldown(
-                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                 paxs::LanguageDomain::SIMULATION,
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
@@ -317,9 +315,6 @@ namespace paxs {
             if (!isVisible() || !isEnabled()) return false;
             if (simulation_pulldown.isHit(x, y)) return true;
             if (control_buttons_.isHit(x, y)) return true;
-#ifdef PAXS_USING_SIMULATOR
-            if (stats_widget_.isHit(x, y)) return true;
-#endif
             return false;
         }
 
