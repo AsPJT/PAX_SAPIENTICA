@@ -197,37 +197,6 @@ namespace paxs {
             }
         }
 
-        /// @brief Remove relative path patterns from path string
-        /// @brief パス文字列から相対パスパターン（./../../等）を削除する
-        /// @param path パス文字列
-        /// @return 相対パスパターンを削除したパス文字列
-        static std::string removeRelativePathPrefix(const std::string& path) noexcept {
-            std::string result = path;
-            std::size_t pos = 0;
-
-            // パターン: "./" または "../" または "../../" 等の繰り返し
-            while (pos < result.length()) {
-                // "./" を探す
-                if (result.substr(pos, 2) == "./") {
-                    // "./" を削除
-                    result.erase(pos, 2);
-                    continue;
-                }
-                // "../" を探す
-                else if (result.substr(pos, 3) == "../") {
-                    // "../" を削除
-                    result.erase(pos, 3);
-                    continue;
-                }
-                // それ以外は次の文字へ
-                else {
-                    break;
-                }
-            }
-
-            return result;
-        }
-
         /// @brief Remove relative path patterns from path string (in-place version)
         /// @brief パス文字列から相対パスパターン（./../../等）を削除する（インプレース版）
         /// @param path パス文字列（参照）

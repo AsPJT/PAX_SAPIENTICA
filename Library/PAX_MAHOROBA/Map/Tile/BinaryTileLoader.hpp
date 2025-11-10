@@ -44,9 +44,9 @@ namespace paxs {
     public:
         /// @brief タイルを読み込む（バイナリ→PNG変換）
         /// @brief Load a tile (binary to PNG conversion)
-        /// @param binary_path_with_zy Z と Y が既に置換されたバイナリパス
-        /// @param local_path_with_zy Z と Y が既に置換されたローカルパス
-        /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス
+        /// @param binary_path_with_zy Z と Y が既に置換されたバイナリパス（アセットルートからの相対パス）
+        /// @param local_path_with_zy Z と Y が既に置換されたローカルパス（アセットルートからの相対パス）
+        /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス（アセットルートからの相対パス）
         /// @param x_value X 座標の文字列
         /// @param current_map_view_height 現在のマップビュー高さ
         /// @param binary_buffer [in/out] バイナリデータ読み込み用の再利用バッファ (サイズ tile_pixels)
@@ -60,12 +60,12 @@ namespace paxs {
             std::vector<unsigned char>& binary_buffer, // 引数で受け取る
             std::vector<TileRGBA>& rgba_buffer         // 引数で受け取る
         ) {
-            // バイナリパスと出力パスの X を置換
-            std::string binary_path = binary_path_with_zy;
-            paxs::StringExtensions::replace(binary_path, "{x}", x_value);
+            // バイナリ相対パスの X を置換
+            std::string binary_relative_path = binary_path_with_zy;
+            paxs::StringExtensions::replace(binary_relative_path, "{x}", x_value);
 
-            // バイナリファイルを読み込み
-            paxs::Input8BitBinary i8bbs(binary_path,
+            // バイナリファイルを読み込み（Input8BitBinaryは内部でrootpathを前置）
+            paxs::Input8BitBinary i8bbs(binary_relative_path,
                 AppConfig::getInstance()->getRootPath()
             );
 
@@ -123,29 +123,32 @@ namespace paxs {
                 }
             }
 
-            // 出力PNGパスの X を置換
-            std::string local_file_path = local_path_with_zy;
-            paxs::StringExtensions::replace(local_file_path, "{x}", x_value);
+            // 出力PNG相対パスの X を置換
+            std::string relative_path = local_path_with_zy;
+            paxs::StringExtensions::replace(relative_path, "{x}", x_value);
 
-            // 保存先フォルダを作成
-            std::filesystem::create_directories(folder_path_with_zyx);
+            // アセットルートパスを前置して絶対パスを構築
+            const std::string root_path = AppConfig::getInstance()->getRootPath();
+            const std::string full_path = root_path + relative_path;
+            const std::string full_folder_path = root_path + folder_path_with_zyx;
 
-            // PNGファイルとして保存
-            stbi_write_png(local_file_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data(), 0); // 引数のバッファを使用
+            // 保存先フォルダを作成（絶対パスを使用）
+            std::filesystem::create_directories(full_folder_path);
 
-            // ファイル存在チェック
-            if (!std::filesystem::exists(local_file_path)) {
+            // PNGファイルとして保存（絶対パスを使用）
+            stbi_write_png(full_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data(), 0); // 引数のバッファを使用
+
+            // ファイル存在チェック（絶対パスを使用）
+            if (!std::filesystem::exists(full_path)) {
                 return nullptr;
             }
 
-            // テクスチャを読み込み
-            auto texture = std::make_unique<paxg::Texture>(
-                paxs::StringExtensions::removeRelativePathPrefix(local_file_path)
-            );
+            // テクスチャを読み込み（相対パスを使用）
+            auto texture = std::make_unique<paxg::Texture>(relative_path);
 
             // 読み込み失敗チェック
             if (!(*texture)) {
-                PAXS_WARNING("BinaryTileLoader: Failed to load texture from binary generated file: " + local_file_path);
+                PAXS_WARNING("BinaryTileLoader: Failed to load texture from binary generated file: " + relative_path);
                 return nullptr;
             }
 

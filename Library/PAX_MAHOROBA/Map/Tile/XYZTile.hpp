@@ -446,7 +446,8 @@ namespace paxs {
                     break;
                 }
 #else
-                file_name_format = AppConfig::getInstance()->getRootPath() + map_file_path_name_ + file_name_format_ + std::string(".png");
+                // アセットルートからの相対パスとして保持（getRootPathは使用時に前置）
+                file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
 #endif
             }
             if (file_name_format.size() != 0) {

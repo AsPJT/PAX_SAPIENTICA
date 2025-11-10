@@ -17,6 +17,7 @@
 #include <string>
 
 #include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
@@ -27,30 +28,31 @@ namespace paxs {
     public:
         /// @brief タイルを読み込む
         /// @brief Load a tile
-        /// @param path_with_zy Z と Y が既に置換されたパス
+        /// @param path_with_zy Z と Y が既に置換されたパス（アセットルートからの相対パス）
         /// @param x_value X 座標の文字列
         /// @return 読み込みに成功した場合はテクスチャのunique_ptr、失敗した場合はnullptr
         static std::unique_ptr<paxg::Texture> load(
             const std::string& path_with_zy,
             const std::string& x_value
         ) {
-            // X を置換してパスを構築
-            std::string path = path_with_zy;
-            paxs::StringExtensions::replace(path, "{x}", x_value);
+            // X を置換して相対パスを構築
+            std::string relative_path = path_with_zy;
+            paxs::StringExtensions::replace(relative_path, "{x}", x_value);
+
+            // アセットルートパスを前置して絶対パスを構築
+            const std::string full_path = AppConfig::getInstance()->getRootPath() + relative_path;
 
 #if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
             // Android DxLib: ファイル存在チェックをスキップ
             // （アセットファイルは std::filesystem::exists で検出できないため）
 #else
-            if (!std::filesystem::exists(path)) {
+            if (!std::filesystem::exists(full_path)) {
                 return nullptr;
             }
 #endif
 
-            // テクスチャを読み込み
-            auto texture = std::make_unique<paxg::Texture>(
-                paxs::StringExtensions::removeRelativePathPrefix(path)
-            );
+            // テクスチャを読み込み（相対パスを使用）
+            auto texture = std::make_unique<paxg::Texture>(relative_path);
 
             // 読み込み失敗チェック
             if (!(*texture)) {
