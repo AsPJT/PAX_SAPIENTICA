@@ -12,10 +12,6 @@
 #ifndef PAX_GRAPHICA_RECT_HPP
 #define PAX_GRAPHICA_RECT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -25,14 +21,14 @@
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/IDrawable.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
+#include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 
-    struct Rect : public paxg::IDrawable {
+    struct Rect {
 #if defined(PAXS_USING_SIV3D)
         s3d::RectF rect{};
         constexpr Rect() = default;
@@ -67,6 +63,10 @@ namespace paxg {
             rect.w = size_.x();
             rect.h = size_.y();
         }
+        bool contains(const float x_, const float y_) const {
+            return (rect.x <= x_) && (x_ <= (rect.x + rect.w)) &&
+                (rect.y <= y_) && (y_ <= (rect.y + rect.h));
+        }
 
 #elif defined(PAXS_USING_SFML)
         sf::RectangleShape rect{};
@@ -90,6 +90,10 @@ namespace paxg {
         void setSize(const float w_, const float h_) { rect.setSize(sf::Vector2f(w_, h_)); }
         void setPos(const Vec2i& pos_) { rect.setPosition({ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()) }); }
         void setSize(const Vec2i& size_) { rect.setSize(sf::Vector2f(static_cast<float>(size_.x()), static_cast<float>(size_.y()))); }
+        bool contains(const float x_, const float y_) const {
+            return x_ >= rect.getPosition().x && x_ <= (rect.getPosition().x + rect.getSize().x) &&
+                   y_ >= rect.getPosition().y && y_ <= (rect.getPosition().y + rect.getSize().y);
+        }
 #else
         float x0{}, y0{}, w0{}, h0{};
         constexpr Rect() = default;
@@ -128,9 +132,13 @@ namespace paxg {
             w0 = static_cast<float>(size_.x());
             h0 = static_cast<float>(size_.y());
         }
+        bool contains(const float x_, const float y_) const {
+            return x0 <= x_ && x_ <= x0 + w0 &&
+                   y0 <= y_ && y_ <= y0 + h0;
+        }
 #endif
 
-        void draw() const override {
+        void draw() const {
 #if defined(PAXS_USING_SIV3D)
             rect.draw();
 
@@ -140,7 +148,7 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+            Window::window().draw(rect);
 
 #endif
         }
@@ -159,10 +167,73 @@ namespace paxg {
         void draw(const paxg::Color& c_) const {
             sf::RectangleShape rect2 = rect;
             rect2.setFillColor(c_.color);
-            Window::window.draw(rect2);
+            Window::window().draw(rect2);
         }
 #else
         void draw(const paxg::Color&) const {}
+#endif
+
+        /// @brief Draw shadow with blur effect
+        /// @brief ぼかし効果付きの影を描画
+        /// @param offset Shadow offset (影のオフセット)
+        /// @param blur_size Blur size (ぼかしサイズ)
+        /// @param spread Spread size (広がりサイズ)
+        /// @return Reference to this for method chaining (メソッドチェーン用の自身への参照)
+#if defined(PAXS_USING_SIV3D)
+        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
+            rect.drawShadow({offset.x(), offset.y()}, blur_size, spread);
+            return *this;
+        }
+#elif defined(PAXS_USING_SFML)
+        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
+            // SFML: Simple shadow using semi-transparent rectangles
+            // 複数の半透明矩形を重ねて簡易的な影を表現
+            sf::RectangleShape shadow = rect;
+            const int shadow_alpha = 40; // Base opacity
+
+            for (int i = spread + blur_size; i >= 0; --i) {
+                shadow.setPosition(sf::Vector2f(
+                    rect.getPosition().x + offset.x() + i,
+                    rect.getPosition().y + offset.y() + i
+                ));
+                shadow.setSize(sf::Vector2f(
+                    rect.getSize().x + i * 2,
+                    rect.getSize().y + i * 2
+                ));
+
+                int alpha = shadow_alpha * (spread + blur_size - i + 1) / (spread + blur_size + 1);
+                shadow.setFillColor(sf::Color(0, 0, 0, static_cast<uint8_t>(alpha)));
+                Window::window().draw(shadow);
+            }
+            return *this;
+        }
+#elif defined(PAXS_USING_DXLIB)
+        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
+            // DxLib: Simple shadow using semi-transparent rectangles
+            // 複数の半透明矩形を重ねて簡易的な影を表現
+            DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 40);
+
+            for (int i = spread + blur_size; i >= 0; --i) {
+                int alpha = 40 * (spread + blur_size - i + 1) / (spread + blur_size + 1);
+                DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+
+                DxLib::DrawBox(
+                    static_cast<int>(x0 + offset.x() + i),
+                    static_cast<int>(y0 + offset.y() + i),
+                    static_cast<int>(x0 + w0 + i),
+                    static_cast<int>(y0 + h0 + i),
+                    DxLib::GetColor(0, 0, 0),
+                    TRUE
+                );
+            }
+
+            DxLib::SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+            return *this;
+        }
+#else
+        const Rect& drawShadow(const Vec2i&, int, int) const {
+            return *this;
+        }
 #endif
 
         void drawAt() const {
@@ -175,7 +246,7 @@ namespace paxg {
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
-            Window::window.draw(rect);
+            Window::window().draw(rect);
 
 #endif
         }
@@ -194,7 +265,7 @@ namespace paxg {
         void drawAt(const paxg::Color& c_) const {
             sf::RectangleShape rect2 = rect;
             rect2.setFillColor(c_.color);
-            Window::window.draw(rect2);
+            Window::window().draw(rect2);
         }
 #else
         void drawAt(const paxg::Color&) const {}
@@ -232,25 +303,25 @@ namespace paxg {
                 rect.getSize().x + static_cast<float>(outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
             rect1.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y - static_cast<float>(outer_thickness) });
             rect1.setFillColor(c_.color);
-            Window::window.draw(rect1);
+            Window::window().draw(rect1);
 
             sf::RectangleShape rect2(sf::Vector2f(
                 rect.getSize().x + static_cast<float>(outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
             rect2.setPosition({ rect.getPosition().x - static_cast<float>(outer_thickness), rect.getPosition().y + rect.getSize().y - static_cast<float>(inner_thickness) });
             rect2.setFillColor(c_.color);
-            Window::window.draw(rect2);
+            Window::window().draw(rect2);
 
             sf::RectangleShape rect3(sf::Vector2f(
                 static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(rect.getSize().y + outer_thickness * 2)));
             rect3.setPosition({ static_cast<float>(rect.getPosition().x - outer_thickness), static_cast<float>(rect.getPosition().y - outer_thickness) });
             rect3.setFillColor(c_.color);
-            Window::window.draw(rect3);
+            Window::window().draw(rect3);
 
             sf::RectangleShape rect4(sf::Vector2f(
                 static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(rect.getSize().y + outer_thickness * 2)));
             rect4.setPosition({ static_cast<float>(rect.getPosition().x + rect.getSize().x - inner_thickness), static_cast<float>(rect.getPosition().y - outer_thickness) });
             rect4.setFillColor(c_.color);
-            Window::window.draw(rect4);
+            Window::window().draw(rect4);
 
         }
 #else
@@ -261,12 +332,13 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             return rect.leftClicked();
 #elif defined(PAXS_USING_DXLIB)
-            if (old_left_touch == 1) {
-                const int touch_num = DxLib::GetTouchInputNum();
+            if (paxg::TouchInput::getPreviousTouchCount() == 1) {
+                const int touch_num = paxg::TouchInput::getTouchCount();
                 // 1 フレーム前にタッチされている
                 if (touch_num == 0) {
-                    const auto& mx = old_left_touch_pos.x();
-                    const auto& my = old_left_touch_pos.y();
+                    const auto& prev_pos = paxg::TouchInput::getPreviousTouchPosition();
+                    const auto& mx = prev_pos.x;
+                    const auto& my = prev_pos.y;
                     return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
                 }
             }
@@ -280,7 +352,7 @@ namespace paxg {
 #elif defined(PAXS_USING_SFML)
             // 1 フレーム前にタッチされている
             if (paxg::Mouse::getInstance()->upLeft()) {
-                int mx = sf::Mouse::getPosition(Window::window).x, my = sf::Mouse::getPosition(Window::window).y;
+                int mx = sf::Mouse::getPosition(Window::window()).x, my = sf::Mouse::getPosition(Window::window()).y;
                 return (mx >= rect.getPosition().x &&
                     my >= rect.getPosition().y &&
                     mx < rect.getPosition().x + rect.getSize().x &&
@@ -303,16 +375,13 @@ namespace paxg {
 
 #elif defined(PAXS_USING_SFML)
             return rect.getGlobalBounds().contains(
-                { static_cast<float>(sf::Mouse::getPosition(Window::window).x),
-            static_cast<float>(sf::Mouse::getPosition(Window::window).y) });
+                { static_cast<float>(sf::Mouse::getPosition(Window::window()).x),
+            static_cast<float>(sf::Mouse::getPosition(Window::window()).y) });
 
 #else
             return false;
 #endif
         }
-
-        void drawAt(const Vec2f&) const override {}
-        void drawAt(const Vec2i&) const override {}
     };
 }
 

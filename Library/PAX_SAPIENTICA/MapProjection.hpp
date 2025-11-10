@@ -1,20 +1,16 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
 #ifndef PAX_SAPIENTICA_TYPE_MAP_PROJECTION_HPP
 #define PAX_SAPIENTICA_TYPE_MAP_PROJECTION_HPP
-
-/*##########################################################################################
-
-##########################################################################################*/
 
 #include <cmath>
 
@@ -34,9 +30,7 @@ namespace paxs {
     // 前方宣言
     // forward declaration
     struct MercatorDeg; // メルカトル図法（度）
-    //struct MercatorRad; // メルカトル図法（ラジアン）
     struct EquirectangularDeg; // 正距円筒図法（度）
-    //struct EquirectangularRad; // 正距円筒図法（ラジアン）
 
     // メルカトル図法（度）
     struct MercatorDeg : paxs::Vector2<double> {

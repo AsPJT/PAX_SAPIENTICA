@@ -9,19 +9,14 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
-#define PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
-
-/*##########################################################################################
-
-##########################################################################################*/
+#ifndef PAX_SAPIENTICA_LANGUAGE_HPP
+#define PAX_SAPIENTICA_LANGUAGE_HPP
 
 #include <cstddef>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <vector>
-#include <unordered_map>
 
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -39,99 +34,178 @@ namespace paxs {
         constexpr std::size_t cget() const { return select_language; }
         constexpr std::uint_least32_t cgetKey() const { return select_key; }
     };
+    /// @brief 多言語テキスト辞書クラス
+    /// @brief Multi-language text dictionary class
+    /// @details TSVファイルから多言語テキストを読み込み、言語キーとテキストキーで検索可能にする
+    ///          Loads multi-language text from TSV files and makes it searchable by language key and text key
     class Language {
     private:
+        /// @brief 登録された言語のリスト（登録順）
+        /// @brief List of registered languages (in registration order)
+        std::vector<std::uint_least32_t> ordered_languages_{};
 
-    private:
-        std::vector<std::uint_least32_t> ordered_languages{}; // 登録順の言語
-        std::unordered_map<std::uint_least32_t, std::size_t> unordered_languages{}; // 非順序の言語
-        std::unordered_map<std::uint_least64_t, std::string> texts_and_languages{}; // テキストを辞書で管理
-        std::unordered_map<std::uint_least32_t, std::uint_least64_t> text_key{}; // テキストを辞書で管理 (１つの言語のみ)
+        /// @brief 言語キー → インデックス のマッピング
+        /// @brief Mapping from language key to index
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> language_key_to_index_{};
+
+        /// @brief (テキストキー + 言語キー) → テキスト のマッピング
+        /// @brief Mapping from (text key + language key) to text
+        /// @details 上位32bitがテキストキー、下位32bitが言語キー
+        ///          Upper 32 bits: text key, Lower 32 bits: language key
+        paxs::UnorderedMap<std::uint_least64_t, std::string> text_dictionary_{};
+
+        /// @brief テキストキー → フォールバック用の64bitキー のマッピング
+        /// @brief Mapping from text key to fallback 64-bit key
+        /// @details 指定言語でテキストが見つからない場合のフォールバック用
+        ///          Used as fallback when text is not found in specified language
+        paxs::UnorderedMap<std::uint_least32_t, std::uint_least64_t> fallback_text_key_{};
+
     public:
-        // key が存在しているか
-        bool isIndex(const std::uint_least64_t key) const {
-            return  (texts_and_languages.find(key) != texts_and_languages.end());
-        }
-        // key が存在しているか
-        bool isIndex32(const std::uint_least32_t key) const {
-            return  (text_key.find(key) != text_key.end());
+        /// @brief 64bitキーが辞書に存在するかチェック
+        /// @brief Check if 64-bit key exists in dictionary
+        /// @param key 64bitキー（テキストキー + 言語キー） / 64-bit key (text key + language key)
+        /// @return 存在すればtrue / true if exists
+        bool hasText(const std::uint_least64_t key) const {
+            return text_dictionary_.find(key) != text_dictionary_.end();
         }
 
-        // 64bit Key を返す
-        std::uint_least64_t getKey(const std::uint_least32_t key_, const std::uint_least32_t language_) const {
-            return (static_cast<std::uint_least64_t>(key_) << 32)
-                + static_cast<std::uint_least64_t>(language_);
+        /// @brief テキストキーが辞書に存在するかチェック
+        /// @brief Check if text key exists in dictionary
+        /// @param key テキストキー / Text key
+        /// @return 存在すればtrue / true if exists
+        bool hasTextKey(const std::uint_least32_t key) const {
+            return fallback_text_key_.find(key) != fallback_text_key_.end();
         }
-        const std::string* getStringPtr(const std::uint_least32_t key_, const std::uint_least32_t language_) const {
-            const std::uint_least64_t key_language = getKey(key_, language_);
 
-            // 指定した Key が存在しない場合
-            if (key_language == 0 || !isIndex(key_language)) {
-                if (!isIndex32(key_)) { // 入力の Key が 1 つも登録されていない場合
-                    return nullptr; // 単語名がない場合は描画しない
-                }
-                if (!isIndex(text_key.at(key_))) { // 入力の Key が 1 つも登録されていない場合
-                    return nullptr; // 単語名がない場合は描画しない
-                }
-                return &(texts_and_languages.at(text_key.at(key_)));
+        /// @brief テキストキーと言語キーから64bitキーを生成
+        /// @brief Generate 64-bit key from text key and language key
+        /// @param text_key テキストキー / Text key
+        /// @param language_key 言語キー / Language key
+        /// @return 64bitキー（上位32bit: テキストキー, 下位32bit: 言語キー）
+        ///         64-bit key (upper 32 bits: text key, lower 32 bits: language key)
+        std::uint_least64_t createCombinedKey(
+            const std::uint_least32_t text_key,
+            const std::uint_least32_t language_key) const {
+            return (static_cast<std::uint_least64_t>(text_key) << 32)
+                + static_cast<std::uint_least64_t>(language_key);
+        }
+
+        /// @brief テキストを取得
+        /// @brief Get text string
+        /// @param text_key テキストキー / Text key
+        /// @param language_key 言語キー / Language key
+        /// @return テキストへのポインタ、見つからない場合はnullptr
+        ///         Pointer to text string, nullptr if not found
+        /// @details 指定言語で見つからない場合、フォールバック言語のテキストを返す
+        ///          If not found in specified language, returns text in fallback language
+        const std::string* getStringPtr(
+            const std::uint_least32_t text_key,
+            const std::uint_least32_t language_key) const {
+            const std::uint_least64_t combined_key = createCombinedKey(text_key, language_key);
+
+            // 指定した言語でテキストが存在する場合はそれを返す
+            if (combined_key != 0 && hasText(combined_key)) {
+                return &(text_dictionary_.at(combined_key));
             }
-            return &(texts_and_languages.at(key_language));
+
+            // フォールバック処理：デフォルト言語のテキストを返す
+            if (!hasTextKey(text_key)) {
+                return nullptr; // テキストキー自体が登録されていない
+            }
+
+            const std::uint_least64_t fallback_key = fallback_text_key_.at(text_key);
+            if (!hasText(fallback_key)) {
+                return nullptr; // フォールバックテキストも見つからない
+            }
+
+            return &(text_dictionary_.at(fallback_key));
         }
 
     private:
-
-        // 項目の ID を返す
-        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
-            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
+        /// @brief TSVヘッダーから指定キーのカラムインデックスを取得
+        /// @brief Get column index for specified key from TSV header
+        /// @param header_map ヘッダーマップ / Header map
+        /// @param key 検索するキー / Key to search
+        /// @return カラムインデックス、見つからない場合はSIZE_MAX
+        ///         Column index, SIZE_MAX if not found
+        std::size_t getColumnIndex(
+            const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& header_map,
+            const std::uint_least32_t key) const {
+            auto it = header_map.find(key);
+            return (it != header_map.end()) ? it->second : SIZE_MAX;
         }
 
     public:
-        // 新しいテキストの追加
-        void add(const std::string& str_) {
-            paxs::InputFile pifs(str_);
+        /// @brief TSVファイルから多言語テキストを読み込む
+        /// @brief Load multi-language text from TSV file
+        /// @param file_path TSVファイルのパス / Path to TSV file
+        /// @details TSV形式：1行目がヘッダー（key, ja-JP, en-US, ...）、2行目以降がデータ
+        ///          TSV format: 1st row is header (key, ja-JP, en-US, ...), subsequent rows are data
+        void add(const std::string& file_path) {
+            paxs::InputFile pifs(file_path);
             if (pifs.fail()) return;
-            // 1 行目を読み込む
-            if (!(pifs.getLine())) {
-                return; // 何もない場合
+
+            // ヘッダー行を読み込む（1行目）
+            if (!pifs.getLine()) {
+                return; // ファイルが空の場合
             }
-            // BOM を削除
+
+            // BOMを削除
             pifs.deleteBOM();
-            // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
-            std::vector<std::uint_least32_t> menu_v = pifs.splitHashMapMurMur3Vector('\t');
 
-            const std::size_t key = getMenuIndex(menu, MurMur3::calcHash("key"));
-            if (key == SIZE_MAX) return; // Key がないのはデータにならない
+            // ヘッダーを解析（タブ区切り）
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> header_map = pifs.splitHashMapMurMur3('\t');
+            std::vector<std::uint_least32_t> language_keys = pifs.splitHashMapMurMur3Vector('\t');
 
-            // Key が登録されていない場合は登録する
-            if (unordered_languages.find(MurMur3::calcHash("key")) == unordered_languages.end()) {
-                unordered_languages.emplace(MurMur3::calcHash("key"), SIZE_MAX);
+            // "key"カラムのインデックスを取得
+            const std::size_t key_column_index = getColumnIndex(header_map, MurMur3::calcHash("key"));
+            if (key_column_index == SIZE_MAX) {
+                return; // "key"カラムがない場合は処理できない
             }
-            for (const std::uint_least32_t v : menu_v) {
-                // 言語が登録されていない場合は登録する
-                if (unordered_languages.find(v) == unordered_languages.end()) {
-                    unordered_languages.emplace(v, ordered_languages.size());
-                    ordered_languages.emplace_back(v);
+
+            // "key"カラム自体を言語リストに登録（内部管理用）
+            const std::uint_least32_t key_hash = MurMur3::calcHash("key");
+            if (language_key_to_index_.find(key_hash) == language_key_to_index_.end()) {
+                language_key_to_index_.emplace(key_hash, SIZE_MAX);
+            }
+
+            // ヘッダーに含まれる言語を登録
+            for (const std::uint_least32_t lang_key : language_keys) {
+                if (language_key_to_index_.find(lang_key) == language_key_to_index_.end()) {
+                    language_key_to_index_.emplace(lang_key, ordered_languages_.size());
+                    ordered_languages_.emplace_back(lang_key);
                 }
             }
-            // unordered_languages
 
-            // 1 行ずつ読み込み（区切りはタブ）
+            // データ行を1行ずつ読み込み
             while (pifs.getLine()) {
-                std::vector<std::string> sub_menu_v = pifs.split('\t');
-                if (key >= sub_menu_v.size()) continue; // Key がない場合は処理しない
-                for (std::size_t i = 0; i < sub_menu_v.size() && i < menu_v.size(); ++i) {
-                    if (i == key) continue; // key と key の場合は無視
-                    if (sub_menu_v[i].size() == 0) continue; // 文字がない場合は処理しない
+                std::vector<std::string> columns = pifs.split('\t');
+                if (key_column_index >= columns.size()) {
+                    continue; // keyカラムがない行はスキップ
+                }
 
-                    const std::uint_least64_t hash64 = (static_cast<std::uint_least64_t>(MurMur3::calcHash(sub_menu_v[key].size(), sub_menu_v[key].c_str())) << 32)
-                        + static_cast<std::uint_least64_t>(menu_v[i]); // key と language
-                    if (!isIndex(hash64)) {
-                        texts_and_languages.emplace(hash64, sub_menu_v[i]);
+                // 各カラム（各言語）のテキストを処理
+                for (std::size_t i = 0; i < columns.size() && i < language_keys.size(); ++i) {
+                    if (i == key_column_index) continue; // keyカラム自体はスキップ
+                    if (columns[i].empty()) continue;     // 空のテキストはスキップ
+
+                    // テキストキーを生成（keyカラムの値をハッシュ化）
+                    const std::uint_least32_t text_key = MurMur3::calcHash(
+                        columns[key_column_index].size(),
+                        columns[key_column_index].c_str()
+                    );
+
+                    // 64bitキーを生成（テキストキー + 言語キー）
+                    const std::uint_least64_t combined_key = createCombinedKey(text_key, language_keys[i]);
+
+                    // 辞書に追加（重複は無視）
+                    if (!hasText(combined_key)) {
+                        text_dictionary_.emplace(combined_key, columns[i]);
                     }
-                    const std::uint_least32_t hash32 = MurMur3::calcHash(sub_menu_v[key].size(), sub_menu_v[key].c_str());
-                    if (!isIndex32(hash32)) {
-                        text_key.emplace(hash32, hash64);
+
+                    // フォールバック用キーを登録（最初に見つかった言語を使用）
+                    if (!hasTextKey(text_key)) {
+                        fallback_text_key_.emplace(text_key, combined_key);
                     }
                 }
             }
@@ -141,4 +215,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_SIV3D_LANGUAGE_HPP
+#endif // !PAX_SAPIENTICA_LANGUAGE_HPP

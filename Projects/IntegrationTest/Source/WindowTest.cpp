@@ -10,15 +10,15 @@
 ##########################################################################################*/
 
 #include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Graphics.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 int main() {
     paxg::Rect rect(0, 0, 100, 100);
     // paxg::Circle circle(100, 100, 50);
-    paxg::String path("../data/sample.png");
+    paxg::String path("data/sample.png");
     paxg::Texture texture(path);
     paxg::Window::Init(800, 600, "PAX SAPIENTICA Library");
     while (paxg::Window::update()) {

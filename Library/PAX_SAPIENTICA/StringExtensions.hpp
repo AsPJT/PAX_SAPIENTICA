@@ -12,20 +12,16 @@
 #ifndef PAX_SAPIENTICA_STRING_EXTENSIONS_HPP
 #define PAX_SAPIENTICA_STRING_EXTENSIONS_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <limits>
 #include <sstream>
 #include <string>
-#include <unordered_map>
 #include <variant>
 #include <vector>
 
+#include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/GeographicInformation/ConvertToInt.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
 
@@ -110,17 +106,6 @@ namespace paxs {
                 if (field.size() == 0) result[counter] = 251; // 文字列が空の時は NaN(251) を入れる
                 else {
                     result[counter] = paxs::slopeDegF64ToLog2U8(std::stod(field)); // 文字列を数値に変換する
-
-                    /* バイナリデータをより小さくするための実験 */
-                    //if (result[counter] > 181) result[counter] = 181;
-                    //else if (result[counter] > 162) result[counter] = 162;
-                    //else if (result[counter] > 127) result[counter] = 127;
-                    //else if (result[counter] > 0) result[counter] = 1;
-
-                    //if ((result[counter] & 1) == 1) ++result[counter]; // 実験：奇数を削除
-                    //const unsigned int b = 16;
-                    //result[counter] = unsigned char(b * ((result[counter] + (b - 1)) / b)); // 倍数を削除
-                    //if (result[counter] > 250) result[counter] = 250;
                 }
 
                 ++counter;
@@ -150,11 +135,11 @@ namespace paxs {
         }
 
         /// @brief Split string by delimiter
-        /// @brief デリミタで文字列を分割する（ std::unordered_map 版）
-        static std::unordered_map<std::string, std::size_t> splitHashMap(const std::string& input, const char delimiter) noexcept {
+        /// @brief デリミタで文字列を分割する（ UnorderedMap 版）
+        static paxs::UnorderedMap<std::string, std::size_t> splitHashMap(const std::string& input, const char delimiter) noexcept {
             std::istringstream stream(input);
             std::string field;
-            std::unordered_map<std::string, std::size_t> result;
+            paxs::UnorderedMap<std::string, std::size_t> result;
             std::size_t index = 0;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 result.emplace(field, index);
@@ -164,11 +149,11 @@ namespace paxs {
         }
 
         /// @brief Split string by delimiter
-        /// @brief デリミタで文字列を分割する（ std::unordered_map 版）
-        static std::unordered_map<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const std::string& input, const char delimiter) noexcept {
+        /// @brief デリミタで文字列を分割する（ UnorderedMap 版）
+        static paxs::UnorderedMap<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const std::string& input, const char delimiter) noexcept {
             std::istringstream stream(input);
             std::string field{};
-            std::unordered_map<std::uint_least32_t, std::size_t> result;
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> result;
             std::size_t index = 0;
             while (std::getline(stream, field, delimiter)) { // 1 行ごとに文字列を分割
                 result.emplace(MurMur3::calcHash(field.size(), field.c_str()), index);
@@ -209,6 +194,33 @@ namespace paxs {
         static void replaceList(std::string& str, const std::vector<std::string>& from, const std::vector<std::string>& to) noexcept {
             for (std::size_t i = 0; i < from.size() && i < to.size(); ++i) {
                 replace(str, from[i], to[i]);
+            }
+        }
+
+        /// @brief Remove relative path patterns from path string (in-place version)
+        /// @brief パス文字列から相対パスパターン（./../../等）を削除する（インプレース版）
+        /// @param path パス文字列（参照）
+        static void removeRelativePathPrefixInPlace(std::string& path) noexcept {
+            std::size_t pos = 0;
+
+            // パターン: "./" または "../" または "../../" 等の繰り返し
+            while (pos < path.length()) {
+                // "./" を探す
+                if (path.substr(pos, 2) == "./") {
+                    // "./" を削除
+                    path.erase(pos, 2);
+                    continue;
+                }
+                // "../" を探す
+                else if (path.substr(pos, 3) == "../") {
+                    // "../" を削除
+                    path.erase(pos, 3);
+                    continue;
+                }
+                // それ以外は次の文字へ
+                else {
+                    break;
+                }
             }
         }
 

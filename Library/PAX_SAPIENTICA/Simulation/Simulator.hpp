@@ -1,25 +1,20 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
 #ifndef PAX_SAPIENTICA_SIMULATION_SIMULATOR_HPP
 #define PAX_SAPIENTICA_SIMULATION_SIMULATOR_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <memory>
 #include <stdexcept>
 
-#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp>

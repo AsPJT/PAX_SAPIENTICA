@@ -12,19 +12,13 @@
 #ifndef PAX_SAPIENTICA_PROVINCES_JAPAN_HPP
 #define PAX_SAPIENTICA_PROVINCES_JAPAN_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <random>
-#include <unordered_map>
 #include <vector>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
 
@@ -36,7 +30,7 @@ namespace paxs {
             std::uint_least32_t population = 0; // 人口
         };
 
-        /// @brief 
+        /// @brief
         /// @brief mtDNA の地方区分を表す構造体
         struct mtDNA_Region {
             std::vector<std::uint_least8_t> id{};
@@ -61,6 +55,7 @@ namespace paxs {
             double immigrant_f64 = 0;
             double increased_immigration = 0;
             std::uint_least32_t mtdna_region_hash = 0;
+            std::uint_least32_t language_region_hash = 0;
 
             std::uint_least32_t direction_min_distance = 100;
             // std::array<double, 8> direction_weight{};
@@ -74,8 +69,43 @@ namespace paxs {
     private:
 
         // 項目の ID を返す
-        std::size_t getMenuIndex(const std::unordered_map<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
+        std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
             return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
+        }
+
+        void inputLanguage_List(const std::string& japan_provinces_path) noexcept {
+
+            const std::string path = japan_provinces_path + "/Language_List.tsv";
+
+            paxs::InputFile language_tsv(AppConfig::getInstance()->getRootPath() + path);
+            if (language_tsv.fail()) {
+                PAXS_WARNING("Failed to read Language_List TSV file: " + path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(language_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            language_tsv.deleteBOM();
+            // 1 行目を分割する
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = language_tsv.splitHashMapMurMur3('\t');
+            std::size_t i = 1;
+
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (language_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = language_tsv.split('\t');
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("language"))
+                    ) {
+                    PAXS_WARNING("Failed to read Japan Language_List TSV file: " + path + " at line " + std::to_string(i));
+                    ++i;
+                    continue;
+                }
+                language_list.emplace_back(sub_menu_v[menu[MurMur3::calcHash("language")]]);
+                ++i;
+            }
+
         }
 
         void inputMtDNA_List(const std::string& japan_provinces_path) noexcept {
@@ -94,7 +124,7 @@ namespace paxs {
             // BOM を削除
             mtdna_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
             std::size_t i = 1;
 
             // 1 行ずつ読み込み（区切りはタブ）
@@ -113,6 +143,72 @@ namespace paxs {
 
         }
 
+        void inputLanguage_Region(const std::string& japan_provinces_path) noexcept {
+
+            const std::string path = japan_provinces_path + "/Language.tsv";
+
+            paxs::InputFile language_tsv(AppConfig::getInstance()->getRootPath() + path);
+            if (language_tsv.fail()) {
+                PAXS_WARNING("Failed to read Language TSV file: " + path);
+                return;
+            }
+            // 1 行目を読み込む
+            if (!(language_tsv.getLine())) {
+                return; // 何もない場合
+            }
+            // BOM を削除
+            language_tsv.deleteBOM();
+            // 1 行目を分割する
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = language_tsv.splitHashMapMurMur3('\t');
+#ifdef PAXS_DEVELOPMENT
+            std::size_t i = 1;
+#endif
+
+            // 1 行ずつ読み込み（区切りはタブ）
+            while (language_tsv.getLine()) {
+                std::vector<std::string> sub_menu_v = language_tsv.split('\t');
+                if (
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("language_region")) ||
+                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("language_dist"))
+                    ) {
+#ifdef PAXS_DEVELOPMENT
+                    PAXS_WARNING("Failed to read Japan Language TSV file: " + path + " at line " + std::to_string(i));
+#endif
+                    continue;
+                }
+
+                mtDNA_Region language_region;
+                std::vector<std::string> dist = paxs::StringExtensions::split(sub_menu_v[menu[MurMur3::calcHash("language_dist")]], '/');
+
+                if (dist.size() % 2 == 1) {
+                    continue;
+                }
+                if (dist.size() <= 1) {
+                    continue;
+                }
+                for (int j = 0; j < dist.size(); j += 2) {
+                    for (int k = 0; k < language_list.size(); ++k) {
+                        // 言語 の名称の index を取得し、確率分布と一緒に管理
+                        if (language_list[k] == dist[j]) {
+                            language_region.id.emplace_back(k);
+                            language_region.weight.emplace_back(std::stod(dist[j + 1]));
+                            break;
+                        }
+                    }
+                }
+                // 確率分布を生成
+                language_region.dist = std::discrete_distribution<>(language_region.weight.begin(), language_region.weight.end());
+
+                // mtDNA 地方区分のハッシュ
+                const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("haplo_group_region")]];
+                language_region_list.emplace(MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str()), language_region);
+
+#ifdef PAXS_DEVELOPMENT
+                ++i;
+#endif
+            }
+        }
+
         void inputMtDNA_Region(const std::string& japan_provinces_path) noexcept {
 
             const std::string path = japan_provinces_path + "/mtDNA.tsv";
@@ -129,7 +225,7 @@ namespace paxs {
             // BOM を削除
             mtdna_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
 #ifdef PAXS_DEVELOPMENT
             std::size_t i = 1;
 #endif
@@ -195,7 +291,7 @@ namespace paxs {
             // BOM を削除
             district_tsv.deleteBOM();
             // 1 行目を分割する
-            std::unordered_map<std::uint_least32_t, std::size_t> menu = district_tsv.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = district_tsv.splitHashMapMurMur3('\t');
             std::size_t i = 1;
 
             // 1 行ずつ読み込み（区切りはタブ）
@@ -244,6 +340,9 @@ namespace paxs {
 
                 const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("mtdna_region")]];
                 district.mtdna_region_hash = MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str());
+
+                const std::string& language_region_str = sub_menu_v[menu[MurMur3::calcHash("language_region")]];
+                district.language_region_hash = MurMur3::calcHash(language_region_str.size(), language_region_str.c_str());
                 district_list.emplace_back(district);
                 ++i;
             }
@@ -257,6 +356,8 @@ namespace paxs {
 
             inputMtDNA_List(japan_provinces_path);
             inputMtDNA_Region(japan_provinces_path);
+            inputLanguage_List(japan_provinces_path);
+            inputLanguage_Region(japan_provinces_path);
             inputDistrict(japan_provinces_path);
         }
 
@@ -357,6 +458,25 @@ namespace paxs {
 
             return district_list[0];
         }
+        std::uint_least8_t getLanguage(const std::uint_least8_t id, std::mt19937& gen) noexcept {
+            for (const auto& district : district_list) {
+                if (district.id == id) {
+                    auto& weight_list = language_region_list.at(district.language_region_hash);
+                    return weight_list.id[weight_list.dist(gen)];
+                }
+            }
+            PAXS_WARNING("Failed to get District: " + std::to_string(id));
+
+            auto& weight_list = language_region_list.at(district_list[0].language_region_hash);
+            return weight_list.id[weight_list.dist(gen)];
+        }
+        const std::string& getLanguage_Name(const std::uint_least8_t id) const noexcept {
+            return language_list[id];
+        }
+        std::size_t getSizeLanguage() const noexcept {
+            return language_list.size();
+        }
+
         std::uint_least8_t getMtDNA(const std::uint_least8_t id, std::mt19937& gen) noexcept {
             for (const auto& district : district_list) {
                 if (district.id == id) {
@@ -417,9 +537,11 @@ namespace paxs {
     private:
         std::vector<JapanRegion> japan_regions; // 日本の地方区分
         std::vector<District> district_list; // 日本の地区
-        std::unordered_map<std::uint_least32_t, mtDNA_Region> mtdna_region_list; // mtDNA 地方区分
+        paxs::UnorderedMap<std::uint_least32_t, mtDNA_Region> mtdna_region_list; // mtDNA 地方区分
+        paxs::UnorderedMap<std::uint_least32_t, mtDNA_Region> language_region_list; // 言語 地方区分
         //std::vector<std::uint_least32_t> mtdna_region_hash_list; // mtDNA ハッシュ計算用
         std::vector<std::string> mtdna_list; // mtDNA
+        std::vector<std::string> language_list; // 言語
     };
 
 }

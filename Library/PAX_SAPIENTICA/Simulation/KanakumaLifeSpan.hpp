@@ -12,14 +12,9 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_KANAKUMA_LIFE_SPAN_HPP
 #define PAX_SAPIENTICA_SIMULATION_KANAKUMA_LIFE_SPAN_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <random>
 
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
-#include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 
 namespace paxs {
 

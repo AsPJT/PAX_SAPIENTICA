@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_CHROMOSOME_HPP
 #define PAX_SAPIENTICA_SIMULATION_CHROMOSOME_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <array>
 #include <cstdint>
 #include <random>
@@ -75,9 +71,6 @@ namespace paxs {
                 else {
                     child.set(i, father.get(i - 1 + (random_value % 2)));
                 }
-                //if (i == chromosome_length - 1) {
-                //    child.setGender(random_value % 2);
-                //}
                 random_value >>= 1;
             }
             return child;

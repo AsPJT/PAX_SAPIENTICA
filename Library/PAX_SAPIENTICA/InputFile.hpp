@@ -12,14 +12,9 @@
 #ifndef PAX_SAPIENTICA_INPUT_FILE_HPP
 #define PAX_SAPIENTICA_INPUT_FILE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <fstream>
 #include <string>
 #include <vector>
-#include <unordered_map>
 
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
@@ -170,11 +165,11 @@ namespace paxs {
             paxs::StringExtensions::splitElevationS16(pline, delimiter, result, size);
         }
         // 区切り文字で分割する
-        std::unordered_map<std::string, std::size_t> splitHashMap(const char delimiter) const {
+        paxs::UnorderedMap<std::string, std::size_t> splitHashMap(const char delimiter) const {
             return paxs::StringExtensions::splitHashMap(pline, delimiter);
         }
         // 区切り文字で分割する（ 32bit ハッシュ値で管理）
-        std::unordered_map<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const char delimiter) const {
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> splitHashMapMurMur3(const char delimiter) const {
             return paxs::StringExtensions::splitHashMapMurMur3(pline, delimiter);
         }
         // 区切り文字で分割する（ 32bit ハッシュ値で管理）

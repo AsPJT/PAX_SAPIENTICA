@@ -1,20 +1,16 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
 #ifndef PAX_SAPIENTICA_TYPE_FILE_HPP
 #define PAX_SAPIENTICA_TYPE_FILE_HPP
-
-/*##########################################################################################
-
-##########################################################################################*/
 
 #include <filesystem>
 #include <fstream>
@@ -77,6 +73,29 @@ namespace paxs {
                 result.emplace_back(StringExtensions::split(content, '\t'));
             }
             return result;
+        }
+
+        /// @brief Create directories recursively.
+        /// @brief ディレクトリを再帰的に作成する。
+        static bool createDirectories(const std::string& directory_path) noexcept {
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            return false; // std::filesystem が動作しないため何もしない
+#else
+            std::error_code ec;
+            std::filesystem::path dir_path(directory_path);
+
+            // 相対パスの場合は絶対パスに変換
+            if (dir_path.is_relative()) {
+                dir_path = std::filesystem::absolute(dir_path);
+            }
+
+            std::filesystem::create_directories(dir_path, ec);
+            if (ec) {
+                PAXS_ERROR("Failed to create directories: " + directory_path + " (" + ec.message() + ")");
+                return false;
+            }
+            return true;
+#endif
         }
 
         /// @brief Get the file name in the directory.

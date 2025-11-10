@@ -30,6 +30,13 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     )
     set_tests_properties(${TARGET_NAME} PROPERTIES LABELS "Unit")
+
+    # Auto-detect PathTSV dependency by checking if test reads Config.tsv
+    file(READ ${TEST_SOURCE} TEST_FILE_CONTENT)
+    if(TEST_FILE_CONTENT MATCHES "Config\\.tsv" OR TEST_FILE_CONTENT MATCHES "AppConfig::getInstance")
+        add_dependencies(${TARGET_NAME} CreatePathTSV)
+        message(STATUS "Auto-detected Config.tsv dependency: ${TARGET_NAME}")
+    endif()
 endforeach()
 
 set(PROJECT_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../..")
@@ -41,4 +48,3 @@ file(WRITE ${PATH_TSV_FILE} ${TSV_CONTENT})
 add_custom_target(CreatePathTSV ALL
     DEPENDS ${PATH_TSV_FILE}
 )
-add_dependencies(Simulations_JapanProvincesUnitTest CreatePathTSV)

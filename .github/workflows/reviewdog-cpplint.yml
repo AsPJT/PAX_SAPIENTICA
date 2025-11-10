@@ -11,7 +11,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: cpplint
-      uses: reviewdog/action-cpplint@b6c13159b10435813edfddea9e1cd02157544f45
+      uses: reviewdog/action-cpplint@v1
       with:
         github_token: ${{ secrets.github_token }}
         reporter: github-pr-review

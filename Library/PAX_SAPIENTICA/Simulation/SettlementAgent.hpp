@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_SETTLEMENT_AGENT_HPP
 #define PAX_SAPIENTICA_SIMULATION_SETTLEMENT_AGENT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <array>
 #include <limits>
 #include <memory>
@@ -23,9 +19,6 @@
 #include <stdexcept>
 
 #include <PAX_SAPIENTICA/Simulation/Genome.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/Simulation/Environment.hpp>
-#include <PAX_SAPIENTICA/Simulation/Object.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 
 namespace paxs {
@@ -35,7 +28,7 @@ namespace paxs {
     class SettlementAgent {
     public:
 
-        SettlementAgent() = default;
+        constexpr SettlementAgent() = default;
 
         explicit SettlementAgent(const HumanIndexType id,
             const AgeType age, const AgeType life_span, const Genome& genome,
@@ -43,7 +36,7 @@ namespace paxs {
             std::uint_least8_t hunter_gatherer_, // 狩猟採集文化
             std::uint_least8_t language_ // 言語
         ) noexcept
-            : id(id), //name_id(name_id),
+            : id(id),
             age(age), life_span(life_span), genome(genome),
             farming(farming_), hunter_gatherer(hunter_gatherer_), language(language_) {}
 
@@ -63,7 +56,7 @@ namespace paxs {
 
         constexpr AgeType getAgeInt() const noexcept { return age; }
 
-        /// @brief Get the agent's age.
+        /// @brief Get the agent's gender.
         /// @brief エージェントの性別を取得する
         constexpr bool isFemale() const noexcept { return genome.isFemale(); }
         constexpr bool isMale() const noexcept { return genome.isMale(); }

@@ -12,15 +12,9 @@
 #ifndef PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_SLOPE_HPP
 #define PAX_SAPIENTICA_GEOGRAPHIC_INFORMATION_SLOPE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
-// C ライブラリ
 #include <cmath>
 #include <cstddef>
 
-// C++ ライブラリ
 #include <array>
 #include <fstream>
 #include <limits>

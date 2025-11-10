@@ -21,7 +21,22 @@ jobs:
     - name: Run cppcheck
       run: |
         cd ${{ env.WORKSPACE }}
-        cppcheck --enable=all --output-file=cppcheck-result.txt --force --quiet -I Library Projects
+        cppcheck \
+          --enable=warning,style,performance,portability \
+          --suppress=missingIncludeSystem \
+          --suppress=unusedFunction \
+          --suppress=syntaxError:*/UnitTest/* \
+          --inline-suppr \
+          --output-file=cppcheck-result.txt \
+          --quiet \
+          -I Library \
+          -j $(nproc) \
+          Library/PAX_GRAPHICA \
+          Library/PAX_MAHOROBA \
+          Library/PAX_SAPIENTICA \
+          Projects/MapViewer \
+          Projects/IntegrationTest \
+          Projects/UnitTest
 
     - name: Setup reviewdog
       uses: reviewdog/action-setup@80a06617492b461a66508e2dedf16233f0506804

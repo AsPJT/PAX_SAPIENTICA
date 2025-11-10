@@ -1,20 +1,16 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
 #ifndef PAX_SAPIENTICA_TYPE_MATH_HPP
 #define PAX_SAPIENTICA_TYPE_MATH_HPP
-
-/*##########################################################################################
-
-##########################################################################################*/
 
 // π
 #define PAX_SAPIENTICA_PI (3.1415926535897932384626433832795028841971)

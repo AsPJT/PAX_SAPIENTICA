@@ -12,22 +12,9 @@
 #ifndef PAX_GRAPHICA_SFML_CIRCLE_HPP
 #define PAX_GRAPHICA_SFML_CIRCLE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
-#if defined(PAXS_USING_SIV3D)
-#include <Siv3D.hpp>
-#elif defined(PAXS_USING_DXLIB)
-#include <DxLib.h>
-#elif defined(PAXS_USING_SFML)
+#ifdef PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
 #endif
-
-#include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/IDrawable.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 

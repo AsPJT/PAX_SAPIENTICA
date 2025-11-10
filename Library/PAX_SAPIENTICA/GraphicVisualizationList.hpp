@@ -12,21 +12,16 @@
 #ifndef PAX_SAPIENTICA_GRAPHIC_VISUALIZATION_LIST_HPP
 #define PAX_SAPIENTICA_GRAPHIC_VISUALIZATION_LIST_HPP
 
-/*##########################################################################################
+#include <cstdint>
 
-##########################################################################################*/
-
-#include <string>
-#include <unordered_map>
-
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
 namespace paxs {
 
     // GUI 上で可視化する項目を管理
     class GraphicVisualizationList {
     private:
-        std::unordered_map<std::uint_least32_t, bool> visible{}; // 可視化するかしないかを持つ辞書
+        paxs::UnorderedMap<std::uint_least32_t, bool> visible{}; // 可視化するかしないかを持つ辞書
 
     public:
         // 新しい項目を追加
@@ -43,6 +38,10 @@ namespace paxs {
         }
         // 指定した要素の符号を取得
         bool operator[](const std::uint_least32_t& str_) const {
+            return (visible.find(str_) != visible.end()) ? visible.at(str_) : true;
+        }
+        // 指定した要素の符号を取得
+        bool at(const std::uint_least32_t& str_) const {
             return (visible.find(str_) != visible.end()) ? visible.at(str_) : true;
         }
 

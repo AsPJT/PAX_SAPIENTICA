@@ -12,17 +12,12 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_ENVIRONMENT_HPP
 #define PAX_SAPIENTICA_SIMULATION_ENVIRONMENT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cmath>
 #include <iostream>
 #include <memory>
 #include <random>
 #include <regex>
 #include <stdexcept>
-#include <unordered_map>
 #include <variant>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -45,7 +40,7 @@ namespace paxs {
 
         /// @brief Start position of the simulation.
         /// @brief シミュレーションデータのマップ
-        std::unordered_map<std::uint_least32_t, std::unique_ptr<DataVariant>> data_map;
+        paxs::UnorderedMap<std::uint_least32_t, std::unique_ptr<DataVariant>> data_map;
 
         explicit Environment() noexcept = default;
         explicit Environment(const std::string& setting_file_path) noexcept {

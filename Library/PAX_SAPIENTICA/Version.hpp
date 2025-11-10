@@ -12,14 +12,9 @@
 #ifndef PAX_SAPIENTICA_CONSTANT_VERSION_HPP
 #define PAX_SAPIENTICA_CONSTANT_VERSION_HPP
 
-/*##########################################################################################
-	Define version macro.
-	バージョンマクロを定義する。
-##########################################################################################*/
-
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20250529L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20251110L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [vX.a.a]
@@ -29,17 +24,17 @@
 
 // PAX_SAPIENTICA 補助バージョン  [v6.0.a.X.a]
 #ifndef PAX_SAPIENTICA_LIBRARY_MINOR
-#define PAX_SAPIENTICA_LIBRARY_MINOR (3)
+#define PAX_SAPIENTICA_LIBRARY_MINOR (4)
 #endif
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (12)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
 #endif
 
 // バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.3.12 KAMUY YUKAR"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.4.0 MAKEMAKE"
 #endif
 
 //char name[
@@ -51,6 +46,8 @@
 	更新履歴
 	バージョン	| 更新日		| 概要
 	6.0.1.0.X	| 2024/0X/XX	| コピペ用
+    6.0.1.3.14	| 2024/09/04	| GUIシミュレーションの実験繰り返し機能を追加。言語DNA変数の追加。 #136
+    6.0.1.3.13	| 2024/06/02	| SFML3.0.0対応 #134
 	6.0.1.3.12	| 2024/05/18	| シミュレーションモデルを選択するプルダウンメニューを追加 #132
 	6.0.1.3.11	| 2024/05/17	| 警告を解消 #131
     6.0.1.3.10  | 2025/05/14    | シミュレーション結果のRegionテキスト出力機能追加 #130

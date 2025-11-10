@@ -12,9 +12,7 @@
 #ifndef PAX_GRAPHICA_MOUSE_HPP
 #define PAX_GRAPHICA_MOUSE_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
+#include <optional>
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
@@ -22,14 +20,9 @@
 #include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
-#endif
-
-#if defined(PAXS_USING_SFML)
 #include <PAX_GRAPHICA/SFML_Event.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/IDrawable.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -69,6 +62,13 @@ namespace paxg {
         bool getLeft() const {
             return left;
         }
+        bool getRight() const {
+            return right;
+        }
+        bool getMiddle() const {
+            return middle;
+        }
+
         // 離した瞬間
         bool upLeft() const {
             return (left_before_1frame && !left);
@@ -92,19 +92,45 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             wheel_rot_vol = static_cast<int>(s3d::Mouse::Wheel());
             left = s3d::MouseL.pressed();
+            right = s3d::MouseR.pressed();
+            middle = s3d::MouseM.pressed();
             pos_x = s3d::Cursor::Pos().x;
             pos_y = s3d::Cursor::Pos().y;
 #elif defined(PAXS_USING_DXLIB)
             wheel_rot_vol = DxLib::GetMouseWheelRotVol();
-            left = ((DxLib::GetMouseInput() & MOUSE_INPUT_LEFT) != 0);
+            int mouse_input = DxLib::GetMouseInput();
+            left = ((mouse_input & MOUSE_INPUT_LEFT) != 0);
+            right = ((mouse_input & MOUSE_INPUT_RIGHT) != 0);
+            middle = ((mouse_input & MOUSE_INPUT_MIDDLE) != 0);
             if (DxLib::GetMousePoint(&pos_x, &pos_y) == -1) {
                 pos_x = pos_y = 0;
             }
 #elif defined(PAXS_USING_SFML)
             wheel_rot_vol = static_cast<int>(paxg::SFML_Event::getInstance()->wheel_delta);
             left = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
-            pos_x = sf::Mouse::getPosition(Window::window).x;
-            pos_y = sf::Mouse::getPosition(Window::window).y;
+            right = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right);
+            middle = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle);
+            auto mouse_pos = sf::Mouse::getPosition(Window::window());
+            pos_x = mouse_pos.x;
+            pos_y = mouse_pos.y;
+#endif
+        }
+
+        // SFML 3.0.0: より安全なマウス位置取得（std::optional）
+        std::optional<Vec2i> tryGetPosition() const {
+#if defined(PAXS_USING_SIV3D)
+            return Vec2i(s3d::Cursor::Pos().x, s3d::Cursor::Pos().y);
+#elif defined(PAXS_USING_DXLIB)
+            int x = 0, y = 0;
+            if (DxLib::GetMousePoint(&x, &y) == -1) {
+                return std::nullopt;
+            }
+            return Vec2i(x, y);
+#elif defined(PAXS_USING_SFML)
+            // SFML 3.0 では常に成功するが、一貫性のためoptionalを返す
+            return Vec2i(pos_x, pos_y);
+#else
+            return std::nullopt;
 #endif
         }
 
@@ -119,8 +145,8 @@ namespace paxg {
         bool left_before_1frame = false; // 1 フレーム前の左クリック判定
 
         bool left = false;
-        //bool right = false; // 未使用
-        //bool middle = false; // 未使用
+        bool right = false;
+        bool middle = false;
 
         int wheel_rot_vol = 0;
 

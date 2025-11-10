@@ -1,20 +1,16 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
 #ifndef PAX_SAPIENTICA_SIMULATION_DATA_HPP
 #define PAX_SAPIENTICA_SIMULATION_DATA_HPP
-
-/*##########################################################################################
-
-##########################################################################################*/
 
 #include <cmath>
 #include <filesystem>
@@ -27,7 +23,6 @@
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/File.hpp>
 #include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
-#include <PAX_SAPIENTICA/InputFile/SimulationRange.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusDisplayer.hpp>

@@ -12,9 +12,8 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
-#include <PAX_MAHOROBA/Main.hpp>
+#include <PAX_MAHOROBA/Core/Main.hpp>
 
-// その他の処理 (Windows)
 int main() {
 
     paxs::startMain();

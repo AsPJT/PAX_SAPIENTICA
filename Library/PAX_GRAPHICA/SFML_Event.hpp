@@ -12,72 +12,112 @@
 #ifndef PAX_GRAPHICA_SFML_EVENT_HPP
 #define PAX_GRAPHICA_SFML_EVENT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
-#if defined(PAXS_USING_SIV3D)
-#include <Siv3D.hpp>
-#elif defined(PAXS_USING_DXLIB)
-#include <DxLib.h>
-#elif defined(PAXS_USING_SFML)
+#ifdef PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
+#include <PAX_SAPIENTICA/AppConst.hpp>
 #endif
-
-#include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/IDrawable.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
 
     // 実行時定数
     class SFML_Event {
     private:
+        static SFML_Event instance;
+
+        SFML_Event() = default;
+        ~SFML_Event() = default;
+
+        // Delete copy constructor and assignment operator
+        SFML_Event(const SFML_Event&) = delete;
+        SFML_Event& operator=(const SFML_Event&) = delete;
+
     public:
         // インスタンスを取得
         static SFML_Event* getInstance() {
-            if (instance == nullptr) {
-                instance = new SFML_Event();
-            }
-            return instance;
+            return &instance;
         }
 
 #if defined(PAXS_USING_SFML)
         float wheel_delta = 0.0f;
+        bool has_focus = true; // 起動時はフォーカスありとして初期化
+
         bool update(sf::RenderWindow& window) {
             wheel_delta = 0.0f;
-            sf::FloatRect visibleArea;
 
-            // 新しいポーリングメカニズム
+            // SFML 3.0.0 の新しいポーリングメカニズム
             while (const auto& poll_event = window.pollEvent()) {
-                if (poll_event->is<sf::Event::Closed>()) return false; // 終了シグナル
+                if (poll_event->is<sf::Event::Closed>()) {
+                    return false; // 終了シグナル
+                }
+                else if (poll_event->is<sf::Event::FocusGained>()) {
+                    has_focus = true;
+                }
+                else if (poll_event->is<sf::Event::FocusLost>()) {
+                    has_focus = false;
+                }
                 else if (const auto* mouseWheelScrolled = poll_event->getIf<sf::Event::MouseWheelScrolled>()) {
-                    wheel_delta = -(mouseWheelScrolled->delta); // 特定のイベント構造体からdeltaにアクセス
+                    wheel_delta = -(mouseWheelScrolled->delta);
                 }
                 else if (const auto* resized = poll_event->getIf<sf::Event::Resized>()) {
-                    // resized->size (sf::Vector2u型) から新しい幅と高さをアクセス
-                    // sf::FloatRectのコンストラクタは {位置}, {サイズ} を取る
-                    sf::FloatRect visibleAreaUpdate({ 0.f, 0.f },
-                        { static_cast<float>(resized->size.x), static_cast<float>(resized->size.y) });
-                    // sf::View(sf::FloatRect) コンストラクタは引き続き利用可能
+                    unsigned w = resized->size.x;
+                    unsigned h = resized->size.y;
+
+                    if (w < static_cast<unsigned>(paxs::AppConst::min_window_size.x))  w = static_cast<unsigned>(paxs::AppConst::min_window_size.x);
+                    if (h < static_cast<unsigned>(paxs::AppConst::min_window_size.y)) h = static_cast<unsigned>(paxs::AppConst::min_window_size.y);
+
+                    const auto currentSize = window.getSize();
+                    if (currentSize.x != w || currentSize.y != h) {
+                        window.setSize({ w, h });
+                    }
+                    // sf::FloatRect は position と size で構築（SFML 3.0 の新しい構造）
+                    sf::FloatRect visibleAreaUpdate(
+                        {0.f, 0.f},
+                        {static_cast<float>(w), static_cast<float>(h)}
+                    );
                     window.setView(sf::View(visibleAreaUpdate));
                 }
             }
             return true;
         }
-#endif
 
-    private:
-        static SFML_Event* instance;
-        SFML_Event() = default;
-        ~SFML_Event() {
-            delete instance;
+        // SFML 3.0.0 の handleEvents() サポート
+        template<typename... EventHandlers>
+        bool handleEvents(sf::RenderWindow& window, EventHandlers&&... handlers) {
+            bool shouldContinue = true;
+            wheel_delta = 0.0f;
+
+            window.handleEvents([&](const sf::Event& event) {
+                // クローズイベントの処理
+                if (event.is<sf::Event::Closed>()) {
+                    shouldContinue = false;
+                    return;
+                }
+
+                // マウスホイールの処理
+                if (const auto* mouseWheelScrolled = event.getIf<sf::Event::MouseWheelScrolled>()) {
+                    wheel_delta = -(mouseWheelScrolled->delta);
+                }
+
+                // リサイズの処理
+                if (const auto* resized = event.getIf<sf::Event::Resized>()) {
+                    sf::FloatRect visibleAreaUpdate(
+                        {0.f, 0.f},
+                        {static_cast<float>(resized->size.x), static_cast<float>(resized->size.y)}
+                    );
+                    window.setView(sf::View(visibleAreaUpdate));
+                }
+
+                // ユーザー定義のハンドラを実行
+                (handlers(event), ...);
+            });
+
+            return shouldContinue;
         }
-
+#endif
     };
 
-    SFML_Event* SFML_Event::instance = nullptr;
+    // Static member definition
+    SFML_Event SFML_Event::instance;
 
 }
 

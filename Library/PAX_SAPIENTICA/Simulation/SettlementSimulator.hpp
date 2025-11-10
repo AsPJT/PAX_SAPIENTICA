@@ -12,10 +12,6 @@
 #ifndef PAX_SAPIENTICA_SETTLEMENT_SIMULATOR_HPP
 #define PAX_SAPIENTICA_SETTLEMENT_SIMULATOR_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cstdint>
 
 #include <array>
@@ -24,7 +20,6 @@
 #include <filesystem>
 #include <memory>
 #include <random>
-#include <unordered_map>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
@@ -34,16 +29,14 @@
 #include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/StatusDisplayer.hpp>
+#include <PAX_SAPIENTICA/TimeUtility.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
 
 namespace paxs {
 
     // シミュレーション出力フォルダ用の時刻取得
     std::string calcDateTime() {
-        static char buffer[20];
-        std::time_t t = std::time(nullptr);
-        std::strftime(buffer, sizeof(buffer), "%Y-%m-%d-%H-%M-%S", std::localtime(&t));
-        return buffer;
+        return TimeUtility::getCurrentDateTime("%Y-%m-%d-%H-%M-%S");
     }
 
     class SettlementSimulator {
@@ -118,43 +111,135 @@ namespace paxs {
         }
         // 集落の初期化時にシミュレーション変数を出力
         void initResults() {
-            // 出力
-            const std::string str = "SimulationResults/" + calcDateTime();
-            std::filesystem::create_directories(str);
-            pop_ofs = std::ofstream(str + "/Population.txt");
-            mtdna_ofs = std::ofstream(str + "/mtDNA.txt");
-            snp_ofs = std::ofstream(str + "/SNP.txt");
-            language_ofs = std::ofstream(str + "/Language.txt");
-            live_ofs = std::ofstream(str + "/HabitableLand.txt");
+            if (pop_ofs.is_open()) pop_ofs.close();
+            if (mtdna_ofs.is_open()) mtdna_ofs.close();
+            if (language_dna_ofs.is_open()) language_dna_ofs.close();
+            if (snp_ofs.is_open()) snp_ofs.close();
+            if (language_ofs.is_open()) language_ofs.close();
+            if (live_ofs.is_open()) live_ofs.close();
+            if (pop_region_ofs.is_open()) pop_region_ofs.close();
+            if (mtdna_region_ofs.is_open()) mtdna_region_ofs.close();
+            if (language_dna_region_ofs.is_open()) language_dna_region_ofs.close();
+            if (snp_region_ofs.is_open()) snp_region_ofs.close();
+            if (language_region_ofs.is_open()) language_region_ofs.close();
+            if (live_region_ofs.is_open()) live_region_ofs.close();
 
-            pop_region_ofs = std::ofstream(str + "/Region_Population.txt");
-            mtdna_region_ofs = std::ofstream(str + "/Region_mtDNA.txt");
-            snp_region_ofs = std::ofstream(str + "/Region_SNP.txt");
-            language_region_ofs = std::ofstream(str + "/Region_Language.txt");
-            live_region_ofs = std::ofstream(str + "/Region_HabitableLand.txt");
+            if (labeled_pop_ofs.is_open()) labeled_pop_ofs.close();
+            if (labeled_mtdna_ofs.is_open()) labeled_mtdna_ofs.close();
+            if (labeled_language_dna_ofs.is_open()) labeled_language_dna_ofs.close();
+            if (labeled_snp_ofs.is_open()) labeled_snp_ofs.close();
+            if (labeled_language_ofs.is_open()) labeled_language_ofs.close();
+            if (labeled_live_ofs.is_open()) labeled_live_ofs.close();
+            if (labeled_pop_region_ofs.is_open()) labeled_pop_region_ofs.close();
+            if (labeled_mtdna_region_ofs.is_open()) labeled_mtdna_region_ofs.close();
+            if (labeled_language_dna_region_ofs.is_open()) labeled_language_dna_region_ofs.close();
+            if (labeled_snp_region_ofs.is_open()) labeled_snp_region_ofs.close();
+            if (labeled_language_region_ofs.is_open()) labeled_language_region_ofs.close();
+            if (labeled_live_region_ofs.is_open()) labeled_live_region_ofs.close();
+
+            const std::string result_dir = "SimulationResults/" + calcDateTime();
+            std::filesystem::create_directories(result_dir);
+            pop_ofs.open(result_dir + "/Population.txt");
+            mtdna_ofs.open(result_dir + "/mtDNA.txt");
+            language_dna_ofs.open(result_dir + "/Language_DNA.txt");
+            snp_ofs.open(result_dir + "/SNP.txt");
+            language_ofs.open(result_dir + "/Language.txt");
+            live_ofs.open(result_dir + "/HabitableLand.txt");
+
+            pop_region_ofs.open(result_dir + "/Region_Population.txt");
+            mtdna_region_ofs.open(result_dir + "/Region_mtDNA.txt");
+            language_dna_region_ofs.open(result_dir + "/Region_Language_DNA.txt");
+            snp_region_ofs.open(result_dir + "/Region_SNP.txt");
+            language_region_ofs.open(result_dir + "/Region_Language.txt");
+            live_region_ofs.open(result_dir + "/Region_HabitableLand.txt");
+
+            const std::string& label_name = SimulationConstants::getInstance()->output_directory_name;
+            if (!label_name.empty()) {
+                const std::string timestamp = calcDateTime(); // タイムスタンプをここで一度だけ取得
+                const std::string labeled_base_dir = "LabeledSimulationResults/" + label_name;
+
+                // ディレクトリ作成
+                std::filesystem::create_directories(labeled_base_dir + "/Population");
+                std::filesystem::create_directories(labeled_base_dir + "/mtDNA");
+                std::filesystem::create_directories(labeled_base_dir + "/SNP");
+                std::filesystem::create_directories(labeled_base_dir + "/Language");
+                std::filesystem::create_directories(labeled_base_dir + "/Language_DNA");
+                std::filesystem::create_directories(labeled_base_dir + "/Region_Population");
+                std::filesystem::create_directories(labeled_base_dir + "/Region_mtDNA");
+                std::filesystem::create_directories(labeled_base_dir + "/Region_SNP");
+                std::filesystem::create_directories(labeled_base_dir + "/Region_Language");
+                std::filesystem::create_directories(labeled_base_dir + "/Region_Language_DNA");
+
+                // ファイルを開く
+                labeled_pop_ofs.open(labeled_base_dir + "/Population/" + timestamp + ".txt");
+                labeled_mtdna_ofs.open(labeled_base_dir + "/mtDNA/" + timestamp + ".txt");
+                labeled_language_dna_ofs.open(labeled_base_dir + "/Language_DNA/" + timestamp + ".txt");
+                labeled_snp_ofs.open(labeled_base_dir + "/SNP/" + timestamp + ".txt");
+                labeled_language_ofs.open(labeled_base_dir + "/Language/" + timestamp + ".txt");
+                labeled_pop_region_ofs.open(labeled_base_dir + "/Region_Population/" + timestamp + ".txt");
+                labeled_mtdna_region_ofs.open(labeled_base_dir + "/Region_mtDNA/" + timestamp + ".txt");
+                labeled_language_dna_region_ofs.open(labeled_base_dir + "/Region_Language_DNA/" + timestamp + ".txt");
+                labeled_snp_region_ofs.open(labeled_base_dir + "/Region_SNP/" + timestamp + ".txt");
+                labeled_language_region_ofs.open(labeled_base_dir + "/Region_Language/" + timestamp + ".txt");
+
+                // 新しいファイルにヘッダーを書き込む
+                outputResultString(labeled_pop_ofs);
+                outputResultString(labeled_mtdna_ofs);
+                outputResultString(labeled_language_dna_ofs);
+                outputResultString(labeled_snp_ofs);
+                outputResultString(labeled_language_ofs);
+                outputResultString(labeled_pop_region_ofs);
+                outputResultString(labeled_mtdna_region_ofs);
+                outputResultString(labeled_language_dna_region_ofs);
+                outputResultString(labeled_snp_region_ofs);
+                outputResultString(labeled_language_region_ofs);
+
+                for (std::size_t i = 0; i < max_number_of_districts - 1; ++i) {
+                    outputResultDistrictName(labeled_pop_ofs, i);
+                    outputResultDistrictName(labeled_mtdna_ofs, i);
+                    outputResultDistrictName(labeled_language_dna_ofs, i);
+                    outputResultDistrictName(labeled_snp_ofs, i);
+                    outputResultDistrictName(labeled_language_ofs, i);
+                }
+                outputResultLastString(labeled_pop_ofs);
+                outputResultLastString(labeled_mtdna_ofs);
+                outputResultLastString(labeled_language_dna_ofs);
+                outputResultLastString(labeled_snp_ofs);
+                outputResultLastString(labeled_language_ofs);
+                outputResultLastString(labeled_pop_region_ofs);
+                outputResultLastString(labeled_mtdna_region_ofs);
+                outputResultLastString(labeled_language_dna_region_ofs);
+                outputResultLastString(labeled_snp_region_ofs);
+                outputResultLastString(labeled_language_region_ofs);
+            }
 
             outputResultString(pop_ofs);
             outputResultString(mtdna_ofs);
+            outputResultString(language_dna_ofs);
             outputResultString(snp_ofs);
             outputResultString(language_ofs);
 
             outputResultString(pop_region_ofs);
             outputResultString(mtdna_region_ofs);
+            outputResultString(language_dna_region_ofs);
             outputResultString(snp_region_ofs);
             outputResultString(language_region_ofs);
             for (std::size_t i = 0; i < max_number_of_districts - 1; ++i) {
                 outputResultDistrictName(pop_ofs, i);
                 outputResultDistrictName(mtdna_ofs, i);
+                outputResultDistrictName(language_dna_ofs, i);
                 outputResultDistrictName(snp_ofs, i);
                 outputResultDistrictName(language_ofs, i);
             }
             outputResultLastString(pop_ofs);
             outputResultLastString(mtdna_ofs);
+            outputResultLastString(language_dna_ofs);
             outputResultLastString(snp_ofs);
             outputResultLastString(language_ofs);
 
             outputResultLastString(pop_region_ofs);
             outputResultLastString(mtdna_region_ofs);
+            outputResultLastString(language_dna_region_ofs);
             outputResultLastString(snp_region_ofs);
             outputResultLastString(language_region_ofs);
         }
@@ -225,6 +310,7 @@ namespace paxs {
                 std::size_t pop_num = 0; // 人口数
                 std::size_t sat_num = 0; // 集落数
                 std::vector < std::vector<int>> mtdna_num(max_number_of_districts, std::vector<int>(256, 0)); // mtDNA 数
+                std::vector < std::vector<int>> language_num(max_number_of_districts, std::vector<int>(256, 0)); // 言語 数
                 std::size_t ryopop[max_number_of_districts]{};
                 std::size_t ryoset[max_number_of_districts]{};
                 double ryosnp[max_number_of_districts]{};
@@ -235,6 +321,7 @@ namespace paxs {
                 std::array<std::uint_least32_t, 10> region_snp{};
                 std::array<std::uint_least32_t, 10> region_language{};
                 std::vector<std::vector<int>> mtdna_region_num(10, std::vector<int>(256, 0)); // mtDNA 数
+                std::vector<std::vector<int>> language_region_num(10, std::vector<int>(256, 0)); // 言語 数
 
                 // 地名を描画
                 for (const auto& agent : getSettlementGrids()) {
@@ -244,30 +331,36 @@ namespace paxs {
 
                         const std::uint_least8_t ryo_id = environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance()->district_key, settlement.getPosition());
                         if (ryo_id < max_number_of_districts) {
-                            ryopop[ryo_id]+= settlement.getPopulation(); // 地区ごとに人口数を増加させる
-                            ryosnp[ryo_id]+= settlement.getSNP(); // 地区ごとに SNP を増加させる
-                            ryolanguage[ryo_id]+= settlement.getLanguage(); // 地区ごとに言語を増加させる
+                            ryopop[ryo_id] += settlement.getPopulation(); // 地区ごとに人口数を増加させる
+                            ryosnp[ryo_id] += settlement.getSNP(); // 地区ごとに SNP を増加させる
+                            ryolanguage[ryo_id] += settlement.getLanguage(); // 地区ごとに言語を増加させる
                             ++(ryoset[ryo_id]);
 
                             // 地域区分
                             const std::uint_least8_t region_id = japan_provinces->getJapanRegionId(ryo_id);
 
-                            // mtDNA ごとにカウント
+                            // mtDNA と言語 ごとにカウント
                             for (int popi = 0; popi < settlement.cgetAgents().size(); ++popi) {
                                 const auto get_mtdna = settlement.cgetAgents()[popi].cgetGenome().getMtDNA();
                                 mtdna_num[ryo_id][get_mtdna] += 1;
                                 if (region_id < 10) mtdna_region_num[region_id][get_mtdna] += 1;
+
+                                const auto get_language_dna = settlement.cgetAgents()[popi].cgetGenome().getLanguage();
+                                language_num[ryo_id][get_language_dna] += 1;
+                                if (region_id < 10) language_region_num[region_id][get_language_dna] += 1;
                             }
                         }
                     }
                 }
                 pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                language_dna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 snp_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 language_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
 
                 pop_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 mtdna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                language_dna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 snp_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                 language_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
 
@@ -290,8 +383,12 @@ namespace paxs {
                         mtdna_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
                     }
                     mtdna_ofs << '\t';
+                    for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
+                        if (int(language_num[i][j]) == 0) continue;
+                        language_ofs << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_num[i][j]) << '/';
+                    }
+                    language_ofs << '\t';
                 }
-                // Region
                 for (std::size_t region_id = 0; region_id < 10; ++region_id) {
                     pop_region_ofs << region_pop[region_id] << '\t';
                     snp_region_ofs << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
@@ -301,16 +398,80 @@ namespace paxs {
                         mtdna_region_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
                     }
                     mtdna_region_ofs << '\t';
+                    for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
+                        if (int(language_region_num[region_id][j]) == 0) continue;
+                        language_dna_region_ofs << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_region_num[region_id][j]) << '/';
+                    }
+                    language_dna_region_ofs << '\t';
                 }
                 pop_ofs << step_count << '\n';
                 mtdna_ofs << step_count << '\n';
+                language_dna_ofs << step_count << '\n';
                 snp_ofs << step_count << '\n';
                 language_ofs << step_count << '\n';
 
                 pop_region_ofs << step_count << '\n';
                 mtdna_region_ofs << step_count << '\n';
+                language_dna_region_ofs << step_count << '\n';
                 snp_region_ofs << step_count << '\n';
                 language_region_ofs << step_count << '\n';
+
+                const std::string& label_name = SimulationConstants::getInstance()->output_directory_name;
+                if (!label_name.empty()) {
+                    labeled_pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    labeled_mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    labeled_language_dna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    labeled_snp_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    labeled_language_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+
+                    labeled_pop_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    labeled_mtdna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    labeled_language_dna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    labeled_snp_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    labeled_language_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+
+                    for (std::size_t i = 1; i < max_number_of_districts; ++i) {
+                        labeled_pop_ofs << ryopop[i] << '\t';
+                        labeled_snp_ofs << ryosnp[i] << '\t';
+                        labeled_language_ofs << ryolanguage[i] << '\t';
+                        for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
+                            if (int(mtdna_num[i][j]) == 0) continue;
+                            labeled_mtdna_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
+                        }
+                        labeled_mtdna_ofs << '\t';
+                        for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
+                            if (int(language_num[i][j]) == 0) continue;
+                            labeled_language_dna_ofs << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_num[i][j]) << '/';
+                        }
+                        labeled_language_dna_ofs << '\t';
+                    }
+                    for (std::size_t region_id = 0; region_id < 10; ++region_id) {
+                        labeled_pop_region_ofs << region_pop[region_id] << '\t';
+                        labeled_snp_region_ofs << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                        labeled_language_region_ofs << static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                        for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
+                            if (int(mtdna_region_num[region_id][j]) == 0) continue;
+                            labeled_mtdna_region_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
+                        }
+                        labeled_mtdna_region_ofs << '\t';
+                        for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
+                            if (int(language_region_num[region_id][j]) == 0) continue;
+                            labeled_language_dna_region_ofs << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_region_num[region_id][j]) << '/';
+                        }
+                        labeled_language_dna_region_ofs << '\t';
+                    }
+                    labeled_pop_ofs << step_count << '\n';
+                    labeled_mtdna_ofs << step_count << '\n';
+                    labeled_language_dna_ofs << step_count << '\n';
+                    labeled_snp_ofs << step_count << '\n';
+                    labeled_language_ofs << step_count << '\n';
+
+                    labeled_pop_region_ofs << step_count << '\n';
+                    labeled_mtdna_region_ofs << step_count << '\n';
+                    labeled_language_dna_region_ofs << step_count << '\n';
+                    labeled_snp_region_ofs << step_count << '\n';
+                    labeled_language_region_ofs << step_count << '\n';
+                }
             }
 
             std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
@@ -343,9 +504,11 @@ namespace paxs {
                     settlement.preUpdate(kanakuma_life_span);
                 }
             }
-            // 前901年から稲作文化開始
-            if (step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
-                step_count <= SimulationConstants::getInstance()->immigration_end_steps) {
+            // 渡来期間
+            if (SimulationConstants::getInstance()->immigration_step_interval > 0 &&
+                step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
+                step_count <= SimulationConstants::getInstance()->immigration_end_steps &&
+                (step_count - SimulationConstants::getInstance()->immigration_start_steps) % SimulationConstants::getInstance()->immigration_step_interval == 0) {
                 randomizeSettlements(false, true /* 渡来人 */, (step_count >= SimulationConstants::getInstance()->bronze_start_steps)/*青銅*/);
             }
 
@@ -409,9 +572,11 @@ namespace paxs {
 
             calcPop();
 
-            // 前901年から処理開始
-            if (step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
-                step_count <= SimulationConstants::getInstance()->immigration_end_steps) {
+            // 渡来期間
+            if (SimulationConstants::getInstance()->immigration_step_interval > 0 &&
+                step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
+                step_count <= SimulationConstants::getInstance()->immigration_end_steps &&
+                (step_count - SimulationConstants::getInstance()->immigration_start_steps) % SimulationConstants::getInstance()->immigration_step_interval == 0) {
                 // 渡来数を増やす
                 japan_provinces->update();
             }
@@ -425,11 +590,11 @@ namespace paxs {
 
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr std::unordered_map<SettlementGridsType, SettlementGrid>&
+        constexpr paxs::UnorderedMap<SettlementGridsType, SettlementGrid>&
             getSettlementGrids() noexcept { return settlement_grids; }
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
-        constexpr const std::unordered_map<SettlementGridsType, SettlementGrid>&
+        constexpr const paxs::UnorderedMap<SettlementGridsType, SettlementGrid>&
             cgetSettlementGrids() const noexcept { return settlement_grids; }
 
         /// @brief Get processing_time.
@@ -453,7 +618,7 @@ namespace paxs {
         double move_processing_time = 0.0;
         double marriage_processing_time = 0.0;
 
-        std::unordered_map<SettlementGridsType, SettlementGrid> settlement_grids;
+        paxs::UnorderedMap<SettlementGridsType, SettlementGrid> settlement_grids;
         std::shared_ptr<Environment> environment;
 
         std::unique_ptr<paxs::JapanProvinces> japan_provinces;
@@ -483,15 +648,31 @@ namespace paxs {
 
         std::ofstream pop_ofs;
         std::ofstream mtdna_ofs;
+        std::ofstream language_dna_ofs;
         std::ofstream snp_ofs;
         std::ofstream language_ofs;
         std::ofstream live_ofs;
 
         std::ofstream pop_region_ofs;
         std::ofstream mtdna_region_ofs;
+        std::ofstream language_dna_region_ofs;
         std::ofstream snp_region_ofs;
         std::ofstream language_region_ofs;
         std::ofstream live_region_ofs;
+
+        // ラベル形式用のファイルストリーム
+        std::ofstream labeled_pop_ofs;
+        std::ofstream labeled_mtdna_ofs;
+        std::ofstream labeled_language_dna_ofs;
+        std::ofstream labeled_snp_ofs;
+        std::ofstream labeled_language_ofs;
+        std::ofstream labeled_live_ofs;
+        std::ofstream labeled_pop_region_ofs;
+        std::ofstream labeled_mtdna_region_ofs;
+        std::ofstream labeled_language_dna_region_ofs;
+        std::ofstream labeled_snp_region_ofs;
+        std::ofstream labeled_language_region_ofs;
+        std::ofstream labeled_live_region_ofs;
 
         // 婚姻時に移動前の位置と移動後の位置を記録
         std::vector<GridType4> marriage_pos_list{};
@@ -553,7 +734,7 @@ namespace paxs {
             std::uint_least8_t district_id_max = 0;
 
             // 地区と人口のマップ
-            std::unordered_map<std::uint_least8_t, std::uint_least32_t> district_population_map;
+            paxs::UnorderedMap<std::uint_least8_t, std::uint_least32_t> district_population_map;
             for (auto& district : japan_provinces->cgetDistrictList()) {
                 if (((is_ad200)? district.init_pop : district.immigrant) == 0) {
                     continue;
@@ -632,7 +813,7 @@ namespace paxs {
                     const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id;
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)));
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)), japan_provinces->getLanguage(immigration_and_district_id, gen));
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan((is_farming), genome.isMale(), gen);
 
                         AgeType age_value = 0;
@@ -695,7 +876,7 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)));
+                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)), japan_provinces->getLanguage(immigration_and_district_id, gen));
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(is_farming, genome.isMale(), gen);
 
                         AgeType age_value = 0;

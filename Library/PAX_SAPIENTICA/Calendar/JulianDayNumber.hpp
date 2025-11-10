@@ -12,13 +12,9 @@
 #ifndef PAX_SAPIENTICA_CALENDAR_JULIAN_DAY_NUMBER_HPP
 #define PAX_SAPIENTICA_CALENDAR_JULIAN_DAY_NUMBER_HPP
 
-/*##########################################################################################
-    Deals with calculations related to the Julian calendar, the Gregorian calendar, and the Julian day.
-    ユリウス暦、グレゴリオ暦、ユリウス日に関する計算を扱う。
-##########################################################################################*/
-
 #include <cmath>
 #include <cstdint>
+#include <type_traits>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -32,9 +28,9 @@ namespace paxs::cal {
     private:
         Day day{ 1940571 /*西暦601年1月1日*/}; // 1808286 西暦238年10月26日
     public:
-        JulianDayNumber() = default;
-        template<typename T>
-        JulianDayNumber(const T jdn_) { day = static_cast<Day>(jdn_); }
+        constexpr JulianDayNumber() = default;
+        template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
+        constexpr JulianDayNumber(const T jdn_) { day = static_cast<Day>(jdn_); }
 
     public:
 

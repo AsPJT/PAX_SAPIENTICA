@@ -12,24 +12,18 @@
 #ifndef PAX_SAPIENTICA_SETTLEMENT_HPP
 #define PAX_SAPIENTICA_SETTLEMENT_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
-
-#include <algorithm>
 #include <deque>
 #include <functional>
 #include <memory>
 #include <random>
 
 #include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/RandomSelector.hpp>
 #include <PAX_SAPIENTICA/Simulation/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/KanakumaLifeSpan.hpp>
-#include <PAX_SAPIENTICA/Simulation/Object.hpp>
+#include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/UniqueIdentification.hpp>
@@ -152,15 +146,6 @@ namespace paxs {
                 else if (environment->getSlope(neighbour_z) < 191/*30*/) return 4.3 / 1.5 * lc;
                 else if (environment->getSlope(neighbour_z) < 199/*35*/) return 5.1 / 1.5 * lc;
                 else if (environment->getSlope(neighbour_z) < 206/*40*/) return 6.0 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 213/*45*/) return 100 * 7.2 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 218/*50*/) return 100 * 8.6 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 224/*55*/) return 100 * 10.2 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 228/*60*/) return 100 * 12.2 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 233/*65*/) return 100 * 14.5 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 237/*70*/) return 100 * 17.3 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 241/*75*/) return 100 * 20.6 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 244/*80*/) return 100 * 24.5 / 1.5 * lc;
-                //else if (environment->getSlope(neighbour_z) < 247/*85*/) return 100 * 29.2 / 1.5 * lc;
                 else if (environment->getSlope(neighbour_z) <= 250/*90*/) return 100 * 34.7 / 1.5 * lc;
             }
             return SimulationConstants::getInstance()->land_cost;
@@ -174,7 +159,6 @@ namespace paxs {
 
                 const AStarVec2 neighbour_z = neighbour * z;
                 if (!isRange(neighbour)) continue;
-                //if (!isRange(neighbour) || environment->getSlope(neighbour_z) >= 213) continue;
                 // コスト計算
                 const double node_cost = calcCost(environment, neighbour_z) * ((x <= 3 /* 斜め移動 */) ? 1.41421356237 : 1.0) + node_.cost;
                 const GridType distance = calculateDistance(neighbour);
@@ -265,15 +249,6 @@ namespace paxs {
         /// @brief Delete the agent.
         /// @brief エージェントを削除する
         void deleteAgent(const std::uint_least32_t id_) noexcept {
-            //for (auto i = 0; i < agents.size();) {
-            //    if (!(agents[i].getId() != id_)) {
-            //        ++i;
-            //        continue;
-            //    }
-            //    agents[i] = agents.back(); // 同義 it = agents.erase(it);
-            //    agents.pop_back();
-            //    break;
-            //}
             agents.erase(std::remove_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; }), agents.end());
         }
 
@@ -283,7 +258,7 @@ namespace paxs {
             old_position = position;
             position = position_;
         }
-        /// @brief 
+        /// @brief
         /// @brief 集落の過去の座標を消去
         void clearOldPosition() noexcept {
             old_position = Vector2(-1, -1);
@@ -729,15 +704,9 @@ namespace paxs {
         /// @brief Get the most mtDNA.
         /// @brief 最多 mtDNA を取得
         std::size_t getMostMtDNA() const noexcept {
-            //std::vector<std::uint_least8_t> dna_list{};
-            //std::vector<std::uint_least8_t> dna_count_list{};
-
             std::size_t mtdna_max = 0;
 
             for (std::size_t i = 0; i < agents.size(); ++i) {
-                //for (std::size_t i = 0; i < agents.size(); ++i) {
-                    //if (dna == agents[i].cgetGenome().getMtDNA())
-                //}
                 mtdna_max += agents[i].cgetGenome().getMtDNA();
             }
             return mtdna_max / agents.size();
@@ -787,7 +756,7 @@ namespace paxs {
         Vector2 position{};
 
         std::mt19937* gen{}; // 乱数生成器
-        
+
 
         std::shared_ptr<Environment> environment{}; // 環境
         /// @brief エージェントの配列
@@ -866,7 +835,6 @@ namespace paxs {
 
                 agents.emplace_back(Agent(
                     UniqueIdentification<HumanIndexType>::generate(),
-                    //0, // TODO: 名前ID
                     static_cast<AgeType>(lifespan_dist(*gen)),
                     set_lifespan,
                     genome,

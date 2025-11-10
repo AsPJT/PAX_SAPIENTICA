@@ -12,12 +12,9 @@
 #ifndef PAX_SAPIENTICA_TYPE_MURMUR3_HPP
 #define PAX_SAPIENTICA_TYPE_MURMUR3_HPP
 
-/*##########################################################################################
-
-##########################################################################################*/
-
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 namespace paxs {
 
@@ -120,6 +117,9 @@ namespace paxs {
                     str + ((len >> 2) * mm3::size4u), len & 3, murmur3a(str, len >> 2, seed)
                 )
                 , len);
+        }
+        static constexpr std::uint_least32_t calcHash(const std::string& str, const std::uint_least32_t seed = 0) {
+            return calcHash(str.size(), str.c_str(), seed);
         }
         // 文字列の長さを計算する（スタックによる実装）
         static constexpr std::uint_least32_t calcHashStack(const char* const str, const std::uint_least32_t seed = 0) {

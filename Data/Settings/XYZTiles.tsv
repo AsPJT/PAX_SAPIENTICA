@@ -4,7 +4,6 @@ map_land_and_water	menu_bar_map_land_and_water	0	asset_file			Data/Map/XYZTile/L
 map_kinai	menu_bar_map_ryosei_line	1	asset_file			Data/Map/XYZTile/Kinai/	{z}/{n}_{z}_{x}_{y}	texture	zxy	12	12	11		
 map_heijokyo	menu_bar_map_ryosei_line	1	asset_file			Data/Map/XYZTile/Heijokyo/	{z}/{n}_{z}_{x}_{y}	texture	zxy	16	16	15		
 map_soil	menu_bar_map_soil	0	asset_file			Data/Map/XYZTile/Soil/Image/Soil/2023/	{z}/{n}_{z}_{x}_{y}	texture	soil	12	12	8		
-map_soil	menu_bar_map_soil	1	asset_file			Data/XYZTiles/east_asia/	{z}/{n}_{z}_{x}_{y}	texture	zxy	10	10	8		
 map_balhae_line	menu_bar_map_ryosei_line	1	asset_file			Data/XYZTiles/NationalBorders/Balhae/	{z}/{n}_{z}_{x}_{y}	texture	zxy	5	9	5		
 map_silla_line	menu_bar_map_ryosei_line	1	asset_file			Data/XYZTiles/NationalBorders/Silla/	{z}/{n}_{z}_{x}_{y}	texture	zxy	5	10	5		
 map_ryoseikoku_line	menu_bar_map_ryosei_line	1	asset_file			Data/XYZTiles/NationalBorders/Ryoseikoku/	{z}/{n}_{z}_{x}_{y}	texture	zxy	6	9	6		
