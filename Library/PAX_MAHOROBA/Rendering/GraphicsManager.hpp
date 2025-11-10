@@ -16,6 +16,7 @@
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
+#include <PAX_MAHOROBA/Input/MapContentInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/Photo360InputHandler.hpp>
 #include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/MapTileLayer.hpp>
@@ -42,6 +43,7 @@ namespace paxs {
         MapContentLayer map_content_layer_;
         Photo360Layer photo360_layer_;
         Photo360InputHandler photo360_input_handler_;
+        MapContentInputHandler map_content_input_handler_;
         UILayer ui_layer_;
         MenuBar menu_bar_;
 
@@ -61,6 +63,11 @@ namespace paxs {
                 &photo360_layer_,
                 &app_state.getVisibilityManager()
               )
+            , map_content_input_handler_(
+                nullptr,  // 後で設定
+                nullptr,  // 後で設定
+                &app_state.getVisibilityManager()
+              )
             , ui_layer_(
                 &app_state.getVisibilityManager(),
                 &app_state.getMapViewport(),
@@ -76,6 +83,14 @@ namespace paxs {
             menu_bar_.setAppStateManager(&app_state);
             map_content_layer_.setAppStateManager(&app_state);
             map_tile_layer_.setAppStateManager(&app_state);
+
+            // MapContentInputHandlerにマネージャーのポインタを設定
+            // （map_content_layer_の初期化後に設定する必要があるため、ここで代入）
+            map_content_input_handler_ = MapContentInputHandler(
+                &map_content_layer_.getPersonPortraitManager(),
+                &map_content_layer_.getGeographicFeatureManager(),
+                &app_state.getVisibilityManager()
+            );
 
             // UILayerの初期化（一度のみ）
             ui_layer_.initialize();
@@ -153,7 +168,7 @@ namespace paxs {
 
             // 統合入力ルーターに登録（レイヤーベース優先度制御）
             input_router.registerHandler(&photo360_input_handler_);
-            input_router.registerHandler(&map_content_layer_);
+            input_router.registerHandler(&map_content_input_handler_);
 #ifdef PAXS_USING_SIMULATOR
             input_router.registerHandler(&map_content_layer_.getSettlementInputHandler());
 #endif

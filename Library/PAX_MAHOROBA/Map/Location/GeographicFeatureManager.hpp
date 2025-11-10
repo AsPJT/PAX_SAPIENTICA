@@ -92,6 +92,60 @@ namespace paxs {
             visible_ = visible;
         }
 
+        bool isHit(int mouse_x, int mouse_y, std::string& hit_place_name) const {
+            if (!visible_ || cached_visible_ == nullptr) return false;
+
+            const std::uint_least32_t ja_jp_language = MurMur3::calcHash("ja-JP");
+
+            for (std::size_t h = 0; h < location_point_list_list.size(); ++h) {
+                const auto& location_point_list = location_point_list_list[h].location_point_list;
+                const auto& lll = location_point_list_list[h];
+
+                // 時間の範囲外を除去
+                if (lll.min_year > cached_jdn_) continue;
+                if (lll.max_year < cached_jdn_) continue;
+
+                if (!cached_visible_->isVisible(lll.lpe)) continue;
+
+                for (std::size_t i = 0; i < location_point_list.size(); ++i) {
+                    const auto& lli = location_point_list[i];
+
+                    // 時間の範囲外を除去
+                    if (lli.min_year > cached_jdn_) continue;
+                    if (lli.max_year < cached_jdn_) continue;
+
+                    // 3つのX座標（中央、西、東）でヒット判定
+                    for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
+                        const double current_x = lli.coordinate.x + (offset_mult * 360.0);
+
+                        // スクリーン座標に変換
+                        const int screen_x = static_cast<int>(
+                            (current_x - cached_map_view_center_x_) * cached_map_view_height_ + cached_map_view_width_ / 2.0
+                        );
+                        const int screen_y = static_cast<int>(
+                            (lli.coordinate.y - cached_map_view_center_y_) * cached_map_view_height_ + cached_map_view_height_ / 2.0
+                        );
+
+                        // ヒット判定（アイコンのサイズを基準）
+                        const int hit_radius = static_cast<int>(lli.overall_length / 2 * lli.zoom);
+
+                        const int dx = mouse_x - screen_x;
+                        const int dy = mouse_y - screen_y;
+                        if (dx * dx + dy * dy <= hit_radius * hit_radius) {
+                            // ヒット！地名を取得
+                            if (lli.place_name.find(ja_jp_language) != lli.place_name.end()) {
+                                hit_place_name = lli.place_name.at(ja_jp_language);
+                            } else if (!lli.place_name.empty()) {
+                                hit_place_name = lli.place_name.begin()->second;
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
     private:
         // 可視性管理
         bool visible_ = true;

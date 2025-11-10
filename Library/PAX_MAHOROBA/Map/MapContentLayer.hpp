@@ -37,7 +37,7 @@ namespace paxs {
 
     /// @brief 地図コンテンツレイヤークラス
     /// @brief Map Content Layer
-    class MapContentLayer : public IRenderable, public IInputHandler {
+    class MapContentLayer : public IRenderable {
     private:
         GeographicFeatureManager geographic_feature_manager_{}; // 地理的特徴(地名とアイコン)
         PersonPortraitManager person_portrait_manager_{}; // 人物の肖像画と名前
@@ -46,124 +46,11 @@ namespace paxs {
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
 #endif
 
-        // 可視性・有効性管理
-        bool visible_ = true;
-        bool enabled_ = true;
-
         const MapViewport* map_viewport_ptr = nullptr;
 
         EventBus* event_bus_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
 
-    public:
-        MapContentLayer(const MapViewport* map_viewport)
-            : map_viewport_ptr(map_viewport)
-        {
-        }
-
-        // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
-        MapContentLayer(const MapContentLayer&) = delete;
-        MapContentLayer& operator=(const MapContentLayer&) = delete;
-        MapContentLayer(MapContentLayer&&) = delete;
-        MapContentLayer& operator=(MapContentLayer&&) = delete;
-
-        /// @brief AppStateManagerを設定してイベント駆動を有効化
-        void setAppStateManager(AppStateManager* app_state_manager) {
-            app_state_manager_ = app_state_manager;
-            if (app_state_manager_ != nullptr) {
-                event_bus_ = &EventBus::getInstance();
-#ifdef PAXS_USING_SIMULATOR
-                settlement_input_handler_.setEventBus(event_bus_);
-#endif
-                subscribeToEvents();
-                // 初回更新を即座に実行
-                updateAllContentData();
-            }
-        }
-
-        void render() const override {
-            if (!visible_ || !app_state_manager_) return;
-
-            // AppStateManagerから最新データを直接取得して描画のみ実行
-            const auto& visible = app_state_manager_->getVisibilityManager();
-
-            if (visible.isVisible(ViewMenu::map)) { // 地図が「可視」の場合は描画する
-                person_portrait_manager_.render();
-                geographic_feature_manager_.render();
-            }
-
-#ifdef PAXS_USING_SIMULATOR
-            // SettlementManager を描画（シミュレーション表示時）
-            // Render SettlementManager (when simulation is visible)
-            if (visible.isVisible(ViewMenu::simulation)) {
-                settlement_manager_.render();
-            }
-#endif
-        }
-
-        /// @brief キーボードイベント処理
-        /// @param event キーボードイベント / Keyboard event
-        /// @return イベント処理結果 / Event handling result
-        EventHandlingResult handleEvent(const KeyboardEvent& event) override {
-            if (!app_state_manager_) return EventHandlingResult::NotHandled();
-
-            const auto& visible = app_state_manager_->getVisibilityManager();
-
-#ifdef PAXS_USING_SIMULATOR
-            // 集落の入力処理
-            if (visible.isVisible(ViewMenu::map) ||
-                visible.isVisible(ViewMenu::simulation)) {
-                const auto& simulation_manager = app_state_manager_->getSimulationManager();
-                if (simulation_manager.isActive()) {
-                    settlement_input_handler_.handleEvent(event);
-                }
-            }
-#endif
-            // 入力を消費しない（背後のハンドラーにも伝播させる）
-            return EventHandlingResult::NotHandled();
-        }
-
-        EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!enabled_ || !app_state_manager_) {
-                return EventHandlingResult::NotHandled();
-            }
-
-            const auto& visible = app_state_manager_->getVisibilityManager();
-
-            // 地図が表示されていない場合は処理しない
-            if (!visible.isVisible(ViewMenu::map)) {
-                return EventHandlingResult::NotHandled();
-            }
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
-
-        bool isHit([[maybe_unused]] int x, [[maybe_unused]] int y) const override {
-            // 地図全体が対象なので常にtrue
-            return visible_ && enabled_;
-        }
-
-        RenderLayer getLayer() const override {
-            return RenderLayer::MapContent;
-        }
-        bool isVisible() const override {
-            return visible_;
-        }
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-        bool isEnabled() const override {
-            return enabled_;
-        }
-
-#ifdef PAXS_USING_SIMULATOR
-        /// @brief SettlementInputHandler への参照を取得（GraphicsManager での登録用）
-        SettlementInputHandler& getSettlementInputHandler() {
-            return settlement_input_handler_;
-        }
-#endif
-
-    private:
         /// @brief Settlement以外のコンテンツデータを更新
         /// @brief Update non-settlement content data (person_portrait, geographic_feature)
         void updateNonSettlementData() {
@@ -298,6 +185,69 @@ namespace paxs {
             );
 #endif
         }
+    public:
+        MapContentLayer(const MapViewport* map_viewport)
+            : map_viewport_ptr(map_viewport) {}
+
+        // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
+        MapContentLayer(const MapContentLayer&) = delete;
+        MapContentLayer& operator=(const MapContentLayer&) = delete;
+        MapContentLayer(MapContentLayer&&) = delete;
+        MapContentLayer& operator=(MapContentLayer&&) = delete;
+
+        /// @brief AppStateManagerを設定してイベント駆動を有効化
+        void setAppStateManager(AppStateManager* app_state_manager) {
+            app_state_manager_ = app_state_manager;
+            if (app_state_manager_ != nullptr) {
+                event_bus_ = &EventBus::getInstance();
+#ifdef PAXS_USING_SIMULATOR
+                settlement_input_handler_.setEventBus(event_bus_);
+#endif
+                subscribeToEvents();
+                // 初回更新を即座に実行
+                updateAllContentData();
+            }
+        }
+
+        void render() const override {
+            if (!isVisible() || !app_state_manager_) return;
+
+            person_portrait_manager_.render();
+            geographic_feature_manager_.render();
+
+#ifdef PAXS_USING_SIMULATOR
+            // SettlementManager を描画（シミュレーション表示時）
+            // Render SettlementManager (when simulation is visible)
+            if (app_state_manager_->getVisibilityManager().isVisible(ViewMenu::simulation)) {
+                settlement_manager_.render();
+            }
+#endif
+        }
+
+        /// @brief PersonPortraitManager への参照を取得（MapContentInputHandler での使用）
+        /// @brief Get reference to PersonPortraitManager (for MapContentInputHandler)
+        const PersonPortraitManager& getPersonPortraitManager() const {
+            return person_portrait_manager_;
+        }
+
+        /// @brief GeographicFeatureManager への参照を取得（MapContentInputHandler での使用）
+        /// @brief Get reference to GeographicFeatureManager (for MapContentInputHandler)
+        const GeographicFeatureManager& getGeographicFeatureManager() const {
+            return geographic_feature_manager_;
+        }
+
+#ifdef PAXS_USING_SIMULATOR
+        /// @brief SettlementInputHandler への参照を取得（GraphicsManager での登録用）
+        SettlementInputHandler& getSettlementInputHandler() {
+            return settlement_input_handler_;
+        }
+#endif
+        bool isVisible() const override {
+            return app_state_manager_->getVisibilityManager().isVisible(ViewMenu::map);
+        }
+        RenderLayer getLayer() const override { return RenderLayer::MapContent; }
+        void setVisible(bool /*visible*/) override {}
+        bool isEnabled() const { return true; }
     };
 }
 

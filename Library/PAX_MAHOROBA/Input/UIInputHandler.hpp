@@ -69,10 +69,6 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        /// @brief ヒットテスト
-        /// @brief Hit test
-        /// @param x X座標 / X coordinate
-        /// @param y Y座標 / Y coordinate
         bool isHit(int x, int y) const override {
             for (const IInputHandler* handler : registered_widgets_) {
                 if (handler->isHit(x, y)) {
@@ -82,20 +78,9 @@ namespace paxs {
             return false;
         }
 
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
-        /// @return UIContentレイヤー / UIContent layer
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-
-        bool isEnabled() const override {
-            return true;
-        }
-
-        void setEnabled(bool enabled) {
-            (void)enabled;
-        }
+        RenderLayer getLayer() const override { return RenderLayer::UIContent;}
+        bool isEnabled() const override { return true; }
+        void setEnabled(bool /*enabled*/) {}
     };
 
 } // namespace paxs

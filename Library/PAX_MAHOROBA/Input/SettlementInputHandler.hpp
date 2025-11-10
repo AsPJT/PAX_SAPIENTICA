@@ -37,46 +37,32 @@ namespace paxs {
             event_bus_ = event_bus;
         }
 
-        // IInputHandler の実装
-        // IInputHandler implementation
-
         /// @brief キーボードイベント処理
         /// @brief Handle keyboard event
         /// @param event キーボードイベント / Keyboard event
         /// @return イベント処理結果 / Event handling result
         EventHandlingResult handleEvent(const KeyboardEvent& event) override {
             (void)event;
-            if (!visible_ || !enabled_) return EventHandlingResult::NotHandled();
-
-            // 既存のupdate()ロジックを呼び出す
             update();
 
-            // 入力を消費しない（背後のハンドラーにも伝播させる）
             return EventHandlingResult::NotHandled();
         }
 
-        void setVisible(bool visible) { visible_ = visible; }
-        bool isVisible() const { return visible_; }
-        bool isEnabled() const override { return enabled_; }
+        bool isEnabled() const override { return true; }
 
         /// @brief 現在の表示モードを取得
-        /// @brief Get current display mode
         std::size_t getSelectDraw() const { return select_draw_; }
 
         /// @brief グリッド線表示フラグを取得
-        /// @brief Get grid line display flag
         bool getIsLine() const { return is_line_; }
 
         /// @brief 移動矢印表示フラグを取得
-        /// @brief Get arrow display flag
         bool getIsArrow() const { return is_arrow_; }
 
     private:
         std::size_t select_draw_ = 1;  // 表示モード (1-6)
         bool is_line_ = false;          // グリッド線を表示するか
         bool is_arrow_ = true;          // 移動線（矢印）を表示するか
-        bool visible_ = true;
-        bool enabled_ = true;
         EventBus* event_bus_ = nullptr;
 
         /// @brief 設定変更イベントを発行
