@@ -19,7 +19,7 @@
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #endif
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
@@ -183,11 +183,7 @@ namespace paxs {
             calcDate();
         }
 
-        void update(
-#ifdef PAXS_USING_SIMULATOR
-            SimulationManager& simulation_manager // コンパイル時の分岐により使わない場合あり
-#endif
-        ) {
+        void update() {
             static int calendar_update_counter = 0; // 暦を繰り上げるタイミングを決めるためのカウンタ
             ++calendar_update_counter;
             if (calendar_update_counter >= calendar_update_threshold) { // カウンタが指定した値を超えたら日付を変える処理を実行
@@ -195,23 +191,27 @@ namespace paxs {
                 // 時間を進めている場合（逆行していない場合）
                 if (move_forward_in_time) {
 #ifdef PAXS_USING_SIMULATOR
-                    // エージェント機能
-                    // TODO: fix
-                    if (is_agent_update && simulation_manager.isActive()) {
+                    // エージェント機能（シミュレーション実行時）
+                    if (is_agent_update) {
+                        // シミュレーション用の時間進行（AppStateManagerが制御）
                         jdn += (days_per_year / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
                         calcDate(); // 日付計算
-                        simulation_manager.step(); // シミュレーションを 1 ステップ実行する
                         steps.getDay()++; // ステップ数を増やす
                     }
                     else
 #endif
+                    // 通常の時間進行（シミュレーション再生中は実行しない）
                     if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
                         jdn += (days_per_year / time_scale_factor / 2.0); // ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
                 }
-                // 時間を逆行している場合
-                else if (go_back_in_time) {
+                // 時間を逆行している場合（シミュレーション再生中は逆再生しない）
+                else if (go_back_in_time
+#ifdef PAXS_USING_SIMULATOR
+                    && !is_agent_update
+#endif
+                ) {
                     if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
                         jdn -= (days_per_year / time_scale_factor); // ユリウス日を繰り下げ（前の日にする）
                         calcDate(); // 日付計算

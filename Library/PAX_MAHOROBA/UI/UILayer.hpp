@@ -249,8 +249,7 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションパネルの参照を設定（一度のみ）
             const auto& simulation_manager = app_state_manager_->getSimulationManager();
-            const auto& koyomi_sim = app_state_manager_->getKoyomi();
-            simulation_panel.getControlButtons().setReferences(&simulation_manager, &koyomi_sim,
+            simulation_panel.getControlButtons().setReferences(&simulation_manager, event_bus_,
                 ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
             simulation_panel.setupCallback();
 

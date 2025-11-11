@@ -12,9 +12,10 @@
 #ifndef PAX_MAHOROBA_UI_SIMULATION_CONTROL_BUTTONS_HPP
 #define PAX_MAHOROBA_UI_SIMULATION_CONTROL_BUTTONS_HPP
 
+#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
+#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
-#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 
@@ -88,14 +89,42 @@ namespace paxs {
 
         void setReferences(
             const SimulationManager* simulation_manager_ptr,
-            const paxs::Koyomi* koyomi,
+            EventBus* event_bus,
             int debug_start_y
         ) {
             simulation_manager_ptr_ = simulation_manager_ptr;
-            koyomi_ = koyomi;
+            event_bus_ = event_bus;
             debug_start_y_ = debug_start_y;
 
+            // イベント購読を設定
+            subscribeToEvents();
             layoutButtons();
+        }
+
+        /// @brief イベント購読を設定
+        void subscribeToEvents() {
+            if (event_bus_ == nullptr) return;
+
+            // SimulationPlayCommandEventを購読してシミュレーション再生状態を同期
+            event_bus_->subscribe<SimulationPlayCommandEvent>(
+                [this](const SimulationPlayCommandEvent&) {
+                    is_simulation_playing_ = true;
+                }
+            );
+
+            // SimulationStopCommandEventを購読
+            event_bus_->subscribe<SimulationStopCommandEvent>(
+                [this](const SimulationStopCommandEvent&) {
+                    is_simulation_playing_ = false;
+                }
+            );
+
+            // SimulationInitCommandEventを購読（初期化時は停止状態）
+            event_bus_->subscribe<SimulationInitCommandEvent>(
+                [this](const SimulationInitCommandEvent&) {
+                    is_simulation_playing_ = false;
+                }
+            );
         }
 
         void setOnClick(ClickCallback cb) {
@@ -107,13 +136,13 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!simulation_manager_ptr_ || !koyomi_) return;
+            if (!simulation_manager_ptr_) return;
 
             if (!simulation_manager_ptr_->isActive()) {
                buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].render();
                return;
             }
-            if (koyomi_->is_agent_update) {
+            if (is_simulation_playing_) {
                 // 再生中 → 停止ボタンのみ表示
                 buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].render();
                 return;
@@ -131,13 +160,13 @@ namespace paxs {
             if (!isVisible()) {
                 return false;
             }
-            if (!simulation_manager_ptr_ || !koyomi_) {
+            if (!simulation_manager_ptr_) {
                 return false;
             }
             if (!simulation_manager_ptr_->isActive()) {
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].isHit(x, y);
             }
-            if (koyomi_->is_agent_update) {
+            if (is_simulation_playing_) {
                 // 再生中 → 停止ボタンのみ有効
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].isHit(x, y);
             }
@@ -154,13 +183,13 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!simulation_manager_ptr_ || !koyomi_) {
+            if (!simulation_manager_ptr_) {
                 return EventHandlingResult::NotHandled();
             }
             if (!simulation_manager_ptr_->isActive()) {
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].handleEvent(event);
             }
-            if (koyomi_->is_agent_update) {
+            if (is_simulation_playing_) {
                 // 再生中 → 停止ボタンのみ有効
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].handleEvent(event);
             }
@@ -219,8 +248,11 @@ namespace paxs {
         std::vector<SimulationControlButton> buttons_;
 
         const SimulationManager* simulation_manager_ptr_ = nullptr;
-        const paxs::Koyomi* koyomi_ = nullptr;
+        EventBus* event_bus_ = nullptr;
         int debug_start_y_ = 0;
+
+        // イベントから同期された状態 / State synchronized from events
+        bool is_simulation_playing_ = false;
 
         static constexpr int TIME_ICON_SIZE = 40;
 
