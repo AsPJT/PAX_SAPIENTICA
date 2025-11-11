@@ -127,7 +127,7 @@ namespace paxs {
                     debug_info_bg_.setVisible(debug_info_panel.isVisible());
 #ifdef PAXS_USING_SIMULATOR
                     simulation_bg_.setVisible(simulation_panel.isVisible());
-                    // settlement_status_bg_はGraphicsManagerで制御
+                    // settlement_status_bg_はAppComponentManagerで制御
 #endif
                 }
             );

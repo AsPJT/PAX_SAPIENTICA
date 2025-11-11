@@ -338,7 +338,7 @@ namespace paxs {
         }
 
 #ifdef PAXS_USING_SIMULATOR
-        /// @brief SettlementInputHandler への参照を取得（GraphicsManager での登録用）
+        /// @brief SettlementInputHandler への参照を取得（AppComponentManager での登録用）
         SettlementInputHandler& getSettlementInputHandler() {
             return settlement_input_handler_;
         }

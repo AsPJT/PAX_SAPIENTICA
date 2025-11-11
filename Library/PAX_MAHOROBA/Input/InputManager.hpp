@@ -27,8 +27,8 @@ namespace paxs {
 
 /// @brief 入力管理クラス
 /// @brief Input manager class
-/// @details GraphicsManagerから入力処理を分離し、入力イベントの収集と配信を担当
-///          Separates input processing from GraphicsManager and handles input event collection and distribution
+/// @details AppComponentManagerから入力処理を分離し、入力イベントの収集と配信を担当
+///          Separates input processing from AppComponentManager and handles input event collection and distribution
 class InputManager {
 public:
     InputManager(EventBus& event_bus)

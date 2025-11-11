@@ -23,6 +23,7 @@
 
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
+#include <PAX_MAHOROBA/Core/AppComponentManager.hpp>
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
@@ -30,7 +31,6 @@
 #include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/GraphicsManager.hpp>
 
 namespace paxs {
 
@@ -50,8 +50,8 @@ namespace paxs {
         // 3. InputManager作成（入力処理統合）
         InputManager input_manager(event_bus);
 
-        // 4. GraphicsManager作成（描画のみ）
-        GraphicsManager graphics_manager(event_bus, app_state);
+        // 4. AppComponentManager作成（コンポーネント統合管理）
+        AppComponentManager component_manager(event_bus, app_state);
 
         // 5. 入力ハンドラー登録
         std::unique_ptr<MapViewportInputHandler> map_viewport_input_handler =
@@ -65,8 +65,8 @@ namespace paxs {
         input_manager.registerHandler(map_viewport_input_handler.get());
         input_manager.registerHandler(ui_input_handler.get());
 
-        // GraphicsManagerが内部のウィジェット/ハンドラーを登録
-        graphics_manager.registerToInputHandlers(*ui_input_handler, input_manager.getInputRouter());
+        // AppComponentManagerが内部のウィジェット/ハンドラーを登録
+        component_manager.registerToInputHandlers(*ui_input_handler, input_manager.getInputRouter());
 
         // ローディング画面終了
         paxs::PaxSapienticaInit::endLoadingScreen();
@@ -88,10 +88,10 @@ namespace paxs {
             app_state.updateKoyomi();
 
             // 4. タイルデータ更新（ビューポート変更に応じてタイルをロード）
-            graphics_manager.updateTiles();
+            component_manager.updateTiles();
 
             // 5. 描画のみ（更新は不要、データはAppStateManagerから直接取得）
-            graphics_manager.render();
+            component_manager.render();
 
             // 6. タッチ入力の状態更新
             paxg::TouchInput::updateState();

@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_GRAPHICS_MANAGER_HPP
-#define PAX_MAHOROBA_GRAPHICS_MANAGER_HPP
+#ifndef PAX_MAHOROBA_APP_COMPONENT_MANAGER_HPP
+#define PAX_MAHOROBA_APP_COMPONENT_MANAGER_HPP
 
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -27,10 +27,13 @@
 
 namespace paxs {
 
-    /// @brief グラフィック統合管理クラス
-    /// @brief Graphics integrated management class
-    /// @details 責務を描画のみに限定し、入力処理や状態管理はInputManagerとAppStateManagerに委譲
-    class GraphicsManager {
+    /// @brief アプリケーションコンポーネント統合管理クラス
+    /// @brief Application component integrated management class
+    /// @details レンダリングレイヤー、UIレイヤー、入力ハンドラーを統合管理
+    /// @details Manages rendering layers, UI layers, and input handlers
+    /// @note 旧名: GraphicsManager（Rendering層からCore層に昇格）
+    /// @note Former name: GraphicsManager (promoted from Rendering layer to Core layer)
+    class AppComponentManager {
     private:
         EventBus& event_bus_;
         AppStateManager& app_state_;
@@ -52,7 +55,7 @@ namespace paxs {
         /// @brief Constructor
         /// @param event_bus EventBus参照 / EventBus reference
         /// @param app_state AppStateManager参照 / AppStateManager reference
-        GraphicsManager(EventBus& event_bus, AppStateManager& app_state)
+        AppComponentManager(EventBus& event_bus, AppStateManager& app_state)
             : event_bus_(event_bus)
             , app_state_(app_state)
             , render_layer_manager_()
@@ -104,10 +107,10 @@ namespace paxs {
         }
 
         // コピー・ムーブ禁止（メンバー変数へのポインタをRenderLayerManagerに登録しているため）
-        GraphicsManager(const GraphicsManager&) = delete;
-        GraphicsManager& operator=(const GraphicsManager&) = delete;
-        GraphicsManager(GraphicsManager&&) = delete;
-        GraphicsManager& operator=(GraphicsManager&&) = delete;
+        AppComponentManager(const AppComponentManager&) = delete;
+        AppComponentManager& operator=(const AppComponentManager&) = delete;
+        AppComponentManager(AppComponentManager&&) = delete;
+        AppComponentManager& operator=(AppComponentManager&&) = delete;
 
         /// @brief タイルデータを更新（描画前に呼び出し）
         /// @brief Update tile data (called before rendering)
@@ -176,4 +179,4 @@ namespace paxs {
     };
 }
 
-#endif // !PAX_MAHOROBA_GRAPHICS_MANAGER_HPP
+#endif // !PAX_MAHOROBA_APP_COMPONENT_MANAGER_HPP
