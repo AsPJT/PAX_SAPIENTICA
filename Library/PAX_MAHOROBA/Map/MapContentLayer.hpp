@@ -180,6 +180,7 @@ namespace paxs {
             render_context_.map_view_height = map_viewport_ptr->getHeight();
             render_context_.map_view_center_x = map_viewport_ptr->getCenterX();
             render_context_.map_view_center_y = map_viewport_ptr->getCenterY();
+            render_context_.visibility_manager = &app_state_manager_->getVisibilityManager();
         }
 
         /// @brief 全Featureのupdate()を呼び出し

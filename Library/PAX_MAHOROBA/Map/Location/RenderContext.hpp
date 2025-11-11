@@ -15,6 +15,8 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+
 namespace paxs {
 
 /// @brief 描画コンテキスト - 描画に必要なパラメータをまとめた構造体
@@ -25,6 +27,7 @@ struct RenderContext {
     double map_view_height = 0.0;  ///< 地図ビューの高さ / Map view height
     double map_view_center_x = 0.0; ///< 地図ビューの中心X座標 / Map view center X
     double map_view_center_y = 0.0; ///< 地図ビューの中心Y座標 / Map view center Y
+    const FeatureVisibilityManager* visibility_manager = nullptr; ///< 地物種別ごとの可視性管理 / Per-feature-type visibility manager
 
     /// @brief メルカトル座標からスクリーン座標に変換
     /// @brief Convert Mercator coordinates to screen coordinates

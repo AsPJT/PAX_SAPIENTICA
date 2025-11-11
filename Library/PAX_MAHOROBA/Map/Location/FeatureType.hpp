@@ -21,6 +21,7 @@ enum class FeatureType {
     PlaceName,        ///< 地名（テキストのみ） / Place name (text only)
     Geographic,       ///< 地理的地物（アイコン） / Geographic feature (icon)
     Settlement,       ///< 集落 / Settlement
+    Model3D,          ///< 3Dモデル（古墳の石室など） / 3D model (burial chamber, etc.)
     Custom            ///< カスタム地物 / Custom feature
 };
 

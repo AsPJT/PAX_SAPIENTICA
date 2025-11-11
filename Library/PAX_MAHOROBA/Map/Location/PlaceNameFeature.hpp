@@ -68,7 +68,16 @@ public:
         return "";
     }
 
+    std::uint_least32_t getLpe() const override {
+        return data_.lpe;
+    }
+
     void update(const RenderContext& context) override {
+        // 地物種別の可視性チェック（最優先）
+        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.lpe)) {
+            cached_screen_positions_.clear();
+            return;
+        }
         // 空間フィルタリング：ビューの範囲外の場合はスキップ
         if (!context.isInViewBounds(data_.coordinate.x, data_.coordinate.y)) {
             cached_screen_positions_.clear();

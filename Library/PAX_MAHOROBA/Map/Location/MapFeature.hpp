@@ -17,6 +17,8 @@
 
 #include <PAX_GRAPHICA/Vec2.hpp>
 
+#include <cstdint>
+
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
@@ -46,6 +48,14 @@ public:
     /// @param language 言語コード（デフォルト: "ja-JP"） / Language code (default: "ja-JP")
     /// @return 地物の名前 / Feature name
     virtual std::string getName(const std::string& language = "ja-JP") const = 0;
+
+    /// @brief 地物の種別（lpe）を取得
+    /// @brief Get feature type identifier (lpe)
+    /// @return 地物の種別ハッシュ値 / Feature type hash
+    /// @note lpe = Location Point Entity（地物の種別を識別するハッシュ値）
+    /// @note 例: "青銅器", "古墳", "agent1" などの文字列のハッシュ値
+    /// @note Example: Hash of strings like "青銅器" (bronze), "古墳" (tomb), "agent1"
+    virtual std::uint_least32_t getLpe() const = 0;
 
     // ========== 状態管理 / State Management ==========
 

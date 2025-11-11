@@ -23,6 +23,7 @@
 #include <PAX_MAHOROBA/Map/Location/GeographicFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/Model3DFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
@@ -62,6 +63,9 @@ public:
                 break;
             case FeatureType::PlaceName:
                 drawPlaceName(static_cast<const PlaceNameFeature&>(*feature), context, texture_map);
+                break;
+            case FeatureType::Model3D:
+                drawModel3D(static_cast<const Model3DFeature&>(*feature), context, texture_map);
                 break;
             default:
                 break;
@@ -175,40 +179,36 @@ private:
         const auto& data = feature.getData();
         const auto& screen_positions = feature.getScreenPositions();
 
-        const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
-        const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
-
-        paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
-        paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
-
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
-            // 英語名がない場合
-            if (data.place_name.find(second_language) == data.place_name.end()) {
-                if (data.place_name.find(first_language) != data.place_name.end()) {
-                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
-                    font->drawAt(data.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
-                }
-            }
-            // 日本語名がない場合
-            else if (data.place_name.find(first_language) == data.place_name.end()) {
-                if (data.place_name.find(second_language) != data.place_name.end()) {
-                    en_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
-                    en_font->drawAt(data.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
-                }
-            }
-            // 両方の名前がある場合
-            else {
-                // 英語名を描画（下）
-                en_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
-                en_font->drawBottomCenter(data.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
-                // 日本語名を描画（上）
-                if (data.place_name.find(first_language) != data.place_name.end()) {
-                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
-                    font->drawTopCenter(data.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
-                }
-            }
+            LocationRendererHelper::drawBilingualText(data.place_name, draw_pos, "at");
         }
+    }
+
+    /// @brief 3Dモデル地物を描画
+    /// @brief Draw 3D model feature
+    /// @param feature 3Dモデル地物 / 3D model feature
+    /// @param context 描画コンテキスト / Rendering context
+    /// @param texture_map テクスチャマップ / Texture map
+    /// @note 将来の実装: 3Dモデルの描画処理を実装
+    /// @note Future implementation: Implement 3D model rendering
+    static void drawModel3D(
+        const Model3DFeature& feature,
+        const RenderContext& context,
+        const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
+    ) {
+        // 現在は未実装（将来的にModel3DRendererを使用して描画）
+        // Currently unimplemented (will use Model3DRenderer for rendering in the future)
+        (void)feature;
+        (void)context;
+        (void)texture_map;
+
+        // TODO: 将来的な実装例
+        // const auto& screen_positions = feature.getScreenPositions();
+        // for (const auto& draw_pos : screen_positions) {
+        //     // 3Dモデルを描画位置に配置
+        //     feature.getRenderer().render();
+        // }
     }
 
     /// @brief テクスチャを複数描画（GeographicFeature用）

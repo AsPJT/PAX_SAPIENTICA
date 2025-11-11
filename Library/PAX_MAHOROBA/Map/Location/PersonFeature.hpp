@@ -72,7 +72,17 @@ public:
         return "";
     }
 
+    std::uint_least32_t getLpe() const override {
+        return data_.lpe;
+    }
+
     void update(const RenderContext& context) override {
+        // 地物種別の可視性チェック（最優先）
+        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.lpe)) {
+            cached_screen_positions_.clear();
+            return;
+        }
+
         // 時間補間座標の計算
         interpolated_pos_ = MapCoordinateConverter::interpolatePosition(
             data_.start_coordinate, data_.end_coordinate,
