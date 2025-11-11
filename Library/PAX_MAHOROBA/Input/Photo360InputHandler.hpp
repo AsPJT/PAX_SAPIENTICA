@@ -13,7 +13,7 @@
 #define PAX_MAHOROBA_INPUT_PHOTO_360_INPUT_HANDLER_HPP
 
 #include <PAX_GRAPHICA/Key.hpp>
-#include <PAX_MAHOROBA/Input/Events.hpp>
+#include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>

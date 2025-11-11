@@ -107,42 +107,14 @@ namespace paxs {
             }
         }
 
-        /// @brief 座標をスクリーン座標に変換
-        /// @brief Convert mercator coordinate to screen position
-        /// @param coordinate_x メルカトル座標X
-        /// @param coordinate_y メルカトル座標Y
-        /// @param map_view_width マップビューの幅
-        /// @param map_view_height マップビューの高さ
-        /// @param map_view_center_x マップビューの中心X座標
-        /// @param map_view_center_y マップビューの中心Y座標
-        /// @return スクリーン座標
-        static paxg::Vec2i toScreenPos(
-            double coordinate_x,
-            double coordinate_y,
-            double map_view_width,
-            double map_view_height,
-            double map_view_center_x,
-            double map_view_center_y
-        ) {
-            return paxg::Vec2i{
-                static_cast<int>((coordinate_x - (map_view_center_x - map_view_width / 2))
-                               / map_view_width * double(paxg::Window::width())),
-                static_cast<int>(double(paxg::Window::height())
-                               - ((coordinate_y - (map_view_center_y - map_view_height / 2))
-                               / map_view_height * double(paxg::Window::height())))
-            };
-        }
-
         /// @brief 範囲内判定
-        /// @brief Check if coordinate is within view bounds
-        /// @param coordinate_x メルカトル座標X
-        /// @param coordinate_y メルカトル座標Y
-        /// @param map_view_width マップビューの幅
-        /// @param map_view_height マップビューの高さ
-        /// @param map_view_center_x マップビューの中心X座標
-        /// @param map_view_center_y マップビューの中心Y座標
-        /// @param margin_factor マージン係数（デフォルト: 1.6）
-        /// @return 範囲内ならtrue
+        /// @param coordinate_x メルカトル座標X / Mercator X coordinate
+        /// @param coordinate_y メルカトル座標Y / Mercator Y coordinate
+        /// @param map_view_width マップビューの幅 / Map view width
+        /// @param map_view_height マップビューの高さ / Map view height
+        /// @param map_view_center_x マップビューの中心X座標 / Map view center X
+        /// @param map_view_center_y マップビューの中心Y座標 / Map view center Y
+        /// @param margin_factor マージン係数（デフォルト: 1.6） / Margin factor (default: 1.6)
         static bool isInViewBounds(
             double coordinate_x,
             double coordinate_y,
@@ -152,10 +124,12 @@ namespace paxs {
             double map_view_center_y,
             double margin_factor = 1.6
         ) {
-            return !(coordinate_x < (map_view_center_x - map_view_width / margin_factor)
-                  || coordinate_x > (map_view_center_x + map_view_width / margin_factor)
-                  || coordinate_y < (map_view_center_y - map_view_height / margin_factor)
-                  || coordinate_y > (map_view_center_y + map_view_height / margin_factor));
+            const double half_width = map_view_width / 2 * margin_factor;
+            const double half_height = map_view_height / 2 * margin_factor;
+            return (coordinate_x >= map_view_center_x - half_width &&
+                    coordinate_x <= map_view_center_x + half_width &&
+                    coordinate_y >= map_view_center_y - half_height &&
+                    coordinate_y <= map_view_center_y + half_height);
         }
 
     private:

@@ -18,7 +18,7 @@
 
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
-#include <PAX_MAHOROBA/Input/Events.hpp>
+#include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/InputRouter.hpp>
 
 #include <PAX_SAPIENTICA/MouseClickStateManager.hpp>

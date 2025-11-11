@@ -12,7 +12,7 @@
 #ifndef PAX_MAHOROBA_I_INPUT_HANDLER_HPP
 #define PAX_MAHOROBA_I_INPUT_HANDLER_HPP
 
-#include <PAX_MAHOROBA/Input/Events.hpp>
+#include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 namespace paxs {

@@ -19,6 +19,7 @@
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
+#include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
 
 #include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
 
@@ -78,7 +79,7 @@ namespace paxs {
                         if (lli.max_year < jdn) continue;
 
                         // 描画位置
-                        const paxg::Vec2i draw_pos = LocationRendererHelper::toScreenPos(
+                        const paxg::Vec2i draw_pos = MapCoordinateConverter::toScreenPos(
                             lli.coordinate.x, lli.coordinate.y,
                             map_view_width, map_view_height,
                             map_view_center_x, map_view_center_y

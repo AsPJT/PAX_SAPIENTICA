@@ -58,9 +58,15 @@ public:
         double max_year
     );
 
-private:
     /// @brief 単一の座標をスクリーン座標に変換
     /// @brief Convert single coordinate to screen position
+    /// @param mercator_x メルカトル座標X / Mercator X coordinate
+    /// @param mercator_y メルカトル座標Y / Mercator Y coordinate
+    /// @param map_view_width ビューポート幅 / Viewport width
+    /// @param map_view_height ビューポート高さ / Viewport height
+    /// @param map_view_center_x ビューポート中心X / Viewport center X
+    /// @param map_view_center_y ビューポート中心Y / Viewport center Y
+    /// @return スクリーン座標 / Screen position
     static paxg::Vec2i toScreenPos(
         double mercator_x,
         double mercator_y,
@@ -129,7 +135,7 @@ inline paxg::Vec2i MapCoordinateConverter::toScreenPos(
     double map_view_center_x,
     double map_view_center_y
 ) {
-    // LocationRendererHelper::toScreenPos()と同じ計算式を使用
+    // メルカトル座標をスクリーン座標に変換
     return paxg::Vec2i(
         static_cast<int>(
             (mercator_x - (map_view_center_x - map_view_width / 2))

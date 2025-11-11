@@ -17,7 +17,7 @@
 #include <string>
 #include <vector>
 
-#include <PAX_MAHOROBA/Input/Events.hpp>
+#include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
@@ -86,10 +86,9 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
-            if (visibility_manager_ != nullptr &&
-                !visibility_manager_->isVisible(ViewMenu::map)) {
+            if (visibility_manager_ != nullptr && !visibility_manager_->isVisible(ViewMenu::map)) {
                     return false;
-                }
+            }
 
             // 座標が変わったらキャッシュ無効化
             if (hit_cache_.cached_x != x || hit_cache_.cached_y != y) {
@@ -105,7 +104,6 @@ namespace paxs {
                     MapFeature* hit_feature = MapContentHitTester::findFeatureAt(*features_, *render_context_, x, y);
 
                     if (hit_feature != nullptr) {
-                        std::cout << "  -> Hit feature: " << hit_feature->getName() << std::endl;
                         hit_cache_.hit_feature = hit_feature;
                         hit_cache_.valid = true;
                         return true;
