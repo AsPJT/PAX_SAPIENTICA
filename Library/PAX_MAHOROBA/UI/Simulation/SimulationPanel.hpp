@@ -41,7 +41,6 @@ namespace paxs {
     class SimulationPanel : public IWidget {
     private:
         const paxs::FeatureVisibilityManager* visibility_manager_ptr = nullptr;
-        EventBus* event_bus_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
 
         // UI配置定数
@@ -178,10 +177,8 @@ namespace paxs {
         // コンストラクタ
         SimulationPanel(
             const paxs::FeatureVisibilityManager* visibility_manager,
-            EventBus& event_bus,
             AppStateManager& app_state_manager
         ) : visibility_manager_ptr(visibility_manager),
-            event_bus_(&event_bus),
             app_state_manager_(&app_state_manager),
             simulation_pulldown(
                 paxs::LanguageDomain::SIMULATION,

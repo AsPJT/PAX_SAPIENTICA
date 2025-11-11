@@ -45,13 +45,13 @@ namespace paxs {
         EventBus& event_bus = EventBus::getInstance();
 
         // 2. AppStateManager作成（ドメインロジック集約）
-        AppStateManager app_state(event_bus);
+        AppStateManager app_state{};
 
         // 3. InputManager作成（入力処理統合）
-        InputManager input_manager(event_bus);
+        InputManager input_manager{};
 
         // 4. AppComponentManager作成（コンポーネント統合管理）
-        AppComponentManager component_manager(event_bus, app_state);
+        AppComponentManager component_manager(app_state);
 
         // 5. 入力ハンドラー登録
         std::unique_ptr<MapViewportInputHandler> map_viewport_input_handler =

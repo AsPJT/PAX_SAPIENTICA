@@ -19,7 +19,7 @@ class SimulationControllerTest : public ::testing::Test {
 protected:
     // EventBusはシングルトンなので参照を取得
     EventBus& event_bus_ = EventBus::getInstance();
-    SimulationController controller_{event_bus_};
+    SimulationController controller_{};
 };
 
 /// @brief 自動実行開始のテスト

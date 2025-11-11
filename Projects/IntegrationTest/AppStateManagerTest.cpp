@@ -35,7 +35,7 @@ protected:
 // ============================================================================
 
 TEST_F(AppStateManagerTest, ConstructorInitializesObjects) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     // ドメインオブジェクトが初期化されていることを確認
     EXPECT_NO_THROW(app_state.getKoyomi());
@@ -44,7 +44,7 @@ TEST_F(AppStateManagerTest, ConstructorInitializesObjects) {
 }
 
 TEST_F(AppStateManagerTest, GettersReturnConstReferences) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     // const参照が返されることを確認
     const Koyomi& koyomi = app_state.getKoyomi();
@@ -56,7 +56,7 @@ TEST_F(AppStateManagerTest, GettersReturnConstReferences) {
 }
 
 TEST_F(AppStateManagerTest, GettersReturnNonConstReferences) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     // 非const参照が返されることを確認
     Koyomi& koyomi = app_state.getKoyomi();
@@ -71,7 +71,7 @@ TEST_F(AppStateManagerTest, GettersReturnNonConstReferences) {
 // ============================================================================
 
 TEST_F(AppStateManagerTest, SetLanguagePublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     std::uint_least8_t received_index = 255;
 
@@ -88,7 +88,7 @@ TEST_F(AppStateManagerTest, SetLanguagePublishesEvent) {
 }
 
 TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
     app_state.setLanguage(3, 0); // 言語インデックス3、キーは0（テスト用ダミー値）
 
     int event_count = 0;
@@ -110,7 +110,7 @@ TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
 // ============================================================================
 
 TEST_F(AppStateManagerTest, SetFeatureVisibilityPublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     std::uint_least32_t received_key = 0;
     bool received_visible = false;
@@ -130,7 +130,7 @@ TEST_F(AppStateManagerTest, SetFeatureVisibilityPublishesEvent) {
 }
 
 TEST_F(AppStateManagerTest, SetFeatureVisibilitySameValueDoesNotPublish) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     const std::uint_least32_t test_key = 12345;
     app_state.setFeatureVisibility(test_key, true);
@@ -154,7 +154,7 @@ TEST_F(AppStateManagerTest, SetFeatureVisibilitySameValueDoesNotPublish) {
 // ============================================================================
 
 TEST_F(AppStateManagerTest, MapViewportEventBusIntegration) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int event_count = 0;
     double received_x = 0.0;
@@ -178,7 +178,7 @@ TEST_F(AppStateManagerTest, MapViewportEventBusIntegration) {
 }
 
 TEST_F(AppStateManagerTest, MapViewportSizeChangePublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int event_count = 0;
 
@@ -202,7 +202,7 @@ TEST_F(AppStateManagerTest, MapViewportSizeChangePublishesEvent) {
 // ============================================================================
 
 TEST_F(AppStateManagerTest, SimulationCommandsAreHandled) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int init_event_count = 0;
     int state_event_count = 0;
@@ -221,7 +221,7 @@ TEST_F(AppStateManagerTest, SimulationCommandsAreHandled) {
 }
 
 TEST_F(AppStateManagerTest, SimulationPlayCommandPublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int state_event_count = 0;
     SimulationStateChangedEvent::State received_state = SimulationStateChangedEvent::State::Stopped;
@@ -244,7 +244,7 @@ TEST_F(AppStateManagerTest, SimulationPlayCommandPublishesEvent) {
 }
 
 TEST_F(AppStateManagerTest, SimulationPauseCommandPublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int state_event_count = 0;
     SimulationStateChangedEvent::State received_state = SimulationStateChangedEvent::State::Stopped;
@@ -268,7 +268,7 @@ TEST_F(AppStateManagerTest, SimulationPauseCommandPublishesEvent) {
 }
 
 TEST_F(AppStateManagerTest, SimulationStopCommandPublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int state_event_count = 0;
     SimulationStateChangedEvent::State received_state = SimulationStateChangedEvent::State::Playing;

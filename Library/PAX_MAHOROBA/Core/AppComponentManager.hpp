@@ -15,7 +15,6 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Input/MapContentInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/Photo360InputHandler.hpp>
 #include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
@@ -35,7 +34,6 @@ namespace paxs {
     /// @note Former name: GraphicsManager (promoted from Rendering layer to Core layer)
     class AppComponentManager {
     private:
-        EventBus& event_bus_;
         AppStateManager& app_state_;
 
         RenderLayerManager render_layer_manager_;
@@ -53,11 +51,9 @@ namespace paxs {
     public:
         /// @brief コンストラクタ
         /// @brief Constructor
-        /// @param event_bus EventBus参照 / EventBus reference
         /// @param app_state AppStateManager参照 / AppStateManager reference
-        AppComponentManager(EventBus& event_bus, AppStateManager& app_state)
-            : event_bus_(event_bus)
-            , app_state_(app_state)
+        AppComponentManager(AppStateManager& app_state)
+            : app_state_(app_state)
             , render_layer_manager_()
             , map_tile_layer_()
             , map_content_layer_(&app_state.getMapViewport())
@@ -74,7 +70,6 @@ namespace paxs {
             , ui_layer_(
                 &app_state.getVisibilityManager(),
                 &app_state.getMapViewport(),
-                &event_bus,
                 &app_state
               )
             , menu_bar_() {
@@ -82,8 +77,6 @@ namespace paxs {
             // FeatureVisibilityManagerの初期化
             menu_bar_.initializeVisibility(&app_state_.getVisibilityManager());
 
-            // EventBusを設定
-            menu_bar_.setEventBus(&event_bus);
             map_content_layer_.setAppStateManager(&app_state);
             map_tile_layer_.setAppStateManager(&app_state);
 

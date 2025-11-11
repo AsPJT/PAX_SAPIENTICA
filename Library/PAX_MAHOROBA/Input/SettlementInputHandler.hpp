@@ -31,10 +31,6 @@ namespace paxs {
     public:
         SettlementInputHandler() = default;
 
-        void setEventBus(EventBus* event_bus) {
-            event_bus_ = event_bus;
-        }
-
         EventHandlingResult handleEvent(const KeyboardEvent& event) override {
             (void)event;
             update();
@@ -55,18 +51,15 @@ namespace paxs {
         std::size_t select_draw_ = 1;  // 表示モード (1-6)
         bool is_line_ = false;          // グリッド線を表示するか
         bool is_arrow_ = true;          // 移動線（矢印）を表示するか
-        EventBus* event_bus_ = nullptr;
 
         /// @brief 設定変更イベントを発行
         /// @brief Notify settlement display settings changed
         void notifyDisplayChanged() {
-            if (event_bus_ != nullptr) {
-                event_bus_->publish(SettlementDisplayChangedEvent(
-                    select_draw_,
-                    is_line_,
-                    is_arrow_
-                ));
-            }
+            paxs::EventBus::getInstance().publish(SettlementDisplayChangedEvent(
+                select_draw_,
+                is_line_,
+                is_arrow_
+            ));
         }
 
         /// @brief キーボード入力を処理してSettlementRendererの状態を更新（内部メソッド）

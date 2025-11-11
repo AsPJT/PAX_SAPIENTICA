@@ -49,8 +49,6 @@ namespace paxs {
 
         paxs::UILayout ui_layout;
 
-        // イベント駆動用（オプション）
-        EventBus* event_bus_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
 
         paxs::CalendarPanel calendar_panel;
@@ -76,9 +74,9 @@ namespace paxs {
         /// @brief イベントを購読
         /// @brief Subscribe to events
         void subscribeToEvents() {
-            if (event_bus_ == nullptr) return;
+            paxs::EventBus& event_bus = paxs::EventBus::getInstance();
             // ウィンドウリサイズイベントの購読
-            event_bus_->subscribe<WindowResizedEvent>(
+            event_bus.subscribe<WindowResizedEvent>(
                 [this](const WindowResizedEvent& event) {
                     (void)event;
                     // UIレイアウトを再計算
@@ -91,7 +89,7 @@ namespace paxs {
             );
 
             // 日付変更イベントの購読
-            event_bus_->subscribe<DateChangedEvent>(
+            event_bus.subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
                     (void)event;
                     // CalendarPanelの日付表示を更新
@@ -99,15 +97,12 @@ namespace paxs {
                         const auto& koyomi = app_state_manager_->getKoyomi();
                         calendar_panel.setCalendarParams(koyomi);
                         calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
-
-                        // レイアウトも再計算（日付リストのサイズが変わる可能性があるため）
-                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
                     }
                 }
             );
 
             // 言語変更イベントの購読
-            event_bus_->subscribe<LanguageChangedEvent>(
+            event_bus.subscribe<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent& event) {
                     (void)event;
                     // 言語変更時はレイアウト再計算が必要
@@ -119,7 +114,7 @@ namespace paxs {
             );
 
             // 機能可視性変更イベントの購読
-            event_bus_->subscribe<FeatureVisibilityChangedEvent>(
+            event_bus.subscribe<FeatureVisibilityChangedEvent>(
                 [this](const FeatureVisibilityChangedEvent& event) {
                     (void)event;
                     // 背景の可視性をパネルと同期
@@ -134,7 +129,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落表示設定変更イベントの購読
-            event_bus_->subscribe<SettlementDisplayChangedEvent>(
+            event_bus.subscribe<SettlementDisplayChangedEvent>(
                 [this](const SettlementDisplayChangedEvent& event) {
                     // SettlementStatusPanelの表示モードを更新
                     settlement_status_panel.setSelectDraw(event.select_draw);
@@ -142,7 +137,7 @@ namespace paxs {
             );
 
             // シミュレーション状態変更イベントの購読
-            event_bus_->subscribe<SimulationStateChangedEvent>(
+            event_bus.subscribe<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
                     // シミュレーションが停止状態になったら表示
                     if (event.new_state == SimulationState::Stopped) {
@@ -163,10 +158,8 @@ namespace paxs {
         UILayer(
             paxs::FeatureVisibilityManager* visible_manager,
             const MapViewport* map_viewport,
-            EventBus* event_bus = nullptr,
             AppStateManager* app_state_manager = nullptr)
             : visible_manager_ptr(visible_manager),
-              event_bus_(event_bus),
               app_state_manager_(app_state_manager),
               calendar_panel(ui_layout, visible_manager),
               debug_info_panel(ui_layout, visible_manager, map_viewport),
@@ -174,7 +167,6 @@ namespace paxs {
               settlement_status_panel(visible_manager),
               simulation_panel(
                   visible_manager,
-                  event_bus ? *event_bus : EventBus::getInstance(),
                   *app_state_manager  // 必須パラメータ（nullptrチェックは後で追加予定）
               ),
 #endif
@@ -200,10 +192,7 @@ namespace paxs {
 #endif
             sortPanelsByLayer();
 
-            // イベント購読を設定
-            if (event_bus_ != nullptr) {
-                subscribeToEvents();
-            }
+            subscribeToEvents();
         }
 
         // コピー・ムーブ禁止（メンバー変数へのポインタをvector<IWidget*>に格納しているため）
@@ -211,16 +200,6 @@ namespace paxs {
         UILayer& operator=(const UILayer&) = delete;
         UILayer(UILayer&&) = delete;
         UILayer& operator=(UILayer&&) = delete;
-
-        /// @brief イベントバスを設定してイベント駆動を有効化
-        /// @brief Set EventBus to enable event-driven updates
-        /// @param event_bus EventBusへのポインタ
-        void setEventBus(EventBus* event_bus) {
-            event_bus_ = event_bus;
-            if (event_bus_ != nullptr) {
-                subscribeToEvents();
-            }
-        }
 
         /// @brief UILayerの初期化（一度だけ呼び出す）
         void initialize() {

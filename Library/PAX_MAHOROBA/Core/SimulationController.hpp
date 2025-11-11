@@ -29,11 +29,9 @@ namespace paxs {
 /// @details UIから分離されたビジネスロジック層
 class SimulationController {
 public:
-    explicit SimulationController(EventBus& event_bus)
-        : event_bus_(event_bus) {
-
+    explicit SimulationController() {
         // シミュレーション停止イベントを購読
-        event_bus_.subscribe<SimulationStopCommandEvent>(
+        EventBus::getInstance().subscribe<SimulationStopCommandEvent>(
             [this](const SimulationStopCommandEvent& /*event*/) {
                 stopAutoExecution();
             }
@@ -69,7 +67,7 @@ public:
                 startNextCycle();
             } else {
                 // 全サイクル完了
-                event_bus_.publish(SimulationStopCommandEvent());
+                EventBus::getInstance().publish(SimulationStopCommandEvent());
                 is_auto_executing_ = false;
                 remaining_iterations_ = 0;
             }
@@ -106,7 +104,6 @@ public:
     bool isAutoExecuting() const { return is_auto_executing_; }
 
 private:
-    EventBus& event_bus_;
     int remaining_iterations_ = 0;
     bool is_auto_executing_ = false;
     std::string current_model_name_;
@@ -122,11 +119,12 @@ private:
     /// @brief 次の実行サイクルを開始
     /// @brief Start next execution cycle
     void startNextCycle() {
+        paxs::EventBus& event_bus = paxs::EventBus::getInstance();
         // シミュレーション初期化イベントを発行
-        event_bus_.publish(SimulationInitCommandEvent(current_model_name_));
+        event_bus.publish(SimulationInitCommandEvent(current_model_name_));
 
         // 再生イベントを発行
-        event_bus_.publish(SimulationPlayCommandEvent(remaining_iterations_));
+        event_bus.publish(SimulationPlayCommandEvent(remaining_iterations_));
     }
 };
 

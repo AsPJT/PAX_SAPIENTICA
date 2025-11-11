@@ -65,7 +65,6 @@ namespace paxs {
 
         const MapViewport* map_viewport_ptr = nullptr;
 
-        EventBus* event_bus_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
 
 
@@ -99,11 +98,11 @@ namespace paxs {
         /// @brief イベントを購読
         /// @brief Subscribe to events
         void subscribeToEvents() {
-            if (event_bus_ == nullptr) return;
+            paxs::EventBus& event_bus = paxs::EventBus::getInstance();
 
             // ビューポート変更イベントの購読
             // すべてのコンテンツを更新（ビューポート変更時は全て再描画が必要）
-            event_bus_->subscribe<ViewportChangedEvent>(
+            event_bus.subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
                     (void)event;
                     if (app_state_manager_) {
@@ -117,7 +116,7 @@ namespace paxs {
 
             // 日付変更イベントの購読
             // Settlement以外のコンテンツを更新（人物肖像画、地理的特徴は日付依存）
-            event_bus_->subscribe<DateChangedEvent>(
+            event_bus.subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
                     (void)event;
                     if (app_state_manager_) {
@@ -128,7 +127,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーション状態変更イベントの購読（初期化完了検知）
-            event_bus_->subscribe<SimulationStateChangedEvent>(
+            event_bus.subscribe<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
                     // 停止状態になった時（初期化完了時）に集落データを更新
                     if (event.new_state == SimulationState::Stopped) {
@@ -144,7 +143,7 @@ namespace paxs {
 
             // シミュレーションステップ実行イベントの購読
             // Settlementデータのみ更新（シミュレーション進行時）
-            event_bus_->subscribe<SimulationStepExecutedEvent>(
+            event_bus.subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
                     (void)event;
                     if (app_state_manager_) {
@@ -155,7 +154,7 @@ namespace paxs {
 
             // 集落表示設定変更イベントの購読
             // Settlement表示設定（select_draw, is_line, is_arrow）変更時
-            event_bus_->subscribe<SettlementDisplayChangedEvent>(
+            event_bus.subscribe<SettlementDisplayChangedEvent>(
                 [this](const SettlementDisplayChangedEvent& event) {
                     (void)event;
                     if (app_state_manager_) {
@@ -298,10 +297,6 @@ namespace paxs {
         void setAppStateManager(AppStateManager* app_state_manager) {
             app_state_manager_ = app_state_manager;
             if (app_state_manager_ != nullptr) {
-                event_bus_ = &EventBus::getInstance();
-#ifdef PAXS_USING_SIMULATOR
-                settlement_input_handler_.setEventBus(event_bus_);
-#endif
                 // データロード（初回のみ）
                 if (features_.empty()) {
                     loadAllFeatures();

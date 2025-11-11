@@ -23,8 +23,6 @@ class EventBus;
 /// @brief Click context - Structure containing parameters needed for click handling
 struct ClickContext {
     paxg::Vec2i mouse_pos;         ///< マウス座標 / Mouse position
-    // TODO: 必要かどうか検討
-    EventBus* event_bus = nullptr; ///< イベントバス / Event bus
 };
 
 } // namespace paxs

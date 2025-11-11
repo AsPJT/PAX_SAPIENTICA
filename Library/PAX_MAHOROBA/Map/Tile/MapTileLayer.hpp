@@ -38,7 +38,6 @@ namespace paxs {
 
         bool initial_tiles_preloaded_ = false;
 
-        EventBus* event_bus_ = nullptr;
         AppStateManager* app_state_manager_ = nullptr;
 
     public:
@@ -57,7 +56,6 @@ namespace paxs {
         void setAppStateManager(AppStateManager* app_state_manager) {
             app_state_manager_ = app_state_manager;
             if (app_state_manager_ != nullptr) {
-                event_bus_ = &EventBus::getInstance();
                 subscribeToEvents();
                 // 初回更新を即座に実行
                 updateTileData();
@@ -126,8 +124,6 @@ namespace paxs {
         /// @brief イベントを購読
         /// @brief Subscribe to events
         void subscribeToEvents() {
-            if (event_bus_ == nullptr) return;
-
             // TODO: 必要に応じてイベント購読を追加
         }
     };

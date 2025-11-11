@@ -31,10 +31,8 @@ namespace paxs {
 ///          Separates input processing from AppComponentManager and handles input event collection and distribution
 class InputManager {
 public:
-    InputManager(EventBus& event_bus)
-        : event_bus_(event_bus)
-        , input_router_()
-        , last_window_width_(paxg::Window::width())
+    InputManager()
+        : last_window_width_(paxg::Window::width())
         , last_window_height_(paxg::Window::height()) {
     }
 
@@ -121,10 +119,8 @@ public:
     }
 
 private:
-    EventBus& event_bus_;
-
     // 統合入力ルーティングシステム
-    InputRouter input_router_;  // 全ての入力イベント（キーボード、マウス、マウスホイール）
+    InputRouter input_router_{};  // 全ての入力イベント（キーボード、マウス、マウスホイール）
 
     // マウスボタン状態管理
     MouseClickStateManager left_button_state_manager_;
@@ -140,8 +136,7 @@ private:
         const int current_height = paxg::Window::height();
 
         if (current_width != last_window_width_ || current_height != last_window_height_) {
-            // EventBus経由でWindowResizedEventを発行
-            event_bus_.publish(WindowResizedEvent(current_width, current_height));
+            EventBus::getInstance().publish(WindowResizedEvent(current_width, current_height));
 
             last_window_width_ = current_width;
             last_window_height_ = current_height;

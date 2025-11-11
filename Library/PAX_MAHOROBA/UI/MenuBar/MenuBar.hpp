@@ -51,6 +51,8 @@ namespace paxs {
                 true
             )
         {
+            subscribeToEvents();
+
             language_selector_.setItemsKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES);
 
             // GitHubボタンを初期化
@@ -121,17 +123,6 @@ namespace paxs {
             return language_selector_.getKey();
         }
 
-        /// @brief EventBusを設定
-        /// @brief Set EventBus
-        void setEventBus(EventBus* event_bus) {
-            event_bus_ = event_bus;
-            // EventBusが設定されたら、イベント購読を開始
-            if (event_bus_ && !events_subscribed_) {
-                subscribeToEvents();
-                events_subscribed_ = true;
-            }
-        }
-
         /// @brief 可視性状態を反映
         void initializeVisibility(paxs::FeatureVisibilityManager* visible_manager) {
             // 可視性の初期化
@@ -179,11 +170,9 @@ namespace paxs {
         /// @brief 言語変更時のハンドラー（コールバック駆動）
         /// @brief Language change handler (callback-driven)
         void handleLanguageChanged(std::size_t new_index) {
-            if (!event_bus_) return;
-
             const std::uint_least32_t language_key = language_selector_.getKey();
             // EventBus経由で言語変更コマンドを発行
-            event_bus_->publish(LanguageChangeCommandEvent(
+            paxs::EventBus::getInstance().publish(LanguageChangeCommandEvent(
                 static_cast<std::uint_least8_t>(new_index),
                 language_key
             ));
@@ -192,8 +181,6 @@ namespace paxs {
         /// @brief メニュー項目トグル時のハンドラー（コールバック駆動）
         /// @brief Menu item toggle handler (callback-driven)
         void handleMenuItemToggled(const std::uint_least32_t menu_key, std::size_t item_index, bool is_checked) {
-            if (!event_bus_) return;
-
             // メニューキーに応じて適切な機能キーを取得し、可視性を更新
             // item_indexはDropDownMenuの内部インデックス（0はヘッダー、1以降が実際の項目）
             // 実際の項目インデックスに変換するため-1する
@@ -211,7 +198,7 @@ namespace paxs {
                     ViewMenu::view_3d
                 };
                 if (actual_index < view_items.size()) {
-                    event_bus_->publish(FeatureVisibilityChangeCommandEvent(
+                    paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
                         static_cast<std::uint_least32_t>(view_items[actual_index]),
                         is_checked
                     ));
@@ -234,7 +221,7 @@ namespace paxs {
                     PlaceNamesMenu::ydna
                 };
                 if (actual_index < place_name_items.size()) {
-                    event_bus_->publish(FeatureVisibilityChangeCommandEvent(
+                    paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
                         static_cast<std::uint_least32_t>(place_name_items[actual_index]),
                         is_checked
                     ));
@@ -250,7 +237,7 @@ namespace paxs {
                     MapLayersMenu::line2
                 };
                 if (actual_index < map_layer_items.size()) {
-                    event_bus_->publish(FeatureVisibilityChangeCommandEvent(
+                    paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
                         static_cast<std::uint_least32_t>(map_layer_items[actual_index]),
                         is_checked
                     ));
@@ -371,9 +358,7 @@ namespace paxs {
 
         // 状態管理
         bool visible_ = true;
-        EventBus* event_bus_ = nullptr;
         std::size_t previous_language_index_ = 0;
-        bool events_subscribed_ = false;
 
         // 子ウィジェット
         paxs::Pulldown language_selector_;

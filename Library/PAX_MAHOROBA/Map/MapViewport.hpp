@@ -73,15 +73,10 @@ namespace paxs {
         double width = (height) / double(paxg::Window::height()) * double(paxg::Window::width()); // マップの高さ
         double expansion_size = MapViewportConstants::default_expansion_size; // マップの拡大量
 
-        // イベントバスへのポインタ（オプション）
-        EventBus* event_bus_ = nullptr;
-
         /// @brief イベントを購読
         void subscribeToEvents() {
-            if (event_bus_ == nullptr) return;
-
             // ウィンドウリサイズイベントを購読
-            event_bus_->subscribe<WindowResizedEvent>(
+            paxs::EventBus::getInstance().subscribe<WindowResizedEvent>(
                 [this](const WindowResizedEvent&) {
                     // ウィンドウサイズ変更時に幅を再計算し、ViewportChangedEventを発行
                     applyConstraints();
@@ -91,26 +86,16 @@ namespace paxs {
         }
 
     public:
-        MapViewport() = default;
-
-        /// @brief EventBusを設定
-        void setEventBus(EventBus* event_bus) {
-            event_bus_ = event_bus;
+        MapViewport() {
             subscribeToEvents();
         }
 
         /// @brief ビューポート変更イベントを発行
         /// @brief Notify viewport change event
         void notifyViewportChanged() {
-            if (event_bus_ != nullptr) {
-                // ズームレベルを計算（heightから推定）
-                const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
-                event_bus_->publish(ViewportChangedEvent(
-                    center.getX(),
-                    center.getY(),
-                    zoom_level
-                ));
-            }
+            const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
+            paxs::EventBus::getInstance().publish(ViewportChangedEvent(
+                center.getX(), center.getY(), zoom_level));
         }
 
         /// @brief 浮動小数点数が異なるかどうかを判定（許容誤差考慮）

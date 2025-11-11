@@ -32,21 +32,14 @@ namespace paxs {
 /// @details ドメインオブジェクトを集約管理し、状態変更時にイベントを発行
 class AppStateManager {
 public:
-    /// @brief コンストラクタ
-    /// @param event_bus イベントバス
-    explicit AppStateManager(EventBus& event_bus)
-        : event_bus_(event_bus)
-        , koyomi_()
+    explicit AppStateManager()
+        : koyomi_()
         , map_viewport_()
 #ifdef PAXS_USING_SIMULATOR
         , simulation_manager_()
-        , simulation_controller_(event_bus)
+        , simulation_controller_()
 #endif
         , visibility_manager_() {
-
-        // MapViewportにEventBusを設定
-        map_viewport_.setEventBus(&event_bus_);
-
         subscribeToEvents();
 
         // 初期状態を通知
@@ -95,20 +88,20 @@ public:
             current_language_index_ = index;
             Fonts().setLanguage(static_cast<std::size_t>(index));
             Fonts().setLanguageByKey(language_key);
-            event_bus_.publish(LanguageChangedEvent(index));
+            paxs::EventBus::getInstance().publish(LanguageChangedEvent(index));
         }
     }
 
     /// @brief 時間再生制御コマンドを実行
     /// @param action 再生制御アクション
     void executeTimePlaybackControl(TimePlaybackControlEvent::Action action) {
-        event_bus_.publish(TimePlaybackControlEvent(action));
+        paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(action));
     }
 
     /// @brief 日付移動コマンドを実行
     /// @param days 移動日数
     void executeDateNavigation(double days) {
-        event_bus_.publish(DateNavigationEvent(days));
+        paxs::EventBus::getInstance().publish(DateNavigationEvent(days));
     }
 
     /// @brief 機能の可視性を設定
@@ -116,7 +109,7 @@ public:
     /// @param visible 可視性
     void setFeatureVisibility(std::uint_least32_t key, bool visible) {
         if (visibility_manager_.setVisibility(key, visible)) {
-            event_bus_.publish(FeatureVisibilityChangedEvent(key, visible));
+            paxs::EventBus::getInstance().publish(FeatureVisibilityChangedEvent(key, visible));
         }
     }
 
@@ -128,29 +121,29 @@ public:
     /// @brief シミュレーション初期化コマンドを実行
     /// @param model_name モデル名
     void executeSimulationInit(const std::string& model_name = "") {
-        event_bus_.publish(SimulationInitCommandEvent(model_name));
+        paxs::EventBus::getInstance().publish(SimulationInitCommandEvent(model_name));
     }
 
     /// @brief シミュレーション再生コマンドを実行
     /// @param iterations 繰り返し回数
     void executeSimulationPlay(int iterations = 1) {
-        event_bus_.publish(SimulationPlayCommandEvent(iterations));
+        paxs::EventBus::getInstance().publish(SimulationPlayCommandEvent(iterations));
     }
 
     /// @brief シミュレーション一時停止コマンドを実行
     void executeSimulationPause() {
-        event_bus_.publish(SimulationPauseCommandEvent());
+        paxs::EventBus::getInstance().publish(SimulationPauseCommandEvent());
     }
 
     /// @brief シミュレーション停止コマンドを実行
     void executeSimulationStop() {
-        event_bus_.publish(SimulationStopCommandEvent());
+        paxs::EventBus::getInstance().publish(SimulationStopCommandEvent());
     }
 
     /// @brief シミュレーションステップ進行コマンドを実行
     /// @param steps ステップ数
     void executeSimulationStep(int steps = 1) {
-        event_bus_.publish(SimulationStepCommandEvent(steps));
+        paxs::EventBus::getInstance().publish(SimulationStepCommandEvent(steps));
     }
 
     /// @brief シミュレーション初期化コマンドを実行
@@ -159,25 +152,25 @@ public:
     void executeSimulationInitialize(
         const std::string& model_name,
         unsigned int seed) {
-        event_bus_.publish(SimulationInitializeCommandEvent(model_name, seed));
+        paxs::EventBus::getInstance().publish(SimulationInitializeCommandEvent(model_name, seed));
     }
 
     /// @brief シミュレーション入力データ再読み込みコマンドを実行
     /// @param model_name モデル名
     void executeReloadInputData(const std::string& model_name) {
-        event_bus_.publish(ReloadInputDataCommandEvent(model_name));
+        paxs::EventBus::getInstance().publish(ReloadInputDataCommandEvent(model_name));
     }
 
     /// @brief 人間データ初期化コマンドを実行
     /// @param model_name モデル名
     void executeInitHumanData(const std::string& model_name) {
-        event_bus_.publish(InitHumanDataCommandEvent(model_name));
+        paxs::EventBus::getInstance().publish(InitHumanDataCommandEvent(model_name));
     }
 
     /// @brief シミュレーションクリアコマンドを実行
     /// @brief Execute simulation clear command
     void executeSimulationClear() {
-        event_bus_.publish(SimulationClearCommandEvent());
+        paxs::EventBus::getInstance().publish(SimulationClearCommandEvent());
     }
 #endif
 
@@ -200,7 +193,7 @@ public:
                 simulation_manager_.step();
 
                 // シミュレーションステップ実行イベントを発行
-                event_bus_.publish(SimulationStepExecutedEvent(
+                paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
                     static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay()),
                     static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
                 ));
@@ -210,7 +203,7 @@ public:
             if (old_jdn != new_jdn) {
                 // グレゴリオ暦から年月日を取得
                 auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-                event_bus_.publish(DateChangedEvent(
+                paxs::EventBus::getInstance().publish(DateChangedEvent(
                     new_jdn,
                     gregorian_date.cgetYear(),
                     gregorian_date.cgetMonth(),
@@ -225,8 +218,6 @@ public:
 #endif
 
 private:
-    EventBus& event_bus_;
-
     // ドメインオブジェクト（AppStateManagerが所有）
     Koyomi koyomi_;
     MapViewport map_viewport_;
@@ -244,7 +235,7 @@ private:
     void publishInitialState() {
 #ifdef PAXS_USING_SIMULATOR
         // Simulationの初期状態を通知
-        event_bus_.publish(SimulationStateChangedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(
             SimulationState::Uninitialized, 0
         ));
 #endif
@@ -252,29 +243,31 @@ private:
 
     /// @brief イベント購読を初期化
     void subscribeToEvents() {
+        paxs::EventBus& event_bus = paxs::EventBus::getInstance();
+
         // 言語変更コマンドの購読
-        event_bus_.subscribe<LanguageChangeCommandEvent>(
+        event_bus.subscribe<LanguageChangeCommandEvent>(
             [this](const LanguageChangeCommandEvent& event) {
                 setLanguage(event.language_index, event.language_key);
             }
         );
 
         // 地物可視性変更コマンドの購読
-        event_bus_.subscribe<FeatureVisibilityChangeCommandEvent>(
+        event_bus.subscribe<FeatureVisibilityChangeCommandEvent>(
             [this](const FeatureVisibilityChangeCommandEvent& event) {
                 setFeatureVisibility(event.feature_key, event.is_visible);
             }
         );
 
         // 時間再生制御コマンドの購読
-        event_bus_.subscribe<TimePlaybackControlEvent>(
+        event_bus.subscribe<TimePlaybackControlEvent>(
             [this](const TimePlaybackControlEvent& event) {
                 handleTimePlaybackControl(event);
             }
         );
 
         // 日付移動コマンドの購読
-        event_bus_.subscribe<DateNavigationEvent>(
+        event_bus.subscribe<DateNavigationEvent>(
             [this](const DateNavigationEvent& event) {
                 handleDateNavigation(event);
             }
@@ -282,63 +275,63 @@ private:
 
 #ifdef PAXS_USING_SIMULATOR
         // シミュレーション初期化コマンドの購読
-        event_bus_.subscribe<SimulationInitCommandEvent>(
+        event_bus.subscribe<SimulationInitCommandEvent>(
             [this](const SimulationInitCommandEvent& event) {
                 handleSimulationInit(event);
             }
         );
 
         // シミュレーション再生コマンドの購読
-        event_bus_.subscribe<SimulationPlayCommandEvent>(
+        event_bus.subscribe<SimulationPlayCommandEvent>(
             [this](const SimulationPlayCommandEvent& event) {
                 handleSimulationPlay(event);
             }
         );
 
         // シミュレーション一時停止コマンドの購読
-        event_bus_.subscribe<SimulationPauseCommandEvent>(
+        event_bus.subscribe<SimulationPauseCommandEvent>(
             [this](const SimulationPauseCommandEvent& event) {
                 handleSimulationPause(event);
             }
         );
 
         // シミュレーション停止コマンドの購読
-        event_bus_.subscribe<SimulationStopCommandEvent>(
+        event_bus.subscribe<SimulationStopCommandEvent>(
             [this](const SimulationStopCommandEvent& event) {
                 handleSimulationStop(event);
             }
         );
 
         // シミュレーションステップ進行コマンドの購読
-        event_bus_.subscribe<SimulationStepCommandEvent>(
+        event_bus.subscribe<SimulationStepCommandEvent>(
             [this](const SimulationStepCommandEvent& event) {
                 handleSimulationStep(event);
             }
         );
 
         // シミュレーション初期化コマンドの購読
-        event_bus_.subscribe<SimulationInitializeCommandEvent>(
+        event_bus.subscribe<SimulationInitializeCommandEvent>(
             [this](const SimulationInitializeCommandEvent& event) {
                 handleSimulationInitialize(event);
             }
         );
 
         // シミュレーション入力データ再読み込みコマンドの購読
-        event_bus_.subscribe<ReloadInputDataCommandEvent>(
+        event_bus.subscribe<ReloadInputDataCommandEvent>(
             [this](const ReloadInputDataCommandEvent& event) {
                 handleReloadInputData(event);
             }
         );
 
         // 人間データ初期化コマンドの購読
-        event_bus_.subscribe<InitHumanDataCommandEvent>(
+        event_bus.subscribe<InitHumanDataCommandEvent>(
             [this](const InitHumanDataCommandEvent& event) {
                 handleInitHumanData(event);
             }
         );
 
         // シミュレーションクリアコマンドの購読
-        event_bus_.subscribe<SimulationClearCommandEvent>(
+        event_bus.subscribe<SimulationClearCommandEvent>(
             [this](const SimulationClearCommandEvent& event) {
                 handleSimulationClear(event);
             }
@@ -359,7 +352,7 @@ private:
         if (koyomi_.is_agent_update) {
             if (event.action == Action::Reverse || event.action == Action::Stop) {
                 // シミュレーションを停止
-                event_bus_.publish(SimulationStopCommandEvent());
+                paxs::EventBus::getInstance().publish(SimulationStopCommandEvent());
                 return;
             }
             // Forward の場合は何もしない（既にシミュレーション再生中）
@@ -390,7 +383,7 @@ private:
 
         // 日付変更イベント発行
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        event_bus_.publish(DateChangedEvent(
+        paxs::EventBus::getInstance().publish(DateChangedEvent(
             koyomi_.jdn.cgetDay(),
             gregorian_date.cgetYear(),
             gregorian_date.cgetMonth(),
@@ -409,12 +402,12 @@ private:
         // 実際の実装では適切な開始日を設定する必要があります
 
         // 状態変更イベント発行
-        event_bus_.publish(SimulationStateChangedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(
             SimulationState::Stopped, 0
         ));
 
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        event_bus_.publish(DateChangedEvent(
+        paxs::EventBus::getInstance().publish(DateChangedEvent(
             koyomi_.jdn.cgetDay(),
             gregorian_date.cgetYear(),
             gregorian_date.cgetMonth(),
@@ -433,7 +426,7 @@ private:
         }
 
         // 状態変更イベント発行
-        event_bus_.publish(SimulationStateChangedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(
             SimulationState::Playing,
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
         ));
@@ -446,7 +439,7 @@ private:
         koyomi_.go_back_in_time = false;
 
         // 状態変更イベント発行
-        event_bus_.publish(SimulationStateChangedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(
             SimulationState::Stopped,
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
         ));
@@ -460,7 +453,7 @@ private:
         koyomi_.go_back_in_time = false;
 
         // 状態変更イベント発行
-        event_bus_.publish(SimulationStateChangedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(
             SimulationState::Stopped,
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
         ));
@@ -474,14 +467,16 @@ private:
         }
         koyomi_.jdn += event.steps;
 
+        paxs::EventBus& event_bus = paxs::EventBus::getInstance();
+
         // 状態変更イベント発行
-        event_bus_.publish(SimulationStepExecutedEvent(
+        event_bus.publish(SimulationStepExecutedEvent(
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay()),
             static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
         ));
 
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        event_bus_.publish(DateChangedEvent(
+        event_bus.publish(DateChangedEvent(
             koyomi_.jdn.cgetDay(),
             gregorian_date.cgetYear(),
             gregorian_date.cgetMonth(),
@@ -502,7 +497,7 @@ private:
         koyomi_.go_back_in_time = false;
 
         // 状態変更イベント発行
-        event_bus_.publish(SimulationStateChangedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(
             SimulationState::Stopped,
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
         ));
@@ -520,12 +515,12 @@ private:
         koyomi_.calcDate();
 
         // 状態変更イベント発行
-        event_bus_.publish(SimulationStateChangedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(
             SimulationState::Stopped, 0
         ));
 
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        event_bus_.publish(DateChangedEvent(
+        paxs::EventBus::getInstance().publish(DateChangedEvent(
             koyomi_.jdn.cgetDay(),
             gregorian_date.cgetYear(),
             gregorian_date.cgetMonth(),
@@ -542,12 +537,12 @@ private:
         koyomi_.calcDate();
 
         // 状態変更イベント発行（初期化前の状態に戻す）
-        event_bus_.publish(SimulationStateChangedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(
             SimulationState::Uninitialized, 0
         ));
 
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        event_bus_.publish(DateChangedEvent(
+        paxs::EventBus::getInstance().publish(DateChangedEvent(
             koyomi_.jdn.cgetDay(),
             gregorian_date.cgetYear(),
             gregorian_date.cgetMonth(),

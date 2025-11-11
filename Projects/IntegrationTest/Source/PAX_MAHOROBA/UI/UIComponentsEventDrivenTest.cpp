@@ -26,7 +26,7 @@ namespace paxs {
 class UIComponentsEventDrivenTest : public ::testing::Test {
 protected:
     EventBus& event_bus_ = EventBus::getInstance();
-    AppStateManager app_state_manager_{event_bus_};
+    AppStateManager app_state_manager_{};
 
     void SetUp() override {
         // テスト環境のセットアップ
@@ -42,7 +42,6 @@ protected:
 /// @brief MenuBarがEventBus経由で可視性を設定できることをテスト
 TEST_F(UIComponentsEventDrivenTest, MenuBarUsesEventBusForVisibility) {
     MenuBar menu_bar;
-    menu_bar.setEventBus(&event_bus_);
 
     // 初期化
     auto& visibility_manager = const_cast<FeatureVisibilityManager&>(

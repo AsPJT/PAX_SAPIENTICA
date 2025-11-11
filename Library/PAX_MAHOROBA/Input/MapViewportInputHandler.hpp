@@ -23,8 +23,6 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
@@ -36,7 +34,6 @@ namespace paxs {
     ///
     /// IInputHandlerを継承し、座標に依存しないイベント（キーボード、
     /// マウスホイール）と座標ベースのマウス入力を処理します。
-    /// WindowResizedEventはEventBus経由で購読します。
     class MapViewportInputHandler : public IInputHandler {
     private:
         std::array<paxg::Key, 1> enl_keys; // 拡大キー
@@ -45,8 +42,6 @@ namespace paxs {
         std::array<paxg::Key, 2> move_right_keys; // 右移動キー (D, Right)
         std::array<paxg::Key, 2> move_up_keys;    // 上移動キー (W, Up)
         std::array<paxg::Key, 2> move_down_keys;  // 下移動キー (S, Down)
-
-        bool events_subscribed_ = false; // イベント購読済みフラグ
 
 #ifdef __ANDROID__
         int touch_num = 0;
@@ -305,23 +300,11 @@ namespace paxs {
             return changed;
         }
 
-        /// @brief MapViewportへの参照を設定してイベントを購読
-        /// @brief Set reference to MapViewport and subscribe to events
+        /// @brief MapViewportへの参照を設定
+        /// @brief Set reference to MapViewport
         /// @param viewport MapViewportへの参照 / Reference to MapViewport
         void setViewport(MapViewport* viewport) {
             viewport_ = viewport;
-
-            // WindowResizedEventを購読
-            if (viewport_ && !events_subscribed_) {
-                EventBus::getInstance().subscribe<WindowResizedEvent>(
-                    [this](const WindowResizedEvent&) {
-                        if (viewport_) {
-                            viewport_->setSize(viewport_->getHeight());
-                        }
-                    }
-                );
-                events_subscribed_ = true;
-            }
         }
 
         /// @brief ドラッグ中かどうかを取得
