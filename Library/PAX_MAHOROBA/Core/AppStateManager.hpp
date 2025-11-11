@@ -120,16 +120,6 @@ public:
         }
     }
 
-    /// @brief 地図レイヤーの可視性を設定
-    /// @param key レイヤーキー
-    /// @param visible 可視性
-    void setMapLayerVisibility(std::uint_least32_t key, bool visible) {
-        const bool changed = visibility_manager_.setVisibility(key, visible);
-        if (changed) {
-            event_bus_.publish(MapLayerVisibilityChangedEvent(key, visible));
-        }
-    }
-
     // ============================================================================
     // コマンド実行（UIから呼ばれる）
     // ============================================================================
@@ -232,22 +222,11 @@ public:
                     gregorian_date.cgetMonth(),
                     gregorian_date.cgetDay()
                 ));
-
-                // Koyomi状態同期イベントを発行
-                event_bus_.publish(KoyomiStateSyncEvent(
-                    koyomi_.date_list.size(),
-                    new_jdn
-                ));
             }
         }
 
         // SimulationControllerの更新（自動繰り返し実行制御）
         simulation_controller_.update(simulation_manager_, koyomi_, "");
-
-        // SimulationManager状態同期イベントを発行
-        event_bus_.publish(SimulationManagerStateSyncEvent(
-            simulation_manager_.isActive()
-        ));
     }
 #endif
 
@@ -269,16 +248,10 @@ private:
     /// @brief 初期状態をイベントで通知
     /// @brief Publish initial state via events
     void publishInitialState() {
-        // Koyomi初期状態を通知
-        event_bus_.publish(KoyomiStateSyncEvent(
-            koyomi_.date_list.size(),
-            koyomi_.jdn.cgetDay()
-        ));
-
 #ifdef PAXS_USING_SIMULATOR
-        // SimulationManager初期状態を通知
-        event_bus_.publish(SimulationManagerStateSyncEvent(
-            simulation_manager_.isActive()
+        // Simulationの初期状態を通知
+        event_bus_.publish(SimulationStateChangedEvent(
+            SimulationState::Uninitialized, 0
         ));
 #endif
     }
@@ -438,12 +411,13 @@ private:
         // ドメインロジック実行
         simulation_manager_.initSimulation();
         koyomi_.steps.setDay(0);
+        // TODO: 下のコメントの正誤確認
         // Note: SimulationManagerにgetStartDate()がないため、
         // 実際の実装では適切な開始日を設定する必要があります
 
         // 状態変更イベント発行
         event_bus_.publish(SimulationStateChangedEvent(
-            SimulationStateChangedEvent::State::Stopped, 0
+            SimulationState::Stopped, 0
         ));
 
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
@@ -468,7 +442,7 @@ private:
 
         // 状態変更イベント発行
         event_bus_.publish(SimulationStateChangedEvent(
-            SimulationStateChangedEvent::State::Playing,
+            SimulationState::Playing,
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
         ));
     }
@@ -482,7 +456,7 @@ private:
 
         // 状態変更イベント発行
         event_bus_.publish(SimulationStateChangedEvent(
-            SimulationStateChangedEvent::State::Paused,
+            SimulationState::Stopped,
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
         ));
     }
@@ -497,7 +471,7 @@ private:
 
         // 状態変更イベント発行
         event_bus_.publish(SimulationStateChangedEvent(
-            SimulationStateChangedEvent::State::Stopped,
+            SimulationState::Stopped,
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
         ));
     }
@@ -545,9 +519,8 @@ private:
         koyomi_.go_back_in_time = false;
 
         // 状態変更イベント発行
-        event_bus_.publish(DataLoadingCompletedEvent("GeographicData", true));
         event_bus_.publish(SimulationStateChangedEvent(
-            SimulationStateChangedEvent::State::Stopped,
+            SimulationState::Stopped,
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay())
         ));
     }
@@ -555,9 +528,8 @@ private:
     /// @brief シミュレーション入力データ再読み込みコマンドを処理
     void handleReloadInputData(const ReloadInputDataCommandEvent& event) {
         (void)event;
-
-        // 状態変更イベント発行
-        event_bus_.publish(DataLoadingCompletedEvent("SimulationInputData", true));
+        // ドメインロジック実行
+        simulation_manager_.reloadInputData();
     }
 
     /// @brief 人間データ初期化コマンドを処理
@@ -570,7 +542,7 @@ private:
 
         // 状態変更イベント発行
         event_bus_.publish(SimulationStateChangedEvent(
-            SimulationStateChangedEvent::State::Stopped, 0
+            SimulationState::Stopped, 0
         ));
 
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
@@ -590,9 +562,9 @@ private:
         koyomi_.steps.setDay(0);
         koyomi_.calcDate();
 
-        // 状態変更イベント発行
+        // 状態変更イベント発行（初期化前の状態に戻す）
         event_bus_.publish(SimulationStateChangedEvent(
-            SimulationStateChangedEvent::State::Stopped, 0
+            SimulationState::Uninitialized, 0
         ));
 
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();

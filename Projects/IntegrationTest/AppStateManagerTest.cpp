@@ -150,30 +150,6 @@ TEST_F(AppStateManagerTest, SetFeatureVisibilitySameValueDoesNotPublish) {
 }
 
 // ============================================================================
-// マップレイヤー可視性テスト
-// ============================================================================
-
-TEST_F(AppStateManagerTest, SetMapLayerVisibilityPublishesEvent) {
-    AppStateManager app_state(event_bus_);
-
-    std::uint_least32_t received_key = 0;
-    bool received_visible = false;
-
-    event_bus_.subscribe<MapLayerVisibilityChangedEvent>(
-        [&received_key, &received_visible](const MapLayerVisibilityChangedEvent& event) {
-            received_key = event.layer_key;
-            received_visible = event.is_visible;
-        }
-    );
-
-    const std::uint_least32_t test_key = 54321;
-    app_state.setMapLayerVisibility(test_key, false);
-
-    EXPECT_EQ(received_key, test_key);
-    EXPECT_FALSE(received_visible);
-}
-
-// ============================================================================
 // MapViewport統合テスト
 // ============================================================================
 
@@ -288,7 +264,7 @@ TEST_F(AppStateManagerTest, SimulationPauseCommandPublishesEvent) {
     app_state.executeSimulationPause();
 
     EXPECT_EQ(state_event_count, 1);
-    EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Paused);
+    EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Stopped);
 }
 
 TEST_F(AppStateManagerTest, SimulationStopCommandPublishesEvent) {

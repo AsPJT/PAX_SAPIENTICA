@@ -49,7 +49,6 @@ namespace paxs {
 
         void render() const override {
             if (simulation_manager_ == nullptr) return;
-            if (!simulation_manager_->isActive()) return;
 
             paxg::Font* font = Fonts().getFont(
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),

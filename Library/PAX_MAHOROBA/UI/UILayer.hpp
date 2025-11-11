@@ -37,6 +37,7 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationState.hpp>
 
 namespace paxs {
 
@@ -122,45 +123,37 @@ namespace paxs {
                 [this](const FeatureVisibilityChangedEvent& event) {
                     (void)event;
                     // 背景の可視性をパネルと同期
-                    // UILayer全体の可視性はrender()でチェックされるため、ここでは個別パネルの可視性のみ考慮
                     calendar_bg_.setVisible(calendar_panel.isVisible());
                     debug_info_bg_.setVisible(debug_info_panel.isVisible());
 #ifdef PAXS_USING_SIMULATOR
                     simulation_bg_.setVisible(simulation_panel.isVisible());
-                    // settlement_status_bg_はAppComponentManagerで制御
+                    settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
                 }
             );
 
 #ifdef PAXS_USING_SIMULATOR
-            // シミュレーション状態変更イベントの購読
-            event_bus_->subscribe<SimulationStateChangedEvent>(
-                [this](const SimulationStateChangedEvent& event) {
-                    (void)event;
-                    // シミュレーション状態変更時の処理
-                    if (app_state_manager_) {
-                        const auto& koyomi = app_state_manager_->getKoyomi();
-                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
-
-
-                        // 背景の可視性をパネルと同期
-                        simulation_bg_.setVisible(simulation_panel.isVisible());
-                    }
-                }
-            );
-
-            // シミュレーションステップ実行イベントの購読
-            event_bus_->subscribe<SimulationStepExecutedEvent>(
-                [this](const SimulationStepExecutedEvent& event) {
-                    (void)event;
-                }
-            );
-
             // 集落表示設定変更イベントの購読
             event_bus_->subscribe<SettlementDisplayChangedEvent>(
                 [this](const SettlementDisplayChangedEvent& event) {
                     // SettlementStatusPanelの表示モードを更新
                     settlement_status_panel.setSelectDraw(event.select_draw);
+                }
+            );
+
+            // シミュレーション状態変更イベントの購読
+            event_bus_->subscribe<SimulationStateChangedEvent>(
+                [this](const SimulationStateChangedEvent& event) {
+                    // シミュレーションが停止状態になったら表示
+                    if (event.new_state == SimulationState::Stopped) {
+                        settlement_status_panel.setVisible(true);
+                        settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
+                    }
+                    // 初期化前になったら非表示
+                    else if (event.new_state == SimulationState::Uninitialized) {
+                        settlement_status_panel.setVisible(false);
+                        settlement_status_bg_.setVisible(false);
+                    }
                 }
             );
 #endif
@@ -229,14 +222,6 @@ namespace paxs {
             }
         }
 
-        // TODO: イベントベースに移行
-        /// @brief SettlementStatusPanelの背景可視性を同期
-        void syncSettlementStatusBackground() {
-#ifdef PAXS_USING_SIMULATOR
-            settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
-#endif
-        }
-
         /// @brief UILayerの初期化（一度だけ呼び出す）
         void initialize() {
             if (!app_state_manager_) return;
@@ -248,13 +233,12 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーションパネルの参照を設定（一度のみ）
-            const auto& simulation_manager = app_state_manager_->getSimulationManager();
-            simulation_panel.getControlButtons().setReferences(&simulation_manager, event_bus_,
-                ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_panel.getControlButtons().setButtonsBaseY(ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
             simulation_panel.setupCallback();
 
             // 背景の可視性をパネルと同期
             simulation_bg_.setVisible(simulation_panel.isVisible());
+            settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
 
             // CalendarPanelの初期設定

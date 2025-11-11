@@ -61,6 +61,20 @@ namespace paxs {
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
         }
 
+        /// @brief シミュレーション入力データを再読み込み
+        /// @brief Reload simulation input data
+        /// @param model_name モデル名 / Model name
+        void reloadInputData(const std::string& model_name = "Sample") {
+            // SimulationConstantsのシングルトンインスタンスを取得
+            auto* constants = SimulationConstants::getInstance(model_name);
+
+            // 各種データを再読み込み
+            constants->init(model_name);
+            constants->inputLifeSpan(model_name);
+            constants->inputMarriage(model_name);
+            constants->inputChildbearing(model_name);
+        }
+
         /// @brief
         /// @brief 渡来数の取得
         std::uint_least64_t emigrationSize() {

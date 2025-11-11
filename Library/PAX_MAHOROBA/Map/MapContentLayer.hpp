@@ -127,12 +127,17 @@ namespace paxs {
             );
 
 #ifdef PAXS_USING_SIMULATOR
-            // シミュレーション状態変更イベントの購読
+            // シミュレーション状態変更イベントの購読（初期化完了検知）
             event_bus_->subscribe<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
-                    (void)event;
-                    if (app_state_manager_) {
-                        updateSettlementData();
+                    // 停止状態になった時（初期化完了時）に集落データを更新
+                    if (event.new_state == SimulationState::Stopped) {
+                        if (app_state_manager_) {
+                            updateSettlementData();
+                        }
+                    } else if (event.new_state == SimulationState::Uninitialized) {
+                        // クリアされた場合はキャッシュをクリアして無効な参照を防ぐ
+                        settlement_manager_.clearCache();
                     }
                 }
             );
@@ -145,15 +150,6 @@ namespace paxs {
                     if (app_state_manager_) {
                         updateSettlementData();
                     }
-                }
-            );
-
-            // シミュレーションクリアイベントの購読
-            event_bus_->subscribe<SimulationClearCommandEvent>(
-                [this](const SimulationClearCommandEvent& event) {
-                    (void)event;
-                    // キャッシュをクリアして無効な参照を防ぐ
-                    settlement_manager_.clearCache();
                 }
             );
 
@@ -330,7 +326,6 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // SettlementManager を描画（シミュレーション表示時）
-            // Render SettlementManager (when simulation is visible)
             if (app_state_manager_->getVisibilityManager().isVisible(ViewMenu::simulation)) {
                 settlement_manager_.render();
             }

@@ -102,6 +102,15 @@ namespace paxs {
             }
         }
 
+        /// @brief シミュレーションの入力データを再読み込み
+        /// @brief Reload simulation input data
+        /// @param model_name モデル名（オプショナル） / Model name (
+        void reloadInputData(const std::string& model_name = "") {
+            if (simulator_) {
+                simulator_->reloadInputData(model_name);
+            }
+        }
+
         /// @brief シミュレーションが初期化されているか
         /// @brief Check if simulation is initialized
         /// @return 初期化されていればtrue / true if initialized

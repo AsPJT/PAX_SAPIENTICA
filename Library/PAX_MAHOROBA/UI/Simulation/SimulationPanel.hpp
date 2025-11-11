@@ -13,10 +13,8 @@
 #define PAX_MAHOROBA_UI_SIMULATION_PANEL_HPP
 
 #include <cmath>
-#include <cstdint>
 #include <memory>
 #include <random>
-#include <string>
 #include <vector>
 
 #include <PAX_GRAPHICA/Font.hpp>
@@ -38,6 +36,7 @@
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationState.hpp>
 #include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
@@ -57,7 +56,7 @@ namespace paxs {
         SimulationStatsWidget stats_widget_;
 
         // イベントから同期された状態 / State synchronized from events
-        bool simulation_is_active_ = false;
+        paxs::SimulationState simulation_state_ = paxs::SimulationState::Uninitialized;
 
         /// @brief イベント購読を設定
         /// @brief Subscribe to events
@@ -77,10 +76,12 @@ namespace paxs {
                 }
             );
 
-            // SimulationManager状態同期イベントを購読
-            EventBus::getInstance().subscribe<SimulationManagerStateSyncEvent>(
-                [this](const SimulationManagerStateSyncEvent& event) {
-                    simulation_is_active_ = event.is_active;
+            // SimulationStateChangedイベントを購読
+            EventBus::getInstance().subscribe<SimulationStateChangedEvent>(
+                [this](const SimulationStateChangedEvent& event) {
+                    simulation_state_ = event.new_state;
+                    // SimulationControlButtonsに状態を通知
+                    control_buttons_.setSimulationState(simulation_state_);
                 }
             );
         }
@@ -250,6 +251,13 @@ namespace paxs {
                 this->onControlButtonClicked(id);
             });
 
+#ifdef PAXS_USING_SIMULATOR
+            // SimulationStatsWidgetにSimulationManagerを設定
+            if (app_state_manager_) {
+                stats_widget_.setSimulationManager(&app_state_manager_->getSimulationManager());
+            }
+#endif
+
             // 初期レイアウト計算
             calculateLayout();
         }
@@ -257,25 +265,13 @@ namespace paxs {
         void render() const override {
             if (!isVisible()) return;
 
-            drawPulldown();
             control_buttons_.render();
 
-#ifdef PAXS_USING_SIMULATOR
-            // シミュレーション統計情報を表示（シミュレーションがアクティブな場合のみ）
-            if (simulation_is_active_) {
+            if (simulation_state_ == paxs::SimulationState::Uninitialized) {
+                simulation_pulldown.render();
+            } else {
                 stats_widget_.render();
             }
-#endif
-        }
-
-        void drawPulldown() const {
-#ifdef PAXS_USING_SIMULATOR
-            if (!simulation_is_active_) {
-                simulation_pulldown.render();
-            }
-#else
-            simulation_pulldown.render();
-#endif
         }
 
         // イベント処理

@@ -16,6 +16,7 @@
 #include <string>
 
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationState.hpp>
 
 namespace paxs {
 
@@ -56,14 +57,6 @@ struct DateChangedEvent : Event {
         : julian_day_number(jdn), new_year(year), new_month(month), new_day(day) {}
 };
 
-/// @brief 時間速度変更イベント
-struct TimeSpeedChangedEvent : Event {
-    const int new_speed;  // 例: 1, 2, 4, 8, 16
-
-    explicit TimeSpeedChangedEvent(int speed)
-        : new_speed(speed) {}
-};
-
 /// @brief ビューポート変更イベント
 struct ViewportChangedEvent : Event {
     const double new_center_x;
@@ -72,15 +65,6 @@ struct ViewportChangedEvent : Event {
 
     ViewportChangedEvent(double center_x, double center_y, int zoom_level)
         : new_center_x(center_x), new_center_y(center_y), new_zoom_level(zoom_level) {}
-};
-
-/// @brief マップレイヤー表示切替イベント
-struct MapLayerVisibilityChangedEvent : Event {
-    const std::uint_least32_t layer_key;
-    const bool is_visible;
-
-    MapLayerVisibilityChangedEvent(std::uint_least32_t key, bool visible)
-        : layer_key(key), is_visible(visible) {}
 };
 
 /// @brief 地物表示切替イベント（通知用）
@@ -101,47 +85,13 @@ struct FeatureVisibilityChangeCommandEvent : Event {
         : feature_key(key), is_visible(visible) {}
 };
 
-/// @brief レンダーレイヤー表示切替イベント
-struct RenderLayerVisibilityChangedEvent : Event {
-    const std::uint_least32_t layer_key;
-    const bool is_visible;
-
-    RenderLayerVisibilityChangedEvent(std::uint_least32_t key, bool visible)
-        : layer_key(key), is_visible(visible) {}
-};
-
-/// @brief Koyomi（暦）状態同期イベント
-/// @details UIがKoyomiの最新状態を受け取るためのイベント
-struct KoyomiStateSyncEvent : Event {
-    const std::size_t date_list_size;  ///< カレンダーリストのサイズ / Size of calendar list
-    const double current_jdn;          ///< 現在のユリウス日 / Current Julian Day Number
-
-    KoyomiStateSyncEvent(std::size_t size, double jdn)
-        : date_list_size(size), current_jdn(jdn) {}
-};
-
 /// @brief シミュレーション状態変更イベント
 struct SimulationStateChangedEvent : Event {
-    enum class State {
-        Stopped,
-        Playing,
-        Paused
-    };
-
-    const State new_state;
+    const SimulationState new_state;
     const std::uint_least32_t current_step;
 
-    SimulationStateChangedEvent(State state, std::uint_least32_t step)
+    SimulationStateChangedEvent(SimulationState state, std::uint_least32_t step)
         : new_state(state), current_step(step) {}
-};
-
-/// @brief SimulationManager状態同期イベント
-/// @details UIがSimulationManagerの最新状態を受け取るためのイベント
-struct SimulationManagerStateSyncEvent : Event {
-    const bool is_active;              ///< シミュレーションが有効か / Whether simulation is active
-
-    explicit SimulationManagerStateSyncEvent(bool active)
-        : is_active(active) {}
 };
 
 /// @brief シミュレーションステップ実行完了イベント
@@ -256,57 +206,6 @@ struct DateNavigationEvent : Event {
 
     explicit DateNavigationEvent(double d)
         : days(d) {}
-};
-
-/// @brief メニューアイテム選択イベント
-struct MenuItemSelectedEvent : Event {
-    const std::string menu_id;
-
-    explicit MenuItemSelectedEvent(const std::string& id)
-        : menu_id(id) {}
-};
-
-/// @brief プルダウン選択変更イベント
-struct PulldownSelectionChangedEvent : Event {
-    const std::string pulldown_id;
-    const std::size_t selected_index;
-
-    PulldownSelectionChangedEvent(const std::string& id, std::size_t index)
-        : pulldown_id(id), selected_index(index) {}
-};
-
-/// @brief ボタンクリックイベント
-struct ButtonClickedEvent : Event {
-    const std::string button_id;
-
-    explicit ButtonClickedEvent(const std::string& id)
-        : button_id(id) {}
-};
-
-/// @brief データ読込開始イベント
-struct DataLoadingStartedEvent : Event {
-    const std::string data_type;
-
-    explicit DataLoadingStartedEvent(const std::string& type)
-        : data_type(type) {}
-};
-
-/// @brief データ読込完了イベント
-struct DataLoadingCompletedEvent : Event {
-    const std::string data_type;
-    const bool success;
-
-    DataLoadingCompletedEvent(const std::string& type, bool succeeded)
-        : data_type(type), success(succeeded) {}
-};
-
-/// @brief 地理データ読込完了イベント
-struct GeographicDataLoadedEvent : Event {
-    const std::string layer_name;
-    const std::size_t feature_count;
-
-    GeographicDataLoadedEvent(const std::string& name, std::size_t count)
-        : layer_name(name), feature_count(count) {}
 };
 
 } // namespace paxs

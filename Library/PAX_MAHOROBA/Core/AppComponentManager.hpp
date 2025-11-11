@@ -124,22 +124,6 @@ namespace paxs {
             // AppStateManagerから最新データを取得
             auto& visible_manager = app_state_.getVisibilityManager();
 
-#ifdef PAXS_USING_SIMULATOR
-            auto& simulation_manager = app_state_.getSimulationManager();
-#endif
-
-
-#ifdef PAXS_USING_SIMULATOR
-            // シミュレーターが初期化されている かつ Simulation可視フラグがONの場合のみ表示
-            const bool simulation_visible = visible_manager.isVisible(ViewMenu::simulation);
-            ui_layer_.getSettlementStatusPanel().setVisible(
-                simulation_manager.isActive() && simulation_visible
-            );
-
-            // SettlementStatusPanelの背景をパネルと同期
-            ui_layer_.syncSettlementStatusBackground();
-#endif
-
             // Photo360Layerの可視性設定
             photo360_layer_.setVisible(visible_manager.isVisible(ViewMenu::view_3d));
 

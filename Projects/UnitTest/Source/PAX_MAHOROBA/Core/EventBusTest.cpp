@@ -124,26 +124,6 @@ TEST_F(EventBusTest, EnqueueAndProcessQueue) {
     EXPECT_EQ(EventBus::getInstance().getQueueSize(), 0);
 }
 
-// 複数のイベントをキューイング
-TEST_F(EventBusTest, MultipleQueuedEvents) {
-    int call_count = 0;
-
-    EventBus::getInstance().subscribe<TimeSpeedChangedEvent>(
-        [&](const TimeSpeedChangedEvent& event) { call_count++; }
-    );
-
-    // 複数のイベントをキューに追加
-    EventBus::getInstance().enqueue(TimeSpeedChangedEvent(1));
-    EventBus::getInstance().enqueue(TimeSpeedChangedEvent(2));
-    EventBus::getInstance().enqueue(TimeSpeedChangedEvent(4));
-    EXPECT_EQ(EventBus::getInstance().getQueueSize(), 3);
-
-    // キューを処理
-    EventBus::getInstance().processQueue();
-    EXPECT_EQ(call_count, 3);
-    EXPECT_EQ(EventBus::getInstance().getQueueSize(), 0);
-}
-
 // 購読者数の取得
 TEST_F(EventBusTest, GetSubscriberCount) {
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<ViewportChangedEvent>(), 0);
@@ -157,12 +137,6 @@ TEST_F(EventBusTest, GetSubscriberCount) {
         [](const ViewportChangedEvent& event) {}
     );
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<ViewportChangedEvent>(), 2);
-}
-
-// 購読者がいない場合のイベント発行
-TEST_F(EventBusTest, PublishWithoutSubscribers) {
-    // 購読者がいない状態でイベントを発行しても例外が発生しないことを確認
-    EXPECT_NO_THROW(EventBus::getInstance().publish(MapLayerVisibilityChangedEvent(123, true)));
 }
 
 // clearメソッドのテスト
@@ -190,7 +164,7 @@ TEST_F(EventBusTest, ClearMethod) {
 
 // シミュレーションイベントのテスト
 TEST_F(EventBusTest, SimulationStateChangedEvent) {
-    SimulationStateChangedEvent::State received_state = SimulationStateChangedEvent::State::Stopped;
+    SimulationState received_state = SimulationState::Stopped;
 
     EventBus::getInstance().subscribe<SimulationStateChangedEvent>(
         [&](const SimulationStateChangedEvent& event) {
@@ -199,14 +173,14 @@ TEST_F(EventBusTest, SimulationStateChangedEvent) {
     );
 
     EventBus::getInstance().publish(
-        SimulationStateChangedEvent(SimulationStateChangedEvent::State::Playing, 100)
+        SimulationStateChangedEvent(SimulationState::Playing, 100)
     );
-    EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Playing);
+    EXPECT_EQ(received_state, SimulationState::Playing);
 
     EventBus::getInstance().publish(
-        SimulationStateChangedEvent(SimulationStateChangedEvent::State::Paused, 150)
+        SimulationStateChangedEvent(SimulationState::Stopped, 150)
     );
-    EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Paused);
+    EXPECT_EQ(received_state, SimulationState::Stopped);
 }
 
 // コマンドイベントのテスト
@@ -245,78 +219,6 @@ TEST_F(EventBusTest, CommandEvents) {
     EXPECT_EQ(pause_count, 1);
     EXPECT_EQ(stop_count, 1);
     EXPECT_EQ(step_count, 1);
-}
-
-// UIイベントのテスト
-TEST_F(EventBusTest, UIEvents) {
-    std::string received_menu_id;
-    std::string received_pulldown_id;
-    std::size_t received_index = 0;
-    std::string received_button_id;
-
-    EventBus::getInstance().subscribe<MenuItemSelectedEvent>(
-        [&](const MenuItemSelectedEvent& event) {
-            received_menu_id = event.menu_id;
-        }
-    );
-    EventBus::getInstance().subscribe<PulldownSelectionChangedEvent>(
-        [&](const PulldownSelectionChangedEvent& event) {
-            received_pulldown_id = event.pulldown_id;
-            received_index = event.selected_index;
-        }
-    );
-    EventBus::getInstance().subscribe<ButtonClickedEvent>(
-        [&](const ButtonClickedEvent& event) {
-            received_button_id = event.button_id;
-        }
-    );
-
-    EventBus::getInstance().publish(MenuItemSelectedEvent("file_open"));
-    EXPECT_EQ(received_menu_id, "file_open");
-
-    EventBus::getInstance().publish(PulldownSelectionChangedEvent("language_select", 2));
-    EXPECT_EQ(received_pulldown_id, "language_select");
-    EXPECT_EQ(received_index, 2);
-
-    EventBus::getInstance().publish(ButtonClickedEvent("apply_button"));
-    EXPECT_EQ(received_button_id, "apply_button");
-}
-
-// データローディングイベントのテスト
-TEST_F(EventBusTest, DataLoadingEvents) {
-    std::string received_data_type;
-    bool received_success = false;
-    std::string received_layer_name;
-    std::size_t received_feature_count = 0;
-
-    EventBus::getInstance().subscribe<DataLoadingStartedEvent>(
-        [&](const DataLoadingStartedEvent& event) {
-            received_data_type = event.data_type;
-        }
-    );
-    EventBus::getInstance().subscribe<DataLoadingCompletedEvent>(
-        [&](const DataLoadingCompletedEvent& event) {
-            received_data_type = event.data_type;
-            received_success = event.success;
-        }
-    );
-    EventBus::getInstance().subscribe<GeographicDataLoadedEvent>(
-        [&](const GeographicDataLoadedEvent& event) {
-            received_layer_name = event.layer_name;
-            received_feature_count = event.feature_count;
-        }
-    );
-
-    EventBus::getInstance().publish(DataLoadingStartedEvent("map_tiles"));
-    EXPECT_EQ(received_data_type, "map_tiles");
-
-    EventBus::getInstance().publish(DataLoadingCompletedEvent("map_tiles", true));
-    EXPECT_EQ(received_data_type, "map_tiles");
-    EXPECT_TRUE(received_success);
-
-    EventBus::getInstance().publish(GeographicDataLoadedEvent("rivers", 1523));
-    EXPECT_EQ(received_layer_name, "rivers");
-    EXPECT_EQ(received_feature_count, 1523);
 }
 
 } // namespace paxs

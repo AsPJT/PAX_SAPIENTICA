@@ -12,8 +12,6 @@
 #ifndef PAX_MAHOROBA_UI_SETTLEMENT_STATUS_PANEL_HPP
 #define PAX_MAHOROBA_UI_SETTLEMENT_STATUS_PANEL_HPP
 
-#include <cstddef>
-
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
@@ -35,7 +33,7 @@ namespace paxs {
             : visible_manager_ptr(visible_manager) {}
 
         void render() const override {
-            if (!visible_) return;
+            if (!isVisible()) return;
 
             const std::string text = getStatusText();
 
@@ -68,8 +66,8 @@ namespace paxs {
             };
         }
 
-        bool isVisible() const override { return visible_; }
         void setVisible(bool visible) override { visible_ = visible; }
+        bool isVisible() const override { return visible_ && visible_manager_ptr->isVisible(ViewMenu::simulation); }
         void setPos(const paxg::Vec2i& pos) override { pos_ = pos; }
         bool isHit(int /*x*/, int /*y*/) const override { return false; }
         const char* getName() const override { return "SettlementStatusPanel"; }

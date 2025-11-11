@@ -17,14 +17,13 @@
 namespace paxs {
 
 // 前方宣言
-class AppStateManager;
 class EventBus;
 
 /// @brief クリックコンテキスト - クリック時に必要なパラメータをまとめた構造体
 /// @brief Click context - Structure containing parameters needed for click handling
 struct ClickContext {
     paxg::Vec2i mouse_pos;         ///< マウス座標 / Mouse position
-    AppStateManager* app_state_manager = nullptr;  ///< アプリケーション状態管理 / App state manager
+    // TODO: 必要かどうか検討
     EventBus* event_bus = nullptr; ///< イベントバス / Event bus
 };
 

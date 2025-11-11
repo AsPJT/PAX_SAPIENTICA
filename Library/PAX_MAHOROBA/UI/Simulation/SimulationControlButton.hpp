@@ -12,12 +12,10 @@
 #ifndef PAX_MAHOROBA_UI_SIMULATION_CONTROL_BUTTONS_HPP
 #define PAX_MAHOROBA_UI_SIMULATION_CONTROL_BUTTONS_HPP
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationState.hpp>
 
 namespace paxs {
 
@@ -87,44 +85,15 @@ namespace paxs {
         const char* getName() const override { return "SimulationControlButtons"; }
         RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
 
-        void setReferences(
-            const SimulationManager* simulation_manager_ptr,
-            EventBus* event_bus,
-            int debug_start_y
-        ) {
-            simulation_manager_ptr_ = simulation_manager_ptr;
-            event_bus_ = event_bus;
-            debug_start_y_ = debug_start_y;
+        void setButtonsBaseY(int buttons_base_y) {
+            buttons_base_y_ = buttons_base_y;
 
-            // イベント購読を設定
-            subscribeToEvents();
             layoutButtons();
         }
 
-        /// @brief イベント購読を設定
-        void subscribeToEvents() {
-            if (event_bus_ == nullptr) return;
-
-            // SimulationPlayCommandEventを購読してシミュレーション再生状態を同期
-            event_bus_->subscribe<SimulationPlayCommandEvent>(
-                [this](const SimulationPlayCommandEvent&) {
-                    is_simulation_playing_ = true;
-                }
-            );
-
-            // SimulationStopCommandEventを購読
-            event_bus_->subscribe<SimulationStopCommandEvent>(
-                [this](const SimulationStopCommandEvent&) {
-                    is_simulation_playing_ = false;
-                }
-            );
-
-            // SimulationInitCommandEventを購読（初期化時は停止状態）
-            event_bus_->subscribe<SimulationInitCommandEvent>(
-                [this](const SimulationInitCommandEvent&) {
-                    is_simulation_playing_ = false;
-                }
-            );
+        /// @brief シミュレーション状態を設定
+        void setSimulationState(SimulationState state) {
+            simulation_state_ = state;
         }
 
         void setOnClick(ClickCallback cb) {
@@ -136,20 +105,18 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!simulation_manager_ptr_) return;
-
-            if (!simulation_manager_ptr_->isActive()) {
+            if (simulation_state_ == SimulationState::Uninitialized) {
                buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].render();
                return;
             }
-            if (is_simulation_playing_) {
+            if (simulation_state_ == SimulationState::Playing) {
                 // 再生中 → 停止ボタンのみ表示
                 buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].render();
                 return;
             }
+            // 停止中 → 読み込みボタンと停止ボタン以外を表示
             for (const auto& btn : buttons_) {
                 if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
-                    // 読み込みボタンと停止ボタンは非表示
                     continue;
                 }
                 btn.render();
@@ -160,19 +127,16 @@ namespace paxs {
             if (!isVisible()) {
                 return false;
             }
-            if (!simulation_manager_ptr_) {
-                return false;
-            }
-            if (!simulation_manager_ptr_->isActive()) {
+            if (simulation_state_ == SimulationState::Uninitialized) {
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].isHit(x, y);
             }
-            if (is_simulation_playing_) {
+            if (simulation_state_ == SimulationState::Playing) {
                 // 再生中 → 停止ボタンのみ有効
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].isHit(x, y);
             }
+            // 停止中
             for (const auto& btn : buttons_) {
                 if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
-                    // 読み込みボタンと停止ボタンは非表示
                     continue;
                 }
                 if (btn.isHit(x, y)) {
@@ -183,19 +147,16 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!simulation_manager_ptr_) {
-                return EventHandlingResult::NotHandled();
-            }
-            if (!simulation_manager_ptr_->isActive()) {
+            if (simulation_state_ == SimulationState::Uninitialized) {
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].handleEvent(event);
             }
-            if (is_simulation_playing_) {
+            if (simulation_state_ == SimulationState::Playing) {
                 // 再生中 → 停止ボタンのみ有効
                 return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].handleEvent(event);
             }
+            // 停止中
             for (auto& btn : buttons_) {
                 if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
-                    // 読み込みボタンと停止ボタンは非表示
                     continue;
                 }
                 if (btn.isHit(event.x, event.y)) {
@@ -207,7 +168,7 @@ namespace paxs {
 
         void layoutButtons() {
             // 基本のY位置
-            const int base_y = debug_start_y_;
+            const int base_y = buttons_base_y_;
 
             for (auto& btn : buttons_) {
                 switch (btn.getId()) {
@@ -247,12 +208,11 @@ namespace paxs {
     private:
         std::vector<SimulationControlButton> buttons_;
 
-        const SimulationManager* simulation_manager_ptr_ = nullptr;
-        EventBus* event_bus_ = nullptr;
-        int debug_start_y_ = 0;
+        // ボタン配置の基準Y座標 / Base Y coordinate for button layout
+        int buttons_base_y_ = 0;
 
-        // イベントから同期された状態 / State synchronized from events
-        bool is_simulation_playing_ = false;
+        // SimulationPanelから設定される状態 / State set from SimulationPanel
+        SimulationState simulation_state_ = SimulationState::Uninitialized;
 
         static constexpr int TIME_ICON_SIZE = 40;
 
