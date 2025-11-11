@@ -64,7 +64,7 @@ public:
             handler(static_cast<const EventType&>(event));
         };
 
-        subscribers_[type_id].push_back(wrapper);
+        subscribers_[type_id].emplace_back(wrapper);
     }
 
     /// @brief イベントを発行（即座に通知）

@@ -12,12 +12,16 @@
 #ifndef PAX_MAHOROBA_MAP_CONTENT_INPUT_HANDLER_HPP
 #define PAX_MAHOROBA_MAP_CONTENT_INPUT_HANDLER_HPP
 
+#include <iostream>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include <PAX_MAHOROBA/Input/Events.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
-#include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
-#include <PAX_MAHOROBA/Map/Location/PersonPortraitManager.hpp>
+#include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
+#include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
+#include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
@@ -25,17 +29,22 @@
 
 namespace paxs {
 
-    /// @brief 地図コンテンツ入力処理ハンドラー
-    /// @brief Map content input handler
+    /// @brief 地図コンテンツ入力処理ハンドラー（新Featureシステム対応）
+    /// @brief Map content input handler (new Feature system)
     class MapContentInputHandler : public IInputHandler {
     public:
+        /// @brief コンストラクタ
+        /// @brief Constructor
+        /// @param features 地物のリスト / List of features
+        /// @param render_context 描画コンテキスト / Render context
+        /// @param visibility_manager 可視性マネージャー / Visibility manager
         MapContentInputHandler(
-            const PersonPortraitManager* person_portrait_manager,
-            const GeographicFeatureManager* geographic_feature_manager,
+            const std::vector<std::unique_ptr<MapFeature>>* features,
+            const RenderContext* render_context,
             const FeatureVisibilityManager* visibility_manager
         )
-            : person_portrait_manager_(person_portrait_manager)
-            , geographic_feature_manager_(geographic_feature_manager)
+            : features_(features)
+            , render_context_(render_context)
             , visibility_manager_(visibility_manager)
         {
         }
@@ -62,10 +71,14 @@ namespace paxs {
                 }
             }
 
-            // キャッシュされた結果に基づいて処理
-            if (hit_cache_.type == HitCache::HitType::PersonPortrait) {
-                return EventHandlingResult::Handled();
-            } else if (hit_cache_.type == HitCache::HitType::GeographicFeature) {
+            // キャッシュされたFeatureに対してonClickを呼び出し
+            if (hit_cache_.hit_feature != nullptr) {
+                ClickContext context;
+                context.mouse_pos = paxg::Vec2i(event.x, event.y);
+
+                hit_cache_.hit_feature->onClick(context);
+
+                std::cout << "Clicked on feature: " << hit_cache_.hit_feature->getName() << std::endl;
                 return EventHandlingResult::Handled();
             }
 
@@ -87,58 +100,75 @@ namespace paxs {
                 hit_cache_.cached_x = x;
                 hit_cache_.cached_y = y;
 
-                // 1. 人物肖像画をチェック
-                if (person_portrait_manager_ != nullptr) {
-                    std::string person_name;
-                    if (person_portrait_manager_->isHit(x, y, person_name)) {
-                        hit_cache_.type = HitCache::HitType::PersonPortrait;
-                        hit_cache_.name = person_name;
-                        hit_cache_.valid = true;
-                        return true;
-                    }
-                }
+                // 新システム: MapContentHitTesterを使用してヒットテスト
+                if (features_ != nullptr && render_context_ != nullptr) {
+                    MapFeature* hit_feature = MapContentHitTester::findFeatureAt(*features_, *render_context_, x, y);
 
-                // 2. 地理的特徴をチェック
-                if (geographic_feature_manager_ != nullptr) {
-                    std::string place_name;
-                    if (geographic_feature_manager_->isHit(x, y, place_name)) {
-                        hit_cache_.type = HitCache::HitType::GeographicFeature;
-                        hit_cache_.name = place_name;
+                    if (hit_feature != nullptr) {
+                        std::cout << "  -> Hit feature: " << hit_feature->getName() << std::endl;
+                        hit_cache_.hit_feature = hit_feature;
                         hit_cache_.valid = true;
                         return true;
                     }
                 }
 
                 // ヒットなし
-                hit_cache_.type = HitCache::HitType::None;
+                hit_cache_.hit_feature = nullptr;
                 hit_cache_.valid = true;
                 return false;
             }
 
-            return hit_cache_.type != HitCache::HitType::None;
+            return hit_cache_.hit_feature != nullptr;
         }
 
-        RenderLayer getLayer() const override { return RenderLayer::MapContent; }
         bool isVisible() const { return true; }
-        void setVisible(bool /*visible*/) {}
-        bool isEnabled() const override { return true; }
-        void setEnabled(bool /*enabled*/) {}
+        RenderLayer getLayer() const override { return RenderLayer::MapContent; }
 
     private:
-        const PersonPortraitManager* person_portrait_manager_ = nullptr;
-        const GeographicFeatureManager* geographic_feature_manager_ = nullptr;
+        const std::vector<std::unique_ptr<MapFeature>>* features_ = nullptr;
+        const RenderContext* render_context_ = nullptr;
         const FeatureVisibilityManager* visibility_manager_ = nullptr;
 
+        /// @brief ヒットテスト結果のキャッシュ
+        /// @brief Cache for hit test results
         struct HitCache {
             bool valid = false;
-            enum class HitType { None, PersonPortrait, GeographicFeature };
-            HitType type = HitType::None;
-            std::string name;
+            MapFeature* hit_feature = nullptr;  ///< ヒットしたFeature（所有権なし）
             int cached_x = -1;
             int cached_y = -1;
         };
         mutable HitCache hit_cache_;
     };
+
+    // ========================================
+    // MapContentHitTester::findFeatureAt の実装
+    // ========================================
+
+    /// @brief Featureリストからマウス座標でヒットしたFeatureを検索
+    inline MapFeature* MapContentHitTester::findFeatureAt(
+        const std::vector<std::unique_ptr<MapFeature>>& features,
+        const RenderContext& context,
+        int mouse_x,
+        int mouse_y
+    ) {
+        // 逆順で検索（後に描画されたものが優先）
+        for (auto it = features.rbegin(); it != features.rend(); ++it) {
+            const auto& feature = *it;
+            if (!feature || !feature->isVisible()) continue;
+
+            // 時間フィルタリング：現在の時刻に表示されないFeatureはクリック不可
+            if (!feature->isInTimeRange(context.jdn)) continue;
+
+            // 描画されていないFeatureはクリック不可（空間・ズームレベルフィルタリング済み）
+            if (feature->getScreenPositions().empty()) continue;
+
+            // Featureのヒット判定メソッドを呼び出し
+            if (feature->isHit(paxg::Vec2i(mouse_x, mouse_y))) {
+                return feature.get();
+            }
+        }
+        return nullptr;
+    }
 
 } // namespace paxs
 

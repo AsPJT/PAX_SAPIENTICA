@@ -64,8 +64,8 @@ namespace paxs {
                 &app_state.getVisibilityManager()
               )
             , map_content_input_handler_(
-                nullptr,  // 後で設定
-                nullptr,  // 後で設定
+                nullptr,  // 後で設定（map_content_layer_初期化後）
+                nullptr,  // 後で設定（map_content_layer_初期化後）
                 &app_state.getVisibilityManager()
               )
             , ui_layer_(
@@ -84,11 +84,11 @@ namespace paxs {
             map_content_layer_.setAppStateManager(&app_state);
             map_tile_layer_.setAppStateManager(&app_state);
 
-            // MapContentInputHandlerにマネージャーのポインタを設定
+            // MapContentInputHandlerにFeaturesとRenderContextを設定
             // （map_content_layer_の初期化後に設定する必要があるため、ここで代入）
             map_content_input_handler_ = MapContentInputHandler(
-                &map_content_layer_.getPersonPortraitManager(),
-                &map_content_layer_.getGeographicFeatureManager(),
+                &map_content_layer_.getFeatures(),
+                &map_content_layer_.getRenderContext(),
                 &app_state.getVisibilityManager()
             );
 

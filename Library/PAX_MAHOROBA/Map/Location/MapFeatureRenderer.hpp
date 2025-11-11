@@ -1,0 +1,276 @@
+﻿/*##########################################################################################
+
+    PAX SAPIENTICA Library 💀🌿🌏
+
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com		https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
+
+#ifndef PAX_MAHOROBA_MAP_FEATURE_RENDERER_HPP
+#define PAX_MAHOROBA_MAP_FEATURE_RENDERER_HPP
+
+#include <cstdint>
+#include <memory>
+#include <vector>
+
+#include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
+#include <PAX_MAHOROBA/Map/Location/GeographicFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
+#include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+
+#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
+
+namespace paxs {
+
+/// @brief 地物の描画を統括するレンダラークラス
+/// @brief Renderer class that manages drawing of all map features
+class MapFeatureRenderer {
+public:
+    /// @brief 地物のリストを描画
+    /// @brief Draw list of features
+    /// @param features 描画する地物のリスト / List of features to draw
+    /// @param context 描画コンテキスト / Rendering context
+    /// @param texture_map テクスチャマップ / Texture map
+    static void drawFeatures(
+        const std::vector<std::unique_ptr<MapFeature>>& features,
+        const RenderContext& context,
+        const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
+    ) {
+        for (const auto& feature : features) {
+            if (!feature || !feature->isVisible()) continue;
+            if (!feature->isInTimeRange(context.jdn)) continue;
+            // 空間フィルタリング済み（update()でスクリーン座標が空の場合はスキップ）
+            if (feature->getScreenPositions().empty()) continue;
+
+            switch (feature->getType()) {
+            case FeatureType::Person:
+                drawPerson(static_cast<const PersonFeature&>(*feature), context, texture_map);
+                break;
+            case FeatureType::Geographic:
+                drawGeographic(static_cast<const GeographicFeature&>(*feature), context, texture_map);
+                break;
+            case FeatureType::PlaceName:
+                drawPlaceName(static_cast<const PlaceNameFeature&>(*feature), context, texture_map);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+private:
+    MapFeatureRenderer() = default;
+
+    // 描画定数
+    static constexpr int TEXTURE_SPACING_HORIZONTAL = 4;
+    static constexpr int TEXTURE_SPACING_HORIZONTAL_ZOOMED = 6;
+    static constexpr int TEXTURE_SPACING_VERTICAL = 4;
+    static constexpr std::uint_least16_t ZOOM_SPLIT_COUNT = 10;
+
+    /// @brief 人物地物を描画
+    /// @brief Draw person feature
+    /// @param feature 人物地物 / Person feature
+    /// @param context 描画コンテキスト / Rendering context
+    /// @param texture_map テクスチャマップ / Texture map
+    static void drawPerson(
+        const PersonFeature& feature,
+        const RenderContext& context,
+        const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
+    ) {
+        const auto& data = feature.getData();
+        const auto& list_data = feature.getListData();
+        const auto& screen_positions = feature.getScreenPositions();
+        const int display_size = feature.getDisplaySize();
+
+        const bool is_small_size = (data.min_view > context.map_view_width || data.max_view < context.map_view_width);
+
+        // 各スクリーン座標で描画（経度ラップ対応）
+        for (const auto& draw_pos : screen_positions) {
+            // エージェントアイコン描画
+            if (LocationRendererHelper::drawAgentIcon(texture_map, data.lpe, draw_pos)) {
+                continue;
+            }
+
+            // テクスチャを取得
+            const std::uint_least32_t place_tex = (data.place_texture == 0) ? list_data.place_texture : data.place_texture;
+            if (texture_map.find(place_tex) == texture_map.end()) continue;
+
+            if (is_small_size) {
+                // 肖像画のみ描画
+                texture_map.at(place_tex).resizedDrawAt(display_size, draw_pos);
+            }
+            else {
+                // 肖像画とテキストを描画
+                texture_map.at(place_tex).resizedDrawAt(120, draw_pos);
+
+                // テキスト位置
+                const paxg::Vec2i draw_font_pos = paxg::Vec2i{ draw_pos.x(), draw_pos.y() - 60 };
+                LocationRendererHelper::drawBilingualText(data.place_name, draw_font_pos, "topCenter");
+            }
+        }
+    }
+
+    /// @brief 地理的地物を描画
+    /// @brief Draw geographic feature
+    /// @param feature 地理的地物 / Geographic feature
+    /// @param context 描画コンテキスト / Rendering context
+    /// @param texture_map テクスチャマップ / Texture map
+    static void drawGeographic(
+        const GeographicFeature& feature,
+        const RenderContext& context,
+        const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
+    ) {
+        const auto& data = feature.getData();
+        const auto& screen_positions = feature.getScreenPositions();
+        const int display_size = feature.getDisplaySize();
+
+        // 各スクリーン座標で描画（経度ラップ対応）
+        for (const auto& draw_pos : screen_positions) {
+            // エージェントアイコン描画
+            if (LocationRendererHelper::drawAgentIcon(texture_map, data.lpe, draw_pos)) {
+                continue;
+            }
+
+            // テクスチャを取得（親のテクスチャをフォールバック）
+            // Note: GeographicFeature は LocationPoint を使用しているため、親のテクスチャ情報は含まれていない
+            // 将来的には LocationPointList への参照も保持する必要があるかもしれない
+            const std::uint_least32_t place_tex = data.place_texture;
+            if (texture_map.find(place_tex) == texture_map.end()) continue;
+
+            const bool is_zoomed = (data.zoom > 1.0);
+
+            // 複数タイルの描画
+            drawTextureMultiple(
+                texture_map.at(place_tex),
+                display_size,
+                draw_pos,
+                data.x_size,
+                data.y_size,
+                is_zoomed
+            );
+        }
+    }
+
+    /// @brief 地名地物を描画
+    /// @brief Draw place name feature
+    /// @param feature 地名地物 / Place name feature
+    /// @param context 描画コンテキスト / Rendering context
+    /// @param texture_map テクスチャマップ / Texture map
+    static void drawPlaceName(
+        const PlaceNameFeature& feature,
+        const RenderContext& context,
+        const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
+    ) {
+        const auto& data = feature.getData();
+        const auto& screen_positions = feature.getScreenPositions();
+
+        const std::uint_least32_t first_language = MurMur3::calcHash("ja-JP");
+        const std::uint_least32_t second_language = MurMur3::calcHash("en-US");
+
+        paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+        paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
+
+        // 各スクリーン座標で描画（経度ラップ対応）
+        for (const auto& draw_pos : screen_positions) {
+            // 英語名がない場合
+            if (data.place_name.find(second_language) == data.place_name.end()) {
+                if (data.place_name.find(first_language) != data.place_name.end()) {
+                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                    font->drawAt(data.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
+                }
+            }
+            // 日本語名がない場合
+            else if (data.place_name.find(first_language) == data.place_name.end()) {
+                if (data.place_name.find(second_language) != data.place_name.end()) {
+                    en_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                    en_font->drawAt(data.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
+                }
+            }
+            // 両方の名前がある場合
+            else {
+                // 英語名を描画（下）
+                en_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                en_font->drawBottomCenter(data.place_name.at(second_language), draw_pos, paxg::Color(0, 0, 0));
+                // 日本語名を描画（上）
+                if (data.place_name.find(first_language) != data.place_name.end()) {
+                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                    font->drawTopCenter(data.place_name.at(first_language), draw_pos, paxg::Color(0, 0, 0));
+                }
+            }
+        }
+    }
+
+    /// @brief テクスチャを複数描画（GeographicFeature用）
+    /// @brief Draw texture multiple times (for GeographicFeature)
+    static void drawTextureMultiple(
+        const paxg::Texture& tex,
+        const int len,
+        const paxg::Vec2i& draw_pos,
+        const std::uint_least16_t x_size,
+        const std::uint_least16_t y_size,
+        const bool is_zoomed
+    ) {
+        if (x_size <= 1) {
+            if (y_size <= 1) {
+                tex.resizedDrawAt(len, draw_pos);
+            }
+            else {
+                for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
+                    tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x(), draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                }
+            }
+        }
+        else {
+            if (is_zoomed) {
+                // ズーム時は分割表示
+                constexpr std::uint_least16_t split_count = ZOOM_SPLIT_COUNT;
+                if (y_size <= 1) {
+                    for (std::uint_least16_t ix = 0, ixx = 0, iyy = 0; ix < x_size; ++ix, ++ixx) {
+                        if (ix != 0 && ix % split_count == 0) {
+                            ixx = 0;
+                            ++iyy;
+                        }
+                        tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ixx) * TEXTURE_SPACING_HORIZONTAL_ZOOMED, draw_pos.y() + static_cast<int>(iyy) * TEXTURE_SPACING_VERTICAL });
+                    }
+                }
+                else {
+                    for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
+                        for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
+                            tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                        }
+                    }
+                }
+            }
+            else {
+                // 通常時
+                if (y_size <= 1) {
+                    for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
+                        tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() });
+                    }
+                }
+                else {
+                    for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
+                        for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
+                            tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+} // namespace paxs
+
+#endif // !PAX_MAHOROBA_MAP_FEATURE_RENDERER_HPP
