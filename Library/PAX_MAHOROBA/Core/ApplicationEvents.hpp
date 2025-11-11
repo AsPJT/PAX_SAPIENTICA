@@ -147,22 +147,15 @@ struct SimulationStepCommandEvent : Event {
         : steps(step_count) {}
 };
 
-/// @brief 地理データ読み込みコマンドイベント
-struct LoadGeographicDataCommandEvent : Event {
+/// @brief シミュレーション初期化コマンドイベント
+struct SimulationInitializeCommandEvent : Event {
     const std::string model_name;
-    const std::string map_list_path;
-    const std::string japan_provinces_path;
     const unsigned int seed;
 
-    LoadGeographicDataCommandEvent(
+    SimulationInitializeCommandEvent(
         const std::string& model,
-        const std::string& map_path,
-        const std::string& provinces_path,
         unsigned int random_seed)
-        : model_name(model)
-        , map_list_path(map_path)
-        , japan_provinces_path(provinces_path)
-        , seed(random_seed) {}
+        : model_name(model), seed(random_seed) {}
 };
 
 /// @brief シミュレーション入力データ再読み込みコマンドイベント

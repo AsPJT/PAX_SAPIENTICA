@@ -23,7 +23,7 @@ namespace paxs {
     class SimulationControlButton : public IconButton {
     public:
         enum class Id {
-            LoadGeographicData, // 未初期化のとき
+            Initialize, // 未初期化のとき
             Stop, // 初期化済 & 再生中
             ReloadInputData, // 初期化済 & 停止中
             InitHumanData,
@@ -33,7 +33,7 @@ namespace paxs {
             None,
         };
         static constexpr std::array<std::pair<const char*, std::uint_least32_t>, 7> button_data = {{
-            {"SimulationLoadGeographicDataButton", MurMur3::calcHash("texture_load_geographic_data2")},
+            {"SimulationInitializeButton", MurMur3::calcHash("texture_load_geographic_data2")},
             {"SimulationStopButton", MurMur3::calcHash("texture_stop")},
             {"SimulationReloadInputDataButton", MurMur3::calcHash("texture_reload")},
             {"SimulationInitHumanDataButton", MurMur3::calcHash("texture_load_agent_data2")},
@@ -106,7 +106,7 @@ namespace paxs {
 
         void render() const override {
             if (simulation_state_ == SimulationState::Uninitialized) {
-               buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].render();
+               buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Initialize)].render();
                return;
             }
             if (simulation_state_ == SimulationState::Playing) {
@@ -116,7 +116,7 @@ namespace paxs {
             }
             // 停止中 → 読み込みボタンと停止ボタン以外を表示
             for (const auto& btn : buttons_) {
-                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
+                if (btn.getId() == SimulationControlButton::Id::Initialize || btn.getId() == SimulationControlButton::Id::Stop) {
                     continue;
                 }
                 btn.render();
@@ -128,7 +128,7 @@ namespace paxs {
                 return false;
             }
             if (simulation_state_ == SimulationState::Uninitialized) {
-                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].isHit(x, y);
+                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Initialize)].isHit(x, y);
             }
             if (simulation_state_ == SimulationState::Playing) {
                 // 再生中 → 停止ボタンのみ有効
@@ -136,7 +136,7 @@ namespace paxs {
             }
             // 停止中
             for (const auto& btn : buttons_) {
-                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
+                if (btn.getId() == SimulationControlButton::Id::Initialize || btn.getId() == SimulationControlButton::Id::Stop) {
                     continue;
                 }
                 if (btn.isHit(x, y)) {
@@ -148,7 +148,7 @@ namespace paxs {
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             if (simulation_state_ == SimulationState::Uninitialized) {
-                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::LoadGeographicData)].handleEvent(event);
+                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Initialize)].handleEvent(event);
             }
             if (simulation_state_ == SimulationState::Playing) {
                 // 再生中 → 停止ボタンのみ有効
@@ -156,7 +156,7 @@ namespace paxs {
             }
             // 停止中
             for (auto& btn : buttons_) {
-                if (btn.getId() == SimulationControlButton::Id::LoadGeographicData || btn.getId() == SimulationControlButton::Id::Stop) {
+                if (btn.getId() == SimulationControlButton::Id::Initialize || btn.getId() == SimulationControlButton::Id::Stop) {
                     continue;
                 }
                 if (btn.isHit(event.x, event.y)) {
@@ -172,7 +172,7 @@ namespace paxs {
 
             for (auto& btn : buttons_) {
                 switch (btn.getId()) {
-                case SimulationControlButton::Id::LoadGeographicData:
+                case SimulationControlButton::Id::Initialize:
                     btn.placeFromRight(X_LOAD_OR_DELETE, base_y, TIME_ICON_SIZE);
                     break;
                 case SimulationControlButton::Id::Clear:
@@ -226,7 +226,7 @@ namespace paxs {
         ClickCallback on_click_;
 
         void buildButtons() {
-            buttons_.emplace_back(SimulationControlButton::Id::LoadGeographicData);
+            buttons_.emplace_back(SimulationControlButton::Id::Initialize);
             buttons_.emplace_back(SimulationControlButton::Id::Stop);
             buttons_.emplace_back(SimulationControlButton::Id::ReloadInputData);
             buttons_.emplace_back(SimulationControlButton::Id::InitHumanData);

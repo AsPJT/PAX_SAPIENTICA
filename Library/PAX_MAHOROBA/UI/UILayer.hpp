@@ -16,7 +16,7 @@
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/UI/SettlementStatusPanel.hpp>
+#include <PAX_MAHOROBA/UI/Simulation/SettlementStatusPanel.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationPanel.hpp>
 #endif
 

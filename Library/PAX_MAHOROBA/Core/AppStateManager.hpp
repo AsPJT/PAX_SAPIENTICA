@@ -153,19 +153,13 @@ public:
         event_bus_.publish(SimulationStepCommandEvent(steps));
     }
 
-    /// @brief 地理データ読み込みコマンドを実行
+    /// @brief シミュレーション初期化コマンドを実行
     /// @param model_name モデル名
-    /// @param map_list_path マップリストパス
-    /// @param japan_provinces_path 都道府県パス
     /// @param seed 乱数シード
-    void executeLoadGeographicData(
+    void executeSimulationInitialize(
         const std::string& model_name,
-        const std::string& map_list_path,
-        const std::string& japan_provinces_path,
         unsigned int seed) {
-        event_bus_.publish(LoadGeographicDataCommandEvent(
-            model_name, map_list_path, japan_provinces_path, seed
-        ));
+        event_bus_.publish(SimulationInitializeCommandEvent(model_name, seed));
     }
 
     /// @brief シミュレーション入力データ再読み込みコマンドを実行
@@ -322,10 +316,10 @@ private:
             }
         );
 
-        // 地理データ読み込みコマンドの購読
-        event_bus_.subscribe<LoadGeographicDataCommandEvent>(
-            [this](const LoadGeographicDataCommandEvent& event) {
-                handleLoadGeographicData(event);
+        // シミュレーション初期化コマンドの購読
+        event_bus_.subscribe<SimulationInitializeCommandEvent>(
+            [this](const SimulationInitializeCommandEvent& event) {
+                handleSimulationInitialize(event);
             }
         );
 
@@ -408,7 +402,6 @@ private:
     /// @brief シミュレーション初期化コマンドを処理
     void handleSimulationInit(const SimulationInitCommandEvent& event) {
         (void)event;
-        // ドメインロジック実行
         simulation_manager_.initSimulation();
         koyomi_.steps.setDay(0);
         // TODO: 下のコメントの正誤確認
@@ -431,7 +424,6 @@ private:
 
     /// @brief シミュレーション再生コマンドを処理
     void handleSimulationPlay(const SimulationPlayCommandEvent& event) {
-        // ドメインロジック実行
         koyomi_.is_agent_update = true;
         koyomi_.move_forward_in_time = true;
 
@@ -450,7 +442,6 @@ private:
     /// @brief シミュレーション一時停止コマンドを処理
     void handleSimulationPause(const SimulationPauseCommandEvent& event) {
         (void)event;
-        // ドメインロジック実行
         koyomi_.move_forward_in_time = false;
         koyomi_.go_back_in_time = false;
 
@@ -464,7 +455,6 @@ private:
     /// @brief シミュレーション停止コマンドを処理
     void handleSimulationStop(const SimulationStopCommandEvent& event) {
         (void)event;
-        // ドメインロジック実行
         koyomi_.is_agent_update = false;
         koyomi_.move_forward_in_time = false;
         koyomi_.go_back_in_time = false;
@@ -478,7 +468,6 @@ private:
 
     /// @brief シミュレーションステップ進行コマンドを処理
     void handleSimulationStep(const SimulationStepCommandEvent& event) {
-        // ドメインロジック実行
         for (int i = 0; i < event.steps; ++i) {
             simulation_manager_.step();
             koyomi_.steps.setDay(koyomi_.steps.cgetDay() + 1);
@@ -500,15 +489,9 @@ private:
         ));
     }
 
-    /// @brief 地理データ読み込みコマンドを処理
-    void handleLoadGeographicData(const LoadGeographicDataCommandEvent& event) {
-        // ドメインロジック実行
-        simulation_manager_.initialize(
-            event.map_list_path,
-            event.japan_provinces_path,
-            event.seed,
-            event.model_name
-        );
+    /// @brief シミュレーション初期化コマンドを処理
+    void handleSimulationInitialize(const SimulationInitializeCommandEvent& event) {
+        simulation_manager_.simulationInitialize(event.model_name, event.seed);
 
         // シミュレーション初期化
         simulation_manager_.initSimulation();
@@ -527,16 +510,12 @@ private:
 
     /// @brief シミュレーション入力データ再読み込みコマンドを処理
     void handleReloadInputData(const ReloadInputDataCommandEvent& event) {
-        (void)event;
-        // ドメインロジック実行
-        simulation_manager_.reloadInputData();
+        simulation_manager_.reloadData(event.model_name);
     }
 
     /// @brief 人間データ初期化コマンドを処理
     void handleInitHumanData(const InitHumanDataCommandEvent& event) {
-        (void)event;
-        // ドメインロジック実行
-        simulation_manager_.initSimulation();
+        simulation_manager_.initHumanData(event.model_name);
         koyomi_.steps.setDay(0);
         koyomi_.calcDate();
 
@@ -557,7 +536,7 @@ private:
     /// @brief シミュレーションクリアコマンドを処理
     /// @brief Handle simulation clear command
     void handleSimulationClear(const SimulationClearCommandEvent& /*event*/) {
-        // ドメインロジック実行：シミュレーションを初期化前の状態に戻す
+        // シミュレーションを初期化前の状態に戻す
         simulation_manager_.clear();
         koyomi_.steps.setDay(0);
         koyomi_.calcDate();

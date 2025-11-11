@@ -30,14 +30,11 @@
 #include <PAX_MAHOROBA/UI/Simulation/SimulationStatsWidget.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationState.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
 
@@ -121,38 +118,19 @@ namespace paxs {
 
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
 
-            // よく使うパスを先に作る（必要な場合だけ使う）
-            auto make_paths = [&]() {
-                std::string map_list_path = "Data/Simulations/" + model_name + "/MapList.tsv";
-                std::string japan_provinces_path = "Data/Simulations/" + model_name;
-                AppConfig::getInstance()->calcDataSettingsNotPath(
-                    MurMur3::calcHash("SimulationXYZTiles"),
-                    [&](const std::string& path_) { map_list_path = path_; });
-                AppConfig::getInstance()->calcDataSettingsNotPath(
-                    MurMur3::calcHash("SimulationProvincesPath"),
-                    [&](const std::string& path_) { japan_provinces_path = path_; });
-                paxs::StringExtensions::replace(map_list_path, "Sample", model_name);
-                paxs::StringExtensions::replace(japan_provinces_path, "Sample", model_name);
-                return std::pair{std::move(map_list_path), std::move(japan_provinces_path)};
-            };
-
             switch (id) {
-            case SimulationControlButton::Id::LoadGeographicData: {
-                // 地理データ読み込みコマンドを発行
-                auto [map_list_path, japan_provinces_path] = make_paths();
-                SimulationConstants::getInstance(model_name)->init(model_name);
-
+            case SimulationControlButton::Id::Initialize: {
 #ifdef PAXS_USING_SIV3D
+                // Siv3Dコンソールを開く（初回のみ）
                 static bool is_console_open = false;
                 if (!is_console_open) {
                     s3d::detail::Console_impl{}.open();
                     is_console_open = true;
                 }
 #endif
+                // シミュレーション初期化コマンドを発行
                 std::random_device seed_gen;
-                app_state_manager_->executeLoadGeographicData(
-                    model_name, map_list_path, japan_provinces_path, seed_gen()
-                );
+                app_state_manager_->executeSimulationInitialize(model_name, seed_gen());
                 break;
             }
             case SimulationControlButton::Id::Stop: {
@@ -162,7 +140,6 @@ namespace paxs {
             }
             case SimulationControlButton::Id::ReloadInputData: {
                 // シミュレーション入力データ再読み込みコマンドを発行
-                SimulationConstants::getInstance(model_name)->init(model_name);
                 app_state_manager_->executeReloadInputData(model_name);
                 break;
             }

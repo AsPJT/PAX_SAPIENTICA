@@ -15,9 +15,14 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <utility>
 
+#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/StringExtensions.hpp>
 
 namespace paxs {
 
@@ -39,18 +44,27 @@ namespace paxs {
         /// @brief 現在のシミュレーションモデル名
         std::string current_model_name_;
 
-    public:
-        SimulationManager() = default;
-        ~SimulationManager() = default;
+        /// @brief モデル名からパスを生成
+        /// @param model_name モデル名 / Model name
+        /// @return <マップリストパス, 都道府県パス> / <map list path, provinces path>
+        std::pair<std::string, std::string> generatePaths(const std::string& model_name) const {
+            std::string map_list_path = "Data/Simulations/" + model_name + "/MapList.tsv";
+            std::string japan_provinces_path = "Data/Simulations/" + model_name;
 
-        // コピー・移動禁止
-        SimulationManager(const SimulationManager&) = delete;
-        SimulationManager& operator=(const SimulationManager&) = delete;
-        SimulationManager(SimulationManager&&) = delete;
-        SimulationManager& operator=(SimulationManager&&) = delete;
+            AppConfig::getInstance()->calcDataSettingsNotPath(
+                MurMur3::calcHash("SimulationXYZTiles"),
+                [&](const std::string& path_) { map_list_path = path_; });
+            AppConfig::getInstance()->calcDataSettingsNotPath(
+                MurMur3::calcHash("SimulationProvincesPath"),
+                [&](const std::string& path_) { japan_provinces_path = path_; });
+
+            paxs::StringExtensions::replace(map_list_path, "Sample", model_name);
+            paxs::StringExtensions::replace(japan_provinces_path, "Sample", model_name);
+
+            return {map_list_path, japan_provinces_path};
+        }
 
         /// @brief シミュレーションを初期化
-        /// @brief Initialize simulation
         /// @param map_list_path マップリストファイルパス / Map list file path
         /// @param provinces_path 行政区画ファイルパス / Provinces file path
         /// @param seed 乱数シード（オプショナル） / Random seed (optional)
@@ -78,8 +92,17 @@ namespace paxs {
             is_initialized_ = true;
         }
 
+    public:
+        SimulationManager() = default;
+        ~SimulationManager() = default;
+
+        // コピー・移動禁止
+        SimulationManager(const SimulationManager&) = delete;
+        SimulationManager& operator=(const SimulationManager&) = delete;
+        SimulationManager(SimulationManager&&) = delete;
+        SimulationManager& operator=(SimulationManager&&) = delete;
+
         /// @brief シミュレーションをクリア（初期化前の状態に戻す）
-        /// @brief Clear simulation (return to uninitialized state)
         void clear() {
             simulator_.reset();       // シミュレータを破棄
             is_initialized_ = false;  // 初期化フラグをfalseに
@@ -87,7 +110,6 @@ namespace paxs {
         }
 
         /// @brief シミュレーションを初期化（集落データをクリア）
-        /// @brief Initialize simulation (clear settlement data)
         void initSimulation() {
             if (simulator_) {
                 simulator_->init();
@@ -95,7 +117,6 @@ namespace paxs {
         }
 
         /// @brief シミュレーションを1ステップ実行
-        /// @brief Execute one step of simulation
         void step() {
             if (simulator_) {
                 simulator_->step();
@@ -103,7 +124,6 @@ namespace paxs {
         }
 
         /// @brief シミュレーションの入力データを再読み込み
-        /// @brief Reload simulation input data
         /// @param model_name モデル名（オプショナル） / Model name (
         void reloadInputData(const std::string& model_name = "") {
             if (simulator_) {
@@ -112,24 +132,53 @@ namespace paxs {
         }
 
         /// @brief シミュレーションが初期化されているか
-        /// @brief Check if simulation is initialized
         /// @return 初期化されていればtrue / true if initialized
         bool isInitialized() const {
             return is_initialized_ && simulator_ != nullptr;
         }
 
         /// @brief シミュレーションが実行中か（有効か）
-        /// @brief Check if simulation is active
         /// @return 実行中であればtrue / true if active
         bool isActive() const {
             return simulator_ != nullptr;
         }
 
         /// @brief 現在のモデル名を取得
-        /// @brief Get current model name
         /// @return モデル名 / Model name
         const std::string& getCurrentModelName() const {
             return current_model_name_;
+        }
+
+        // ========================================
+        // ビジネスロジックAPI
+        // Business Logic API
+        // ========================================
+
+        /// @brief 地理データを読み込んでシミュレーションを初期化
+        /// @param model_name モデル名 / Model name
+        /// @param seed 乱数シード（0の場合は自動生成） / Random seed (auto-generated if 0)
+        void simulationInitialize(const std::string& model_name, std::uint_least32_t seed = 0) {
+            SimulationConstants::getInstance(model_name)->init(model_name);
+
+            auto [map_list_path, japan_provinces_path] = generatePaths(model_name);
+            initialize(map_list_path, japan_provinces_path, seed, model_name);
+        }
+
+        /// @brief 人間データを初期化
+        /// @param model_name モデル名 / Model name
+        void initHumanData(const std::string& model_name) {
+            // モデル名を更新
+            current_model_name_ = model_name;
+            // シミュレーションを初期化
+            initSimulation();
+        }
+
+        /// @brief 入力データを再読み込み
+        /// @param model_name モデル名 / Model name
+        void reloadData(const std::string& model_name) {
+            SimulationConstants::getInstance(model_name)->init(model_name);
+            reloadInputData(model_name);
+            current_model_name_ = model_name;
         }
 
         // ========================================
@@ -138,21 +187,18 @@ namespace paxs {
         // ========================================
 
         /// @brief 総人口を取得
-        /// @brief Get total population
         /// @return 総人口 / Total population
         std::size_t getPopulation() const {
             return simulator_ ? simulator_->cgetPopulationNum() : 0;
         }
 
         /// @brief 集落数を取得
-        /// @brief Get number of settlements
         /// @return 集落数 / Number of settlements
         std::size_t getSettlementCount() const {
             return simulator_ ? simulator_->cgetSettlement() : 0;
         }
 
         /// @brief 集落グリッドへのconst参照を取得（描画用）
-        /// @brief Get const reference to settlement grids (for rendering)
         /// @return 集落グリッド / Settlement grids
         const auto& getSettlementGrids() const {
             static const paxs::UnorderedMap<SettlementGridsType, SettlementGrid> empty_map;
@@ -160,7 +206,6 @@ namespace paxs {
         }
 
         /// @brief 婚姻位置リストへのconst参照を取得（描画用）
-        /// @brief Get const reference to marriage position list (for rendering)
         /// @return 婚姻位置リスト / Marriage position list
         const auto& getMarriagePositions() const {
             static const std::vector<GridType4> empty_vec;
