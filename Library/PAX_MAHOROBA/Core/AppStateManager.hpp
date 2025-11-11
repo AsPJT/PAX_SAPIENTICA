@@ -208,7 +208,19 @@ public:
         if (koyomi_.move_forward_in_time || koyomi_.go_back_in_time) {
             const double old_jdn = koyomi_.jdn.cgetDay();
 
-            koyomi_.update(simulation_manager_);
+            koyomi_.update();
+
+            // シミュレーション実行制御（is_agent_updateがtrueの場合のみ）
+            if (koyomi_.is_agent_update && simulation_manager_.isActive()) {
+                // シミュレーションを1ステップ実行
+                simulation_manager_.step();
+
+                // シミュレーションステップ実行イベントを発行
+                event_bus_.publish(SimulationStepExecutedEvent(
+                    static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay()),
+                    static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
+                ));
+            }
 
             const double new_jdn = koyomi_.jdn.cgetDay();
             if (old_jdn != new_jdn) {
@@ -374,6 +386,19 @@ private:
     /// @brief 時間再生制御コマンドを処理
     void handleTimePlaybackControl(const TimePlaybackControlEvent& event) {
         using Action = TimePlaybackControlEvent::Action;
+
+#ifdef PAXS_USING_SIMULATOR
+        // シミュレーション再生中は暦の逆再生・停止を無効化（シミュレーションを停止する）
+        if (koyomi_.is_agent_update) {
+            if (event.action == Action::Reverse || event.action == Action::Stop) {
+                // シミュレーションを停止
+                event_bus_.publish(SimulationStopCommandEvent());
+                return;
+            }
+            // Forward の場合は何もしない（既にシミュレーション再生中）
+            return;
+        }
+#endif
 
         switch (event.action) {
         case Action::Forward:
