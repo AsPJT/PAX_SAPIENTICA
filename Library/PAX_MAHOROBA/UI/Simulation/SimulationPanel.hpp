@@ -56,6 +56,9 @@ namespace paxs {
         SimulationControlButtons control_buttons_;
         SimulationStatsWidget stats_widget_;
 
+        // イベントから同期された状態 / State synchronized from events
+        bool simulation_is_active_ = false;
+
         /// @brief イベント購読を設定
         /// @brief Subscribe to events
         void subscribeToEvents() {
@@ -71,6 +74,13 @@ namespace paxs {
             EventBus::getInstance().subscribe<WindowResizedEvent>(
                 [this](const WindowResizedEvent&) {
                     calculateLayout();
+                }
+            );
+
+            // SimulationManager状態同期イベントを購読
+            EventBus::getInstance().subscribe<SimulationManagerStateSyncEvent>(
+                [this](const SimulationManagerStateSyncEvent& event) {
+                    simulation_is_active_ = event.is_active;
                 }
             );
         }
@@ -227,23 +237,8 @@ namespace paxs {
 
             simulation_pulldown.setItemsKey(simulation_key);
 
-#ifdef PAXS_USING_SIMULATOR
-            // 統計ウィジェットの初期化
-            stats_widget_.setSimulationManager(&app_state_manager.getSimulationManager());
-#endif
-
             // イベント購読を設定
             subscribeToEvents();
-        }
-
-        /// @brief 残り実行回数を取得（表示用）
-        int getRemainingIterations() const {
-#ifdef PAXS_USING_SIMULATOR
-            if (!app_state_manager_) return 0;
-            return app_state_manager_->getSimulationController().getRemainingIterations();
-#else
-            return 0;
-#endif
         }
 
         /// @brief SimulationControlButtonsへのアクセス
@@ -260,15 +255,14 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!isVisible() || !app_state_manager_) return;
+            if (!isVisible()) return;
 
             drawPulldown();
             control_buttons_.render();
 
 #ifdef PAXS_USING_SIMULATOR
             // シミュレーション統計情報を表示（シミュレーションがアクティブな場合のみ）
-            const auto& simulation_manager = app_state_manager_->getSimulationManager();
-            if (simulation_manager.isActive()) {
+            if (simulation_is_active_) {
                 stats_widget_.render();
             }
 #endif
@@ -276,9 +270,7 @@ namespace paxs {
 
         void drawPulldown() const {
 #ifdef PAXS_USING_SIMULATOR
-            if (!app_state_manager_) return;
-            const auto& simulation_manager = app_state_manager_->getSimulationManager();
-            if (!simulation_manager.isActive()) {
+            if (!simulation_is_active_) {
                 simulation_pulldown.render();
             }
 #else

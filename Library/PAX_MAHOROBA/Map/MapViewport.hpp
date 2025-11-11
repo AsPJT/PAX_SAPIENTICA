@@ -76,12 +76,27 @@ namespace paxs {
         // イベントバスへのポインタ（オプション）
         EventBus* event_bus_ = nullptr;
 
+        /// @brief イベントを購読
+        void subscribeToEvents() {
+            if (event_bus_ == nullptr) return;
+
+            // ウィンドウリサイズイベントを購読
+            event_bus_->subscribe<WindowResizedEvent>(
+                [this](const WindowResizedEvent&) {
+                    // ウィンドウサイズ変更時に幅を再計算し、ViewportChangedEventを発行
+                    applyConstraints();
+                    notifyViewportChanged();
+                }
+            );
+        }
+
     public:
         MapViewport() = default;
 
         /// @brief EventBusを設定
         void setEventBus(EventBus* event_bus) {
             event_bus_ = event_bus;
+            subscribeToEvents();
         }
 
         /// @brief ビューポート変更イベントを発行

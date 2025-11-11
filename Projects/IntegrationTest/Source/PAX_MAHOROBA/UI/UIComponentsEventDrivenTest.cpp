@@ -39,10 +39,10 @@ protected:
     }
 };
 
-/// @brief MenuBarがAppStateManager経由で可視性を設定できることをテスト
-TEST_F(UIComponentsEventDrivenTest, MenuBarUsesAppStateManagerForVisibility) {
+/// @brief MenuBarがEventBus経由で可視性を設定できることをテスト
+TEST_F(UIComponentsEventDrivenTest, MenuBarUsesEventBusForVisibility) {
     MenuBar menu_bar;
-    menu_bar.setAppStateManager(&app_state_manager_);
+    menu_bar.setEventBus(&event_bus_);
 
     // 初期化
     auto& visibility_manager = const_cast<FeatureVisibilityManager&>(

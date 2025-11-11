@@ -19,7 +19,6 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
@@ -122,12 +121,12 @@ namespace paxs {
             return language_selector_.getKey();
         }
 
-        /// @brief AppStateManagerを設定
-        /// @brief Set AppStateManager
-        void setAppStateManager(AppStateManager* app_state_manager) {
-            app_state_manager_ = app_state_manager;
-            // AppStateManagerが設定されたら、イベント購読を開始
-            if (app_state_manager_ && !events_subscribed_) {
+        /// @brief EventBusを設定
+        /// @brief Set EventBus
+        void setEventBus(EventBus* event_bus) {
+            event_bus_ = event_bus;
+            // EventBusが設定されたら、イベント購読を開始
+            if (event_bus_ && !events_subscribed_) {
                 subscribeToEvents();
                 events_subscribed_ = true;
             }
@@ -180,17 +179,20 @@ namespace paxs {
         /// @brief 言語変更時のハンドラー（コールバック駆動）
         /// @brief Language change handler (callback-driven)
         void handleLanguageChanged(std::size_t new_index) {
-            if (!app_state_manager_) return;
+            if (!event_bus_) return;
 
             const std::uint_least32_t language_key = language_selector_.getKey();
-            // AppStateManager経由で言語変更イベントを発行
-            app_state_manager_->setLanguage(static_cast<std::uint_least8_t>(new_index), language_key);
+            // EventBus経由で言語変更コマンドを発行
+            event_bus_->publish(LanguageChangeCommandEvent(
+                static_cast<std::uint_least8_t>(new_index),
+                language_key
+            ));
         }
 
         /// @brief メニュー項目トグル時のハンドラー（コールバック駆動）
         /// @brief Menu item toggle handler (callback-driven)
         void handleMenuItemToggled(const std::uint_least32_t menu_key, std::size_t item_index, bool is_checked) {
-            if (!app_state_manager_) return;
+            if (!event_bus_) return;
 
             // メニューキーに応じて適切な機能キーを取得し、可視性を更新
             // item_indexはDropDownMenuの内部インデックス（0はヘッダー、1以降が実際の項目）
@@ -209,8 +211,10 @@ namespace paxs {
                     ViewMenu::view_3d
                 };
                 if (actual_index < view_items.size()) {
-                    app_state_manager_->setFeatureVisibility(
-                        static_cast<std::uint_least32_t>(view_items[actual_index]), is_checked);
+                    event_bus_->publish(FeatureVisibilityChangeCommandEvent(
+                        static_cast<std::uint_least32_t>(view_items[actual_index]),
+                        is_checked
+                    ));
                 }
             }
             else if (menu_key == MurMur3::calcHash("place_names")) {
@@ -230,8 +234,10 @@ namespace paxs {
                     PlaceNamesMenu::ydna
                 };
                 if (actual_index < place_name_items.size()) {
-                    app_state_manager_->setFeatureVisibility(
-                        static_cast<std::uint_least32_t>(place_name_items[actual_index]), is_checked);
+                    event_bus_->publish(FeatureVisibilityChangeCommandEvent(
+                        static_cast<std::uint_least32_t>(place_name_items[actual_index]),
+                        is_checked
+                    ));
                 }
             }
             else if (menu_key == MurMur3::calcHash("map")) {
@@ -244,8 +250,10 @@ namespace paxs {
                     MapLayersMenu::line2
                 };
                 if (actual_index < map_layer_items.size()) {
-                    app_state_manager_->setFeatureVisibility(
-                        static_cast<std::uint_least32_t>(map_layer_items[actual_index]), is_checked);
+                    event_bus_->publish(FeatureVisibilityChangeCommandEvent(
+                        static_cast<std::uint_least32_t>(map_layer_items[actual_index]),
+                        is_checked
+                    ));
                 }
             }
         }
@@ -363,7 +371,7 @@ namespace paxs {
 
         // 状態管理
         bool visible_ = true;
-        AppStateManager* app_state_manager_ = nullptr;
+        EventBus* event_bus_ = nullptr;
         std::size_t previous_language_index_ = 0;
         bool events_subscribed_ = false;
 

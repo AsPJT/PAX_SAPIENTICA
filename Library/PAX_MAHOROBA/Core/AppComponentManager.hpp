@@ -82,8 +82,8 @@ namespace paxs {
             // FeatureVisibilityManagerの初期化
             menu_bar_.initializeVisibility(&app_state_.getVisibilityManager());
 
-            // AppStateManagerを設定
-            menu_bar_.setAppStateManager(&app_state);
+            // EventBusを設定
+            menu_bar_.setEventBus(&event_bus);
             map_content_layer_.setAppStateManager(&app_state);
             map_tile_layer_.setAppStateManager(&app_state);
 

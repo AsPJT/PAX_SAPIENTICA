@@ -48,6 +48,9 @@ public:
         map_viewport_.setEventBus(&event_bus_);
 
         subscribeToEvents();
+
+        // 初期状態を通知
+        publishInitialState();
     }
 
     // ============================================================================
@@ -217,11 +220,22 @@ public:
                     gregorian_date.cgetMonth(),
                     gregorian_date.cgetDay()
                 ));
+
+                // Koyomi状態同期イベントを発行
+                event_bus_.publish(KoyomiStateSyncEvent(
+                    koyomi_.date_list.size(),
+                    new_jdn
+                ));
             }
         }
 
         // SimulationControllerの更新（自動繰り返し実行制御）
         simulation_controller_.update(simulation_manager_, koyomi_, "");
+
+        // SimulationManager状態同期イベントを発行
+        event_bus_.publish(SimulationManagerStateSyncEvent(
+            simulation_manager_.isActive()
+        ));
     }
 #endif
 
@@ -240,8 +254,39 @@ private:
     // 状態変数
     std::uint_least8_t current_language_index_ = 0;
 
+    /// @brief 初期状態をイベントで通知
+    /// @brief Publish initial state via events
+    void publishInitialState() {
+        // Koyomi初期状態を通知
+        event_bus_.publish(KoyomiStateSyncEvent(
+            koyomi_.date_list.size(),
+            koyomi_.jdn.cgetDay()
+        ));
+
+#ifdef PAXS_USING_SIMULATOR
+        // SimulationManager初期状態を通知
+        event_bus_.publish(SimulationManagerStateSyncEvent(
+            simulation_manager_.isActive()
+        ));
+#endif
+    }
+
     /// @brief イベント購読を初期化
     void subscribeToEvents() {
+        // 言語変更コマンドの購読
+        event_bus_.subscribe<LanguageChangeCommandEvent>(
+            [this](const LanguageChangeCommandEvent& event) {
+                setLanguage(event.language_index, event.language_key);
+            }
+        );
+
+        // 地物可視性変更コマンドの購読
+        event_bus_.subscribe<FeatureVisibilityChangeCommandEvent>(
+            [this](const FeatureVisibilityChangeCommandEvent& event) {
+                setFeatureVisibility(event.feature_key, event.is_visible);
+            }
+        );
+
         // 時間再生制御コマンドの購読
         event_bus_.subscribe<TimePlaybackControlEvent>(
             [this](const TimePlaybackControlEvent& event) {

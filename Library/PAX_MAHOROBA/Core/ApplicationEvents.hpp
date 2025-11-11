@@ -19,12 +19,7 @@
 
 namespace paxs {
 
-// ========================================
-// System Events
-// ========================================
-
 /// @brief ウィンドウサイズ変更イベント
-/// @brief Window resized event
 struct WindowResizedEvent : Event {
     const int new_width;
     const int new_height;
@@ -33,8 +28,7 @@ struct WindowResizedEvent : Event {
         : new_width(width), new_height(height) {}
 };
 
-/// @brief 言語設定変更イベント
-/// @brief Language setting changed event
+/// @brief 言語設定変更イベント（通知用）
 struct LanguageChangedEvent : Event {
     const std::uint_least8_t new_language;
 
@@ -42,12 +36,16 @@ struct LanguageChangedEvent : Event {
         : new_language(language) {}
 };
 
-// ========================================
-// Calendar Events
-// ========================================
+/// @brief 言語変更コマンドイベント（UI → Domain）
+struct LanguageChangeCommandEvent : Event {
+    const std::uint_least8_t language_index;
+    const std::uint_least32_t language_key;
+
+    LanguageChangeCommandEvent(std::uint_least8_t index, std::uint_least32_t key)
+        : language_index(index), language_key(key) {}
+};
 
 /// @brief 日付変更イベント
-/// @brief Date changed event
 struct DateChangedEvent : Event {
     const double julian_day_number;
     const int new_year;
@@ -59,7 +57,6 @@ struct DateChangedEvent : Event {
 };
 
 /// @brief 時間速度変更イベント
-/// @brief Time speed changed event
 struct TimeSpeedChangedEvent : Event {
     const int new_speed;  // 例: 1, 2, 4, 8, 16
 
@@ -67,12 +64,7 @@ struct TimeSpeedChangedEvent : Event {
         : new_speed(speed) {}
 };
 
-// ========================================
-// Map Events
-// ========================================
-
 /// @brief ビューポート変更イベント
-/// @brief Viewport changed event
 struct ViewportChangedEvent : Event {
     const double new_center_x;
     const double new_center_y;
@@ -83,7 +75,6 @@ struct ViewportChangedEvent : Event {
 };
 
 /// @brief マップレイヤー表示切替イベント
-/// @brief Map layer visibility changed event
 struct MapLayerVisibilityChangedEvent : Event {
     const std::uint_least32_t layer_key;
     const bool is_visible;
@@ -92,12 +83,7 @@ struct MapLayerVisibilityChangedEvent : Event {
         : layer_key(key), is_visible(visible) {}
 };
 
-// ========================================
-// Feature Visibility Events
-// ========================================
-
-/// @brief 地物表示切替イベント
-/// @brief Feature visibility changed event
+/// @brief 地物表示切替イベント（通知用）
 struct FeatureVisibilityChangedEvent : Event {
     const std::uint_least32_t feature_key;
     const bool is_visible;
@@ -106,8 +92,16 @@ struct FeatureVisibilityChangedEvent : Event {
         : feature_key(key), is_visible(visible) {}
 };
 
+/// @brief 地物可視性変更コマンドイベント（UI → Domain）
+struct FeatureVisibilityChangeCommandEvent : Event {
+    const std::uint_least32_t feature_key;
+    const bool is_visible;
+
+    FeatureVisibilityChangeCommandEvent(std::uint_least32_t key, bool visible)
+        : feature_key(key), is_visible(visible) {}
+};
+
 /// @brief レンダーレイヤー表示切替イベント
-/// @brief Render layer visibility changed event
 struct RenderLayerVisibilityChangedEvent : Event {
     const std::uint_least32_t layer_key;
     const bool is_visible;
@@ -116,12 +110,17 @@ struct RenderLayerVisibilityChangedEvent : Event {
         : layer_key(key), is_visible(visible) {}
 };
 
-// ========================================
-// Simulation Events
-// ========================================
+/// @brief Koyomi（暦）状態同期イベント
+/// @details UIがKoyomiの最新状態を受け取るためのイベント
+struct KoyomiStateSyncEvent : Event {
+    const std::size_t date_list_size;  ///< カレンダーリストのサイズ / Size of calendar list
+    const double current_jdn;          ///< 現在のユリウス日 / Current Julian Day Number
+
+    KoyomiStateSyncEvent(std::size_t size, double jdn)
+        : date_list_size(size), current_jdn(jdn) {}
+};
 
 /// @brief シミュレーション状態変更イベント
-/// @brief Simulation state changed event
 struct SimulationStateChangedEvent : Event {
     enum class State {
         Stopped,
@@ -136,8 +135,16 @@ struct SimulationStateChangedEvent : Event {
         : new_state(state), current_step(step) {}
 };
 
+/// @brief SimulationManager状態同期イベント
+/// @details UIがSimulationManagerの最新状態を受け取るためのイベント
+struct SimulationManagerStateSyncEvent : Event {
+    const bool is_active;              ///< シミュレーションが有効か / Whether simulation is active
+
+    explicit SimulationManagerStateSyncEvent(bool active)
+        : is_active(active) {}
+};
+
 /// @brief シミュレーションステップ実行完了イベント
-/// @brief Simulation step executed event
 struct SimulationStepExecutedEvent : Event {
     const std::uint_least32_t current_step;
     const std::uint_least32_t total_population;
@@ -147,7 +154,6 @@ struct SimulationStepExecutedEvent : Event {
 };
 
 /// @brief 集落表示設定変更イベント
-/// @brief Settlement display settings changed event
 struct SettlementDisplayChangedEvent : Event {
     const std::size_t select_draw;
     const bool is_line;
@@ -157,12 +163,7 @@ struct SettlementDisplayChangedEvent : Event {
         : select_draw(draw), is_line(line), is_arrow(arrow) {}
 };
 
-// ========================================
-// Command Events (UI → Domain)
-// ========================================
-
 /// @brief シミュレーション初期化コマンドイベント
-/// @brief Simulation initialization command event
 struct SimulationInitCommandEvent : Event {
     const std::string model_name;
 
@@ -171,7 +172,6 @@ struct SimulationInitCommandEvent : Event {
 };
 
 /// @brief シミュレーション再生コマンドイベント
-/// @brief Simulation play command event
 struct SimulationPlayCommandEvent : Event {
     const int iterations;
 
@@ -180,19 +180,16 @@ struct SimulationPlayCommandEvent : Event {
 };
 
 /// @brief シミュレーション一時停止コマンドイベント
-/// @brief Simulation pause command event
 struct SimulationPauseCommandEvent : Event {
     SimulationPauseCommandEvent() = default;
 };
 
 /// @brief シミュレーション停止コマンドイベント
-/// @brief Simulation stop command event
 struct SimulationStopCommandEvent : Event {
     SimulationStopCommandEvent() = default;
 };
 
 /// @brief シミュレーションステップ実行コマンドイベント
-/// @brief Simulation step command event
 struct SimulationStepCommandEvent : Event {
     const int steps;
 
@@ -201,7 +198,6 @@ struct SimulationStepCommandEvent : Event {
 };
 
 /// @brief 地理データ読み込みコマンドイベント
-/// @brief Load geographic data command event
 struct LoadGeographicDataCommandEvent : Event {
     const std::string model_name;
     const std::string map_list_path;
@@ -220,7 +216,6 @@ struct LoadGeographicDataCommandEvent : Event {
 };
 
 /// @brief シミュレーション入力データ再読み込みコマンドイベント
-/// @brief Reload simulation input data command event
 struct ReloadInputDataCommandEvent : Event {
     const std::string model_name;
 
@@ -229,7 +224,6 @@ struct ReloadInputDataCommandEvent : Event {
 };
 
 /// @brief 人間データ初期化コマンドイベント
-/// @brief Initialize human data command event
 struct InitHumanDataCommandEvent : Event {
     const std::string model_name;
 
@@ -238,17 +232,11 @@ struct InitHumanDataCommandEvent : Event {
 };
 
 /// @brief シミュレーションクリアコマンドイベント
-/// @brief Simulation clear command event
 struct SimulationClearCommandEvent : Event {
     SimulationClearCommandEvent() = default;
 };
 
-// ========================================
-// Time Control Events
-// ========================================
-
 /// @brief 時間再生制御イベント
-/// @brief Time playback control event
 struct TimePlaybackControlEvent : Event {
     enum class Action {
         Forward,   // 順再生
@@ -263,7 +251,6 @@ struct TimePlaybackControlEvent : Event {
 };
 
 /// @brief 日付移動イベント
-/// @brief Date navigation event
 struct DateNavigationEvent : Event {
     const double days;  // 移動日数（負数で過去、正数で未来）
 
@@ -271,12 +258,7 @@ struct DateNavigationEvent : Event {
         : days(d) {}
 };
 
-// ========================================
-// UI Events
-// ========================================
-
 /// @brief メニューアイテム選択イベント
-/// @brief Menu item selected event
 struct MenuItemSelectedEvent : Event {
     const std::string menu_id;
 
@@ -285,7 +267,6 @@ struct MenuItemSelectedEvent : Event {
 };
 
 /// @brief プルダウン選択変更イベント
-/// @brief Pulldown selection changed event
 struct PulldownSelectionChangedEvent : Event {
     const std::string pulldown_id;
     const std::size_t selected_index;
@@ -295,7 +276,6 @@ struct PulldownSelectionChangedEvent : Event {
 };
 
 /// @brief ボタンクリックイベント
-/// @brief Button clicked event
 struct ButtonClickedEvent : Event {
     const std::string button_id;
 
@@ -303,12 +283,7 @@ struct ButtonClickedEvent : Event {
         : button_id(id) {}
 };
 
-// ========================================
-// Data Loading Events
-// ========================================
-
 /// @brief データ読込開始イベント
-/// @brief Data loading started event
 struct DataLoadingStartedEvent : Event {
     const std::string data_type;
 
@@ -317,7 +292,6 @@ struct DataLoadingStartedEvent : Event {
 };
 
 /// @brief データ読込完了イベント
-/// @brief Data loading completed event
 struct DataLoadingCompletedEvent : Event {
     const std::string data_type;
     const bool success;
@@ -327,7 +301,6 @@ struct DataLoadingCompletedEvent : Event {
 };
 
 /// @brief 地理データ読込完了イベント
-/// @brief Geographic data loaded event
 struct GeographicDataLoadedEvent : Event {
     const std::string layer_name;
     const std::size_t feature_count;
