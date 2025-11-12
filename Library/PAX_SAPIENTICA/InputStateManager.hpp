@@ -9,19 +9,19 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_MOUSE_CLICK_STATE_MANAGER_HPP
-#define PAX_SAPIENTICA_MOUSE_CLICK_STATE_MANAGER_HPP
+#ifndef PAX_SAPIENTICA_INPUT_STATE_MANAGER_HPP
+#define PAX_SAPIENTICA_INPUT_STATE_MANAGER_HPP
 
 namespace paxs {
 
-    /// @brief マウスクリック状態を管理するクラス (Infrastructure Layer)
-    /// @brief A class that manages mouse click state to properly detect Down/Up/Held/None transitions
-    /// @details マウスボタンの状態遷移を管理し、Down（押された瞬間）、Held（押され続けている）、Up（離された瞬間）、None（押されていない）を正確に検出します
-    /// @details Manages mouse button state transitions to accurately detect Down (just pressed), Held (being held), Up (just released), None (not pressed)
-    struct MouseClickStateManager {
+    /// @brief 入力状態を管理するクラス (Infrastructure Layer)
+    /// @brief A class that manages input state to properly detect Down/Up/Held/None transitions
+    /// @details マウスボタンやキーボードの状態遷移を管理し、Down（押された瞬間）、Held（押され続けている）、Up（離された瞬間）、None（押されていない）を正確に検出します
+    /// @details Manages input state transitions (mouse/keyboard) to accurately detect Down (just pressed), Held (being held), Up (just released), None (not pressed)
+    struct InputStateManager {
     public:
-        /// @brief マウスボタンの状態
-        /// @brief Mouse button state
+        /// @brief 入力の状態
+        /// @brief Input state
         enum class State {
             None,   ///< 押されていない / Not pressed
             Down,   ///< 押された瞬間（1フレームのみ）/ Just pressed (only 1 frame)

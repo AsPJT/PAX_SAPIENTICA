@@ -29,8 +29,13 @@ namespace paxs {
 
     /// @brief メニューバー関連の文字列キー定数
     namespace MenuBarKeys {
+        // メニューバー全体
+        constexpr const char* view_menu = "view_menu";
+        constexpr const char* place_names_menu = "place_names_menu";
+        constexpr const char* map_menu = "map_menu";
+
         // View メニュー
-        constexpr const char* view = "menu_bar_view";
+        constexpr const char* view_header = "menu_bar_view";
         constexpr const char* view_calendar = "menu_bar_view_calendar";
         constexpr const char* view_map = "menu_bar_view_map";
         constexpr const char* view_ui = "menu_bar_view_ui";
@@ -41,7 +46,7 @@ namespace paxs {
 
         /// @brief View メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array view_menu_hashes = {
-            MurMur3::calcHash(view),
+            MurMur3::calcHash(view_header),
             MurMur3::calcHash(view_calendar),
             MurMur3::calcHash(view_map),
             MurMur3::calcHash(view_ui),
@@ -52,7 +57,7 @@ namespace paxs {
         };
 
         // Feature メニュー
-        constexpr const char* place_names = "place_names";
+        constexpr const char* place_names_header = "place_names";
         constexpr const char* place_name = "place_names_place_name";
         constexpr const char* site = "place_names_site";
         constexpr const char* tumulus = "place_names_tumulus";
@@ -68,7 +73,7 @@ namespace paxs {
 
         /// @brief Feature メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array feature_menu_hashes = {
-            MurMur3::calcHash(place_names),
+            MurMur3::calcHash(place_names_header),
             MurMur3::calcHash(place_name),
             MurMur3::calcHash(site),
             MurMur3::calcHash(tumulus),
@@ -84,7 +89,7 @@ namespace paxs {
         };
 
         // Map メニュー
-        constexpr const char* map = "menu_bar_map";
+        constexpr const char* map_header = "menu_bar_map";
         constexpr const char* map_land_and_water = "menu_bar_map_land_and_water";
         constexpr const char* map_soil = "menu_bar_map_soil";
         constexpr const char* map_ryosei_line = "menu_bar_map_ryosei_line";
@@ -93,7 +98,7 @@ namespace paxs {
 
         /// @brief Map メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array map_menu_hashes = {
-            MurMur3::calcHash(map),
+            MurMur3::calcHash(map_header),
             MurMur3::calcHash(map_land_and_water),
             MurMur3::calcHash(map_soil),
             MurMur3::calcHash(map_ryosei_line),
@@ -101,6 +106,14 @@ namespace paxs {
             MurMur3::calcHash(map_line1)
         };
     }
+
+    /// @brief メニューバーの項目識別子
+    /// @brief Menu bar item identifiers
+    enum class MenuBarType : std::uint_least32_t {
+        view        = MurMur3::calcHash(MenuBarKeys::view_menu),
+        place_names = MurMur3::calcHash(MenuBarKeys::place_names_menu),
+        map         = MurMur3::calcHash(MenuBarKeys::map_menu),
+    };
 
     /// @brief Viewメニューの項目識別子
     /// @brief View menu item identifiers

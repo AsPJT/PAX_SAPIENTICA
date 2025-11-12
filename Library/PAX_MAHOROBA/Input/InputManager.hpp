@@ -21,7 +21,7 @@
 #include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/InputRouter.hpp>
 
-#include <PAX_SAPIENTICA/MouseClickStateManager.hpp>
+#include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {
 
@@ -89,8 +89,8 @@ public:
         const bool current_left_button = mouse->getLeft();
 
         // 左ボタンの状態を更新してイベントを発行
-        MouseClickStateManager::State left_state = left_button_state_manager_.update(current_left_button);
-        if (left_state != MouseClickStateManager::State::None) {
+        InputStateManager::State left_state = left_button_state_manager_.update(current_left_button);
+        if (left_state != InputStateManager::State::None) {
             MouseEvent event(mouse_x, mouse_y);
 
             // 修飾キーの設定
@@ -104,13 +104,13 @@ public:
             event.prev_y = mouse->getPosYBefore1Frame();
 
             // ボタン状態の設定
-            if (left_state == MouseClickStateManager::State::Down) {
+            if (left_state == InputStateManager::State::Down) {
                 event.left_button_state = MouseButtonState::Pressed;
             }
-            else if (left_state == MouseClickStateManager::State::Held) {
+            else if (left_state == InputStateManager::State::Held) {
                 event.left_button_state = MouseButtonState::Held;
             }
-            else if (left_state == MouseClickStateManager::State::Up) {
+            else if (left_state == InputStateManager::State::Up) {
                 event.left_button_state = MouseButtonState::Released;
             }
 
@@ -123,7 +123,7 @@ private:
     InputRouter input_router_{};  // 全ての入力イベント（キーボード、マウス、マウスホイール）
 
     // マウスボタン状態管理
-    MouseClickStateManager left_button_state_manager_;
+    InputStateManager left_button_state_manager_;
 
     // ウィンドウサイズキャッシュ
     int last_window_width_;

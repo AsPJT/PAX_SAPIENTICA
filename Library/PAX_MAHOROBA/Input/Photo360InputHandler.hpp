@@ -32,23 +32,16 @@ namespace paxs {
     /// blocking input propagation to background layers (Settlement, Map).
     class Photo360InputHandler : public IInputHandler {
     private:
-        Photo360Layer* photo360_layer_ = nullptr;
-        FeatureVisibilityManager* visibility_manager_ = nullptr;
+        Photo360Layer& photo360_layer_;
 
         // Photo360の設定値（Photo360Config::Sphereから）
-        // Configuration values from Photo360Config::Sphere
         static constexpr double move_speed_ = 1.2;     // 移動速度（度/フレーム）/ Move speed (degrees/frame)
         static constexpr double zoom_speed_ = 0.015;   // ズーム速度 / Zoom speed
         static constexpr double zoom_min_ = -17.0;     // ズーム最小値 / Zoom minimum
         static constexpr double zoom_max_ = -14.2;     // ズーム最大値 / Zoom maximum
 
     public:
-        /// @brief コンストラクタ
-        /// @brief Constructor
-        /// @param layer Photo360Layerへのポインタ / Pointer to Photo360Layer
-        /// @param visibility FeatureVisibilityManagerへのポインタ / Pointer to FeatureVisibilityManager
-        Photo360InputHandler(Photo360Layer* layer, FeatureVisibilityManager* visibility)
-            : photo360_layer_(layer), visibility_manager_(visibility) {}
+        Photo360InputHandler(Photo360Layer& layer) : photo360_layer_(layer) {}
 
         /// @brief キーボードイベント処理
         /// @brief Handle keyboard event
@@ -70,7 +63,7 @@ namespace paxs {
             // 現在の視点回転角度とズーム位置を取得
             // Get current view rotation angles and zoom position
             double rotX = 0.0, rotY = 0.0, rotZ = 0.0;
-            photo360_layer_->getViewRotation(rotX, rotY, rotZ);
+            photo360_layer_.getViewRotation(rotX, rotY, rotZ);
 
             bool handled = false;
 
@@ -123,7 +116,7 @@ namespace paxs {
             // 視点を更新
             // Update view rotation
             if (handled) {
-                photo360_layer_->setViewRotation(rotX, rotY, rotZ);
+                photo360_layer_.setViewRotation(rotX, rotY, rotZ);
                 return EventHandlingResult::Handled();
             }
 
@@ -152,28 +145,10 @@ namespace paxs {
             return true;
         }
 
-        /// @brief レンダリングレイヤーを取得
-        /// @brief Get rendering layer
-        /// @return Photo360と同じMap3Dレイヤー / Photo360 layer (same as Photo360)
-        RenderLayer getLayer() const override {
-            return RenderLayer::Photo360;
-        }
+        RenderLayer getLayer() const override { return RenderLayer::Photo360; }
 
-        /// @brief 有効性を取得
-        /// @brief Get enabled state
-        /// @return Photo360が表示中の場合true / true if Photo360 is visible
-        ///
-        /// Photo360が表示中（ViewMenu::view_3dがtrue）かつ有効な場合のみtrueを返します。
-        /// これにより、Photo360表示時は自動的に背後のハンドラー（Settlement、Map）への
-        /// 入力伝播がブロックされます。
-        /// Returns true only when Photo360 is visible (ViewMenu::view_3d is true) and enabled.
-        /// This automatically blocks input propagation to background handlers (Settlement, Map)
-        /// when Photo360 is displayed.
         bool isEnabled() const {
-            return photo360_layer_ != nullptr
-                && photo360_layer_->isVisible()
-                && visibility_manager_ != nullptr
-                && visibility_manager_->isVisible(ViewMenu::view_3d);
+            return photo360_layer_.isVisible();
         }
     };
 

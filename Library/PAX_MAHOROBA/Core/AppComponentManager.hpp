@@ -32,42 +32,31 @@ namespace paxs {
     class AppComponentManager {
     private:
         AppStateManager& app_state_;
-
         RenderLayerManager render_layer_manager_;
-
         MapTileLayer map_tile_layer_;
         MapContentLayer map_content_layer_;
+        MapContentInputHandler map_content_input_handler_;
         Photo360Layer photo360_layer_;
         Photo360InputHandler photo360_input_handler_;
-        MapContentInputHandler map_content_input_handler_{};
         UILayer ui_layer_;
         MenuBar menu_bar_;
 
     public:
-        /// @param app_state AppStateManager参照 / AppStateManager reference
         AppComponentManager(AppStateManager& app_state)
             : app_state_(app_state)
             , render_layer_manager_()
             , map_tile_layer_(app_state)
             , map_content_layer_(app_state)
-            , photo360_layer_()
-            , photo360_input_handler_(
-                &photo360_layer_,
-                &app_state.getVisibilityManager()
-              )
+            , photo360_layer_(app_state.getVisibilityManager())
+            , photo360_input_handler_(photo360_layer_)
             , ui_layer_(app_state)
-            , menu_bar_() {
-
-            menu_bar_.initializeVisibility(&app_state_.getVisibilityManager());
-
-            // MapContentInputHandlerにFeaturesとRenderContextを設定
-            // （map_content_layer_の初期化後に設定する必要があるため、ここで代入）
-            map_content_input_handler_ = MapContentInputHandler(
-                &map_content_layer_.getFeatures(),
-                &map_content_layer_.getRenderContext(),
-                &app_state.getVisibilityManager()
-            );
-
+            , menu_bar_(app_state_.getVisibilityManager())
+            , map_content_input_handler_(
+                map_content_layer_.getFeatures(),
+                map_content_layer_.getRenderContext(),
+                app_state.getVisibilityManager()
+            ) {
+            // menubar生成時に可視性が初期化されるため、UILayerの可視性初期化はここで実行
             ui_layer_.initializeVisibility();
 
             // レイヤーシステムに各コンポーネントを登録
@@ -84,17 +73,9 @@ namespace paxs {
         AppComponentManager(AppComponentManager&&) = delete;
         AppComponentManager& operator=(AppComponentManager&&) = delete;
 
-        /// @brief 描画処理のみを実行
-        /// @details データはAppStateManagerから直接取得し、イベント駆動で更新される
         void render() {
-            // AppStateManagerから最新データを取得
-            auto& visible_manager = app_state_.getVisibilityManager();
-
-            // Photo360Layerの可視性設定
-            photo360_layer_.setVisible(visible_manager.isVisible(ViewMenu::view_3d));
-
             // 3Dモード時は360度写真とメニューバーのみ描画、通常モードは全レイヤー描画
-            if (visible_manager.isVisible(ViewMenu::view_3d)) {
+            if (photo360_layer_.isVisible()) {
                 // 3Dモード: 360度写真を描画してからメニューバーを描画
                 photo360_layer_.render();
                 menu_bar_.render();

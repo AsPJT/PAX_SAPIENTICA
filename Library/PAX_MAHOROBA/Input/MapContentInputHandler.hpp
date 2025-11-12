@@ -33,15 +33,13 @@ namespace paxs {
     /// @brief Map content input handler (new Feature system)
     class MapContentInputHandler : public IInputHandler {
     public:
-        MapContentInputHandler() = default;
-
         /// @param features 地物のリスト / List of features
         /// @param render_context 描画コンテキスト / Render context
         /// @param visibility_manager 可視性マネージャー / Visibility manager
         MapContentInputHandler(
-            const std::vector<std::unique_ptr<MapFeature>>* features,
-            const RenderContext* render_context,
-            const FeatureVisibilityManager* visibility_manager
+            const std::vector<std::unique_ptr<MapFeature>>& features,
+            const RenderContext& render_context,
+            const FeatureVisibilityManager& visibility_manager
         )
             : features_(features)
             , render_context_(render_context)
@@ -51,8 +49,7 @@ namespace paxs {
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             // 地図が表示されていない場合は処理しない
-            if (visibility_manager_ != nullptr &&
-                !visibility_manager_->isVisible(ViewMenu::map)) {
+            if (!visibility_manager_.isVisible(ViewMenu::map)) {
                 return EventHandlingResult::NotHandled();
             }
 
@@ -86,7 +83,7 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
-            if (visibility_manager_ != nullptr && !visibility_manager_->isVisible(ViewMenu::map)) {
+            if (!visibility_manager_.isVisible(ViewMenu::map)) {
                     return false;
             }
 
@@ -100,14 +97,12 @@ namespace paxs {
                 hit_cache_.cached_y = y;
 
                 // 新システム: MapContentHitTesterを使用してヒットテスト
-                if (features_ != nullptr && render_context_ != nullptr) {
-                    MapFeature* hit_feature = MapContentHitTester::findFeatureAt(*features_, *render_context_, x, y);
+                MapFeature* hit_feature = MapContentHitTester::findFeatureAt(features_, render_context_, x, y);
 
-                    if (hit_feature != nullptr) {
-                        hit_cache_.hit_feature = hit_feature;
-                        hit_cache_.valid = true;
-                        return true;
-                    }
+                if (hit_feature != nullptr) {
+                    hit_cache_.hit_feature = hit_feature;
+                    hit_cache_.valid = true;
+                    return true;
                 }
 
                 // ヒットなし
@@ -123,9 +118,9 @@ namespace paxs {
         RenderLayer getLayer() const override { return RenderLayer::MapContent; }
 
     private:
-        const std::vector<std::unique_ptr<MapFeature>>* features_ = nullptr;
-        const RenderContext* render_context_ = nullptr;
-        const FeatureVisibilityManager* visibility_manager_ = nullptr;
+        const std::vector<std::unique_ptr<MapFeature>>& features_;
+        const RenderContext& render_context_;
+        const FeatureVisibilityManager& visibility_manager_;
 
         /// @brief ヒットテスト結果のキャッシュ
         /// @brief Cache for hit test results

@@ -41,13 +41,11 @@ protected:
 
 /// @brief MenuBarがEventBus経由で可視性を設定できることをテスト
 TEST_F(UIComponentsEventDrivenTest, MenuBarUsesEventBusForVisibility) {
-    MenuBar menu_bar;
-
     // 初期化
     auto& visibility_manager = const_cast<FeatureVisibilityManager&>(
         app_state_manager_.getVisibilityManager()
     );
-    menu_bar.initializeVisibility(&visibility_manager);
+    MenuBar menu_bar(visibility_manager);
 
     // AppStateManagerを通じて可視性を設定
     const auto calendar_key = MurMur3::calcHash("Calendar");

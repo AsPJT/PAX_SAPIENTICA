@@ -17,6 +17,8 @@
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/DropDownMenu.hpp>
 
+#include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
+
 namespace paxs {
     /// @brief DropDownMenu（固定ヘッダー型）を複数持つ
     class MenuSystem : public IWidget {
@@ -26,8 +28,8 @@ namespace paxs {
 
         paxg::Rect bar_rect_{0,0,0,0};
 
-        // 各メニュー項目に紐づけられた Key (Hash)
-        paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu_list_key{};
+        // 各メニュー項目に紐づけられた Key 値
+        paxs::UnorderedMap<paxs::MenuBarType, std::size_t> menu_list_key{};
 
         std::size_t start_x = 0;
 
@@ -56,17 +58,17 @@ namespace paxs {
         /// @param items_key_ 項目のキー一覧（最初の項目がメニュー名）
         /// @param font_size_ フォントサイズ
         /// @param font_buffer_thickness_size_ フォントの太さ
-        /// @param menu_key_ メニューのキー（識別用）
+        /// @param menu_type_ メニュー項目の種類
         void add(
             const std::span<const std::uint_least32_t> items_key_,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
-            const std::uint_least32_t menu_key_) {
+            const paxs::MenuBarType menu_type_) {
 
             if (menu_list.size() != 0) {
                 start_x += static_cast<std::size_t>(menu_list.back().getRect().w());
             }
-            menu_list_key.emplace(menu_key_, menu_list.size());
+            menu_list_key.emplace(menu_type_, menu_list.size());
             menu_list.emplace_back(paxs::DropDownMenu(
                 items_key_,
                 font_size_,
@@ -111,13 +113,13 @@ namespace paxs {
         }
 
         /// @brief メニュー項目を取得
-        /// @param key メニュー項目のキー
+        /// @param type メニュー項目の種類
         /// @return メニュー項目のポインタ（存在しない場合はnullptr）
-        paxs::DropDownMenu* getDropDownMenu(const std::uint_least32_t key) {
-            return (menu_list_key.find(key) != menu_list_key.end()) ? &menu_list[menu_list_key.at(key)] : nullptr;
+        paxs::DropDownMenu* getDropDownMenu(const paxs::MenuBarType type) {
+            return (menu_list_key.find(type) != menu_list_key.end()) ? &menu_list[menu_list_key.at(type)] : nullptr;
         }
-        const paxs::DropDownMenu* cgetDropDownMenu(const std::uint_least32_t key) const {
-            return (menu_list_key.find(key) != menu_list_key.end()) ? &menu_list[menu_list_key.at(key)] : nullptr;
+        const paxs::DropDownMenu* getDropDownMenu(const paxs::MenuBarType type) const {
+            return (menu_list_key.find(type) != menu_list_key.end()) ? &menu_list[menu_list_key.at(type)] : nullptr;
         }
 
         bool isHit(int x, int y) const override {
