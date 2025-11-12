@@ -72,7 +72,17 @@ namespace paxs {
             }
 
             file << message << " (" << filename << ":" << line << ")" << std::endl;
+
+            // EventBus経由でログイベント発行（定義は後で提供）
+            publishLogEvent(level, filename, line, message, current_time);
         }
+
+    private:
+        static void publishLogEvent(const Level level,
+                                    const std::string& filename,
+                                    const int line,
+                                    const std::string& message,
+                                    const std::string& timestamp) noexcept;
     };
 }
 

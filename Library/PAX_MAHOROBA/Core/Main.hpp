@@ -9,7 +9,6 @@
 
 ##########################################################################################*/
 
-//#define PAXS_DEVELOPMENT
 #ifndef PAX_MAHOROBA_MAIN_HPP
 #define PAX_MAHOROBA_MAIN_HPP
 
@@ -25,12 +24,19 @@
 
 #include <PAX_MAHOROBA/Core/AppComponentManager.hpp>
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
 #include <PAX_MAHOROBA/Input/InputManager.hpp>
 #include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
+
+#ifdef PAXS_DEVELOPMENT
+#include <PAX_SAPIENTICA/LoggerIntegration.hpp>
+#include <PAX_MAHOROBA/Input/DebugInputHandler.hpp>
+#include <PAX_MAHOROBA/UI/Debug/DebugConsoleCommandRegistry.hpp>
+#endif
 
 namespace paxs {
 
@@ -60,12 +66,28 @@ namespace paxs {
         std::unique_ptr<UIInputHandler> ui_input_handler =
             std::make_unique<UIInputHandler>();
 
+#ifdef PAXS_DEVELOPMENT
+        std::unique_ptr<DebugInputHandler> debug_input_handler =
+            std::make_unique<DebugInputHandler>(&component_manager.getDebugLayer());
+#endif
+
         // InputManagerに入力ハンドラーを登録
         input_manager.registerHandler(map_viewport_input_handler.get());
         input_manager.registerHandler(ui_input_handler.get());
+#ifdef PAXS_DEVELOPMENT
+        input_manager.registerHandler(debug_input_handler.get());
+#endif
 
         // AppComponentManagerが内部のウィジェット/ハンドラーを登録
         component_manager.registerToInputHandlers(*ui_input_handler, input_manager.getInputRouter());
+
+#ifdef PAXS_DEVELOPMENT
+        // デバッグコンソールにカスタムコマンドを登録
+        DebugConsoleCommandRegistry::registerAllCommands(
+            component_manager.getDebugLayer().getConsole(),
+            app_state
+        );
+#endif
 
         // ローディング画面終了
         paxs::PaxSapienticaInit::endLoadingScreen();
@@ -86,10 +108,17 @@ namespace paxs {
             // 3. 暦更新（シミュレーション実行中の場合）
             app_state.updateKoyomi();
 
-            // 4. 描画処理
+#ifdef PAXS_DEVELOPMENT
+            // 4. デバッグレイヤーの更新（自動削除チェック）
+            component_manager.getDebugLayer().update(
+                component_manager.getDebugLayer().getCurrentTime()
+            );
+#endif
+
+            // 5. 描画処理
             component_manager.render();
 
-            // 5. タッチ入力の状態更新
+            // 6. タッチ入力の状態更新
             paxg::TouchInput::updateState();
         }
     }

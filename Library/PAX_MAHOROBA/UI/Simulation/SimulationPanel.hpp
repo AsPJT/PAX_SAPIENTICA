@@ -21,14 +21,14 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationControlButton.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationStatsWidget.hpp>
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/InputFile.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
@@ -88,14 +88,6 @@ namespace paxs {
 
             switch (id) {
             case SimulationControlButton::Id::Initialize: {
-#ifdef PAXS_USING_SIV3D
-                // Siv3Dコンソールを開く（初回のみ）
-                static bool is_console_open = false;
-                if (!is_console_open) {
-                    s3d::detail::Console_impl{}.open();
-                    is_console_open = true;
-                }
-#endif
                 // シミュレーション初期化コマンドを発行
                 app_state_manager_.executeSimulationInitialize(model_name);
                 break;

@@ -24,6 +24,10 @@
 #include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>
 
+#ifdef PAXS_DEVELOPMENT
+#include <PAX_MAHOROBA/UI/Debug/DebugLayer.hpp>
+#endif
+
 namespace paxs {
 
     /// @brief アプリケーションコンポーネント統合管理クラス
@@ -41,6 +45,10 @@ namespace paxs {
         UILayer ui_layer_;
         MenuBar menu_bar_;
 
+#ifdef PAXS_DEVELOPMENT
+        DebugLayer debug_layer_;
+#endif
+
     public:
         AppComponentManager(AppStateManager& app_state)
             : app_state_(app_state)
@@ -55,7 +63,11 @@ namespace paxs {
                 map_content_layer_.getFeatures(),
                 map_content_layer_.getRenderContext(),
                 app_state.getVisibilityManager()
-            ) {
+            )
+#ifdef PAXS_DEVELOPMENT
+            , debug_layer_()
+#endif
+        {
             // menubar生成時に可視性が初期化されるため、UILayerの可視性初期化はここで実行
             ui_layer_.initializeVisibility();
 
@@ -65,6 +77,10 @@ namespace paxs {
             render_layer_manager_.registerRenderable(&photo360_layer_);
             render_layer_manager_.registerRenderable(&ui_layer_);
             render_layer_manager_.registerRenderable(&menu_bar_);
+
+#ifdef PAXS_DEVELOPMENT
+            render_layer_manager_.registerRenderable(&debug_layer_);
+#endif
         }
 
         // コピー・ムーブ禁止（メンバー変数へのポインタをRenderLayerManagerに登録しているため）
@@ -107,6 +123,12 @@ namespace paxs {
             input_router.registerHandler(&map_content_layer_.getSettlementInputHandler());
 #endif
         }
+
+#ifdef PAXS_DEVELOPMENT
+        DebugLayer& getDebugLayer() {
+            return debug_layer_;
+        }
+#endif
     };
 }
 

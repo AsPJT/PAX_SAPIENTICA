@@ -22,9 +22,7 @@
 
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
@@ -35,6 +33,8 @@
 #include <PAX_SAPIENTICA/AppConst.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
+#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationState.hpp>

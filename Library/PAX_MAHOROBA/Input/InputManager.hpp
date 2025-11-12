@@ -16,11 +16,11 @@
 #include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/InputRouter.hpp>
 
+#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {

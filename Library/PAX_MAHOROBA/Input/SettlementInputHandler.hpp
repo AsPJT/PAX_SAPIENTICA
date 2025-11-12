@@ -16,10 +16,10 @@
 
 #include <PAX_GRAPHICA/Key.hpp>
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 
+#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 #include <PAX_SAPIENTICA/InputStateManager.hpp>
 
 namespace paxs {

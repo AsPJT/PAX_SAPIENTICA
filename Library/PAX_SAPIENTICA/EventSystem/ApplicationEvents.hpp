@@ -9,13 +9,13 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_CORE_APPLICATION_EVENTS_HPP
-#define PAX_MAHOROBA_CORE_APPLICATION_EVENTS_HPP
+#ifndef PAX_SAPIENTICA_EVENT_SYSTEM_APPLICATION_EVENTS_HPP
+#define PAX_SAPIENTICA_EVENT_SYSTEM_APPLICATION_EVENTS_HPP
 
 #include <cstdint>
 #include <string>
 
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationState.hpp>
 
 namespace paxs {
@@ -189,6 +189,38 @@ struct DateNavigationEvent : Event {
         : days(d) {}
 };
 
+/// @brief ログイベント（Logger → UI通知）
+/// @brief Log event (Logger → UI notification)
+///
+/// Logger.hppから発行され、DebugLayerが購読します。
+/// デバッグビルド時のみログ内容を画面に表示するために使用されます。
+struct LogEvent : Event {
+    /// @brief ログレベル
+    /// @brief Log level
+    enum class Level {
+        Info,       ///< 情報メッセージ
+        Warning,    ///< 警告メッセージ
+        Error       ///< エラーメッセージ
+    };
+
+    Level level;                // ログレベル
+    std::string message;        // ログメッセージ
+    std::string filename;       // ファイル名
+    int line;                   // 行番号
+    std::string timestamp;      // タイムスタンプ
+
+    LogEvent(Level lvl,
+             const std::string& msg,
+             const std::string& file,
+             int ln,
+             const std::string& ts)
+        : level(lvl)
+        , message(msg)
+        , filename(file)
+        , line(ln)
+        , timestamp(ts) {}
+};
+
 } // namespace paxs
 
-#endif // !PAX_MAHOROBA_CORE_APPLICATION_EVENTS_HPP
+#endif // !PAX_SAPIENTICA_EVENT_SYSTEM_APPLICATION_EVENTS_HPP

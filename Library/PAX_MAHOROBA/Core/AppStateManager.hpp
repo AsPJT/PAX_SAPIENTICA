@@ -12,12 +12,12 @@
 #ifndef PAX_MAHOROBA_CORE_APP_STATE_MANAGER_HPP
 #define PAX_MAHOROBA_CORE_APP_STATE_MANAGER_HPP
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
+#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 #include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
 
 #ifdef PAXS_USING_SIMULATOR

@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_CORE_EVENT_BUS_HPP
-#define PAX_MAHOROBA_CORE_EVENT_BUS_HPP
+#ifndef PAX_SAPIENTICA_EVENT_SYSTEM_EVENT_BUS_HPP
+#define PAX_SAPIENTICA_EVENT_SYSTEM_EVENT_BUS_HPP
 
 #include <functional>
 #include <memory>
@@ -158,4 +158,4 @@ private:
 
 } // namespace paxs
 
-#endif // !PAX_MAHOROBA_CORE_EVENT_BUS_HPP
+#endif // !PAX_SAPIENTICA_EVENT_SYSTEM_EVENT_BUS_HPP

@@ -10,8 +10,9 @@
 ##########################################################################################*/
 
 #include <gtest/gtest.h>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Core/SimulationController.hpp>
+
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 
 namespace paxs {
 

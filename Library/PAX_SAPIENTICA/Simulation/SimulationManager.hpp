@@ -12,6 +12,7 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_MANAGER_HPP
 #define PAX_SAPIENTICA_SIMULATION_MANAGER_HPP
 
+#include <filesystem>
 #include <memory>
 #include <random>
 #include <string>
@@ -19,6 +20,7 @@
 
 #include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Logger.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
@@ -161,6 +163,17 @@ namespace paxs {
             SimulationConstants::getInstance(model_name)->init(model_name);
 
             auto [map_list_path, japan_provinces_path] = generatePaths(model_name);
+
+            // パスの存在確認
+            if (!std::filesystem::exists(paxs::AppConfig::getInstance()->getRootPath() + "/" + map_list_path)) {
+                PAXS_WARNING("Model '" + model_name + "' does not exist (MapList not found: " + map_list_path + "). Available models: Sample, EpiJomon, Yaponesia, AynuMosir, Philippines, Aotearoa");
+                return;
+            }
+            if (!std::filesystem::exists(paxs::AppConfig::getInstance()->getRootPath() + "/" + japan_provinces_path)) {
+                PAXS_WARNING("Model '" + model_name + "' does not exist (Provinces path not found: " + japan_provinces_path + "). Available models: Sample, EpiJomon, Yaponesia, AynuMosir, Philippines, Aotearoa");
+                return;
+            }
+
             initialize(map_list_path, japan_provinces_path, seed, model_name);
         }
 

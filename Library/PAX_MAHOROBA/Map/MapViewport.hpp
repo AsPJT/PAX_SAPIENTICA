@@ -15,9 +15,8 @@
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
-
+#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 #include <PAX_SAPIENTICA/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/MapProjection.hpp>
 
