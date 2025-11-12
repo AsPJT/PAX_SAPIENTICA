@@ -89,7 +89,7 @@ namespace paxs {
         constexpr const char* map_soil = "menu_bar_map_soil";
         constexpr const char* map_ryosei_line = "menu_bar_map_ryosei_line";
         constexpr const char* map_slope = "menu_bar_map_slope";
-        constexpr const char* map_line2 = "menu_bar_map_line2";
+        constexpr const char* map_line1 = "menu_bar_map_line1";
 
         /// @brief Map メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array map_menu_hashes = {
@@ -98,7 +98,7 @@ namespace paxs {
             MurMur3::calcHash(map_soil),
             MurMur3::calcHash(map_ryosei_line),
             MurMur3::calcHash(map_slope),
-            MurMur3::calcHash(map_line2)
+            MurMur3::calcHash(map_line1)
         };
     }
 
@@ -140,7 +140,7 @@ namespace paxs {
         soil           = MurMur3::calcHash("menu_bar_map_soil"),
         ryosei_line    = MurMur3::calcHash("menu_bar_map_ryosei_line"),
         slope          = MurMur3::calcHash("menu_bar_map_slope"),
-        line2          = MurMur3::calcHash("menu_bar_map_line2"),
+        line1          = MurMur3::calcHash(MenuBarKeys::map_line1),
     };
     template<> struct MenuItemEnum<MapLayersMenu> { using enum_type = MapLayersMenu; };
 

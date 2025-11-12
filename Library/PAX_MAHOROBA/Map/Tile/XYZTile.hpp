@@ -144,7 +144,6 @@ namespace paxs {
         unsigned int draw_max_z = 999; // 描画最大 Z
         unsigned int z_num = (1 << z); // 2 の z 乗 // std::pow(2, z) と等価
 
-        // ★ リファクタリング Phase 1: 新しい構造体変数（既存変数と並行して使用）
         ViewportState current_viewport_{0.0, 0.0, 0.0, 0.0};
         ZoomState current_zoom_{0, 0, 0};
         TileRange current_range_{{0, 0}, {0, 0}};
@@ -359,7 +358,6 @@ namespace paxs {
             const double map_view_center_x, // 描画される地図の中心経度
             const double map_view_center_y // 描画される地図の中心緯度
         ) {
-            // ★ Phase 3: 新しい構造体ベースのロジックに完全移行
             // 1. 新しい状態を計算
             ViewportState new_viewport{
                 map_view_width, map_view_height,

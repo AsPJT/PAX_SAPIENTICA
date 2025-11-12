@@ -18,6 +18,7 @@
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 
 #include <PAX_SAPIENTICA/InputFile.hpp>
+#include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
 
@@ -161,7 +162,7 @@ namespace paxs {
         /// @brief グリッド線タイルを作成
         /// @return グリッド線タイル
         XYZTile createGridLineTile() const {
-            XYZTile xyz_tile(MurMur3::calcHash("menu_bar_map_line2"), true,
+            XYZTile xyz_tile(static_cast<std::uint_least32_t>(paxs::MapLayersMenu::line1), true,
                 paxs::MurMur3::calcHash("asset_file"), 0, "", "",
                 (""), paxs::MurMur3::calcHash("grid_and_string"), "");
             return xyz_tile;

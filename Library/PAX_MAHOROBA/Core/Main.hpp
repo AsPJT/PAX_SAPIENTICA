@@ -86,13 +86,10 @@ namespace paxs {
             // 3. 暦更新（シミュレーション実行中の場合）
             app_state.updateKoyomi();
 
-            // 4. タイルデータ更新（ビューポート変更に応じてタイルをロード）
-            component_manager.updateTiles();
-
-            // 5. 描画のみ（更新は不要、データはAppStateManagerから直接取得）
+            // 4. 描画処理
             component_manager.render();
 
-            // 6. タッチ入力の状態更新
+            // 5. タッチ入力の状態更新
             paxg::TouchInput::updateState();
         }
     }

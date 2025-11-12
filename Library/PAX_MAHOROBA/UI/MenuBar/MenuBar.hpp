@@ -99,7 +99,7 @@ namespace paxs {
             visible_manager->emplace(MapLayersMenu::soil, false); // 土壌
             visible_manager->emplace(MapLayersMenu::ryosei_line, true); // 陸生国境界線
             visible_manager->emplace(MapLayersMenu::slope, true); // 傾斜
-            visible_manager->emplace(MapLayersMenu::line2, false); // 線2
+            visible_manager->emplace(MapLayersMenu::line1, false); // 線1
 
             // View メニューの状態を初期化
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(MurMur3::calcHash("view"));
@@ -125,7 +125,7 @@ namespace paxs {
             map_menu->setIsItems(std::size_t(1), visible_manager->isVisible(MapLayersMenu::soil));
             map_menu->setIsItems(std::size_t(2), visible_manager->isVisible(MapLayersMenu::ryosei_line));
             map_menu->setIsItems(std::size_t(3), visible_manager->isVisible(MapLayersMenu::slope));
-            map_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MapLayersMenu::line2));
+            map_menu->setIsItems(std::size_t(4), visible_manager->isVisible(MapLayersMenu::line1));
         }
 
         /// @brief 言語変更時のハンドラー（コールバック駆動）
@@ -195,7 +195,7 @@ namespace paxs {
                     MapLayersMenu::soil,
                     MapLayersMenu::ryosei_line,
                     MapLayersMenu::slope,
-                    MapLayersMenu::line2
+                    MapLayersMenu::line1
                 };
                 if (actual_index < map_layer_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
