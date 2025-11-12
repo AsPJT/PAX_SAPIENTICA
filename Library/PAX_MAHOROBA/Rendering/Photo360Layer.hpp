@@ -16,7 +16,7 @@
 
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 

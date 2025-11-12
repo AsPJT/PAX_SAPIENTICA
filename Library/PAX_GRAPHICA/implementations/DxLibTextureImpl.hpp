@@ -18,9 +18,9 @@
 
 #include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/TextureImpl.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 namespace paxg {
 
     class DxLibTextureImpl : public TextureImpl {

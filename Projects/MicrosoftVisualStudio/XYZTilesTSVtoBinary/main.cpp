@@ -10,7 +10,7 @@
 ##########################################################################################*/
 
 
-#include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
+#include <PAX_SAPIENTICA/Geography/Terrain/Slope.hpp>
 
 #include <iostream>
 
@@ -26,13 +26,13 @@ int  main() {
             for (std::size_t y = 360; y < 430; ++y) {
 
                 std::string input_name_zxy = input_name;
-                paxs::StringExtensions::replace(input_name_zxy, "{z}", std::to_string(z));
-                paxs::StringExtensions::replace(input_name_zxy, "{x}", std::to_string(x));
-                paxs::StringExtensions::replace(input_name_zxy, "{y}", std::to_string(y));
+                paxs::StringUtils::replace(input_name_zxy, "{z}", std::to_string(z));
+                paxs::StringUtils::replace(input_name_zxy, "{x}", std::to_string(x));
+                paxs::StringUtils::replace(input_name_zxy, "{y}", std::to_string(y));
                 std::string output_name_zxy = output_name;
-                paxs::StringExtensions::replace(output_name_zxy, "{z}", std::to_string(z));
-                paxs::StringExtensions::replace(output_name_zxy, "{x}", std::to_string(x));
-                paxs::StringExtensions::replace(output_name_zxy, "{y}", std::to_string(y));
+                paxs::StringUtils::replace(output_name_zxy, "{z}", std::to_string(z));
+                paxs::StringUtils::replace(output_name_zxy, "{x}", std::to_string(x));
+                paxs::StringUtils::replace(output_name_zxy, "{y}", std::to_string(y));
 
                 paxs::SlopeDegU0To250AllOutput sda(
                     input_name_zxy, "./../../../",
@@ -47,10 +47,10 @@ int  main() {
 }
 
 //int main() {
-//    std::cout << paxs::elevationF64ToLog2S16(paxs::elevationLog2S16ToF64(-20000)) << '\n';
+//    std::cout << paxs::ElevationEncoding::elevationF64ToLog2S16(paxs::elevationLog2S16ToF64(-20000)) << '\n';
 //    //std::cout << (paxs::slopeDegLog2U8ToF64(7)) << '\n';
-//    //std::cout << (int)paxs::slopeDegF64ToLog2U8(55);
-//    //std::cout << paxs::elevationF64ToLog2S16(3.138);
+//    //std::cout << (int)paxs::SlopeEncoding::slopeDegF64ToLog2U8(55);
+//    //std::cout << paxs::ElevationEncoding::elevationF64ToLog2S16(3.138);
 //}
 
 //// 標高版 : TSV から バイナリデータを出力
@@ -71,13 +71,13 @@ int  main() {
 //            for (std::size_t y = 0; y < z_num; ++y) {
 //
 //                std::string input_name_zxy = input_name;
-//                paxs::StringExtensions::replace(input_name_zxy, "{z}", std::to_string(z));
-//                paxs::StringExtensions::replace(input_name_zxy, "{x}", std::to_string(x));
-//                paxs::StringExtensions::replace(input_name_zxy, "{y}", std::to_string(y));
+//                paxs::StringUtils::replace(input_name_zxy, "{z}", std::to_string(z));
+//                paxs::StringUtils::replace(input_name_zxy, "{x}", std::to_string(x));
+//                paxs::StringUtils::replace(input_name_zxy, "{y}", std::to_string(y));
 //                std::string output_name_zxy = output_name;
-//                paxs::StringExtensions::replace(output_name_zxy, "{z}", std::to_string(z));
-//                paxs::StringExtensions::replace(output_name_zxy, "{x}", std::to_string(x));
-//                paxs::StringExtensions::replace(output_name_zxy, "{y}", std::to_string(y));
+//                paxs::StringUtils::replace(output_name_zxy, "{z}", std::to_string(z));
+//                paxs::StringUtils::replace(output_name_zxy, "{x}", std::to_string(x));
+//                paxs::StringUtils::replace(output_name_zxy, "{y}", std::to_string(y));
 //
 //                paxs::ElevationS16AllOutput sda(
 //                    input_name_zxy, "./../../../",
@@ -146,13 +146,13 @@ int  main() {
 //            for (std::size_t y = 0; y < z_num; ++y) {
 //
 //                std::string input_name_zxy = input_name;
-//                paxs::StringExtensions::replace(input_name_zxy, "{z}", std::to_string(z));
-//                paxs::StringExtensions::replace(input_name_zxy, "{x}", std::to_string(x));
-//                paxs::StringExtensions::replace(input_name_zxy, "{y}", std::to_string(y));
+//                paxs::StringUtils::replace(input_name_zxy, "{z}", std::to_string(z));
+//                paxs::StringUtils::replace(input_name_zxy, "{x}", std::to_string(x));
+//                paxs::StringUtils::replace(input_name_zxy, "{y}", std::to_string(y));
 //                std::string output_name_zxy = output_name;
-//                paxs::StringExtensions::replace(output_name_zxy, "{z}", std::to_string(z));
-//                paxs::StringExtensions::replace(output_name_zxy, "{x}", std::to_string(x));
-//                paxs::StringExtensions::replace(output_name_zxy, "{y}", std::to_string(y));
+//                paxs::StringUtils::replace(output_name_zxy, "{z}", std::to_string(z));
+//                paxs::StringUtils::replace(output_name_zxy, "{x}", std::to_string(x));
+//                paxs::StringUtils::replace(output_name_zxy, "{y}", std::to_string(y));
 //
 //                paxs::SlopeDegU0To250AllOutput sda(
 //                    input_name_zxy, "./../../../",

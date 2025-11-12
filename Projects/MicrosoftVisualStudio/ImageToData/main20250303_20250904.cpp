@@ -30,9 +30,9 @@
 
 #include <PAX_SAPIENTICA/Color/RGBA.hpp>
 #include <PAX_SAPIENTICA/Color/Ryoseikoku.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/StringUtils.hpp>
 
-#include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
+#include <PAX_SAPIENTICA/Geography/Terrain/Slope.hpp>
 
 const std::string path = "../../../"; // Data 階層のパス
 
@@ -159,11 +159,11 @@ bool output_bin(const xyz_tiles_conv::XYZTilesConv& conv_data, const std::string
 
 bool ToTSV(const xyz_tiles_conv::XYZTilesConv& conv_data) {
     std::string input_path = conv_data.input;
-    paxs::StringExtensions::replace(input_path, "{z}", std::to_string(conv_data.z));
-    paxs::StringExtensions::replace(input_path, "{min_x}", std::to_string(conv_data.min_x));
-    paxs::StringExtensions::replace(input_path, "{min_y}", std::to_string(conv_data.min_y));
-    paxs::StringExtensions::replace(input_path, "{len_x}", std::to_string(conv_data.len_x));
-    paxs::StringExtensions::replace(input_path, "{len_y}", std::to_string(conv_data.len_y));
+    paxs::StringUtils::replace(input_path, "{z}", std::to_string(conv_data.z));
+    paxs::StringUtils::replace(input_path, "{min_x}", std::to_string(conv_data.min_x));
+    paxs::StringUtils::replace(input_path, "{min_y}", std::to_string(conv_data.min_y));
+    paxs::StringUtils::replace(input_path, "{len_x}", std::to_string(conv_data.len_x));
+    paxs::StringUtils::replace(input_path, "{len_y}", std::to_string(conv_data.len_y));
     {
         std::ifstream ifs(input_path);
         if (!ifs) return false; // 入力ファイルが見つからなかった
@@ -173,7 +173,7 @@ bool ToTSV(const xyz_tiles_conv::XYZTilesConv& conv_data) {
 
     // Z 数値変換済みの出力パス
     std::string output_path_z = xyz_tiles_conv::output;
-    paxs::StringExtensions::replace(output_path_z, "{z}", std::to_string(conv_data.z));
+    paxs::StringUtils::replace(output_path_z, "{z}", std::to_string(conv_data.z));
 
     unsigned char* pixels = nullptr;
 
@@ -188,10 +188,10 @@ bool ToTSV(const xyz_tiles_conv::XYZTilesConv& conv_data) {
     const int max_x = conv_data.min_x + conv_data.len_x, max_y = conv_data.min_y + conv_data.len_y;
     for (int y = conv_data.min_y, row0 = 0; y < max_y; ++y, ++row0) {
         std::string output_path_zy = output_path_z;
-        paxs::StringExtensions::replace(output_path_zy, "{y}", std::to_string(y));
+        paxs::StringUtils::replace(output_path_zy, "{y}", std::to_string(y));
         for (int x = conv_data.min_x, col0 = 0; x < max_x; ++x, ++col0) {
             std::string output_path = output_path_zy;
-            paxs::StringExtensions::replace(output_path, "{x}", std::to_string(x));
+            paxs::StringUtils::replace(output_path, "{x}", std::to_string(x));
 
             int slash_num = 0;
             for (int i = 0; i < output_path.size(); ++i) {

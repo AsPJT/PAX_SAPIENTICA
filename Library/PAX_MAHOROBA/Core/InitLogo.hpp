@@ -18,8 +18,8 @@
 #include <PAX_MAHOROBA/Core/Init.hpp>
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 
-#include <PAX_SAPIENTICA/AppConst.hpp>
-#include <PAX_SAPIENTICA/Version.hpp>
+#include <PAX_SAPIENTICA/System/AppConst.hpp>
+#include <PAX_SAPIENTICA/System/Version.hpp>
 
 namespace paxs {
 

@@ -12,7 +12,7 @@
 #ifndef PAX_GRAPHICA_RENDER_TEXTURE_IMPL_HPP
 #define PAX_GRAPHICA_RENDER_TEXTURE_IMPL_HPP
 
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
 

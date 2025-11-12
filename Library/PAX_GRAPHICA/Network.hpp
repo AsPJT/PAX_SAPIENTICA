@@ -14,7 +14,7 @@
 
 #include <string>
 
-#include <PAX_SAPIENTICA/File.hpp>
+#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
@@ -85,7 +85,7 @@ namespace paxg {
             // 保存先のディレクトリを作成
             std::filesystem::path path(save_path);
             if (path.has_parent_path()) {
-                if (!paxs::File::createDirectories(path.parent_path().string())) {
+                if (!paxs::FileSystem::createDirectories(path.parent_path().string())) {
                     curl_easy_cleanup(curl);
                     return false;
                 }
@@ -124,7 +124,7 @@ namespace paxg {
             // 保存先のディレクトリを作成
             std::filesystem::path path(save_path);
             if (path.has_parent_path()) {
-                if (!paxs::File::createDirectories(path.parent_path().string())) {
+                if (!paxs::FileSystem::createDirectories(path.parent_path().string())) {
                     return false;
                 }
             }

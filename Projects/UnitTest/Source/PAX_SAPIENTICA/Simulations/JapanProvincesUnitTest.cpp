@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/JapanProvinces.hpp>
 
 // もしConfig.tsvが存在しない場合、一時的に作成する
 class PathTSV {

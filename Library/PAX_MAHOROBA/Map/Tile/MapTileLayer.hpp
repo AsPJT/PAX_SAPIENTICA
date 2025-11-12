@@ -22,10 +22,10 @@
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 

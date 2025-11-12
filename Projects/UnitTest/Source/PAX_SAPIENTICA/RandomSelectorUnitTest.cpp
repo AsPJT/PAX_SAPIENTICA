@@ -11,12 +11,12 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/RandomSelector.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/Random.hpp>
 
 TEST(RandomSelectorUnitTest, select1) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    paxs::RandomSelector selector(&gen);
+    paxs::RandomSelector selector(gen);
 
     std::vector<int> vec = { 0, 1, 2, 3, 4, 5 };
     std::vector<int> result = selector.select(vec, 3);
@@ -27,7 +27,7 @@ TEST(RandomSelectorUnitTest, select1) {
 TEST(RandomSelectorUnitTest, select2) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    paxs::RandomSelector selector(&gen);
+    paxs::RandomSelector selector(gen);
 
     std::vector<int> vec = { 0, 1, 2, 3, 4, 5 };
     std::vector<int> result = selector.select(vec, 3);
@@ -50,7 +50,7 @@ TEST(RandomSelectorUnitTest, select2) {
 TEST(RandomSelectorUnitTest, outOfRange) {
     std::random_device rd;
     std::mt19937 gen(rd());
-    paxs::RandomSelector selector(&gen);
+    paxs::RandomSelector selector(gen);
 
     std::vector<int> vec = { 0, 1, 2, 3, 4, 5 };
     std::vector<int> result = {};

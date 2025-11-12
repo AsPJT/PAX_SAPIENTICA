@@ -11,7 +11,7 @@
 
 #include <memory>
 
-#include <PAX_SAPIENTICA/Simulation/SettlementSimulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/Manager/SettlementSimulator.hpp>
 
 int main() {
     const std::string map_list_path = "Data/Simulations/MapList.tsv";

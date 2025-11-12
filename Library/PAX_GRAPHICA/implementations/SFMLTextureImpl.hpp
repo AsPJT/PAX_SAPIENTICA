@@ -18,7 +18,7 @@
 #include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/TextureImpl.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 #include <algorithm> // std::min を使用するために追加
 #include <cmath>     // std::min がfloatで曖昧な場合のため (fminでも可)

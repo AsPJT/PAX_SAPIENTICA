@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_XYZ_TILE_HPP
 
 #include <cmath>
-#include <filesystem>
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,12 +22,12 @@
 #include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/UrlTileLoader.hpp>
 
-#include <PAX_SAPIENTICA/Map/TileCache.hpp>
-#include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
-#include <PAX_SAPIENTICA/Map/TileMetadata.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/Map/Tile/TileCache.hpp>
+#include <PAX_SAPIENTICA/Map/Tile/TileCoordinate.hpp>
+#include <PAX_SAPIENTICA/Map/Tile/TileMetadata.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -244,8 +243,8 @@ namespace paxs {
 
             const std::string z_value = std::to_string(z); // Z の値
             std::string local_file_path_zn = file_name_format;
-            paxs::StringExtensions::replace(local_file_path_zn, "{z}", z_value);
-            if (map_name.size() != 0) paxs::StringExtensions::replace(local_file_path_zn, "{n}", map_name);
+            paxs::StringUtils::replace(local_file_path_zn, "{z}", z_value);
+            if (map_name.size() != 0) paxs::StringUtils::replace(local_file_path_zn, "{n}", map_name);
 
             const std::uint_least64_t index_z = tile_cache_.encodeKeyZ(static_cast<std::uint_least64_t>(z));
 
@@ -254,7 +253,7 @@ namespace paxs {
 
                 const std::string y_value = std::to_string((i + z_num) & (z_num - 1)); // Y の値
                 std::string local_file_path_zny = local_file_path_zn;
-                paxs::StringExtensions::replace(local_file_path_zny, "{y}", y_value);
+                paxs::StringUtils::replace(local_file_path_zny, "{y}", y_value);
 
                 const std::uint_least64_t index_zy = tile_cache_.encodeKeyY(static_cast<std::uint_least64_t>((i + z_num) & (z_num - 1))) + index_z;
 
@@ -265,22 +264,22 @@ namespace paxs {
 
                 if (!metadata_.texture_url.empty()) {
                     url_path_zny = metadata_.texture_url;
-                    paxs::StringExtensions::replace(url_path_zny, "{z}", z_value);
-                    paxs::StringExtensions::replace(url_path_zny, "{y}", y_value);
+                    paxs::StringUtils::replace(url_path_zny, "{z}", z_value);
+                    paxs::StringUtils::replace(url_path_zny, "{y}", y_value);
                 }
 
                 if (!binary_file_name_format.empty()) {
                     binary_path_zny = binary_file_name_format;
-                    paxs::StringExtensions::replace(binary_path_zny, "{z}", z_value);
-                    paxs::StringExtensions::replace(binary_path_zny, "{y}", y_value);
-                    if (map_name.size() != 0) paxs::StringExtensions::replace(binary_path_zny, "{n}", map_name);
+                    paxs::StringUtils::replace(binary_path_zny, "{z}", z_value);
+                    paxs::StringUtils::replace(binary_path_zny, "{y}", y_value);
+                    if (map_name.size() != 0) paxs::StringUtils::replace(binary_path_zny, "{n}", map_name);
                 }
 
                 if (!texture_full_path_folder.empty()) {
                     texture_folder_path_zny = texture_full_path_folder;
-                    paxs::StringExtensions::replace(texture_folder_path_zny, "{z}", z_value);
-                    paxs::StringExtensions::replace(texture_folder_path_zny, "{y}", y_value);
-                    if (map_name.size() != 0) paxs::StringExtensions::replace(texture_folder_path_zny, "{n}", map_name);
+                    paxs::StringUtils::replace(texture_folder_path_zny, "{z}", z_value);
+                    paxs::StringUtils::replace(texture_folder_path_zny, "{y}", y_value);
+                    if (map_name.size() != 0) paxs::StringUtils::replace(texture_folder_path_zny, "{n}", map_name);
                 }
 
                 for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
@@ -308,7 +307,7 @@ namespace paxs {
                     // 2. UrlTileLoader（URL からダウンロード）
                     if (!metadata_.texture_url.empty()) {
                         std::string texture_folder_path_znyx = texture_folder_path_zny;
-                        paxs::StringExtensions::replace(texture_folder_path_znyx, "{x}", x_value);
+                        paxs::StringUtils::replace(texture_folder_path_znyx, "{x}", x_value);
 
                         texture = UrlTileLoader::load(
                             url_path_zny,
@@ -326,7 +325,7 @@ namespace paxs {
                     // 3. BinaryTileLoader（バイナリデータから PNG 生成）
                     if (!binary_file_name_format.empty() && !texture_full_path_folder.empty()) {
                         std::string texture_folder_path_znyx = texture_folder_path_zny;
-                        paxs::StringExtensions::replace(texture_folder_path_znyx, "{x}", x_value);
+                        paxs::StringUtils::replace(texture_folder_path_znyx, "{x}", x_value);
 
                         texture = BinaryTileLoader::load(
                             binary_path_zny,

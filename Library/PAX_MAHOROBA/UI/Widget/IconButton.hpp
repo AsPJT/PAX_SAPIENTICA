@@ -17,8 +17,8 @@
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 namespace paxs {
 

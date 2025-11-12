@@ -14,8 +14,8 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/File.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 TEST(LoggerUnitTest, currentDateTime) {
     const std::regex  e("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}");

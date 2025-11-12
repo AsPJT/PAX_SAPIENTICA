@@ -22,9 +22,10 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {
 

@@ -11,8 +11,8 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
-#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 
 namespace paxs {
 

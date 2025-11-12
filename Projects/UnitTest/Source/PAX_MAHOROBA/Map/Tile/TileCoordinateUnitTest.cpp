@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
-#include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
+#include <PAX_SAPIENTICA/Map/Tile/TileCoordinate.hpp>
 
 namespace paxs {
 

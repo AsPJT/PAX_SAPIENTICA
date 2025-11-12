@@ -13,8 +13,8 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Simulation/Agent.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Agent.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 
 using Vector2 = paxs::Vector2<paxs::GridType>;
 

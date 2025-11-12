@@ -30,12 +30,12 @@
 #include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 #ifdef PAXS_DEVELOPMENT
-#include <PAX_SAPIENTICA/LoggerIntegration.hpp>
 #include <PAX_MAHOROBA/Input/DebugInputHandler.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugConsoleCommandRegistry.hpp>
+#include <PAX_SAPIENTICA/Utility/LoggerIntegration.hpp>
 #endif
 
 namespace paxs {

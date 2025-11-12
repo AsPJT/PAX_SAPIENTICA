@@ -16,7 +16,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 

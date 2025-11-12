@@ -23,7 +23,7 @@
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
-#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 
 namespace paxs {
 

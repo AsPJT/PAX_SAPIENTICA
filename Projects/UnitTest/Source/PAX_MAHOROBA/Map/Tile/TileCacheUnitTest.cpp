@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
-#include <PAX_SAPIENTICA/Map/TileCache.hpp>
+#include <PAX_SAPIENTICA/Map/Tile/TileCache.hpp>
 
 namespace paxs {
 

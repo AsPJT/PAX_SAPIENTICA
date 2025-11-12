@@ -24,7 +24,7 @@
 #include <vector>
 #include <cmath>
 
-#include <PAX_SAPIENTICA/GeographicInformation/Elevation.hpp>
+#include <PAX_SAPIENTICA/Geography/Terrain/Elevation.hpp>
 
 // 画像保存用
 struct RGBA {

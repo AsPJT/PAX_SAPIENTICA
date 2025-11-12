@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 #include <PAX_MAHOROBA/Core/SimulationController.hpp>
 
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {
 

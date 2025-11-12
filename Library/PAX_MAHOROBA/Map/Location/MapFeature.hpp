@@ -12,12 +12,11 @@
 #ifndef PAX_MAHOROBA_MAP_FEATURE_HPP
 #define PAX_MAHOROBA_MAP_FEATURE_HPP
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include <PAX_GRAPHICA/Vec2.hpp>
-
-#include <cstdint>
 
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>

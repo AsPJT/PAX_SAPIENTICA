@@ -13,8 +13,8 @@
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 
-#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {
 

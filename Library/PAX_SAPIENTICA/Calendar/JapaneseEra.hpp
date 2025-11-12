@@ -14,12 +14,11 @@
 
 #include <array>
 #include <cmath>
-#include <fstream>
 #include <string>
 #include <vector>
 
-#include <PAX_SAPIENTICA/InputFile.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/System/InputFile.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 
 namespace paxs {
 

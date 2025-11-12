@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_MAP_TILE_BINARY_TILE_LOADER_HPP
 
 #include <cstddef>
-#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
@@ -23,10 +22,11 @@
 
 #include <PAX_GRAPHICA/Texture.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/GeographicInformation/Slope.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/Geography/Terrain/Slope.hpp>
+#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
 
@@ -62,7 +62,7 @@ namespace paxs {
         ) {
             // バイナリ相対パスの X を置換
             std::string binary_relative_path = binary_path_with_zy;
-            paxs::StringExtensions::replace(binary_relative_path, "{x}", x_value);
+            paxs::StringUtils::replace(binary_relative_path, "{x}", x_value);
 
             // バイナリファイルを読み込み（Input8BitBinaryは内部でrootpathを前置）
             paxs::Input8BitBinary i8bbs(binary_relative_path,
@@ -125,7 +125,7 @@ namespace paxs {
 
             // 出力PNG相対パスの X を置換
             std::string relative_path = local_path_with_zy;
-            paxs::StringExtensions::replace(relative_path, "{x}", x_value);
+            paxs::StringUtils::replace(relative_path, "{x}", x_value);
 
             // アセットルートパスを前置して絶対パスを構築
             const std::string root_path = AppConfig::getInstance()->getRootPath();
@@ -133,13 +133,13 @@ namespace paxs {
             const std::string full_folder_path = root_path + folder_path_with_zyx;
 
             // 保存先フォルダを作成（絶対パスを使用）
-            std::filesystem::create_directories(full_folder_path);
+            FileSystem::createDirectories(full_folder_path);
 
             // PNGファイルとして保存（絶対パスを使用）
             stbi_write_png(full_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data(), 0); // 引数のバッファを使用
 
             // ファイル存在チェック（絶対パスを使用）
-            if (!std::filesystem::exists(full_path)) {
+            if (!FileSystem::exists(full_path)) {
                 return nullptr;
             }
 

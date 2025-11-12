@@ -20,7 +20,7 @@
 #include <SFML/Graphics.hpp>
 #endif
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 namespace paxg {
 

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Simulation/Chromosome.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Chromosome.hpp>
 
 TEST (ChromosomeUnitTest, getAndSet) {
     paxs::Chromosome chromosome;

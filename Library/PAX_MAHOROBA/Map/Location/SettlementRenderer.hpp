@@ -18,15 +18,15 @@
 #include <PAX_GRAPHICA/Spline2D.hpp>
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
+
 #include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
-
 #include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
 
-#include <PAX_SAPIENTICA/MapUtility.hpp>
+#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
-#include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
-#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/SettlementGrid.hpp>
+#include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
 
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する
@@ -358,7 +358,7 @@ namespace paxs {
             const paxs::Vector2<int>& start_position,
             const paxs::Vector2<int>& position,
             const int z) {
-            return MapUtility::convertToMercatorCoordinate(start_position, position, z);
+            return MapUtils::convertToMercatorCoordinate(start_position, position, z);
         }
 
     };

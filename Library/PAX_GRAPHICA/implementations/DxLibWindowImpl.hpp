@@ -22,8 +22,8 @@
 
 #include <PAX_GRAPHICA/WindowImpl.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/AppConst.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConst.hpp>
 
 namespace paxg {
     namespace MinWindow {

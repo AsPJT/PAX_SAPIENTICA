@@ -15,7 +15,7 @@
 #include <memory>
 #include <string>
 
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 #if defined(PAXS_USING_SIV3D)
 #include <PAX_GRAPHICA/implementations/Siv3DWindowImpl.hpp>

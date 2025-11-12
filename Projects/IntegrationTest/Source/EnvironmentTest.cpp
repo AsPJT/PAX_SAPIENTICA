@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
 
 int main()
 {

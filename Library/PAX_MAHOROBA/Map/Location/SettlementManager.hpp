@@ -19,8 +19,8 @@
 #include <PAX_MAHOROBA/Map/Location/SettlementRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
-#include <PAX_SAPIENTICA/Simulation/SettlementGrid.hpp>
-#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/SettlementGrid.hpp>
 
 namespace paxs {
 

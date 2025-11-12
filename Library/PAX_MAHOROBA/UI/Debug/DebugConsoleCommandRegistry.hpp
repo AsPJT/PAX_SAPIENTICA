@@ -16,10 +16,10 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugConsole.hpp>
 
-#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
 

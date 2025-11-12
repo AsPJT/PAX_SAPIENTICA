@@ -25,7 +25,7 @@
 
 #include <PAX_GRAPHICA/String.hpp>
 
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxg {
 

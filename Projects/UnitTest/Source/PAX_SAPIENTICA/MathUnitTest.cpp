@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Math.hpp>
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
 
 TEST (MathUnitTest, pi) {
     double expected = 3.1415926535897932384626433832795028841971;

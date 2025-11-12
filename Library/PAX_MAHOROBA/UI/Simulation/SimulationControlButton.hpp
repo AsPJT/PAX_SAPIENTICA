@@ -14,8 +14,8 @@
 
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationState.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationState.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 

@@ -20,7 +20,7 @@
 #include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugLayer.hpp>
 
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
 

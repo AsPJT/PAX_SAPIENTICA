@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 TEST (FeatureVisibilityManagerUnitTest, emplace) {
     paxs::FeatureVisibilityManager fvm;

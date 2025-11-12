@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 
 namespace paxg {
 
@@ -47,7 +47,7 @@ namespace paxg {
     protected:
         // Helper to convert SVG paths to PNG
         static std::string convertSvgToPng(std::string path) {
-            paxs::StringExtensions::replace(path, ".svg", ".png");
+            paxs::StringUtils::replace(path, ".svg", ".png");
             return path;
         }
     };

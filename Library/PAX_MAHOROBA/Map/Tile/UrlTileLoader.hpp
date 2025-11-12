@@ -12,15 +12,16 @@
 #ifndef PAX_MAHOROBA_MAP_TILE_URL_TILE_LOADER_HPP
 #define PAX_MAHOROBA_MAP_TILE_URL_TILE_LOADER_HPP
 
-#include <filesystem>
 #include <memory>
 #include <string>
 
 #include <PAX_GRAPHICA/Network.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
 
@@ -43,10 +44,10 @@ namespace paxs {
         ) {
             // URL と ローカル相対パスの X を置換
             std::string url_path = url_path_with_zy;
-            paxs::StringExtensions::replace(url_path, "{x}", x_value);
+            paxs::StringUtils::replace(url_path, "{x}", x_value);
 
             std::string relative_path = local_path_with_zy;
-            paxs::StringExtensions::replace(relative_path, "{x}", x_value);
+            paxs::StringUtils::replace(relative_path, "{x}", x_value);
 
             // アセットルートパスを前置して絶対パスを構築
             const std::string root_path = AppConfig::getInstance()->getRootPath();
@@ -54,7 +55,7 @@ namespace paxs {
             const std::string full_folder_path = root_path + folder_path_with_zyx;
 
             // 保存先フォルダを作成（絶対パスを使用）
-            std::filesystem::create_directories(full_folder_path);
+            FileSystem::createDirectories(full_folder_path);
 
             // ダウンロード（絶対パスを使用）
             if (!paxg::Network::downloadFile(url_path, full_path)) {
@@ -63,7 +64,7 @@ namespace paxs {
             }
 
             // ファイル存在チェック（絶対パスを使用）
-            if (!std::filesystem::exists(full_path)) {
+            if (!FileSystem::exists(full_path)) {
                 return nullptr;
             }
 

@@ -16,13 +16,13 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_MAHOROBA/Core/SimulationController.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
+#include <PAX_SAPIENTICA/Simulation/Manager/SimulationManager.hpp>
 #endif
 
 namespace paxs {

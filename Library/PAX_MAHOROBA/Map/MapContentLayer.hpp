@@ -18,7 +18,7 @@
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/SettlementManager.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
+#include <PAX_SAPIENTICA/Simulation/Manager/SimulationManager.hpp>
 #endif
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
@@ -31,16 +31,15 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/EventSystem/ApplicationEvents.hpp>
-#include <PAX_SAPIENTICA/EventSystem/EventBus.hpp>
-#include <PAX_SAPIENTICA/GeographicInformation/PersonNameRepository.hpp>
-#include <PAX_SAPIENTICA/GeographicInformation/PlaceNameRepository.hpp>
-#include <PAX_SAPIENTICA/InputFile/KeyValueTSV.hpp>
-
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/PersonNameRepository.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/PlaceNameRepository.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
 

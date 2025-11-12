@@ -29,7 +29,7 @@
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
-#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 
 namespace paxs {
 
