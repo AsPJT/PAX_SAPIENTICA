@@ -120,8 +120,8 @@ private:
     /// @brief Start next execution cycle
     void startNextCycle() {
         paxs::EventBus& event_bus = paxs::EventBus::getInstance();
-        // シミュレーション初期化イベントを発行
-        event_bus.publish(SimulationInitCommandEvent(current_model_name_));
+        // 人間データ初期化イベントを発行
+        event_bus.publish(InitHumanDataCommandEvent(current_model_name_));
 
         // 再生イベントを発行
         event_bus.publish(SimulationPlayCommandEvent(remaining_iterations_));

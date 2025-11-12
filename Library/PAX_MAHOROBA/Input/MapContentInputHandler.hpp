@@ -33,8 +33,8 @@ namespace paxs {
     /// @brief Map content input handler (new Feature system)
     class MapContentInputHandler : public IInputHandler {
     public:
-        /// @brief コンストラクタ
-        /// @brief Constructor
+        MapContentInputHandler() = default;
+
         /// @param features 地物のリスト / List of features
         /// @param render_context 描画コンテキスト / Render context
         /// @param visibility_manager 可視性マネージャー / Visibility manager

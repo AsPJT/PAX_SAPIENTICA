@@ -14,14 +14,13 @@
 
 #include <array>
 
+#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
-#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/GitHubButton.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuSystem.hpp>
@@ -38,24 +37,19 @@ namespace paxs {
     /// @brief アプリ上部のメニューバー
     class MenuBar : public IWidget{
     private:
-        // UI配置定数
         static constexpr int github_button_margin = 8;
 
     public:
-        /// @brief コンストラクタ
         MenuBar() :
-            language_selector_(
-                paxs::LanguageDomain::UI,
+            language_selector_(paxs::LanguageDomain::UI,
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
                 true
-            )
-        {
+            ) {
             subscribeToEvents();
 
             language_selector_.setItemsKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES);
 
-            // GitHubボタンを初期化
             github_button_.init(language_selector_);
 
             // 言語選択のコールバックを設定
@@ -85,42 +79,9 @@ namespace paxs {
             menu_system.updateMenuWidth();
         }
 
-        /// @brief レイアウトを計算
-        void calculateLayout() {
-            // 言語選択プルダウンを右端に配置
-            language_selector_.setPos(paxg::Vec2i{
-                static_cast<int>(paxg::Window::width() - language_selector_.getRect().w()),
-                0
-            });
-            github_button_.setPos(paxg::Vec2i{
-                static_cast<int>(language_selector_.getRect().x() - github_button_.getRect().w() - github_button_margin),
-                static_cast<int>((language_selector_.getRect().h() - github_button_.getRect().h()) / 2)
-            });
-        }
-
         /// @brief ヘッダーの高さを取得
         float getHeight() const {
             return language_selector_.getRect().h();
-        }
-
-        /// @brief メニューバーの取得（読み取り専用）
-        const MenuSystem& getMenuSystem() const {
-            return menu_system;
-        }
-
-        /// @brief メニューバーの取得（変更可能）- TileManager用
-        MenuSystem& getMenuSystem() {
-            return menu_system;
-        }
-
-        /// @brief 言語選択のインデックスを取得
-        std::size_t getLanguageIndex() const {
-            return language_selector_.getIndex();
-        }
-
-        /// @brief 言語選択のキーを取得
-        std::uint_least32_t getLanguageKey() const {
-            return language_selector_.getKey();
         }
 
         /// @brief 可視性状態を反映
@@ -337,6 +298,12 @@ namespace paxs {
         const char* getName() const override { return "MenuBar"; }
 
     private:
+        std::size_t previous_language_index_ = 0;
+
+        paxs::Pulldown language_selector_;
+        paxs::MenuSystem menu_system;
+        paxs::GitHubButton github_button_;
+
         /// @brief イベント購読を設定
         /// @brief Subscribe to events
         void subscribeToEvents() {
@@ -356,14 +323,19 @@ namespace paxs {
             );
         }
 
-        // 状態管理
-        bool visible_ = true;
-        std::size_t previous_language_index_ = 0;
+        /// @brief レイアウトを計算
+        void calculateLayout() {
+            // 言語選択プルダウンを右端に配置
+            language_selector_.setPos(paxg::Vec2i{
+                static_cast<int>(paxg::Window::width() - language_selector_.getRect().w()),
+                0
+            });
+            github_button_.setPos(paxg::Vec2i{
+                static_cast<int>(language_selector_.getRect().x() - github_button_.getRect().w() - github_button_margin),
+                static_cast<int>((language_selector_.getRect().h() - github_button_.getRect().h()) / 2)
+            });
+        }
 
-        // 子ウィジェット
-        paxs::Pulldown language_selector_;
-        paxs::MenuSystem menu_system;
-        paxs::GitHubButton github_button_;
     };
 
 } // namespace paxs

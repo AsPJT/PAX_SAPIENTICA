@@ -45,11 +45,9 @@ namespace paxs {
     /// @brief Integrated management class for UI layer
     class UILayer : public IWidget{
     private:
-        paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
+        const paxs::FeatureVisibilityManager& visible_manager;
 
         paxs::UILayout ui_layout;
-
-        AppStateManager* app_state_manager_ = nullptr;
 
         paxs::CalendarPanel calendar_panel;
         paxs::UIPanelBackground calendar_bg_;
@@ -63,6 +61,8 @@ namespace paxs {
 #endif
         std::vector<IWidget*> panels;
 
+        std::size_t koyomi_date_list_size = 0;
+
         void sortPanelsByLayer() {
             std::sort(panels.begin(), panels.end(),
                 [](IWidget* a, IWidget* b) {
@@ -72,7 +72,6 @@ namespace paxs {
         }
 
         /// @brief イベントを購読
-        /// @brief Subscribe to events
         void subscribeToEvents() {
             paxs::EventBus& event_bus = paxs::EventBus::getInstance();
             // ウィンドウリサイズイベントの購読
@@ -80,24 +79,8 @@ namespace paxs {
                 [this](const WindowResizedEvent& event) {
                     (void)event;
                     // UIレイアウトを再計算
-                    if (app_state_manager_) {
-                        const auto& koyomi = app_state_manager_->getKoyomi();
-                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
-                        calendar_panel.updateButtonLayout();
-                    }
-                }
-            );
-
-            // 日付変更イベントの購読
-            event_bus.subscribe<DateChangedEvent>(
-                [this](const DateChangedEvent& event) {
-                    (void)event;
-                    // CalendarPanelの日付表示を更新
-                    if (calendar_panel.isVisible() && app_state_manager_) {
-                        const auto& koyomi = app_state_manager_->getKoyomi();
-                        calendar_panel.setCalendarParams(koyomi);
-                        calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
-                    }
+                    ui_layout.calculate(koyomi_date_list_size, calendar_panel.getTimeControlHeight());
+                    calendar_panel.updateButtonLayout();
                 }
             );
 
@@ -106,10 +89,7 @@ namespace paxs {
                 [this](const LanguageChangedEvent& event) {
                     (void)event;
                     // 言語変更時はレイアウト再計算が必要
-                    if (app_state_manager_) {
-                        const auto& koyomi = app_state_manager_->getKoyomi();
-                        ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
-                    }
+                    ui_layout.calculate(koyomi_date_list_size, calendar_panel.getTimeControlHeight());
                 }
             );
 
@@ -155,20 +135,13 @@ namespace paxs {
         }
 
     public:
-        UILayer(
-            paxs::FeatureVisibilityManager* visible_manager,
-            const MapViewport* map_viewport,
-            AppStateManager* app_state_manager = nullptr)
-            : visible_manager_ptr(visible_manager),
-              app_state_manager_(app_state_manager),
-              calendar_panel(ui_layout, visible_manager),
-              debug_info_panel(ui_layout, visible_manager, map_viewport),
+        UILayer(const AppStateManager& app_state_manager)
+            : visible_manager(app_state_manager.getVisibilityManager()),
+              calendar_panel(ui_layout, visible_manager, app_state_manager),
+              debug_info_panel(ui_layout, visible_manager, app_state_manager.getMapViewport(), app_state_manager.getKoyomi()),
 #ifdef PAXS_USING_SIMULATOR
               settlement_status_panel(visible_manager),
-              simulation_panel(
-                  visible_manager,
-                  *app_state_manager  // 必須パラメータ（nullptrチェックは後で追加予定）
-              ),
+              simulation_panel(visible_manager, app_state_manager),
 #endif
               calendar_bg_("CalendarBackground", &ui_layout.calendar_panel),
               debug_info_bg_("DebugInfoBackground", &ui_layout.debug_info_panel)
@@ -192,7 +165,18 @@ namespace paxs {
 #endif
             sortPanelsByLayer();
 
+            const auto& koyomi = app_state_manager.getKoyomi();
+            koyomi_date_list_size = koyomi.date_list.size();
             subscribeToEvents();
+
+            // UIレイアウトを初期計算
+            ui_layout.calculate(koyomi_date_list_size, calendar_panel.getTimeControlHeight());
+            calendar_panel.updateButtonLayout();
+
+#ifdef PAXS_USING_SIMULATOR
+            simulation_panel.getControlButtons().setButtonsBaseY(ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
+            simulation_panel.calculateLayout();
+#endif
         }
 
         // コピー・ムーブ禁止（メンバー変数へのポインタをvector<IWidget*>に格納しているため）
@@ -201,32 +185,13 @@ namespace paxs {
         UILayer(UILayer&&) = delete;
         UILayer& operator=(UILayer&&) = delete;
 
-        /// @brief UILayerの初期化（一度だけ呼び出す）
-        void initialize() {
-            if (!app_state_manager_) return;
-
-            const auto& koyomi = app_state_manager_->getKoyomi();
-
-            // UIレイアウトを初期計算
-            ui_layout.calculate(koyomi.date_list.size(), calendar_panel.getTimeControlHeight());
-
+        /// @brief UILayerの可視性を初期化
+        void initializeVisibility() {
 #ifdef PAXS_USING_SIMULATOR
-            // シミュレーションパネルの参照を設定（一度のみ）
-            simulation_panel.getControlButtons().setButtonsBaseY(ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
-            simulation_panel.setupCallback();
-
             // 背景の可視性をパネルと同期
             simulation_bg_.setVisible(simulation_panel.isVisible());
             settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
 #endif
-
-            // CalendarPanelの初期設定
-            if (calendar_panel.isVisible()) {
-                calendar_panel.setCalendarParams(koyomi);
-                calendar_panel.setTimeControlParams(koyomi, app_state_manager_);
-                calendar_panel.updateButtonLayout();
-            }
-
             // 背景の可視性をパネルと同期
             calendar_bg_.setVisible(calendar_panel.isVisible());
             debug_info_bg_.setVisible(debug_info_panel.isVisible());
@@ -294,7 +259,7 @@ namespace paxs {
 #endif
 
         bool isVisible() const override {
-            return visible_manager_ptr->isVisible(ViewMenu::ui);
+            return visible_manager.isVisible(ViewMenu::ui);
         }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
         paxg::Rect getRect() const override { return paxg::Rect{}; }

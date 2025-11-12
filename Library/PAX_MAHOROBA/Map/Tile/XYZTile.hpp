@@ -23,7 +23,6 @@
 #include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/UrlTileLoader.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Map/TileCache.hpp>
 #include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
 #include <PAX_SAPIENTICA/Map/TileMetadata.hpp>

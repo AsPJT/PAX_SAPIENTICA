@@ -28,9 +28,8 @@ namespace paxs {
     /// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
     class SettlementStatusPanel : public IWidget {
     public:
-        SettlementStatusPanel(
-            const paxs::FeatureVisibilityManager* visible_manager)
-            : visible_manager_ptr(visible_manager) {}
+        SettlementStatusPanel(const paxs::FeatureVisibilityManager& visible_manager)
+            : visible_manager_(visible_manager) {}
 
         void render() const override {
             if (!isVisible()) return;
@@ -67,7 +66,7 @@ namespace paxs {
         }
 
         void setVisible(bool visible) override { visible_ = visible; }
-        bool isVisible() const override { return visible_ && visible_manager_ptr->isVisible(ViewMenu::simulation); }
+        bool isVisible() const override { return visible_ && visible_manager_.isVisible(ViewMenu::simulation); }
         void setPos(const paxg::Vec2i& pos) override { pos_ = pos; }
         bool isHit(int /*x*/, int /*y*/) const override { return false; }
         const char* getName() const override { return "SettlementStatusPanel"; }
@@ -88,8 +87,7 @@ namespace paxs {
         bool visible_ = false;  // シミュレーション初期化後に表示
         paxg::Vec2i pos_{ start_x, start_y };
 
-        // 可視性管理
-        const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
+        const paxs::FeatureVisibilityManager& visible_manager_;
 
         /// @brief 表示モードに応じたテキストを取得
         /// @brief Get text according to display mode

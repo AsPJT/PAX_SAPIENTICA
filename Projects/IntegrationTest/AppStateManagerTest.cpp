@@ -153,30 +153,6 @@ TEST_F(AppStateManagerTest, SetFeatureVisibilitySameValueDoesNotPublish) {
 // MapViewport統合テスト
 // ============================================================================
 
-TEST_F(AppStateManagerTest, MapViewportEventBusIntegration) {
-    AppStateManager app_state{};
-
-    int event_count = 0;
-    double received_x = 0.0;
-    double received_y = 0.0;
-
-    event_bus_.subscribe<ViewportChangedEvent>(
-        [&event_count, &received_x, &received_y](const ViewportChangedEvent& event) {
-            event_count++;
-            received_x = event.new_center_x;
-            received_y = event.new_center_y;
-        }
-    );
-
-    // MapViewportを操作
-    MapViewport& viewport = app_state.getMapViewport();
-    viewport.setCenterX(100.0);
-
-    // イベントが発行されることを確認
-    EXPECT_EQ(event_count, 1);
-    EXPECT_DOUBLE_EQ(received_x, 100.0);
-}
-
 TEST_F(AppStateManagerTest, MapViewportSizeChangePublishesEvent) {
     AppStateManager app_state{};
 
@@ -191,6 +167,7 @@ TEST_F(AppStateManagerTest, MapViewportSizeChangePublishesEvent) {
     // サイズ変更
     MapViewport& viewport = app_state.getMapViewport();
     viewport.setSize(20.0);
+    viewport.notifyViewportChanged();
 
     // イベントが発行されることを確認
     EXPECT_EQ(event_count, 1);
@@ -213,8 +190,8 @@ TEST_F(AppStateManagerTest, SimulationCommandsAreHandled) {
         }
     );
 
-    // 初期化コマンドを実行
-    app_state.executeSimulationInit("test_model");
+    // 人間データ初期化コマンドを実行
+    app_state.executeInitHumanData("test_model");
 
     // 状態変更イベントが発行されることを確認
     EXPECT_GE(state_event_count, 1);
@@ -233,8 +210,8 @@ TEST_F(AppStateManagerTest, SimulationPlayCommandPublishesEvent) {
         }
     );
 
-    // 初期化してから再生
-    app_state.executeSimulationInit();
+    // 人間データ初期化してから再生
+    app_state.executeInitHumanData("test_model");
     state_event_count = 0;  // カウントをリセット
 
     app_state.executeSimulationPlay();
@@ -256,8 +233,8 @@ TEST_F(AppStateManagerTest, SimulationPauseCommandPublishesEvent) {
         }
     );
 
-    // 初期化して再生してから一時停止
-    app_state.executeSimulationInit();
+    // 人間データ初期化して再生してから一時停止
+    app_state.executeInitHumanData("test_model");
     app_state.executeSimulationPlay();
     state_event_count = 0;  // カウントをリセット
 
@@ -280,8 +257,8 @@ TEST_F(AppStateManagerTest, SimulationStopCommandPublishesEvent) {
         }
     );
 
-    // 初期化して再生してから停止
-    app_state.executeSimulationInit();
+    // 人間データ初期化して再生してから停止
+    app_state.executeInitHumanData("test_model");
     app_state.executeSimulationPlay();
     state_event_count = 0;  // カウントをリセット
 

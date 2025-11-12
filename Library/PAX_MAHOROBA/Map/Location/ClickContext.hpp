@@ -16,9 +16,6 @@
 
 namespace paxs {
 
-// 前方宣言
-class EventBus;
-
 /// @brief クリックコンテキスト - クリック時に必要なパラメータをまとめた構造体
 /// @brief Click context - Structure containing parameters needed for click handling
 struct ClickContext {

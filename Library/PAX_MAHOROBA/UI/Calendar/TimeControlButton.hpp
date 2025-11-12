@@ -17,7 +17,6 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
@@ -135,7 +134,10 @@ namespace paxs {
         static constexpr int ICON_MOVE_X = static_cast<int>(TIME_ICON_SIZE * 1.1);
         static constexpr int ICON_MOVE_Y = static_cast<int>(TIME_ICON_SIZE * 1.1);
 
-        TimeControlButtons() {
+        TimeControlButtons(const UILayout& ui_layout, const AppStateManager& app_state_manager)
+            : ui_layout_(ui_layout)
+            , app_state_manager_(app_state_manager)
+            , koyomi(app_state_manager.getKoyomi()) {
             buildButtons();
         }
 
@@ -143,15 +145,6 @@ namespace paxs {
         /// @brief Get height of time control panel
         int getHeight() const {
             return ARROW_TIME_ICON_SIZE + TIME_ICON_SIZE * 2;
-        }
-
-        void setReferences(const paxs::Koyomi& koyomi, const UILayout& ui_layout) {
-            koyomi_ = &koyomi;
-            ui_layout_ = &ui_layout;
-        }
-
-        void setAppStateManager(AppStateManager* app_state_manager) {
-            app_state_manager_ = app_state_manager;
         }
 
         void setOnClick() {
@@ -164,14 +157,12 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!koyomi_ || !ui_layout_) return;
             for (const auto& btn : buttons_) {
                 btn.render();
             }
         }
 
         bool isHit(int x, int y) const override {
-            if (!koyomi_ || !ui_layout_) return false;
             for (const auto& btn : buttons_) {
                 if (btn.isHit(x, y)) {
                     return true;
@@ -206,9 +197,8 @@ namespace paxs {
         /// @brief ボタンレイアウトを更新（UILayoutが変更された時に呼ぶ）
         /// @brief Update button layout (call when UILayout has changed)
         void layoutButtons() {
-            if (!ui_layout_) return;
-            const int offset_from_right_base = ui_layout_->time_control_base_x;
-            int current_y = ui_layout_->koyomi_font_y + ui_layout_->time_control_base_y;
+            const int offset_from_right_base = ui_layout_.time_control_base_x;
+            int current_y = ui_layout_.koyomi_font_y + ui_layout_.time_control_base_y;
 
             // 各行のレイアウト設定 (type, icon_size, move_x, move_y)
             struct RowLayout { ButtonType type; int icon_size; int move_x; int move_y; };
@@ -236,9 +226,9 @@ namespace paxs {
 
     private:
         std::vector<TimeControlButton> buttons_;
-        const paxs::Koyomi* koyomi_ = nullptr;
-        const UILayout* ui_layout_ = nullptr;
-        AppStateManager* app_state_manager_ = nullptr;
+        const paxs::Koyomi& koyomi;
+        const UILayout& ui_layout_;
+        const AppStateManager& app_state_manager_;
         paxg::Vec2i pos_{0, 0};
         ClickCallback on_click_;
 
@@ -287,18 +277,16 @@ namespace paxs {
         /// @brief ボタンアクションを実行
         /// @brief Execute button action
         void executeButtonAction(TimeControlButton::Id id) {
-            if (!app_state_manager_) return;
-
             using Id = TimeControlButton::Id;
             using Action = TimePlaybackControlEvent::Action;
 
             // 再生コントロール
             if (id == Id::PlaybackReverse) {
-                app_state_manager_->executeTimePlaybackControl(Action::Reverse);
+                app_state_manager_.executeTimePlaybackControl(Action::Reverse);
             } else if (id == Id::PlaybackStop) {
-                app_state_manager_->executeTimePlaybackControl(Action::Stop);
+                app_state_manager_.executeTimePlaybackControl(Action::Stop);
             } else if (id == Id::PlaybackForward) {
-                app_state_manager_->executeTimePlaybackControl(Action::Forward);
+                app_state_manager_.executeTimePlaybackControl(Action::Forward);
             } else {
                 // 日付移動系
                 constexpr double day   = 1.0;
@@ -313,7 +301,7 @@ namespace paxs {
 
                 const int index = static_cast<int>(id) - static_cast<int>(Id::DayBackward);
                 if (index >= 0 && index < 14) {
-                    app_state_manager_->executeDateNavigation(days_map[index]);
+                    app_state_manager_.executeDateNavigation(days_map[index]);
                 }
             }
         }

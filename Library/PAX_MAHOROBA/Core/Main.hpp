@@ -55,8 +55,7 @@ namespace paxs {
 
         // 5. 入力ハンドラー登録
         std::unique_ptr<MapViewportInputHandler> map_viewport_input_handler =
-            std::make_unique<MapViewportInputHandler>();
-        map_viewport_input_handler->setViewport(&app_state.getMapViewport());
+            std::make_unique<MapViewportInputHandler>(app_state.getMapViewport());
 
         std::unique_ptr<UIInputHandler> ui_input_handler =
             std::make_unique<UIInputHandler>();

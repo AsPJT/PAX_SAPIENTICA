@@ -29,56 +29,36 @@ namespace paxs {
     /// @brief アプリケーションコンポーネント統合管理クラス
     /// @brief Application component integrated management class
     /// @details レンダリングレイヤー、UIレイヤー、入力ハンドラーを統合管理
-    /// @details Manages rendering layers, UI layers, and input handlers
-    /// @note 旧名: GraphicsManager（Rendering層からCore層に昇格）
-    /// @note Former name: GraphicsManager (promoted from Rendering layer to Core layer)
     class AppComponentManager {
     private:
         AppStateManager& app_state_;
 
         RenderLayerManager render_layer_manager_;
 
-        // 各レイヤー（イベント駆動版、将来的に更新予定）
-        // Each layer (event-driven version, to be updated in future)
         MapTileLayer map_tile_layer_;
         MapContentLayer map_content_layer_;
         Photo360Layer photo360_layer_;
         Photo360InputHandler photo360_input_handler_;
-        MapContentInputHandler map_content_input_handler_;
+        MapContentInputHandler map_content_input_handler_{};
         UILayer ui_layer_;
         MenuBar menu_bar_;
 
     public:
-        /// @brief コンストラクタ
-        /// @brief Constructor
         /// @param app_state AppStateManager参照 / AppStateManager reference
         AppComponentManager(AppStateManager& app_state)
             : app_state_(app_state)
             , render_layer_manager_()
-            , map_tile_layer_()
-            , map_content_layer_(&app_state.getMapViewport())
+            , map_tile_layer_(app_state)
+            , map_content_layer_(app_state)
             , photo360_layer_()
             , photo360_input_handler_(
                 &photo360_layer_,
                 &app_state.getVisibilityManager()
               )
-            , map_content_input_handler_(
-                nullptr,  // 後で設定（map_content_layer_初期化後）
-                nullptr,  // 後で設定（map_content_layer_初期化後）
-                &app_state.getVisibilityManager()
-              )
-            , ui_layer_(
-                &app_state.getVisibilityManager(),
-                &app_state.getMapViewport(),
-                &app_state
-              )
+            , ui_layer_(app_state)
             , menu_bar_() {
 
-            // FeatureVisibilityManagerの初期化
             menu_bar_.initializeVisibility(&app_state_.getVisibilityManager());
-
-            map_content_layer_.setAppStateManager(&app_state);
-            map_tile_layer_.setAppStateManager(&app_state);
 
             // MapContentInputHandlerにFeaturesとRenderContextを設定
             // （map_content_layer_の初期化後に設定する必要があるため、ここで代入）
@@ -88,8 +68,7 @@ namespace paxs {
                 &app_state.getVisibilityManager()
             );
 
-            // UILayerの初期化（一度のみ）
-            ui_layer_.initialize();
+            ui_layer_.initializeVisibility();
 
             // レイヤーシステムに各コンポーネントを登録
             render_layer_manager_.registerRenderable(&map_tile_layer_);

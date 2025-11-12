@@ -16,8 +16,6 @@
 #include <vector>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRepository.hpp>
@@ -38,10 +36,11 @@ namespace paxs {
 
         bool initial_tiles_preloaded_ = false;
 
-        AppStateManager* app_state_manager_ = nullptr;
+        const AppStateManager& app_state_manager_;
 
     public:
-        MapTileLayer() {
+        MapTileLayer(const AppStateManager& app_state_manager)
+            : app_state_manager_(app_state_manager) {
             // XYZタイルを初期化
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
                 [&](const std::string& path) {
@@ -50,27 +49,19 @@ namespace paxs {
                 });
             // グリッド線を追加
             xyz_tile_list.emplace_back(tile_repository_.createGridLineTile());
-        }
 
-        /// @brief AppStateManagerを設定してイベント駆動を有効化
-        void setAppStateManager(AppStateManager* app_state_manager) {
-            app_state_manager_ = app_state_manager;
-            if (app_state_manager_ != nullptr) {
-                subscribeToEvents();
-                // 初回更新を即座に実行
-                updateTileData();
-                // 初期タイルをプリロード
-                preloadInitialTiles();
-            }
+            subscribeToEvents();
+            // 初回更新を即座に実行
+            updateTileData();
+            // 初期タイルをプリロード
+            preloadInitialTiles();
         }
 
         void render() const override {
-            if (!app_state_manager_) return;
-
             // AppStateManagerから最新データを直接取得して描画のみ実行
-            const auto& visible = app_state_manager_->getVisibilityManager();
-            const auto& map_viewport = app_state_manager_->getMapViewport();
-            const auto& koyomi = app_state_manager_->getKoyomi();
+            const auto& visible = app_state_manager_.getVisibilityManager();
+            const auto& map_viewport = app_state_manager_.getMapViewport();
+            const auto& koyomi = app_state_manager_.getKoyomi();
 
             TileRenderer::drawBackground();
             TileRenderer::drawTiles(xyz_tile_list, visible, map_viewport, koyomi.jdn.cgetDay());
@@ -81,10 +72,8 @@ namespace paxs {
 
         /// @brief タイルデータを更新（メインループから明示的に呼び出し）
         void updateTileData() {
-            if (!app_state_manager_) return;
-
-            const auto& visible = app_state_manager_->getVisibilityManager();
-            const auto& map_viewport = app_state_manager_->getMapViewport();
+            const auto& visible = app_state_manager_.getVisibilityManager();
+            const auto& map_viewport = app_state_manager_.getMapViewport();
 
             const double map_viewport_width = map_viewport.getWidth();
             const double map_viewport_height = map_viewport.getHeight();
@@ -102,10 +91,10 @@ namespace paxs {
         /// @brief 初期タイルをプリロード
         /// @brief Preload initial tiles before first render
         void preloadInitialTiles() {
-            if (initial_tiles_preloaded_ || !app_state_manager_) return;
+            if (initial_tiles_preloaded_) return;
 
-            const auto& visible = app_state_manager_->getVisibilityManager();
-            const auto& map_viewport = app_state_manager_->getMapViewport();
+            const auto& visible = app_state_manager_.getVisibilityManager();
+            const auto& map_viewport = app_state_manager_.getMapViewport();
 
             const double map_viewport_width = map_viewport.getWidth();
             const double map_viewport_height = map_viewport.getHeight();
@@ -122,7 +111,6 @@ namespace paxs {
         }
 
         /// @brief イベントを購読
-        /// @brief Subscribe to events
         void subscribeToEvents() {
             // TODO: 必要に応じてイベント購読を追加
         }

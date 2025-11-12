@@ -30,10 +30,10 @@ namespace paxs {
     /// @brief デバッグ情報パネルを表示するクラス
     class DebugInfoPanel : public IWidget {
     private:
-        const MapViewport* map_viewport_ptr = nullptr;
-        const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
-        const UILayout* ui_layout_ = nullptr;
-        Koyomi* koyomi_ = nullptr;
+        const paxs::FeatureVisibilityManager& visible_manager_;
+        const MapViewport& map_viewport_;
+        const UILayout& ui_layout_;
+        const Koyomi& koyomi_;
 
         // TODO: 表示
         std::size_t map_viewport_width_str_index = MurMur3::calcHash(25, "debug_magnification_power");
@@ -43,9 +43,13 @@ namespace paxs {
 
     public:
         DebugInfoPanel(const UILayout& ui_layout,
-            const paxs::FeatureVisibilityManager* visible_manager,
-            const MapViewport* map_viewport
-        ) : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager), map_viewport_ptr(map_viewport) {}
+            const paxs::FeatureVisibilityManager& visible_manager,
+            const MapViewport& map_viewport,
+            const Koyomi& koyomi)
+            : ui_layout_(ui_layout)
+            , visible_manager_(visible_manager)
+            , map_viewport_(map_viewport)
+            , koyomi_(koyomi) {}
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             // DebugInfoPanelは入力処理を行わない
@@ -61,8 +65,8 @@ namespace paxs {
 
             font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 
-            const int text_x = ui_layout_->debug_info_panel.x + 15; // パネル内の左端
-            const int text_y = ui_layout_->debug_info_panel.y + 15; // パネル内の上端
+            const int text_x = ui_layout_.debug_info_panel.x + 15; // パネル内の左端
+            const int text_y = ui_layout_.debug_info_panel.y + 15; // パネル内の上端
             const int line_height = 25;
 
             int current_line = 0;
@@ -83,13 +87,13 @@ namespace paxs {
                 paxg::Color(0, 0, 0)
             );
             font->draw(
-                std::to_string(map_viewport_ptr->getHeight()),
+                std::to_string(map_viewport_.getHeight()),
                 paxg::Vec2i(text_x + 100, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
             // XYZ Tiles Z拡大率
-            const int z_magnification = static_cast<int>(-std::log2(map_viewport_ptr->getHeight()) + 12.5);
+            const int z_magnification = static_cast<int>(-std::log2(map_viewport_.getHeight()) + 12.5);
             const std::string* const xyz_label_ptr = Fonts().getText(
                 MurMur3::calcHash("debug_xyz_tiles_z"),
                 LanguageDomain::UI
@@ -108,14 +112,14 @@ namespace paxs {
             );
 
             // 大きな年号を描画
-            if (koyomi_ != nullptr && !koyomi_->date_list.empty()) {
+            if (!koyomi_.date_list.empty()) {
                 // グレゴリオ暦の年を取得（date_list[1]がグレゴリオ暦）
-                if (koyomi_->date_list.size() > 1) {
+                if (koyomi_.date_list.size() > 1) {
                     const int date_year = [&]() {
                         int year = 0;
                         std::visit([&](const auto& x) {
                             year = int(x.cgetYear());
-                        }, koyomi_->date_list[1].date);
+                        }, koyomi_.date_list[1].date);
                         return year;
                     }();
 
@@ -130,7 +134,7 @@ namespace paxs {
 
                             // パネル内の下部に配置
                             const int big_year_x = text_x;
-                            const int big_year_y = ui_layout_->debug_info_panel.y + ui_layout_->debug_info_panel.height - 80;  // パネル下部から80px上
+                            const int big_year_y = ui_layout_.debug_info_panel.y + ui_layout_.debug_info_panel.height - 80;  // パネル下部から80px上
 
                             big_year_font->draw(
                                 std::to_string(date_year),
@@ -144,18 +148,17 @@ namespace paxs {
         }
 
         paxg::Rect getRect() const override {
-            return ui_layout_->debug_info_panel.getRect();
+            return ui_layout_.debug_info_panel.getRect();
         }
 
         bool isHit(int x, int y) const override {
             if (!isVisible()) return false;
             (void)x; (void)y;
             return false;
-            // TODO: child
         }
 
         bool isVisible() const override {
-            return visible_manager_ptr->isVisible(ViewMenu::debug);
+            return visible_manager_.isVisible(ViewMenu::debug);
         }
 
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }

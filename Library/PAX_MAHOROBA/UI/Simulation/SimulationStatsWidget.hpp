@@ -32,24 +32,17 @@ namespace paxs {
     /// @details 人口数と集落数を表示
     class SimulationStatsWidget : public IWidget {
     private:
-        const SimulationManager* simulation_manager_ = nullptr;
+        const SimulationManager& simulation_manager_;
         paxg::Vec2i pos_{0, 0};
 
         static constexpr int line_height_ = 25;
         static constexpr int label_width_ = 130;
 
     public:
-        SimulationStatsWidget() = default;
-
-        /// @brief SimulationManagerへの参照を設定
-        /// @param simulation_manager SimulationManagerへのポインタ
-        void setSimulationManager(const SimulationManager* simulation_manager) {
-            simulation_manager_ = simulation_manager;
-        }
+        SimulationStatsWidget(const SimulationManager& simulation_manager)
+            : simulation_manager_(simulation_manager) {}
 
         void render() const override {
-            if (simulation_manager_ == nullptr) return;
-
             paxg::Font* font = Fonts().getFont(
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
@@ -66,7 +59,7 @@ namespace paxs {
                 paxg::Color(0, 0, 0)
             );
             font->draw(
-                std::to_string(simulation_manager_->getPopulation()),
+                std::to_string(simulation_manager_.getPopulation()),
                 paxg::Vec2i(pos_.x() + label_width_, pos_.y() + line_height_ * current_line++),
                 paxg::Color(0, 0, 0)
             );
@@ -79,7 +72,7 @@ namespace paxs {
                 paxg::Color(0, 0, 0)
             );
             font->draw(
-                std::to_string(simulation_manager_->getSettlementCount()),
+                std::to_string(simulation_manager_.getSettlementCount()),
                 paxg::Vec2i(pos_.x() + label_width_, pos_.y() + line_height_ * current_line++),
                 paxg::Color(0, 0, 0)
             );

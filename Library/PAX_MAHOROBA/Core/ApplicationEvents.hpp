@@ -88,10 +88,9 @@ struct FeatureVisibilityChangeCommandEvent : Event {
 /// @brief シミュレーション状態変更イベント
 struct SimulationStateChangedEvent : Event {
     const SimulationState new_state;
-    const std::uint_least32_t current_step;
 
-    SimulationStateChangedEvent(SimulationState state, std::uint_least32_t step)
-        : new_state(state), current_step(step) {}
+    SimulationStateChangedEvent(SimulationState state)
+        : new_state(state) {}
 };
 
 /// @brief シミュレーションステップ実行完了イベント
@@ -111,14 +110,6 @@ struct SettlementDisplayChangedEvent : Event {
 
     SettlementDisplayChangedEvent(std::size_t draw, bool line, bool arrow)
         : select_draw(draw), is_line(line), is_arrow(arrow) {}
-};
-
-/// @brief シミュレーション初期化コマンドイベント
-struct SimulationInitCommandEvent : Event {
-    const std::string model_name;
-
-    explicit SimulationInitCommandEvent(const std::string& name = "")
-        : model_name(name) {}
 };
 
 /// @brief シミュレーション再生コマンドイベント
@@ -150,12 +141,9 @@ struct SimulationStepCommandEvent : Event {
 /// @brief シミュレーション初期化コマンドイベント
 struct SimulationInitializeCommandEvent : Event {
     const std::string model_name;
-    const unsigned int seed;
 
-    SimulationInitializeCommandEvent(
-        const std::string& model,
-        unsigned int random_seed)
-        : model_name(model), seed(random_seed) {}
+    explicit SimulationInitializeCommandEvent(const std::string& model)
+        : model_name(model) {}
 };
 
 /// @brief シミュレーション入力データ再読み込みコマンドイベント

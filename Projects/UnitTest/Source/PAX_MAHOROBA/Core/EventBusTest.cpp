@@ -173,12 +173,12 @@ TEST_F(EventBusTest, SimulationStateChangedEvent) {
     );
 
     EventBus::getInstance().publish(
-        SimulationStateChangedEvent(SimulationState::Playing, 100)
+        SimulationStateChangedEvent(SimulationState::Playing)
     );
     EXPECT_EQ(received_state, SimulationState::Playing);
 
     EventBus::getInstance().publish(
-        SimulationStateChangedEvent(SimulationState::Stopped, 150)
+        SimulationStateChangedEvent(SimulationState::Stopped)
     );
     EXPECT_EQ(received_state, SimulationState::Stopped);
 }
@@ -191,8 +191,8 @@ TEST_F(EventBusTest, CommandEvents) {
     int stop_count = 0;
     int step_count = 0;
 
-    EventBus::getInstance().subscribe<SimulationInitCommandEvent>(
-        [&](const SimulationInitCommandEvent& event) { init_count++; }
+    EventBus::getInstance().subscribe<InitHumanDataCommandEvent>(
+        [&](const InitHumanDataCommandEvent& event) { init_count++; }
     );
     EventBus::getInstance().subscribe<SimulationPlayCommandEvent>(
         [&](const SimulationPlayCommandEvent& event) { play_count++; }
@@ -208,7 +208,7 @@ TEST_F(EventBusTest, CommandEvents) {
     );
 
     // 各コマンドイベントを発行
-    EventBus::getInstance().publish(SimulationInitCommandEvent());
+    EventBus::getInstance().publish(InitHumanDataCommandEvent("test_model"));
     EventBus::getInstance().publish(SimulationPlayCommandEvent());
     EventBus::getInstance().publish(SimulationPauseCommandEvent());
     EventBus::getInstance().publish(SimulationStopCommandEvent());

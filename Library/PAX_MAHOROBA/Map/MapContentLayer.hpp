@@ -24,7 +24,6 @@
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/Core/EventBus.hpp>
-#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/GeographicFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeatureRenderer.hpp>
@@ -63,19 +62,15 @@ namespace paxs {
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
 #endif
 
-        const MapViewport* map_viewport_ptr = nullptr;
-
-        AppStateManager* app_state_manager_ = nullptr;
-
+        const MapViewport& map_viewport_;
+        const AppStateManager& app_state_manager_;
 
 #ifdef PAXS_USING_SIMULATOR
         /// @brief Settlementデータのみ更新
         /// @brief Update settlement data only
         void updateSettlementData() {
-            if (!app_state_manager_) return;
-
-            const auto& koyomi = app_state_manager_->getKoyomi();
-            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+            const auto& koyomi = app_state_manager_.getKoyomi();
+            const auto& simulation_manager = app_state_manager_.getSimulationManager();
 
             // SettlementManager に描画パラメータを設定
             if (simulation_manager.isActive()) {
@@ -83,10 +78,10 @@ namespace paxs {
                     koyomi.jdn.cgetDay(),
                     simulation_manager.getSettlementGrids(),
                     simulation_manager.getMarriagePositions(),
-                    map_viewport_ptr->getWidth(),
-                    map_viewport_ptr->getHeight(),
-                    map_viewport_ptr->getCenterX(),
-                    map_viewport_ptr->getCenterY(),
+                    map_viewport_.getWidth(),
+                    map_viewport_.getHeight(),
+                    map_viewport_.getCenterX(),
+                    map_viewport_.getCenterY(),
                     settlement_input_handler_.getSelectDraw(),
                     settlement_input_handler_.getIsLine(),
                     settlement_input_handler_.getIsArrow()
@@ -105,12 +100,10 @@ namespace paxs {
             event_bus.subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
                     (void)event;
-                    if (app_state_manager_) {
-                        updateAllFeatures();
+                    updateAllFeatures();
 #ifdef PAXS_USING_SIMULATOR
-                        updateSettlementData();
+                    updateSettlementData();
 #endif
-                    }
                 }
             );
 
@@ -119,9 +112,7 @@ namespace paxs {
             event_bus.subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
                     (void)event;
-                    if (app_state_manager_) {
-                        updateAllFeatures();
-                    }
+                    updateAllFeatures();
                 }
             );
 
@@ -131,9 +122,7 @@ namespace paxs {
                 [this](const SimulationStateChangedEvent& event) {
                     // 停止状態になった時（初期化完了時）に集落データを更新
                     if (event.new_state == SimulationState::Stopped) {
-                        if (app_state_manager_) {
-                            updateSettlementData();
-                        }
+                        updateSettlementData();
                     } else if (event.new_state == SimulationState::Uninitialized) {
                         // クリアされた場合はキャッシュをクリアして無効な参照を防ぐ
                         settlement_manager_.clearCache();
@@ -146,9 +135,7 @@ namespace paxs {
             event_bus.subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
                     (void)event;
-                    if (app_state_manager_) {
-                        updateSettlementData();
-                    }
+                    updateSettlementData();
                 }
             );
 
@@ -157,9 +144,7 @@ namespace paxs {
             event_bus.subscribe<SettlementDisplayChangedEvent>(
                 [this](const SettlementDisplayChangedEvent& event) {
                     (void)event;
-                    if (app_state_manager_) {
-                        updateSettlementData();
-                    }
+                    updateSettlementData();
                 }
             );
 #endif
@@ -167,15 +152,13 @@ namespace paxs {
 
         /// @brief RenderContextを更新
         void updateRenderContext() {
-            if (!map_viewport_ptr || !app_state_manager_) return;
-
-            const auto& koyomi = app_state_manager_->getKoyomi();
+            const auto& koyomi = app_state_manager_.getKoyomi();
             render_context_.jdn = koyomi.jdn.cgetDay();
-            render_context_.map_view_width = map_viewport_ptr->getWidth();
-            render_context_.map_view_height = map_viewport_ptr->getHeight();
-            render_context_.map_view_center_x = map_viewport_ptr->getCenterX();
-            render_context_.map_view_center_y = map_viewport_ptr->getCenterY();
-            render_context_.visibility_manager = &app_state_manager_->getVisibilityManager();
+            render_context_.map_view_width = map_viewport_.getWidth();
+            render_context_.map_view_height = map_viewport_.getHeight();
+            render_context_.map_view_center_x = map_viewport_.getCenterX();
+            render_context_.map_view_center_y = map_viewport_.getCenterY();
+            render_context_.visibility_manager = &app_state_manager_.getVisibilityManager();
         }
 
         /// @brief 全Featureのupdate()を呼び出し
@@ -284,8 +267,20 @@ namespace paxs {
         }
 
     public:
-        MapContentLayer(const MapViewport* map_viewport)
-            : map_viewport_ptr(map_viewport) {}
+        MapContentLayer(const AppStateManager& app_state_manager)
+            : app_state_manager_(app_state_manager)
+            , map_viewport_(app_state_manager.getMapViewport()) {
+            // データロード（初回のみ）
+            if (features_.empty()) {
+                loadAllFeatures();
+            }
+            subscribeToEvents();
+            // 初回更新を即座に実行
+            updateAllFeatures();
+#ifdef PAXS_USING_SIMULATOR
+            updateSettlementData();
+#endif
+        }
 
         // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
         MapContentLayer(const MapContentLayer&) = delete;
@@ -293,25 +288,8 @@ namespace paxs {
         MapContentLayer(MapContentLayer&&) = delete;
         MapContentLayer& operator=(MapContentLayer&&) = delete;
 
-        /// @brief AppStateManagerを設定してイベント駆動を有効化
-        void setAppStateManager(AppStateManager* app_state_manager) {
-            app_state_manager_ = app_state_manager;
-            if (app_state_manager_ != nullptr) {
-                // データロード（初回のみ）
-                if (features_.empty()) {
-                    loadAllFeatures();
-                }
-                subscribeToEvents();
-                // 初回更新を即座に実行
-                updateAllFeatures();
-#ifdef PAXS_USING_SIMULATOR
-                updateSettlementData();
-#endif
-            }
-        }
-
         void render() const override {
-            if (!isVisible() || !app_state_manager_) return;
+            if (!isVisible()) return;
 
             UnorderedMap<std::uint_least32_t, paxg::Texture> merged_textures = person_texture_map_.get();
             for (const auto& [key, texture] : geographic_texture_map_.get()) {
@@ -321,7 +299,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // SettlementManager を描画（シミュレーション表示時）
-            if (app_state_manager_->getVisibilityManager().isVisible(ViewMenu::simulation)) {
+            if (app_state_manager_.getVisibilityManager().isVisible(ViewMenu::simulation)) {
                 settlement_manager_.render();
             }
 #endif
@@ -364,7 +342,7 @@ namespace paxs {
         }
 
         bool isVisible() const override {
-            return app_state_manager_->getVisibilityManager().isVisible(ViewMenu::map);
+            return app_state_manager_.getVisibilityManager().isVisible(ViewMenu::map);
         }
         void setVisible(bool /*visible*/) override {}
         RenderLayer getLayer() const override { return RenderLayer::MapContent; }
