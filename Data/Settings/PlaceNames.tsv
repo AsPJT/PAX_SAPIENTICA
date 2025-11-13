@@ -4,7 +4,7 @@ Data/Genomes/HomoSapiens/JomonYayoi.tsv	bone	人骨	0	0.9				1
 Data/Genomes/HomoSapiens/AncientSiberian-Steppe-Baltic-CentralAsian-Caucasus-Y-DNA/mtDNA-Haplogroup.tsv	mtdna	シベリアmtDNA	0.1					1
 Data/Genomes/HomoSapiens/HaplogroupInfo/mtDNA-Haplogroup.tsv	mtdna	世界のmtDNA	0.1					1
 Data/Genomes/HomoSapiens/Yaponesia/mtDNA-Haplogroup.tsv	mtdna	ヤポネシアmtDNA	0.1					1
-aData/Features/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	3				1
+Data/Features/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	3				1
 Data/Features/TestMap/Hokkaido.tsv	site	北海道の遺跡名	0	0.5				1
 Data/Features/EastAsia/Yaponesia/Kango.tsv	site	環濠集落	0	0.1				0.5
 Data/Features/EastAsia/Yaponesia/Shisekibo.tsv	dolmen	日本の支石墓	0	0.9				1
@@ -17,7 +17,7 @@ Data/Features/EastAsia/Yaponesia/Kofun/Yosumi.tsv	tomb	日本の四隅突出型�
 Data/Features/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1				1
 Data/Features/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1				1
 Data/Features/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1				1
-aData/Features/EastAsia/Korea/Site.tsv	site	韓国の遺跡	0	0.5				1
+Data/Features/EastAsia/Korea/Site.tsv	site	韓国の遺跡	0	0.5				1
 Data/PlaceNames/EastAsia/Yaponesia/KojikiPlaceName.tsv	place_name	古事記の地名	0	2	1721424	1940208		1
 Data/PlaceNames/PlaceNames.tsv	place_name	汎用的な地名						1
 Data/PlaceNames/EastAsia/Yaponesia/Ryoseikoku.tsv	place_name	令制国名	1					1
@@ -33,12 +33,11 @@ Data/PlaceNames/EastAsia/Yaponesia/OmoroSoshiPlaceName.tsv	place_name	おもろ�
 Data/PlaceNames/EastAsia/China/China.tsv	place_name	中国大陸の地名	0.1	24	0	9999999		1
 Data/PlaceNames/EastAsia/Yaponesia/Geoshape/NRCT.tsv	place_name	『日本歴史地名大系』地名項目データセット	0	0.1	1721424	9999999		1
 Data/PlaceNames/Europe/Roma.tsv	place_name	ローマ帝国	1			9999999		1
-aData/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石室	0	0.1				1
+Data/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石室	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Dotaku.tsv	dotaku	銅鐸	0	0.1				1
 Data/Items/EastAsia/Korea/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
 Data/Items/EastAsia/China/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Doken.tsv	doken	銅剣	0	0.1				1
-Data/Items/EastAsia/Yaponesia/Yajiri.tsv	yajiri	鏃	0	0.9				1
 Data/Items/EastAsia/Yaponesia/Kasen.tsv	coin	貨泉	0	0.9				0.5
