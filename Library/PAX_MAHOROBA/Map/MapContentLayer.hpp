@@ -22,6 +22,7 @@
 #endif
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Map/Location/GenomeFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/GeographicFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeatureRenderer.hpp>
@@ -33,6 +34,7 @@
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/GenomeRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PersonNameRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PlaceNameRepository.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -51,11 +53,10 @@ namespace paxs {
         std::vector<std::unique_ptr<MapFeature>> features_; ///< 地物のコレクション / Collection of features
         RenderContext render_context_; ///< 描画コンテキスト / Render context
 
-        // データリポジトリ
-        PersonNameRepository person_repository_;
-        PlaceNameRepository place_repository_;
+        // テクスチャマップ
         paxs::KeyValueTSV<paxg::Texture> person_texture_map_; ///< 人物用テクスチャマップ / Person texture map
         paxs::KeyValueTSV<paxg::Texture> geographic_texture_map_; ///< 地理用テクスチャマップ / Geographic texture map
+        paxs::KeyValueTSV<paxg::Texture> genome_texture_map_; ///< ゲノム用テクスチャマップ / Genome texture map
 #ifdef PAXS_USING_SIMULATOR
         SettlementManager settlement_manager_{}; // 集落管理
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
@@ -184,23 +185,13 @@ namespace paxs {
             const std::size_t estimated_person_count = 1000;
             features_.reserve(current_capacity + estimated_person_count);
 
-            // PersonNameRepository.loadPersonNameList() takes only a callback
-            // The callback is invoked for each file path found in the index file
-            auto inputPlaceFunc = [this](const std::string& path, double min_view, double max_view,
-                                          int min_year, int max_year,
-                                          std::uint_least32_t lpe, std::uint_least32_t place_texture) {
-                auto loaded = person_repository_.loadPersonFromFile(path, min_view, max_view, min_year, max_year, lpe, place_texture);
-                if (loaded.person_location_list.empty()) return;
-
-                // PersonFeatureに変換
-                for (const auto& person_data : loaded.person_location_list) {
-                    features_.emplace_back(
-                        std::make_unique<PersonFeature>(person_data, loaded)
-                    );
-                }
-            };
-
-            person_repository_.loadPersonNameList(inputPlaceFunc);
+            // PersonFeatureに変換
+            auto all_persons = PersonNameRepository::loadPersonNameList();
+            for (const auto& [person_data, person_list] : all_persons) {
+                features_.emplace_back(
+                    std::make_unique<PersonFeature>(person_data, person_list)
+                );
+            }
         }
 
         /// @brief 地理的地物データを読み込み
@@ -216,37 +207,45 @@ namespace paxs {
             const std::size_t estimated_geographic_count = 5000;
             features_.reserve(current_capacity + estimated_geographic_count);
 
-            // PlaceNameRepository.loadPlaceNameList() takes only a callback
-            // The callback is invoked for each file path found in the index file
-            auto inputPlaceFunc = [this](const std::string& path, double min_view, double max_view,
-                                          int min_year, int max_year,
-                                          std::uint_least32_t lpe, std::uint_least32_t place_texture,
-                                          double zoom) {
-                auto loaded = place_repository_.loadPlaceFromFile(path, min_view, max_view, min_year, max_year, lpe, place_texture, zoom);
-                if (loaded.location_point_list.empty()) return;
-
-                // 地名とアイコンの判定ロジック
-                // place_textureがある場合はアイコン（GeographicFeature）
-                // place_textureがない場合は地名（PlaceNameFeature）
-                for (const auto& location_data : loaded.location_point_list) {
-                    const std::uint_least32_t effective_texture =
-                        (location_data.place_texture == 0) ? loaded.place_texture : location_data.place_texture;
-
-                    if (effective_texture != 0) {
-                        // テクスチャがある場合はアイコン
-                        features_.emplace_back(
-                            std::make_unique<GeographicFeature>(location_data)
-                        );
-                    } else {
-                        // テクスチャがない場合は地名
-                        features_.emplace_back(
-                            std::make_unique<PlaceNameFeature>(location_data)
-                        );
-                    }
+            // 地名とアイコンの判定ロジック
+            // place_textureがある場合はアイコン（GeographicFeature）
+            // place_textureがない場合は地名（PlaceNameFeature）
+            auto all_places = PlaceNameRepository::loadPlaceNameList();
+            for (auto& location_data : all_places) {
+                if (location_data.place_texture != 0) {
+                    // テクスチャがある場合はアイコン
+                    features_.emplace_back(
+                        std::make_unique<GeographicFeature>(std::move(location_data))
+                    );
+                } else {
+                    // テクスチャがない場合は地名
+                    features_.emplace_back(
+                        std::make_unique<PlaceNameFeature>(std::move(location_data))
+                    );
                 }
-            };
+            }
+        }
 
-            place_repository_.loadPlaceNameList(inputPlaceFunc);
+        /// @brief ゲノムデータを読み込み
+        void loadGenomeFeatures() {
+            // ゲノム用のテクスチャを読み込み（MapIconsと同じものを使用）
+            const std::string map_icons_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MapIcons"));
+            if (map_icons_path.size() > 0) {
+                genome_texture_map_.input(map_icons_path);
+            }
+
+            // 容量を事前確保
+            const std::size_t current_capacity = features_.capacity();
+            const std::size_t estimated_genome_count = 500;
+            features_.reserve(current_capacity + estimated_genome_count);
+
+            // GenomeFeatureに変換
+            auto all_genomes = GenomeRepository::loadGenomeList();
+            for (auto& genome_data : all_genomes) {
+                features_.emplace_back(
+                    std::make_unique<GenomeFeature>(std::move(genome_data))
+                );
+            }
         }
 
         /// @brief 全データを読み込み
@@ -259,6 +258,10 @@ namespace paxs {
             std::cout << "Loading geographic features..." << std::endl;
             loadGeographicFeatures();
             std::cout << "Geographic features loaded: " << features_.size() << " total" << std::endl;
+
+            std::cout << "Loading genome features..." << std::endl;
+            loadGenomeFeatures();
+            std::cout << "Genome features loaded: " << features_.size() << " total" << std::endl;
         }
 
     public:
@@ -288,6 +291,9 @@ namespace paxs {
 
             UnorderedMap<std::uint_least32_t, paxg::Texture> merged_textures = person_texture_map_.get();
             for (const auto& [key, texture] : geographic_texture_map_.get()) {
+                merged_textures.emplace(key, texture);
+            }
+            for (const auto& [key, texture] : genome_texture_map_.get()) {
                 merged_textures.emplace(key, texture);
             }
             MapFeatureRenderer::drawFeatures(features_, render_context_, merged_textures);

@@ -67,6 +67,10 @@ namespace paxs {
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MenuBarType::place_names);
+            menu_system.add(paxs::MenuBarKeys::genome_menu_hashes,
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                          MenuBarType::genomes);
             menu_system.add(paxs::MenuBarKeys::map_menu_hashes,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
@@ -123,7 +127,7 @@ namespace paxs {
             }
             else if (menu_type == paxs::MenuBarType::place_names) {
                 // Place Names メニュー
-                const std::array<PlaceNamesMenu, 12> place_name_items = {
+                const std::array<PlaceNamesMenu, 9> place_name_items = {
                     PlaceNamesMenu::place_name,
                     PlaceNamesMenu::site,
                     PlaceNamesMenu::tumulus,
@@ -132,14 +136,25 @@ namespace paxs {
                     PlaceNamesMenu::stone_coffin,
                     PlaceNamesMenu::doken,
                     PlaceNamesMenu::dotaku,
-                    PlaceNamesMenu::bronze_mirror,
-                    PlaceNamesMenu::human_bone,
-                    PlaceNamesMenu::mtdna,
-                    PlaceNamesMenu::ydna
+                    PlaceNamesMenu::bronze_mirror
                 };
                 if (actual_index < place_name_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
                         static_cast<std::uint_least32_t>(place_name_items[actual_index]),
+                        is_checked
+                    ));
+                }
+            }
+            else if (menu_type == paxs::MenuBarType::genomes) {
+                // Genome メニュー
+                const std::array<GenomeMenu, 3> genome_items = {
+                    GenomeMenu::human_bone,
+                    GenomeMenu::mtdna,
+                    GenomeMenu::ydna
+                };
+                if (actual_index < genome_items.size()) {
+                    paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
+                        static_cast<std::uint_least32_t>(genome_items[actual_index]),
                         is_checked
                     ));
                 }
@@ -177,6 +192,14 @@ namespace paxs {
             if (place_names_menu) {
                 place_names_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::place_names, index, is_checked);
+                });
+            }
+
+            // Genome メニューのコールバック
+            paxs::DropDownMenu* genome_menu = menu_system.getDropDownMenu(paxs::MenuBarType::genomes);
+            if (genome_menu) {
+                genome_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
+                    handleMenuItemToggled(paxs::MenuBarType::genomes, index, is_checked);
                 });
             }
 

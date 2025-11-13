@@ -67,9 +67,13 @@ namespace paxs {
         constexpr const char* doken = "place_names_doken";
         constexpr const char* dotaku = "place_names_dotaku";
         constexpr const char* bronze_mirror = "place_names_bronze_mirror";
-        constexpr const char* human_bone = "place_names_human_bone";
-        constexpr const char* mtdna = "place_names_mtdna";
-        constexpr const char* ydna = "place_names_ydna";
+
+        // Genome メニュー
+        constexpr const char* genomes_menu = "genomes_menu";
+        constexpr const char* genomes_header = "genomes";
+        constexpr const char* human_bone = "genomes_human_bone";
+        constexpr const char* mtdna = "genomes_mtdna";
+        constexpr const char* ydna = "genomes_ydna";
 
         /// @brief Feature メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array feature_menu_hashes = {
@@ -82,7 +86,12 @@ namespace paxs {
             MurMur3::calcHash(stone_coffin),
             MurMur3::calcHash(doken),
             MurMur3::calcHash(dotaku),
-            MurMur3::calcHash(bronze_mirror),
+            MurMur3::calcHash(bronze_mirror)
+        };
+
+        /// @brief Genome メニューの全項目ハッシュ配列（タイトル含む）
+        inline constexpr std::array genome_menu_hashes = {
+            MurMur3::calcHash(genomes_header),
             MurMur3::calcHash(human_bone),
             MurMur3::calcHash(mtdna),
             MurMur3::calcHash(ydna)
@@ -112,6 +121,7 @@ namespace paxs {
     enum class MenuBarType : std::uint_least32_t {
         view        = MurMur3::calcHash(MenuBarKeys::view_menu),
         place_names = MurMur3::calcHash(MenuBarKeys::place_names_menu),
+        genomes     = MurMur3::calcHash(MenuBarKeys::genomes_menu),
         map         = MurMur3::calcHash(MenuBarKeys::map_menu),
     };
 
@@ -140,11 +150,17 @@ namespace paxs {
         doken          = MurMur3::calcHash("doken"),
         dotaku         = MurMur3::calcHash("dotaku"),
         bronze_mirror  = MurMur3::calcHash("bronze_mirror"),
-        human_bone     = MurMur3::calcHash("human_bone"),
+    };
+    template<> struct MenuItemEnum<PlaceNamesMenu> { using enum_type = PlaceNamesMenu; };
+
+    /// @brief Genomeメニューの項目識別子
+    /// @brief Genome menu item identifiers
+    enum class GenomeMenu : std::uint_least32_t {
+        human_bone     = MurMur3::calcHash("bone"),
         mtdna          = MurMur3::calcHash("mtdna"),
         ydna           = MurMur3::calcHash("ydna"),
     };
-    template<> struct MenuItemEnum<PlaceNamesMenu> { using enum_type = PlaceNamesMenu; };
+    template<> struct MenuItemEnum<GenomeMenu> { using enum_type = GenomeMenu; };
 
     /// @brief Mapメニューの項目識別子（地図レイヤー）
     /// @brief Map menu item identifiers (map layers)

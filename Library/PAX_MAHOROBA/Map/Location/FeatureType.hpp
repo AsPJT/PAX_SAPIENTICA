@@ -19,10 +19,13 @@ namespace paxs {
 enum class FeatureType {
     Person,           ///< 人物（肖像画+名前） / Person (portrait + name)
     PlaceName,        ///< 地名（テキストのみ） / Place name (text only)
+    // TODO: GeographicをItemとStructureに分割する
     Geographic,       ///< 地理的地物（アイコン） / Geographic feature (icon)
+    Genome,          ///< 遺伝子情報 / Genome information
+    // Item,             ///< アイテム / Item
+    // Structure,        ///< 構造物 / Structure
     Settlement,       ///< 集落 / Settlement
     Model3D,          ///< 3Dモデル（古墳の石室など） / 3D model (burial chamber, etc.)
-    Custom            ///< カスタム地物 / Custom feature
 };
 
 } // namespace paxs

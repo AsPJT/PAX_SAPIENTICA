@@ -57,9 +57,11 @@ place_names_stone_coffin	Stone Coffin	石棺	石棺	石棺	석관	せっかん	S
 place_names_doken	Bronze Sword	銅剣	銅劍	铜剑	청동 검	どうけん	Espada de bronce	Espada de bronze	Bronzeschwert	Épée de bronze	Spada di bronzo	Bronz Kılıç	Brązowy miecz	Χάλκινο σπαθί	Bronzen zwaard	Bronzový meč	Бронзовий меч	Бронзовый меч	Pedang Perunggu	شمشیر مفرغی	سيف برونزي	Hurekane Emus
 place_names_dotaku	Dotaku	銅鐸	銅鐸	铜铎	동탁	どうたく	Dotaku	Dotaku	Dotaku	Dōtaku	Dotaku	Dotaku	Dōtaku	Ντοτάκου	Dotaku	Dótaku	Дотаку	Дотаку	Dotaku	Dotaku	Dotaku	Dotaku
 place_names_bronze_mirror	Bronze Mirror	銅鏡	銅鏡	铜镜	동경	どうきょう	Espejo de bronce	Espelho de bronze	Bronzespiegel	Miroir de bronze	Specchio di bronzo	Bronz Ayna	Brązowe lustro	Χάλκινος καθρέφτης	Bronzen spiegel	Bronzové zrcadlo	Бронзове дзеркало	Бронзовое зеркало	Cermin Perunggu	آینه برنزی	مرآة برونزية	Hurekane Kankami
-place_names_human_bone	Human Bone	人骨	人骨	人骨	인골	じんこつ	Hueso humano	Osso humano	Menschlicher Knochen	Os humain	Osso umano	İnsan Kemiği	Ludzka kość	Ανθρώπινο οστό	Menselijk bot	Lidská kost	Людська кістка	Человеческая кость	Tulang Manusia	استخوان انسان	عظم بشري	Aynu Pone
-place_names_mtdna	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	ADNmt	ADNmt	mtDNA	ADNmt	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	мтДНК	мтДНК	mtDNA	دی‌ان‌ای میتوکندری	الحمض النووي للميتوكوندريا	mtDNA
-place_names_ydna	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	ADN-Y	ADN-Y	Y-DNA	ADN-Y	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-ДНК	Y-ДНК	Y-DNA	دی‌ان‌ای Y	الحمض النووي Y	Y-DNA
+> genomes
+genomes	Genomes	ゲノム	基因體	基因组	유전체	げのむ	Genomas	Genomas	Genome	Génomes	Genomi	Genomlar	Genomy	Γονιδιώματα	Genomen	Genomy	Геноми	Геномы	Genom	ژنوم	الجينومات	Genomes
+genomes_human_bone	Human Bone	人骨	人骨	人骨	인골	じんこつ	Hueso humano	Osso humano	Menschlicher Knochen	Os humain	Osso umano	İnsan Kemiği	Ludzka kość	Ανθρώπινο οστό	Menselijk bot	Lidská kost	Людська кістка	Человеческая кость	Tulang Manusia	استخوان انسان	عظم بشري	Aynu Pone
+genomes_mtdna	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	ADNmt	ADNmt	mtDNA	ADNmt	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	мтДНК	мтДНК	mtDNA	دی‌ان‌ای میتوکندری	الحمض النووي للميتوكوندريا	mtDNA
+genomes_ydna	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	ADN-Y	ADN-Y	Y-DNA	ADN-Y	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-ДНК	Y-ДНК	Y-DNA	دی‌ان‌ای Y	الحمض النووي Y	Y-DNA
 > menu_bar_calendar																						
 menu_bar_calendar	Calendar(C)	カレンダー(C)	日曆(C)	日历(C)	캘린더(C)	かれんだー	Calendario(C)	Calendário(C)	Kalender(C)	Calendrier(C)	Calendario(C)	Takvim (C)	Kalendarz(C)	Ημερολόγιο(C)	Kalender (C)	Kalendář(C)	Календар(C)	Календарь (C)	Kalender (C)	تقویم (C)	التقويم (C)	Tonukarpe(C)
 menu_bar_calendar_japan	Japanese Calendar	和暦	日本曆	日本历	일본 달력	わ れき	Calendario japonés	Calendário Japonês	Japanischer Kalender	Calendrier japonais	Calendario giapponese	Japon Takvimi	Kalendarz japoński	Ιαπωνικό ημερολόγιο	Japanse kalender	Japonský kalendář	Японський календар	Японский календарь	Kalender Jepang	تقویم ژاپنی	التقويم الياباني	Japanese Tonukarpe

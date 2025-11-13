@@ -1,4 +1,4 @@
-﻿file_path	place_type	description	min_size	max_size	first_julian_day	last_julian_day	texture	ja-JP
+﻿file_path	type	description	min_size	max_size	first_julian_day	last_julian_day	texture	ja-JP
 Data/PersonName/Maya/1st century/Yax Ehb Xook.tsv	place_name	???	0	1000	0	9948341	Pakal	???
 Data/PersonName/Maya/3rd century/Animal Headdress.tsv	place_name	???	0	1000	0	9948341	Pakal	???
 Data/PersonName/Maya/3rd century/Foliated Jaguar.tsv	place_name	???	0	1000	0	9948341	Pakal	???

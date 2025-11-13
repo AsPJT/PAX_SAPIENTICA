@@ -16,10 +16,12 @@
 #include <memory>
 #include <vector>
 
+#include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
+#include <PAX_MAHOROBA/Map/Location/GenomeFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/GeographicFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/LocationRendererHelper.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
@@ -62,6 +64,9 @@ public:
                 break;
             case FeatureType::PlaceName:
                 drawPlaceName(static_cast<const PlaceNameFeature&>(*feature), context, texture_map);
+                break;
+            case FeatureType::Genome:
+                drawGenome(static_cast<const GenomeFeature&>(*feature), context, texture_map);
                 break;
             case FeatureType::Model3D:
                 drawModel3D(static_cast<const Model3DFeature&>(*feature), context, texture_map);
@@ -150,6 +155,78 @@ private:
             // 将来的には LocationPointList への参照も保持する必要があるかもしれない
             const std::uint_least32_t place_tex = data.place_texture;
             if (texture_map.find(place_tex) == texture_map.end()) continue;
+
+            const bool is_zoomed = (data.zoom > 1.0);
+
+            // 複数タイルの描画
+            drawTextureMultiple(
+                texture_map.at(place_tex),
+                display_size,
+                draw_pos,
+                data.x_size,
+                data.y_size,
+                is_zoomed
+            );
+        }
+    }
+
+    /// @brief ゲノム地物を描画
+    /// @brief Draw genome feature
+    /// @param feature ゲノム地物 / Genome feature
+    /// @param context 描画コンテキスト / Rendering context
+    /// @param texture_map テクスチャマップ / Texture map
+    /// @brief 警告用のテクスチャを描画（テクスチャが見つからない場合）
+    /// @brief Draw warning texture when texture is not found
+    static void drawWarningTexture(const paxg::Vec2i& pos, int size) {
+        // 赤い四角形で警告表示
+        paxg::Rect(
+            static_cast<float>(pos.x() - size / 2),
+            static_cast<float>(pos.y() - size / 2),
+            static_cast<float>(size),
+            static_cast<float>(size)
+        ).draw(paxg::Color(255, 0, 0, 180)); // 半透明の赤
+
+        // 中央に白い×印を描画
+        const float center_x = static_cast<float>(pos.x());
+        const float center_y = static_cast<float>(pos.y());
+        const float half_size = static_cast<float>(size) * 0.3f;
+
+        // ×印の線（太さ3ピクセル）
+        paxg::Line(
+            center_x - half_size, center_y - half_size,
+            center_x + half_size, center_y + half_size
+        ).draw(3.0f, paxg::Color(255, 255, 255));
+
+        paxg::Line(
+            center_x - half_size, center_y + half_size,
+            center_x + half_size, center_y - half_size
+        ).draw(3.0f, paxg::Color(255, 255, 255));
+    }
+
+    static void drawGenome(
+        const GenomeFeature& feature,
+        const RenderContext& context,
+        const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
+    ) {
+        const auto& data = feature.getData();
+        const auto& screen_positions = feature.getScreenPositions();
+        const int display_size = feature.getDisplaySize();
+
+        // 各スクリーン座標で描画（経度ラップ対応）
+        for (const auto& draw_pos : screen_positions) {
+            // エージェントアイコン描画
+            if (LocationRendererHelper::drawAgentIcon(texture_map, data.lpe, draw_pos)) {
+                continue;
+            }
+
+            // テクスチャを取得
+            const std::uint_least32_t place_tex = data.place_texture;
+
+            // テクスチャが見つからない場合は警告表示
+            if (place_tex == 0 || texture_map.find(place_tex) == texture_map.end()) {
+                drawWarningTexture(draw_pos, display_size > 0 ? display_size : 20);
+                continue;
+            }
 
             const bool is_zoomed = (data.zoom > 1.0);
 

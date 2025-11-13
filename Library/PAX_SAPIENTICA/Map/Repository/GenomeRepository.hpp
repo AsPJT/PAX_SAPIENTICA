@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_MAP_REPOSITORY_PLACE_NAME_REPOSITORY_HPP
-#define PAX_SAPIENTICA_MAP_REPOSITORY_PLACE_NAME_REPOSITORY_HPP
+#ifndef PAX_SAPIENTICA_MAP_REPOSITORY_GENOME_REPOSITORY_HPP
+#define PAX_SAPIENTICA_MAP_REPOSITORY_GENOME_REPOSITORY_HPP
 
 #include <cstdint>
 #include <functional>
@@ -28,15 +28,16 @@
 
 namespace paxs {
 
-    /// @brief 地名のデータ読み込みを担当する構造体 (Infrastructure Layer)
-    struct PlaceNameRepository {
-        /// @brief 地名データファイルのリストを読み込み、全てのLocationPointを返す
-        /// @brief Load place name data file list and return all LocationPoints
-        static std::vector<LocationPoint> loadPlaceNameList() {
+    /// @brief ゲノムデータの読み込みを担当する構造体 (Infrastructure Layer)
+    /// @brief Genome data loading repository (Infrastructure Layer)
+    struct GenomeRepository {
+        /// @brief ゲノムデータファイルのリストを読み込み、全てのLocationPointを返す
+        /// @brief Load genome data file list and return all LocationPoints
+        static std::vector<LocationPoint> loadGenomeList() {
             std::vector<LocationPoint> all_points;
 
-            FeatureListLoader::loadFeatureList("PlaceNames", [&all_points](const FeatureListParams& params) {
-                auto loaded = loadPlaceFromFile(params);
+            FeatureListLoader::loadFeatureList("Genomes", [&all_points](const FeatureListParams& params) {
+                auto loaded = loadGenomeFromFile(params);
                 all_points.insert(all_points.end(),
                     std::make_move_iterator(loaded.location_point_list.begin()),
                     std::make_move_iterator(loaded.location_point_list.end()));
@@ -45,24 +46,25 @@ namespace paxs {
             return all_points;
         }
 
-        /// @brief 個別の地名ファイルを読み込んでLocationPointListを返す
-        static LocationPointList loadPlaceFromFile(const FeatureListParams& params) {
-            std::vector<LocationPoint> location_point_list{}; // 地物の一覧
+        /// @brief 個別のゲノムファイルを読み込んでLocationPointListを返す
+        /// @brief Load individual genome file and return LocationPointList
+        static LocationPointList loadGenomeFromFile(const FeatureListParams& params) {
+            std::vector<LocationPoint> location_point_list{}; // ゲノムデータの一覧
             const std::uint_least32_t lpe = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
             paxs::TsvTable table(params.file_path);
             if (!table.isSuccessfullyLoaded()) {
-                PAXS_WARNING("Failed to load place file: " + params.file_path);
+                PAXS_WARNING("Failed to load genome file: " + params.file_path);
                 return LocationPointList{};
             }
 
             // 必須カラムの存在確認
             if (!table.hasColumn("longitude")) {
-                PAXS_ERROR("PlaceFile is missing required column: longitude");
+                PAXS_ERROR("GenomeFile is missing required column: longitude");
                 return LocationPointList{};
             }
             if (!table.hasColumn("latitude")) {
-                PAXS_ERROR("PlaceFile is missing required column: latitude");
+                PAXS_ERROR("GenomeFile is missing required column: latitude");
                 return LocationPointList{};
             }
 
@@ -107,23 +109,21 @@ namespace paxs {
 
                 // 経度・緯度の文字列が空の場合は読み込まない
                 if (longitude_str.empty() || latitude_str.empty()) {
-                    // TODO: データを整備してコメントアウトを解除する
-                    // PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + str_ + ": missing longitude or latitude");
                     return;
                 }
 
-                // 地名
-                paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{};
+                // ゲノム名
+                paxs::UnorderedMap<std::uint_least32_t, std::string> genome_name{};
                 if (has_ja_jp) {
                     const std::string& ja_jp_str = table.get(row_index, ja_jp_hash);
                     if (!ja_jp_str.empty()) {
-                        place_name.emplace(MurMur3::calcHash("ja-JP"), ja_jp_str);
+                        genome_name.emplace(MurMur3::calcHash("ja-JP"), ja_jp_str);
                     }
                 }
                 if (has_en_us) {
                     const std::string& en_us_str = table.get(row_index, en_us_hash);
                     if (!en_us_str.empty()) {
-                        place_name.emplace(MurMur3::calcHash("en-US"), en_us_str);
+                        genome_name.emplace(MurMur3::calcHash("en-US"), en_us_str);
                     }
                 }
 
@@ -162,7 +162,7 @@ namespace paxs {
 
                 // 格納
                 location_point_list.emplace_back(
-                    place_name,
+                    genome_name,
                     paxs::EquirectangularDeg(
                         paxs::Vector2<double>(
                             point_longitude, // 経度
@@ -179,9 +179,9 @@ namespace paxs {
                     params.zoom
                 );
             });
-            // 地物を何も読み込んでいない場合は空のLocationPointListを返す
+            // ゲノムデータを何も読み込んでいない場合は空のLocationPointListを返す
             if (location_point_list.size() == 0) {
-                PAXS_WARNING("No valid location points loaded from file: " + params.file_path);
+                PAXS_WARNING("No valid genome points loaded from file: " + params.file_path);
                 return LocationPointList{};
             }
 
@@ -199,4 +199,4 @@ namespace paxs {
 
 }
 
-#endif // !PAX_SAPIENTICA_MAP_REPOSITORY_PLACE_NAME_REPOSITORY_HPP
+#endif // !PAX_SAPIENTICA_MAP_REPOSITORY_GENOME_REPOSITORY_HPP

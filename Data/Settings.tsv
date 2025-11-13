@@ -4,6 +4,7 @@ MapIcons	Data/Settings/MapIcons.tsv
 MenuIcons	Data/Settings/MenuIcons.tsv
 PersonNames	Data/Settings/PersonNames.tsv
 PlaceNames	Data/Settings/PlaceNames.tsv
+Genomes	Data/Settings/Genomes.tsv
 Portraits	Data/Settings/Portraits.tsv
 XYZTiles	Data/Settings/XYZTiles.tsv
 SimulationConstants	Data/Simulations/Sample/Settings.tsv
