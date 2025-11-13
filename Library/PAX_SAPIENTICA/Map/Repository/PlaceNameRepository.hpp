@@ -36,17 +36,15 @@ namespace paxs {
         void loadPlaceNameList(
             const std::function<void(const std::string&, double, double, int, int, std::uint_least32_t, std::uint_least32_t, double)>& inputPlaceFunc
         ) const {
-            std::string str = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("PlaceNames"),
-                [&](const std::string& path_) {str = path_; });
-            if (str.size() == 0) {
+            const std::string setting_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("PlaceNames"));
+            if (setting_path.size() == 0) {
                 PAXS_WARNING("PlaceNames configuration path is empty");
                 return;
             }
 
-            paxs::TsvTable table(str);
+            paxs::TsvTable table(setting_path);
             if (!table.isSuccessfullyLoaded()) {
-                PAXS_WARNING("Failed to load place name list: " + str);
+                PAXS_WARNING("Failed to load place name list: " + setting_path);
                 return;
             }
 
@@ -84,7 +82,7 @@ namespace paxs {
 
                 // パスが空の場合は読み込まない
                 if (file_path_str.empty()) {
-                    PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + str + ": file_path is empty");
+                    PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + setting_path + ": file_path is empty");
                     return;
                 }
 

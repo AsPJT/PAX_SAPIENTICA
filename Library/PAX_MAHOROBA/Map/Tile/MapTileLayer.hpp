@@ -42,7 +42,7 @@ namespace paxs {
         MapTileLayer(const AppStateManager& app_state_manager)
             : app_state_manager_(app_state_manager) {
             // XYZタイルを初期化
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("XYZTiles"),
+            AppConfig::getInstance()->ifSettingExists(MurMur3::calcHash("XYZTiles"),
                 [&](const std::string& path) {
                     std::vector<XYZTile> loaded_tiles = tile_repository_.loadFromFile(path);
                     xyz_tile_list.insert(xyz_tile_list.end(), loaded_tiles.begin(), loaded_tiles.end());

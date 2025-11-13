@@ -98,17 +98,15 @@ namespace paxs {
             const std::function<void(const std::string&, double, double, int, int,
                                      std::uint_least32_t, std::uint_least32_t)>& inputPlaceFunc
         ) const {
-            std::string str = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("PersonNames"),
-                [&](const std::string& path_) {str = path_; });
-            if (str.size() == 0) {
+            const std::string setting_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("PersonNames"));
+            if (setting_path.size() == 0) {
                 PAXS_WARNING("PersonNames configuration path is empty");
                 return;
             }
 
-            paxs::TsvTable table(str);
+            paxs::TsvTable table(setting_path);
             if (!table.isSuccessfullyLoaded()) {
-                PAXS_WARNING("Failed to load person name list: " + str);
+                PAXS_WARNING("Failed to load person name list: " + setting_path);
                 return;
             }
 
@@ -139,7 +137,7 @@ namespace paxs {
             table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
                 const std::string& file_path_str = table.get(row_index, file_path_hash);
                 if (file_path_str.empty()) {
-                    PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + str + ": file_path is empty");
+                    PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + setting_path + ": file_path is empty");
                     return;
                 }
 

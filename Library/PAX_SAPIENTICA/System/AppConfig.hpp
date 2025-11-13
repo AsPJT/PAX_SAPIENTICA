@@ -38,26 +38,19 @@ namespace paxs {
             return root_path;
         }
 
-        std::string getDataSettings(const std::uint_least32_t key_) const {
+        std::string getSettingPath(const std::uint_least32_t key_) const {
             if (!data_settings.contains(key_)) {
                 PAXS_WARNING("Data settings key " + std::to_string(key_) + " not found.");
                 return std::string{};
             }
             return data_settings.at(key_);
         }
-        // 指定したキーのデータ設定が存在している場合は true を返す
-        bool isDataSettings(const std::uint_least32_t key_) const {
-            if (!data_settings.contains(key_)) {
-                return false;
-            }
-            return (data_settings.at(key_).size() != 0);
-        }
         template<typename Func_>
-        void calcDataSettings(const std::uint_least32_t key_, Func_&& func_) const {
+        void ifSettingExists(const std::uint_least32_t key_, Func_&& func_) const {
             // 指定したキーのデータ設定が存在している場合は処理をする
-            if (isDataSettings(key_)) {
+            if (hasDataSettings(key_)) {
                 func_(
-                    getDataSettings(key_));
+                    getSettingPath(key_));
             } else {
                 PAXS_WARNING("Data settings for key " + std::to_string(key_) + " is missing.");
             }
@@ -85,6 +78,14 @@ namespace paxs {
 
         ~AppConfig() {
             delete instance;
+        }
+
+        // @brief 指定したキーのデータ設定が存在しているか
+        bool hasDataSettings(const std::uint_least32_t key_) const {
+            if (!data_settings.contains(key_)) {
+                return false;
+            }
+            return (data_settings.at(key_).size() != 0);
         }
 
         /// @brief TSVファイルから key-value ペアを全て読み込む

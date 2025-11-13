@@ -259,9 +259,7 @@ namespace paxs {
         }
 
         void inputLifeSpan(const std::string& model_name_) noexcept {
-            std::string path = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
-                [&](const std::string& path_) {path = path_; });
+            std::string path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
             path += std::string("/" + life_span_file);
@@ -334,9 +332,7 @@ namespace paxs {
         }
 
         void inputMarriage(const std::string& model_name_) noexcept {
-            std::string path = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
-                [&](const std::string& path_) {path = path_; });
+            std::string path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
             path += std::string("/" + marriage_file);
@@ -386,9 +382,7 @@ namespace paxs {
             }
         }
         void inputChildbearing(const std::string& model_name_) noexcept {
-            std::string path = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationProvincesPath"),
-                [&](const std::string& path_) {path = path_; });
+            std::string path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
             if (path.size() == 0) return;
@@ -440,12 +434,13 @@ namespace paxs {
         }
 
         void init(const std::string& model_name_ = "Sample") {
-            std::string str = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationConstants"),
-                [&](const std::string& path_) {str = path_; });
+            std::string str = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationConstants"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(str, "Sample", model_name_);
-            if (str.size() == 0) return; std::cout << model_name_;
+            if (str.size() == 0) {
+                PAXS_WARNING("Simulation Constants TSV file path is empty.");
+                return;
+            }
 
             KeyValueTSV<std::string> kvt;
             if (!kvt.input(str)) {
@@ -459,7 +454,7 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("district_key"), [&](const std::string& str_) {district_key = MurMur3::calcHash(str_.size(), str_.c_str()); });
 
             // シミュレーションの範囲を設定
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationRange"),
+            AppConfig::getInstance()->ifSettingExists(MurMur3::calcHash("SimulationRange"),
                 [&](const std::string& path_) {sr.input(path_); });
 
             stoiFunc(kvt, MurMur3::calcHash("steps_per_year"), [&](const std::string& str_) {steps_per_year = std::stoi(str_); });

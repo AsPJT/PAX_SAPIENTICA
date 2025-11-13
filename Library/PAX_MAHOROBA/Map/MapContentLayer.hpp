@@ -173,9 +173,7 @@ namespace paxs {
         /// @brief 人物データを読み込み
         void loadPersonFeatures() {
             // テクスチャを読み込み（Portraitsの設定を使用）
-            std::string portraits_path = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Portraits"),
-                [&](const std::string& path_) { portraits_path = path_; });
+            const std::string portraits_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("Portraits"));
 
             if (portraits_path.size() > 0) {
                 person_texture_map_.input(portraits_path);
@@ -208,9 +206,7 @@ namespace paxs {
         /// @brief 地理的地物データを読み込み
         void loadGeographicFeatures() {
             // 地理的特徴用のテクスチャを読み込み（MiniIconsから）
-            std::string mini_icons_path = "";
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("MiniIcons"),
-                [&](const std::string& path_) { mini_icons_path = path_; });
+            const std::string mini_icons_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MiniIcons"));
             if (mini_icons_path.size() > 0) {
                 geographic_texture_map_.input(mini_icons_path);
             }

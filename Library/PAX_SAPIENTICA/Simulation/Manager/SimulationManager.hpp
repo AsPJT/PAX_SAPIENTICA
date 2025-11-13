@@ -50,15 +50,8 @@ namespace paxs {
         /// @param model_name モデル名 / Model name
         /// @return <マップリストパス, 都道府県パス> / <map list path, provinces path>
         std::pair<std::string, std::string> generatePaths(const std::string& model_name) const {
-            std::string map_list_path = "Data/Simulations/" + model_name + "/MapList.tsv";
-            std::string japan_provinces_path = "Data/Simulations/" + model_name;
-
-            AppConfig::getInstance()->calcDataSettings(
-                MurMur3::calcHash("SimulationXYZTiles"),
-                [&](const std::string& path_) { map_list_path = path_; });
-            AppConfig::getInstance()->calcDataSettings(
-                MurMur3::calcHash("SimulationProvincesPath"),
-                [&](const std::string& path_) { japan_provinces_path = path_; });
+            std::string map_list_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationXYZTiles"));
+            std::string japan_provinces_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
 
             paxs::StringUtils::replace(map_list_path, "Sample", model_name);
             paxs::StringUtils::replace(japan_provinces_path, "Sample", model_name);

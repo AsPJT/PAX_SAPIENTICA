@@ -189,12 +189,12 @@ namespace paxs {
             setupLanguageFonts();
 
             // 言語辞書の読み込み
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
+            AppConfig::getInstance()->ifSettingExists(MurMur3::calcHash("Languages"),
                 [&](const std::string& path_) {
                     addLanguageDictionary(path_, LanguageDomain::UI);
                 });
 
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationModels"),
+            AppConfig::getInstance()->ifSettingExists(MurMur3::calcHash("SimulationModels"),
                 [&](const std::string& path_) {
                     addLanguageDictionary(path_, LanguageDomain::SIMULATION);
                 });
