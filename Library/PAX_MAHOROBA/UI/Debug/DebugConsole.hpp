@@ -117,7 +117,7 @@ public:
 
         font_text->draw("Debug Console",
                        paxg::Vec2i(CONSOLE_MARGIN_X + CONSOLE_PADDING, CONSOLE_MARGIN_Y + 5),
-                       paxg::Color(200, 200, 200));
+                       paxg::Color(0, 0, 0));
 
         // フィルターボタン描画
         const int filter_y = CONSOLE_MARGIN_Y + 35;
@@ -148,7 +148,7 @@ public:
         const int end_index = static_cast<int>(filtered_indices.size()) - scroll_offset_;
 
         int current_y = log_area_y;
-        for (int i = std::max(0, start_index); i < std::min(end_index, static_cast<int>(filtered_indices.size())); ++i) {
+        for (int i = (std::max)(0, start_index); i < (std::min)(end_index, static_cast<int>(filtered_indices.size())); ++i) {
             const auto& item = log_history_[filtered_indices[i]];
             const paxg::Color text_color = getLevelColor(item.level);
 
@@ -173,7 +173,7 @@ public:
                                        " / " + std::to_string(log_history_.size());
         font_text->draw(count_info,
                        paxg::Vec2i(CONSOLE_MARGIN_X + console_width - 200, CONSOLE_MARGIN_Y + 25),
-                       paxg::Color(150, 150, 150));
+                       paxg::Color(0, 0, 0));
 
 #ifdef PAXS_DEVELOPMENT
         // コマンド入力フィールド
@@ -190,7 +190,7 @@ public:
         // プロンプト記号 ">"
         font_text->draw("> ",
                        paxg::Vec2i(CONSOLE_MARGIN_X + CONSOLE_PADDING + 5, input_y + 5),
-                       paxg::Color(100, 255, 100));
+                       paxg::Color(0, 0, 0));
 
         // 入力テキスト（カーソル位置にアンダースコアを挿入）
         std::string display_text = command_input_;
@@ -199,7 +199,7 @@ public:
         }
         font_text->draw(display_text,
                        paxg::Vec2i(CONSOLE_MARGIN_X + CONSOLE_PADDING + 25, input_y + 5),
-                       paxg::Color(200, 200, 200));
+                       paxg::Color(0, 0, 0));
 #endif
     }
 
@@ -371,9 +371,9 @@ private:
 
     paxg::Color getLevelColor(LogEvent::Level level) const {
         switch(level) {
-            case LogEvent::Level::Info:    return paxg::Color(150, 200, 255);
-            case LogEvent::Level::Warning: return paxg::Color(255, 200, 100);
-            case LogEvent::Level::Error:   return paxg::Color(255, 100, 100);
+            case LogEvent::Level::Info:    return paxg::Color(75, 100, 127);
+            case LogEvent::Level::Warning: return paxg::Color(127, 100, 50);
+            case LogEvent::Level::Error:   return paxg::Color(127, 50, 50);
             default: return paxg::Color(200, 200, 200);
         }
     }
@@ -393,7 +393,7 @@ private:
                          int x, int y, const paxg::Color& color) const {
         const bool is_active = (filter_mask_ & filter_bit) != 0;
         const paxg::Color bg_color = is_active ? color : paxg::Color(80, 80, 80);
-        const paxg::Color text_color = is_active ? paxg::Color(255, 255, 255) : paxg::Color(150, 150, 150);
+        const paxg::Color text_color = is_active ? paxg::Color(0, 0, 0) : paxg::Color(150, 150, 150);
 
         // ボタン背景
         paxg::Rect(x, y, FILTER_BUTTON_WIDTH, FILTER_BUTTON_HEIGHT).draw(bg_color);

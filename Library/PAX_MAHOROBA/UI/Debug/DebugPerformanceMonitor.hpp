@@ -110,7 +110,7 @@ public:
         // タイトル
         font_text->draw("Performance Monitor",
                        paxg::Vec2i(pos_x + PADDING, pos_y + PADDING),
-                       paxg::Color(200, 200, 200));
+                       paxg::Color(0, 0, 0));
 
         // FPS情報
         const int text_y = pos_y + PADDING + 20;
@@ -122,7 +122,7 @@ public:
 
         font_text->draw("Frame Time: " + formatDouble(frame_time_ms_, 2) + " ms",
                        paxg::Vec2i(pos_x + PADDING, text_y + 20),
-                       paxg::Color(200, 200, 200));
+                       paxg::Color(0, 0, 0));
 
         // 統計情報
         if (!frame_times_.empty()) {
@@ -138,7 +138,7 @@ public:
 
             font_text->draw("Min: " + formatDouble(min_fps, 1) + " / Max: " + formatDouble(max_fps, 1),
                            paxg::Vec2i(pos_x + PADDING, text_y + 40),
-                           paxg::Color(150, 150, 150));
+                           paxg::Color(0, 0, 0));
         }
 
         // FPSグラフ
@@ -225,11 +225,11 @@ private:
 
     /// @brief FPSに応じた色を取得
     paxg::Color getFPSColor(double fps) const {
-        if (fps >= 55.0) return paxg::Color(0, 255, 0);      // 緑：良好
-        if (fps >= 45.0) return paxg::Color(200, 255, 0);    // 黄緑：やや良好
-        if (fps >= 30.0) return paxg::Color(255, 255, 0);    // 黄：普通
-        if (fps >= 20.0) return paxg::Color(255, 150, 0);    // オレンジ：やや悪い
-        return paxg::Color(255, 0, 0);                       // 赤：悪い
+        if (fps >= 55.0) return paxg::Color(0, 127, 0);      // 緑：良好
+        if (fps >= 45.0) return paxg::Color(100, 127, 0);    // 黄緑：やや良好
+        if (fps >= 30.0) return paxg::Color(127, 127, 0);    // 黄：普通
+        if (fps >= 20.0) return paxg::Color(127, 75, 0);    // オレンジ：やや悪い
+        return paxg::Color(127, 0, 0);                       // 赤：悪い
     }
 
     /// @brief 数値をフォーマット
