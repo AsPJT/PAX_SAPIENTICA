@@ -5,7 +5,7 @@ Data/Genomes/HomoSapiens/AncientSiberian-Steppe-Baltic-CentralAsian-Caucasus-Y-D
 Data/Genomes/HomoSapiens/HaplogroupInfo/mtDNA-Haplogroup.tsv	mtdna	世界のmtDNA	0.1					1
 Data/Genomes/HomoSapiens/Yaponesia/mtDNA-Haplogroup.tsv	mtdna	ヤポネシアmtDNA	0.1					1
 Data/Features/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	3				1
-Data/Features/TestMap/Hokkaido.tsv	site	北海道の遺跡名	0	0.5				1
+Data/Features/EastAsia/Yaponesia/Hokkaido.tsv	site	北海道の遺跡名	0	0.5				3
 Data/Features/EastAsia/Yaponesia/Kango.tsv	site	環濠集落	0	0.1				0.5
 Data/Features/EastAsia/Yaponesia/Shisekibo.tsv	dolmen	日本の支石墓	0	0.9				1
 Data/Features/EastAsia/Korea/Dolmen.tsv	dolmen	朝鮮半島の支石墓	0	0.9				1
