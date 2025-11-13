@@ -15,6 +15,7 @@
 #include <string>
 
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
@@ -39,7 +40,7 @@ namespace paxg {
     public:
         /// @brief URLからファイルをダウンロードして保存する
         /// @param url ダウンロード元のURL
-        /// @param save_path 保存先のファイルパス
+        /// @param save_path 保存先のファイルパス（アセットルートからの相対パス）
         /// @return 成功した場合true
         static bool downloadFile(const std::string& url, const std::string& save_path) {
 #if defined(PAXS_USING_SIV3D)
@@ -82,7 +83,11 @@ namespace paxg {
             CURL* curl = curl_easy_init();
             if (!curl) return false;
 
-            // 保存先のディレクトリを作成
+            // 相対パスを絶対パスに変換
+            const std::string root_path = paxs::AppConfig::getInstance()->getRootPath();
+            const std::string full_path = root_path + save_path;
+
+            // 保存先のディレクトリを作成（相対パスで指定）
             std::filesystem::path path(save_path);
             if (path.has_parent_path()) {
                 if (!paxs::FileSystem::createDirectories(path.parent_path().string())) {
@@ -91,7 +96,7 @@ namespace paxg {
                 }
             }
 
-            std::ofstream out_file(save_path, std::ios::binary);
+            std::ofstream out_file(full_path, std::ios::binary);
             if (!out_file.is_open()) {
                 curl_easy_cleanup(curl);
                 return false;
@@ -110,7 +115,7 @@ namespace paxg {
             curl_easy_cleanup(curl);
 
             if (res != CURLE_OK) {
-                std::filesystem::remove(save_path); // 失敗時はファイルを削除
+                std::filesystem::remove(full_path); // 失敗時はファイルを削除
                 return false;
             }
 
@@ -121,7 +126,11 @@ namespace paxg {
 #ifdef _WIN32
         // WinINet を使用したダウンロード（Windows）
         static bool downloadWithWinINet(const std::string& url, const std::string& save_path) {
-            // 保存先のディレクトリを作成
+            // 相対パスを絶対パスに変換
+            const std::string root_path = paxs::AppConfig::getInstance()->getRootPath();
+            const std::string full_path = root_path + save_path;
+
+            // 保存先のディレクトリを作成（相対パスで指定）
             std::filesystem::path path(save_path);
             if (path.has_parent_path()) {
                 if (!paxs::FileSystem::createDirectories(path.parent_path().string())) {
@@ -138,7 +147,7 @@ namespace paxg {
                 return false;
             }
 
-            std::ofstream out_file(save_path, std::ios::binary);
+            std::ofstream out_file(full_path, std::ios::binary);
             if (!out_file.is_open()) {
                 InternetCloseHandle(hUrl);
                 InternetCloseHandle(hInternet);

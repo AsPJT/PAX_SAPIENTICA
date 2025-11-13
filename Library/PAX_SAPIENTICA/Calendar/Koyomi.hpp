@@ -177,8 +177,8 @@ namespace paxs {
 
         Koyomi() {
             // 暦を読み込み
-            paxs::JapaneseEra::inputList(japanese_era_list, AppConfig::getInstance()->getRootPath() + "Data/Calendars/JapaneseEraName.tsv");
-            paxs::ChineseEra::inputList(chinese_era_list, AppConfig::getInstance()->getRootPath() + "Data/Calendars/ChineseEraName.tsv");
+            paxs::JapaneseEra::inputList(japanese_era_list, "Data/Calendars/JapaneseEraName.tsv");
+            paxs::ChineseEra::inputList(chinese_era_list, "Data/Calendars/ChineseEraName.tsv");
             // 日付計算
             calcDate();
         }

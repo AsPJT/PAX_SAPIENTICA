@@ -33,13 +33,11 @@ namespace paxs {
         /// @brief Load a tile (download from URL)
         /// @param url_path_with_zy Z と Y が既に置換された URL パス（アセットルートからの相対パス）
         /// @param local_path_with_zy Z と Y が既に置換されたローカルパス（アセットルートからの相対パス）
-        /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス（アセットルートからの相対パス）
         /// @param x_value X 座標の文字列
         /// @return 読み込みに成功した場合はテクスチャのunique_ptr、失敗した場合はnullptr
         static std::unique_ptr<paxg::Texture> load(
             const std::string& url_path_with_zy,
             const std::string& local_path_with_zy,
-            const std::string& folder_path_with_zyx,
             const std::string& x_value
         ) {
             // URL と ローカル相対パスの X を置換
@@ -49,22 +47,20 @@ namespace paxs {
             std::string relative_path = local_path_with_zy;
             paxs::StringUtils::replace(relative_path, "{x}", x_value);
 
-            // アセットルートパスを前置して絶対パスを構築
-            const std::string root_path = AppConfig::getInstance()->getRootPath();
-            const std::string full_path = root_path + relative_path;
-            const std::string full_folder_path = root_path + folder_path_with_zyx;
+            // 保存先フォルダを作成（相対パスから親ディレクトリを抽出）
+            const std::string parent_dir = FileSystem::getParentPath(relative_path);
+            if (!parent_dir.empty()) {
+                FileSystem::createDirectories(parent_dir);
+            }
 
-            // 保存先フォルダを作成（絶対パスを使用）
-            FileSystem::createDirectories(full_folder_path);
-
-            // ダウンロード（絶対パスを使用）
-            if (!paxg::Network::downloadFile(url_path, full_path)) {
+            // ダウンロード
+            if (!paxg::Network::downloadFile(url_path, relative_path)) {
                 // ダウンロード失敗
                 return nullptr;
             }
 
-            // ファイル存在チェック（絶対パスを使用）
-            if (!FileSystem::exists(full_path)) {
+            // ファイル存在チェック（相対パスを使用）
+            if (!FileSystem::exists(relative_path)) {
                 return nullptr;
             }
 

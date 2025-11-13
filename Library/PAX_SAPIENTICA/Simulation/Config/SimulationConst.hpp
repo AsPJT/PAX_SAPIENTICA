@@ -273,6 +273,7 @@ namespace paxs {
             }
             // 1 行目を読み込む
             if (!(life_span_tsv.getLine())) {
+                PAXS_WARNING("LifeSpan TSV file is empty: " + path);
                 return; // 何もない場合
             }
             // BOM を削除
@@ -346,6 +347,7 @@ namespace paxs {
             }
             // 1 行目を読み込む
             if (!(probability_tsv.getLine())) {
+                PAXS_WARNING("Marriage TSV file is empty: " + path);
                 return; // 何もない場合
             }
             // BOM を削除
@@ -398,6 +400,7 @@ namespace paxs {
             }
             // 1 行目を読み込む
             if (!(probability_tsv.getLine())) {
+                PAXS_WARNING("Childbearing TSV file is empty: " + path);
                 return; // 何もない場合
             }
             // BOM を削除

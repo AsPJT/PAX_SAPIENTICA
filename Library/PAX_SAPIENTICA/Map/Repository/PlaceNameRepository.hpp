@@ -17,11 +17,12 @@
 #include <string>
 #include <vector>
 
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
-#include <PAX_SAPIENTICA/System/InputFile.hpp>
-#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
-#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
+#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -38,89 +39,99 @@ namespace paxs {
             std::string str = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("PlaceNames"),
                 [&](const std::string& path_) {str = path_; });
-            if (str.size() == 0) return;
-
-            paxs::InputFile pifs(str);
-            if (pifs.fail()) return;
-            // 1 行目を読み込む
-            if (!(pifs.getLine())) {
-                return; // 何もない場合
+            if (str.size() == 0) {
+                PAXS_WARNING("PlaceNames configuration path is empty");
+                return;
             }
-            // BOM を削除
-            pifs.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
-            const std::size_t file_path = getMenuIndex(menu, MurMur3::calcHash("file_path"));
-            if (file_path == SIZE_MAX) return; // パスがないのはデータにならない
-            const std::size_t place_type = getMenuIndex(menu, MurMur3::calcHash("place_type"));
+            paxs::TsvTable table(str);
+            if (!table.isSuccessfullyLoaded()) {
+                PAXS_WARNING("Failed to load place name list: " + str);
+                return;
+            }
 
-            const std::size_t minimum_size = getMenuIndex(menu, MurMur3::calcHash("min_size"));
-            const std::size_t maximum_size = getMenuIndex(menu, MurMur3::calcHash("max_size"));
-            const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash("first_julian_day"));
-            const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash("last_julian_day"));
-            const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
-            const std::size_t zoom_size = getMenuIndex(menu, MurMur3::calcHash("zoom"));
+            // 必須カラムの存在確認
+            if (!table.hasColumn("file_path")) {
+                PAXS_ERROR("PlaceNameList is missing required column: file_path");
+                return;
+            }
 
-            const std::size_t first_year = getMenuIndex(menu, MurMur3::calcHash("first_year"));
-            const std::size_t last_year = getMenuIndex(menu, MurMur3::calcHash("last_year"));
+            // カラムハッシュキーを取得
+            const std::uint_least32_t file_path_hash = MurMur3::calcHash("file_path");
+            const std::uint_least32_t place_type_hash = MurMur3::calcHash("place_type");
+            const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
+            const std::uint_least32_t max_size_hash = MurMur3::calcHash("max_size");
+            const std::uint_least32_t first_julian_day_hash = MurMur3::calcHash("first_julian_day");
+            const std::uint_least32_t last_julian_day_hash = MurMur3::calcHash("last_julian_day");
+            const std::uint_least32_t texture_hash = MurMur3::calcHash("texture");
+            const std::uint_least32_t zoom_hash = MurMur3::calcHash("zoom");
+            const std::uint_least32_t first_year_hash = MurMur3::calcHash("first_year");
+            const std::uint_least32_t last_year_hash = MurMur3::calcHash("last_year");
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
+            const bool has_place_type = table.hasColumn(place_type_hash);
+            const bool has_min_size = table.hasColumn(min_size_hash);
+            const bool has_max_size = table.hasColumn(max_size_hash);
+            const bool has_first_julian_day = table.hasColumn(first_julian_day_hash);
+            const bool has_last_julian_day = table.hasColumn(last_julian_day_hash);
+            const bool has_texture = table.hasColumn(texture_hash);
+            const bool has_zoom = table.hasColumn(zoom_hash);
+            const bool has_first_year = table.hasColumn(first_year_hash);
+            const bool has_last_year = table.hasColumn(last_year_hash);
+
+            // 1 行ずつ読み込み
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+                const std::string& file_path_str = table.get(row_index, file_path_hash);
 
                 // パスが空の場合は読み込まない
-                if (strvec[file_path].size() == 0) continue;
+                if (file_path_str.empty()) {
+                    PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + str + ": file_path is empty");
+                    return;
+                }
 
                 // 対象となる地物の種別
-                const std::uint_least32_t type = (place_type == SIZE_MAX) ?
+                const std::string& place_type_str = has_place_type ? table.get(row_index, place_type_hash) : "";
+                const std::uint_least32_t type = place_type_str.empty() ?
                     MurMur3::calcHash("place_name") :
-                    ((strvec[place_type].size() == 0) ?
-                        MurMur3::calcHash("place_name") :
-                        MurMur3::calcHash(strvec[place_type].size(), strvec[place_type].c_str()));
+                    MurMur3::calcHash(place_type_str.size(), place_type_str.c_str());
 
                 // 可視化する地図の最小範囲
-                const double min_view = (minimum_size >= strvec.size()) ?
-                    0 : ((strvec[minimum_size].size() == 0) ?
-                        0 : std::stod(strvec[minimum_size]));
+                const std::string& min_size_str = has_min_size ? table.get(row_index, min_size_hash) : "";
+                const double min_view = min_size_str.empty() ? 0 : std::stod(min_size_str);
+
                 // 可視化する地図の最大範囲
-                const double max_view = (maximum_size >= strvec.size()) ?
-                    99999999.0 : ((strvec[maximum_size].size() == 0) ?
-                        99999999.0 : std::stod(strvec[maximum_size]));
+                const std::string& max_size_str = has_max_size ? table.get(row_index, max_size_hash) : "";
+                const double max_view = max_size_str.empty() ? 99999999.0 : std::stod(max_size_str);
+
                 // 可視化する時代（古い年～）
-                const int min_year = (first_julian_day >= strvec.size()) ?
-                    (first_year >= strvec.size()) ?
-                    -99999999 : ((strvec[first_year].size() == 0) ?
-                        -99999999 : int(std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1))
-                    : ((strvec[first_julian_day].size() == 0) ?
-                        (first_year >= strvec.size()) ?
-                        -99999999 : ((strvec[first_year].size() == 0) ?
-                            -99999999 : int(std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1))
-                        : std::stoi(strvec[first_julian_day]));
+                const std::string& first_jd_str = has_first_julian_day ? table.get(row_index, first_julian_day_hash) : "";
+                const std::string& first_year_str = has_first_year ? table.get(row_index, first_year_hash) : "";
+                const int min_year = !first_jd_str.empty() ?
+                    std::stoi(first_jd_str) :
+                    (!first_year_str.empty() ?
+                        int(std::stod(first_year_str) * days_in_a_year + julian_day_on_m1_1_1) :
+                        -99999999);
+
                 // 可視化する時代（～新しい年）
-                const int max_year = (last_julian_day >= strvec.size()) ?
-                    (last_year >= strvec.size()) ?
-                    99999999 : ((strvec[last_year].size() == 0) ?
-                        99999999 : int(std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1))
-                    : ((strvec[last_julian_day].size() == 0) ?
-                        (last_year >= strvec.size()) ?
-                        99999999 : ((strvec[last_year].size() == 0) ?
-                            99999999 : int(std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1))
-                        : std::stoi(strvec[last_julian_day]));
+                const std::string& last_jd_str = has_last_julian_day ? table.get(row_index, last_julian_day_hash) : "";
+                const std::string& last_year_str = has_last_year ? table.get(row_index, last_year_hash) : "";
+                const int max_year = !last_jd_str.empty() ?
+                    std::stoi(last_jd_str) :
+                    (!last_year_str.empty() ?
+                        int(std::stod(last_year_str) * days_in_a_year + julian_day_on_m1_1_1) :
+                        99999999);
 
                 // 画像
-                const std::uint_least32_t place_texture_hash = (place_texture >= strvec.size()) ?
-                    0 : ((strvec[place_texture].size() == 0) ?
-                        0 : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()));
+                const std::string& texture_str = has_texture ? table.get(row_index, texture_hash) : "";
+                const std::uint_least32_t place_texture_hash = texture_str.empty() ? 0 :
+                    MurMur3::calcHash(texture_str.size(), texture_str.c_str());
 
-                // 対象となる地物の種別
-                const double zoom = (zoom_size >= strvec.size()) ?
-                    1.0 : ((strvec[zoom_size].size() == 0) ?
-                        1.0 : std::stod(strvec[zoom_size]));
+                // ズームサイズ
+                const std::string& zoom_str = has_zoom ? table.get(row_index, zoom_hash) : "";
+                const double zoom = zoom_str.empty() ? 1.0 : std::stod(zoom_str);
 
                 // 地物を追加（コールバック経由）
-                inputPlaceFunc(strvec[file_path], min_view, max_view, min_year, max_year, type, place_texture_hash, zoom);
-            }
+                inputPlaceFunc(file_path_str, min_view, max_view, min_year, max_year, type, place_texture_hash, zoom);
+            });
         }
 
         /// @brief 個別の地名ファイルを読み込んでLocationPointListを返す
@@ -136,89 +147,115 @@ namespace paxs {
         ) const {
             std::vector<LocationPoint> location_point_list{}; // 地物の一覧
 
-            paxs::InputFile pifs(str_, AppConfig::getInstance()->getRootPath());
-            if (pifs.fail()) return LocationPointList{};
-            // 1 行目を読み込む
-            if (!(pifs.getLine())) {
-                return LocationPointList{}; // 何もない場合
+            paxs::TsvTable table(str_);
+            if (!table.isSuccessfullyLoaded()) {
+                PAXS_WARNING("Failed to load place file: " + str_);
+                return LocationPointList{};
             }
-            // BOM を削除
-            pifs.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
-            const std::size_t longitude = getMenuIndex(menu, MurMur3::calcHash("longitude"));
-            if (longitude == SIZE_MAX) return LocationPointList{}; // 経度がないのはデータにならない
-            const std::size_t latitude = getMenuIndex(menu, MurMur3::calcHash("latitude"));
-            if (latitude == SIZE_MAX) return LocationPointList{}; // 緯度がないのはデータにならない
+            // 必須カラムの存在確認
+            if (!table.hasColumn("longitude")) {
+                PAXS_ERROR("PlaceFile is missing required column: longitude");
+                return LocationPointList{};
+            }
+            if (!table.hasColumn("latitude")) {
+                PAXS_ERROR("PlaceFile is missing required column: latitude");
+                return LocationPointList{};
+            }
 
             double start_longitude = 180.0; // 始点の経度
             double end_longitude = -180.0; // 終点の経度
             double start_latitude = 90.0; // 始点の緯度
             double end_latitude = -90.0; // 終点の緯度
 
-            // 配列の添え字番号
-            const std::size_t overall_length = getMenuIndex(menu, MurMur3::calcHash("overall_length"));
-            const std::size_t x_size = getMenuIndex(menu, MurMur3::calcHash("x_size"));
-            const std::size_t y_size = getMenuIndex(menu, MurMur3::calcHash("y_size"));
-            const std::size_t minimum_size = getMenuIndex(menu, MurMur3::calcHash("min_size"));
-            const std::size_t maximum_size = getMenuIndex(menu, MurMur3::calcHash("max_size"));
-            const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash("first_julian_day"));
-            const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash("last_julian_day"));
-            const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
+            // カラムハッシュキーを取得
+            const std::uint_least32_t longitude_hash = MurMur3::calcHash("longitude");
+            const std::uint_least32_t latitude_hash = MurMur3::calcHash("latitude");
+            const std::uint_least32_t overall_length_hash = MurMur3::calcHash("overall_length");
+            const std::uint_least32_t x_size_hash = MurMur3::calcHash("x_size");
+            const std::uint_least32_t y_size_hash = MurMur3::calcHash("y_size");
+            const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
+            const std::uint_least32_t max_size_hash = MurMur3::calcHash("max_size");
+            const std::uint_least32_t first_julian_day_hash = MurMur3::calcHash("first_julian_day");
+            const std::uint_least32_t last_julian_day_hash = MurMur3::calcHash("last_julian_day");
+            const std::uint_least32_t texture_hash = MurMur3::calcHash("texture");
+            const std::uint_least32_t first_year_hash = MurMur3::calcHash("first_year");
+            const std::uint_least32_t last_year_hash = MurMur3::calcHash("last_year");
+            const std::uint_least32_t ja_jp_hash = MurMur3::calcHash("ja-JP");
+            const std::uint_least32_t en_us_hash = MurMur3::calcHash("en-US");
 
-            const std::size_t first_year = getMenuIndex(menu, MurMur3::calcHash("first_year"));
-            const std::size_t last_year = getMenuIndex(menu, MurMur3::calcHash("last_year"));
+            const bool has_overall_length = table.hasColumn(overall_length_hash);
+            const bool has_x_size = table.hasColumn(x_size_hash);
+            const bool has_y_size = table.hasColumn(y_size_hash);
+            const bool has_min_size = table.hasColumn(min_size_hash);
+            const bool has_max_size = table.hasColumn(max_size_hash);
+            const bool has_first_julian_day = table.hasColumn(first_julian_day_hash);
+            const bool has_last_julian_day = table.hasColumn(last_julian_day_hash);
+            const bool has_texture = table.hasColumn(texture_hash);
+            const bool has_first_year = table.hasColumn(first_year_hash);
+            const bool has_last_year = table.hasColumn(last_year_hash);
+            const bool has_ja_jp = table.hasColumn(ja_jp_hash);
+            const bool has_en_us = table.hasColumn(en_us_hash);
 
-            // 地名
-            const std::size_t language_ja_jp = getMenuIndex(menu, MurMur3::calcHash("ja-JP"));
-            const std::size_t language_en_us = getMenuIndex(menu, MurMur3::calcHash("en-US"));
+            // 1 行ずつ読み込み
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+                const std::string& longitude_str = table.get(row_index, longitude_hash);
+                const std::string& latitude_str = table.get(row_index, latitude_hash);
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
-
-                // 経度の文字列が空の場合は読み込まない
-                if (longitude >= strvec.size()) continue;
-                else if (strvec[longitude].size() == 0) continue;
-                // 緯度の文字列が空の場合は読み込まない
-                if (latitude >= strvec.size()) continue;
-                else if (strvec[latitude].size() == 0) continue;
+                // 経度・緯度の文字列が空の場合は読み込まない
+                if (longitude_str.empty() || latitude_str.empty()) {
+                    // TODO: データを整備してコメントアウトを解除する
+                    // PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + str_ + ": missing longitude or latitude");
+                    return;
+                }
 
                 // 地名
                 paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{};
-                if (language_ja_jp < strvec.size() && strvec[language_ja_jp].size() != 0) {
-                    place_name.emplace(MurMur3::calcHash("ja-JP"), strvec[language_ja_jp]);
+                if (has_ja_jp) {
+                    const std::string& ja_jp_str = table.get(row_index, ja_jp_hash);
+                    if (!ja_jp_str.empty()) {
+                        place_name.emplace(MurMur3::calcHash("ja-JP"), ja_jp_str);
+                    }
                 }
-                if (language_en_us < strvec.size() && strvec[language_en_us].size() != 0) {
-                    place_name.emplace(MurMur3::calcHash("en-US"), strvec[language_en_us]);
-                }
-                bool is_overall_length = false;
-                if (overall_length < strvec.size()) {
-                    if (strvec[overall_length].size() != 0) is_overall_length = true;
-                }
-                bool is_x_size = false;
-                if (x_size < strvec.size()) {
-                    if (strvec[x_size].size() != 0) is_x_size = true;
-                }
-                bool is_y_size = false;
-                if (y_size < strvec.size()) {
-                    if (strvec[y_size].size() != 0) is_y_size = true;
+                if (has_en_us) {
+                    const std::string& en_us_str = table.get(row_index, en_us_hash);
+                    if (!en_us_str.empty()) {
+                        place_name.emplace(MurMur3::calcHash("en-US"), en_us_str);
+                    }
                 }
 
-                double point_longitude = std::stod(strvec[longitude]); // 経度
-                double point_latitude = std::stod(strvec[latitude]); // 緯度
+                const std::string& overall_length_str = has_overall_length ? table.get(row_index, overall_length_hash) : "";
+                const std::string& x_size_str = has_x_size ? table.get(row_index, x_size_hash) : "";
+                const std::string& y_size_str = has_y_size ? table.get(row_index, y_size_hash) : "";
+
+                double point_longitude = std::stod(longitude_str); // 経度
+                double point_latitude = std::stod(latitude_str); // 緯度
                 // 経緯度の範囲を求める
                 start_longitude = (std::min)(start_longitude, point_longitude);
                 start_latitude = (std::min)(start_latitude, point_latitude);
                 end_longitude = (std::max)(end_longitude, point_longitude);
                 end_latitude = (std::max)(end_latitude, point_latitude);
 
-                auto first_jd = int((first_julian_day >= strvec.size()) ? min_year_ : (strvec[first_julian_day].size() == 0) ? min_year_ : std::stod(strvec[first_julian_day]));
-                if (first_jd == min_year_) first_jd = int((first_year >= strvec.size()) ? min_year_ : (strvec[first_year].size() == 0) ? min_year_ : std::stod(strvec[first_year]) * days_in_a_year + julian_day_on_m1_1_1);
+                // 日付範囲の処理
+                const std::string& first_jd_str = has_first_julian_day ? table.get(row_index, first_julian_day_hash) : "";
+                const std::string& first_year_str = has_first_year ? table.get(row_index, first_year_hash) : "";
+                int first_jd = !first_jd_str.empty() ?
+                    int(std::stod(first_jd_str)) :
+                    (!first_year_str.empty() ?
+                        int(std::stod(first_year_str) * days_in_a_year + julian_day_on_m1_1_1) :
+                        min_year_);
 
-                auto last_jd = int((last_julian_day >= strvec.size()) ? max_year_ : (strvec[last_julian_day].size() == 0) ? max_year_ : std::stod(strvec[last_julian_day]));
-                if (last_jd == max_year_) last_jd = int((last_year >= strvec.size()) ? max_year_ : (strvec[last_year].size() == 0) ? max_year_ : std::stod(strvec[last_year]) * days_in_a_year + julian_day_on_m1_1_1);
+                const std::string& last_jd_str = has_last_julian_day ? table.get(row_index, last_julian_day_hash) : "";
+                const std::string& last_year_str = has_last_year ? table.get(row_index, last_year_hash) : "";
+                int last_jd = !last_jd_str.empty() ?
+                    int(std::stod(last_jd_str)) :
+                    (!last_year_str.empty() ?
+                        int(std::stod(last_year_str) * days_in_a_year + julian_day_on_m1_1_1) :
+                        max_year_);
+
+                const std::string& min_size_str = has_min_size ? table.get(row_index, min_size_hash) : "";
+                const std::string& max_size_str = has_max_size ? table.get(row_index, max_size_hash) : "";
+                const std::string& texture_str = has_texture ? table.get(row_index, texture_hash) : "";
 
                 // 格納
                 location_point_list.emplace_back(
@@ -227,20 +264,23 @@ namespace paxs {
                         paxs::Vector2<double>(
                             point_longitude, // 経度
                             point_latitude)).toMercatorDeg(), // 緯度
-                    (!is_x_size) ? 1 : (strvec[x_size].size() == 0) ? 1 : static_cast<std::uint_least16_t>(std::stod(strvec[x_size])), // 横の枚数
-                    (!is_y_size) ? 1 : (strvec[y_size].size() == 0) ? 1 : static_cast<std::uint_least16_t>(std::stod(strvec[y_size])), // 縦の枚数
-                    (!is_overall_length) ? 10.0 : (strvec[overall_length].size() == 0) ? 10.0 : std::stod(strvec[overall_length]), // 全長
-                    (minimum_size >= strvec.size()) ? min_view_ : (strvec[minimum_size].size() == 0) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
-                    (maximum_size >= strvec.size()) ? max_view_ : (strvec[maximum_size].size() == 0) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
+                    x_size_str.empty() ? 1 : static_cast<std::uint_least16_t>(std::stod(x_size_str)), // 横の枚数
+                    y_size_str.empty() ? 1 : static_cast<std::uint_least16_t>(std::stod(y_size_str)), // 縦の枚数
+                    overall_length_str.empty() ? 10.0 : std::stod(overall_length_str), // 全長
+                    min_size_str.empty() ? min_view_ : std::stod(min_size_str), // 最小サイズ
+                    max_size_str.empty() ? max_view_ : std::stod(max_size_str), // 最大サイズ
                     first_jd, // 最小時代
                     last_jd, // 最大時代
                     lpe_,
-                    (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()), // テクスチャの Key
+                    texture_str.empty() ? place_texture_ : MurMur3::calcHash(texture_str.size(), texture_str.c_str()), // テクスチャの Key
                     zoom_
                 );
-            }
+            });
             // 地物を何も読み込んでいない場合は空のLocationPointListを返す
-            if (location_point_list.size() == 0) return LocationPointList{};
+            if (location_point_list.size() == 0) {
+                PAXS_WARNING("No valid location points loaded from file: " + str_);
+                return LocationPointList{};
+            }
 
             // LocationPointListを構築して返す
             return LocationPointList(location_point_list,
@@ -252,11 +292,6 @@ namespace paxs {
                 , lpe_, place_texture_);
         }
 
-    private:
-        // 項目の ID を返す
-        static std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
-        }
     };
 
 }

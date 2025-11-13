@@ -141,14 +141,20 @@ namespace paxs {
             const std::string& ofs_str2_,
             const char delimiter_
         ) :ifs(ifs_str_, ifs_str2_), delimiter(delimiter_) {
-            if (ifs.fail()) return; // 読み込み失敗
+            if (ifs.fail()) {
+                PAXS_WARNING("Failed to open input file: " + ifs_str_ + ifs_str2_);
+                return; // 読み込み失敗
+            }
 
             // 読み込み成功の場合は出力を生成する
             sd = paxs::ElevationS16UnitOutput(ofs_str2_ + ofs_str_);
         }
 
         void calc() {
-            if (ifs.fail()) return; // 読み込み失敗
+            if (ifs.fail()) {
+                PAXS_WARNING("Failed to open input file during calculation.");
+                return; // 読み込み失敗
+            }
             std::int_least16_t pre_value = 32762; // 1 つ前の値
             std::array<std::int_least16_t, 256> xyz_one_line{};
             while (ifs.getLine()) {
@@ -252,14 +258,20 @@ namespace paxs {
             const std::string& ofs_str2_,
             const char delimiter_
         ) :ifs(ifs_str_, ifs_str2_), delimiter(delimiter_) {
-            if (ifs.fail()) return; // 読み込み失敗
+            if (ifs.fail()) {
+                PAXS_WARNING("Failed to open input file: " + ifs_str_ + ifs_str2_);
+                return; // 読み込み失敗
+            }
 
             // 読み込み成功の場合は出力を生成する
             sd = paxs::SlopeDegU0To250UnitOutput(ofs_str2_ + ofs_str_);
         }
 
         void calc() {
-            if (ifs.fail()) return; // 読み込み失敗
+            if (ifs.fail()) {
+                PAXS_WARNING("Failed to open input file during calculation.");
+                return; // 読み込み失敗
+            }
             unsigned char pre_value = 252; // 1 つ前の値
             std::array<unsigned char, 256> xyz_one_line{};
             while (ifs.getLine()) {
@@ -280,12 +292,14 @@ namespace paxs {
         paxs::InputFile ifs;
 
         Input16BitBinary(
-            const std::string& ifs_str_,
-            const std::string& ifs_str2_
-        ) :ifs(ifs_str_, ifs_str2_, paxs::MurMur3::calcHash("asset_file"), paxs::MurMur3::calcHash("binary")) {}
+            const std::string& ifs_str_
+        ) :ifs(ifs_str_, "", paxs::MurMur3::calcHash("asset_file"), paxs::MurMur3::calcHash("binary")) {}
 
         bool calc(std::int_least16_t* tiles_) {
-            if (ifs.fail()) return false; // 読み込み失敗
+            if (ifs.fail()) {
+                PAXS_WARNING("Failed to open input file for 16-bit binary reading: " + ifs.getFilePath());
+                return false; // 読み込み失敗
+            }
             char xyz_tiles[256 * 256 * 2/*2byte*/]{};
             const std::size_t byte_num = ifs.splitBinary(xyz_tiles, 256 * 256 * 2); // バイト数
             if (byte_num <= 1) return false; // 1 文字になることはない
@@ -342,10 +356,16 @@ namespace paxs {
 
         template<typename Func_>
         bool calc(Func_&& func_) {
-            if (ifs.fail()) return false; // 読み込み失敗
+            if (ifs.fail()) {
+                PAXS_WARNING("Failed to open input file for 16-bit binary reading: " + ifs.getFilePath());
+                return false; // 読み込み失敗
+            }
             char xyz_tiles[256 * 256 * 2/*2byte*/]{};
             const std::size_t byte_num = ifs.splitBinary(xyz_tiles, 256 * 256 * 2); // バイト数
-            if (byte_num <= 1) return false; // 1 文字になることはない
+            if (byte_num <= 1) {
+                PAXS_WARNING("Input file for 16-bit binary reading is too short: " + ifs.getFilePath());
+                return false; // 1 文字になることはない
+            }
 
             for (std::size_t i = 0, j = 0;
                 i < byte_num // 入力された文字数
@@ -405,12 +425,14 @@ namespace paxs {
         paxs::InputFile ifs;
 
         Input8BitBinary(
-            const std::string& ifs_str_,
-            const std::string& ifs_str2_
-        ) :ifs(ifs_str_, ifs_str2_, paxs::MurMur3::calcHash("asset_file"), paxs::MurMur3::calcHash("binary")) {}
+            const std::string& ifs_str_
+        ) :ifs(ifs_str_, "", paxs::MurMur3::calcHash("asset_file"), paxs::MurMur3::calcHash("binary")) {}
 
         bool calc(unsigned char* tiles_) {
-            if (ifs.fail()) return false; // 読み込み失敗
+            if (ifs.fail()) {
+                PAXS_WARNING("Failed to open input file for 8-bit binary reading: " + ifs.getFilePath());
+                return false; // 読み込み失敗
+            }
             char xyz_tiles[256 * 256]{};
             const std::size_t byte_num = ifs.splitBinary(xyz_tiles, 256 * 256); // バイト数
             for (std::size_t i = 0, j = 0;
@@ -447,7 +469,10 @@ namespace paxs {
 
         template<typename Func_>
         bool calc(Func_&& func_) {
-            if (ifs.fail()) return false; // 読み込み失敗
+            if (ifs.fail()) {
+                PAXS_WARNING("Failed to open input file for 8-bit binary reading: " + ifs.getFilePath());
+                return false; // 読み込み失敗
+            }
             char xyz_tiles[256 * 256]{};
             const std::size_t byte_num = ifs.splitBinary(xyz_tiles, 256 * 256); // バイト数
             for (std::size_t i = 0, j = 0;

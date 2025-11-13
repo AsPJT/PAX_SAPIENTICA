@@ -62,41 +62,44 @@ namespace paxs {
             return is_successfully_loaded;
         }
 
-        // ルートパスを読み込む true 成功
+        /// @brief TSVファイルを読み込む
+        /// @param relative_path アセットルートからの相対パス
+        /// @param func 値を変換する関数
+        /// @return 成功時true
         template<typename Func>
-        bool input(const std::string& str_, Func&& func) {
+        bool input(const std::string& relative_path, Func&& func) {
             if (is_loaded) return true;
             is_loaded = true;
 
-            paxs::InputFile pifs(str_);
-            if (pifs.fail()) {
-                PAXS_ERROR(str_ + " is missing.");
+            paxs::InputFile input_file(relative_path);
+            if (input_file.fail()) {
+                PAXS_ERROR(relative_path + " is missing.");
                 return false;
             }
             // 1 行目を読み込む
-            if (!(pifs.getLine())) {
-                PAXS_ERROR("The first line of " + str_ + " could not be read.");
+            if (!(input_file.getLine())) {
+                PAXS_ERROR("The first line of " + relative_path + " could not be read.");
                 return false;
             }
             // BOM を削除
-            pifs.deleteBOM();
+            input_file.deleteBOM();
             // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = input_file.splitHashMapMurMur3('\t');
 
             const std::size_t file_path = inputPathGetMenuIndex(menu, MurMur3::calcHash("value"));
             if (file_path == SIZE_MAX) {
-                PAXS_ERROR(str_ + " is missing a Value on the first line.");
+                PAXS_ERROR(relative_path + " is missing a Value on the first line.");
                 return false; // Value がないのはデータにならない
             }
             const std::size_t file_type = inputPathGetMenuIndex(menu, MurMur3::calcHash("key"));
             if (file_type == SIZE_MAX) {
-                PAXS_ERROR(str_ + " is missing a Key on the first line.");
+                PAXS_ERROR(relative_path + " is missing a Key on the first line.");
                 return false; // Key がないのはデータにならない
             }
 
             // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
+            while (input_file.getLine()) {
+                std::vector<std::string> strvec = input_file.split('\t');
 
                 // 列数が項目より小さい場合は読み込まない
                 if (file_type >= strvec.size()) continue;
@@ -111,8 +114,11 @@ namespace paxs {
             is_successfully_loaded = true;
             return true;
         }
-        bool input(const std::string& str_) {
-            return input(str_, [](const std::string& value_) { return Value(value_); });
+        /// @brief TSVファイルを読み込む（デフォルト変換関数使用）
+        /// @param relative_path アセットルートからの相対パス
+        /// @return 成功時true
+        bool input(const std::string& relative_path) {
+            return input(relative_path, [](const std::string& value_) { return Value(value_); });
         }
 
         Value operator[](std::uint_least32_t key_) const {

@@ -46,7 +46,7 @@ namespace paxs {
         explicit Environment(const std::string& setting_file_path) noexcept {
             std::vector<std::vector<std::string>> settings;
 
-            settings = FileSystem::readTSV(AppConfig::getInstance()->getRootPath() + setting_file_path);
+            settings = FileSystem::readTSV(setting_file_path);
 
             if (settings.empty()) {
                 PAXS_ERROR("Failed to read TSV file: " + setting_file_path);

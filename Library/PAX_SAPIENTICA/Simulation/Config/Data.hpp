@@ -13,6 +13,7 @@
 #define PAX_SAPIENTICA_SIMULATION_CONFIG_DATA_HPP
 
 #include <cmath>
+#include <filesystem>
 #include <iostream>
 #include <regex>
 #include <stdexcept>
@@ -35,12 +36,12 @@ namespace paxs {
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        explicit Data(const std::string& file_path, const std::string name, const int default_z) noexcept : name(name), default_z(default_z) {
+        explicit Data(const std::string& directory_path, const std::string name, const int default_z) noexcept : name(name), default_z(default_z) {
             z_mag = std::pow(2, default_z - SimulationConstants::getInstance()->getZ());
             GridType area_x = SimulationConstants::getInstance()->getEndArea().x - SimulationConstants::getInstance()->getStartArea().x + 1;
             column_size = static_cast<int>(area_x * pixel_size * z_mag);
 
-            load(file_path);
+            load(directory_path);
         }
         Data(const Data& other) noexcept
             : name(other.name),
@@ -96,37 +97,37 @@ namespace paxs {
 
         /// @brief Load the file.
         /// @brief ファイルのロード
-        void load(const std::string& file_path) noexcept {
+        void load(const std::string& directory_path) noexcept {
             std::cout << "Loading " << name << " data..." << std::endl;
-            std::vector<std::string> file_names = FileSystem::getFileNames(AppConfig::getInstance()->getRootPath() + file_path);
+            std::vector<std::string> file_paths = FileSystem::getFilePaths(directory_path);
 
-            std::cout << file_names.size() << " files are found." << std::endl;
+            std::cout << file_paths.size() << " files are found." << std::endl;
 
-            if(file_names.size() == 0) {
-                PAXS_ERROR("No files are found: " + file_path);
+            if(file_paths.size() == 0) {
+                PAXS_ERROR("No files are found: " + directory_path);
                 return;
             }
 
-            if(file_names[0].find(".tsv") != std::string::npos) {
-                loadNumericTSV(file_path);
-            } else if(file_names[0].find(".txt") != std::string::npos) {
-                if (z_mag > 1) loadNumericTextAndCompress(file_names);
-                else loadNumericText(file_names);
-            } else if(file_names[0].find(".bin") != std::string::npos) {
+            if(file_paths[0].find(".tsv") != std::string::npos) {
+                loadNumericTSV(directory_path);
+            } else if(file_paths[0].find(".txt") != std::string::npos) {
+                if (z_mag > 1) loadNumericTextAndCompress(file_paths);
+                else loadNumericText(file_paths);
+            } else if(file_paths[0].find(".bin") != std::string::npos) {
                 if constexpr (std::is_same<DataType, std::uint_least8_t>::value) {
-                    loadBinary<paxs::Input8BitBinary>(file_path);
+                    loadBinary<paxs::Input8BitBinary>(directory_path);
                 } else if constexpr (std::is_same<DataType, std::int_least16_t>::value) {
-                    loadBinary<paxs::Input16BitBinary>(file_path);
+                    loadBinary<paxs::Input16BitBinary>(directory_path);
                 }
             } else {
-                PAXS_WARNING("File type is invalid: " + file_names[0]);
+                PAXS_WARNING("File type is invalid: " + file_paths[0]);
             }
         }
 
         /// @brief Load binary files.
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
-        void loadBinary(const std::string& file_path) noexcept {
+        void loadBinary(const std::string& directory_path) noexcept {
             const Vector2 start_position = SimulationConstants::getInstance()->getStartArea() * z_mag;
             const Vector2 end_position = SimulationConstants::getInstance()->getEndArea() * z_mag;
 
@@ -139,14 +140,14 @@ namespace paxs {
                 for (GridType x = start_position.x; x <= end_position.x; ++x) {
                     const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".bin";
 
-                    if (!FileSystem::exists(AppConfig::getInstance()->getRootPath() + file_path + file_name)) {
+                    if (!FileSystem::exists(directory_path + file_name)) {
                         --file_count;
                         StatusDisplayer::displayProgressBar(load_count, file_count);
                         continue;
                     }
 
                     const Vector2 default_position = Vector2(x, y) * pixel_size - start_xyz_position;
-                    BinaryDataType bi(file_path + file_name, AppConfig::getInstance()->getRootPath());
+                    BinaryDataType bi(directory_path + file_name);
                     bi.calc([&](const DataType value_, const std::uint_least8_t px, const std::uint_least8_t py) {
                         const Vector2 position = default_position + Vector2((GridType)px, (GridType)py);
                         data[position.to(DataGridsType{})] = value_;
@@ -166,7 +167,7 @@ namespace paxs {
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
         [[maybe_unused]]
-        void loadBinary(const std::vector<std::string>& file_names) noexcept {
+        void loadBinary(const std::vector<std::string>& file_paths) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
@@ -174,14 +175,14 @@ namespace paxs {
             const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
-            for(const auto& file_name : file_names) {
-                StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            for(const auto& file_path : file_paths) {
+                StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
 
                 Vector2 xyz_position;
                 try {
-                    xyz_position = getXAndYFromFileName(file_name);
+                    xyz_position = getXAndYFromFileName(file_path);
                 } catch (const std::exception&) {
-                    PAXS_WARNING("File name is invalid: " + file_name);
+                    PAXS_WARNING("File name is invalid: " + file_path);
                     ++file_count;
                     continue;
                 }
@@ -192,7 +193,7 @@ namespace paxs {
                     continue;
                 }
 
-                BinaryDataType bi(file_name, "");
+                BinaryDataType bi(file_path, "");
                 bi.calc([&](const DataType value_, const std::uint_least8_t x, const std::uint_least8_t y) {
                         const Vector2 position = default_position + Vector2((GridType)x, (GridType)y);
                         data[position.to(DataGridsType{})] = value_;
@@ -202,14 +203,14 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
 
         /// @brief Load numeric TSV files.
         /// @brief 数値TSVファイルのロード
-        void loadNumericTSV(const std::string& file_path) noexcept {
+        void loadNumericTSV(const std::string& directory_path) noexcept {
             const Vector2 start_position = SimulationConstants::getInstance()->getStartArea() * z_mag;
             const Vector2 end_position = SimulationConstants::getInstance()->getEndArea() * z_mag;
 
@@ -222,15 +223,16 @@ namespace paxs {
                 for (GridType x = start_position.x; x <= end_position.x; ++x) {
                     const std::string file_name = "zxy_" + std::to_string(default_z) + "_" + std::to_string(x) + "_" + std::to_string(y) + ".tsv";
 
-                    if (!FileSystem::exists(AppConfig::getInstance()->getRootPath() + file_path + file_name)) {
+                    if (!FileSystem::exists(directory_path + file_name)) {
                         --file_count;
                         StatusDisplayer::displayProgressBar(load_count, file_count);
                         continue;
                     }
 
-                    std::vector<std::string> file = FileSystem::readFile(AppConfig::getInstance()->getRootPath() + file_path + file_name);
+                    const std::string relative_path = directory_path + file_name;
+                    std::vector<std::string> file = FileSystem::readFile(relative_path);
                     if (file.size() == 0) {
-                        PAXS_WARNING("File is empty: " + file_name);
+                        PAXS_WARNING("File is empty: " + relative_path);
                         ++file_count;
                         continue;
                     }
@@ -255,10 +257,10 @@ namespace paxs {
                                     data[position.to(DataGridsType{})] = static_cast<DataType>(std::stod(values[px]));
                                 }
                             } catch (const std::invalid_argument&/*ia*/) {
-                                PAXS_WARNING("File contains invalid value: " + file_name);
+                                PAXS_WARNING("File contains invalid value: " + relative_path);
                                 continue;
                             } catch (const std::out_of_range&/*oor*/) {
-                                PAXS_WARNING("File contains out of range value: " + file_name);
+                                PAXS_WARNING("File contains out of range value: " + relative_path);
                                 continue;
                             }
                         }
@@ -276,7 +278,7 @@ namespace paxs {
         /// @brief Load numeric TSV files.
         /// @brief 数値TSVファイルのロード
         [[maybe_unused]]
-        void loadNumericTSV(const std::vector<std::string>& file_names) noexcept {
+        void loadNumericTSV(const std::vector<std::string>& file_paths) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
@@ -284,14 +286,14 @@ namespace paxs {
             const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
-            for(const auto& file_name : file_names) {
-                StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            for(const auto& file_path : file_paths) {
+                StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
 
                 Vector2 xyz_position;
                 try {
-                    xyz_position = getXAndYFromFileName(file_name);
+                    xyz_position = getXAndYFromFileName(file_path);
                 } catch (const std::exception&) {
-                    PAXS_WARNING("File name is invalid: " + file_name);
+                    PAXS_WARNING("File name is invalid: " + file_path);
                     ++file_count;
                     continue;
                 }
@@ -302,9 +304,9 @@ namespace paxs {
                     continue;
                 }
 
-                std::vector<std::string> file = FileSystem::readFile(file_name);
+                std::vector<std::string> file = FileSystem::readFile(file_path);
                 if (file.size() == 0) {
-                    PAXS_WARNING("File is empty: " + file_name);
+                    PAXS_WARNING("File is empty: " + file_path);
                     ++file_count;
                     continue;
                 }
@@ -327,10 +329,10 @@ namespace paxs {
                                 data[position.to(DataType{})] = static_cast<DataType>(std::stod(values[x]));
                             }
                         } catch (const std::invalid_argument&/*ia*/) {
-                            PAXS_WARNING("File contains invalid value: " + file_name);
+                            PAXS_WARNING("File contains invalid value: " + file_path);
                             continue;
                         } catch (const std::out_of_range&/*oor*/) {
-                            PAXS_WARNING("File contains out of range value: " + file_name);
+                            PAXS_WARNING("File contains out of range value: " + file_path);
                             continue;
                         }
                     }
@@ -338,14 +340,14 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
 
         /// @brief Load numeric text file.
         /// @brief 数値テキストファイルのロード
-        void loadNumericText(const std::vector<std::string>& file_names) noexcept {
+        void loadNumericText(const std::vector<std::string>& file_paths) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
@@ -353,14 +355,14 @@ namespace paxs {
             const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
-            for(const auto& file_name : file_names) {
-                StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            for(const auto& file_path : file_paths) {
+                StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
 
                 Vector2 xyz_position;
                 try {
-                    xyz_position = getXAndYFromFileName(file_name);
+                    xyz_position = getXAndYFromFileName(file_path);
                 } catch (const std::exception&) {
-                    PAXS_WARNING("File name is invalid: " + file_name);
+                    PAXS_WARNING("File name is invalid: " + file_path);
                     ++file_count;
                     continue;
                 }
@@ -371,9 +373,9 @@ namespace paxs {
                     continue;
                 }
 
-                std::vector<std::string> file = FileSystem::readFile(file_name);
+                std::vector<std::string> file = FileSystem::readFile(file_path);
                 if (file.size() == 0) {
-                    PAXS_WARNING("File is empty: " + file_name);
+                    PAXS_WARNING("File is empty: " + file_path);
                     ++file_count;
                     continue;
                 }
@@ -389,14 +391,14 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
 
         /// @brief Load numeric text files and compress the data.
         /// @brief 数値テキストファイルのロードしてデータを圧縮する
-        void loadNumericTextAndCompress(const std::vector<std::string>& file_names) noexcept {
+        void loadNumericTextAndCompress(const std::vector<std::string>& file_paths) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
@@ -404,14 +406,14 @@ namespace paxs {
             const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
-            for(const auto& file_name : file_names) {
-                StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            for(const auto& file_path : file_paths) {
+                StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
 
                 Vector2 xyz_position;
                 try {
-                    xyz_position = getXAndYFromFileName(file_name);
+                    xyz_position = getXAndYFromFileName(file_path);
                 } catch (const std::exception&) {
-                    PAXS_WARNING("File name is invalid: " + file_name);
+                    PAXS_WARNING("File name is invalid: " + file_path);
                     ++file_count;
                     continue;
                 }
@@ -422,9 +424,9 @@ namespace paxs {
                     continue;
                 }
 
-                std::vector<std::string> file = FileSystem::readFile(file_name);
+                std::vector<std::string> file = FileSystem::readFile(file_path);
                 if (file.size() == 0) {
-                    PAXS_WARNING("File is empty: " + file_name);
+                    PAXS_WARNING("File is empty: " + file_path);
                     ++file_count;
                     continue;
                 }
@@ -454,22 +456,26 @@ namespace paxs {
             z_mag = 1;
             default_z = SimulationConstants::getInstance()->getZ();
 
-            StatusDisplayer::displayProgressBar(file_count, int(file_names.size()));
+            StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
             std::cout << load_count << " files are loaded.\n" << std::endl;
         }
 
         /// @brief Get X and Y coordinates from file name.
         /// @brief ファイルの名前からX座標とY座標を取得
-        Vector2 getXAndYFromFileName(const std::string& file_name) {
+        // TODO: 動作確認
+        Vector2 getXAndYFromFileName(const std::string& file_path) {
+            std::filesystem::path path(file_path);
+            std::string filename = path.filename().string();
+
             const std::regex pattern(R"((\w+)_(\d+)_(\d+)_(\d+)\.(\w+))");
             std::smatch matches;
 
-            if(std::regex_search(file_name, matches, pattern)) {
+            if(std::regex_search(filename, matches, pattern)) {
                 return Vector2(std::stoi(matches[3]), std::stoi(matches[4]));
             }
             else {
-                const std::string message = "File name is invalid: " + file_name;
+                const std::string message = "File name is invalid: " + file_path;
                 PAXS_ERROR(message);
                 throw std::runtime_error(message);
             }

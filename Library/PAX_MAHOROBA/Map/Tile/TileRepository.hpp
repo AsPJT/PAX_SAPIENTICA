@@ -39,24 +39,28 @@ namespace paxs {
         TileRepository() = default;
 
         /// @brief ファイルからXYZタイルを読み込む
-        /// @param file_path ファイルパス
+        /// @param relative_path 相対パス
         /// @return 読み込んだタイルのリスト
-        std::vector<XYZTile> loadFromFile(const std::string& file_path) const {
+        std::vector<XYZTile> loadFromFile(const std::string& relative_path) const {
             std::vector<XYZTile> tiles;
 
-            paxs::InputFile pifs(file_path);
-            if (pifs.fail()) return tiles;
+            paxs::InputFile input_file(relative_path);
+            if (input_file.fail()) {
+                PAXS_ERROR(relative_path + " could not be opened.");
+                return tiles;
+            }
 
             // 1 行目を読み込む
-            if (!(pifs.getLine())) {
+            if (!(input_file.getLine())) {
+                PAXS_ERROR("The first line (header) of " + relative_path + " could not be read.");
                 return tiles; // 何もない場合
             }
 
             // BOM を削除
-            pifs.deleteBOM();
+            input_file.deleteBOM();
 
             // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = input_file.splitHashMapMurMur3('\t');
 
             // カラムインデックスを取得
             const std::size_t menu_bar_index = getMenuIndexMap(menu, MurMur3::calcHash("menu_bar"));
@@ -75,8 +79,8 @@ namespace paxs {
             const std::size_t draw_max_z_index = getMenuIndexMap(menu, MurMur3::calcHash("draw_max_z"));
 
             // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
+            while (input_file.getLine()) {
+                std::vector<std::string> strvec = input_file.split('\t');
 
                 // 描画の種類 例）画像 texture やグリッド grid など
                 // const bool menu_bar_map_bool = (visible_menu_bar_index >= strvec.size()) ? false :

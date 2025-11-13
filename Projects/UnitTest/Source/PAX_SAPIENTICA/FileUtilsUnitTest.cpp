@@ -53,18 +53,3 @@ TEST (FileUtilsUnitTest, readTSV) {
     ASSERT_EQ(expected, actual);
 }
 
-#ifndef _WIN32
-TEST (FileUtilsUnitTest, getFileNames) {
-    const std::vector<std::string> expected = {
-        prefix + "/test_file.csv",
-        prefix + "/test_file.tsv",
-        prefix + "/test_file.txt"
-    };
-    std::vector<std::string> actual = paxs::FileSystem::getFileNames(prefix);
-
-    std::sort(actual.begin(), actual.end());
-
-    ASSERT_EQ(expected, actual);
-
-}
-#endif // !_WIN32

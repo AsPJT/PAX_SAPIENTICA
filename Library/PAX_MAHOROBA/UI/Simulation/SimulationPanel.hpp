@@ -160,7 +160,7 @@ namespace paxs {
 
             // Models.txt 読み込み
             const std::string models_path = "Data/Simulations/Models.txt";
-            paxs::InputFile models_tsv(AppConfig::getInstance()->getRootPath() + models_path);
+            paxs::InputFile models_tsv(models_path);
             if (models_tsv.fail()) {
                 PAXS_WARNING("Failed to read Models TXT file: " + models_path);
                 simulation_model_name.emplace_back("Sample");

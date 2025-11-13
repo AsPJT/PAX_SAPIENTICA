@@ -17,15 +17,11 @@
 #include <string>
 #include <vector>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb/stb_image_write.h>
-
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Terrain/Slope.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
@@ -46,16 +42,13 @@ namespace paxs {
         /// @brief Load a tile (binary to PNG conversion)
         /// @param binary_path_with_zy Z と Y が既に置換されたバイナリパス（アセットルートからの相対パス）
         /// @param local_path_with_zy Z と Y が既に置換されたローカルパス（アセットルートからの相対パス）
-        /// @param folder_path_with_zyx Z, Y, X が既に置換されたフォルダパス（アセットルートからの相対パス）
         /// @param x_value X 座標の文字列
-        /// @param current_map_view_height 現在のマップビュー高さ
         /// @param binary_buffer [in/out] バイナリデータ読み込み用の再利用バッファ (サイズ tile_pixels)
         /// @param rgba_buffer [in/out] RGBA変換用の再利用バッファ (サイズ tile_pixels)
         /// @return 読み込みに成功した場合はテクスチャのunique_ptr、失敗した場合はnullptr
         static std::unique_ptr<paxg::Texture> load(
             const std::string& binary_path_with_zy,
             const std::string& local_path_with_zy,
-            const std::string& folder_path_with_zyx,
             const std::string& x_value,
             std::vector<unsigned char>& binary_buffer, // 引数で受け取る
             std::vector<TileRGBA>& rgba_buffer         // 引数で受け取る
@@ -64,10 +57,13 @@ namespace paxs {
             std::string binary_relative_path = binary_path_with_zy;
             paxs::StringUtils::replace(binary_relative_path, "{x}", x_value);
 
-            // バイナリファイルを読み込み（Input8BitBinaryは内部でrootpathを前置）
-            paxs::Input8BitBinary i8bbs(binary_relative_path,
-                AppConfig::getInstance()->getRootPath()
-            );
+            // バイナリファイルの存在チェック（オプショナルなファイルなので静かに失敗）
+            if (!FileSystem::exists(binary_relative_path)) {
+                return nullptr;
+            }
+
+            // バイナリファイルを読み込み
+            paxs::Input8BitBinary i8bbs(binary_relative_path);
 
             // スタックオーバーフロー回避のためヒープに確保
             constexpr std::size_t tile_size = 256;
@@ -127,19 +123,17 @@ namespace paxs {
             std::string relative_path = local_path_with_zy;
             paxs::StringUtils::replace(relative_path, "{x}", x_value);
 
-            // アセットルートパスを前置して絶対パスを構築
-            const std::string root_path = AppConfig::getInstance()->getRootPath();
-            const std::string full_path = root_path + relative_path;
-            const std::string full_folder_path = root_path + folder_path_with_zyx;
+            // 保存先フォルダを作成（相対パスから親ディレクトリを抽出）
+            const std::string parent_dir = FileSystem::getParentPath(relative_path);
+            if (!parent_dir.empty()) {
+                FileSystem::createDirectories(parent_dir);
+            }
 
-            // 保存先フォルダを作成（絶対パスを使用）
-            FileSystem::createDirectories(full_folder_path);
+            // PNGファイルとして保存
+            FileSystem::writePngImage(relative_path, tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data());
 
-            // PNGファイルとして保存（絶対パスを使用）
-            stbi_write_png(full_path.c_str(), tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data(), 0); // 引数のバッファを使用
-
-            // ファイル存在チェック（絶対パスを使用）
-            if (!FileSystem::exists(full_path)) {
+            // ファイル存在チェック（相対パスを使用）
+            if (!FileSystem::exists(relative_path)) {
                 return nullptr;
             }
 

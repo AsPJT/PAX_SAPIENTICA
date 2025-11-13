@@ -21,10 +21,11 @@
 #include <cmath>
 #include <string>
 
-#include <PAX_SAPIENTICA/System/InputFile.hpp>
+#include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -55,75 +56,70 @@ namespace paxs {
         }
 
 
-    private:
-        // 項目の ID を返す
-        inline std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
-        }
     public:
 
         // ルートパスを読み込む true 成功
         bool input(const std::string& str_) {
 
-            paxs::InputFile pifs(str_);
-            if (pifs.fail()) {
+            paxs::TsvTable table(str_);
+            if (!table.isSuccessfullyLoaded()) {
                 PAXS_ERROR("Failed to read SimulationRange.");
                 return false;
             }
-            // 1 行目を読み込む
-            if (!(pifs.getLine())) {
-                PAXS_ERROR("The first line of the SimulationRange file is missing.");
+
+            // 必須カラムの存在確認
+            if (!table.hasColumn("start_x") || !table.hasColumn("start_y") ||
+                !table.hasColumn("end_x") || !table.hasColumn("end_y")) {
+                PAXS_ERROR("SimulationRange is missing required columns (start_x, start_y, end_x, end_y).");
                 return false;
             }
-            // BOM を削除
-            pifs.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
-
-            const std::size_t start_x = inputPathGetMenuIndex(menu, MurMur3::calcHash("start_x"));
-            const std::size_t start_y = inputPathGetMenuIndex(menu, MurMur3::calcHash("start_y"));
-            const std::size_t end_x = inputPathGetMenuIndex(menu, MurMur3::calcHash("end_x"));
-            const std::size_t end_y = inputPathGetMenuIndex(menu, MurMur3::calcHash("end_y"));
-            const std::size_t z_index = inputPathGetMenuIndex(menu, MurMur3::calcHash("z"));
-            if (start_x == SIZE_MAX || start_y == SIZE_MAX || end_x == SIZE_MAX || end_y == SIZE_MAX) {
-                PAXS_ERROR("SimulationRange is missing a StartAndEnd on the first line.");
-                return false; // StartAndEnd がないのはデータにならない
-            }
-            const std::size_t file_type = inputPathGetMenuIndex(menu, MurMur3::calcHash("key"));
-            if (file_type == SIZE_MAX) {
-                PAXS_ERROR("SimulationRange is missing a Key on the first line.");
-                return false; // Key がないのはデータにならない
+            if (!table.hasColumn("key")) {
+                PAXS_ERROR("SimulationRange is missing a Key column.");
+                return false;
             }
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
+            // カラムハッシュキーを取得
+            const std::uint_least32_t key_hash = MurMur3::calcHash("key");
+            const std::uint_least32_t start_x_hash = MurMur3::calcHash("start_x");
+            const std::uint_least32_t start_y_hash = MurMur3::calcHash("start_y");
+            const std::uint_least32_t end_x_hash = MurMur3::calcHash("end_x");
+            const std::uint_least32_t end_y_hash = MurMur3::calcHash("end_y");
+            const std::uint_least32_t z_hash = MurMur3::calcHash("z");
+            const bool has_z = table.hasColumn(z_hash);
 
-                // 列数が項目より小さい場合は読み込まない
-                if (file_type >= strvec.size()) continue;
-                if (start_x >= strvec.size()) continue;
-                if (start_y >= strvec.size()) continue;
-                if (end_x >= strvec.size()) continue;
-                if (end_y >= strvec.size()) continue;
-                if (z_index >= strvec.size()) continue;
+            // 各行を処理
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+                const std::string& key_str = table.get(row_index, key_hash);
+                if (key_str.empty()) return; // キーが空の場合はスキップ
 
-                // テクスチャ名が空の場合は読み込まない
-                if (strvec[file_type].size() == 0) continue;
+                const std::string& start_x_str = table.get(row_index, start_x_hash);
+                const std::string& start_y_str = table.get(row_index, start_y_hash);
+                const std::string& end_x_str = table.get(row_index, end_x_hash);
+                const std::string& end_y_str = table.get(row_index, end_y_hash);
 
-                // テクスチャを追加
-                path_list.emplace(MurMur3::calcHash(strvec[file_type].size(), strvec[file_type].c_str()),
+                if (start_x_str.empty() || start_y_str.empty() ||
+                    end_x_str.empty() || end_y_str.empty()) {
+                    return; // 必須データが空の場合はスキップ
+                }
+
+                int z_value = 10; // デフォルト値
+                if (has_z) {
+                    const std::string& z_str = table.get(row_index, z_hash);
+                    if (!z_str.empty()) {
+                        z_value = std::stoi(z_str);
+                    }
+                }
+
+                path_list.emplace(
+                    MurMur3::calcHash(key_str.size(), key_str.c_str()),
                     StartAndEnd{
-                        paxs::Vector2<int>(
-                            std::stoi(strvec[start_x]),
-                            std::stoi(strvec[start_y])
-                        ),
-                        paxs::Vector2<int>(
-                            std::stoi(strvec[end_x]),
-                            std::stoi(strvec[end_y])
-                        ),
-                    std::stoi(strvec[z_index])
-                    });
-            }
+                        paxs::Vector2<int>(std::stoi(start_x_str), std::stoi(start_y_str)),
+                        paxs::Vector2<int>(std::stoi(end_x_str), std::stoi(end_y_str)),
+                        z_value
+                    }
+                );
+            });
+
             return true;
         }
 

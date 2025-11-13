@@ -17,6 +17,7 @@
 #include <sstream>
 #include <vector>
 
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/InputFile.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -137,28 +138,33 @@ namespace paxs {
     public:
         /// @brief TSVファイルから多言語テキストを読み込む
         /// @brief Load multi-language text from TSV file
-        /// @param file_path TSVファイルのパス / Path to TSV file
+        /// @param relative_path 相対ファイルパス / Relative file path
         /// @details TSV形式：1行目がヘッダー（key, ja-JP, en-US, ...）、2行目以降がデータ
         ///          TSV format: 1st row is header (key, ja-JP, en-US, ...), subsequent rows are data
-        void add(const std::string& file_path) {
-            paxs::InputFile pifs(file_path);
-            if (pifs.fail()) return;
+        void add(const std::string& relative_path) {
+            paxs::InputFile input_file(relative_path);
+            if (input_file.fail()) {
+                PAXS_WARNING("Failed to load language file: " + relative_path);
+                return;
+            }
 
             // ヘッダー行を読み込む（1行目）
-            if (!pifs.getLine()) {
+            if (!input_file.getLine()) {
+                PAXS_WARNING("Failed to load language file: " + relative_path);
                 return; // ファイルが空の場合
             }
 
             // BOMを削除
-            pifs.deleteBOM();
+            input_file.deleteBOM();
 
             // ヘッダーを解析（タブ区切り）
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> header_map = pifs.splitHashMapMurMur3('\t');
-            std::vector<std::uint_least32_t> language_keys = pifs.splitHashMapMurMur3Vector('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> header_map = input_file.splitHashMapMurMur3('\t');
+            std::vector<std::uint_least32_t> language_keys = input_file.splitHashMapMurMur3Vector('\t');
 
             // "key"カラムのインデックスを取得
             const std::size_t key_column_index = getColumnIndex(header_map, MurMur3::calcHash("key"));
             if (key_column_index == SIZE_MAX) {
+                PAXS_WARNING("Failed to load language file: " + relative_path);
                 return; // "key"カラムがない場合は処理できない
             }
 
@@ -177,8 +183,8 @@ namespace paxs {
             }
 
             // データ行を1行ずつ読み込み
-            while (pifs.getLine()) {
-                std::vector<std::string> columns = pifs.split('\t');
+            while (input_file.getLine()) {
+                std::vector<std::string> columns = input_file.split('\t');
                 if (key_column_index >= columns.size()) {
                     continue; // keyカラムがない行はスキップ
                 }

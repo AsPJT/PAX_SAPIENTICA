@@ -40,10 +40,7 @@ namespace paxs {
             std::string relative_path = path_with_zy;
             paxs::StringUtils::replace(relative_path, "{x}", x_value);
 
-            // アセットルートパスを前置して絶対パスを構築
-            const std::string full_path = AppConfig::getInstance()->getRootPath() + relative_path;
-
-            if (!FileSystem::exists(full_path)) {
+            if (!FileSystem::exists(relative_path)) {
                 return nullptr;
             }
 

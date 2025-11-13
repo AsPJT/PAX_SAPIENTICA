@@ -16,9 +16,10 @@
 #include <string>
 #include <vector>
 
-#include <PAX_SAPIENTICA/Geography/StringConversions.hpp>
-#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/Geography/StringConversions.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -42,6 +43,7 @@ namespace paxs {
         std::ifstream pifs{};
         std::string pline{};
 #endif // PAXS_USING_DXLIB
+        std::string file_path_{}; // 読み込んだファイルパス（相対パス）
 
         // ファイルが読み込まれたか確認する（読み込まれていない時は true ）
         bool fail() const {
@@ -57,8 +59,14 @@ namespace paxs {
 #endif // PAXS_USING_DXLIB
         }
 
-        // str_ ファイルのパスの文字列
-        // default_path_ 基準となる根幹のパス
+        /// @brief 読み込んだファイルパスを取得
+        /// @return 相対ファイルパス（読み込み前は空文字列）
+        const std::string& getFilePath() const {
+            return file_path_;
+        }
+
+        // str_ ファイルのパスの文字列（アセットルートからの相対パス）
+        // default_path_ 基準となる根幹のパス（空の場合はAppConfig::getRootPath()を使用）
         // type_ どこにファイルを保存するか
         InputFile(const std::string& str_, const std::string& default_path_ = "",
 
@@ -76,6 +84,13 @@ namespace paxs {
             //    binary // バイナリ
             const std::uint_least32_t format_ = paxs::MurMur3::calcHash("string")
         ) {
+            // ファイルパスを保存
+            file_path_ = str_;
+
+            // default_path_ が空の場合は AppConfig からルートパスを取得
+            const std::string root_path = (default_path_.size() == 0) ?
+                paxs::AppConfig::getInstance()->getRootPath() : default_path_;
+
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
             type = type_; // フォルダの読み書きの種類を格納
 #ifdef __ANDROID__
@@ -86,7 +101,7 @@ namespace paxs {
                 file_size = DxLib::FileRead_size(str_.c_str());
                 file_handle = DxLib::FileRead_open(str_.c_str());
 #else // Android 以外の場合の処理も記載
-                file_handle = DxLib::FileRead_open(std::string(default_path_ + str_).c_str());
+                file_handle = DxLib::FileRead_open(std::string(root_path + str_).c_str());
 #endif // __ANDROID__
                 DxLib::FileRead_set_format(file_handle, DX_CHARCODEFORMAT_UTF8); // UTF-8 を読み込む
                 if (file_handle != 0) {
@@ -108,19 +123,19 @@ namespace paxs {
             }
 #else // Android 以外
             if (format_ == paxs::MurMur3::calcHash("binary")) {
-                pifs = std::ifstream((default_path_.size() == 0) ? str_ : default_path_ + str_, std::ios::binary); // ファイルを読み込む
+                pifs = std::ifstream(root_path + str_, std::ios::binary); // ファイルを読み込む
             }
             else {
-                pifs = std::ifstream((default_path_.size() == 0) ? str_ : default_path_ + str_); // ファイルを読み込む
+                pifs = std::ifstream(root_path + str_); // ファイルを読み込む
             }
 #endif
 
 #else // DxLib 以外
             if (format_ == paxs::MurMur3::calcHash("binary")) {
-                pifs = std::ifstream((default_path_.size() == 0) ? str_ : default_path_ + str_, std::ios::binary); // ファイルを読み込む
+                pifs = std::ifstream(root_path + str_, std::ios::binary); // ファイルを読み込む
             }
             else {
-                pifs = std::ifstream((default_path_.size() == 0) ? str_ : default_path_ + str_); // ファイルを読み込む
+                pifs = std::ifstream(root_path + str_); // ファイルを読み込む
             }
 #endif
         }

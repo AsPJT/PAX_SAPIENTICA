@@ -77,13 +77,14 @@ namespace paxs {
 
             const std::string path = japan_provinces_path + "/Language_List.tsv";
 
-            paxs::InputFile language_tsv(AppConfig::getInstance()->getRootPath() + path);
+            paxs::InputFile language_tsv(path);
             if (language_tsv.fail()) {
                 PAXS_WARNING("Failed to read Language_List TSV file: " + path);
                 return;
             }
             // 1 行目を読み込む
             if (!(language_tsv.getLine())) {
+                PAXS_WARNING("Language_List TSV file is empty: " + path);
                 return; // 何もない場合
             }
             // BOM を削除
@@ -112,13 +113,14 @@ namespace paxs {
 
             const std::string path = japan_provinces_path + "/mtDNA_List.tsv";
 
-            paxs::InputFile mtdna_tsv(AppConfig::getInstance()->getRootPath() + path);
+            paxs::InputFile mtdna_tsv(path);
             if (mtdna_tsv.fail()) {
                 PAXS_WARNING("Failed to read MtDNA_List TSV file: " + path);
                 return;
             }
             // 1 行目を読み込む
             if (!(mtdna_tsv.getLine())) {
+                PAXS_WARNING("MtDNA_List TSV file is empty: " + path);
                 return; // 何もない場合
             }
             // BOM を削除
@@ -147,13 +149,14 @@ namespace paxs {
 
             const std::string path = japan_provinces_path + "/Language.tsv";
 
-            paxs::InputFile language_tsv(AppConfig::getInstance()->getRootPath() + path);
+            paxs::InputFile language_tsv(path);
             if (language_tsv.fail()) {
                 PAXS_WARNING("Failed to read Language TSV file: " + path);
                 return;
             }
             // 1 行目を読み込む
             if (!(language_tsv.getLine())) {
+                PAXS_WARNING("Language TSV file is empty: " + path);
                 return; // 何もない場合
             }
             // BOM を削除
@@ -213,13 +216,14 @@ namespace paxs {
 
             const std::string path = japan_provinces_path + "/mtDNA.tsv";
 
-            paxs::InputFile mtdna_tsv(AppConfig::getInstance()->getRootPath() + path);
+            paxs::InputFile mtdna_tsv(path);
             if (mtdna_tsv.fail()) {
                 PAXS_WARNING("Failed to read MtDNA TSV file: " + path);
                 return;
             }
             // 1 行目を読み込む
             if (!(mtdna_tsv.getLine())) {
+                PAXS_WARNING("MtDNA TSV file is empty: " + path);
                 return; // 何もない場合
             }
             // BOM を削除
@@ -279,13 +283,14 @@ namespace paxs {
 
             const std::string district_tsv_path = japan_provinces_path + "/District.tsv";
 
-            paxs::InputFile district_tsv(AppConfig::getInstance()->getRootPath() + district_tsv_path);
+            paxs::InputFile district_tsv(district_tsv_path);
             if (district_tsv.fail()) {
                 PAXS_WARNING("Failed to read District TSV file: " + district_tsv_path);
                 return;
             }
             // 1 行目を読み込む
             if (!(district_tsv.getLine())) {
+                PAXS_WARNING("District TSV file is empty: " + district_tsv_path);
                 return; // 何もない場合
             }
             // BOM を削除

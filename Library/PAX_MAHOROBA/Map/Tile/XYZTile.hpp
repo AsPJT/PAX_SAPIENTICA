@@ -119,7 +119,6 @@ namespace paxs {
         std::string binary_file_name_format = ""; // バイナリデータ
         std::string map_name = ""; // 地図名
         std::string file_name_format = ("{z}/{x}/{y}");
-        std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
 
         // XYZ タイルの画面上の始点セル
         Vector2<int> start_cell{};
@@ -148,25 +147,6 @@ namespace paxs {
         TileRange current_range_{{0, 0}, {0, 0}};
 
     private:
-        // フルパスのフォルダまでのパスを返す
-        std::string setFullPathFolder() const {
-            std::size_t slash_index = 99999999;
-            for (std::size_t i = 0; i < file_name_format.size(); ++i) {
-                if (file_name_format[i] == '/') {
-                    slash_index = i;
-                }
-            }
-            // スラッシュがない場合は空文字を返す
-            if (slash_index == 99999999) {
-                return "";
-            }
-            // スラッシュがある場合は最後のスラッシュまでのフォルダパスを返す
-            std::string str = file_name_format;
-            str[slash_index] = 0; // 終端文字を入れる
-            return std::string(str.c_str());
-        }
-
-
         /// @brief ビューポートから新しいズーム状態を計算
         /// @param map_view_height ビューポートの高さ
         /// @return 計算されたズーム状態
@@ -260,7 +240,6 @@ namespace paxs {
                 // URL と Binary のパスを Y 置換まで事前計算（X ループ外）
                 std::string url_path_zny;
                 std::string binary_path_zny;
-                std::string texture_folder_path_zny;
 
                 if (!metadata_.texture_url.empty()) {
                     url_path_zny = metadata_.texture_url;
@@ -273,13 +252,6 @@ namespace paxs {
                     paxs::StringUtils::replace(binary_path_zny, "{z}", z_value);
                     paxs::StringUtils::replace(binary_path_zny, "{y}", y_value);
                     if (map_name.size() != 0) paxs::StringUtils::replace(binary_path_zny, "{n}", map_name);
-                }
-
-                if (!texture_full_path_folder.empty()) {
-                    texture_folder_path_zny = texture_full_path_folder;
-                    paxs::StringUtils::replace(texture_folder_path_zny, "{z}", z_value);
-                    paxs::StringUtils::replace(texture_folder_path_zny, "{y}", y_value);
-                    if (map_name.size() != 0) paxs::StringUtils::replace(texture_folder_path_zny, "{n}", map_name);
                 }
 
                 for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
@@ -306,13 +278,9 @@ namespace paxs {
 
                     // 2. UrlTileLoader（URL からダウンロード）
                     if (!metadata_.texture_url.empty()) {
-                        std::string texture_folder_path_znyx = texture_folder_path_zny;
-                        paxs::StringUtils::replace(texture_folder_path_znyx, "{x}", x_value);
-
                         texture = UrlTileLoader::load(
                             url_path_zny,
                             local_file_path_zny,
-                            texture_folder_path_znyx,
                             x_value
                         );
 
@@ -323,14 +291,10 @@ namespace paxs {
                     }
 
                     // 3. BinaryTileLoader（バイナリデータから PNG 生成）
-                    if (!binary_file_name_format.empty() && !texture_full_path_folder.empty()) {
-                        std::string texture_folder_path_znyx = texture_folder_path_zny;
-                        paxs::StringUtils::replace(texture_folder_path_znyx, "{x}", x_value);
-
+                    if (!binary_file_name_format.empty()) {
                         texture = BinaryTileLoader::load(
                             binary_path_zny,
                             local_file_path_zny,
-                            texture_folder_path_znyx,
                             x_value,
                             binary_buffer_,  // バッファを渡す
                             rgba_buffer_     // バッファを渡す
@@ -445,9 +409,6 @@ namespace paxs {
                 // アセットルートからの相対パスとして保持
                 file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
 #endif
-            }
-            if (file_name_format.size() != 0) {
-                texture_full_path_folder = setFullPathFolder();
             }
         }
 

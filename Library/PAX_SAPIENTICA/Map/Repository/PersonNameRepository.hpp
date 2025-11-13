@@ -18,10 +18,11 @@
 #include <string>
 #include <vector>
 
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
-#include <PAX_SAPIENTICA/System/InputFile.hpp>
-#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -100,67 +101,78 @@ namespace paxs {
             std::string str = "";
             AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("PersonNames"),
                 [&](const std::string& path_) {str = path_; });
-            if (str.size() == 0) return;
-
-            paxs::InputFile pifs(str);
-            if (pifs.fail()) return;
-            // 1 行目を読み込む
-            if (!(pifs.getLine())) {
-                return; // 何もない場合
+            if (str.size() == 0) {
+                PAXS_WARNING("PersonNames configuration path is empty");
+                return;
             }
-            // BOM を削除
-            pifs.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
-            const std::size_t file_path = getMenuIndex(menu, MurMur3::calcHash("file_path"));
-            if (file_path == SIZE_MAX) return; // パスがないのはデータにならない
-            const std::size_t place_type = getMenuIndex(menu, MurMur3::calcHash("place_type"));
+            paxs::TsvTable table(str);
+            if (!table.isSuccessfullyLoaded()) {
+                PAXS_WARNING("Failed to load person name list: " + str);
+                return;
+            }
 
-            const std::size_t minimum_size = getMenuIndex(menu, MurMur3::calcHash("min_size"));
-            const std::size_t maximum_size = getMenuIndex(menu, MurMur3::calcHash("max_size"));
-            const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash("first_julian_day"));
-            const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash("last_julian_day"));
-            const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
+            // 必須カラムの検証
+            if (!table.hasColumn("file_path")) {
+                PAXS_ERROR("PersonNameList is missing required column: file_path");
+                return;
+            }
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
+            // カラムハッシュキーを作成
+            const std::uint_least32_t file_path_hash = MurMur3::calcHash("file_path");
+            const std::uint_least32_t place_type_hash = MurMur3::calcHash("place_type");
+            const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
+            const std::uint_least32_t max_size_hash = MurMur3::calcHash("max_size");
+            const std::uint_least32_t first_julian_day_hash = MurMur3::calcHash("first_julian_day");
+            const std::uint_least32_t last_julian_day_hash = MurMur3::calcHash("last_julian_day");
+            const std::uint_least32_t texture_hash = MurMur3::calcHash("texture");
 
-                // パスが空の場合は読み込まない
-                if (strvec[file_path].size() == 0) continue;
+            // オプショナルカラムの存在確認
+            const bool has_place_type = table.hasColumn(place_type_hash);
+            const bool has_min_size = table.hasColumn(min_size_hash);
+            const bool has_max_size = table.hasColumn(max_size_hash);
+            const bool has_first_julian_day = table.hasColumn(first_julian_day_hash);
+            const bool has_last_julian_day = table.hasColumn(last_julian_day_hash);
+            const bool has_texture = table.hasColumn(texture_hash);
+
+            // 1 行ずつ読み込み
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+                const std::string& file_path_str = table.get(row_index, file_path_hash);
+                if (file_path_str.empty()) {
+                    PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + str + ": file_path is empty");
+                    return;
+                }
 
                 // 対象となる地物の種別
-                const std::uint_least32_t type = (place_type == SIZE_MAX) ?
+                const std::string& place_type_str = has_place_type ? table.get(row_index, place_type_hash) : "";
+                const std::uint_least32_t type = place_type_str.empty() ?
                     MurMur3::calcHash("place_name") :
-                    ((strvec[place_type].size() == 0) ?
-                        MurMur3::calcHash("place_name") :
-                        MurMur3::calcHash(strvec[place_type].size(), strvec[place_type].c_str()));
+                    MurMur3::calcHash(place_type_str.size(), place_type_str.c_str());
 
                 // 可視化する地図の最小範囲
-                const double min_view = (minimum_size >= strvec.size()) ?
-                    0 : ((strvec[minimum_size].size() == 0) ?
-                        0 : std::stod(strvec[minimum_size]));
+                const std::string& min_size_str = has_min_size ? table.get(row_index, min_size_hash) : "";
+                const double min_view = min_size_str.empty() ? 0.0 : std::stod(min_size_str);
+
                 // 可視化する地図の最大範囲
-                const double max_view = (maximum_size >= strvec.size()) ?
-                    99999999.0 : ((strvec[maximum_size].size() == 0) ?
-                        99999999.0 : std::stod(strvec[maximum_size]));
+                const std::string& max_size_str = has_max_size ? table.get(row_index, max_size_hash) : "";
+                const double max_view = max_size_str.empty() ? 99999999.0 : std::stod(max_size_str);
+
                 // 可視化する時代（古い年～）
-                const int min_year = (first_julian_day >= strvec.size()) ?
-                    -99999999 : ((strvec[first_julian_day].size() == 0) ?
-                        -99999999 : std::stoi(strvec[first_julian_day]));
+                const std::string& first_julian_day_str = has_first_julian_day ? table.get(row_index, first_julian_day_hash) : "";
+                const int min_year = first_julian_day_str.empty() ? -99999999 : std::stoi(first_julian_day_str);
+
                 // 可視化する時代（～新しい年）
-                const int max_year = (last_julian_day >= strvec.size()) ?
-                    99999999 : ((strvec[last_julian_day].size() == 0) ?
-                        99999999 : std::stoi(strvec[last_julian_day]));
+                const std::string& last_julian_day_str = has_last_julian_day ? table.get(row_index, last_julian_day_hash) : "";
+                const int max_year = last_julian_day_str.empty() ? 99999999 : std::stoi(last_julian_day_str);
+
                 // 画像
-                const std::uint_least32_t place_texture_hash = (place_texture >= strvec.size()) ?
-                    0 : ((strvec[place_texture].size() == 0) ?
-                        0 : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()));
+                const std::string& texture_str = has_texture ? table.get(row_index, texture_hash) : "";
+                const std::uint_least32_t place_texture_hash = texture_str.empty() ?
+                    0 : MurMur3::calcHash(texture_str.size(), texture_str.c_str());
 
                 // 地物を追加 (callback)
-                inputPlaceFunc(strvec[file_path], min_view, max_view, min_year, max_year, type, place_texture_hash);
-            }
+                inputPlaceFunc(file_path_str, min_view, max_view, min_year, max_year, type, place_texture_hash);
+            });
         }
 
         /// @brief 個別ファイルから人物データを読み込み
@@ -175,26 +187,29 @@ namespace paxs {
         ) const {
             std::vector<PersonLocationPoint> person_location_list{}; // 地物の一覧
 
-            paxs::InputFile pifs(str_, AppConfig::getInstance()->getRootPath());
-            if (pifs.fail()) return PersonLocationList();
-            // 1 行目を読み込む
-            if (!(pifs.getLine())) {
-                return PersonLocationList(); // 何もない場合
+            paxs::TsvTable table(str_);
+            if (!table.isSuccessfullyLoaded()) {
+                PAXS_WARNING("Failed to load person file: " + str_);
+                return PersonLocationList();
             }
-            // BOM を削除
-            pifs.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
 
-            const std::size_t start_longitude = getMenuIndex(menu, MurMur3::calcHash("start_longitude"));
-            if (start_longitude == SIZE_MAX) return PersonLocationList(); // 経度がないのはデータにならない
-            const std::size_t start_latitude = getMenuIndex(menu, MurMur3::calcHash("start_latitude"));
-            if (start_latitude == SIZE_MAX) return PersonLocationList(); // 緯度がないのはデータにならない
-
-            const std::size_t end_longitude = getMenuIndex(menu, MurMur3::calcHash("end_longitude"));
-            if (end_longitude == SIZE_MAX) return PersonLocationList(); // 経度がないのはデータにならない
-            const std::size_t end_latitude = getMenuIndex(menu, MurMur3::calcHash("end_latitude"));
-            if (end_latitude == SIZE_MAX) return PersonLocationList(); // 緯度がないのはデータにならない
+            // 必須カラムの検証
+            if (!table.hasColumn("start_longitude")) {
+                PAXS_ERROR("PersonFile is missing required column: start_longitude");
+                return PersonLocationList();
+            }
+            if (!table.hasColumn("start_latitude")) {
+                PAXS_ERROR("PersonFile is missing required column: start_latitude");
+                return PersonLocationList();
+            }
+            if (!table.hasColumn("end_longitude")) {
+                PAXS_ERROR("PersonFile is missing required column: end_longitude");
+                return PersonLocationList();
+            }
+            if (!table.hasColumn("end_latitude")) {
+                PAXS_ERROR("PersonFile is missing required column: end_latitude");
+                return PersonLocationList();
+            }
 
             double start_start_longitude = 180.0; // 始点の経度
             double start_end_longitude = -180.0; // 終点の経度
@@ -206,59 +221,82 @@ namespace paxs {
             double end_start_latitude = 90.0; // 始点の緯度
             double end_end_latitude = -90.0; // 終点の緯度
 
-            // 配列の添え字番号
-            const std::size_t overall_length = getMenuIndex(menu, MurMur3::calcHash("overall_length"));
-            const std::size_t minimum_size = getMenuIndex(menu, MurMur3::calcHash("min_size"));
-            const std::size_t maximum_size = getMenuIndex(menu, MurMur3::calcHash("max_size"));
-            const std::size_t first_julian_day = getMenuIndex(menu, MurMur3::calcHash("first_julian_day"));
-            const std::size_t last_julian_day = getMenuIndex(menu, MurMur3::calcHash("last_julian_day"));
-            const std::size_t place_texture = getMenuIndex(menu, MurMur3::calcHash("texture"));
+            // カラムハッシュキーを作成
+            const std::uint_least32_t start_longitude_hash = MurMur3::calcHash("start_longitude");
+            const std::uint_least32_t start_latitude_hash = MurMur3::calcHash("start_latitude");
+            const std::uint_least32_t end_longitude_hash = MurMur3::calcHash("end_longitude");
+            const std::uint_least32_t end_latitude_hash = MurMur3::calcHash("end_latitude");
+            const std::uint_least32_t overall_length_hash = MurMur3::calcHash("overall_length");
+            const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
+            const std::uint_least32_t max_size_hash = MurMur3::calcHash("max_size");
+            const std::uint_least32_t first_julian_day_hash = MurMur3::calcHash("first_julian_day");
+            const std::uint_least32_t last_julian_day_hash = MurMur3::calcHash("last_julian_day");
+            const std::uint_least32_t texture_hash = MurMur3::calcHash("texture");
+            const std::uint_least32_t ja_jp_hash = MurMur3::calcHash("ja-JP");
+            const std::uint_least32_t en_us_hash = MurMur3::calcHash("en-US");
 
-            // 地名
-            const std::size_t language_ja_jp = getMenuIndex(menu, MurMur3::calcHash("ja-JP"));
-            const std::size_t language_en_us = getMenuIndex(menu, MurMur3::calcHash("en-US"));
+            // オプショナルカラムの存在確認
+            const bool has_overall_length = table.hasColumn(overall_length_hash);
+            const bool has_min_size = table.hasColumn(min_size_hash);
+            const bool has_max_size = table.hasColumn(max_size_hash);
+            const bool has_first_julian_day = table.hasColumn(first_julian_day_hash);
+            const bool has_last_julian_day = table.hasColumn(last_julian_day_hash);
+            const bool has_texture = table.hasColumn(texture_hash);
+            const bool has_ja_jp = table.hasColumn(ja_jp_hash);
+            const bool has_en_us = table.hasColumn(en_us_hash);
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
+            // 1 行ずつ読み込み
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+                const std::string& start_longitude_str = table.get(row_index, start_longitude_hash);
+                const std::string& start_latitude_str = table.get(row_index, start_latitude_hash);
+                const std::string& end_longitude_str = table.get(row_index, end_longitude_hash);
+                const std::string& end_latitude_str = table.get(row_index, end_latitude_hash);
 
-                // 経度の文字列が空の場合は読み込まない
-                if (strvec[start_longitude].size() == 0) continue;
-                // 経度の文字列が空の場合は読み込まない
-                if (strvec[start_latitude].size() == 0) continue;
-                // 経度の文字列が空の場合は読み込まない
-                if (strvec[end_longitude].size() == 0) continue;
-                // 経度の文字列が空の場合は読み込まない
-                if (strvec[end_latitude].size() == 0) continue;
+                if (start_longitude_str.empty() || start_latitude_str.empty() ||
+                    end_longitude_str.empty() || end_latitude_str.empty()) {
+                    PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + str_ + ": missing coordinates");
+                    return;
+                }
 
                 // 地名
                 paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{};
-                if (language_ja_jp < strvec.size() && strvec[language_ja_jp].size() != 0) {
-                    place_name.emplace(MurMur3::calcHash("ja-JP"), strvec[language_ja_jp]);
+                if (has_ja_jp) {
+                    const std::string& ja_jp_str = table.get(row_index, ja_jp_hash);
+                    if (!ja_jp_str.empty()) {
+                        place_name.emplace(MurMur3::calcHash("ja-JP"), ja_jp_str);
+                    }
                 }
-                if (language_en_us < strvec.size() && strvec[language_en_us].size() != 0) {
-                    place_name.emplace(MurMur3::calcHash("en-US"), strvec[language_en_us]);
-                }
-                bool is_overall_length = false;
-                if (overall_length < strvec.size()) {
-                    if (strvec[overall_length].size() != 0) is_overall_length = true;
+                if (has_en_us) {
+                    const std::string& en_us_str = table.get(row_index, en_us_hash);
+                    if (!en_us_str.empty()) {
+                        place_name.emplace(MurMur3::calcHash("en-US"), en_us_str);
+                    }
                 }
 
-                double start_point_longitude = std::stod(strvec[start_longitude]); // 経度
-                double start_point_latitude = std::stod(strvec[start_latitude]); // 緯度
+                const std::string& overall_length_str = has_overall_length ? table.get(row_index, overall_length_hash) : "";
+
+                double start_point_longitude = std::stod(start_longitude_str); // 経度
+                double start_point_latitude = std::stod(start_latitude_str); // 緯度
                 // 経緯度の範囲を求める
                 start_start_longitude = (std::min)(start_start_longitude, start_point_longitude);
                 start_start_latitude = (std::min)(start_start_latitude, start_point_latitude);
                 start_end_longitude = (std::max)(start_end_longitude, start_point_longitude);
                 start_end_latitude = (std::max)(start_end_latitude, start_point_latitude);
 
-                double end_point_longitude = std::stod(strvec[end_longitude]); // 経度
-                double end_point_latitude = std::stod(strvec[end_latitude]); // 緯度
+                double end_point_longitude = std::stod(end_longitude_str); // 経度
+                double end_point_latitude = std::stod(end_latitude_str); // 緯度
                 // 経緯度の範囲を求める
                 end_start_longitude = (std::min)(end_start_longitude, end_point_longitude);
                 end_start_latitude = (std::min)(end_start_latitude, end_point_latitude);
                 end_end_longitude = (std::max)(end_end_longitude, end_point_longitude);
                 end_end_latitude = (std::max)(end_end_latitude, end_point_latitude);
+
+                // オプショナル値の取得
+                const std::string& min_size_str = has_min_size ? table.get(row_index, min_size_hash) : "";
+                const std::string& max_size_str = has_max_size ? table.get(row_index, max_size_hash) : "";
+                const std::string& first_julian_day_str = has_first_julian_day ? table.get(row_index, first_julian_day_hash) : "";
+                const std::string& last_julian_day_str = has_last_julian_day ? table.get(row_index, last_julian_day_hash) : "";
+                const std::string& texture_str = has_texture ? table.get(row_index, texture_hash) : "";
 
                 // 格納
                 person_location_list.emplace_back(
@@ -268,20 +306,24 @@ namespace paxs {
                             start_point_longitude, // 経度
                             start_point_latitude)).toMercatorDeg(), // 緯度
                     paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(
-                        end_point_longitude, // 経度
-                        end_point_latitude)).toMercatorDeg(), // 緯度
-                    (!is_overall_length) ? 1000.0 : std::stod(strvec[overall_length]), // 全長
-                    (minimum_size >= strvec.size()) ? min_view_ : std::stod(strvec[minimum_size]), // 最小サイズ
-                    (maximum_size >= strvec.size()) ? max_view_ : std::stod(strvec[maximum_size]), // 最大サイズ
-                    (first_julian_day >= strvec.size()) ? min_year_ : std::stod(strvec[first_julian_day]), // 最小時代
-                    (last_julian_day >= strvec.size()) ? max_year_ : std::stod(strvec[last_julian_day]), // 最大時代
+                        paxs::Vector2<double>(
+                            end_point_longitude, // 経度
+                            end_point_latitude)).toMercatorDeg(), // 緯度
+                    overall_length_str.empty() ? 1000.0 : std::stod(overall_length_str), // 全長
+                    min_size_str.empty() ? min_view_ : std::stod(min_size_str), // 最小サイズ
+                    max_size_str.empty() ? max_view_ : std::stod(max_size_str), // 最大サイズ
+                    first_julian_day_str.empty() ? min_year_ : std::stod(first_julian_day_str), // 最小時代
+                    last_julian_day_str.empty() ? max_year_ : std::stod(last_julian_day_str), // 最大時代
                     lpe_,
-                    (place_texture >= strvec.size()) ? place_texture_ : MurMur3::calcHash(strvec[place_texture].size(), strvec[place_texture].c_str()) // テクスチャの Key
+                    texture_str.empty() ? place_texture_ : MurMur3::calcHash(texture_str.size(), texture_str.c_str()) // テクスチャの Key
                 );
-            }
+            });
+
             // 地物を何も読み込んでいない場合は何もしないで終わる
-            if (person_location_list.size() == 0) return PersonLocationList();
+            if (person_location_list.size() == 0) {
+                PAXS_WARNING("No valid person locations loaded from file: " + str_);
+                return PersonLocationList();
+            }
 
             // 読み込んだファイルを格納する
             return PersonLocationList(person_location_list,
@@ -297,11 +339,6 @@ namespace paxs {
                 , lpe_, place_texture_);
         }
 
-    private:
-        // 項目の ID を返す
-        static std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
-        }
     };
 
 }

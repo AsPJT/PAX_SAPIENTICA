@@ -53,10 +53,10 @@ namespace paxs {
             std::string map_list_path = "Data/Simulations/" + model_name + "/MapList.tsv";
             std::string japan_provinces_path = "Data/Simulations/" + model_name;
 
-            AppConfig::getInstance()->calcDataSettingsNotPath(
+            AppConfig::getInstance()->calcDataSettings(
                 MurMur3::calcHash("SimulationXYZTiles"),
                 [&](const std::string& path_) { map_list_path = path_; });
-            AppConfig::getInstance()->calcDataSettingsNotPath(
+            AppConfig::getInstance()->calcDataSettings(
                 MurMur3::calcHash("SimulationProvincesPath"),
                 [&](const std::string& path_) { japan_provinces_path = path_; });
 
@@ -165,11 +165,11 @@ namespace paxs {
             auto [map_list_path, japan_provinces_path] = generatePaths(model_name);
 
             // パスの存在確認
-            if (!FileSystem::exists(paxs::AppConfig::getInstance()->getRootPath() + "/" + map_list_path)) {
+            if (!FileSystem::exists(map_list_path)) {
                 PAXS_WARNING("Model '" + model_name + "' does not exist (MapList not found: " + map_list_path + "). Available models: Sample, EpiJomon, Yaponesia, AynuMosir, Philippines, Aotearoa");
                 return;
             }
-            if (!FileSystem::exists(paxs::AppConfig::getInstance()->getRootPath() + "/" + japan_provinces_path)) {
+            if (!FileSystem::exists(japan_provinces_path)) {
                 PAXS_WARNING("Model '" + model_name + "' does not exist (Provinces path not found: " + japan_provinces_path + "). Available models: Sample, EpiJomon, Yaponesia, AynuMosir, Philippines, Aotearoa");
                 return;
             }
