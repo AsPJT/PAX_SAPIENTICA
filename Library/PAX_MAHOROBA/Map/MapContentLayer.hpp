@@ -205,10 +205,10 @@ namespace paxs {
 
         /// @brief 地理的地物データを読み込み
         void loadGeographicFeatures() {
-            // 地理的特徴用のテクスチャを読み込み（MiniIconsから）
-            const std::string mini_icons_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MiniIcons"));
-            if (mini_icons_path.size() > 0) {
-                geographic_texture_map_.input(mini_icons_path);
+            // 地理的特徴用のテクスチャを読み込み
+            const std::string map_icons_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MapIcons"));
+            if (map_icons_path.size() > 0) {
+                geographic_texture_map_.input(map_icons_path);
             }
 
             // 容量を事前確保（地理的地物は多いため5000を確保）

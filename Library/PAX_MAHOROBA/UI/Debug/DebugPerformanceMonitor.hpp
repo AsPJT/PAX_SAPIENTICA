@@ -72,7 +72,7 @@ public:
         last_frame_time_ = current_time;
 
         // フレーム時間を記録
-        frame_times_.push_back(frame_time);
+        frame_times_.emplace_back(frame_time);
         if (frame_times_.size() > 60) {  // 直近60フレームを保持
             frame_times_.pop_front();
         }
@@ -84,7 +84,7 @@ public:
             last_update_time_ = current_time;
 
             // FPS履歴を更新
-            fps_history_.push_back(fps_);
+            fps_history_.emplace_back(fps_);
             if (fps_history_.size() > MAX_FPS_HISTORY) {
                 fps_history_.pop_front();
             }

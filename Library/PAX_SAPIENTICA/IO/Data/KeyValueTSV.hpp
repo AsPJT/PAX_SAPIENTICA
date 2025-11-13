@@ -86,15 +86,15 @@ namespace paxs {
             // 1 行目を分割する
             paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = input_file.splitHashMapMurMur3('\t');
 
-            const std::size_t file_path = inputPathGetMenuIndex(menu, MurMur3::calcHash("value"));
-            if (file_path == SIZE_MAX) {
-                PAXS_ERROR(relative_path + " is missing a Value on the first line.");
-                return false; // Value がないのはデータにならない
-            }
-            const std::size_t file_type = inputPathGetMenuIndex(menu, MurMur3::calcHash("key"));
-            if (file_type == SIZE_MAX) {
+            const std::size_t key_index = inputPathGetMenuIndex(menu, MurMur3::calcHash("key"));
+            if (key_index == SIZE_MAX) {
                 PAXS_ERROR(relative_path + " is missing a Key on the first line.");
                 return false; // Key がないのはデータにならない
+            }
+            const std::size_t value_index = inputPathGetMenuIndex(menu, MurMur3::calcHash("value"));
+            if (value_index == SIZE_MAX) {
+                PAXS_ERROR(relative_path + " is missing a Value on the first line.");
+                return false; // Value がないのはデータにならない
             }
 
             // 1 行ずつ読み込み（区切りはタブ）
@@ -102,14 +102,14 @@ namespace paxs {
                 std::vector<std::string> strvec = input_file.split('\t');
 
                 // 列数が項目より小さい場合は読み込まない
-                if (file_type >= strvec.size()) continue;
-                if (file_path >= strvec.size()) continue;
+                if (key_index >= strvec.size()) continue;
+                if (value_index >= strvec.size()) continue;
 
-                // テクスチャ名が空の場合は読み込まない
-                if (strvec[file_type].size() == 0) continue;
+                // keyが空の場合は読み込まない
+                if (strvec[key_index].size() == 0) continue;
 
-                // テクスチャを追加
-                path_list.emplace(MurMur3::calcHash(strvec[file_type].size(), strvec[file_type].c_str()), func(strvec[file_path]));
+                // 値を変換して格納
+                path_list.emplace(MurMur3::calcHash(strvec[key_index].size(), strvec[key_index].c_str()), func(strvec[value_index]));
             }
             is_successfully_loaded = true;
             return true;

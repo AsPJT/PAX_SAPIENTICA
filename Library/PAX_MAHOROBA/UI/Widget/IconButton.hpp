@@ -59,7 +59,7 @@ namespace paxs {
         inline static paxs::KeyValueTSV<paxg::Texture> icon_textures;
 
         static void loadIconTextures() {
-            icon_textures.input("Data/MenuIcon/MenuIcons.tsv",
+            icon_textures.input(AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MenuIcons")),
                 [&](const std::string& value_) { return paxg::Texture(value_); });
         }
     };

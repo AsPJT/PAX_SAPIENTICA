@@ -194,7 +194,7 @@ namespace paxs {
                     addLanguageDictionary(path_, LanguageDomain::UI);
                 });
 
-            AppConfig::getInstance()->ifSettingExists(MurMur3::calcHash("SimulationModels"),
+            AppConfig::getInstance()->ifSettingExists(MurMur3::calcHash("SimulationModelLanguages"),
                 [&](const std::string& path_) {
                     addLanguageDictionary(path_, LanguageDomain::SIMULATION);
                 });

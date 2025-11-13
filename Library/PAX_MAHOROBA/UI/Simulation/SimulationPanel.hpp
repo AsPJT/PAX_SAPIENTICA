@@ -16,7 +16,6 @@
 #include <memory>
 #include <vector>
 
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -157,9 +156,7 @@ namespace paxs {
                 false
             )
         {
-
-            // Models.txt 読み込み
-            const std::string models_path = "Data/Simulations/Models.txt";
+            const std::string models_path = paxs::AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationModels"));
             paxs::InputFile models_tsv(models_path);
             if (models_tsv.fail()) {
                 PAXS_WARNING("Failed to read Models TXT file: " + models_path);

@@ -140,7 +140,7 @@ public:
         std::vector<int> filtered_indices;
         for (int i = 0; i < static_cast<int>(log_history_.size()); ++i) {
             if (isLevelVisible(log_history_[i].level)) {
-                filtered_indices.push_back(i);
+                filtered_indices.emplace_back(i);
             }
         }
 
@@ -213,7 +213,7 @@ public:
         item.level = event.level;
         item.timestamp = getCurrentTime();
 
-        log_history_.push_back(item);
+        log_history_.emplace_back(item);
     }
 
     void scrollUp() {
@@ -272,7 +272,7 @@ public:
                 executeCommand(command_input_);
 
                 // コマンド履歴に追加
-                command_history_.push_back(command_input_);
+                command_history_.emplace_back(command_input_);
                 if (command_history_.size() > MAX_COMMAND_HISTORY) {
                     command_history_.pop_front();
                 }
@@ -487,7 +487,7 @@ private:
         std::string token;
 
         while (iss >> token) {
-            args.push_back(token);
+            args.emplace_back(token);
         }
 
         return args;

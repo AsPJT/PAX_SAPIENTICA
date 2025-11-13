@@ -121,7 +121,7 @@ public:
         item.id = next_notification_id_++;
         item.is_close_button_hovered = false;
 
-        notification_stack_.push_back(item);
+        notification_stack_.emplace_back(item);
         updateLayout();
     }
 
