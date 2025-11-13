@@ -63,10 +63,18 @@ namespace paxs {
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MenuBarType::view);
-            menu_system.add(paxs::MenuBarKeys::feature_menu_hashes,
+            menu_system.add(paxs::MenuBarKeys::place_names_menu_hashes,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MenuBarType::place_names);
+            menu_system.add(paxs::MenuBarKeys::item_menu_hashes,
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                          MenuBarType::item);
+            menu_system.add(paxs::MenuBarKeys::structure_menu_hashes,
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                          MenuBarType::structure);
             menu_system.add(paxs::MenuBarKeys::genome_menu_hashes,
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
@@ -127,20 +135,46 @@ namespace paxs {
             }
             else if (menu_type == paxs::MenuBarType::place_names) {
                 // Place Names メニュー
-                const std::array<PlaceNamesMenu, 9> place_name_items = {
-                    PlaceNamesMenu::place_name,
-                    PlaceNamesMenu::site,
-                    PlaceNamesMenu::tumulus,
-                    PlaceNamesMenu::dolmen,
-                    PlaceNamesMenu::kamekanbo,
-                    PlaceNamesMenu::stone_coffin,
-                    PlaceNamesMenu::doken,
-                    PlaceNamesMenu::dotaku,
-                    PlaceNamesMenu::bronze_mirror
+                const std::array<PlaceNamesMenu, 5> place_name_items = {
+                    PlaceNamesMenu::ancient_text,
+                    PlaceNamesMenu::administrative,
+                    PlaceNamesMenu::indigenous,
+                    PlaceNamesMenu::historical_state,
+                    PlaceNamesMenu::general
                 };
                 if (actual_index < place_name_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
                         static_cast<std::uint_least32_t>(place_name_items[actual_index]),
+                        is_checked
+                    ));
+                }
+            }
+            else if (menu_type == paxs::MenuBarType::item) {
+                // Item メニュー
+                const std::array<ItemMenu, 5> item_items = {
+                    ItemMenu::kamekanbo,
+                    ItemMenu::stone_coffin,
+                    ItemMenu::doken,
+                    ItemMenu::dotaku,
+                    ItemMenu::coin
+                };
+                if (actual_index < item_items.size()) {
+                    paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
+                        static_cast<std::uint_least32_t>(item_items[actual_index]),
+                        is_checked
+                    ));
+                }
+            }
+            else if (menu_type == paxs::MenuBarType::structure) {
+                // Structure メニュー
+                const std::array<StructureMenu, 3> structure_items = {
+                    StructureMenu::site,
+                    StructureMenu::tomb,
+                    StructureMenu::dolmen
+                };
+                if (actual_index < structure_items.size()) {
+                    paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
+                        static_cast<std::uint_least32_t>(structure_items[actual_index]),
                         is_checked
                     ));
                 }
@@ -192,6 +226,22 @@ namespace paxs {
             if (place_names_menu) {
                 place_names_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::place_names, index, is_checked);
+                });
+            }
+
+            // Item メニューのコールバック
+            paxs::DropDownMenu* item_menu = menu_system.getDropDownMenu(paxs::MenuBarType::item);
+            if (item_menu) {
+                item_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
+                    handleMenuItemToggled(paxs::MenuBarType::item, index, is_checked);
+                });
+            }
+
+            // Structure メニューのコールバック
+            paxs::DropDownMenu* structure_menu = menu_system.getDropDownMenu(paxs::MenuBarType::structure);
+            if (structure_menu) {
+                structure_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
+                    handleMenuItemToggled(paxs::MenuBarType::structure, index, is_checked);
                 });
             }
 

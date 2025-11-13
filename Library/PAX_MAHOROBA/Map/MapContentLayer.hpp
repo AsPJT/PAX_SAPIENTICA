@@ -35,6 +35,7 @@
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/GenomeRepository.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/GeographicFeatureRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PersonNameRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PlaceNameRepository.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -207,22 +208,28 @@ namespace paxs {
             const std::size_t estimated_geographic_count = 5000;
             features_.reserve(current_capacity + estimated_geographic_count);
 
-            // 地名とアイコンの判定ロジック
-            // place_textureがある場合はアイコン（GeographicFeature）
-            // place_textureがない場合は地名（PlaceNameFeature）
-            auto all_places = PlaceNameRepository::loadPlaceNameList();
-            for (auto& location_data : all_places) {
-                if (location_data.place_texture != 0) {
-                    // テクスチャがある場合はアイコン
-                    features_.emplace_back(
-                        std::make_unique<GeographicFeature>(std::move(location_data))
-                    );
-                } else {
-                    // テクスチャがない場合は地名
-                    features_.emplace_back(
-                        std::make_unique<PlaceNameFeature>(std::move(location_data))
-                    );
-                }
+            // GeographicFeatureに変換
+            auto all_geographic_features = GeographicFeatureRepository::loadGeographicFeatureList();
+            for (auto& location_data : all_geographic_features) {
+                features_.emplace_back(
+                    std::make_unique<GeographicFeature>(std::move(location_data))
+                );
+            }
+        }
+
+        /// @brief 地名データを読み込み
+        void loadPlaceNameFeatures() {
+            // 容量を事前確保
+            const std::size_t current_capacity = features_.capacity();
+            const std::size_t estimated_place_name_count = 1000;
+            features_.reserve(current_capacity + estimated_place_name_count);
+
+            // PlaceNameFeatureに変換
+            auto all_place_names = PlaceNameRepository::loadPlaceNameList();
+            for (auto& location_data : all_place_names) {
+                features_.emplace_back(
+                    std::make_unique<PlaceNameFeature>(std::move(location_data))
+                );
             }
         }
 
@@ -258,6 +265,10 @@ namespace paxs {
             std::cout << "Loading geographic features..." << std::endl;
             loadGeographicFeatures();
             std::cout << "Geographic features loaded: " << features_.size() << " total" << std::endl;
+
+            std::cout << "Loading place name features..." << std::endl;
+            loadPlaceNameFeatures();
+            std::cout << "Place name features loaded: " << features_.size() << " total" << std::endl;
 
             std::cout << "Loading genome features..." << std::endl;
             loadGenomeFeatures();

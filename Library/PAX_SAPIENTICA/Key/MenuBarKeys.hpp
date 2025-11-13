@@ -32,17 +32,19 @@ namespace paxs {
         // メニューバー全体
         constexpr const char* view_menu = "view_menu";
         constexpr const char* place_names_menu = "place_names_menu";
+        constexpr const char* item_menu = "item_menu";
+        constexpr const char* structure_menu = "structure_menu";
         constexpr const char* map_menu = "map_menu";
 
         // View メニュー
-        constexpr const char* view_header = "menu_bar_view";
-        constexpr const char* view_calendar = "menu_bar_view_calendar";
-        constexpr const char* view_map = "menu_bar_view_map";
-        constexpr const char* view_ui = "menu_bar_view_ui";
-        constexpr const char* view_simulation = "menu_bar_view_simulation";
-        constexpr const char* view_license = "menu_bar_view_license";
-        constexpr const char* view_debug = "menu_bar_view_debug";
-        constexpr const char* view_3d = "menu_bar_view_3d";
+        constexpr const char* view_header = "view_header";
+        constexpr const char* view_calendar = "view_calendar";
+        constexpr const char* view_map = "view_map";
+        constexpr const char* view_ui = "view_ui";
+        constexpr const char* view_simulation = "view_simulation";
+        constexpr const char* view_license = "view_license";
+        constexpr const char* view_debug = "view_debug";
+        constexpr const char* view_3d = "view_3d";
 
         /// @brief View メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array view_menu_hashes = {
@@ -56,37 +58,61 @@ namespace paxs {
             // MurMur3::calcHash(view_3d)
         };
 
-        // Feature メニュー
-        constexpr const char* place_names_header = "place_names";
-        constexpr const char* place_name = "place_names_place_name";
-        constexpr const char* site = "place_names_site";
-        constexpr const char* tumulus = "place_names_tumulus";
-        constexpr const char* dolmen = "place_names_dolmen";
-        constexpr const char* kamekanbo = "place_names_kamekanbo";
-        constexpr const char* stone_coffin = "place_names_stone_coffin";
-        constexpr const char* doken = "place_names_doken";
-        constexpr const char* dotaku = "place_names_dotaku";
-        constexpr const char* bronze_mirror = "place_names_bronze_mirror";
+        // Place Names メニュー
+        constexpr const char* place_names_header = "place_names_header";
+        constexpr const char* ancient_text = "ancient_text";
+        constexpr const char* administrative = "administrative";
+        constexpr const char* indigenous = "indigenous";
+        constexpr const char* historical_state = "historical_state";
+        constexpr const char* general = "general";
+
+        // Item メニュー
+        constexpr const char* item = "item";
+        constexpr const char* kamekanbo = "kamekanbo";
+        constexpr const char* stone_coffin = "stone_coffin";
+        constexpr const char* doken = "doken";
+        constexpr const char* dotaku = "dotaku";
+        constexpr const char* coin = "coin";
+
+        // Structure メニュー
+        constexpr const char* structure = "structure";
+        constexpr const char* site = "site";
+        constexpr const char* tomb = "tomb";
+        constexpr const char* dolmen = "dolmen";
 
         // Genome メニュー
         constexpr const char* genomes_menu = "genomes_menu";
-        constexpr const char* genomes_header = "genomes";
-        constexpr const char* human_bone = "genomes_human_bone";
-        constexpr const char* mtdna = "genomes_mtdna";
-        constexpr const char* ydna = "genomes_ydna";
+        constexpr const char* genomes_header = "genomes_header";
+        constexpr const char* human_bone = "human_bone";
+        constexpr const char* mtdna = "mtdna";
+        constexpr const char* ydna = "ydna";
 
-        /// @brief Feature メニューの全項目ハッシュ配列（タイトル含む）
-        inline constexpr std::array feature_menu_hashes = {
+        /// @brief Place Names メニューの全項目ハッシュ配列（タイトル含む）
+        inline constexpr std::array place_names_menu_hashes = {
             MurMur3::calcHash(place_names_header),
-            MurMur3::calcHash(place_name),
-            MurMur3::calcHash(site),
-            MurMur3::calcHash(tumulus),
-            MurMur3::calcHash(dolmen),
+            MurMur3::calcHash(ancient_text),
+            MurMur3::calcHash(administrative),
+            MurMur3::calcHash(indigenous),
+            MurMur3::calcHash(historical_state),
+            MurMur3::calcHash(general)
+        };
+
+        /// @brief Item メニューの全項目ハッシュ配列（タイトル含む）
+        inline constexpr std::array item_menu_hashes = {
+            MurMur3::calcHash(item),
             MurMur3::calcHash(kamekanbo),
             MurMur3::calcHash(stone_coffin),
             MurMur3::calcHash(doken),
             MurMur3::calcHash(dotaku),
-            MurMur3::calcHash(bronze_mirror)
+            MurMur3::calcHash(coin)
+        };
+
+        /// @brief Structure メニューの全項目ハッシュ配列（タイトル含む）
+        inline constexpr std::array structure_menu_hashes = {
+            MurMur3::calcHash(structure),
+            MurMur3::calcHash(site),
+            MurMur3::calcHash(tomb),
+            MurMur3::calcHash(dolmen)
         };
 
         /// @brief Genome メニューの全項目ハッシュ配列（タイトル含む）
@@ -98,12 +124,12 @@ namespace paxs {
         };
 
         // Map メニュー
-        constexpr const char* map_header = "menu_bar_map";
-        constexpr const char* map_land_and_water = "menu_bar_map_land_and_water";
-        constexpr const char* map_soil = "menu_bar_map_soil";
-        constexpr const char* map_ryosei_line = "menu_bar_map_ryosei_line";
-        constexpr const char* map_slope = "menu_bar_map_slope";
-        constexpr const char* map_line1 = "menu_bar_map_line1";
+        constexpr const char* map_header = "map_header";
+        constexpr const char* map_land_and_water = "map_land_and_water";
+        constexpr const char* map_soil = "map_soil";
+        constexpr const char* map_ryosei_line = "map_ryosei_line";
+        constexpr const char* map_slope = "map_slope";
+        constexpr const char* map_line1 = "map_line1";
 
         /// @brief Map メニューの全項目ハッシュ配列（タイトル含む）
         inline constexpr std::array map_menu_hashes = {
@@ -121,6 +147,8 @@ namespace paxs {
     enum class MenuBarType : std::uint_least32_t {
         view        = MurMur3::calcHash(MenuBarKeys::view_menu),
         place_names = MurMur3::calcHash(MenuBarKeys::place_names_menu),
+        item        = MurMur3::calcHash(MenuBarKeys::item_menu),
+        structure   = MurMur3::calcHash(MenuBarKeys::structure_menu),
         genomes     = MurMur3::calcHash(MenuBarKeys::genomes_menu),
         map         = MurMur3::calcHash(MenuBarKeys::map_menu),
     };
@@ -141,34 +169,50 @@ namespace paxs {
     /// @brief Place Namesメニューの項目識別子
     /// @brief Place Names menu item identifiers
     enum class PlaceNamesMenu : std::uint_least32_t {
-        place_name     = MurMur3::calcHash("place_name"),
-        site           = MurMur3::calcHash("site"),
-        tumulus        = MurMur3::calcHash("tumulus"),
-        dolmen         = MurMur3::calcHash("dolmen"),
-        kamekanbo      = MurMur3::calcHash("kamekanbo"),
-        stone_coffin   = MurMur3::calcHash("stone_coffin"),
-        doken          = MurMur3::calcHash("doken"),
-        dotaku         = MurMur3::calcHash("dotaku"),
-        bronze_mirror  = MurMur3::calcHash("bronze_mirror"),
+        ancient_text     = MurMur3::calcHash(MenuBarKeys::ancient_text),
+        administrative   = MurMur3::calcHash(MenuBarKeys::administrative),
+        indigenous       = MurMur3::calcHash(MenuBarKeys::indigenous),
+        historical_state = MurMur3::calcHash(MenuBarKeys::historical_state),
+        general          = MurMur3::calcHash(MenuBarKeys::general),
     };
     template<> struct MenuItemEnum<PlaceNamesMenu> { using enum_type = PlaceNamesMenu; };
+
+    /// @brief Itemメニューの項目識別子
+    /// @brief Item menu item identifiers
+    enum class ItemMenu : std::uint_least32_t {
+        kamekanbo    = MurMur3::calcHash(MenuBarKeys::kamekanbo),
+        stone_coffin = MurMur3::calcHash(MenuBarKeys::stone_coffin),
+        doken        = MurMur3::calcHash(MenuBarKeys::doken),
+        dotaku       = MurMur3::calcHash(MenuBarKeys::dotaku),
+        coin         = MurMur3::calcHash(MenuBarKeys::coin),
+    };
+    template<> struct MenuItemEnum<ItemMenu> { using enum_type = ItemMenu; };
+
+    /// @brief Structureメニューの項目識別子
+    /// @brief Structure menu item identifiers
+    enum class StructureMenu : std::uint_least32_t {
+        site   = MurMur3::calcHash(MenuBarKeys::site),
+        tomb   = MurMur3::calcHash(MenuBarKeys::tomb),
+        dolmen = MurMur3::calcHash(MenuBarKeys::dolmen),
+    };
+    template<> struct MenuItemEnum<StructureMenu> { using enum_type = StructureMenu; };
 
     /// @brief Genomeメニューの項目識別子
     /// @brief Genome menu item identifiers
     enum class GenomeMenu : std::uint_least32_t {
-        human_bone     = MurMur3::calcHash("bone"),
-        mtdna          = MurMur3::calcHash("mtdna"),
-        ydna           = MurMur3::calcHash("ydna"),
+        human_bone     = MurMur3::calcHash(MenuBarKeys::human_bone),
+        mtdna          = MurMur3::calcHash(MenuBarKeys::mtdna),
+        ydna           = MurMur3::calcHash(MenuBarKeys::ydna),
     };
     template<> struct MenuItemEnum<GenomeMenu> { using enum_type = GenomeMenu; };
 
     /// @brief Mapメニューの項目識別子（地図レイヤー）
     /// @brief Map menu item identifiers (map layers)
     enum class MapLayersMenu : std::uint_least32_t {
-        land_and_water = MurMur3::calcHash("menu_bar_map_land_and_water"),
-        soil           = MurMur3::calcHash("menu_bar_map_soil"),
-        ryosei_line    = MurMur3::calcHash("menu_bar_map_ryosei_line"),
-        slope          = MurMur3::calcHash("menu_bar_map_slope"),
+        land_and_water = MurMur3::calcHash(MenuBarKeys::map_land_and_water),
+        soil           = MurMur3::calcHash(MenuBarKeys::map_soil),
+        ryosei_line    = MurMur3::calcHash(MenuBarKeys::map_ryosei_line),
+        slope          = MurMur3::calcHash(MenuBarKeys::map_slope),
         line1          = MurMur3::calcHash(MenuBarKeys::map_line1),
     };
     template<> struct MenuItemEnum<MapLayersMenu> { using enum_type = MapLayersMenu; };
