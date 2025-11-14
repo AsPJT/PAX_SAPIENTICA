@@ -152,13 +152,6 @@ public:
 
     // ========== Geographic 固有のアクセサ / Geographic-specific Accessors ==========
 
-    /// @brief アイコンテクスチャを取得（将来の実装用）
-    /// @brief Get icon texture (for future implementation)
-    const paxg::Texture* getIconTexture() const {
-        // TODO: TextureManagerから取得するように実装
-        return nullptr;
-    }
-
     /// @brief 複数タイルにまたがるかチェック
     /// @brief Check if feature spans multiple tiles
     bool hasMultipleTiles() const {

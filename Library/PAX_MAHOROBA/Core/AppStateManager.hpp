@@ -192,14 +192,7 @@ public:
 
             const double new_jdn = koyomi_.jdn.cgetDay();
             if (old_jdn != new_jdn) {
-                // グレゴリオ暦から年月日を取得
-                auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-                paxs::EventBus::getInstance().publish(DateChangedEvent(
-                    new_jdn,
-                    gregorian_date.cgetYear(),
-                    gregorian_date.cgetMonth(),
-                    gregorian_date.cgetDay()
-                ));
+                publishDateChangedEvent();
             }
         }
 
@@ -358,12 +351,9 @@ private:
         }
     }
 
-    /// @brief 日付移動コマンドを処理
-    void handleDateNavigation(const DateNavigationEvent& event) {
-        koyomi_.jdn.getDay() += event.days;
-        koyomi_.calcDate();
-
-        // 日付変更イベント発行
+    /// @brief 日付変更イベントを発行
+    /// @brief Publish date changed event
+    void publishDateChangedEvent() const {
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
         paxs::EventBus::getInstance().publish(DateChangedEvent(
             koyomi_.jdn.cgetDay(),
@@ -374,30 +364,45 @@ private:
     }
 
 #ifdef PAXS_USING_SIMULATOR
+    /// @brief Koyomiのステップと日付をリセット
+    /// @brief Reset Koyomi steps and date
+    void resetKoyomiStepsAndDate() {
+        koyomi_.steps.setDay(0);
+        koyomi_.calcDate();
+    }
+
+    /// @brief Koyomiの状態をリセット（シミュレーション停止状態へ）
+    /// @brief Reset Koyomi state to stopped simulation state
+    void resetKoyomiToStoppedState() {
+        resetKoyomiStepsAndDate();
+        koyomi_.is_agent_update = false;
+        koyomi_.move_forward_in_time = false;
+        koyomi_.go_back_in_time = false;
+    }
+#endif
+
+    /// @brief 日付移動コマンドを処理
+    void handleDateNavigation(const DateNavigationEvent& event) {
+        koyomi_.jdn.getDay() += event.days;
+        koyomi_.calcDate();
+        publishDateChangedEvent();
+    }
+
+#ifdef PAXS_USING_SIMULATOR
     /// @brief シミュレーション初期化コマンドを処理
     void handleSimulationInitialize(const SimulationInitializeCommandEvent& event) {
         simulation_manager_.simulationInitialize(event.model_name);
 
         // シミュレーション初期化
         simulation_manager_.initSimulation();
-        // TODO: SimulationManagerにgetStartDate()を追加して適切な開始日を設定する
-        koyomi_.steps.setDay(0);
 
-        koyomi_.calcDate();
-        koyomi_.is_agent_update = false;
-        koyomi_.move_forward_in_time = false;
-        koyomi_.go_back_in_time = false;
+        // SimulationConstantsからstart_julian_dayを取得してKoyomiにセット
+        koyomi_.jdn.setDay(SimulationConstants::getInstance()->start_julian_day);
+        resetKoyomiToStoppedState();
 
         // 状態変更イベント発行
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
-
-        auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        paxs::EventBus::getInstance().publish(DateChangedEvent(
-            koyomi_.jdn.cgetDay(),
-            gregorian_date.cgetYear(),
-            gregorian_date.cgetMonth(),
-            gregorian_date.cgetDay()
-        ));
+        publishDateChangedEvent();
     }
 
     /// @brief シミュレーション再生コマンドを処理
@@ -443,21 +448,12 @@ private:
         }
         koyomi_.jdn += event.steps;
 
-        paxs::EventBus& event_bus = paxs::EventBus::getInstance();
-
         // 状態変更イベント発行
-        event_bus.publish(SimulationStepExecutedEvent(
+        paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
             static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay()),
             static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
         ));
-
-        auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        event_bus.publish(DateChangedEvent(
-            koyomi_.jdn.cgetDay(),
-            gregorian_date.cgetYear(),
-            gregorian_date.cgetMonth(),
-            gregorian_date.cgetDay()
-        ));
+        publishDateChangedEvent();
     }
 
     /// @brief シミュレーション入力データ再読み込みコマンドを処理
@@ -468,22 +464,11 @@ private:
     /// @brief 人間データ初期化コマンドを処理
     void handleInitHumanData(const InitHumanDataCommandEvent& event) {
         simulation_manager_.initHumanData(event.model_name);
-        koyomi_.steps.setDay(0);
-        koyomi_.calcDate();
-        koyomi_.is_agent_update = false;
-        koyomi_.move_forward_in_time = false;
-        koyomi_.go_back_in_time = false;
+        resetKoyomiToStoppedState();
 
         // 状態変更イベント発行
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
-
-        auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        paxs::EventBus::getInstance().publish(DateChangedEvent(
-            koyomi_.jdn.cgetDay(),
-            gregorian_date.cgetYear(),
-            gregorian_date.cgetMonth(),
-            gregorian_date.cgetDay()
-        ));
+        publishDateChangedEvent();
     }
 
     /// @brief シミュレーションクリアコマンドを処理
@@ -491,19 +476,11 @@ private:
     void handleSimulationClear(const SimulationClearCommandEvent& /*event*/) {
         // シミュレーションを初期化前の状態に戻す
         simulation_manager_.clear();
-        koyomi_.steps.setDay(0);
-        koyomi_.calcDate();
+        resetKoyomiStepsAndDate();
 
         // 状態変更イベント発行（初期化前の状態に戻す）
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Uninitialized));
-
-        auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
-        paxs::EventBus::getInstance().publish(DateChangedEvent(
-            koyomi_.jdn.cgetDay(),
-            gregorian_date.cgetYear(),
-            gregorian_date.cgetMonth(),
-            gregorian_date.cgetDay()
-        ));
+        publishDateChangedEvent();
     }
 #endif
 };

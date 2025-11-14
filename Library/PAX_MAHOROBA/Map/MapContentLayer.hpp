@@ -29,6 +29,7 @@
 #include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Map/MapAssetRegistry.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
@@ -54,10 +55,8 @@ namespace paxs {
         std::vector<std::unique_ptr<MapFeature>> features_; ///< 地物のコレクション / Collection of features
         RenderContext render_context_; ///< 描画コンテキスト / Render context
 
-        // テクスチャマップ
-        paxs::KeyValueTSV<paxg::Texture> person_texture_map_; ///< 人物用テクスチャマップ / Person texture map
-        paxs::KeyValueTSV<paxg::Texture> geographic_texture_map_; ///< 地理用テクスチャマップ / Geographic texture map
-        paxs::KeyValueTSV<paxg::Texture> genome_texture_map_; ///< ゲノム用テクスチャマップ / Genome texture map
+        // アセット管理
+        MapAssetRegistry asset_registry_; ///< 地図アイコンアセットレジストリ / Map icon asset registry
 #ifdef PAXS_USING_SIMULATOR
         SettlementManager settlement_manager_{}; // 集落管理
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
@@ -178,7 +177,7 @@ namespace paxs {
             const std::string portraits_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("Portraits"));
 
             if (portraits_path.size() > 0) {
-                person_texture_map_.input(portraits_path);
+                asset_registry_.loadPersonIcons(portraits_path);
             }
 
             // 容量を事前確保
@@ -197,12 +196,6 @@ namespace paxs {
 
         /// @brief 地理的地物データを読み込み
         void loadGeographicFeatures() {
-            // 地理的特徴用のテクスチャを読み込み
-            const std::string map_icons_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MapIcons"));
-            if (map_icons_path.size() > 0) {
-                geographic_texture_map_.input(map_icons_path);
-            }
-
             // 容量を事前確保（地理的地物は多いため5000を確保）
             const std::size_t current_capacity = features_.capacity();
             const std::size_t estimated_geographic_count = 5000;
@@ -235,12 +228,6 @@ namespace paxs {
 
         /// @brief ゲノムデータを読み込み
         void loadGenomeFeatures() {
-            // ゲノム用のテクスチャを読み込み（MapIconsと同じものを使用）
-            const std::string map_icons_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MapIcons"));
-            if (map_icons_path.size() > 0) {
-                genome_texture_map_.input(map_icons_path);
-            }
-
             // 容量を事前確保
             const std::size_t current_capacity = features_.capacity();
             const std::size_t estimated_genome_count = 500;
@@ -258,6 +245,13 @@ namespace paxs {
         /// @brief 全データを読み込み
         void loadAllFeatures() {
             features_.clear();
+
+            // MapIconsを1回だけロード（地理・ゲノム共用）
+            const std::string map_icons_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MapIcons"));
+            if (map_icons_path.size() > 0) {
+                asset_registry_.loadMapIcons(map_icons_path);
+            }
+
             std::cout << "Loading person features..." << std::endl;
             loadPersonFeatures();
             std::cout << "Person features loaded: " << features_.size() << std::endl;
@@ -273,6 +267,9 @@ namespace paxs {
             std::cout << "Loading genome features..." << std::endl;
             loadGenomeFeatures();
             std::cout << "Genome features loaded: " << features_.size() << " total" << std::endl;
+
+            // 全アイコンをマージ
+            asset_registry_.mergeCategories();
         }
 
     public:
@@ -300,14 +297,7 @@ namespace paxs {
         void render() const override {
             if (!isVisible()) return;
 
-            UnorderedMap<std::uint_least32_t, paxg::Texture> merged_textures = person_texture_map_.get();
-            for (const auto& [key, texture] : geographic_texture_map_.get()) {
-                merged_textures.emplace(key, texture);
-            }
-            for (const auto& [key, texture] : genome_texture_map_.get()) {
-                merged_textures.emplace(key, texture);
-            }
-            MapFeatureRenderer::drawFeatures(features_, render_context_, merged_textures);
+            MapFeatureRenderer::drawFeatures(features_, render_context_, asset_registry_.getMergedMap());
 
 #ifdef PAXS_USING_SIMULATOR
             // SettlementManager を描画（シミュレーション表示時）

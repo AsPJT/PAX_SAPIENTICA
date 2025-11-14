@@ -153,11 +153,6 @@ public:
         return interpolated_pos_;
     }
 
-    const paxg::Texture* getPortraitTexture() const {
-        // TODO: TextureManagerから取得するように実装
-        return nullptr;
-    }
-
     const PersonLocationPoint& getData() const {
         return data_;
     }
