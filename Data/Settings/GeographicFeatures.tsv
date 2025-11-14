@@ -13,7 +13,7 @@ Data/Features/EastAsia/Yaponesia/Kofun/Yosumi.tsv	tomb	日本の四隅突出型�
 Data/Features/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1				1
 Data/Features/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1				1
 Data/Features/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1				1
-Data/Features/EastAsia/Korea/Site.tsv	site	韓国の遺跡	0	0.5				1
+Data/Features/EastAsia/Korea/Site.tsv	site	韓国の遺跡	0	0.5				3
 Data/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石室	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	0.1				1
 Data/Items/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	0.1				1
