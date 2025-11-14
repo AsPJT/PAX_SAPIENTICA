@@ -212,6 +212,9 @@ private:
         const auto& screen_positions = feature.getScreenPositions();
         const int display_size = feature.getDisplaySize();
 
+        // 名前表示の閾値（表示サイズが小さい場合は名前を表示しない）
+        const bool should_show_name = (display_size >= 15);
+
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
             // エージェントアイコン描画
@@ -239,6 +242,16 @@ private:
                 data.y_size,
                 is_zoomed
             );
+
+            // 名前を描画（表示サイズが十分な場合のみ）
+            if (should_show_name && !data.place_name.empty()) {
+                // テクスチャの上部に名前を描画
+                const paxg::Vec2i text_pos = paxg::Vec2i{
+                    draw_pos.x(),
+                    draw_pos.y() - display_size / 2 - 5  // アイコンの上部から少し離す
+                };
+                LocationRendererHelper::drawBilingualText(data.place_name, text_pos, "bottomCenter");
+            }
         }
     }
 
