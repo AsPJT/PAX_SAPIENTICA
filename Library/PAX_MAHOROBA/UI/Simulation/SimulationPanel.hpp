@@ -24,6 +24,7 @@
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationControlButton.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationStatsWidget.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationState.hpp>
@@ -40,10 +41,7 @@ namespace paxs {
     private:
         const paxs::FeatureVisibilityManager& visibility_manager_;
         const AppStateManager& app_state_manager_;
-
-        // UI配置定数
-        static constexpr int pulldown_y_position = 600;
-        static constexpr int pulldown_right_margin = 200;
+        const UILayout& ui_layout_;
 
         paxs::Pulldown simulation_pulldown;
         SimulationControlButtons control_buttons_;
@@ -60,14 +58,6 @@ namespace paxs {
             EventBus::getInstance().subscribe<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent&) {
                     simulation_pulldown.updateLanguage();
-                    calculateLayout();
-                }
-            );
-
-            // ウィンドウリサイズイベントを購読してレイアウトを再計算
-            EventBus::getInstance().subscribe<WindowResizedEvent>(
-                [this](const WindowResizedEvent&) {
-                    calculateLayout();
                 }
             );
 
@@ -143,9 +133,11 @@ namespace paxs {
         // コンストラクタ
         SimulationPanel(
             const paxs::FeatureVisibilityManager& visibility_manager,
-            const AppStateManager& app_state_manager
+            const AppStateManager& app_state_manager,
+            const UILayout& ui_layout
         ) : visibility_manager_(visibility_manager),
             app_state_manager_(app_state_manager),
+            ui_layout_(ui_layout),
 #ifdef PAXS_USING_SIMULATOR
             stats_widget_(app_state_manager.getSimulationManager()),
 #endif
@@ -233,16 +225,19 @@ namespace paxs {
         /// @brief レイアウトを再計算
         void calculateLayout() {
 #ifdef PAXS_USING_SIMULATOR
+            // プルダウンの位置をUILayoutから取得
             simulation_pulldown.setPos(paxg::Vec2i{
-                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - pulldown_right_margin),
-                pulldown_y_position
+                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - ui_layout_.simulation_pulldown_right_margin),
+                ui_layout_.simulation_pulldown_y_position
             });
 
-            control_buttons_.layoutButtons();
+            // ボタンレイアウトをUILayoutの情報で更新
+            control_buttons_.setButtonsBaseY(ui_layout_.simulation_buttons_base_y);
 
+            // 統計ウィジェットの位置
             stats_widget_.setPos(paxg::Vec2i{
                 static_cast<int>(paxg::Window::width() - 250),
-                pulldown_y_position
+                ui_layout_.simulation_pulldown_y_position
             });
 #endif
         }

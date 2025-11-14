@@ -227,6 +227,16 @@ private:
             }
             key_states_[key_code] = is_pressed;
         }
+        // マイナス記号（ASCII 45）
+        {
+            bool is_pressed = paxg::Key(paxg::PAXG_KEY_MINUS).isPressed();
+            int key_code = static_cast<int>('-');
+
+            if (is_pressed && !key_states_[key_code]) {
+                debug_layer_->getConsole().handleTextInput('-');
+            }
+            key_states_[key_code] = is_pressed;
+        }
     }
 #endif // PAXS_DEVELOPMENT
 

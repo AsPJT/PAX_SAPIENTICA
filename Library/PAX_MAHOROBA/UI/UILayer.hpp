@@ -85,6 +85,9 @@ namespace paxs {
                     // UIレイアウトを再計算
                     ui_layout.calculate(koyomi_date_list_size, calendar_panel.getTimeControlHeight());
                     calendar_panel.updateButtonLayout();
+#ifdef PAXS_USING_SIMULATOR
+                    simulation_panel.calculateLayout();
+#endif
                 }
             );
 
@@ -94,6 +97,9 @@ namespace paxs {
                     (void)event;
                     // 言語変更時はレイアウト再計算が必要
                     ui_layout.calculate(koyomi_date_list_size, calendar_panel.getTimeControlHeight());
+#ifdef PAXS_USING_SIMULATOR
+                    simulation_panel.calculateLayout();
+#endif
                 }
             );
 
@@ -165,11 +171,11 @@ namespace paxs {
               feature_detail_panel(ui_layout, visible_manager),
 #ifdef PAXS_USING_SIMULATOR
               settlement_status_panel(visible_manager),
-              simulation_panel(visible_manager, app_state_manager),
+              simulation_panel(visible_manager, app_state_manager, ui_layout),
 #endif
               calendar_bg_("CalendarBackground", &ui_layout.calendar_panel),
               debug_info_bg_("DebugInfoBackground", &ui_layout.debug_info_panel),
-              feature_detail_bg_("FeatureDetailBackground", &ui_layout.feature_detail_panel)
+              feature_detail_bg_("FeatureDetailBackground", &feature_detail_panel)
 #ifdef PAXS_USING_SIMULATOR
               , simulation_bg_("SimulationBackground", &ui_layout.simulation_panel)
               , settlement_status_bg_("SettlementStatusBackground", &ui_layout.settlement_status_panel)
@@ -201,7 +207,6 @@ namespace paxs {
             calendar_panel.updateButtonLayout();
 
 #ifdef PAXS_USING_SIMULATOR
-            simulation_panel.getControlButtons().setButtonsBaseY(ui_layout.koyomi_font_y + ui_layout.next_rect_start_y + 20);
             simulation_panel.calculateLayout();
 #endif
         }

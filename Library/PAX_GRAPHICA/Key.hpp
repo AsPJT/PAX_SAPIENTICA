@@ -112,6 +112,7 @@ namespace paxg {
     constexpr InputKey PAXG_KEY_BACKSPACE = s3d::KeyBackspace;
     constexpr InputKey PAXG_KEY_SPACE = s3d::KeySpace;
     constexpr InputKey PAXG_KEY_TAB = s3d::KeyTab;
+    constexpr InputKey PAXG_KEY_MINUS = s3d::KeyMinus;
 #undef PAXG_DEFINE_KEY_COMMON
 
 #elif defined(PAXS_USING_DXLIB)
@@ -140,6 +141,7 @@ namespace paxg {
     inline const InputKey PAXG_KEY_BACKSPACE = PAXG_KEY_BACK;
     PAXG_DXLIB_KEY(SPACE)
     PAXG_DXLIB_KEY(TAB)
+    PAXG_DXLIB_KEY(MINUS)
 #undef PAXG_DXLIB_KEY
 
 #elif defined(PAXS_USING_SFML)
@@ -172,6 +174,7 @@ namespace paxg {
     inline const InputKey PAXG_KEY_BACKSPACE = InputKey{sf::Keyboard::Key::Backspace};
     inline const InputKey PAXG_KEY_SPACE = InputKey{sf::Keyboard::Key::Space};
     inline const InputKey PAXG_KEY_TAB = InputKey{sf::Keyboard::Key::Tab};
+    inline const InputKey PAXG_KEY_MINUS = InputKey{sf::Keyboard::Key::Hyphen};
 
 #else
     using InputKey = InputStruct;
@@ -186,6 +189,7 @@ namespace paxg {
     inline const InputKey PAXG_KEY_BACKSPACE = InputStruct{};
     inline const InputKey PAXG_KEY_SPACE = InputStruct{};
     inline const InputKey PAXG_KEY_TAB = InputStruct{};
+    inline const InputKey PAXG_KEY_MINUS = InputStruct{};
 
 #endif
 

@@ -45,6 +45,17 @@ namespace paxs {
         std::string feature_type_name_;
         paxs::UnorderedMap<std::uint_least32_t, std::string> extra_data_;
 
+        // 動的に計算されるパネルの高さ
+        mutable int calculated_height_ = 0;
+        mutable int calculated_lines_ = 0;
+
+        /// @brief パネルのY座標を計算（下部固定）
+        int calculatePanelY() const {
+            const int panel_height = (calculated_height_ > 0) ? calculated_height_ : ui_layout_.feature_detail_panel_height;
+            const int panel_bottom = paxg::Window::height() - ui_layout_.feature_detail_panel_bottom_margin;
+            return panel_bottom - panel_height;
+        }
+
         /// @brief 長い文字列を複数行に分割して描画
         /// @brief Draw long text with word wrapping
         /// @param font フォント / Font
@@ -143,11 +154,12 @@ namespace paxs {
 
             // 閉じるボタンのクリック判定
             if (event.left_button_state == MouseButtonState::Pressed) {
-                // 閉じるボタンの領域（パネル右上）
+                // 閉じるボタンの領域（パネル右上）- 動的に計算
+                const int panel_y = calculatePanelY();
                 const int close_button_size = 20;
                 const int close_button_x = ui_layout_.feature_detail_panel.x +
                                           ui_layout_.feature_detail_panel.width - close_button_size - 5;
-                const int close_button_y = ui_layout_.feature_detail_panel.y + 5;
+                const int close_button_y = panel_y + 5;
 
                 // クリック位置が閉じるボタン内か判定
                 if (event.x >= close_button_x &&
@@ -173,10 +185,15 @@ namespace paxs {
 
             font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 
-            const int text_x = ui_layout_.feature_detail_panel.content_x;
-            const int text_y = ui_layout_.feature_detail_panel.content_y;
+            // パネルの動的な位置を計算
             const int line_height = 25;
-            const int max_text_width = ui_layout_.feature_detail_panel.content_width;
+            const int padding_top = 10;
+            const int padding_left = 10;
+            const int panel_y = calculatePanelY();
+
+            const int text_x = ui_layout_.feature_detail_panel.x + padding_left;
+            const int text_y = panel_y + padding_top;
+            const int max_text_width = ui_layout_.feature_detail_panel.width - padding_left * 2;
 
             int current_line = 0;
 
@@ -295,11 +312,11 @@ namespace paxs {
                 }
             }
 
-            // 閉じるボタンを描画
+            // 閉じるボタンを描画（動的に計算されたパネル位置を使用）
             const int close_button_size = 20;
             const int close_button_x = ui_layout_.feature_detail_panel.x +
                                       ui_layout_.feature_detail_panel.width - close_button_size - 5;
-            const int close_button_y = ui_layout_.feature_detail_panel.y + 5;
+            const int close_button_y = panel_y + 5;
 
             // 閉じるボタンの背景（薄い赤）
             paxg::Rect close_button_bg(
@@ -316,20 +333,36 @@ namespace paxs {
                 paxg::Vec2i(close_button_x + 2, close_button_y),
                 paxg::Color(255, 255, 255)
             );
+
+            // 計算された行数と高さを保存
+            calculated_lines_ = current_line;
+            const int padding_bottom = 10;
+            calculated_height_ = (current_line + 1) * line_height + padding_top + padding_bottom;
         }
 
         paxg::Rect getRect() const override {
-            return ui_layout_.feature_detail_panel.getRect();
+            // 動的に計算された高さを使用
+            // 下部を固定し、上に伸びるように計算
+            const int panel_height = (calculated_height_ > 0) ? calculated_height_ : ui_layout_.feature_detail_panel_height;
+            const int panel_y = calculatePanelY();
+
+            return paxg::Rect(
+                static_cast<float>(ui_layout_.feature_detail_panel.x),
+                static_cast<float>(panel_y),
+                static_cast<float>(ui_layout_.feature_detail_panel.width),
+                static_cast<float>(panel_height)
+            );
         }
 
         bool isHit(int x, int y) const override {
             if (!isVisible()) return false;
 
-            // 閉じるボタンのヒット判定
+            // 閉じるボタンのヒット判定 - 動的に計算
+            const int panel_y = calculatePanelY();
             const int close_button_size = 20;
             const int close_button_x = ui_layout_.feature_detail_panel.x +
                                       ui_layout_.feature_detail_panel.width - close_button_size - 5;
-            const int close_button_y = ui_layout_.feature_detail_panel.y + 5;
+            const int close_button_y = panel_y + 5;
 
             return (x >= close_button_x &&
                     x <= close_button_x + close_button_size &&

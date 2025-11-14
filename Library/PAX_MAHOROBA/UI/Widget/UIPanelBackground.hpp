@@ -28,12 +28,13 @@ namespace paxs {
     private:
         const char* name_;
         const PanelLayout* layout;
+        const IWidget* widget_; // 動的なパネル用（優先）
         const paxg::Color bg_color_;
         const int corner_radius_;
         bool visible_ = true;
 
     public:
-        /// @brief コンストラクタ
+        /// @brief コンストラクタ（PanelLayout使用）
         /// @param name パネル名（"HeaderBackground"等）
         /// @param bg_color 背景色（デフォルト: 薄灰色 {243, 243, 243}）
         /// @param corner_radius 角の丸み半径（デフォルト: 10）
@@ -47,9 +48,33 @@ namespace paxs {
             , bg_color_(bg_color)
             , corner_radius_(corner_radius)
             , layout(layout)
+            , widget_(nullptr)
+        {}
+
+        /// @brief コンストラクタ（IWidget使用 - 動的パネル用）
+        /// @param name パネル名
+        /// @param widget 動的なパネルへのポインタ
+        /// @param bg_color 背景色
+        /// @param corner_radius 角の丸み半径
+        UIPanelBackground(
+            const char* name,
+            const IWidget* widget,
+            const paxg::Color& bg_color = paxg::Color{243, 243, 243},
+            int corner_radius = 10
+        )
+            : name_(name)
+            , bg_color_(bg_color)
+            , corner_radius_(corner_radius)
+            , layout(nullptr)
+            , widget_(widget)
         {}
 
         paxg::Rect getRect() const override {
+            // widgetが設定されている場合はそちらを優先（動的パネル）
+            if (widget_) {
+                return widget_->getRect();
+            }
+            // 従来のPanelLayout使用
             if (layout) {
                 return layout->getRect();
             }
@@ -69,6 +94,25 @@ namespace paxs {
 
         void render() const override {
             if (!visible_) return;
+
+            // widget_が設定されている場合（動的パネル）
+            if (widget_) {
+                const paxg::Rect rect = widget_->getRect();
+                if (rect.w() <= 0 || rect.h() <= 0) {
+                    PAXS_WARNING(std::string("UIPanelBackground::render: ") + name_ + " (widget) has non-positive dimensions, skipping render");
+                    return;
+                }
+                PanelBackgroundRenderer::draw(
+                    static_cast<int>(rect.x()),
+                    static_cast<int>(rect.y()),
+                    static_cast<int>(rect.w()),
+                    static_cast<int>(rect.h()),
+                    corner_radius_, bg_color_
+                );
+                return;
+            }
+
+            // layoutが設定されている場合（従来）
             if (!layout) {
                 PAXS_WARNING(std::string("UIPanelBackground::render: ") + name_ + " layout is not set, skipping render");
                 return;

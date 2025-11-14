@@ -110,6 +110,12 @@ namespace paxs {
         const int feature_detail_panel_x = 10 + 300 + 20; // debug_info_panel_x + width + margin
         const int feature_detail_panel_width = 450; // テキスト幅 + パディング（長い文字列に対応）
         const int feature_detail_panel_height = 350; // テキスト高さ + パディング（より多くの情報に対応）
+        const int feature_detail_panel_bottom_margin = 10; // 画面下部からのマージン
+
+        // シミュレーションコントロールボタンの位置
+        int simulation_buttons_base_y = 0;  // calculate()内で設定
+        static constexpr int simulation_pulldown_right_margin = 200;
+        static constexpr int simulation_pulldown_y_position = 600;
 
         UILayout() {
             settlement_status_panel.x = settlement_status_panel_x;
@@ -160,6 +166,9 @@ namespace paxs {
             simulation_panel.width = rect_len_x;
             simulation_panel.height = next_rect_end_y;
             simulation_panel.calculateContentArea();
+
+            // SimulationControlButtonsの基準Y座標
+            simulation_buttons_base_y = koyomi_font_y + next_rect_start_y + 20;
 
             // DebugInfoPanelのレイアウト
             debug_info_panel.x = debug_info_panel_x;

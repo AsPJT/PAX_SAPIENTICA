@@ -69,6 +69,11 @@ namespace paxs {
             setPos(paxg::Vec2i{ x, y });
             setSize(paxg::Vec2i{ size, size });
         }
+
+        void setButtonPos(int x, int y, int size) {
+            setPos(paxg::Vec2i{ x, y });
+            setSize(paxg::Vec2i{ size, size });
+        }
     private:
         Id id_ = Id::None;
         ClickCallback on_click_;
