@@ -27,3 +27,5 @@ texture_load_agent_data	Data/MenuIcon/LoadAgentData.svg
 texture_load_agent_data2	Data/MenuIcon/LoadAgentData2.svg
 texture_load_geographic_data	Data/MenuIcon/LoadGeographicData.svg
 texture_load_geographic_data2	Data/MenuIcon/LoadGeographicData2.svg
+texture_close	Data/MenuIcon/Close.svg
+texture_web	Data/MenuIcon/Web.svg
