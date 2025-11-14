@@ -147,6 +147,46 @@ namespace paxs {
         TileRange current_range_{{0, 0}, {0, 0}};
 
     private:
+        /// @brief ファイル名フォーマットを構築（プラットフォーム固有処理を含む）
+        /// @brief Build file name format (including platform-specific processing)
+        /// @param texture_root_path_type テクスチャルートパスタイプ
+        /// @param map_file_path_name マップファイルパス名
+        /// @param file_name_format_ ファイル名フォーマット
+        /// @return 構築されたファイル名フォーマット
+        static std::string buildFileNameFormat(
+            std::uint_least32_t texture_root_path_type,
+            const std::string& map_file_path_name,
+            const std::string& file_name_format_
+        ) {
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            static char internal_data_path[1024]{};
+
+            switch (texture_root_path_type) {
+            case paxs::MurMur3::calcHash("asset_file"):
+                return map_file_path_name + file_name_format_ + ".png";
+            case paxs::MurMur3::calcHash("internal_file"):
+                DxLib::GetInternalDataPath(internal_data_path, 1024);
+                return std::string(internal_data_path) + "/" +
+                    map_file_path_name + file_name_format_ + ".png";
+            case paxs::MurMur3::calcHash("external_file"):
+                DxLib::GetExternalDataPath(internal_data_path, 1024);
+                return std::string(internal_data_path) + "/" +
+                    map_file_path_name + file_name_format_ + ".png";
+            default:
+                printfDx("\n[error:%u,%s,%s,%s]",
+                    texture_root_path_type,
+                    "", // map_binary_name
+                    map_file_path_name.c_str(),
+                    file_name_format_.c_str());
+                return map_file_path_name + file_name_format_ + ".png";
+            }
+#else
+            // アセットルートからの相対パスとして保持
+            (void)texture_root_path_type; // 未使用警告を抑制
+            return map_file_path_name + file_name_format_ + ".png";
+#endif
+        }
+
         /// @brief ビューポートから新しいズーム状態を計算
         /// @param map_view_height ビューポートの高さ
         /// @return 計算されたズーム状態
@@ -383,32 +423,11 @@ namespace paxs {
             // フォーマットが指定されている場合
             if (file_name_format_.size() != 0) {
                 // 地図のテクスチャのファイルパスを保存
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
-                static char internal_data_path[1024]{};
-
-                switch (texture_root_path_type_) {
-                case paxs::MurMur3::calcHash("asset_file"):
-                    file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
-                    break;
-                case paxs::MurMur3::calcHash("internal_file"):
-                    DxLib::GetInternalDataPath(internal_data_path, 1024);
-                    file_name_format = std::string(internal_data_path) + "/" +
-                        map_file_path_name_ + file_name_format_ + std::string(".png");
-                    break;
-                case paxs::MurMur3::calcHash("external_file"):
-                    DxLib::GetExternalDataPath(internal_data_path, 1024);
-                    file_name_format = std::string(internal_data_path) + "/" +
-                        map_file_path_name_ + file_name_format_ + std::string(".png");
-                    break;
-                default:
-                    file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
-                    printfDx("\n[error:%u,%s,%s,%s]", texture_root_path_type_, map_binary_name_.c_str(), map_file_path_name_.c_str(), file_name_format_.c_str());
-                    break;
-                }
-#else
-                // アセットルートからの相対パスとして保持
-                file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
-#endif
+                file_name_format = buildFileNameFormat(
+                    texture_root_path_type_,
+                    map_file_path_name_,
+                    file_name_format_
+                );
             }
         }
 

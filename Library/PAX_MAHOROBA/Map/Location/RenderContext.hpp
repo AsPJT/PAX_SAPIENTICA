@@ -29,25 +29,6 @@ struct RenderContext {
     double map_view_center_y = 0.0; ///< 地図ビューの中心Y座標 / Map view center Y
     const FeatureVisibilityManager* visibility_manager = nullptr; ///< 地物種別ごとの可視性管理 / Per-feature-type visibility manager
 
-    /// @brief メルカトル座標からスクリーン座標に変換
-    /// @brief Convert Mercator coordinates to screen coordinates
-    /// @param mercator_x メルカトル座標X / Mercator X coordinate
-    /// @param mercator_y メルカトル座標Y / Mercator Y coordinate
-    /// @return スクリーン座標 / Screen coordinates
-    inline paxg::Vec2i toScreenPos(double mercator_x, double mercator_y) const {
-        return paxg::Vec2i(
-            static_cast<int>(
-                (mercator_x - (map_view_center_x - map_view_width / 2))
-                / map_view_width * double(paxg::Window::width())
-            ),
-            static_cast<int>(
-                double(paxg::Window::height())
-                - ((mercator_y - (map_view_center_y - map_view_height / 2))
-                / map_view_height * double(paxg::Window::height()))
-            )
-        );
-    }
-
     /// @brief 座標がビューの範囲内にあるかチェック
     /// @brief Check if coordinates are within view bounds
     /// @param mercator_x メルカトル座標X / Mercator X coordinate
