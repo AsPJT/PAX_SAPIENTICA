@@ -99,7 +99,8 @@ namespace paxs {
                     data.last_julian_day,
                     lpe,
                     data.texture_hash,
-                    params.zoom
+                    params.zoom,
+                    data.extra_data
                 );
             });
 

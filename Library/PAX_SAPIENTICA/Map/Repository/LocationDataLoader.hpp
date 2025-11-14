@@ -56,6 +56,28 @@ namespace paxs {
         std::uint_least32_t en_us = MurMur3::calcHash("en-US");
     };
 
+    // location_data_loader_detailの追加関数
+    namespace location_data_loader_detail {
+        /// @brief 標準カラムかどうかを判定
+        /// @brief Check if column is a standard column
+        inline bool isStandardColumn(std::uint_least32_t column_hash, const ColumnHashes& hashes) {
+            return column_hash == hashes.longitude ||
+                   column_hash == hashes.latitude ||
+                   column_hash == hashes.overall_length ||
+                   column_hash == hashes.x_size ||
+                   column_hash == hashes.y_size ||
+                   column_hash == hashes.min_size ||
+                   column_hash == hashes.max_size ||
+                   column_hash == hashes.first_julian_day ||
+                   column_hash == hashes.last_julian_day ||
+                   column_hash == hashes.first_year ||
+                   column_hash == hashes.last_year ||
+                   column_hash == hashes.texture ||
+                   column_hash == hashes.ja_jp ||
+                   column_hash == hashes.en_us;
+        }
+    }
+
     /// @brief カラムの存在フラグを保持する構造体
     /// @brief Struct to hold column existence flags
     struct ColumnFlags {
@@ -122,6 +144,10 @@ namespace paxs {
         int last_julian_day = 0;
         std::uint_least32_t texture_hash = 0;
         paxs::UnorderedMap<std::uint_least32_t, std::string> names;
+
+        /// @brief 追加カラムデータ
+        /// @brief Extra column data
+        paxs::UnorderedMap<std::uint_least32_t, std::string> extra_data;
     };
 
     /// @brief 位置データ読み込みのヘルパークラス
@@ -252,6 +278,18 @@ namespace paxs {
 
             // テクスチャハッシュの計算
             data.texture_hash = calculateTextureHash(texture_str, params.texture_hash);
+
+            // 追加カラムの読み込み
+            const std::vector<std::uint_least32_t>& header_keys = table.getHeaderKeys();
+            for (const auto& column_hash : header_keys) {
+                // 標準カラムでない場合は extra_data に格納
+                if (!location_data_loader_detail::isStandardColumn(column_hash, hashes)) {
+                    const std::string& value = table.get(row_index, column_hash);
+                    if (!value.empty()) {
+                        data.extra_data[column_hash] = value;
+                    }
+                }
+            }
 
             return data;
         }

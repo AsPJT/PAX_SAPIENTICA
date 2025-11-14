@@ -41,10 +41,11 @@ namespace paxs {
             const int max_year_,  // 可視化する時代（～新しい年）
             const std::uint_least32_t lpe_,  // 対象となる地物の種別
             const std::uint_least32_t place_texture_, // 出典
-            const double zoom_ // 拡大率
+            const double zoom_, // 拡大率
+            const paxs::UnorderedMap<std::uint_least32_t, std::string>& extra_data_ = {}  // 追加カラムデータ
         ) noexcept
             : place_name(place_name_), coordinate(coordinate_), x_size(x_size_), y_size(y_size_), overall_length(overall_length_),
-            min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_), zoom(zoom_){}
+            min_view(min_view_), max_view(max_view_), min_year(min_year_), max_year(max_year_), lpe(lpe_), place_texture(place_texture_), zoom(zoom_), extra_data(extra_data_){}
 
         paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{}; // 地名
         paxs::MercatorDeg coordinate{}; // 経緯度
@@ -56,6 +57,23 @@ namespace paxs {
         std::uint_least32_t lpe = MurMur3::calcHash("place_name"); // 対象となる地物の種別
         std::uint_least32_t place_texture = 0; // 地物の画像
         double zoom = 1.0; // 拡大率
+
+        /// @brief 追加カラムデータ（TSVの拡張情報）
+        /// @brief Extra column data from TSV files
+        paxs::UnorderedMap<std::uint_least32_t, std::string> extra_data{};
+
+        /// @brief 追加カラムの値を取得（ハッシュ値で直接アクセス）
+        /// @brief Get extra column value by hash
+        std::string getExtraData(std::uint_least32_t column_hash) const {
+            auto it = extra_data.find(column_hash);
+            return (it != extra_data.end()) ? it->second : "";
+        }
+
+        /// @brief 追加カラムが存在するか確認（ハッシュ値）
+        /// @brief Check if extra column exists by hash
+        bool hasExtraData(std::uint_least32_t column_hash) const {
+            return extra_data.find(column_hash) != extra_data.end();
+        }
     };
 
     // 地物の一覧

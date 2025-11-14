@@ -99,7 +99,8 @@ namespace paxs {
                     data.last_julian_day,
                     lpe,
                     params.texture_hash, // テクスチャの Key（地名は常にparams.texture_hashを使用）
-                    params.zoom
+                    params.zoom,
+                    data.extra_data
                 );
             });
 

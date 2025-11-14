@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include <PAX_MAHOROBA/Events/FeatureEvents.hpp>
 #include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
@@ -24,6 +25,7 @@
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
@@ -75,7 +77,8 @@ namespace paxs {
 
                 hit_cache_.hit_feature->onClick(context);
 
-                std::cout << "Clicked on feature: " << hit_cache_.hit_feature->getName() << std::endl;
+                // EventBus経由でFeatureSelectedEventを発行
+                EventBus::getInstance().publish(FeatureSelectedEvent(hit_cache_.hit_feature));
                 return EventHandlingResult::Handled();
             }
 
