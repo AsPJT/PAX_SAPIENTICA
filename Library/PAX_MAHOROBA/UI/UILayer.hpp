@@ -28,7 +28,7 @@
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
-#include <PAX_MAHOROBA/UI/FeatureDetailPanel.hpp>
+#include <PAX_MAHOROBA/UI/Feature/FeatureDetailPanel.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Widget/UIPanelBackground.hpp>
 

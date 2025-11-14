@@ -2,10 +2,10 @@
 
     PAX SAPIENTICA Library 💀🌿🌏
 
-    [Planning]      2023-2024 As Project
-    [Production]    2023-2024 As Project
-    [Contact Us]    wanotaitei@gmail.com         https://github.com/AsPJT/PAX_SAPIENTICA
-    [License]       Distributed under the CC0 1.0. https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -23,6 +23,7 @@
 #include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/UI/Feature/FeatureCloseButton.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
@@ -49,11 +50,27 @@ namespace paxs {
         mutable int calculated_height_ = 0;
         mutable int calculated_lines_ = 0;
 
+        // 閉じるボタン
+        FeatureCloseButton close_button_;
+
         /// @brief パネルのY座標を計算（下部固定）
         int calculatePanelY() const {
             const int panel_height = (calculated_height_ > 0) ? calculated_height_ : ui_layout_.feature_detail_panel_height;
             const int panel_bottom = paxg::Window::height() - ui_layout_.feature_detail_panel_bottom_margin;
             return panel_bottom - panel_height;
+        }
+
+        /// @brief 閉じるボタンの位置を更新
+        /// @brief Update close button position
+        void updateCloseButtonPosition() const {
+            const int panel_y = calculatePanelY();
+            const int close_button_size = 20;
+            const int close_button_x = ui_layout_.feature_detail_panel.x +
+                                      ui_layout_.feature_detail_panel.width - close_button_size - 5;
+            const int close_button_y = panel_y + 5;
+
+            // constメソッドからsetPosを呼ぶため、const_castを使用
+            const_cast<FeatureCloseButton&>(close_button_).setPos(paxg::Vec2i{ close_button_x, close_button_y });
         }
 
         /// @brief 長い文字列を複数行に分割して描画
@@ -147,30 +164,22 @@ namespace paxs {
                     onFeatureDeselected(event);
                 }
             );
+
+            // 閉じるボタンのコールバックを設定
+            close_button_.setOnClick([this]() {
+                EventBus::getInstance().publish(FeatureDeselectedEvent());
+            });
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             if (!isVisible()) return EventHandlingResult::NotHandled();
 
-            // 閉じるボタンのクリック判定
-            if (event.left_button_state == MouseButtonState::Pressed) {
-                // 閉じるボタンの領域（パネル右上）- 動的に計算
-                const int panel_y = calculatePanelY();
-                const int close_button_size = 20;
-                const int close_button_x = ui_layout_.feature_detail_panel.x +
-                                          ui_layout_.feature_detail_panel.width - close_button_size - 5;
-                const int close_button_y = panel_y + 5;
+            // 閉じるボタンの位置を更新
+            updateCloseButtonPosition();
 
-                // クリック位置が閉じるボタン内か判定
-                if (event.x >= close_button_x &&
-                    event.x <= close_button_x + close_button_size &&
-                    event.y >= close_button_y &&
-                    event.y <= close_button_y + close_button_size) {
-
-                    // FeatureDeselectedEventを発行してパネルを閉じる
-                    EventBus::getInstance().publish(FeatureDeselectedEvent());
-                    return EventHandlingResult::Handled();
-                }
+            // 閉じるボタンのヒット判定とイベント処理
+            if (close_button_.isHit(event.x, event.y)) {
+                return close_button_.handleEvent(event);
             }
 
             return EventHandlingResult::NotHandled();
@@ -313,26 +322,8 @@ namespace paxs {
             }
 
             // 閉じるボタンを描画（動的に計算されたパネル位置を使用）
-            const int close_button_size = 20;
-            const int close_button_x = ui_layout_.feature_detail_panel.x +
-                                      ui_layout_.feature_detail_panel.width - close_button_size - 5;
-            const int close_button_y = panel_y + 5;
-
-            // 閉じるボタンの背景（薄い赤）
-            paxg::Rect close_button_bg(
-                static_cast<float>(close_button_x),
-                static_cast<float>(close_button_y),
-                static_cast<float>(close_button_size),
-                static_cast<float>(close_button_size)
-            );
-            close_button_bg.draw(paxg::Color(220, 100, 100));
-
-            // ×印を描画
-            font->draw(
-                "×",
-                paxg::Vec2i(close_button_x + 2, close_button_y),
-                paxg::Color(255, 255, 255)
-            );
+            updateCloseButtonPosition();
+            close_button_.render();
 
             // 計算された行数と高さを保存
             calculated_lines_ = current_line;
@@ -357,17 +348,11 @@ namespace paxs {
         bool isHit(int x, int y) const override {
             if (!isVisible()) return false;
 
-            // 閉じるボタンのヒット判定 - 動的に計算
-            const int panel_y = calculatePanelY();
-            const int close_button_size = 20;
-            const int close_button_x = ui_layout_.feature_detail_panel.x +
-                                      ui_layout_.feature_detail_panel.width - close_button_size - 5;
-            const int close_button_y = panel_y + 5;
+            // 閉じるボタンの位置を更新
+            updateCloseButtonPosition();
 
-            return (x >= close_button_x &&
-                    x <= close_button_x + close_button_size &&
-                    y >= close_button_y &&
-                    y <= close_button_y + close_button_size);
+            // 閉じるボタンのヒット判定
+            return close_button_.isHit(x, y);
         }
 
         bool isVisible() const override {

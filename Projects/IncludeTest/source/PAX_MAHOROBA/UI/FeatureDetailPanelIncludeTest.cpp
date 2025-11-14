@@ -1,3 +1,3 @@
-#include <PAX_MAHOROBA/UI/FeatureDetailPanel.hpp>
+#include <PAX_MAHOROBA/UI/Feature/FeatureDetailPanel.hpp>
 
 int main(){}
