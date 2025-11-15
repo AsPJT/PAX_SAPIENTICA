@@ -252,21 +252,21 @@ namespace paxs {
                 asset_registry_.loadMapIcons(map_icons_path);
             }
 
-            std::cout << "Loading person features..." << std::endl;
+            std::cout << "Loading person features...\n";
             loadPersonFeatures();
-            std::cout << "Person features loaded: " << features_.size() << std::endl;
+            std::cout << "Person features loaded: " << features_.size() << "\n";
 
-            std::cout << "Loading geographic features..." << std::endl;
+            std::cout << "Loading geographic features...\n";
             loadGeographicFeatures();
-            std::cout << "Geographic features loaded: " << features_.size() << " total" << std::endl;
+            std::cout << "Geographic features loaded: " << features_.size() << " total\n";
 
-            std::cout << "Loading place name features..." << std::endl;
+            std::cout << "Loading place name features...\n";
             loadPlaceNameFeatures();
-            std::cout << "Place name features loaded: " << features_.size() << " total" << std::endl;
+            std::cout << "Place name features loaded: " << features_.size() << " total\n";
 
-            std::cout << "Loading genome features..." << std::endl;
+            std::cout << "Loading genome features...\n";
             loadGenomeFeatures();
-            std::cout << "Genome features loaded: " << features_.size() << " total" << std::endl;
+            std::cout << "Genome features loaded: " << features_.size() << " total\n";
 
             // 全アイコンをマージ
             asset_registry_.mergeCategories();

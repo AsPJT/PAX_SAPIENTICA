@@ -34,8 +34,8 @@ namespace paxs {
 
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 
-        void setOnClick(ClickCallback cb) {
-            on_click_ = std::move(cb);
+        void setOnClick(ClickCallback callback) {
+            on_click_ = std::move(callback);
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {

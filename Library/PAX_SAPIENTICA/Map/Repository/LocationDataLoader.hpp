@@ -191,7 +191,7 @@ namespace paxs {
                 return static_cast<int>(std::stod(jd_str));
             }
             if (!year_str.empty()) {
-                return static_cast<int>(std::stod(year_str) * location_data_loader_detail::days_in_a_year + location_data_loader_detail::julian_day_on_m1_1_1);
+                return static_cast<int>((std::stod(year_str) * location_data_loader_detail::days_in_a_year) + location_data_loader_detail::julian_day_on_m1_1_1);
             }
             return default_value;
         }
@@ -243,6 +243,7 @@ namespace paxs {
 
             // 経度・緯度が空の場合はスキップ
             if (longitude_str.empty() || latitude_str.empty()) {
+                PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + params.file_path + ": missing coordinates");
                 return std::nullopt;
             }
 

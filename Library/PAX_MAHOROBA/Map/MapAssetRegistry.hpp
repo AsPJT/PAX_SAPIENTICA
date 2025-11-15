@@ -46,7 +46,6 @@ public:
     /// @param portraits_path ポートレートTSVファイルのパス / Path to portraits TSV
     /// @return 成功時true / True on success
     bool loadPersonIcons(const std::string& portraits_path) {
-        PAXS_INFO("Loading person icons from: " + portraits_path);
         return person_textures_.input(portraits_path);
     }
 
@@ -55,7 +54,6 @@ public:
     /// @param map_icons_path 地図アイコンTSVファイルのパス / Path to map icons TSV
     /// @return 成功時true / True on success
     bool loadMapIcons(const std::string& map_icons_path) {
-        PAXS_INFO("Loading map icons from: " + map_icons_path);
         return map_icon_textures_.input(map_icons_path);
     }
 
@@ -63,7 +61,9 @@ public:
     /// @brief Merge all categories
     /// @details ロード後に一度だけ呼び出してマージマップを作成
     void mergeCategories() {
-        if (is_merged_) return;
+        if (is_merged_) {
+            return;
+        }
 
         merged_textures_.clear();
 
@@ -78,7 +78,6 @@ public:
         }
 
         is_merged_ = true;
-        PAXS_INFO("Merged " + std::to_string(merged_textures_.size()) + " textures");
     }
 
     // ============================================================================
@@ -90,8 +89,8 @@ public:
     /// @param key ハッシュキー / Hash key
     /// @return テクスチャへのポインタ（存在しない場合nullptr） / Pointer to texture (nullptr if not found)
     const paxg::Texture* getTexture(std::uint_least32_t key) const {
-        auto it = merged_textures_.find(key);
-        return (it != merged_textures_.end()) ? &it->second : nullptr;
+        auto iterator = merged_textures_.find(key);
+        return (iterator != merged_textures_.end()) ? &iterator->second : nullptr;
     }
 
     /// @brief ハッシュキーからテクスチャを取得（参照）
