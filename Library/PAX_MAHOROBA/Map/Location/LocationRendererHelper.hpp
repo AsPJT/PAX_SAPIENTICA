@@ -33,23 +33,23 @@ namespace paxs {
         /// @brief agent1/agent2アイコンを描画
         /// @brief Draw agent1/agent2 icons
         /// @param texture テクスチャマップ
-        /// @param lpe ロケーションタイプ（agent1 or agent2のハッシュ値）
+        /// @param feature_type_hash 地物の種別ハッシュ値（agent1 or agent2のハッシュ値）
         /// @param draw_pos 描画位置
         /// @return true if agent icon was drawn, false otherwise
         static bool drawAgentIcon(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
-            std::uint_least32_t lpe,
+            std::uint_least32_t feature_type_hash,
             const paxg::Vec2i& draw_pos
         ) {
             // エージェント1を描画
-            if (lpe == MurMur3::calcHash("agent1")) {
+            if (feature_type_hash == MurMur3::calcHash("agent1")) {
                 if (texture.find(MurMur3::calcHash("BlueCircle")) != texture.end()) {
                     texture.at(MurMur3::calcHash("BlueCircle")).resizedDrawAt(15, draw_pos);
                 }
                 return true;
             }
             // エージェント2を描画
-            else if (lpe == MurMur3::calcHash("agent2")) {
+            else if (feature_type_hash == MurMur3::calcHash("agent2")) {
                 if (texture.find(MurMur3::calcHash("RedCircle")) != texture.end()) {
                     texture.at(MurMur3::calcHash("RedCircle")).resizedDrawAt(15, draw_pos);
                 }

@@ -51,34 +51,34 @@ public:
     std::string getId() const override {
         // IDとして人物名のハッシュを使用
         const std::uint_least32_t ja_jp = MurMur3::calcHash("ja-JP");
-        if (data_.place_name.find(ja_jp) != data_.place_name.end()) {
-            return data_.place_name.at(ja_jp);
+        if (data_.person_name.find(ja_jp) != data_.person_name.end()) {
+            return data_.person_name.at(ja_jp);
         }
-        if (!data_.place_name.empty()) {
-            return data_.place_name.begin()->second;
+        if (!data_.person_name.empty()) {
+            return data_.person_name.begin()->second;
         }
         return "unknown";
     }
 
     std::string getName(const std::string& language = "ja-JP") const override {
         const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        if (data_.place_name.find(lang_hash) != data_.place_name.end()) {
-            return data_.place_name.at(lang_hash);
+        if (data_.person_name.find(lang_hash) != data_.person_name.end()) {
+            return data_.person_name.at(lang_hash);
         }
         // フォールバック: 最初の名前を返す
-        if (!data_.place_name.empty()) {
-            return data_.place_name.begin()->second;
+        if (!data_.person_name.empty()) {
+            return data_.person_name.begin()->second;
         }
         return "";
     }
 
-    std::uint_least32_t getLpe() const override {
-        return data_.lpe;
+    std::uint_least32_t getFeatureTypeHash() const override {
+        return data_.feature_type_hash;
     }
 
     void update(const RenderContext& context) override {
         // 地物種別の可視性チェック（最優先）
-        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.lpe)) {
+        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
             cached_screen_positions_.clear();
             return;
         }
@@ -103,8 +103,8 @@ public:
         );
 
         // 表示サイズの計算
-        const bool out_of_range = (data_.min_view > context.map_view_width ||
-                                   data_.max_view < context.map_view_width);
+        const bool out_of_range = (data_.min_zoom_level > context.map_view_width ||
+                                   data_.max_zoom_level < context.map_view_width);
         cached_display_size_ = out_of_range
             ? static_cast<int>(data_.overall_length / 2)
             : 60;  // 120 / 2

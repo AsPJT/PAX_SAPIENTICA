@@ -101,17 +101,17 @@ private:
         const auto& screen_positions = feature.getScreenPositions();
         const int display_size = feature.getDisplaySize();
 
-        const bool is_small_size = (data.min_view > context.map_view_width || data.max_view < context.map_view_width);
+        const bool is_small_size = (data.min_zoom_level > context.map_view_width || data.max_zoom_level < context.map_view_width);
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
             // エージェントアイコン描画
-            if (LocationRendererHelper::drawAgentIcon(texture_map, data.lpe, draw_pos)) {
+            if (LocationRendererHelper::drawAgentIcon(texture_map, data.feature_type_hash, draw_pos)) {
                 continue;
             }
 
             // テクスチャを取得
-            const std::uint_least32_t place_tex = (data.place_texture == 0) ? list_data.place_texture : data.place_texture;
+            const std::uint_least32_t place_tex = (data.texture_key == 0) ? list_data.texture_key : data.texture_key;
             if (texture_map.find(place_tex) == texture_map.end()) continue;
 
             if (is_small_size) {
@@ -124,7 +124,7 @@ private:
 
                 // テキスト位置
                 const paxg::Vec2i draw_font_pos = paxg::Vec2i{ draw_pos.x(), draw_pos.y() - 60 };
-                LocationRendererHelper::drawBilingualText(data.place_name, draw_font_pos, "topCenter");
+                LocationRendererHelper::drawBilingualText(data.person_name, draw_font_pos, "topCenter");
             }
         }
     }
@@ -146,14 +146,14 @@ private:
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
             // エージェントアイコン描画
-            if (LocationRendererHelper::drawAgentIcon(texture_map, data.lpe, draw_pos)) {
+            if (LocationRendererHelper::drawAgentIcon(texture_map, data.feature_type_hash, draw_pos)) {
                 continue;
             }
 
             // テクスチャを取得（親のテクスチャをフォールバック）
             // Note: GeographicFeature は LocationPoint を使用しているため、親のテクスチャ情報は含まれていない
             // 将来的には LocationPointList への参照も保持する必要があるかもしれない
-            const std::uint_least32_t place_tex = data.place_texture;
+            const std::uint_least32_t place_tex = data.texture_key;
             if (texture_map.find(place_tex) == texture_map.end()) continue;
 
             const bool is_zoomed = (data.zoom > 1.0);
@@ -218,12 +218,12 @@ private:
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
             // エージェントアイコン描画
-            if (LocationRendererHelper::drawAgentIcon(texture_map, data.lpe, draw_pos)) {
+            if (LocationRendererHelper::drawAgentIcon(texture_map, data.feature_type_hash, draw_pos)) {
                 continue;
             }
 
             // テクスチャを取得
-            const std::uint_least32_t place_tex = data.place_texture;
+            const std::uint_least32_t place_tex = data.texture_key;
 
             // テクスチャが見つからない場合は警告表示
             if (place_tex == 0 || texture_map.find(place_tex) == texture_map.end()) {
@@ -303,8 +303,8 @@ private:
     /// @brief テクスチャを複数描画（GeographicFeature用）
     /// @brief Draw texture multiple times (for GeographicFeature)
     static void drawTextureMultiple(
-        const paxg::Texture& tex,
-        const int len,
+        const paxg::Texture& texture,
+        const int display_size,
         const paxg::Vec2i& draw_pos,
         const std::uint_least16_t x_size,
         const std::uint_least16_t y_size,
@@ -312,11 +312,11 @@ private:
     ) {
         if (x_size <= 1) {
             if (y_size <= 1) {
-                tex.resizedDrawAt(len, draw_pos);
+                texture.resizedDrawAt(display_size, draw_pos);
             }
             else {
                 for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
-                    tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x(), draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                    texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x(), draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
                 }
             }
         }
@@ -330,13 +330,13 @@ private:
                             ixx = 0;
                             ++iyy;
                         }
-                        tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ixx) * TEXTURE_SPACING_HORIZONTAL_ZOOMED, draw_pos.y() + static_cast<int>(iyy) * TEXTURE_SPACING_VERTICAL });
+                        texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ixx) * TEXTURE_SPACING_HORIZONTAL_ZOOMED, draw_pos.y() + static_cast<int>(iyy) * TEXTURE_SPACING_VERTICAL });
                     }
                 }
                 else {
                     for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
                         for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                            tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                            texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
                         }
                     }
                 }
@@ -345,13 +345,13 @@ private:
                 // 通常時
                 if (y_size <= 1) {
                     for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                        tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() });
+                        texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() });
                     }
                 }
                 else {
                     for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
                         for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                            tex.resizedDrawAt(len, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                            texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
                         }
                     }
                 }

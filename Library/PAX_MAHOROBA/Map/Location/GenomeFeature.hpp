@@ -72,13 +72,13 @@ public:
         return "";
     }
 
-    std::uint_least32_t getLpe() const override {
-        return data_.lpe;
+    std::uint_least32_t getFeatureTypeHash() const override {
+        return data_.feature_type_hash;
     }
 
     void update(const RenderContext& context) override {
         // 地物種別の可視性チェック（最優先）
-        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.lpe)) {
+        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
             cached_screen_positions_.clear();
             return;
         }
@@ -90,7 +90,7 @@ public:
         }
 
         // ズームレベルフィルタリング：範囲外の場合のみ描画（アイコンのみ）
-        if (!(data_.min_view > context.map_view_height || data_.max_view < context.map_view_height)) {
+        if (!(data_.min_zoom_level > context.map_view_height || data_.max_zoom_level < context.map_view_height)) {
             cached_screen_positions_.clear();
             return;
         }

@@ -115,7 +115,7 @@ namespace paxs {
                 )),
                 1, 1, 10, 100, 0, 0, 99999999,
                 MurMur3::calcHash("agent1"),
-                0,  // 出典なし / No source
+                0,  // テクスチャキーなし / No source
                 1.0 // 拡大率 / Zoom factor
             };
         }
@@ -145,21 +145,21 @@ namespace paxs {
         ) {
             for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    const auto lli = createLocationPoint(paxs::Vector2<int>(
+                    const auto location_point = createLocationPoint(paxs::Vector2<int>(
                         settlement.getPosition().x, settlement.getPosition().y));
 
                     // 経緯度の範囲外を除去
                     if (!LocationRendererHelper::isInViewBounds(
-                        lli.coordinate.x, lli.coordinate.y,
+                        location_point.coordinate.x, location_point.coordinate.y,
                         map_view_width, map_view_height,
                         map_view_center_x, map_view_center_y)) continue;
 
                     // 時間範囲外を除去
-                    if (lli.min_year > jdn || lli.max_year < jdn) continue;
+                    if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
 
                     // 描画位置
                     const paxg::Vec2i draw_pos = MapCoordinateConverter::toScreenPos(
-                        lli.coordinate.x, lli.coordinate.y,
+                        location_point.coordinate.x, location_point.coordinate.y,
                         map_view_width, map_view_height,
                         map_view_center_x, map_view_center_y
                     );
@@ -219,23 +219,23 @@ namespace paxs {
             // 集落の移動履歴を描画
             for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    const auto lli = createLocationPoint(paxs::Vector2<int>(
+                    const auto location_point = createLocationPoint(paxs::Vector2<int>(
                         settlement.getPosition().x, settlement.getPosition().y));
 
                     if (!LocationRendererHelper::isInViewBounds(
-                        lli.coordinate.x, lli.coordinate.y,
+                        location_point.coordinate.x, location_point.coordinate.y,
                         map_view_width, map_view_height,
                         map_view_center_x, map_view_center_y)) continue;
 
-                    if (lli.min_year > jdn || lli.max_year < jdn) continue;
+                    if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
 
                     const paxg::Vec2f draw_pos = paxg::Vec2f{
                         static_cast<float>(MapCoordinateConverter::toScreenPos(
-                            lli.coordinate.x, lli.coordinate.y,
+                            location_point.coordinate.x, location_point.coordinate.y,
                             map_view_width, map_view_height,
                             map_view_center_x, map_view_center_y).x()),
                         static_cast<float>(MapCoordinateConverter::toScreenPos(
-                            lli.coordinate.x, lli.coordinate.y,
+                            location_point.coordinate.x, location_point.coordinate.y,
                             map_view_width, map_view_height,
                             map_view_center_x, map_view_center_y).y())
                     };
@@ -303,23 +303,23 @@ namespace paxs {
 
             // 婚姻移動を描画
             for (const auto& marriage_pos : *marriage_pos_list) {
-                const auto lli = createLocationPoint(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
+                const auto location_point = createLocationPoint(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
                 if (!LocationRendererHelper::isInViewBounds(
-                    lli.coordinate.x, lli.coordinate.y,
+                    location_point.coordinate.x, location_point.coordinate.y,
                     map_view_width, map_view_height,
                     map_view_center_x, map_view_center_y)) continue;
 
-                if (lli.min_year > jdn || lli.max_year < jdn) continue;
+                if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
                 if (marriage_pos.sx == -1 || marriage_pos.sx == 0) continue;
 
                 const paxg::Vec2f draw_pos = paxg::Vec2f{
                     static_cast<float>(MapCoordinateConverter::toScreenPos(
-                        lli.coordinate.x, lli.coordinate.y,
+                        location_point.coordinate.x, location_point.coordinate.y,
                         map_view_width, map_view_height,
                         map_view_center_x, map_view_center_y).x()),
                     static_cast<float>(MapCoordinateConverter::toScreenPos(
-                        lli.coordinate.x, lli.coordinate.y,
+                        location_point.coordinate.x, location_point.coordinate.y,
                         map_view_width, map_view_height,
                         map_view_center_x, map_view_center_y).y())
                 };

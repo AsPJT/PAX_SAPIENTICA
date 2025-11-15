@@ -264,8 +264,8 @@ namespace paxs {
             data.overall_length = getOptionalValue(overall_length_str, 10.0);
             data.x_size = getOptionalValue<std::uint_least16_t>(x_size_str, 1);
             data.y_size = getOptionalValue<std::uint_least16_t>(y_size_str, 1);
-            data.min_size = getOptionalValue(min_size_str, params.min_view);
-            data.max_size = getOptionalValue(max_size_str, params.max_view);
+            data.min_size = getOptionalValue(min_size_str, params.min_zoom_level);
+            data.max_size = getOptionalValue(max_size_str, params.max_zoom_level);
 
             // 日付範囲の計算
             const std::string& first_jd_str = flags.has_first_julian_day ? table.get(row_index, hashes.first_julian_day) : "";

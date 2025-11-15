@@ -137,12 +137,12 @@ namespace paxs {
                     99999999 : ((strvec[max_z_index].size() == 0) ?
                         99999999 : std::stoi(strvec[max_z_index]));
 
-                // 可視化する地図の最小範囲
+                // 表示する最小ズームレベル
                 const unsigned int draw_min_z = (draw_min_z_index >= strvec.size()) ?
                     99999999 : ((strvec[draw_min_z_index].size() == 0) ?
                         99999999 : std::stoi(strvec[draw_min_z_index]));
 
-                // 可視化する地図の最大範囲
+                // 表示する最大ズームレベル
                 const unsigned int draw_max_z = (draw_max_z_index >= strvec.size()) ?
                     99999999 : ((strvec[draw_max_z_index].size() == 0) ?
                         99999999 : std::stoi(strvec[draw_max_z_index]));

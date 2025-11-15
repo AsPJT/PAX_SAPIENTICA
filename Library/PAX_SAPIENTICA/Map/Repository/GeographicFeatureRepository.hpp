@@ -49,7 +49,7 @@ namespace paxs {
         /// @brief 個別の地理的特徴ファイルを読み込んでLocationPointListを返す
         static LocationPointList loadGeographicFeatureFromFile(const FeatureListParams& params) {
             std::vector<LocationPoint> location_point_list{};
-            const std::uint_least32_t lpe = MurMur3::calcHash(params.type.size(), params.type.c_str());
+            const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
             paxs::TsvTable table(params.file_path);
             if (!table.isSuccessfullyLoaded()) {
@@ -97,7 +97,7 @@ namespace paxs {
                     data.max_size,
                     data.first_julian_day,
                     data.last_julian_day,
-                    lpe,
+                    feature_type_hash,
                     data.texture_hash,
                     params.zoom,
                     data.extra_data
@@ -114,8 +114,8 @@ namespace paxs {
                     paxs::Vector2<double>(bounds.start_longitude, bounds.start_latitude)).toMercatorDeg(),
                 paxs::EquirectangularDeg(
                     paxs::Vector2<double>(bounds.end_longitude, bounds.end_latitude)).toMercatorDeg(),
-                params.min_view, params.max_view, params.min_year, params.max_year,
-                lpe, params.texture_hash);
+                params.min_zoom_level, params.max_zoom_level, params.min_year, params.max_year,
+                feature_type_hash, params.texture_hash);
         }
 
     };

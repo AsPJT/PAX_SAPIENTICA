@@ -46,7 +46,7 @@ public:
     /// @param min_year 開始年（ユリウス日） / Start year (Julian Day Number)
     /// @param max_year 終了年（ユリウス日） / End year (Julian Day Number)
     /// @param model_config 3Dモデルの設定 / 3D model configuration
-    /// @param lpe 地物種別（デフォルト: "model_3d"） / Feature type identifier (default: "model_3d")
+    /// @param feature_type_hash 地物種別（デフォルト: "model_3d"） / Feature type identifier (default: "model_3d")
     Model3DFeature(
         const std::string& id,
         const std::string& name,
@@ -54,12 +54,12 @@ public:
         double min_year,
         double max_year,
         const paxg::Graphics3DModelConfig& model_config,
-        std::uint_least32_t lpe = MurMur3::calcHash("model_3d")
+        std::uint_least32_t feature_type_hash = MurMur3::calcHash("model_3d")
     )
         : id_(id)
         , name_(name)
         , coordinate_(coordinate)
-        , lpe_(lpe)
+        , feature_type_hash_(feature_type_hash)
         , renderer_(model_config)
     {
         visible_ = true;
@@ -81,15 +81,15 @@ public:
         return name_;
     }
 
-    std::uint_least32_t getLpe() const override {
-        return lpe_;
+    std::uint_least32_t getFeatureTypeHash() const override {
+        return feature_type_hash_;
     }
 
     // ========== 状態管理 / State Management ==========
 
     void update(const RenderContext& context) override {
         // 地物種別の可視性チェック（最優先）
-        if (context.visibility_manager && !context.visibility_manager->isVisible(lpe_)) {
+        if (context.visibility_manager && !context.visibility_manager->isVisible(feature_type_hash_)) {
             cached_screen_positions_.clear();
             return;
         }
@@ -174,7 +174,7 @@ private:
     std::string id_;                                   ///< 地物ID / Feature ID
     std::string name_;                                 ///< 地物名 / Feature name
     MercatorDeg coordinate_;                           ///< 位置（メルカトル座標） / Position (Mercator)
-    std::uint_least32_t lpe_;                          ///< 地物種別 / Feature type identifier
+    std::uint_least32_t feature_type_hash_;            ///< 地物の種別を識別するハッシュ値 / Feature type hash identifier
     Model3DRenderer renderer_;                         ///< 3Dモデルレンダラー / 3D model renderer
 
     // キャッシュされた状態 / Cached state

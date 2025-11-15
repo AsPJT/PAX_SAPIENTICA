@@ -29,8 +29,8 @@ namespace paxs {
     struct FeatureListParams {
         std::string file_path;
         std::string type;
-        double min_view;
-        double max_view;
+        double min_zoom_level;
+        double max_zoom_level;
         int min_year;
         int max_year;
         std::uint_least32_t texture_hash;
@@ -112,13 +112,13 @@ namespace paxs {
                     return;
                 }
 
-                // 可視化する地図の最小範囲
+                // 表示する最小ズームレベル
                 const std::string& min_size_str = has_min_size ? table.get(row_index, min_size_hash) : "";
-                const double min_view = min_size_str.empty() ? 0.0 : std::stod(min_size_str);
+                const double min_zoom_level = min_size_str.empty() ? 0.0 : std::stod(min_size_str);
 
-                // 可視化する地図の最大範囲
+                // 表示する最大ズームレベル
                 const std::string& max_size_str = has_max_size ? table.get(row_index, max_size_hash) : "";
-                const double max_view = max_size_str.empty() ? 99999999.0 : std::stod(max_size_str);
+                const double max_zoom_level = max_size_str.empty() ? 99999999.0 : std::stod(max_size_str);
 
                 // 可視化する時代（古い年～）
                 const std::string& first_jd_str = has_first_julian_day ? table.get(row_index, first_julian_day_hash) : "";
@@ -151,8 +151,8 @@ namespace paxs {
                 callback(FeatureListParams{
                     file_path_str,
                     type_str,
-                    min_view,
-                    max_view,
+                    min_zoom_level,
+                    max_zoom_level,
                     min_year,
                     max_year,
                     texture_hash_value,

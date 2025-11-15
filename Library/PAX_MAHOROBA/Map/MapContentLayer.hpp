@@ -290,12 +290,14 @@ namespace paxs {
 
         // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
         MapContentLayer(const MapContentLayer&) = delete;
-        MapContentLayer& operator=(const MapContentLayer&) = delete;
+        auto operator=(const MapContentLayer&) -> MapContentLayer& = delete;
         MapContentLayer(MapContentLayer&&) = delete;
-        MapContentLayer& operator=(MapContentLayer&&) = delete;
+        auto operator=(MapContentLayer&&) -> MapContentLayer& = delete;
 
         void render() const override {
-            if (!isVisible()) return;
+            if (!isVisible()) {
+                return;
+            }
 
             MapFeatureRenderer::drawFeatures(features_, render_context_, asset_registry_.getMergedMap());
 
