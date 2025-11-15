@@ -1,8 +1,8 @@
-﻿ja-JP	latitude	longitude	first_julian_day	last_julian_day	texture	overall_length
-伊豆石	34.750657	138.766744	1823328	1980382	BlueRipples	200
-竜山石	34.780833	134.794722	1823328	1980382	BrownRipples	200
-笏谷石	36.051389	136.200556	1823328	1980382	LightBlueRipples	200
-阿蘇石	32.69093447	130.5908057	1823328	1980382	RedRipples	200
-荒島石	35.43043391	133.1994506	1823328	1980382	RedPurpleRipples	200
-来待石	35.41371731	132.9477559	1823328	1980382	YellowRipples	200
-二上山	34.5268454	135.6771214	1823328	1980382	YellowGreenRipples	200
+﻿key	ja-JP	latitude	longitude	first_julian_day	last_julian_day	texture	overall_length
+Ishikiriba1	伊豆石	34.750657	138.766744	1823328	1980382	BlueRipples	200
+Ishikiriba2	竜山石	34.780833	134.794722	1823328	1980382	BrownRipples	200
+Ishikiriba3	笏谷石	36.051389	136.200556	1823328	1980382	LightBlueRipples	200
+Ishikiriba4	阿蘇石	32.69093447	130.5908057	1823328	1980382	RedRipples	200
+Ishikiriba5	荒島石	35.43043391	133.1994506	1823328	1980382	RedPurpleRipples	200
+Ishikiriba6	来待石	35.41371731	132.9477559	1823328	1980382	YellowRipples	200
+Ishikiriba7	二上山	34.5268454	135.6771214	1823328	1980382	YellowGreenRipples	200
