@@ -14,7 +14,6 @@
 
 #include <cstddef>
 #include <string>
-#include <sstream>
 #include <vector>
 
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -31,9 +30,10 @@ namespace paxs {
     public:
         constexpr void set(const std::size_t select_language_) { select_language = select_language_; }
         constexpr void setKey(const std::uint_least32_t select_key_) { select_key = select_key_; }
-        constexpr std::size_t cget() const { return select_language; }
-        constexpr std::uint_least32_t cgetKey() const { return select_key; }
+        constexpr std::size_t get() const { return select_language; }
+        constexpr std::uint_least32_t getKey() const { return select_key; }
     };
+
     /// @brief 多言語テキスト辞書クラス
     /// @brief Multi-language text dictionary class
     /// @details TSVファイルから多言語テキストを読み込み、言語キーとテキストキーで検索可能にする
@@ -42,23 +42,36 @@ namespace paxs {
     private:
         /// @brief 登録された言語のリスト（登録順）
         /// @brief List of registered languages (in registration order)
-        std::vector<std::uint_least32_t> ordered_languages_{};
+        std::vector<std::uint_least32_t> ordered_languages_;
 
         /// @brief 言語キー → インデックス のマッピング
         /// @brief Mapping from language key to index
-        paxs::UnorderedMap<std::uint_least32_t, std::size_t> language_key_to_index_{};
+        paxs::UnorderedMap<std::uint_least32_t, std::size_t> language_key_to_index_;
 
         /// @brief (テキストキー + 言語キー) → テキスト のマッピング
         /// @brief Mapping from (text key + language key) to text
         /// @details 上位32bitがテキストキー、下位32bitが言語キー
         ///          Upper 32 bits: text key, Lower 32 bits: language key
-        paxs::UnorderedMap<std::uint_least64_t, std::string> text_dictionary_{};
+        paxs::UnorderedMap<std::uint_least64_t, std::string> text_dictionary_;
 
         /// @brief テキストキー → フォールバック用の64bitキー のマッピング
         /// @brief Mapping from text key to fallback 64-bit key
         /// @details 指定言語でテキストが見つからない場合のフォールバック用
         ///          Used as fallback when text is not found in specified language
-        paxs::UnorderedMap<std::uint_least32_t, std::uint_least64_t> fallback_text_key_{};
+        paxs::UnorderedMap<std::uint_least32_t, std::uint_least64_t> fallback_text_key_;
+
+        /// @brief TSVヘッダーから指定キーのカラムインデックスを取得
+        /// @brief Get column index for specified key from TSV header
+        /// @param header_map ヘッダーマップ / Header map
+        /// @param key 検索するキー / Key to search
+        /// @return カラムインデックス、見つからない場合はSIZE_MAX
+        ///         Column index, SIZE_MAX if not found
+        static std::size_t getColumnIndex(
+            const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& header_map,
+            const std::uint_least32_t key) {
+            auto iterator = header_map.find(key);
+            return (iterator != header_map.end()) ? iterator->second : SIZE_MAX;
+        }
 
     public:
         /// @brief 64bitキーが辞書に存在するかチェック
@@ -121,21 +134,6 @@ namespace paxs {
             return &(text_dictionary_.at(fallback_key));
         }
 
-    private:
-        /// @brief TSVヘッダーから指定キーのカラムインデックスを取得
-        /// @brief Get column index for specified key from TSV header
-        /// @param header_map ヘッダーマップ / Header map
-        /// @param key 検索するキー / Key to search
-        /// @return カラムインデックス、見つからない場合はSIZE_MAX
-        ///         Column index, SIZE_MAX if not found
-        std::size_t getColumnIndex(
-            const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& header_map,
-            const std::uint_least32_t key) const {
-            auto it = header_map.find(key);
-            return (it != header_map.end()) ? it->second : SIZE_MAX;
-        }
-
-    public:
         /// @brief TSVファイルから多言語テキストを読み込む
         /// @brief Load multi-language text from TSV file
         /// @param relative_path 相対ファイルパス / Relative file path
@@ -191,8 +189,12 @@ namespace paxs {
 
                 // 各カラム（各言語）のテキストを処理
                 for (std::size_t i = 0; i < columns.size() && i < language_keys.size(); ++i) {
-                    if (i == key_column_index) continue; // keyカラム自体はスキップ
-                    if (columns[i].empty()) continue;     // 空のテキストはスキップ
+                    if (i == key_column_index) {
+                        continue; // keyカラム自体はスキップ
+                    }
+                    if (columns[i].empty()) {
+                        continue;     // 空のテキストはスキップ
+                    }
 
                     // テキストキーを生成（keyカラムの値をハッシュ化）
                     const std::uint_least32_t text_key = MurMur3::calcHash(

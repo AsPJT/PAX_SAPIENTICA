@@ -53,7 +53,7 @@ namespace paxs {
 
             // 人口数
             font->draw(
-                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
                 paxg::Vec2i(pos_.x(), pos_.y() + line_height_ * current_line),
                 paxg::Color(0, 0, 0)
@@ -66,7 +66,7 @@ namespace paxs {
 
             // 集落数
             font->draw(
-                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
                 paxg::Vec2i(pos_.x(), pos_.y() + line_height_ * current_line),
                 paxg::Color(0, 0, 0)

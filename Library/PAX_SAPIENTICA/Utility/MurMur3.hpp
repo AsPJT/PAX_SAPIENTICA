@@ -26,9 +26,9 @@ namespace paxs {
     private:
         static constexpr std::uint_least32_t to_uint32(
             const char* const key,
-            const std::size_t i = mm3::size4u,
+            const std::size_t count = mm3::size4u,
             const std::uint_least32_t u32 = 0) {
-            return i ? to_uint32(key, i - 1, (u32 << 8) | key[i - 1]) : u32;
+            return count ? to_uint32(key, count - 1, (u32 << 8) | key[count - 1]) : u32;
         }
 
         static constexpr std::uint_least32_t murmur3a_5(const std::uint_least32_t h) {
@@ -51,9 +51,9 @@ namespace paxs {
         }
         static constexpr std::uint_least32_t murmur3a(
             const char* const key,
-            const std::size_t i,
+            const std::size_t count,
             const std::uint_least32_t h /*seed*/) {
-            return i ? murmur3a(key + mm3::size4u, i - 1, murmur3a_0(to_uint32(key), h)) : h;
+            return count ? murmur3a(key + mm3::size4u, count - 1, murmur3a_0(to_uint32(key), h)) : h;
         }
 
         static constexpr std::uint_least32_t murmur3b_3(const std::uint_least32_t k, const std::uint_least32_t h) {
@@ -70,9 +70,9 @@ namespace paxs {
         }
         static constexpr std::uint_least32_t murmur3b(
             const char* const key,
-            const std::size_t i,
+            const std::size_t count,
             const std::uint_least32_t h) {
-            return i ? murmur3b_0(to_uint32(key, i), h) : h;
+            return count ? murmur3b_0(to_uint32(key, count), h) : h;
         }
 
         static constexpr std::uint_least32_t murmur3c_4(const std::uint_least32_t h) {
@@ -129,23 +129,25 @@ namespace paxs {
         static constexpr std::uint_least32_t calcHash(const char* const str, const std::uint_least32_t seed = 0) {
             std::uint_least32_t h = seed; std::size_t len = 0;
             for (;; len += 4) {
-                if (str[len] == '\0') break;
-                else if (str[len + 1] == '\0') {
+                if (str[len] == '\0') {
+                    break;
+                }
+                if (str[len + 1] == '\0') {
                     h = murmur3b(str + len, 1, h);
                     len += 1;
                     break;
                 }
-                else if (str[len + 2] == '\0') {
+                if (str[len + 2] == '\0') {
                     h = murmur3b(str + len, 2, h);
                     len += 2;
                     break;
                 }
-                else if (str[len + 3] == '\0') {
+                if (str[len + 3] == '\0') {
                     h = murmur3b(str + len, 3, h);
                     len += 3;
                     break;
                 }
-                else h = murmur3_Chunk(str + len, h);
+                h = murmur3_Chunk(str + len, h);
             }
             return murmur3c(h, len);
         }

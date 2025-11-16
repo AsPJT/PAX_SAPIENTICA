@@ -106,7 +106,7 @@ namespace paxs {
         /// @brief 和暦に変換
         void updateJapaneseDate(OutputDate& output_date) const {
             const paxs::cal::JapanDate jp_date = jdn.toJapaneseCalendar(japanese_era_list);
-            const std::string gengo = "gengo_" + std::to_string(jp_date.cgetGengo());
+            const std::string gengo = "gengo_" + std::to_string(jp_date.getGengo());
             output_date.calendar_name_key = MurMur3::calcHash(gengo.size(), gengo.c_str());
             output_date.date = jp_date;
         }
@@ -114,7 +114,7 @@ namespace paxs {
         /// @brief 中国暦に変換
         void updateChineseDate(OutputDate& output_date) const {
             const paxs::cal::ChinaDate cn_date = jdn.toChineseCalendar(chinese_era_list);
-            const std::string gengo = "chinese_calendar_" + std::to_string(cn_date.cgetGengo());
+            const std::string gengo = "chinese_calendar_" + std::to_string(cn_date.getGengo());
             output_date.calendar_name_key = MurMur3::calcHash(gengo.size(), gengo.c_str());
             output_date.date = cn_date;
         }
@@ -195,12 +195,12 @@ namespace paxs {
                         // シミュレーション用の時間進行（AppStateManagerが制御）
                         jdn += (days_per_year / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
                         calcDate(); // 日付計算
-                        steps.getDay()++; // ステップ数を増やす
+                        steps.increment(); // ステップ数を増やす
                     }
                     else
 #endif
                     // 通常の時間進行（シミュレーション再生中は実行しない）
-                    if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
+                    if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
                         jdn += (days_per_year / time_scale_factor / 2.0); // ユリウス日を繰り上げ（次の日にする）
                         calcDate(); // 日付計算
                     }
@@ -211,7 +211,7 @@ namespace paxs {
                     && !is_agent_update
 #endif
                 ) {
-                    if (jdn.cgetDay() != (std::numeric_limits<int>::max)()) {
+                    if (jdn.getDay() != (std::numeric_limits<int>::max)()) {
                         jdn -= (days_per_year / time_scale_factor); // ユリウス日を繰り下げ（前の日にする）
                         calcDate(); // 日付計算
                     }

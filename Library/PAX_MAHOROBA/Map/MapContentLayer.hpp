@@ -75,7 +75,7 @@ namespace paxs {
             // SettlementManager に描画パラメータを設定
             if (simulation_manager.isActive()) {
                 settlement_manager_.setDrawParams(
-                    koyomi.jdn.cgetDay(),
+                    koyomi.jdn.getDay(),
                     simulation_manager.getSettlementGrids(),
                     simulation_manager.getMarriagePositions(),
                     map_viewport_.getWidth(),
@@ -153,7 +153,7 @@ namespace paxs {
         /// @brief RenderContextを更新
         void updateRenderContext() {
             const auto& koyomi = app_state_manager_.getKoyomi();
-            render_context_.jdn = koyomi.jdn.cgetDay();
+            render_context_.jdn = koyomi.jdn.getDay();
             render_context_.map_view_width = map_viewport_.getWidth();
             render_context_.map_view_height = map_viewport_.getHeight();
             render_context_.map_view_center_x = map_viewport_.getCenterX();

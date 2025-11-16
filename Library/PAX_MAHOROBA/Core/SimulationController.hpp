@@ -112,7 +112,7 @@ private:
     /// @brief Check if simulation is completed
     bool isSimulationCompleted(const Koyomi& koyomi) const {
         if (total_steps_ <= 0) return false;
-        return koyomi.steps.cgetDay() >= static_cast<std::size_t>(total_steps_);
+        return koyomi.steps.getDay() >= static_cast<std::size_t>(total_steps_);
     }
 
     /// @brief 次の実行サイクルを開始

@@ -208,7 +208,7 @@ namespace paxs {
 
             // タイトル
             font->draw(
-                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"地物詳細") : "Feature Detail",
                 paxg::Vec2i(text_x, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
@@ -217,7 +217,7 @@ namespace paxs {
             // 種別
             if (!feature_type_name_.empty()) {
                 const std::string type_label =
-                    (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                    (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"種別: ") : "Type: ";
 
                 drawWrappedText(
@@ -235,7 +235,7 @@ namespace paxs {
             // 名前
             if (!feature_name_.empty()) {
                 const std::string name_label =
-                    (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                    (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"名称: ") : "Name: ";
 
                 drawWrappedText(
@@ -373,7 +373,7 @@ namespace paxs {
 
             // 現在の言語を取得
             const std::string current_lang =
-                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ? "ja-JP" : "en-US";
+                (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ? "ja-JP" : "en-US";
 
             // Featureの名前を取得
             feature_name_ = selected_feature_->getName(current_lang);
@@ -382,22 +382,22 @@ namespace paxs {
             switch (selected_feature_->getType()) {
                 case FeatureType::Geographic:
                     feature_type_name_ =
-                        (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                        (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                         reinterpret_cast<const char*>(u8"地理的特徴") : "Geographic Feature";
                     break;
                 case FeatureType::PlaceName:
                     feature_type_name_ =
-                        (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                        (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                         reinterpret_cast<const char*>(u8"地名") : "Place Name";
                     break;
                 case FeatureType::Genome:
                     feature_type_name_ =
-                        (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                        (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                         reinterpret_cast<const char*>(u8"ゲノム") : "Genome";
                     break;
                 case FeatureType::Person:
                     feature_type_name_ =
-                        (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                        (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                         reinterpret_cast<const char*>(u8"人物") : "Person";
                     break;
                 default:

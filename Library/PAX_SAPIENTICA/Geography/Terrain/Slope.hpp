@@ -12,12 +12,10 @@
 #ifndef PAX_SAPIENTICA_GEOGRAPHY_TERRAIN_SLOPE_HPP
 #define PAX_SAPIENTICA_GEOGRAPHY_TERRAIN_SLOPE_HPP
 
-#include <cmath>
 #include <cstddef>
 
 #include <array>
 #include <fstream>
-#include <limits>
 #include <string>
 
 #include <PAX_SAPIENTICA/System/InputFile.hpp>
@@ -27,7 +25,7 @@ namespace paxs {
     // 標高
     struct ElevationS16UnitOutput {
 
-        std::ofstream ofs{};
+        std::ofstream ofs;
 
         ElevationS16UnitOutput() = default;
         ElevationS16UnitOutput(const std::string& str_)

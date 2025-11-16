@@ -225,7 +225,7 @@ namespace paxs {
         /// @param profile_name プロファイル名（例: "main", "pulldown"） / Profile name (e.g., "main", "pulldown")
         /// @return フォントへのポインタ、失敗時は nullptr / Pointer to font, nullptr on failure
         paxg::Font* getFont(const std::string& profile_name) {
-            return getFont(select_language_.cgetKey(), profile_name);
+            return getFont(select_language_.getKey(), profile_name);
         }
 
         /// @brief 指定言語のフォントを取得
@@ -247,7 +247,7 @@ namespace paxs {
         /// @param buffer_thickness バッファー厚 / Buffer thickness
         /// @return フォントへのポインタ、失敗時は nullptr / Pointer to font, nullptr on failure
         paxg::Font* getFont(std::uint_least8_t size, std::uint_least8_t buffer_thickness) {
-            return getFont(select_language_.cgetKey(), size, buffer_thickness);
+            return getFont(select_language_.getKey(), size, buffer_thickness);
         }
 
         /// @brief 指定言語のフォントを取得（サイズとバッファー厚を直接指定）
@@ -315,7 +315,7 @@ namespace paxs {
             if (languages_.find(domain) == languages_.end()) {
                 return nullptr;
             }
-            return languages_.at(domain).getStringPtr(key_hash, select_language_.cgetKey());
+            return languages_.at(domain).getStringPtr(key_hash, select_language_.getKey());
         }
 
         /// @brief 言語辞書を追加

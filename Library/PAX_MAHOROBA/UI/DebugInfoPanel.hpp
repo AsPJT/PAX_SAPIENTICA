@@ -73,7 +73,7 @@ namespace paxs {
 
             // タイトル
             font->draw(
-                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"デバッグ情報") : "Debug Info",
                 paxg::Vec2i(text_x, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
@@ -81,7 +81,7 @@ namespace paxs {
 
             // マップの拡大率
             font->draw(
-                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
+                (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"拡大率: ") : "Zoom: ",
                 paxg::Vec2i(text_x, text_y + line_height * current_line),
                 paxg::Color(0, 0, 0)
@@ -118,7 +118,10 @@ namespace paxs {
                     const int date_year = [&]() {
                         int year = 0;
                         std::visit([&](const auto& x) {
-                            year = int(x.cgetYear());
+                            using T = std::decay_t<decltype(x)>;
+                            if constexpr (paxs::cal::YearMonthDayDateType<T>) {
+                                year = int(x.getYear());
+                            }
                         }, koyomi_.date_list[1].date);
                         return year;
                     }();

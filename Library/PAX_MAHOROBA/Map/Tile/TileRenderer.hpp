@@ -57,7 +57,7 @@ namespace paxs {
             const double map_viewport_height = map_viewport.getHeight();
             const double map_viewport_center_x = map_viewport.getCenterX();
             const double map_viewport_center_y = map_viewport.getCenterY();
-            const int date = static_cast<int>(jdn.cgetDay());
+            const int date = static_cast<int>(jdn.getDay());
 
             for (const auto& tile : tiles) {
                 // 可視性チェック

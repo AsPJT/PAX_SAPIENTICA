@@ -168,7 +168,7 @@ public:
     /// @details シミュレーションの再生時にはシミュレーションをステップ実行する
     void updateKoyomi() {
         if (koyomi_.move_forward_in_time || koyomi_.go_back_in_time) {
-            const double old_jdn = koyomi_.jdn.cgetDay();
+            const double old_jdn = koyomi_.jdn.getDay();
 
             koyomi_.update();
 
@@ -179,12 +179,12 @@ public:
 
                 // シミュレーションステップ実行イベントを発行
                 paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
-                    static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay()),
+                    static_cast<std::uint_least32_t>(koyomi_.steps.getDay()),
                     static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
                 ));
             }
 
-            const double new_jdn = koyomi_.jdn.cgetDay();
+            const double new_jdn = koyomi_.jdn.getDay();
             if (old_jdn != new_jdn) {
                 publishDateChangedEvent();
             }
@@ -350,10 +350,10 @@ private:
     void publishDateChangedEvent() const {
         auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
         paxs::EventBus::getInstance().publish(DateChangedEvent(
-            koyomi_.jdn.cgetDay(),
-            gregorian_date.cgetYear(),
-            gregorian_date.cgetMonth(),
-            gregorian_date.cgetDay()
+            koyomi_.jdn.getDay(),
+            gregorian_date.getYear(),
+            gregorian_date.getMonth(),
+            gregorian_date.getDay()
         ));
     }
 
@@ -377,7 +377,7 @@ private:
 
     /// @brief 日付移動コマンドを処理
     void handleDateNavigation(const DateNavigationEvent& event) {
-        koyomi_.jdn.getDay() += event.days;
+        koyomi_.jdn.addDays(event.days);
         koyomi_.calcDate();
         publishDateChangedEvent();
     }
@@ -438,13 +438,13 @@ private:
     void handleSimulationStep(const SimulationStepCommandEvent& event) {
         for (int i = 0; i < event.steps; ++i) {
             simulation_manager_.step();
-            koyomi_.steps.setDay(koyomi_.steps.cgetDay() + 1);
+            koyomi_.steps.setDay(koyomi_.steps.getDay() + 1);
         }
         koyomi_.jdn += event.steps;
 
         // 状態変更イベント発行
         paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
-            static_cast<std::uint_least32_t>(koyomi_.steps.cgetDay()),
+            static_cast<std::uint_least32_t>(koyomi_.steps.getDay()),
             static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
         ));
         publishDateChangedEvent();

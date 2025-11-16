@@ -29,26 +29,17 @@ namespace paxs::cal {
         Day day{ 1940571 /*西暦601年1月1日*/}; // 1808286 西暦238年10月26日
     public:
         constexpr JulianDayNumber() = default;
-        template<typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
-        constexpr JulianDayNumber(const T jdn_) { day = static_cast<Day>(jdn_); }
+        template<typename T>
+        constexpr JulianDayNumber(const T jdn_) requires (std::is_arithmetic_v<T>) : day(static_cast<Day>(jdn_)) {  }
 
-    public:
-
-        constexpr void setGengo(const DateGengo) const {} // 何もしない（ Variant に用いているため定義）
-        constexpr void setYear(const DateYear) const {} // 何もしない（ Variant に用いているため定義）
-        constexpr void setMonth(const DateMonth) const {} // 何もしない（ Variant に用いているため定義）
         constexpr void setDay(const Day day_) { day = day_; }
-        constexpr void setLeapMonth(const bool) const {} // 何もしない（ Variant に用いているため定義）
-        constexpr DateGengo getGengo() const { return 0; }
-        constexpr DateYear getYear() const { return 0; }
-        constexpr DateMonth getMonth() const { return 0; }
-        constexpr Day& getDay() { return day; }
-        constexpr DateGengo cgetGengo() const { return 0; }
-        constexpr DateYear cgetYear() const { return 0; }
-        constexpr DateMonth cgetMonth() const { return 0; }
-        constexpr Day cgetDay() const { return day; }
-        constexpr static bool isLeapMonth() { return false; } // 閏月は必ず無い（ Variant に用いているため定義）
-        constexpr static DateOutputType getDateOutputType() { return DateOutputType::name_and_value; } // 暦名＆年月日形式（ Variant に用いているため定義）
+        constexpr void addDays(const Day days) { day += days; }
+
+        constexpr Day getDay() const { return day; }
+        constexpr static bool isLeapMonth() { return false; }
+        constexpr static DateOutputType getDateOutputType() {
+            return DateOutputType::name_and_value;
+        }
 
         constexpr Day operator+=(const Day day_) { return (day += day_); }
         constexpr Day operator-=(const Day day_) { return (day -= day_); }
@@ -105,7 +96,13 @@ namespace paxs::cal {
         }
         // 和暦を取得
         constexpr JapanDate toJapaneseCalendar(const std::vector<paxs::JapaneseEra>& japanese_era_list) const {
-            JapanDate jp_date{ 0,1,0,0,false };
+            JapanDate jp_date{
+                GengoTag(0),
+                YearTag(1),
+                MonthTag(0),
+                DayTag(0),
+                LeapMonthTag(false)
+            };
 
             // ユリウス日が 1480407 以上（神武 1 年 1 月 1 日以降、グレゴリオ暦 紀元前 660 年 2 月 11 日以降）
             if (static_cast<int>(day) >= 1480407) {
@@ -161,7 +158,13 @@ namespace paxs::cal {
 
         // 中国大陸の暦を取得
         constexpr ChinaDate toChineseCalendar(const std::vector<paxs::ChineseEra>& japanese_era_list) const {
-            ChinaDate jp_date{ 0,1,1,1,false };
+            ChinaDate jp_date{
+                GengoTag(0),
+                YearTag(1),
+                MonthTag(1),
+                DayTag(1),
+                LeapMonthTag(false)
+            };
 
             // ユリウス日が 1480407 以上（神武 1 年 1 月 1 日以降、グレゴリオ暦 紀元前 660 年 2 月 11 日以降）
             if (static_cast<int>(day) >= 1480407) {
@@ -218,7 +221,7 @@ namespace paxs::cal {
         // 較正年代を取得
         constexpr CalBP toCalBP() const {
             GregorianDate ymd = toGregorianCalendar();
-            int value = int(ymd.cgetYear());
+            int value = int(ymd.getYear());
             if (value >= 1950) value = 0;
             else value = 1950 - value;
             return CalBP{ value };
@@ -240,10 +243,14 @@ namespace paxs::cal {
             IslamicDate ymd{};
             // おおよその年から1年ずつ前倒しで検索
             ymd.setYear((islamic_day - 227014) / 355);
-            while (islamic_day >= IslamicDate(ymd.getYear() + 1, 1, 1)) ymd.getYear()++;
+            while (islamic_day >= IslamicDate(ymd.getYear() + 1, 1, 1)) {
+                ymd.incrementYear();
+            }
             // ムハッラム（ Muharram ・１月）から月単位で検索
             ymd.setMonth(1);
-            while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(getLastMonthDay(ymd.getYear(), ymd.getMonth())))) ymd.getMonth()++;
+            while (islamic_day > IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(getLastMonthDay(ymd.getYear(), ymd.getMonth())))) {
+                ymd.incrementMonth();
+            }
             ymd.setDay(static_cast<DateDay>(islamic_day - static_cast<int>(IslamicDate(ymd.getYear(), ymd.getMonth(), static_cast<DateDay>(1))) + 1));
             return ymd;
         }

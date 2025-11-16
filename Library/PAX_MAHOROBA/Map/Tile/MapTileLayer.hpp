@@ -61,7 +61,7 @@ namespace paxs {
             const auto& koyomi = app_state_manager_.getKoyomi();
 
             TileRenderer::drawBackground();
-            TileRenderer::drawTiles(xyz_tile_list, visible, map_viewport, koyomi.jdn.cgetDay());
+            TileRenderer::drawTiles(xyz_tile_list, visible, map_viewport, koyomi.jdn.getDay());
         }
 
         RenderLayer getLayer() const override { return RenderLayer::MapTile; }

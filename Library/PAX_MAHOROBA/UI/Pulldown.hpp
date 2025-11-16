@@ -118,7 +118,7 @@ namespace paxs {
                     continue;
                 }
 
-                const std::uint_least32_t font_key = (is_one_font ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
+                const std::uint_least32_t font_key = (is_one_font ? items_key[i] : Fonts().getSelectedLanguage().getKey());
                 paxg::Font* item_font = Fonts().getFont(font_key, FontProfiles::PULLDOWN);
                 if (item_font == nullptr) {
                     PAXS_WARNING("Pulldown: Missing font for item.");
@@ -194,9 +194,9 @@ namespace paxs {
             }
 
             // 言語が変わっていたら更新処理
-            const std::uint_least32_t current_language_key = Fonts().getSelectedLanguage().cgetKey();
+            const std::uint_least32_t current_language_key = Fonts().getSelectedLanguage().getKey();
             if (old_language_key != current_language_key) {
-                language_index = Fonts().getSelectedLanguage().cget();
+                language_index = Fonts().getSelectedLanguage().get();
                 old_language_key = current_language_key;
                 updateLanguage();
             }
@@ -306,7 +306,7 @@ namespace paxs {
 
             paxg::Vec2i pos = rect.pos();
 
-            const std::uint_least32_t select_key = (is_one_font ? items_key[item_index] : Fonts().getSelectedLanguage().cgetKey());
+            const std::uint_least32_t select_key = (is_one_font ? items_key[item_index] : Fonts().getSelectedLanguage().getKey());
 
             // 種別によって描画処理を変える
             if (display_type == PulldownDisplayType::SelectedValue) {
@@ -362,7 +362,7 @@ namespace paxs {
                     // 四角形の色を変える
                     rect_tmp.draw(paxg::Color{ 135, 206, 235 });
                 }
-                const std::uint_least32_t select_font_key = ((is_one_font) ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
+                const std::uint_least32_t select_font_key = ((is_one_font) ? items_key[i] : Fonts().getSelectedLanguage().getKey());
 
                 paxg::Font* one_font = Fonts().getFont(select_font_key, FontProfiles::PULLDOWN);
                 if (one_font == nullptr) {
