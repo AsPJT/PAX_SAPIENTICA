@@ -83,11 +83,12 @@ namespace paxs {
                     LanguageDomain::UI
                 );
                 if (text_str == nullptr) {
-                    PAXS_WARNING("CalendarContent (Asian): Missing calendar name | "
-                        "Index: " + std::to_string(i) +
-                        " | Calendar: " + getCalendarNameFromHash(koyomi_.date_list[i].calendar_name_key) +
-                        " | Key: " + std::to_string(koyomi_.date_list[i].calendar_name_key) +
-                        " | JDN: " + std::to_string(koyomi_.jdn.cgetDay()));
+                    // 暦が存在しない時代に暦名がないというエラーが大量に発生するが、それは正常であるためエラー出力を削除
+                    //PAXS_WARNING("CalendarContent (Asian): Missing calendar name | "
+                    //    "Index: " + std::to_string(i) +
+                    //    " | Calendar: " + (koyomi_.date_list[i].calendar_name) +
+                    //    " | Key: " + std::to_string(koyomi_.date_list[i].calendar_name_key) +
+                    //    " | JDN: " + std::to_string(koyomi_.jdn.cgetDay()));
                     continue;
                 }
 
@@ -172,11 +173,12 @@ namespace paxs {
                     LanguageDomain::UI
                 );
                 if (text_str == nullptr) {
-                    PAXS_WARNING("CalendarContent (Western): Missing calendar name | "
-                        "Index: " + std::to_string(i) +
-                        " | Calendar: " + getCalendarNameFromHash(koyomi_.date_list[i].calendar_name_key) +
-                        " | Key: " + std::to_string(koyomi_.date_list[i].calendar_name_key) +
-                        " | JDN: " + std::to_string(koyomi_.jdn.cgetDay()));
+                    // 暦が存在しない時代に暦名がないというエラーが大量に発生するが、それは正常であるためエラー出力を削除
+                    //PAXS_WARNING("CalendarContent (Western): Missing calendar name | "
+                    //    "Index: " + std::to_string(i) +
+                    //    " | Calendar: " + getCalendarNameFromHash(koyomi_.date_list[i].calendar_name_key) +
+                    //    " | Key: " + std::to_string(koyomi_.date_list[i].calendar_name_key) +
+                    //    " | JDN: " + std::to_string(koyomi_.jdn.cgetDay()));
                     continue;
                 }
 
