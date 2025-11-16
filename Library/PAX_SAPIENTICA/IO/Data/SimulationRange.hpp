@@ -18,7 +18,6 @@
     の２つの TSV 読み込み行うクラス
 ##########################################################################################*/
 
-#include <cmath>
 #include <string>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>

@@ -12,10 +12,6 @@
 #ifndef PAX_MAHOROBA_UI_PANEL_BACKGROUND_HPP
 #define PAX_MAHOROBA_UI_PANEL_BACKGROUND_HPP
 
-#include <functional>
-#include <map>
-#include <vector>
-
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/RenderTexture.hpp>

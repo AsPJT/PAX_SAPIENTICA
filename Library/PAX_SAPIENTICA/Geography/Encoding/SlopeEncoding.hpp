@@ -13,7 +13,6 @@
 #define PAX_SAPIENTICA_GEOGRAPHY_ENCODING_SLOPE_ENCODING_HPP
 
 #include <cmath>
-#include <cstdint>
 #include <limits>
 
 namespace paxs {

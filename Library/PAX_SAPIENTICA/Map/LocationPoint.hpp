@@ -12,9 +12,7 @@
 #ifndef PAX_SAPIENTICA_MAP_LOCATION_POINT_HPP
 #define PAX_SAPIENTICA_MAP_LOCATION_POINT_HPP
 
-#include <algorithm>
 #include <cstdint>
-#include <functional>
 #include <string>
 
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>

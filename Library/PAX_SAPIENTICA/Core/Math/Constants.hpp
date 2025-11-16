@@ -19,11 +19,11 @@ namespace paxs {
 
     template<typename T>
     struct MathConstants {
-        constexpr inline static T pi() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI); } // π
-        constexpr inline static T pi2() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 2.0); } // ２π
-        constexpr inline static T pi3() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 3.0); } // ３π
-        constexpr inline static T pi4() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 4.0); } // ４π
-        constexpr inline static T piHalf() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 0.5); } // π／２
+        constexpr static T pi() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI); } // π
+        constexpr static T pi2() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 2.0); } // ２π
+        constexpr static T pi3() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 3.0); } // ３π
+        constexpr static T pi4() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 4.0); } // ４π
+        constexpr static T piHalf() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 0.5); } // π／２
     };
 
     using MathConstantsF32 = MathConstants<float>;

@@ -19,16 +19,16 @@ namespace paxs {
     template<typename T>
     struct MathConversions {
         // ラジアンから度への変換係数
-        constexpr inline static T radToDeg() noexcept { return static_cast<T>(180.0 / PAX_SAPIENTICA_PI); }
+        constexpr static T radToDeg() noexcept { return static_cast<T>(180.0 / PAX_SAPIENTICA_PI); }
 
         // 度からラジアンへの変換係数
-        constexpr inline static T degToRad() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI / 180.0); }
+        constexpr static T degToRad() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI / 180.0); }
 
         // ラジアンから度へ変換
-        constexpr inline static T radToDeg(const T value) noexcept { return static_cast<T>(value * radToDeg()); }
+        constexpr static T radToDeg(const T value) noexcept { return static_cast<T>(value * radToDeg()); }
 
         // 度からラジアンへ変換
-        constexpr inline static T degToRad(const T value) noexcept { return static_cast<T>(value * degToRad()); }
+        constexpr static T degToRad(const T value) noexcept { return static_cast<T>(value * degToRad()); }
     };
 
     using MathConversionsF32 = MathConversions<float>;

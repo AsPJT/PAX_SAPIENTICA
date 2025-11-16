@@ -12,11 +12,9 @@
 #ifndef PAX_SAPIENTICA_GEOGRAPHY_STRING_CONVERSIONS_HPP
 #define PAX_SAPIENTICA_GEOGRAPHY_STRING_CONVERSIONS_HPP
 
-#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <string>
-#include <vector>
 
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Encoding/ElevationEncoding.hpp>

@@ -13,8 +13,6 @@
 #define PAX_SAPIENTICA_IO_FILE_FILE_SYSTEM_HPP
 
 #include <filesystem>
-#include <fstream>
-#include <stdexcept>
 #include <vector>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION

@@ -35,6 +35,21 @@ namespace paxs {
         const paxs::Koyomi& koyomi_;
         const paxs::UILayout& ui_layout_;
 
+        // ヘルパー関数：年月日データを抽出（YearMonthDayDateType用）
+        template<cal::YearMonthDayDateType T>
+        static void extractYearMonthDay(const T& date, int& year, int& month, int& day, bool& is_leap) {
+            year = static_cast<int>(date.getYear());
+            month = static_cast<int>(date.getMonth());
+            day = static_cast<int>(date.getDay());
+            is_leap = date.isLeapMonth();
+        }
+
+        // ヘルパー関数：年月日データを抽出（その他の型用）
+        template<typename T>
+        static void extractYearMonthDay(const T&, int&, int&, int&, bool&) {
+            // YearMonthDayDateTypeでない型は何もしない
+        }
+
         // カレンダーを描画（言語に応じて自動選択）
         void renderInternal() const {
             const std::uint_least32_t current_language = Fonts().getSelectedLanguage().getKey();
@@ -86,13 +101,7 @@ namespace paxs {
                 switch (output_type) {
                 case paxs::cal::DateOutputType::name_and_ymd:
                     std::visit([&](const auto& x) {
-                        using T = std::decay_t<decltype(x)>;
-                        if constexpr (paxs::cal::YearMonthDayDateType<T>) {
-                            date_year = int(x.getYear());
-                            date_month = int(x.getMonth());
-                            date_day = int(x.getDay());
-                            date_lm = x.isLeapMonth();
-                        }
+                        extractYearMonthDay(x, date_year, date_month, date_day, date_lm);
                         }, koyomi_.date_list[i].date);
                     if (date_day <= 0 || date_month <= 0) {
                         break;
@@ -163,13 +172,7 @@ namespace paxs {
                 switch (output_type) {
                 case paxs::cal::DateOutputType::name_and_ymd:
                     std::visit([&](const auto& x) {
-                        using T = std::decay_t<decltype(x)>;
-                        if constexpr (paxs::cal::YearMonthDayDateType<T>) {
-                            date_year = int(x.getYear());
-                            date_month = int(x.getMonth());
-                            date_day = int(x.getDay());
-                            date_lm = x.isLeapMonth();
-                        }
+                        extractYearMonthDay(x, date_year, date_month, date_day, date_lm);
                     }, koyomi_.date_list[i].date);
 
                     if (date_day <= 0 || date_month <= 0) {

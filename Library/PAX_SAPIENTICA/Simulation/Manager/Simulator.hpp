@@ -13,7 +13,6 @@
 #define PAX_SAPIENTICA_SIMULATION_MANAGER_SIMULATOR_HPP
 
 #include <memory>
-#include <stdexcept>
 
 #include <PAX_SAPIENTICA/Simulation/Entity/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>

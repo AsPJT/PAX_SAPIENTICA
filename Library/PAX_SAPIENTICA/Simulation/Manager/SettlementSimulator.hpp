@@ -12,10 +12,9 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_MANAGER_SETTLEMENT_SIMULATOR_HPP
 #define PAX_SAPIENTICA_SIMULATION_MANAGER_SETTLEMENT_SIMULATOR_HPP
 
-#include <cstdint>
-
 #include <array>
 #include <chrono>
+#include <cstdint>
 #include <ctime>
 #include <memory>
 #include <random>

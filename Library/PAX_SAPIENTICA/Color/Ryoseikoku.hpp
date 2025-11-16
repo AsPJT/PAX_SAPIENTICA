@@ -19,7 +19,7 @@
 namespace paxs {
 
     class RyoseikokuColor {
-        inline static constexpr std::array<paxs::RGBA, 91> soil_temp =
+        static constexpr std::array<paxs::RGBA, 91> soil_temp =
         {
             paxs::RGBA{0,0,0}, // 0
             paxs::RGBA{245,105,100},

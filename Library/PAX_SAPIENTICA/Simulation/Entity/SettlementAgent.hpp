@@ -12,11 +12,7 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_ENTITY_SETTLEMENT_AGENT_HPP
 #define PAX_SAPIENTICA_SIMULATION_ENTITY_SETTLEMENT_AGENT_HPP
 
-#include <array>
 #include <limits>
-#include <memory>
-#include <random>
-#include <stdexcept>
 
 #include <PAX_SAPIENTICA/Simulation/Entity/Genome.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>

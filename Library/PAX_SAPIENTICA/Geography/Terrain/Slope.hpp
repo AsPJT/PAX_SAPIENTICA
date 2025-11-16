@@ -12,9 +12,8 @@
 #ifndef PAX_SAPIENTICA_GEOGRAPHY_TERRAIN_SLOPE_HPP
 #define PAX_SAPIENTICA_GEOGRAPHY_TERRAIN_SLOPE_HPP
 
-#include <cstddef>
-
 #include <array>
+#include <cstddef>
 #include <fstream>
 #include <string>
 

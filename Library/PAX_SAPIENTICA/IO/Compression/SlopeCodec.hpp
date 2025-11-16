@@ -12,7 +12,6 @@
 #ifndef PAX_SAPIENTICA_IO_COMPRESSION_SLOPE_CODEC_HPP
 #define PAX_SAPIENTICA_IO_COMPRESSION_SLOPE_CODEC_HPP
 
-#include <cstdint>
 #include <fstream>
 #include <string>
 

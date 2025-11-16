@@ -13,7 +13,6 @@
 #define PAX_SAPIENTICA_CALENDAR_CHINESE_ERA_HPP
 
 #include <array>
-#include <cmath>
 #include <string>
 #include <vector>
 

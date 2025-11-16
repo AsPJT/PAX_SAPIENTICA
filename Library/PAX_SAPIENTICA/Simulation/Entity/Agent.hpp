@@ -16,7 +16,6 @@
 #include <limits>
 #include <memory>
 #include <random>
-#include <stdexcept>
 
 #include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/Object.hpp>
