@@ -12,19 +12,16 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_CONFIG_ENVIRONMENT_HPP
 #define PAX_SAPIENTICA_SIMULATION_CONFIG_ENVIRONMENT_HPP
 
-#include <cmath>
-#include <iostream>
 #include <memory>
-#include <random>
-#include <regex>
 #include <stdexcept>
 #include <variant>
 
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
-#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -82,17 +79,18 @@ namespace paxs {
                 const std::uint_least32_t data_type = MurMur3::calcHash(settings[i][data_type_column].size(), settings[i][data_type_column].c_str());
                 const std::uint_least32_t key = MurMur3::calcHash(settings[i][key_column].size(), settings[i][key_column].c_str());
                 const std::string& key_str = settings[i][key_column];
+                const int z_value = StringUtils::safeStoi(settings[i][z_column], 0, true);
                 if (data_type == MurMur3::calcHash("u8")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t>(settings[i][file_path_column], key_str, z_value)));
                 }
                 else if (data_type == MurMur3::calcHash("u32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t>(settings[i][file_path_column], key_str, z_value)));
                 }
                 else if (data_type == MurMur3::calcHash("f32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float>(settings[i][file_path_column], key_str, z_value)));
                 }
                 else if (data_type == MurMur3::calcHash("s16")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t>(settings[i][file_path_column], key_str, std::stoi(settings[i][z_column]))));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t>(settings[i][file_path_column], key_str, z_value)));
                 }
                 else {
                     PAXS_WARNING("data_type is not found in " + setting_file_path);
@@ -169,17 +167,20 @@ namespace paxs {
             }
         }
         bool isCoast(const Vector2& position) const noexcept {
-            const bool is_land = isLand(position); // 陸かどうか
-            if (!is_land) return false; // 陸ではないので海岸ではない
+            if (!isLand(position)) {
+                return false; // 陸ではないので海岸ではない
+            }
             // 隣接セルが陸地ではない場合は海岸
-            if (!isLand(Vector2{ position.x - 1, position.y - 1 })) return true;
-            if (!isLand(Vector2{ position.x, position.y - 1 })) return true;
-            if (!isLand(Vector2{ position.x + 1, position.y - 1 })) return true;
-            if (!isLand(Vector2{ position.x - 1, position.y })) return true;
-            if (!isLand(Vector2{ position.x + 1, position.y })) return true;
-            if (!isLand(Vector2{ position.x - 1, position.y + 1 })) return true;
-            if (!isLand(Vector2{ position.x, position.y + 1 })) return true;
-            if (!isLand(Vector2{ position.x + 1, position.y + 1 })) return true;
+            if (!isLand({ position.x - 1, position.y - 1 })
+            || !isLand({ position.x, position.y - 1 })
+            || !isLand({ position.x + 1, position.y - 1 })
+            || !isLand({ position.x - 1, position.y })
+            || !isLand({ position.x + 1, position.y })
+            || !isLand({ position.x - 1, position.y + 1 })
+            || !isLand({ position.x, position.y + 1 })
+            || !isLand({ position.x + 1, position.y + 1 })) {
+                return true;
+            }
             return false; // 海岸ではない
         }
 

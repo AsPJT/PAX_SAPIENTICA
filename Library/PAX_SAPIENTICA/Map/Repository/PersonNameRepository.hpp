@@ -19,6 +19,7 @@
 #include <vector>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/FeatureListLoader.hpp>
@@ -199,16 +200,42 @@ namespace paxs {
 
                 const std::string& overall_length_str = has_overall_length ? table.get(row_index, overall_length_hash) : "";
 
-                double start_point_longitude = std::stod(start_longitude_str); // 経度
-                double start_point_latitude = std::stod(start_latitude_str); // 緯度
+                // 経度の変換
+                auto start_lon_opt = StringUtils::toDouble(start_longitude_str);
+                if (!start_lon_opt) {
+                    PAXS_WARNING("Invalid start_longitude at row " + std::to_string(row_index) + " in " + params.file_path + ": \"" + start_longitude_str + "\"");
+                    return;
+                }
+                double start_point_longitude = *start_lon_opt; // 経度
+
+                // 緯度の変換
+                auto start_lat_opt = StringUtils::toDouble(start_latitude_str);
+                if (!start_lat_opt) {
+                    PAXS_WARNING("Invalid start_latitude at row " + std::to_string(row_index) + " in " + params.file_path + ": \"" + start_latitude_str + "\"");
+                    return;
+                }
+                double start_point_latitude = *start_lat_opt; // 緯度
                 // 経緯度の範囲を求める
                 start_start_longitude = (std::min)(start_start_longitude, start_point_longitude);
                 start_start_latitude = (std::min)(start_start_latitude, start_point_latitude);
                 start_end_longitude = (std::max)(start_end_longitude, start_point_longitude);
                 start_end_latitude = (std::max)(start_end_latitude, start_point_latitude);
 
-                double end_point_longitude = std::stod(end_longitude_str); // 経度
-                double end_point_latitude = std::stod(end_latitude_str); // 緯度
+                // 終点経度の変換
+                auto end_lon_opt = StringUtils::toDouble(end_longitude_str);
+                if (!end_lon_opt) {
+                    PAXS_WARNING("Invalid end_longitude at row " + std::to_string(row_index) + " in " + params.file_path + ": \"" + end_longitude_str + "\"");
+                    return;
+                }
+                double end_point_longitude = *end_lon_opt; // 経度
+
+                // 終点緯度の変換
+                auto end_lat_opt = StringUtils::toDouble(end_latitude_str);
+                if (!end_lat_opt) {
+                    PAXS_WARNING("Invalid end_latitude at row " + std::to_string(row_index) + " in " + params.file_path + ": \"" + end_latitude_str + "\"");
+                    return;
+                }
+                double end_point_latitude = *end_lat_opt; // 緯度
                 // 経緯度の範囲を求める
                 end_start_longitude = (std::min)(end_start_longitude, end_point_longitude);
                 end_start_latitude = (std::min)(end_start_latitude, end_point_latitude);
@@ -233,11 +260,11 @@ namespace paxs {
                         paxs::Vector2<double>(
                             end_point_longitude, // 経度
                             end_point_latitude)).toMercatorDeg(), // 緯度
-                    overall_length_str.empty() ? 1000.0 : std::stod(overall_length_str), // 全長
-                    min_size_str.empty() ? params.min_zoom_level : std::stod(min_size_str), // 最小サイズ
-                    max_size_str.empty() ? params.max_zoom_level : std::stod(max_size_str), // 最大サイズ
-                    first_julian_day_str.empty() ? params.min_year : std::stod(first_julian_day_str), // 最小時代
-                    last_julian_day_str.empty() ? params.max_year : std::stod(last_julian_day_str), // 最大時代
+                    StringUtils::safeStod(overall_length_str, 1000.0, true), // 全長
+                    StringUtils::safeStod(min_size_str, params.min_zoom_level, true), // 最小サイズ
+                    StringUtils::safeStod(max_size_str, params.max_zoom_level, true), // 最大サイズ
+                    StringUtils::safeStod(first_julian_day_str, params.min_year, true), // 最小時代
+                    StringUtils::safeStod(last_julian_day_str, params.max_year, true), // 最大時代
                     feature_type_hash,
                     texture_str.empty() ? params.texture_hash : MurMur3::calcHash(texture_str.size(), texture_str.c_str()) // テクスチャの Key
                 );

@@ -16,6 +16,7 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugConsole.hpp>
 
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
@@ -50,22 +51,22 @@ private:
                 PAXS_WARNING("Usage: x <longitude> (range: 0.0-180.0)");
                 return;
             }
-            try {
-                double longitude = std::stod(args[1]);
-                if (longitude < 0.0 || longitude > 180.0) {
-                    PAXS_WARNING("Longitude must be between 0.0 and 180.0");
-                    return;
-                }
-                // メルカトル座標に変換
-                paxs::Vector2<double> equirect_coords(longitude, app_state.getMapViewport().getCenterY());
-                paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-                app_state.getMapViewport().setCenter(mercator_coords.getX(), app_state.getMapViewport().getCenterY());
-                app_state.getMapViewport().applyConstraints();
-                app_state.getMapViewport().notifyViewportChanged();
-                PAXS_INFO("Longitude set to " + args[1]);
-            } catch (const std::exception& e) {
-                PAXS_ERROR("Invalid longitude value: " + std::string(e.what()));
+            auto longitude_opt = StringUtils::toDouble(args[1]);
+            if (!longitude_opt) {
+                PAXS_ERROR("Invalid longitude value: \"" + args[1] + "\"");
+                return;
             }
+            double longitude = *longitude_opt;
+            if (longitude < 0.0 || longitude > 180.0) {
+                PAXS_WARNING("Longitude must be between 0.0 and 180.0");
+                return;
+            }
+            // メルカトル座標に変換
+            paxs::Vector2<double> equirect_coords(longitude, app_state.getMapViewport().getCenterY());
+            paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
+            app_state.getMapViewport().setCenter(mercator_coords.getX(), app_state.getMapViewport().getCenterY());
+            app_state.getMapViewport().applyConstraints();
+            app_state.getMapViewport().notifyViewportChanged();
         });
 
         // y <latitude>: 緯度を設定（範囲: 0.0～90.0）
@@ -74,22 +75,22 @@ private:
                 PAXS_WARNING("Usage: y <latitude> (range: 0.0-90.0)");
                 return;
             }
-            try {
-                double latitude = std::stod(args[1]);
-                if (latitude < 0.0 || latitude > 90.0) {
-                    PAXS_WARNING("Latitude must be between 0.0 and 90.0");
-                    return;
-                }
-                // メルカトル座標に変換
-                paxs::Vector2<double> equirect_coords(app_state.getMapViewport().getCenterX(), latitude);
-                paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-                app_state.getMapViewport().setCenter(app_state.getMapViewport().getCenterX(), mercator_coords.getY());
-                app_state.getMapViewport().applyConstraints();
-                app_state.getMapViewport().notifyViewportChanged();
-                PAXS_INFO("Latitude set to " + args[1]);
-            } catch (const std::exception& e) {
-                PAXS_ERROR("Invalid latitude value: " + std::string(e.what()));
+            auto latitude_opt = StringUtils::toDouble(args[1]);
+            if (!latitude_opt) {
+                PAXS_ERROR("Invalid latitude value: \"" + args[1] + "\"");
+                return;
             }
+            double latitude = *latitude_opt;
+            if (latitude < 0.0 || latitude > 90.0) {
+                PAXS_WARNING("Latitude must be between 0.0 and 90.0");
+                return;
+            }
+            // メルカトル座標に変換
+            paxs::Vector2<double> equirect_coords(app_state.getMapViewport().getCenterX(), latitude);
+            paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
+            app_state.getMapViewport().setCenter(app_state.getMapViewport().getCenterX(), mercator_coords.getY());
+            app_state.getMapViewport().applyConstraints();
+            app_state.getMapViewport().notifyViewportChanged();
         });
 
         // z <zoom>: 拡大率を設定
@@ -100,21 +101,21 @@ private:
                     std::to_string(app_state.getMapViewport().getMaxHeight()) + ")");
                 return;
             }
-            try {
-                double zoom = std::stod(args[1]);
-                const double min_h = app_state.getMapViewport().getMinHeight();
-                const double max_h = app_state.getMapViewport().getMaxHeight();
-                if (zoom < min_h || zoom > max_h) {
-                    PAXS_WARNING("Zoom must be between " + std::to_string(min_h) + " and " + std::to_string(max_h));
-                    return;
-                }
-                app_state.getMapViewport().setSize(zoom);
-                app_state.getMapViewport().applyConstraints();
-                app_state.getMapViewport().notifyViewportChanged();
-                PAXS_INFO("Zoom level set to " + args[1]);
-            } catch (const std::exception& e) {
-                PAXS_ERROR("Invalid zoom value: " + std::string(e.what()));
+            auto zoom_opt = StringUtils::toDouble(args[1]);
+            if (!zoom_opt) {
+                PAXS_ERROR("Invalid zoom value: \"" + args[1] + "\"");
+                return;
             }
+            double zoom = *zoom_opt;
+            const double min_h = app_state.getMapViewport().getMinHeight();
+            const double max_h = app_state.getMapViewport().getMaxHeight();
+            if (zoom < min_h || zoom > max_h) {
+                PAXS_WARNING("Zoom must be between " + std::to_string(min_h) + " and " + std::to_string(max_h));
+                return;
+            }
+            app_state.getMapViewport().setSize(zoom);
+            app_state.getMapViewport().applyConstraints();
+            app_state.getMapViewport().notifyViewportChanged();
         });
     }
 

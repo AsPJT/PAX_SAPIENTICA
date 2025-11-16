@@ -15,9 +15,10 @@
 #include <random>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/InputFile.hpp>
-#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
@@ -194,7 +195,7 @@ namespace paxs {
                         // 言語 の名称の index を取得し、確率分布と一緒に管理
                         if (language_list[k] == dist[j]) {
                             language_region.id.emplace_back(k);
-                            language_region.weight.emplace_back(std::stod(dist[j + 1]));
+                            language_region.weight.emplace_back(StringUtils::safeStod(dist[j + 1], 0.0, true));
                             break;
                         }
                     }
@@ -261,7 +262,7 @@ namespace paxs {
                         // mtDNA の名称の index を取得し、確率分布と一緒に管理
                         if (mtdna_list[k] == dist[j]) {
                             mtdna_region.id.emplace_back(k);
-                            mtdna_region.weight.emplace_back(std::stod(dist[j + 1]));
+                            mtdna_region.weight.emplace_back(StringUtils::safeStod(dist[j + 1], 0.0, true));
                             break;
                         }
                     }
@@ -331,13 +332,13 @@ namespace paxs {
                 district.init_pop = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("init_pop")]]));
                 district.immigrant = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("immigrant")]]));
                 district.immigrant_f64 = static_cast<double>(district.immigrant);
-                district.increased_immigration = std::stod(sub_menu_v[menu[MurMur3::calcHash("increased_immigration")]]);
+                district.increased_immigration = StringUtils::safeStod(sub_menu_v[menu[MurMur3::calcHash("increased_immigration")]], 0.0, true);
 
                 district.direction_min_distance = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("direction_min_distance")]]));
 
                 std::vector<std::string> direction_split = paxs::StringUtils::split(sub_menu_v[menu[MurMur3::calcHash("directions")]], '/');
                 for (std::size_t di = 0; di < direction_split.size() && di < 8; ++di) {
-                    district.direction_weight.emplace_back(std::stod(direction_split[di]));
+                    district.direction_weight.emplace_back(StringUtils::safeStod(direction_split[di], 0.0, true));
                 }
                 if(district.direction_weight.size() == 0) district.direction_weight.emplace_back(0.0);
                 // 方向の確率分布を生成

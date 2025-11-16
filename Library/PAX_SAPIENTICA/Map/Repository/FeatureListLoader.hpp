@@ -17,6 +17,7 @@
 #include <string>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
@@ -114,28 +115,28 @@ namespace paxs {
 
                 // 表示する最小ズームレベル
                 const std::string& min_size_str = has_min_size ? table.get(row_index, min_size_hash) : "";
-                const double min_zoom_level = min_size_str.empty() ? 0.0 : std::stod(min_size_str);
+                const double min_zoom_level = StringUtils::safeStod(min_size_str, 0.0, true);
 
                 // 表示する最大ズームレベル
                 const std::string& max_size_str = has_max_size ? table.get(row_index, max_size_hash) : "";
-                const double max_zoom_level = max_size_str.empty() ? 99999999.0 : std::stod(max_size_str);
+                const double max_zoom_level = StringUtils::safeStod(max_size_str, 99999999.0, true);
 
                 // 可視化する時代（古い年～）
                 const std::string& first_jd_str = has_first_julian_day ? table.get(row_index, first_julian_day_hash) : "";
                 const std::string& first_year_str = has_first_year ? table.get(row_index, first_year_hash) : "";
                 const int min_year = !first_jd_str.empty() ?
-                    std::stoi(first_jd_str) :
+                    StringUtils::safeStoi(first_jd_str, -99999999, true) :
                     (!first_year_str.empty() ?
-                        static_cast<int>(std::stod(first_year_str) * days_in_a_year + julian_day_on_m1_1_1) :
+                        static_cast<int>(StringUtils::safeStod(first_year_str, -99999999.0, true) * days_in_a_year + julian_day_on_m1_1_1) :
                         -99999999);
 
                 // 可視化する時代（～新しい年）
                 const std::string& last_jd_str = has_last_julian_day ? table.get(row_index, last_julian_day_hash) : "";
                 const std::string& last_year_str = has_last_year ? table.get(row_index, last_year_hash) : "";
                 const int max_year = !last_jd_str.empty() ?
-                    std::stoi(last_jd_str) :
+                    StringUtils::safeStoi(last_jd_str, 99999999, true) :
                     (!last_year_str.empty() ?
-                        static_cast<int>(std::stod(last_year_str) * days_in_a_year + julian_day_on_m1_1_1) :
+                        static_cast<int>(StringUtils::safeStod(last_year_str, 99999999.0, true) * days_in_a_year + julian_day_on_m1_1_1) :
                         99999999);
 
                 // 画像
@@ -145,7 +146,7 @@ namespace paxs {
 
                 // ズームサイズ
                 const std::string& zoom_str = has_zoom ? table.get(row_index, zoom_hash) : "";
-                const double zoom = zoom_str.empty() ? 1.0 : std::stod(zoom_str);
+                const double zoom = StringUtils::safeStod(zoom_str, 1.0, true);
 
                 // コールバックを呼び出し
                 callback(FeatureListParams{

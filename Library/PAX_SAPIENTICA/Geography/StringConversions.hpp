@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Encoding/ElevationEncoding.hpp>
 #include <PAX_SAPIENTICA/Geography/Encoding/SlopeEncoding.hpp>
 
@@ -41,13 +42,13 @@ struct GeoStringConversions {
         while ((end_pos = input.find(delimiter, start_pos)) != std::string::npos) {
             if (field_index >= size) break;
             std::string field = input.substr(start_pos, end_pos - start_pos);
-            result[field_index++] = (field.empty() || field == "nan") ? 251 : paxs::SlopeEncoding::slopeDegF64ToLog2U8(std::stod(field));
+            result[field_index++] = (field.empty() || field == "nan") ? 251 : paxs::SlopeEncoding::slopeDegF64ToLog2U8(StringUtils::safeStod(field, 0.0, false));
             start_pos = end_pos + 1;
         }
         // 最後のフィールド
         if (field_index < size && start_pos < input.size()) {
             std::string field = input.substr(start_pos);
-            result[field_index++] = (field.empty() || field == "nan") ? 251 : paxs::SlopeEncoding::slopeDegF64ToLog2U8(std::stod(field));
+            result[field_index++] = (field.empty() || field == "nan") ? 251 : paxs::SlopeEncoding::slopeDegF64ToLog2U8(StringUtils::safeStod(field, 0.0, false));
         }
     }
 
@@ -65,13 +66,13 @@ struct GeoStringConversions {
         while ((end_pos = input.find(delimiter, start_pos)) != std::string::npos) {
             if (field_index >= size) break;
             std::string field = input.substr(start_pos, end_pos - start_pos);
-            result[field_index++] = (field.empty() || field == "nan") ? 32761 : paxs::ElevationEncoding::elevationF64ToLog2S16(std::stod(field));
+            result[field_index++] = (field.empty() || field == "nan") ? 32761 : paxs::ElevationEncoding::elevationF64ToLog2S16(StringUtils::safeStod(field, 0.0, false));
             start_pos = end_pos + 1;
         }
         // 最後のフィールド
         if (field_index < size && start_pos < input.size()) {
             std::string field = input.substr(start_pos);
-            result[field_index++] = (field.empty() || field == "nan") ? 32761 : paxs::ElevationEncoding::elevationF64ToLog2S16(std::stod(field));
+            result[field_index++] = (field.empty() || field == "nan") ? 32761 : paxs::ElevationEncoding::elevationF64ToLog2S16(StringUtils::safeStod(field, 0.0, false));
         }
     }
 };

@@ -18,6 +18,7 @@
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/System/InputFile.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
@@ -130,22 +131,22 @@ namespace paxs {
                 // 読み込む地図の最小範囲
                 const unsigned int min_z = (min_z_index >= strvec.size()) ?
                     99999999 : ((strvec[min_z_index].size() == 0) ?
-                        99999999 : std::stoi(strvec[min_z_index]));
+                        99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[min_z_index], 99999999, true)));
 
                 // 読み込む地図の最大範囲
                 const unsigned int max_z = (max_z_index >= strvec.size()) ?
                     99999999 : ((strvec[max_z_index].size() == 0) ?
-                        99999999 : std::stoi(strvec[max_z_index]));
+                        99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[max_z_index], 99999999, true)));
 
                 // 表示する最小ズームレベル
                 const unsigned int draw_min_z = (draw_min_z_index >= strvec.size()) ?
                     99999999 : ((strvec[draw_min_z_index].size() == 0) ?
-                        99999999 : std::stoi(strvec[draw_min_z_index]));
+                        99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[draw_min_z_index], 99999999, true)));
 
                 // 表示する最大ズームレベル
                 const unsigned int draw_max_z = (draw_max_z_index >= strvec.size()) ?
                     99999999 : ((strvec[draw_max_z_index].size() == 0) ?
-                        99999999 : std::stoi(strvec[draw_max_z_index]));
+                        99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[draw_max_z_index], 99999999, true)));
 
                 XYZTile xyz_tile(menu_bar_map, menu_bar_map_bool,
                     texture_input_type, binary_input_type, binary_path,

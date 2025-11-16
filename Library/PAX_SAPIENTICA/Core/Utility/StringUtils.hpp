@@ -13,6 +13,7 @@
 #define PAX_SAPIENTICA_CORE_UTILITY_STRING_UTILS_HPP
 
 #include <limits>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <variant>
@@ -214,6 +215,196 @@ namespace paxs {
             catch (const std::out_of_range&/*oor*/) {
                 // str is out of range for a int
                 return str;
+            }
+        }
+
+        /// @brief Safely convert string to double (returns std::optional)
+        /// @brief 文字列を安全に double に変換する（std::optional版）
+        /// @param str 変換する文字列
+        /// @return 変換成功時は値、空文字列または失敗時は std::nullopt
+        /// @note 空文字列は std::nullopt を返す（0.0 とは区別される）
+        static std::optional<double> toDouble(const std::string& str) noexcept {
+            if (str.empty()) {
+                return std::nullopt;
+            }
+            try {
+                return std::stod(str);
+            }
+            catch (const std::invalid_argument&) {
+                return std::nullopt;
+            }
+            catch (const std::out_of_range&) {
+                return std::nullopt;
+            }
+        }
+
+        /// @brief Safely convert string to double with default value
+        /// @brief 文字列を安全に double に変換する（デフォルト値付き）
+        /// @param str 変換する文字列
+        /// @param default_value 変換失敗時のデフォルト値
+        /// @param warn_on_error エラー時に警告を出力するか（デフォルト: true）
+        /// @return 変換結果またはデフォルト値
+        /// @note 空文字列の場合もデフォルト値を返す
+        static double safeStod(const std::string& str, double default_value, bool warn_on_error = true) noexcept {
+            if (str.empty()) {
+                return default_value;
+            }
+            try {
+                return std::stod(str);
+            }
+            catch (const std::invalid_argument&) {
+                if (warn_on_error) {
+                    PAXS_WARNING("Invalid numeric value: \"" + str + "\", using default: " + std::to_string(default_value));
+                }
+                return default_value;
+            }
+            catch (const std::out_of_range&) {
+                if (warn_on_error) {
+                    PAXS_WARNING("Numeric value out of range: \"" + str + "\", using default: " + std::to_string(default_value));
+                }
+                return default_value;
+            }
+        }
+
+        /// @brief Safely convert string to int (returns std::optional)
+        /// @brief 文字列を安全に int に変換する（std::optional版）
+        /// @param str 変換する文字列
+        /// @return 変換成功時は値、空文字列または失敗時は std::nullopt
+        /// @note 空文字列は std::nullopt を返す（0 とは区別される）
+        static std::optional<int> toInt(const std::string& str) noexcept {
+            if (str.empty()) {
+                return std::nullopt;
+            }
+            try {
+                return std::stoi(str);
+            }
+            catch (const std::invalid_argument&) {
+                return std::nullopt;
+            }
+            catch (const std::out_of_range&) {
+                return std::nullopt;
+            }
+        }
+
+        /// @brief Safely convert string to int with default value
+        /// @brief 文字列を安全に int に変換する（デフォルト値付き）
+        /// @param str 変換する文字列
+        /// @param default_value 変換失敗時のデフォルト値
+        /// @param warn_on_error エラー時に警告を出力するか（デフォルト: true）
+        /// @return 変換結果またはデフォルト値
+        /// @note 空文字列の場合もデフォルト値を返す
+        static int safeStoi(const std::string& str, int default_value, bool warn_on_error = true) noexcept {
+            if (str.empty()) {
+                return default_value;
+            }
+            try {
+                return std::stoi(str);
+            }
+            catch (const std::invalid_argument&) {
+                if (warn_on_error) {
+                    PAXS_WARNING("Invalid integer value: \"" + str + "\", using default: " + std::to_string(default_value));
+                }
+                return default_value;
+            }
+            catch (const std::out_of_range&) {
+                if (warn_on_error) {
+                    PAXS_WARNING("Integer value out of range: \"" + str + "\", using default: " + std::to_string(default_value));
+                }
+                return default_value;
+            }
+        }
+
+        /// @brief Safely convert string to long (returns std::optional)
+        /// @brief 文字列を安全に long に変換する（std::optional版）
+        /// @param str 変換する文字列
+        /// @return 変換成功時は値、空文字列または失敗時は std::nullopt
+        static std::optional<long> toLong(const std::string& str) noexcept {
+            if (str.empty()) {
+                return std::nullopt;
+            }
+            try {
+                return std::stol(str);
+            }
+            catch (const std::invalid_argument&) {
+                return std::nullopt;
+            }
+            catch (const std::out_of_range&) {
+                return std::nullopt;
+            }
+        }
+
+        /// @brief Safely convert string to long with default value
+        /// @brief 文字列を安全に long に変換する（デフォルト値付き）
+        /// @param str 変換する文字列
+        /// @param default_value 変換失敗時のデフォルト値
+        /// @param warn_on_error エラー時に警告を出力するか（デフォルト: true）
+        /// @return 変換結果またはデフォルト値
+        /// @note 空文字列の場合もデフォルト値を返す
+        static long safeStol(const std::string& str, long default_value, bool warn_on_error = true) noexcept {
+            if (str.empty()) {
+                return default_value;
+            }
+            try {
+                return std::stol(str);
+            }
+            catch (const std::invalid_argument&) {
+                if (warn_on_error) {
+                    PAXS_WARNING("Invalid long value: \"" + str + "\", using default: " + std::to_string(default_value));
+                }
+                return default_value;
+            }
+            catch (const std::out_of_range&) {
+                if (warn_on_error) {
+                    PAXS_WARNING("Long value out of range: \"" + str + "\", using default: " + std::to_string(default_value));
+                }
+                return default_value;
+            }
+        }
+
+        /// @brief Safely convert string to float (returns std::optional)
+        /// @brief 文字列を安全に float に変換する（std::optional版）
+        /// @param str 変換する文字列
+        /// @return 変換成功時は値、空文字列または失敗時は std::nullopt
+        static std::optional<float> toFloat(const std::string& str) noexcept {
+            if (str.empty()) {
+                return std::nullopt;
+            }
+            try {
+                return std::stof(str);
+            }
+            catch (const std::invalid_argument&) {
+                return std::nullopt;
+            }
+            catch (const std::out_of_range&) {
+                return std::nullopt;
+            }
+        }
+
+        /// @brief Safely convert string to float with default value
+        /// @brief 文字列を安全に float に変換する（デフォルト値付き）
+        /// @param str 変換する文字列
+        /// @param default_value 変換失敗時のデフォルト値
+        /// @param warn_on_error エラー時に警告を出力するか（デフォルト: true）
+        /// @return 変換結果またはデフォルト値
+        /// @note 空文字列の場合もデフォルト値を返す
+        static float safeStof(const std::string& str, float default_value, bool warn_on_error = true) noexcept {
+            if (str.empty()) {
+                return default_value;
+            }
+            try {
+                return std::stof(str);
+            }
+            catch (const std::invalid_argument&) {
+                if (warn_on_error) {
+                    PAXS_WARNING("Invalid float value: \"" + str + "\", using default: " + std::to_string(default_value));
+                }
+                return default_value;
+            }
+            catch (const std::out_of_range&) {
+                if (warn_on_error) {
+                    PAXS_WARNING("Float value out of range: \"" + str + "\", using default: " + std::to_string(default_value));
+                }
+                return default_value;
             }
         }
     };

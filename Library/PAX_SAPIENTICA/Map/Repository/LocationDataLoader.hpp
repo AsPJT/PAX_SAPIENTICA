@@ -17,6 +17,7 @@
 #include <optional>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/FeatureListLoader.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
@@ -187,12 +188,26 @@ namespace paxs {
             const std::string& year_str,
             int default_value
         ) {
+            // ユリウス日が指定されている場合
             if (!jd_str.empty()) {
-                return static_cast<int>(std::stod(jd_str));
+                auto jd_opt = StringUtils::toDouble(jd_str);
+                if (jd_opt) {
+                    return static_cast<int>(*jd_opt);
+                }
+                PAXS_WARNING("Invalid Julian Day value: \"" + jd_str + "\", using default: " + std::to_string(default_value));
+                return default_value;
             }
+
+            // 年が指定されている場合
             if (!year_str.empty()) {
-                return static_cast<int>((std::stod(year_str) * location_data_loader_detail::days_in_a_year) + location_data_loader_detail::julian_day_on_m1_1_1);
+                auto year_opt = StringUtils::toDouble(year_str);
+                if (year_opt) {
+                    return static_cast<int>((*year_opt * location_data_loader_detail::days_in_a_year) + location_data_loader_detail::julian_day_on_m1_1_1);
+                }
+                PAXS_WARNING("Invalid year value: \"" + year_str + "\", using default: " + std::to_string(default_value));
+                return default_value;
             }
+
             return default_value;
         }
 
@@ -206,12 +221,18 @@ namespace paxs {
             if (str.empty()) {
                 return default_value;
             }
+
             if constexpr (std::is_same_v<T, std::uint_least16_t>) {
-                return static_cast<std::uint_least16_t>(std::stod(str));
+                auto opt = StringUtils::toInt(str);
+                if (opt && *opt >= 0) {
+                    return static_cast<std::uint_least16_t>(*opt);
+                }
+                PAXS_WARNING("Invalid uint16 value: \"" + str + "\", using default: " + std::to_string(default_value));
+                return default_value;
             } else if constexpr (std::is_same_v<T, double>) {
-                return std::stod(str);
+                return StringUtils::safeStod(str, default_value, true);
             } else if constexpr (std::is_same_v<T, int>) {
-                return static_cast<int>(std::stod(str));
+                return StringUtils::safeStoi(str, default_value, true);
             }
             return default_value;
         }
@@ -248,8 +269,24 @@ namespace paxs {
             }
 
             LocationRowData data;
-            data.longitude = std::stod(longitude_str);
-            data.latitude = std::stod(latitude_str);
+
+            // 経度の変換
+            auto lon_opt = StringUtils::toDouble(longitude_str);
+            if (!lon_opt) {
+                PAXS_WARNING("Invalid longitude format at row " + std::to_string(row_index) +
+                    " in " + params.file_path + ": \"" + longitude_str + "\"");
+                return std::nullopt;
+            }
+            data.longitude = *lon_opt;
+
+            // 緯度の変換
+            auto lat_opt = StringUtils::toDouble(latitude_str);
+            if (!lat_opt) {
+                PAXS_WARNING("Invalid latitude format at row " + std::to_string(row_index) +
+                    " in " + params.file_path + ": \"" + latitude_str + "\"");
+                return std::nullopt;
+            }
+            data.latitude = *lat_opt;
 
             // 多言語名の読み込み
             data.names = loadNames(table, row_index, hashes, flags);

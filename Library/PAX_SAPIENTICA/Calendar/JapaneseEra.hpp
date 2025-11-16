@@ -48,8 +48,8 @@ namespace paxs {
             number_of_days_of_leap_month(number_of_days_of_leap_month_),
             leap_month(leap_month_) {}
     private:
-        constexpr static int emptyCharSupportStoi(const std::string& str_) {
-            return (str_.size() == 0) ? 0 : std::stoi(str_);
+        static int emptyCharSupportStoi(const std::string& str_) {
+            return StringUtils::safeStoi(str_, 0, false);
         }
 
     public:

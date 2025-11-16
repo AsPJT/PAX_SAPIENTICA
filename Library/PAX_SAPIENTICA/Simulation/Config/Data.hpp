@@ -248,20 +248,22 @@ namespace paxs {
                                 continue;
                             }
                             // T型に変換
-                            try {
-                                if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
-                                    int value = std::stoi(values[px]);
-                                    if(value == 0) continue;
-                                    data[position.to(DataGridsType{})] = static_cast<DataType>(value);
-                                } else if constexpr (std::is_same<DataType, float>::value) {
-                                    data[position.to(DataGridsType{})] = static_cast<DataType>(std::stod(values[px]));
+                            if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
+                                auto value_opt = StringUtils::toInt(values[px]);
+                                if (!value_opt) {
+                                    PAXS_WARNING("File contains invalid integer value: " + relative_path + " (value: \"" + values[px] + "\")");
+                                    continue;
                                 }
-                            } catch (const std::invalid_argument&/*ia*/) {
-                                PAXS_WARNING("File contains invalid value: " + relative_path);
-                                continue;
-                            } catch (const std::out_of_range&/*oor*/) {
-                                PAXS_WARNING("File contains out of range value: " + relative_path);
-                                continue;
+                                int value = *value_opt;
+                                if(value == 0) continue;
+                                data[position.to(DataGridsType{})] = static_cast<DataType>(value);
+                            } else if constexpr (std::is_same<DataType, float>::value) {
+                                auto value_opt = StringUtils::toDouble(values[px]);
+                                if (!value_opt) {
+                                    PAXS_WARNING("File contains invalid float value: " + relative_path + " (value: \"" + values[px] + "\")");
+                                    continue;
+                                }
+                                data[position.to(DataGridsType{})] = static_cast<DataType>(*value_opt);
                             }
                         }
                     }
@@ -320,20 +322,22 @@ namespace paxs {
                             continue;
                         }
                         // T型に変換
-                        try {
-                            if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
-                                int value = std::stoi(values[x]);
-                                if(value == 0) continue;
-                                data[position.to(DataType{})] = static_cast<DataType>(value);
-                            } else if constexpr (std::is_same<DataType, float>::value) {
-                                data[position.to(DataType{})] = static_cast<DataType>(std::stod(values[x]));
+                        if constexpr (std::is_same<DataType, std::uint_least8_t>::value || std::is_same<DataType, std::uint_least32_t>::value) {
+                            auto value_opt = StringUtils::toInt(values[x]);
+                            if (!value_opt) {
+                                PAXS_WARNING("File contains invalid integer value: " + file_path + " (value: \"" + values[x] + "\")");
+                                continue;
                             }
-                        } catch (const std::invalid_argument&/*ia*/) {
-                            PAXS_WARNING("File contains invalid value: " + file_path);
-                            continue;
-                        } catch (const std::out_of_range&/*oor*/) {
-                            PAXS_WARNING("File contains out of range value: " + file_path);
-                            continue;
+                            int value = *value_opt;
+                            if(value == 0) continue;
+                            data[position.to(DataType{})] = static_cast<DataType>(value);
+                        } else if constexpr (std::is_same<DataType, float>::value) {
+                            auto value_opt = StringUtils::toDouble(values[x]);
+                            if (!value_opt) {
+                                PAXS_WARNING("File contains invalid float value: " + file_path + " (value: \"" + values[x] + "\")");
+                                continue;
+                            }
+                            data[position.to(DataType{})] = static_cast<DataType>(*value_opt);
                         }
                     }
                 }
@@ -472,13 +476,15 @@ namespace paxs {
             std::smatch matches;
 
             if(std::regex_search(filename, matches, pattern)) {
-                return Vector2(std::stoi(matches[3]), std::stoi(matches[4]));
+                return {
+                    StringUtils::safeStoi(matches[3].str(), 0, true),
+                    StringUtils::safeStoi(matches[4].str(), 0, true)
+                };
             }
-            else {
-                const std::string message = "File name is invalid: " + file_path;
-                PAXS_ERROR(message);
-                throw std::runtime_error(message);
-            }
+
+            const std::string message = "File name is invalid: " + file_path;
+            PAXS_ERROR(message);
+            throw std::runtime_error(message);
         }
     };
 }

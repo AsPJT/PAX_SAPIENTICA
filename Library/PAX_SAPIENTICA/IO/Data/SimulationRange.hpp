@@ -21,9 +21,10 @@
 #include <cmath>
 #include <string>
 
-#include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -106,15 +107,15 @@ namespace paxs {
                 if (has_z) {
                     const std::string& z_str = table.get(row_index, z_hash);
                     if (!z_str.empty()) {
-                        z_value = std::stoi(z_str);
+                        z_value = StringUtils::safeStoi(z_str, 10, true);
                     }
                 }
 
                 path_list.emplace(
                     MurMur3::calcHash(key_str.size(), key_str.c_str()),
                     StartAndEnd{
-                        paxs::Vector2<int>(std::stoi(start_x_str), std::stoi(start_y_str)),
-                        paxs::Vector2<int>(std::stoi(end_x_str), std::stoi(end_y_str)),
+                        paxs::Vector2<int>(StringUtils::safeStoi(start_x_str, 0, true), StringUtils::safeStoi(start_y_str, 0, true)),
+                        paxs::Vector2<int>(StringUtils::safeStoi(end_x_str, 0, true), StringUtils::safeStoi(end_y_str, 0, true)),
                         z_value
                     }
                 );
