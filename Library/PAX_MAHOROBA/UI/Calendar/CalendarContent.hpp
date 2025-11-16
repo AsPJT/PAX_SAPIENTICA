@@ -16,12 +16,13 @@
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
+#include <PAX_SAPIENTICA/Key/CalendarKeys.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -33,6 +34,21 @@ namespace paxs {
         // 描画に必要な参照（render呼び出し時に設定される）
         const paxs::Koyomi& koyomi_;
         const paxs::UILayout& ui_layout_;
+
+        /// @brief 暦のハッシュ値から名前を取得するヘルパー関数
+        /// @param hash 暦のハッシュ値
+        /// @return 暦の名前（見つからない場合は"Unknown"）
+        static const char* getCalendarNameFromHash(std::uint_least32_t hash) {
+            if (hash == CalendarKeys::CALENDAR_JAPAN_HASH) return CalendarKeys::CALENDAR_JAPAN;
+            if (hash == CalendarKeys::CALENDAR_GREGORIAN_HASH) return CalendarKeys::CALENDAR_GREGORIAN;
+            if (hash == CalendarKeys::CALENDAR_JULIAN_HASH) return CalendarKeys::CALENDAR_JULIAN;
+            if (hash == CalendarKeys::CALENDAR_HIJRI_HASH) return CalendarKeys::CALENDAR_HIJRI;
+            if (hash == CalendarKeys::CALENDAR_CHINESE_HASH) return CalendarKeys::CALENDAR_CHINESE;
+            if (hash == CalendarKeys::CALENDAR_JULIAN_DAY_HASH) return CalendarKeys::CALENDAR_JULIAN_DAY;
+            if (hash == CalendarKeys::CALENDAR_CALBP_HASH) return CalendarKeys::CALENDAR_CALBP;
+            if (hash == CalendarKeys::MENU_BAR_VIEW_SIMULATION_HASH) return CalendarKeys::MENU_BAR_VIEW_SIMULATION;
+            return "Unknown";
+        }
 
         // カレンダーを描画（言語に応じて自動選択）
         void renderInternal() const {
@@ -67,7 +83,11 @@ namespace paxs {
                     LanguageDomain::UI
                 );
                 if (text_str == nullptr) {
-                    PAXS_WARNING("CalendarContent: Missing calendar name for key " + std::to_string(koyomi_.date_list[i].calendar_name_key));
+                    PAXS_WARNING("CalendarContent (Asian): Missing calendar name | "
+                        "Index: " + std::to_string(i) +
+                        " | Calendar: " + getCalendarNameFromHash(koyomi_.date_list[i].calendar_name_key) +
+                        " | Key: " + std::to_string(koyomi_.date_list[i].calendar_name_key) +
+                        " | JDN: " + std::to_string(koyomi_.jdn.cgetDay()));
                     continue;
                 }
 
@@ -152,7 +172,11 @@ namespace paxs {
                     LanguageDomain::UI
                 );
                 if (text_str == nullptr) {
-                    PAXS_WARNING("CalendarContent: Missing calendar name for key " + std::to_string(koyomi_.date_list[i].calendar_name_key));
+                    PAXS_WARNING("CalendarContent (Western): Missing calendar name | "
+                        "Index: " + std::to_string(i) +
+                        " | Calendar: " + getCalendarNameFromHash(koyomi_.date_list[i].calendar_name_key) +
+                        " | Key: " + std::to_string(koyomi_.date_list[i].calendar_name_key) +
+                        " | JDN: " + std::to_string(koyomi_.jdn.cgetDay()));
                     continue;
                 }
 

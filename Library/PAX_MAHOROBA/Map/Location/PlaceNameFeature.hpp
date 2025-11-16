@@ -127,7 +127,9 @@ public:
     }
 
     bool isHit(const paxg::Vec2i& mouse_pos) const override {
-        if (!visible_) return false;
+        if (!visible_) {
+            return false;
+        }
 
         // テキストの境界ボックスで判定（矩形判定）
         const int text_width = cached_text_width_;
@@ -135,18 +137,18 @@ public:
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [text_width, text_height](int mx, int my, const paxg::Vec2i& pos) {
+            [text_width, text_height](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
                 // 矩形判定: drawAtは横方向中央、縦方向上を基準に描画
                 // 横: 中央±width/2、縦: 上からheightの範囲
                 const int half_width = text_width / 2;
-                return mx >= pos.x() - half_width && mx <= pos.x() + half_width &&
-                       my >= pos.y() && my <= pos.y() + text_height;
+                return mouse_x >= pos.x() - half_width && mouse_x <= pos.x() + half_width &&
+                       mouse_y >= pos.y() && mouse_y <= pos.y() + text_height;
             }
         );
     }
 
     void onClick(const ClickContext& context) override {
-        std::cout << "PlaceName clicked: " << getName() << std::endl;
+        std::cout << "PlaceName clicked: " << getName() << "\n";
         (void)context;
     }
 

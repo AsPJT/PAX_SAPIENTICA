@@ -32,14 +32,7 @@ namespace paxs {
 /// @details ドメインオブジェクトを集約管理し、状態変更時にイベントを発行
 class AppStateManager {
 public:
-    explicit AppStateManager()
-        : koyomi_()
-        , map_viewport_()
-#ifdef PAXS_USING_SIMULATOR
-        , simulation_manager_()
-        , simulation_controller_()
-#endif
-        , visibility_manager_() {
+    explicit AppStateManager() {
         subscribeToEvents();
 
         // 初期状態を通知
