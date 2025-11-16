@@ -12,6 +12,7 @@
 #ifndef PAX_SAPIENTICA_INPUT_FILE_HPP
 #define PAX_SAPIENTICA_INPUT_FILE_HPP
 
+#include <array>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -24,7 +25,7 @@
 namespace paxs {
 
     // UTF-8 BOM
-    constexpr char utf8_bom[4] = {
+    constexpr std::array<char, 4> utf8_bom = {
         static_cast<char>(static_cast<unsigned char>(0xef)) ,
         static_cast<char>(static_cast<unsigned char>(0xbb)) ,
         static_cast<char>(static_cast<unsigned char>(0xbf)) ,
@@ -40,23 +41,19 @@ namespace paxs {
         std::uint_least32_t type{};
         int file_size = 0; // ファイルの大きさ
 #else
-        std::ifstream pifs{};
-        std::string pline{};
+        std::ifstream pifs;
+        std::string pline;
 #endif // PAXS_USING_DXLIB
-        std::string file_path_{}; // 読み込んだファイルパス（相対パス）
+        std::string file_path_; // 読み込んだファイルパス（相対パス）
 
         // ファイルが読み込まれたか確認する（読み込まれていない時は true ）
         bool fail() const {
-#ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
-#ifdef __ANDROID__
+#if defined (PAXS_USING_DXLIB) && (__ANDROID__)
             return (type == paxs::MurMur3::calcHash("asset_file")) ?
                 (file_handle == 0) : (pifs.fail());
-#else // Android 以外
-            return pifs.fail();
-#endif
 #else
             return pifs.fail();
-#endif // PAXS_USING_DXLIB
+#endif // PAXS_USING_DXLIB && __ANDROID__
         }
 
         /// @brief 読み込んだファイルパスを取得

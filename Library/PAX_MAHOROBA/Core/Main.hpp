@@ -105,7 +105,7 @@ namespace paxs {
             // 2. イベントキュー処理（遅延イベントの処理）
             event_bus.processQueue();
 
-            // 3. 暦更新（シミュレーション実行中の場合）
+            // 3. 暦更新（暦再生時の時間進行）
             app_state.updateKoyomi();
 
 #ifdef PAXS_DEVELOPMENT

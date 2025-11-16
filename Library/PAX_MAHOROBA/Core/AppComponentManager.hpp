@@ -52,7 +52,6 @@ namespace paxs {
     public:
         AppComponentManager(AppStateManager& app_state)
             : app_state_(app_state)
-            , render_layer_manager_()
             , map_tile_layer_(app_state)
             , map_content_layer_(app_state)
             , photo360_layer_(app_state.getVisibilityManager())
@@ -84,6 +83,7 @@ namespace paxs {
         }
 
         // コピー・ムーブ禁止（メンバー変数へのポインタをRenderLayerManagerに登録しているため）
+        ~AppComponentManager() = default;
         AppComponentManager(const AppComponentManager&) = delete;
         AppComponentManager& operator=(const AppComponentManager&) = delete;
         AppComponentManager(AppComponentManager&&) = delete;

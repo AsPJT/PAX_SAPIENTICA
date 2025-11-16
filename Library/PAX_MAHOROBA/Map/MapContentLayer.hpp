@@ -289,6 +289,7 @@ namespace paxs {
         }
 
         // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
+        ~MapContentLayer() override = default;
         MapContentLayer(const MapContentLayer&) = delete;
         auto operator=(const MapContentLayer&) -> MapContentLayer& = delete;
         MapContentLayer(MapContentLayer&&) = delete;

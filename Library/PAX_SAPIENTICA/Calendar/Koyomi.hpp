@@ -15,7 +15,6 @@
 #include <array>
 #include <limits>
 #include <string>
-#include <variant>
 #include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
@@ -38,11 +37,11 @@ namespace paxs {
         /// @brief 出力に必要な日付の情報
         struct OutputDate {
             std::uint_least32_t calendar_name_key; // 暦の名前
-            cal::Calendars date{}; // 日付
+            cal::Calendars date; // 日付
         };
 
-        cal::JDN_F64 jdn{}; // ユリウス通日（基準となる暦）
-        cal::SimulationSteps steps{}; // シミュレーションのステップ数
+        cal::JDN_F64 jdn; // ユリウス通日（基準となる暦）
+        cal::SimulationSteps steps; // シミュレーションのステップ数
 
         // 表示する暦レイヤー（8種類の暦）
         std::array<OutputDate, 8> date_list = {
@@ -95,17 +94,17 @@ namespace paxs {
         static constexpr int calendar_update_threshold = 0; // 暦更新のしきい値
 
         /// @brief グレゴリオ暦に変換
-        void updateGregorianDate(OutputDate& output_date) {
+        void updateGregorianDate(OutputDate& output_date) const {
             output_date.date = jdn.toGregorianCalendar();
         }
 
         /// @brief ユリウス暦に変換
-        void updateJulianDate(OutputDate& output_date) {
+        void updateJulianDate(OutputDate& output_date) const {
             output_date.date = jdn.toJulianCalendar();
         }
 
         /// @brief 和暦に変換
-        void updateJapaneseDate(OutputDate& output_date) {
+        void updateJapaneseDate(OutputDate& output_date) const {
             const paxs::cal::JapanDate jp_date = jdn.toJapaneseCalendar(japanese_era_list);
             const std::string gengo = "gengo_" + std::to_string(jp_date.cgetGengo());
             output_date.calendar_name_key = MurMur3::calcHash(gengo.size(), gengo.c_str());
@@ -113,7 +112,7 @@ namespace paxs {
         }
 
         /// @brief 中国暦に変換
-        void updateChineseDate(OutputDate& output_date) {
+        void updateChineseDate(OutputDate& output_date) const {
             const paxs::cal::ChinaDate cn_date = jdn.toChineseCalendar(chinese_era_list);
             const std::string gengo = "chinese_calendar_" + std::to_string(cn_date.cgetGengo());
             output_date.calendar_name_key = MurMur3::calcHash(gengo.size(), gengo.c_str());
@@ -126,12 +125,12 @@ namespace paxs {
         }
 
         /// @brief BP（年代測定）に変換
-        void updateCalBP(OutputDate& output_date) {
+        void updateCalBP(OutputDate& output_date) const {
             output_date.date = jdn.toCalBP();
         }
 
         /// @brief イスラム暦（ヒジュラ暦）に変換
-        void updateIslamicDate(OutputDate& output_date) {
+        void updateIslamicDate(OutputDate& output_date) const {
             output_date.date = jdn.toIslamicCalendar();
         }
 

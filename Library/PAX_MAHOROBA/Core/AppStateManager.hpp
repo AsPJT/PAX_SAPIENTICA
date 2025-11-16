@@ -164,7 +164,8 @@ public:
 
 #ifdef PAXS_USING_SIMULATOR
     /// @brief 暦を更新
-    /// @details シミュレーションが実行中の場合、時間を進める
+    /// @details 暦の再生状態に応じて時間を進行・巻き戻す
+    /// @details シミュレーションの再生時にはシミュレーションをステップ実行する
     void updateKoyomi() {
         if (koyomi_.move_forward_in_time || koyomi_.go_back_in_time) {
             const double old_jdn = koyomi_.jdn.cgetDay();
