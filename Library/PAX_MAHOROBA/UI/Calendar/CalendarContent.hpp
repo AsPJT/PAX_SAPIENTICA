@@ -35,21 +35,6 @@ namespace paxs {
         const paxs::Koyomi& koyomi_;
         const paxs::UILayout& ui_layout_;
 
-        // ヘルパー関数：年月日データを抽出（YearMonthDayDateType用）
-        template<cal::YearMonthDayDateType T>
-        static void extractYearMonthDay(const T& date, int& year, int& month, int& day, bool& is_leap) {
-            year = static_cast<int>(date.getYear());
-            month = static_cast<int>(date.getMonth());
-            day = static_cast<int>(date.getDay());
-            is_leap = date.isLeapMonth();
-        }
-
-        // ヘルパー関数：年月日データを抽出（その他の型用）
-        template<typename T>
-        static void extractYearMonthDay(const T&, int&, int&, int&, bool&) {
-            // YearMonthDayDateTypeでない型は何もしない
-        }
-
         // カレンダーを描画（言語に応じて自動選択）
         void renderInternal() const {
             const std::uint_least32_t current_language = Fonts().getSelectedLanguage().getKey();
@@ -100,9 +85,42 @@ namespace paxs {
 
                 switch (output_type) {
                 case paxs::cal::DateOutputType::name_and_ymd:
-                    std::visit([&](const auto& x) {
-                        extractYearMonthDay(x, date_year, date_month, date_day, date_lm);
-                        }, koyomi_.date_list[i].date);
+                    // GregorianDate
+                    if (const auto* ptr = std::get_if<cal::GregorianDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = paxs::cal::GregorianDate::isLeapMonth();
+                    }
+                    // JulianDate
+                    else if (const auto* ptr = std::get_if<cal::JulianDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = paxs::cal::JulianDate::isLeapMonth();
+                    }
+                    // IslamicDate
+                    else if (const auto* ptr = std::get_if<cal::IslamicDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = paxs::cal::IslamicDate::isLeapMonth();
+                    }
+                    // JapanDate
+                    else if (const auto* ptr = std::get_if<cal::JapanDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = ptr->isLeapMonth();
+                    }
+                    // ChinaDate
+                    else if (const auto* ptr = std::get_if<cal::ChinaDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = ptr->isLeapMonth();
+                    }
+
                     if (date_day <= 0 || date_month <= 0) {
                         break;
                     }
@@ -171,16 +189,50 @@ namespace paxs {
 
                 switch (output_type) {
                 case paxs::cal::DateOutputType::name_and_ymd:
-                    std::visit([&](const auto& x) {
-                        extractYearMonthDay(x, date_year, date_month, date_day, date_lm);
-                    }, koyomi_.date_list[i].date);
+                    // GregorianDate
+                    if (const auto* ptr = std::get_if<cal::GregorianDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = paxs::cal::GregorianDate::isLeapMonth();
+                    }
+                    // JulianDate
+                    else if (const auto* ptr = std::get_if<cal::JulianDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = paxs::cal::JulianDate::isLeapMonth();
+                    }
+                    // IslamicDate
+                    else if (const auto* ptr = std::get_if<cal::IslamicDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = paxs::cal::IslamicDate::isLeapMonth();
+                    }
+                    // JapanDate
+                    else if (const auto* ptr = std::get_if<cal::JapanDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = ptr->isLeapMonth();
+                    }
+                    // ChinaDate
+                    else if (const auto* ptr = std::get_if<cal::ChinaDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(ptr->getYear());
+                        date_month = static_cast<int>(ptr->getMonth());
+                        date_day = static_cast<int>(ptr->getDay());
+                        date_lm = ptr->isLeapMonth();
+                    }
 
                     if (date_day <= 0 || date_month <= 0) {
                         break;
                     }
 
-                    if (text_str != nullptr) (*one_font).drawTopRight(*text_str,
+                    if (text_str != nullptr) {
+                        (*one_font).drawTopRight(*text_str,
                         paxg::Vec2i(static_cast<int>(ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    }
 
                     (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(95 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(235 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));

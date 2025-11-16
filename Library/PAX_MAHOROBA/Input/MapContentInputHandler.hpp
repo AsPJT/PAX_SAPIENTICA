@@ -12,9 +12,7 @@
 #ifndef PAX_MAHOROBA_MAP_CONTENT_INPUT_HANDLER_HPP
 #define PAX_MAHOROBA_MAP_CONTENT_INPUT_HANDLER_HPP
 
-#include <iostream>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include <PAX_MAHOROBA/Events/FeatureEvents.hpp>

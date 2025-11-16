@@ -14,7 +14,6 @@
 
 #include <algorithm>
 #include <array>
-#include <cmath>
 
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Color.hpp>
