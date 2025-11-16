@@ -12,9 +12,12 @@
 #ifndef PAX_MAHOROBA_RENDER_CONTEXT_HPP
 #define PAX_MAHOROBA_RENDER_CONTEXT_HPP
 
+#include <PAX_GRAPHICA/Font.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 namespace paxs {
@@ -28,6 +31,8 @@ struct RenderContext {
     double map_view_center_x = 0.0; ///< 地図ビューの中心X座標 / Map view center X
     double map_view_center_y = 0.0; ///< 地図ビューの中心Y座標 / Map view center Y
     const FeatureVisibilityManager* visibility_manager = nullptr; ///< 地物種別ごとの可視性管理 / Per-feature-type visibility manager
+    paxg::Font* font = nullptr; ///< 地名・人名描画用フォント / Font for place/person names
+    const UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_map = nullptr; ///< テクスチャマップ / Texture map
 
     /// @brief 座標がビューの範囲内にあるかチェック
     /// @brief Check if coordinates are within view bounds

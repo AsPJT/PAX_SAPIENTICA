@@ -71,11 +71,11 @@ namespace paxs {
 
         paxg::Rect getRect() const override {
             // widgetが設定されている場合はそちらを優先（動的パネル）
-            if (widget_) {
+            if (widget_ != nullptr) {
                 return widget_->getRect();
             }
             // 従来のPanelLayout使用
-            if (layout) {
+            if (layout != nullptr) {
                 return layout->getRect();
             }
             PAXS_WARNING("UIPanelBackground::getRect: layout is not set, returning full width rect");
@@ -93,10 +93,12 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!visible_) return;
+            if (!visible_) {
+                return;
+            }
 
             // widget_が設定されている場合（動的パネル）
-            if (widget_) {
+            if (widget_ != nullptr) {
                 const paxg::Rect rect = widget_->getRect();
                 if (rect.w() <= 0 || rect.h() <= 0) {
                     PAXS_WARNING(std::string("UIPanelBackground::render: ") + name_ + " (widget) has non-positive dimensions, skipping render");
@@ -113,7 +115,7 @@ namespace paxs {
             }
 
             // layoutが設定されている場合（従来）
-            if (!layout) {
+            if (layout == nullptr) {
                 PAXS_WARNING(std::string("UIPanelBackground::render: ") + name_ + " layout is not set, skipping render");
                 return;
             }
@@ -132,7 +134,7 @@ namespace paxs {
 
         const char* getName() const override { return name_; }
         RenderLayer getLayer() const override { return RenderLayer::UIBackground; }
-        void setVisible(bool visible) override { visible_ = visible; }
+        void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_; }
         void setPos(const paxg::Vec2i& /*pos*/) override {}
 };

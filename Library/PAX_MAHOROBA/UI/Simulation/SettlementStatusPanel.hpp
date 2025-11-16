@@ -19,6 +19,7 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
 
@@ -32,7 +33,9 @@ namespace paxs {
             : visible_manager_(visible_manager) {}
 
         void render() const override {
-            if (!isVisible()) return;
+            if (!isVisible()) {
+                return;
+            }
 
             const std::string text = getStatusText();
 
@@ -42,7 +45,10 @@ namespace paxs {
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
-            if (font == nullptr) return;
+            if (font == nullptr) {
+                PAXS_WARNING("SettlementStatusPanel::render: Font not found.");
+                return;
+            }
 
             // テキストを描画
             font->draw(text, paxg::Vec2i{ start_x + font_space_x, start_y + font_space_y },
@@ -65,17 +71,17 @@ namespace paxs {
             };
         }
 
-        void setVisible(bool visible) override { visible_ = visible; }
+        EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
+            // このパネルはマウス入力を処理しない
+            return EventHandlingResult::NotHandled();
+        }
+
+        void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_ && visible_manager_.isVisible(ViewMenu::simulation); }
         void setPos(const paxg::Vec2i& pos) override { pos_ = pos; }
         bool isHit(int /*x*/, int /*y*/) const override { return false; }
         const char* getName() const override { return "SettlementStatusPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-
-        EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
-            // このパネルはマウス入力を処理しない
-            return EventHandlingResult::NotHandled();
-        }
 
     private:
         static constexpr int start_x = 40;  // 背景端の左上の X 座標

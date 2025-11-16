@@ -48,8 +48,9 @@ namespace paxs {
                 }
                 return true;
             }
+
             // エージェント2を描画
-            else if (feature_type_hash == MurMur3::calcHash("agent2")) {
+            if (feature_type_hash == MurMur3::calcHash("agent2")) {
                 if (texture.find(MurMur3::calcHash("RedCircle")) != texture.end()) {
                     texture.at(MurMur3::calcHash("RedCircle")).resizedDrawAt(15, draw_pos);
                 }

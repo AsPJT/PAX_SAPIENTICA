@@ -82,7 +82,7 @@ public:
 
     void update(const RenderContext& context) override {
         // 地物種別の可視性チェック（最優先）
-        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
+        if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
             cached_screen_positions_.clear();
             return;
         }
@@ -94,7 +94,7 @@ public:
         }
 
         // ズームレベルフィルタリング：範囲外の場合のみ描画（アイコンのみ）
-        if (!(data_.min_zoom_level > context.map_view_height || data_.max_zoom_level < context.map_view_height)) {
+        if (data_.min_zoom_level <= context.map_view_height && data_.max_zoom_level >= context.map_view_height) {
             cached_screen_positions_.clear();
             return;
         }
@@ -108,6 +108,16 @@ public:
 
         // 表示サイズの計算（zoom適用）
         cached_display_size_ = static_cast<int>(data_.overall_length / 2 * data_.zoom);
+
+        // テクスチャサイズを取得してキャッシュ
+        if (context.texture_map != nullptr && context.texture_map->find(data_.texture_key) != context.texture_map->end()) {
+            const auto& tex = context.texture_map->at(data_.texture_key);
+            cached_texture_width_ = tex.width();
+            cached_texture_height_ = tex.height();
+        } else {
+            cached_texture_width_ = cached_display_size_;
+            cached_texture_height_ = cached_display_size_;
+        }
     }
 
     bool isVisible() const override {
@@ -131,14 +141,22 @@ public:
     // ========== ヒット判定 / Hit Testing ==========
 
     bool isHit(const paxg::Vec2i& mouse_pos) const override {
-        if (!visible_) return false;
+        if (!visible_) {
+            return false;
+        }
 
-        const int hit_radius = cached_display_size_;
+        // テクスチャサイズを使った矩形判定
+        const int texture_width = cached_texture_width_;
+        const int texture_height = cached_texture_height_;
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [hit_radius](int mx, int my, const paxg::Vec2i& pos) {
-                return MapContentHitTester::circleHitTest(mx, my, pos, hit_radius);
+            [texture_width, texture_height](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
+                // 矩形判定: テクスチャは中心から描画されると仮定
+                const int half_width = texture_width / 2;
+                const int half_height = texture_height / 2;
+                return mouse_x >= pos.x() - half_width && mouse_x <= pos.x() + half_width &&
+                       mouse_y >= pos.y() - half_height && mouse_y <= pos.y() + half_height;
             }
         );
     }
@@ -146,7 +164,7 @@ public:
     // ========== イベント処理 / Event Handling ==========
 
     void onClick(const ClickContext& context) override {
-        std::cout << "Geographic feature clicked: " << getName() << std::endl;
+        std::cout << "Geographic feature clicked: " << getName() << "\n";
         (void)context;
     }
 
@@ -176,6 +194,8 @@ private:
     // キャッシュされた状態 / Cached state
     std::vector<paxg::Vec2i> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
     int cached_display_size_ = 50;                     ///< 表示サイズ / Display size
+    int cached_texture_width_ = 50;                    ///< キャッシュされたテクスチャ幅 / Cached texture width
+    int cached_texture_height_ = 50;                   ///< キャッシュされたテクスチャ高さ / Cached texture height
 };
 
 } // namespace paxs

@@ -35,7 +35,9 @@ public:
     ~DebugLayer() override = default;
 
     void render() const override {
-        if (!visible_) return;
+        if (!visible_) {
+            return;
+        }
 
         // コンソールが表示されている場合は通知を非表示
         if (!console_.isVisible()) {
@@ -130,7 +132,6 @@ public:
 
     RenderLayer getLayer() const override { return RenderLayer::Debug; }
     bool isVisible() const override { return visible_; }
-    void setVisible(bool visible) override { visible_ = visible; }
 
 };
 

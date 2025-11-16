@@ -31,7 +31,6 @@ namespace paxs {
 
         // 可視性管理
         // Visibility management
-        void setVisible(bool /*visible*/) override {}
         bool isVisible() const override = 0;
 
         // コンポーネント情報

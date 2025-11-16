@@ -12,7 +12,6 @@
 #ifndef PAX_MAHOROBA_UI_DEBUG_DEBUG_VARIABLE_WATCHER_HPP
 #define PAX_MAHOROBA_UI_DEBUG_DEBUG_VARIABLE_WATCHER_HPP
 
-#include <cstdint>
 #include <functional>
 #include <map>
 #include <string>
@@ -181,23 +180,16 @@ public:
         watched_variables_.clear();
     }
 
-    /// @brief 表示/非表示を切り替え
-    /// @brief Toggle visibility
-    void toggleVisible() { visible_ = !visible_; }
-
-    /// @brief 表示状態を取得
-    /// @brief Get visibility
-    bool isVisible() const { return visible_; }
-
-    /// @brief 表示状態を設定
-    /// @brief Set visibility
-    void setVisible(bool visible) { visible_ = visible; }
-
     /// @brief 監視中の変数数を取得
     /// @brief Get number of watched variables
     std::size_t getVariableCount() const {
         return watched_variables_.size();
     }
+
+    void toggleVisible() { visible_ = !visible_; }
+    bool isVisible() const { return visible_; }
+    void setVisible(bool visible) { visible_ = visible; }
+
 };
 
 } // namespace paxs

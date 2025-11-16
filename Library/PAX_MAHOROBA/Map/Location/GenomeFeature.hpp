@@ -78,7 +78,7 @@ public:
 
     void update(const RenderContext& context) override {
         // 地物種別の可視性チェック（最優先）
-        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
+        if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
             cached_screen_positions_.clear();
             return;
         }
@@ -90,13 +90,13 @@ public:
         }
 
         // ズームレベルフィルタリング：範囲外の場合のみ描画（アイコンのみ）
-        if (!(data_.min_zoom_level > context.map_view_height || data_.max_zoom_level < context.map_view_height)) {
+        if (data_.min_zoom_level <= context.map_view_height && data_.max_zoom_level >= context.map_view_height) {
             cached_screen_positions_.clear();
             return;
         }
 
         // 時代フィルタリング：ユリウス日の範囲をチェック
-        if (!(data_.min_year <= context.jdn && context.jdn <= data_.max_year)) {
+        if (data_.min_year > context.jdn || context.jdn > data_.max_year) {
             cached_screen_positions_.clear();
             return;
         }
@@ -110,6 +110,27 @@ public:
 
         // 表示サイズの計算（zoom適用）
         cached_display_size_ = static_cast<int>(data_.overall_length / 2 * data_.zoom);
+
+        // テクスチャサイズを取得してキャッシュ
+        if (context.texture_map != nullptr && context.texture_map->find(data_.texture_key) != context.texture_map->end()) {
+            const auto& tex = context.texture_map->at(data_.texture_key);
+            cached_texture_width_ = tex.width();
+            cached_texture_height_ = tex.height();
+        } else {
+            cached_texture_width_ = cached_display_size_;
+            cached_texture_height_ = cached_display_size_;
+        }
+
+        // テキストサイズを計算（表示サイズが十分な場合のみ）
+        const bool should_show_name = (cached_display_size_ >= 15);
+        if (should_show_name && !data_.place_name.empty() && context.font != nullptr) {
+            const std::string name = getName();
+            cached_text_width_ = context.font->width(name);
+            cached_text_height_ = context.font->height();
+        } else {
+            cached_text_width_ = 0;
+            cached_text_height_ = 0;
+        }
     }
 
     bool isVisible() const override {
@@ -129,20 +150,45 @@ public:
     }
 
     bool isHit(const paxg::Vec2i& mouse_pos) const override {
-        if (!visible_) return false;
+        if (!visible_) {
+            return false;
+        }
 
-        const int hit_radius = cached_display_size_;
+        const int texture_width = cached_texture_width_;
+        const int texture_height = cached_texture_height_;
+        const int text_width = cached_text_width_;
+        const int text_height = cached_text_height_;
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [hit_radius](int mx, int my, const paxg::Vec2i& pos) {
-                return MapContentHitTester::circleHitTest(mx, my, pos, hit_radius);
+            [texture_width, texture_height, text_width, text_height](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
+                // テクスチャの矩形判定（中心から描画）
+                const int half_width = texture_width / 2;
+                const int half_height = texture_height / 2;
+                if (mouse_x >= pos.x() - half_width && mouse_x <= pos.x() + half_width &&
+                    mouse_y >= pos.y() - half_height && mouse_y <= pos.y() + half_height) {
+                    return true;
+                }
+
+                // テキストの矩形判定（drawBottomCenterは横中央、縦は下から描画）
+                // text_pos.y = pos.y() - display_size / 2 - 5（アイコンの上部から少し離す）
+                // drawBottomCenterなので、そこから上にtext_heightの範囲
+                if (text_width > 0 && text_height > 0) {
+                    const int text_bottom_y = pos.y() - half_height - 5;  // テキスト下端
+                    const int half_text_w = text_width / 2;
+                    if (mouse_x >= pos.x() - half_text_w && mouse_x <= pos.x() + half_text_w &&
+                        mouse_y >= text_bottom_y - text_height && mouse_y <= text_bottom_y) {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         );
     }
 
     void onClick(const ClickContext& context) override {
-        std::cout << "Genome feature clicked: " << getName() << std::endl;
+        std::cout << "Genome feature clicked: " << getName() << "\n";
         (void)context;
     }
 
@@ -154,6 +200,10 @@ private:
     LocationPoint data_;  ///< ゲノムデータ / Genome data
     std::vector<paxg::Vec2i> cached_screen_positions_;  ///< キャッシュされた画面座標 / Cached screen positions
     int cached_display_size_ = 0;  ///< キャッシュされた表示サイズ / Cached display size
+    int cached_texture_width_ = 50;   ///< キャッシュされたテクスチャ幅 / Cached texture width
+    int cached_texture_height_ = 50;  ///< キャッシュされたテクスチャ高さ / Cached texture height
+    int cached_text_width_ = 0;       ///< キャッシュされたテキスト幅 / Cached text width
+    int cached_text_height_ = 0;      ///< キャッシュされたテキスト高さ / Cached text height
 };
 
 } // namespace paxs

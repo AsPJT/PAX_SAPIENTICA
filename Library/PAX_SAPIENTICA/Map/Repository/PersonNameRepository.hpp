@@ -29,7 +29,7 @@
 namespace paxs {
     // 人物の位置情報
     struct PersonLocationPoint {
-        constexpr explicit PersonLocationPoint() = default;
+        explicit PersonLocationPoint() = default;
         explicit PersonLocationPoint(
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& person_name_,  // 人物名
             const paxs::MercatorDeg& start_coordinate_,  // 経緯度
@@ -46,8 +46,8 @@ namespace paxs {
             min_zoom_level(min_zoom_level_), max_zoom_level(max_zoom_level_), min_year(min_year_), max_year(max_year_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
 
         paxs::UnorderedMap<std::uint_least32_t, std::string> person_name{}; // 人物名
-        paxs::MercatorDeg start_coordinate{}; // 経緯度
-        paxs::MercatorDeg end_coordinate{}; // 経緯度
+        paxs::MercatorDeg start_coordinate; // 経緯度
+        paxs::MercatorDeg end_coordinate; // 経緯度
         double overall_length = 10; // 全長
         double min_zoom_level = 0.0, max_zoom_level = 9999.0; // 表示するズームレベル範囲
         double min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
@@ -68,7 +68,7 @@ namespace paxs {
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "person"）
         std::uint_least32_t texture_key = 0; // テクスチャキー
 
-        constexpr explicit PersonLocationList() = default;
+        explicit PersonLocationList() = default;
         explicit PersonLocationList(
             const std::vector<PersonLocationPoint>& location_point_list_,  // 人物
             paxs::MercatorDeg start_start_coordinate_, // 経緯度

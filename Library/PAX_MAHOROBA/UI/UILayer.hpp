@@ -69,9 +69,9 @@ namespace paxs {
 
         void sortPanelsByLayer() {
             std::sort(panels.begin(), panels.end(),
-                [](IWidget* a, IWidget* b) {
+                [](IWidget* left, IWidget* right) {
                     // 降順
-                    return a->getLayer() > b->getLayer();
+                    return left->getLayer() > right->getLayer();
                 });
         }
 

@@ -348,7 +348,6 @@ namespace paxs {
         bool isVisible() const override {
             return app_state_manager_.getVisibilityManager().isVisible(ViewMenu::map);
         }
-        void setVisible(bool /*visible*/) override {}
         RenderLayer getLayer() const override { return RenderLayer::MapContent; }
     };
 }

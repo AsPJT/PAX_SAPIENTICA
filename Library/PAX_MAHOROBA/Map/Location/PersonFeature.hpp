@@ -109,6 +109,26 @@ public:
             ? static_cast<int>(data_.overall_length / 2)
             : 60;  // 120 / 2
 
+        // テクスチャサイズとテキストサイズを取得
+        const std::uint_least32_t tex_key = (data_.texture_key == 0) ? list_data_.texture_key : data_.texture_key;
+        if (context.texture_map != nullptr && context.texture_map->find(tex_key) != context.texture_map->end()) {
+            const auto& tex = context.texture_map->at(tex_key);
+            cached_texture_width_ = tex.width();
+            cached_texture_height_ = tex.height();
+        } else {
+            cached_texture_width_ = cached_display_size_;
+            cached_texture_height_ = cached_display_size_;
+        }
+
+        if (!out_of_range && context.font != nullptr) {
+            const std::string name = getName();
+            cached_text_width_ = context.font->width(name);
+            cached_text_height_ = context.font->height();
+        } else {
+            cached_text_width_ = 0;
+            cached_text_height_ = 0;
+        }
+
         cached_jdn_ = context.jdn;
     }
 
@@ -131,13 +151,34 @@ public:
     bool isHit(const paxg::Vec2i& mouse_pos) const override {
         if (!visible_) return false;
 
-        const int hit_radius = cached_display_size_;
+        const int texture_width = cached_texture_width_;
+        const int texture_height = cached_texture_height_;
+        const int text_width = cached_text_width_;
+        const int text_height = cached_text_height_;
 
-        // 3つのスクリーン座標でヒット判定
+        // 3つのスクリーン座標でヒット判定（テクスチャ + テキスト）
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [hit_radius](int mx, int my, const paxg::Vec2i& pos) {
-                return MapContentHitTester::circleHitTest(mx, my, pos, hit_radius);
+            [texture_width, texture_height, text_width, text_height](int mx, int my, const paxg::Vec2i& pos) {
+                // テクスチャの矩形判定（中心から描画）
+                const int half_tex_w = texture_width / 2;
+                const int half_tex_h = texture_height / 2;
+                if (mx >= pos.x() - half_tex_w && mx <= pos.x() + half_tex_w &&
+                    my >= pos.y() - half_tex_h && my <= pos.y() + half_tex_h) {
+                    return true;
+                }
+                // テキストの矩形判定（drawTopCenterは横中央、縦は上から描画）
+                // draw_font_pos = {x, y - 60}から描画されるため、
+                // 実際のテキスト位置は pos.y() - 60 から text_height の範囲
+                if (text_width > 0 && text_height > 0) {
+                    const int text_y = pos.y() - 60;  // テクスチャの上部（MapFeatureRenderer参照）
+                    const int half_text_w = text_width / 2;
+                    if (mx >= pos.x() - half_text_w && mx <= pos.x() + half_text_w &&
+                        my >= text_y && my <= text_y + text_height) {
+                        return true;
+                    }
+                }
+                return false;
             }
         );
     }
@@ -168,6 +209,10 @@ private:
     MercatorDeg interpolated_pos_;                    ///< 補間された座標 / Interpolated position
     std::vector<paxg::Vec2i> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
     int cached_display_size_ = 60;                    ///< 表示サイズ / Display size
+    int cached_texture_width_ = 60;                   ///< キャッシュされたテクスチャ幅 / Cached texture width
+    int cached_texture_height_ = 60;                  ///< キャッシュされたテクスチャ高さ / Cached texture height
+    int cached_text_width_ = 0;                       ///< キャッシュされたテキスト幅 / Cached text width
+    int cached_text_height_ = 0;                      ///< キャッシュされたテキスト高さ / Cached text height
     double cached_jdn_ = 0.0;                         ///< キャッシュされたJDN / Cached JDN
 };
 

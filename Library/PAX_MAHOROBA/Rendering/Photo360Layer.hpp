@@ -29,8 +29,7 @@ namespace paxs {
 
     public:
         Photo360Layer(const FeatureVisibilityManager& visibility_manager)
-            : photo360_()
-            , visibility_manager_(visibility_manager) {}
+            : visibility_manager_(visibility_manager) {}
 
         /// @brief 360度写真を更新・描画
         void render() const override {
@@ -54,8 +53,8 @@ namespace paxs {
         }
 
         /// @brief 背景色設定を更新
-        void setBackgroundConfig(const paxg::Photo360Config::Background& bg) {
-            photo360_.setBackgroundConfig(bg);
+        void setBackgroundConfig(const paxg::Photo360Config::Background& background) {
+            photo360_.setBackgroundConfig(background);
         }
 
         /// @brief 現在の視点回転角度を取得（度）
@@ -70,7 +69,6 @@ namespace paxs {
 
         RenderLayer getLayer() const override { return RenderLayer::Photo360; }
         bool isVisible() const override { return visibility_manager_.isVisible(ViewMenu::view_3d); }
-        void setVisible(bool /*visible*/) override {}
     };
 
 }

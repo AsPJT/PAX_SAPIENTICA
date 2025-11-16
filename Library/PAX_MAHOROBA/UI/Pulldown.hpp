@@ -14,7 +14,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <limits>
 #include <string>
 #include <vector>
 #include <span>
@@ -45,14 +44,14 @@ namespace paxs {
     ///          - FixedHeader: 固定のヘッダー名が表示される（メニューバーなど）
     class Pulldown : public IWidget {
     private:
-        std::span<const std::uint_least32_t> items_key{}; // 項目の Key 一覧
+        std::span<const std::uint_least32_t> items_key; // 項目の Key 一覧
 
         std::size_t language_index = 0; // 言語の要素番号
         std::uint_least32_t old_language_key = 0; // 選択されている言語の Key
-        std::vector<bool> is_items{}; // 項目が TRUE か FALSE になっているか格納
+        std::vector<bool> is_items; // 項目が TRUE か FALSE になっているか格納
         paxs::UnorderedMap<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
 
-        paxg::Rect rect{};
+        paxg::Rect rect;
         PulldownDisplayType display_type{}; // 表示タイプ (SelectedValue or FixedHeader)
         bool is_one_font = false;
 
@@ -99,7 +98,7 @@ namespace paxs {
                 rect.setH(static_cast<float>(paxg::FontConfig::PULLDOWN_FONT_SIZE) * 2.f);
             }
             else {
-                const float height = static_cast<float>(((*one_font).height()) + padding.y() * 2);
+                const float height = static_cast<float>(((*one_font).height()) + (padding.y() * 2));
                 rect.setH(height);
             }
 
@@ -110,21 +109,26 @@ namespace paxs {
 
             for (std::size_t i = 0; i < item_count; ++i) {
                 const std::string* str = nullptr;
-                std::string direct_str;
 
                 // 言語辞書から取得
                 str = Fonts().getText(items_key[i], language_domain);
 
-                if (str == nullptr || str->size() == 0) continue;
+                if (str == nullptr || str->size() == 0) {
+                    PAXS_WARNING("Pulldown: Missing text for key " + std::to_string(items_key[i]));
+                    continue;
+                }
 
                 const std::uint_least32_t font_key = (is_one_font ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
                 paxg::Font* item_font = Fonts().getFont(font_key, FontProfiles::PULLDOWN);
-                if (item_font == nullptr) continue;
+                if (item_font == nullptr) {
+                    PAXS_WARNING("Pulldown: Missing font for item.");
+                    continue;
+                }
 
                 // 最大の文字数からプルダウンの各項目の幅を定義
                 all_rect_x =
                 (
-                    static_cast<float>((std::max)(static_cast<int>(all_rect_x), static_cast<int>((*item_font).width(*str))))
+                    static_cast<float>((std::max)(static_cast<int>(all_rect_x), (*item_font).width(*str)))
                 );
                 // フォントが１つの場合は１行目も項目と同じ幅にする
                 if (is_one_font) {
@@ -178,11 +182,6 @@ namespace paxs {
             }
         }
 
-        // からか判定
-        bool isEmpty() const {
-            return items_key.empty();
-        }
-
         /// @brief 選択変更時のコールバックを設定
         void setOnSelectionChanged(std::function<void(std::size_t, bool)> callback) {
             on_selection_changed_ = std::move(callback);
@@ -190,8 +189,9 @@ namespace paxs {
 
         // 入力処理
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (isEmpty()) return EventHandlingResult::NotHandled();
-            if (!visible_) return EventHandlingResult::NotHandled(); // 非表示または無効の場合は処理をしない
+            if (!visible_ || items_key.empty()) {
+                return EventHandlingResult::NotHandled(); // 非表示または無効の場合は処理をしない
+            }
 
             // 言語が変わっていたら更新処理
             const std::uint_least32_t current_language_key = Fonts().getSelectedLanguage().cgetKey();
@@ -204,44 +204,44 @@ namespace paxs {
             // Pressed/Heldイベント：プルダウン範囲内ならイベントを消費（ドラッグ防止）
             if (event.left_button_state == MouseButtonState::Pressed ||
                 event.left_button_state == MouseButtonState::Held) {
-                float rx = rect.x();
-                float ry = rect.y();
-                float rw = rect.w();
-                float rh = rect.h();
+                int rect_x = static_cast<int>(rect.x());
+                int rect_y = static_cast<int>(rect.y());
+                int rect_w = static_cast<int>(rect.w());
+                int rect_h = static_cast<int>(rect.h());
 
                 // ヘッダー部分
-                if (event.x >= rx && event.x < rx + rw && event.y >= ry && event.y < ry + rh) {
+                if (event.x >= rect_x && event.x < rect_x + rect_w && event.y >= rect_y && event.y < rect_y + rect_h) {
                     return EventHandlingResult::Handled();
                 }
 
                 // ドロップダウン項目（開いている場合）
                 if (is_open) {
                     paxg::Vec2i pos = paxg::Vec2i(
-                        static_cast<int>(rect.pos().x()),
-                        static_cast<int>(rect.pos().y() + rect.h()));
+                        rect_x,
+                        rect_y + rect_h);
                     for (std::size_t i = 0; i < items_key.size(); ++i) {
                         const paxg::Rect rect_tmp{ pos, rect.w(), rect.h() };
-                        float rtx = rect_tmp.x();
-                        float rty = rect_tmp.y();
-                        float rtw = rect_tmp.w();
-                        float rth = rect_tmp.h();
+                        int rtx = static_cast<int>(rect_tmp.x());
+                        int rty = static_cast<int>(rect_tmp.y());
+                        int rtw = static_cast<int>(rect_tmp.w());
+                        int rth = static_cast<int>(rect_tmp.h());
                         if (event.x >= rtx && event.x < rtx + rtw && event.y >= rty && event.y < rty + rth) {
                             return EventHandlingResult::Handled();
                         }
-                        pos.setY(static_cast<int>(pos.y() + rect.h()));
+                        pos.setY(pos.y() + rect_h);
                     }
                 }
             }
 
             // Releasedイベント：実際の処理を行う
             if (event.left_button_state == MouseButtonState::Released) {
-                float rx = rect.x();
-                float ry = rect.y();
-                float rw = rect.w();
-                float rh = rect.h();
+                int rect_x = static_cast<int>(rect.x());
+                int rect_y = static_cast<int>(rect.y());
+                int rect_w = static_cast<int>(rect.w());
+                int rect_h = static_cast<int>(rect.h());
 
                 // ヘッダー部分をクリック：開閉をトグル
-                if (event.x >= rx && event.x < rx + rw && event.y >= ry && event.y < ry + rh) {
+                if (event.x >= rect_x && event.x < rect_x + rect_w && event.y >= rect_y && event.y < rect_y + rect_h) {
                     is_open = (not is_open);
                     return EventHandlingResult::Handled();
                 }
@@ -249,14 +249,14 @@ namespace paxs {
                 // ドロップダウン項目をクリック（開いている場合）
                 if (is_open) {
                     paxg::Vec2i pos = paxg::Vec2i(
-                        static_cast<int>(rect.pos().x()),
-                        static_cast<int>(rect.pos().y() + rect.h()));
+                        rect_x,
+                        rect_y + rect_h);
                     for (std::size_t i = 0; i < items_key.size(); ++i) {
                         const paxg::Rect rect_tmp{ pos, rect.w(), rect.h() };
-                        float rtx = rect_tmp.x();
-                        float rty = rect_tmp.y();
-                        float rtw = rect_tmp.w();
-                        float rth = rect_tmp.h();
+                        int rtx = static_cast<int>(rect_tmp.x());
+                        int rty = static_cast<int>(rect_tmp.y());
+                        int rtw = static_cast<int>(rect_tmp.w());
+                        int rth = static_cast<int>(rect_tmp.h());
                         if (event.x >= rtx && event.x < rtx + rtw && event.y >= rty && event.y < rty + rth) {
                             // もし選択肢が左クリックされていたら
                             if (i < is_items.size()) {
@@ -276,7 +276,7 @@ namespace paxs {
                                 return EventHandlingResult::Handled();
                             }
                         }
-                        pos.setY(static_cast<int>(pos.y() + rect.h()));
+                        pos.setY(pos.y() + rect_h);
                     }
                 }
             }
@@ -284,9 +284,13 @@ namespace paxs {
         }
         // 描画
         void render() const override {
-            if (!visible_ || isEmpty()) return;
+            if (!visible_ || items_key.empty()) {
+                return;
+            }
             const std::size_t item_count = items_key.size();
-            if (item_count == 0) return;
+            if (item_count == 0) {
+                return;
+            }
 
             const std::size_t item_index = index;
             rect.draw(paxg::Color{ 243, 243, 243 }); // プルダウンの背景を描画
@@ -307,14 +311,16 @@ namespace paxs {
             // 種別によって描画処理を変える
             if (display_type == PulldownDisplayType::SelectedValue) {
                 const std::string* str = nullptr;
-                std::string direct_str;
 
                 str = Fonts().getText(items_key[index], language_domain);
 
                 if (str == nullptr || str->size() == 0) return;
 
                 paxg::Font* one_font = Fonts().getFont(select_key, FontProfiles::PULLDOWN);
-                if (one_font == nullptr) return;
+                if (one_font == nullptr) {
+                    PAXS_WARNING("Pulldown::render: Font not found.");
+                    return;
+                }
                 // 文字を描画
                 (*one_font).draw(
                     *str,
@@ -322,7 +328,6 @@ namespace paxs {
             }
             else {
                 const std::string* str0 = nullptr;
-                std::string direct_str;
 
                 str0 = Fonts().getText(items_key.front(), language_domain);
 
@@ -347,7 +352,6 @@ namespace paxs {
             const std::size_t start_index = (display_type == PulldownDisplayType::FixedHeader) ? 1 : 0;
             for (std::size_t i = start_index; i < item_count; ++i) {
                 const std::string* i_str = nullptr;
-                std::string direct_str;
 
                 i_str = Fonts().getText(items_key[i], language_domain);
 
@@ -361,7 +365,9 @@ namespace paxs {
                 const std::uint_least32_t select_font_key = ((is_one_font) ? items_key[i] : Fonts().getSelectedLanguage().cgetKey());
 
                 paxg::Font* one_font = Fonts().getFont(select_font_key, FontProfiles::PULLDOWN);
-                if (one_font == nullptr) continue;
+                if (one_font == nullptr) {
+                    continue;
+                }
                 // 文字を描画
                 (*one_font).draw(
                     *i_str,
@@ -375,14 +381,22 @@ namespace paxs {
         // Pulldown 固有のメソッド
         size_t getIndex() const { return index; }
         // 引数の添え字番号の項目が TRUE か FALSE になっているか調べる
-        bool getIsItems(const std::size_t i) const {
-            if (is_items.size() == 0) return true; // データがない場合
-            if (i < is_items.size()) return is_items[i];
+        bool getIsItems(const std::size_t index) const {
+            if (is_items.size() == 0) {
+                PAXS_WARNING("Pulldown::getIsItems: No items available.");
+                return true; // データがない場合
+            }
+            if (index < is_items.size()) {
+                return is_items[index];
+            }
             return is_items.front();
         }
         // 引数の Key の項目が TRUE か FALSE になっているか調べる
         bool getIsItemsKey(const std::uint_least32_t key) const {
-            if (is_items.size() == 0) return true; // データがない場合
+            if (is_items.size() == 0) {
+                PAXS_WARNING("Pulldown::getIsItemsKey: No items available.");
+                return true; // データがない場合
+            }
             if (item_index_key.find(key) == item_index_key.end()) return true; // 引数の Key が存在しない場合
             return getIsItems(item_index_key.at(key));
         }
@@ -394,7 +408,9 @@ namespace paxs {
         void close() { is_open = false; }
 
         bool isHit(int x, int y) const override {
-            if (!isVisible()) return false;
+            if (!isVisible()) {
+                return false;
+            }
 
             // ヘッダー部分のヒットテスト
             const paxg::Rect header_rect = getRect();
@@ -426,7 +442,7 @@ namespace paxs {
 
         void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
         paxg::Rect getRect() const override { return rect; }
-        void setVisible(bool visible) override { visible_ = visible; }
+        void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_; }
         const char* getName() const override { return "Pulldown"; }
         RenderLayer getLayer() const override { return RenderLayer::UIOverlay; }

@@ -12,8 +12,6 @@
 #ifndef PAX_MAHOROBA_SETTLEMENT_MANAGER_HPP
 #define PAX_MAHOROBA_SETTLEMENT_MANAGER_HPP
 
-#include <cstdint>
-#include <memory>
 #include <vector>
 
 #include <PAX_MAHOROBA/Map/Location/SettlementRenderer.hpp>
@@ -44,8 +42,9 @@ namespace paxs {
         SettlementManager() = default;
 
         void render() const override {
-            if (!isVisible()) return;
-            if (!cached_agents_ || !cached_marriage_pos_list_) return;
+            if (!isVisible() || (cached_agents_ == nullptr) || (cached_marriage_pos_list_ == nullptr)) {
+                return;
+            }
             SettlementRenderer::draw(cached_jdn_, cached_agents_, cached_marriage_pos_list_,
                 cached_map_view_width_, cached_map_view_height_,
                 cached_map_view_center_x_, cached_map_view_center_y_,
@@ -88,7 +87,6 @@ namespace paxs {
         RenderLayer getLayer() const override { return RenderLayer::MapContent; }
         // TODO: isVisible() の実装を検討
         bool isVisible() const override { return true; }
-        void setVisible(bool /*visible*/) override {}
 
     };
 }

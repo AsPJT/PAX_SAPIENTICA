@@ -22,6 +22,7 @@
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -65,7 +66,10 @@ namespace paxs {
                     koyomi_.date_list[i].calendar_name_key,
                     LanguageDomain::UI
                 );
-                if (text_str == nullptr) continue;
+                if (text_str == nullptr) {
+                    PAXS_WARNING("CalendarContent: Missing calendar name for key " + std::to_string(koyomi_.date_list[i].calendar_name_key));
+                    continue;
+                }
 
                 // 暦描画フォントを指定
                 paxg::Font* one_font = Fonts().getFont(
@@ -73,7 +77,10 @@ namespace paxs {
                     static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                     static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                 );
-                if (one_font == nullptr) continue;
+                if (one_font == nullptr) {
+                    PAXS_WARNING("CalendarContent: Missing font for calendar rendering.");
+                    continue;
+                }
 
                 switch (output_type) {
                 case paxs::cal::DateOutputType::name_and_ymd:
@@ -83,7 +90,9 @@ namespace paxs {
                         date_day = int(x.cgetDay());
                         date_lm = x.isLeapMonth();
                         }, koyomi_.date_list[i].date);
-                    if (date_day <= 0 || date_month <= 0) break;
+                    if (date_day <= 0 || date_month <= 0) {
+                        break;
+                    }
 
                     (*one_font).drawTopRight(*text_str,
                         paxg::Vec2i(static_cast<int>(ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
@@ -132,14 +141,20 @@ namespace paxs {
                     static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                     static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                 );
-                if (one_font == nullptr) continue;
+                if (one_font == nullptr) {
+                    PAXS_WARNING("CalendarContent: Missing font for calendar rendering.");
+                    continue;
+                }
 
                 // 暦の読み方を返す
                 const std::string* const text_str = Fonts().getText(
                     koyomi_.date_list[i].calendar_name_key,
                     LanguageDomain::UI
                 );
-                if (text_str == nullptr) continue;
+                if (text_str == nullptr) {
+                    PAXS_WARNING("CalendarContent: Missing calendar name for key " + std::to_string(koyomi_.date_list[i].calendar_name_key));
+                    continue;
+                }
 
                 switch (output_type) {
                 case paxs::cal::DateOutputType::name_and_ymd:
@@ -192,7 +207,6 @@ namespace paxs {
             renderInternal();
         }
 
-        void setVisible(bool /*visible*/) override {}
         bool isVisible() const override { return true; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
     };

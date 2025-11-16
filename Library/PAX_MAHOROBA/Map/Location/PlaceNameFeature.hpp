@@ -74,7 +74,7 @@ public:
 
     void update(const RenderContext& context) override {
         // 地物種別の可視性チェック（最優先）
-        if (context.visibility_manager && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
+        if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
             cached_screen_positions_.clear();
             return;
         }
@@ -97,8 +97,17 @@ public:
             context.map_view_center_x, context.map_view_center_y
         );
 
-        // TODO: テキストの実際の境界ボックスサイズを計算
-        cached_display_size_ = 50;
+        // フォントからテキストサイズを計算
+        if (context.font != nullptr) {
+            const std::string name = getName();
+            cached_text_width_ = context.font->width(name);
+            cached_text_height_ = context.font->height();
+        } else {
+            // フォントが利用できない場合はデフォルト値を使用
+            cached_text_width_ = 100;
+            cached_text_height_ = 20;
+        }
+        cached_display_size_ = cached_text_height_;
     }
 
     bool isVisible() const override {
@@ -120,14 +129,18 @@ public:
     bool isHit(const paxg::Vec2i& mouse_pos) const override {
         if (!visible_) return false;
 
-        // TODO: テキストの境界ボックスで判定
-        // 現在は円形判定を使用
-        const int hit_radius = cached_display_size_;
+        // テキストの境界ボックスで判定（矩形判定）
+        const int text_width = cached_text_width_;
+        const int text_height = cached_text_height_;
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [hit_radius](int mx, int my, const paxg::Vec2i& pos) {
-                return MapContentHitTester::circleHitTest(mx, my, pos, hit_radius);
+            [text_width, text_height](int mx, int my, const paxg::Vec2i& pos) {
+                // 矩形判定: drawAtは横方向中央、縦方向上を基準に描画
+                // 横: 中央±width/2、縦: 上からheightの範囲
+                const int half_width = text_width / 2;
+                return mx >= pos.x() - half_width && mx <= pos.x() + half_width &&
+                       my >= pos.y() && my <= pos.y() + text_height;
             }
         );
     }
@@ -145,6 +158,8 @@ private:
     LocationPoint data_;
     std::vector<paxg::Vec2i> cached_screen_positions_;
     int cached_display_size_ = 50;
+    int cached_text_width_ = 100;   ///< キャッシュされたテキスト幅 / Cached text width
+    int cached_text_height_ = 20;   ///< キャッシュされたテキスト高さ / Cached text height
 };
 
 } // namespace paxs

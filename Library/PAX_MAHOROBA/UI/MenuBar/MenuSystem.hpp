@@ -29,7 +29,7 @@ namespace paxs {
         paxg::Rect bar_rect_{0,0,0,0};
 
         // 各メニュー項目に紐づけられた Key 値
-        paxs::UnorderedMap<paxs::MenuBarType, std::size_t> menu_list_key{};
+        paxs::UnorderedMap<paxs::MenuBarType, std::size_t> menu_list_key;
 
         std::size_t start_x = 0;
 
@@ -86,9 +86,11 @@ namespace paxs {
 
             for (std::size_t i = 0; i < menu_list.size(); ++i) {
                 if (menu_list[i].isHitHeader(event.x, event.y)) {
-                    const bool was_open = menu_list[i].isOpen();
+                    const bool was_open = menu_list[i].isVisible();
                     // 全部閉じる
-                    for (auto& mi : menu_list) mi.setVisible(false);
+                    for (auto& menu : menu_list) {
+                        menu.setVisible(false);
+                    }
                     // 今クリックしたやつだけトグル
                     menu_list[i].setVisible(!was_open);
                     return EventHandlingResult::Handled();
@@ -96,9 +98,9 @@ namespace paxs {
             }
 
             // 開いてる子のドロップダウンにイベントを渡す
-            for (paxs::DropDownMenu& mi : menu_list) {
-                if (mi.isOpen()) {
-                    paxs::EventHandlingResult r = mi.handleEvent(event);
+            for (paxs::DropDownMenu& menu : menu_list) {
+                if (menu.isVisible()) {
+                    paxs::EventHandlingResult r = menu.handleEvent(event);
                     if (r.handled) return r;
                 }
             }

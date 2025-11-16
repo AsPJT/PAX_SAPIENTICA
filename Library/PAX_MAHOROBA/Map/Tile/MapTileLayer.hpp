@@ -66,7 +66,6 @@ namespace paxs {
 
         RenderLayer getLayer() const override { return RenderLayer::MapTile; }
         bool isVisible() const override { return true; }
-        void setVisible(bool /*visible*/) override {}
 
     private:
         /// @brief タイルデータを更新（ViewportChangedEventから呼び出し）
@@ -81,7 +80,9 @@ namespace paxs {
 
             // 更新処理
             for (auto&& xyz_tile : xyz_tile_list) {
-                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) continue;
+                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) {
+                    continue;
+                }
                 xyz_tile.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
             }
         }

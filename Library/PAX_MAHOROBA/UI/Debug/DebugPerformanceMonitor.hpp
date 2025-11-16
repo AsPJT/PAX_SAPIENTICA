@@ -12,8 +12,8 @@
 #ifndef PAX_MAHOROBA_UI_DEBUG_DEBUG_PERFORMANCE_MONITOR_HPP
 #define PAX_MAHOROBA_UI_DEBUG_DEBUG_PERFORMANCE_MONITOR_HPP
 
+#include <algorithm>
 #include <chrono>
-#include <cstdint>
 #include <deque>
 #include <string>
 
@@ -94,10 +94,14 @@ public:
     /// @brief 描画処理
     /// @brief Render process
     void render() const {
-        if (!visible_) return;
+        if (!visible_) {
+            return;
+        }
 
         paxg::Font* font_text = Fonts().getFont(FontProfiles::UI_SMALL);
-        if (!font_text) return;
+        if (font_text == nullptr) {
+            return;
+        }
 
         const int window_width = paxg::Window::width();
         const int pos_x = window_width - MONITOR_WIDTH - MONITOR_MARGIN;
@@ -128,11 +132,11 @@ public:
         if (!frame_times_.empty()) {
             double min_fps = 1000.0;
             double max_fps = 0.0;
-            for (double ft : frame_times_) {
-                if (ft > 0.0) {
-                    double f = 1.0 / ft;
-                    if (f < min_fps) min_fps = f;
-                    if (f > max_fps) max_fps = f;
+            for (double frame_time : frame_times_) {
+                if (frame_time > 0.0) {
+                    double fps = 1.0 / frame_time;
+                    min_fps = (std::min)(fps, min_fps);
+                    max_fps = (std::max)(fps, max_fps);
                 }
             }
 
@@ -157,21 +161,13 @@ public:
                        paxg::Color(100, 100, 100));
     }
 
-    /// @brief 表示/非表示を切り替え
-    /// @brief Toggle visibility
-    void toggleVisible() { visible_ = !visible_; }
-
-    /// @brief 表示状態を取得
-    /// @brief Get visibility
-    bool isVisible() const { return visible_; }
-
-    /// @brief 表示状態を設定
-    /// @brief Set visibility
-    void setVisible(bool visible) { visible_ = visible; }
-
     /// @brief 現在のFPSを取得
     /// @brief Get current FPS
     double getFPS() const { return fps_; }
+
+    void toggleVisible() { visible_ = !visible_; }
+    bool isVisible() const { return visible_; }
+    void setVisible(bool visible) { visible_ = visible; }
 
 private:
     /// @brief FPSを計算

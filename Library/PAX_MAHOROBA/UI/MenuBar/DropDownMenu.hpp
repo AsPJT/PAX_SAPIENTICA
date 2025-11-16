@@ -179,7 +179,9 @@ namespace paxs {
 
         /// @brief 描画処理
         void render() const override {
-            if (isEmpty() || items_key.size() == 0) return;
+            if (items_key.size() == 0) {
+                return;
+            }
 
             // ヘッダーの背景と枠を描画（常に表示）
             rect.draw(paxg::Color{ 243, 243, 243 });
@@ -201,12 +203,6 @@ namespace paxs {
             }
         }
 
-        /// @brief プルダウンが空かどうか
-        bool isEmpty() const { return items_key.size() == 0; }
-
-        /// @brief プルダウンの開閉状態を取得
-        bool isOpen() const { return visible_; }
-
         /// @brief プルダウンを閉じる
         void close() { visible_ = false; }
 
@@ -218,45 +214,71 @@ namespace paxs {
         }
 
         /// @brief 項目の状態を設定（インデックス指定）
-        void setIsItems(const std::size_t i, const bool new_value) {
-            if (is_items.size() == 0) return;
-            const std::size_t actual_index = i + 1; // ヘッダー分をオフセット
-            if (actual_index < is_items.size()) is_items[actual_index] = new_value;
+        void setIsItems(const std::size_t index, const bool new_value) {
+            if (is_items.size() == 0) {
+                PAXS_WARNING("DropDownMenu: No items to set state for.");
+                return;
+            }
+            const std::size_t actual_index = index + 1; // ヘッダー分をオフセット
+            if (actual_index < is_items.size()) {
+                is_items[actual_index] = new_value;
+            }
         }
 
         /// @brief 項目の状態を設定（キー指定）
         void setIsItems(const std::uint_least32_t key, const bool is_item) {
-            if (item_index_key.find(key) == item_index_key.end()) return;
-            const std::size_t i = item_index_key.at(key);
-            if (i < is_items.size()) {
-                is_items[i] = is_item;
+            if (item_index_key.find(key) == item_index_key.end()) {
+                PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
+                return;
+            }
+            const std::size_t index = item_index_key.at(key);
+            if (index < is_items.size()) {
+                is_items[index] = is_item;
             }
         }
 
         /// @brief 項目の状態を取得（インデックス指定）
         /// @details MenuItemでは最初の項目がヘッダー名なので、+1してアクセス
-        bool getIsItems(const std::size_t i) const {
-            if (is_items.size() == 0) return true;
-            const std::size_t actual_index = i + 1; // ヘッダー分をオフセット
-            if (actual_index < is_items.size()) return is_items[actual_index];
+        bool getIsItems(const std::size_t index) const {
+            if (is_items.size() == 0) {
+                PAXS_WARNING("DropDownMenu: No items to get state from.");
+                return true;
+            }
+            const std::size_t actual_index = index + 1; // ヘッダー分をオフセット
+            if (actual_index < is_items.size()) {
+                return is_items[actual_index];
+            }
             return is_items.front();
         }
 
         /// @brief 項目の状態を取得（キー指定）
         bool getIsItems(const std::uint_least32_t key) const {
-            if (item_index_key.find(key) == item_index_key.end()) return true;
+            if (item_index_key.find(key) == item_index_key.end()) {
+                PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
+                return true;
+            }
             const std::size_t index = item_index_key.at(key);
             // キーで取得する場合、インデックスは既に正しい位置を指しているので
             // ヘッダー（インデックス0）を参照している場合のみスキップ
-            if (index == 0) return true; // ヘッダー自体は常にtrue
-            if (index < is_items.size()) return is_items[index];
+            if (index == 0) {
+                return true; // ヘッダー自体は常にtrue
+            }
+            if (index < is_items.size()) {
+                return is_items[index];
+            }
             return is_items.front();
         }
 
         /// @brief 引数の Key の項目が TRUE か FALSE になっているか調べる
         bool getIsItemsKey(const std::uint_least32_t key) const {
-            if (is_items.size() == 0) return true; // データがない場合
-            if (item_index_key.find(key) == item_index_key.end()) return true; // 引数の Key が存在しない場合
+            if (is_items.size() == 0) {
+                PAXS_WARNING("DropDownMenu: No items to check for key.");
+                return true; // データがない場合
+            }
+            if (item_index_key.find(key) == item_index_key.end()) {
+                PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
+                return true; // 引数の Key が存在しない場合
+            }
             return getIsItems(item_index_key.at(key));
         }
 
@@ -267,7 +289,9 @@ namespace paxs {
         }
 
         bool isHit(int x, int y) const override {
-            if (!visible_) return false;
+            if (!visible_) {
+                return false;
+            }
 
             // ヘッダーは親(MenuSystem)が判定するのでここでは見ない
 
@@ -286,8 +310,8 @@ namespace paxs {
 
         void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
         paxg::Rect getRect() const override { return rect; }
-        void setVisible(bool visible) override { visible_ = visible; }
         bool isVisible() const override { return visible_; }
+        void setVisible(bool visible) { visible_ = visible; }
         const char* getName() const override { return "DropDownMenu"; }
         RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
 
@@ -295,13 +319,22 @@ namespace paxs {
         /// @brief ヘッダー部分のテキストを描画
         /// @details 最初の項目（メニュー名）を常に表示
         void drawHeader() const {
-            if (items_key.size() == 0) return;
+            if (items_key.size() == 0) {
+                PAXS_WARNING("DropDownMenu: No items to display in header.");
+                return;
+            }
 
             const std::string* str = Fonts().getText(items_key.front(), LanguageDomain::UI);
-            if (str == nullptr || str->size() == 0) return;
+            if (str == nullptr || str->size() == 0) {
+                PAXS_WARNING("DropDownMenu: Missing text for header item.");
+                return;
+            }
 
             paxg::Font* one_font = Fonts().getFont(font_size, font_buffer_thickness_size);
-            if (one_font == nullptr) return;
+            if (one_font == nullptr) {
+                PAXS_WARNING("DropDownMenu: Missing font for header item.");
+                return;
+            }
 
             (*one_font).draw(
                 *str,
