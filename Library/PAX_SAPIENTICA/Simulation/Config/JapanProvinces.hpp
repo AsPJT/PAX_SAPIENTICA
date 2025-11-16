@@ -43,7 +43,7 @@ namespace paxs {
         /// @brief 日本の地区を表す構造体
         struct District {
             std::uint_least8_t id = 0;
-            std::string name = "";
+            std::string name;
             std::uint_least8_t region_id = 0; // 対応する地方区分ID
             std::uint_least8_t language = 0; // 言語
             std::uint_least8_t hunter_gatherer = 0; // 狩猟採集

@@ -26,8 +26,8 @@ namespace paxs {
         /// @brief 英語未翻訳
         /// @brief 寿命を決定する
         AgeType setLifeSpan(const bool is_farming_, const bool is_male_, std::mt19937& gen) {
-            return static_cast<AgeType>(SimulationConstants::getInstance()->getLifeSpan(is_farming_, !is_male_, gen) * SimulationConstants::getInstance()->steps_per_year
-                + SimulationConstants::getInstance()->step_per_year_dist(gen));
+            return static_cast<AgeType>(SimulationConstants::getInstance().getLifeSpan(is_farming_, !is_male_, gen) * SimulationConstants::getInstance().steps_per_year
+                + SimulationConstants::getInstance().step_per_year_dist(gen));
         }
 
     };

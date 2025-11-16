@@ -12,6 +12,7 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_MANAGER_SETTLEMENT_SIMULATOR_HPP
 #define PAX_SAPIENTICA_SIMULATION_MANAGER_SETTLEMENT_SIMULATOR_HPP
 
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstdint>
@@ -63,20 +64,19 @@ namespace paxs {
         /// @brief シミュレーション入力データを再読み込み
         /// @brief Reload simulation input data
         /// @param model_name モデル名 / Model name
-        void reloadInputData(const std::string& model_name = "Sample") {
+        static void reloadInputData(const std::string& model_name = "Sample") {
             // SimulationConstantsのシングルトンインスタンスを取得
-            auto* constants = SimulationConstants::getInstance(model_name);
+            auto& constants = SimulationConstants::getInstance(model_name);
 
             // 各種データを再読み込み
-            constants->init(model_name);
-            constants->inputLifeSpan(model_name);
-            constants->inputMarriage(model_name);
-            constants->inputChildbearing(model_name);
+            constants.init(model_name);
+            constants.inputLifeSpan(model_name);
+            constants.inputMarriage(model_name);
+            constants.inputChildbearing(model_name);
         }
 
-        /// @brief
         /// @brief 渡来数の取得
-        std::uint_least64_t emigrationSize() {
+        std::uint_least64_t getEmigrationCount() const {
             return emigration_count;
         }
 
@@ -84,17 +84,16 @@ namespace paxs {
         /// @brief 生命表を取得
         void outputLifeSpan(const int loop_num_) {
             std::ofstream life_ofs = std::ofstream("life.txt");
-            std::vector<int> life_num1(SimulationConstants::getInstance()->steps_per_year * 100, 0);
-            std::vector<int> life_num2(SimulationConstants::getInstance()->steps_per_year * 100, 0);
+            std::vector<int> life_num1(SimulationConstants::getInstance().steps_per_year * 100, 0);
+            std::vector<int> life_num2(SimulationConstants::getInstance().steps_per_year * 100, 0);
             for (int i = 0; i < loop_num_; ++i) {
                 life_num1[kanakuma_life_span.setLifeSpan(true, 0, gen)] += 1;
                 life_num2[kanakuma_life_span.setLifeSpan(true, 1, gen)] += 1;
             }
             life_ofs << "step\tyear\tfemale\tmale\n";
-            for (int i = 0; i < SimulationConstants::getInstance()->steps_per_year * 100; ++i) {
-                life_ofs << i << '\t' << i / SimulationConstants::getInstance()->steps_per_year << '\t' << life_num1[i] << '\t' << life_num2[i] << '\n';
+            for (int i = 0; i < SimulationConstants::getInstance().steps_per_year * 100; ++i) {
+                life_ofs << i << '\t' << i / SimulationConstants::getInstance().steps_per_year << '\t' << life_num1[i] << '\t' << life_num2[i] << '\n';
             }
-            return;
         }
 
         // 人口を計算
@@ -111,11 +110,11 @@ namespace paxs {
             }
         }
         // 結果の文字列を出力
-        void outputResultString(std::ofstream& ofs_) const {
+        static void outputResultString(std::ofstream& ofs_)  {
             ofs_ << "step_count" << '\t' << "settlement" << '\t' << "population" << '\t';
         }
         // 結果の最後の文字列を出力
-        void outputResultLastString(std::ofstream& ofs_) const {
+        static void outputResultLastString(std::ofstream& ofs_)  {
             ofs_ << "step_count" << '\n';
         }
         // 結果の地区名を出力
@@ -166,7 +165,7 @@ namespace paxs {
             language_region_ofs.open(result_dir + "/Region_Language.txt");
             live_region_ofs.open(result_dir + "/Region_HabitableLand.txt");
 
-            const std::string& label_name = SimulationConstants::getInstance()->output_directory_name;
+            const std::string& label_name = SimulationConstants::getInstance().output_directory_name;
             if (!label_name.empty()) {
                 const std::string timestamp = calcDateTime(); // タイムスタンプをここで一度だけ取得
                 const std::string labeled_base_dir = "LabeledSimulationResults/" + label_name;
@@ -293,23 +292,23 @@ namespace paxs {
             }
         }
 
-        void moveSettlement(const std::uint_least32_t id, const Vector2 current_key, const Vector2 target_key) noexcept {
+        void moveSettlement(const std::uint_least32_t settlement_id, const Vector2 current_key, const Vector2 target_key) noexcept {
             const auto current_index = current_key.to(SettlementGridsType{});
             const auto target_index = target_key.to(SettlementGridsType{});
 
             // ターゲットの地域が登録されているか？
-            auto it = settlement_grids.find(target_index);
-            if (it != settlement_grids.end()) {
+            auto iterator = settlement_grids.find(target_index);
+            if (iterator != settlement_grids.end()) {
                 // 登録されている場合はそのターゲット地域へ移動
-                it->second.moveSettlementToThis(settlement_grids[current_index].getSettlement(id));
+                iterator->second.moveSettlementToThis(settlement_grids[current_index].getSettlement(settlement_id));
             }
             else {
                 // 登録されていない場合は新しく地域を作成
-                SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance()->cell_group_length, environment, gen);
-                settlement_grid.moveSettlementToThis(settlement_grids[current_index].getSettlement(id));
+                SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance().cell_group_length, environment, gen);
+                settlement_grid.moveSettlementToThis(settlement_grids[current_index].getSettlement(settlement_id));
                 settlement_grids[target_index] = settlement_grid;
             }
-            settlement_grids[current_index].deleteSettlement(id);
+            settlement_grids[current_index].deleteSettlement(settlement_id);
         }
 
         /// @brief Execute the simulation for the one step.
@@ -319,7 +318,7 @@ namespace paxs {
             start_time = std::chrono::system_clock::now(); // 計測開始
 
             // 指定したステップおきに出力する
-            if (step_count % SimulationConstants::getInstance()->output_step_frequency == 0) {
+            if (step_count % SimulationConstants::getInstance().output_step_frequency == 0) {
                 std::size_t pop_num = 0; // 人口数
                 std::size_t sat_num = 0; // 集落数
                 std::vector < std::vector<int>> mtdna_num(max_number_of_districts, std::vector<int>(256, 0)); // mtDNA 数
@@ -342,7 +341,7 @@ namespace paxs {
                         ++sat_num; // 集落数を増加させる
                         pop_num += settlement.getPopulation(); // 人口数を増加させる
 
-                        const std::uint_least8_t ryo_id = environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance()->district_key, settlement.getPosition());
+                        const std::uint_least8_t ryo_id = environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, settlement.getPosition());
                         if (ryo_id < max_number_of_districts) {
                             ryopop[ryo_id] += settlement.getPopulation(); // 地区ごとに人口数を増加させる
                             ryosnp[ryo_id] += settlement.getSNP(); // 地区ごとに SNP を増加させる
@@ -429,7 +428,7 @@ namespace paxs {
                 snp_region_ofs << step_count << '\n';
                 language_region_ofs << step_count << '\n';
 
-                const std::string& label_name = SimulationConstants::getInstance()->output_directory_name;
+                const std::string& label_name = SimulationConstants::getInstance().output_directory_name;
                 if (!label_name.empty()) {
                     labeled_pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
                     labeled_mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
@@ -498,7 +497,7 @@ namespace paxs {
                         continue;
                     }
 
-                    auto [target_id, current_key, target_key] = settlements[i].move(gen, japan_provinces->getDistrict(environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance()->district_key, settlements[i].getPosition())));
+                    auto [target_id, current_key, target_key] = settlements[i].move(gen, japan_provinces->getDistrict(environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, settlements[i].getPosition())));
 
                     if (target_id != 0) {
                         move_list.emplace_back(target_id, current_key, target_key);
@@ -518,11 +517,11 @@ namespace paxs {
                 }
             }
             // 渡来期間
-            if (SimulationConstants::getInstance()->immigration_step_interval > 0 &&
-                step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
-                step_count <= SimulationConstants::getInstance()->immigration_end_steps &&
-                (step_count - SimulationConstants::getInstance()->immigration_start_steps) % SimulationConstants::getInstance()->immigration_step_interval == 0) {
-                randomizeSettlements(false, true /* 渡来人 */, (step_count >= SimulationConstants::getInstance()->bronze_start_steps)/*青銅*/);
+            if (SimulationConstants::getInstance().immigration_step_interval > 0 &&
+                step_count >= SimulationConstants::getInstance().immigration_start_steps &&
+                step_count <= SimulationConstants::getInstance().immigration_end_steps &&
+                (step_count - SimulationConstants::getInstance().immigration_start_steps) % SimulationConstants::getInstance().immigration_step_interval == 0) {
+                randomizeSettlements(false, true /* 渡来人 */, (step_count >= SimulationConstants::getInstance().bronze_start_steps)/*青銅*/);
             }
 
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
@@ -541,7 +540,7 @@ namespace paxs {
                 if (settlements.size() == 0) continue; // 集落が無い場合
 
                 Vector2 grid_position = settlement_grid.second.getGridPosition();
-                grid_position /= SimulationConstants::getInstance()->cell_group_length;
+                grid_position /= SimulationConstants::getInstance().cell_group_length;
 
                 close_settlements_list.clear();
                 for (int i = -1; i <= 1; ++i) {
@@ -586,10 +585,10 @@ namespace paxs {
             calcPop();
 
             // 渡来期間
-            if (SimulationConstants::getInstance()->immigration_step_interval > 0 &&
-                step_count >= SimulationConstants::getInstance()->immigration_start_steps &&
-                step_count <= SimulationConstants::getInstance()->immigration_end_steps &&
-                (step_count - SimulationConstants::getInstance()->immigration_start_steps) % SimulationConstants::getInstance()->immigration_step_interval == 0) {
+            if (SimulationConstants::getInstance().immigration_step_interval > 0 &&
+                step_count >= SimulationConstants::getInstance().immigration_start_steps &&
+                step_count <= SimulationConstants::getInstance().immigration_end_steps &&
+                (step_count - SimulationConstants::getInstance().immigration_start_steps) % SimulationConstants::getInstance().immigration_step_interval == 0) {
                 // 渡来数を増やす
                 japan_provinces->update();
             }
@@ -688,7 +687,7 @@ namespace paxs {
         std::ofstream labeled_live_region_ofs;
 
         // 婚姻時に移動前の位置と移動後の位置を記録
-        std::vector<GridType4> marriage_pos_list{};
+        std::vector<GridType4> marriage_pos_list;
 
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
@@ -728,7 +727,7 @@ namespace paxs {
                 }
 
                 // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance()->district_key, position);
+                std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, position);
                 if (district_id < max_number_of_districts) {
                     (*live_list)[district_id].emplaceBack(live_probability, land_position);
                 }
@@ -748,15 +747,13 @@ namespace paxs {
 
             // 地区と人口のマップ
             paxs::UnorderedMap<std::uint_least8_t, std::uint_least32_t> district_population_map;
-            for (auto& district : japan_provinces->cgetDistrictList()) {
+            for (const auto& district : japan_provinces->cgetDistrictList()) {
                 if (((is_ad200)? district.init_pop : district.immigrant) == 0) {
                     continue;
                 }
                 district_population_map[district.id] = ((is_ad200) ? district.init_pop : district.immigrant);
                 // より地区 ID が大きい値を見つけたら上書き
-                if (district.id > district_id_max) {
-                    district_id_max = district.id;
-                }
+                district_id_max = (std::max)(district.id, district_id_max);
             }
             // 全人口
             int all_population = 0;
@@ -789,7 +786,7 @@ namespace paxs {
                     const Vector2 live_position = Vector2::from(live.habitable_land_positions[live_probability_index]);
 
                     // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                    // std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance()->district_key, live_position);
+                    // std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, live_position);
 
                     auto district_population_it = district_population_map.find(district_id);
                     if (district_population_it == district_population_map.end()) {
@@ -806,11 +803,11 @@ namespace paxs {
                     settlement_population = (std::min)(settlement_population, static_cast<int>(district_population_it->second));
 
                     // 集落をグリッドに配置
-                    Vector2 grid_position = live_position / SimulationConstants::getInstance()->cell_group_length;
+                    Vector2 grid_position = live_position / SimulationConstants::getInstance().cell_group_length;
                     SettlementGridsType key = grid_position.to(SettlementGridsType{});
                     // グリッドが存在しない場合は作成
                     if (settlement_grids.find(key) == settlement_grids.end()) {
-                        settlement_grids[key] = SettlementGrid(grid_position * SimulationConstants::getInstance()->cell_group_length, environment, gen);
+                        settlement_grids[key] = SettlementGrid(grid_position * SimulationConstants::getInstance().cell_group_length, environment, gen);
                     }
                     // 集落を作成
                     Settlement settlement = Settlement(
@@ -819,20 +816,20 @@ namespace paxs {
                         environment
                     );
                     // 青銅の持ち込み
-                    if (is_bronze) settlement.setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance()->bronze));
+                    if (is_bronze) settlement.setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance().bronze));
                     settlement.setPosition(live_position);
 
                     // 渡来人込みの地区 ID
-                    const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id;
+                    const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance().immigration_district_id/*toraijin*/ : district_id;
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
                         Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)), japan_provinces->getLanguage(immigration_and_district_id, gen));
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan((is_farming), genome.isMale(), gen);
 
                         AgeType age_value = 0;
-                        if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_grace_period) {
+                        if (set_lifespan > SimulationConstants::getInstance().init_lifespan_grace_period) {
                             // 寿命の乱数分布
-                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance()->init_lifespan_grace_period) };
+                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance().init_lifespan_grace_period) };
                             age_value = static_cast<AgeType>(lifespan_dist(gen));
                         }
 
@@ -873,7 +870,7 @@ namespace paxs {
             // 地区の人口が残っている場合は、ランダムに配置
             for (auto& district_population : district_population_map) {
                 std::uint_least8_t district_id = district_population.first;
-                int population = district_population.second;
+                const int population = district_population.second;
                 std::vector<Settlement> settlements;
                 getSettlements(settlements, district_id);
 
@@ -885,7 +882,7 @@ namespace paxs {
                 const int add_population = population / static_cast<int>(settlements.size());
 
                 // 渡来人込みの地区 ID
-                const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance()->immigration_district_id/*toraijin*/ : district_id;
+                const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance().immigration_district_id/*toraijin*/ : district_id;
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
@@ -893,9 +890,9 @@ namespace paxs {
                         const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(is_farming, genome.isMale(), gen);
 
                         AgeType age_value = 0;
-                        if (set_lifespan > SimulationConstants::getInstance()->init_lifespan_grace_period) {
+                        if (set_lifespan > SimulationConstants::getInstance().init_lifespan_grace_period) {
                             // 寿命の乱数分布
-                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance()->init_lifespan_grace_period) };
+                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance().init_lifespan_grace_period) };
                             age_value = static_cast<AgeType>(lifespan_dist(gen));
                         }
 
@@ -908,11 +905,15 @@ namespace paxs {
                             static_cast<std::uint_least8_t>(japan_provinces->getHunterGatherer(immigration_and_district_id)),
                             static_cast<std::uint_least8_t>(japan_provinces->getLanguage(immigration_and_district_id))
                         );
-                        if (is_farming) ++emigration_count; // 農耕カウント
+                        if (is_farming) {
+                            ++emigration_count; // 農耕カウント
+                        }
                     }
                     settlement.addAgents(agents);
                     // 青銅の持ち込み
-                    if (is_bronze) settlement.setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance()->bronze));
+                    if (is_bronze) {
+                        settlement.setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance().bronze));
+                    }
                 }
             }
 
@@ -922,11 +923,11 @@ namespace paxs {
         }
 
         /// @brief 指定した地区のIDの集落グリッドを取得
-        void getSettlementGrids(std::vector<SettlementGrid>& settlement_grids_, const std::uint_least8_t district_id_) noexcept {
+        void getSettlementGrids(std::vector<SettlementGrid>& settlement_grids_, const std::uint_least8_t target_district_id) noexcept {
             for (auto& settlement_grid : settlement_grids) {
                 std::vector<std::uint_least8_t> district_ids = settlement_grid.second.getDistrictIds();
-                for (auto id : district_ids) {
-                    if (id == district_id_) {
+                for (auto district_id : district_ids) {
+                    if (district_id == target_district_id) {
                         settlement_grids_.emplace_back(settlement_grid.second);
                         break;
                     }

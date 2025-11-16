@@ -44,7 +44,7 @@ TEST (JapanProvincesUnitTest, constructor) {
         PathTSV::generatePathTSV();
     }
 
-    std::cout << paxs::AppConfig::getInstance()->getRootPath() << std::endl;
+    std::cout << paxs::AppConfig::getInstance().getRootPath() << std::endl;
 
     const std::string japan_region_tsv_path = "Projects/UnitTest/Data/Simulations";
 

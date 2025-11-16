@@ -12,6 +12,8 @@
 #ifndef PAX_SAPIENTICA_INPUT_STATE_MANAGER_HPP
 #define PAX_SAPIENTICA_INPUT_STATE_MANAGER_HPP
 
+#include <cstdint>
+
 namespace paxs {
 
     /// @brief 入力状態を管理するクラス (Infrastructure Layer)
@@ -22,7 +24,7 @@ namespace paxs {
     public:
         /// @brief 入力の状態
         /// @brief Input state
-        enum class State {
+        enum class State : std::uint8_t {
             None,   ///< 押されていない / Not pressed
             Down,   ///< 押された瞬間（1フレームのみ）/ Just pressed (only 1 frame)
             Held,   ///< 押され続けている / Being held
@@ -56,7 +58,7 @@ namespace paxs {
         /// - Up → None: ボタンが離されたまま（false → false、前回Up）
         /// - None → None: ボタンが離されたまま（false → false、前回None）
         constexpr State update(const bool is_pressed) noexcept {
-            State result;
+            State result = State::None;
 
             if (!previous_state_ && is_pressed) {
                 // 前フレーム: 押されていない、現フレーム: 押されている → Down（押された瞬間）
@@ -85,17 +87,17 @@ namespace paxs {
         /// @brief 現在の状態を取得（更新なし）
         /// @brief Get current state (without update)
         /// @return 現在のボタン状態 / Current button state
-        constexpr bool getCurrentState() const noexcept {
+        [[nodiscard]] constexpr bool getCurrentState() const noexcept {
             return current_state_;
         }
 
         /// @brief 前フレームの状態を取得
         /// @brief Get previous frame state
         /// @return 前フレームのボタン状態 / Previous frame button state
-        constexpr bool getPreviousState() const noexcept {
+        [[nodiscard]] constexpr bool getPreviousState() const noexcept {
             return previous_state_;
         }
     };
 }
 
-#endif // !PAX_SAPIENTICA_MOUSE_CLICK_STATE_MANAGER_HPP
+#endif // !PAX_SAPIENTICA_INPUT_STATE_MANAGER_HPP

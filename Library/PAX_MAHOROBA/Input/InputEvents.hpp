@@ -18,7 +18,7 @@ namespace paxs {
 
     /// @brief マウスボタンの状態
     /// @brief Mouse button state
-    enum class MouseButtonState {
+    enum class MouseButtonState : std::uint8_t {
         None,       ///< 押されていない / Not pressed
         Pressed,    ///< 押された瞬間 / Just pressed
         Released,   ///< 離された瞬間 / Just released

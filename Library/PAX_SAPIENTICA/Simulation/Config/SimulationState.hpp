@@ -12,11 +12,12 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_CONFIG_SIMULATION_STATE_HPP
 #define PAX_SAPIENTICA_SIMULATION_CONFIG_SIMULATION_STATE_HPP
 
-namespace paxs {
+#include <cstdint>
 
+namespace paxs {
     /// @brief シミュレーション状態
     /// @brief Simulation State
-    enum class SimulationState {
+    enum class SimulationState : std::uint8_t {
         Uninitialized,  // 初期化前 / Before initialization
         Stopped,        // 停止中 / Stopped
         Playing         // 再生中 / Playing

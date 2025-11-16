@@ -31,6 +31,13 @@ namespace paxs {
         static_cast<char>(static_cast<unsigned char>(0xbf)) ,
         0 };
 
+    // InputFile constants
+    namespace InputFileConstants {
+        constexpr std::size_t file_path_buffer_size = 256;
+        constexpr std::size_t line_buffer_size = 4096;
+        constexpr std::size_t bom_size = 3;
+    }
+
     struct InputFile {
 
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
@@ -86,12 +93,12 @@ namespace paxs {
 
             // default_path_ が空の場合は AppConfig からルートパスを取得
             const std::string root_path = (default_path_.size() == 0) ?
-                paxs::AppConfig::getInstance()->getRootPath() : default_path_;
+                paxs::AppConfig::getInstance().getRootPath() : default_path_;
 
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
             type = type_; // フォルダの読み書きの種類を格納
 #ifdef __ANDROID__
-            static char file_path[256];
+            static char file_path[InputFileConstants::file_path_buffer_size];
             switch (type) {
             case paxs::MurMur3::calcHash("asset_file"):
 #ifdef __ANDROID__
@@ -102,7 +109,7 @@ namespace paxs {
 #endif // __ANDROID__
                 DxLib::FileRead_set_format(file_handle, DX_CHARCODEFORMAT_UTF8); // UTF-8 を読み込む
                 if (file_handle != 0) {
-                    pline0.resize(4096);
+                    pline0.resize(InputFileConstants::line_buffer_size);
                 }
                 break;
             case paxs::MurMur3::calcHash("internal_file"):
@@ -141,7 +148,7 @@ namespace paxs {
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
 #ifdef __ANDROID__
             if (type == paxs::MurMur3::calcHash("asset_file")) {
-                const int dline = DxLib::FileRead_gets(&(pline0[0]), 4096, file_handle);
+                const int dline = DxLib::FileRead_gets(&(pline0[0]), static_cast<int>(InputFileConstants::line_buffer_size), file_handle);
                 if (dline == -1 || dline == 0) {
                     pline.clear();
                     return false;
@@ -196,13 +203,15 @@ namespace paxs {
 
         // BOM を削除する
         void deleteBOM() {
-            if (pline.size() < 3) return;
+            if (pline.size() < InputFileConstants::bom_size) {
+                return;
+            }
             if (
                 pline[0] == utf8_bom[0] &&
                 pline[1] == utf8_bom[1] &&
                 pline[2] == utf8_bom[2]
                 ) {
-                pline = std::string(&(pline[3]));
+                pline = std::string(&(pline[InputFileConstants::bom_size]));
             }
         }
 

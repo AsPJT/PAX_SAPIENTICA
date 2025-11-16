@@ -109,7 +109,7 @@ namespace paxg {
             }.removeSRGBCurve();
 
             // 360度写真をロード
-            const auto rootPath = s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath());
+            const auto rootPath = s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance().getRootPath());
             photo_texture_ = s3d::Texture(s3d::Image{ rootPath + s3d::Unicode::FromUTF8(config_.paths.photoPath) }.mirror());
 #endif
         }

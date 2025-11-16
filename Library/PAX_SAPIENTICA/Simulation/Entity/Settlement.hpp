@@ -131,11 +131,11 @@ namespace paxs {
 
         double calcCost(std::shared_ptr<Environment>& environment, const AStarVec2& neighbour_z) const noexcept {
             // 海の通行コスト
-            if (!environment->isLand(neighbour_z)) return SimulationConstants::getInstance()->ocean_cost;
+            if (!environment->isLand(neighbour_z)) return SimulationConstants::getInstance().ocean_cost;
             // 海岸の通行コスト
-            else if (environment->isCoast(neighbour_z)) return SimulationConstants::getInstance()->coast_cost;
+            else if (environment->isCoast(neighbour_z)) return SimulationConstants::getInstance().coast_cost;
             else {
-                const double lc = SimulationConstants::getInstance()->land_cost;
+                const double lc = SimulationConstants::getInstance().land_cost;
                 if (environment->getSlope(neighbour_z) < 6 /*0.1*/) return lc;
                 else if (environment->getSlope(neighbour_z) < 100/*5*/) return 1.8 / 1.5 * lc;
                 else if (environment->getSlope(neighbour_z) < 133/*10*/) return 2.1 / 1.5 * lc;
@@ -147,7 +147,7 @@ namespace paxs {
                 else if (environment->getSlope(neighbour_z) < 206/*40*/) return 6.0 / 1.5 * lc;
                 else if (environment->getSlope(neighbour_z) <= 250/*90*/) return 100 * 34.7 / 1.5 * lc;
             }
-            return SimulationConstants::getInstance()->land_cost;
+            return SimulationConstants::getInstance().land_cost;
         }
 
         bool cellOpen(const AStarNode& node_, std::shared_ptr<Environment>& environment) noexcept {
@@ -331,7 +331,7 @@ namespace paxs {
             std::uniform_int_distribution<int> dist(0, static_cast<int>(close_settlements_size - 1));
             const std::size_t j = static_cast<std::size_t>(dist(*gen));
             const Settlement& close_settlement = close_settlements[j];
-            if (close_settlement.getPosition().distance_pow2(position) > SimulationConstants::getInstance()->marriage_search_range_pow2) return false; // 婚姻距離内に集落が無いため失敗
+            if (close_settlement.getPosition().distance_pow2(position) > SimulationConstants::getInstance().marriage_search_range_pow2) return false; // 婚姻距離内に集落が無いため失敗
 
             const std::vector<Agent>& close_agent = close_settlement.cgetAgents();
             for (std::size_t k = 0; k < close_agent.size(); ++k) {
@@ -363,11 +363,11 @@ namespace paxs {
             bool is_select_matrilocality = false;
 
             // 母方居住婚
-            if (SimulationConstants::getInstance()->maternal_residence_probability >= 1.0f) {
+            if (SimulationConstants::getInstance().maternal_residence_probability >= 1.0f) {
                 is_matrilocality = true;
             }
             // 父方居住婚
-            else if (SimulationConstants::getInstance()->maternal_residence_probability <= 0.0f) {
+            else if (SimulationConstants::getInstance().maternal_residence_probability <= 0.0f) {
                 is_matrilocality = false;
             }
             // 選択居住婚
@@ -417,7 +417,7 @@ namespace paxs {
                     Agent& male = pair_settlement.getAgents()[pair_agent_index];
                     // 選択居住婚の場合はどちらの住居に移動するか乱数で決定する
                     if (is_select_matrilocality) {
-                        is_matrilocality = (SimulationConstants::getInstance()->maternal_residence_probability >= SimulationConstants::getInstance()->random_dist_f32(*gen));
+                        is_matrilocality = (SimulationConstants::getInstance().maternal_residence_probability >= SimulationConstants::getInstance().random_dist_f32(*gen));
                     }
                     // シミュレーションの設定で母方に移住するか父方に移住するかを決める
                     // 母方の場合
@@ -477,13 +477,13 @@ namespace paxs {
         // A* の経路探索
         void moveAStar(std::mt19937& engine, District& district_, const Vector2& current_position, Vector2& target_position) noexcept {
             double cost = -1.0;
-            const int distance = SimulationConstants::getInstance()->move_dist(engine);
+            const int distance = SimulationConstants::getInstance().move_dist(engine);
 
-            const GridType cw = /*environment->getSlopeCellWidth() * */SimulationConstants::getInstance()->move_astar_distance;
+            const GridType cw = /*environment->getSlopeCellWidth() * */SimulationConstants::getInstance().move_astar_distance;
             const Vector2 cp_cw = current_position / cw;
 #ifdef _OPENMP
             double max_cost = 1.0;
-            const int loop = SimulationConstants::getInstance()->move_astar_loop;
+            const int loop = SimulationConstants::getInstance().move_astar_loop;
             std::vector<double> cost_list(loop);
             std::vector<Vector2> pos_list(loop);
             std::vector<Vector2> move_list(loop);
@@ -504,7 +504,7 @@ namespace paxs {
 #pragma omp parallel for
             for (int i = 0; i < loop; ++i) {
 #else
-            for (std::uint_least32_t i = 0; i < SimulationConstants::getInstance()->move_astar_loop; ++i) {
+            for (std::uint_least32_t i = 0; i < SimulationConstants::getInstance().move_astar_loop; ++i) {
 #endif
 #ifdef _OPENMP
                 const Vector2 move_position = move_list[i];
@@ -561,12 +561,12 @@ namespace paxs {
             // 小さい領域のシミュレーションでは無限ループする可能性がある
             while (target_position == current_position || !environment->isLive(target_position)) {
                 // 無限ループに陥った場合は無視
-                if (loop_count >= SimulationConstants::getInstance()->move_redo) return current_position;
+                if (loop_count >= SimulationConstants::getInstance().move_redo) return current_position;
 
                 // 移動距離が偏りのある方向を指定する距離以上か判定し、方向を格納する
                 const double theta = (distance >= static_cast<int>(district_.direction_min_distance)) ?
-                    SimulationConstants::getInstance()->theta_dist_array[district_.direction_dist(engine)](engine) :
-                    SimulationConstants::getInstance()->theta_dist(engine);
+                    SimulationConstants::getInstance().theta_dist_array[district_.direction_dist(engine)](engine) :
+                    SimulationConstants::getInstance().theta_dist(engine);
                 target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
                 ++loop_count;
             }
@@ -578,7 +578,7 @@ namespace paxs {
         /// @return 集落グリッドを移動したかどうか
         std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, District& district_) noexcept {
             // 確率で移動
-            if (SimulationConstants::getInstance()->random_dist(engine) > SimulationConstants::getInstance()->move_probability) return { 0, Vector2(), Vector2() };
+            if (SimulationConstants::getInstance().random_dist(engine) > SimulationConstants::getInstance().move_probability) return { 0, Vector2(), Vector2() };
 
             Vector2 current_key;
             Vector2 target_key;
@@ -590,7 +590,7 @@ namespace paxs {
             Vector2 target_position = position;
 
             // A* を使った方法
-            if(SimulationConstants::getInstance()->move_method == MurMur3::calcHash("astar") && SimulationConstants::getInstance()->move_astar_loop >= 1){
+            if(SimulationConstants::getInstance().move_method == MurMur3::calcHash("astar") && SimulationConstants::getInstance().move_astar_loop >= 1){
                 moveAStar(engine, district_, current_position, target_position);
             }
             else {
@@ -598,21 +598,23 @@ namespace paxs {
                 // 小さい領域のシミュレーションでは無限ループする可能性がある
                 while (target_position == current_position || !environment->isLive(target_position)) {
                     // 無限ループに陥った場合は無視
-                    if (loop_count >= SimulationConstants::getInstance()->move_redo) return { 0, Vector2(), Vector2() };
-                    int distance = SimulationConstants::getInstance()->move_dist(engine);
+                    if (loop_count >= SimulationConstants::getInstance().move_redo) return { 0, Vector2(), Vector2() };
+                    int distance = SimulationConstants::getInstance().move_dist(engine);
 
                     // 移動距離が偏りのある方向を指定する距離以上か判定し、方向を格納する
                     const double theta = (distance >= static_cast<int>(district_.direction_min_distance)) ?
-                        SimulationConstants::getInstance()->theta_dist_array[district_.direction_dist(engine)](engine) :
-                        SimulationConstants::getInstance()->theta_dist(engine);
+                        SimulationConstants::getInstance().theta_dist_array[district_.direction_dist(engine)](engine) :
+                        SimulationConstants::getInstance().theta_dist(engine);
                     target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
                     ++loop_count;
                 }
             }
-            current_key = current_position / SimulationConstants::getInstance()->cell_group_length;
-            target_key = target_position / SimulationConstants::getInstance()->cell_group_length;
+            current_key = current_position / SimulationConstants::getInstance().cell_group_length;
+            target_key = target_position / SimulationConstants::getInstance().cell_group_length;
 
-            if (current_key == target_key) return { 0, Vector2(), Vector2() };
+            if (current_key == target_key) {
+                return { 0, Vector2(), Vector2() };
+            }
 
             is_moved = true;
 
@@ -644,9 +646,9 @@ namespace paxs {
         /// @brief 重み人口を取得
         double getPopulationWeight() const noexcept {
             // 農耕文化の重み
-            const double ac_weight = SimulationConstants::getInstance()->max_agricultural_settlement_weight;
+            const double ac_weight = SimulationConstants::getInstance().max_agricultural_settlement_weight;
             // 狩猟採集文化の重み
-            const double hg_weight = SimulationConstants::getInstance()->max_hunter_gatherer_settlement_weight;
+            const double hg_weight = SimulationConstants::getInstance().max_hunter_gatherer_settlement_weight;
 
             double population_weight = 0;
             for (const auto& agent : agents) {
@@ -776,14 +778,14 @@ namespace paxs {
                     if (count == 0) {
                         // 生業文化別の死産率を格納
                         const double stillbirth_rate = (agent.cgetFarming() > 0) ?
-                            SimulationConstants::getInstance()->agricultural_stillbirth_rate :
-                            SimulationConstants::getInstance()->hunter_gatherer_stillbirth_rate;
+                            SimulationConstants::getInstance().agricultural_stillbirth_rate :
+                            SimulationConstants::getInstance().hunter_gatherer_stillbirth_rate;
 
                         // 死産率 100 ％の場合は出産しない
                         if (stillbirth_rate >= 1.0f) continue;
                         else if (stillbirth_rate > 0.0f) {
                             // 死産
-                            if (SimulationConstants::getInstance()->random_dist_f32(*gen) < stillbirth_rate) continue;
+                            if (SimulationConstants::getInstance().random_dist_f32(*gen) < stillbirth_rate) continue;
                         }
                         const std::uint_least8_t farming =
                             // 両親が農耕文化であれば両親の半分の値を引き継ぐ
@@ -792,7 +794,7 @@ namespace paxs {
                             // 両親が共に農耕文化を持たない場合は 0
                             : ((agent.cgetFarming() == 0 && agent.cgetPartnerFarming() == 0) ? 0
                                 // 片親が農耕文化を持つ場合は乱数
-                                : ((SimulationConstants::getInstance()->random_dist_f32(*gen) < SimulationConstants::getInstance()->child_agriculture_priority) ?
+                                : ((SimulationConstants::getInstance().random_dist_f32(*gen) < SimulationConstants::getInstance().child_agriculture_priority) ?
                                     // 農耕文化を持つ親から値を引き継ぐ
                                     ((agent.cgetFarming() == 0) ? agent.cgetPartnerFarming() : agent.cgetFarming()) :
                                     0
@@ -811,7 +813,7 @@ namespace paxs {
                 }
                 // 出産可能かどうか
                 else if (agent.isAbleToGiveBirth() && isAbleToGiveBirth(agent.getAgeSizeT(), agent.cgetFarming() > 0)) {
-                    agent.setBirthIntervalCount(SimulationConstants::getInstance()->birth_interval);
+                    agent.setBirthIntervalCount(SimulationConstants::getInstance().birth_interval);
                 }
 
             }
@@ -829,7 +831,7 @@ namespace paxs {
                 const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(true, genome.isMale(), *gen);
 
                 std::uniform_int_distribution<> lifespan_dist{
-                    (std::min)(18 * SimulationConstants::getInstance()->steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
+                    (std::min)(18 * SimulationConstants::getInstance().steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
                     static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
 
                 agents.emplace_back(Agent(
@@ -864,19 +866,19 @@ namespace paxs {
         /// @brief 確率で結婚するかどうかを返す
         bool isMarried(const std::size_t age, const bool is_agricultural) noexcept {
             // 婚姻可能年齢の上限値以上だったら結婚しない
-            const double threshold = SimulationConstants::getInstance()->getMarriageProbability(age, is_agricultural);
+            const double threshold = SimulationConstants::getInstance().getMarriageProbability(age, is_agricultural);
             if (threshold == 0.0) return false;
             if (threshold >= 1.0) return true;
-            return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
+            return SimulationConstants::getInstance().random_dist(*gen) < threshold;
         }
 
         /// @brief Is able to give birth?
         /// @brief 確率で出産するかどうかを返す
         bool isAbleToGiveBirth(const std::size_t age, const bool is_agricultural) noexcept {
-            const double threshold = SimulationConstants::getInstance()->getChildbearingProbability(age, is_agricultural);
+            const double threshold = SimulationConstants::getInstance().getChildbearingProbability(age, is_agricultural);
             if (threshold == 0.0) return false;
             if (threshold >= 1.0) return true;
-            return SimulationConstants::getInstance()->random_dist(*gen) < threshold;
+            return SimulationConstants::getInstance().random_dist(*gen) < threshold;
         }
     };
 

@@ -89,7 +89,7 @@ namespace paxg {
 
         void setIcon(const std::string& path) override {
             sf::Image icon;
-            if (!icon.loadFromFile(paxs::AppConfig::getInstance()->getRootPath() + path)){
+            if (!icon.loadFromFile(paxs::AppConfig::getInstance().getRootPath() + path)){
                 PAXS_WARNING("Failed to load icon from: " + path);
                 return;
             }

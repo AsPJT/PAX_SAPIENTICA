@@ -97,7 +97,7 @@ namespace paxs {
         void notifyViewportChanged() {
             const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
             paxs::EventBus::getInstance().publish(ViewportChangedEvent(
-                center.getX(), center.getY(), zoom_level));
+                {center.getX(), center.getY()}, zoom_level));
         }
 
         /// @brief ビューポートの境界制約を適用（Domain層の責任）

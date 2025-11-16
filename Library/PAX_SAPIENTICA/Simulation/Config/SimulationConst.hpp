@@ -42,7 +42,6 @@ namespace paxs {
     constexpr double pi_per_8 = M_PI / 8.0; // π／８
     // constexpr double pi_per_4m8 = pi_per_4 - pi_per_8; // π／４ーπ／８
 
-    // std::sqrt(2 * M_PI)
     constexpr double sqrt_2_x_pi = static_cast<double>(2.506628275);
 
     using GridType = int;
@@ -83,30 +82,31 @@ namespace paxs {
     /// @brief
     /// @brief 妊娠確率
     struct MarriageProbability {
-        std::vector<double> agricultural{}; // 農耕民の確率
-        std::vector<double> hunter_gatherer{}; // 狩猟採集民の確率
+        std::vector<double> agricultural; // 農耕民の確率
+        std::vector<double> hunter_gatherer; // 狩猟採集民の確率
     };
     /// @brief
     /// @brief 出産確率
     struct ChildbearingProbability {
-        std::vector<double> agricultural{}; // 農耕民の確率
-        std::vector<double> hunter_gatherer{}; // 狩猟採集民の確率
+        std::vector<double> agricultural; // 農耕民の確率
+        std::vector<double> hunter_gatherer; // 狩猟採集民の確率
     };
 
 
     struct SimulationConstants {
-        // インスタンスを取得
-        static SimulationConstants* getInstance(const std::string& model_name_ = "Sample") {
-            if (instance == nullptr) {
-                instance = new SimulationConstants(model_name_);
-            }
+        // Meyer's Singleton パターン
+        static SimulationConstants& getInstance(const std::string& model_name_ = "Sample") {
+            static SimulationConstants instance(model_name_);
             return instance;
         }
-        static SimulationConstants* instance;
 
-        ~SimulationConstants() {
-            delete instance;
-        }
+        // コピー・ムーブを禁止
+        SimulationConstants(const SimulationConstants&) = delete;
+        SimulationConstants& operator=(const SimulationConstants&) = delete;
+        SimulationConstants(SimulationConstants&&) = delete;
+        SimulationConstants& operator=(SimulationConstants&&) = delete;
+
+        ~SimulationConstants() = default;
 
         int start_julian_day = 1728746; // シミュレーション開始日（ユリウス日）
         std::uint_least32_t area = MurMur3::calcHash("japan"); // シミュレーションの対象範囲
@@ -259,7 +259,7 @@ namespace paxs {
         }
 
         void inputLifeSpan(const std::string& model_name_) noexcept {
-            std::string path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
+            std::string path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
             path += std::string("/" + life_span_file);
@@ -332,7 +332,7 @@ namespace paxs {
         }
 
         void inputMarriage(const std::string& model_name_) noexcept {
-            std::string path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
+            std::string path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
             path += std::string("/" + marriage_file);
@@ -382,7 +382,7 @@ namespace paxs {
             }
         }
         void inputChildbearing(const std::string& model_name_) noexcept {
-            std::string path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
+            std::string path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
             if (path.size() == 0) return;
@@ -434,7 +434,7 @@ namespace paxs {
         }
 
         void init(const std::string& model_name_ = "Sample") {
-            std::string str = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationConstants"));
+            std::string str = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationConstants"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(str, "Sample", model_name_);
             if (str.size() == 0) {
@@ -454,7 +454,7 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("district_key"), [&](const std::string& str_) {district_key = MurMur3::calcHash(str_.size(), str_.c_str()); });
 
             // シミュレーションの範囲を設定
-            AppConfig::getInstance()->ifSettingExists(MurMur3::calcHash("SimulationRange"),
+            AppConfig::getInstance().ifSettingExists(MurMur3::calcHash("SimulationRange"),
                 [&](const std::string& path_) {sr.input(path_); });
 
             stoiFunc(kvt, MurMur3::calcHash("steps_per_year"), [&](const std::string& str_) {steps_per_year = StringUtils::safeStoi(str_, 1, true); });
@@ -522,7 +522,6 @@ namespace paxs {
         }
 
     };
-    SimulationConstants* SimulationConstants::instance = nullptr;
 }
 
 #endif // !PAX_SAPIENTICA_SIMULATION_CONFIG_SIMULATION_CONST_HPP

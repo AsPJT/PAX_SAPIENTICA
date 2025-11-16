@@ -15,9 +15,6 @@
 #include <chrono>
 #include <cstdint>
 #include <deque>
-#include <functional>
-#include <map>
-#include <sstream>
 #include <string>
 #include <vector>
 

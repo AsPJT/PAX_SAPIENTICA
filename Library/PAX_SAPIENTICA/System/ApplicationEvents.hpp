@@ -15,18 +15,19 @@
 #include <cstdint>
 #include <string>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationState.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <utility>
 
 namespace paxs {
 
 /// @brief ウィンドウサイズ変更イベント
 struct WindowResizedEvent : Event {
-    const int new_width;
-    const int new_height;
+    const Vector2<int> new_size;
 
-    WindowResizedEvent(int width, int height)
-        : new_width(width), new_height(height) {}
+    explicit WindowResizedEvent(Vector2<int> size)
+        : new_size(size) {}
 };
 
 /// @brief 言語設定変更イベント（通知用）
@@ -59,12 +60,11 @@ struct DateChangedEvent : Event {
 
 /// @brief ビューポート変更イベント
 struct ViewportChangedEvent : Event {
-    const double new_center_x;
-    const double new_center_y;
+    const Vector2<double> new_center;
     const int new_zoom_level;
 
-    ViewportChangedEvent(double center_x, double center_y, int zoom_level)
-        : new_center_x(center_x), new_center_y(center_y), new_zoom_level(zoom_level) {}
+    ViewportChangedEvent(Vector2<double> center, int zoom_level)
+        : new_center(center), new_zoom_level(zoom_level) {}
 };
 
 /// @brief 地物表示切替イベント（通知用）
@@ -169,7 +169,7 @@ struct SimulationClearCommandEvent : Event {
 
 /// @brief 時間再生制御イベント
 struct TimePlaybackControlEvent : Event {
-    enum class Action {
+    enum class Action : std::uint8_t {
         Forward,   // 順再生
         Reverse,   // 逆再生
         Stop       // 停止
@@ -177,16 +177,16 @@ struct TimePlaybackControlEvent : Event {
 
     const Action action;
 
-    explicit TimePlaybackControlEvent(Action a)
-        : action(a) {}
+    explicit TimePlaybackControlEvent(Action action_type)
+        : action(action_type) {}
 };
 
 /// @brief 日付移動イベント
 struct DateNavigationEvent : Event {
     const double days;  // 移動日数（負数で過去、正数で未来）
 
-    explicit DateNavigationEvent(double d)
-        : days(d) {}
+    explicit DateNavigationEvent(double day_count)
+        : days(day_count) {}
 };
 
 /// @brief ログイベント（Logger → UI通知）
@@ -197,7 +197,7 @@ struct DateNavigationEvent : Event {
 struct LogEvent : Event {
     /// @brief ログレベル
     /// @brief Log level
-    enum class Level {
+    enum class Level : std::uint8_t {
         Info,       ///< 情報メッセージ
         Warning,    ///< 警告メッセージ
         Error       ///< エラーメッセージ
@@ -210,15 +210,15 @@ struct LogEvent : Event {
     std::string timestamp;      // タイムスタンプ
 
     LogEvent(Level lvl,
-             const std::string& msg,
-             const std::string& file,
-             int ln,
-             const std::string& ts)
+             std::string  msg,
+             std::string  file,
+             int line_number,
+             std::string  time_stamp)
         : level(lvl)
-        , message(msg)
-        , filename(file)
-        , line(ln)
-        , timestamp(ts) {}
+        , message(std::move(msg))
+        , filename(std::move(file))
+        , line(line_number)
+        , timestamp(std::move(time_stamp)) {}
 };
 
 } // namespace paxs

@@ -52,26 +52,25 @@ namespace paxs {
 #endif
 
             // ランダムな位置を探す
-            std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::SimulationConstants::getInstance()->cell_group_length - 1);
-            std::uniform_int_distribution<> dis_y(grid_position.y, grid_position.y + paxs::SimulationConstants::getInstance()->cell_group_length - 1);
+            std::uniform_int_distribution<> dis_x(grid_position.x, grid_position.x + paxs::SimulationConstants::getInstance().cell_group_length - 1);
+            std::uniform_int_distribution<> dis_y(grid_position.y, grid_position.y + paxs::SimulationConstants::getInstance().cell_group_length - 1);
             Vector2 position;
 
-            while (black_list.size() < SimulationConstants::getInstance()->cell_group_length * SimulationConstants::getInstance()->cell_group_length) {
+            while (black_list.size() < SimulationConstants::getInstance().cell_group_length * SimulationConstants::getInstance().cell_group_length) {
                 position.x = dis_x(*gen);
                 position.y = dis_y(*gen);
                 if (std::find(black_list.begin(), black_list.end(), position) == black_list.end()) {
                     if (environment->isLive(position)) {
                         // 居住可能
                         break;
-                    } else {
-                        // 居住不可
-                        black_list.emplace_back(position);
                     }
+                    // 居住不可
+                    black_list.emplace_back(position);
                 }
             }
 
             // 集落を移動
-            if (black_list.size() == SimulationConstants::getInstance()->cell_group_length * SimulationConstants::getInstance()->cell_group_length) {
+            if (black_list.size() == SimulationConstants::getInstance().cell_group_length * SimulationConstants::getInstance().cell_group_length) {
                 // 居住可能な場所がない
                 PAXS_WARNING("No place to live.");
                 return; // 集落を追加しない
@@ -97,14 +96,13 @@ namespace paxs {
                     return settlement;
                 }
             }
-            const std::string message = "Settlement not found. ID: " + std::to_string(id);
-            PAXS_ERROR(message);
+            PAXS_ERROR("Settlement not found. ID: " + std::to_string(id));
             return settlements[0];
         }
 
         /// @brief Get the grid position.
         /// @brief グリッドの座標を取得
-        Vector2 getGridPosition() const noexcept { return grid_position; }
+        [[nodiscard]] Vector2 getGridPosition() const noexcept { return grid_position; }
 
         /// @brief Delete the settlement.
         /// @brief 集落を削除
@@ -114,8 +112,7 @@ namespace paxs {
                 (*it) = settlements.back(); // 同義 settlements.erase(it);
                 settlements.pop_back();
             } else {
-                const std::string message = "Settlement not found. ID: " + std::to_string(id);
-                PAXS_ERROR(message);
+                PAXS_ERROR("Settlement not found. ID: " + std::to_string(id));
             }
         }
 
@@ -183,11 +180,11 @@ namespace paxs {
         }
 
     private:
-        std::vector<Settlement> settlements{};
-        std::shared_ptr<Environment> environment{};
+        std::vector<Settlement> settlements;
+        std::shared_ptr<Environment> environment;
         Vector2 grid_position{};
         std::mt19937* gen{}; // 乱数生成器
-        std::vector<std::uint_least8_t> district_list{};
+        std::vector<std::uint_least8_t> district_list;
     };
 
 }

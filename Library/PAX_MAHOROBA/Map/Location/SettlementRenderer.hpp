@@ -109,7 +109,7 @@ namespace paxs {
             return LocationPoint{
                 paxs::UnorderedMap<std::uint_least32_t, std::string>(),
                 paxs::MercatorDeg(getLocation(
-                    SimulationConstants::getInstance()->getStartArea(),
+                    SimulationConstants::getInstance().getStartArea(),
                     position,
                     ZOOM_LEVEL
                 )),
@@ -349,13 +349,13 @@ namespace paxs {
             const double map_view_width, const double map_view_height,
             const double map_view_center_x, const double map_view_center_y
         ) {
-            const auto area_width = SimulationConstants::getInstance()->getEndArea().x -
-                SimulationConstants::getInstance()->getStartArea().x;
-            const auto area_height = SimulationConstants::getInstance()->getEndArea().y -
-                SimulationConstants::getInstance()->getStartArea().y;
+            const auto area_width = SimulationConstants::getInstance().getEndArea().x -
+                SimulationConstants::getInstance().getStartArea().x;
+            const auto area_height = SimulationConstants::getInstance().getEndArea().y -
+                SimulationConstants::getInstance().getStartArea().y;
 
             const paxs::MercatorDeg start_coordinate = paxs::MercatorDeg(getLocation(
-                SimulationConstants::getInstance()->getStartArea(),
+                SimulationConstants::getInstance().getStartArea(),
                 paxs::Vector2<int>(0, 0), ZOOM_LEVEL));
             const paxg::Vec2f draw_start_pos = paxg::Vec2f{
                 static_cast<float>((start_coordinate.x - (map_view_center_x - map_view_width / 2)) /
@@ -366,7 +366,7 @@ namespace paxs {
             };
 
             const paxs::MercatorDeg end_coordinate = paxs::MercatorDeg(getLocation(
-                SimulationConstants::getInstance()->getStartArea(),
+                SimulationConstants::getInstance().getStartArea(),
                 paxs::Vector2<int>(area_width * 256, area_height * 256), ZOOM_LEVEL));
             const paxg::Vec2f draw_end_pos = paxg::Vec2f{
                 static_cast<float>((end_coordinate.x - (map_view_center_x - map_view_width / 2)) /
@@ -377,9 +377,9 @@ namespace paxs {
             };
 
             const paxs::MercatorDeg tile_coordinate = paxs::MercatorDeg(getLocation(
-                SimulationConstants::getInstance()->getStartArea(),
-                paxs::Vector2<int>(SimulationConstants::getInstance()->cell_group_length,
-                    SimulationConstants::getInstance()->cell_group_length), ZOOM_LEVEL));
+                SimulationConstants::getInstance().getStartArea(),
+                paxs::Vector2<int>(SimulationConstants::getInstance().cell_group_length,
+                    SimulationConstants::getInstance().cell_group_length), ZOOM_LEVEL));
             const paxg::Vec2f tile_pos = paxg::Vec2f{
                 static_cast<float>((tile_coordinate.x - (map_view_center_x - map_view_width / 2)) /
                     map_view_width * double(paxg::Window::width())) - draw_start_pos.x(),

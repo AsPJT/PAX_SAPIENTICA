@@ -25,7 +25,7 @@ protected:
 
     void SetUp() override {
         // テスト用のデータディレクトリを取得
-        test_data_dir = paxs::AppConfig::getInstance()->getRootPath() + "Data/Map/XYZTiles/Test/";
+        test_data_dir = paxs::AppConfig::getInstance().getRootPath() + "Data/Map/XYZTiles/Test/";
 
         // テストディレクトリが存在しない場合は作成
         if (!std::filesystem::exists(test_data_dir)) {

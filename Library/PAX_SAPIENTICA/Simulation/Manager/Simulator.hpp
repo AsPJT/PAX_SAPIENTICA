@@ -91,7 +91,7 @@ namespace paxs {
         /// @brief Randomly place the agents.
         /// @brief エージェントをランダムに配置する
         void randomizeAgents(const int agent_count) {
-            const Vector2& offset = SimulationConstants::getInstance()->getEndArea() - SimulationConstants::getInstance()->getStartArea();
+            const Vector2& offset = SimulationConstants::getInstance().getEndArea() - SimulationConstants::getInstance().getStartArea();
             std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
             std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
             std::uniform_int_distribution<> age_dist(0, 20);

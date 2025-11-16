@@ -31,10 +31,10 @@ namespace paxg {
 
         Siv3DTextureImpl(const paxg::Image& image) : texture(image) {}
 
-        Siv3DTextureImpl(const paxg::String& path) : texture(s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath()) + path.string) {}
+        Siv3DTextureImpl(const paxg::String& path) : texture(s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance().getRootPath()) + path.string) {}
 
         Siv3DTextureImpl(const std::string& path)
-            : texture(static_cast<paxg::String>(paxs::AppConfig::getInstance()->getRootPath() + path).string) {}
+            : texture(static_cast<paxg::String>(paxs::AppConfig::getInstance().getRootPath() + path).string) {}
 
         bool isValid() const override {
             return !!texture;

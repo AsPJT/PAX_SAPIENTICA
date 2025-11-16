@@ -12,11 +12,13 @@
 #ifndef PAX_MAHOROBA_FEATURE_TYPE_HPP
 #define PAX_MAHOROBA_FEATURE_TYPE_HPP
 
+#include <cstdint>
+
 namespace paxs {
 
 /// @brief 地物の種類を表すEnum
 /// @brief Feature type enumeration
-enum class FeatureType {
+enum class FeatureType : std::uint_least8_t {
     Person,           ///< 人物（肖像画+名前） / Person (portrait + name)
     PlaceName,        ///< 地名（テキストのみ） / Place name (text only)
     Geographic,       ///< 地理的地物（アイコン） / Geographic feature (icon)

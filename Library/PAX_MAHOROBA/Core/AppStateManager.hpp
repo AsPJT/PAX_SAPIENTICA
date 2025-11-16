@@ -391,7 +391,7 @@ private:
         simulation_manager_.initSimulation();
 
         // SimulationConstantsからstart_julian_dayを取得してKoyomiにセット
-        koyomi_.jdn.setDay(SimulationConstants::getInstance()->start_julian_day);
+        koyomi_.jdn.setDay(SimulationConstants::getInstance().start_julian_day);
         resetKoyomiToStoppedState();
 
         // 状態変更イベント発行

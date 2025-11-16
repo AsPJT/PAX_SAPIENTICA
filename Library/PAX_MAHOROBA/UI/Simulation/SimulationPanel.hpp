@@ -12,8 +12,6 @@
 #ifndef PAX_MAHOROBA_UI_SIMULATION_PANEL_HPP
 #define PAX_MAHOROBA_UI_SIMULATION_PANEL_HPP
 
-#include <cmath>
-#include <memory>
 #include <vector>
 
 #include <PAX_GRAPHICA/Rect.hpp>
@@ -103,7 +101,7 @@ namespace paxs {
             }
             case SimulationControlButton::Id::Play: {
                 // 再生コマンドを発行（読み込み済みチェックはAppStateManagerで行う）
-                const int iterations = SimulationConstants::getInstance(model_name)->num_iterations;
+                const int iterations = SimulationConstants::getInstance(model_name).num_iterations;
                 app_state_manager_.executeSimulationPlay(iterations);
                 break;
             }
@@ -148,7 +146,7 @@ namespace paxs {
                 false
             )
         {
-            const std::string models_path = paxs::AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationModels"));
+            const std::string models_path = paxs::AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationModels"));
             paxs::InputFile models_tsv(models_path);
             if (models_tsv.fail()) {
                 PAXS_WARNING("Failed to read Models TXT file: " + models_path);

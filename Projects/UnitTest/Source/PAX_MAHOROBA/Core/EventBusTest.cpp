@@ -46,13 +46,13 @@ TEST_F(EventBusTest, PublishAndSubscribe) {
     EventBus::getInstance().subscribe<WindowResizedEvent>(
         [&](const WindowResizedEvent& event) {
             call_count++;
-            received_width = event.new_width;
-            received_height = event.new_height;
+            received_width = event.new_size.x;
+            received_height = event.new_size.y;
         }
     );
 
     // イベントを発行
-    EventBus::getInstance().publish(WindowResizedEvent(1920, 1080));
+    EventBus::getInstance().publish(WindowResizedEvent({1920, 1080}));
 
     // ハンドラーが即座に呼ばれることを確認
     EXPECT_EQ(call_count, 1);
@@ -95,7 +95,7 @@ TEST_F(EventBusTest, EventTypeSeparation) {
     );
 
     // WindowResizedEventを発行
-    EventBus::getInstance().publish(WindowResizedEvent(800, 600));
+    EventBus::getInstance().publish(WindowResizedEvent(Vector2<int>(800, 600)));
     EXPECT_EQ(window_call_count, 1);
     EXPECT_EQ(language_call_count, 0);
 

@@ -38,7 +38,7 @@ namespace paxg{
         Font(const int size_, const std::string& path, const int buffer_thickness) {
             font = (path.size() == 0) ?
                 s3d::Font(s3d::FontMethod::SDF, size_) :
-                s3d::Font(s3d::FontMethod::SDF, size_, s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath() + path));
+                s3d::Font(s3d::FontMethod::SDF, size_, s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance().getRootPath() + path));
             font.setBufferThickness(buffer_thickness);
         }
         bool is_outline = false;
@@ -152,7 +152,7 @@ namespace paxg{
                 );
             } else {
                 // 外部フォントファイルを使用
-                const std::string full_path = paxs::AppConfig::getInstance()->getRootPath() + path;
+                const std::string full_path = paxs::AppConfig::getInstance().getRootPath() + path;
                 int font_data_handle = DxLib::LoadFontDataToHandle(full_path.c_str(), buffer_thickness);
 
                 if (font_data_handle == -1) {
@@ -271,7 +271,7 @@ namespace paxg{
         Font(const int size_, const std::string& path, const int /*buffer_thickness*/) {
             size = size_;
             if (path.size() == 0) return;
-            if (!font.openFromFile(paxs::AppConfig::getInstance()->getRootPath() + path)) {
+            if (!font.openFromFile(paxs::AppConfig::getInstance().getRootPath() + path)) {
                 PAXS_WARNING(path + " is missing.");
             }
         }

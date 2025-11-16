@@ -62,7 +62,7 @@ namespace paxs {
             std::uniform_int_distribution<std::uint_least64_t> dist((std::numeric_limits<std::uint_least64_t>::min)(), (std::numeric_limits<std::uint_least64_t>::max)());
             std::uint_least64_t random_value = dist(engine);
 
-            Chromosome child;
+            Chromosome child{};
             for (std::uint_least8_t i = 0; i < chromosome_length; ++i) {
                 // 偶数が母親、奇数が父親から遺伝
                 if (i % 2 == 0) {
@@ -79,11 +79,10 @@ namespace paxs {
         static Chromosome generateRandom(std::mt19937& engine) noexcept {
             std::uniform_int_distribution<> dist((std::numeric_limits<std::uint_least8_t>::min)(), (std::numeric_limits<std::uint_least8_t>::max)());
 
-            Chromosome random_chromosome;
+            Chromosome random_chromosome{};
             for (std::uint_least8_t i = 0; i < chromosome_length; ++i) {
                 random_chromosome.set(i, static_cast<std::uint_least8_t>(dist(engine)));
             }
-            //random_chromosome.setGender(dist(engine) % 2);
             return random_chromosome;
         }
 

@@ -49,7 +49,7 @@ namespace paxs {
             const std::string& config_key,
             const std::function<void(const FeatureListParams&)>& callback
         ) {
-            const std::string setting_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash(config_key.c_str()));
+            const std::string setting_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash(config_key.c_str()));
             if (setting_path.empty()) {
                 PAXS_WARNING(config_key + " configuration path is empty");
                 return;

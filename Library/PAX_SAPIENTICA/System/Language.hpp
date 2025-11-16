@@ -60,6 +60,11 @@ namespace paxs {
         ///          Used as fallback when text is not found in specified language
         paxs::UnorderedMap<std::uint_least32_t, std::uint_least64_t> fallback_text_key_;
 
+        /// @brief 言語システムの定数
+        static constexpr std::size_t key_bit_shift = 32;
+        static constexpr std::size_t invalid_column_index = SIZE_MAX;
+        static constexpr std::uint_least64_t invalid_key = 0;
+
         /// @brief TSVヘッダーから指定キーのカラムインデックスを取得
         /// @brief Get column index for specified key from TSV header
         /// @param header_map ヘッダーマップ / Header map
@@ -70,7 +75,20 @@ namespace paxs {
             const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& header_map,
             const std::uint_least32_t key) {
             auto iterator = header_map.find(key);
-            return (iterator != header_map.end()) ? iterator->second : SIZE_MAX;
+            return (iterator != header_map.end()) ? iterator->second : invalid_column_index;
+        }
+
+        /// @brief テキストキーと言語キーから64bitキーを生成
+        /// @brief Generate 64-bit key from text key and language key
+        /// @param text_key テキストキー / Text key
+        /// @param language_key 言語キー / Language key
+        /// @return 64bitキー（上位32bit: テキストキー, 下位32bit: 言語キー）
+        ///         64-bit key (upper 32 bits: text key, lower 32 bits: language key)
+        static std::uint_least64_t createCombinedKey(
+            const std::uint_least32_t text_key,
+            const std::uint_least32_t language_key)  {
+            return (static_cast<std::uint_least64_t>(text_key) << key_bit_shift)
+                + static_cast<std::uint_least64_t>(language_key);
         }
 
     public:
@@ -90,19 +108,6 @@ namespace paxs {
             return fallback_text_key_.find(key) != fallback_text_key_.end();
         }
 
-        /// @brief テキストキーと言語キーから64bitキーを生成
-        /// @brief Generate 64-bit key from text key and language key
-        /// @param text_key テキストキー / Text key
-        /// @param language_key 言語キー / Language key
-        /// @return 64bitキー（上位32bit: テキストキー, 下位32bit: 言語キー）
-        ///         64-bit key (upper 32 bits: text key, lower 32 bits: language key)
-        std::uint_least64_t createCombinedKey(
-            const std::uint_least32_t text_key,
-            const std::uint_least32_t language_key) const {
-            return (static_cast<std::uint_least64_t>(text_key) << 32)
-                + static_cast<std::uint_least64_t>(language_key);
-        }
-
         /// @brief テキストを取得
         /// @brief Get text string
         /// @param text_key テキストキー / Text key
@@ -117,7 +122,7 @@ namespace paxs {
             const std::uint_least64_t combined_key = createCombinedKey(text_key, language_key);
 
             // 指定した言語でテキストが存在する場合はそれを返す
-            if (combined_key != 0 && hasText(combined_key)) {
+            if (combined_key != invalid_key && hasText(combined_key)) {
                 return &(text_dictionary_.at(combined_key));
             }
 
@@ -161,7 +166,7 @@ namespace paxs {
 
             // "key"カラムのインデックスを取得
             const std::size_t key_column_index = getColumnIndex(header_map, MurMur3::calcHash("key"));
-            if (key_column_index == SIZE_MAX) {
+            if (key_column_index == invalid_column_index) {
                 PAXS_WARNING("Failed to load language file: " + relative_path);
                 return; // "key"カラムがない場合は処理できない
             }
@@ -169,7 +174,7 @@ namespace paxs {
             // "key"カラム自体を言語リストに登録（内部管理用）
             const std::uint_least32_t key_hash = MurMur3::calcHash("key");
             if (language_key_to_index_.find(key_hash) == language_key_to_index_.end()) {
-                language_key_to_index_.emplace(key_hash, SIZE_MAX);
+                language_key_to_index_.emplace(key_hash, invalid_column_index);
             }
 
             // ヘッダーに含まれる言語を登録
@@ -188,11 +193,11 @@ namespace paxs {
                 }
 
                 // 各カラム（各言語）のテキストを処理
-                for (std::size_t i = 0; i < columns.size() && i < language_keys.size(); ++i) {
-                    if (i == key_column_index) {
+                for (std::size_t column_index = 0; column_index < columns.size() && column_index < language_keys.size(); ++column_index) {
+                    if (column_index == key_column_index) {
                         continue; // keyカラム自体はスキップ
                     }
-                    if (columns[i].empty()) {
+                    if (columns[column_index].empty()) {
                         continue;     // 空のテキストはスキップ
                     }
 
@@ -203,11 +208,11 @@ namespace paxs {
                     );
 
                     // 64bitキーを生成（テキストキー + 言語キー）
-                    const std::uint_least64_t combined_key = createCombinedKey(text_key, language_keys[i]);
+                    const std::uint_least64_t combined_key = createCombinedKey(text_key, language_keys[column_index]);
 
                     // 辞書に追加（重複は無視）
                     if (!hasText(combined_key)) {
-                        text_dictionary_.emplace(combined_key, columns[i]);
+                        text_dictionary_.emplace(combined_key, columns[column_index]);
                     }
 
                     // フォールバック用キーを登録（最初に見つかった言語を使用）

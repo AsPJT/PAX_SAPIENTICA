@@ -23,11 +23,10 @@ namespace paxs {
     /// @brief GUI上で可視化する項目の状態を管理
     class FeatureVisibilityManager {
     private:
-        paxs::UnorderedMap<std::uint_least32_t, bool> visible_features{}; // 機能の可視性を管理する辞書
+        paxs::UnorderedMap<std::uint_least32_t, bool> visible_features; // 機能の可視性を管理する辞書
 
     public:
         FeatureVisibilityManager() = default;
-        ~FeatureVisibilityManager() = default;
 
         /// @brief 新しい機能を登録（ハッシュ値版）
         /// @param feature_id 機能ID（ハッシュ値）
@@ -40,8 +39,8 @@ namespace paxs {
         /// @tparam T メニュー項目enum型（MenuItemEnumに登録されている型のみ）
         /// @param item メニュー項目識別子
         /// @param is_visible 初期可視状態
-        template<typename T, std::enable_if_t<is_menu_item_enum_v<T>, int> = 0>
-        void emplace(T item, bool is_visible) {
+        template<typename T>
+        void emplace(T item, bool is_visible) requires (is_menu_item_enum_v<T>) {
             emplace(static_cast<std::uint_least32_t>(item), is_visible);
         }
 
@@ -54,8 +53,8 @@ namespace paxs {
         /// @brief 指定した機能の可視状態を反転（enum版）
         /// @tparam T メニュー項目enum型（MenuItemEnumに登録されている型のみ）
         /// @param item メニュー項目識別子
-        template<typename T, std::enable_if_t<is_menu_item_enum_v<T>, int> = 0>
-        void toggle(T item) {
+        template<typename T>
+        void toggle(T item) requires (is_menu_item_enum_v<T>) {
             toggle(static_cast<std::uint_least32_t>(item));
         }
 
@@ -64,8 +63,8 @@ namespace paxs {
         /// @param is_visible 可視状態
         /// @return 値が変更されたらtrue
         bool setVisibility(const std::uint_least32_t& feature_id, const bool is_visible) {
-            auto it = visible_features.find(feature_id);
-            if (it != visible_features.end() && it->second == is_visible) {
+            const auto iterator = visible_features.find(feature_id);
+            if (iterator != visible_features.end() && iterator->second == is_visible) {
                 return false; // 変更なし
             }
             visible_features[feature_id] = is_visible;
@@ -77,15 +76,15 @@ namespace paxs {
         /// @param item メニュー項目識別子
         /// @param is_visible 可視状態
         /// @return 値が変更されたらtrue
-        template<typename T, std::enable_if_t<is_menu_item_enum_v<T>, int> = 0>
-        bool setVisibility(T item, bool is_visible) {
+        template<typename T>
+        bool setVisibility(T item, bool is_visible) requires (is_menu_item_enum_v<T>) {
             return setVisibility(static_cast<std::uint_least32_t>(item), is_visible);
         }
 
         /// @brief 指定した機能の可視状態を取得（ハッシュ値版）
         /// @param feature_id 機能ID（ハッシュ値）
         /// @return 可視状態（登録されていない場合はtrue）
-        bool isVisible(const std::uint_least32_t& feature_id) const {
+        [[nodiscard]] bool isVisible(const std::uint_least32_t& feature_id) const {
             return (visible_features.find(feature_id) != visible_features.end()) ? visible_features.at(feature_id) : true;
         }
 
@@ -93,8 +92,8 @@ namespace paxs {
         /// @tparam T メニュー項目enum型（MenuItemEnumに登録されている型のみ）
         /// @param item メニュー項目識別子
         /// @return 可視状態（登録されていない場合はtrue）
-        template<typename T, std::enable_if_t<is_menu_item_enum_v<T>, int> = 0>
-        bool isVisible(T item) const {
+        template<typename T>
+        [[nodiscard]] bool isVisible(T item) const requires (is_menu_item_enum_v<T>) {
             return isVisible(static_cast<std::uint_least32_t>(item));
         }
     };

@@ -47,8 +47,8 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
-        float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
-        std::size_t getAgeSizeT() const noexcept { return static_cast<std::size_t>(age) / static_cast<std::size_t>(SimulationConstants::getInstance()->steps_per_year); }
+        float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance().steps_per_year); }
+        std::size_t getAgeSizeT() const noexcept { return static_cast<std::size_t>(age) / static_cast<std::size_t>(SimulationConstants::getInstance().steps_per_year); }
 
         constexpr AgeType getAgeInt() const noexcept { return age; }
 
@@ -121,22 +121,22 @@ namespace paxs {
         /// @brief Is the agent able to marry?
         /// @brief エージェントが結婚可能かどうかを返す
         bool isAbleToMarriage() const noexcept {
-            const float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
+            const float age_f = static_cast<float>(age) / SimulationConstants::getInstance().steps_per_year;
             return age_f > (genome.isMale() ?
-                SimulationConstants::getInstance()->male_marriageable_age_min :
-                SimulationConstants::getInstance()->female_marriageable_age_min) &&
+                SimulationConstants::getInstance().male_marriageable_age_min :
+                SimulationConstants::getInstance().female_marriageable_age_min) &&
                 age_f < (genome.isMale() ?
-                    SimulationConstants::getInstance()->male_marriageable_age_max :
-                    SimulationConstants::getInstance()->female_marriageable_age_max) &&
+                    SimulationConstants::getInstance().male_marriageable_age_max :
+                    SimulationConstants::getInstance().female_marriageable_age_max) &&
                 !is_married;
         }
 
         /// @brief Is able to give birth?
         /// @brief 出産可能かどうか
         bool isAbleToGiveBirth() const noexcept {
-            const float age_f = static_cast<float>(age) / SimulationConstants::getInstance()->steps_per_year;
-            return age_f > SimulationConstants::getInstance()->childbearing_age_min
-                && age_f < SimulationConstants::getInstance()->childbearing_age_max && is_married;
+            const float age_f = static_cast<float>(age) / SimulationConstants::getInstance().steps_per_year;
+            return age_f > SimulationConstants::getInstance().childbearing_age_min
+                && age_f < SimulationConstants::getInstance().childbearing_age_max && is_married;
         }
 
         /// @brief Get the partner's ID.

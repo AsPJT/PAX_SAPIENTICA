@@ -47,14 +47,20 @@ public:
         const Koyomi& koyomi,
         const std::string& model_name
     ) {
-        if (!is_auto_executing_) return;
-        if (!simulation_manager.isActive()) return;
+        if (!is_auto_executing_) {
+            // 自動実行していない場合は何もしない
+            return;
+        }
+        if (!simulation_manager.isActive()) {
+            // シミュレーションが初期化されていない場合は何もしない
+            return;
+        }
 
         // モデル名が変更された場合は total_steps を更新
         if (current_model_name_ != model_name) {
             current_model_name_ = model_name;
-            const auto* constants = SimulationConstants::getInstance(model_name);
-            total_steps_ = constants->total_steps;
+            const auto& constants = SimulationConstants::getInstance(model_name);
+            total_steps_ = constants.total_steps;
         }
 
         // シミュレーション完了チェック
@@ -83,8 +89,8 @@ public:
         current_model_name_ = model_name;
 
         // total_stepsを取得
-        const auto* constants = SimulationConstants::getInstance(model_name);
-        total_steps_ = constants->total_steps;
+        const auto& constants = SimulationConstants::getInstance(model_name);
+        total_steps_ = constants.total_steps;
     }
 
     /// @brief 自動実行を停止
@@ -111,7 +117,9 @@ private:
     /// @brief シミュレーションが完了したかチェック
     /// @brief Check if simulation is completed
     bool isSimulationCompleted(const Koyomi& koyomi) const {
-        if (total_steps_ <= 0) return false;
+        if (total_steps_ <= 0) {
+            return false;
+        }
         return koyomi.steps.getDay() >= static_cast<std::size_t>(total_steps_);
     }
 

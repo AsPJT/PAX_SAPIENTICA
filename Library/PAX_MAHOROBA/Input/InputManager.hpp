@@ -136,7 +136,7 @@ private:
         const int current_height = paxg::Window::height();
 
         if (current_width != last_window_width_ || current_height != last_window_height_) {
-            EventBus::getInstance().publish(WindowResizedEvent(current_width, current_height));
+            EventBus::getInstance().publish(WindowResizedEvent({current_width, current_height}));
 
             last_window_width_ = current_width;
             last_window_height_ = current_height;

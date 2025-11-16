@@ -25,6 +25,11 @@ namespace paxs {
 /// @brief イベント型の基底クラス
 /// @brief Base class for all events
 struct Event {
+    Event() = default;
+    Event(const Event&) = default;
+    auto operator=(const Event&) -> Event& = default;
+    Event(Event&&) noexcept = default;
+    auto operator=(Event&&) noexcept -> Event& = default;
     virtual ~Event() = default;
 };
 
@@ -77,9 +82,9 @@ public:
 
         const std::type_index type_id(typeid(EventType));
 
-        auto it = subscribers_.find(type_id);
-        if (it != subscribers_.end()) {
-            for (const auto& handler : it->second) {
+        const auto iterator = subscribers_.find(type_id);
+        if (iterator != subscribers_.end()) {
+            for (const auto& handler : iterator->second) {
                 handler(event);
             }
         }
@@ -100,13 +105,13 @@ public:
     /// @brief Process all queued events
     void processQueue() {
         while (!event_queue_.empty()) {
-            std::unique_ptr<Event>& event = event_queue_.front();
+            const std::unique_ptr<Event>& event = event_queue_.front();
 
-            Event& event_ref = *event;
+            const Event& event_ref = *event;
             const std::type_index type_id(typeid(event_ref));
-            auto it = subscribers_.find(type_id);
-            if (it != subscribers_.end()) {
-                for (const auto& handler : it->second) {
+            const auto iterator = subscribers_.find(type_id);
+            if (iterator != subscribers_.end()) {
+                for (const auto& handler : iterator->second) {
                     handler(event_ref);
                 }
             }
@@ -124,8 +129,8 @@ public:
         static_assert(std::is_base_of_v<Event, EventType>, "EventType must derive from Event");
 
         const std::type_index type_id(typeid(EventType));
-        auto it = subscribers_.find(type_id);
-        return (it != subscribers_.end()) ? it->second.size() : 0;
+        const auto iterator = subscribers_.find(type_id);
+        return (iterator != subscribers_.end()) ? iterator->second.size() : 0;
     }
 
     /// @brief キューのサイズを取得（デバッグ用）

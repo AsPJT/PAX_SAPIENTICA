@@ -37,8 +37,8 @@ namespace paxs {
     public:
         using Vector2 = paxs::Vector2<GridType>;
         explicit Data(const std::string& directory_path, const std::string name, const int default_z) noexcept : name(name), default_z(default_z) {
-            z_mag = std::pow(2, default_z - SimulationConstants::getInstance()->getZ());
-            GridType area_x = SimulationConstants::getInstance()->getEndArea().x - SimulationConstants::getInstance()->getStartArea().x + 1;
+            z_mag = std::pow(2, default_z - SimulationConstants::getInstance().getZ());
+            GridType area_x = SimulationConstants::getInstance().getEndArea().x - SimulationConstants::getInstance().getStartArea().x + 1;
             column_size = static_cast<int>(area_x * pixel_size * z_mag);
 
             load(directory_path);
@@ -128,10 +128,10 @@ namespace paxs {
         /// @brief バイナリファイルのロード
         template <typename BinaryDataType>
         void loadBinary(const std::string& directory_path) noexcept {
-            const Vector2 start_position = SimulationConstants::getInstance()->getStartArea() * z_mag;
-            const Vector2 end_position = SimulationConstants::getInstance()->getEndArea() * z_mag;
+            const Vector2 start_position = SimulationConstants::getInstance().getStartArea() * z_mag;
+            const Vector2 end_position = SimulationConstants::getInstance().getEndArea() * z_mag;
 
-            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance().getStartArea() * pixel_size * z_mag;
 
             std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
@@ -171,8 +171,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
-            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance().getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance().getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_path : file_paths) {
@@ -211,10 +211,10 @@ namespace paxs {
         /// @brief Load numeric TSV files.
         /// @brief 数値TSVファイルのロード
         void loadNumericTSV(const std::string& directory_path) noexcept {
-            const Vector2 start_position = SimulationConstants::getInstance()->getStartArea() * z_mag;
-            const Vector2 end_position = SimulationConstants::getInstance()->getEndArea() * z_mag;
+            const Vector2 start_position = SimulationConstants::getInstance().getStartArea() * z_mag;
+            const Vector2 end_position = SimulationConstants::getInstance().getEndArea() * z_mag;
 
-            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance().getStartArea() * pixel_size * z_mag;
 
             std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
@@ -284,8 +284,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
-            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance().getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance().getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_path : file_paths) {
@@ -355,8 +355,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size * z_mag;
-            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size * z_mag;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance().getStartArea() * pixel_size * z_mag;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance().getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_path : file_paths) {
@@ -406,8 +406,8 @@ namespace paxs {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
-            const Vector2 start_xyz_position = SimulationConstants::getInstance()->getStartArea() * pixel_size;
-            const Vector2 end_xyz_position = SimulationConstants::getInstance()->getEndArea() * pixel_size;
+            const Vector2 start_xyz_position = SimulationConstants::getInstance().getStartArea() * pixel_size;
+            const Vector2 end_xyz_position = SimulationConstants::getInstance().getEndArea() * pixel_size;
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_path : file_paths) {
@@ -458,7 +458,7 @@ namespace paxs {
             }
 
             z_mag = 1;
-            default_z = SimulationConstants::getInstance()->getZ();
+            default_z = SimulationConstants::getInstance().getZ();
 
             StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;

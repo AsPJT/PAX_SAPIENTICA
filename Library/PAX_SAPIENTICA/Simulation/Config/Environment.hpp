@@ -115,7 +115,7 @@ namespace paxs {
         /// @brief Get the land position list.
         /// @brief 陸の位置リストの取得
         void getLandPositions(std::vector<DataGridsType>& keys) const {
-            std::get<Data<std::uint_least8_t>>(*data_map.at(SimulationConstants::getInstance()->land_key)).getKeys(keys);
+            std::get<Data<std::uint_least8_t>>(*data_map.at(SimulationConstants::getInstance().land_key)).getKeys(keys);
         }
 
         /// @brief Is it possible to live?
@@ -158,7 +158,7 @@ namespace paxs {
         /// @brief 陸地かどうかの判定
         virtual bool isLand(const Vector2& position) const noexcept {
             try {
-                auto value = getData<std::uint_least8_t>(SimulationConstants::getInstance()->land_key, position);
+                auto value = getData<std::uint_least8_t>(SimulationConstants::getInstance().land_key, position);
                 return static_cast<int>(value) >= static_cast<int>(1);
             }
             catch (const std::exception&) {

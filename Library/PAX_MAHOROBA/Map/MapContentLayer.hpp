@@ -174,7 +174,7 @@ namespace paxs {
         /// @brief 人物データを読み込み
         void loadPersonFeatures() {
             // テクスチャを読み込み（Portraitsの設定を使用）
-            const std::string portraits_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("Portraits"));
+            const std::string portraits_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("Portraits"));
 
             if (portraits_path.size() > 0) {
                 asset_registry_.loadPersonIcons(portraits_path);
@@ -247,7 +247,7 @@ namespace paxs {
             features_.clear();
 
             // MapIconsを1回だけロード（地理・ゲノム共用）
-            const std::string map_icons_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("MapIcons"));
+            const std::string map_icons_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("MapIcons"));
             if (map_icons_path.size() > 0) {
                 asset_registry_.loadMapIcons(map_icons_path);
             }

@@ -84,7 +84,7 @@ namespace paxg {
             if (!curl) return false;
 
             // 相対パスを絶対パスに変換
-            const std::string root_path = paxs::AppConfig::getInstance()->getRootPath();
+            const std::string root_path = paxs::AppConfig::getInstance().getRootPath();
             const std::string full_path = root_path + save_path;
 
             // 保存先のディレクトリを作成（相対パスで指定）
@@ -127,7 +127,7 @@ namespace paxg {
         // WinINet を使用したダウンロード（Windows）
         static bool downloadWithWinINet(const std::string& url, const std::string& save_path) {
             // 相対パスを絶対パスに変換
-            const std::string root_path = paxs::AppConfig::getInstance()->getRootPath();
+            const std::string root_path = paxs::AppConfig::getInstance().getRootPath();
             const std::string full_path = root_path + save_path;
 
             // 保存先のディレクトリを作成（相対パスで指定）

@@ -111,7 +111,7 @@ namespace paxs {
 
         /// @brief Get the agent's age.
         /// @brief エージェントの年齢を取得する
-        float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance()->steps_per_year); }
+        float getAge() const noexcept { return age / static_cast<float>(SimulationConstants::getInstance().steps_per_year); }
 
         /// @brief Increment the agent's age.
         /// @brief エージェントの年齢をインクリメントする

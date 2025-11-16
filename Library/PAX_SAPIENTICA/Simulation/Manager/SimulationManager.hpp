@@ -49,9 +49,9 @@ namespace paxs {
         /// @brief モデル名からパスを生成
         /// @param model_name モデル名 / Model name
         /// @return <マップリストパス, 都道府県パス> / <map list path, provinces path>
-        std::pair<std::string, std::string> generatePaths(const std::string& model_name) const {
-            std::string map_list_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationXYZTiles"));
-            std::string japan_provinces_path = AppConfig::getInstance()->getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
+        static std::pair<std::string, std::string> generatePaths(const std::string& model_name)  {
+            std::string map_list_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationXYZTiles"));
+            std::string japan_provinces_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
 
             paxs::StringUtils::replace(map_list_path, "Sample", model_name);
             paxs::StringUtils::replace(japan_provinces_path, "Sample", model_name);
@@ -153,7 +153,7 @@ namespace paxs {
         /// @param model_name モデル名 / Model name
         /// @param seed 乱数シード（0の場合は自動生成） / Random seed (auto-generated if 0)
         void simulationInitialize(const std::string& model_name, std::uint_least32_t seed = 0) {
-            SimulationConstants::getInstance(model_name)->init(model_name);
+            SimulationConstants::getInstance(model_name).init(model_name);
 
             auto [map_list_path, japan_provinces_path] = generatePaths(model_name);
 
@@ -182,7 +182,7 @@ namespace paxs {
         /// @brief 入力データを再読み込み
         /// @param model_name モデル名 / Model name
         void reloadData(const std::string& model_name) {
-            SimulationConstants::getInstance(model_name)->init(model_name);
+            SimulationConstants::getInstance(model_name).init(model_name);
             reloadInputData(model_name);
             current_model_name_ = model_name;
         }

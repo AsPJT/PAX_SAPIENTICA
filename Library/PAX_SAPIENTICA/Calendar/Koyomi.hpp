@@ -193,7 +193,7 @@ namespace paxs {
                     // エージェント機能（シミュレーション実行時）
                     if (is_agent_update) {
                         // シミュレーション用の時間進行（AppStateManagerが制御）
-                        jdn += (days_per_year / static_cast<double>(SimulationConstants::getInstance()->steps_per_year));
+                        jdn += (days_per_year / static_cast<double>(SimulationConstants::getInstance().steps_per_year));
                         calcDate(); // 日付計算
                         steps.increment(); // ステップ数を増やす
                     }

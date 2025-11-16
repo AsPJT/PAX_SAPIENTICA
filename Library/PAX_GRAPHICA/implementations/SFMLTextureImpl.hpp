@@ -40,7 +40,7 @@ namespace paxg {
 
         SFMLTextureImpl(const paxg::String& path) {
             std::string path_str = convertSvgToPng(path.string);
-            if (!texture.loadFromFile(paxs::AppConfig::getInstance()->getRootPath() + path_str)) {
+            if (!texture.loadFromFile(paxs::AppConfig::getInstance().getRootPath() + path_str)) {
                 PAXS_WARNING("Failed to load texture: " + path_str);
             }
             else {
@@ -50,7 +50,7 @@ namespace paxg {
 
         SFMLTextureImpl(const std::string& path) {
             std::string path_str = convertSvgToPng(path);
-            if (!texture.loadFromFile(paxs::AppConfig::getInstance()->getRootPath() + path_str)) {
+            if (!texture.loadFromFile(paxs::AppConfig::getInstance().getRootPath() + path_str)) {
                 PAXS_WARNING("Failed to load texture: " + path_str);
             }
             else {

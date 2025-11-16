@@ -87,7 +87,7 @@ namespace paxs {
             return false; // std::filesystem が動作しないため何もしない
 #else
             // 相対パスの場合は getRootPath() を使って絶対パスに変換
-            const std::string root_path = AppConfig::getInstance()->getRootPath();
+            const std::string root_path = AppConfig::getInstance().getRootPath();
             const std::string full_path = root_path + directory_path;
 
             std::error_code ec;
@@ -110,7 +110,7 @@ namespace paxs {
             InputFile file(relative_path);
             return !file.fail();
 #else
-            const std::string absolute_path = paxs::AppConfig::getInstance()->getRootPath() + relative_path;
+            const std::string absolute_path = paxs::AppConfig::getInstance().getRootPath() + relative_path;
             return std::filesystem::exists(absolute_path);
 #endif
         }
@@ -136,7 +136,7 @@ namespace paxs {
                 PAXS_ERROR("Failed to access: " + relative_directory_path);
                 return {};
             }
-            const std::string root_path = paxs::AppConfig::getInstance()->getRootPath();
+            const std::string root_path = paxs::AppConfig::getInstance().getRootPath();
             const std::string dir_path_str = root_path + relative_directory_path;
             std::filesystem::path dir_path(dir_path_str);
             std::filesystem::directory_iterator dir_iter(dir_path), end_iter;
@@ -193,7 +193,7 @@ namespace paxs {
             const void* data
         ) noexcept {
             // 相対パスを絶対パスに変換
-            const std::string root_path = AppConfig::getInstance()->getRootPath();
+            const std::string root_path = AppConfig::getInstance().getRootPath();
             const std::string full_path = root_path + relative_path;
 
             // PNG書き込み（stbi_write_pngは外部ライブラリなので絶対パスが必要）

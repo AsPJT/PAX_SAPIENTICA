@@ -102,7 +102,7 @@ namespace paxg {
             }.removeSRGBCurve();
 
             // 3D モデルデータをロード
-            const auto rootPath = s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath());
+            const auto rootPath = s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance().getRootPath());
             model_ = s3d::Model{ rootPath + s3d::Unicode::FromUTF8(config_.paths.modelPath) };
 
             // モデルに付随するテクスチャをアセット管理に登録

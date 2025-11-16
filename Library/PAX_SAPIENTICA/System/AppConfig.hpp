@@ -14,6 +14,7 @@
 
 #include <fstream>
 #include <string>
+#include <utility>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
@@ -22,45 +23,54 @@
 
 namespace paxs {
 
+    // BOM constants
+    namespace BOMConstants {
+        constexpr unsigned char bom_byte_1 = 0xEF;
+        constexpr unsigned char bom_byte_2 = 0xBB;
+        constexpr unsigned char bom_byte_3 = 0xBF;
+        constexpr std::size_t bom_size = 3;
+    }
+
     // 実行時定数
     class AppConfig {
     public:
-        // インスタンスを取得
-        static AppConfig* getInstance() {
-            if (instance == nullptr) {
-                instance = new AppConfig();
-            }
+        // コピー・ムーブを禁止
+        AppConfig(const AppConfig&) = delete;
+        auto operator=(const AppConfig&) -> AppConfig& = delete;
+        AppConfig(AppConfig&&) = delete;
+        auto operator=(AppConfig&&) -> AppConfig& = delete;
+
+        // Meyer's Singleton パターン
+        static AppConfig& getInstance() {
+            static AppConfig instance;
             return instance;
         }
 
         // ルートパスを取得
-        std::string getRootPath() const {
+        [[nodiscard]] std::string getRootPath() const {
             return root_path;
         }
 
-        std::string getSettingPath(const std::uint_least32_t key_) const {
-            if (!data_settings.contains(key_)) {
-                PAXS_WARNING("Data settings key " + std::to_string(key_) + " not found.");
+        [[nodiscard]] std::string getSettingPath(const std::uint_least32_t key) const {
+            if (!data_settings.contains(key)) {
+                PAXS_WARNING("Data settings key " + std::to_string(key) + " not found.");
                 return std::string{};
             }
-            return data_settings.at(key_);
+            return data_settings.at(key);
         }
         template<typename Func_>
-        void ifSettingExists(const std::uint_least32_t key_, Func_&& func_) const {
+        void ifSettingExists(const std::uint_least32_t key, Func_&& func) const {
             // 指定したキーのデータ設定が存在している場合は処理をする
-            if (hasDataSettings(key_)) {
-                func_(
-                    getSettingPath(key_));
+            if (hasDataSettings(key)) {
+                std::forward<Func_>(func)(getSettingPath(key));
             } else {
-                PAXS_WARNING("Data settings for key " + std::to_string(key_) + " is missing.");
+                PAXS_WARNING("Data settings for key " + std::to_string(key) + " is missing.");
             }
         }
 
     private:
-        static AppConfig* instance;
-
         paxs::UnorderedMap<std::uint_least32_t, std::string> data_settings;
-        std::string root_path = "";
+        std::string root_path;
 
         AppConfig() {
             // Config.tsvからroot_pathを読み込み
@@ -76,12 +86,10 @@ namespace paxs {
             }
         }
 
-        ~AppConfig() {
-            delete instance;
-        }
+        ~AppConfig() = default;
 
         // @brief 指定したキーのデータ設定が存在しているか
-        bool hasDataSettings(const std::uint_least32_t key_) const {
+        [[nodiscard]] bool hasDataSettings(const std::uint_least32_t key_) const {
             if (!data_settings.contains(key_)) {
                 return false;
             }
@@ -103,11 +111,11 @@ namespace paxs {
             }
 
             // BOM削除
-            if (line.size() >= 3 &&
-                static_cast<unsigned char>(line[0]) == 0xEF &&
-                static_cast<unsigned char>(line[1]) == 0xBB &&
-                static_cast<unsigned char>(line[2]) == 0xBF) {
-                line = line.substr(3);
+            if (line.size() >= BOMConstants::bom_size &&
+                static_cast<unsigned char>(line[0]) == BOMConstants::bom_byte_1 &&
+                static_cast<unsigned char>(line[1]) == BOMConstants::bom_byte_2 &&
+                static_cast<unsigned char>(line[2]) == BOMConstants::bom_byte_3) {
+                line = line.substr(BOMConstants::bom_size);
             }
 
             std::vector<std::string> headers = paxs::StringUtils::split(line, '\t');
@@ -116,8 +124,12 @@ namespace paxs {
             std::size_t key_index = SIZE_MAX;
             std::size_t value_index = SIZE_MAX;
             for (std::size_t i = 0; i < headers.size(); ++i) {
-                if (headers[i] == "key") key_index = i;
-                if (headers[i] == "value") value_index = i;
+                if (headers[i] == "key") {
+                    key_index = i;
+                }
+                if (headers[i] == "value") {
+                    value_index = i;
+                }
             }
 
             if (key_index == SIZE_MAX || value_index == SIZE_MAX) {
@@ -136,7 +148,9 @@ namespace paxs {
                 const std::string& key_str = columns[key_index];
                 const std::string& value_str = columns[value_index];
 
-                if (key_str.empty()) continue;
+                if (key_str.empty()) {
+                    continue;
+                }
 
                 map.emplace(
                     MurMur3::calcHash(key_str.size(), key_str.c_str()),
@@ -157,8 +171,6 @@ namespace paxs {
         }
 
     };
-
-    AppConfig* AppConfig::instance = nullptr;
 
 }
 
