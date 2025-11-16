@@ -101,7 +101,7 @@ private:
         const auto& screen_positions = feature.getScreenPositions();
         const int display_size = feature.getDisplaySize();
 
-        const bool is_small_size = (data.min_zoom_level > context.map_view_width || data.max_zoom_level < context.map_view_width);
+        const bool is_small_size = (data.min_zoom_level > context.map_view_size.x || data.max_zoom_level < context.map_view_size.x);
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {

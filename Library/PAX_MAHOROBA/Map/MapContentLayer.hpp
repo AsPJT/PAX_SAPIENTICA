@@ -33,6 +33,8 @@
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/GenomeRepository.hpp>
@@ -78,10 +80,8 @@ namespace paxs {
                     koyomi.jdn.getDay(),
                     simulation_manager.getSettlementGrids(),
                     simulation_manager.getMarriagePositions(),
-                    map_viewport_.getWidth(),
-                    map_viewport_.getHeight(),
-                    map_viewport_.getCenterX(),
-                    map_viewport_.getCenterY(),
+                    Vector2<double>(map_viewport_.getWidth(), map_viewport_.getHeight()),
+                    Vector2<double>(map_viewport_.getCenterX(), map_viewport_.getCenterY()),
                     settlement_input_handler_.getSelectDraw(),
                     settlement_input_handler_.getIsLine(),
                     settlement_input_handler_.getIsArrow()
@@ -154,10 +154,8 @@ namespace paxs {
         void updateRenderContext() {
             const auto& koyomi = app_state_manager_.getKoyomi();
             render_context_.jdn = koyomi.jdn.getDay();
-            render_context_.map_view_width = map_viewport_.getWidth();
-            render_context_.map_view_height = map_viewport_.getHeight();
-            render_context_.map_view_center_x = map_viewport_.getCenterX();
-            render_context_.map_view_center_y = map_viewport_.getCenterY();
+            render_context_.map_view_size = Vector2<double>(map_viewport_.getWidth(), map_viewport_.getHeight());
+            render_context_.map_view_center = Vector2<double>(map_viewport_.getCenterX(), map_viewport_.getCenterY());
             render_context_.visibility_manager = &app_state_manager_.getVisibilityManager();
         }
 

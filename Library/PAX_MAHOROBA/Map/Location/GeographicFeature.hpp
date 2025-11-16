@@ -25,6 +25,7 @@
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
@@ -94,7 +95,7 @@ public:
         }
 
         // ズームレベルフィルタリング：範囲外の場合のみ描画（アイコンのみ）
-        if (data_.min_zoom_level <= context.map_view_height && data_.max_zoom_level >= context.map_view_height) {
+        if (data_.min_zoom_level <= context.map_view_size.y && data_.max_zoom_level >= context.map_view_size.y) {
             cached_screen_positions_.clear();
             return;
         }
@@ -102,8 +103,8 @@ public:
         // スクリーン座標に変換（経度ラップ処理付き）
         cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
             data_.coordinate.x, data_.coordinate.y,
-            context.map_view_width, context.map_view_height,
-            context.map_view_center_x, context.map_view_center_y
+            context.map_view_size,
+            context.map_view_center
         );
 
         // 表示サイズの計算（zoom適用）
@@ -112,11 +113,9 @@ public:
         // テクスチャサイズを取得してキャッシュ
         if (context.texture_map != nullptr && context.texture_map->find(data_.texture_key) != context.texture_map->end()) {
             const auto& tex = context.texture_map->at(data_.texture_key);
-            cached_texture_width_ = tex.width();
-            cached_texture_height_ = tex.height();
+            cached_texture_size_ = Vector2<int>(tex.width(), tex.height());
         } else {
-            cached_texture_width_ = cached_display_size_;
-            cached_texture_height_ = cached_display_size_;
+            cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
         }
     }
 
@@ -145,18 +144,17 @@ public:
             return false;
         }
 
-        // テクスチャサイズを使った矩形判定
-        const int texture_width = cached_texture_width_;
-        const int texture_height = cached_texture_height_;
+        const Vector2<int> texture_size = cached_texture_size_;
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [texture_width, texture_height](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
-                // 矩形判定: テクスチャは中心から描画されると仮定
-                const int half_width = texture_width / 2;
-                const int half_height = texture_height / 2;
-                return mouse_x >= pos.x() - half_width && mouse_x <= pos.x() + half_width &&
-                       mouse_y >= pos.y() - half_height && mouse_y <= pos.y() + half_height;
+            [texture_size](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
+                // テクスチャの矩形判定（中心から描画）
+                const Rect<int> texture_rect = Rect<int>::fromCenter(
+                    Vector2<int>(pos.x(), pos.y()),
+                    texture_size
+                );
+                return texture_rect.contains(mouse_x, mouse_y);
             }
         );
     }
@@ -194,8 +192,7 @@ private:
     // キャッシュされた状態 / Cached state
     std::vector<paxg::Vec2i> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
     int cached_display_size_ = 50;                     ///< 表示サイズ / Display size
-    int cached_texture_width_ = 50;                    ///< キャッシュされたテクスチャ幅 / Cached texture width
-    int cached_texture_height_ = 50;                   ///< キャッシュされたテクスチャ高さ / Cached texture height
+    Vector2<int> cached_texture_size_{50, 50};         ///< キャッシュされたテクスチャサイズ / Cached texture size
 };
 
 } // namespace paxs

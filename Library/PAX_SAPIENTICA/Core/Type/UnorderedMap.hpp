@@ -16,29 +16,30 @@
 #include <string>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
 
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
     template <class T>
-    concept StreamInsertable = requires(std::ostream& os, const T& value) {
-        { os << value } -> std::same_as<std::ostream&>;
+    concept StreamInsertable = requires(std::ostream& ostream, const T& value) {
+        { ostream << value } -> std::same_as<std::ostream&>;
     };
 
     template <class T>
-    std::string to_string_any(const T& v) {
+    std::string to_string_any(const T& value) {
         if constexpr (std::is_arithmetic_v<T>) {
             // int, double など数値なら std::to_string に任せる
-            return std::to_string(v);
+            return std::to_string(value);
         } else if constexpr (std::is_same_v<T, std::string>) {
             // すでに std::string ならそのまま返す
-            return v;
+            return value;
         } else if constexpr (std::is_same_v<T, const char*>) {
-            return std::string(v);
+            return std::string(value);
         } else if constexpr (StreamInsertable<T>) {
             // ostream に流せる型ならそれを使う
             std::ostringstream oss;
-            oss << v;
+            oss << value;
             return oss.str();
         } else {
             return "<unprintable type>";
@@ -53,10 +54,11 @@ namespace paxs {
     private:
         std::unordered_map<Key, Value> map_;
         std::string name_; // マップの名前（ログ出力時に使用）
+
     public:
         // コンストラクタ
         UnorderedMap() : name_("UnnamedMap") {}
-        explicit UnorderedMap(const std::string& name) : name_(name) {}
+        explicit UnorderedMap(std::string  name) : name_(std::move(name)) {}
 
         // イテレータ型のエイリアス
         using iterator = typename std::unordered_map<Key, Value>::iterator;
@@ -65,20 +67,17 @@ namespace paxs {
         /// @brief 要素を追加
         template<typename... Args>
         std::pair<iterator, bool> emplace(Args&&... args) {
-            auto result = map_.emplace(std::forward<Args>(args)...);
-            return result;
+            return map_.emplace(std::forward<Args>(args)...);
         }
 
         /// @brief 要素を挿入
         std::pair<iterator, bool> insert(const std::pair<Key, Value>& value) {
-            auto result = map_.insert(value);
-            return result;
+            return map_.insert(value);
         }
 
         /// @brief 要素を挿入（move版）
         std::pair<iterator, bool> insert(std::pair<Key, Value>&& value) {
-            auto result = map_.insert(std::move(value));
-            return result;
+            return map_.insert(std::move(value));
         }
 
         /// @brief 要素にアクセス（存在しない場合は例外を投げる）
@@ -104,27 +103,23 @@ namespace paxs {
 
         /// @brief キーが存在するかチェック
         bool contains(const Key& key) const {
-            bool result = (map_.find(key) != map_.end());
-            return result;
+            return map_.find(key) != map_.end();
         }
 
 
         /// @brief 要素を検索
         iterator find(const Key& key) {
-            auto it = map_.find(key);
-            return it;
+            return map_.find(key);
         }
 
         /// @brief 要素を検索（const版）
         const_iterator find(const Key& key) const {
-            auto it = map_.find(key);
-            return it;
+            return map_.find(key);
         }
 
         /// @brief 要素を削除 (キーで削除)
         size_t erase(const Key& key) {
-            size_t count = map_.erase(key);
-            return count;
+            return map_.erase(key);
         }
 
         /// @brief 要素を削除 (イテレータで削除)
@@ -165,13 +160,8 @@ namespace paxs {
         }
 
         /// @brief マップ名を取得
-        const std::string& getName() const {
+        [[nodiscard]] const std::string& getName() const {
             return name_;
-        }
-
-        /// @brief 内部の unordered_map への参照を取得（必要な場合のみ使用）
-        std::unordered_map<Key, Value>& getInternalMap() {
-            return map_;
         }
 
         /// @brief 内部の unordered_map への const 参照を取得

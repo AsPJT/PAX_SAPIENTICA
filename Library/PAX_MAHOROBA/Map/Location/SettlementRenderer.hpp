@@ -24,6 +24,7 @@
 #include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Simulation/Entity/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
@@ -38,34 +39,30 @@ namespace paxs {
         /// @param jdn ユリウス日
         /// @param agents 集落グリッド
         /// @param marriage_pos_list 婚姻移動のリスト
-        /// @param map_view_width マップビューの幅
-        /// @param map_view_height マップビューの高さ
-        /// @param map_view_center_x マップビューの中心X座標
-        /// @param map_view_center_y マップビューの中心Y座標
+        /// @param map_view_size マップビューのサイズ
+        /// @param map_view_center マップビューの中心座標
         /// @param select_draw 表示モード (1-6)
         /// @param is_line グリッド線を表示するか
         /// @param is_arrow 移動矢印を表示するか
         static void draw(const double jdn,
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
             const std::vector<GridType4>* marriage_pos_list,
-            const double map_view_width, const double map_view_height, const double map_view_center_x, const double map_view_center_y,
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center,
             const std::size_t select_draw, const bool is_line, const bool is_arrow
         ) {
             // 集落を描画
-            drawSettlements(jdn, agents, map_view_width, map_view_height,
-                map_view_center_x, map_view_center_y, select_draw);
+            drawSettlements(jdn, agents, map_view_size, map_view_center, select_draw);
 
             // グリッド線を描画
             if (is_line) {
-                drawGridLines(map_view_width, map_view_height,
-                    map_view_center_x, map_view_center_y);
+                drawGridLines(map_view_size, map_view_center);
             }
 
             // 移動線を描画
             if (is_arrow) {
                 drawMovementLines(jdn, agents, marriage_pos_list,
-                    map_view_width, map_view_height,
-                    map_view_center_x, map_view_center_y);
+                    map_view_size, map_view_center);
             }
         }
 
@@ -104,7 +101,6 @@ namespace paxs {
         /// @brief 集落の位置からLocationPointを作成
         /// @brief Create LocationPoint from settlement position
         /// @param position 集落の位置 / Settlement position
-        /// @return LocationPoint
         static LocationPoint createLocationPoint(const paxs::Vector2<int>& position) {
             return LocationPoint{
                 paxs::UnorderedMap<std::uint_least32_t, std::string>(),
@@ -123,7 +119,6 @@ namespace paxs {
         /// @brief 言語番号から色を取得
         /// @brief Get color from language number
         /// @param language 言語番号 / Language number (0-4)
-        /// @return 言語の色 / Language color
         static paxg::Color getLanguageColor(std::uint_least8_t language) {
             switch (language) {
             case 1: return LANGUAGE_COLOR_1;
@@ -139,8 +134,8 @@ namespace paxs {
         static void drawSettlements(
             const double jdn,
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
-            const double map_view_width, const double map_view_height,
-            const double map_view_center_x, const double map_view_center_y,
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center,
             const std::size_t select_draw
         ) {
             for (const auto& agent : *agents) {
@@ -151,8 +146,7 @@ namespace paxs {
                     // 経緯度の範囲外を除去
                     if (!LocationRendererHelper::isInViewBounds(
                         location_point.coordinate.x, location_point.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y)) continue;
+                        map_view_size, map_view_center)) continue;
 
                     // 時間範囲外を除去
                     if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
@@ -160,8 +154,8 @@ namespace paxs {
                     // 描画位置
                     const paxg::Vec2i draw_pos = MapCoordinateConverter::toScreenPos(
                         location_point.coordinate.x, location_point.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y
+                        map_view_size,
+                        map_view_center
                     );
 
                     // 円のサイズ
@@ -213,8 +207,8 @@ namespace paxs {
             const double jdn,
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
             const std::vector<GridType4>* marriage_pos_list,
-            const double map_view_width, const double map_view_height,
-            const double map_view_center_x, const double map_view_center_y
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center
         ) {
             // 集落の移動履歴を描画
             for (const auto& agent : *agents) {
@@ -224,20 +218,21 @@ namespace paxs {
 
                     if (!LocationRendererHelper::isInViewBounds(
                         location_point.coordinate.x, location_point.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y)) continue;
+                        map_view_size, map_view_center)) continue;
 
                     if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
 
                     const paxg::Vec2f draw_pos = paxg::Vec2f{
                         static_cast<float>(MapCoordinateConverter::toScreenPos(
-                            location_point.coordinate.x, location_point.coordinate.y,
-                            map_view_width, map_view_height,
-                            map_view_center_x, map_view_center_y).x()),
+                            location_point.coordinate.x,
+                            location_point.coordinate.y,
+                            map_view_size,
+                            map_view_center).x()),
                         static_cast<float>(MapCoordinateConverter::toScreenPos(
-                            location_point.coordinate.x, location_point.coordinate.y,
-                            map_view_width, map_view_height,
-                            map_view_center_x, map_view_center_y).y())
+                            location_point.coordinate.x,
+                            location_point.coordinate.y,
+                            map_view_size,
+                            map_view_center).y())
                     };
 
                     if (settlement.getOldPosition().x == -1 || settlement.getOldPosition().x == 0) continue;
@@ -251,8 +246,8 @@ namespace paxs {
                             auto one_lli = createLocationPoint(paxs::Vector2<int>(p.x, p.y));
                             const paxg::Vec2i one_pos = MapCoordinateConverter::toScreenPos(
                                 one_lli.coordinate.x, one_lli.coordinate.y,
-                                map_view_width, map_view_height,
-                                map_view_center_x, map_view_center_y);
+                                map_view_size,
+                                map_view_center);
                             spline_points.emplace_back(paxg::Vec2f{
                                 static_cast<float>(one_pos.x()), static_cast<float>(one_pos.y()) });
                         }
@@ -260,8 +255,8 @@ namespace paxs {
                         auto old_lli = createLocationPoint(settlement.getOldPosition());
                         const paxg::Vec2i old_pos = MapCoordinateConverter::toScreenPos(
                             old_lli.coordinate.x, old_lli.coordinate.y,
-                            map_view_width, map_view_height,
-                            map_view_center_x, map_view_center_y);
+                            map_view_size,
+                            map_view_center);
                         spline_points.emplace_back(paxg::Vec2f{
                             static_cast<float>(old_pos.x()), static_cast<float>(old_pos.y()) });
 
@@ -272,12 +267,12 @@ namespace paxs {
                         const paxg::Vec2f first_pos = paxg::Vec2f{
                             static_cast<float>(MapCoordinateConverter::toScreenPos(
                                 first_lli.coordinate.x, first_lli.coordinate.y,
-                                map_view_width, map_view_height,
-                                map_view_center_x, map_view_center_y).x()),
+                                map_view_size,
+                                map_view_center).x()),
                             static_cast<float>(MapCoordinateConverter::toScreenPos(
                                 first_lli.coordinate.x, first_lli.coordinate.y,
-                                map_view_width, map_view_height,
-                                map_view_center_x, map_view_center_y).y())
+                                map_view_size,
+                                map_view_center).y())
                         };
                         paxg::Line{ first_pos.x(), first_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(
                             MOVEMENT_ARROW_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
@@ -288,12 +283,12 @@ namespace paxs {
                         const paxg::Vec2f old_pos = paxg::Vec2f{
                             static_cast<float>(MapCoordinateConverter::toScreenPos(
                                 old_lli.coordinate.x, old_lli.coordinate.y,
-                                map_view_width, map_view_height,
-                                map_view_center_x, map_view_center_y).x()),
+                                map_view_size,
+                                map_view_center).x()),
                             static_cast<float>(MapCoordinateConverter::toScreenPos(
                                 old_lli.coordinate.x, old_lli.coordinate.y,
-                                map_view_width, map_view_height,
-                                map_view_center_x, map_view_center_y).y())
+                                map_view_size,
+                                map_view_center).y())
                         };
                         paxg::Line{ old_pos.x(), old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(
                             MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
@@ -307,8 +302,7 @@ namespace paxs {
 
                 if (!LocationRendererHelper::isInViewBounds(
                     location_point.coordinate.x, location_point.coordinate.y,
-                    map_view_width, map_view_height,
-                    map_view_center_x, map_view_center_y)) continue;
+                    map_view_size, map_view_center)) continue;
 
                 if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
                 if (marriage_pos.sx == -1 || marriage_pos.sx == 0) continue;
@@ -316,24 +310,24 @@ namespace paxs {
                 const paxg::Vec2f draw_pos = paxg::Vec2f{
                     static_cast<float>(MapCoordinateConverter::toScreenPos(
                         location_point.coordinate.x, location_point.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y).x()),
+                        map_view_size,
+                        map_view_center).x()),
                     static_cast<float>(MapCoordinateConverter::toScreenPos(
                         location_point.coordinate.x, location_point.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y).y())
+                        map_view_size,
+                        map_view_center).y())
                 };
 
                 auto old_lli = createLocationPoint(paxs::Vector2<int>(marriage_pos.sx, marriage_pos.sy));
                 const paxg::Vec2f old_pos = paxg::Vec2f{
                     static_cast<float>(MapCoordinateConverter::toScreenPos(
                         old_lli.coordinate.x, old_lli.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y).x()),
+                        map_view_size,
+                        map_view_center).x()),
                     static_cast<float>(MapCoordinateConverter::toScreenPos(
                         old_lli.coordinate.x, old_lli.coordinate.y,
-                        map_view_width, map_view_height,
-                        map_view_center_x, map_view_center_y).y())
+                        map_view_size,
+                        map_view_center).y())
                 };
 
                 const paxg::Color marriage_color = marriage_pos.is_matrilocality
@@ -346,8 +340,8 @@ namespace paxs {
         /// @brief グリッド線を描画
         /// @brief Draw grid lines
         static void drawGridLines(
-            const double map_view_width, const double map_view_height,
-            const double map_view_center_x, const double map_view_center_y
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center
         ) {
             const auto area_width = SimulationConstants::getInstance().getEndArea().x -
                 SimulationConstants::getInstance().getStartArea().x;
@@ -358,22 +352,22 @@ namespace paxs {
                 SimulationConstants::getInstance().getStartArea(),
                 paxs::Vector2<int>(0, 0), ZOOM_LEVEL));
             const paxg::Vec2f draw_start_pos = paxg::Vec2f{
-                static_cast<float>((start_coordinate.x - (map_view_center_x - map_view_width / 2)) /
-                    map_view_width * double(paxg::Window::width())),
+                static_cast<float>((start_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
+                    map_view_size.x * double(paxg::Window::width())),
                 static_cast<float>(double(paxg::Window::height()) -
-                    ((start_coordinate.y - (map_view_center_y - map_view_height / 2)) /
-                        map_view_height * double(paxg::Window::height())))
+                    ((start_coordinate.y - (map_view_center.y - map_view_size.y / 2)) /
+                        map_view_size.y * double(paxg::Window::height())))
             };
 
             const paxs::MercatorDeg end_coordinate = paxs::MercatorDeg(getLocation(
                 SimulationConstants::getInstance().getStartArea(),
                 paxs::Vector2<int>(area_width * 256, area_height * 256), ZOOM_LEVEL));
             const paxg::Vec2f draw_end_pos = paxg::Vec2f{
-                static_cast<float>((end_coordinate.x - (map_view_center_x - map_view_width / 2)) /
-                    map_view_width * double(paxg::Window::width())),
+                static_cast<float>((end_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
+                    map_view_size.x * double(paxg::Window::width())),
                 static_cast<float>(double(paxg::Window::height()) -
-                    ((end_coordinate.y - (map_view_center_y - map_view_height / 2)) /
-                        map_view_height * double(paxg::Window::height())))
+                    ((end_coordinate.y - (map_view_center.y - map_view_size.y / 2)) /
+                        map_view_size.y * double(paxg::Window::height())))
             };
 
             const paxs::MercatorDeg tile_coordinate = paxs::MercatorDeg(getLocation(
@@ -381,11 +375,11 @@ namespace paxs {
                 paxs::Vector2<int>(SimulationConstants::getInstance().cell_group_length,
                     SimulationConstants::getInstance().cell_group_length), ZOOM_LEVEL));
             const paxg::Vec2f tile_pos = paxg::Vec2f{
-                static_cast<float>((tile_coordinate.x - (map_view_center_x - map_view_width / 2)) /
-                    map_view_width * double(paxg::Window::width())) - draw_start_pos.x(),
+                static_cast<float>((tile_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
+                    map_view_size.x * double(paxg::Window::width())) - draw_start_pos.x(),
                 static_cast<float>(double(paxg::Window::height()) -
-                    ((tile_coordinate.y - (map_view_center_y - map_view_height / 2)) /
-                        map_view_height * double(paxg::Window::height()))) - draw_start_pos.y()
+                    ((tile_coordinate.y - (map_view_center.y - map_view_size.y / 2)) /
+                        map_view_size.y * double(paxg::Window::height()))) - draw_start_pos.y()
             };
 
             // 外枠線を描画

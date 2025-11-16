@@ -34,12 +34,11 @@ namespace paxs {
 
     // メルカトル図法（度）
     struct MercatorDeg : paxs::Vector2<double> {
-        explicit MercatorDeg() {}
-        // C++20 より前は constexpr にならない
-        explicit MercatorDeg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
+        constexpr explicit MercatorDeg() : Vector2() {}
+        constexpr explicit MercatorDeg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
         // Ｙ軸を正距円筒図法（ラジアン）へ変換した値を返す
         double toEquirectangularRadY() const noexcept {
-            return static_cast<double>(std::asin(std::tanh(paxs::MathF64::degToRad(this->y))));
+            return std::asin(std::tanh(paxs::MathF64::degToRad(this->y)));
         }
         // Ｙ軸を正距円筒図法（度）へ変換した値を返す
         double toEquirectangularDegY() const noexcept {
@@ -78,19 +77,19 @@ namespace paxs {
     template<typename T>
     struct MapProjection {
         // 正距円筒図法（ラジアン）からメルカトル図法へ変換（ラジアン）
-        constexpr inline static T equirectangularRadYToMercatorRadY(const T value) noexcept {
+        constexpr static T equirectangularRadYToMercatorRadY(const T value) noexcept {
             return static_cast<T>((value >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::MathF64::pi() / 4.0 - double(value) / 2.0)))));
         }
         // 正距円筒図法（度）からメルカトル図法へ変換（ラジアン）
-        constexpr inline static T equirectangularDegYToMercatorRadY(const T value) noexcept {
+        constexpr static T equirectangularDegYToMercatorRadY(const T value) noexcept {
             return static_cast<T>(equirectangularRadYToMercatorRadY(paxs::Math<T>::degToRad(value)));
         }
         // 正距円筒図法（ラジアン）からメルカトル図法へ変換（度）
-        constexpr inline static T equirectangularRadYToMercatorDegY(const T value) noexcept {
+        constexpr static T equirectangularRadYToMercatorDegY(const T value) noexcept {
             return static_cast<T>(paxs::MathF64::radToDeg(equirectangularRadYToMercatorRadY(value)));
         }
         // 正距円筒図法（度）からメルカトル図法へ変換（度）
-        constexpr inline static T equirectangularDegYToMercatorDegY(const T value) noexcept {
+        constexpr static T equirectangularDegYToMercatorDegY(const T value) noexcept {
             return static_cast<T>(paxs::MathF64::radToDeg(equirectangularRadYToMercatorRadY(paxs::Math<T>::degToRad(value))));
         }
     };

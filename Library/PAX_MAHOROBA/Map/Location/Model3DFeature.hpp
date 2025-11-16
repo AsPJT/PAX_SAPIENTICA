@@ -102,8 +102,8 @@ public:
         // スクリーン座標に変換（経度ラップ処理付き）
         cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
             coordinate_.x, coordinate_.y,
-            context.map_view_width, context.map_view_height,
-            context.map_view_center_x, context.map_view_center_y
+            context.map_view_size,
+            context.map_view_center
         );
 
         // 3Dモデルの状態を更新（回転など）

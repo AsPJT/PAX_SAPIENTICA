@@ -17,6 +17,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 
 namespace paxs {
@@ -29,18 +30,14 @@ public:
     /// @brief Convert Mercator coordinates to screen positions (with longitude wrapping)
     /// @param mercator_x メルカトル座標X（経度）/ Mercator X (longitude)
     /// @param mercator_y メルカトル座標Y（緯度）/ Mercator Y (latitude)
-    /// @param map_view_width ビューポート幅 / Viewport width
-    /// @param map_view_height ビューポート高さ / Viewport height
-    /// @param map_view_center_x ビューポート中心X / Viewport center X
-    /// @param map_view_center_y ビューポート中心Y / Viewport center Y
+    /// @param map_view_size ビューポートサイズ / Viewport size
+    /// @param map_view_center ビューポート中心 / Viewport center
     /// @return 3つのスクリーン座標（-360°, 0°, +360°）/ Three screen positions
     static std::vector<paxg::Vec2i> toScreenPositions(
         double mercator_x,
         double mercator_y,
-        double map_view_width,
-        double map_view_height,
-        double map_view_center_x,
-        double map_view_center_y
+        const Vector2<double>& map_view_size,
+        const Vector2<double>& map_view_center
     );
 
     /// @brief 時間補間座標の計算（PersonPortrait用）
@@ -63,18 +60,14 @@ public:
     /// @brief Convert single coordinate to screen position
     /// @param mercator_x メルカトル座標X / Mercator X coordinate
     /// @param mercator_y メルカトル座標Y / Mercator Y coordinate
-    /// @param map_view_width ビューポート幅 / Viewport width
-    /// @param map_view_height ビューポート高さ / Viewport height
-    /// @param map_view_center_x ビューポート中心X / Viewport center X
-    /// @param map_view_center_y ビューポート中心Y / Viewport center Y
+    /// @param map_view_size ビューポートサイズ / Viewport size
+    /// @param map_view_center ビューポート中心 / Viewport center
     /// @return スクリーン座標 / Screen position
     static paxg::Vec2i toScreenPos(
         double mercator_x,
         double mercator_y,
-        double map_view_width,
-        double map_view_height,
-        double map_view_center_x,
-        double map_view_center_y
+        const Vector2<double>& map_view_size,
+        const Vector2<double>& map_view_center
     );
 };
 
@@ -85,10 +78,8 @@ public:
 inline std::vector<paxg::Vec2i> MapCoordinateConverter::toScreenPositions(
     double mercator_x,
     double mercator_y,
-    double map_view_width,
-    double map_view_height,
-    double map_view_center_x,
-    double map_view_center_y
+    const Vector2<double>& map_view_size,
+    const Vector2<double>& map_view_center
 ) {
     std::vector<paxg::Vec2i> positions;
     positions.reserve(3);
@@ -98,8 +89,7 @@ inline std::vector<paxg::Vec2i> MapCoordinateConverter::toScreenPositions(
         const double wrapped_x = mercator_x + (offset_mult * 360.0);
         positions.emplace_back(toScreenPos(
             wrapped_x, mercator_y,
-            map_view_width, map_view_height,
-            map_view_center_x, map_view_center_y
+            map_view_size, map_view_center
         ));
     }
 
@@ -131,21 +121,19 @@ inline MercatorDeg MapCoordinateConverter::interpolatePosition(
 inline paxg::Vec2i MapCoordinateConverter::toScreenPos(
     double mercator_x,
     double mercator_y,
-    double map_view_width,
-    double map_view_height,
-    double map_view_center_x,
-    double map_view_center_y
+    const Vector2<double>& map_view_size,
+    const Vector2<double>& map_view_center
 ) {
     // メルカトル座標をスクリーン座標に変換
     return paxg::Vec2i(
         static_cast<int>(
-            (mercator_x - (map_view_center_x - map_view_width / 2))
-            / map_view_width * double(paxg::Window::width())
+            (mercator_x - (map_view_center.x - map_view_size.x / 2))
+            / map_view_size.x * double(paxg::Window::width())
         ),
         static_cast<int>(
             double(paxg::Window::height())
-            - ((mercator_y - (map_view_center_y - map_view_height / 2))
-            / map_view_height * double(paxg::Window::height()))
+            - ((mercator_y - (map_view_center.y - map_view_size.y / 2))
+            / map_view_size.y * double(paxg::Window::height()))
         )
     );
 }

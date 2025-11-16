@@ -17,7 +17,9 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 namespace paxs {
@@ -25,11 +27,9 @@ namespace paxs {
 /// @brief 描画コンテキスト - 描画に必要なパラメータをまとめた構造体
 /// @brief Render context - Structure containing parameters needed for rendering
 struct RenderContext {
-    double jdn = 0.0;              ///< ユリウス日 / Julian Day Number
-    double map_view_width = 0.0;   ///< 地図ビューの幅 / Map view width
-    double map_view_height = 0.0;  ///< 地図ビューの高さ / Map view height
-    double map_view_center_x = 0.0; ///< 地図ビューの中心X座標 / Map view center X
-    double map_view_center_y = 0.0; ///< 地図ビューの中心Y座標 / Map view center Y
+    double jdn = 0.0;  ///< ユリウス日 / Julian Day Number
+    Vector2<double> map_view_size{0.0, 0.0};      ///< 地図ビューのサイズ（幅、高さ） / Map view size (width, height)
+    Vector2<double> map_view_center{0.0, 0.0};    ///< 地図ビューの中心座標 / Map view center
     const FeatureVisibilityManager* visibility_manager = nullptr; ///< 地物種別ごとの可視性管理 / Per-feature-type visibility manager
     paxg::Font* font = nullptr; ///< 地名・人名描画用フォント / Font for place/person names
     const UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_map = nullptr; ///< テクスチャマップ / Texture map
@@ -40,13 +40,12 @@ struct RenderContext {
     /// @param mercator_y メルカトル座標Y / Mercator Y coordinate
     /// @param margin マージン倍率（デフォルト1.6） / Margin multiplier (default 1.6)
     /// @return 範囲内ならtrue / True if within bounds
-    inline bool isInViewBounds(double mercator_x, double mercator_y, double margin = 1.6) const {
-        const double half_width = map_view_width / 2 * margin;
-        const double half_height = map_view_height / 2 * margin;
-        return (mercator_x >= map_view_center_x - half_width &&
-                mercator_x <= map_view_center_x + half_width &&
-                mercator_y >= map_view_center_y - half_height &&
-                mercator_y <= map_view_center_y + half_height);
+    [[nodiscard]] bool isInViewBounds(double mercator_x, double mercator_y, double margin = 1.6) const {
+        const Rect<double> view_rect = Rect<double>::fromCenter(
+            map_view_center,
+            Vector2<double>(map_view_size.x * margin, map_view_size.y * margin)
+        );
+        return view_rect.contains(mercator_x, mercator_y);
     }
 };
 

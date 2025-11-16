@@ -24,6 +24,8 @@
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
@@ -85,7 +87,7 @@ public:
         }
 
         // ズームレベルフィルタリング：範囲外の場合はスキップ
-        if (data_.min_zoom_level > context.map_view_height || data_.max_zoom_level < context.map_view_height) {
+        if (data_.min_zoom_level > context.map_view_size.y || data_.max_zoom_level < context.map_view_size.y) {
             cached_screen_positions_.clear();
             return;
         }
@@ -93,21 +95,19 @@ public:
         // スクリーン座標に変換（経度ラップ処理付き）
         cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
             data_.coordinate.x, data_.coordinate.y,
-            context.map_view_width, context.map_view_height,
-            context.map_view_center_x, context.map_view_center_y
+            context.map_view_size,
+            context.map_view_center
         );
 
         // フォントからテキストサイズを計算
         if (context.font != nullptr) {
             const std::string name = getName();
-            cached_text_width_ = context.font->width(name);
-            cached_text_height_ = context.font->height();
+            cached_text_size_ = Vector2<int>(context.font->width(name), context.font->height());
         } else {
             // フォントが利用できない場合はデフォルト値を使用
-            cached_text_width_ = 100;
-            cached_text_height_ = 20;
+            cached_text_size_ = Vector2<int>(100, 20);
         }
-        cached_display_size_ = cached_text_height_;
+        cached_display_size_ = cached_text_size_.y;
     }
 
     bool isVisible() const override {
@@ -131,18 +131,19 @@ public:
             return false;
         }
 
-        // テキストの境界ボックスで判定（矩形判定）
-        const int text_width = cached_text_width_;
-        const int text_height = cached_text_height_;
+        const Vector2<int> text_size = cached_text_size_;
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [text_width, text_height](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
-                // 矩形判定: drawAtは横方向中央、縦方向上を基準に描画
-                // 横: 中央±width/2、縦: 上からheightの範囲
-                const int half_width = text_width / 2;
-                return mouse_x >= pos.x() - half_width && mouse_x <= pos.x() + half_width &&
-                       mouse_y >= pos.y() && mouse_y <= pos.y() + text_height;
+            [text_size](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
+                // テキストの矩形判定: drawAtは横方向中央、縦方向上を基準に描画
+                const Rect<int> text_rect(
+                    pos.x() - (text_size.x / 2),
+                    pos.y(),
+                    text_size.x,
+                    text_size.y
+                );
+                return text_rect.contains(mouse_x, mouse_y);
             }
         );
     }
@@ -160,8 +161,7 @@ private:
     LocationPoint data_;
     std::vector<paxg::Vec2i> cached_screen_positions_;
     int cached_display_size_ = 50;
-    int cached_text_width_ = 100;   ///< キャッシュされたテキスト幅 / Cached text width
-    int cached_text_height_ = 20;   ///< キャッシュされたテキスト高さ / Cached text height
+    Vector2<int> cached_text_size_{100, 20};  ///< キャッシュされたテキストサイズ / Cached text size
 };
 
 } // namespace paxs

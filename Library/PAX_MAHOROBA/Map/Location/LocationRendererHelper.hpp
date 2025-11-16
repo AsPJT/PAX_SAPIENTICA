@@ -22,6 +22,7 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -111,26 +112,22 @@ namespace paxs {
         /// @brief 範囲内判定
         /// @param coordinate_x メルカトル座標X / Mercator X coordinate
         /// @param coordinate_y メルカトル座標Y / Mercator Y coordinate
-        /// @param map_view_width マップビューの幅 / Map view width
-        /// @param map_view_height マップビューの高さ / Map view height
-        /// @param map_view_center_x マップビューの中心X座標 / Map view center X
-        /// @param map_view_center_y マップビューの中心Y座標 / Map view center Y
+        /// @param map_view_size マップビューのサイズ / Map view size
+        /// @param map_view_center マップビューの中心座標 / Map view center
         /// @param margin_factor マージン係数（デフォルト: 1.6） / Margin factor (default: 1.6)
         static bool isInViewBounds(
             double coordinate_x,
             double coordinate_y,
-            double map_view_width,
-            double map_view_height,
-            double map_view_center_x,
-            double map_view_center_y,
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center,
             double margin_factor = 1.6
         ) {
-            const double half_width = map_view_width / 2 * margin_factor;
-            const double half_height = map_view_height / 2 * margin_factor;
-            return (coordinate_x >= map_view_center_x - half_width &&
-                    coordinate_x <= map_view_center_x + half_width &&
-                    coordinate_y >= map_view_center_y - half_height &&
-                    coordinate_y <= map_view_center_y + half_height);
+            const double half_width = map_view_size.x / 2 * margin_factor;
+            const double half_height = map_view_size.y / 2 * margin_factor;
+            return (coordinate_x >= map_view_center.x - half_width &&
+                    coordinate_x <= map_view_center.x + half_width &&
+                    coordinate_y >= map_view_center.y - half_height &&
+                    coordinate_y <= map_view_center.y + half_height);
         }
 
     private:
