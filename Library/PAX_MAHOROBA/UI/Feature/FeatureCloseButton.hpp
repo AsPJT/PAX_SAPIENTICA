@@ -29,7 +29,7 @@ namespace paxs {
         FeatureCloseButton()
             : IconButton("FeatureCloseButton", MurMur3::calcHash("texture_close")) {
             // デフォルトのボタンサイズを設定
-            setSize(paxg::Vec2i{ 20, 20 });
+            setSize(Vector2<int>{ 20, 20 });
         }
 
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }

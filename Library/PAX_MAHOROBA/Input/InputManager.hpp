@@ -19,6 +19,7 @@
 #include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/InputRouter.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/System/InputStateManager.hpp>
@@ -32,8 +33,7 @@ namespace paxs {
 class InputManager {
 public:
     InputManager()
-        : last_window_width_(paxg::Window::width())
-        , last_window_height_(paxg::Window::height()) {
+        : last_window_size_(paxg::Window::width(), paxg::Window::height()) {
     }
 
     /// @brief InputRouterを取得
@@ -84,14 +84,13 @@ public:
         }
 
         // 4. マウスイベント（InputRouterを通じて配信）
-        const int mouse_x = mouse->getPosX();
-        const int mouse_y = mouse->getPosY();
+        const Vector2<int> mouse_pos = mouse->getPos();
         const bool current_left_button = mouse->getLeft();
 
         // 左ボタンの状態を更新してイベントを発行
         InputStateManager::State left_state = left_button_state_manager_.update(current_left_button);
         if (left_state != InputStateManager::State::None) {
-            MouseEvent event(mouse_x, mouse_y);
+            MouseEvent event(mouse_pos);
 
             // 修飾キーの設定
             if (paxg::Key::isShiftPressed()) event.modifier_keys |= MouseEvent::MODIFIER_SHIFT;
@@ -100,8 +99,7 @@ public:
             if (paxg::Key::isCommandPressed()) event.modifier_keys |= MouseEvent::MODIFIER_COMMAND;
 
             // 前フレームの座標を設定
-            event.prev_x = mouse->getPosXBefore1Frame();
-            event.prev_y = mouse->getPosYBefore1Frame();
+            event.prev_pos = mouse->getPosBefore1Frame();
 
             // ボタン状態の設定
             if (left_state == InputStateManager::State::Down) {
@@ -126,20 +124,17 @@ private:
     InputStateManager left_button_state_manager_;
 
     // ウィンドウサイズキャッシュ
-    int last_window_width_;
-    int last_window_height_;
+    Vector2<int> last_window_size_;
 
     /// @brief ウィンドウリサイズを検知してイベントを発行
     /// @brief Detect window resize and publish event
     void detectWindowResize() {
-        const int current_width = paxg::Window::width();
-        const int current_height = paxg::Window::height();
+        const Vector2<int> current_size(paxg::Window::width(), paxg::Window::height());
 
-        if (current_width != last_window_width_ || current_height != last_window_height_) {
-            EventBus::getInstance().publish(WindowResizedEvent({current_width, current_height}));
+        if (current_size != last_window_size_) {
+            EventBus::getInstance().publish(WindowResizedEvent(current_size));
 
-            last_window_width_ = current_width;
-            last_window_height_ = current_height;
+            last_window_size_ = current_size;
         }
     }
 };

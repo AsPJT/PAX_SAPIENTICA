@@ -138,7 +138,7 @@ public:
 
     // ========== ヒット判定 / Hit Testing ==========
 
-    bool isHit(const paxg::Vec2i& mouse_pos) const override {
+    bool isHit(const paxs::Vector2<int>& mouse_pos) const override {
         if (!visible_) {
             return false;
         }
@@ -146,7 +146,7 @@ public:
         const Vector2<int> texture_size = cached_texture_size_;
 
         return MapContentHitTester::testMultiplePositions(
-            mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
+            mouse_pos.x, mouse_pos.y, cached_screen_positions_,
             [texture_size](int mouse_x, int mouse_y, const paxg::Vec2<double>& pos) {
                 // テクスチャの矩形判定（中心から描画）
                 const Rect<int> texture_rect = Rect<int>::fromCenter(

@@ -94,8 +94,8 @@ namespace paxs {
         }
 
         /// @brief ヘッダーの高さを取得
-        float getHeight() const {
-            return language_selector_.getRect().h();
+        int getHeight() const {
+            return language_selector_.getRect().height();
         }
 
         /// @brief 言語変更時のハンドラー（コールバック駆動）
@@ -215,7 +215,7 @@ namespace paxs {
         void setupMenuCallbacks() {
             // View メニューのコールバック
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(paxs::MenuBarType::view);
-            if (view_menu) {
+            if (view_menu != nullptr) {
                 view_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::view, index, is_checked);
                 });
@@ -223,7 +223,7 @@ namespace paxs {
 
             // Place Names メニューのコールバック
             paxs::DropDownMenu* place_names_menu = menu_system.getDropDownMenu(paxs::MenuBarType::place_names);
-            if (place_names_menu) {
+            if (place_names_menu != nullptr) {
                 place_names_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::place_names, index, is_checked);
                 });
@@ -231,7 +231,7 @@ namespace paxs {
 
             // Item メニューのコールバック
             paxs::DropDownMenu* item_menu = menu_system.getDropDownMenu(paxs::MenuBarType::item);
-            if (item_menu) {
+            if (item_menu != nullptr) {
                 item_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::item, index, is_checked);
                 });
@@ -239,7 +239,7 @@ namespace paxs {
 
             // Structure メニューのコールバック
             paxs::DropDownMenu* structure_menu = menu_system.getDropDownMenu(paxs::MenuBarType::structure);
-            if (structure_menu) {
+            if (structure_menu != nullptr) {
                 structure_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::structure, index, is_checked);
                 });
@@ -247,7 +247,7 @@ namespace paxs {
 
             // Genome メニューのコールバック
             paxs::DropDownMenu* genome_menu = menu_system.getDropDownMenu(paxs::MenuBarType::genomes);
-            if (genome_menu) {
+            if (genome_menu != nullptr) {
                 genome_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::genomes, index, is_checked);
                 });
@@ -255,7 +255,7 @@ namespace paxs {
 
             // Map メニューのコールバック
             paxs::DropDownMenu* map_menu = menu_system.getDropDownMenu(paxs::MenuBarType::map);
-            if (map_menu) {
+            if (map_menu != nullptr) {
                 map_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::map, index, is_checked);
                 });
@@ -280,40 +280,38 @@ namespace paxs {
             github_button_.render();
         }
 
-        paxg::Rect getRect() const override {
-            return paxg::Rect{
-                0.f,
-                0.f,
-                static_cast<float>(paxg::Window::width()),
+        Rect<int> getRect() const override {
+            return { 0, 0,
+                paxg::Window::width(),
                 getHeight()
             };
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) return false;
-            if (getRect().contains(static_cast<float>(x), static_cast<float>(y))) return true;
-            if (menu_system.isHit(x, y)) return true;
-            return language_selector_.isHit(x, y);
+            if (getRect().contains(pos)) return true;
+            if (menu_system.isHit(pos)) return true;
+            return language_selector_.isHit(pos);
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             // メニューバーのマウス入力処理
-            if (menu_system.isHit(event.x, event.y)) {
+            if (menu_system.isHit(event.pos)) {
                 return menu_system.handleEvent(event);
             }
 
             // 言語選択プルダウンのマウス入力処理
-            if (language_selector_.isHit(event.x, event.y)) {
+            if (language_selector_.isHit(event.pos)) {
                 return language_selector_.handleEvent(event);
             }
 
             // GitHubボタンのマウス入力処理
-            if (github_button_.isHit(event.x, event.y)) {
+            if (github_button_.isHit(event.pos)) {
                 return github_button_.handleEvent(event);
             }
 
             // Headerの範囲内か
-            if (getRect().contains(static_cast<float>(event.x), static_cast<float>(event.y))) {
+            if (getRect().contains(event.pos)) {
                 return EventHandlingResult::Handled();
             }
 
@@ -322,7 +320,7 @@ namespace paxs {
 
         RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
         bool isVisible() const override { return true; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        void setPos(const Vector2<int>& /*pos*/) override {}
         const char* getName() const override { return "MenuBar"; }
 
     private:
@@ -354,13 +352,13 @@ namespace paxs {
         /// @brief レイアウトを計算
         void calculateLayout() {
             // 言語選択プルダウンを右端に配置
-            language_selector_.setPos(paxg::Vec2i{
-                static_cast<int>(paxg::Window::width() - language_selector_.getRect().w()),
+            language_selector_.setPos(Vector2<int>{
+                static_cast<int>(paxg::Window::width() - language_selector_.getRect().width()),
                 0
             });
-            github_button_.setPos(paxg::Vec2i{
-                static_cast<int>(language_selector_.getRect().x() - github_button_.getRect().w() - github_button_margin),
-                static_cast<int>((language_selector_.getRect().h() - github_button_.getRect().h()) / 2)
+            github_button_.setPos(Vector2<int>{
+                language_selector_.getRect().x() - github_button_.getRect().width() - github_button_margin,
+                (language_selector_.getRect().height() - github_button_.getRect().height()) / 2
             });
         }
 
@@ -383,7 +381,7 @@ namespace paxs {
 
             // View メニューの状態を初期化
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(paxs::MenuBarType::view);
-            if (!view_menu) {
+            if (view_menu == nullptr) {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
                 return;
             }
@@ -397,7 +395,7 @@ namespace paxs {
 
             // Map メニューの状態を初期化
             paxs::DropDownMenu* map_menu = menu_system.getDropDownMenu(paxs::MenuBarType::map);
-            if (!map_menu) {
+            if (map_menu == nullptr) {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'map' menu not found.");
                 return;
             }

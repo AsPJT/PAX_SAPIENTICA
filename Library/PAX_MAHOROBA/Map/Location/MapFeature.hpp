@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <string>
 
-#include <PAX_GRAPHICA/Vec2.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
@@ -93,7 +93,7 @@ public:
     /// @brief Check if mouse position hits this feature
     /// @param mouse_pos マウス座標 / Mouse position
     /// @return ヒットしたらtrue / True if hit
-    virtual bool isHit(const paxg::Vec2i& mouse_pos) const = 0;
+    virtual bool isHit(const paxs::Vector2<int>& mouse_pos) const = 0;
 
     // ========== イベント処理 / Event Handling ==========
 

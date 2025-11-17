@@ -130,13 +130,13 @@ public:
 
     // ========== ヒット判定 / Hit Testing ==========
 
-    bool isHit(const paxg::Vec2i& mouse_pos) const override {
+    bool isHit(const paxs::Vector2<int>& mouse_pos) const override {
         if (!visible_) return false;
 
         const int hit_radius = getDisplaySize() / 2;
 
         return MapContentHitTester::testMultiplePositions(
-            mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
+            mouse_pos.x, mouse_pos.y, cached_screen_positions_,
             [hit_radius](int mx, int my, const paxg::Vec2<double>& pos) {
                 return MapContentHitTester::circleHitTest(mx, my, pos, hit_radius);
             }

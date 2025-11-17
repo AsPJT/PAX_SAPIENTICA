@@ -14,6 +14,8 @@
 
 #include <cstdint>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+
 namespace paxs {
 
     /// @brief マウスボタンの状態
@@ -43,14 +45,12 @@ namespace paxs {
     /// @brief マウスイベント
     /// @brief Mouse event
     struct MouseEvent {
-        /// @brief X座標
-        int x = 0;
-        /// @brief Y座標
-        int y = 0;
-        /// @brief 前フレームのX座標
-        int prev_x = 0;
-        /// @brief 前フレームのY座標
-        int prev_y = 0;
+        /// @brief マウス座標
+        /// @brief Mouse position
+        Vector2<int> pos{};
+        /// @brief 前フレームのマウス座標
+        /// @brief Previous frame mouse position
+        Vector2<int> prev_pos{};
 
         /// @brief 左ボタンの状態
         MouseButtonState left_button_state = MouseButtonState::None;
@@ -68,7 +68,7 @@ namespace paxs {
         static constexpr std::uint8_t MODIFIER_COMMAND = 0x08;
 
         MouseEvent() = default;
-        MouseEvent(int x_, int y_) : x(x_), y(y_) {}
+        MouseEvent(const Vector2<int>& position) : pos(position), prev_pos(0, 0) {}
     };
 
     /// @brief マウスホイールイベント

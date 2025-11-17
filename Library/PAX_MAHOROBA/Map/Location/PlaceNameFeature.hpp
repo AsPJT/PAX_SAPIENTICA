@@ -126,7 +126,7 @@ public:
         return cached_display_size_;
     }
 
-    bool isHit(const paxg::Vec2i& mouse_pos) const override {
+    bool isHit(const paxs::Vector2<int>& mouse_pos) const override {
         if (!visible_) {
             return false;
         }
@@ -134,7 +134,7 @@ public:
         const Vector2<int> text_size = cached_text_size_;
 
         return MapContentHitTester::testMultiplePositions(
-            mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
+            mouse_pos.x, mouse_pos.y, cached_screen_positions_,
             [text_size](int mouse_x, int mouse_y, const paxg::Vec2<double>& pos) {
                 // テキストの矩形判定: drawAtは横方向中央、縦方向上を基準に描画
                 const Rect<int> text_rect(

@@ -210,7 +210,7 @@ namespace paxs {
                 int rect_h = static_cast<int>(rect.h());
 
                 // ヘッダー部分
-                if (event.x >= rect_x && event.x < rect_x + rect_w && event.y >= rect_y && event.y < rect_y + rect_h) {
+                if (event.pos.x >= rect_x && event.pos.x < rect_x + rect_w && event.pos.y >= rect_y && event.pos.y < rect_y + rect_h) {
                     return EventHandlingResult::Handled();
                 }
 
@@ -225,7 +225,7 @@ namespace paxs {
                         int rty = static_cast<int>(rect_tmp.y());
                         int rtw = static_cast<int>(rect_tmp.w());
                         int rth = static_cast<int>(rect_tmp.h());
-                        if (event.x >= rtx && event.x < rtx + rtw && event.y >= rty && event.y < rty + rth) {
+                        if (event.pos.x >= rtx && event.pos.x < rtx + rtw && event.pos.y >= rty && event.pos.y < rty + rth) {
                             return EventHandlingResult::Handled();
                         }
                         pos.setY(pos.y() + rect_h);
@@ -241,7 +241,7 @@ namespace paxs {
                 int rect_h = static_cast<int>(rect.h());
 
                 // ヘッダー部分をクリック：開閉をトグル
-                if (event.x >= rect_x && event.x < rect_x + rect_w && event.y >= rect_y && event.y < rect_y + rect_h) {
+                if (event.pos.x >= rect_x && event.pos.x < rect_x + rect_w && event.pos.y >= rect_y && event.pos.y < rect_y + rect_h) {
                     is_open = (not is_open);
                     return EventHandlingResult::Handled();
                 }
@@ -257,7 +257,7 @@ namespace paxs {
                         int rty = static_cast<int>(rect_tmp.y());
                         int rtw = static_cast<int>(rect_tmp.w());
                         int rth = static_cast<int>(rect_tmp.h());
-                        if (event.x >= rtx && event.x < rtx + rtw && event.y >= rty && event.y < rty + rth) {
+                        if (event.pos.x >= rtx && event.pos.x < rtx + rtw && event.pos.y >= rty && event.pos.y < rty + rth) {
                             // もし選択肢が左クリックされていたら
                             if (i < is_items.size()) {
                                 // 項目をオンオフさせる
@@ -407,15 +407,14 @@ namespace paxs {
         bool isOpen() const { return is_open; }
         void close() { is_open = false; }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& mouse_pos) const override {
             if (!isVisible()) {
                 return false;
             }
 
             // ヘッダー部分のヒットテスト
             const paxg::Rect header_rect = getRect();
-            if (x >= header_rect.x() && x < header_rect.x() + header_rect.w() &&
-                y >= header_rect.y() && y < header_rect.y() + header_rect.h()) {
+            if (header_rect.contains(mouse_pos)) {
                 return true;
             }
 
@@ -429,8 +428,7 @@ namespace paxs {
 
                 for (std::size_t i = 0; i < items_key.size(); ++i) {
                     const paxg::Rect item_rect{ pos, item_width, header_rect.h() };
-                    if (x >= item_rect.x() && x < item_rect.x() + item_rect.w() &&
-                        y >= item_rect.y() && y < item_rect.y() + item_rect.h()) {
+                    if (item_rect.contains(mouse_pos)) {
                         return true;
                     }
                     pos.setY(static_cast<int>(pos.y() + header_rect.h()));
@@ -440,8 +438,17 @@ namespace paxs {
             return false;
         }
 
-        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
-        paxg::Rect getRect() const override { return rect; }
+        void setPos(const Vector2<int>& pos) override {
+            rect.setPos(paxg::Vec2i(pos.x, pos.y));
+        }
+        Rect<int> getRect() const override {
+            return {
+                static_cast<int>(rect.x()),
+                static_cast<int>(rect.y()),
+                static_cast<int>(rect.w()),
+                static_cast<int>(rect.h())
+            };
+        }
         void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_; }
         const char* getName() const override { return "Pulldown"; }

@@ -12,6 +12,8 @@
 #ifndef PAX_MAHOROBA_I_INPUT_HANDLER_HPP
 #define PAX_MAHOROBA_I_INPUT_HANDLER_HPP
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+
 #include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
@@ -61,14 +63,13 @@ namespace paxs {
 
         /// @brief 指定座標がこのオブジェクトの範囲内かどうかをチェック（ヒットテスト）
         /// @brief Check if the specified coordinates are within this object's bounds (hit test)
-        /// @param x X座標 / X coordinate
-        /// @param y Y座標 / Y coordinate
+        /// @param pos マウス座標 / Mouse position
         /// @return 範囲内ならtrue / true if within bounds
         ///
         /// マウスイベント処理時のみ使用されます。
         /// キーボードやマウスホイールイベントでは呼び出されません。
-        virtual bool isHit(int x, int y) const {
-            (void)x; (void)y;
+        virtual bool isHit(const paxs::Vector2<int>& pos) const {
+            (void)pos;
             return true;  // デフォルトは常にヒット / Default: always hit
         }
 

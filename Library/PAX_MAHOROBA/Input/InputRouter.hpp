@@ -15,6 +15,8 @@
 #include <algorithm>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 
 namespace paxs {
@@ -145,7 +147,7 @@ namespace paxs {
                 if (handler == nullptr) continue;
 
                 // ヒットテストを実行（座標がハンドラーの範囲内かチェック）
-                if (!handler->isHit(event.x, event.y)) continue;
+                if (!handler->isHit(event.pos)) continue;
 
                 // ハンドラーにマウスイベントを渡す
                 EventHandlingResult result = handler->handleEvent(event);
@@ -242,7 +244,7 @@ namespace paxs {
                 if (layer < min_layer || layer > max_layer) continue;
 
                 // ヒットテストを実行
-                if (!handler->isHit(event.x, event.y)) continue;
+                if (!handler->isHit(event.pos)) continue;
 
                 // ハンドラーにマウスイベントを渡す
                 EventHandlingResult result = handler->handleEvent(event);
@@ -295,7 +297,7 @@ namespace paxs {
                 if (handler->getLayer() != target_layer) continue;
 
                 // ヒットテストを実行
-                if (!handler->isHit(event.x, event.y)) continue;
+                if (!handler->isHit(event.pos)) continue;
 
                 // ハンドラーにマウスイベントを渡す
                 EventHandlingResult result = handler->handleEvent(event);

@@ -69,7 +69,7 @@ namespace paxs {
             , widget_(widget)
         {}
 
-        paxg::Rect getRect() const override {
+        Rect<int> getRect() const override {
             // widgetが設定されている場合はそちらを優先（動的パネル）
             if (widget_ != nullptr) {
                 return widget_->getRect();
@@ -79,7 +79,7 @@ namespace paxs {
                 return layout->getRect();
             }
             PAXS_WARNING("UIPanelBackground::getRect: layout is not set, returning full width rect");
-            return paxg::Rect{};
+            return {0, 0, 0, 0};
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
@@ -99,18 +99,12 @@ namespace paxs {
 
             // widget_が設定されている場合（動的パネル）
             if (widget_ != nullptr) {
-                const paxg::Rect rect = widget_->getRect();
-                if (rect.w() <= 0 || rect.h() <= 0) {
+                const paxs::Rect<int> widget_rect = widget_->getRect();
+                if (widget_rect.width() <= 0 || widget_rect.height() <= 0) {
                     PAXS_WARNING(std::string("UIPanelBackground::render: ") + name_ + " (widget) has non-positive dimensions, skipping render");
                     return;
                 }
-                PanelBackgroundRenderer::draw(
-                    static_cast<int>(rect.x()),
-                    static_cast<int>(rect.y()),
-                    static_cast<int>(rect.w()),
-                    static_cast<int>(rect.h()),
-                    corner_radius_, bg_color_
-                );
+                PanelBackgroundRenderer::draw(widget_rect, corner_radius_, bg_color_);
                 return;
             }
 
@@ -125,18 +119,14 @@ namespace paxs {
                 return;
             }
 
-            PanelBackgroundRenderer::draw(
-                layout->x, layout->y,
-                layout->width, layout->height,
-                corner_radius_, bg_color_
-            );
+            PanelBackgroundRenderer::draw(layout->getRect(), corner_radius_, bg_color_);
         }
 
         const char* getName() const override { return name_; }
         RenderLayer getLayer() const override { return RenderLayer::UIBackground; }
         void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        void setPos(const Vector2<int>& /*pos*/) override {}
 };
 
 } // namespace paxs

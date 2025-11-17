@@ -109,8 +109,8 @@ namespace paxs {
 
         void placeFromRight(int offset_from_right, int y, int size) {
             const int x = paxg::Window::width() - offset_from_right;
-            setPos(paxg::Vec2i{ x, y });
-            setSize(paxg::Vec2i{ size, size });
+            setPos(Vector2<int>{ x, y });
+            setSize(Vector2<int>{ size, size });
         }
 
     private:
@@ -162,9 +162,9 @@ namespace paxs {
             }
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             for (const auto& btn : buttons_) {
-                if (btn.isHit(x, y)) {
+                if (btn.isHit(paxs::Vector2<int>(pos.x, pos.y))) {
                     return true;
                 }
             }
@@ -173,23 +173,22 @@ namespace paxs {
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             for (auto& btn : buttons_) {
-                if (btn.isHit(event.x, event.y)) {
+                if (btn.isHit(event.pos)) {
                     return btn.handleEvent(event);
                 }
             }
             return EventHandlingResult::NotHandled();
         }
 
-        paxg::Rect getRect() const override {
-            return paxg::Rect{
-                static_cast<float>(pos_.x()),
-                static_cast<float>(pos_.y()),
-                static_cast<float>(ICON_MOVE_X * 7), // 7つのアイコン
-                static_cast<float>(getHeight())
+        Rect<int> getRect() const override {
+            return {
+                pos_.x, pos_.y,
+                ICON_MOVE_X * 7, // 7つのアイコン
+                getHeight()
             };
         }
 
-        void setPos(const paxg::Vec2i& pos) override {
+        void setPos(const Vector2<int>& pos) override {
             pos_ = pos;
             layoutButtons();
         }
@@ -229,7 +228,7 @@ namespace paxs {
         const paxs::Koyomi& koyomi;
         const UILayout& ui_layout_;
         const AppStateManager& app_state_manager_;
-        paxg::Vec2i pos_{0, 0};
+        paxs::Vector2<int> pos_{0, 0};
         ClickCallback on_click_;
 
         void buildButtons() {

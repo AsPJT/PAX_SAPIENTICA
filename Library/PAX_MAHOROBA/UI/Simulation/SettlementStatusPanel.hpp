@@ -62,12 +62,9 @@ namespace paxs {
             select_draw_ = select_draw;
         }
 
-        paxg::Rect getRect() const override {
-            return paxg::Rect{
-                static_cast<float>(pos_.x()),
-                static_cast<float>(pos_.y()),
-                300.0f,  // width
-                60.0f    // height
+        Rect<int> getRect() const override {
+            return { pos_.x, pos_.y,
+                300, 60  // 幅と高さを固定
             };
         }
 
@@ -78,8 +75,8 @@ namespace paxs {
 
         void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_ && visible_manager_.isVisible(ViewMenu::simulation); }
-        void setPos(const paxg::Vec2i& pos) override { pos_ = pos; }
-        bool isHit(int /*x*/, int /*y*/) const override { return false; }
+        void setPos(const Vector2<int>& pos) override { pos_ = pos; }
+        bool isHit(const paxs::Vector2<int>& pos) const override { return false; }
         const char* getName() const override { return "SettlementStatusPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 
@@ -91,7 +88,7 @@ namespace paxs {
 
         std::size_t select_draw_ = 1;  // 表示モード (1-6)
         bool visible_ = false;  // シミュレーション初期化後に表示
-        paxg::Vec2i pos_{ start_x, start_y };
+        paxs::Vector2<int> pos_{ start_x, start_y };
 
         const paxs::FeatureVisibilityManager& visible_manager_;
 

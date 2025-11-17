@@ -18,6 +18,8 @@
 #include <PAX_MAHOROBA/UI/Debug/DebugPerformanceMonitor.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugVariableWatcher.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+
 namespace paxs {
 
 /// @brief デバッグレイヤー（デバッグ機能の統合管理）
@@ -62,24 +64,24 @@ public:
 
     /// @brief マウス移動イベントを処理
     /// @brief Handle mouse move event
-    void handleMouseMove(int mouse_x, int mouse_y) {
-        notification_manager_.handleMouseMove(mouse_x, mouse_y);
+    void handleMouseMove(const Vector2<int>& mouse_pos) {
+        notification_manager_.handleMouseMove(mouse_pos);
 
         // 将来の拡張例:
-        // console_.handleMouseMove(mouse_x, mouse_y);
+        // console_.handleMouseMove(mouse_pos);
     }
 
     /// @brief マウスクリックイベントを処理
     /// @brief Handle mouse click event
-    void handleMouseClick(int mouse_x, int mouse_y) {
+    void handleMouseClick(const Vector2<int>& mouse_pos) {
         // コンソールが表示されている場合、フィルターボタンのクリックをチェック
         if (console_.isVisible()) {
-            if (console_.handleFilterButtonClick(mouse_x, mouse_y)) {
+            if (console_.handleFilterButtonClick(mouse_pos)) {
                 return;  // フィルターボタンがクリックされた
             }
         }
 
-        notification_manager_.handleMouseClick(mouse_x, mouse_y);
+        notification_manager_.handleMouseClick(mouse_pos);
     }
 
     /// @brief 現在時刻を取得

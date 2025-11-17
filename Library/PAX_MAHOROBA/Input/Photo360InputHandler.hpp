@@ -139,9 +139,9 @@ namespace paxs {
 
         /// @brief ヒットテスト（キーボード入力のため常にtrue）
         /// @brief Hit test (always true for keyboard input)
-        bool isHit(int x, int y) const override {
-            (void)x;
-            (void)y;
+        bool isHit(const paxs::Vector2<int>& pos) const override {
+            (void)pos.x;
+            (void)pos.y;
             return true;
         }
 

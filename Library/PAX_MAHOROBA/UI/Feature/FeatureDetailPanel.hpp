@@ -70,7 +70,7 @@ namespace paxs {
             const int close_button_y = panel_y + 5;
 
             // constメソッドからsetPosを呼ぶため、const_castを使用
-            const_cast<FeatureCloseButton&>(close_button_).setPos(paxg::Vec2i{ close_button_x, close_button_y });
+            const_cast<FeatureCloseButton&>(close_button_).setPos(Vector2<int>{ close_button_x, close_button_y });
         }
 
         /// @brief 長い文字列を複数行に分割して描画
@@ -178,7 +178,7 @@ namespace paxs {
             updateCloseButtonPosition();
 
             // 閉じるボタンのヒット判定とイベント処理
-            if (close_button_.isHit(event.x, event.y)) {
+            if (close_button_.isHit(event.pos)) {
                 return close_button_.handleEvent(event);
             }
 
@@ -331,28 +331,28 @@ namespace paxs {
             calculated_height_ = (current_line + 1) * line_height + padding_top + padding_bottom;
         }
 
-        paxg::Rect getRect() const override {
+        Rect<int> getRect() const override {
             // 動的に計算された高さを使用
             // 下部を固定し、上に伸びるように計算
             const int panel_height = (calculated_height_ > 0) ? calculated_height_ : ui_layout_.feature_detail_panel_height;
             const int panel_y = calculatePanelY();
 
-            return paxg::Rect(
-                static_cast<float>(ui_layout_.feature_detail_panel.x),
-                static_cast<float>(panel_y),
-                static_cast<float>(ui_layout_.feature_detail_panel.width),
-                static_cast<float>(panel_height)
+            return Rect<int>(
+                ui_layout_.feature_detail_panel.x,
+                panel_y,
+                ui_layout_.feature_detail_panel.width,
+                panel_height
             );
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) return false;
 
             // 閉じるボタンの位置を更新
             updateCloseButtonPosition();
 
             // 閉じるボタンのヒット判定
-            return close_button_.isHit(x, y);
+            return close_button_.isHit(paxs::Vector2<int>(pos.x, pos.y));
         }
 
         bool isVisible() const override {
@@ -362,7 +362,7 @@ namespace paxs {
 
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
         const char* getName() const override { return "FeatureDetailPanel"; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        void setPos(const Vector2<int>& /*pos*/) override {}
 
     private:
         /// @brief FeatureSelectedEventのハンドラー

@@ -59,11 +59,11 @@ namespace paxs {
         std::uint_least8_t font_buffer_thickness_size = 16;
 
         // 項目の状態管理
-        std::vector<bool> is_items{};
+        std::vector<bool> is_items;
         paxs::UnorderedMap<std::uint_least32_t, std::size_t> item_index_key{};
 
         // レイアウト
-        paxg::Rect rect{};
+        paxg::Rect rect;
         paxg::Vec2i padding{ default_padding_x, default_padding_y };
         float all_rect_x{}; // 全ての項目の文字幅
 
@@ -157,7 +157,7 @@ namespace paxs {
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
-                if (item_rect.contains(static_cast<float>(event.x), static_cast<float>(event.y))) {
+                if (item_rect.contains(static_cast<float>(event.pos.x), static_cast<float>(event.pos.y))) {
                     // もともとやってたトグル処理
                     if (i < is_items.size()) {
                         const bool old_value = is_items[i];
@@ -288,7 +288,7 @@ namespace paxs {
             return result;
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& mouse_pos) const override {
             if (!visible_) {
                 return false;
             }
@@ -300,7 +300,7 @@ namespace paxs {
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
-                if (item_rect.contains((float)x, (float)y)) {
+                if (item_rect.contains((float)mouse_pos.x, (float)mouse_pos.y)) {
                     return true;
                 }
                 pos.setY((int)(pos.y() + rect.h()));
@@ -308,8 +308,17 @@ namespace paxs {
             return false;
         }
 
-        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
-        paxg::Rect getRect() const override { return rect; }
+        void setPos(const Vector2<int>& pos) override {
+            rect.setPos(paxg::Vec2i(pos.x, pos.y));
+        }
+        Rect<int> getRect() const override {
+            return {
+                static_cast<int>(rect.x()),
+                static_cast<int>(rect.y()),
+                static_cast<int>(rect.w()),
+                static_cast<int>(rect.h())
+            };
+        }
         bool isVisible() const override { return visible_; }
         void setVisible(bool visible) { visible_ = visible; }
         const char* getName() const override { return "DropDownMenu"; }

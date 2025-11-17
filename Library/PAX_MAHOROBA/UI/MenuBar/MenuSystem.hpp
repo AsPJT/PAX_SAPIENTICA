@@ -38,8 +38,8 @@ namespace paxs {
         float h = 0.f;
 
         for (paxs::DropDownMenu& menu : menu_list) {
-            const float w = menu.getRect().w();
-            const float item_h = menu.getRect().h();
+            const float w = menu.getRect().width();
+            const float item_h = menu.getRect().height();
 
             menu.setRectX(x);
 
@@ -66,7 +66,7 @@ namespace paxs {
             const paxs::MenuBarType menu_type_) {
 
             if (menu_list.size() != 0) {
-                start_x += static_cast<std::size_t>(menu_list.back().getRect().w());
+                start_x += static_cast<std::size_t>(menu_list.back().getRect().width());
             }
             menu_list_key.emplace(menu_type_, menu_list.size());
             menu_list.emplace_back(paxs::DropDownMenu(
@@ -85,7 +85,7 @@ namespace paxs {
             }
 
             for (std::size_t i = 0; i < menu_list.size(); ++i) {
-                if (menu_list[i].isHitHeader(event.x, event.y)) {
+                if (menu_list[i].isHitHeader(event.pos.x, event.pos.y)) {
                     const bool was_open = menu_list[i].isVisible();
                     // 全部閉じる
                     for (auto& menu : menu_list) {
@@ -124,15 +124,15 @@ namespace paxs {
             return (menu_list_key.find(type) != menu_list_key.end()) ? &menu_list[menu_list_key.at(type)] : nullptr;
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             // ヘッダー列に当たっていたらtrue
             for (auto const& mi : menu_list) {
-                if (mi.isHitHeader(x, y)) return true;
+                if (mi.isHitHeader(pos.x, pos.y)) return true;
             }
 
             // 開いてる子がヒットしていないかも見る
             for (auto const& mi : menu_list) {
-                if (mi.isHit(x, y)) {
+                if (mi.isHit(pos)) {
                     return true;
                 }
             }
@@ -147,8 +147,16 @@ namespace paxs {
         }
 
         bool isVisible() const override { return true; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
-        paxg::Rect getRect() const override { return bar_rect_; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
+        Rect<int> getRect() const override {
+        const paxg::Rect& r = bar_rect_;
+        return {
+            static_cast<int>(r.x()),
+            static_cast<int>(r.y()),
+            static_cast<int>(r.w()),
+            static_cast<int>(r.h())
+        };
+    }
         const char* getName() const override { return "MenuSystem"; }
         RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
     };

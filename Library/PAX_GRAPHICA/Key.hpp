@@ -12,12 +12,7 @@
 #ifndef PAX_GRAPHICA_KEY_HPP
 #define PAX_GRAPHICA_KEY_HPP
 
-#include <algorithm>
 #include <array>
-#include <cmath>
-#include <memory>
-#include <new>
-#include <vector>
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
@@ -27,7 +22,6 @@
 #include <SFML/Graphics.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>

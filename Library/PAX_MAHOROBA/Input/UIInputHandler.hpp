@@ -59,7 +59,7 @@ namespace paxs {
             sortWidgets();
 
             for (IInputHandler* handler : registered_widgets_) {
-                if (handler->isHit(event.x, event.y)) {
+                if (handler->isHit(event.pos)) {
                     EventHandlingResult result = handler->handleEvent(event);
                     if (result.handled) {
                         return result; // イベントが処理されたら終了
@@ -69,9 +69,9 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             for (const IInputHandler* handler : registered_widgets_) {
-                if (handler->isHit(x, y)) {
+                if (handler->isHit(pos)) {
                     return true;
                 }
             }

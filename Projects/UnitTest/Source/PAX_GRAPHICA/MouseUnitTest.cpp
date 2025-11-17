@@ -42,14 +42,13 @@ TEST(MouseUnitTest, PositionGetters) {
     // Position values should be accessible (exact values depend on platform)
     int x = mouse->getPosX();
     int y = mouse->getPosY();
-    int xBefore = mouse->getPosXBefore1Frame();
-    int yBefore = mouse->getPosYBefore1Frame();
+    const paxs::Vector2<int> before = mouse->getPosBefore1Frame();
 
     // Just verify they return without crashing
     ASSERT_TRUE(x >= -1);  // -1 is initial value
     ASSERT_TRUE(y >= -1);
-    ASSERT_TRUE(xBefore >= 0);
-    ASSERT_TRUE(yBefore >= 0);
+    ASSERT_TRUE(before.x >= 0);
+    ASSERT_TRUE(before.y >= 0);
 }
 
 // Test mouse button state methods
@@ -106,13 +105,12 @@ TEST(MouseUnitTest, CalledFirstEveryFrame) {
     ASSERT_NO_THROW(mouse->calledFirstEveryFrame());
 
     // After calling, previous state should be updated
-    int xBefore = mouse->getPosXBefore1Frame();
-    int yBefore = mouse->getPosYBefore1Frame();
+    const paxs::Vector2<int> before = mouse->getPosBefore1Frame();
     bool leftBefore = mouse->getLeftBefore1Frame();
 
     // Values should be accessible
-    ASSERT_TRUE(xBefore >= -1);
-    ASSERT_TRUE(yBefore >= -1);
+    ASSERT_TRUE(before.x >= -1);
+    ASSERT_TRUE(before.y >= -1);
     ASSERT_FALSE(leftBefore);  // Initially false
 }
 

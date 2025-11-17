@@ -25,6 +25,7 @@
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
@@ -418,7 +419,7 @@ public:
     }
 
     /// @brief マウスクリックでフィルターボタンをチェック
-    bool handleFilterButtonClick(int mouse_x, int mouse_y) {
+    bool handleFilterButtonClick(const Vector2<int>& mouse_pos) {
         if (!visible_) return false;
 
         const int filter_y = CONSOLE_MARGIN_Y + 35;
@@ -427,22 +428,22 @@ public:
         const int button_x3 = button_x2 + FILTER_BUTTON_WIDTH + FILTER_BUTTON_MARGIN;
 
         // INFO ボタン
-        if (mouse_x >= button_x1 && mouse_x < button_x1 + FILTER_BUTTON_WIDTH &&
-            mouse_y >= filter_y && mouse_y < filter_y + FILTER_BUTTON_HEIGHT) {
+        if (mouse_pos.x >= button_x1 && mouse_pos.x < button_x1 + FILTER_BUTTON_WIDTH &&
+            mouse_pos.y >= filter_y && mouse_pos.y < filter_y + FILTER_BUTTON_HEIGHT) {
             toggleFilter(LogEvent::Level::Info);
             return true;
         }
 
         // WARNING ボタン
-        if (mouse_x >= button_x2 && mouse_x < button_x2 + FILTER_BUTTON_WIDTH &&
-            mouse_y >= filter_y && mouse_y < filter_y + FILTER_BUTTON_HEIGHT) {
+        if (mouse_pos.x >= button_x2 && mouse_pos.x < button_x2 + FILTER_BUTTON_WIDTH &&
+            mouse_pos.y >= filter_y && mouse_pos.y < filter_y + FILTER_BUTTON_HEIGHT) {
             toggleFilter(LogEvent::Level::Warning);
             return true;
         }
 
         // ERROR ボタン
-        if (mouse_x >= button_x3 && mouse_x < button_x3 + FILTER_BUTTON_WIDTH &&
-            mouse_y >= filter_y && mouse_y < filter_y + FILTER_BUTTON_HEIGHT) {
+        if (mouse_pos.x >= button_x3 && mouse_pos.x < button_x3 + FILTER_BUTTON_WIDTH &&
+            mouse_pos.y >= filter_y && mouse_pos.y < filter_y + FILTER_BUTTON_HEIGHT) {
             toggleFilter(LogEvent::Level::Error);
             return true;
         }

@@ -150,13 +150,13 @@ namespace paxs {
             }
         }
 
-        paxg::Rect getRect() const override {
+        Rect<int> getRect() const override {
             return ui_layout_.debug_info_panel.getRect();
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) return false;
-            (void)x; (void)y;
+            (void)pos.x; (void)pos.y;
             return false;
         }
 
@@ -166,7 +166,7 @@ namespace paxs {
 
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
         const char* getName() const override { return "DebugInfoPanel"; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        void setPos(const Vector2<int>& /*pos*/) override {}
     };
 
 }

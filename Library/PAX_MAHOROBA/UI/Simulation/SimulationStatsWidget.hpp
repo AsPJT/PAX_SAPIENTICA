@@ -33,7 +33,7 @@ namespace paxs {
     class SimulationStatsWidget : public IWidget {
     private:
         const SimulationManager& simulation_manager_;
-        paxg::Vec2i pos_{0, 0};
+        paxs::Vector2<int> pos_ {0, 0};
 
         static constexpr int line_height_ = 25;
         static constexpr int label_width_ = 130;
@@ -55,12 +55,12 @@ namespace paxs {
             font->draw(
                 (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"人口: ") : "Population: ",
-                paxg::Vec2i(pos_.x(), pos_.y() + line_height_ * current_line),
+                paxg::Vec2i(pos_.x, pos_.y + (line_height_ * current_line)),
                 paxg::Color(0, 0, 0)
             );
             font->draw(
                 std::to_string(simulation_manager_.getPopulation()),
-                paxg::Vec2i(pos_.x() + label_width_, pos_.y() + line_height_ * current_line++),
+                paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
                 paxg::Color(0, 0, 0)
             );
 
@@ -68,12 +68,12 @@ namespace paxs {
             font->draw(
                 (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
                     reinterpret_cast<const char*>(u8"集落: ") : "Settlements: ",
-                paxg::Vec2i(pos_.x(), pos_.y() + line_height_ * current_line),
+                paxg::Vec2i(pos_.x, pos_.y + (line_height_ * current_line)),
                 paxg::Color(0, 0, 0)
             );
             font->draw(
                 std::to_string(simulation_manager_.getSettlementCount()),
-                paxg::Vec2i(pos_.x() + label_width_, pos_.y() + line_height_ * current_line++),
+                paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
                 paxg::Color(0, 0, 0)
             );
         }
@@ -82,17 +82,14 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        paxg::Rect getRect() const override {
-            return paxg::Rect{
-                static_cast<float>(pos_.x()),
-                static_cast<float>(pos_.y()),
-                static_cast<float>(label_width_ + 100),  // ラベル幅 + 数値表示幅
-                static_cast<float>(line_height_ * 2)      // 2行分
+        Rect<int> getRect() const override {
+            return { pos_.x, pos_.y,
+                label_width_ + 100,  // ラベル幅 + 数値表示幅
+                line_height_ * 2      // 2行分
             };
         }
-
         bool isVisible() const override { return true; }
-        void setPos(const paxg::Vec2i& pos) override { pos_ = pos; }
+        void setPos(const Vector2<int>& pos) override { pos_ = pos; }
         const char* getName() const override { return "SimulationStatsWidget"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
     };

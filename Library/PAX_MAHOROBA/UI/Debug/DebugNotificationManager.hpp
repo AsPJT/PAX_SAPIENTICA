@@ -24,6 +24,7 @@
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 
@@ -125,15 +126,15 @@ public:
         updateLayout();
     }
 
-    void handleMouseMove(int mouse_x, int mouse_y) {
+    void handleMouseMove(const Vector2<int>& mouse_pos) {
         for (auto& item : notification_stack_) {
-            item.is_close_button_hovered = item.close_button_rect.contains(mouse_x, mouse_y);
+            item.is_close_button_hovered = item.close_button_rect.contains(mouse_pos);
         }
     }
 
-    void handleMouseClick(int mouse_x, int mouse_y) {
+    void handleMouseClick(const Vector2<int>& mouse_pos) {
         for (const auto& item : notification_stack_) {
-            if (item.close_button_rect.contains(mouse_x, mouse_y)) {
+            if (item.close_button_rect.contains(mouse_pos)) {
                 removeNotification(item.id);
                 break;
             }

@@ -257,11 +257,11 @@ namespace paxs {
             }
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) return false;
             for (const IWidget* panel : panels) {
                 if (panel) {
-                    if (panel->isHit(x, y)) {
+                    if (panel->isHit(pos)) {
                         return true;
                     }
                 } else {
@@ -274,7 +274,7 @@ namespace paxs {
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             for (IWidget* panel : panels) {
                 if (panel) {
-                    if (panel->isHit(event.x, event.y)) {
+                    if (panel->isHit(event.pos)) {
                         EventHandlingResult result = panel->handleEvent(event);
                         if (result.handled) {
                             return result;
@@ -294,8 +294,8 @@ namespace paxs {
         bool isVisible() const override {
             return visible_manager.isVisible(ViewMenu::ui);
         }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
-        paxg::Rect getRect() const override { return paxg::Rect{}; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
+        Rect<int> getRect() const override { return Rect<int>(0, 0, 0, 0); }
         const char* getName() const override { return "UILayer"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
     };

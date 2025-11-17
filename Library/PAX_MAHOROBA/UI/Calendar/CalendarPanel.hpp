@@ -65,9 +65,9 @@ namespace paxs {
             return time_control_widget_.handleEvent(event);
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) return false;
-            return time_control_widget_.isHit(x, y);
+            return time_control_widget_.isHit(paxs::Vector2<int>(pos.x, pos.y));
         }
 
         bool isVisible() const override {
@@ -75,8 +75,8 @@ namespace paxs {
         }
         const char* getName() const override { return "CalendarPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
-        paxg::Rect getRect() const override { return paxg::Rect{}; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
+        Rect<int> getRect() const override { return {0, 0, 0, 0}; }
     };
 
 } // namespace paxs

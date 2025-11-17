@@ -12,14 +12,14 @@
 #ifndef PAX_MAHOROBA_CLICK_CONTEXT_HPP
 #define PAX_MAHOROBA_CLICK_CONTEXT_HPP
 
-#include <PAX_GRAPHICA/Vec2.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxs {
 
 /// @brief クリックコンテキスト - クリック時に必要なパラメータをまとめた構造体
 /// @brief Click context - Structure containing parameters needed for click handling
 struct ClickContext {
-    paxg::Vec2i mouse_pos;         ///< マウス座標 / Mouse position
+    paxs::Vector2<int> mouse_pos;         ///< マウス座標 / Mouse position
 };
 
 } // namespace paxs

@@ -13,7 +13,9 @@
 #ifndef PAX_MAHOROBA_UI_ICON_BUTTON_HPP
 #define PAX_MAHOROBA_UI_ICON_BUTTON_HPP
 
+#include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
+#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
@@ -36,25 +38,24 @@ namespace paxs {
             if (!icon_textures.isSuccessfullyLoaded()) return;
             if (!icon_textures.contains(icon_texture_path_hash)) return;
 
-            icon_textures[icon_texture_path_hash].resizedDraw(static_cast<int>(rect.w()), paxg::Vec2i{
-                static_cast<int>(rect.x()),
-                static_cast<int>(rect.y())
-            });
+            icon_textures[icon_texture_path_hash].resizedDraw(rect.width(),
+                paxg::Vec2i{ rect.x(), rect.y() }
+            );
         }
 
-        paxg::Rect getRect() const override { return rect; }
+        Rect<int> getRect() const override { return rect; }
         const char* getName() const override { return name; }
         bool isVisible() const override { return true; }
-        void setPos(const paxg::Vec2i& pos) override { rect.setPos(pos); }
+        void setPos(const Vector2<int>& pos) override { rect.position = pos; }
 
     protected:
-        void setSize(const paxg::Vec2i& size) { rect.setSize(size); }
+        void setSize(const Vector2<int>& size) { rect.size = size; }
 
     private:
         const std::uint_least32_t icon_texture_path_hash;
         const char* name;
 
-        paxg::Rect rect;
+        paxs::Rect<int> rect;
 
         inline static paxs::KeyValueTSV<paxg::Texture> icon_textures;
 

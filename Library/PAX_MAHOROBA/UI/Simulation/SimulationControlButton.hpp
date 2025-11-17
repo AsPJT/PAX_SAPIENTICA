@@ -66,13 +66,13 @@ namespace paxs {
 
         void placeFromRight(int offset_from_right, int y, int size) {
             const int x = paxg::Window::width() - offset_from_right;
-            setPos(paxg::Vec2i{ x, y });
-            setSize(paxg::Vec2i{ size, size });
+            setPos(Vector2<int>{ x, y });
+            setSize(Vector2<int>{ size, size });
         }
 
         void setButtonPos(int x, int y, int size) {
-            setPos(paxg::Vec2i{ x, y });
-            setSize(paxg::Vec2i{ size, size });
+            setPos(Vector2<int>{ x, y });
+            setSize(Vector2<int>{ size, size });
         }
     private:
         Id id_ = Id::None;
@@ -128,23 +128,23 @@ namespace paxs {
             }
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) {
                 return false;
             }
             if (simulation_state_ == SimulationState::Uninitialized) {
-                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Initialize)].isHit(x, y);
+                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Initialize)].isHit(pos);
             }
             if (simulation_state_ == SimulationState::Playing) {
                 // 再生中 → 停止ボタンのみ有効
-                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].isHit(x, y);
+                return buttons_[static_cast<std::size_t>(SimulationControlButton::Id::Stop)].isHit(pos);
             }
             // 停止中
             for (const auto& btn : buttons_) {
                 if (btn.getId() == SimulationControlButton::Id::Initialize || btn.getId() == SimulationControlButton::Id::Stop) {
                     continue;
                 }
-                if (btn.isHit(x, y)) {
+                if (btn.isHit(pos)) {
                     return true;
                 }
             }
@@ -164,7 +164,7 @@ namespace paxs {
                 if (btn.getId() == SimulationControlButton::Id::Initialize || btn.getId() == SimulationControlButton::Id::Stop) {
                     continue;
                 }
-                if (btn.isHit(event.x, event.y)) {
+                if (btn.isHit(event.pos)) {
                     return btn.handleEvent(event);
                 }
             }
@@ -206,8 +206,8 @@ namespace paxs {
             }
         }
 
-        paxg::Rect getRect() const override { return {}; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        Rect<int> getRect() const override { return {0, 0, 0, 0}; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
         bool isVisible() const override { return true; }
 
     private:

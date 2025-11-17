@@ -20,6 +20,8 @@
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 #include <PAX_MAHOROBA/Rendering/ShadowRenderer.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
+
 namespace paxs {
 
     /// @brief UIパネルの背景と影を描画するクラス
@@ -94,31 +96,28 @@ namespace paxs {
 
         /// @brief 背景と影を描画（角丸）
         /// @brief Draw background and shadow (rounded corners)
-        /// @param x パネルのX座標 / Panel X coordinate
-        /// @param y パネルのY座標 / Panel Y coordinate
-        /// @param width パネルの幅 / Panel width
-        /// @param height パネルの高さ / Panel height
+        /// @param rect パネルの矩形領域 / Panel rectangle
         /// @param corner_radius 角の丸み半径 / Corner radius (default: 10)
         /// @param bg_color 背景色 / Background color (default: white)
         /// @param layer レンダリングレイヤー / Rendering layer (default: UIBackground)
         static void draw(
-            int x, int y, int width, int height,
+            const paxs::Rect<int>& rect,
             int corner_radius = 10,
             const paxg::Color& bg_color = paxg::Color{255, 255, 255},
             RenderLayer layer = RenderLayer::UIBackground
         ) {
 #ifdef PAXS_USING_SIV3D
             // Siv3D: バッチ描画に登録（レイヤー別）
-            shadow_shapes_map_[layer].emplace_back([x, y, width, height, corner_radius]() {
-                paxg::RoundRect{ x, y, width, height, corner_radius }.draw();
+            shadow_shapes_map_[layer].emplace_back([rect, corner_radius]() {
+                paxg::RoundRect{ rect.x(), rect.y(), rect.width(), rect.height(), corner_radius }.draw();
             });
-            panel_shapes_map_[layer].emplace_back([x, y, width, height, corner_radius, bg_color]() {
-                paxg::RoundRect{ x, y, width, height, corner_radius }.draw(bg_color);
+            panel_shapes_map_[layer].emplace_back([rect, corner_radius, bg_color]() {
+                paxg::RoundRect{ rect.x(), rect.y(), rect.width(), rect.height(), corner_radius }.draw(bg_color);
             });
 #else
             // SFML/DxLib: 即座に描画
             (void)layer;
-            paxg::RoundRect{ x, y, width, height, corner_radius }
+            paxg::RoundRect{ rect.x(), rect.y(), rect.width(), rect.height(), corner_radius }
                 .drawShadow({1, 1}, 4, 1).draw(bg_color);
 #endif
         }

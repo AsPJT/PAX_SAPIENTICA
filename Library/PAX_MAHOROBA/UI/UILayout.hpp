@@ -48,13 +48,8 @@ namespace paxs {
             content_height = height - padding_top - padding_bottom;
         }
 
-        paxg::Rect getRect() const {
-            return paxg::Rect{
-                static_cast<float>(x),
-                static_cast<float>(y),
-                static_cast<float>(width),
-                static_cast<float>(height)
-            };
+        paxs::Rect<int> getRect() const {
+            return {x, y, width, height};
         }
     };
 

@@ -335,7 +335,7 @@ namespace paxs {
         }
 
         /// @brief マウス座標でFeatureを検索（入力処理用）
-        MapFeature* findFeatureAt(const paxg::Vec2i& mouse_pos) {
+        MapFeature* findFeatureAt(const paxs::Vector2<int>& mouse_pos) {
             for (auto& feature : features_) {
                 if (feature && feature->isVisible() && feature->isHit(mouse_pos)) {
                     return feature.get();

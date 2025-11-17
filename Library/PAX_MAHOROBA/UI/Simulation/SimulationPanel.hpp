@@ -197,7 +197,7 @@ namespace paxs {
             }
 
             // まずプルダウンを処理
-            if (simulation_pulldown.isHit(event.x, event.y)) {
+            if (simulation_pulldown.isHit(event.pos)) {
                 if (event.left_button_state == MouseButtonState::Released) {
                     return simulation_pulldown.handleEvent(event);
                 } else {
@@ -206,17 +206,17 @@ namespace paxs {
             }
 
             // 次にボタンを処理
-            if (control_buttons_.isHit(event.x, event.y)) {
+            if (control_buttons_.isHit(event.pos)) {
                 return control_buttons_.handleEvent(event);
             }
 
             return EventHandlingResult::NotHandled();
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) return false;
-            if (simulation_pulldown.isHit(x, y)) return true;
-            if (control_buttons_.isHit(x, y)) return true;
+            if (simulation_pulldown.isHit(paxs::Vector2<int>(pos.x, pos.y))) return true;
+            if (control_buttons_.isHit(paxs::Vector2<int>(pos.x, pos.y))) return true;
             return false;
         }
 
@@ -224,8 +224,8 @@ namespace paxs {
         void calculateLayout() {
 #ifdef PAXS_USING_SIMULATOR
             // プルダウンの位置をUILayoutから取得
-            simulation_pulldown.setPos(paxg::Vec2i{
-                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().w() - ui_layout_.simulation_pulldown_right_margin),
+            simulation_pulldown.setPos(Vector2<int>{
+                static_cast<int>(paxg::Window::width() - simulation_pulldown.getRect().width() - ui_layout_.simulation_pulldown_right_margin),
                 ui_layout_.simulation_pulldown_y_position
             });
 
@@ -233,7 +233,7 @@ namespace paxs {
             control_buttons_.setButtonsBaseY(ui_layout_.simulation_buttons_base_y);
 
             // 統計ウィジェットの位置
-            stats_widget_.setPos(paxg::Vec2i{
+            stats_widget_.setPos(Vector2<int>{
                 static_cast<int>(paxg::Window::width() - 250),
                 ui_layout_.simulation_pulldown_y_position
             });
@@ -248,8 +248,8 @@ namespace paxs {
         }
         const char* getName() const override { return "SimulationPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-        paxg::Rect getRect() const override { return paxg::Rect{};}
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        Rect<int> getRect() const override { return {0, 0, 0, 0}; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
     };
 }
 

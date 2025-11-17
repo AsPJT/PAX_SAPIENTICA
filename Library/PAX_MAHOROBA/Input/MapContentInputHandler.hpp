@@ -59,11 +59,9 @@ namespace paxs {
             }
 
             // キャッシュが有効かチェック
-            if (!hit_cache_.valid ||
-                hit_cache_.cached_x != event.x ||
-                hit_cache_.cached_y != event.y) {
+            if (!hit_cache_.valid || hit_cache_.cached_pos != event.pos) {
                 // isHit() が先に呼ばれているはずだが、念のため再チェック
-                if (!isHit(event.x, event.y)) {
+                if (!isHit(event.pos)) {
                     return EventHandlingResult::NotHandled();
                 }
             }
@@ -71,7 +69,7 @@ namespace paxs {
             // キャッシュされたFeatureに対してonClickを呼び出し
             if (hit_cache_.hit_feature != nullptr) {
                 ClickContext context;
-                context.mouse_pos = paxg::Vec2i(event.x, event.y);
+                context.mouse_pos = event.pos;
 
                 hit_cache_.hit_feature->onClick(context);
 
@@ -83,22 +81,21 @@ namespace paxs {
             return EventHandlingResult::NotHandled();
         }
 
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!visibility_manager_.isVisible(ViewMenu::map)) {
                     return false;
             }
 
             // 座標が変わったらキャッシュ無効化
-            if (hit_cache_.cached_x != x || hit_cache_.cached_y != y) {
+            if (hit_cache_.cached_pos != pos) {
                 hit_cache_.valid = false;
             }
 
             if (!hit_cache_.valid) {
-                hit_cache_.cached_x = x;
-                hit_cache_.cached_y = y;
+                hit_cache_.cached_pos = pos;
 
                 // 新システム: MapContentHitTesterを使用してヒットテスト
-                MapFeature* hit_feature = MapContentHitTester::findFeatureAt(features_, render_context_, x, y);
+                MapFeature* hit_feature = MapContentHitTester::findFeatureAt(features_, render_context_, pos.x, pos.y);
 
                 if (hit_feature != nullptr) {
                     hit_cache_.hit_feature = hit_feature;
@@ -128,8 +125,7 @@ namespace paxs {
         struct HitCache {
             bool valid = false;
             MapFeature* hit_feature = nullptr;  ///< ヒットしたFeature（所有権なし）
-            int cached_x = -1;
-            int cached_y = -1;
+            paxs::Vector2<int> cached_pos{-1, -1};
         };
         mutable HitCache hit_cache_;
     };
@@ -157,7 +153,7 @@ namespace paxs {
             if (feature->getScreenPositions().empty()) continue;
 
             // Featureのヒット判定メソッドを呼び出し
-            if (feature->isHit(paxg::Vec2i(mouse_x, mouse_y))) {
+            if (feature->isHit(paxs::Vector2<int>(mouse_x, mouse_y))) {
                 return feature.get();
             }
         }

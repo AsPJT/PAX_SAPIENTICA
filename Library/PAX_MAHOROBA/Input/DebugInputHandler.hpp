@@ -57,7 +57,7 @@ public:
     explicit DebugInputHandler(DebugLayer* debug_layer)
         : debug_layer_(debug_layer) {
         // テスト用変数を登録
-        if (debug_layer_) {
+        if (debug_layer_ != nullptr) {
             auto& watcher = debug_layer_->getVariableWatcher();
             watcher.addIntVariable("test_notification_counter", &test_notification_counter_);
             watcher.addIntVariable("test_int_value", &test_int_value_);
@@ -75,7 +75,7 @@ public:
 
     // IInputHandler実装
     EventHandlingResult handleEvent(const KeyboardEvent& /*event*/) override {
-        if (!debug_layer_) {
+        if (debug_layer_ == nullptr) {
             return EventHandlingResult::NotHandled();
         }
 
@@ -243,16 +243,16 @@ private:
 public:
 
     EventHandlingResult handleEvent(const MouseEvent& event) override {
-        if (!debug_layer_) {
+        if (debug_layer_ == nullptr) {
             return EventHandlingResult::NotHandled();
         }
 
         // マウス移動は常に処理（ホバー状態の更新）
-        debug_layer_->handleMouseMove(event.x, event.y);
+        debug_layer_->handleMouseMove(event.pos);
 
         // マウスクリックの処理
         if (event.left_button_state == MouseButtonState::Pressed) {
-            debug_layer_->handleMouseClick(event.x, event.y);
+            debug_layer_->handleMouseClick(event.pos);
             // デバッグレイヤーでイベントが処理された場合でも他のハンドラーにも伝播
             return EventHandlingResult::NotHandled();
         }
@@ -261,7 +261,7 @@ public:
     }
 
     EventHandlingResult handleEvent(const MouseWheelEvent& event) override {
-        if (!debug_layer_) {
+        if (debug_layer_ == nullptr) {
             return EventHandlingResult::NotHandled();
         }
 

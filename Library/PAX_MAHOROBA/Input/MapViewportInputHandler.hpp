@@ -18,7 +18,6 @@
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Key.hpp>
-#include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -82,9 +81,9 @@ namespace paxs {
                 double center_y = viewport_.getCenterY();
 
                 center_x += height / static_cast<double>(paxg::Window::height()) *
-                    static_cast<double>(event.prev_x - event.x);
+                    static_cast<double>(event.prev_pos.x - event.pos.x);
                 center_y += height / static_cast<double>(paxg::Window::height()) *
-                    static_cast<double>(event.y - event.prev_y);
+                    static_cast<double>(event.pos.y - event.prev_pos.y);
 
                 // 経度の範囲調整
                 if (center_x < MapViewportConstants::longitude_min) {
@@ -379,7 +378,7 @@ namespace paxs {
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
-        bool isHit(int /*x*/, int /*y*/) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             // 画面全体が対象なので常にtrue
             return true;
         }
