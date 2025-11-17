@@ -207,17 +207,13 @@ namespace paxs {
             if (zoom_in) {
                 if (height > min_height) {
                     height -= (height / expansion_size);
-                    if (height < min_height) {
-                        height = min_height;
-                    }
+                    height = (std::max)(height, min_height);
                     changed = true;
                 }
             } else {
                 if (height < max_height) {
                     height += (height / expansion_size);
-                    if (height > max_height) {
-                        height = max_height;
-                    }
+                    height = (std::min)(height, max_height);
                     changed = true;
                 }
             }

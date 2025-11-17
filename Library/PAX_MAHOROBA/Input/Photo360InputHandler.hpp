@@ -12,6 +12,8 @@
 #ifndef PAX_MAHOROBA_INPUT_PHOTO_360_INPUT_HANDLER_HPP
 #define PAX_MAHOROBA_INPUT_PHOTO_360_INPUT_HANDLER_HPP
 
+#include <algorithm>
+
 #include <PAX_GRAPHICA/Key.hpp>
 
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
@@ -95,16 +97,12 @@ namespace paxs {
             // Zoom operation: Q/E
             if (paxg::PAXG_KEY_Q.pressed()) {
                 rotZ -= zoom_speed_;
-                if (rotZ < zoom_min_) {
-                    rotZ = zoom_min_;
-                }
+                rotZ = (std::max)(rotZ, zoom_min_);
                 handled = true;
             }
             if (paxg::PAXG_KEY_E.pressed()) {
                 rotZ += zoom_speed_;
-                if (rotZ > zoom_max_) {
-                    rotZ = zoom_max_;
-                }
+                rotZ = (std::min)(rotZ, zoom_max_);
                 handled = true;
             }
 

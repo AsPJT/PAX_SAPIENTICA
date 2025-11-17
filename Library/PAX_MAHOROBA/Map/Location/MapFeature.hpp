@@ -79,7 +79,7 @@ public:
     /// @brief スクリーン座標を取得（経度ラップ処理により複数の座標を返す）
     /// @brief Get screen positions (returns multiple positions due to longitude wrapping)
     /// @return スクリーン座標のリスト / List of screen positions
-    virtual std::vector<paxg::Vec2i> getScreenPositions() const = 0;
+    virtual std::vector<paxg::Vec2<double>> getScreenPositions() const = 0;
 
     /// @brief 表示サイズを取得
     /// @brief Get display size
@@ -110,9 +110,7 @@ public:
     }
 
 protected:
-    bool visible_ = true;     ///< 可視性 / Visibility
-    double min_year_ = 0.0;   ///< 開始年（ユリウス日） / Start year (Julian Day Number)
-    double max_year_ = 0.0;   ///< 終了年（ユリウス日） / End year (Julian Day Number)
+    bool visible_ = true;           ///< 可視性 / Visibility
 };
 
 } // namespace paxs

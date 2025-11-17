@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
@@ -36,22 +37,20 @@ namespace paxs {
             const paxs::MercatorDeg& start_coordinate_,  // 経緯度
             const paxs::MercatorDeg& end_coordinate_,  // 経緯度
             const double overall_length_,  // 全長
-            const double min_zoom_level_,  // 表示する最小ズームレベル
-            const double max_zoom_level_,  // 表示する最大ズームレベル
-            const double min_year_,  // 可視化する時代（古い年～）
-            const double max_year_,  // 可視化する時代（～新しい年）
+            const Range<double>& zoom_range_,  // 表示するズームレベル範囲
+            const Range<double>& year_range_,  // 可視化する時代範囲
             const std::uint_least32_t feature_type_hash_,  // 地物の種別を識別するハッシュ値
             const std::uint_least32_t texture_key_ // テクスチャキー
         ) noexcept
             : person_name(person_name_), start_coordinate(start_coordinate_), end_coordinate(end_coordinate_), overall_length(overall_length_),
-            min_zoom_level(min_zoom_level_), max_zoom_level(max_zoom_level_), min_year(min_year_), max_year(max_year_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
+            zoom_range(zoom_range_), year_range(year_range_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
 
         paxs::UnorderedMap<std::uint_least32_t, std::string> person_name{}; // 人物名
         paxs::MercatorDeg start_coordinate; // 経緯度
         paxs::MercatorDeg end_coordinate; // 経緯度
         double overall_length = 10; // 全長
-        double min_zoom_level = 0.0, max_zoom_level = 9999.0; // 表示するズームレベル範囲
-        double min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
+        Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
+        Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "person"）
         std::uint_least32_t texture_key = 0; // テクスチャキー
     };
@@ -64,8 +63,8 @@ namespace paxs {
         paxs::MercatorDeg start_end_coordinate{}; // 経緯度
         paxs::MercatorDeg end_start_coordinate{}; // 経緯度
         paxs::MercatorDeg end_end_coordinate{}; // 経緯度
-        double min_zoom_level = 0.0, max_zoom_level = 9999.0; // 表示するズームレベル範囲
-        double min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
+        Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
+        Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "person"）
         std::uint_least32_t texture_key = 0; // テクスチャキー
 
@@ -76,17 +75,15 @@ namespace paxs {
             paxs::MercatorDeg start_end_coordinate_, // 経緯度
             paxs::MercatorDeg end_start_coordinate_, // 経緯度
             paxs::MercatorDeg end_end_coordinate_, // 経緯度
-            const double min_zoom_level_,  // 表示する最小ズームレベル
-            const double max_zoom_level_,  // 表示する最大ズームレベル
-            const double min_year_,  // 可視化する時代（古い年～）
-            const double max_year_,  // 可視化する時代（～新しい年）
+            const Range<double>& zoom_range_,  // 表示するズームレベル範囲
+            const Range<double>& year_range_,  // 可視化する時代範囲
             const std::uint_least32_t feature_type_hash_,  // 地物の種別を識別するハッシュ値
             const std::uint_least32_t texture_key_ // テクスチャキー
         ) noexcept
             : person_location_list(location_point_list_),
             start_start_coordinate(start_start_coordinate_), start_end_coordinate(start_end_coordinate_),
             end_start_coordinate(end_start_coordinate_), end_end_coordinate(end_end_coordinate_),
-            min_zoom_level(min_zoom_level_), max_zoom_level(max_zoom_level_), min_year(min_year_), max_year(max_year_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
+            zoom_range(zoom_range_), year_range(year_range_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
 
     };
 
@@ -261,10 +258,14 @@ namespace paxs {
                             end_point_longitude, // 経度
                             end_point_latitude)).toMercatorDeg(), // 緯度
                     StringUtils::safeStod(overall_length_str, 1000.0, true), // 全長
-                    StringUtils::safeStod(min_size_str, params.min_zoom_level, true), // 最小サイズ
-                    StringUtils::safeStod(max_size_str, params.max_zoom_level, true), // 最大サイズ
-                    StringUtils::safeStod(first_julian_day_str, params.min_year, true), // 最小時代
-                    StringUtils::safeStod(last_julian_day_str, params.max_year, true), // 最大時代
+                    Range<double>(
+                        StringUtils::safeStod(min_size_str, params.zoom_range.min, true),
+                        StringUtils::safeStod(max_size_str, params.zoom_range.max, true)
+                    ), // ズームレベル範囲
+                    Range<double>(
+                        StringUtils::safeStod(first_julian_day_str, params.year_range.min, true),
+                        StringUtils::safeStod(last_julian_day_str, params.year_range.max, true)
+                    ), // 時代範囲
                     feature_type_hash,
                     texture_str.empty() ? params.texture_hash : MurMur3::calcHash(texture_str.size(), texture_str.c_str()) // テクスチャの Key
                 );
@@ -286,7 +287,8 @@ namespace paxs {
                     paxs::Vector2<double>(end_start_longitude/* 経度 */, end_start_latitude/* 緯度 */)).toMercatorDeg(),
                 paxs::EquirectangularDeg(
                     paxs::Vector2<double>(end_end_longitude/* 経度 */, end_end_latitude/* 緯度 */)).toMercatorDeg(),
-                params.min_zoom_level, params.max_zoom_level, params.min_year, params.max_year,
+                params.zoom_range,
+                params.year_range,
                 feature_type_hash, params.texture_hash);
         }
 

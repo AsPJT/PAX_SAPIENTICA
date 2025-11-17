@@ -109,7 +109,9 @@ namespace paxs {
                     position,
                     ZOOM_LEVEL
                 )),
-                1, 1, 10, 100, 0, 0, 99999999,
+                1, 1, 10,
+                Range<double>(0, 100),
+                Range<double>(0, 99999999),
                 MurMur3::calcHash("agent1"),
                 0,  // テクスチャキーなし / No source
                 1.0 // 拡大率 / Zoom factor
@@ -149,11 +151,11 @@ namespace paxs {
                         map_view_size, map_view_center)) continue;
 
                     // 時間範囲外を除去
-                    if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
+                    if (location_point.year_range.excludes(jdn)) continue;
 
                     // 描画位置
-                    const paxg::Vec2i draw_pos = MapCoordinateConverter::toScreenPos(
-                        location_point.coordinate.x, location_point.coordinate.y,
+                    const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
+                        location_point.coordinate,
                         map_view_size,
                         map_view_center
                     );
@@ -220,20 +222,12 @@ namespace paxs {
                         location_point.coordinate.x, location_point.coordinate.y,
                         map_view_size, map_view_center)) continue;
 
-                    if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
+                    if (location_point.year_range.excludes(jdn)) continue;
 
-                    const paxg::Vec2f draw_pos = paxg::Vec2f{
-                        static_cast<float>(MapCoordinateConverter::toScreenPos(
-                            location_point.coordinate.x,
-                            location_point.coordinate.y,
-                            map_view_size,
-                            map_view_center).x()),
-                        static_cast<float>(MapCoordinateConverter::toScreenPos(
-                            location_point.coordinate.x,
-                            location_point.coordinate.y,
-                            map_view_size,
-                            map_view_center).y())
-                    };
+                    const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
+                        location_point.coordinate,
+                        map_view_size,
+                        map_view_center);
 
                     if (settlement.getOldPosition().x == -1 || settlement.getOldPosition().x == 0) continue;
 
@@ -244,8 +238,8 @@ namespace paxs {
 
                         for (auto&& p : settlement.getPositions()) {
                             auto one_lli = createLocationPoint(paxs::Vector2<int>(p.x, p.y));
-                            const paxg::Vec2i one_pos = MapCoordinateConverter::toScreenPos(
-                                one_lli.coordinate.x, one_lli.coordinate.y,
+                            const paxg::Vec2<double> one_pos = MapCoordinateConverter::toScreenPos(
+                                one_lli.coordinate,
                                 map_view_size,
                                 map_view_center);
                             spline_points.emplace_back(paxg::Vec2f{
@@ -253,8 +247,8 @@ namespace paxs {
                         }
 
                         auto old_lli = createLocationPoint(settlement.getOldPosition());
-                        const paxg::Vec2i old_pos = MapCoordinateConverter::toScreenPos(
-                            old_lli.coordinate.x, old_lli.coordinate.y,
+                        const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
+                            old_lli.coordinate,
                             map_view_size,
                             map_view_center);
                         spline_points.emplace_back(paxg::Vec2f{
@@ -264,34 +258,22 @@ namespace paxs {
 
                         // 矢印を描画
                         auto first_lli = createLocationPoint(settlement.getPositions()[0]);
-                        const paxg::Vec2f first_pos = paxg::Vec2f{
-                            static_cast<float>(MapCoordinateConverter::toScreenPos(
-                                first_lli.coordinate.x, first_lli.coordinate.y,
-                                map_view_size,
-                                map_view_center).x()),
-                            static_cast<float>(MapCoordinateConverter::toScreenPos(
-                                first_lli.coordinate.x, first_lli.coordinate.y,
-                                map_view_size,
-                                map_view_center).y())
-                        };
-                        paxg::Line{ first_pos.x(), first_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(
-                            MOVEMENT_ARROW_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
+                        const paxg::Vec2<double> first_pos = MapCoordinateConverter::toScreenPos(
+                            first_lli.coordinate,
+                            map_view_size,
+                            map_view_center);
+                        paxg::Line{first_pos, draw_pos}
+                            .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                     }
                     else {
                         // 単純な移動線
                         auto old_lli = createLocationPoint(settlement.getOldPosition());
-                        const paxg::Vec2f old_pos = paxg::Vec2f{
-                            static_cast<float>(MapCoordinateConverter::toScreenPos(
-                                old_lli.coordinate.x, old_lli.coordinate.y,
-                                map_view_size,
-                                map_view_center).x()),
-                            static_cast<float>(MapCoordinateConverter::toScreenPos(
-                                old_lli.coordinate.x, old_lli.coordinate.y,
-                                map_view_size,
-                                map_view_center).y())
-                        };
-                        paxg::Line{ old_pos.x(), old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(
-                            MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
+                        const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
+                            old_lli.coordinate,
+                            map_view_size,
+                            map_view_center);
+                        paxg::Line{old_pos, draw_pos}
+                            .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                     }
                 }
             }
@@ -304,36 +286,24 @@ namespace paxs {
                     location_point.coordinate.x, location_point.coordinate.y,
                     map_view_size, map_view_center)) continue;
 
-                if (location_point.min_year > jdn || location_point.max_year < jdn) continue;
+                if (location_point.year_range.excludes(jdn)) continue;
                 if (marriage_pos.sx == -1 || marriage_pos.sx == 0) continue;
 
-                const paxg::Vec2f draw_pos = paxg::Vec2f{
-                    static_cast<float>(MapCoordinateConverter::toScreenPos(
-                        location_point.coordinate.x, location_point.coordinate.y,
-                        map_view_size,
-                        map_view_center).x()),
-                    static_cast<float>(MapCoordinateConverter::toScreenPos(
-                        location_point.coordinate.x, location_point.coordinate.y,
-                        map_view_size,
-                        map_view_center).y())
-                };
+                const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
+                    location_point.coordinate,
+                    map_view_size,
+                    map_view_center);
 
                 auto old_lli = createLocationPoint(paxs::Vector2<int>(marriage_pos.sx, marriage_pos.sy));
-                const paxg::Vec2f old_pos = paxg::Vec2f{
-                    static_cast<float>(MapCoordinateConverter::toScreenPos(
-                        old_lli.coordinate.x, old_lli.coordinate.y,
-                        map_view_size,
-                        map_view_center).x()),
-                    static_cast<float>(MapCoordinateConverter::toScreenPos(
-                        old_lli.coordinate.x, old_lli.coordinate.y,
-                        map_view_size,
-                        map_view_center).y())
-                };
+                const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
+                    old_lli.coordinate,
+                    map_view_size,
+                    map_view_center);
 
                 const paxg::Color marriage_color = marriage_pos.is_matrilocality
                     ? MARRIAGE_COLOR_MATRILOCAL : MARRIAGE_COLOR_PATRILOCAL;
-                paxg::Line{ old_pos.x(), old_pos.y(), draw_pos.x(), draw_pos.y() }.drawArrow(
-                    MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, marriage_color);
+                paxg::Line{old_pos, draw_pos}
+                    .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, marriage_color);
             }
         }
 

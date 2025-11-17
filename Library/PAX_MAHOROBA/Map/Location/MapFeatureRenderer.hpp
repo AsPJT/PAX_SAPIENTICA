@@ -101,7 +101,7 @@ private:
         const auto& screen_positions = feature.getScreenPositions();
         const int display_size = feature.getDisplaySize();
 
-        const bool is_small_size = (data.min_zoom_level > context.map_view_size.x || data.max_zoom_level < context.map_view_size.x);
+        const bool is_small_size = data.zoom_range.excludes(context.map_view_size.x);
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
@@ -123,7 +123,7 @@ private:
                 texture_map.at(place_tex).resizedDrawAt(120, draw_pos);
 
                 // テキスト位置
-                const paxg::Vec2i draw_font_pos = paxg::Vec2i{ draw_pos.x(), draw_pos.y() - 60 };
+                const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x(), draw_pos.y() - 60 };
                 LocationRendererHelper::drawBilingualText(data.person_name, draw_font_pos, "topCenter");
             }
         }
@@ -177,7 +177,7 @@ private:
     /// @param texture_map テクスチャマップ / Texture map
     /// @brief 警告用のテクスチャを描画（テクスチャが見つからない場合）
     /// @brief Draw warning texture when texture is not found
-    static void drawWarningTexture(const paxg::Vec2i& pos, int size) {
+    static void drawWarningTexture(const paxg::Vec2<double>& pos, int size) {
         // 赤い四角形で警告表示
         paxg::Rect(
             static_cast<float>(pos.x() - size / 2),
@@ -246,7 +246,7 @@ private:
             // 名前を描画（表示サイズが十分な場合のみ）
             if (should_show_name && !data.place_name.empty()) {
                 // テクスチャの上部に名前を描画
-                const paxg::Vec2i text_pos = paxg::Vec2i{
+                const paxg::Vec2<double> text_pos = paxg::Vec2<double>{
                     draw_pos.x(),
                     draw_pos.y() - display_size / 2 - 5  // アイコンの上部から少し離す
                 };
@@ -305,7 +305,7 @@ private:
     static void drawTextureMultiple(
         const paxg::Texture& texture,
         const int display_size,
-        const paxg::Vec2i& draw_pos,
+        const paxg::Vec2<double>& draw_pos,
         const std::uint_least16_t x_size,
         const std::uint_least16_t y_size,
         const bool is_zoomed
@@ -316,7 +316,8 @@ private:
             }
             else {
                 for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
-                    texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x(), draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                    const paxg::Vec2<double> pos{draw_pos.x(), draw_pos.y() + static_cast<double>(iy) * TEXTURE_SPACING_VERTICAL};
+                    texture.resizedDrawAt(display_size, pos);
                 }
             }
         }
@@ -330,13 +331,15 @@ private:
                             ixx = 0;
                             ++iyy;
                         }
-                        texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ixx) * TEXTURE_SPACING_HORIZONTAL_ZOOMED, draw_pos.y() + static_cast<int>(iyy) * TEXTURE_SPACING_VERTICAL });
+                        const paxg::Vec2<double> pos{draw_pos.x() + static_cast<double>(ixx) * TEXTURE_SPACING_HORIZONTAL_ZOOMED, draw_pos.y() + static_cast<double>(iyy) * TEXTURE_SPACING_VERTICAL};
+                        texture.resizedDrawAt(display_size, pos);
                     }
                 }
                 else {
                     for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
                         for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                            texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                            const paxg::Vec2<double> pos{draw_pos.x() + static_cast<double>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<double>(iy) * TEXTURE_SPACING_VERTICAL};
+                            texture.resizedDrawAt(display_size, pos);
                         }
                     }
                 }
@@ -345,13 +348,15 @@ private:
                 // 通常時
                 if (y_size <= 1) {
                     for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                        texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() });
+                        const paxg::Vec2<double> pos{draw_pos.x() + static_cast<double>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y()};
+                        texture.resizedDrawAt(display_size, pos);
                     }
                 }
                 else {
                     for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
                         for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                            texture.resizedDrawAt(display_size, paxg::Vec2i{ draw_pos.x() + static_cast<int>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<int>(iy) * TEXTURE_SPACING_VERTICAL });
+                            const paxg::Vec2<double> pos{draw_pos.x() + static_cast<double>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<double>(iy) * TEXTURE_SPACING_VERTICAL};
+                            texture.resizedDrawAt(display_size, pos);
                         }
                     }
                 }

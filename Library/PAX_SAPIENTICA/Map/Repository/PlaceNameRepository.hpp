@@ -94,10 +94,8 @@ namespace paxs {
                     data.x_size,
                     data.y_size,
                     data.overall_length,
-                    data.min_size,
-                    data.max_size,
-                    data.first_julian_day,
-                    data.last_julian_day,
+                    data.zoom_range,
+                    data.year_range,
                     feature_type_hash,
                     params.texture_hash, // テクスチャの Key（地名は常にparams.texture_hashを使用）
                     params.zoom,
@@ -117,7 +115,8 @@ namespace paxs {
                     paxs::Vector2<double>(bounds.start_longitude, bounds.start_latitude)).toMercatorDeg(),
                 paxs::EquirectangularDeg(
                     paxs::Vector2<double>(bounds.end_longitude, bounds.end_latitude)).toMercatorDeg(),
-                params.min_zoom_level, params.max_zoom_level, params.min_year, params.max_year,
+                params.zoom_range,
+                params.year_range,
                 feature_type_hash, params.texture_hash);
         }
 

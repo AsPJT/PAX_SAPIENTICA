@@ -40,7 +40,7 @@ namespace paxs {
         static bool drawAgentIcon(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
             std::uint_least32_t feature_type_hash,
-            const paxg::Vec2i& draw_pos
+            const paxg::Vec2<double>& draw_pos
         ) {
             // エージェント1を描画
             if (feature_type_hash == MurMur3::calcHash("agent1")) {
@@ -68,7 +68,7 @@ namespace paxs {
         /// @param outline_color アウトラインの色（デフォルト: 243, 243, 243）
         static void drawBilingualText(
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& place_name,
-            const paxg::Vec2i& draw_pos,
+            const paxg::Vec2<double>& draw_pos,
             const char* text_mode = "topCenter",
             const paxg::Color& outline_color = paxg::Color(243, 243, 243)
         ) {
@@ -138,7 +138,7 @@ namespace paxs {
         static void drawTextByMode(
             paxg::Font* font,
             const std::string& text,
-            const paxg::Vec2i& pos,
+            const paxg::Vec2<double>& pos,
             const paxg::Color& color,
             const char* mode
         ) {

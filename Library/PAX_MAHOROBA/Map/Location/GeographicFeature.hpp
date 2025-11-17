@@ -43,8 +43,6 @@ public:
     GeographicFeature(const LocationPoint& data)
         : data_(data) {
         visible_ = true;
-        min_year_ = data.min_year;
-        max_year_ = data.max_year;
     }
 
     // ========== 基本情報 / Basic Information ==========
@@ -89,20 +87,20 @@ public:
         }
 
         // 空間フィルタリング：ビューの範囲外の場合はスキップ
-        if (!context.isInViewBounds(data_.coordinate.x, data_.coordinate.y)) {
+        if (!context.isInViewBounds(data_.coordinate)) {
             cached_screen_positions_.clear();
             return;
         }
 
         // ズームレベルフィルタリング：範囲外の場合のみ描画（アイコンのみ）
-        if (data_.min_zoom_level <= context.map_view_size.y && data_.max_zoom_level >= context.map_view_size.y) {
+        if (data_.zoom_range.contains(context.map_view_size.y)) {
             cached_screen_positions_.clear();
             return;
         }
 
         // スクリーン座標に変換（経度ラップ処理付き）
         cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
-            data_.coordinate.x, data_.coordinate.y,
+            data_.coordinate,
             context.map_view_size,
             context.map_view_center
         );
@@ -124,12 +122,12 @@ public:
     }
 
     bool isInTimeRange(double jdn) const override {
-        return jdn >= min_year_ && jdn <= max_year_;
+        return data_.year_range.contains(jdn);
     }
 
     // ========== 座標・描画 / Coordinates & Rendering ==========
 
-    std::vector<paxg::Vec2i> getScreenPositions() const override {
+    std::vector<paxg::Vec2<double>> getScreenPositions() const override {
         return cached_screen_positions_;
     }
 
@@ -148,10 +146,10 @@ public:
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [texture_size](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
+            [texture_size](int mouse_x, int mouse_y, const paxg::Vec2<double>& pos) {
                 // テクスチャの矩形判定（中心から描画）
                 const Rect<int> texture_rect = Rect<int>::fromCenter(
-                    Vector2<int>(pos.x(), pos.y()),
+                    Vector2<int>(static_cast<int>(pos.x()), static_cast<int>(pos.y())),
                     texture_size
                 );
                 return texture_rect.contains(mouse_x, mouse_y);
@@ -190,7 +188,7 @@ private:
     LocationPoint data_;                               ///< 地物位置データ / Geographic feature location data
 
     // キャッシュされた状態 / Cached state
-    std::vector<paxg::Vec2i> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
+    std::vector<paxg::Vec2<double>> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
     int cached_display_size_ = 50;                     ///< 表示サイズ / Display size
     Vector2<int> cached_texture_size_{50, 50};         ///< キャッシュされたテクスチャサイズ / Cached texture size
 };

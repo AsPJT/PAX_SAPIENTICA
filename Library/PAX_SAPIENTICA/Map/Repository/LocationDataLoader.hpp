@@ -16,6 +16,7 @@
 #include <string>
 #include <optional>
 
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
@@ -139,10 +140,8 @@ namespace paxs {
         double overall_length = 10.0;
         std::uint_least16_t x_size = 1;
         std::uint_least16_t y_size = 1;
-        double min_size = 0.0;
-        double max_size = 0.0;
-        int first_julian_day = 0;
-        int last_julian_day = 0;
+        Range<double> zoom_range{0.0, 0.0};
+        Range<double> year_range{0.0, 0.0};
         std::uint_least32_t texture_hash = 0;
         paxs::UnorderedMap<std::uint_least32_t, std::string> names;
 
@@ -183,16 +182,16 @@ namespace paxs {
 
         /// @brief 日付範囲を計算（ユリウス日または年から）
         /// @brief Calculate date range from Julian Day or year
-        static int calculateJulianDay(
+        static double calculateJulianDay(
             const std::string& jd_str,
             const std::string& year_str,
-            int default_value
+            double default_value
         ) {
             // ユリウス日が指定されている場合
             if (!jd_str.empty()) {
                 auto jd_opt = StringUtils::toDouble(jd_str);
                 if (jd_opt) {
-                    return static_cast<int>(*jd_opt);
+                    return *jd_opt;
                 }
                 PAXS_WARNING("Invalid Julian Day value: \"" + jd_str + "\", using default: " + std::to_string(default_value));
                 return default_value;
@@ -202,7 +201,7 @@ namespace paxs {
             if (!year_str.empty()) {
                 auto year_opt = StringUtils::toDouble(year_str);
                 if (year_opt) {
-                    return static_cast<int>((*year_opt * location_data_loader_detail::days_in_a_year) + location_data_loader_detail::julian_day_on_m1_1_1);
+                    return (*year_opt * location_data_loader_detail::days_in_a_year) + location_data_loader_detail::julian_day_on_m1_1_1;
                 }
                 PAXS_WARNING("Invalid year value: \"" + year_str + "\", using default: " + std::to_string(default_value));
                 return default_value;
@@ -302,8 +301,11 @@ namespace paxs {
             data.overall_length = getOptionalValue(overall_length_str, 10.0);
             data.x_size = getOptionalValue<std::uint_least16_t>(x_size_str, 1);
             data.y_size = getOptionalValue<std::uint_least16_t>(y_size_str, 1);
-            data.min_size = getOptionalValue(min_size_str, params.min_zoom_level);
-            data.max_size = getOptionalValue(max_size_str, params.max_zoom_level);
+
+            // ズーム範囲の計算
+            const double min_size = getOptionalValue(min_size_str, params.zoom_range.min);
+            const double max_size = getOptionalValue(max_size_str, params.zoom_range.max);
+            data.zoom_range = Range<double>(min_size, max_size);
 
             // 日付範囲の計算
             const std::string& first_jd_str = flags.has_first_julian_day ? table.get(row_index, hashes.first_julian_day) : "";
@@ -311,8 +313,9 @@ namespace paxs {
             const std::string& last_jd_str = flags.has_last_julian_day ? table.get(row_index, hashes.last_julian_day) : "";
             const std::string& last_year_str = flags.has_last_year ? table.get(row_index, hashes.last_year) : "";
 
-            data.first_julian_day = calculateJulianDay(first_jd_str, first_year_str, params.min_year);
-            data.last_julian_day = calculateJulianDay(last_jd_str, last_year_str, params.max_year);
+            const double first_julian_day = calculateJulianDay(first_jd_str, first_year_str, params.year_range.min);
+            const double last_julian_day = calculateJulianDay(last_jd_str, last_year_str, params.year_range.max);
+            data.year_range = Range<double>(first_julian_day, last_julian_day);
 
             // テクスチャハッシュの計算
             data.texture_hash = calculateTextureHash(texture_str, params.texture_hash);

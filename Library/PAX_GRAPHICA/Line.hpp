@@ -39,6 +39,11 @@ namespace paxg {
         constexpr Line(const paxg::Vec2i& s, const paxg::Vec2i& e)
             : line(s.x(), s.y(), e.x(), e.y()) {}
 
+        // Vec2<double> コンストラクタ (conversion from double to float)
+        constexpr Line(const paxg::Vec2<double>& s, const paxg::Vec2<double>& e)
+            : line(static_cast<float>(s.x()), static_cast<float>(s.y()),
+                   static_cast<float>(e.x()), static_cast<float>(e.y())) {}
+
         void draw(const double thickness, const paxg::Color& color) const {
             line.draw(thickness, color.color);
         }
@@ -58,6 +63,11 @@ namespace paxg {
             x0(static_cast<float>(pos.x())), y0(static_cast<float>(pos.y())), w0(w), h0(h) {}
         constexpr Line(const float x, const float y, const paxg::Vec2i& size)
             : x0(x), y0(y), w0(static_cast<float>(size.x())), h0(static_cast<float>(size.y())) {}
+
+        // Vec2<double> コンストラクタ (conversion from double to float)
+        constexpr Line(const paxg::Vec2<double>& s, const paxg::Vec2<double>& e)
+            : x0(static_cast<float>(s.x())), y0(static_cast<float>(s.y())),
+              w0(static_cast<float>(e.x())), h0(static_cast<float>(e.y())) {}
 
         void draw(const double thickness, const paxg::Color& color) const {
             // 直線の場合
@@ -127,6 +137,12 @@ namespace paxg {
             line[1].position = sf::Vector2f(static_cast<float>(e.x()), static_cast<float>(e.y()));
         }
 
+        // Vec2<double> コンストラクタ (conversion from double to float)
+        Line(const paxg::Vec2<double>& s, const paxg::Vec2<double>& e) {
+            line[0].position = sf::Vector2f(static_cast<float>(s.x()), static_cast<float>(s.y()));
+            line[1].position = sf::Vector2f(static_cast<float>(e.x()), static_cast<float>(e.y()));
+        }
+
         void draw(const double /*thickness*/, const paxg::Color& color) {
             line[0].color = color;
             line[1].color = color;
@@ -187,6 +203,11 @@ namespace paxg {
         constexpr Line(const paxg::Vec2i& s, const paxg::Vec2i& e)
             : sx0(static_cast<float>(s.x())), sy0(static_cast<float>(s.y())),
             ex0(static_cast<float>(e.x())), ey0(static_cast<float>(e.y())) {}
+
+        // Vec2<double> コンストラクタ (conversion from double to float)
+        constexpr Line(const paxg::Vec2<double>& s, const paxg::Vec2<double>& e)
+            : sx0(static_cast<float>(s.x())), sy0(static_cast<float>(s.y())),
+              ex0(static_cast<float>(e.x())), ey0(static_cast<float>(e.y())) {}
 
         void draw([[maybe_unused]] const double thickness, [[maybe_unused]] const paxg::Color& color) const {
         }

@@ -25,6 +25,7 @@
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
@@ -40,10 +41,9 @@ public:
     /// @param data 人物の位置データ / Person location data
     /// @param list_data 人物リストデータ / Person list data
     PersonFeature(const PersonLocationPoint& data, const PersonLocationList& list_data)
-        : data_(data), list_data_(list_data) {
+        : data_(data)
+        , list_data_(list_data) {
         visible_ = true;
-        min_year_ = data.min_year;
-        max_year_ = data.max_year;
     }
 
     FeatureType getType() const override {
@@ -88,25 +88,24 @@ public:
         // 時間補間座標の計算
         interpolated_pos_ = MapCoordinateConverter::interpolatePosition(
             data_.start_coordinate, data_.end_coordinate,
-            context.jdn, data_.min_year, data_.max_year
+            context.jdn, data_.year_range.min, data_.year_range.max
         );
 
         // 空間フィルタリング：ビューの範囲外の場合はスキップ
-        if (!context.isInViewBounds(interpolated_pos_.x, interpolated_pos_.y)) {
+        if (!context.isInViewBounds(interpolated_pos_)) {
             cached_screen_positions_.clear();
             return;
         }
 
         // スクリーン座標に変換（経度ラップ処理付き）
         cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
-            interpolated_pos_.x, interpolated_pos_.y,
+            interpolated_pos_,
             context.map_view_size,
             context.map_view_center
         );
 
         // 表示サイズの計算
-        const bool out_of_range = (data_.min_zoom_level > context.map_view_size.x ||
-                                   data_.max_zoom_level < context.map_view_size.x);
+        const bool out_of_range = data_.zoom_range.excludes(context.map_view_size.x);
         cached_display_size_ = out_of_range
             ? static_cast<int>(data_.overall_length / 2)
             : 60;  // 120 / 2
@@ -135,10 +134,10 @@ public:
     }
 
     bool isInTimeRange(double jdn) const override {
-        return jdn >= min_year_ && jdn <= max_year_;
+        return data_.year_range.contains(jdn);
     }
 
-    std::vector<paxg::Vec2i> getScreenPositions() const override {
+    std::vector<paxg::Vec2<double>> getScreenPositions() const override {
         return cached_screen_positions_;
     }
 
@@ -155,10 +154,10 @@ public:
         // 3つのスクリーン座標でヒット判定（テクスチャ + テキスト）
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [texture_size, text_size](int mx, int my, const paxg::Vec2i& pos) {
+            [texture_size, text_size](int mx, int my, const paxg::Vec2<double>& pos) {
                 // テクスチャの矩形判定（中心から描画）
                 const Rect<int> texture_rect = Rect<int>::fromCenter(
-                    Vector2<int>(pos.x(), pos.y()),
+                    Vector2<int>(static_cast<int>(pos.x()), static_cast<int>(pos.y())),
                     texture_size
                 );
                 if (texture_rect.contains(mx, my)) {
@@ -168,9 +167,9 @@ public:
                 // draw_font_pos = {x, y - 60}から描画されるため、
                 // 実際のテキスト位置は pos.y() - 60 から text_height の範囲
                 if (text_size.x > 0 && text_size.y > 0) {
-                    const int text_y = pos.y() - 60;  // テクスチャの上部（MapFeatureRenderer参照）
+                    const int text_y = static_cast<int>(pos.y()) - 60;  // テクスチャの上部（MapFeatureRenderer参照）
                     const Rect<int> text_rect(
-                        pos.x() - (text_size.x / 2),
+                        static_cast<int>(pos.x()) - (text_size.x / 2),
                         text_y,
                         text_size.x,
                         text_size.y
@@ -208,7 +207,7 @@ private:
     PersonLocationList list_data_;       ///< 人物リストデータ / Person list data
 
     MercatorDeg interpolated_pos_;                    ///< 補間された座標 / Interpolated position
-    std::vector<paxg::Vec2i> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
+    std::vector<paxg::Vec2<double>> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
     int cached_display_size_ = 60;                    ///< 表示サイズ / Display size
     Vector2<int> cached_texture_size_{60, 60};        ///< キャッシュされたテクスチャサイズ / Cached texture size
     Vector2<int> cached_text_size_{0, 0};             ///< キャッシュされたテキストサイズ / Cached text size

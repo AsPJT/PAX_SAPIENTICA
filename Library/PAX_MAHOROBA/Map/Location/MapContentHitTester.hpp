@@ -44,6 +44,15 @@ public:
         int radius
     );
 
+    /// @brief 円形ヒット判定 (Vec2<double>版)
+    /// @brief Circle hit test (Vec2<double> version)
+    static bool circleHitTest(
+        int mouse_x,
+        int mouse_y,
+        const paxg::Vec2<double>& center,
+        int radius
+    );
+
     /// @brief 矩形ヒット判定
     /// @brief Rectangle hit test
     /// @param mouse_x マウスX座標 / Mouse X coordinate
@@ -76,17 +85,18 @@ public:
 
     /// @brief 経度ラップを考慮した複数座標のヒット判定
     /// @brief Hit test with multiple positions (considering longitude wrapping)
+    /// @tparam Vec2Type Vec2型（Vec2<int>またはVec2<double>） / Vec2 type (Vec2<int> or Vec2<double>)
     /// @tparam HitTestFunc ヒット判定関数型 / Hit test function type
     /// @param mouse_x マウスX座標 / Mouse X coordinate
     /// @param mouse_y マウスY座標 / Mouse Y coordinate
     /// @param positions スクリーン座標のリスト / List of screen positions
     /// @param hit_test_func ヒット判定関数 / Hit test function
     /// @return いずれかの座標でヒットした場合true / True if hit at any position
-    template<typename HitTestFunc>
+    template<typename Vec2Type, typename HitTestFunc>
     static bool testMultiplePositions(
         int mouse_x,
         int mouse_y,
-        const std::vector<paxg::Vec2i>& positions,
+        const std::vector<Vec2Type>& positions,
         HitTestFunc hit_test_func
     ) {
         for (const auto& pos : positions) {
@@ -134,6 +144,17 @@ inline bool MapContentHitTester::circleHitTest(
     const int dx = mouse_x - center.x();
     const int dy = mouse_y - center.y();
     return (dx * dx + dy * dy) <= (radius * radius);
+}
+
+inline bool MapContentHitTester::circleHitTest(
+    int mouse_x,
+    int mouse_y,
+    const paxg::Vec2<double>& center,
+    int radius
+) {
+    const double dx = static_cast<double>(mouse_x) - center.x();
+    const double dy = static_cast<double>(mouse_y) - center.y();
+    return (dx * dx + dy * dy) <= static_cast<double>(radius * radius);
 }
 
 inline bool MapContentHitTester::rectHitTest(

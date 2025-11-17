@@ -40,8 +40,6 @@ public:
     PlaceNameFeature(const LocationPoint& data)
         : data_(data) {
         visible_ = true;
-        min_year_ = data.min_year;
-        max_year_ = data.max_year;
     }
 
     FeatureType getType() const override {
@@ -81,20 +79,20 @@ public:
             return;
         }
         // 空間フィルタリング：ビューの範囲外の場合はスキップ
-        if (!context.isInViewBounds(data_.coordinate.x, data_.coordinate.y)) {
+        if (!context.isInViewBounds(data_.coordinate)) {
             cached_screen_positions_.clear();
             return;
         }
 
         // ズームレベルフィルタリング：範囲外の場合はスキップ
-        if (data_.min_zoom_level > context.map_view_size.y || data_.max_zoom_level < context.map_view_size.y) {
+        if (data_.zoom_range.excludes(context.map_view_size.y)) {
             cached_screen_positions_.clear();
             return;
         }
 
         // スクリーン座標に変換（経度ラップ処理付き）
         cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
-            data_.coordinate.x, data_.coordinate.y,
+            data_.coordinate,
             context.map_view_size,
             context.map_view_center
         );
@@ -115,10 +113,10 @@ public:
     }
 
     bool isInTimeRange(double jdn) const override {
-        return jdn >= min_year_ && jdn <= max_year_;
+        return data_.year_range.contains(jdn);
     }
 
-    std::vector<paxg::Vec2i> getScreenPositions() const override {
+    std::vector<paxg::Vec2<double>> getScreenPositions() const override {
         return cached_screen_positions_;
     }
 
@@ -135,11 +133,11 @@ public:
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [text_size](int mouse_x, int mouse_y, const paxg::Vec2i& pos) {
+            [text_size](int mouse_x, int mouse_y, const paxg::Vec2<double>& pos) {
                 // テキストの矩形判定: drawAtは横方向中央、縦方向上を基準に描画
                 const Rect<int> text_rect(
-                    pos.x() - (text_size.x / 2),
-                    pos.y(),
+                    static_cast<int>(pos.x()) - (text_size.x / 2),
+                    static_cast<int>(pos.y()),
                     text_size.x,
                     text_size.y
                 );
@@ -159,7 +157,7 @@ public:
 
 private:
     LocationPoint data_;
-    std::vector<paxg::Vec2i> cached_screen_positions_;
+    std::vector<paxg::Vec2<double>> cached_screen_positions_;
     int cached_display_size_ = 50;
     Vector2<int> cached_text_size_{100, 20};  ///< キャッシュされたテキストサイズ / Cached text size
 };

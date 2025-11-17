@@ -20,6 +20,7 @@
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 namespace paxs {
@@ -40,12 +41,12 @@ struct RenderContext {
     /// @param mercator_y メルカトル座標Y / Mercator Y coordinate
     /// @param margin マージン倍率（デフォルト1.6） / Margin multiplier (default 1.6)
     /// @return 範囲内ならtrue / True if within bounds
-    [[nodiscard]] bool isInViewBounds(double mercator_x, double mercator_y, double margin = 1.6) const {
+    [[nodiscard]] bool isInViewBounds(Vector2<double> mercator_pos, double margin = 1.6) const {
         const Rect<double> view_rect = Rect<double>::fromCenter(
             map_view_center,
-            Vector2<double>(map_view_size.x * margin, map_view_size.y * margin)
+            map_view_size * margin
         );
-        return view_rect.contains(mercator_x, mercator_y);
+        return view_rect.contains(mercator_pos);
     }
 };
 

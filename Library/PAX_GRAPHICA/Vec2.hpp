@@ -34,6 +34,10 @@ namespace paxg {
 
         constexpr Vec2(const T x, const T y) : vec2(static_cast<typename NativeVec2::value_type>(x), static_cast<typename NativeVec2::value_type>(y)) {}
         constexpr Vec2(const NativeVec2& vec2) : vec2(vec2) {}
+
+        // 型変換コンストラクタ (conversion constructor for different numeric types)
+        template<typename U>
+        constexpr Vec2(const Vec2<U>& other) : vec2(static_cast<typename NativeVec2::value_type>(other.x()), static_cast<typename NativeVec2::value_type>(other.y())) {}
         constexpr operator NativeVec2() const { return vec2; }
 
         constexpr auto x() const { return static_cast<T>(vec2.x); }
@@ -48,6 +52,11 @@ namespace paxg {
 
         Vec2(const T x, const T y) : vec2(x, y) {}
         Vec2(const NativeVec2& vec2) : vec2(vec2) {}
+
+        // 型変換コンストラクタ (conversion constructor for different numeric types)
+        template<typename U>
+        Vec2(const Vec2<U>& other) : vec2(static_cast<T>(other.x()), static_cast<T>(other.y())) {}
+
         operator NativeVec2() const { return vec2; }
 
         constexpr auto x() const { return vec2.x; }
@@ -60,6 +69,10 @@ namespace paxg {
         T x0{}, y0{};
 
         constexpr Vec2(const T x, const T y) : x0(x), y0(y) {}
+
+        // 型変換コンストラクタ (conversion constructor for different numeric types)
+        template<typename U>
+        constexpr Vec2(const Vec2<U>& other) : x0(static_cast<T>(other.x())), y0(static_cast<T>(other.y())) {}
 
         constexpr auto x() const { return x0; }
         constexpr auto y() const { return y0; }

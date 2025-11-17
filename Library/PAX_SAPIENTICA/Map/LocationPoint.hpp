@@ -15,8 +15,9 @@
 #include <cstdint>
 #include <string>
 
-#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -33,25 +34,25 @@ namespace paxs {
             std::uint_least16_t x_size_,  // 重ね枚数
             std::uint_least16_t y_size_,  // 重ね枚数
             const double overall_length_,  // 全長
-            const double min_zoom_level_,  // 表示する最小ズームレベル
-            const double max_zoom_level_,  // 表示する最大ズームレベル
-            const int min_year_,  // 可視化する時代（古い年～）
-            const int max_year_,  // 可視化する時代（～新しい年）
+            const Range<double>& zoom_range_,  // 表示するズームレベル範囲
+            const Range<double>& year_range_,  // 可視化する時代範囲
             const std::uint_least32_t feature_type_hash_,  // 地物の種別を識別するハッシュ値
             const std::uint_least32_t texture_key_, // テクスチャキー
             const double zoom_, // 拡大率
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& extra_data_ = {}  // 追加カラムデータ
         ) noexcept
             : place_name(place_name_), coordinate(coordinate_), x_size(x_size_), y_size(y_size_), overall_length(overall_length_),
-            min_zoom_level(min_zoom_level_), max_zoom_level(max_zoom_level_), min_year(min_year_), max_year(max_year_), feature_type_hash(feature_type_hash_), texture_key(texture_key_), zoom(zoom_), extra_data(extra_data_){}
+            zoom_range(zoom_range_), year_range(year_range_),
+            feature_type_hash(feature_type_hash_), texture_key(texture_key_), zoom(zoom_),
+            extra_data(extra_data_){}
 
         paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{}; // 地物名（多言語対応：地名、遺跡名、古墳名など）
         paxs::MercatorDeg coordinate{}; // 経緯度
         std::uint_least16_t x_size = 1;
         std::uint_least16_t y_size = 1;
         double overall_length = 10; // 全長
-        double min_zoom_level = 0.0, max_zoom_level = 9999.0; // 表示するズームレベル範囲
-        int min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
+        Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
+        Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "tomb", "site", "person"）
         std::uint_least32_t texture_key = 0; // テクスチャキー（ハッシュ値）
         double zoom = 1.0; // 拡大率
@@ -63,8 +64,8 @@ namespace paxs {
         /// @brief 追加カラムの値を取得（ハッシュ値で直接アクセス）
         /// @brief Get extra column value by hash
         std::string getExtraData(std::uint_least32_t column_hash) const {
-            auto it = extra_data.find(column_hash);
-            return (it != extra_data.end()) ? it->second : "";
+            auto iterator = extra_data.find(column_hash);
+            return (iterator != extra_data.end()) ? iterator->second : "";
         }
 
         /// @brief 追加カラムが存在するか確認（ハッシュ値）
@@ -80,8 +81,8 @@ namespace paxs {
 
         paxs::MercatorDeg start_coordinate{}; // 経緯度
         paxs::MercatorDeg end_coordinate{}; // 経緯度
-        double min_zoom_level = 0.0, max_zoom_level = 9999.0; // 表示するズームレベル範囲
-        int min_year = -99999999, max_year = 99999999; // 可視化する時代（古い年～新しい年）
+        Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
+        Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "tomb", "site", "person"）
         std::uint_least32_t texture_key = 0; // テクスチャキー（ハッシュ値）
 
@@ -90,16 +91,15 @@ namespace paxs {
             const std::vector<LocationPoint>& location_point_list_,  // 地物
             paxs::MercatorDeg start_coordinate_, // 経緯度
             paxs::MercatorDeg end_coordinate_, // 経緯度
-            const double min_zoom_level_,  // 表示する最小ズームレベル
-            const double max_zoom_level_,  // 表示する最大ズームレベル
-            const int min_year_,  // 可視化する時代（古い年～）
-            const int max_year_,  // 可視化する時代（～新しい年）
+            const Range<double>& zoom_range_,  // 表示するズームレベル範囲
+            const Range<double>& year_range_,  // 可視化する時代範囲
             const std::uint_least32_t feature_type_hash_,  // 地物の種別を識別するハッシュ値
             const std::uint_least32_t texture_key_ // テクスチャキー
         ) noexcept
             : location_point_list(location_point_list_),
             start_coordinate(start_coordinate_), end_coordinate(end_coordinate_),
-            min_zoom_level(min_zoom_level_), max_zoom_level(max_zoom_level_), min_year(min_year_), max_year(max_year_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
+            zoom_range(zoom_range_), year_range(year_range_),
+            feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
 
     };
 

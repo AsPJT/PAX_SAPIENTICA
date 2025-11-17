@@ -26,8 +26,10 @@
 #include <PAX_MAHOROBA/Map/Location/Model3DRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -40,31 +42,13 @@ class Model3DFeature : public MapFeature {
 public:
     /// @brief コンストラクタ
     /// @brief Constructor
-    /// @param id 地物のID / Feature ID
-    /// @param name 地物の名前 / Feature name
-    /// @param coordinate 位置（メルカトル座標） / Position (Mercator coordinates)
-    /// @param min_year 開始年（ユリウス日） / Start year (Julian Day Number)
-    /// @param max_year 終了年（ユリウス日） / End year (Julian Day Number)
+    /// @param data 地物の位置データ / Feature location data
     /// @param model_config 3Dモデルの設定 / 3D model configuration
-    /// @param feature_type_hash 地物種別（デフォルト: "model_3d"） / Feature type identifier (default: "model_3d")
-    Model3DFeature(
-        const std::string& id,
-        const std::string& name,
-        const MercatorDeg& coordinate,
-        double min_year,
-        double max_year,
-        const paxg::Graphics3DModelConfig& model_config,
-        std::uint_least32_t feature_type_hash = MurMur3::calcHash("model_3d")
-    )
-        : id_(id)
-        , name_(name)
-        , coordinate_(coordinate)
-        , feature_type_hash_(feature_type_hash)
+    Model3DFeature(const LocationPoint& data, const paxg::Graphics3DModelConfig& model_config)
+        : data_(data)
         , renderer_(model_config)
     {
         visible_ = true;
-        min_year_ = min_year;
-        max_year_ = max_year;
     }
 
     // ========== 基本情報 / Basic Information ==========
@@ -74,34 +58,48 @@ public:
     }
 
     std::string getId() const override {
-        return id_;
+        const std::uint_least32_t ja_jp = MurMur3::calcHash("ja-JP");
+        if (data_.place_name.find(ja_jp) != data_.place_name.end()) {
+            return data_.place_name.at(ja_jp);
+        }
+        if (!data_.place_name.empty()) {
+            return data_.place_name.begin()->second;
+        }
+        return "unknown_model_3d";
     }
 
-    std::string getName(const std::string& /*language*/ = "ja-JP") const override {
-        return name_;
+    std::string getName(const std::string& language = "ja-JP") const override {
+        const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
+        if (data_.place_name.find(lang_hash) != data_.place_name.end()) {
+            return data_.place_name.at(lang_hash);
+        }
+        if (!data_.place_name.empty()) {
+            return data_.place_name.begin()->second;
+        }
+        return "";
     }
 
     std::uint_least32_t getFeatureTypeHash() const override {
-        return feature_type_hash_;
+        return data_.feature_type_hash;
     }
 
     // ========== 状態管理 / State Management ==========
 
     void update(const RenderContext& context) override {
         // 地物種別の可視性チェック（最優先）
-        if (context.visibility_manager && !context.visibility_manager->isVisible(feature_type_hash_)) {
+        if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
             cached_screen_positions_.clear();
             return;
         }
         // 空間フィルタリング：ビューの範囲外の場合はスキップ
-        if (!context.isInViewBounds(coordinate_.x, coordinate_.y)) {
+        if (!context.isInViewBounds(data_.coordinate)) {
             cached_screen_positions_.clear();
             return;
         }
 
         // スクリーン座標に変換（経度ラップ処理付き）
         cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
-            coordinate_.x, coordinate_.y,
+            data_.coordinate,
             context.map_view_size,
             context.map_view_center
         );
@@ -115,12 +113,12 @@ public:
     }
 
     bool isInTimeRange(double jdn) const override {
-        return jdn >= min_year_ && jdn <= max_year_;
+        return data_.year_range.contains(jdn);
     }
 
     // ========== 座標・描画 / Coordinates & Rendering ==========
 
-    std::vector<paxg::Vec2i> getScreenPositions() const override {
+    std::vector<paxg::Vec2<double>> getScreenPositions() const override {
         return cached_screen_positions_;
     }
 
@@ -137,7 +135,7 @@ public:
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x(), mouse_pos.y(), cached_screen_positions_,
-            [hit_radius](int mx, int my, const paxg::Vec2i& pos) {
+            [hit_radius](int mx, int my, const paxg::Vec2<double>& pos) {
                 return MapContentHitTester::circleHitTest(mx, my, pos, hit_radius);
             }
         );
@@ -146,7 +144,7 @@ public:
     // ========== イベント処理 / Event Handling ==========
 
     void onClick(const ClickContext& context) override {
-        std::cout << "3D Model clicked: " << name_ << std::endl;
+        std::cout << "3D Model clicked: " << getName() << std::endl;
         (void)context;
     }
 
@@ -164,21 +162,18 @@ public:
         return renderer_;
     }
 
-    /// @brief 元の座標を取得
-    /// @brief Get original coordinate
-    const MercatorDeg& getCoordinate() const {
-        return coordinate_;
+    /// @brief 元のデータを取得
+    /// @brief Get original data
+    const LocationPoint& getData() const {
+        return data_;
     }
 
 private:
-    std::string id_;                                   ///< 地物ID / Feature ID
-    std::string name_;                                 ///< 地物名 / Feature name
-    MercatorDeg coordinate_;                           ///< 位置（メルカトル座標） / Position (Mercator)
-    std::uint_least32_t feature_type_hash_;            ///< 地物の種別を識別するハッシュ値 / Feature type hash identifier
+    LocationPoint data_;                               ///< 地物位置データ / Feature location data
     Model3DRenderer renderer_;                         ///< 3Dモデルレンダラー / 3D model renderer
 
     // キャッシュされた状態 / Cached state
-    std::vector<paxg::Vec2i> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
+    std::vector<paxg::Vec2<double>> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
 };
 
 } // namespace paxs

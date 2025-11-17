@@ -17,6 +17,7 @@
 #include <string>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -30,10 +31,8 @@ namespace paxs {
     struct FeatureListParams {
         std::string file_path;
         std::string type;
-        double min_zoom_level;
-        double max_zoom_level;
-        int min_year;
-        int max_year;
+        Range<double> zoom_range;
+        Range<double> year_range;
         std::uint_least32_t texture_hash;
         double zoom;
     };
@@ -149,16 +148,14 @@ namespace paxs {
                 const double zoom = StringUtils::safeStod(zoom_str, 1.0, true);
 
                 // コールバックを呼び出し
-                callback(FeatureListParams{
+                callback(FeatureListParams(
                     file_path_str,
                     type_str,
-                    min_zoom_level,
-                    max_zoom_level,
-                    min_year,
-                    max_year,
+                    Range<double>(min_zoom_level, max_zoom_level),
+                    Range<double>(static_cast<double>(min_year), static_cast<double>(max_year)),
                     texture_hash_value,
                     zoom
-                });
+                ));
             });
         }
     };

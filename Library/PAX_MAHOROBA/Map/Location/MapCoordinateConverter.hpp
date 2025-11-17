@@ -24,18 +24,15 @@ namespace paxs {
 
 /// @brief 地図座標変換ヘルパークラス
 /// @brief Map coordinate conversion helper class
-class MapCoordinateConverter {
-public:
+struct MapCoordinateConverter {
     /// @brief メルカトル座標→スクリーン座標変換（経度ラップ処理付き）
     /// @brief Convert Mercator coordinates to screen positions (with longitude wrapping)
-    /// @param mercator_x メルカトル座標X（経度）/ Mercator X (longitude)
-    /// @param mercator_y メルカトル座標Y（緯度）/ Mercator Y (latitude)
+    /// @param mercator_pos メルカトル座標 / Mercator position
     /// @param map_view_size ビューポートサイズ / Viewport size
     /// @param map_view_center ビューポート中心 / Viewport center
     /// @return 3つのスクリーン座標（-360°, 0°, +360°）/ Three screen positions
-    static std::vector<paxg::Vec2i> toScreenPositions(
-        double mercator_x,
-        double mercator_y,
+    static std::vector<paxg::Vec2<double>> toScreenPositions(
+        const Vector2<double>& mercator_pos,
         const Vector2<double>& map_view_size,
         const Vector2<double>& map_view_center
     );
@@ -58,14 +55,12 @@ public:
 
     /// @brief 単一の座標をスクリーン座標に変換
     /// @brief Convert single coordinate to screen position
-    /// @param mercator_x メルカトル座標X / Mercator X coordinate
-    /// @param mercator_y メルカトル座標Y / Mercator Y coordinate
+    /// @param mercator_pos メルカトル座標 / Mercator position
     /// @param map_view_size ビューポートサイズ / Viewport size
     /// @param map_view_center ビューポート中心 / Viewport center
     /// @return スクリーン座標 / Screen position
-    static paxg::Vec2i toScreenPos(
-        double mercator_x,
-        double mercator_y,
+    static paxg::Vec2<double> toScreenPos(
+        const Vector2<double>& mercator_pos,
         const Vector2<double>& map_view_size,
         const Vector2<double>& map_view_center
     );
@@ -75,20 +70,19 @@ public:
 // インライン実装
 // ========================================
 
-inline std::vector<paxg::Vec2i> MapCoordinateConverter::toScreenPositions(
-    double mercator_x,
-    double mercator_y,
+inline std::vector<paxg::Vec2<double>> MapCoordinateConverter::toScreenPositions(
+    const Vector2<double>& mercator_pos,
     const Vector2<double>& map_view_size,
     const Vector2<double>& map_view_center
 ) {
-    std::vector<paxg::Vec2i> positions;
+    std::vector<paxg::Vec2<double>> positions;
     positions.reserve(3);
 
     // 3つの経度座標（-360°, 0°, +360°）を計算
     for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
-        const double wrapped_x = mercator_x + (offset_mult * 360.0);
+        const double wrapped_x = mercator_pos.x + (offset_mult * 360.0);
         positions.emplace_back(toScreenPos(
-            wrapped_x, mercator_y,
+            Vector2<double>(wrapped_x, mercator_pos.y),
             map_view_size, map_view_center
         ));
     }
@@ -109,32 +103,23 @@ inline MercatorDeg MapCoordinateConverter::interpolatePosition(
         ? 0.0
         : (jdn_displacement / view_year_displacement);
 
-    const double coordinate_displacement_x = end.x - start.x;
-    const double coordinate_displacement_y = end.y - start.y;
+    const Vector2<double> coordinate_displacement = end - start;
 
-    return MercatorDeg(paxs::Vector2<double>(
-        start.x + coordinate_displacement_x * year_normalization,
-        start.y + coordinate_displacement_y * year_normalization
-    ));
+    return MercatorDeg(start + coordinate_displacement * year_normalization);
 }
 
-inline paxg::Vec2i MapCoordinateConverter::toScreenPos(
-    double mercator_x,
-    double mercator_y,
+inline paxg::Vec2<double> MapCoordinateConverter::toScreenPos(
+    const Vector2<double>& mercator_pos,
     const Vector2<double>& map_view_size,
     const Vector2<double>& map_view_center
 ) {
     // メルカトル座標をスクリーン座標に変換
-    return paxg::Vec2i(
-        static_cast<int>(
-            (mercator_x - (map_view_center.x - map_view_size.x / 2))
-            / map_view_size.x * double(paxg::Window::width())
-        ),
-        static_cast<int>(
-            double(paxg::Window::height())
-            - ((mercator_y - (map_view_center.y - map_view_size.y / 2))
-            / map_view_size.y * double(paxg::Window::height()))
-        )
+    return paxg::Vec2<double>(
+        (mercator_pos.x - (map_view_center.x - map_view_size.x / 2))
+        / map_view_size.x * double(paxg::Window::width()),
+        double(paxg::Window::height())
+        - ((mercator_pos.y - (map_view_center.y - map_view_size.y / 2))
+        / map_view_size.y * double(paxg::Window::height()))
     );
 }
 
