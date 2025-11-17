@@ -29,6 +29,7 @@
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PersonNameRepository.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -98,10 +99,11 @@ public:
         }
 
         // スクリーン座標に変換（経度ラップ処理付き）
-        cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
+        MapCoordinateConverter::toScreenPositions(
             interpolated_pos_,
             context.map_view_size,
-            context.map_view_center
+            context.map_view_center,
+            cached_screen_positions_
         );
 
         // 表示サイズの計算
@@ -137,7 +139,7 @@ public:
         return data_.year_range.contains(jdn);
     }
 
-    std::vector<paxg::Vec2<double>> getScreenPositions() const override {
+    const WrappedScreenPositions& getScreenPositions() const override {
         return cached_screen_positions_;
     }
 
@@ -207,7 +209,7 @@ private:
     PersonLocationList list_data_;       ///< 人物リストデータ / Person list data
 
     MercatorDeg interpolated_pos_;                    ///< 補間された座標 / Interpolated position
-    std::vector<paxg::Vec2<double>> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
+    WrappedScreenPositions cached_screen_positions_;  ///< 経度ラップされたスクリーン座標 / Wrapped screen positions
     int cached_display_size_ = 60;                    ///< 表示サイズ / Display size
     Vector2<int> cached_texture_size_{60, 60};        ///< キャッシュされたテクスチャサイズ / Cached texture size
     Vector2<int> cached_text_size_{0, 0};             ///< キャッシュされたテキストサイズ / Cached text size

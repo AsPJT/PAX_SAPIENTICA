@@ -14,58 +14,58 @@
 
 namespace paxs {
 
-	/// @brief 範囲を表すクラス（min/max）
-	/// @brief Class representing a range (min/max)
-	template<typename T>
-	struct Range {
-		T min{};
-		T max{};
+    /// @brief 範囲を表すクラス（min/max）
+    /// @brief Class representing a range (min/max)
+    template<typename T>
+    struct Range {
+        T min{};
+        T max{};
 
-		constexpr Range() noexcept = default;
-		constexpr Range(T min_val, T max_val) noexcept : min(min_val), max(max_val) {}
+        constexpr Range() noexcept = default;
+        constexpr Range(T min_val, T max_val) noexcept : min(min_val), max(max_val) {}
 
-		/// @brief 値が範囲内にあるかチェック（min <= value <= max）
-		/// @brief Check if a value is within the range (min <= value <= max)
-		[[nodiscard]] constexpr bool contains(T value) const noexcept {
-			return value >= min && value <= max;
-		}
+        /// @brief 値が範囲内にあるかチェック（min <= value <= max）
+        /// @brief Check if a value is within the range (min <= value <= max)
+        [[nodiscard]] constexpr bool contains(T value) const noexcept {
+            return value >= min && value <= max;
+        }
 
-		/// @brief 値が範囲外にあるかチェック（value < min || value > max）
-		/// @brief Check if a value is outside the range (value < min || value > max)
-		[[nodiscard]] constexpr bool excludes(T value) const noexcept {
-			return value < min || value > max;
-		}
+        /// @brief 値が範囲外にあるかチェック（value < min || value > max）
+        /// @brief Check if a value is outside the range (value < min || value > max)
+        [[nodiscard]] constexpr bool excludes(T value) const noexcept {
+            return value < min || value > max;
+        }
 
-		/// @brief 範囲の長さを取得
-		/// @brief Get the length of the range
-		[[nodiscard]] constexpr T length() const noexcept {
-			return max - min;
-		}
+        /// @brief 範囲の長さを取得
+        /// @brief Get the length of the range
+        [[nodiscard]] constexpr T length() const noexcept {
+            return max - min;
+        }
 
-		/// @brief 範囲の中心値を取得
-		/// @brief Get the center value of the range
-		[[nodiscard]] constexpr T center() const noexcept {
-			return (min + max) / static_cast<T>(2);
-		}
+        /// @brief 範囲の中心値を取得
+        /// @brief Get the center value of the range
+        [[nodiscard]] constexpr T center() const noexcept {
+            return (min + max) / static_cast<T>(2);
+        }
 
-		/// @brief 値を範囲内にクランプ
-		/// @brief Clamp a value within the range
-		[[nodiscard]] constexpr T clamp(T value) const noexcept {
-			if (value < min) return min;
-			if (value > max) return max;
-			return value;
-		}
+        /// @brief 値を範囲内にクランプ
+        /// @brief Clamp a value within the range
+        [[nodiscard]] constexpr T clamp(T value) const noexcept {
+            if (value < min) return min;
+            if (value > max) return max;
+            return value;
+        }
 
-		/// @brief 2つの範囲が重なっているかチェック
-		/// @brief Check if two ranges overlap
-		[[nodiscard]] constexpr bool overlaps(const Range<T>& other) const noexcept {
-			return !(max < other.min || min > other.max);
-		}
+        /// @brief 2つの範囲が重なっているかチェック
+        /// @brief Check if two ranges overlap
+        [[nodiscard]] constexpr bool overlaps(const Range<T>& other) const noexcept {
+            return !(max < other.min || min > other.max);
+        }
 
-		/// @brief デフォルトの比較演算子
-		/// @brief Default comparison operator
-		auto operator<=>(const Range<T>& other) const noexcept = default;
-	};
+        /// @brief デフォルトの比較演算子
+        /// @brief Default comparison operator
+        auto operator<=>(const Range<T>& other) const noexcept = default;
+    };
 
 } // namespace paxs
 

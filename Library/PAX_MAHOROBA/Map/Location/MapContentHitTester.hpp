@@ -85,18 +85,18 @@ public:
 
     /// @brief 経度ラップを考慮した複数座標のヒット判定
     /// @brief Hit test with multiple positions (considering longitude wrapping)
-    /// @tparam Vec2Type Vec2型（Vec2<int>またはVec2<double>） / Vec2 type (Vec2<int> or Vec2<double>)
+    /// @tparam PositionsType 座標コンテナ型（イテレート可能） / Positions container type (iterable)
     /// @tparam HitTestFunc ヒット判定関数型 / Hit test function type
     /// @param mouse_x マウスX座標 / Mouse X coordinate
     /// @param mouse_y マウスY座標 / Mouse Y coordinate
-    /// @param positions スクリーン座標のリスト / List of screen positions
+    /// @param positions スクリーン座標のコンテナ / Container of screen positions
     /// @param hit_test_func ヒット判定関数 / Hit test function
     /// @return いずれかの座標でヒットした場合true / True if hit at any position
-    template<typename Vec2Type, typename HitTestFunc>
+    template<typename PositionsType, typename HitTestFunc>
     static bool testMultiplePositions(
         int mouse_x,
         int mouse_y,
-        const std::vector<Vec2Type>& positions,
+        const PositionsType& positions,
         HitTestFunc hit_test_func
     ) {
         for (const auto& pos : positions) {

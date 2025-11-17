@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_GENOME_FEATURE_HPP
 
 #include <string>
-#include <vector>
 
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -28,6 +27,7 @@
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -101,10 +101,11 @@ public:
         }
 
         // スクリーン座標に変換（経度ラップ処理付き）
-        cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
+        MapCoordinateConverter::toScreenPositions(
             data_.coordinate,
             context.map_view_size,
-            context.map_view_center
+            context.map_view_center,
+            cached_screen_positions_
         );
 
         // 表示サイズの計算（zoom適用）
@@ -136,7 +137,7 @@ public:
         return data_.year_range.contains(jdn);
     }
 
-    std::vector<paxg::Vec2<double>> getScreenPositions() const override {
+    const WrappedScreenPositions& getScreenPositions() const override {
         return cached_screen_positions_;
     }
 
@@ -194,7 +195,7 @@ public:
 
 private:
     LocationPoint data_;  ///< ゲノムデータ / Genome data
-    std::vector<paxg::Vec2<double>> cached_screen_positions_;  ///< キャッシュされた画面座標 / Cached screen positions
+    WrappedScreenPositions cached_screen_positions_;  ///< 経度ラップされたスクリーン座標 / Wrapped screen positions
     int cached_display_size_ = 0;  ///< キャッシュされた表示サイズ / Cached display size
     Vector2<int> cached_texture_size_{50, 50};  ///< キャッシュされたテクスチャサイズ / Cached texture size
     Vector2<int> cached_text_size_{0, 0};       ///< キャッシュされたテキストサイズ / Cached text size

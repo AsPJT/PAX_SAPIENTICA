@@ -27,6 +27,7 @@
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -91,10 +92,11 @@ public:
         }
 
         // スクリーン座標に変換（経度ラップ処理付き）
-        cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
+        MapCoordinateConverter::toScreenPositions(
             data_.coordinate,
             context.map_view_size,
-            context.map_view_center
+            context.map_view_center,
+            cached_screen_positions_
         );
 
         // フォントからテキストサイズを計算
@@ -116,7 +118,7 @@ public:
         return data_.year_range.contains(jdn);
     }
 
-    std::vector<paxg::Vec2<double>> getScreenPositions() const override {
+    const WrappedScreenPositions& getScreenPositions() const override {
         return cached_screen_positions_;
     }
 
@@ -157,7 +159,7 @@ public:
 
 private:
     LocationPoint data_;
-    std::vector<paxg::Vec2<double>> cached_screen_positions_;
+    WrappedScreenPositions cached_screen_positions_;  ///< 経度ラップされたスクリーン座標 / Wrapped screen positions
     int cached_display_size_ = 50;
     Vector2<int> cached_text_size_{100, 20};  ///< キャッシュされたテキストサイズ / Cached text size
 };

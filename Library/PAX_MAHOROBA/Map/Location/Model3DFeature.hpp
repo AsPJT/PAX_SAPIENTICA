@@ -29,6 +29,7 @@
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -98,10 +99,11 @@ public:
         }
 
         // スクリーン座標に変換（経度ラップ処理付き）
-        cached_screen_positions_ = MapCoordinateConverter::toScreenPositions(
+        MapCoordinateConverter::toScreenPositions(
             data_.coordinate,
             context.map_view_size,
-            context.map_view_center
+            context.map_view_center,
+            cached_screen_positions_
         );
 
         // 3Dモデルの状態を更新（回転など）
@@ -118,7 +120,7 @@ public:
 
     // ========== 座標・描画 / Coordinates & Rendering ==========
 
-    std::vector<paxg::Vec2<double>> getScreenPositions() const override {
+    const WrappedScreenPositions& getScreenPositions() const override {
         return cached_screen_positions_;
     }
 
@@ -173,7 +175,7 @@ private:
     Model3DRenderer renderer_;                         ///< 3Dモデルレンダラー / 3D model renderer
 
     // キャッシュされた状態 / Cached state
-    std::vector<paxg::Vec2<double>> cached_screen_positions_; ///< スクリーン座標（3つ） / Screen positions (3)
+    WrappedScreenPositions cached_screen_positions_;  ///< 経度ラップされたスクリーン座標 / Wrapped screen positions
 };
 
 } // namespace paxs

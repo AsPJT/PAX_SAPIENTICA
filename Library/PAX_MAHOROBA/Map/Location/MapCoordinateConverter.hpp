@@ -12,13 +12,12 @@
 #ifndef PAX_MAHOROBA_MAP_COORDINATE_CONVERTER_HPP
 #define PAX_MAHOROBA_MAP_COORDINATE_CONVERTER_HPP
 
-#include <vector>
-
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 
 namespace paxs {
 
@@ -30,11 +29,12 @@ struct MapCoordinateConverter {
     /// @param mercator_pos メルカトル座標 / Mercator position
     /// @param map_view_size ビューポートサイズ / Viewport size
     /// @param map_view_center ビューポート中心 / Viewport center
-    /// @return 3つのスクリーン座標（-360°, 0°, +360°）/ Three screen positions
-    static std::vector<paxg::Vec2<double>> toScreenPositions(
+    /// @param out_positions 出力先（経度ラップされた3つのスクリーン座標） / Output (three wrapped screen positions)
+    static void toScreenPositions(
         const Vector2<double>& mercator_pos,
         const Vector2<double>& map_view_size,
-        const Vector2<double>& map_view_center
+        const Vector2<double>& map_view_center,
+        WrappedScreenPositions& out_positions
     );
 
     /// @brief 時間補間座標の計算（PersonPortrait用）
@@ -70,24 +70,21 @@ struct MapCoordinateConverter {
 // インライン実装
 // ========================================
 
-inline std::vector<paxg::Vec2<double>> MapCoordinateConverter::toScreenPositions(
+inline void MapCoordinateConverter::toScreenPositions(
     const Vector2<double>& mercator_pos,
     const Vector2<double>& map_view_size,
-    const Vector2<double>& map_view_center
+    const Vector2<double>& map_view_center,
+    WrappedScreenPositions& out_positions
 ) {
-    std::vector<paxg::Vec2<double>> positions;
-    positions.reserve(3);
-
     // 3つの経度座標（-360°, 0°, +360°）を計算
-    for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
+    for (int offset_mult = -1, i = 0; offset_mult <= 1; ++offset_mult, ++i) {
         const double wrapped_x = mercator_pos.x + (offset_mult * 360.0);
-        positions.emplace_back(toScreenPos(
+        out_positions.positions[i] = toScreenPos(
             Vector2<double>(wrapped_x, mercator_pos.y),
             map_view_size, map_view_center
-        ));
+        );
     }
-
-    return positions;
+    out_positions.is_valid = true;  // Mark as valid after filling positions
 }
 
 inline MercatorDeg MapCoordinateConverter::interpolatePosition(

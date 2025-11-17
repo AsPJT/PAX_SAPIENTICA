@@ -14,13 +14,14 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
 
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+
+#include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 
 namespace paxs {
 
@@ -76,10 +77,10 @@ public:
 
     // ========== 座標・描画 / Coordinates & Rendering ==========
 
-    /// @brief スクリーン座標を取得（経度ラップ処理により複数の座標を返す）
-    /// @brief Get screen positions (returns multiple positions due to longitude wrapping)
-    /// @return スクリーン座標のリスト / List of screen positions
-    virtual std::vector<paxg::Vec2<double>> getScreenPositions() const = 0;
+    /// @brief 経度ラップされたスクリーン座標を取得
+    /// @brief Get longitude-wrapped screen positions
+    /// @return 経度ラップされた3つのスクリーン座標 / Three wrapped screen positions
+    virtual const WrappedScreenPositions& getScreenPositions() const = 0;
 
     /// @brief 表示サイズを取得
     /// @brief Get display size

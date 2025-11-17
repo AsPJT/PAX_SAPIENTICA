@@ -142,12 +142,11 @@ namespace paxs {
         ) {
             for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    const auto location_point = createLocationPoint(paxs::Vector2<int>(
-                        settlement.getPosition().x, settlement.getPosition().y));
+                    const auto location_point = createLocationPoint(settlement.getPosition());
 
                     // 経緯度の範囲外を除去
                     if (!LocationRendererHelper::isInViewBounds(
-                        location_point.coordinate.x, location_point.coordinate.y,
+                        location_point.coordinate,
                         map_view_size, map_view_center)) continue;
 
                     // 時間範囲外を除去
@@ -215,11 +214,10 @@ namespace paxs {
             // 集落の移動履歴を描画
             for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    const auto location_point = createLocationPoint(paxs::Vector2<int>(
-                        settlement.getPosition().x, settlement.getPosition().y));
+                    const auto location_point = createLocationPoint(settlement.getPosition());
 
                     if (!LocationRendererHelper::isInViewBounds(
-                        location_point.coordinate.x, location_point.coordinate.y,
+                        location_point.coordinate,
                         map_view_size, map_view_center)) continue;
 
                     if (location_point.year_range.excludes(jdn)) continue;
@@ -283,7 +281,7 @@ namespace paxs {
                 const auto location_point = createLocationPoint(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
                 if (!LocationRendererHelper::isInViewBounds(
-                    location_point.coordinate.x, location_point.coordinate.y,
+                    location_point.coordinate,
                     map_view_size, map_view_center)) continue;
 
                 if (location_point.year_range.excludes(jdn)) continue;

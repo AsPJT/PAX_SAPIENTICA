@@ -110,24 +110,22 @@ namespace paxs {
         }
 
         /// @brief 範囲内判定
-        /// @param coordinate_x メルカトル座標X / Mercator X coordinate
-        /// @param coordinate_y メルカトル座標Y / Mercator Y coordinate
+        /// @param coordinate メルカトル座標 / Mercator coordinate
         /// @param map_view_size マップビューのサイズ / Map view size
         /// @param map_view_center マップビューの中心座標 / Map view center
         /// @param margin_factor マージン係数（デフォルト: 1.6） / Margin factor (default: 1.6)
         static bool isInViewBounds(
-            double coordinate_x,
-            double coordinate_y,
+            const Vector2<double>& coordinate,
             const Vector2<double>& map_view_size,
             const Vector2<double>& map_view_center,
             double margin_factor = 1.6
         ) {
             const double half_width = map_view_size.x / 2 * margin_factor;
             const double half_height = map_view_size.y / 2 * margin_factor;
-            return (coordinate_x >= map_view_center.x - half_width &&
-                    coordinate_x <= map_view_center.x + half_width &&
-                    coordinate_y >= map_view_center.y - half_height &&
-                    coordinate_y <= map_view_center.y + half_height);
+            return (coordinate.x >= map_view_center.x - half_width &&
+                    coordinate.x <= map_view_center.x + half_width &&
+                    coordinate.y >= map_view_center.y - half_height &&
+                    coordinate.y <= map_view_center.y + half_height);
         }
 
     private:
