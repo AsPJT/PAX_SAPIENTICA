@@ -83,8 +83,8 @@ public:
             return;
         }
 
-        // ズームレベルフィルタリング：範囲外の場合のみ描画（アイコンのみ）
-        if (data_.zoom_range.contains(context.map_view_size.y)) {
+        // ズームレベルフィルタリング：範囲外の場合はスキップ
+        if (data_.zoom_range.excludes(context.map_view_size.y)) {
             cached_screen_positions_.clear();
             return;
         }
