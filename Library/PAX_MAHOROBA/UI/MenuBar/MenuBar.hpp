@@ -117,11 +117,12 @@ namespace paxs {
 
             if (menu_type == paxs::MenuBarType::view) {
                 // View メニュー
-                const std::array<ViewMenu, 7> view_items = {
+                const std::array view_items = {
                     ViewMenu::calendar,
                     ViewMenu::map,
                     ViewMenu::ui,
                     ViewMenu::simulation,
+                    ViewMenu::person,
                     ViewMenu::license,
                     ViewMenu::debug,
                     ViewMenu::view_3d
@@ -135,7 +136,7 @@ namespace paxs {
             }
             else if (menu_type == paxs::MenuBarType::place_names) {
                 // Place Names メニュー
-                const std::array<PlaceNamesMenu, 5> place_name_items = {
+                const std::array place_name_items = {
                     PlaceNamesMenu::ancient_text,
                     PlaceNamesMenu::administrative,
                     PlaceNamesMenu::indigenous,
@@ -151,7 +152,7 @@ namespace paxs {
             }
             else if (menu_type == paxs::MenuBarType::item) {
                 // Item メニュー
-                const std::array<ItemMenu, 5> item_items = {
+                const std::array item_items = {
                     ItemMenu::kamekanbo,
                     ItemMenu::stone_coffin,
                     ItemMenu::doken,
@@ -369,6 +370,7 @@ namespace paxs {
             visible_manager.emplace(ViewMenu::map, true); // 地図
             visible_manager.emplace(ViewMenu::ui, true); // UI
             visible_manager.emplace(ViewMenu::simulation, true); // シミュレーション
+            visible_manager.emplace(ViewMenu::person, true); // 人物
             visible_manager.emplace(ViewMenu::license, false); // ライセンス
             visible_manager.emplace(ViewMenu::debug, false); // デバッグ
             visible_manager.emplace(ViewMenu::view_3d, false); // 360度写真
@@ -389,9 +391,10 @@ namespace paxs {
             view_menu->setIsItems(std::size_t(1), visible_manager.isVisible(ViewMenu::map));
             view_menu->setIsItems(std::size_t(2), visible_manager.isVisible(ViewMenu::ui));
             view_menu->setIsItems(std::size_t(3), visible_manager.isVisible(ViewMenu::simulation));
-            view_menu->setIsItems(std::size_t(4), visible_manager.isVisible(ViewMenu::license));
-            view_menu->setIsItems(std::size_t(5), visible_manager.isVisible(ViewMenu::debug));
-            view_menu->setIsItems(std::size_t(6), visible_manager.isVisible(ViewMenu::view_3d));
+            view_menu->setIsItems(std::size_t(4), visible_manager.isVisible(ViewMenu::person));
+            view_menu->setIsItems(std::size_t(5), visible_manager.isVisible(ViewMenu::license));
+            view_menu->setIsItems(std::size_t(6), visible_manager.isVisible(ViewMenu::debug));
+            view_menu->setIsItems(std::size_t(7), visible_manager.isVisible(ViewMenu::view_3d));
 
             // Map メニューの状態を初期化
             paxs::DropDownMenu* map_menu = menu_system.getDropDownMenu(paxs::MenuBarType::map);

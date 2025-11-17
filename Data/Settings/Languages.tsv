@@ -43,6 +43,7 @@ view_calendar	Calendar	カレンダー	日历	日历	달력	かれんだー	Cale
 view_map	Map	地図	地图	地图	지도	ちず	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة	Sinrunoka
 view_ui	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI
 view_simulation	Simulation	ステップ数	仿真	仿真	시뮬레이션	しみゅれーしょん	Simulación	Simulação	Simulation	Simulation	Simulazione	Simülasyon	Symulacja	Προσομοίωση	Simulatie	Simulace	Симуляція	Симулирование	Simulasi	شبیه‌سازی	محاكاة	Simulation
+view_person	Person	人物	人物	人物	인물	じんぶつ	Persona	Pessoa	Person	Personne	Persona	Kişi	Osoba	Πρόσωπο	Persoon	Osoba	Особа	Человек	Orang	شخص	شخص	Person
 view_license	License	ライセンス	许可	许可	라이선스	らいせんす	Licencia	Licença	Lizenz	Licence	Licenza	Lisans	Licencja	Άδεια	Licentie	Licence	Ліцензія	Лицензия	Lisensi	مجوز	رخصة	License
 view_debug	Debug	デバッグ	调试	调试	디버깅	でばっぐ	Depurar	Depurar	Debuggen	Débogage	Debug	Hata Ayıklama	Debugowanie	Αποσφαλμάτωση	Debug	Ladění	Налагодження	Отладка	Debug	اشکال زدایی	Debug	Debug
 view_3d	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	سه بعدی	ثلاثي الأبعاد	3D

@@ -42,6 +42,7 @@ namespace paxs {
         constexpr const char* view_map = "view_map";
         constexpr const char* view_ui = "view_ui";
         constexpr const char* view_simulation = "view_simulation";
+        constexpr const char* view_person = "view_person";
         constexpr const char* view_license = "view_license";
         constexpr const char* view_debug = "view_debug";
         constexpr const char* view_3d = "view_3d";
@@ -53,6 +54,7 @@ namespace paxs {
             MurMur3::calcHash(view_map),
             MurMur3::calcHash(view_ui),
             MurMur3::calcHash(view_simulation),
+            MurMur3::calcHash(view_person),
             MurMur3::calcHash(view_license),
             MurMur3::calcHash(view_debug)
             // MurMur3::calcHash(view_3d)
@@ -160,6 +162,7 @@ namespace paxs {
         map        = MurMur3::calcHash(MenuBarKeys::view_map),
         ui         = MurMur3::calcHash(MenuBarKeys::view_ui),
         simulation = MurMur3::calcHash(MenuBarKeys::view_simulation),
+        person     = MurMur3::calcHash(MenuBarKeys::view_person),
         license    = MurMur3::calcHash(MenuBarKeys::view_license),
         debug      = MurMur3::calcHash(MenuBarKeys::view_debug),
         view_3d    = MurMur3::calcHash(MenuBarKeys::view_3d),
