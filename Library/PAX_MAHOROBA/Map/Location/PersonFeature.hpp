@@ -30,7 +30,7 @@
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
-#include <PAX_SAPIENTICA/Map/Repository/PersonNameRepository.hpp>
+#include <PAX_SAPIENTICA/Map/PersonLocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -51,26 +51,22 @@ public:
         return FeatureType::Person;
     }
 
-    std::string getId() const override {
-        // IDとして人物名のハッシュを使用
-        const std::uint_least32_t ja_jp = MurMur3::calcHash("ja-JP");
-        if (data_.person_name.find(ja_jp) != data_.person_name.end()) {
-            return data_.person_name.at(ja_jp);
+    std::uint_least32_t getId() const override {
+        // IDとして key の MurMur3 ハッシュを使用
+        if (!data_.key.empty()) {
+            return MurMur3::calcHash(data_.key.c_str());
         }
-        if (!data_.person_name.empty()) {
-            return data_.person_name.begin()->second;
-        }
-        return "unknown";
+        return 0;
     }
 
     std::string getName(const std::string& language = "ja-JP") const override {
         const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        if (data_.person_name.find(lang_hash) != data_.person_name.end()) {
-            return data_.person_name.at(lang_hash);
+        if (data_.names.find(lang_hash) != data_.names.end()) {
+            return data_.names.at(lang_hash);
         }
         // フォールバック: 最初の名前を返す
-        if (!data_.person_name.empty()) {
-            return data_.person_name.begin()->second;
+        if (!data_.names.empty()) {
+            return data_.names.begin()->second;
         }
         return "";
     }
@@ -109,7 +105,7 @@ public:
         // 表示サイズの計算
         const bool out_of_range = data_.zoom_range.excludes(context.map_view_size.x);
         cached_display_size_ = out_of_range
-            ? static_cast<int>(data_.overall_length / 2)
+            ? 5  // 範囲外時の小さい表示サイズ
             : 60;  // 120 / 2
 
         // テクスチャサイズとテキストサイズを取得

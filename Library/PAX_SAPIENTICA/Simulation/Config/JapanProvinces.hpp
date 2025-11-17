@@ -60,8 +60,8 @@ namespace paxs {
 
             std::uint_least32_t direction_min_distance = 100;
             // std::array<double, 8> direction_weight{};
-            std::vector<double> direction_weight{};
-            std::discrete_distribution<> direction_dist{};
+            std::vector<double> direction_weight;
+            std::discrete_distribution<> direction_dist;
         };
 
     /// @brief A class that represents a prefecture in Japan.

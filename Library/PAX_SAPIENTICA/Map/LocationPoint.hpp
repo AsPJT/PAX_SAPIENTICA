@@ -27,12 +27,11 @@ namespace paxs {
 
     // 地物の位置情報
     struct LocationPoint {
-        constexpr explicit LocationPoint() = default;
+        explicit LocationPoint() = default;
         explicit LocationPoint(
-            const paxs::UnorderedMap<std::uint_least32_t, std::string>& place_name_,  // 地物名（多言語対応）
+            const std::string& key_,  // 地物の一意キー
+            const paxs::UnorderedMap<std::uint_least32_t, std::string>& names_,  // 地物名（多言語対応）
             const paxs::MercatorDeg& coordinate_,  // 経緯度
-            std::uint_least16_t x_size_,  // 重ね枚数
-            std::uint_least16_t y_size_,  // 重ね枚数
             const double overall_length_,  // 全長
             const Range<double>& zoom_range_,  // 表示するズームレベル範囲
             const Range<double>& year_range_,  // 可視化する時代範囲
@@ -41,15 +40,14 @@ namespace paxs {
             const double zoom_, // 拡大率
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& extra_data_ = {}  // 追加カラムデータ
         ) noexcept
-            : place_name(place_name_), coordinate(coordinate_), x_size(x_size_), y_size(y_size_), overall_length(overall_length_),
+            : key(key_), names(names_), coordinate(coordinate_), overall_length(overall_length_),
             zoom_range(zoom_range_), year_range(year_range_),
             feature_type_hash(feature_type_hash_), texture_key(texture_key_), zoom(zoom_),
             extra_data(extra_data_){}
 
-        paxs::UnorderedMap<std::uint_least32_t, std::string> place_name{}; // 地物名（多言語対応：地名、遺跡名、古墳名など）
-        paxs::MercatorDeg coordinate{}; // 経緯度
-        std::uint_least16_t x_size = 1;
-        std::uint_least16_t y_size = 1;
+        std::string key;  // 地物の一意キー（TSVのkeyカラムから）
+        paxs::UnorderedMap<std::uint_least32_t, std::string> names; // 地物名（多言語対応：地名、遺跡名、古墳名、人物名、ゲノム名など）
+        paxs::MercatorDeg coordinate; // 経緯度
         double overall_length = 10; // 全長
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
         Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
@@ -59,7 +57,7 @@ namespace paxs {
 
         /// @brief 追加カラムデータ（TSVの拡張情報）
         /// @brief Extra column data from TSV files
-        paxs::UnorderedMap<std::uint_least32_t, std::string> extra_data{};
+        paxs::UnorderedMap<std::uint_least32_t, std::string> extra_data;
 
         /// @brief 追加カラムの値を取得（ハッシュ値で直接アクセス）
         /// @brief Get extra column value by hash
@@ -77,16 +75,16 @@ namespace paxs {
 
     // 地物の一覧
     struct LocationPointList {
-        std::vector<LocationPoint> location_point_list{}; // 地物の一覧
+        std::vector<LocationPoint> location_point_list; // 地物の一覧
 
-        paxs::MercatorDeg start_coordinate{}; // 経緯度
-        paxs::MercatorDeg end_coordinate{}; // 経緯度
+        paxs::MercatorDeg start_coordinate; // 経緯度
+        paxs::MercatorDeg end_coordinate; // 経緯度
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
         Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "tomb", "site", "person"）
         std::uint_least32_t texture_key = 0; // テクスチャキー（ハッシュ値）
 
-        constexpr explicit LocationPointList() = default;
+        explicit LocationPointList() = default;
         explicit LocationPointList(
             const std::vector<LocationPoint>& location_point_list_,  // 地物
             paxs::MercatorDeg start_coordinate_, // 経緯度

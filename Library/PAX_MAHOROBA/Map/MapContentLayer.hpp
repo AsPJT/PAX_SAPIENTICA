@@ -250,19 +250,15 @@ namespace paxs {
                 asset_registry_.loadMapIcons(map_icons_path);
             }
 
-            std::cout << "Loading person features...\n";
             loadPersonFeatures();
             std::cout << "Person features loaded: " << features_.size() << "\n";
 
-            std::cout << "Loading geographic features...\n";
             loadGeographicFeatures();
             std::cout << "Geographic features loaded: " << features_.size() << " total\n";
 
-            std::cout << "Loading place name features...\n";
             loadPlaceNameFeatures();
             std::cout << "Place name features loaded: " << features_.size() << " total\n";
 
-            std::cout << "Loading genome features...\n";
             loadGenomeFeatures();
             std::cout << "Genome features loaded: " << features_.size() << " total\n";
 
@@ -325,7 +321,7 @@ namespace paxs {
         }
 
         /// @brief IDでFeatureを検索
-        MapFeature* findFeatureById(const std::string& id) {
+        MapFeature* findFeatureById(std::uint_least32_t id) {
             for (auto& feature : features_) {
                 if (feature && feature->getId() == id) {
                     return feature.get();

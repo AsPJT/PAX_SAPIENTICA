@@ -40,6 +40,7 @@ namespace paxs {
     /// @brief Struct to hold pre-computed hash values for TSV columns
     struct ColumnHashes {
         // 必須カラム
+        std::uint_least32_t key = MurMur3::calcHash("key");
         std::uint_least32_t longitude = MurMur3::calcHash("longitude");
         std::uint_least32_t latitude = MurMur3::calcHash("latitude");
 
@@ -63,7 +64,8 @@ namespace paxs {
         /// @brief 標準カラムかどうかを判定
         /// @brief Check if column is a standard column
         inline bool isStandardColumn(std::uint_least32_t column_hash, const ColumnHashes& hashes) {
-            return column_hash == hashes.longitude ||
+            return column_hash == hashes.key ||
+                   column_hash == hashes.longitude ||
                    column_hash == hashes.latitude ||
                    column_hash == hashes.overall_length ||
                    column_hash == hashes.x_size ||
@@ -83,6 +85,7 @@ namespace paxs {
     /// @brief カラムの存在フラグを保持する構造体
     /// @brief Struct to hold column existence flags
     struct ColumnFlags {
+        bool has_key = false;
         bool has_overall_length = false;
         bool has_x_size = false;
         bool has_y_size = false;
@@ -99,6 +102,7 @@ namespace paxs {
         /// @brief TsvTableから各カラムの存在を確認して設定
         /// @brief Set column existence flags from TsvTable
         void setFromTable(const TsvTable& table, const ColumnHashes& hashes) {
+            has_key = table.hasColumn(hashes.key);
             has_overall_length = table.hasColumn(hashes.overall_length);
             has_x_size = table.hasColumn(hashes.x_size);
             has_y_size = table.hasColumn(hashes.y_size);
@@ -135,11 +139,10 @@ namespace paxs {
     /// @brief TSVから読み込んだ行データを保持する構造体
     /// @brief Struct to hold row data loaded from TSV
     struct LocationRowData {
+        std::string key;
         double longitude = 0.0;
         double latitude = 0.0;
         double overall_length = 10.0;
-        std::uint_least16_t x_size = 1;
-        std::uint_least16_t y_size = 1;
         Range<double> zoom_range{0.0, 0.0};
         Range<double> year_range{0.0, 0.0};
         std::uint_least32_t texture_hash = 0;
@@ -257,6 +260,8 @@ namespace paxs {
             const ColumnFlags& flags,
             const FeatureListParams& params
         ) {
+            const std::string& key_str = flags.has_key ? table.get(row_index, hashes.key) : "";
+
             // 必須カラムの取得
             const std::string& longitude_str = table.get(row_index, hashes.longitude);
             const std::string& latitude_str = table.get(row_index, hashes.latitude);
@@ -268,6 +273,7 @@ namespace paxs {
             }
 
             LocationRowData data;
+            data.key = key_str;
 
             // 経度の変換
             auto lon_opt = StringUtils::toDouble(longitude_str);
@@ -292,15 +298,11 @@ namespace paxs {
 
             // オプションカラムの読み込み
             const std::string& overall_length_str = flags.has_overall_length ? table.get(row_index, hashes.overall_length) : "";
-            const std::string& x_size_str = flags.has_x_size ? table.get(row_index, hashes.x_size) : "";
-            const std::string& y_size_str = flags.has_y_size ? table.get(row_index, hashes.y_size) : "";
             const std::string& min_size_str = flags.has_min_size ? table.get(row_index, hashes.min_size) : "";
             const std::string& max_size_str = flags.has_max_size ? table.get(row_index, hashes.max_size) : "";
             const std::string& texture_str = flags.has_texture ? table.get(row_index, hashes.texture) : "";
 
             data.overall_length = getOptionalValue(overall_length_str, 10.0);
-            data.x_size = getOptionalValue<std::uint_least16_t>(x_size_str, 1);
-            data.y_size = getOptionalValue<std::uint_least16_t>(y_size_str, 1);
 
             // ズーム範囲の計算
             const double min_size = getOptionalValue(min_size_str, params.zoom_range.min);

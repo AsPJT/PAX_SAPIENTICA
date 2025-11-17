@@ -103,13 +103,14 @@ namespace paxs {
         /// @param position 集落の位置 / Settlement position
         static LocationPoint createLocationPoint(const paxs::Vector2<int>& position) {
             return LocationPoint{
+                "settlement_" + std::to_string(position.x) + "_" + std::to_string(position.y),  // key
                 paxs::UnorderedMap<std::uint_least32_t, std::string>(),
                 paxs::MercatorDeg(getLocation(
                     SimulationConstants::getInstance().getStartArea(),
                     position,
                     ZOOM_LEVEL
                 )),
-                1, 1, 10,
+                10,
                 Range<double>(0, 100),
                 Range<double>(0, 99999999),
                 MurMur3::calcHash("agent1"),

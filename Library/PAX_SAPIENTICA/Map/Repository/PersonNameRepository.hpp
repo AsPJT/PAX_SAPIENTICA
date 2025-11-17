@@ -12,7 +12,6 @@
 #ifndef PAX_SAPIENTICA_MAP_REPOSITORY_PERSON_NAME_REPOSITORY_HPP
 #define PAX_SAPIENTICA_MAP_REPOSITORY_PERSON_NAME_REPOSITORY_HPP
 
-#include <algorithm>
 #include <cstdint>
 #include <functional>
 #include <string>
@@ -23,69 +22,14 @@
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
+#include <PAX_SAPIENTICA/Map/PersonLocationPoint.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/FeatureListLoader.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/LocationDataLoader.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
-    // 人物の位置情報
-    struct PersonLocationPoint {
-        explicit PersonLocationPoint() = default;
-        explicit PersonLocationPoint(
-            const paxs::UnorderedMap<std::uint_least32_t, std::string>& person_name_,  // 人物名
-            const paxs::MercatorDeg& start_coordinate_,  // 経緯度
-            const paxs::MercatorDeg& end_coordinate_,  // 経緯度
-            const double overall_length_,  // 全長
-            const Range<double>& zoom_range_,  // 表示するズームレベル範囲
-            const Range<double>& year_range_,  // 可視化する時代範囲
-            const std::uint_least32_t feature_type_hash_,  // 地物の種別を識別するハッシュ値
-            const std::uint_least32_t texture_key_ // テクスチャキー
-        ) noexcept
-            : person_name(person_name_), start_coordinate(start_coordinate_), end_coordinate(end_coordinate_), overall_length(overall_length_),
-            zoom_range(zoom_range_), year_range(year_range_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
-
-        paxs::UnorderedMap<std::uint_least32_t, std::string> person_name{}; // 人物名
-        paxs::MercatorDeg start_coordinate; // 経緯度
-        paxs::MercatorDeg end_coordinate; // 経緯度
-        double overall_length = 10; // 全長
-        Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
-        Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
-        std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "person"）
-        std::uint_least32_t texture_key = 0; // テクスチャキー
-    };
-
-    // 人物の一覧
-    struct PersonLocationList {
-        std::vector<PersonLocationPoint> person_location_list{}; // 人物の一覧
-
-        paxs::MercatorDeg start_start_coordinate{}; // 経緯度
-        paxs::MercatorDeg start_end_coordinate{}; // 経緯度
-        paxs::MercatorDeg end_start_coordinate{}; // 経緯度
-        paxs::MercatorDeg end_end_coordinate{}; // 経緯度
-        Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
-        Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
-        std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "person"）
-        std::uint_least32_t texture_key = 0; // テクスチャキー
-
-        explicit PersonLocationList() = default;
-        explicit PersonLocationList(
-            const std::vector<PersonLocationPoint>& location_point_list_,  // 人物
-            paxs::MercatorDeg start_start_coordinate_, // 経緯度
-            paxs::MercatorDeg start_end_coordinate_, // 経緯度
-            paxs::MercatorDeg end_start_coordinate_, // 経緯度
-            paxs::MercatorDeg end_end_coordinate_, // 経緯度
-            const Range<double>& zoom_range_,  // 表示するズームレベル範囲
-            const Range<double>& year_range_,  // 可視化する時代範囲
-            const std::uint_least32_t feature_type_hash_,  // 地物の種別を識別するハッシュ値
-            const std::uint_least32_t texture_key_ // テクスチャキー
-        ) noexcept
-            : person_location_list(location_point_list_),
-            start_start_coordinate(start_start_coordinate_), start_end_coordinate(start_end_coordinate_),
-            end_start_coordinate(end_start_coordinate_), end_end_coordinate(end_end_coordinate_),
-            zoom_range(zoom_range_), year_range(year_range_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
-
-    };
 
     /// @brief 人物名のデータ読み込みを担当する構造体 (Infrastructure Layer)
     struct PersonNameRepository {
@@ -108,6 +52,16 @@ namespace paxs {
         static PersonLocationList loadPersonFromFile(const FeatureListParams& params) {
             std::vector<PersonLocationPoint> person_location_list{}; // 人物の一覧
             const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
+
+            // ファイル名からキーを抽出（拡張子を除く）
+            std::string person_key;
+            {
+                const std::size_t last_slash = params.file_path.find_last_of("/\\");
+                const std::size_t last_dot = params.file_path.find_last_of('.');
+                const std::size_t start_pos = (last_slash == std::string::npos) ? 0 : last_slash + 1;
+                const std::size_t end_pos = (last_dot == std::string::npos || last_dot < start_pos) ? params.file_path.length() : last_dot;
+                person_key = params.file_path.substr(start_pos, end_pos - start_pos);
+            }
 
             paxs::TsvTable table(params.file_path);
             if (!table.isSuccessfullyLoaded()) {
@@ -133,39 +87,19 @@ namespace paxs {
                 return PersonLocationList();
             }
 
-            double start_start_longitude = 180.0; // 始点の経度
-            double start_end_longitude = -180.0; // 終点の経度
-            double start_start_latitude = 90.0; // 始点の緯度
-            double start_end_latitude = -90.0; // 終点の緯度
 
-            double end_start_longitude = 180.0; // 始点の経度
-            double end_end_longitude = -180.0; // 終点の経度
-            double end_start_latitude = 90.0; // 始点の緯度
-            double end_end_latitude = -90.0; // 終点の緯度
+            // カラムハッシュとフラグの設定
+            ColumnHashes hashes;
+            ColumnFlags flags;
 
-            // カラムハッシュキーを作成
+            // Person固有のカラムハッシュを追加
             const std::uint_least32_t start_longitude_hash = MurMur3::calcHash("start_longitude");
             const std::uint_least32_t start_latitude_hash = MurMur3::calcHash("start_latitude");
             const std::uint_least32_t end_longitude_hash = MurMur3::calcHash("end_longitude");
             const std::uint_least32_t end_latitude_hash = MurMur3::calcHash("end_latitude");
-            const std::uint_least32_t overall_length_hash = MurMur3::calcHash("overall_length");
-            const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
-            const std::uint_least32_t max_size_hash = MurMur3::calcHash("max_size");
-            const std::uint_least32_t first_julian_day_hash = MurMur3::calcHash("first_julian_day");
-            const std::uint_least32_t last_julian_day_hash = MurMur3::calcHash("last_julian_day");
-            const std::uint_least32_t texture_hash = MurMur3::calcHash("texture");
-            const std::uint_least32_t ja_jp_hash = MurMur3::calcHash("ja-JP");
-            const std::uint_least32_t en_us_hash = MurMur3::calcHash("en-US");
 
-            // オプショナルカラムの存在確認
-            const bool has_overall_length = table.hasColumn(overall_length_hash);
-            const bool has_min_size = table.hasColumn(min_size_hash);
-            const bool has_max_size = table.hasColumn(max_size_hash);
-            const bool has_first_julian_day = table.hasColumn(first_julian_day_hash);
-            const bool has_last_julian_day = table.hasColumn(last_julian_day_hash);
-            const bool has_texture = table.hasColumn(texture_hash);
-            const bool has_ja_jp = table.hasColumn(ja_jp_hash);
-            const bool has_en_us = table.hasColumn(en_us_hash);
+            // 共通カラムの存在確認
+            flags.setFromTable(table, hashes);
 
             // 1 行ずつ読み込み
             table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
@@ -180,22 +114,9 @@ namespace paxs {
                     return;
                 }
 
-                // 人物名
-                paxs::UnorderedMap<std::uint_least32_t, std::string> person_name{};
-                if (has_ja_jp) {
-                    const std::string& ja_jp_str = table.get(row_index, ja_jp_hash);
-                    if (!ja_jp_str.empty()) {
-                        person_name.emplace(MurMur3::calcHash("ja-JP"), ja_jp_str);
-                    }
-                }
-                if (has_en_us) {
-                    const std::string& en_us_str = table.get(row_index, en_us_hash);
-                    if (!en_us_str.empty()) {
-                        person_name.emplace(MurMur3::calcHash("en-US"), en_us_str);
-                    }
-                }
-
-                const std::string& overall_length_str = has_overall_length ? table.get(row_index, overall_length_hash) : "";
+                // 人物名（多言語対応）
+                paxs::UnorderedMap<std::uint_least32_t, std::string> names =
+                    LocationDataLoader::loadNames(table, row_index, hashes, flags);
 
                 // 経度の変換
                 auto start_lon_opt = StringUtils::toDouble(start_longitude_str);
@@ -212,11 +133,6 @@ namespace paxs {
                     return;
                 }
                 double start_point_latitude = *start_lat_opt; // 緯度
-                // 経緯度の範囲を求める
-                start_start_longitude = (std::min)(start_start_longitude, start_point_longitude);
-                start_start_latitude = (std::min)(start_start_latitude, start_point_latitude);
-                start_end_longitude = (std::max)(start_end_longitude, start_point_longitude);
-                start_end_latitude = (std::max)(start_end_latitude, start_point_latitude);
 
                 // 終点経度の変換
                 auto end_lon_opt = StringUtils::toDouble(end_longitude_str);
@@ -233,22 +149,18 @@ namespace paxs {
                     return;
                 }
                 double end_point_latitude = *end_lat_opt; // 緯度
-                // 経緯度の範囲を求める
-                end_start_longitude = (std::min)(end_start_longitude, end_point_longitude);
-                end_start_latitude = (std::min)(end_start_latitude, end_point_latitude);
-                end_end_longitude = (std::max)(end_end_longitude, end_point_longitude);
-                end_end_latitude = (std::max)(end_end_latitude, end_point_latitude);
 
                 // オプショナル値の取得
-                const std::string& min_size_str = has_min_size ? table.get(row_index, min_size_hash) : "";
-                const std::string& max_size_str = has_max_size ? table.get(row_index, max_size_hash) : "";
-                const std::string& first_julian_day_str = has_first_julian_day ? table.get(row_index, first_julian_day_hash) : "";
-                const std::string& last_julian_day_str = has_last_julian_day ? table.get(row_index, last_julian_day_hash) : "";
-                const std::string& texture_str = has_texture ? table.get(row_index, texture_hash) : "";
+                const std::string& min_size_str = flags.has_min_size ? table.get(row_index, hashes.min_size) : "";
+                const std::string& max_size_str = flags.has_max_size ? table.get(row_index, hashes.max_size) : "";
+                const std::string& first_julian_day_str = flags.has_first_julian_day ? table.get(row_index, hashes.first_julian_day) : "";
+                const std::string& last_julian_day_str = flags.has_last_julian_day ? table.get(row_index, hashes.last_julian_day) : "";
+                const std::string& texture_str = flags.has_texture ? table.get(row_index, hashes.texture) : "";
 
                 // 格納
                 person_location_list.emplace_back(
-                    person_name,
+                    person_key,
+                    names,
                     paxs::EquirectangularDeg(
                         paxs::Vector2<double>(
                             start_point_longitude, // 経度
@@ -257,7 +169,6 @@ namespace paxs {
                         paxs::Vector2<double>(
                             end_point_longitude, // 経度
                             end_point_latitude)).toMercatorDeg(), // 緯度
-                    StringUtils::safeStod(overall_length_str, 1000.0, true), // 全長
                     Range<double>(
                         StringUtils::safeStod(min_size_str, params.zoom_range.min, true),
                         StringUtils::safeStod(max_size_str, params.zoom_range.max, true)
@@ -271,25 +182,20 @@ namespace paxs {
                 );
             });
 
-            // 地物を何も読み込んでいない場合は何もしないで終わる
+            // 人物を何も読み込んでいない場合は何もしないで終わる
             if (person_location_list.size() == 0) {
                 PAXS_WARNING("No valid person locations loaded from file: " + params.file_path);
                 return PersonLocationList();
             }
 
             // 読み込んだファイルを格納する
-            return PersonLocationList(person_location_list,
-                paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(start_start_longitude/* 経度 */, start_start_latitude/* 緯度 */)).toMercatorDeg(),
-                paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(start_end_longitude/* 経度 */, start_end_latitude/* 緯度 */)).toMercatorDeg(),
-                paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(end_start_longitude/* 経度 */, end_start_latitude/* 緯度 */)).toMercatorDeg(),
-                paxs::EquirectangularDeg(
-                    paxs::Vector2<double>(end_end_longitude/* 経度 */, end_end_latitude/* 緯度 */)).toMercatorDeg(),
+            return PersonLocationList(
+                person_location_list,
                 params.zoom_range,
                 params.year_range,
-                feature_type_hash, params.texture_hash);
+                feature_type_hash,
+                params.texture_hash
+            );
         }
 
     };

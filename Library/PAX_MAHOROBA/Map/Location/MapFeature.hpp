@@ -38,10 +38,10 @@ public:
     /// @return 地物の種類 / Feature type
     virtual FeatureType getType() const = 0;
 
-    /// @brief 地物のIDを取得
-    /// @brief Get feature ID
-    /// @return 地物のID / Feature ID
-    virtual std::string getId() const = 0;
+    /// @brief 地物のIDを取得（keyのMurMur3ハッシュ値）
+    /// @brief Get feature ID (MurMur3 hash of key)
+    /// @return 地物のID（ハッシュ値） / Feature ID (hash value)
+    virtual std::uint_least32_t getId() const = 0;
 
     /// @brief 地物の名前を取得
     /// @brief Get feature name

@@ -80,12 +80,6 @@ public:
 private:
     MapFeatureRenderer() = default;
 
-    // 描画定数
-    static constexpr int TEXTURE_SPACING_HORIZONTAL = 4;
-    static constexpr int TEXTURE_SPACING_HORIZONTAL_ZOOMED = 6;
-    static constexpr int TEXTURE_SPACING_VERTICAL = 4;
-    static constexpr std::uint_least16_t ZOOM_SPLIT_COUNT = 10;
-
     /// @brief 人物地物を描画
     /// @brief Draw person feature
     /// @param feature 人物地物 / Person feature
@@ -124,7 +118,7 @@ private:
 
                 // テキスト位置
                 const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x(), draw_pos.y() - 60 };
-                LocationRendererHelper::drawBilingualText(data.person_name, draw_font_pos, "topCenter");
+                LocationRendererHelper::drawBilingualText(data.names, draw_font_pos, "topCenter");
             }
         }
     }
@@ -142,6 +136,7 @@ private:
         const auto& data = feature.getData();
         const auto& screen_positions = feature.getScreenPositions();
         const int display_size = feature.getDisplaySize();
+        const int draw_count = feature.getDrawCount();
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
@@ -156,17 +151,25 @@ private:
             const std::uint_least32_t place_tex = data.texture_key;
             if (texture_map.find(place_tex) == texture_map.end()) continue;
 
-            const bool is_zoomed = (data.zoom > 1.0);
+            const auto& texture = texture_map.at(place_tex);
 
-            // 複数タイルの描画
-            drawTextureMultiple(
-                texture_map.at(place_tex),
-                display_size,
-                draw_pos,
-                data.x_size,
-                data.y_size,
-                is_zoomed
-            );
+            // draw_countが1の場合は通常描画
+            if (draw_count == 1) {
+                texture.resizedDrawAt(display_size, draw_pos);
+            } else {
+                // draw_countが2以上の場合は横に複数並べて描画（中央揃え）
+                constexpr int spacing = 4;  // テクスチャ間の間隔
+                const int total_width = draw_count * display_size + (draw_count - 1) * spacing;
+                const int start_x = static_cast<int>(draw_pos.x()) - total_width / 2;
+
+                for (int i = 0; i < draw_count; ++i) {
+                    const paxg::Vec2<double> draw_item_pos{
+                        static_cast<double>(start_x + i * (display_size + spacing) + display_size / 2),
+                        draw_pos.y()
+                    };
+                    texture.resizedDrawAt(display_size, draw_item_pos);
+                }
+            }
         }
     }
 
@@ -231,26 +234,17 @@ private:
                 continue;
             }
 
-            const bool is_zoomed = (data.zoom > 1.0);
-
-            // 複数タイルの描画
-            drawTextureMultiple(
-                texture_map.at(place_tex),
-                display_size,
-                draw_pos,
-                data.x_size,
-                data.y_size,
-                is_zoomed
-            );
+            // テクスチャを描画
+            texture_map.at(place_tex).resizedDrawAt(display_size, draw_pos);
 
             // 名前を描画（表示サイズが十分な場合のみ）
-            if (should_show_name && !data.place_name.empty()) {
+            if (should_show_name && !data.names.empty()) {
                 // テクスチャの上部に名前を描画
                 const paxg::Vec2<double> text_pos = paxg::Vec2<double>{
                     draw_pos.x(),
                     draw_pos.y() - display_size / 2 - 5  // アイコンの上部から少し離す
                 };
-                LocationRendererHelper::drawBilingualText(data.place_name, text_pos, "bottomCenter");
+                LocationRendererHelper::drawBilingualText(data.names, text_pos, "bottomCenter");
             }
         }
     }
@@ -270,7 +264,7 @@ private:
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
-            LocationRendererHelper::drawBilingualText(data.place_name, draw_pos, "at");
+            LocationRendererHelper::drawBilingualText(data.names, draw_pos, "at");
         }
     }
 
@@ -300,69 +294,6 @@ private:
         // }
     }
 
-    /// @brief テクスチャを複数描画（GeographicFeature用）
-    /// @brief Draw texture multiple times (for GeographicFeature)
-    static void drawTextureMultiple(
-        const paxg::Texture& texture,
-        const int display_size,
-        const paxg::Vec2<double>& draw_pos,
-        const std::uint_least16_t x_size,
-        const std::uint_least16_t y_size,
-        const bool is_zoomed
-    ) {
-        if (x_size <= 1) {
-            if (y_size <= 1) {
-                texture.resizedDrawAt(display_size, draw_pos);
-            }
-            else {
-                for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
-                    const paxg::Vec2<double> pos{draw_pos.x(), draw_pos.y() + static_cast<double>(iy) * TEXTURE_SPACING_VERTICAL};
-                    texture.resizedDrawAt(display_size, pos);
-                }
-            }
-        }
-        else {
-            if (is_zoomed) {
-                // ズーム時は分割表示
-                constexpr std::uint_least16_t split_count = ZOOM_SPLIT_COUNT;
-                if (y_size <= 1) {
-                    for (std::uint_least16_t ix = 0, ixx = 0, iyy = 0; ix < x_size; ++ix, ++ixx) {
-                        if (ix != 0 && ix % split_count == 0) {
-                            ixx = 0;
-                            ++iyy;
-                        }
-                        const paxg::Vec2<double> pos{draw_pos.x() + static_cast<double>(ixx) * TEXTURE_SPACING_HORIZONTAL_ZOOMED, draw_pos.y() + static_cast<double>(iyy) * TEXTURE_SPACING_VERTICAL};
-                        texture.resizedDrawAt(display_size, pos);
-                    }
-                }
-                else {
-                    for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
-                        for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                            const paxg::Vec2<double> pos{draw_pos.x() + static_cast<double>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<double>(iy) * TEXTURE_SPACING_VERTICAL};
-                            texture.resizedDrawAt(display_size, pos);
-                        }
-                    }
-                }
-            }
-            else {
-                // 通常時
-                if (y_size <= 1) {
-                    for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                        const paxg::Vec2<double> pos{draw_pos.x() + static_cast<double>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y()};
-                        texture.resizedDrawAt(display_size, pos);
-                    }
-                }
-                else {
-                    for (std::uint_least16_t iy = 0; iy < y_size; ++iy) {
-                        for (std::uint_least16_t ix = 0; ix < x_size; ++ix) {
-                            const paxg::Vec2<double> pos{draw_pos.x() + static_cast<double>(ix) * TEXTURE_SPACING_HORIZONTAL, draw_pos.y() + static_cast<double>(iy) * TEXTURE_SPACING_VERTICAL};
-                            texture.resizedDrawAt(display_size, pos);
-                        }
-                    }
-                }
-            }
-        }
-    }
 };
 
 } // namespace paxs

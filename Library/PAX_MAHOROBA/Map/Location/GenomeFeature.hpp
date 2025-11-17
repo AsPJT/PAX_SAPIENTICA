@@ -30,6 +30,7 @@
 #include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <utility>
 
 namespace paxs {
 
@@ -40,33 +41,27 @@ public:
     /// @brief コンストラクタ
     /// @brief Constructor
     /// @param data ゲノムの位置データ / Genome location data
-    GenomeFeature(const LocationPoint& data)
-        : data_(data) {
-        visible_ = true;
-    }
+    GenomeFeature(LocationPoint data) : data_(std::move(data)) {}
 
     FeatureType getType() const override {
         return FeatureType::Genome;
     }
 
-    std::string getId() const override {
-        const std::uint_least32_t ja_jp = MurMur3::calcHash("ja-JP");
-        if (data_.place_name.find(ja_jp) != data_.place_name.end()) {
-            return data_.place_name.at(ja_jp);
+    std::uint_least32_t getId() const override {
+        // IDとして key の MurMur3 ハッシュを使用
+        if (!data_.key.empty()) {
+            return MurMur3::calcHash(data_.key.c_str());
         }
-        if (!data_.place_name.empty()) {
-            return data_.place_name.begin()->second;
-        }
-        return "unknown_genome";
+        return 0;
     }
 
     std::string getName(const std::string& language = "ja-JP") const override {
         const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        if (data_.place_name.find(lang_hash) != data_.place_name.end()) {
-            return data_.place_name.at(lang_hash);
+        if (data_.names.find(lang_hash) != data_.names.end()) {
+            return data_.names.at(lang_hash);
         }
-        if (!data_.place_name.empty()) {
-            return data_.place_name.begin()->second;
+        if (!data_.names.empty()) {
+            return data_.names.begin()->second;
         }
         return "";
     }
@@ -121,7 +116,7 @@ public:
 
         // テキストサイズを計算（表示サイズが十分な場合のみ）
         const bool should_show_name = (cached_display_size_ >= 15);
-        if (should_show_name && !data_.place_name.empty() && context.font != nullptr) {
+        if (should_show_name && !data_.names.empty() && context.font != nullptr) {
             const std::string name = getName();
             cached_text_size_ = Vector2<int>(context.font->width(name), context.font->height());
         } else {
