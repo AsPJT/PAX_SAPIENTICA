@@ -40,10 +40,10 @@ namespace paxs {
 class PersonFeature : public MapFeature {
 public:
     /// @param data 人物の位置データ / Person location data
-    /// @param list_data 人物リストデータ / Person list data
-    PersonFeature(const PersonLocationPoint& data, const PersonLocationList& list_data)
+    /// @param group_data 人物グループデータ / Person group data
+    PersonFeature(const PersonLocationPoint& data, const PersonLocationGroup& group_data)
         : data_(data)
-        , list_data_(list_data) {
+        , group_data_(group_data) {
         visible_ = true;
     }
 
@@ -109,7 +109,7 @@ public:
             : 60;  // 120 / 2
 
         // テクスチャサイズとテキストサイズを取得
-        const std::uint_least32_t tex_key = (data_.texture_key == 0) ? list_data_.texture_key : data_.texture_key;
+        const std::uint_least32_t tex_key = (data_.texture_key == 0) ? group_data_.texture_key : data_.texture_key;
         if (context.texture_map != nullptr && context.texture_map->find(tex_key) != context.texture_map->end()) {
             const auto& tex = context.texture_map->at(tex_key);
             cached_texture_size_ = Vector2<int>(tex.width(), tex.height());
@@ -196,13 +196,13 @@ public:
         return data_;
     }
 
-    const PersonLocationList& getListData() const {
-        return list_data_;
+    const PersonLocationGroup& getGroupData() const {
+        return group_data_;
     }
 
 private:
     PersonLocationPoint data_;           ///< 人物位置データ / Person location data
-    PersonLocationList list_data_;       ///< 人物リストデータ / Person list data
+    PersonLocationGroup group_data_;     ///< 人物グループデータ / Person group data
 
     MercatorDeg interpolated_pos_;                    ///< 補間された座標 / Interpolated position
     WrappedScreenPositions cached_screen_positions_;  ///< 経度ラップされたスクリーン座標 / Wrapped screen positions

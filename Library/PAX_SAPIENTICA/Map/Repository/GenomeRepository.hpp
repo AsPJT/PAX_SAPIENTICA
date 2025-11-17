@@ -45,26 +45,26 @@ namespace paxs {
             return all_points;
         }
 
-        /// @brief 個別のゲノムファイルを読み込んでLocationPointListを返す
-        /// @brief Load individual genome file and return LocationPointList
-        static LocationPointList loadGenomeFromFile(const FeatureListParams& params) {
+        /// @brief 個別のゲノムファイルを読み込んでLocationPointGroupを返す
+        /// @brief Load individual genome file and return LocationPointGroup
+        static LocationPointGroup loadGenomeFromFile(const FeatureListParams& params) {
             std::vector<LocationPoint> location_point_list{};
             const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
             paxs::TsvTable table(params.file_path);
             if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to load genome file: " + params.file_path);
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
             // 必須カラムの存在確認
             if (!table.hasColumn("longitude")) {
                 PAXS_ERROR("GenomeFile is missing required column: longitude");
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
             if (!table.hasColumn("latitude")) {
                 PAXS_ERROR("GenomeFile is missing required column: latitude");
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
             // 共通ヘルパーを使用
@@ -102,14 +102,14 @@ namespace paxs {
                 );
             });
 
-            // ゲノムデータを何も読み込んでいない場合は空のLocationPointListを返す
+            // ゲノムデータを何も読み込んでいない場合は空のLocationPointGroupを返す
             if (location_point_list.size() == 0) {
                 PAXS_WARNING("No valid genome points loaded from file: " + params.file_path);
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
-            // LocationPointListを構築して返す
-            return LocationPointList(location_point_list,
+            // LocationPointGroupを構築して返す
+            return LocationPointGroup(location_point_list,
                 paxs::EquirectangularDeg(
                     paxs::Vector2<double>(bounds.start_longitude, bounds.start_latitude)).toMercatorDeg(),
                 paxs::EquirectangularDeg(

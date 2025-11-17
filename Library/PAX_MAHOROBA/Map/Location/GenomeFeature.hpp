@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_GENOME_FEATURE_HPP
 
 #include <string>
+#include <utility>
 
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -30,7 +31,6 @@
 #include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
-#include <utility>
 
 namespace paxs {
 
@@ -57,7 +57,7 @@ public:
 
     std::string getName(const std::string& language = "ja-JP") const override {
         const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        if (data_.names.find(lang_hash) != data_.names.end()) {
+        if (data_.names.contains(lang_hash)) {
             return data_.names.at(lang_hash);
         }
         if (!data_.names.empty()) {
@@ -107,7 +107,7 @@ public:
         cached_display_size_ = static_cast<int>(data_.overall_length / 2 * data_.zoom);
 
         // テクスチャサイズを取得してキャッシュ
-        if (context.texture_map != nullptr && context.texture_map->find(data_.texture_key) != context.texture_map->end()) {
+        if (context.texture_map != nullptr && context.texture_map->contains(data_.texture_key)) {
             const auto& tex = context.texture_map->at(data_.texture_key);
             cached_texture_size_ = Vector2<int>(tex.width(), tex.height());
         } else {

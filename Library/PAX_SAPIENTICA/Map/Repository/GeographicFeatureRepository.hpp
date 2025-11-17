@@ -46,25 +46,25 @@ namespace paxs {
             return all_points;
         }
 
-        /// @brief 個別の地理的特徴ファイルを読み込んでLocationPointListを返す
-        static LocationPointList loadGeographicFeatureFromFile(const FeatureListParams& params) {
+        /// @brief 個別の地理的特徴ファイルを読み込んでLocationPointGroupを返す
+        static LocationPointGroup loadGeographicFeatureFromFile(const FeatureListParams& params) {
             std::vector<LocationPoint> location_point_list{};
             const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
             paxs::TsvTable table(params.file_path);
             if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to load geographic feature file: " + params.file_path);
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
             // 必須カラムの存在確認
             if (!table.hasColumn("longitude")) {
                 PAXS_ERROR("GeographicFeatureFile is missing required column: longitude");
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
             if (!table.hasColumn("latitude")) {
                 PAXS_ERROR("GeographicFeatureFile is missing required column: latitude");
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
             // 共通ヘルパーを使用
@@ -104,10 +104,10 @@ namespace paxs {
 
             if (location_point_list.size() == 0) {
                 PAXS_WARNING("No valid geographic features loaded from file: " + params.file_path);
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
-            return LocationPointList(location_point_list,
+            return LocationPointGroup(location_point_list,
                 paxs::EquirectangularDeg(
                     paxs::Vector2<double>(bounds.start_longitude, bounds.start_latitude)).toMercatorDeg(),
                 paxs::EquirectangularDeg(

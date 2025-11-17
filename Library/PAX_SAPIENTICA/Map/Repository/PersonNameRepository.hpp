@@ -35,8 +35,8 @@ namespace paxs {
     struct PersonNameRepository {
         /// @brief 人物名リストを読み込み、全てのPersonLocationPointを返す
         /// @brief Load person name data file list and return all PersonLocationPoints
-        static std::vector<std::pair<PersonLocationPoint, PersonLocationList>> loadPersonNameList() {
-            std::vector<std::pair<PersonLocationPoint, PersonLocationList>> all_persons;
+        static std::vector<std::pair<PersonLocationPoint, PersonLocationGroup>> loadPersonNameList() {
+            std::vector<std::pair<PersonLocationPoint, PersonLocationGroup>> all_persons;
 
             FeatureListLoader::loadFeatureList("PersonNames", [&all_persons](const FeatureListParams& params) {
                 auto loaded = loadPersonFromFile(params);
@@ -49,7 +49,7 @@ namespace paxs {
         }
 
         /// @brief 個別ファイルから人物データを読み込み
-        static PersonLocationList loadPersonFromFile(const FeatureListParams& params) {
+        static PersonLocationGroup loadPersonFromFile(const FeatureListParams& params) {
             std::vector<PersonLocationPoint> person_location_list{}; // 人物の一覧
             const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
@@ -66,25 +66,25 @@ namespace paxs {
             paxs::TsvTable table(params.file_path);
             if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to load person file: " + params.file_path);
-                return PersonLocationList();
+                return PersonLocationGroup();
             }
 
             // 必須カラムの検証
             if (!table.hasColumn("start_longitude")) {
                 PAXS_ERROR("PersonFile is missing required column: start_longitude");
-                return PersonLocationList();
+                return PersonLocationGroup();
             }
             if (!table.hasColumn("start_latitude")) {
                 PAXS_ERROR("PersonFile is missing required column: start_latitude");
-                return PersonLocationList();
+                return PersonLocationGroup();
             }
             if (!table.hasColumn("end_longitude")) {
                 PAXS_ERROR("PersonFile is missing required column: end_longitude");
-                return PersonLocationList();
+                return PersonLocationGroup();
             }
             if (!table.hasColumn("end_latitude")) {
                 PAXS_ERROR("PersonFile is missing required column: end_latitude");
-                return PersonLocationList();
+                return PersonLocationGroup();
             }
 
 
@@ -185,11 +185,11 @@ namespace paxs {
             // 人物を何も読み込んでいない場合は何もしないで終わる
             if (person_location_list.size() == 0) {
                 PAXS_WARNING("No valid person locations loaded from file: " + params.file_path);
-                return PersonLocationList();
+                return PersonLocationGroup();
             }
 
             // 読み込んだファイルを格納する
-            return PersonLocationList(
+            return PersonLocationGroup(
                 person_location_list,
                 params.zoom_range,
                 params.year_range,

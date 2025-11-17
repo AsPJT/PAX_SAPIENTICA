@@ -14,6 +14,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
@@ -29,7 +30,7 @@ namespace paxs {
     struct LocationPoint {
         explicit LocationPoint() = default;
         explicit LocationPoint(
-            const std::string& key_,  // 地物の一意キー
+            std::string  key_,  // 地物の一意キー
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& names_,  // 地物名（多言語対応）
             const paxs::MercatorDeg& coordinate_,  // 経緯度
             const double overall_length_,  // 全長
@@ -40,7 +41,7 @@ namespace paxs {
             const double zoom_, // 拡大率
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& extra_data_ = {}  // 追加カラムデータ
         ) noexcept
-            : key(key_), names(names_), coordinate(coordinate_), overall_length(overall_length_),
+            : key(std::move(key_)), names(names_), coordinate(coordinate_), overall_length(overall_length_),
             zoom_range(zoom_range_), year_range(year_range_),
             feature_type_hash(feature_type_hash_), texture_key(texture_key_), zoom(zoom_),
             extra_data(extra_data_){}
@@ -69,12 +70,12 @@ namespace paxs {
         /// @brief 追加カラムが存在するか確認（ハッシュ値）
         /// @brief Check if extra column exists by hash
         bool hasExtraData(std::uint_least32_t column_hash) const {
-            return extra_data.find(column_hash) != extra_data.end();
+            return extra_data.contains(column_hash);
         }
     };
 
-    // 地物の一覧
-    struct LocationPointList {
+    // 地物のグループ（ファイル単位のメタデータを含む）
+    struct LocationPointGroup {
         std::vector<LocationPoint> location_point_list; // 地物の一覧
 
         paxs::MercatorDeg start_coordinate; // 経緯度
@@ -84,8 +85,8 @@ namespace paxs {
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "tomb", "site", "person"）
         std::uint_least32_t texture_key = 0; // テクスチャキー（ハッシュ値）
 
-        explicit LocationPointList() = default;
-        explicit LocationPointList(
+        explicit LocationPointGroup() = default;
+        explicit LocationPointGroup(
             const std::vector<LocationPoint>& location_point_list_,  // 地物
             paxs::MercatorDeg start_coordinate_, // 経緯度
             paxs::MercatorDeg end_coordinate_, // 経緯度

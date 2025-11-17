@@ -91,7 +91,7 @@ private:
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
     ) {
         const auto& data = feature.getData();
-        const auto& list_data = feature.getListData();
+        const auto& group_data = feature.getGroupData();
         const auto& screen_positions = feature.getScreenPositions();
         const int display_size = feature.getDisplaySize();
 
@@ -105,7 +105,7 @@ private:
             }
 
             // テクスチャを取得
-            const std::uint_least32_t place_tex = (data.texture_key == 0) ? list_data.texture_key : data.texture_key;
+            const std::uint_least32_t place_tex = (data.texture_key == 0) ? group_data.texture_key : data.texture_key;
             if (texture_map.find(place_tex) == texture_map.end()) continue;
 
             if (is_small_size) {
@@ -147,7 +147,7 @@ private:
 
             // テクスチャを取得（親のテクスチャをフォールバック）
             // Note: GeographicFeature は LocationPoint を使用しているため、親のテクスチャ情報は含まれていない
-            // 将来的には LocationPointList への参照も保持する必要があるかもしれない
+            // 将来的には LocationPointGroup への参照も保持する必要があるかもしれない
             const std::uint_least32_t place_tex = data.texture_key;
             if (texture_map.find(place_tex) == texture_map.end()) continue;
 

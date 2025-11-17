@@ -46,25 +46,25 @@ namespace paxs {
             return all_points;
         }
 
-        /// @brief 個別の地名ファイルを読み込んでLocationPointListを返す
-        static LocationPointList loadPlaceFromFile(const FeatureListParams& params) {
+        /// @brief 個別の地名ファイルを読み込んでLocationPointGroupを返す
+        static LocationPointGroup loadPlaceFromFile(const FeatureListParams& params) {
             std::vector<LocationPoint> location_point_list{}; // 地物の一覧
             const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
             paxs::TsvTable table(params.file_path);
             if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to load place file: " + params.file_path);
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
             // 必須カラムの存在確認
             if (!table.hasColumn("longitude")) {
                 PAXS_ERROR("PlaceFile is missing required column: longitude");
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
             if (!table.hasColumn("latitude")) {
                 PAXS_ERROR("PlaceFile is missing required column: latitude");
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
             // 共通ヘルパーを使用
@@ -102,14 +102,14 @@ namespace paxs {
                 );
             });
 
-            // 地物を何も読み込んでいない場合は空のLocationPointListを返す
+            // 地物を何も読み込んでいない場合は空のLocationPointGroupを返す
             if (location_point_list.size() == 0) {
                 PAXS_WARNING("No valid location points loaded from file: " + params.file_path);
-                return LocationPointList{};
+                return LocationPointGroup{};
             }
 
-            // LocationPointListを構築して返す
-            return LocationPointList(location_point_list,
+            // LocationPointGroupを構築して返す
+            return LocationPointGroup(location_point_list,
                 paxs::EquirectangularDeg(
                     paxs::Vector2<double>(bounds.start_longitude, bounds.start_latitude)).toMercatorDeg(),
                 paxs::EquirectangularDeg(
