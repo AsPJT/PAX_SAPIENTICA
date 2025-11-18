@@ -46,7 +46,6 @@ TEST_F(UIComponentsEventDrivenTest, MenuBarUsesEventBusForVisibility) {
         app_state_manager_.getVisibilityManager()
     );
     MenuBar menu_bar(visibility_manager);
-    menu_bar.setAppStateManager(&app_state_manager_);
 
     // AppStateManagerを通じて可視性を設定
     const auto calendar_key = MurMur3::calcHash("Calendar");
