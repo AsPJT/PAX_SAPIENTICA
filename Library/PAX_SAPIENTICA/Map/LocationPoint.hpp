@@ -63,7 +63,7 @@ namespace paxs {
         /// @brief 追加カラムの値を取得（ハッシュ値で直接アクセス）
         /// @brief Get extra column value by hash
         std::string getExtraData(std::uint_least32_t column_hash) const {
-            auto iterator = extra_data.find(column_hash);
+            const auto iterator = extra_data.find(column_hash);
             return (iterator != extra_data.end()) ? iterator->second : "";
         }
 

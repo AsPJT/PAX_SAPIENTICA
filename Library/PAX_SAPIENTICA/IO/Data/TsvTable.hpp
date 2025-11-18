@@ -128,7 +128,7 @@ namespace paxs {
         /// @param column_name Column name / カラム名
         /// @return true if column exists / カラムが存在すればtrue
         bool hasColumn(const std::string& column_name) const {
-            return header_map_.find(MurMur3::calcHash(column_name)) != header_map_.end();
+            return header_map_.contains(MurMur3::calcHash(column_name));
         }
 
         /// @brief Check if a column exists by hash key
@@ -136,7 +136,7 @@ namespace paxs {
         /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
         /// @return true if column exists / カラムが存在すればtrue
         bool hasColumn(const std::uint_least32_t column_key) const {
-            return header_map_.find(column_key) != header_map_.end();
+            return header_map_.contains(column_key);
         }
 
         /// @brief Get column index by name
@@ -152,8 +152,8 @@ namespace paxs {
         /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
         /// @return Column index, or SIZE_MAX if not found / カラムインデックス、見つからない場合はSIZE_MAX
         std::size_t getColumnIndex(const std::uint_least32_t column_key) const {
-            auto it = header_map_.find(column_key);
-            return (it != header_map_.end()) ? it->second : SIZE_MAX;
+            const auto iterator = header_map_.find(column_key);
+            return (iterator != header_map_.end()) ? iterator->second : SIZE_MAX;
         }
 
         /// @brief Get cell value by row and column index

@@ -34,8 +34,8 @@ namespace paxs {
         bool is_loaded{ false };
 
         // 項目の ID を返す
-        inline std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
+         std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
+            return  menu.contains(str_) ? menu.at(str_) : SIZE_MAX;
         }
     public:
 

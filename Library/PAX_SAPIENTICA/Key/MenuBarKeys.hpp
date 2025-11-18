@@ -231,6 +231,62 @@ namespace paxs {
     template<typename T>
     inline constexpr bool is_menu_item_enum_v = is_menu_item_enum<T>::value;
 
+    /// @brief メニュー項目のEnum配列（ハッシュ配列と対応）
+    /// @brief Menu item enum arrays (corresponds to hash arrays)
+    namespace MenuBarKeys {
+        /// @brief Viewメニューの項目リスト（ヘッダーを除く実際の項目のみ）
+        inline constexpr std::array view_menu_items = {
+            paxs::ViewMenu::calendar,
+            paxs::ViewMenu::map,
+            paxs::ViewMenu::ui,
+            paxs::ViewMenu::simulation,
+            paxs::ViewMenu::person,
+            paxs::ViewMenu::license,
+            paxs::ViewMenu::debug
+        };
+
+        /// @brief Place Namesメニューの項目リスト
+        inline constexpr std::array place_names_menu_items = {
+            paxs::PlaceNamesMenu::ancient_text,
+            paxs::PlaceNamesMenu::administrative,
+            paxs::PlaceNamesMenu::indigenous,
+            paxs::PlaceNamesMenu::historical_state,
+            paxs::PlaceNamesMenu::general
+        };
+
+        /// @brief Itemメニューの項目リスト
+        inline constexpr std::array item_menu_items = {
+            paxs::ItemMenu::kamekanbo,
+            paxs::ItemMenu::stone_coffin,
+            paxs::ItemMenu::doken,
+            paxs::ItemMenu::dotaku,
+            paxs::ItemMenu::coin
+        };
+
+        /// @brief Structureメニューの項目リスト
+        inline constexpr std::array structure_menu_items = {
+            paxs::StructureMenu::site,
+            paxs::StructureMenu::tomb,
+            paxs::StructureMenu::dolmen
+        };
+
+        /// @brief Genomeメニューの項目リスト
+        inline constexpr std::array genome_menu_items = {
+            paxs::GenomeMenu::human_bone,
+            paxs::GenomeMenu::mtdna,
+            paxs::GenomeMenu::ydna
+        };
+
+        /// @brief Mapメニューの項目リスト
+        inline constexpr std::array map_menu_items = {
+            paxs::MapLayersMenu::land_and_water,
+            paxs::MapLayersMenu::soil,
+            paxs::MapLayersMenu::ryosei_line,
+            paxs::MapLayersMenu::slope,
+            paxs::MapLayersMenu::line1
+        };
+    }
+
 }
 
 #endif // !PAX_SAPIENTICA_KEY_MENU_KEYS_HPP

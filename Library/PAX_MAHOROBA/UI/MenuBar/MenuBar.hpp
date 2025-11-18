@@ -116,96 +116,49 @@ namespace paxs {
             const std::size_t actual_index = (item_index > 0) ? (item_index - 1) : 0;
 
             if (menu_type == paxs::MenuBarType::view) {
-                // View メニュー
-                const std::array view_items = {
-                    ViewMenu::calendar,
-                    ViewMenu::map,
-                    ViewMenu::ui,
-                    ViewMenu::simulation,
-                    ViewMenu::person,
-                    ViewMenu::license,
-                    ViewMenu::debug,
-                    ViewMenu::view_3d
-                };
-                if (actual_index < view_items.size()) {
+                if (actual_index < paxs::MenuBarKeys::view_menu_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
-                        static_cast<std::uint_least32_t>(view_items[actual_index]),
+                        static_cast<std::uint_least32_t>(paxs::MenuBarKeys::view_menu_items[actual_index]),
                         is_checked
                     ));
                 }
             }
             else if (menu_type == paxs::MenuBarType::place_names) {
-                // Place Names メニュー
-                const std::array place_name_items = {
-                    PlaceNamesMenu::ancient_text,
-                    PlaceNamesMenu::administrative,
-                    PlaceNamesMenu::indigenous,
-                    PlaceNamesMenu::historical_state,
-                    PlaceNamesMenu::general
-                };
-                if (actual_index < place_name_items.size()) {
+                if (actual_index < paxs::MenuBarKeys::place_names_menu_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
-                        static_cast<std::uint_least32_t>(place_name_items[actual_index]),
+                        static_cast<std::uint_least32_t>(paxs::MenuBarKeys::place_names_menu_items[actual_index]),
                         is_checked
                     ));
                 }
             }
             else if (menu_type == paxs::MenuBarType::item) {
-                // Item メニュー
-                const std::array item_items = {
-                    ItemMenu::kamekanbo,
-                    ItemMenu::stone_coffin,
-                    ItemMenu::doken,
-                    ItemMenu::dotaku,
-                    ItemMenu::coin
-                };
-                if (actual_index < item_items.size()) {
+                if (actual_index < paxs::MenuBarKeys::item_menu_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
-                        static_cast<std::uint_least32_t>(item_items[actual_index]),
+                        static_cast<std::uint_least32_t>(paxs::MenuBarKeys::item_menu_items[actual_index]),
                         is_checked
                     ));
                 }
             }
             else if (menu_type == paxs::MenuBarType::structure) {
-                // Structure メニュー
-                const std::array<StructureMenu, 3> structure_items = {
-                    StructureMenu::site,
-                    StructureMenu::tomb,
-                    StructureMenu::dolmen
-                };
-                if (actual_index < structure_items.size()) {
+                if (actual_index < paxs::MenuBarKeys::structure_menu_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
-                        static_cast<std::uint_least32_t>(structure_items[actual_index]),
+                        static_cast<std::uint_least32_t>(paxs::MenuBarKeys::structure_menu_items[actual_index]),
                         is_checked
                     ));
                 }
             }
             else if (menu_type == paxs::MenuBarType::genomes) {
-                // Genome メニュー
-                const std::array<GenomeMenu, 3> genome_items = {
-                    GenomeMenu::human_bone,
-                    GenomeMenu::mtdna,
-                    GenomeMenu::ydna
-                };
-                if (actual_index < genome_items.size()) {
+                if (actual_index < paxs::MenuBarKeys::genome_menu_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
-                        static_cast<std::uint_least32_t>(genome_items[actual_index]),
+                        static_cast<std::uint_least32_t>(paxs::MenuBarKeys::genome_menu_items[actual_index]),
                         is_checked
                     ));
                 }
             }
             else if (menu_type == paxs::MenuBarType::map) {
-                // Map メニュー
-                const std::array<MapLayersMenu, 5> map_layer_items = {
-                    MapLayersMenu::land_and_water,
-                    MapLayersMenu::soil,
-                    MapLayersMenu::ryosei_line,
-                    MapLayersMenu::slope,
-                    MapLayersMenu::line1
-                };
-                if (actual_index < map_layer_items.size()) {
+                if (actual_index < paxs::MenuBarKeys::map_menu_items.size()) {
                     paxs::EventBus::getInstance().publish(FeatureVisibilityChangeCommandEvent(
-                        static_cast<std::uint_least32_t>(map_layer_items[actual_index]),
+                        static_cast<std::uint_least32_t>(paxs::MenuBarKeys::map_menu_items[actual_index]),
                         is_checked
                     ));
                 }
@@ -383,30 +336,23 @@ namespace paxs {
 
             // View メニューの状態を初期化
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(paxs::MenuBarType::view);
-            if (view_menu == nullptr) {
+            if (view_menu != nullptr) {
+                for (std::size_t i = 0; i < paxs::MenuBarKeys::view_menu_items.size(); ++i) {
+                    view_menu->setIsItems(i, visible_manager.isVisible(paxs::MenuBarKeys::view_menu_items[i]));
+                }
+            } else {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
-                return;
             }
-            view_menu->setIsItems(std::size_t(0), visible_manager.isVisible(ViewMenu::calendar));
-            view_menu->setIsItems(std::size_t(1), visible_manager.isVisible(ViewMenu::map));
-            view_menu->setIsItems(std::size_t(2), visible_manager.isVisible(ViewMenu::ui));
-            view_menu->setIsItems(std::size_t(3), visible_manager.isVisible(ViewMenu::simulation));
-            view_menu->setIsItems(std::size_t(4), visible_manager.isVisible(ViewMenu::person));
-            view_menu->setIsItems(std::size_t(5), visible_manager.isVisible(ViewMenu::license));
-            view_menu->setIsItems(std::size_t(6), visible_manager.isVisible(ViewMenu::debug));
-            view_menu->setIsItems(std::size_t(7), visible_manager.isVisible(ViewMenu::view_3d));
 
             // Map メニューの状態を初期化
             paxs::DropDownMenu* map_menu = menu_system.getDropDownMenu(paxs::MenuBarType::map);
-            if (map_menu == nullptr) {
+            if (map_menu != nullptr) {
+                for (std::size_t i = 0; i < paxs::MenuBarKeys::map_menu_items.size(); ++i) {
+                    map_menu->setIsItems(i, visible_manager.isVisible(paxs::MenuBarKeys::map_menu_items[i]));
+                }
+            } else {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'map' menu not found.");
-                return;
             }
-            map_menu->setIsItems(std::size_t(0), visible_manager.isVisible(MapLayersMenu::land_and_water));
-            map_menu->setIsItems(std::size_t(1), visible_manager.isVisible(MapLayersMenu::soil));
-            map_menu->setIsItems(std::size_t(2), visible_manager.isVisible(MapLayersMenu::ryosei_line));
-            map_menu->setIsItems(std::size_t(3), visible_manager.isVisible(MapLayersMenu::slope));
-            map_menu->setIsItems(std::size_t(4), visible_manager.isVisible(MapLayersMenu::line1));
         }
 
     };

@@ -71,7 +71,8 @@ namespace paxs {
 
         // 項目の ID を返す
         std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
-            return  (menu.find(str_) != menu.end()) ? menu.at(str_) : SIZE_MAX;
+            const auto iterator = menu.find(str_);
+            return  iterator != menu.end() ? iterator->second : SIZE_MAX;
         }
 
         void inputLanguage_List(const std::string& japan_provinces_path) noexcept {

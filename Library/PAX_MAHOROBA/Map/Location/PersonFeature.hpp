@@ -61,8 +61,9 @@ public:
 
     std::string getName(const std::string& language = "ja-JP") const override {
         const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        if (data_.names.find(lang_hash) != data_.names.end()) {
-            return data_.names.at(lang_hash);
+        const auto iterator = data_.names.find(lang_hash);
+        if (iterator != data_.names.end()) {
+            return iterator->second;
         }
         // フォールバック: 最初の名前を返す
         if (!data_.names.empty()) {
@@ -110,9 +111,14 @@ public:
 
         // テクスチャサイズとテキストサイズを取得
         const std::uint_least32_t tex_key = (data_.texture_key == 0) ? group_data_.texture_key : data_.texture_key;
-        if (context.texture_map != nullptr && context.texture_map->find(tex_key) != context.texture_map->end()) {
-            const auto& tex = context.texture_map->at(tex_key);
-            cached_texture_size_ = Vector2<int>(tex.width(), tex.height());
+        if (context.texture_map != nullptr) {
+            const auto iterator = context.texture_map->find(tex_key);
+            if (iterator != context.texture_map->end()) {
+                const auto& tex = iterator->second;
+                cached_texture_size_ = Vector2<int>(tex.width(), tex.height());
+            } else {
+                cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
+            }
         } else {
             cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
         }

@@ -57,8 +57,9 @@ public:
 
     std::string getName(const std::string& language = "ja-JP") const override {
         const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        if (data_.names.find(lang_hash) != data_.names.end()) {
-            return data_.names.at(lang_hash);
+        const auto iterator = data_.names.find(lang_hash);
+        if (iterator != data_.names.end()) {
+            return iterator->second;
         }
         if (!data_.names.empty()) {
             return data_.names.begin()->second;

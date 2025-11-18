@@ -312,7 +312,7 @@ namespace paxs {
         /// @return テキストへのポインタ、失敗時は nullptr / Pointer to text, nullptr on failure
         const std::string* getText(std::uint_least32_t key_hash,
                                    LanguageDomain domain = LanguageDomain::UI) const {
-            if (languages_.find(domain) == languages_.end()) {
+            if (!languages_.contains(domain)) {
                 return nullptr;
             }
             return languages_.at(domain).getStringPtr(key_hash, select_language_.getKey());
@@ -373,7 +373,7 @@ namespace paxs {
         /// @param name プロファイル名 / Profile name
         /// @return 存在すれば true / true if exists
         bool hasProfile(const std::string& name) const {
-            return profiles_.find(name) != profiles_.end();
+            return profiles_.contains(name);
         }
 
     };

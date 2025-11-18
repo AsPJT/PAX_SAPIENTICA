@@ -44,16 +44,18 @@ namespace paxs {
         ) {
             // エージェント1を描画
             if (feature_type_hash == MurMur3::calcHash("agent1")) {
-                if (texture.find(MurMur3::calcHash("BlueCircle")) != texture.end()) {
-                    texture.at(MurMur3::calcHash("BlueCircle")).resizedDrawAt(15, draw_pos);
+                const auto iterator = texture.find(MurMur3::calcHash("BlueCircle"));
+                if (iterator != texture.end()) {
+                    iterator->second.resizedDrawAt(15, draw_pos);
                 }
                 return true;
             }
 
             // エージェント2を描画
             if (feature_type_hash == MurMur3::calcHash("agent2")) {
-                if (texture.find(MurMur3::calcHash("RedCircle")) != texture.end()) {
-                    texture.at(MurMur3::calcHash("RedCircle")).resizedDrawAt(15, draw_pos);
+                const auto iterator = texture.find(MurMur3::calcHash("RedCircle"));
+                if (iterator != texture.end()) {
+                    iterator->second.resizedDrawAt(15, draw_pos);
                 }
                 return true;
             }
@@ -75,8 +77,8 @@ namespace paxs {
             const std::uint_least32_t ja_jp = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t en_us = MurMur3::calcHash("en-US");
 
-            const bool has_ja = (place_name.find(ja_jp) != place_name.end());
-            const bool has_en = (place_name.find(en_us) != place_name.end());
+            const bool has_ja = place_name.contains(ja_jp);
+            const bool has_en = place_name.contains(en_us);
 
             paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
             paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);

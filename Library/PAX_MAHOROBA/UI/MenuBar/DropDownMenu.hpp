@@ -253,7 +253,7 @@ namespace paxs {
 
         /// @brief 項目の状態を取得（キー指定）
         bool getIsItems(const std::uint_least32_t key) const {
-            if (item_index_key.find(key) == item_index_key.end()) {
+            if (!item_index_key.contains(key)) {
                 PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
                 return true;
             }
@@ -275,7 +275,7 @@ namespace paxs {
                 PAXS_WARNING("DropDownMenu: No items to check for key.");
                 return true; // データがない場合
             }
-            if (item_index_key.find(key) == item_index_key.end()) {
+            if (!item_index_key.contains(key)) {
                 PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
                 return true; // 引数の Key が存在しない場合
             }

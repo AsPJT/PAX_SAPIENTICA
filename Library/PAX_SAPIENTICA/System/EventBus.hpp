@@ -130,7 +130,7 @@ public:
 
         const std::type_index type_id(typeid(EventType));
         const auto iterator = subscribers_.find(type_id);
-        return (iterator != subscribers_.end()) ? iterator->second.size() : 0;
+        return iterator != subscribers_.end() ? iterator->second.size() : 0;
     }
 
     /// @brief キューのサイズを取得（デバッグ用）

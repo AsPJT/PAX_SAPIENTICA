@@ -297,7 +297,7 @@ namespace paxs {
             const auto target_index = target_key.to(SettlementGridsType{});
 
             // ターゲットの地域が登録されているか？
-            auto iterator = settlement_grids.find(target_index);
+            const auto iterator = settlement_grids.find(target_index);
             if (iterator != settlement_grids.end()) {
                 // 登録されている場合はそのターゲット地域へ移動
                 iterator->second.moveSettlementToThis(settlement_grids[current_index].getSettlement(settlement_id));

@@ -74,8 +74,8 @@ namespace paxs {
         static std::size_t getColumnIndex(
             const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& header_map,
             const std::uint_least32_t key) {
-            auto iterator = header_map.find(key);
-            return (iterator != header_map.end()) ? iterator->second : invalid_column_index;
+            const auto iterator = header_map.find(key);
+            return iterator != header_map.end() ? iterator->second : invalid_column_index;
         }
 
         /// @brief テキストキーと言語キーから64bitキーを生成
@@ -97,7 +97,7 @@ namespace paxs {
         /// @param key 64bitキー（テキストキー + 言語キー） / 64-bit key (text key + language key)
         /// @return 存在すればtrue / true if exists
         bool hasText(const std::uint_least64_t key) const {
-            return text_dictionary_.find(key) != text_dictionary_.end();
+            return text_dictionary_.contains(key);
         }
 
         /// @brief テキストキーが辞書に存在するかチェック
@@ -105,7 +105,7 @@ namespace paxs {
         /// @param key テキストキー / Text key
         /// @return 存在すればtrue / true if exists
         bool hasTextKey(const std::uint_least32_t key) const {
-            return fallback_text_key_.find(key) != fallback_text_key_.end();
+            return fallback_text_key_.contains(key);
         }
 
         /// @brief テキストを取得

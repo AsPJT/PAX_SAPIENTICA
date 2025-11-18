@@ -278,9 +278,9 @@ namespace paxs {
                 };
 
                 for (const auto& col : known_columns) {
-                    auto it = extra_data_.find(col.hash);
-                    if (it != extra_data_.end()) {
-                        const std::string display_text = std::string(col.label) + ": " + it->second;
+                    const auto iterator = extra_data_.find(col.hash);
+                    if (iterator != extra_data_.end()) {
+                        const std::string display_text = std::string(col.label) + ": " + iterator->second;
 
                         drawWrappedText(
                             font,

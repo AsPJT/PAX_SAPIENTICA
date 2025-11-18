@@ -111,17 +111,17 @@ namespace paxs {
         /// @param key エンコードされたキー
         /// @return 試行済みの場合true（成功・失敗問わず）
         bool hasAttempted(std::uint_least64_t key) const {
-            return cache_map_.find(key) != cache_map_.end();
+            return cache_map_.contains(key);
         }
 
         /// @brief テクスチャを取得（LRU更新あり）
         /// @param key エンコードされたキー
         /// @return テクスチャへのポインタ（存在しない場合はnullptr）
         const TextureType* getTexture(std::uint_least64_t key) {
-            auto it = cache_map_.find(key);
-            if (it == cache_map_.end()) return nullptr;
+            const auto iterator = cache_map_.find(key);
+            if (iterator == cache_map_.end()) return nullptr;
 
-            CacheEntry& entry = it->second;
+            CacheEntry& entry = iterator->second;
             if (!entry.texture.has_value()) return nullptr;
 
             // LRUリストを更新（最近使用したので先頭に移動）
@@ -138,10 +138,10 @@ namespace paxs {
         /// @param key エンコードされたキー
         /// @return テクスチャへのポインタ（存在しない場合はnullptr）
         const TextureType* getTextureConst(std::uint_least64_t key) const {
-            auto it = cache_map_.find(key);
-            if (it == cache_map_.end()) return nullptr;
+            const auto iterator = cache_map_.find(key);
+            if (iterator == cache_map_.end()) return nullptr;
 
-            const CacheEntry& entry = it->second;
+            const CacheEntry& entry = iterator->second;
             if (!entry.texture.has_value()) return nullptr;
 
             return &(entry.texture.value());

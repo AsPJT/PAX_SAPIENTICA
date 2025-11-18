@@ -106,7 +106,7 @@ private:
 
             // テクスチャを取得
             const std::uint_least32_t place_tex = (data.texture_key == 0) ? group_data.texture_key : data.texture_key;
-            if (texture_map.find(place_tex) == texture_map.end()) continue;
+            if (!texture_map.contains(place_tex)) continue;
 
             if (is_small_size) {
                 // 肖像画のみ描画
@@ -149,7 +149,7 @@ private:
             // Note: GeographicFeature は LocationPoint を使用しているため、親のテクスチャ情報は含まれていない
             // 将来的には LocationPointGroup への参照も保持する必要があるかもしれない
             const std::uint_least32_t place_tex = data.texture_key;
-            if (texture_map.find(place_tex) == texture_map.end()) continue;
+            if (!texture_map.contains(place_tex)) continue;
 
             const auto& texture = texture_map.at(place_tex);
 
@@ -229,7 +229,7 @@ private:
             const std::uint_least32_t place_tex = data.texture_key;
 
             // テクスチャが見つからない場合は警告表示
-            if (place_tex == 0 || texture_map.find(place_tex) == texture_map.end()) {
+            if (place_tex == 0 || !texture_map.contains(place_tex)) {
                 drawWarningTexture(draw_pos, display_size > 0 ? display_size : 20);
                 continue;
             }

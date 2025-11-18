@@ -397,7 +397,7 @@ namespace paxs {
                 PAXS_WARNING("Pulldown::getIsItemsKey: No items available.");
                 return true; // データがない場合
             }
-            if (item_index_key.find(key) == item_index_key.end()) return true; // 引数の Key が存在しない場合
+            if (!item_index_key.contains(key)) return true; // 引数の Key が存在しない場合
             return getIsItems(item_index_key.at(key));
         }
 
