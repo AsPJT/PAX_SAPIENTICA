@@ -1,5 +1,6 @@
 ﻿key	value
 Languages	Data/Settings/Languages.tsv
+Locales	Data/Settings/Locales.tsv
 MapIcons	Data/Settings/MapIcons.tsv
 MenuIcons	Data/Settings/MenuIcons.tsv
 PersonNames	Data/Settings/PersonNames.tsv
