@@ -15,20 +15,20 @@
 // Range型の基本動作テスト
 TEST(RangeTest, DefaultConstruction) {
 	constexpr paxs::Range<int> range;
-	EXPECT_EQ(range.min, 0);
-	EXPECT_EQ(range.max, 0);
+	EXPECT_EQ(range.minimum, 0);
+	EXPECT_EQ(range.maximum, 0);
 }
 
 TEST(RangeTest, ValueConstruction) {
 	constexpr paxs::Range<int> range(10, 20);
-	EXPECT_EQ(range.min, 10);
-	EXPECT_EQ(range.max, 20);
+	EXPECT_EQ(range.minimum, 10);
+	EXPECT_EQ(range.maximum, 20);
 }
 
 TEST(RangeTest, DoubleConstruction) {
 	constexpr paxs::Range<double> range(1.5, 3.7);
-	EXPECT_DOUBLE_EQ(range.min, 1.5);
-	EXPECT_DOUBLE_EQ(range.max, 3.7);
+	EXPECT_DOUBLE_EQ(range.minimum, 1.5);
+	EXPECT_DOUBLE_EQ(range.maximum, 3.7);
 }
 
 // contains() のテスト
