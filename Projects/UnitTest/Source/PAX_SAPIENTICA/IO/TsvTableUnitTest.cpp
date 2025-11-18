@@ -15,16 +15,40 @@
 #include <string>
 
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+
+class PathTSV {
+public:
+	static void generatePathTSV() {
+		std::ofstream ofs("Config.tsv");
+		ofs << "key\tvalue\nasset_file\t../" << std::endl;
+		ofs.close();
+	}
+
+	static void removePathTSV() {
+		std::remove("Config.tsv");
+	}
+};
 
 // Test fixture for TsvTable tests
 class TsvTableTest : public ::testing::Test {
 protected:
     std::string test_file_path = "test_data.tsv";
+    std::string actual_file_path;
 
     void SetUp() override {
+        // AppConfig初期化
+        is_path_tsv_exist = std::filesystem::exists("Config.tsv");
+        if (!is_path_tsv_exist) {
+            PathTSV::generatePathTSV();
+        }
+
+        // AppConfigのrootPathからの相対パスでファイルを作成
+        actual_file_path = paxs::AppConfig::getInstance().getRootPath() + test_file_path;
+
         // Create a test TSV file
-        std::ofstream ofs(test_file_path);
+        std::ofstream ofs(actual_file_path);
         ofs << "key\tvalue\tcount\n";
         ofs << "apple\tred\t5\n";
         ofs << "banana\tyellow\t3\n";
@@ -34,8 +58,14 @@ protected:
 
     void TearDown() override {
         // Clean up test file
-        std::remove(test_file_path.c_str());
+        std::remove(actual_file_path.c_str());
+
+        if (!is_path_tsv_exist) {
+            PathTSV::removePathTSV();
+        }
     }
+
+    bool is_path_tsv_exist = false;
 };
 
 TEST_F(TsvTableTest, LoadFile) {
@@ -194,10 +224,17 @@ TEST_F(TsvTableTest, GetHeaderMap) {
 
 // Test with BOM
 TEST(TsvTableBOMTest, HandleBOM) {
+    // AppConfig初期化
+    bool is_path_tsv_exist = std::filesystem::exists("Config.tsv");
+    if (!is_path_tsv_exist) {
+        PathTSV::generatePathTSV();
+    }
+
     std::string test_file = "test_bom.tsv";
+    std::string actual_file = paxs::AppConfig::getInstance().getRootPath() + test_file;
 
     // Create file with UTF-8 BOM
-    std::ofstream ofs(test_file, std::ios::binary);
+    std::ofstream ofs(actual_file, std::ios::binary);
     ofs << "\xEF\xBB\xBF";  // UTF-8 BOM
     ofs << "key\tvalue\n";
     ofs << "test\tdata\n";
@@ -211,14 +248,25 @@ TEST(TsvTableBOMTest, HandleBOM) {
     EXPECT_TRUE(table.hasColumn("value"));
     EXPECT_EQ("test", table.get(0, "key"));
 
-    std::remove(test_file.c_str());
+    std::remove(actual_file.c_str());
+
+    if (!is_path_tsv_exist) {
+        PathTSV::removePathTSV();
+    }
 }
 
 // Test with empty lines
 TEST(TsvTableEmptyLineTest, SkipEmptyLines) {
-    std::string test_file = "test_empty.tsv";
+    // AppConfig初期化
+    bool is_path_tsv_exist = std::filesystem::exists("Config.tsv");
+    if (!is_path_tsv_exist) {
+        PathTSV::generatePathTSV();
+    }
 
-    std::ofstream ofs(test_file);
+    std::string test_file = "test_empty.tsv";
+    std::string actual_file = paxs::AppConfig::getInstance().getRootPath() + test_file;
+
+    std::ofstream ofs(actual_file);
     ofs << "key\tvalue\n";
     ofs << "test1\tdata1\n";
     ofs << "\n";  // Empty line
@@ -231,5 +279,9 @@ TEST(TsvTableEmptyLineTest, SkipEmptyLines) {
     EXPECT_EQ("test1", table.get(0, "key"));
     EXPECT_EQ("test2", table.get(1, "key"));
 
-    std::remove(test_file.c_str());
+    std::remove(actual_file.c_str());
+
+    if (!is_path_tsv_exist) {
+        PathTSV::removePathTSV();
+    }
 }

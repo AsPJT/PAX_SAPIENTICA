@@ -250,17 +250,18 @@ namespace paxs {
                 asset_registry_.loadMapIcons(map_icons_path);
             }
 
-            loadPersonFeatures();
-            std::cout << "Person features loaded: " << features_.size() << "\n";
+            // 描画順序: 地名 → ゲノム → 地理 → 人物
+            loadPlaceNameFeatures();
+            std::cout << "Place name features loaded: " << features_.size() << "\n";
+
+            loadGenomeFeatures();
+            std::cout << "Genome features loaded: " << features_.size() << " total\n";
 
             loadGeographicFeatures();
             std::cout << "Geographic features loaded: " << features_.size() << " total\n";
 
-            loadPlaceNameFeatures();
-            std::cout << "Place name features loaded: " << features_.size() << " total\n";
-
-            loadGenomeFeatures();
-            std::cout << "Genome features loaded: " << features_.size() << " total\n";
+            loadPersonFeatures();
+            std::cout << "Person features loaded: " << features_.size() << " total\n";
 
             // 全アイコンをマージ
             asset_registry_.mergeCategories();

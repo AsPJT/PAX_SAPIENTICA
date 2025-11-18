@@ -15,9 +15,11 @@
 #include <algorithm>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 namespace paxs {
 
@@ -198,10 +200,9 @@ namespace paxs {
         /// @brief 特定レイヤー範囲のキーボードイベントをルーティング
         /// @brief Route keyboard event to specific layer range
         /// @param event キーボードイベント / Keyboard event
-        /// @param min_layer 最小レイヤー / Minimum layer (inclusive)
-        /// @param max_layer 最大レイヤー / Maximum layer (inclusive)
+        /// @param layer_range レイヤー範囲 / Layer range
         /// @return イベントが処理された場合true / true if event was handled
-        bool routeEventRange(const KeyboardEvent& event, RenderLayer min_layer, RenderLayer max_layer) {
+        bool routeEventRange(const KeyboardEvent& event, const Range<RenderLayer>& layer_range) {
             // ソートされていない場合は自動的にソート
             if (!is_sorted_) {
                 sort();
@@ -211,8 +212,7 @@ namespace paxs {
             for (IInputHandler* handler : handlers_) {
                 if (handler == nullptr) continue;
 
-                RenderLayer layer = handler->getLayer();
-                if (layer < min_layer || layer > max_layer) continue;
+                if (!layer_range.contains(handler->getLayer())) continue;
 
                 EventHandlingResult result = handler->handleEvent(event);
 
@@ -227,10 +227,9 @@ namespace paxs {
         /// @brief 特定レイヤー範囲のマウスイベントをルーティング
         /// @brief Route mouse event to specific layer range
         /// @param event マウスイベント / Mouse event
-        /// @param min_layer 最小レイヤー / Minimum layer (inclusive)
-        /// @param max_layer 最大レイヤー / Maximum layer (inclusive)
+        /// @param layer_range レイヤー範囲 / Layer range
         /// @return イベントが処理された場合true / true if event was handled
-        bool routeEventRange(const MouseEvent& event, RenderLayer min_layer, RenderLayer max_layer) {
+        bool routeEventRange(const MouseEvent& event, const Range<RenderLayer>& layer_range) {
             // ソートされていない場合は自動的にソート
             if (!is_sorted_) {
                 sort();
@@ -240,8 +239,7 @@ namespace paxs {
             for (IInputHandler* handler : handlers_) {
                 if (handler == nullptr) continue;
 
-                RenderLayer layer = handler->getLayer();
-                if (layer < min_layer || layer > max_layer) continue;
+                if (!layer_range.contains(handler->getLayer())) continue;
 
                 // ヒットテストを実行
                 if (!handler->isHit(event.pos)) continue;
