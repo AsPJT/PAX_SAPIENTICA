@@ -1,0 +1,43 @@
+﻿key	value
+view_header	표시
+view_calendar	달력
+view_map	지도
+view_ui	UI
+view_simulation	시뮬레이션
+view_person	인물
+view_license	라이선스
+view_debug	디버깅
+view_3d	3D
+place_names_header	지명
+ancient_text	고문헌
+administrative	행정구역
+indigenous	선주민
+historical_state	역사적 국가
+general	일반
+item	유물
+kamekanbo	독무덤
+stone_coffin	석관
+doken	청동 검
+dotaku	동탁
+coin	화천
+structure	유구
+site	유적
+tomb	고분
+dolmen	고인돌
+genomes_header	유전체
+human_bone	인골
+mtdna	mtDNA
+ydna	Y-DNA
+map_header	지도
+map_base	보통
+map_land_and_sea	육해
+map_land_and_water	육수
+map_soil	토양
+map_soil_temperature	토양 온도
+map_ryosei_country	율령국
+map_ryosei_line	율령국선
+map_slope	경사면
+map_lakes_and_rivers1	호수와 강1
+map_lakes_and_rivers2	호수와 강2
+map_line1	선1
+map_line2	선2

@@ -412,6 +412,22 @@ namespace paxs {
             return locales_;
         }
 
+        /// @brief 現在選択されている言語でLocalesからテキストを取得（ハッシュキー版）
+        /// @brief Get text from Locales with currently selected language (hash key version)
+        /// @param domain_key ドメインキー（ハッシュ値） / Domain key (hash value)
+        /// @param text_key テキストキー（ハッシュ値） / Text key (hash value)
+        /// @return テキストへのポインタ、見つからない場合はnullptr / Pointer to text, nullptr if not found
+        const std::string* getLocalesText(
+            const std::uint_least32_t domain_key,
+            const std::uint_least32_t text_key) const {
+
+            // 選択されている言語のキーを取得
+            const std::uint_least32_t selected_lang_key = select_language_.getKey();
+
+            // Localesからテキストを取得（3つのハッシュキーを使用）
+            return locales_.getStringPtr(domain_key, text_key, selected_lang_key);
+        }
+
     };
 
     inline FontSystem* FontSystem::instance_ = nullptr;

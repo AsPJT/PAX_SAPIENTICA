@@ -1,0 +1,43 @@
+﻿key	value
+view_header	Вид
+view_calendar	Календарь
+view_map	Карта
+view_ui	UI
+view_simulation	Симулирование
+view_person	Человек
+view_license	Лицензия
+view_debug	Отладка
+view_3d	3D
+place_names_header	Топонимы
+ancient_text	Древний текст
+administrative	Административный
+indigenous	Коренной
+historical_state	Историческое государство
+general	Общий
+item	Артефакт
+kamekanbo	Кувшинные погребения
+stone_coffin	Каменный саркофаг
+doken	Бронзовый меч
+dotaku	Дотаку
+coin	Монета
+structure	Структура
+site	Археологический памятник
+tomb	Могила
+dolmen	Дольмен
+genomes_header	Геномы
+human_bone	Человеческая кость
+mtdna	мтДНК
+ydna	Y-ДНК
+map_header	Карта
+map_base	База
+map_land_and_sea	Земля и море
+map_land_and_water	Земля и вода
+map_soil	Почва
+map_soil_temperature	Температура почвы
+map_ryosei_country	Страна Рёсэй
+map_ryosei_line	Линия Рёсэй
+map_slope	Склон
+map_lakes_and_rivers1	Озера и реки1
+map_lakes_and_rivers2	Озера и реки2
+map_line1	Линия1
+map_line2	Линия2
