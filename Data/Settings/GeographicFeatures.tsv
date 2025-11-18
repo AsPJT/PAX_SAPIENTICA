@@ -1,24 +1,24 @@
-key	file_path	type	description	min_size	max_size	first_julian_day	last_julian_day	texture	zoom
-Ishikiriba	Data/Features/EastAsia/Yaponesia/SekkanIshikiriba.tsv	stone_coffin	石棺の石切り場	0	0.1				1
-KochiseiSite	Data/Features/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	3				1
-Hokkaido	Data/Features/EastAsia/Yaponesia/Hokkaido.tsv	site	北海道の遺跡名	0	0.5				3
-Kango	Data/Features/EastAsia/Yaponesia/Kango.tsv	site	環濠集落	0	0.1				0.5
-Shisekibo	Data/Features/EastAsia/Yaponesia/Shisekibo.tsv	dolmen	日本の支石墓	0	0.9				1
-DolmenKR	Data/Features/EastAsia/Korea/Dolmen.tsv	dolmen	朝鮮半島の支石墓	0	0.9				1
-DolmenTamna	Data/Features/EastAsia/Tamna/Dolmen.tsv	dolmen	済州島の支石墓	0	0.9				1
-Kofun	Data/Features/EastAsia/Yaponesia/Kofun/Kofun.tsv	tomb	日本の古墳	0	0.1				1
-Enpun	Data/Features/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	0.1				1
-YayoiTomb	Data/Features/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	0.1				1
-Yosumi	Data/Features/EastAsia/Yaponesia/Kofun/Yosumi.tsv	tomb	日本の四隅突出型墳丘墓	0	0.1				1
-GoguryeoTomb	Data/Features/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	0.1				1
-SillaTomb	Data/Features/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	0.1				1
-ChinaTomb	Data/Features/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	0.1				1
-SiteKR	Data/Features/EastAsia/Korea/Site.tsv	site	韓国の遺跡	0	0.5				3
-Yokosekishitsu	Data/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石室	0	0.1				1
-Kamekan	Data/Items/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	0.1				1
-Sekkan	Data/Items/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	0.1				0.7
-Dotaku	Data/Items/EastAsia/Yaponesia/Dotaku.tsv	dotaku	銅鐸	0	0.1				1
-DokenKR	Data/Items/EastAsia/Korea/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
-DokenCN	Data/Items/EastAsia/China/Doken.tsv	doken	東アジア大陸の銅剣	0	0.1				1
-Doken	Data/Items/EastAsia/Yaponesia/Doken.tsv	doken	銅剣	0	0.1				1
-Kasen	Data/Items/EastAsia/Yaponesia/Kasen.tsv	coin	貨泉	0	0.9				0.5
+key	file_path	type	description	min_size	max_size	first_year	last_year	texture	zoom
+Ishikiriba	Data/Features/EastAsia/Yaponesia/SekkanIshikiriba.tsv	stone_coffin	石棺の石切り場	0	30	-10000	1000		1
+KochiseiSite	Data/Features/EastAsia/Yaponesia/KochiseiSite.tsv	site	高地性集落	0	30	-1000	1000		1
+Hokkaido	Data/Features/EastAsia/Yaponesia/Hokkaido.tsv	site	北海道の遺跡名	0	30	-50000	1000		3
+Kango	Data/Features/EastAsia/Yaponesia/Kango.tsv	site	環濠集落	0	30	-2000	1000		0.5
+Shisekibo	Data/Features/EastAsia/Yaponesia/Shisekibo.tsv	dolmen	日本の支石墓	0	30	-2000	1000		1
+DolmenKR	Data/Features/EastAsia/Korea/Dolmen.tsv	dolmen	朝鮮半島の支石墓	0	30	-2000	1000		1
+DolmenTamna	Data/Features/EastAsia/Tamna/Dolmen.tsv	dolmen	済州島の支石墓	0	30	-2000	1000		1
+Kofun	Data/Features/EastAsia/Yaponesia/Kofun/Kofun.tsv	tomb	日本の古墳	0	30	-1000	1000		1
+Enpun	Data/Features/EastAsia/Yaponesia/Kofun/Enpun.tsv	tomb	日本の円墳	0	30	-1000	1000		1
+YayoiTomb	Data/Features/EastAsia/Yaponesia/Kofun/YayoiTomb.tsv	tomb	日本の弥生時代の墳墓	0	30	-1000	1000		1
+Yosumi	Data/Features/EastAsia/Yaponesia/Kofun/Yosumi.tsv	tomb	日本の四隅突出型墳丘墓	0	30	-1000	1000		1
+GoguryeoTomb	Data/Features/EastAsia/Korea/GoguryeoTomb.tsv	tomb	高句麗の古墳	0	30	-1000	1000		1
+SillaTomb	Data/Features/EastAsia/Korea/SillaTomb.tsv	tomb	新羅の古墳	0	30	-1000	1000		1
+ChinaTomb	Data/Features/EastAsia/China/Tomb.tsv	tomb	中国の古墳	0	30	-10000	1000		1
+SiteKR	Data/Features/EastAsia/Korea/Site.tsv	site	韓国の遺跡	0	30	-50000	2000		3
+Yokosekishitsu	Data/Features/EastAsia/Yaponesia/Yokoanashikisekishitsu.tsv	tomb	横穴式石室	0	30	-1000	1000		1
+Kamekan	Data/Items/EastAsia/Yaponesia/Kamekan.tsv	kamekanbo	甕棺墓	0	30	-2000	1000		1
+Sekkan	Data/Items/EastAsia/Yaponesia/Sekkan.tsv	stone_coffin	石棺	0	30	-2000	1000		0.7
+Dotaku	Data/Items/EastAsia/Yaponesia/Dotaku.tsv	dotaku	銅鐸	0	30	-1000	400		1
+DokenKR	Data/Items/EastAsia/Korea/Doken.tsv	doken	東アジア大陸の銅剣	0	30	-2000	1000		1
+DokenCN	Data/Items/EastAsia/China/Doken.tsv	doken	東アジア大陸の銅剣	0	30	-2000	1000		1
+Doken	Data/Items/EastAsia/Yaponesia/Doken.tsv	doken	銅剣	0	30	-2000	1000		1
+Kasen	Data/Items/EastAsia/Yaponesia/Kasen.tsv	coin	貨泉	0	30	-1000	1000		0.5
