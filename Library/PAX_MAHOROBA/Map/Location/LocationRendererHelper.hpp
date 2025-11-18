@@ -21,8 +21,9 @@
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -33,25 +34,28 @@ namespace paxs {
         /// @brief agent1/agent2アイコンを描画
         /// @brief Draw agent1/agent2 icons
         /// @param texture テクスチャマップ
-        /// @param lpe ロケーションタイプ（agent1 or agent2のハッシュ値）
+        /// @param feature_type_hash 地物の種別ハッシュ値（agent1 or agent2のハッシュ値）
         /// @param draw_pos 描画位置
         /// @return true if agent icon was drawn, false otherwise
         static bool drawAgentIcon(
             const paxs::UnorderedMap<std::uint_least32_t, paxg::Texture>& texture,
-            std::uint_least32_t lpe,
-            const paxg::Vec2i& draw_pos
+            std::uint_least32_t feature_type_hash,
+            const paxg::Vec2<double>& draw_pos
         ) {
             // エージェント1を描画
-            if (lpe == MurMur3::calcHash("agent1")) {
-                if (texture.find(MurMur3::calcHash("BlueCircle")) != texture.end()) {
-                    texture.at(MurMur3::calcHash("BlueCircle")).resizedDrawAt(15, draw_pos);
+            if (feature_type_hash == MurMur3::calcHash("agent1")) {
+                const auto iterator = texture.find(MurMur3::calcHash("BlueCircle"));
+                if (iterator != texture.end()) {
+                    iterator->second.resizedDrawAt(15, draw_pos);
                 }
                 return true;
             }
+
             // エージェント2を描画
-            else if (lpe == MurMur3::calcHash("agent2")) {
-                if (texture.find(MurMur3::calcHash("RedCircle")) != texture.end()) {
-                    texture.at(MurMur3::calcHash("RedCircle")).resizedDrawAt(15, draw_pos);
+            if (feature_type_hash == MurMur3::calcHash("agent2")) {
+                const auto iterator = texture.find(MurMur3::calcHash("RedCircle"));
+                if (iterator != texture.end()) {
+                    iterator->second.resizedDrawAt(15, draw_pos);
                 }
                 return true;
             }
@@ -66,15 +70,15 @@ namespace paxs {
         /// @param outline_color アウトラインの色（デフォルト: 243, 243, 243）
         static void drawBilingualText(
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& place_name,
-            const paxg::Vec2i& draw_pos,
+            const paxg::Vec2<double>& draw_pos,
             const char* text_mode = "topCenter",
             const paxg::Color& outline_color = paxg::Color(243, 243, 243)
         ) {
             const std::uint_least32_t ja_jp = MurMur3::calcHash("ja-JP");
             const std::uint_least32_t en_us = MurMur3::calcHash("en-US");
 
-            const bool has_ja = (place_name.find(ja_jp) != place_name.end());
-            const bool has_en = (place_name.find(en_us) != place_name.end());
+            const bool has_ja = place_name.contains(ja_jp);
+            const bool has_en = place_name.contains(en_us);
 
             paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
             paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
@@ -107,55 +111,23 @@ namespace paxs {
             }
         }
 
-        /// @brief 座標をスクリーン座標に変換
-        /// @brief Convert mercator coordinate to screen position
-        /// @param coordinate_x メルカトル座標X
-        /// @param coordinate_y メルカトル座標Y
-        /// @param map_view_width マップビューの幅
-        /// @param map_view_height マップビューの高さ
-        /// @param map_view_center_x マップビューの中心X座標
-        /// @param map_view_center_y マップビューの中心Y座標
-        /// @return スクリーン座標
-        static paxg::Vec2i toScreenPos(
-            double coordinate_x,
-            double coordinate_y,
-            double map_view_width,
-            double map_view_height,
-            double map_view_center_x,
-            double map_view_center_y
-        ) {
-            return paxg::Vec2i{
-                static_cast<int>((coordinate_x - (map_view_center_x - map_view_width / 2))
-                               / map_view_width * double(paxg::Window::width())),
-                static_cast<int>(double(paxg::Window::height())
-                               - ((coordinate_y - (map_view_center_y - map_view_height / 2))
-                               / map_view_height * double(paxg::Window::height())))
-            };
-        }
-
         /// @brief 範囲内判定
-        /// @brief Check if coordinate is within view bounds
-        /// @param coordinate_x メルカトル座標X
-        /// @param coordinate_y メルカトル座標Y
-        /// @param map_view_width マップビューの幅
-        /// @param map_view_height マップビューの高さ
-        /// @param map_view_center_x マップビューの中心X座標
-        /// @param map_view_center_y マップビューの中心Y座標
-        /// @param margin_factor マージン係数（デフォルト: 1.6）
-        /// @return 範囲内ならtrue
+        /// @param coordinate メルカトル座標 / Mercator coordinate
+        /// @param map_view_size マップビューのサイズ / Map view size
+        /// @param map_view_center マップビューの中心座標 / Map view center
+        /// @param margin_factor マージン係数（デフォルト: 1.6） / Margin factor (default: 1.6)
         static bool isInViewBounds(
-            double coordinate_x,
-            double coordinate_y,
-            double map_view_width,
-            double map_view_height,
-            double map_view_center_x,
-            double map_view_center_y,
+            const Vector2<double>& coordinate,
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center,
             double margin_factor = 1.6
         ) {
-            return !(coordinate_x < (map_view_center_x - map_view_width / margin_factor)
-                  || coordinate_x > (map_view_center_x + map_view_width / margin_factor)
-                  || coordinate_y < (map_view_center_y - map_view_height / margin_factor)
-                  || coordinate_y > (map_view_center_y + map_view_height / margin_factor));
+            const double half_width = map_view_size.x / 2 * margin_factor;
+            const double half_height = map_view_size.y / 2 * margin_factor;
+            return (coordinate.x >= map_view_center.x - half_width &&
+                    coordinate.x <= map_view_center.x + half_width &&
+                    coordinate.y >= map_view_center.y - half_height &&
+                    coordinate.y <= map_view_center.y + half_height);
         }
 
     private:
@@ -166,7 +138,7 @@ namespace paxs {
         static void drawTextByMode(
             paxg::Font* font,
             const std::string& text,
-            const paxg::Vec2i& pos,
+            const paxg::Vec2<double>& pos,
             const paxg::Color& color,
             const char* mode
         ) {

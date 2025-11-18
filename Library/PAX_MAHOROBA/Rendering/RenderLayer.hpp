@@ -36,7 +36,7 @@ namespace paxs {
 
         // 360度写真レイヤー（全画面没入型ビューア）
         // 360-degree photo layer (full-screen immersive viewer)
-        Map3D = 300,
+        Photo360 = 300,
 
         // UI背景レイヤー（パネル背景、影など）
         // UI background layer (panel backgrounds, shadows, etc.)

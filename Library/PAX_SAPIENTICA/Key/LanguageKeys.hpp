@@ -13,9 +13,8 @@
 #define PAX_SAPIENTICA_KEY_LANGUAGE_KEYS_HPP
 
 #include <array>
-#include <cstdint>
 
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 

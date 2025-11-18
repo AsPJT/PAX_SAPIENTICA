@@ -1,6 +1,6 @@
-ja-JP	en-US	longitude	latitude	min_size	max_size	first_year	last_year	texture	overall_length
-皇南大塚		129.2118992	35.83889418	0	0.1	458	500	HwangnamDaechong	114
-13代		129.214167	35.836944	0	0.1	284	314	KoreaTomb	56.7
-17代		129.217222	35.832536	0	0.1	402	432	KoreaTomb	22
-24代		129.183333	35.828889	0	0.1	576	606	KoreaTomb	20
-22代		129.21	35.83	0	0.1	514	544	KoreaTomb	47
+key	ja-JP	en-US	longitude	latitude	min_size	max_size	first_year	last_year	texture	overall_length
+SillaTomb1	皇南大塚		129.2118992	35.83889418	0	0.1	458	500	HwangnamDaechong	114
+SillaTomb2	13代		129.214167	35.836944	0	0.1	284	314	KoreaTomb	56.7
+SillaTomb3	17代		129.217222	35.832536	0	0.1	402	432	KoreaTomb	22
+SillaTomb4	24代		129.183333	35.828889	0	0.1	576	606	KoreaTomb	20
+SillaTomb5	22代		129.21	35.83	0	0.1	514	544	KoreaTomb	47

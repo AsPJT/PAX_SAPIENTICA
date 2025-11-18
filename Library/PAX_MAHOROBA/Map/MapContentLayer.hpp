@@ -13,196 +13,75 @@
 #define PAX_MAHOROBA_MAP_CONTENT_LAYER_HPP
 
 #include <memory>
+#include <vector>
 
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Location/SettlementManager.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
+#include <PAX_SAPIENTICA/Simulation/Manager/SimulationManager.hpp>
 #endif
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
-#include <PAX_MAHOROBA/Input/IEventHandler.hpp>
-#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
-#include <PAX_MAHOROBA/Map/Location/GeographicFeatureManager.hpp>
+#include <PAX_MAHOROBA/Map/Location/GenomeFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/GeographicFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/MapFeatureRenderer.hpp>
+#include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Map/MapAssetRegistry.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
-#include <PAX_MAHOROBA/Map/Location/PersonPortraitManager.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/GenomeRepository.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/GeographicFeatureRepository.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/PersonNameRepository.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/PlaceNameRepository.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
 
     /// @brief 地図コンテンツレイヤークラス
     /// @brief Map Content Layer
-    class MapContentLayer : public IRenderable, public IEventHandler, public IMouseEventHandler {
+    class MapContentLayer : public IRenderable {
     private:
-        GeographicFeatureManager geographic_feature_manager_{}; // 地理的特徴(地名とアイコン)
-        PersonPortraitManager person_portrait_manager_{}; // 人物の肖像画と名前
+        // 新しいFeatureベース構造
+        std::vector<std::unique_ptr<MapFeature>> features_; ///< 地物のコレクション / Collection of features
+        RenderContext render_context_; ///< 描画コンテキスト / Render context
+
+        // アセット管理
+        MapAssetRegistry asset_registry_; ///< 地図アイコンアセットレジストリ / Map icon asset registry
 #ifdef PAXS_USING_SIMULATOR
         SettlementManager settlement_manager_{}; // 集落管理
         SettlementInputHandler settlement_input_handler_; // 集落入力処理
 #endif
 
-        // 可視性・有効性管理
-        bool visible_ = true;
-        bool enabled_ = true;
-
-        const MapViewport* map_viewport_ptr = nullptr;
-
-        EventBus* event_bus_ = nullptr;
-        AppStateManager* app_state_manager_ = nullptr;
-
-    public:
-        MapContentLayer(const MapViewport* map_viewport)
-            : map_viewport_ptr(map_viewport)
-        {
-        }
-
-        // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
-        MapContentLayer(const MapContentLayer&) = delete;
-        MapContentLayer& operator=(const MapContentLayer&) = delete;
-        MapContentLayer(MapContentLayer&&) = delete;
-        MapContentLayer& operator=(MapContentLayer&&) = delete;
-
-        /// @brief AppStateManagerを設定してイベント駆動を有効化
-        void setAppStateManager(AppStateManager* app_state_manager) {
-            app_state_manager_ = app_state_manager;
-            if (app_state_manager_ != nullptr) {
-                event_bus_ = &EventBus::getInstance();
-#ifdef PAXS_USING_SIMULATOR
-                settlement_input_handler_.setEventBus(event_bus_);
-#endif
-                subscribeToEvents();
-                // 初回更新を即座に実行
-                updateAllContentData();
-            }
-        }
-
-        void render() const override {
-            if (!visible_ || !app_state_manager_) return;
-
-            // AppStateManagerから最新データを直接取得して描画のみ実行
-            const auto& visible = app_state_manager_->getVisibilityManager();
-
-            if (visible.isVisible(FeatureVisibilityManager::View::Map)) { // 地図が「可視」の場合は描画する
-                person_portrait_manager_.render();
-                geographic_feature_manager_.render();
-            }
-
-#ifdef PAXS_USING_SIMULATOR
-            // SettlementManager を描画（シミュレーション表示時）
-            // Render SettlementManager (when simulation is visible)
-            if (visible.isVisible(FeatureVisibilityManager::View::Simulation)) {
-                settlement_manager_.render();
-            }
-#endif
-        }
-
-        /// @brief キーボードイベント処理
-        /// @param event キーボードイベント / Keyboard event
-        /// @return イベント処理結果 / Event handling result
-        EventHandlingResult handleEvent(const KeyboardEvent& event) override {
-            if (!app_state_manager_) return EventHandlingResult::NotHandled();
-
-            const auto& visible = app_state_manager_->getVisibilityManager();
-
-#ifdef PAXS_USING_SIMULATOR
-            // 集落の入力処理
-            if (visible.isVisible(FeatureVisibilityManager::View::Map) ||
-                visible.isVisible(FeatureVisibilityManager::View::Simulation)) {
-                const auto& simulation_manager = app_state_manager_->getSimulationManager();
-                if (simulation_manager.isActive()) {
-                    settlement_input_handler_.handleEvent(event);
-                }
-            }
-#endif
-            // 入力を消費しない（背後のハンドラーにも伝播させる）
-            return EventHandlingResult::NotHandled();
-        }
-
-        EventHandlingResult handleEvent(const MouseEvent& event) override {
-            // TODO: マウスイベント処理
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
-
-        bool isHit([[maybe_unused]] int x, [[maybe_unused]] int y) const override {
-            // 地図全体が対象なので常にtrue
-            return visible_ && enabled_;
-        }
-
-        RenderLayer getLayer() const override {
-            return RenderLayer::MapContent;
-        }
-        bool isVisible() const override {
-            return visible_;
-        }
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
-        bool isEnabled() const override {
-            return enabled_;
-        }
-
-#ifdef PAXS_USING_SIMULATOR
-        /// @brief SettlementInputHandler への参照を取得（GraphicsManager での登録用）
-        SettlementInputHandler& getSettlementInputHandler() {
-            return settlement_input_handler_;
-        }
-#endif
-
-    private:
-        /// @brief Settlement以外のコンテンツデータを更新
-        /// @brief Update non-settlement content data (person_portrait, geographic_feature)
-        void updateNonSettlementData() {
-            if (!app_state_manager_) return;
-
-            const auto& koyomi = app_state_manager_->getKoyomi();
-            const auto& visible = app_state_manager_->getVisibilityManager();
-
-            // 人物肖像画の描画パラメータ設定
-            person_portrait_manager_.setDrawParams(
-                koyomi.jdn.cgetDay(),
-                map_viewport_ptr->getWidth(),
-                map_viewport_ptr->getHeight(),
-                map_viewport_ptr->getCenterX(),
-                map_viewport_ptr->getCenterY()
-            );
-
-            // 地理的特徴の描画パラメータ設定
-            geographic_feature_manager_.setDrawParams(
-                visible,
-                koyomi.jdn.cgetDay(),
-                map_viewport_ptr->getWidth(),
-                map_viewport_ptr->getHeight(),
-                map_viewport_ptr->getCenterX(),
-                map_viewport_ptr->getCenterY()
-            );
-        }
+        const MapViewport& map_viewport_;
+        const AppStateManager& app_state_manager_;
 
 #ifdef PAXS_USING_SIMULATOR
         /// @brief Settlementデータのみ更新
         /// @brief Update settlement data only
         void updateSettlementData() {
-            if (!app_state_manager_) return;
-
-            const auto& koyomi = app_state_manager_->getKoyomi();
-            const auto& simulation_manager = app_state_manager_->getSimulationManager();
+            const auto& koyomi = app_state_manager_.getKoyomi();
+            const auto& simulation_manager = app_state_manager_.getSimulationManager();
 
             // SettlementManager に描画パラメータを設定
             if (simulation_manager.isActive()) {
                 settlement_manager_.setDrawParams(
-                    koyomi.jdn.cgetDay(),
+                    koyomi.jdn.getDay(),
                     simulation_manager.getSettlementGrids(),
                     simulation_manager.getMarriagePositions(),
-                    map_viewport_ptr->getWidth(),
-                    map_viewport_ptr->getHeight(),
-                    map_viewport_ptr->getCenterX(),
-                    map_viewport_ptr->getCenterY(),
+                    Vector2<double>(map_viewport_.getWidth(), map_viewport_.getHeight()),
+                    Vector2<double>(map_viewport_.getCenterX(), map_viewport_.getCenterY()),
                     settlement_input_handler_.getSelectDraw(),
                     settlement_input_handler_.getIsLine(),
                     settlement_input_handler_.getIsArrow()
@@ -211,85 +90,261 @@ namespace paxs {
         }
 #endif
 
-        /// @brief すべてのコンテンツデータを更新
-        /// @brief Update all content data
-        void updateAllContentData() {
-            updateNonSettlementData();
-#ifdef PAXS_USING_SIMULATOR
-            updateSettlementData();
-#endif
-        }
-
         /// @brief イベントを購読
         /// @brief Subscribe to events
         void subscribeToEvents() {
-            if (event_bus_ == nullptr) return;
+            paxs::EventBus& event_bus = paxs::EventBus::getInstance();
 
             // ビューポート変更イベントの購読
             // すべてのコンテンツを更新（ビューポート変更時は全て再描画が必要）
-            event_bus_->subscribe<ViewportChangedEvent>(
+            event_bus.subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
                     (void)event;
-                    if (app_state_manager_) {
-                        updateAllContentData();
-                    }
+                    updateAllFeatures();
+#ifdef PAXS_USING_SIMULATOR
+                    updateSettlementData();
+#endif
                 }
             );
 
             // 日付変更イベントの購読
             // Settlement以外のコンテンツを更新（人物肖像画、地理的特徴は日付依存）
-            event_bus_->subscribe<DateChangedEvent>(
+            event_bus.subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
                     (void)event;
-                    if (app_state_manager_) {
-                        updateNonSettlementData();
-                    }
+                    updateAllFeatures();
                 }
             );
 
 #ifdef PAXS_USING_SIMULATOR
-            // シミュレーション状態変更イベントの購読
-            event_bus_->subscribe<SimulationStateChangedEvent>(
+            // シミュレーション状態変更イベントの購読（初期化完了検知）
+            event_bus.subscribe<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
-                    (void)event;
-                    if (app_state_manager_) {
+                    // 停止状態になった時（初期化完了時）に集落データを更新
+                    if (event.new_state == SimulationState::Stopped) {
                         updateSettlementData();
+                    } else if (event.new_state == SimulationState::Uninitialized) {
+                        // クリアされた場合はキャッシュをクリアして無効な参照を防ぐ
+                        settlement_manager_.clearCache();
                     }
                 }
             );
 
             // シミュレーションステップ実行イベントの購読
             // Settlementデータのみ更新（シミュレーション進行時）
-            event_bus_->subscribe<SimulationStepExecutedEvent>(
+            event_bus.subscribe<SimulationStepExecutedEvent>(
                 [this](const SimulationStepExecutedEvent& event) {
                     (void)event;
-                    if (app_state_manager_) {
-                        updateSettlementData();
-                    }
-                }
-            );
-
-            // シミュレーションクリアイベントの購読
-            event_bus_->subscribe<SimulationClearCommandEvent>(
-                [this](const SimulationClearCommandEvent& event) {
-                    (void)event;
-                    // キャッシュをクリアして無効な参照を防ぐ
-                    settlement_manager_.clearCache();
+                    updateSettlementData();
                 }
             );
 
             // 集落表示設定変更イベントの購読
             // Settlement表示設定（select_draw, is_line, is_arrow）変更時
-            event_bus_->subscribe<SettlementDisplayChangedEvent>(
+            event_bus.subscribe<SettlementDisplayChangedEvent>(
                 [this](const SettlementDisplayChangedEvent& event) {
                     (void)event;
-                    if (app_state_manager_) {
-                        updateSettlementData();
-                    }
+                    updateSettlementData();
                 }
             );
 #endif
         }
+
+        /// @brief RenderContextを更新
+        void updateRenderContext() {
+            const auto& koyomi = app_state_manager_.getKoyomi();
+            render_context_.jdn = koyomi.jdn.getDay();
+            render_context_.map_view_size = Vector2<double>(map_viewport_.getWidth(), map_viewport_.getHeight());
+            render_context_.map_view_center = Vector2<double>(map_viewport_.getCenterX(), map_viewport_.getCenterY());
+            render_context_.visibility_manager = &app_state_manager_.getVisibilityManager();
+        }
+
+        /// @brief 全Featureのupdate()を呼び出し
+        void updateAllFeatures() {
+            updateRenderContext();
+            for (auto& feature : features_) {
+                if (feature && feature->isInTimeRange(render_context_.jdn)) {
+                    feature->update(render_context_);
+                }
+            }
+        }
+
+        /// @brief 人物データを読み込み
+        void loadPersonFeatures() {
+            // テクスチャを読み込み（Portraitsの設定を使用）
+            const std::string portraits_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("Portraits"));
+
+            if (portraits_path.size() > 0) {
+                asset_registry_.loadPersonIcons(portraits_path);
+            }
+
+            // 容量を事前確保
+            const std::size_t current_capacity = features_.capacity();
+            const std::size_t estimated_person_count = 1000;
+            features_.reserve(current_capacity + estimated_person_count);
+
+            // PersonFeatureに変換
+            auto all_persons = PersonNameRepository::loadPersonNameList();
+            for (const auto& [person_data, person_list] : all_persons) {
+                features_.emplace_back(
+                    std::make_unique<PersonFeature>(person_data, person_list)
+                );
+            }
+        }
+
+        /// @brief 地理的地物データを読み込み
+        void loadGeographicFeatures() {
+            // 容量を事前確保（地理的地物は多いため5000を確保）
+            const std::size_t current_capacity = features_.capacity();
+            const std::size_t estimated_geographic_count = 5000;
+            features_.reserve(current_capacity + estimated_geographic_count);
+
+            // GeographicFeatureに変換
+            auto all_geographic_features = GeographicFeatureRepository::loadGeographicFeatureList();
+            for (auto& location_data : all_geographic_features) {
+                features_.emplace_back(
+                    std::make_unique<GeographicFeature>(std::move(location_data))
+                );
+            }
+        }
+
+        /// @brief 地名データを読み込み
+        void loadPlaceNameFeatures() {
+            // 容量を事前確保
+            const std::size_t current_capacity = features_.capacity();
+            const std::size_t estimated_place_name_count = 1000;
+            features_.reserve(current_capacity + estimated_place_name_count);
+
+            // PlaceNameFeatureに変換
+            auto all_place_names = PlaceNameRepository::loadPlaceNameList();
+            for (auto& location_data : all_place_names) {
+                features_.emplace_back(
+                    std::make_unique<PlaceNameFeature>(std::move(location_data))
+                );
+            }
+        }
+
+        /// @brief ゲノムデータを読み込み
+        void loadGenomeFeatures() {
+            // 容量を事前確保
+            const std::size_t current_capacity = features_.capacity();
+            const std::size_t estimated_genome_count = 500;
+            features_.reserve(current_capacity + estimated_genome_count);
+
+            // GenomeFeatureに変換
+            auto all_genomes = GenomeRepository::loadGenomeList();
+            for (auto& genome_data : all_genomes) {
+                features_.emplace_back(
+                    std::make_unique<GenomeFeature>(std::move(genome_data))
+                );
+            }
+        }
+
+        /// @brief 全データを読み込み
+        void loadAllFeatures() {
+            features_.clear();
+
+            // MapIconsを1回だけロード（地理・ゲノム共用）
+            const std::string map_icons_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("MapIcons"));
+            if (map_icons_path.size() > 0) {
+                asset_registry_.loadMapIcons(map_icons_path);
+            }
+
+            // 描画順序: 地名 → ゲノム → 地理 → 人物
+            loadPlaceNameFeatures();
+            std::cout << "Place name features loaded: " << features_.size() << "\n";
+
+            loadGenomeFeatures();
+            std::cout << "Genome features loaded: " << features_.size() << " total\n";
+
+            loadGeographicFeatures();
+            std::cout << "Geographic features loaded: " << features_.size() << " total\n";
+
+            loadPersonFeatures();
+            std::cout << "Person features loaded: " << features_.size() << " total\n";
+
+            // 全アイコンをマージ
+            asset_registry_.mergeCategories();
+        }
+
+    public:
+        MapContentLayer(const AppStateManager& app_state_manager)
+            : app_state_manager_(app_state_manager)
+            , map_viewport_(app_state_manager.getMapViewport()) {
+            // データロード（初回のみ）
+            if (features_.empty()) {
+                loadAllFeatures();
+            }
+            subscribeToEvents();
+            // 初回更新を即座に実行
+            updateAllFeatures();
+#ifdef PAXS_USING_SIMULATOR
+            updateSettlementData();
+#endif
+        }
+
+        // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
+        ~MapContentLayer() override = default;
+        MapContentLayer(const MapContentLayer&) = delete;
+        auto operator=(const MapContentLayer&) -> MapContentLayer& = delete;
+        MapContentLayer(MapContentLayer&&) = delete;
+        auto operator=(MapContentLayer&&) -> MapContentLayer& = delete;
+
+        void render() const override {
+            if (!isVisible()) {
+                return;
+            }
+
+            MapFeatureRenderer::drawFeatures(features_, render_context_, asset_registry_.getMergedMap());
+
+#ifdef PAXS_USING_SIMULATOR
+            // SettlementManager を描画（シミュレーション表示時）
+            if (app_state_manager_.getVisibilityManager().isVisible(ViewMenu::simulation)) {
+                settlement_manager_.render();
+            }
+#endif
+        }
+
+#ifdef PAXS_USING_SIMULATOR
+        /// @brief SettlementInputHandler への参照を取得（AppComponentManager での登録用）
+        SettlementInputHandler& getSettlementInputHandler() {
+            return settlement_input_handler_;
+        }
+#endif
+
+        const std::vector<std::unique_ptr<MapFeature>>& getFeatures() const {
+            return features_;
+        }
+
+        /// @brief RenderContextへの参照を取得（入力処理用）
+        const RenderContext& getRenderContext() const {
+            return render_context_;
+        }
+
+        /// @brief IDでFeatureを検索
+        MapFeature* findFeatureById(std::uint_least32_t id) {
+            for (auto& feature : features_) {
+                if (feature && feature->getId() == id) {
+                    return feature.get();
+                }
+            }
+            return nullptr;
+        }
+
+        /// @brief マウス座標でFeatureを検索（入力処理用）
+        MapFeature* findFeatureAt(const paxs::Vector2<int>& mouse_pos) {
+            for (auto& feature : features_) {
+                if (feature && feature->isVisible() && feature->isHit(mouse_pos)) {
+                    return feature.get();
+                }
+            }
+            return nullptr;
+        }
+
+        bool isVisible() const override {
+            return app_state_manager_.getVisibilityManager().isVisible(ViewMenu::map);
+        }
+        RenderLayer getLayer() const override { return RenderLayer::MapContent; }
     };
 }
 

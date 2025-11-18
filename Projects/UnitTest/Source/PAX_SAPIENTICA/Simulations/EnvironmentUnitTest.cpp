@@ -21,9 +21,9 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Simulation/Agent.hpp>
-#include <PAX_SAPIENTICA/Simulation/Environment.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Agent.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
 
 using Vector2 = paxs::Vector2<paxs::GridType>;
 

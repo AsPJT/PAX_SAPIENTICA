@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 TEST(MurMur3UnitTest, aiueo) {
     std::uint_least32_t expected = 3387496686u;

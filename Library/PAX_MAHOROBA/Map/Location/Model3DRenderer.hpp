@@ -17,8 +17,34 @@
 namespace paxs {
 
     /// @brief 3Dモデル描画クラス
+    /// @brief 3D model renderer class
     /// @details 地図上に配置される3Dオブジェクト（古墳の石室など）を描画
-    /// PAX_GRAPHICA/3DModel.hpp のラッパークラス
+    /// @details Renders 3D objects (burial chambers, etc.) placed on the map
+    /// @note PAX_GRAPHICA/3DModel.hpp のラッパークラス
+    /// @note Wrapper class for PAX_GRAPHICA/3DModel.hpp
+    ///
+    /// @section integration 統合方針 / Integration Plan
+    /// このクラスは Model3DFeature クラス内で使用され、Featureシステムに統合されています。
+    /// This class is used within Model3DFeature class and is integrated into the Feature system.
+    ///
+    /// @subsection usage 使用方法 / Usage
+    /// Model3DFeature を通じて使用してください。直接インスタンス化することは推奨されません。
+    /// Use through Model3DFeature. Direct instantiation is not recommended.
+    ///
+    /// @code
+    /// // 使用例 / Example usage:
+    /// auto feature = std::make_unique<Model3DFeature>(
+    ///     "tomb_001",                    // ID
+    ///     "石室",                         // 名前 / Name
+    ///     MercatorDeg(135.0, 35.0),      // 座標 / Coordinate
+    ///     2440000.0,                     // 開始年 / Start year (JDN)
+    ///     2450000.0,                     // 終了年 / End year (JDN)
+    ///     model_config                   // 3Dモデル設定 / 3D model config
+    /// );
+    /// @endcode
+    ///
+    /// @see Model3DFeature
+    /// @see MapFeatureRenderer::drawModel3D()
     class Model3DRenderer {
     private:
         paxg::Graphics3DModel model3d_;

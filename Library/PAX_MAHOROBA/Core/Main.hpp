@@ -9,7 +9,6 @@
 
 ##########################################################################################*/
 
-//#define PAXS_DEVELOPMENT
 #ifndef PAX_MAHOROBA_MAIN_HPP
 #define PAX_MAHOROBA_MAIN_HPP
 
@@ -23,14 +22,21 @@
 
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
+#include <PAX_MAHOROBA/Core/AppComponentManager.hpp>
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
 #include <PAX_MAHOROBA/Input/InputManager.hpp>
 #include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/GraphicsManager.hpp>
+
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+
+#ifdef PAXS_DEVELOPMENT
+#include <PAX_MAHOROBA/Input/DebugInputHandler.hpp>
+#include <PAX_MAHOROBA/UI/Debug/DebugConsoleCommandRegistry.hpp>
+#include <PAX_SAPIENTICA/Utility/LoggerIntegration.hpp>
+#endif
 
 namespace paxs {
 
@@ -45,28 +51,43 @@ namespace paxs {
         EventBus& event_bus = EventBus::getInstance();
 
         // 2. AppStateManager作成（ドメインロジック集約）
-        AppStateManager app_state(event_bus);
+        AppStateManager app_state{};
 
         // 3. InputManager作成（入力処理統合）
-        InputManager input_manager(event_bus);
+        InputManager input_manager{};
 
-        // 4. GraphicsManager作成（描画のみ）
-        GraphicsManager graphics_manager(event_bus, app_state);
+        // 4. AppComponentManager作成（コンポーネント統合管理）
+        AppComponentManager component_manager(app_state);
 
         // 5. 入力ハンドラー登録
         std::unique_ptr<MapViewportInputHandler> map_viewport_input_handler =
-            std::make_unique<MapViewportInputHandler>();
-        map_viewport_input_handler->setViewport(&app_state.getMapViewport());
+            std::make_unique<MapViewportInputHandler>(app_state.getMapViewport());
 
         std::unique_ptr<UIInputHandler> ui_input_handler =
             std::make_unique<UIInputHandler>();
 
+#ifdef PAXS_DEVELOPMENT
+        std::unique_ptr<DebugInputHandler> debug_input_handler =
+            std::make_unique<DebugInputHandler>(&component_manager.getDebugLayer());
+#endif
+
         // InputManagerに入力ハンドラーを登録
         input_manager.registerHandler(map_viewport_input_handler.get());
-        input_manager.getMouseEventRouter().registerHandler(ui_input_handler.get());
+        input_manager.registerHandler(ui_input_handler.get());
+#ifdef PAXS_DEVELOPMENT
+        input_manager.registerHandler(debug_input_handler.get());
+#endif
 
-        // GraphicsManagerが内部のウィジェット/ハンドラーを登録
-        graphics_manager.registerToInputHandlers(*ui_input_handler, input_manager.getEventRouter());
+        // AppComponentManagerが内部のウィジェット/ハンドラーを登録
+        component_manager.registerToInputHandlers(*ui_input_handler, input_manager.getInputRouter());
+
+#ifdef PAXS_DEVELOPMENT
+        // デバッグコンソールにカスタムコマンドを登録
+        DebugConsoleCommandRegistry::registerAllCommands(
+            component_manager.getDebugLayer().getConsole(),
+            app_state
+        );
+#endif
 
         // ローディング画面終了
         paxs::PaxSapienticaInit::endLoadingScreen();
@@ -84,14 +105,18 @@ namespace paxs {
             // 2. イベントキュー処理（遅延イベントの処理）
             event_bus.processQueue();
 
-            // 3. 暦更新（シミュレーション実行中の場合）
+            // 3. 暦更新（暦再生時の時間進行）
             app_state.updateKoyomi();
 
-            // 4. タイルデータ更新（ビューポート変更に応じてタイルをロード）
-            graphics_manager.updateTiles();
+#ifdef PAXS_DEVELOPMENT
+            // 4. デバッグレイヤーの更新（自動削除チェック）
+            component_manager.getDebugLayer().update(
+                component_manager.getDebugLayer().getCurrentTime()
+            );
+#endif
 
-            // 5. 描画のみ（更新は不要、データはAppStateManagerから直接取得）
-            graphics_manager.render();
+            // 5. 描画処理
+            component_manager.render();
 
             // 6. タッチ入力の状態更新
             paxg::TouchInput::updateState();

@@ -12,32 +12,26 @@
 #ifndef PAX_MAHOROBA_I_BUTTON_HPP
 #define PAX_MAHOROBA_I_BUTTON_HPP
 
-#include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
-
-#include <PAX_MAHOROBA/Input/IMouseEventHandler.hpp>
+#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxs {
 
-    class IWidget : public IRenderable, public IMouseEventHandler {
+    class IWidget : public IRenderable, public IInputHandler {
     public:
         virtual ~IWidget() = default;
 
         // 位置・サイズ管理
         // Position and size management
-        virtual paxg::Rect getRect() const = 0;
-        virtual void setPos(const paxg::Vec2i& pos) = 0;
+        virtual Rect<int> getRect() const = 0;
+        virtual void setPos(const Vector2<int>& pos) = 0;
 
         // 可視性管理
         // Visibility management
-        void setVisible(bool visible) override = 0;
         bool isVisible() const override = 0;
-
-        // 有効/無効管理
-        // Enable/disable management
-        virtual void setEnabled(bool enabled) = 0;
-        bool isEnabled() const override = 0;
 
         // コンポーネント情報
         // Component information
@@ -55,19 +49,15 @@ namespace paxs {
         /// @return レンダリングレイヤー / Rendering layer
         RenderLayer getLayer() const override = 0;
 
-        // IMouseEventHandler の実装
-        // IMouseEventHandler implementation
+        // IInputHandler の実装
+        // IInputHandler implementation
 
-        /// @brief ヒットテスト（getRect()を使用）
-        /// @brief Hit test (uses getRect())
-        /// @param x X座標 / X coordinate
-        /// @param y Y座標 / Y coordinate
+        /// @brief ヒットテスト
+        /// @param pos マウス座標 / Mouse position
         /// @return 範囲内ならtrue / true if within bounds
-        bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
-            const paxg::Rect rect = getRect();
-            return (x >= rect.x() && x < rect.x() + rect.w() &&
-                y >= rect.y() && y < rect.y() + rect.h());
+        bool isHit(const Vector2<int>& pos) const override {
+            if (!isVisible()) return false;
+            return getRect().contains(pos);
         }
     };
 

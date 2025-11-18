@@ -17,9 +17,40 @@
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/DropDownMenu.hpp>
 
+#include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
+
 namespace paxs {
     /// @brief DropDownMenu（固定ヘッダー型）を複数持つ
     class MenuSystem : public IWidget {
+    private:
+        // メニューバーに付属するメニュー項目が左から順番に格納されている
+        std::vector<paxs::DropDownMenu> menu_list;
+
+        paxg::Rect bar_rect_{0,0,0,0};
+
+        // 各メニュー項目に紐づけられた Key 値
+        paxs::UnorderedMap<paxs::MenuBarType, std::size_t> menu_list_key;
+
+        std::size_t start_x = 0;
+
+    void layout() {
+        float x = 0.f;
+        float h = 0.f;
+
+        for (paxs::DropDownMenu& menu : menu_list) {
+            const float w = menu.getRect().width();
+            const float item_h = menu.getRect().height();
+
+            menu.setRectX(x);
+
+            x += w; // 幅ぶんだけ進む
+            h = (std::max)(h, item_h);
+        }
+
+        // メニューバー全体のrectも左上(0,0)から幅xだけにする
+        bar_rect_ = paxg::Rect{0.f, 0.f, x, h};
+    }
+
     public:
         MenuSystem() = default;
 
@@ -27,17 +58,17 @@ namespace paxs {
         /// @param items_key_ 項目のキー一覧（最初の項目がメニュー名）
         /// @param font_size_ フォントサイズ
         /// @param font_buffer_thickness_size_ フォントの太さ
-        /// @param menu_key_ メニューのキー（識別用）
+        /// @param menu_type_ メニュー項目の種類
         void add(
             const std::span<const std::uint_least32_t> items_key_,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
-            const std::uint_least32_t menu_key_) {
+            const paxs::MenuBarType menu_type_) {
 
             if (menu_list.size() != 0) {
-                start_x += static_cast<std::size_t>(menu_list.back().getRect().w());
+                start_x += static_cast<std::size_t>(menu_list.back().getRect().width());
             }
-            menu_list_key.emplace(menu_key_, menu_list.size());
+            menu_list_key.emplace(menu_type_, menu_list.size());
             menu_list.emplace_back(paxs::DropDownMenu(
                 items_key_,
                 font_size_,
@@ -54,10 +85,12 @@ namespace paxs {
             }
 
             for (std::size_t i = 0; i < menu_list.size(); ++i) {
-                if (menu_list[i].isHitHeader(event.x, event.y)) {
-                    const bool was_open = menu_list[i].isOpen();
+                if (menu_list[i].isHitHeader(event.pos.x, event.pos.y)) {
+                    const bool was_open = menu_list[i].isVisible();
                     // 全部閉じる
-                    for (auto& mi : menu_list) mi.setVisible(false);
+                    for (auto& menu : menu_list) {
+                        menu.setVisible(false);
+                    }
                     // 今クリックしたやつだけトグル
                     menu_list[i].setVisible(!was_open);
                     return EventHandlingResult::Handled();
@@ -65,9 +98,9 @@ namespace paxs {
             }
 
             // 開いてる子のドロップダウンにイベントを渡す
-            for (paxs::DropDownMenu& mi : menu_list) {
-                if (mi.isOpen()) {
-                    paxs::EventHandlingResult r = mi.handleEvent(event);
+            for (paxs::DropDownMenu& menu : menu_list) {
+                if (menu.isVisible()) {
+                    paxs::EventHandlingResult r = menu.handleEvent(event);
                     if (r.handled) return r;
                 }
             }
@@ -82,66 +115,30 @@ namespace paxs {
         }
 
         /// @brief メニュー項目を取得
-        /// @param key メニュー項目のキー
+        /// @param type メニュー項目の種類
         /// @return メニュー項目のポインタ（存在しない場合はnullptr）
-        paxs::DropDownMenu* getDropDownMenu(const std::uint_least32_t key) {
-            return (menu_list_key.find(key) != menu_list_key.end()) ? &menu_list[menu_list_key.at(key)] : nullptr;
+        paxs::DropDownMenu* getDropDownMenu(const paxs::MenuBarType type) {
+            const auto iterator = menu_list_key.find(type);
+            return iterator != menu_list_key.end() ? &menu_list[iterator->second] : nullptr;
         }
-        const paxs::DropDownMenu* cgetDropDownMenu(const std::uint_least32_t key) const {
-            return (menu_list_key.find(key) != menu_list_key.end()) ? &menu_list[menu_list_key.at(key)] : nullptr;
-        }
-
-    private:
-        // メニューバーに付属するメニュー項目が左から順番に格納されている
-        std::vector<paxs::DropDownMenu> menu_list;
-
-        paxg::Rect bar_rect_{0,0,0,0};
-
-        // 各メニュー項目に紐づけられた Key (Hash)
-        paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu_list_key{};
-
-        std::size_t start_x = 0;
-
-    void layout() {
-        float x = 0.f;
-        float h = 0.f;
-
-        for (paxs::DropDownMenu& menu : menu_list) {
-            const float w = menu.getRect().w();
-            const float item_h = menu.getRect().h();
-
-            menu.setRectX(x);
-
-            x += w; // 幅ぶんだけ進む
-            h = (std::max)(h, item_h);
+        const paxs::DropDownMenu* getDropDownMenu(const paxs::MenuBarType type) const {
+            const auto iterator = menu_list_key.find(type);
+            return iterator != menu_list_key.end() ? &menu_list[iterator->second] : nullptr;
         }
 
-        // メニューバー全体のrectも左上(0,0)から幅xだけにする
-        bar_rect_ = paxg::Rect{0.f, 0.f, x, h};
-    }
-
-    public:
-        RenderLayer getLayer() const override {
-            return RenderLayer::MenuBar;
-        }
-
-        bool isHit(int x, int y) const override {
+        bool isHit(const paxs::Vector2<int>& pos) const override {
             // ヘッダー列に当たっていたらtrue
             for (auto const& mi : menu_list) {
-                if (mi.isHitHeader(x, y)) return true;
+                if (mi.isHitHeader(pos.x, pos.y)) return true;
             }
 
             // 開いてる子がヒットしていないかも見る
             for (auto const& mi : menu_list) {
-                if (mi.isHit(x, y)) {
+                if (mi.isHit(pos)) {
                     return true;
                 }
             }
             return false;
-        }
-
-        paxg::Rect getRect() const override {
-            return bar_rect_;
         }
 
         void updateMenuWidth() {
@@ -150,16 +147,20 @@ namespace paxs {
             }
             layout();
         }
-        void setPos(const paxg::Vec2i& /*pos*/) override {
-            // MenuBarは常に画面上部に配置されるため、positionの変更は実装しない
-        }
 
-        void setVisible(bool /*visible*/) override {}
         bool isVisible() const override { return true; }
-        void setEnabled(bool /*enabled*/) override {}
-        bool isEnabled() const override { return true; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
+        Rect<int> getRect() const override {
+        const paxg::Rect& r = bar_rect_;
+        return {
+            static_cast<int>(r.x()),
+            static_cast<int>(r.y()),
+            static_cast<int>(r.w()),
+            static_cast<int>(r.h())
+        };
+    }
         const char* getName() const override { return "MenuSystem"; }
-
+        RenderLayer getLayer() const override { return RenderLayer::MenuBar; }
     };
 } // namespace paxs
 

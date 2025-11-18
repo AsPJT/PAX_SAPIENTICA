@@ -15,12 +15,11 @@
 #include <cstddef>
 #include <string>
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
-
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationManager.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Manager/SimulationManager.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {
 
@@ -29,11 +28,9 @@ namespace paxs {
 /// @details UIから分離されたビジネスロジック層
 class SimulationController {
 public:
-    explicit SimulationController(EventBus& event_bus)
-        : event_bus_(event_bus) {
-
+    explicit SimulationController() {
         // シミュレーション停止イベントを購読
-        event_bus_.subscribe<SimulationStopCommandEvent>(
+        EventBus::getInstance().subscribe<SimulationStopCommandEvent>(
             [this](const SimulationStopCommandEvent& /*event*/) {
                 stopAutoExecution();
             }
@@ -50,14 +47,20 @@ public:
         const Koyomi& koyomi,
         const std::string& model_name
     ) {
-        if (!is_auto_executing_) return;
-        if (!simulation_manager.isActive()) return;
+        if (!is_auto_executing_) {
+            // 自動実行していない場合は何もしない
+            return;
+        }
+        if (!simulation_manager.isActive()) {
+            // シミュレーションが初期化されていない場合は何もしない
+            return;
+        }
 
         // モデル名が変更された場合は total_steps を更新
         if (current_model_name_ != model_name) {
             current_model_name_ = model_name;
-            const auto* constants = SimulationConstants::getInstance(model_name);
-            total_steps_ = constants->total_steps;
+            const auto& constants = SimulationConstants::getInstance(model_name);
+            total_steps_ = constants.total_steps;
         }
 
         // シミュレーション完了チェック
@@ -69,7 +72,7 @@ public:
                 startNextCycle();
             } else {
                 // 全サイクル完了
-                event_bus_.publish(SimulationStopCommandEvent());
+                EventBus::getInstance().publish(SimulationStopCommandEvent());
                 is_auto_executing_ = false;
                 remaining_iterations_ = 0;
             }
@@ -86,8 +89,8 @@ public:
         current_model_name_ = model_name;
 
         // total_stepsを取得
-        const auto* constants = SimulationConstants::getInstance(model_name);
-        total_steps_ = constants->total_steps;
+        const auto& constants = SimulationConstants::getInstance(model_name);
+        total_steps_ = constants.total_steps;
     }
 
     /// @brief 自動実行を停止
@@ -106,7 +109,6 @@ public:
     bool isAutoExecuting() const { return is_auto_executing_; }
 
 private:
-    EventBus& event_bus_;
     int remaining_iterations_ = 0;
     bool is_auto_executing_ = false;
     std::string current_model_name_;
@@ -115,18 +117,21 @@ private:
     /// @brief シミュレーションが完了したかチェック
     /// @brief Check if simulation is completed
     bool isSimulationCompleted(const Koyomi& koyomi) const {
-        if (total_steps_ <= 0) return false;
-        return koyomi.steps.cgetDay() >= static_cast<std::size_t>(total_steps_);
+        if (total_steps_ <= 0) {
+            return false;
+        }
+        return koyomi.steps.getDay() >= static_cast<std::size_t>(total_steps_);
     }
 
     /// @brief 次の実行サイクルを開始
     /// @brief Start next execution cycle
     void startNextCycle() {
-        // シミュレーション初期化イベントを発行
-        event_bus_.publish(SimulationInitCommandEvent(current_model_name_));
+        paxs::EventBus& event_bus = paxs::EventBus::getInstance();
+        // 人間データ初期化イベントを発行
+        event_bus.publish(InitHumanDataCommandEvent(current_model_name_));
 
         // 再生イベントを発行
-        event_bus_.publish(SimulationPlayCommandEvent(remaining_iterations_));
+        event_bus.publish(SimulationPlayCommandEvent(remaining_iterations_));
     }
 };
 

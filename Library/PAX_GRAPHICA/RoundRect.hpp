@@ -18,6 +18,7 @@
 #include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
+#include <algorithm> // std::min, std::max (SFMLで使用)
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -25,8 +26,6 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
-
-#include <algorithm> // std::min, std::max (SFMLで使用)
 
 namespace paxg {
 
@@ -450,42 +449,6 @@ namespace paxg {
 #else
         void drawFrame(const double, const double, const paxg::Color&) const {}
 #endif
-
-        bool leftClicked() const {
-#if defined(PAXS_USING_SIV3D)
-            return rect.leftClicked();
-#elif defined(PAXS_USING_DXLIB)
-            if (paxg::TouchInput::getPreviousTouchCount() == 1) {
-                const int touch_num = paxg::TouchInput::getTouchCount();
-                // 1 フレーム前にタッチされている
-                if (touch_num == 0) {
-                    const auto& prev_pos = paxg::TouchInput::getPreviousTouchPosition();
-                    const auto& mx = prev_pos.x;
-                    const auto& my = prev_pos.y;
-                    return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
-                }
-            }
-            // 1 フレーム前にタッチされている
-            if (paxg::Mouse::getInstance()->upLeft()) {
-                int mx = 0, my = 0;
-                DxLib::GetMousePoint(&mx, &my);
-                return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
-            }
-            return false;
-#elif defined(PAXS_USING_SFML)
-            // 1 フレーム前にタッチされている
-            if (paxg::Mouse::getInstance()->upLeft()) {
-                int mx = sf::Mouse::getPosition(Window::window()).x, my = sf::Mouse::getPosition(Window::window()).y;
-                return (mx >= x0 &&
-                    my >= y0 &&
-                    mx < x0 + w0 &&
-                    my < y0 + h0);
-            }
-            return false;
-#else
-            return false;
-#endif
-        }
 
         bool mouseOver() const {
 #if defined(PAXS_USING_SIV3D)

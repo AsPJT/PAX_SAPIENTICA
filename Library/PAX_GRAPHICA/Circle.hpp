@@ -32,11 +32,13 @@ namespace paxg {
         s3d::Circle circle;
         constexpr Circle(const float x, const float y, const float r) : circle(x, y, r) {}
         constexpr Circle(const paxg::Vec2i& pos, const float r) : circle(pos.x(), pos.y(), r) {}
+        constexpr Circle(const paxg::Vec2<double>& pos, const float r) : circle(static_cast<float>(pos.x()), static_cast<float>(pos.y()), r) {}
         constexpr operator s3d::Circle() const { return circle; }
 #else
         float x, y, r;
         constexpr Circle(const float x, const float y, const float r) : x(x), y(y), r(r) {}
         constexpr Circle(const paxg::Vec2i& pos, const float r) : x(static_cast<float>(pos.x())), y(static_cast<float>(pos.y())), r(r) {}
+        constexpr Circle(const paxg::Vec2<double>& pos, const float r) : x(static_cast<float>(pos.x())), y(static_cast<float>(pos.y())), r(r) {}
 #endif
         void draw() const {
 #if defined(PAXS_USING_SIV3D)

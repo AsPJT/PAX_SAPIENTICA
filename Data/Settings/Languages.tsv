@@ -37,29 +37,40 @@ menu_bar_edit_cut	Cut	切り取り	剪切	剪切	잘라내기	きりとり	Corta
 menu_bar_edit_copy	Copy	コピー	复制	复制	복사	こぴー	Copiar	Copiar	Kopieren	Copier	Copia	Kopya	Kopiuj	Αντιγραφή	Kopiëren	Kopírovat	Копіювати	Копировать	Menyalin	کپی	ينسخ	Lattupte
 menu_bar_edit_paste	Paste	貼り付け	粘贴	粘贴	붙여넣기	はりつけ	Pegar	Colar	Einfügen	Coller	Incolla	Yapıştır	Wklej	Επικόλληση	Plakken	Vložit	Вставити	Вставить	Menempel	چسباندن	معجون	Paste
 menu_bar_edit_delete	Delete	削除	删除	删除	삭제	さくじょ	Borrar	Apagar	Löschen	Supprimer	Cancellare	Silme	Usuń	Διαγραφή	Verwijderen	Odstranit	Видалити	Удалить	Menghapus	حذف	حذف	Delete
-> menu_bar_view																						
-menu_bar_view	View	表示	显示	显示	표시	ひょうじ	Ver	Ver	Ansicht	Vue	Vista	Görünüm	Widok	Προβολή	Weergave	Zobrazit	Перегляд	Вид	Melihat	مشاهده	مشاهدة	Kuttupte
-menu_bar_view_calendar	Calendar	カレンダー	日历	日历	달력	かれんだー	Calendario	Calendário	Kalender	Calendrier	Calendario	Takvim	Kalendarz	Ημερολόγιο	Kalender	Kalendář	Календар	Календарь	Kalender	تقویم	تقويم	Tonukarpe
-menu_bar_view_map	Map	地図	地图	地图	지도	ちず	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة	Sinrunoka
-menu_bar_view_ui	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI
-menu_bar_view_simulation	Simulation	ステップ数	仿真	仿真	시뮬레이션	しみゅれーしょん	Simulación	Simulação	Simulation	Simulation	Simulazione	Simülasyon	Symulacja	Προσομοίωση	Simulatie	Simulace	Симуляція	Симулирование	Simulasi	شبیه‌سازی	محاكاة	Simulation
-menu_bar_view_license	License	ライセンス	许可	许可	라이선스	らいせんす	Licencia	Licença	Lizenz	Licence	Licenza	Lisans	Licencja	Άδεια	Licentie	Licence	Ліцензія	Лицензия	Lisensi	مجوز	رخصة	License
-menu_bar_view_debug	Debug	デバッグ	调试	调试	디버깅	でばっぐ	Depurar	Depurar	Debuggen	Débogage	Debug	Hata Ayıklama	Debugowanie	Αποσφαλμάτωση	Debug	Ladění	Налагодження	Отладка	Debug	اشکال زدایی	Debug	Debug
-menu_bar_view_3d	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	سه بعدی	ثلاثي الأبعاد	3D
-> menu_bar_place_names																						
-place_names	Feature	地物	地物	地物	지물	ちぶつ	Características	Caraterísticas	Merkmal	Entité	Elemento	Özellik	Obiekt	Στοιχείο	Kenmerk	Prvek	Об'єкт	Объект	Fitur	ویژگی	ميزة	Feature
-place_names_place_name	Place Name	地名	地名	地名	지명	ちめい	Topónimo	Topônimo	Geografischer Name	Toponyme	Toponimo	Yer adı	Toponim	Toponym	Toponiem	Toponymum	Топонім	Топоним	Nama tempat	نام مکان	اسم مكان	Sinre
-place_names_site	Archaeological site	遺跡	遺蹟	遗迹	유적	いせき	Yacimiento arqueológico	Sítio arqueológico	Fundstätte	Site archéologique	Sito archeologico	Arkeolojik sit	Stanowisko archeologiczne	Αρχαιολογική θέση	Vindplaats	Archeologická lokalita	Пам'ятка археології	Археологический памятник	Situs arkeologi	محوطه باستانی	موقع أثري	Archaeological site
-place_names_tumulus	Tumulus	墳丘墓	墳冢	坟冢	분구묘	ふんきゅうぼ	Túmulo	Tumulus	Hügelgrab	Tumulus	Tumulo	Tümülüs	Tumulus	Τύμβος	Grafheuvel	Mohyla	Тумулус	Тумулус	Tumulus	گورپشته	جثوة	Tumulus
-place_names_dolmen	Dolmen	支石墓	石棚	石棚	고인돌	しせきぼ	Dolmen	Dólmen	Dolmen	Dolmen	Dolmen	Dolmen	Dolmen	Ντολμέν	Hunebed	Dolmen	Дольмен	Дольмен	Dolmen	میزسنگ	دلمن	Dolmen
-place_names_kamekanbo	Jar burial	甕棺墓	甕棺葬	瓮棺葬	독무덤	かめかんぼ	Vasija de enterramiento	Sepultamento em urna	Gefäßbestattung	Sépulture en jarre	Jar burial	Çömlek mezar	Pochówek w naczyniu	Ταφή σε πίθο	Potbegrafenis	Pohřeb v nádobě	Глекові поховання	Кувшинные погребения	Jar burial	گورخمره	الدفن في الجرار	Jar burial
-place_names_stone_coffin	Stone Coffin	石棺	石棺	石棺	석관	せっかん	Sarcófago de piedra	Sarcófago de pedra	Steinsarg	Sarcophage en pierre	Sepoltura in giara	Taş Lahit	Kamienny sarkofag	Πέτρινη Σαρκοφάγος	Stenen sarcofaag	Kamenná rakev	Кам'яний саркофаг	Каменный саркофаг	Peti mati batu	تابوت سنگی	ناووس	Suma Ot
-place_names_doken	Bronze Sword	銅剣	銅劍	铜剑	청동 검	どうけん	Espada de bronce	Espada de bronze	Bronzeschwert	Épée de bronze	Spada di bronzo	Bronz Kılıç	Brązowy miecz	Χάλκινο σπαθί	Bronzen zwaard	Bronzový meč	Бронзовий меч	Бронзовый меч	Pedang Perunggu	شمشیر مفرغی	سيف برونزي	Hurekane Emus
-place_names_dotaku	Dotaku	銅鐸	銅鐸	铜铎	동탁	どうたく	Dotaku	Dotaku	Dotaku	Dōtaku	Dotaku	Dotaku	Dōtaku	Ντοτάκου	Dotaku	Dótaku	Дотаку	Дотаку	Dotaku	Dotaku	Dotaku	Dotaku
-place_names_bronze_mirror	Bronze Mirror	銅鏡	銅鏡	铜镜	동경	どうきょう	Espejo de bronce	Espelho de bronze	Bronzespiegel	Miroir de bronze	Specchio di bronzo	Bronz Ayna	Brązowe lustro	Χάλκινος καθρέφτης	Bronzen spiegel	Bronzové zrcadlo	Бронзове дзеркало	Бронзовое зеркало	Cermin Perunggu	آینه برنزی	مرآة برونزية	Hurekane Kankami
-place_names_human_bone	Human Bone	人骨	人骨	人骨	인골	じんこつ	Hueso humano	Osso humano	Menschlicher Knochen	Os humain	Osso umano	İnsan Kemiği	Ludzka kość	Ανθρώπινο οστό	Menselijk bot	Lidská kost	Людська кістка	Человеческая кость	Tulang Manusia	استخوان انسان	عظم بشري	Aynu Pone
-place_names_mtdna	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	ADNmt	ADNmt	mtDNA	ADNmt	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	мтДНК	мтДНК	mtDNA	دی‌ان‌ای میتوکندری	الحمض النووي للميتوكوندريا	mtDNA
-place_names_ydna	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	ADN-Y	ADN-Y	Y-DNA	ADN-Y	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-ДНК	Y-ДНК	Y-DNA	دی‌ان‌ای Y	الحمض النووي Y	Y-DNA
+> view_menu
+view_header	View	表示	显示	显示	표시	ひょうじ	Ver	Ver	Ansicht	Vue	Vista	Görünüm	Widok	Προβολή	Weergave	Zobrazit	Перегляд	Вид	Melihat	مشاهده	مشاهدة	Kuttupte
+view_calendar	Calendar	カレンダー	日历	日历	달력	かれんだー	Calendario	Calendário	Kalender	Calendrier	Calendario	Takvim	Kalendarz	Ημερολόγιο	Kalender	Kalendář	Календар	Календарь	Kalender	تقویم	تقويم	Tonukarpe
+view_map	Map	地図	地图	地图	지도	ちず	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة	Sinrunoka
+view_ui	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI	UI
+view_simulation	Simulation	ステップ数	仿真	仿真	시뮬레이션	しみゅれーしょん	Simulación	Simulação	Simulation	Simulation	Simulazione	Simülasyon	Symulacja	Προσομοίωση	Simulatie	Simulace	Симуляція	Симулирование	Simulasi	شبیه‌سازی	محاكاة	Simulation
+view_person	Person	人物	人物	人物	인물	じんぶつ	Persona	Pessoa	Person	Personne	Persona	Kişi	Osoba	Πρόσωπο	Persoon	Osoba	Особа	Человек	Orang	شخص	شخص	Person
+view_license	License	ライセンス	许可	许可	라이선스	らいせんす	Licencia	Licença	Lizenz	Licence	Licenza	Lisans	Licencja	Άδεια	Licentie	Licence	Ліцензія	Лицензия	Lisensi	مجوز	رخصة	License
+view_debug	Debug	デバッグ	调试	调试	디버깅	でばっぐ	Depurar	Depurar	Debuggen	Débogage	Debug	Hata Ayıklama	Debugowanie	Αποσφαλμάτωση	Debug	Ladění	Налагодження	Отладка	Debug	اشکال زدایی	Debug	Debug
+view_3d	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	3D	سه بعدی	ثلاثي الأبعاد	3D
+> place_names_menu
+place_names_header	Place Names	地名	地名	地名	지명	ちめい	Nombres de lugares	Nomes de lugares	Ortsnamen	Toponymes	Toponimi	Yer adları	Nazwy miejsc	Τοπωνύμια	Plaatsnamen	Místní názvy	Топоніми	Топонимы	Nama tempat	نام مکان	اسم مكان	Sinre
+ancient_text	Ancient Text	古文献	古文獻	古文献	고문헌	こぶんけん	Texto antiguo	Texto antigo	Alter Text	Texte ancien	Testo antico	Eski Metin	Starożytny tekst	Αρχαίο κείμενο	Oude tekst	Starý text	Давній текст	Древний текст	Teks kuno	متن باستانی	نص قديم	Ancient Text
+administrative	Administrative	行政区画	行政區劃	行政区划	행정구역	ぎょうせい くかく	Administrativo	Administrativo	Verwaltung	Administratif	Amministrativo	İdari	Administracyjny	Διοικητικός	Administratief	Administrativní	Адміністративний	Административный	Administratif	اداری	إداري	Administrative
+indigenous	Indigenous	先住民	原住民	原住民	선주민	せんじゅうみん	Indígena	Indígena	Indigen	Indigène	Indigeno	Yerli	Rdzenni	Αυτόχθων	Inheems	Domorodý	Корінний	Коренной	Pribumi	بومی	السكان الأصليين	Indigenous
+historical_state	Historical State	歴史的国家	歷史國家	历史国家	역사적 국가	れきしてき こっか	Estado histórico	Estado histórico	Historischer Staat	État historique	Stato storico	Tarihi Devlet	Państwo historyczne	Ιστορικό κράτος	Historische staat	Historický stát	Історична держава	Историческое государство	Negara bersejarah	کشور تاریخی	دولة تاريخية	Historical State
+general	General	汎用	汎用	泛用	일반	はんよう	General	Geral	Allgemein	Général	Generale	Genel	Ogólny	Γενικός	Algemeen	Obecné	Загальний	Общий	Umum	عمومی	عام	General
+> item_menu
+item	Item	遺物	遺物	遗物	유물	いぶつ	Artículo	Item	Gegenstand	Objet	Oggetto	Eşya	Przedmiot	Αντικείμενο	Item	Předmět	Артефакт	Артефакт	Benda	شیء	شيء	Item
+kamekanbo	Jar burial	甕棺墓	甕棺葬	瓮棺葬	독무덤	かめかんぼ	Vasija de enterramiento	Sepultamento em urna	Gefäßbestattung	Sépulture en jarre	Jar burial	Çömlek mezar	Pochówek w naczyniu	Ταφή σε πίθο	Potbegrafenis	Pohřeb v nádobě	Глекові поховання	Кувшинные погребения	Jar burial	گورخمره	الدفن في الجرار	Jar burial
+stone_coffin	Stone Coffin	石棺	石棺	石棺	석관	せっかん	Sarcófago de piedra	Sarcófago de pedra	Steinsarg	Sarcophage en pierre	Sarcofago di pietra	Taş Lahit	Kamienny sarkofag	Πέτρινη Σαρκοφάγος	Stenen sarcofaag	Kamenná rakev	Кам'яний саркофаг	Каменный саркофаг	Peti mati batu	تابوت سنگی	ناووس	Suma Ot
+doken	Bronze Sword	銅剣	銅劍	铜剑	청동 검	どうけん	Espada de bronce	Espada de bronze	Bronzeschwert	Épée de bronze	Spada di bronzo	Bronz Kılıç	Brązowy miecz	Χάλκινο σπαθί	Bronzen zwaard	Bronzový meč	Бронзовий меч	Бронзовый меч	Pedang Perunggu	شمشیر مفرغی	سيف برونزي	Hurekane Emus
+dotaku	Dotaku	銅鐸	銅鐸	铜铎	동탁	どうたく	Dotaku	Dotaku	Dotaku	Dōtaku	Dotaku	Dotaku	Dōtaku	Ντοτάκου	Dotaku	Dótaku	Дотаку	Дотаку	Dotaku	Dotaku	Dotaku	Dotaku
+coin	Coin	貨泉	貨泉	货泉	화천	かせん	Moneda	Moeda	Münze	Monnaie	Moneta	Madeni para	Moneta	Νόμισμα	Munt	Mince	Монета	Монета	Koin	سکه	عملة	Coin
+> structure_menu
+structure	Structure	遺構	遺構	遗迹	유구	いこう	Estructura	Estrutura	Struktur	Structure	Struttura	Yapı	Struktura	Δομή	Structuur	Struktura	Структура	Структура	Struktur	ساختار	هيكل	Structure
+site	Archaeological site	遺跡	遺蹟	遗迹	유적	いせき	Yacimiento arqueológico	Sítio arqueológico	Fundstätte	Site archéologique	Sito archeologico	Arkeolojik sit	Stanowisko archeologiczne	Αρχαιολογική θέση	Vindplaats	Archeologická lokalita	Пам'ятка археології	Археологический памятник	Situs arkeologi	محوطه باستانی	موقع أثري	Archaeological site
+tomb	Tomb	古墳	古墳	古墳	고분	こふん	Tumba	Túmulo	Grab	Tombeau	Tomba	Mezar	Grobowiec	Τάφος	Graf	Hrobka	Могила	Могила	Makam	مقبره	قبر	Tomb
+dolmen	Dolmen	支石墓	石棚	石棚	고인돌	しせきぼ	Dolmen	Dólmen	Dolmen	Dolmen	Dolmen	Dolmen	Dolmen	Ντολμέν	Hunebed	Dolmen	Дольмен	Дольмен	Dolmen	میزسنگ	دلمن	Dolmen
+> genomes_menu
+genomes_header	Genomes	ゲノム	基因體	基因组	유전체	げのむ	Genomas	Genomas	Genome	Génomes	Genomi	Genomlar	Genomy	Γονιδιώματα	Genomen	Genomy	Геноми	Геномы	Genom	ژنوم	الجينومات	Genomes
+human_bone	Human Bone	人骨	人骨	人骨	인골	じんこつ	Hueso humano	Osso humano	Menschlicher Knochen	Os humain	Osso umano	İnsan Kemiği	Ludzka kość	Ανθρώπινο οστό	Menselijk bot	Lidská kost	Людська кістка	Человеческая кость	Tulang Manusia	استخوان انسان	عظم بشري	Aynu Pone
+mtdna	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	ADNmt	ADNmt	mtDNA	ADNmt	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	mtDNA	мтДНК	мтДНК	mtDNA	دی‌ان‌ای میتوکندری	الحمض النووي للميتوكوندريا	mtDNA
+ydna	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	ADN-Y	ADN-Y	Y-DNA	ADN-Y	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-DNA	Y-ДНК	Y-ДНК	Y-DNA	دی‌ان‌ای Y	الحمض النووي Y	Y-DNA
 > menu_bar_calendar																						
 menu_bar_calendar	Calendar(C)	カレンダー(C)	日曆(C)	日历(C)	캘린더(C)	かれんだー	Calendario(C)	Calendário(C)	Kalender(C)	Calendrier(C)	Calendario(C)	Takvim (C)	Kalendarz(C)	Ημερολόγιο(C)	Kalender (C)	Kalendář(C)	Календар(C)	Календарь (C)	Kalender (C)	تقویم (C)	التقويم (C)	Tonukarpe(C)
 menu_bar_calendar_japan	Japanese Calendar	和暦	日本曆	日本历	일본 달력	わ れき	Calendario japonés	Calendário Japonês	Japanischer Kalender	Calendrier japonais	Calendario giapponese	Japon Takvimi	Kalendarz japoński	Ιαπωνικό ημερολόγιο	Japanse kalender	Japonský kalendář	Японський календар	Японский календарь	Kalender Jepang	تقویم ژاپنی	التقويم الياباني	Japanese Tonukarpe
@@ -67,20 +78,20 @@ menu_bar_calendar_gregorian	Gregorian Calendar	グレゴリオ暦	公曆	公历	
 menu_bar_calendar_julian	Julian Calendar	ユリウス暦	儒略曆	儒略历	율리우스력	ゆりうす れき	Calendario juliano	Calendário Juliano	Julianischer Kalender	Calendrier julien	Calendario giuliano	Jülyen Takvimi	Kalendarz juliański	Ιουλιανό ημερολόγιο	Juliaanse kalender	Juliánský kalendář	Юліанський календар	Юлианский календарь	Kalender Julian	تقویم جولیان	تقويم جوليان	Yúriuskar Tonukarpe
 menu_bar_calendar_julian_day	Julian day	ユリウス通日	儒略日	儒略日	율리우스일	ゆりうす つうじつ	Día juliano	Dia Juliano	Julianischer Tag	Jour julien	Giorno giuliano	Julian günü	Dzień juliański	Ιουλιανή ημέρα	Juliaanse dag	Juliánský den	Юліанський день	Юлианский день	Hari Julian	روز جولیان	يوم جوليان	Yúriuskar to
 menu_bar_calendar_hijri	Hijri Calendar	ヒジュラ暦	伊斯兰曆	伊斯兰历	이슬람력	ひじゅら れき	Calendario hijri	Calendário Hijri	Hijri Kalender	Calendrier hijri	Calendario hijri	Hijri Takvimi	Kalendarz hijri	Hijri ημερολόγιο	Hijri kalender	Hijri kalendář	Hijri календар	Hijri календарь	Kalender Hijri	تقویم اسلامی	تقويم هجري	Musrimkor Tonukarpe
-> menu_bar_map																						
-menu_bar_map	Map	地図	地図	地図	지도	ちず	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة	Sinrunoka
-menu_bar_map_base	Base	通常	通常	通常	보통	つうじょう	Base	Base	Basis	Base	Base	Üs	Baza	Βάση	Basis	Základna	База	База	Pangkalan	پایه	قاعدة	Base
-menu_bar_map_land_and_sea	Land and Sea	陸海	陸海	陸海	육해	りくかい	Tierra y Mar	Terra e Mar	Land und Meer	Terre et mer	Terra e mare	Kara ve Deniz	Ląd i morze	Γη και θάλασσα	Land en Zee	Země a moře	Суша і море	Земля и море	Daratan dan Laut	خشکی و دریا	الأرض والبحر	Ya & Atuy
-menu_bar_map_land_and_water	Land and Water	陸水	陸水	陸水	육수	りくすい	Tierra y Agua	Terra e água	Land und Wasser	Terre et eau	Terra e acqua	Kara ve Su	Ląd i woda	Γη και Νερό	Land en Water	Země a voda	Суша і вода	Земля и вода	Tanah dan Air	زمین و آب	الأرض والمياه	Ya & Wakka
-menu_bar_map_soil	Soil	土壌	土壌	土壌	토양	どじょう	Suelo	Solo	Boden	Sol	Suolo	Toprak	Gleba	Έδαφος	Bodem	Půda	Ґрунт	Почва	Tanah	خاک	تربة	Toy
-menu_bar_map_soil_temperature	Soil Temperature	土壌温度	土壌温度	土壌温度	토양 온도	どじょう おんど	Temperatura del suelo	Temperatura do solo	Bodentemperatur	Température du sol	Temperatura del suolo	Toprak Sıcaklığı	Temperatura gleby	Θερμοκρασία εδάφους	Bodem Temperatuur	Teplota půdy	Температура ґрунту	Температура почвы	Suhu Tanah	دمای خاک	درجة حرارة التربة	Toy Sesekru
-menu_bar_map_ryosei_country	Ryosei Country	令制国	令制国	令制国	율령국	りょうせいこく	País Ryosei	País de Ryosei	Ryosei Land	Pays Ryosei	Paese Ryosei	Ryosei Ülkesi	Kraj Ryosei	Χώρα Ryosei	Ryosei Land	Země Ryosei	Країна Рьосей	Страна Рёсэй	Negara Ryosei	کشور Ryosei	دولة Ryosei	Ryosei Mosir
-menu_bar_map_ryosei_line	Ryosei Line	令制国線	令制国線	令制国線	율령국선	りょうせいこく せん	Línea Ryosei	Linha de Ryosei	Ryosei Linie	Ligne Ryosei	Linea Ryosei	Ryosei Line	Linia Ryosei	Γραμμή Ryosei	Ryosei Lijn	Linie Ryosei	Лінія Рьосей	Линия Рёсэй	Garis Ryosei	خط Ryosei	خط Ryosei	Ryosei Rúnoka
-menu_bar_map_slope	Slope	傾斜	坡度	坡度	경사면	けいしゃ	Pendiente	Declive	Gefälle	Pente	Pendenza	Eğim	Nachylenie	Κλίση	Helling	Svah	Схил	Склон	Kemiringan	شیب	ميل	Slope
-menu_bar_map_lakes_and_rivers1	Lakes and rivers1	湖川1	河流和湖泊1	河流和湖泊1	호수와 강1	こせん1	Lagos y ríos1	Lagos e rios1	Seen und Flüsse1	Lacs et rivières1	Laghi e fiumi1	Göller ve nehirler1	Jeziora i rzeki1	Λίμνες και ποτάμια1	Meren en rivieren1	Jezera a řeky1	Озера та річки1	Озера и реки1	Danau dan sungai1	دریاچه ها و رودخانه ها 1	البحيرات والأنهار 1	To & Pet1
-menu_bar_map_lakes_and_rivers2	Lakes and rivers2	湖川2	河流和湖泊2	河流和湖泊2	호수와 강2	こせん2	Lagos y ríos2	Lagos e rios2	Seen und Flüsse2	Lacs et rivières2	Laghi e fiumi2	Göller ve nehirler2	Jeziora i rzeki2	Λίμνες και ποτάμια2	Meren en rivieren2	Jezera a řeky2	Озера та річки2	Озера и реки2	Danau dan sungai2	دریاچه ها و رودخانه ها 2	البحيرات والأنهار 2	To & Pet2
-menu_bar_map_line1	Line1	線1	線1	線1	선1	せん1	Línea1	Linha1	Linie1	Ligne 1	Linea1	Hat1	Linia1	Γραμμή1	Lijn1	Linie1	Лінія1	Линия1	Garis1	خط 1	خط 1	Rúnoka1
-menu_bar_map_line2	Line2	線2	線2	線2	선2	せん2	Línea2	Linha 2	Linie2	Ligne 2	Linea2	Hat2	Linia2	Γραμμή2	Lijn2	Linie2	Лінія2	Линия2	Jalur2	خط 2	خط 2	Rúnoka2
+> map_menu
+map_header	Map	地図	地図	地図	지도	ちず	Mapa	Mapa	Karte	Carte	Mappa	Harita	Mapa	Χάρτης	Kaart	Mapa	Карта	Карта	Peta	نقشه	خريطة	Sinrunoka
+map_base	Base	通常	通常	通常	보통	つうじょう	Base	Base	Basis	Base	Base	Üs	Baza	Βάση	Basis	Základna	База	База	Pangkalan	پایه	قاعدة	Base
+map_land_and_sea	Land and Sea	陸海	陸海	陸海	육해	りくかい	Tierra y Mar	Terra e Mar	Land und Meer	Terre et mer	Terra e mare	Kara ve Deniz	Ląd i morze	Γη και θάλασσα	Land en Zee	Země a moře	Суша і море	Земля и море	Daratan dan Laut	خشکی و دریا	الأرض والبحر	Ya & Atuy
+map_land_and_water	Land and Water	陸水	陸水	陸水	육수	りくすい	Tierra y Agua	Terra e água	Land und Wasser	Terre et eau	Terra e acqua	Kara ve Su	Ląd i woda	Γη και Νερό	Land en Water	Země a voda	Суша і вода	Земля и вода	Tanah dan Air	زمین و آب	الأرض والمياه	Ya & Wakka
+map_soil	Soil	土壌	土壌	土壌	토양	どじょう	Suelo	Solo	Boden	Sol	Suolo	Toprak	Gleba	Έδαφος	Bodem	Půda	Ґрунт	Почва	Tanah	خاک	تربة	Toy
+map_soil_temperature	Soil Temperature	土壌温度	土壌温度	土壌温度	토양 온도	どじょう おんど	Temperatura del suelo	Temperatura do solo	Bodentemperatur	Température du sol	Temperatura del suolo	Toprak Sıcaklığı	Temperatura gleby	Θερμοκρασία εδάφους	Bodem Temperatuur	Teplota půdy	Температура ґрунту	Температура почвы	Suhu Tanah	دمای خاک	درجة حرارة التربة	Toy Sesekru
+map_ryosei_country	Ryosei Country	令制国	令制国	令制国	율령국	りょうせいこく	País Ryosei	País de Ryosei	Ryosei Land	Pays Ryosei	Paese Ryosei	Ryosei Ülkesi	Kraj Ryosei	Χώρα Ryosei	Ryosei Land	Země Ryosei	Країна Рьосей	Страна Рёсэй	Negara Ryosei	کشور Ryosei	دولة Ryosei	Ryosei Mosir
+map_ryosei_line	Ryosei Line	令制国線	令制国線	令制国線	율령국선	りょうせいこく せん	Línea Ryosei	Linha de Ryosei	Ryosei Linie	Ligne Ryosei	Linea Ryosei	Ryosei Line	Linia Ryosei	Γραμμή Ryosei	Ryosei Lijn	Linie Ryosei	Лінія Рьосей	Линия Рёсэй	Garis Ryosei	خط Ryosei	خط Ryosei	Ryosei Rúnoka
+map_slope	Slope	傾斜	坡度	坡度	경사면	けいしゃ	Pendiente	Declive	Gefälle	Pente	Pendenza	Eğim	Nachylenie	Κλίση	Helling	Svah	Схил	Склон	Kemiringan	شیب	ميل	Slope
+map_lakes_and_rivers1	Lakes and rivers1	湖川1	河流和湖泊1	河流和湖泊1	호수와 강1	こせん1	Lagos y ríos1	Lagos e rios1	Seen und Flüsse1	Lacs et rivières1	Laghi e fiumi1	Göller ve nehirler1	Jeziora i rzeki1	Λίμνες και ποτάμια1	Meren en rivieren1	Jezera a řeky1	Озера та річки1	Озера и реки1	Danau dan sungai1	دریاچه ها و رودخانه ها 1	البحيرات والأنهار 1	To & Pet1
+map_lakes_and_rivers2	Lakes and rivers2	湖川2	河流和湖泊2	河流和湖泊2	호수와 강2	こせん2	Lagos y ríos2	Lagos e rios2	Seen und Flüsse2	Lacs et rivières2	Laghi e fiumi2	Göller ve nehirler2	Jeziora i rzeki2	Λίμνες και ποτάμια2	Meren en rivieren2	Jezera a řeky2	Озера та річки2	Озера и реки2	Danau dan sungai2	دریاچه ها و رودخانه ها 2	البحيرات والأنهار 2	To & Pet2
+map_line1	Line1	線1	線1	線1	선1	せん1	Línea1	Linha1	Linie1	Ligne 1	Linea1	Hat1	Linia1	Γραμμή1	Lijn1	Linie1	Лінія1	Линия1	Garis1	خط 1	خط 1	Rúnoka1
+map_line2	Line2	線2	線2	線2	선2	せん2	Línea2	Linha 2	Linie2	Ligne 2	Linea2	Hat2	Linia2	Γραμμή2	Lijn2	Linie2	Лінія2	Линия2	Jalur2	خط 2	خط 2	Rúnoka2
 > calendar																						
 calendar_japan	Japanese cal.	和暦	和曆	和历	화력	わ れき	Cal. japonés	Cal. japonesa	Japanisches Kal.	Cal. japonais	Cal. giapponese	Japon Takvimi	Kal. japoński	Ιαπωνικά cal.	Japanse kal.	Japonský kal.	Японський кал.	Японский кал.	Kal. Jepang	تقویم ژاپنی	التقويم الياباني	Japanese pa
 calendar_gregorian	Gregorian cal.	グレゴリオ暦	公曆	公历	그레고리력	ぐれごりお れき	Cal. gregoriano	Cal. gregoriana	Gregorianisches Kal.	Cal. grégorien	Cal. gregoriano	Miladi Takvim	Kal. gregoriański	Γρηγοριανό cal.	Gregoriaanse kal.	Gregoriánský kal.	Григоріанський кал.	Григорианский кал.	Kal. Gregorian	تقویم میلادی	التقويم الميلادي	Guregoriuskar

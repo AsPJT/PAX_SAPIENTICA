@@ -1,11 +1,11 @@
 ﻿/*##########################################################################################
 
-	PAX SAPIENTICA Library 💀🌿🌏
+    PAX SAPIENTICA Library 💀🌿🌏
 
-	[Planning]		2023-2024 As Project
-	[Production]	2023-2024 As Project
-	[Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
-	[License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -13,14 +13,13 @@
 #define PAX_SAPIENTICA_COLOR_SOIL_TEMPERATURE_HPP
 
 #include <array>
-#include <string>
 
 #include <PAX_SAPIENTICA/Color/RGBA.hpp>
 
 namespace paxs {
 
     class SoilTemp {
-        inline static constexpr std::array<paxs::RGBA, 91> soil_temp =
+        static constexpr std::array<paxs::RGBA, 91> soil_temp =
         {
               paxs::RGBA("#000000")
             , paxs::RGBA("#FFFFFF")

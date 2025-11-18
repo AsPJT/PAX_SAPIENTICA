@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/MapProjection.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 
 const paxs::MercatorDeg mercatorDeg({0.0, 0.0});
 

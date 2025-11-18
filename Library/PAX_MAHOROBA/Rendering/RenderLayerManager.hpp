@@ -17,6 +17,7 @@
 
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 
 namespace paxs {
 
@@ -108,9 +109,8 @@ namespace paxs {
 
         /// @brief 指定されたレイヤーの範囲内のオブジェクトのみを描画
         /// @brief Render only objects within the specified layer range
-        /// @param min_layer 最小レイヤー / Minimum layer (inclusive)
-        /// @param max_layer 最大レイヤー / Maximum layer (inclusive)
-        void renderRange(RenderLayer min_layer, RenderLayer max_layer) {
+        /// @param layer_range レイヤー範囲 / Layer range
+        void renderRange(const Range<RenderLayer>& layer_range) {
             // ソートされていない場合は自動的にソート
             if (!is_sorted_) {
                 sort();
@@ -120,8 +120,7 @@ namespace paxs {
             for (IRenderable* renderable : renderables_) {
                 if (renderable == nullptr || !renderable->isVisible()) continue;
 
-                RenderLayer layer = renderable->getLayer();
-                if (layer >= min_layer && layer <= max_layer) {
+                if (layer_range.contains(renderable->getLayer())) {
                     renderable->render();
                 }
             }

@@ -26,6 +26,8 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+
 namespace paxg {
 
     // 実行時定数
@@ -43,17 +45,17 @@ namespace paxg {
             return wheel_rot_vol;
         }
 
-        int getPosXBefore1Frame() const {
-            return pos_x_before_1frame;
-        }
-        int getPosYBefore1Frame() const {
-            return pos_y_before_1frame;
+        paxs::Vector2<int> getPosBefore1Frame() const {
+            return paxs::Vector2<int>(pos_x_before_1frame, pos_y_before_1frame);
         }
         int getPosX() const {
             return pos_x;
         }
         int getPosY() const {
             return pos_y;
+        }
+        paxs::Vector2<int> getPos() const {
+            return paxs::Vector2<int>(pos_x, pos_y);
         }
 
         bool getLeftBefore1Frame() const {

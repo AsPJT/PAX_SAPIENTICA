@@ -27,8 +27,8 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxg{
     struct Font {
@@ -38,7 +38,7 @@ namespace paxg{
         Font(const int size_, const std::string& path, const int buffer_thickness) {
             font = (path.size() == 0) ?
                 s3d::Font(s3d::FontMethod::SDF, size_) :
-                s3d::Font(s3d::FontMethod::SDF, size_, s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath() + path));
+                s3d::Font(s3d::FontMethod::SDF, size_, s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance().getRootPath() + path));
             font.setBufferThickness(buffer_thickness);
         }
         bool is_outline = false;
@@ -127,6 +127,26 @@ namespace paxg{
             }
         }
 
+        // Vec2<double> overloads
+        void drawBottomLeft(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawBottomLeft(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawTopRight(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawTopRight(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void draw(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            draw(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawBottomCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawBottomCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawTopCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawTopCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawAt(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawAt(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+
         int height() const {
             return font.height();
         }
@@ -152,7 +172,7 @@ namespace paxg{
                 );
             } else {
                 // 外部フォントファイルを使用
-                const std::string full_path = paxs::AppConfig::getInstance()->getRootPath() + path;
+                const std::string full_path = paxs::AppConfig::getInstance().getRootPath() + path;
                 int font_data_handle = DxLib::LoadFontDataToHandle(full_path.c_str(), buffer_thickness);
 
                 if (font_data_handle == -1) {
@@ -252,6 +272,20 @@ namespace paxg{
             }
         }
 
+        // Vec2<double> overloads
+        void draw(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            draw(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawBottomCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawBottomCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawTopCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawTopCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawAt(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawAt(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+
         int height() const {
             if (font == -1) return h;
             // DxLibで実際の行高さを取得（他のライブラリと同じ挙動にする）
@@ -271,7 +305,7 @@ namespace paxg{
         Font(const int size_, const std::string& path, const int /*buffer_thickness*/) {
             size = size_;
             if (path.size() == 0) return;
-            if (!font.openFromFile(paxs::AppConfig::getInstance()->getRootPath() + path)) {
+            if (!font.openFromFile(paxs::AppConfig::getInstance().getRootPath() + path)) {
                 PAXS_WARNING(path + " is missing.");
             }
         }
@@ -373,6 +407,20 @@ namespace paxg{
             // return str_.size() * size * 0.5;
         }
 
+        // Vec2<double> overloads
+        void draw(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            draw(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawBottomCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawBottomCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawTopCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawTopCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+        void drawAt(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
+            drawAt(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        }
+
 #else
         Font([[maybe_unused]] const int size_, [[maybe_unused]] const std::string& path, [[maybe_unused]] const int buffer_thickness) {
         }
@@ -390,6 +438,20 @@ namespace paxg{
         void drawTopCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
         void drawAt([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
+        }
+
+        // Vec2<double> overloads
+        void drawBottomLeft([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        }
+        void drawTopRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        }
+        void draw([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        }
+        void drawBottomCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        }
+        void drawTopCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        }
+        void drawAt([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
 
         int height() const {

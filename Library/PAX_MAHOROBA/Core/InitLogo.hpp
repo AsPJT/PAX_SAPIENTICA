@@ -18,8 +18,8 @@
 #include <PAX_MAHOROBA/Core/Init.hpp>
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 
-#include <PAX_SAPIENTICA/AppConst.hpp>
-#include <PAX_SAPIENTICA/Version.hpp>
+#include <PAX_SAPIENTICA/System/AppConst.hpp>
+#include <PAX_SAPIENTICA/System/Version.hpp>
 
 namespace paxs {
 
@@ -97,8 +97,8 @@ namespace paxs {
             const int window_height = paxg::Window::height();
 
             // 画像のサイズを取得
-            const int texture_width = loading_texture.width();
-            const int texture_height = loading_texture.height();
+            const float texture_width = static_cast<float>(loading_texture.width());
+            const float texture_height = static_cast<float>(loading_texture.height());
 
             // 画像をウィンドウサイズに合わせてスケーリング
             // アスペクト比を維持しながらウィンドウに収まるようにする
@@ -110,12 +110,11 @@ namespace paxs {
             const int scaled_height = static_cast<int>(texture_height * scale);
 
             // 中央配置の座標を計算
-            const int x = (window_width - scaled_width) / 2;
-            const int y = (window_height - scaled_height) / 2;
+            const int new_x = (window_width - scaled_width) / 2;
+            const int new_y = (window_height - scaled_height) / 2;
 
             // 画像をリサイズして描画
-            loading_texture.resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{x, y});
-
+            loading_texture.resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{new_x, new_y});
             // 画面を更新
 #ifdef PAXS_USING_SFML
             paxg::Window::display();

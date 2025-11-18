@@ -1,8 +1,8 @@
 ﻿#define USING_CHROMOSOME
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Simulation/Genome.hpp>
-#include <PAX_SAPIENTICA/Simulation/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Genome.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 
 TEST (GenomeUnitTest, getAndSet) {
     std::random_device rd;

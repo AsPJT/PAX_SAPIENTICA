@@ -2,10 +2,10 @@
 
     PAX SAPIENTICA Library 💀🌿🌏
 
-    [Planning]      2023-2024 As Project
-    [Production]    2023-2024 As Project
-    [Contact Us]    wanotaitei@gmail.com         https://github.com/AsPJT/PAX_SAPIENTICA
-    [License]       Distributed under the CC0 1.0. https://creativecommons.org/publicdomain/zero/1.0/
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
 
 ##########################################################################################*/
 
@@ -20,7 +20,7 @@
 #include <SFML/Graphics.hpp>
 #endif
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 namespace paxg {
 
@@ -109,7 +109,7 @@ namespace paxg {
             }.removeSRGBCurve();
 
             // 360度写真をロード
-            const auto rootPath = s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance()->getRootPath());
+            const auto rootPath = s3d::Unicode::FromUTF8(paxs::AppConfig::getInstance().getRootPath());
             photo_texture_ = s3d::Texture(s3d::Image{ rootPath + s3d::Unicode::FromUTF8(config_.paths.photoPath) }.mirror());
 #endif
         }
@@ -130,33 +130,6 @@ namespace paxg {
                 // カリングを無効にする
                 const s3d::ScopedRenderStates3D rs{ s3d::RasterizerState::SolidCullNone };
 
-                // キー入力による視点操作
-                if (s3d::KeyLeft.pressed() || s3d::KeyA.pressed())
-                    viewRotationX_ += config_.sphere.moveSpeed;
-                if (s3d::KeyRight.pressed() || s3d::KeyD.pressed())
-                    viewRotationX_ -= config_.sphere.moveSpeed;
-                if (s3d::KeyDown.pressed() || s3d::KeyS.pressed())
-                    viewRotationY_ -= config_.sphere.moveSpeed;
-                if (s3d::KeyUp.pressed() || s3d::KeyW.pressed())
-                    viewRotationY_ += config_.sphere.moveSpeed;
-
-                // ズーム操作
-                if (s3d::KeyQ.pressed()) {
-                    viewPositionZ_ -= config_.sphere.zoomSpeed;
-                    if (viewPositionZ_ < config_.sphere.zoomMin)
-                        viewPositionZ_ = config_.sphere.zoomMin;
-                }
-                if (s3d::KeyE.pressed()) {
-                    viewPositionZ_ += config_.sphere.zoomSpeed;
-                    if (viewPositionZ_ > config_.sphere.zoomMax)
-                        viewPositionZ_ = config_.sphere.zoomMax;
-                }
-
-                // 回転角度を 0-360 度の範囲に正規化
-                if (viewRotationX_ < 0.0) viewRotationX_ += 360.0;
-                if (viewRotationY_ < 0.0) viewRotationY_ += 360.0;
-                if (viewRotationX_ >= 360.0) viewRotationX_ -= 360.0;
-                if (viewRotationY_ >= 360.0) viewRotationY_ -= 360.0;
 
                 // 球体に 360 度写真を貼り付ける
                 s3d::Sphere{

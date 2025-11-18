@@ -22,8 +22,8 @@
 
 #include <PAX_GRAPHICA/WindowImpl.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/AppConst.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConst.hpp>
 
 namespace paxg {
     namespace MinWindow {
@@ -145,7 +145,7 @@ namespace paxg {
                 // アイコンファイルを読み込む（.icoファイルのみ対応）
                 HICON hIcon = (HICON)LoadImageA(
                     NULL,
-                    (paxs::AppConfig::getInstance()->getRootPath() + path).c_str(),
+                    (paxs::AppConfig::getInstance().getRootPath() + path).c_str(),
                     IMAGE_ICON,
                     0, 0,
                     LR_LOADFROMFILE | LR_DEFAULTSIZE

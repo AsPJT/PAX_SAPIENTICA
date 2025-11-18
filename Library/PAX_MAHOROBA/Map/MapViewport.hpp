@@ -15,11 +15,10 @@
 #include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
-
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {
 
@@ -57,7 +56,7 @@ namespace paxs {
     class MapViewport {
     private:
         // 中央の座標を指定
-        Coordinate center = Coordinate(
+        paxg::Coordinate center = paxg::Coordinate(
             paxs::MercatorDeg(paxs::EquirectangularDeg(paxs::Vector2<double>(145, 48))) // 韓国 128, 37 // 日本 135, 35 // 北海道 // 東アジア 127, 31, 75.0 // 全世界 100, 0
         ); // マップ座標の中央
         double height = MapViewportConstants::default_height; // 各国 16.0; // 全世界 240.0 // マップの高さ
@@ -73,37 +72,32 @@ namespace paxs {
         double width = (height) / double(paxg::Window::height()) * double(paxg::Window::width()); // マップの高さ
         double expansion_size = MapViewportConstants::default_expansion_size; // マップの拡大量
 
-        // イベントバスへのポインタ（オプション）
-        EventBus* event_bus_ = nullptr;
-
-    public:
-        MapViewport() = default;
-
-        /// @brief EventBusを設定
-        void setEventBus(EventBus* event_bus) {
-            event_bus_ = event_bus;
-        }
-
-        /// @brief ビューポート変更イベントを発行
-        /// @brief Notify viewport change event
-        void notifyViewportChanged() {
-            if (event_bus_ != nullptr) {
-                // ズームレベルを計算（heightから推定）
-                const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
-                event_bus_->publish(ViewportChangedEvent(
-                    center.getX(),
-                    center.getY(),
-                    zoom_level
-                ));
-            }
+        void subscribeToEvents() {
+            // ウィンドウリサイズイベントを購読
+            paxs::EventBus::getInstance().subscribe<WindowResizedEvent>(
+                [this](const WindowResizedEvent&) {
+                    // ウィンドウサイズ変更時に幅を再計算し、ViewportChangedEventを発行
+                    applyConstraints();
+                    notifyViewportChanged();
+                }
+            );
         }
 
         /// @brief 浮動小数点数が異なるかどうかを判定（許容誤差考慮）
-        /// @param a 値1
-        /// @param b 値2
-        /// @return 異なる場合true
         static bool isDifferent(double a, double b) {
             return std::abs(a - b) >= MapViewportConstants::coordinate_epsilon;
+        }
+
+    public:
+        MapViewport() {
+            subscribeToEvents();
+        }
+
+        /// @brief ビューポート変更イベントを発行
+        void notifyViewportChanged() {
+            const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
+            paxs::EventBus::getInstance().publish(ViewportChangedEvent(
+                {center.getX(), center.getY()}, zoom_level));
         }
 
         /// @brief ビューポートの境界制約を適用（Domain層の責任）
@@ -165,31 +159,16 @@ namespace paxs {
             if (isDifferent(height, new_height)) {
                 height = new_height;
                 width = height / double(paxg::Window::height()) * double(paxg::Window::width());
-                notifyViewportChanged();
             }
         }
-        void setCenterX(const double x_) {
-            if (isDifferent(center.getX(), x_)) {
-                center.setX(x_);
-                notifyViewportChanged();
-            }
-        }
-        void setCenterY(const double y_) {
-            if (isDifferent(center.getY(), y_)) {
-                center.setY(y_);
-                notifyViewportChanged();
-            }
-        }
-        /// @brief X座標とY座標を同時に設定（イベント通知は1回のみ）
         void setCenter(const double x_, const double y_) {
             if (isDifferent(center.getX(), x_) || isDifferent(center.getY(), y_)) {
                 center.setX(x_);
                 center.setY(y_);
-                notifyViewportChanged();
             }
         }
 
-        Coordinate& getCoordinate() {
+        paxg::Coordinate& getCoordinate() {
             return center;
         }
         double getCenterX() const {

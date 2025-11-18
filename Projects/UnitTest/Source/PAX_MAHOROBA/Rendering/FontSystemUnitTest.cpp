@@ -105,10 +105,10 @@ TEST_F(FontSystemTest, LanguageSelection) {
     Fonts().initialize();
 
     Fonts().setLanguage(0);
-    EXPECT_EQ(Fonts().getSelectedLanguage().cget(), 0);
+    EXPECT_EQ(Fonts().getSelectedLanguage().get(), 0);
 
     Fonts().setLanguage(1);
-    EXPECT_EQ(Fonts().getSelectedLanguage().cget(), 1);
+    EXPECT_EQ(Fonts().getSelectedLanguage().get(), 1);
 }
 
 // 言語キーで選択テスト
@@ -116,11 +116,11 @@ TEST_F(FontSystemTest, LanguageSelectionByKey) {
     Fonts().initialize();
 
     Fonts().setLanguageByKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[0]); // en-US
-    EXPECT_EQ(Fonts().getSelectedLanguage().cgetKey(),
+    EXPECT_EQ(Fonts().getSelectedLanguage().getKey(),
               paxs::LanguageKeys::ALL_LANGUAGE_HASHES[0]);
 
     Fonts().setLanguageByKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[1]); // ja-JP
-    EXPECT_EQ(Fonts().getSelectedLanguage().cgetKey(),
+    EXPECT_EQ(Fonts().getSelectedLanguage().getKey(),
               paxs::LanguageKeys::ALL_LANGUAGE_HASHES[1]);
 }
 

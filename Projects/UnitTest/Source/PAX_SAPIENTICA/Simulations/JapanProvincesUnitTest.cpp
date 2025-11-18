@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Simulation/JapanProvinces.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/JapanProvinces.hpp>
 
 // もしConfig.tsvが存在しない場合、一時的に作成する
 class PathTSV {
@@ -44,7 +44,7 @@ TEST (JapanProvincesUnitTest, constructor) {
         PathTSV::generatePathTSV();
     }
 
-    std::cout << paxs::AppConfig::getInstance()->getRootPath() << std::endl;
+    std::cout << paxs::AppConfig::getInstance().getRootPath() << std::endl;
 
     const std::string japan_region_tsv_path = "Projects/UnitTest/Data/Simulations";
 

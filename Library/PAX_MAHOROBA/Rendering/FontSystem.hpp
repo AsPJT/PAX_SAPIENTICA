@@ -17,11 +17,11 @@
 
 #include <PAX_GRAPHICA/Font.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Language.hpp>
+#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/Language.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -148,7 +148,7 @@ namespace paxs {
 
             // 言語ごとのフォントパスを登録
             for (std::size_t i = 0; i < path_list.size(); ++i) {
-                language_font_paths_[paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i]] = path_list[i];
+                language_font_paths_.emplace(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i], path_list[i]);
             }
         }
 
@@ -189,12 +189,12 @@ namespace paxs {
             setupLanguageFonts();
 
             // 言語辞書の読み込み
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("Languages"),
+            AppConfig::getInstance().ifSettingExists(MurMur3::calcHash("Languages"),
                 [&](const std::string& path_) {
                     addLanguageDictionary(path_, LanguageDomain::UI);
                 });
 
-            AppConfig::getInstance()->calcDataSettings(MurMur3::calcHash("SimulationModels"),
+            AppConfig::getInstance().ifSettingExists(MurMur3::calcHash("SimulationModelLanguages"),
                 [&](const std::string& path_) {
                     addLanguageDictionary(path_, LanguageDomain::SIMULATION);
                 });
@@ -225,7 +225,7 @@ namespace paxs {
         /// @param profile_name プロファイル名（例: "main", "pulldown"） / Profile name (e.g., "main", "pulldown")
         /// @return フォントへのポインタ、失敗時は nullptr / Pointer to font, nullptr on failure
         paxg::Font* getFont(const std::string& profile_name) {
-            return getFont(select_language_.cgetKey(), profile_name);
+            return getFont(select_language_.getKey(), profile_name);
         }
 
         /// @brief 指定言語のフォントを取得
@@ -247,7 +247,7 @@ namespace paxs {
         /// @param buffer_thickness バッファー厚 / Buffer thickness
         /// @return フォントへのポインタ、失敗時は nullptr / Pointer to font, nullptr on failure
         paxg::Font* getFont(std::uint_least8_t size, std::uint_least8_t buffer_thickness) {
-            return getFont(select_language_.cgetKey(), size, buffer_thickness);
+            return getFont(select_language_.getKey(), size, buffer_thickness);
         }
 
         /// @brief 指定言語のフォントを取得（サイズとバッファー厚を直接指定）
@@ -312,10 +312,10 @@ namespace paxs {
         /// @return テキストへのポインタ、失敗時は nullptr / Pointer to text, nullptr on failure
         const std::string* getText(std::uint_least32_t key_hash,
                                    LanguageDomain domain = LanguageDomain::UI) const {
-            if (languages_.find(domain) == languages_.end()) {
+            if (!languages_.contains(domain)) {
                 return nullptr;
             }
-            return languages_.at(domain).getStringPtr(key_hash, select_language_.cgetKey());
+            return languages_.at(domain).getStringPtr(key_hash, select_language_.getKey());
         }
 
         /// @brief 言語辞書を追加
@@ -323,7 +323,14 @@ namespace paxs {
         /// @param file_path TSVファイルのパス / Path to TSV file
         /// @param domain 言語辞書のドメイン / Language dictionary domain
         void addLanguageDictionary(const std::string& file_path, LanguageDomain domain) {
-            languages_[domain].add(file_path);
+            auto it = languages_.find(domain);
+            if (it != languages_.end()) {
+                it->second.add(file_path);
+            } else {
+                Language lang;
+                lang.add(file_path);
+                languages_.emplace(domain, std::move(lang));
+            }
         }
 
         // ========================================
@@ -365,7 +372,7 @@ namespace paxs {
         void registerProfile(const std::string& name,
                              std::uint_least8_t size,
                              std::uint_least8_t buffer_thickness) {
-            profiles_[name] = FontProfile{ size, buffer_thickness };
+            profiles_.emplace(name, FontProfile( size, buffer_thickness ));
         }
 
         /// @brief プロファイルが存在するか確認
@@ -373,7 +380,7 @@ namespace paxs {
         /// @param name プロファイル名 / Profile name
         /// @return 存在すれば true / true if exists
         bool hasProfile(const std::string& name) const {
-            return profiles_.find(name) != profiles_.end();
+            return profiles_.contains(name);
         }
 
     };

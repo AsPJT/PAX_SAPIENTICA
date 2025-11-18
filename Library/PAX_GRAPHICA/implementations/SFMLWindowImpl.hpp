@@ -19,9 +19,9 @@
 #include <PAX_GRAPHICA/WindowImpl.hpp>
 #include <PAX_GRAPHICA/SFML_Event.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/AppConst.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConst.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 namespace paxg {
 
     class SFMLWindowImpl : public WindowImpl {
@@ -89,7 +89,7 @@ namespace paxg {
 
         void setIcon(const std::string& path) override {
             sf::Image icon;
-            if (!icon.loadFromFile(paxs::AppConfig::getInstance()->getRootPath() + path)){
+            if (!icon.loadFromFile(paxs::AppConfig::getInstance().getRootPath() + path)){
                 PAXS_WARNING("Failed to load icon from: " + path);
                 return;
             }

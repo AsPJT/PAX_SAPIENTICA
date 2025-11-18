@@ -21,14 +21,15 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
+#include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -56,7 +57,7 @@ namespace paxs {
             const double map_viewport_height = map_viewport.getHeight();
             const double map_viewport_center_x = map_viewport.getCenterX();
             const double map_viewport_center_y = map_viewport.getCenterY();
-            const int date = static_cast<int>(jdn.cgetDay());
+            const int date = static_cast<int>(jdn.getDay());
 
             for (const auto& tile : tiles) {
                 // 可視性チェック
@@ -184,32 +185,59 @@ namespace paxs {
             const double map_view_center_x,
             const double map_view_center_y
         ) {
-            static paxg::Font tmp_font{ 16, "", 3 };
-            tmp_font.setOutline(0, 0.5, paxg::Color{ 243, 243, 243 });
-
+            // 拡大率が描画範囲外の場合は終了
             const unsigned int z = tile.getZ();
+            if (z < tile.getDrawMinZ()) return;
+            if (z > tile.getDrawMaxZ()) return;
+
             const unsigned int z_num = tile.getZNum();
             const Vector2<int> start_cell = tile.getStartCell();
             const Vector2<int> end_cell = tile.getEndCell();
 
-            for (int i = start_cell.y; i <= end_cell.y; ++i) {
+            // グリッドと同じ計算方法で開始位置を取得
+            const Vector2<double> map_start_pos = Vector2<double>{
+                start_cell.x * 360.0 / z_num - 180.0,
+                (360.0 - start_cell.y * 360.0 / z_num) - 180.0
+            };
+
+            double pos_x = (map_start_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width());
+            double pos_y = double(paxg::Window::height()) - ((map_start_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()));
+
+            // セル1つあたりのピクセル幅（グリッドと同じ計算）
+            const double cell_width_px = (360.0 / z_num) / map_view_width * double(paxg::Window::width());
+            const double cell_height_px = (360.0 / z_num) / map_view_height * double(paxg::Window::height());
+
+            // フォントサイズをセルサイズに応じて調整
+            const int font_size = static_cast<int>(cell_height_px / 5);
+            paxg::Font* font = Fonts().getFont(font_size, 3);
+            font->setOutline(0, 0.5, paxg::Color{ 243, 243, 243 });
+
+            double current_y = pos_y;
+            for (int i = start_cell.y; i <= end_cell.y; ++i, current_y += cell_height_px) {
                 const std::size_t i2 = (i + z_num) & (z_num - 1);
-                for (int j = start_cell.x; j <= end_cell.x; ++j) {
+                double current_x = pos_x;
+
+                for (int j = start_cell.x; j <= end_cell.x; ++j, current_x += cell_width_px) {
                     const std::size_t j2 = (j + z_num) & (z_num - 1);
-                    const Vector2<double> map_pos = Vector2<double>{
-                        j * 360.0 / z_num - 180.0,
-                        (360.0 - i * 360.0 / z_num) - 180.0
-                    };
-                    tmp_font.draw(
-                        std::string("X:" + std::to_string(j2) + "\nY:" + std::to_string(i2) +
-                                   "\nZ:" + std::to_string(z) +
-                                   "\nL:" + std::to_string(static_cast<std::size_t>(40075016.68 / (1 << z)))),
-                        paxg::Vec2i(
-                            static_cast<int>(10 + (map_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                            static_cast<int>(5 + double(paxg::Window::height()) - ((map_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
-                        ),
-                        paxg::Color{ 0, 0, 0 }
-                    );
+
+                    // テキスト開始位置（セルの左上から5%オフセット）
+                    const int text_x = static_cast<int>(current_x + cell_width_px * 0.05);
+                    int text_y = static_cast<int>(current_y + cell_height_px * 0.05);
+
+                    // 各行を個別に描画
+                    const int line_height = font_size + 2;  // 行間を2px追加
+
+                    font->draw("X:" + std::to_string(j2), paxg::Vec2i(text_x, text_y), paxg::Color{ 0, 0, 0 });
+                    text_y += line_height;
+
+                    font->draw("Y:" + std::to_string(i2), paxg::Vec2i(text_x, text_y), paxg::Color{ 0, 0, 0 });
+                    text_y += line_height;
+
+                    font->draw("Z:" + std::to_string(z), paxg::Vec2i(text_x, text_y), paxg::Color{ 0, 0, 0 });
+                    text_y += line_height;
+
+                    font->draw("L:" + std::to_string(static_cast<std::size_t>(40075016.68 / (1 << z))),
+                              paxg::Vec2i(text_x, text_y), paxg::Color{ 0, 0, 0 });
                 }
             }
         }

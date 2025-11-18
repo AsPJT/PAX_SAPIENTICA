@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 
 TEST (StringExtensionsUnitTest, split) {
     const std::string str = "Test split";
@@ -19,14 +19,14 @@ TEST (StringExtensionsUnitTest, split) {
         "Test",
         "split"
     };
-    const std::vector<std::string> actual = paxs::StringExtensions::split(str, ' ');
+    const std::vector<std::string> actual = paxs::StringUtils::split(str, ' ');
     ASSERT_EQ(expected, actual);
 }
 
 TEST (StringExtensionsUnitTest, replace) {
     std::string str = "Test replace";
     const std::string expected = "Test_replace";
-    paxs::StringExtensions::replace(str, " ", "_");
+    paxs::StringUtils::replace(str, " ", "_");
     ASSERT_EQ(expected, str);
 }
 
@@ -41,7 +41,7 @@ TEST (StringExtensionsUnitTest, replaceList) {
         "_",
         "replaced"
     };
-    paxs::StringExtensions::replaceList(str, fromList, toList);
+    paxs::StringUtils::replaceList(str, fromList, toList);
     ASSERT_EQ(expected, str);
 }
 
@@ -49,7 +49,7 @@ TEST (StringExtensionsUnitTest, tryToConvertStringToDouble) {
     const std::string str = "1.0";
     const double expected = 1.0;
 
-    auto variant_value = paxs::StringExtensions::tryToConvertStringToDouble(str);
+    auto variant_value = paxs::StringUtils::tryToConvertStringToDouble(str);
 
     if (std::holds_alternative<double>(variant_value)) {
         const double actual = std::get<double>(variant_value);

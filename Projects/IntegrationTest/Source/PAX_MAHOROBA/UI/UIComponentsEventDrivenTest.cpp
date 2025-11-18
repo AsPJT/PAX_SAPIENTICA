@@ -12,12 +12,12 @@
 #include <gtest/gtest.h>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
 
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -26,7 +26,7 @@ namespace paxs {
 class UIComponentsEventDrivenTest : public ::testing::Test {
 protected:
     EventBus& event_bus_ = EventBus::getInstance();
-    AppStateManager app_state_manager_{event_bus_};
+    AppStateManager app_state_manager_{};
 
     void SetUp() override {
         // テスト環境のセットアップ
@@ -39,16 +39,13 @@ protected:
     }
 };
 
-/// @brief MenuBarがAppStateManager経由で可視性を設定できることをテスト
-TEST_F(UIComponentsEventDrivenTest, MenuBarUsesAppStateManagerForVisibility) {
-    MenuBar menu_bar;
-    menu_bar.setAppStateManager(&app_state_manager_);
-
+/// @brief MenuBarがEventBus経由で可視性を設定できることをテスト
+TEST_F(UIComponentsEventDrivenTest, MenuBarUsesEventBusForVisibility) {
     // 初期化
     auto& visibility_manager = const_cast<FeatureVisibilityManager&>(
         app_state_manager_.getVisibilityManager()
     );
-    menu_bar.initializeVisibility(&visibility_manager);
+    MenuBar menu_bar(visibility_manager);
 
     // AppStateManagerを通じて可視性を設定
     const auto calendar_key = MurMur3::calcHash("Calendar");

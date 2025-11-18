@@ -11,7 +11,7 @@
 
 #include <memory>
 
-#include <PAX_SAPIENTICA/Simulation/Simulator.hpp>
+#include <PAX_SAPIENTICA/Simulation/Manager/Simulator.hpp>
 
 int main() {
 	const std::string setting_file_path = "../../../Data/Simulations/MapList.tsv";

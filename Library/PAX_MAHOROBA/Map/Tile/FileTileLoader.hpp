@@ -12,13 +12,14 @@
 #ifndef PAX_MAHOROBA_MAP_TILE_FILE_TILE_LOADER_HPP
 #define PAX_MAHOROBA_MAP_TILE_FILE_TILE_LOADER_HPP
 
-#include <filesystem>
 #include <memory>
 #include <string>
 
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 namespace paxs {
 
@@ -37,19 +38,11 @@ namespace paxs {
         ) {
             // X を置換して相対パスを構築
             std::string relative_path = path_with_zy;
-            paxs::StringExtensions::replace(relative_path, "{x}", x_value);
+            paxs::StringUtils::replace(relative_path, "{x}", x_value);
 
-            // アセットルートパスを前置して絶対パスを構築
-            const std::string full_path = AppConfig::getInstance()->getRootPath() + relative_path;
-
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
-            // Android DxLib: ファイル存在チェックをスキップ
-            // （アセットファイルは std::filesystem::exists で検出できないため）
-#else
-            if (!std::filesystem::exists(full_path)) {
+            if (!FileSystem::exists(relative_path)) {
                 return nullptr;
             }
-#endif
 
             // テクスチャを読み込み（相対パスを使用）
             auto texture = std::make_unique<paxg::Texture>(relative_path);
