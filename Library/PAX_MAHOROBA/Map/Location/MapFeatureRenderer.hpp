@@ -32,6 +32,7 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -118,7 +119,21 @@ private:
 
                 // テキスト位置
                 const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x(), draw_pos.y() - 60 };
-                LocationRendererHelper::drawBilingualText(data.names, draw_font_pos, "topCenter");
+
+                // 選択されている言語で名前を取得
+                const std::uint_least32_t selected_lang_key = FontSystem::getInstance().getSelectedLanguage().getKey();
+                const std::string selected_lang_name = FontSystem::getInstance().getLocales().getLocaleNameFromKeyPublic(selected_lang_key);
+
+                if (!selected_lang_name.empty()) {
+                    const std::string name = feature.getName(selected_lang_name);
+                    if (!name.empty()) {
+                        paxg::Font* font = (selected_lang_key == MurMur3::calcHash("ja-JP"))
+                            ? Fonts().getFont(FontProfiles::MAIN)
+                            : Fonts().getFont(FontProfiles::ENGLISH);
+                        font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                        font->drawTopCenter(name, draw_font_pos, paxg::Color(0, 0, 0));
+                    }
+                }
             }
         }
     }

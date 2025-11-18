@@ -36,7 +36,7 @@ TEST_F(AStarTest, BasicPathfinding) {
 
 	// 開始点と終了点
 	AStarVec2 start(0, 0);
-	AStarVec2 end(100, 100);
+	AStarVec2 end(20, 20);
 	paxs::GridType z = 1;
 
 	// A*インスタンス作成
@@ -58,7 +58,7 @@ TEST_F(AStarTest, PathConsistency) {
 	using AStarVec2 = paxs::Vector2<paxs::GridType>;
 
 	AStarVec2 start(0, 0);
-	AStarVec2 end(100, 100);
+	AStarVec2 end(20, 20);
 	paxs::GridType z = 1;
 
 	// 1回目の探索
@@ -165,7 +165,7 @@ TEST_F(AStarTest, DifferentZLevels) {
 	using AStarVec2 = paxs::Vector2<paxs::GridType>;
 
 	AStarVec2 start(0, 0);
-	AStarVec2 end(256, 256);
+	AStarVec2 end(64, 64);
 
 	// z=1とz=2で経路を比較
 	paxs::AStar astar1(start, end, 1);

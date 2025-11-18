@@ -165,6 +165,44 @@ namespace paxs {
 #endif
         }
 
+        /// @brief Get the file paths in the directory recursively.
+        /// @brief ディレクトリ内のファイルパスを再帰的に取得する。
+        /// @param relative_directory_path アセットルートからの相対ディレクトリパス / Relative directory path from the asset root.
+        /// @return 相対ファイルパスのベクター / Vector of relative file paths from the asset root.
+        static std::vector<std::string> getFilePathsRecursive(const std::string& relative_directory_path) noexcept {
+#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+            return {}; // std::filesystem が動作しないため何もしない
+#else
+            if (!exists(relative_directory_path)) {
+                PAXS_ERROR("Failed to access: " + relative_directory_path);
+                return {};
+            }
+            const std::string root_path = paxs::AppConfig::getInstance().getRootPath();
+            const std::string dir_path_str = root_path + relative_directory_path;
+            std::vector<std::string> result;
+
+            try {
+                for (const auto& entry : std::filesystem::recursive_directory_iterator(dir_path_str)) {
+                    if (entry.is_regular_file()) {
+                        // 絶対パスから相対パスに変換
+                        std::string absolute_path = entry.path().string();
+                        if (absolute_path.find(root_path) == 0) {
+                            result.emplace_back(absolute_path.substr(root_path.size()));
+                        } else {
+                            result.emplace_back(absolute_path);
+                        }
+                    }
+                }
+            }
+            catch (const std::exception& e) {
+                PAXS_ERROR("Failed to recursively scan directory: " + relative_directory_path + " (" + e.what() + ")");
+                return {};
+            }
+
+            return result;
+#endif
+        }
+
         /// @brief Get parent directory path from a file path.
         /// @brief ファイルパスから親ディレクトリパスを取得する。
         /// @param file_path ファイルパス / File path.

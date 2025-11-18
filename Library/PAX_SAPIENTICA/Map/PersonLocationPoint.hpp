@@ -40,6 +40,7 @@ namespace paxs {
             zoom_range(zoom_range_), year_range(year_range_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
 
         std::string key;  // 人物の一意キー（ファイル名から）
+        // TODO: Localesシステムへの完全移行後、namesフィールドは削除可能（PersonFeature::getName()のフォールバックで使用中）
         paxs::UnorderedMap<std::uint_least32_t, std::string> names; // 人物名（多言語対応）
         paxs::MercatorDeg start_coordinate; // 開始時の経緯度
         paxs::MercatorDeg end_coordinate; // 終了時の経緯度

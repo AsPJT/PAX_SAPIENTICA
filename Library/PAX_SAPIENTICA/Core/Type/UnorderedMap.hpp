@@ -49,10 +49,12 @@ namespace paxs {
     /// @brief ログ機能を持つ unordered_map のラッパークラス
     /// @tparam Key キーの型
     /// @tparam Value 値の型
-    template<typename Key, typename Value>
+    /// @tparam Hash ハッシュ関数の型（デフォルト: std::hash<Key>）
+    /// @tparam KeyEqual キー比較関数の型（デフォルト: std::equal_to<Key>）
+    template<typename Key, typename Value, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
     class UnorderedMap {
     private:
-        std::unordered_map<Key, Value> map_;
+        std::unordered_map<Key, Value, Hash, KeyEqual> map_;
         std::string name_; // マップの名前（ログ出力時に使用）
 
     public:
@@ -61,8 +63,8 @@ namespace paxs {
         explicit UnorderedMap(std::string  name) : name_(std::move(name)) {}
 
         // イテレータ型のエイリアス
-        using iterator = typename std::unordered_map<Key, Value>::iterator;
-        using const_iterator = typename std::unordered_map<Key, Value>::const_iterator;
+        using iterator = typename std::unordered_map<Key, Value, Hash, KeyEqual>::iterator;
+        using const_iterator = typename std::unordered_map<Key, Value, Hash, KeyEqual>::const_iterator;
 
         /// @brief 要素を追加
         template<typename... Args>

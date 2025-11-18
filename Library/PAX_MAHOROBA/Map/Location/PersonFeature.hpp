@@ -31,7 +31,9 @@
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 #include <PAX_SAPIENTICA/Map/PersonLocationPoint.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 namespace paxs {
 
@@ -60,6 +62,16 @@ public:
     }
 
     std::string getName(const std::string& language = "ja-JP") const override {
+        // Localesシステムから取得
+        const paxs::Locales& locales = paxs::FontSystem::getInstance().getLocales();
+        const std::string* name = locales.getStringPtr("Features/Persons/Names", data_.key, language);
+        if (name != nullptr) {
+            return *name;
+        }
+        PAXS_WARNING("[PersonFeature] getName FAILED: key=" + data_.key + ", language=" + language + " - returning nullptr from Locales");
+
+        // TODO: Localesシステムへの完全移行後、以下のフォールバックコードは削除可能
+        // フォールバック: 既存のnamesマップから取得
         const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
         const auto iterator = data_.names.find(lang_hash);
         if (iterator != data_.names.end()) {

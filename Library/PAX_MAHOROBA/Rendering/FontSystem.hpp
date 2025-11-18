@@ -21,6 +21,7 @@
 #include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/Language.hpp>
+#include <PAX_SAPIENTICA/System/Locales.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -61,6 +62,9 @@ namespace paxs {
 
         // 言語辞書管理
         paxs::UnorderedMap<LanguageDomain, paxs::Language> languages_;
+
+        // Locales システム
+        paxs::Locales locales_;
 
         // 選択言語
         SelectLanguage select_language_;
@@ -198,6 +202,12 @@ namespace paxs {
                 [&](const std::string& path_) {
                     addLanguageDictionary(path_, LanguageDomain::SIMULATION);
                 });
+
+            // デフォルト言語を設定（en-US）
+            // TODO: マジックナンバー回避
+            const std::uint_least32_t default_language_key = MurMur3::calcHash("en-US");
+            select_language_.setKey(default_language_key);
+            select_language_.set(1);  // en-USは通常インデックス1
 
             initialized_ = true;
         }
@@ -381,6 +391,25 @@ namespace paxs {
         /// @return 存在すれば true / true if exists
         bool hasProfile(const std::string& name) const {
             return profiles_.contains(name);
+        }
+
+        // ========================================
+        // Locales システムアクセス
+        // Locales system access
+        // ========================================
+
+        /// @brief Locales インスタンスへの参照を取得
+        /// @brief Get reference to Locales instance
+        /// @return Locales への参照 / Reference to Locales
+        paxs::Locales& getLocales() {
+            return locales_;
+        }
+
+        /// @brief Locales インスタンスへの const 参照を取得
+        /// @brief Get const reference to Locales instance
+        /// @return Locales への const 参照 / Const reference to Locales
+        const paxs::Locales& getLocales() const {
+            return locales_;
         }
 
     };

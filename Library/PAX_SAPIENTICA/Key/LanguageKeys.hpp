@@ -43,6 +43,33 @@ namespace paxs {
         constexpr const char* AR_SA = "ar-SA";
         constexpr const char* AIN = "ain";
 
+        /// @brief 全言語キーの文字列配列（ハッシュと同順）
+        // TODO: Localesシステムへの完全移行後、ALL_LANGUAGE_NAMESは削除可能（PersonNameRepository::loadPersonFromFile()で使用中）
+        inline constexpr std::array<const char*, 22> ALL_LANGUAGE_NAMES = {
+            EN_US,
+            JA_JP,
+            ZH_TW,
+            ZH_CN,
+            KO_KR,
+            HIRAGANA,
+            ES_ES,
+            PT_BR,
+            DE_DE,
+            FR_FR,
+            IT_IT,
+            TR_TR,
+            PL_PL,
+            EL_GR,
+            NL_NL,
+            CS_CZ,
+            UK_UA,
+            RU_RU,
+            ID_ID,
+            FA_IR,
+            AR_SA,
+            AIN
+        };
+
         /// @brief 全言語キーのハッシュ化済み配列
         inline constexpr std::array ALL_LANGUAGE_HASHES = {
             MurMur3::calcHash(EN_US),

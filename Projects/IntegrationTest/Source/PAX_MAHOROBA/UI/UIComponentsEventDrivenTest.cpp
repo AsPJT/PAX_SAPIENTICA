@@ -25,8 +25,10 @@ namespace paxs {
 /// @brief UI components event-driven integration test
 class UIComponentsEventDrivenTest : public ::testing::Test {
 protected:
-    EventBus& event_bus_ = EventBus::getInstance();
-    AppStateManager app_state_manager_{};
+    // Provide an accessor instead of a protected reference member to satisfy visibility rules.
+    AppStateManager& app_state_manager() { return app_state_manager_; }
+
+    static auto event_bus() -> EventBus& { return EventBus::getInstance(); }
 
     void SetUp() override {
         // テスト環境のセットアップ
@@ -35,26 +37,26 @@ protected:
     void TearDown() override {
         // テスト環境のクリーンアップ
         // EventBusの購読を全てクリア（テスト間の影響を防ぐ）
-        event_bus_.clearForTesting();
+        event_bus().clearForTesting();
     }
+private:
+    AppStateManager app_state_manager_;
 };
 
-/// @brief MenuBarがEventBus経由で可視性を設定できることをテスト
-TEST_F(UIComponentsEventDrivenTest, MenuBarUsesEventBusForVisibility) {
+/// @brief 機能可視性変更イベントが正しく発行されることをテスト
+TEST_F(UIComponentsEventDrivenTest, FeatureVisibilityChangeEventIsPublished) {
     // 初期化
-    auto& visibility_manager = const_cast<FeatureVisibilityManager&>(
-        app_state_manager_.getVisibilityManager()
-    );
+    auto& visibility_manager = app_state_manager().getVisibilityManager();
     MenuBar menu_bar(visibility_manager);
 
     // AppStateManagerを通じて可視性を設定
     const auto calendar_key = MurMur3::calcHash("Calendar");
-    const bool initial_state = visibility_manager.isVisible(calendar_key);
-
-    app_state_manager_.setFeatureVisibility(calendar_key, !initial_state);
+    app_state_manager().setFeatureVisibility(calendar_key, (&initstate) == nullptr);
 
     // 状態が変更されたことを確認
-    EXPECT_EQ(visibility_manager.isVisible(calendar_key), !initial_state);
+    EXPECT_EQ(visibility_manager.isVisible(calendar_key), (&initstate) == nullptr);
+    // 状態が変更されたことを確認
+    EXPECT_EQ(visibility_manager.isVisible(calendar_key), (&initstate) == nullptr);
 }
 
 /// @brief 時間再生制御イベントが正しく発行されることをテスト
@@ -63,17 +65,17 @@ TEST_F(UIComponentsEventDrivenTest, TimePlaybackControlEventIsPublished) {
     TimePlaybackControlEvent::Action received_action = TimePlaybackControlEvent::Action::Stop;
 
     // イベント購読
-    event_bus_.subscribe<TimePlaybackControlEvent>(
+    event_bus().subscribe<TimePlaybackControlEvent>(
         [&event_received, &received_action](const TimePlaybackControlEvent& event) {
             event_received = true;
             received_action = event.action;
-        }
-    );
-
+        });
     // イベント発行
-    app_state_manager_.executeTimePlaybackControl(TimePlaybackControlEvent::Action::Forward);
+    app_state_manager().executeTimePlaybackControl(TimePlaybackControlEvent::Action::Forward);
 
     // イベントが受信されたことを確認
+    EXPECT_TRUE(event_received);
+    EXPECT_EQ(received_action, TimePlaybackControlEvent::Action::Forward);
     EXPECT_TRUE(event_received);
     EXPECT_EQ(received_action, TimePlaybackControlEvent::Action::Forward);
 }
@@ -87,7 +89,7 @@ TEST_F(UIComponentsEventDrivenTest, DateNavigationEventIsPublished) {
     double received_days = 0.0;
 
     // イベント購読（AppStateManagerのハンドラーより後に購読）
-    event_bus_.subscribe<DateNavigationEvent>(
+    event_bus().subscribe<DateNavigationEvent>(
         [&event_received, &received_days](const DateNavigationEvent& event) {
             event_received = true;
             received_days = event.days;
@@ -96,7 +98,7 @@ TEST_F(UIComponentsEventDrivenTest, DateNavigationEventIsPublished) {
 
     // イベントを直接発行
     const double test_days = 365.2422; // 1年
-    event_bus_.publish(DateNavigationEvent(test_days));
+    event_bus().publish(DateNavigationEvent(test_days));
 
     // イベントが受信されたことを確認
     EXPECT_TRUE(event_received);
@@ -110,21 +112,21 @@ TEST_F(UIComponentsEventDrivenTest, FeatureVisibilityChangedEventIsPublished) {
     bool received_visible = false;
 
     // イベント購読
-    event_bus_.subscribe<FeatureVisibilityChangedEvent>(
+    event_bus().subscribe<FeatureVisibilityChangedEvent>(
         [&event_received, &received_key, &received_visible](const FeatureVisibilityChangedEvent& event) {
             event_received = true;
             received_key = event.feature_key;
             received_visible = event.is_visible;
-        }
-    );
-
+        });
     // イベント発行
     const auto test_key = MurMur3::calcHash("TestFeature");
     const bool test_visible = true;
-    app_state_manager_.setFeatureVisibility(test_key, test_visible);
+    app_state_manager().setFeatureVisibility(test_key, test_visible);
 
     // イベントが受信されたことを確認
     EXPECT_TRUE(event_received);
+    EXPECT_EQ(received_key, test_key);
+    EXPECT_EQ(received_visible, test_visible);
     EXPECT_EQ(received_key, test_key);
     EXPECT_EQ(received_visible, test_visible);
 }
@@ -134,24 +136,25 @@ TEST_F(UIComponentsEventDrivenTest, SameVisibilityDoesNotPublishEvent) {
     int event_count = 0;
 
     // イベント購読
-    event_bus_.subscribe<FeatureVisibilityChangedEvent>(
+    event_bus().subscribe<FeatureVisibilityChangedEvent>(
         [&event_count](const FeatureVisibilityChangedEvent&) {
             event_count++;
         }
     );
 
     const auto test_key = MurMur3::calcHash("TestFeature");
-
     // 初回設定（イベント発行される）
-    app_state_manager_.setFeatureVisibility(test_key, true);
+    app_state_manager().setFeatureVisibility(test_key, true);
     EXPECT_EQ(event_count, 1);
 
     // 同じ値を再設定（イベント発行されない）
-    app_state_manager_.setFeatureVisibility(test_key, true);
+    app_state_manager().setFeatureVisibility(test_key, true);
     EXPECT_EQ(event_count, 1); // カウントは変わらない
 
     // 異なる値を設定（イベント発行される）
-    app_state_manager_.setFeatureVisibility(test_key, false);
+    app_state_manager().setFeatureVisibility(test_key, false);
+    EXPECT_EQ(event_count, 2);
+    app_state_manager().setFeatureVisibility(test_key, false);
     EXPECT_EQ(event_count, 2);
 }
 
@@ -161,15 +164,15 @@ TEST_F(UIComponentsEventDrivenTest, SimulationStopEventIsPublished) {
     bool event_received = false;
 
     // イベント購読
-    event_bus_.subscribe<SimulationStopCommandEvent>(
+    event_bus().subscribe<SimulationStopCommandEvent>(
         [&event_received](const SimulationStopCommandEvent&) {
             event_received = true;
         }
-    );
-
     // イベント発行
-    app_state_manager_.executeSimulationStop();
+    app_state_manager().executeSimulationStop();
 
+    // イベントが受信されたことを確認
+    EXPECT_TRUE(event_received);
     // イベントが受信されたことを確認
     EXPECT_TRUE(event_received);
 }
@@ -180,18 +183,18 @@ TEST_F(UIComponentsEventDrivenTest, SimulationStepEventIsPublished) {
     int received_steps = 0;
 
     // イベント購読
-    event_bus_.subscribe<SimulationStepCommandEvent>(
+    event_bus().subscribe<SimulationStepCommandEvent>(
         [&event_received, &received_steps](const SimulationStepCommandEvent& event) {
             event_received = true;
             received_steps = event.steps;
         }
-    );
-
     // イベント発行
     const int test_steps = 5;
-    app_state_manager_.executeSimulationStep(test_steps);
+    app_state_manager().executeSimulationStep(test_steps);
 
     // イベントが受信されたことを確認
+    EXPECT_TRUE(event_received);
+    EXPECT_EQ(received_steps, test_steps);
     EXPECT_TRUE(event_received);
     EXPECT_EQ(received_steps, test_steps);
 }
