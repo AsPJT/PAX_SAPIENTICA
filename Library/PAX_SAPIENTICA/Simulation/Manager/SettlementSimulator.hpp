@@ -297,18 +297,23 @@ namespace paxs {
             const auto target_index = target_key.to(SettlementGridsType{});
 
             // ターゲットの地域が登録されているか？
-            const auto iterator = settlement_grids.find(target_index);
-            if (iterator != settlement_grids.end()) {
+            const auto target_iterator = settlement_grids.find(target_index);
+            const auto current_iterator = settlement_grids.find(current_index);
+            if (current_iterator == settlement_grids.end()) {
+                return; // current_indexが存在しない場合は何もしない
+            }
+
+            if (target_iterator != settlement_grids.end()) {
                 // 登録されている場合はそのターゲット地域へ移動
-                iterator->second.moveSettlementToThis(settlement_grids[current_index].getSettlement(settlement_id));
+                target_iterator->second.moveSettlementToThis(current_iterator->second.getSettlement(settlement_id));
             }
             else {
                 // 登録されていない場合は新しく地域を作成
                 SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance().cell_group_length, environment, gen);
-                settlement_grid.moveSettlementToThis(settlement_grids[current_index].getSettlement(settlement_id));
-                settlement_grids[target_index] = settlement_grid;
+                settlement_grid.moveSettlementToThis(current_iterator->second.getSettlement(settlement_id));
+                settlement_grids.emplace(target_index, std::move(settlement_grid));
             }
-            settlement_grids[current_index].deleteSettlement(settlement_id);
+            current_iterator->second.deleteSettlement(settlement_id);
         }
 
         /// @brief Execute the simulation for the one step.
@@ -751,7 +756,7 @@ namespace paxs {
                 if (((is_ad200)? district.init_pop : district.immigrant) == 0) {
                     continue;
                 }
-                district_population_map[district.id] = ((is_ad200) ? district.init_pop : district.immigrant);
+                district_population_map.emplace(district.id, ((is_ad200) ? district.init_pop : district.immigrant));
                 // より地区 ID が大きい値を見つけたら上書き
                 district_id_max = (std::max)(district.id, district_id_max);
             }
@@ -806,9 +811,7 @@ namespace paxs {
                     Vector2 grid_position = live_position / SimulationConstants::getInstance().cell_group_length;
                     SettlementGridsType key = grid_position.to(SettlementGridsType{});
                     // グリッドが存在しない場合は作成
-                    if (settlement_grids.find(key) == settlement_grids.end()) {
-                        settlement_grids[key] = SettlementGrid(grid_position * SimulationConstants::getInstance().cell_group_length, environment, gen);
-                    }
+                    settlement_grids.try_emplace(key, SettlementGrid(grid_position * SimulationConstants::getInstance().cell_group_length, environment, gen));
                     // 集落を作成
                     Settlement settlement = Settlement(
                         UniqueIdentification<std::uint_least32_t>::generate(),
@@ -854,8 +857,8 @@ namespace paxs {
                     }
 
                     // 集落をグリッドに配置
-                    settlement_grids[key].addSettlement(settlement);
-                    settlement_grids[key].addDistrictId(district_id);
+                    settlement_grids.at(key).addSettlement(settlement);
+                    settlement_grids.at(key).addDistrictId(district_id);
 
                     live.live_probabilities[live_probability_index] = live.live_probabilities.back();
                     live.live_probabilities.pop_back();

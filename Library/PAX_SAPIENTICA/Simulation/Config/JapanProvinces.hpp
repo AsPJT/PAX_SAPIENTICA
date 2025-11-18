@@ -16,10 +16,11 @@
 #include <vector>
 
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
-#include <PAX_SAPIENTICA/System/InputFile.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -68,292 +69,217 @@ namespace paxs {
     /// @brief 日本の州を表すクラス
     class JapanProvinces {
     private:
-
-        // 項目の ID を返す
-        std::size_t getMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) const {
-            const auto iterator = menu.find(str_);
-            return  iterator != menu.end() ? iterator->second : SIZE_MAX;
-        }
-
         void inputLanguage_List(const std::string& japan_provinces_path) noexcept {
-
             const std::string path = japan_provinces_path + "/Language_List.tsv";
+            paxs::TsvTable table(path);
 
-            paxs::InputFile language_tsv(path);
-            if (language_tsv.fail()) {
+            if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to read Language_List TSV file: " + path);
                 return;
             }
-            // 1 行目を読み込む
-            if (!(language_tsv.getLine())) {
-                PAXS_WARNING("Language_List TSV file is empty: " + path);
-                return; // 何もない場合
-            }
-            // BOM を削除
-            language_tsv.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = language_tsv.splitHashMapMurMur3('\t');
-            std::size_t i = 1;
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (language_tsv.getLine()) {
-                std::vector<std::string> sub_menu_v = language_tsv.split('\t');
-                if (
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("language"))
-                    ) {
-                    PAXS_WARNING("Failed to read Japan Language_List TSV file: " + path + " at line " + std::to_string(i));
-                    ++i;
-                    continue;
+            static const std::uint_least32_t language_hash = MurMur3::calcHash("language");
+
+            if (!table.hasColumn(language_hash)) {
+                PAXS_ERROR("Language_List.tsv: missing required column 'language'");
+                return;
+            }
+
+            for (std::size_t row = 0; row < table.rowCount(); ++row) {
+                const std::string& language_value = table.get(row, language_hash);
+                if (!language_value.empty()) {
+                    language_list.emplace_back(language_value);
                 }
-                language_list.emplace_back(sub_menu_v[menu[MurMur3::calcHash("language")]]);
-                ++i;
             }
-
         }
 
         void inputMtDNA_List(const std::string& japan_provinces_path) noexcept {
-
             const std::string path = japan_provinces_path + "/mtDNA_List.tsv";
+            paxs::TsvTable table(path);
 
-            paxs::InputFile mtdna_tsv(path);
-            if (mtdna_tsv.fail()) {
+            if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to read MtDNA_List TSV file: " + path);
                 return;
             }
-            // 1 行目を読み込む
-            if (!(mtdna_tsv.getLine())) {
-                PAXS_WARNING("MtDNA_List TSV file is empty: " + path);
-                return; // 何もない場合
-            }
-            // BOM を削除
-            mtdna_tsv.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
-            std::size_t i = 1;
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (mtdna_tsv.getLine()) {
-                std::vector<std::string> sub_menu_v = mtdna_tsv.split('\t');
-                if (
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("mtdna"))
-                    ) {
-                    PAXS_WARNING("Failed to read Japan MtDNA_List TSV file: " + path + " at line " + std::to_string(i));
-                    ++i;
-                    continue;
+            static const std::uint_least32_t mtdna_hash = MurMur3::calcHash("mtdna");
+
+            if (!table.hasColumn(mtdna_hash)) {
+                PAXS_ERROR("mtDNA_List.tsv: missing required column 'mtdna'");
+                return;
+            }
+
+            for (std::size_t row = 0; row < table.rowCount(); ++row) {
+                const std::string& mtdna_value = table.get(row, mtdna_hash);
+                if (!mtdna_value.empty()) {
+                    mtdna_list.emplace_back(mtdna_value);
                 }
-                mtdna_list.emplace_back(sub_menu_v[menu[MurMur3::calcHash("mtdna")]]);
-                ++i;
             }
-
         }
 
         void inputLanguage_Region(const std::string& japan_provinces_path) noexcept {
-
             const std::string path = japan_provinces_path + "/Language.tsv";
+            paxs::TsvTable table(path);
 
-            paxs::InputFile language_tsv(path);
-            if (language_tsv.fail()) {
+            if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to read Language TSV file: " + path);
                 return;
             }
-            // 1 行目を読み込む
-            if (!(language_tsv.getLine())) {
-                PAXS_WARNING("Language TSV file is empty: " + path);
-                return; // 何もない場合
+
+            static const std::uint_least32_t language_region_hash = MurMur3::calcHash("language_region");
+            static const std::uint_least32_t language_dist_hash = MurMur3::calcHash("language_dist");
+
+            if (!table.hasColumn(language_region_hash) || !table.hasColumn(language_dist_hash)) {
+                PAXS_ERROR("Language.tsv: missing required columns");
+                return;
             }
-            // BOM を削除
-            language_tsv.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = language_tsv.splitHashMapMurMur3('\t');
-#ifdef PAXS_DEVELOPMENT
-            std::size_t i = 1;
-#endif
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (language_tsv.getLine()) {
-                std::vector<std::string> sub_menu_v = language_tsv.split('\t');
-                if (
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("language_region")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("language_dist"))
-                    ) {
-#ifdef PAXS_DEVELOPMENT
-                    PAXS_WARNING("Failed to read Japan Language TSV file: " + path + " at line " + std::to_string(i));
-#endif
-                    continue;
-                }
-
+            for (std::size_t row = 0; row < table.rowCount(); ++row) {
                 mtDNA_Region language_region;
-                std::vector<std::string> dist = paxs::StringUtils::split(sub_menu_v[menu[MurMur3::calcHash("language_dist")]], '/');
+                std::vector<std::string> dist = paxs::StringUtils::split(table.get(row, language_dist_hash), '/');
 
-                if (dist.size() % 2 == 1) {
+                if (dist.size() % 2 == 1 || dist.size() <= 1) {
                     continue;
                 }
-                if (dist.size() <= 1) {
-                    continue;
-                }
-                for (int j = 0; j < dist.size(); j += 2) {
-                    for (int k = 0; k < language_list.size(); ++k) {
-                        // 言語 の名称の index を取得し、確率分布と一緒に管理
+
+                for (std::size_t j = 0; j < dist.size(); j += 2) {
+                    for (std::size_t k = 0; k < language_list.size(); ++k) {
                         if (language_list[k] == dist[j]) {
-                            language_region.id.emplace_back(k);
+                            language_region.id.emplace_back(static_cast<std::uint_least8_t>(k));
                             language_region.weight.emplace_back(StringUtils::safeStod(dist[j + 1], 0.0, true));
                             break;
                         }
                     }
                 }
-                // 確率分布を生成
+
+                if (language_region.weight.empty()) {
+                    continue;
+                }
+
                 language_region.dist = std::discrete_distribution<>(language_region.weight.begin(), language_region.weight.end());
 
-                // mtDNA 地方区分のハッシュ
-                const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("haplo_group_region")]];
-                language_region_list.emplace(MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str()), language_region);
-
-#ifdef PAXS_DEVELOPMENT
-                ++i;
-#endif
+                const std::string& region_str = table.get(row, language_region_hash);
+                language_region_list.emplace(MurMur3::calcHash(region_str.size(), region_str.c_str()), language_region);
             }
         }
 
         void inputMtDNA_Region(const std::string& japan_provinces_path) noexcept {
-
             const std::string path = japan_provinces_path + "/mtDNA.tsv";
+            paxs::TsvTable table(path);
 
-            paxs::InputFile mtdna_tsv(path);
-            if (mtdna_tsv.fail()) {
+            if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to read MtDNA TSV file: " + path);
                 return;
             }
-            // 1 行目を読み込む
-            if (!(mtdna_tsv.getLine())) {
-                PAXS_WARNING("MtDNA TSV file is empty: " + path);
-                return; // 何もない場合
+
+            static const std::uint_least32_t haplo_group_region_hash = MurMur3::calcHash("haplo_group_region");
+            static const std::uint_least32_t haplo_dist_hash = MurMur3::calcHash("haplo_dist");
+
+            if (!table.hasColumn(haplo_group_region_hash) || !table.hasColumn(haplo_dist_hash)) {
+                PAXS_ERROR("mtDNA.tsv: missing required columns");
+                return;
             }
-            // BOM を削除
-            mtdna_tsv.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = mtdna_tsv.splitHashMapMurMur3('\t');
-#ifdef PAXS_DEVELOPMENT
-            std::size_t i = 1;
-#endif
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (mtdna_tsv.getLine()) {
-                std::vector<std::string> sub_menu_v = mtdna_tsv.split('\t');
-                if (
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("haplo_group_region")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("haplo_dist"))
-                    ) {
-#ifdef PAXS_DEVELOPMENT
-                    PAXS_WARNING("Failed to read Japan MtDNA TSV file: " + path + " at line " + std::to_string(i));
-#endif
-                    continue;
-                }
-
+            for (std::size_t row = 0; row < table.rowCount(); ++row) {
                 mtDNA_Region mtdna_region;
-                std::vector<std::string> dist = paxs::StringUtils::split(sub_menu_v[menu[MurMur3::calcHash("haplo_dist")]], '/');
+                std::vector<std::string> dist = paxs::StringUtils::split(table.get(row, haplo_dist_hash), '/');
 
-                if (dist.size() % 2 == 1) {
+                if (dist.size() % 2 == 1 || dist.size() <= 1) {
                     continue;
                 }
-                if (dist.size() <= 1) {
-                    continue;
-                }
-                for (int j = 0; j < dist.size(); j += 2) {
-                    for (int k = 0; k < mtdna_list.size();++k) {
-                        // mtDNA の名称の index を取得し、確率分布と一緒に管理
+
+                for (std::size_t j = 0; j < dist.size(); j += 2) {
+                    for (std::size_t k = 0; k < mtdna_list.size(); ++k) {
                         if (mtdna_list[k] == dist[j]) {
-                            mtdna_region.id.emplace_back(k);
+                            mtdna_region.id.emplace_back(static_cast<std::uint_least8_t>(k));
                             mtdna_region.weight.emplace_back(StringUtils::safeStod(dist[j + 1], 0.0, true));
                             break;
                         }
                     }
                 }
-                // 確率分布を生成
+
+                if (mtdna_region.weight.empty()) {
+                    continue;
+                }
+
                 mtdna_region.dist = std::discrete_distribution<>(mtdna_region.weight.begin(), mtdna_region.weight.end());
 
-                // mtDNA 地方区分のハッシュ
-                const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("haplo_group_region")]];
-                mtdna_region_list.emplace(MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str()), mtdna_region);
-
-#ifdef PAXS_DEVELOPMENT
-                ++i;
-#endif
+                const std::string& region_str = table.get(row, haplo_group_region_hash);
+                mtdna_region_list.emplace(MurMur3::calcHash(region_str.size(), region_str.c_str()), mtdna_region);
             }
         }
 
         void inputDistrict(const std::string& japan_provinces_path) noexcept {
-
             const std::string district_tsv_path = japan_provinces_path + "/District.tsv";
+            paxs::TsvTable table(district_tsv_path);
 
-            paxs::InputFile district_tsv(district_tsv_path);
-            if (district_tsv.fail()) {
+            if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to read District TSV file: " + district_tsv_path);
                 return;
             }
-            // 1 行目を読み込む
-            if (!(district_tsv.getLine())) {
-                PAXS_WARNING("District TSV file is empty: " + district_tsv_path);
-                return; // 何もない場合
+
+            static const std::uint_least32_t id_hash = MurMur3::calcHash("id");
+            static const std::uint_least32_t name_hash = MurMur3::calcHash("name");
+            static const std::uint_least32_t region_hash = MurMur3::calcHash("region");
+            static const std::uint_least32_t language_hash = MurMur3::calcHash("language");
+            static const std::uint_least32_t hunter_gatherer_hash = MurMur3::calcHash("hunter_gatherer");
+            static const std::uint_least32_t farming_hash = MurMur3::calcHash("farming");
+            static const std::uint_least32_t snp_hash = MurMur3::calcHash("snp");
+            static const std::uint_least32_t min_pop_hash = MurMur3::calcHash("min_pop_placed_per_cell");
+            static const std::uint_least32_t max_pop_hash = MurMur3::calcHash("max_pop_placed_per_cell");
+            static const std::uint_least32_t init_pop_hash = MurMur3::calcHash("init_pop");
+            static const std::uint_least32_t immigrant_hash = MurMur3::calcHash("immigrant");
+            static const std::uint_least32_t increased_immigration_hash = MurMur3::calcHash("increased_immigration");
+            static const std::uint_least32_t mtdna_region_hash_key = MurMur3::calcHash("mtdna_region");
+            static const std::uint_least32_t language_region_hash_key = MurMur3::calcHash("language_region");
+            static const std::uint_least32_t direction_min_distance_hash = MurMur3::calcHash("direction_min_distance");
+            static const std::uint_least32_t directions_hash = MurMur3::calcHash("directions");
+
+            if (!table.hasColumn(id_hash) || !table.hasColumn(name_hash) ||
+                !table.hasColumn(region_hash) || !table.hasColumn(language_hash) ||
+                !table.hasColumn(hunter_gatherer_hash) || !table.hasColumn(farming_hash) ||
+                !table.hasColumn(snp_hash) || !table.hasColumn(min_pop_hash) ||
+                !table.hasColumn(max_pop_hash) || !table.hasColumn(init_pop_hash) ||
+                !table.hasColumn(immigrant_hash) || !table.hasColumn(increased_immigration_hash) ||
+                !table.hasColumn(mtdna_region_hash_key) || !table.hasColumn(language_region_hash_key) ||
+                !table.hasColumn(direction_min_distance_hash) || !table.hasColumn(directions_hash)) {
+                PAXS_ERROR("District.tsv: missing required columns");
+                return;
             }
-            // BOM を削除
-            district_tsv.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = district_tsv.splitHashMapMurMur3('\t');
-            std::size_t i = 1;
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (district_tsv.getLine()) {
-                std::vector<std::string> sub_menu_v = district_tsv.split('\t');
-
-                if (
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("id")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("name")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("region")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("min_pop_placed_per_cell")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("max_pop_placed_per_cell")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("init_pop")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("immigrant")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("mtdna_region")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("direction_min_distance")) ||
-                    sub_menu_v.size() <= getMenuIndex(menu, MurMur3::calcHash("directions"))
-                    ) {
-                    PAXS_WARNING("Failed to read Japan region TSV file: " + district_tsv_path + " at line " + std::to_string(i));
-                    continue;
-                }
+            for (std::size_t row = 0; row < table.rowCount(); ++row) {
                 District district;
-                district.id = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("id")]]));
-                district.name = sub_menu_v[menu[MurMur3::calcHash("name")]];
-                district.region_id = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("region")]]));
-                district.language = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("language")]]));
-                district.hunter_gatherer = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("hunter_gatherer")]]));
-                district.farming = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("farming")]]));
-                district.snp = static_cast<std::uint_least8_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("snp")]]));
-                district.settlement_pop_min = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("min_pop_placed_per_cell")]]));
-                district.settlement_pop_max = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("max_pop_placed_per_cell")]]));
-                district.init_pop = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("init_pop")]]));
-                district.immigrant = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("immigrant")]]));
+
+                district.id = static_cast<std::uint_least8_t>(std::stoul(table.get(row, id_hash)));
+                district.name = table.get(row, name_hash);
+                district.region_id = static_cast<std::uint_least8_t>(std::stoul(table.get(row, region_hash)));
+                district.language = static_cast<std::uint_least8_t>(std::stoul(table.get(row, language_hash)));
+                district.hunter_gatherer = static_cast<std::uint_least8_t>(std::stoul(table.get(row, hunter_gatherer_hash)));
+                district.farming = static_cast<std::uint_least8_t>(std::stoul(table.get(row, farming_hash)));
+                district.snp = static_cast<std::uint_least8_t>(std::stoul(table.get(row, snp_hash)));
+                district.settlement_pop_min = static_cast<std::uint_least32_t>(std::stoul(table.get(row, min_pop_hash)));
+                district.settlement_pop_max = static_cast<std::uint_least32_t>(std::stoul(table.get(row, max_pop_hash)));
+                district.init_pop = static_cast<std::uint_least32_t>(std::stoul(table.get(row, init_pop_hash)));
+                district.immigrant = static_cast<std::uint_least32_t>(std::stoul(table.get(row, immigrant_hash)));
                 district.immigrant_f64 = static_cast<double>(district.immigrant);
-                district.increased_immigration = StringUtils::safeStod(sub_menu_v[menu[MurMur3::calcHash("increased_immigration")]], 0.0, true);
+                district.increased_immigration = StringUtils::safeStod(table.get(row, increased_immigration_hash), 0.0, true);
+                district.direction_min_distance = static_cast<std::uint_least32_t>(std::stoul(table.get(row, direction_min_distance_hash)));
 
-                district.direction_min_distance = static_cast<std::uint_least32_t>(std::stoul(sub_menu_v[menu[MurMur3::calcHash("direction_min_distance")]]));
-
-                std::vector<std::string> direction_split = paxs::StringUtils::split(sub_menu_v[menu[MurMur3::calcHash("directions")]], '/');
+                std::vector<std::string> direction_split = paxs::StringUtils::split(table.get(row, directions_hash), '/');
                 for (std::size_t di = 0; di < direction_split.size() && di < 8; ++di) {
                     district.direction_weight.emplace_back(StringUtils::safeStod(direction_split[di], 0.0, true));
                 }
-                if(district.direction_weight.size() == 0) district.direction_weight.emplace_back(0.0);
-                // 方向の確率分布を生成
+                if (district.direction_weight.size() == 0) district.direction_weight.emplace_back(0.0);
                 district.direction_dist = std::discrete_distribution<>(district.direction_weight.begin(), district.direction_weight.end());
 
-                const std::string& mtdna_region_str = sub_menu_v[menu[MurMur3::calcHash("mtdna_region")]];
+                const std::string& mtdna_region_str = table.get(row, mtdna_region_hash_key);
                 district.mtdna_region_hash = MurMur3::calcHash(mtdna_region_str.size(), mtdna_region_str.c_str());
 
-                const std::string& language_region_str = sub_menu_v[menu[MurMur3::calcHash("language_region")]];
+                const std::string& language_region_str = table.get(row, language_region_hash_key);
                 district.language_region_hash = MurMur3::calcHash(language_region_str.size(), language_region_str.c_str());
-                district_list.emplace_back(district);
-                ++i;
-            }
 
+                district_list.emplace_back(district);
+            }
         }
 
     public:

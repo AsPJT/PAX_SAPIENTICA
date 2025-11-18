@@ -96,6 +96,14 @@ namespace paxg {
             const float length = std::sqrt(dx * dx + dy * dy);
             if (length < 0.001f) return; // Too short to draw arrow
 
+            // Adjust arrow size based on line length
+            // If line is shorter than arrow, scale down the arrow proportionally
+            const float arrowLength = arrowSize.y();
+            const float arrowWidth = arrowSize.x();
+            const float scale = (length < arrowLength) ? (length / arrowLength) : 1.0f;
+            const float adjustedArrowLength = arrowLength * scale;
+            const float adjustedArrowWidth = arrowWidth * scale;
+
             // Normalize direction
             const float ndx = dx / length;
             const float ndy = dy / length;
@@ -107,12 +115,12 @@ namespace paxg {
             // Arrow head vertices
             const float tipX = w0;
             const float tipY = h0;
-            const float baseX = w0 - ndx * arrowSize.y();
-            const float baseY = h0 - ndy * arrowSize.y();
-            const float leftX = baseX + pdx * arrowSize.x() / 2;
-            const float leftY = baseY + pdy * arrowSize.x() / 2;
-            const float rightX = baseX - pdx * arrowSize.x() / 2;
-            const float rightY = baseY - pdy * arrowSize.x() / 2;
+            const float baseX = w0 - ndx * adjustedArrowLength;
+            const float baseY = h0 - ndy * adjustedArrowLength;
+            const float leftX = baseX + pdx * adjustedArrowWidth / 2;
+            const float leftY = baseY + pdy * adjustedArrowWidth / 2;
+            const float rightX = baseX - pdx * adjustedArrowWidth / 2;
+            const float rightY = baseY - pdy * adjustedArrowWidth / 2;
 
             // Draw arrow head lines
             const unsigned int dxColor = DxLib::GetColor(color.r, color.g, color.b);
@@ -159,6 +167,14 @@ namespace paxg {
             const float length = std::sqrt(dx * dx + dy * dy);
             if (length < 0.001f) return; // Too short to draw arrow
 
+            // Adjust arrow size based on line length
+            // If line is shorter than arrow, scale down the arrow proportionally
+            const float arrowLength = arrowSize.y();
+            const float arrowWidth = arrowSize.x();
+            const float scale = (length < arrowLength) ? (length / arrowLength) : 1.0f;
+            const float adjustedArrowLength = arrowLength * scale;
+            const float adjustedArrowWidth = arrowWidth * scale;
+
             // Normalize direction
             const float ndx = dx / length;
             const float ndy = dy / length;
@@ -170,12 +186,12 @@ namespace paxg {
             // Arrow head vertices
             const float tipX = line[1].position.x;
             const float tipY = line[1].position.y;
-            const float baseX = tipX - ndx * arrowSize.y();
-            const float baseY = tipY - ndy * arrowSize.y();
-            const float leftX = baseX + pdx * arrowSize.x() / 2;
-            const float leftY = baseY + pdy * arrowSize.x() / 2;
-            const float rightX = baseX - pdx * arrowSize.x() / 2;
-            const float rightY = baseY - pdy * arrowSize.x() / 2;
+            const float baseX = tipX - ndx * adjustedArrowLength;
+            const float baseY = tipY - ndy * adjustedArrowLength;
+            const float leftX = baseX + pdx * adjustedArrowWidth / 2;
+            const float leftY = baseY + pdy * adjustedArrowWidth / 2;
+            const float rightX = baseX - pdx * adjustedArrowWidth / 2;
+            const float rightY = baseY - pdy * adjustedArrowWidth / 2;
 
             // Draw arrow head lines
             sf::Vertex arrowLeft[2];

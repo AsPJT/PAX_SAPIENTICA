@@ -87,23 +87,22 @@ namespace paxs {
 
         /// @brief 要素にアクセス（存在しない場合は例外を投げる）
         Value& at(const Key& key) {
-            if (map_.find(key) == map_.end()) {
+            const auto iterator = map_.find(key);
+            if (iterator == map_.end()) {
                 PAXS_ERROR("[" + name_ + "] at: key not found (key=" + to_string_any(key) + ")");
+                throw std::out_of_range("[" + name_ + "] at: key not found (key=" + to_string_any(key) + ")");
             }
-            return map_.at(key);
+            return iterator->second;
         }
 
         /// @brief 要素にアクセス（const版）
         const Value& at(const Key& key) const {
-            if (map_.find(key) == map_.end()) {
+            const auto iterator = map_.find(key);
+            if (iterator == map_.end()) {
                 PAXS_ERROR("[" + name_ + "] at (const): key not found (key=" + to_string_any(key) + ")");
+                throw std::out_of_range("[" + name_ + "] at (const): key not found (key=" + to_string_any(key) + ")");
             }
-            return map_.at(key);
-        }
-
-        /// @brief 要素にアクセス（存在しない場合はデフォルト構築）
-        Value& operator[](const Key& key) {
-            return map_[key];
+            return iterator->second;
         }
 
         /// @brief キーが存在するかチェック
