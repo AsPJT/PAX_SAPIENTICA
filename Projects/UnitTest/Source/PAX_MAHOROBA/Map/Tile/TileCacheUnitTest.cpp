@@ -180,8 +180,8 @@ TEST_F(TileCacheTest, CacheHitMissLogic) {
     EXPECT_FALSE(is_texture_list.find(key2) == is_texture_list.end());
 
     // 値の確認
-    EXPECT_EQ(is_texture_list[key1], 0);  // 成功
-    EXPECT_EQ(is_texture_list[key2], 1);  // 失敗
+    EXPECT_EQ(is_texture_list.at(key1), 0);  // 成功
+    EXPECT_EQ(is_texture_list.at(key2), 1);  // 失敗
 }
 
 // テスト6: キャッシュの状態フラグ（0=成功, 1=失敗）
@@ -193,17 +193,17 @@ TEST_F(TileCacheTest, CacheStatusFlags) {
 
     // 成功を記録
     is_texture_list.insert({success_key, 0});
-    EXPECT_EQ(is_texture_list[success_key], 0);
+    EXPECT_EQ(is_texture_list.at(success_key), 0);
 
     // 失敗を記録
     is_texture_list.insert({failure_key, 1});
-    EXPECT_EQ(is_texture_list[failure_key], 1);
+    EXPECT_EQ(is_texture_list.at(failure_key), 1);
 
     // 重複登録の防止確認
     // UnorderedMapは既存のキーへのinsertを無視する
     is_texture_list.insert({success_key, 1});  // 上書きしようとする
     // insertは既存キーには何もしないので、値は0のまま
-    EXPECT_EQ(is_texture_list[success_key], 0);
+    EXPECT_EQ(is_texture_list.at(success_key), 0);
 }
 
 // テスト7: 大量のキーでの衝突チェック

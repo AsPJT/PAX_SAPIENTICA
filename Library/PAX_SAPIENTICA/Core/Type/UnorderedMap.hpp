@@ -80,6 +80,11 @@ namespace paxs {
             return map_.insert(std::move(value));
         }
 
+        /// @brief 要素を挿入（存在しない場合のみ）
+        constexpr std::pair<iterator, bool> try_emplace(const Key& key, Value&& value) {
+            return map_.try_emplace(key, std::move(value));
+        }
+
         /// @brief 要素にアクセス（存在しない場合は例外を投げる）
         Value& at(const Key& key) {
             if (map_.find(key) == map_.end()) {

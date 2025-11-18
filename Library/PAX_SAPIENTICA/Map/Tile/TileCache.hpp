@@ -91,7 +91,7 @@ namespace paxs {
             CacheEntry entry;
             entry.texture = std::move(*texture_ptr);
             entry.lru_iterator = lru_list_.begin();
-            cache_map_[key] = std::move(entry);  // operator[]で挿入または上書き
+            cache_map_.emplace(key, std::move(entry));
         }
 
         /// @brief 失敗を記録（テクスチャなし）
@@ -104,7 +104,7 @@ namespace paxs {
             CacheEntry entry;
             entry.texture = std::nullopt;
             entry.lru_iterator = lru_list_.end();  // 無効なイテレータ
-            cache_map_[key] = std::move(entry);  // operator[]で挿入
+            cache_map_.emplace(key, std::move(entry));
         }
 
         /// @brief 試行済みかどうかをチェック

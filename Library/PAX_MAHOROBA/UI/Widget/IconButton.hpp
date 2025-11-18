@@ -38,7 +38,7 @@ namespace paxs {
             if (!icon_textures.isSuccessfullyLoaded()) return;
             if (!icon_textures.contains(icon_texture_path_hash)) return;
 
-            icon_textures[icon_texture_path_hash].resizedDraw(rect.width(),
+            icon_textures.at(icon_texture_path_hash).resizedDraw(rect.width(),
                 paxg::Vec2i{ rect.x(), rect.y() }
             );
         }

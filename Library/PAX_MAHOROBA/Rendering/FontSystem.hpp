@@ -148,7 +148,7 @@ namespace paxs {
 
             // 言語ごとのフォントパスを登録
             for (std::size_t i = 0; i < path_list.size(); ++i) {
-                language_font_paths_[paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i]] = path_list[i];
+                language_font_paths_.emplace(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i], path_list[i]);
             }
         }
 
@@ -323,7 +323,14 @@ namespace paxs {
         /// @param file_path TSVファイルのパス / Path to TSV file
         /// @param domain 言語辞書のドメイン / Language dictionary domain
         void addLanguageDictionary(const std::string& file_path, LanguageDomain domain) {
-            languages_[domain].add(file_path);
+            auto it = languages_.find(domain);
+            if (it != languages_.end()) {
+                it->second.add(file_path);
+            } else {
+                Language lang;
+                lang.add(file_path);
+                languages_.emplace(domain, std::move(lang));
+            }
         }
 
         // ========================================
@@ -365,7 +372,7 @@ namespace paxs {
         void registerProfile(const std::string& name,
                              std::uint_least8_t size,
                              std::uint_least8_t buffer_thickness) {
-            profiles_[name] = FontProfile{ size, buffer_thickness };
+            profiles_.emplace(name, FontProfile( size, buffer_thickness ));
         }
 
         /// @brief プロファイルが存在するか確認

@@ -46,17 +46,14 @@ namespace paxs {
         }
 
         paxs::Vector2<int>& getStart(const std::uint_least32_t key_) {
-            return path_list[key_].start_position;
+            return path_list.at(key_).start_position;
         }
         paxs::Vector2<int>& getEnd(const std::uint_least32_t key_) {
-            return path_list[key_].end_position;
+            return path_list.at(key_).end_position;
         }
         int getZ(const std::uint_least32_t key_) {
-            return path_list[key_].z;
+            return path_list.at(key_).z;
         }
-
-
-    public:
 
         // ルートパスを読み込む true 成功
         bool input(const std::string& str_) {

@@ -35,7 +35,8 @@ namespace paxs {
 
         // 項目の ID を返す
          std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-            return  menu.contains(str_) ? menu.at(str_) : SIZE_MAX;
+            const auto iterator = menu.find(str_);
+            return iterator != menu.end() ? iterator->second : SIZE_MAX;
         }
     public:
 
@@ -102,8 +103,7 @@ namespace paxs {
                 std::vector<std::string> strvec = input_file.split('\t');
 
                 // 列数が項目より小さい場合は読み込まない
-                if (key_index >= strvec.size()) continue;
-                if (value_index >= strvec.size()) continue;
+                if (key_index >= strvec.size() || value_index >= strvec.size()) continue;
 
                 // keyが空の場合は読み込まない
                 if (strvec[key_index].size() == 0) continue;
@@ -121,8 +121,15 @@ namespace paxs {
             return input(relative_path, [](const std::string& value_) { return Value(value_); });
         }
 
-        Value operator[](std::uint_least32_t key_) const {
-            return path_list.contains(key_) ? path_list.at(key_) : Value{};
+        /// @brief 要素にアクセス
+        const Value& at(std::uint_least32_t key_) const {
+            return path_list.at(key_);
+        }
+
+        /// @brief 要素にアクセス、存在しない場合はデフォルト値のコピーを返す
+        Value getOrDefault(std::uint_least32_t key_) const {
+            const auto iterator = path_list.find(key_);
+            return iterator != path_list.end() ? iterator->second : Value{};
         }
 
     };

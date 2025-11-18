@@ -69,7 +69,14 @@ public:
             handler(static_cast<const EventType&>(event));
         };
 
-        subscribers_[type_id].emplace_back(wrapper);
+        auto it = subscribers_.find(type_id);
+        if (it != subscribers_.end()) {
+            it->second.emplace_back(wrapper);
+        } else {
+            std::vector<EventHandlerWrapper> handlers;
+            handlers.emplace_back(wrapper);
+            subscribers_.emplace(type_id, std::move(handlers));
+        }
     }
 
     /// @brief イベントを発行（即座に通知）

@@ -329,7 +329,7 @@ namespace paxs {
                 if (!location_data_loader_detail::isStandardColumn(column_hash, hashes)) {
                     const std::string& value = table.get(row_index, column_hash);
                     if (!value.empty()) {
-                        data.extra_data[column_hash] = value;
+                        data.extra_data.emplace(column_hash, value);
                     }
                 }
             }
