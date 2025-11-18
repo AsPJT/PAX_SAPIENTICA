@@ -12,6 +12,8 @@
 #ifndef PAX_MAHOROBA_UI_SIMULATION_CONTROL_BUTTONS_HPP
 #define PAX_MAHOROBA_UI_SIMULATION_CONTROL_BUTTONS_HPP
 
+#include <functional>
+
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationState.hpp>

@@ -255,7 +255,7 @@ namespace paxs {
                     life_span.dist_hunter_gatherer_male(gen)));
         }
 
-        void inputLifeSpan(const std::string& model_name_) noexcept {
+        void inputLifeSpan(const std::string& model_name_) {
             std::string path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
@@ -314,7 +314,7 @@ namespace paxs {
                 childbearing_probability.hunter_gatherer[age_];
         }
 
-        void inputMarriage(const std::string& model_name_) noexcept {
+        void inputMarriage(const std::string& model_name_) {
             std::string path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
@@ -346,7 +346,7 @@ namespace paxs {
                 marriage_probability.hunter_gatherer.emplace_back(StringUtils::safeStod(hunter_gatherer_str, 0.0, true));
             }
         }
-        void inputChildbearing(const std::string& model_name_) noexcept {
+        void inputChildbearing(const std::string& model_name_) {
             std::string path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
             // Sample を選択モデル名に置換
             paxs::StringUtils::replace(path, "Sample", model_name_);
