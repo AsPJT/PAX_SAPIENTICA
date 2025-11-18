@@ -305,8 +305,8 @@ namespace paxs {
             data.overall_length = getOptionalValue(overall_length_str, 10.0);
 
             // ズーム範囲の計算
-            const double min_size = getOptionalValue(min_size_str, params.zoom_range.min);
-            const double max_size = getOptionalValue(max_size_str, params.zoom_range.max);
+            const double min_size = getOptionalValue(min_size_str, params.zoom_range.minimum);
+            const double max_size = getOptionalValue(max_size_str, params.zoom_range.maximum);
             data.zoom_range = Range<double>(min_size, max_size);
 
             // 日付範囲の計算
@@ -315,8 +315,8 @@ namespace paxs {
             const std::string& last_jd_str = flags.has_last_julian_day ? table.get(row_index, hashes.last_julian_day) : "";
             const std::string& last_year_str = flags.has_last_year ? table.get(row_index, hashes.last_year) : "";
 
-            const double first_julian_day = calculateJulianDay(first_jd_str, first_year_str, params.year_range.min);
-            const double last_julian_day = calculateJulianDay(last_jd_str, last_year_str, params.year_range.max);
+            const double first_julian_day = calculateJulianDay(first_jd_str, first_year_str, params.year_range.minimum);
+            const double last_julian_day = calculateJulianDay(last_jd_str, last_year_str, params.year_range.maximum);
             data.year_range = Range<double>(first_julian_day, last_julian_day);
 
             // テクスチャハッシュの計算

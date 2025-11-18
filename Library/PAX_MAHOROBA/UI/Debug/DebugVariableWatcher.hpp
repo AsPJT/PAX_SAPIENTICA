@@ -78,7 +78,7 @@ public:
         const int pos_y = WATCHER_MARGIN + 260;  // パフォーマンスモニターの下に配置
 
         // 高さを動的に計算
-        const int watcher_height = std::max(
+        const int watcher_height = (std::max)(
             WATCHER_MIN_HEIGHT,
             static_cast<int>(watched_variables_.size()) * LINE_HEIGHT + PADDING * 2 + 30
         );

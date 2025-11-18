@@ -86,7 +86,7 @@ public:
         // 時間補間座標の計算
         interpolated_pos_ = MapCoordinateConverter::interpolatePosition(
             data_.start_coordinate, data_.end_coordinate,
-            context.jdn, data_.year_range.min, data_.year_range.max
+            context.jdn, data_.year_range.minimum, data_.year_range.maximum
         );
 
         // 空間フィルタリング：ビューの範囲外の場合はスキップ

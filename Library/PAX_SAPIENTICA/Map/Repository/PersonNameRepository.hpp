@@ -170,12 +170,12 @@ namespace paxs {
                             end_point_longitude, // 経度
                             end_point_latitude)).toMercatorDeg(), // 緯度
                     Range<double>(
-                        StringUtils::safeStod(min_size_str, params.zoom_range.min, true),
-                        StringUtils::safeStod(max_size_str, params.zoom_range.max, true)
+                        StringUtils::safeStod(min_size_str, params.zoom_range.minimum, true),
+                        StringUtils::safeStod(max_size_str, params.zoom_range.maximum, true)
                     ), // ズームレベル範囲
                     Range<double>(
-                        StringUtils::safeStod(first_julian_day_str, params.year_range.min, true),
-                        StringUtils::safeStod(last_julian_day_str, params.year_range.max, true)
+                        StringUtils::safeStod(first_julian_day_str, params.year_range.minimum, true),
+                        StringUtils::safeStod(last_julian_day_str, params.year_range.maximum, true)
                     ), // 時代範囲
                     feature_type_hash,
                     texture_str.empty() ? params.texture_hash : MurMur3::calcHash(texture_str.size(), texture_str.c_str()) // テクスチャの Key

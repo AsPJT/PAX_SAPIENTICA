@@ -205,11 +205,11 @@ private:
         paxg::Rect(x, line_30fps_y, width, 1).draw(paxg::Color(255, 255, 0, 100));
 
         // FPSグラフを描画
-        const int bar_width = std::max(1, width / static_cast<int>(MAX_FPS_HISTORY));
+        const int bar_width = (std::max)(1, width / static_cast<int>(MAX_FPS_HISTORY));
         for (std::size_t i = 0; i < fps_history_.size(); ++i) {
             const double fps = fps_history_[i];
             const int bar_height = static_cast<int>((fps / 60.0) * height);
-            const int clamped_height = std::min(bar_height, height);
+            const int clamped_height = (std::min)(bar_height, height);
 
             const int bar_x = x + static_cast<int>(i) * bar_width;
             const int bar_y = y + height - clamped_height;
