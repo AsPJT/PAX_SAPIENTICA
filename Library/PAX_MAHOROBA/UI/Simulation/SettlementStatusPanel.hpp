@@ -20,6 +20,7 @@
 
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -28,6 +29,16 @@ namespace paxs {
     ///
     /// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
     class SettlementStatusPanel : public IWidget {
+    private:
+        // SimulationStats domain hash
+        static constexpr std::uint_least32_t simulation_stats_domain_hash = MurMur3::calcHash("SimulationStats");
+        static constexpr std::uint_least32_t display_mode_population_key = MurMur3::calcHash("display_mode_population");
+        static constexpr std::uint_least32_t display_mode_farming_key = MurMur3::calcHash("display_mode_farming");
+        static constexpr std::uint_least32_t display_mode_mtdna_key = MurMur3::calcHash("display_mode_mtdna");
+        static constexpr std::uint_least32_t display_mode_snp_key = MurMur3::calcHash("display_mode_snp");
+        static constexpr std::uint_least32_t display_mode_language_key = MurMur3::calcHash("display_mode_language");
+        static constexpr std::uint_least32_t display_mode_bronze_key = MurMur3::calcHash("display_mode_bronze");
+
     public:
         SettlementStatusPanel(const paxs::FeatureVisibilityManager& visible_manager)
             : visible_manager_(visible_manager) {}
@@ -97,22 +108,30 @@ namespace paxs {
         /// @param select_draw 表示モード (1-6)
         /// @return 表示するテキスト / Text to display
         std::string getStatusText() const {
+            const std::string* text = nullptr;
             switch (select_draw_) {
                 case 1:
-                    return reinterpret_cast<const char*>(u8"1. 人口 Population");
+                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_population_key);
+                    break;
                 case 2:
-                    return reinterpret_cast<const char*>(u8"2. 農耕文化 Farming");
+                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_farming_key);
+                    break;
                 case 3:
-                    return reinterpret_cast<const char*>(u8"3. mtDNA haplogroup");
+                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_mtdna_key);
+                    break;
                 case 4:
-                    return reinterpret_cast<const char*>(u8"4. SNP / Genome");
+                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_snp_key);
+                    break;
                 case 5:
-                    return reinterpret_cast<const char*>(u8"5. 言語 Language");
+                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_language_key);
+                    break;
                 case 6:
-                    return reinterpret_cast<const char*>(u8"6. 青銅 Bronze");
+                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_bronze_key);
+                    break;
                 default:
                     return "";
             }
+            return (text != nullptr) ? *text : "";
         }
     };
 

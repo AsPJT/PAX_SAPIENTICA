@@ -1,0 +1,9 @@
+key	value
+label_population	Population
+label_settlements	Settlements
+display_mode_population	1. Population
+display_mode_farming	2. Farming
+display_mode_mtdna	3. mtDNA haplogroup
+display_mode_snp	4. SNP / Genome
+display_mode_language	5. Language
+display_mode_bronze	6. Bronze
