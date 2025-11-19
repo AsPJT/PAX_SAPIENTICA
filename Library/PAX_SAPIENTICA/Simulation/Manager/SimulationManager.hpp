@@ -204,6 +204,12 @@ namespace paxs {
             return simulator_ ? simulator_->cgetSettlement() : 0;
         }
 
+        /// @brief 渡来数を取得
+        /// @return 渡来数 / Number of migrants
+        std::uint_least64_t getMigrationCount() const {
+            return simulator_ ? simulator_->getEmigrationCount() : 0;
+        }
+
         /// @brief 集落グリッドへのconst参照を取得（描画用）
         /// @return 集落グリッド / Settlement grids
         const auto& getSettlementGrids() const {

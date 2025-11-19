@@ -41,6 +41,9 @@ namespace paxs {
         const AppStateManager& app_state_manager_;
         const UILayout& ui_layout_;
 
+        std::vector<std::uint_least32_t> simulation_key;
+        std::vector<std::string> simulation_model_name;
+
         paxs::Pulldown simulation_pulldown;
         SimulationControlButtons control_buttons_;
 #ifdef PAXS_USING_SIMULATOR
@@ -125,9 +128,6 @@ namespace paxs {
         }
 
     public:
-        std::vector<std::uint_least32_t> simulation_key;
-        std::vector<std::string> simulation_model_name;
-
         // コンストラクタ
         SimulationPanel(
             const paxs::FeatureVisibilityManager& visibility_manager,
@@ -200,9 +200,8 @@ namespace paxs {
             if (simulation_pulldown.isHit(event.pos)) {
                 if (event.left_button_state == MouseButtonState::Released) {
                     return simulation_pulldown.handleEvent(event);
-                } else {
-                    return EventHandlingResult::Handled();
                 }
+                return EventHandlingResult::Handled();
             }
 
             // 次にボタンを処理

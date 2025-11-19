@@ -29,19 +29,20 @@ namespace paxs {
 
     /// @brief シミュレーション統計情報表示ウィジェット
     /// @brief Simulation statistics display widget
-    /// @details 人口数と集落数を表示
+    /// @details 人口数、集落数、渡来数を表示
     class SimulationStatsWidget : public IWidget {
     private:
         // SimulationStats domain hash
         static constexpr std::uint_least32_t simulation_stats_domain_hash = MurMur3::calcHash("SimulationStats");
         static constexpr std::uint_least32_t label_population_key = MurMur3::calcHash("label_population");
         static constexpr std::uint_least32_t label_settlements_key = MurMur3::calcHash("label_settlements");
+        static constexpr std::uint_least32_t label_migration_key = MurMur3::calcHash("label_migration");
 
         const SimulationManager& simulation_manager_;
         paxs::Vector2<int> pos_ {0, 0};
 
         static constexpr int line_height_ = 25;
-        static constexpr int label_width_ = 130;
+        static constexpr int label_width_ = 140;
 
     public:
         SimulationStatsWidget(const SimulationManager& simulation_manager)
@@ -85,6 +86,21 @@ namespace paxs {
                 paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
                 paxg::Color(0, 0, 0)
             );
+
+            // 渡来数
+            const std::string* migration_label = Fonts().getLocalesText(simulation_stats_domain_hash, label_migration_key);
+            if (migration_label != nullptr) {
+                font->draw(
+                    *migration_label + ": ",
+                    paxg::Vec2i(pos_.x, pos_.y + (line_height_ * current_line)),
+                    paxg::Color(0, 0, 0)
+                );
+            }
+            font->draw(
+                std::to_string(simulation_manager_.getMigrationCount()),
+                paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
+                paxg::Color(0, 0, 0)
+            );
         }
 
         EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
@@ -94,7 +110,7 @@ namespace paxs {
         Rect<int> getRect() const override {
             return { pos_.x, pos_.y,
                 label_width_ + 100,  // ラベル幅 + 数値表示幅
-                line_height_ * 2      // 2行分
+                line_height_ * 3      // 3行分（人口、集落、渡来）
             };
         }
         bool isVisible() const override { return true; }

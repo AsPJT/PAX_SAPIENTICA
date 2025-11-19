@@ -1,6 +1,7 @@
 key	value
 label_population	Population
 label_settlements	Settlements
+label_migration	Migration
 display_mode_population	1. Population
 display_mode_farming	2. Farming
 display_mode_mtdna	3. mtDNA haplogroup
