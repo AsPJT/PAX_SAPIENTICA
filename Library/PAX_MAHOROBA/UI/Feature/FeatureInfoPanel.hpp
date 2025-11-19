@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_FEATURE_DETAIL_PANEL_HPP
-#define PAX_MAHOROBA_FEATURE_DETAIL_PANEL_HPP
+#ifndef PAX_MAHOROBA_feature_info_panel_HPP
+#define PAX_MAHOROBA_feature_info_panel_HPP
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
@@ -34,9 +34,25 @@
 namespace paxs {
 
     /// @brief Feature詳細情報パネルを表示するクラス
-    /// @brief Class to display Feature detail information panel
-    class FeatureDetailPanel : public IWidget {
+    /// @brief Class to display Feature info panel
+    class FeatureInfoPanel : public IWidget {
     private:
+        // FeatureInfo domain hash
+        static constexpr std::uint_least32_t feature_info_domain_hash = MurMur3::calcHash("FeatureInfo");
+        static constexpr std::uint_least32_t title_key = MurMur3::calcHash("title");
+        static constexpr std::uint_least32_t label_type_key = MurMur3::calcHash("label_type");
+        static constexpr std::uint_least32_t label_name_key = MurMur3::calcHash("label_name");
+        static constexpr std::uint_least32_t type_geographic_key = MurMur3::calcHash("type_geographic");
+        static constexpr std::uint_least32_t type_place_name_key = MurMur3::calcHash("type_place_name");
+        static constexpr std::uint_least32_t type_genome_key = MurMur3::calcHash("type_genome");
+        static constexpr std::uint_least32_t type_person_key = MurMur3::calcHash("type_person");
+        static constexpr std::uint_least32_t extra_location_key = MurMur3::calcHash("extra_location");
+        static constexpr std::uint_least32_t extra_type_key = MurMur3::calcHash("extra_type");
+        static constexpr std::uint_least32_t extra_era_key = MurMur3::calcHash("extra_era");
+        static constexpr std::uint_least32_t extra_site_key = MurMur3::calcHash("extra_site");
+        static constexpr std::uint_least32_t extra_altitude_key = MurMur3::calcHash("extra_altitude");
+        static constexpr std::uint_least32_t extra_artifact_key = MurMur3::calcHash("extra_artifact");
+
         const UILayout& ui_layout_;
         const paxs::FeatureVisibilityManager& visible_manager_;
 
@@ -55,8 +71,8 @@ namespace paxs {
 
         /// @brief パネルのY座標を計算（下部固定）
         int calculatePanelY() const {
-            const int panel_height = (calculated_height_ > 0) ? calculated_height_ : ui_layout_.feature_detail_panel_height;
-            const int panel_bottom = paxg::Window::height() - ui_layout_.feature_detail_panel_bottom_margin;
+            const int panel_height = (calculated_height_ > 0) ? calculated_height_ : ui_layout_.feature_info_panel_height;
+            const int panel_bottom = paxg::Window::height() - ui_layout_.feature_info_panel_bottom_margin;
             return panel_bottom - panel_height;
         }
 
@@ -65,8 +81,8 @@ namespace paxs {
         void updateCloseButtonPosition() const {
             const int panel_y = calculatePanelY();
             const int close_button_size = 20;
-            const int close_button_x = ui_layout_.feature_detail_panel.x +
-                                      ui_layout_.feature_detail_panel.width - close_button_size - 5;
+            const int close_button_x = ui_layout_.feature_info_panel.x +
+                                      ui_layout_.feature_info_panel.width - close_button_size - 5;
             const int close_button_y = panel_y + 5;
 
             // constメソッドからsetPosを呼ぶため、const_castを使用
@@ -144,7 +160,7 @@ namespace paxs {
         }
 
     public:
-        FeatureDetailPanel(
+        FeatureInfoPanel(
             const UILayout& ui_layout,
             const paxs::FeatureVisibilityManager& visible_manager
         )
@@ -200,54 +216,54 @@ namespace paxs {
             const int padding_left = 10;
             const int panel_y = calculatePanelY();
 
-            const int text_x = ui_layout_.feature_detail_panel.x + padding_left;
+            const int text_x = ui_layout_.feature_info_panel.x + padding_left;
             const int text_y = panel_y + padding_top;
-            const int max_text_width = ui_layout_.feature_detail_panel.width - padding_left * 2;
+            const int max_text_width = ui_layout_.feature_info_panel.width - padding_left * 2;
 
             int current_line = 0;
 
             // タイトル
-            font->draw(
-                (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
-                    reinterpret_cast<const char*>(u8"地物詳細") : "Feature Detail",
-                paxg::Vec2i(text_x, text_y + line_height * current_line++),
-                paxg::Color(0, 0, 0)
-            );
-
-            // 種別
-            if (!feature_type_name_.empty()) {
-                const std::string type_label =
-                    (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
-                    reinterpret_cast<const char*>(u8"種別: ") : "Type: ";
-
-                drawWrappedText(
-                    font,
-                    type_label + feature_type_name_,
-                    text_x,
-                    text_y,
-                    line_height,
-                    max_text_width,
-                    current_line,
+            const std::string* title_text = Fonts().getLocalesText(feature_info_domain_hash, title_key);
+            if (title_text) {
+                font->draw(
+                    *title_text,
+                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
             }
 
+            // 種別
+            if (!feature_type_name_.empty()) {
+                const std::string* type_label = Fonts().getLocalesText(feature_info_domain_hash, label_type_key);
+                if (type_label) {
+                    drawWrappedText(
+                        font,
+                        *type_label + " " + feature_type_name_,
+                        text_x,
+                        text_y,
+                        line_height,
+                        max_text_width,
+                        current_line,
+                        paxg::Color(0, 0, 0)
+                    );
+                }
+            }
+
             // 名前
             if (!feature_name_.empty()) {
-                const std::string name_label =
-                    (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
-                    reinterpret_cast<const char*>(u8"名称: ") : "Name: ";
-
-                drawWrappedText(
-                    font,
-                    name_label + feature_name_,
-                    text_x,
-                    text_y,
-                    line_height,
-                    max_text_width,
-                    current_line,
-                    paxg::Color(0, 0, 0)
-                );
+                const std::string* name_label = Fonts().getLocalesText(feature_info_domain_hash, label_name_key);
+                if (name_label) {
+                    drawWrappedText(
+                        font,
+                        *name_label + " " + feature_name_,
+                        text_x,
+                        text_y,
+                        line_height,
+                        max_text_width,
+                        current_line,
+                        paxg::Color(0, 0, 0)
+                    );
+                }
             }
 
             // 追加情報（extra_data）を表示
@@ -255,7 +271,7 @@ namespace paxs {
                 // 空行を追加
                 current_line++;
 
-                // 既知のカラム名のハッシュ
+                // 既知のカラム名のハッシュ（データファイルで使用されているキー）
                 const std::uint_least32_t location_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"所在地"));
                 const std::uint_least32_t type_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"種別"));
                 const std::uint_least32_t era_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"時代"));
@@ -265,33 +281,36 @@ namespace paxs {
 
                 // 既知のカラムを特定の順序で表示
                 struct KnownColumn {
-                    std::uint_least32_t hash;
-                    const char* label;
+                    std::uint_least32_t data_hash;  // データファイルのキーハッシュ
+                    std::uint_least32_t label_key;  // Localesのラベルキー
                 };
                 const KnownColumn known_columns[] = {
-                    {location_hash, reinterpret_cast<const char*>(u8"所在地")},
-                    {type_hash, reinterpret_cast<const char*>(u8"種別")},
-                    {era_hash, reinterpret_cast<const char*>(u8"時代")},
-                    {site_hash, reinterpret_cast<const char*>(u8"立地")},
-                    {altitude_hash, reinterpret_cast<const char*>(u8"標高")},
-                    {artifact_hash, reinterpret_cast<const char*>(u8"出土遺物")}
+                    {location_hash, extra_location_key},
+                    {type_hash, extra_type_key},
+                    {era_hash, extra_era_key},
+                    {site_hash, extra_site_key},
+                    {altitude_hash, extra_altitude_key},
+                    {artifact_hash, extra_artifact_key}
                 };
 
                 for (const auto& col : known_columns) {
-                    const auto iterator = extra_data_.find(col.hash);
+                    const auto iterator = extra_data_.find(col.data_hash);
                     if (iterator != extra_data_.end()) {
-                        const std::string display_text = std::string(col.label) + ": " + iterator->second;
+                        const std::string* label = Fonts().getLocalesText(feature_info_domain_hash, col.label_key);
+                        if (label) {
+                            const std::string display_text = *label + ": " + iterator->second;
 
-                        drawWrappedText(
-                            font,
-                            display_text,
-                            text_x,
-                            text_y,
-                            line_height,
-                            max_text_width,
-                            current_line,
-                            paxg::Color(0, 0, 0)
-                        );
+                            drawWrappedText(
+                                font,
+                                display_text,
+                                text_x,
+                                text_y,
+                                line_height,
+                                max_text_width,
+                                current_line,
+                                paxg::Color(0, 0, 0)
+                            );
+                        }
                     }
                 }
 
@@ -299,7 +318,7 @@ namespace paxs {
                 for (const auto& [hash, value] : extra_data_) {
                     bool is_known = false;
                     for (const auto& col : known_columns) {
-                        if (hash == col.hash) {
+                        if (hash == col.data_hash) {
                             is_known = true;
                             break;
                         }
@@ -334,13 +353,13 @@ namespace paxs {
         Rect<int> getRect() const override {
             // 動的に計算された高さを使用
             // 下部を固定し、上に伸びるように計算
-            const int panel_height = (calculated_height_ > 0) ? calculated_height_ : ui_layout_.feature_detail_panel_height;
+            const int panel_height = (calculated_height_ > 0) ? calculated_height_ : ui_layout_.feature_info_panel_height;
             const int panel_y = calculatePanelY();
 
             return Rect<int>(
-                ui_layout_.feature_detail_panel.x,
+                ui_layout_.feature_info_panel.x,
                 panel_y,
-                ui_layout_.feature_detail_panel.width,
+                ui_layout_.feature_info_panel.width,
                 panel_height
             );
         }
@@ -361,7 +380,7 @@ namespace paxs {
         }
 
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-        const char* getName() const override { return "FeatureDetailPanel"; }
+        const char* getName() const override { return "FeatureInfoPanel"; }
         void setPos(const Vector2<int>& /*pos*/) override {}
 
     private:
@@ -376,26 +395,26 @@ namespace paxs {
 
             // Featureの種別名を取得
             switch (selected_feature_->getType()) {
-                case FeatureType::Geographic:
-                    feature_type_name_ =
-                        (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"地理的特徴") : "Geographic Feature";
+                case FeatureType::Geographic: {
+                    const std::string* type_text = Fonts().getLocalesText(feature_info_domain_hash, type_geographic_key);
+                    feature_type_name_ = (type_text != nullptr) ? *type_text : "";
                     break;
-                case FeatureType::PlaceName:
-                    feature_type_name_ =
-                        (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"地名") : "Place Name";
+                }
+                case FeatureType::PlaceName: {
+                    const std::string* type_text = Fonts().getLocalesText(feature_info_domain_hash, type_place_name_key);
+                    feature_type_name_ = (type_text != nullptr) ? *type_text : "";
                     break;
-                case FeatureType::Genome:
-                    feature_type_name_ =
-                        (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"ゲノム") : "Genome";
+                }
+                case FeatureType::Genome: {
+                    const std::string* type_text = Fonts().getLocalesText(feature_info_domain_hash, type_genome_key);
+                    feature_type_name_ = (type_text != nullptr) ? *type_text : "";
                     break;
-                case FeatureType::Person:
-                    feature_type_name_ =
-                        (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ?
-                        reinterpret_cast<const char*>(u8"人物") : "Person";
+                }
+                case FeatureType::Person: {
+                    const std::string* type_text = Fonts().getLocalesText(feature_info_domain_hash, type_person_key);
+                    feature_type_name_ = (type_text != nullptr) ? *type_text : "";
                     break;
+                }
                 default:
                     feature_type_name_ = "";
                     break;
@@ -443,4 +462,4 @@ namespace paxs {
 
 } // namespace paxs
 
-#endif // !PAX_MAHOROBA_FEATURE_DETAIL_PANEL_HPP
+#endif // !PAX_MAHOROBA_feature_info_panel_HPP

@@ -28,7 +28,7 @@
 #include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
-#include <PAX_MAHOROBA/UI/Feature/FeatureDetailPanel.hpp>
+#include <PAX_MAHOROBA/UI/Feature/FeatureInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Widget/UIPanelBackground.hpp>
 
@@ -55,8 +55,8 @@ namespace paxs {
         paxs::UIPanelBackground calendar_bg_;
         paxs::DebugInfoPanel debug_info_panel;
         paxs::UIPanelBackground debug_info_bg_;
-        paxs::FeatureDetailPanel feature_detail_panel;
-        paxs::UIPanelBackground feature_detail_bg_;
+        paxs::FeatureInfoPanel feature_info_panel;
+        paxs::UIPanelBackground feature_info_bg_;
 #ifdef PAXS_USING_SIMULATOR
         paxs::SimulationPanel simulation_panel;
         paxs::UIPanelBackground simulation_bg_;
@@ -110,7 +110,7 @@ namespace paxs {
                     // 背景の可視性をパネルと同期
                     calendar_bg_.setVisible(calendar_panel.isVisible());
                     debug_info_bg_.setVisible(debug_info_panel.isVisible());
-                    feature_detail_bg_.setVisible(feature_detail_panel.isVisible());
+                    feature_info_bg_.setVisible(feature_info_panel.isVisible());
 #ifdef PAXS_USING_SIMULATOR
                     simulation_bg_.setVisible(simulation_panel.isVisible());
                     settlement_status_bg_.setVisible(settlement_status_panel.isVisible());
@@ -122,8 +122,8 @@ namespace paxs {
             event_bus.subscribe<FeatureSelectedEvent>(
                 [this](const FeatureSelectedEvent& event) {
                     (void)event;
-                    // FeatureDetailPanelが表示されるので背景も表示
-                    feature_detail_bg_.setVisible(true);
+                    // FeatureInfoPanelが表示されるので背景も表示
+                    feature_info_bg_.setVisible(true);
                 }
             );
 
@@ -131,8 +131,8 @@ namespace paxs {
             event_bus.subscribe<FeatureDeselectedEvent>(
                 [this](const FeatureDeselectedEvent& event) {
                     (void)event;
-                    // FeatureDetailPanelが非表示になるので背景も非表示
-                    feature_detail_bg_.setVisible(false);
+                    // FeatureInfoPanelが非表示になるので背景も非表示
+                    feature_info_bg_.setVisible(false);
                 }
             );
 
@@ -168,14 +168,14 @@ namespace paxs {
             : visible_manager(app_state_manager.getVisibilityManager()),
               calendar_panel(ui_layout, visible_manager, app_state_manager),
               debug_info_panel(ui_layout, visible_manager, app_state_manager.getMapViewport(), app_state_manager.getKoyomi()),
-              feature_detail_panel(ui_layout, visible_manager),
+              feature_info_panel(ui_layout, visible_manager),
 #ifdef PAXS_USING_SIMULATOR
               settlement_status_panel(visible_manager),
               simulation_panel(visible_manager, app_state_manager, ui_layout),
 #endif
               calendar_bg_("CalendarBackground", &ui_layout.calendar_panel),
               debug_info_bg_("DebugInfoBackground", &ui_layout.debug_info_panel),
-              feature_detail_bg_("FeatureDetailBackground", &feature_detail_panel)
+              feature_info_bg_("FeatureInfoBackground", &feature_info_panel)
 #ifdef PAXS_USING_SIMULATOR
               , simulation_bg_("SimulationBackground", &ui_layout.simulation_panel)
               , settlement_status_bg_("SettlementStatusBackground", &ui_layout.settlement_status_panel)
@@ -188,8 +188,8 @@ namespace paxs {
             panels.emplace_back(&calendar_bg_);
             panels.emplace_back(&debug_info_panel);
             panels.emplace_back(&debug_info_bg_);
-            panels.emplace_back(&feature_detail_panel);
-            panels.emplace_back(&feature_detail_bg_);
+            panels.emplace_back(&feature_info_panel);
+            panels.emplace_back(&feature_info_bg_);
 #ifdef PAXS_USING_SIMULATOR
             panels.emplace_back(&simulation_panel);
             panels.emplace_back(&simulation_bg_);
@@ -227,7 +227,7 @@ namespace paxs {
             // 背景の可視性をパネルと同期
             calendar_bg_.setVisible(calendar_panel.isVisible());
             debug_info_bg_.setVisible(debug_info_panel.isVisible());
-            feature_detail_bg_.setVisible(feature_detail_panel.isVisible());
+            feature_info_bg_.setVisible(feature_info_panel.isVisible());
         }
 
         void render() const override {
