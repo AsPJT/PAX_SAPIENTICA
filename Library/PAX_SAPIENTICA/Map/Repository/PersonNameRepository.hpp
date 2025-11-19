@@ -111,10 +111,6 @@ namespace paxs {
                     return;
                 }
 
-                // 人物名（多言語対応）
-                paxs::UnorderedMap<std::uint_least32_t, std::string> names =
-                    LocationDataLoader::loadNames(table, row_index, hashes, flags);
-
                 // 経度の変換
                 auto start_lon_opt = StringUtils::toDouble(start_longitude_str);
                 if (!start_lon_opt) {
@@ -157,7 +153,6 @@ namespace paxs {
                 // 格納
                 person_location_list.emplace_back(
                     person_key,
-                    names,
                     paxs::EquirectangularDeg(
                         paxs::Vector2<double>(
                             start_point_longitude, // 経度

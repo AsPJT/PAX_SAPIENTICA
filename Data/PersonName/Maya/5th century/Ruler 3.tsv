@@ -1,4 +1,4 @@
-en-US	start_longitude	start_latitude	end_longitude	end_latitude	first_julian_day	last_julian_day
-Ruler 3	-89.1425	14.8375	-89.1425	14.8375	1883958	1891262
-Ruler 3	-89.1425	14.8375	-89.1425	14.8375	1891262	1891263
-Ruler 3	-89.1425	14.8375	-89.1425	14.8375	1891263	1891293
+﻿start_longitude	start_latitude	end_longitude	end_latitude	first_julian_day	last_julian_day
+-89.1425	14.8375	-89.1425	14.8375	1883958	1891262
+-89.1425	14.8375	-89.1425	14.8375	1891262	1891263
+-89.1425	14.8375	-89.1425	14.8375	1891263	1891293

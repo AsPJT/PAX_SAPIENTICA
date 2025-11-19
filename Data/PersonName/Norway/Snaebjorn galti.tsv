@@ -1,4 +1,4 @@
-ja-JP	en-US	start_longitude	start_latitude	end_longitude	end_latitude	first_julian_day	last_julian_day
-スネーブヨルン・ガルティ	Snæbjörn galti	-19	65	-19	65	2053796	2078589
-スネーブヨルン・ガルティ	Snæbjörn galti	-19	65	-37.1833	65.5753	2078589	2078632
-スネーブヨルン・ガルティ	Snæbjörn galti	-37.1833	65.5753	-37.1833	65.5753	2078632	2078662
+﻿start_longitude	start_latitude	end_longitude	end_latitude	first_julian_day	last_julian_day
+-19	65	-19	65	2053796	2078589
+-19	65	-37.1833	65.5753	2078589	2078632
+-37.1833	65.5753	-37.1833	65.5753	2078632	2078662

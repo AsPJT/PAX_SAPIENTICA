@@ -159,6 +159,7 @@ namespace paxs {
     public:
         /// @brief 多言語名を読み込む
         /// @brief Load multilingual names
+        // TODO: locales対応したら削除
         static paxs::UnorderedMap<std::uint_least32_t, std::string> loadNames(
             const TsvTable& table,
             std::size_t row_index,
