@@ -416,16 +416,18 @@ namespace paxs {
         /// @brief Get text from Locales with currently selected language (hash key version)
         /// @param domain_key ドメインキー（ハッシュ値） / Domain key (hash value)
         /// @param text_key テキストキー（ハッシュ値） / Text key (hash value)
+        /// @param suppress_warning 警告を抑制するか（デフォルト: false） / Suppress warning (default: false)
         /// @return テキストへのポインタ、見つからない場合はnullptr / Pointer to text, nullptr if not found
         const std::string* getLocalesText(
             const std::uint_least32_t domain_key,
-            const std::uint_least32_t text_key) const {
+            const std::uint_least32_t text_key,
+            const bool suppress_warning = false) const {
 
             // 選択されている言語のキーを取得
             const std::uint_least32_t selected_lang_key = select_language_.getKey();
 
             // Localesからテキストを取得（3つのハッシュキーを使用）
-            return locales_.getStringPtr(domain_key, text_key, selected_lang_key);
+            return locales_.getStringPtr(domain_key, text_key, selected_lang_key, suppress_warning);
         }
 
     };

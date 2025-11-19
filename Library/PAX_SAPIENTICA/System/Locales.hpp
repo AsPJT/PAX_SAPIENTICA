@@ -266,12 +266,14 @@ namespace paxs {
         /// @param domain_path ドメインパス / Domain path
         /// @param text_key テキストキー（文字列） / Text key (string)
         /// @param locale_name ロケール名 / Locale name
+        /// @param suppress_warning 警告を抑制するか（デフォルト: false） / Suppress warning (default: false)
         /// @return テキストへのポインタ、見つからない場合はnullptr
         ///         Pointer to text string, nullptr if not found
         const std::string* getStringPtr(
             const std::string& domain_path,
             const std::string& text_key,
-            const std::string& locale_name) const {
+            const std::string& locale_name,
+            const bool suppress_warning = false) const {
 
             const std::uint_least32_t domain_key = MurMur3::calcHash(
                 domain_path.size(),
@@ -286,7 +288,7 @@ namespace paxs {
                 locale_name.c_str()
             );
 
-            return getStringPtr(domain_key, text_key_hash, locale_key);
+            return getStringPtr(domain_key, text_key_hash, locale_key, suppress_warning);
         }
 
         /// @brief テキストを取得（ハッシュキー版）
@@ -294,6 +296,7 @@ namespace paxs {
         /// @param domain_key ドメインキー（ハッシュ値） / Domain key (hash value)
         /// @param text_key テキストキー（ハッシュ値） / Text key (hash value)
         /// @param locale_key ロケールキー（ハッシュ値） / Locale key (hash value)
+        /// @param suppress_warning 警告を抑制するか（デフォルト: false） / Suppress warning (default: false)
         /// @return テキストへのポインタ、見つからない場合はnullptr
         ///         Pointer to text string, nullptr if not found
         /// @details 指定言語で見つからない場合、フォールバック言語のテキストを返す
@@ -301,7 +304,8 @@ namespace paxs {
         const std::string* getStringPtr(
             const std::uint_least32_t domain_key,
             const std::uint_least32_t text_key,
-            const std::uint_least32_t locale_key) const {
+            const std::uint_least32_t locale_key,
+            const bool suppress_warning = false) const {
 
             // 指定されたロケールでテキストを検索
             CombinedKey combined_key{domain_key, text_key, locale_key};
@@ -315,7 +319,9 @@ namespace paxs {
             const auto fallback_it = fallback_text_key_.find(dt_key);
             if (fallback_it == fallback_text_key_.end()) {
                 // テキストキー自体が登録されていない
-                PAXS_WARNING("[Locales::getStringPtr] Fallback key NOT found - returning nullptr");
+                if (!suppress_warning) {
+                    PAXS_WARNING("[Locales::getStringPtr] Fallback key NOT found - returning nullptr");
+                }
                 return nullptr;
             }
 

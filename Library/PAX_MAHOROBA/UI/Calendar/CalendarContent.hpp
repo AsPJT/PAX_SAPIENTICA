@@ -31,6 +31,12 @@ namespace paxs {
     /// @brief カレンダーコンテンツの描画クラス
     class CalendarContent : public IRenderable {
     private:
+        // Locales ドメインキー定数
+        static constexpr std::uint_least32_t CALENDAR_TYPE_DOMAIN_KEY = MurMur3::calcHash("Calendar/CalendarType");
+        static constexpr std::uint_least32_t CALENDAR_GENGO_DOMAIN_KEY = MurMur3::calcHash("Calendar/Gengo");
+        static constexpr std::uint_least32_t CALENDAR_CHINESE_DOMAIN_KEY = MurMur3::calcHash("Calendar/Chinese");
+        // static constexpr std::uint_least32_t CALENDAR_SUEKI_DOMAIN_KEY = MurMur3::calcHash("Calendar/Sueki"); // 将来の実装用
+
         // 描画に必要な参照（render呼び出し時に設定される）
         const paxs::Koyomi& koyomi_;
         const paxs::UILayout& ui_layout_;
@@ -62,10 +68,20 @@ namespace paxs {
                 int date_day = 0;
                 bool date_lm = false;
 
-                // 暦の読み方を返す
-                const std::string* const text_str = Fonts().getText(
+                // 日付の型に応じてドメインを選択
+                std::uint_least32_t domain_key = CALENDAR_TYPE_DOMAIN_KEY;
+                if (std::holds_alternative<cal::JapanDate>(koyomi_.date_list[i].date)) {
+                    domain_key = CALENDAR_GENGO_DOMAIN_KEY;
+                }
+                else if (std::holds_alternative<cal::ChinaDate>(koyomi_.date_list[i].date)) {
+                    domain_key = CALENDAR_CHINESE_DOMAIN_KEY;
+                }
+
+                // 暦の読み方を返す（存在しない時代の暦はnullptrが返る想定なので警告抑制）
+                const std::string* const text_str = Fonts().getLocalesText(
+                    domain_key,
                     koyomi_.date_list[i].calendar_name_key,
-                    LanguageDomain::UI
+                    true  // suppress_warning = true
                 );
                 if (text_str == nullptr) {
                     // 暦が存在しない時代のため、スキップ
@@ -166,6 +182,15 @@ namespace paxs {
                 bool date_lm = false;
                 const int en_cal_name_pos_x = 85;
 
+                // 日付の型に応じてドメインを選択
+                std::uint_least32_t domain_key = CALENDAR_TYPE_DOMAIN_KEY;
+                if (std::holds_alternative<cal::JapanDate>(koyomi_.date_list[i].date)) {
+                    domain_key = CALENDAR_GENGO_DOMAIN_KEY;
+                }
+                else if (std::holds_alternative<cal::ChinaDate>(koyomi_.date_list[i].date)) {
+                    domain_key = CALENDAR_CHINESE_DOMAIN_KEY;
+                }
+
                 // 暦描画フォントを指定
                 paxg::Font* one_font = Fonts().getFont(
                     Fonts().getSelectedLanguage().getKey(),
@@ -177,10 +202,11 @@ namespace paxs {
                     continue;
                 }
 
-                // 暦の読み方を返す
-                const std::string* const text_str = Fonts().getText(
+                // 暦の読み方を返す（存在しない時代の暦はnullptrが返る想定なので警告抑制）
+                const std::string* const text_str = Fonts().getLocalesText(
+                    domain_key,
                     koyomi_.date_list[i].calendar_name_key,
-                    LanguageDomain::UI
+                    true  // suppress_warning = true
                 );
                 if (text_str == nullptr) {
                     // 暦が存在しない時代のため、スキップ
