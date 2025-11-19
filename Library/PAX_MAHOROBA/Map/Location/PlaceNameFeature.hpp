@@ -67,6 +67,7 @@ public:
             return *name;
         }
         // フォールバック: keyをそのまま返す
+        PAXS_WARNING("[PlaceNameFeature] Missing localized name for key: " + data_.key + " - using key as fallback");
         return data_.key;
     }
 

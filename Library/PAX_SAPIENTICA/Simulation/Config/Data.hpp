@@ -73,10 +73,9 @@ namespace paxs {
             return itr->second;
         }
 
-        /// @brief Get the data of the key.
-        /// @brief キーをvectorで取得
-        /// @return keyのvector
-        constexpr void getKeys(std::vector<DataGridsType>& keys) const noexcept {
+        /// @brief Append all stored keys to the specified vector.
+        /// @brief 登録済みのキーをベクターに追記する
+        constexpr void appendKeys(std::vector<DataGridsType>& keys) const noexcept {
             keys.reserve(data.size());
             for (const auto& [key, value] : data) {
                 keys.emplace_back(key);

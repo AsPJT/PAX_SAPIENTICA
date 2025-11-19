@@ -53,6 +53,15 @@ namespace paxs {
         static constexpr std::uint_least32_t extra_altitude_key = MurMur3::calcHash("extra_altitude");
         static constexpr std::uint_least32_t extra_artifact_key = MurMur3::calcHash("extra_artifact");
 
+        // データファイルで使用されているキーのハッシュ（日本語キー）
+        // TODO: 英語キー対応
+        static constexpr std::uint_least32_t location_hash = MurMur3::calcHash("所在地");
+        static constexpr std::uint_least32_t type_hash = MurMur3::calcHash("種別");
+        static constexpr std::uint_least32_t era_hash = MurMur3::calcHash("時代");
+        static constexpr std::uint_least32_t site_hash = MurMur3::calcHash("立地");
+        static constexpr std::uint_least32_t altitude_hash = MurMur3::calcHash("標高");
+        static constexpr std::uint_least32_t artifact_hash = MurMur3::calcHash("出土遺物");
+
         const UILayout& ui_layout_;
         const paxs::FeatureVisibilityManager& visible_manager_;
 
@@ -271,26 +280,18 @@ namespace paxs {
                 // 空行を追加
                 current_line++;
 
-                // 既知のカラム名のハッシュ（データファイルで使用されているキー）
-                const std::uint_least32_t location_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"所在地"));
-                const std::uint_least32_t type_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"種別"));
-                const std::uint_least32_t era_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"時代"));
-                const std::uint_least32_t site_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"立地"));
-                const std::uint_least32_t altitude_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"標高"));
-                const std::uint_least32_t artifact_hash = MurMur3::calcHash(reinterpret_cast<const char*>(u8"出土遺物"));
-
                 // 既知のカラムを特定の順序で表示
                 struct KnownColumn {
                     std::uint_least32_t data_hash;  // データファイルのキーハッシュ
                     std::uint_least32_t label_key;  // Localesのラベルキー
                 };
-                const KnownColumn known_columns[] = {
-                    {location_hash, extra_location_key},
-                    {type_hash, extra_type_key},
-                    {era_hash, extra_era_key},
-                    {site_hash, extra_site_key},
-                    {altitude_hash, extra_altitude_key},
-                    {artifact_hash, extra_artifact_key}
+                const std::array known_columns = {
+                    KnownColumn(location_hash, extra_location_key),
+                    KnownColumn(type_hash, extra_type_key),
+                    KnownColumn(era_hash, extra_era_key),
+                    KnownColumn(site_hash, extra_site_key),
+                    KnownColumn(altitude_hash, extra_altitude_key),
+                    KnownColumn(artifact_hash, extra_artifact_key)
                 };
 
                 for (const auto& col : known_columns) {

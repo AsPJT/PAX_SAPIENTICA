@@ -115,7 +115,7 @@ namespace paxs {
         /// @brief Get the land position list.
         /// @brief 陸の位置リストの取得
         void getLandPositions(std::vector<DataGridsType>& keys) const {
-            std::get<Data<std::uint_least8_t>>(*data_map.at(SimulationConstants::getInstance().land_key)).getKeys(keys);
+            std::get<Data<std::uint_least8_t>>(*data_map.at(SimulationConstants::getInstance().land_key)).appendKeys(keys);
         }
 
         /// @brief Is it possible to live?

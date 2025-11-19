@@ -338,7 +338,9 @@ namespace paxs {
             const auto fallback_text_it = text_dictionary_.find(fallback_key);
             if (fallback_text_it == text_dictionary_.end()) {
                 // フォールバックテキストも見つからない（内部エラー）
-                PAXS_ERROR("[Locales::getStringPtr] INTERNAL ERROR: fallback text not found in dictionary");
+                if (!suppress_warning) {
+                    PAXS_ERROR("[Locales::getStringPtr] INTERNAL ERROR: fallback text not found in dictionary");
+                }
                 return nullptr;
             }
 

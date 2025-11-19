@@ -109,29 +109,37 @@ namespace paxs {
         /// @return 表示するテキスト / Text to display
         std::string getStatusText() const {
             const std::string* text = nullptr;
+            std::uint_least32_t key = 0;
+
             switch (select_draw_) {
                 case 1:
-                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_population_key);
+                    key = display_mode_population_key;
                     break;
                 case 2:
-                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_farming_key);
+                    key = display_mode_farming_key;
                     break;
                 case 3:
-                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_mtdna_key);
+                    key = display_mode_mtdna_key;
                     break;
                 case 4:
-                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_snp_key);
+                    key = display_mode_snp_key;
                     break;
                 case 5:
-                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_language_key);
+                    key = display_mode_language_key;
                     break;
                 case 6:
-                    text = Fonts().getLocalesText(simulation_stats_domain_hash, display_mode_bronze_key);
+                    key = display_mode_bronze_key;
                     break;
                 default:
                     return "";
             }
-            return (text != nullptr) ? *text : "";
+
+            text = Fonts().getLocalesText(simulation_stats_domain_hash, key);
+            if (text == nullptr) {
+                PAXS_WARNING("[SettlementStatusPanel] Missing text for display mode " + std::to_string(select_draw_));
+                return "";
+            }
+            return *text;
         }
     };
 
