@@ -14,12 +14,36 @@
 
 #include <fstream>
 #include <string>
+#include <functional>
+#include <map>
 
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/TimeUtils.hpp>
 
 namespace paxs {
+
+    /// @brief 地区別統計データ
+    /// @brief District statistics data
+    struct DistrictStatistics {
+        std::size_t population = 0;
+        double snp_avg = 0.0;
+        double language_avg = 0.0;
+        std::map<std::uint_least8_t, int> mtdna_counts;
+        std::map<std::uint_least8_t, int> language_counts;
+    };
+
+    /// @brief ステップ統計データ
+    /// @brief Step statistics data
+    struct StepStatistics {
+        int step_count = 0;
+        std::size_t settlement_count = 0;
+        std::size_t population_count = 0;
+        std::vector<DistrictStatistics> district_stats;
+        std::vector<DistrictStatistics> region_stats;
+        std::function<std::string(std::uint_least8_t)> get_mtdna_name;
+        std::function<std::string(std::uint_least8_t)> get_language_name;
+    };
 
     /// @brief シミュレーション結果をファイルに出力するクラス
     /// @brief Class for writing simulation results to files
@@ -60,6 +84,7 @@ namespace paxs {
         std::string result_directory_;
         std::string labeled_directory_;
         bool is_labeled_output_enabled_ = false;
+        bool live_header_written_ = false;
 
         /// @brief 現在の日時を文字列として取得
         /// @brief Get current date and time as string
@@ -267,54 +292,121 @@ namespace paxs {
             is_labeled_output_enabled_ = false;
         }
 
-        /// @brief ステップごとの結果を書き込む
-        /// @brief Write results for each step
-        /// @param step_count 現在のステップ数 / Current step count
-        /// @param data 出力するデータ / Data to output
-        template<typename T>
-        void writeStepData(int step_count, const T& data, std::ofstream& ofs) {
-            if (!ofs.is_open()) return;
-
-            ofs << step_count << ",";
-            for (std::size_t i = 0; i < data.size() - 1; ++i) {
-                ofs << data[i] << ",";
+        /// @brief 可住地情報を書き込む
+        /// @brief Write habitable land information
+        /// @param district_name 地区名 / District name
+        /// @param habitable_land_count 可住地数 / Habitable land count
+        void writeHabitableLand(const std::string& district_name, std::size_t habitable_land_count) {
+            if (live_ofs.is_open()) {
+                if (!live_header_written_) {
+                    live_ofs << "district\thabitable_land\n";
+                    live_header_written_ = true;
+                }
+                live_ofs << district_name << '\t' << habitable_land_count << '\n';
             }
-            ofs << data[data.size() - 1] << std::endl;
         }
 
-        /// @brief ファイルストリームへのアクセスを提供（後方互換性のため）
-        /// @brief Provide access to file streams (for backward compatibility)
-        std::ofstream& getPopulationStream() { return pop_ofs; }
-        std::ofstream& getMtDNAStream() { return mtdna_ofs; }
-        std::ofstream& getLanguageDNAStream() { return language_dna_ofs; }
-        std::ofstream& getSNPStream() { return snp_ofs; }
-        std::ofstream& getLanguageStream() { return language_ofs; }
-        std::ofstream& getLiveStream() { return live_ofs; }
+        /// @brief ステップごとの統計データを書き込む
+        /// @brief Write statistics for each step
+        /// @param stats 統計データ / Statistics data
+        void writeStepStatistics(const StepStatistics& stats) {
+            writeStepStatisticsToStreams(stats,
+                pop_ofs, mtdna_ofs, language_dna_ofs, snp_ofs, language_ofs,
+                pop_region_ofs, mtdna_region_ofs, language_dna_region_ofs, snp_region_ofs, language_region_ofs
+            );
 
-        std::ofstream& getPopulationRegionStream() { return pop_region_ofs; }
-        std::ofstream& getMtDNARegionStream() { return mtdna_region_ofs; }
-        std::ofstream& getLanguageDNARegionStream() { return language_dna_region_ofs; }
-        std::ofstream& getSNPRegionStream() { return snp_region_ofs; }
-        std::ofstream& getLanguageRegionStream() { return language_region_ofs; }
-        std::ofstream& getLiveRegionStream() { return live_region_ofs; }
+            // ラベル付き出力
+            if (is_labeled_output_enabled_) {
+                writeStepStatisticsToStreams(stats,
+                    labeled_pop_ofs, labeled_mtdna_ofs, labeled_language_dna_ofs, labeled_snp_ofs, labeled_language_ofs,
+                    labeled_pop_region_ofs, labeled_mtdna_region_ofs, labeled_language_dna_region_ofs, labeled_snp_region_ofs, labeled_language_region_ofs
+                );
+            }
+        }
 
-        std::ofstream& getLabeledPopulationStream() { return labeled_pop_ofs; }
-        std::ofstream& getLabeledMtDNAStream() { return labeled_mtdna_ofs; }
-        std::ofstream& getLabeledLanguageDNAStream() { return labeled_language_dna_ofs; }
-        std::ofstream& getLabeledSNPStream() { return labeled_snp_ofs; }
-        std::ofstream& getLabeledLanguageStream() { return labeled_language_ofs; }
-        std::ofstream& getLabeledLiveStream() { return labeled_live_ofs; }
+    private:
+        /// @brief ファイルストリームに統計データを書き込む
+        /// @brief Write statistics to file streams
+        struct OutputStreams {
+            std::ofstream& pop;
+            std::ofstream& mtdna;
+            std::ofstream& lang_dna;
+            std::ofstream& snp;
+            std::ofstream& lang;
+            std::ofstream& pop_reg;
+            std::ofstream& mtdna_reg;
+            std::ofstream& lang_dna_reg;
+            std::ofstream& snp_reg;
+            std::ofstream& lang_reg;
+        };
 
-        std::ofstream& getLabeledPopulationRegionStream() { return labeled_pop_region_ofs; }
-        std::ofstream& getLabeledMtDNARegionStream() { return labeled_mtdna_region_ofs; }
-        std::ofstream& getLabeledLanguageDNARegionStream() { return labeled_language_dna_region_ofs; }
-        std::ofstream& getLabeledSNPRegionStream() { return labeled_snp_region_ofs; }
-        std::ofstream& getLabeledLanguageRegionStream() { return labeled_language_region_ofs; }
-        std::ofstream& getLabeledLiveRegionStream() { return labeled_live_region_ofs; }
+        void writeStepStatisticsToStreams(
+            const StepStatistics& stats,
+            std::ofstream& pop, std::ofstream& mtdna, std::ofstream& lang_dna, std::ofstream& snp, std::ofstream& lang,
+            std::ofstream& pop_reg, std::ofstream& mtdna_reg, std::ofstream& lang_dna_reg, std::ofstream& snp_reg, std::ofstream& lang_reg
+        ) {
+            const int sc = stats.step_count;
+            const std::size_t set_count = stats.settlement_count;
+            const std::size_t pop_count = stats.population_count;
 
-        /// @brief ラベル出力が有効かどうか
-        /// @brief Whether labeled output is enabled
-        bool isLabeledOutputEnabled() const { return is_labeled_output_enabled_; }
+            // ヘッダー行
+            pop << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            mtdna << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            lang_dna << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            snp << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            lang << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            pop_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            mtdna_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            lang_dna_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            snp_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            lang_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
+
+            // 地区別統計
+            for (const auto& stat : stats.district_stats) {
+                pop << stat.population << '\t';
+                snp << stat.snp_avg << '\t';
+                lang << stat.language_avg << '\t';
+
+                for (const auto& [haplotype, count] : stat.mtdna_counts) {
+                    if (count > 0) mtdna << stats.get_mtdna_name(haplotype) << ':' << count << '/';
+                }
+                mtdna << '\t';
+
+                for (const auto& [language_id, count] : stat.language_counts) {
+                    if (count > 0) lang_dna << stats.get_language_name(language_id) << ':' << count << '/';
+                }
+                lang_dna << '\t';
+            }
+
+            // 地域別統計
+            for (const auto& stat : stats.region_stats) {
+                pop_reg << stat.population << '\t';
+                snp_reg << stat.snp_avg << '\t';
+                lang_reg << stat.language_avg << '\t';
+
+                for (const auto& [haplotype, count] : stat.mtdna_counts) {
+                    if (count > 0) mtdna_reg << stats.get_mtdna_name(haplotype) << ':' << count << '/';
+                }
+                mtdna_reg << '\t';
+
+                for (const auto& [language_id, count] : stat.language_counts) {
+                    if (count > 0) lang_dna_reg << stats.get_language_name(language_id) << ':' << count << '/';
+                }
+                lang_dna_reg << '\t';
+            }
+
+            // 終端
+            pop << sc << '\n';
+            mtdna << sc << '\n';
+            lang_dna << sc << '\n';
+            snp << sc << '\n';
+            lang << sc << '\n';
+            pop_reg << sc << '\n';
+            mtdna_reg << sc << '\n';
+            lang_dna_reg << sc << '\n';
+            snp_reg << sc << '\n';
+            lang_reg << sc << '\n';
+        }
     };
 
 } // namespace paxs

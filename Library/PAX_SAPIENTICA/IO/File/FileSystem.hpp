@@ -215,6 +215,18 @@ namespace paxs {
             return file_path.substr(0, last_slash);
         }
 
+        /// @brief Get filename from a file path.
+        /// @brief ファイルパスからファイル名を取得する。
+        /// @param relative_path アセットルートからの相対ファイルパス、または任意のパス文字列 / Relative file path from the asset root, or any path string.
+        /// @return ファイル名（拡張子込み） / Filename (with extension).
+        static std::string getFilename(const std::string& relative_path) noexcept {
+            std::size_t last_slash = relative_path.find_last_of("/\\");
+            if (last_slash == std::string::npos) {
+                return relative_path; // ディレクトリ区切りがない場合はそのまま返す
+            }
+            return relative_path.substr(last_slash + 1);
+        }
+
         /// @brief Write PNG image file.
         /// @brief PNGファイルに画像を書き込む。
         /// @param relative_path アセットルートからの相対パス / Relative path from the asset root.

@@ -13,7 +13,6 @@
 #define PAX_SAPIENTICA_SIMULATION_CONFIG_DATA_HPP
 
 #include <cmath>
-#include <filesystem>
 #include <regex>
 #include <stdexcept>
 #include <map>
@@ -501,10 +500,8 @@ namespace paxs {
 
         /// @brief Get X and Y coordinates from file name.
         /// @brief ファイルの名前からX座標とY座標を取得
-        // TODO: 動作確認
         Vector2 getXAndYFromFileName(const std::string& file_path) {
-            std::filesystem::path path(file_path);
-            std::string filename = path.filename().string();
+            std::string filename = FileSystem::getFilename(file_path);
 
             const std::regex pattern(R"((\w+)_(\d+)_(\d+)_(\d+)\.(\w+))");
             std::smatch matches;

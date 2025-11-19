@@ -184,9 +184,11 @@ namespace paxs {
             calcPop(); // 人口を計算
 
             // 可住地の数を出力
-            result_writer_->getLiveStream() << "district\thabitable_land\n";
             for (std::size_t i = 1; i < max_number_of_districts; ++i) {
-                result_writer_->getLiveStream() << japan_provinces->cgetDistrictList()[i].name << '\t' << (*live_list)[i + 1].habitable_land_positions.size() << '\n';
+                result_writer_->writeHabitableLand(
+                    japan_provinces->cgetDistrictList()[i].name,
+                    (*live_list)[i + 1].habitable_land_positions.size()
+                );
             }
         }
 
@@ -280,18 +282,16 @@ namespace paxs {
                         }
                     }
                 }
-                result_writer_->getPopulationStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                result_writer_->getMtDNAStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                result_writer_->getLanguageDNAStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                result_writer_->getSNPStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                result_writer_->getLanguageStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
 
-                result_writer_->getPopulationRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                result_writer_->getMtDNARegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                result_writer_->getLanguageDNARegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                result_writer_->getSNPRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                result_writer_->getLanguageRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                // Prepare district statistics
+                paxs::StepStatistics stats;
+                stats.step_count = step_count;
+                stats.settlement_count = sat_num;
+                stats.population_count = pop_num;
+                stats.get_mtdna_name = [this](std::uint_least8_t id) { return japan_provinces->getMtDNA_Name(id); };
+                stats.get_language_name = [this](std::uint_least8_t id) { return japan_provinces->getLanguage_Name(id); };
 
+                // Aggregate region stats and prepare district stats
                 for (std::size_t i = 1; i < max_number_of_districts; ++i) {
                     // 地域区分
                     const std::uint_least8_t region_id = static_cast<std::uint_least8_t>(japan_provinces->getJapanRegionId(static_cast<std::uint_least8_t>(i)));
@@ -301,104 +301,48 @@ namespace paxs {
                         region_snp[region_id] += static_cast<std::uint_least32_t>(ryosnp[i]);
                         region_language[region_id] += static_cast<std::uint_least32_t>(ryolanguage[i]);
                     }
-                    ryosnp[i] /= static_cast<double>(ryoset[i]);
-                    ryolanguage[i] /= static_cast<double>(ryoset[i]);
-                    result_writer_->getPopulationStream() << ryopop[i] << '\t';
-                    result_writer_->getSNPStream() << ryosnp[i] << '\t';
-                    result_writer_->getLanguageStream() << ryolanguage[i] << '\t';
+
+                    // Prepare district statistics
+                    paxs::DistrictStatistics district_stat;
+                    district_stat.population = ryopop[i];
+                    district_stat.snp_avg = ryosnp[i] / static_cast<double>(ryoset[i]);
+                    district_stat.language_avg = ryolanguage[i] / static_cast<double>(ryoset[i]);
+
                     for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
-                        if (int(mtdna_num[i][j]) == 0) continue;
-                        result_writer_->getMtDNAStream() << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
+                        if (int(mtdna_num[i][j]) > 0) {
+                            district_stat.mtdna_counts[static_cast<std::uint_least8_t>(j)] = int(mtdna_num[i][j]);
+                        }
                     }
-                    result_writer_->getMtDNAStream() << '\t';
                     for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
-                        if (int(language_num[i][j]) == 0) continue;
-                        result_writer_->getLanguageStream() << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_num[i][j]) << '/';
+                        if (int(language_num[i][j]) > 0) {
+                            district_stat.language_counts[static_cast<std::uint_least8_t>(j)] = int(language_num[i][j]);
+                        }
                     }
-                    result_writer_->getLanguageStream() << '\t';
+                    stats.district_stats.push_back(district_stat);
                 }
+
+                // Prepare region statistics
                 for (std::size_t region_id = 0; region_id < 10; ++region_id) {
-                    result_writer_->getPopulationRegionStream() << region_pop[region_id] << '\t';
-                    result_writer_->getSNPRegionStream() << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
-                    result_writer_->getLanguageRegionStream() << static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                    paxs::DistrictStatistics region_stat;
+                    region_stat.population = region_pop[region_id];
+                    region_stat.snp_avg = static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]);
+                    region_stat.language_avg = static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]);
+
                     for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
-                        if (int(mtdna_region_num[region_id][j]) == 0) continue;
-                        result_writer_->getMtDNARegionStream() << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
+                        if (int(mtdna_region_num[region_id][j]) > 0) {
+                            region_stat.mtdna_counts[static_cast<std::uint_least8_t>(j)] = int(mtdna_region_num[region_id][j]);
+                        }
                     }
-                    result_writer_->getMtDNARegionStream() << '\t';
                     for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
-                        if (int(language_region_num[region_id][j]) == 0) continue;
-                        result_writer_->getLanguageDNARegionStream() << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_region_num[region_id][j]) << '/';
+                        if (int(language_region_num[region_id][j]) > 0) {
+                            region_stat.language_counts[static_cast<std::uint_least8_t>(j)] = int(language_region_num[region_id][j]);
+                        }
                     }
-                    result_writer_->getLanguageDNARegionStream() << '\t';
+                    stats.region_stats.push_back(region_stat);
                 }
-                result_writer_->getPopulationStream() << step_count << '\n';
-                result_writer_->getMtDNAStream() << step_count << '\n';
-                result_writer_->getLanguageDNAStream() << step_count << '\n';
-                result_writer_->getSNPStream() << step_count << '\n';
-                result_writer_->getLanguageStream() << step_count << '\n';
 
-                result_writer_->getPopulationRegionStream() << step_count << '\n';
-                result_writer_->getMtDNARegionStream() << step_count << '\n';
-                result_writer_->getLanguageDNARegionStream() << step_count << '\n';
-                result_writer_->getSNPRegionStream() << step_count << '\n';
-                result_writer_->getLanguageRegionStream() << step_count << '\n';
-
-                if (result_writer_->isLabeledOutputEnabled()) {
-                    result_writer_->getLabeledPopulationStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    result_writer_->getLabeledMtDNAStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    result_writer_->getLabeledLanguageDNAStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    result_writer_->getLabeledSNPStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    result_writer_->getLabeledLanguageStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-
-                    result_writer_->getLabeledPopulationRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    result_writer_->getLabeledMtDNARegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    result_writer_->getLabeledLanguageDNARegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    result_writer_->getLabeledSNPRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    result_writer_->getLabeledLanguageRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-
-                    for (std::size_t i = 1; i < max_number_of_districts; ++i) {
-                        result_writer_->getLabeledPopulationStream() << ryopop[i] << '\t';
-                        result_writer_->getLabeledSNPStream() << ryosnp[i] << '\t';
-                        result_writer_->getLabeledLanguageStream() << ryolanguage[i] << '\t';
-                        for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
-                            if (int(mtdna_num[i][j]) == 0) continue;
-                            result_writer_->getLabeledMtDNAStream() << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
-                        }
-                        result_writer_->getLabeledMtDNAStream() << '\t';
-                        for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
-                            if (int(language_num[i][j]) == 0) continue;
-                            result_writer_->getLabeledLanguageDNAStream() << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_num[i][j]) << '/';
-                        }
-                        result_writer_->getLabeledLanguageDNAStream() << '\t';
-                    }
-                    for (std::size_t region_id = 0; region_id < 10; ++region_id) {
-                        result_writer_->getLabeledPopulationRegionStream() << region_pop[region_id] << '\t';
-                        result_writer_->getLabeledSNPRegionStream() << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
-                        result_writer_->getLabeledLanguageRegionStream() << static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
-                        for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
-                            if (int(mtdna_region_num[region_id][j]) == 0) continue;
-                            result_writer_->getLabeledMtDNARegionStream() << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
-                        }
-                        result_writer_->getLabeledMtDNARegionStream() << '\t';
-                        for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
-                            if (int(language_region_num[region_id][j]) == 0) continue;
-                            result_writer_->getLabeledLanguageDNARegionStream() << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_region_num[region_id][j]) << '/';
-                        }
-                        result_writer_->getLabeledLanguageDNARegionStream() << '\t';
-                    }
-                    result_writer_->getLabeledPopulationStream() << step_count << '\n';
-                    result_writer_->getLabeledMtDNAStream() << step_count << '\n';
-                    result_writer_->getLabeledLanguageDNAStream() << step_count << '\n';
-                    result_writer_->getLabeledSNPStream() << step_count << '\n';
-                    result_writer_->getLabeledLanguageStream() << step_count << '\n';
-
-                    result_writer_->getLabeledPopulationRegionStream() << step_count << '\n';
-                    result_writer_->getLabeledMtDNARegionStream() << step_count << '\n';
-                    result_writer_->getLabeledLanguageDNARegionStream() << step_count << '\n';
-                    result_writer_->getLabeledSNPRegionStream() << step_count << '\n';
-                    result_writer_->getLabeledLanguageRegionStream() << step_count << '\n';
-                }
+                // Write all statistics in one call
+                result_writer_->writeStepStatistics(stats);
             }
 
             std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
