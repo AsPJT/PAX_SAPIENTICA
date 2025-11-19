@@ -27,10 +27,13 @@
 #include <PAX_SAPIENTICA/Simulation/Entity/Settlement.hpp>
 #include <PAX_SAPIENTICA/Simulation/Entity/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Output/SimulationResultWriter.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Utility/StatusDisplayer.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/TimeUtils.hpp>
 #include <PAX_SAPIENTICA/Utility/UniqueIdentification.hpp>
+#include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
+#include <PAX_SAPIENTICA/Interface/ConsoleProgressReporter.hpp>
 
 namespace paxs {
 
@@ -55,45 +58,43 @@ namespace paxs {
         /// @param map_list_path マップリストファイルパス / Map list file path
         /// @param japan_provinces_path 行政区画ファイルパス / Provinces file path
         /// @param seed 乱数シード / Random seed
-        /// @param progress_callback 進捗コールバック（オプション） / Progress callback (optional)
-        template <typename ProgressCallback = std::nullptr_t>
         void setEnvironment(
             const std::string& map_list_path,
             const std::string& japan_provinces_path,
-            const unsigned seed = 0,
-            ProgressCallback&& progress_callback = nullptr
+            const unsigned seed = 0
         ) noexcept {
-            // 進捗報告のヘルパー関数
-            auto report_progress = [&](float progress) {
-                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
-                    progress_callback(progress);
-                }
-            };
-
-            report_progress(0.0f);
+            if (progress_reporter_) {
+                progress_reporter_->reportProgress(0.0f, "Starting environment setup...");
+            }
 
             environment.reset();
-            report_progress(0.05f);
+
+            if (progress_reporter_) {
+                progress_reporter_->reportProgress(0.05f, "Loading environment data...");
+            }
 
             // Environment読み込み（進捗: 5% - 80%）
-            environment = std::make_unique<Environment>(
-                map_list_path,
-                [&](float env_progress) {
-                    // Environmentの進捗（0.0-1.0）を全体の進捗（5%-80%）にマッピング
-                    const float overall = 0.05f + (env_progress * 0.75f);
-                    report_progress(overall);
-                }
-            );
-            report_progress(0.8f);
+            environment = std::make_unique<Environment>();
+            environment->setProgressReporter(progress_reporter_);
+            environment->loadFromFile(map_list_path);
+
+            if (progress_reporter_) {
+                progress_reporter_->reportProgress(0.8f, "Initializing random generator...");
+            }
 
             gen = std::mt19937(seed);
-            report_progress(0.85f);
+
+            if (progress_reporter_) {
+                progress_reporter_->reportProgress(0.85f, "Loading provinces data...");
+            }
 
             japan_provinces.reset();
-            report_progress(0.9f);
 
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
-            report_progress(1.0f);
+
+            if (progress_reporter_) {
+                progress_reporter_->reportProgress(1.0f, "Environment setup complete");
+            }
         }
 
         /// @brief シミュレーション入力データを再読み込み
@@ -158,144 +159,14 @@ namespace paxs {
         }
         // 集落の初期化時にシミュレーション変数を出力
         void initResults() {
-            if (pop_ofs.is_open()) pop_ofs.close();
-            if (mtdna_ofs.is_open()) mtdna_ofs.close();
-            if (language_dna_ofs.is_open()) language_dna_ofs.close();
-            if (snp_ofs.is_open()) snp_ofs.close();
-            if (language_ofs.is_open()) language_ofs.close();
-            if (live_ofs.is_open()) live_ofs.close();
-            if (pop_region_ofs.is_open()) pop_region_ofs.close();
-            if (mtdna_region_ofs.is_open()) mtdna_region_ofs.close();
-            if (language_dna_region_ofs.is_open()) language_dna_region_ofs.close();
-            if (snp_region_ofs.is_open()) snp_region_ofs.close();
-            if (language_region_ofs.is_open()) language_region_ofs.close();
-            if (live_region_ofs.is_open()) live_region_ofs.close();
-
-            if (labeled_pop_ofs.is_open()) labeled_pop_ofs.close();
-            if (labeled_mtdna_ofs.is_open()) labeled_mtdna_ofs.close();
-            if (labeled_language_dna_ofs.is_open()) labeled_language_dna_ofs.close();
-            if (labeled_snp_ofs.is_open()) labeled_snp_ofs.close();
-            if (labeled_language_ofs.is_open()) labeled_language_ofs.close();
-            if (labeled_live_ofs.is_open()) labeled_live_ofs.close();
-            if (labeled_pop_region_ofs.is_open()) labeled_pop_region_ofs.close();
-            if (labeled_mtdna_region_ofs.is_open()) labeled_mtdna_region_ofs.close();
-            if (labeled_language_dna_region_ofs.is_open()) labeled_language_dna_region_ofs.close();
-            if (labeled_snp_region_ofs.is_open()) labeled_snp_region_ofs.close();
-            if (labeled_language_region_ofs.is_open()) labeled_language_region_ofs.close();
-            if (labeled_live_region_ofs.is_open()) labeled_live_region_ofs.close();
-
-            const std::string result_dir = "SimulationResults/" + calcDateTime();
-            FileSystem::createDirectories(result_dir);
-            pop_ofs.open(result_dir + "/Population.txt");
-            mtdna_ofs.open(result_dir + "/mtDNA.txt");
-            language_dna_ofs.open(result_dir + "/Language_DNA.txt");
-            snp_ofs.open(result_dir + "/SNP.txt");
-            language_ofs.open(result_dir + "/Language.txt");
-            live_ofs.open(result_dir + "/HabitableLand.txt");
-
-            pop_region_ofs.open(result_dir + "/Region_Population.txt");
-            mtdna_region_ofs.open(result_dir + "/Region_mtDNA.txt");
-            language_dna_region_ofs.open(result_dir + "/Region_Language_DNA.txt");
-            snp_region_ofs.open(result_dir + "/Region_SNP.txt");
-            language_region_ofs.open(result_dir + "/Region_Language.txt");
-            live_region_ofs.open(result_dir + "/Region_HabitableLand.txt");
-
-            const std::string& label_name = SimulationConstants::getInstance().output_directory_name;
-            if (!label_name.empty()) {
-                const std::string timestamp = calcDateTime(); // タイムスタンプをここで一度だけ取得
-                const std::string labeled_base_dir = "LabeledSimulationResults/" + label_name;
-
-                // ディレクトリ作成
-                FileSystem::createDirectories(labeled_base_dir + "/Population");
-                FileSystem::createDirectories(labeled_base_dir + "/mtDNA");
-                FileSystem::createDirectories(labeled_base_dir + "/SNP");
-                FileSystem::createDirectories(labeled_base_dir + "/Language");
-                FileSystem::createDirectories(labeled_base_dir + "/Language_DNA");
-                FileSystem::createDirectories(labeled_base_dir + "/Region_Population");
-                FileSystem::createDirectories(labeled_base_dir + "/Region_mtDNA");
-                FileSystem::createDirectories(labeled_base_dir + "/Region_SNP");
-                FileSystem::createDirectories(labeled_base_dir + "/Region_Language");
-                FileSystem::createDirectories(labeled_base_dir + "/Region_Language_DNA");
-
-                // ファイルを開く
-                labeled_pop_ofs.open(labeled_base_dir + "/Population/" + timestamp + ".txt");
-                labeled_mtdna_ofs.open(labeled_base_dir + "/mtDNA/" + timestamp + ".txt");
-                labeled_language_dna_ofs.open(labeled_base_dir + "/Language_DNA/" + timestamp + ".txt");
-                labeled_snp_ofs.open(labeled_base_dir + "/SNP/" + timestamp + ".txt");
-                labeled_language_ofs.open(labeled_base_dir + "/Language/" + timestamp + ".txt");
-                labeled_pop_region_ofs.open(labeled_base_dir + "/Region_Population/" + timestamp + ".txt");
-                labeled_mtdna_region_ofs.open(labeled_base_dir + "/Region_mtDNA/" + timestamp + ".txt");
-                labeled_language_dna_region_ofs.open(labeled_base_dir + "/Region_Language_DNA/" + timestamp + ".txt");
-                labeled_snp_region_ofs.open(labeled_base_dir + "/Region_SNP/" + timestamp + ".txt");
-                labeled_language_region_ofs.open(labeled_base_dir + "/Region_Language/" + timestamp + ".txt");
-
-                // 新しいファイルにヘッダーを書き込む
-                outputResultString(labeled_pop_ofs);
-                outputResultString(labeled_mtdna_ofs);
-                outputResultString(labeled_language_dna_ofs);
-                outputResultString(labeled_snp_ofs);
-                outputResultString(labeled_language_ofs);
-                outputResultString(labeled_pop_region_ofs);
-                outputResultString(labeled_mtdna_region_ofs);
-                outputResultString(labeled_language_dna_region_ofs);
-                outputResultString(labeled_snp_region_ofs);
-                outputResultString(labeled_language_region_ofs);
-
-                for (std::size_t i = 0; i < max_number_of_districts - 1; ++i) {
-                    outputResultDistrictName(labeled_pop_ofs, i);
-                    outputResultDistrictName(labeled_mtdna_ofs, i);
-                    outputResultDistrictName(labeled_language_dna_ofs, i);
-                    outputResultDistrictName(labeled_snp_ofs, i);
-                    outputResultDistrictName(labeled_language_ofs, i);
-                }
-                outputResultLastString(labeled_pop_ofs);
-                outputResultLastString(labeled_mtdna_ofs);
-                outputResultLastString(labeled_language_dna_ofs);
-                outputResultLastString(labeled_snp_ofs);
-                outputResultLastString(labeled_language_ofs);
-                outputResultLastString(labeled_pop_region_ofs);
-                outputResultLastString(labeled_mtdna_region_ofs);
-                outputResultLastString(labeled_language_dna_region_ofs);
-                outputResultLastString(labeled_snp_region_ofs);
-                outputResultLastString(labeled_language_region_ofs);
-            }
-
-            outputResultString(pop_ofs);
-            outputResultString(mtdna_ofs);
-            outputResultString(language_dna_ofs);
-            outputResultString(snp_ofs);
-            outputResultString(language_ofs);
-
-            outputResultString(pop_region_ofs);
-            outputResultString(mtdna_region_ofs);
-            outputResultString(language_dna_region_ofs);
-            outputResultString(snp_region_ofs);
-            outputResultString(language_region_ofs);
-            for (std::size_t i = 0; i < max_number_of_districts - 1; ++i) {
-                outputResultDistrictName(pop_ofs, i);
-                outputResultDistrictName(mtdna_ofs, i);
-                outputResultDistrictName(language_dna_ofs, i);
-                outputResultDistrictName(snp_ofs, i);
-                outputResultDistrictName(language_ofs, i);
-            }
-            outputResultLastString(pop_ofs);
-            outputResultLastString(mtdna_ofs);
-            outputResultLastString(language_dna_ofs);
-            outputResultLastString(snp_ofs);
-            outputResultLastString(language_ofs);
-
-            outputResultLastString(pop_region_ofs);
-            outputResultLastString(mtdna_region_ofs);
-            outputResultLastString(language_dna_region_ofs);
-            outputResultLastString(snp_region_ofs);
-            outputResultLastString(language_region_ofs);
+            result_writer_ = std::make_unique<SimulationResultWriter>();
+            result_writer_->initialize(SimulationConstants::getInstance().output_directory_name, japan_provinces->cgetDistrictList());
         }
 
         /// @brief Initialize the simulator.
         /// @brief 集落の初期化
         /// @details 集落をクリアし、地域ごとに指定されたエージェント数になるようにランダムに配置する
-        template <typename ProgressCallback = std::nullptr_t>
-        void init(ProgressCallback&& progress_callback = nullptr) {
+        void init() {
             initResults();
             settlement_grids.clear();
             population_num = 0; // 人口数
@@ -309,13 +180,13 @@ namespace paxs {
             marriage_pos_list.clear();
 
             initRandomizeSettlements();
-            randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/, std::forward<ProgressCallback>(progress_callback));
+            randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/);
             calcPop(); // 人口を計算
 
             // 可住地の数を出力
-            live_ofs << "district\thabitable_land\n";
+            result_writer_->getLiveStream() << "district\thabitable_land\n";
             for (std::size_t i = 1; i < max_number_of_districts; ++i) {
-                live_ofs << japan_provinces->cgetDistrictList()[i].name << '\t' << (*live_list)[i + 1].habitable_land_positions.size() << '\n';
+                result_writer_->getLiveStream() << japan_provinces->cgetDistrictList()[i].name << '\t' << (*live_list)[i + 1].habitable_land_positions.size() << '\n';
             }
         }
 
@@ -323,7 +194,11 @@ namespace paxs {
         /// @brief シミュレーションを指定されたステップ数だけ実行する
         void run(const int step_count_) noexcept {
             for (int i = 0; i < step_count_; ++i) {
-                std::cout << "Step: " << i + 1 << std::endl;
+                if (progress_reporter_) {
+                    progress_reporter_->reportProgress(static_cast<float>(i) / static_cast<float>(step_count_), "Step: " + std::to_string(i + 1));
+                } else {
+                    std::cout << "Step: " << i + 1 << std::endl;
+                }
                 step();
             }
         }
@@ -405,17 +280,17 @@ namespace paxs {
                         }
                     }
                 }
-                pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                language_dna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                snp_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                language_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getPopulationStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getMtDNAStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getLanguageDNAStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getSNPStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getLanguageStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
 
-                pop_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                mtdna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                language_dna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                snp_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                language_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getPopulationRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getMtDNARegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getLanguageDNARegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getSNPRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                result_writer_->getLanguageRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
 
                 for (std::size_t i = 1; i < max_number_of_districts; ++i) {
                     // 地域区分
@@ -428,102 +303,101 @@ namespace paxs {
                     }
                     ryosnp[i] /= static_cast<double>(ryoset[i]);
                     ryolanguage[i] /= static_cast<double>(ryoset[i]);
-                    pop_ofs << ryopop[i] << '\t';
-                    snp_ofs << ryosnp[i] << '\t';
-                    language_ofs << ryolanguage[i] << '\t';
+                    result_writer_->getPopulationStream() << ryopop[i] << '\t';
+                    result_writer_->getSNPStream() << ryosnp[i] << '\t';
+                    result_writer_->getLanguageStream() << ryolanguage[i] << '\t';
                     for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
                         if (int(mtdna_num[i][j]) == 0) continue;
-                        mtdna_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
+                        result_writer_->getMtDNAStream() << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
                     }
-                    mtdna_ofs << '\t';
+                    result_writer_->getMtDNAStream() << '\t';
                     for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
                         if (int(language_num[i][j]) == 0) continue;
-                        language_ofs << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_num[i][j]) << '/';
+                        result_writer_->getLanguageStream() << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_num[i][j]) << '/';
                     }
-                    language_ofs << '\t';
+                    result_writer_->getLanguageStream() << '\t';
                 }
                 for (std::size_t region_id = 0; region_id < 10; ++region_id) {
-                    pop_region_ofs << region_pop[region_id] << '\t';
-                    snp_region_ofs << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
-                    language_region_ofs << static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                    result_writer_->getPopulationRegionStream() << region_pop[region_id] << '\t';
+                    result_writer_->getSNPRegionStream() << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                    result_writer_->getLanguageRegionStream() << static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
                     for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
                         if (int(mtdna_region_num[region_id][j]) == 0) continue;
-                        mtdna_region_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
+                        result_writer_->getMtDNARegionStream() << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
                     }
-                    mtdna_region_ofs << '\t';
+                    result_writer_->getMtDNARegionStream() << '\t';
                     for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
                         if (int(language_region_num[region_id][j]) == 0) continue;
-                        language_dna_region_ofs << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_region_num[region_id][j]) << '/';
+                        result_writer_->getLanguageDNARegionStream() << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_region_num[region_id][j]) << '/';
                     }
-                    language_dna_region_ofs << '\t';
+                    result_writer_->getLanguageDNARegionStream() << '\t';
                 }
-                pop_ofs << step_count << '\n';
-                mtdna_ofs << step_count << '\n';
-                language_dna_ofs << step_count << '\n';
-                snp_ofs << step_count << '\n';
-                language_ofs << step_count << '\n';
+                result_writer_->getPopulationStream() << step_count << '\n';
+                result_writer_->getMtDNAStream() << step_count << '\n';
+                result_writer_->getLanguageDNAStream() << step_count << '\n';
+                result_writer_->getSNPStream() << step_count << '\n';
+                result_writer_->getLanguageStream() << step_count << '\n';
 
-                pop_region_ofs << step_count << '\n';
-                mtdna_region_ofs << step_count << '\n';
-                language_dna_region_ofs << step_count << '\n';
-                snp_region_ofs << step_count << '\n';
-                language_region_ofs << step_count << '\n';
+                result_writer_->getPopulationRegionStream() << step_count << '\n';
+                result_writer_->getMtDNARegionStream() << step_count << '\n';
+                result_writer_->getLanguageDNARegionStream() << step_count << '\n';
+                result_writer_->getSNPRegionStream() << step_count << '\n';
+                result_writer_->getLanguageRegionStream() << step_count << '\n';
 
-                const std::string& label_name = SimulationConstants::getInstance().output_directory_name;
-                if (!label_name.empty()) {
-                    labeled_pop_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    labeled_mtdna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    labeled_language_dna_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    labeled_snp_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    labeled_language_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                if (result_writer_->isLabeledOutputEnabled()) {
+                    result_writer_->getLabeledPopulationStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledMtDNAStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledLanguageDNAStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledSNPStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledLanguageStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
 
-                    labeled_pop_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    labeled_mtdna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    labeled_language_dna_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    labeled_snp_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
-                    labeled_language_region_ofs << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledPopulationRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledMtDNARegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledLanguageDNARegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledSNPRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
+                    result_writer_->getLabeledLanguageRegionStream() << step_count << '\t' << sat_num << '\t' << pop_num << '\t';
 
                     for (std::size_t i = 1; i < max_number_of_districts; ++i) {
-                        labeled_pop_ofs << ryopop[i] << '\t';
-                        labeled_snp_ofs << ryosnp[i] << '\t';
-                        labeled_language_ofs << ryolanguage[i] << '\t';
+                        result_writer_->getLabeledPopulationStream() << ryopop[i] << '\t';
+                        result_writer_->getLabeledSNPStream() << ryosnp[i] << '\t';
+                        result_writer_->getLabeledLanguageStream() << ryolanguage[i] << '\t';
                         for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
                             if (int(mtdna_num[i][j]) == 0) continue;
-                            labeled_mtdna_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
+                            result_writer_->getLabeledMtDNAStream() << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_num[i][j]) << '/';
                         }
-                        labeled_mtdna_ofs << '\t';
+                        result_writer_->getLabeledMtDNAStream() << '\t';
                         for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
                             if (int(language_num[i][j]) == 0) continue;
-                            labeled_language_dna_ofs << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_num[i][j]) << '/';
+                            result_writer_->getLabeledLanguageDNAStream() << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_num[i][j]) << '/';
                         }
-                        labeled_language_dna_ofs << '\t';
+                        result_writer_->getLabeledLanguageDNAStream() << '\t';
                     }
                     for (std::size_t region_id = 0; region_id < 10; ++region_id) {
-                        labeled_pop_region_ofs << region_pop[region_id] << '\t';
-                        labeled_snp_region_ofs << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
-                        labeled_language_region_ofs << static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                        result_writer_->getLabeledPopulationRegionStream() << region_pop[region_id] << '\t';
+                        result_writer_->getLabeledSNPRegionStream() << static_cast<double>(region_snp[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
+                        result_writer_->getLabeledLanguageRegionStream() << static_cast<double>(region_language[region_id]) / static_cast<double>(region_set[region_id]) << '\t';
                         for (std::size_t j = 0; j < japan_provinces->getSizeMtDNA(); ++j) {
                             if (int(mtdna_region_num[region_id][j]) == 0) continue;
-                            labeled_mtdna_region_ofs << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
+                            result_writer_->getLabeledMtDNARegionStream() << japan_provinces->getMtDNA_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(mtdna_region_num[region_id][j]) << '/';
                         }
-                        labeled_mtdna_region_ofs << '\t';
+                        result_writer_->getLabeledMtDNARegionStream() << '\t';
                         for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
                             if (int(language_region_num[region_id][j]) == 0) continue;
-                            labeled_language_dna_region_ofs << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_region_num[region_id][j]) << '/';
+                            result_writer_->getLabeledLanguageDNARegionStream() << japan_provinces->getLanguage_Name(static_cast<std::uint_least8_t>(j)) << ':' << int(language_region_num[region_id][j]) << '/';
                         }
-                        labeled_language_dna_region_ofs << '\t';
+                        result_writer_->getLabeledLanguageDNARegionStream() << '\t';
                     }
-                    labeled_pop_ofs << step_count << '\n';
-                    labeled_mtdna_ofs << step_count << '\n';
-                    labeled_language_dna_ofs << step_count << '\n';
-                    labeled_snp_ofs << step_count << '\n';
-                    labeled_language_ofs << step_count << '\n';
+                    result_writer_->getLabeledPopulationStream() << step_count << '\n';
+                    result_writer_->getLabeledMtDNAStream() << step_count << '\n';
+                    result_writer_->getLabeledLanguageDNAStream() << step_count << '\n';
+                    result_writer_->getLabeledSNPStream() << step_count << '\n';
+                    result_writer_->getLabeledLanguageStream() << step_count << '\n';
 
-                    labeled_pop_region_ofs << step_count << '\n';
-                    labeled_mtdna_region_ofs << step_count << '\n';
-                    labeled_language_dna_region_ofs << step_count << '\n';
-                    labeled_snp_region_ofs << step_count << '\n';
-                    labeled_language_region_ofs << step_count << '\n';
+                    result_writer_->getLabeledPopulationRegionStream() << step_count << '\n';
+                    result_writer_->getLabeledMtDNARegionStream() << step_count << '\n';
+                    result_writer_->getLabeledLanguageDNARegionStream() << step_count << '\n';
+                    result_writer_->getLabeledSNPRegionStream() << step_count << '\n';
+                    result_writer_->getLabeledLanguageRegionStream() << step_count << '\n';
                 }
             }
 
@@ -663,6 +537,12 @@ namespace paxs {
         constexpr std::size_t cgetPopulationNum() const noexcept { return population_num; }
         constexpr std::size_t cgetSettlement() const noexcept { return settlement_num; }
 
+        /// @brief 進捗報告インターフェースを設定
+        /// @brief Set progress reporter
+        void setProgressReporter(IProgressReporter* reporter) {
+            progress_reporter_ = reporter;
+        }
+
     private:
         std::size_t population_num = 0; // 人口数
         std::size_t settlement_num = 0; // 集落数
@@ -699,48 +579,34 @@ namespace paxs {
         };
         std::unique_ptr<std::array<Live, max_number_of_districts + 1>> live_list;
 
-        std::ofstream pop_ofs;
-        std::ofstream mtdna_ofs;
-        std::ofstream language_dna_ofs;
-        std::ofstream snp_ofs;
-        std::ofstream language_ofs;
-        std::ofstream live_ofs;
-
-        std::ofstream pop_region_ofs;
-        std::ofstream mtdna_region_ofs;
-        std::ofstream language_dna_region_ofs;
-        std::ofstream snp_region_ofs;
-        std::ofstream language_region_ofs;
-        std::ofstream live_region_ofs;
-
-        // ラベル形式用のファイルストリーム
-        std::ofstream labeled_pop_ofs;
-        std::ofstream labeled_mtdna_ofs;
-        std::ofstream labeled_language_dna_ofs;
-        std::ofstream labeled_snp_ofs;
-        std::ofstream labeled_language_ofs;
-        std::ofstream labeled_live_ofs;
-        std::ofstream labeled_pop_region_ofs;
-        std::ofstream labeled_mtdna_region_ofs;
-        std::ofstream labeled_language_dna_region_ofs;
-        std::ofstream labeled_snp_region_ofs;
-        std::ofstream labeled_language_region_ofs;
-        std::ofstream labeled_live_region_ofs;
+        // シミュレーション結果出力クラス
+        std::unique_ptr<SimulationResultWriter> result_writer_;
 
         // 婚姻時に移動前の位置と移動後の位置を記録
         std::vector<GridType4> marriage_pos_list;
 
+        // 進捗報告インターフェース
+        IProgressReporter* progress_reporter_ = nullptr;
+
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
         bool initRandomizeSettlements() {
-            std::cout << "Randomize settlements..." << std::endl;
+            if (progress_reporter_ != nullptr) {
+                progress_reporter_->startProgress(0, "Randomize settlements...");
+            } else {
+                std::cout << "Randomize settlements..." << std::endl;
+            }
 
             environment->getLandPositions(land_positions);
 
             live_list = std::unique_ptr<std::array<Live, max_number_of_districts + 1>>(new std::array<Live, max_number_of_districts + 1>());
 
             if (live_list.get() == nullptr) {
-                std::cout << "Low memory" << std::endl;
+                if (progress_reporter_ != nullptr) {
+                    progress_reporter_->reportProgress(0.0f, "Low memory");
+                } else {
+                    std::cout << "Low memory" << std::endl;
+                }
                 return false; // 処理失敗
             }
 
@@ -778,19 +644,11 @@ namespace paxs {
 
         /// @brief Randomly place settlements.
         /// @brief 集落をランダムに配置する
-        template <typename ProgressCallback = std::nullptr_t>
         void randomizeSettlements(
             bool is_ad200,
             bool is_farming, // 渡来人であるか？
-            bool is_bronze, // 青銅文化であるか？
-            ProgressCallback&& progress_callback = nullptr
+            bool is_bronze // 青銅文化であるか？
         ) noexcept {
-            // 進捗報告のヘルパー関数
-            auto report_progress = [&](float progress) {
-                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
-                    progress_callback(progress);
-                }
-            };
             // 地区 ID の最大値
             std::uint_least8_t district_id_max = 0;
 
@@ -825,9 +683,12 @@ namespace paxs {
                     district_population_map.find(district_id) != district_population_map.end() // 地区が残っている間
                     ) {
                     if (step_count == 0) {
-                        StatusDisplayer::displayProgressBar(population_sum, all_population);
-                        if (all_population > 0) {
-                            report_progress(static_cast<float>(population_sum) / static_cast<float>(all_population));
+                        if (progress_reporter_ != nullptr) {
+                            if (all_population > 0) {
+                                progress_reporter_->reportProgress(static_cast<float>(population_sum) / static_cast<float>(all_population), "Randomizing settlements...");
+                            }
+                        } else {
+                            StatusDisplayer::displayProgressBar(population_sum, all_population);
                         }
                     }
 
@@ -914,9 +775,12 @@ namespace paxs {
                 }
             }
             if (step_count == 0) {
-                StatusDisplayer::displayProgressBar(all_population, all_population);
-                report_progress(1.0f); // 完了
-                std::cout << std::endl;
+                if (progress_reporter_ != nullptr) {
+                    progress_reporter_->endProgress();
+                } else {
+                    StatusDisplayer::displayProgressBar(all_population, all_population);
+                    std::cout << std::endl;
+                }
             }
             // 地区の人口が残っている場合は、ランダムに配置
             for (auto& district_population : district_population_map) {
@@ -969,7 +833,11 @@ namespace paxs {
             }
 
             if (step_count == 0) {
-                std::cout << "Done." << std::endl;
+                if (progress_reporter_ != nullptr) {
+                    progress_reporter_->reportProgress(1.0f, "Done.");
+                } else {
+                    std::cout << "Done." << std::endl;
+                }
             }
         }
 

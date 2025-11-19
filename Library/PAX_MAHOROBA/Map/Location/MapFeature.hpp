@@ -15,12 +15,11 @@
 #include <cstdint>
 #include <string>
 
-#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
 
 namespace paxs {

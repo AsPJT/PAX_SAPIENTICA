@@ -24,6 +24,7 @@
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
 #include <PAX_SAPIENTICA/System/Async/ProgressToken.hpp>
+#include <PAX_SAPIENTICA/Interface/GUIProgressReporter.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
@@ -230,16 +231,15 @@ namespace paxs {
                     // Step 3: 環境データの読み込み (進捗: 5% - 95%)
                     token.setMessage("Loading environment data...");
 
-                    // 環境データを段階的に読み込み（進捗コールバック付き）
+                    // GUIProgressReporterを作成してtokenをラップ
+                    GUIProgressReporter<bool> gui_reporter(token);
+                    new_simulator->setProgressReporter(&gui_reporter);
+
+                    // 環境データを段階的に読み込み
                     new_simulator->setEnvironment(
                         map_list_path,
                         japan_provinces_path,
-                        actual_seed,
-                        [&token](float env_progress) {
-                            // setEnvironmentの進捗（0.0-1.0）を全体の進捗（5%-95%）にマッピング
-                            const float overall_progress = 0.05f + (env_progress * 0.9f);
-                            token.setProgress(overall_progress);
-                        }
+                        actual_seed
                     );
 
                     token.setProgress(0.95f);
@@ -260,6 +260,11 @@ namespace paxs {
 
                     // Step 5: メンバ変数への反映 (進捗: 98% - 100%)
                     token.setMessage("Applying configuration...");
+
+                    // 重要: gui_reporterはローカル変数なので、タスク終了後に破棄される
+                    // そのため、progress_reporter_をnullptrにリセットする必要がある
+                    new_simulator->setProgressReporter(nullptr);
+
                     simulator_ = std::move(new_simulator);
                     current_model_name_ = model_name;
                     is_initialized_ = true;

@@ -21,7 +21,6 @@
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 #endif
 
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Calendar/Calendars.hpp>
 #include <PAX_SAPIENTICA/Calendar/ChineseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>

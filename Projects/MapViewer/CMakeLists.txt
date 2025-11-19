@@ -333,3 +333,32 @@ if(WIN32 AND Siv3D_FOUND)
         COMMENT "Copying Siv3D resources..."
     )
 endif()
+
+# Console MapViewer (macOS and Windows)
+if(APPLE OR WIN32)
+    set(CONSOLE_BINARY_NAME "ConsoleMapViewer")
+    set(CONSOLE_CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Console/Main.cpp")
+
+    add_executable(${CONSOLE_BINARY_NAME} ${CONSOLE_CPP_FILE})
+
+    # No GUI libraries needed for console version
+    target_include_directories(${CONSOLE_BINARY_NAME} PRIVATE
+        ${PROJECT_ROOT_DIR}/Library
+        ${PROJECT_ROOT_DIR}/ExternalLibrary
+    )
+
+    if(MSVC)
+        target_compile_options(${CONSOLE_BINARY_NAME} PRIVATE /utf-8)
+    endif()
+
+    if(PAXS_BUILD_TYPE STREQUAL "Development")
+        target_compile_definitions(${CONSOLE_BINARY_NAME} PRIVATE PAXS_DEVELOPMENT)
+    endif()
+
+    # Copy Config.tsv to build directory
+    add_custom_command(
+        TARGET ${CONSOLE_BINARY_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TSV_SOURCE_PATH} $<TARGET_FILE_DIR:${CONSOLE_BINARY_NAME}>
+        COMMENT "Copying Config.tsv for ConsoleMapViewer..."
+    )
+endif()

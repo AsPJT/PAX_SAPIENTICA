@@ -18,7 +18,6 @@
 
 #include <PAX_GRAPHICA/Line.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Location/GenomeFeature.hpp>

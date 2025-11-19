@@ -23,7 +23,6 @@
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/FeatureListLoader.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/LocationDataLoader.hpp>
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
