@@ -1,6 +1,5 @@
 ﻿key	value
 Font	Data/Settings/Font.tsv
-Languages	Data/Settings/Languages.tsv
 Locales	Data/Settings/Locales.tsv
 MapIcons	Data/Settings/MapIcons.tsv
 MenuIcons	Data/Settings/MenuIcons.tsv
@@ -11,7 +10,6 @@ Genomes	Data/Settings/Genomes.tsv
 Portraits	Data/Settings/Portraits.tsv
 XYZTiles	Data/Settings/XYZTiles.tsv
 SimulationConstants	Data/Simulations/Sample/Settings.tsv
-SimulationModelLanguages	Data/Simulations/ModelLanguages.tsv
 SimulationModels	Data/Simulations/Models.txt
 SimulationProvincesPath	Data/Simulations/Sample
 SimulationRange	Data/Simulations/Area.tsv

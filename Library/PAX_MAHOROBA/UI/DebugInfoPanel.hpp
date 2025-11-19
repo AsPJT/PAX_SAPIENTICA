@@ -38,14 +38,14 @@ namespace paxs {
         const Koyomi& koyomi_;
 
         // Locales ドメインキー定数
-        static constexpr std::uint_least32_t UI_MAP_DOMAIN_KEY = MurMur3::calcHash("UI/Map");
+        static constexpr std::uint_least32_t ui_map_domain_key = MurMur3::calcHash("Map");
 
         // デバッグ情報のテキストキー定数
-        static constexpr std::uint_least32_t MAGNIFICATION_POWER_KEY = MurMur3::calcHash("magnification_power");
-        static constexpr std::uint_least32_t MERCATOR_LONGITUDE_KEY = MurMur3::calcHash("mercator_longitude");
-        static constexpr std::uint_least32_t MERCATOR_LATITUDE_KEY = MurMur3::calcHash("mercator_latitude");
-        static constexpr std::uint_least32_t LATITUDE_KEY = MurMur3::calcHash("latitude");
-        static constexpr std::uint_least32_t XYZ_TILES_Z_KEY = MurMur3::calcHash("xyz_tiles_z");
+        static constexpr std::uint_least32_t magnification_power_key = MurMur3::calcHash("magnification_power");
+        static constexpr std::uint_least32_t mercator_longitude_key = MurMur3::calcHash("mercator_longitude");
+        static constexpr std::uint_least32_t mercator_latitude_key = MurMur3::calcHash("mercator_latitude");
+        static constexpr std::uint_least32_t latitude_key = MurMur3::calcHash("latitude");
+        static constexpr std::uint_least32_t xyz_tiles_z_key = MurMur3::calcHash("xyz_tiles_z");
 
     public:
         DebugInfoPanel(const UILayout& ui_layout,
@@ -79,8 +79,8 @@ namespace paxs {
 
             // マップの拡大率
             const std::string* const mag_label_ptr = Fonts().getLocalesText(
-                UI_MAP_DOMAIN_KEY,
-                MAGNIFICATION_POWER_KEY
+                ui_map_domain_key,
+                magnification_power_key
             );
             if (mag_label_ptr != nullptr) {
                 font->draw(
@@ -98,8 +98,8 @@ namespace paxs {
             // XYZ Tiles Z拡大率
             const int z_magnification = static_cast<int>(-std::log2(map_viewport_.getHeight()) + 12.5);
             const std::string* const xyz_label_ptr = Fonts().getLocalesText(
-                UI_MAP_DOMAIN_KEY,
-                XYZ_TILES_Z_KEY
+                ui_map_domain_key,
+                xyz_tiles_z_key
             );
             if (xyz_label_ptr != nullptr) {
                 font->draw(
@@ -116,8 +116,8 @@ namespace paxs {
 
             // メルカトル経度
             const std::string* const merc_lon_label_ptr = Fonts().getLocalesText(
-                UI_MAP_DOMAIN_KEY,
-                MERCATOR_LONGITUDE_KEY
+                ui_map_domain_key,
+                mercator_longitude_key
             );
             if (merc_lon_label_ptr != nullptr) {
                 font->draw(
@@ -134,8 +134,8 @@ namespace paxs {
 
             // メルカトル緯度
             const std::string* const merc_lat_label_ptr = Fonts().getLocalesText(
-                UI_MAP_DOMAIN_KEY,
-                MERCATOR_LATITUDE_KEY
+                ui_map_domain_key,
+                mercator_latitude_key
             );
             if (merc_lat_label_ptr != nullptr) {
                 font->draw(
@@ -152,8 +152,8 @@ namespace paxs {
 
             // 緯度（Equirectangular）
             const std::string* const lat_label_ptr = Fonts().getLocalesText(
-                UI_MAP_DOMAIN_KEY,
-                LATITUDE_KEY
+                ui_map_domain_key,
+                latitude_key
             );
             if (lat_label_ptr != nullptr) {
                 font->draw(

@@ -41,7 +41,7 @@ namespace paxs {
 
     public:
         MenuBar(paxs::FeatureVisibilityManager& visible_manager) :
-            language_selector_(paxs::LanguageDomain::UI,
+            language_selector_(paxs::MurMur3::calcHash("Language"),
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
                 true
@@ -49,7 +49,7 @@ namespace paxs {
             subscribeToEvents();
 
             // Locales から登録されている言語リストを取得
-            language_selector_.setItemsKey(Fonts().getLocales().getOrderedLocales());
+            language_selector_.setItemsKey(Fonts().getOrderedLocales());
 
             github_button_.init(language_selector_);
 

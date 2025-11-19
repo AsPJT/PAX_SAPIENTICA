@@ -122,17 +122,14 @@ private:
 
                 // 選択されている言語で名前を取得
                 const std::uint_least32_t selected_lang_key = FontSystem::getInstance().getSelectedLanguage().getKey();
-                const std::string selected_lang_name = FontSystem::getInstance().getLocales().getLocaleNameFromKeyPublic(selected_lang_key);
 
-                if (!selected_lang_name.empty()) {
-                    const std::string name = feature.getName(selected_lang_name);
-                    if (!name.empty()) {
-                        paxg::Font* font = (selected_lang_key == MurMur3::calcHash("ja-JP"))
-                            ? Fonts().getFont(FontProfiles::MAIN)
-                            : Fonts().getFont(FontProfiles::ENGLISH);
-                        font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
-                        font->drawTopCenter(name, draw_font_pos, paxg::Color(0, 0, 0));
-                    }
+                const std::string name = feature.getName();
+                if (!name.empty()) {
+                    paxg::Font* font = (selected_lang_key == MurMur3::calcHash("ja-JP"))
+                        ? Fonts().getFont(FontProfiles::MAIN)
+                        : Fonts().getFont(FontProfiles::ENGLISH);
+                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                    font->drawTopCenter(name, draw_font_pos, paxg::Color(0, 0, 0));
                 }
             }
         }

@@ -63,8 +63,8 @@ public:
 
     std::string getName(const std::string& language = "ja-JP") const override {
         // Localesシステムから取得
-        const paxs::Locales& locales = paxs::FontSystem::getInstance().getLocales();
-        const std::string* name = locales.getStringPtr("Features/Persons/Names", data_.key, language);
+        const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
+        const std::string* name = paxs::FontSystem::getInstance().getLocalesText(person_names_domain_hash, key_hash);
         if (name != nullptr) {
             return *name;
         }
@@ -219,6 +219,8 @@ public:
     }
 
 private:
+    static constexpr std::uint_least32_t person_names_domain_hash = MurMur3::calcHash("PersonNames");
+
     PersonLocationPoint data_;           ///< 人物位置データ / Person location data
     PersonLocationGroup group_data_;     ///< 人物グループデータ / Person group data
 

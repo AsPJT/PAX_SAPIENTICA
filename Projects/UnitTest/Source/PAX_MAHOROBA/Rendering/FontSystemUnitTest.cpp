@@ -115,7 +115,7 @@ TEST_F(FontSystemTest, LanguageSelectionByKey) {
     Fonts().initialize();
 
     // Locales から登録されている言語リストを取得
-    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getLocales().getOrderedLocales();
+    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getOrderedLocales();
 
     // 最初の言語 (en-US) を選択
     if (!locale_keys.empty()) {

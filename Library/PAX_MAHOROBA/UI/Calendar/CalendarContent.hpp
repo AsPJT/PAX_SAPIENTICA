@@ -32,10 +32,10 @@ namespace paxs {
     class CalendarContent : public IRenderable {
     private:
         // Locales ドメインキー定数
-        static constexpr std::uint_least32_t CALENDAR_TYPE_DOMAIN_KEY = MurMur3::calcHash("Calendar/CalendarType");
-        static constexpr std::uint_least32_t CALENDAR_GENGO_DOMAIN_KEY = MurMur3::calcHash("Calendar/Gengo");
-        static constexpr std::uint_least32_t CALENDAR_CHINESE_DOMAIN_KEY = MurMur3::calcHash("Calendar/Chinese");
-        // static constexpr std::uint_least32_t CALENDAR_SUEKI_DOMAIN_KEY = MurMur3::calcHash("Calendar/Sueki"); // 将来の実装用
+        static constexpr std::uint_least32_t calendar_type_domain_key = MurMur3::calcHash("CalendarType");
+        static constexpr std::uint_least32_t calendar_gengo_domain_key = MurMur3::calcHash("Gengo");
+        static constexpr std::uint_least32_t calendar_chinese_domain_key = MurMur3::calcHash("Chinese");
+        // static constexpr std::uint_least32_t calendar_sueki_domain_key = MurMur3::calcHash("Sueki"); // 将来の実装用
 
         // 描画に必要な参照（render呼び出し時に設定される）
         const paxs::Koyomi& koyomi_;
@@ -69,12 +69,12 @@ namespace paxs {
                 bool date_lm = false;
 
                 // 日付の型に応じてドメインを選択
-                std::uint_least32_t domain_key = CALENDAR_TYPE_DOMAIN_KEY;
+                std::uint_least32_t domain_key = calendar_type_domain_key;
                 if (std::holds_alternative<cal::JapanDate>(koyomi_.date_list[i].date)) {
-                    domain_key = CALENDAR_GENGO_DOMAIN_KEY;
+                    domain_key = calendar_gengo_domain_key;
                 }
                 else if (std::holds_alternative<cal::ChinaDate>(koyomi_.date_list[i].date)) {
-                    domain_key = CALENDAR_CHINESE_DOMAIN_KEY;
+                    domain_key = calendar_chinese_domain_key;
                 }
 
                 // 暦の読み方を返す（存在しない時代の暦はnullptrが返る想定なので警告抑制）
@@ -183,12 +183,12 @@ namespace paxs {
                 const int en_cal_name_pos_x = 85;
 
                 // 日付の型に応じてドメインを選択
-                std::uint_least32_t domain_key = CALENDAR_TYPE_DOMAIN_KEY;
+                std::uint_least32_t domain_key = calendar_type_domain_key;
                 if (std::holds_alternative<cal::JapanDate>(koyomi_.date_list[i].date)) {
-                    domain_key = CALENDAR_GENGO_DOMAIN_KEY;
+                    domain_key = calendar_gengo_domain_key;
                 }
                 else if (std::holds_alternative<cal::ChinaDate>(koyomi_.date_list[i].date)) {
-                    domain_key = CALENDAR_CHINESE_DOMAIN_KEY;
+                    domain_key = calendar_chinese_domain_key;
                 }
 
                 // 暦描画フォントを指定

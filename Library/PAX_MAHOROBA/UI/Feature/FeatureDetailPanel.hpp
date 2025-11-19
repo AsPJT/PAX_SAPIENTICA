@@ -371,12 +371,8 @@ namespace paxs {
             selected_feature_ = event.feature;
             if (selected_feature_ == nullptr) return;
 
-            // 現在の言語を取得
-            const std::string current_lang =
-                (Fonts().getSelectedLanguage().getKey() == MurMur3::calcHash("ja-JP")) ? "ja-JP" : "en-US";
-
             // Featureの名前を取得
-            feature_name_ = selected_feature_->getName(current_lang);
+            feature_name_ = selected_feature_->getName();
 
             // Featureの種別名を取得
             switch (selected_feature_->getType()) {

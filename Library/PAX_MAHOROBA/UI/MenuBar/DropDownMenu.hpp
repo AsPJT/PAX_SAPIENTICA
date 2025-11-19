@@ -39,7 +39,7 @@ namespace paxs {
         static constexpr int checkmark_x_offset = 5;
 
         // Locales ドメインキー定数
-        static constexpr std::uint_least32_t UI_MENUBAR_DOMAIN_KEY = MurMur3::calcHash("UI/MenuBar");
+        static constexpr std::uint_least32_t menubar_domain_key = MurMur3::calcHash("MenuBar");
 
         // プラットフォーム固有の表示調整定数
         static constexpr float android_width_scale = 2.5f;
@@ -125,7 +125,7 @@ namespace paxs {
             rect.setW(0);
             all_rect_x = 0;
             for (std::size_t i = 0; i < items_key.size(); ++i) {
-                const std::string* str = Fonts().getLocalesText(UI_MENUBAR_DOMAIN_KEY, items_key[i]);
+                const std::string* str = Fonts().getLocalesText(menubar_domain_key, items_key[i]);
                 if (str == nullptr || str->size() == 0) continue;
 
                 paxg::Font* item_font = Fonts().getFont(font_size, font_buffer_thickness_size);
@@ -337,7 +337,7 @@ namespace paxs {
                 return;
             }
 
-            const std::string* str = Fonts().getLocalesText(UI_MENUBAR_DOMAIN_KEY, items_key.front());
+            const std::string* str = Fonts().getLocalesText(menubar_domain_key, items_key.front());
             if (str == nullptr || str->size() == 0) {
                 PAXS_WARNING("DropDownMenu: Missing text for header item.");
                 return;
@@ -366,7 +366,7 @@ namespace paxs {
             back_rect.drawShadow({ shadow_offset_x, shadow_offset_y }, shadow_blur_radius, shadow_spread).draw();
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
-                const std::string* i_str = Fonts().getLocalesText(UI_MENUBAR_DOMAIN_KEY, items_key[i]);
+                const std::string* i_str = Fonts().getLocalesText(menubar_domain_key, items_key[i]);
                 if (i_str == nullptr || i_str->size() == 0) continue;
 
                 const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };

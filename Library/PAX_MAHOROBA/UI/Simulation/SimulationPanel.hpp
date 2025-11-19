@@ -140,7 +140,7 @@ namespace paxs {
             stats_widget_(app_state_manager.getSimulationManager()),
 #endif
             simulation_pulldown(
-                paxs::LanguageDomain::SIMULATION,
+                paxs::MurMur3::calcHash("Simulation"),
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
                 false

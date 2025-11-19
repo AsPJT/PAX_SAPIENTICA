@@ -20,12 +20,23 @@
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
-#include <PAX_SAPIENTICA/System/Language.hpp>
 #include <PAX_SAPIENTICA/System/Locales.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
+
+    // 選択言語
+    class SelectLanguage {
+    private:
+        std::size_t select_language = 0; // 選択している言語
+        std::uint_least32_t select_key = 0; // 選択している言語
+    public:
+        constexpr void set(const std::size_t select_language_) { select_language = select_language_; }
+        constexpr void setKey(const std::uint_least32_t select_key_) { select_key = select_key_; }
+        constexpr std::size_t get() const { return select_language; }
+        constexpr std::uint_least32_t getKey() const { return select_key; }
+    };
 
     /// @brief フォントプロファイル名定数
     /// @brief Font profile name constants
@@ -40,13 +51,6 @@ namespace paxs {
         constexpr const char* UI_LARGE = "ui_large";   // 大きいUIテキスト
     }
 
-    /// @brief 言語辞書のドメイン
-    /// @brief Language dictionary domain
-    enum class LanguageDomain : std::uint8_t {
-        UI = 0,          //
-        SIMULATION = 1,  // シミュレーションモデル用 / For simulation models
-    };
-
     /// @brief フォント・言語統合管理シングルトンクラス
     /// @brief Font and Language Unified Management Singleton Class
     class FontSystem {
@@ -60,9 +64,6 @@ namespace paxs {
         // 言語ごとのフォントパス
         paxs::UnorderedMap<std::uint_least32_t, std::string> language_font_paths_;
         std::string default_font_path_;
-
-        // 言語辞書管理
-        paxs::UnorderedMap<LanguageDomain, paxs::Language> languages_;
 
         // Locales システム
         paxs::Locales locales_;
@@ -179,16 +180,6 @@ namespace paxs {
             // 言語フォントの設定
             setupLanguageFonts();
 
-            // 言語辞書の読み込み
-            AppConfig::getInstance().ifSettingExists(MurMur3::calcHash("Languages"),
-                [&](const std::string& path_) {
-                    addLanguageDictionary(path_, LanguageDomain::UI);
-                });
-
-            AppConfig::getInstance().ifSettingExists(MurMur3::calcHash("SimulationModelLanguages"),
-                [&](const std::string& path_) {
-                    addLanguageDictionary(path_, LanguageDomain::SIMULATION);
-                });
 
             // デフォルト言語を設定（en-US）
             // TODO: マジックナンバー回避
@@ -284,53 +275,6 @@ namespace paxs {
         }
 
         // ========================================
-        // 言語辞書API
-        // Language dictionary API
-        // ========================================
-
-        /// @brief テキストを取得
-        /// @brief Get text
-        /// @param key テキストキー（例: "menu.file"） / Text key (e.g., "menu.file")
-        /// @param domain 言語辞書のドメイン（デフォルト: UI） / Language dictionary domain (default: UI)
-        /// @return テキストへのポインタ、失敗時は nullptr / Pointer to text, nullptr on failure
-        const std::string* getText(const std::string& key,
-                                   LanguageDomain domain = LanguageDomain::UI) const {
-            return getText(paxs::MurMur3::calcHash(key), domain);
-        }
-        const std::string* getText(const char* const key,
-                                   LanguageDomain domain = LanguageDomain::UI) const {
-            return getText(paxs::MurMur3::calcHash(key), domain);
-        }
-
-        /// @brief テキストを取得（ハッシュキー版）
-        /// @brief Get text (hash key version)
-        /// @param key_hash テキストキーのMurMur3ハッシュ値 / MurMur3 hash value of text key
-        /// @param domain 言語辞書のドメイン / Language dictionary domain
-        /// @return テキストへのポインタ、失敗時は nullptr / Pointer to text, nullptr on failure
-        const std::string* getText(std::uint_least32_t key_hash,
-                                   LanguageDomain domain = LanguageDomain::UI) const {
-            if (!languages_.contains(domain)) {
-                return nullptr;
-            }
-            return languages_.at(domain).getStringPtr(key_hash, select_language_.getKey());
-        }
-
-        /// @brief 言語辞書を追加
-        /// @brief Add language dictionary
-        /// @param file_path TSVファイルのパス / Path to TSV file
-        /// @param domain 言語辞書のドメイン / Language dictionary domain
-        void addLanguageDictionary(const std::string& file_path, LanguageDomain domain) {
-            auto it = languages_.find(domain);
-            if (it != languages_.end()) {
-                it->second.add(file_path);
-            } else {
-                Language lang;
-                lang.add(file_path);
-                languages_.emplace(domain, std::move(lang));
-            }
-        }
-
-        // ========================================
         // 言語選択API
         // Language selection API
         // ========================================
@@ -385,18 +329,11 @@ namespace paxs {
         // Locales system access
         // ========================================
 
-        /// @brief Locales インスタンスへの参照を取得
-        /// @brief Get reference to Locales instance
-        /// @return Locales への参照 / Reference to Locales
-        paxs::Locales& getLocales() {
-            return locales_;
-        }
-
-        /// @brief Locales インスタンスへの const 参照を取得
-        /// @brief Get const reference to Locales instance
-        /// @return Locales への const 参照 / Const reference to Locales
-        const paxs::Locales& getLocales() const {
-            return locales_;
+        /// @brief 登録されているロケール一覧を取得
+        /// @brief Get list of registered locales
+        /// @return ロケールキーのベクタ / Vector of locale keys
+        const std::vector<std::uint_least32_t>& getOrderedLocales() const {
+            return locales_.getOrderedLocales();
         }
 
         /// @brief 現在選択されている言語でLocalesからテキストを取得（ハッシュキー版）

@@ -19,6 +19,7 @@
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/System/InputFile.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -113,10 +114,10 @@ namespace paxs {
 
         /// @brief ファイルからロケールデータを読み込む
         /// @brief Load locale data from file
-        /// @param domain_path ドメインパス / Domain path
+        /// @param domain_name ドメイン名 / Domain name
         /// @param locale_name ロケール名 / Locale name
         /// @param file_path ファイルパス / File path
-        void loadFile(const std::string& domain_path, const std::string& locale_name, const std::string& file_path) {
+        void loadFile(const std::string& domain_name, const std::string& locale_name, const std::string& file_path) {
             KeyValueTSV<std::string> kv_tsv;
             if (!kv_tsv.input(file_path)) {
                 // en-US ファイルが存在しない場合のみエラー、その他の言語はスキップ
@@ -126,10 +127,10 @@ namespace paxs {
                 return;
             }
 
-            // ドメインキーとロケールキーを計算
+            // ドメイン名とロケール名のキーを計算
             const std::uint_least32_t domain_key = MurMur3::calcHash(
-                domain_path.size(),
-                domain_path.c_str()
+                domain_name.size(),
+                domain_name.c_str()
             );
             const std::uint_least32_t locale_key = MurMur3::calcHash(
                 locale_name.size(),
@@ -203,6 +204,43 @@ namespace paxs {
             });
         }
 
+        /// @brief domain.txt からドメイン名を読み込む
+        /// @brief Load domain name from domain.txt
+        /// @param directory_path ディレクトリパス / Directory path
+        /// @return ドメイン名、見つからない場合は空文字列 / Domain name, empty string if not found
+        std::string loadDomainName(const std::string& directory_path) {
+            const std::string domain_txt_path = directory_path + "/domain.txt";
+
+            if (!FileSystem::exists(domain_txt_path)) {
+                return std::string{};
+            }
+
+            // InputFile を使用して domain.txt の内容を読み込む（1行目のみ）
+            InputFile file(domain_txt_path);
+            if (file.fail()) {
+                return std::string{};
+            }
+
+            if (!file.getLine()) {
+                return std::string{};
+            }
+
+            // BOM を削除
+            file.deleteBOM();
+
+            // 前後の空白を除去
+            std::string domain_name = file.pline;
+            if (!domain_name.empty()) {
+                const std::size_t start = domain_name.find_first_not_of(" \t\r\n");
+                const std::size_t end = domain_name.find_last_not_of(" \t\r\n");
+                if (start != std::string::npos && end != std::string::npos) {
+                    domain_name = domain_name.substr(start, end - start + 1);
+                }
+            }
+
+            return domain_name;
+        }
+
         /// @brief Data/Locales/以下の全てのロケールファイルを再帰的に読み込む
         /// @brief Load all locale files under Data/Locales/ recursively
         void loadAllDomains() {
@@ -238,19 +276,22 @@ namespace paxs {
                     continue;  // 未登録のロケールはスキップ
                 }
 
-                // ドメインパスを抽出（Data/Locales/からの相対パス、ファイル名を除く）
-                // 例: "Data/Locales/Features/Persons/Names/ja-JP.tsv" -> "Features/Persons/Names"
-                std::string domain_path;
+                // ディレクトリパスを抽出（Data/Locales/からの相対パス、ファイル名を除く）
+                // 例: "Data/Locales/Features/Persons/Names/ja-JP.tsv" -> "Data/Locales/Features/Persons/Names"
+                std::string directory_path;
                 if (file_path.size() > locales_dir.size() && last_slash != std::string::npos) {
-                    const std::string path_after_locales = file_path.substr(locales_dir.size());
-                    const std::size_t domain_slash = path_after_locales.find_last_of("/\\");
-                    if (domain_slash != std::string::npos) {
-                        domain_path = path_after_locales.substr(0, domain_slash);
-                    }
+                    directory_path = file_path.substr(0, last_slash);
                 }
 
-                // ファイルを読み込む
-                loadFile(domain_path, locale_name, file_path);
+                // domain.txt からドメイン名を読み込む
+                const std::string domain_name = loadDomainName(directory_path);
+                if (domain_name.empty()) {
+                    PAXS_WARNING("domain.txt not found or empty in: " + directory_path);
+                    continue;  // ドメイン名が取得できない場合はスキップ
+                }
+
+                // ファイルを読み込む（ドメイン名を使用）
+                loadFile(domain_name, locale_name, file_path);
                 ++file_count;
             }
         }
@@ -261,61 +302,29 @@ namespace paxs {
             loadAllDomains();
         }
 
-        /// @brief テキストを取得（文字列キー版）
-        /// @brief Get text string (string key version)
-        /// @param domain_path ドメインパス / Domain path
-        /// @param text_key テキストキー（文字列） / Text key (string)
-        /// @param locale_name ロケール名 / Locale name
+        /// @brief テキストを取得（ドメイン名ハッシュ版）
+        /// @brief Get text string (domain name hash version)
+        /// @param domain_name_hash ドメイン名のハッシュ値 / Domain name hash
+        /// @param text_key_hash テキストキーのハッシュ値 / Text key hash
+        /// @param locale_key ロケールキーのハッシュ値 / Locale key hash
         /// @param suppress_warning 警告を抑制するか（デフォルト: false） / Suppress warning (default: false)
         /// @return テキストへのポインタ、見つからない場合はnullptr
         ///         Pointer to text string, nullptr if not found
         const std::string* getStringPtr(
-            const std::string& domain_path,
-            const std::string& text_key,
-            const std::string& locale_name,
-            const bool suppress_warning = false) const {
-
-            const std::uint_least32_t domain_key = MurMur3::calcHash(
-                domain_path.size(),
-                domain_path.c_str()
-            );
-            const std::uint_least32_t text_key_hash = MurMur3::calcHash(
-                text_key.size(),
-                text_key.c_str()
-            );
-            const std::uint_least32_t locale_key = MurMur3::calcHash(
-                locale_name.size(),
-                locale_name.c_str()
-            );
-
-            return getStringPtr(domain_key, text_key_hash, locale_key, suppress_warning);
-        }
-
-        /// @brief テキストを取得（ハッシュキー版）
-        /// @brief Get text string (hash key version)
-        /// @param domain_key ドメインキー（ハッシュ値） / Domain key (hash value)
-        /// @param text_key テキストキー（ハッシュ値） / Text key (hash value)
-        /// @param locale_key ロケールキー（ハッシュ値） / Locale key (hash value)
-        /// @param suppress_warning 警告を抑制するか（デフォルト: false） / Suppress warning (default: false)
-        /// @return テキストへのポインタ、見つからない場合はnullptr
-        ///         Pointer to text string, nullptr if not found
-        /// @details 指定言語で見つからない場合、フォールバック言語のテキストを返す
-        ///          If not found in specified language, returns text in fallback language
-        const std::string* getStringPtr(
-            const std::uint_least32_t domain_key,
-            const std::uint_least32_t text_key,
+            const std::uint_least32_t domain_name_hash,
+            const std::uint_least32_t text_key_hash,
             const std::uint_least32_t locale_key,
             const bool suppress_warning = false) const {
 
             // 指定されたロケールでテキストを検索
-            CombinedKey combined_key{domain_key, text_key, locale_key};
+            CombinedKey combined_key{domain_name_hash, text_key_hash, locale_key};
             const auto iterator = text_dictionary_.find(combined_key);
             if (iterator != text_dictionary_.end()) {
                 return &(iterator->second);
             }
 
             // フォールバック処理
-            DomainTextKey dt_key(domain_key, text_key);
+            DomainTextKey dt_key(domain_name_hash, text_key_hash);
             const auto fallback_it = fallback_text_key_.find(dt_key);
             if (fallback_it == fallback_text_key_.end()) {
                 // テキストキー自体が登録されていない
@@ -343,13 +352,6 @@ namespace paxs {
             return ordered_locales_;
         }
 
-        /// @brief ロケールキーからロケール名を取得（公開版）
-        /// @brief Get locale name from locale key (public version)
-        /// @param locale_key ロケールキー / Locale key
-        /// @return ロケール名、見つからない場合は空文字列 / Locale name, empty string if not found
-        std::string getLocaleNameFromKeyPublic(std::uint_least32_t locale_key) const {
-            return getLocaleNameFromKey(locale_key);
-        }
     };
 
 }

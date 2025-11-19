@@ -55,7 +55,7 @@ namespace paxs {
         PulldownDisplayType display_type{}; // 表示タイプ (SelectedValue or FixedHeader)
         bool is_one_font = false;
 
-        const LanguageDomain language_domain{}; // 言語ドメイン
+        const std::uint_least32_t domain_hash{}; // ドメイン名のハッシュ値
 
         size_t index = 0;
         paxg::Vec2i padding{ default_padding_x, default_padding_y };
@@ -111,7 +111,7 @@ namespace paxs {
                 const std::string* str = nullptr;
 
                 // 言語辞書から取得
-                str = Fonts().getText(items_key[i], language_domain);
+                str = Fonts().getLocalesText(domain_hash, items_key[i]);
 
                 if (str == nullptr || str->size() == 0) {
                     PAXS_WARNING("Pulldown: Missing text for key " + std::to_string(items_key[i]));
@@ -160,11 +160,11 @@ namespace paxs {
         /// @param display_type_ 表示タイプ（SelectedValue or FixedHeader）
         /// @param is_one_font_ 単一フォントを使用するか
         Pulldown(
-            const LanguageDomain language_domain_,
+            const std::uint_least32_t domain_hash_,
             const paxg::Vec2i& pos_ = { 0,0 },
             PulldownDisplayType display_type_ = PulldownDisplayType::SelectedValue,
             const bool is_one_font_ = false)
-            : language_domain(language_domain_)
+            : domain_hash(domain_hash_)
             , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
             , display_type(display_type_)
             , is_one_font(is_one_font_) {
@@ -312,7 +312,7 @@ namespace paxs {
             if (display_type == PulldownDisplayType::SelectedValue) {
                 const std::string* str = nullptr;
 
-                str = Fonts().getText(items_key[index], language_domain);
+                str = Fonts().getLocalesText(domain_hash, items_key[index]);
 
                 if (str == nullptr || str->size() == 0) return;
 
@@ -329,7 +329,7 @@ namespace paxs {
             else {
                 const std::string* str0 = nullptr;
 
-                str0 = Fonts().getText(items_key.front(), language_domain);
+                str0 = Fonts().getLocalesText(domain_hash, items_key.front());
 
                 if (str0 == nullptr || str0->size() == 0) return;
 
@@ -353,7 +353,7 @@ namespace paxs {
             for (std::size_t i = start_index; i < item_count; ++i) {
                 const std::string* i_str = nullptr;
 
-                i_str = Fonts().getText(items_key[i], language_domain);
+                i_str = Fonts().getLocalesText(domain_hash, items_key[i]);
 
                 if (i_str == nullptr || i_str->size() == 0) continue;
 
