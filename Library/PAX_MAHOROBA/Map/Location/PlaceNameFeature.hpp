@@ -31,11 +31,16 @@
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+
 namespace paxs {
 
 /// @brief 地名（テキストのみ）を表す地物クラス
 /// @brief Feature class representing a place name (text only)
 class PlaceNameFeature : public MapFeature {
+private:
+    static constexpr std::uint_least32_t place_names_domain_hash = MurMur3::calcHash("PlaceNames");
+
 public:
     /// @param data 地名の位置データ / Place location data
     PlaceNameFeature(const LocationPoint& data)
@@ -55,16 +60,14 @@ public:
         return 0;
     }
 
-    std::string getName(const std::string& language = "ja-JP") const override {
-        const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        const auto iterator = data_.names.find(lang_hash);
-        if (iterator != data_.names.end()) {
-            return iterator->second;
+    std::string getName() const override {
+        const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
+        const std::string* name = Fonts().getLocalesText(place_names_domain_hash, key_hash);
+        if (name != nullptr) {
+            return *name;
         }
-        if (!data_.names.empty()) {
-            return data_.names.begin()->second;
-        }
-        return "";
+        // フォールバック: keyをそのまま返す
+        return data_.key;
     }
 
     std::uint_least32_t getFeatureTypeHash() const override {

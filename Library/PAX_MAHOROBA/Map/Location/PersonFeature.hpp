@@ -61,14 +61,14 @@ public:
         return 0;
     }
 
-    std::string getName(const std::string& language = "ja-JP") const override {
+    std::string getName() const override {
         // Localesシステムから取得
         const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
         const std::string* name = paxs::FontSystem::getInstance().getLocalesText(person_names_domain_hash, key_hash);
         if (name != nullptr) {
             return *name;
         }
-        PAXS_WARNING("[PersonFeature] getName FAILED: key=" + data_.key + ", language=" + language + " - returning nullptr from Locales");
+        PAXS_WARNING("[PersonFeature] getName FAILED: key=" + data_.key + " - returning nullptr from Locales");
         return "";
     }
 

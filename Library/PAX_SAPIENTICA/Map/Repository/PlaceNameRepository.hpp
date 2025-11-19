@@ -89,7 +89,6 @@ namespace paxs {
                 // LocationPointを構築（地名は常にparams.texture_hashを使用）
                 location_point_list.emplace_back(
                     data.key,
-                    data.names,
                     paxs::EquirectangularDeg(
                         paxs::Vector2<double>(data.longitude, data.latitude)).toMercatorDeg(),
                     data.overall_length,

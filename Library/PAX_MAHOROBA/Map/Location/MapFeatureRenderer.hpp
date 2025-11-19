@@ -120,14 +120,9 @@ private:
                 // テキスト位置
                 const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x(), draw_pos.y() - 60 };
 
-                // 選択されている言語で名前を取得
-                const std::uint_least32_t selected_lang_key = FontSystem::getInstance().getSelectedLanguage().getKey();
-
                 const std::string name = feature.getName();
                 if (!name.empty()) {
-                    paxg::Font* font = (selected_lang_key == MurMur3::calcHash("ja-JP"))
-                        ? Fonts().getFont(FontProfiles::MAIN)
-                        : Fonts().getFont(FontProfiles::ENGLISH);
+                    paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
                     font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                     font->drawTopCenter(name, draw_font_pos, paxg::Color(0, 0, 0));
                 }
@@ -250,13 +245,20 @@ private:
             texture_map.at(place_tex).resizedDrawAt(display_size, draw_pos);
 
             // 名前を描画（表示サイズが十分な場合のみ）
-            if (should_show_name && !data.names.empty()) {
-                // テクスチャの上部に名前を描画
-                const paxg::Vec2<double> text_pos = paxg::Vec2<double>{
-                    draw_pos.x(),
-                    draw_pos.y() - display_size / 2 - 5  // アイコンの上部から少し離す
-                };
-                LocationRendererHelper::drawBilingualText(data.names, text_pos, "bottomCenter");
+            if (should_show_name) {
+                const std::string name = feature.getName();
+                if (!name.empty()) {
+                    // テクスチャの上部に名前を描画
+                    const paxg::Vec2<double> text_pos = paxg::Vec2<double>{
+                        draw_pos.x(),
+                        draw_pos.y() - (display_size / 2) - 5  // アイコンの上部から少し離す
+                    };
+                    paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+                    if (font != nullptr) {
+                        font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                        font->drawBottomCenter(name, text_pos, paxg::Color(0, 0, 0));
+                    }
+                }
             }
         }
     }
@@ -271,12 +273,18 @@ private:
         const RenderContext& context,
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
     ) {
-        const auto& data = feature.getData();
         const auto& screen_positions = feature.getScreenPositions();
+        const std::string name = feature.getName();
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
-            LocationRendererHelper::drawBilingualText(data.names, draw_pos, "at");
+            if (!name.empty()) {
+                paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+                if (font != nullptr) {
+                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                    font->drawAt(name, draw_pos, paxg::Color(0, 0, 0));
+                }
+            }
         }
     }
 

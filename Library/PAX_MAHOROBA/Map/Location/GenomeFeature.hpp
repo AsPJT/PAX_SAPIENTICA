@@ -32,11 +32,16 @@
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+
 namespace paxs {
 
 /// @brief ゲノム情報（人骨、mtDNA、Y-DNA等）を表す地物クラス
 /// @brief Feature class representing genome information (human bones, mtDNA, Y-DNA, etc.)
 class GenomeFeature : public MapFeature {
+private:
+    static constexpr std::uint_least32_t place_info_domain_hash = MurMur3::calcHash("GenomeNames");
+
 public:
     /// @brief コンストラクタ
     /// @brief Constructor
@@ -55,15 +60,15 @@ public:
         return 0;
     }
 
-    std::string getName(const std::string& language = "ja-JP") const override {
-        const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        if (data_.names.contains(lang_hash)) {
-            return data_.names.at(lang_hash);
-        }
-        if (!data_.names.empty()) {
-            return data_.names.begin()->second;
-        }
-        return "";
+    std::string getName() const override {
+        // data_.keyをハッシュ化してLocalesシステムから名前を取得
+        // const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
+        // const std::string* name = Fonts().getLocalesText(place_info_domain_hash, key_hash);
+        // if (name != nullptr) {
+        //     return *name;
+        // }
+        // フォールバック: keyをそのまま返す
+        return data_.key;
     }
 
     std::uint_least32_t getFeatureTypeHash() const override {
@@ -116,9 +121,13 @@ public:
 
         // テキストサイズを計算（表示サイズが十分な場合のみ）
         const bool should_show_name = (cached_display_size_ >= 15);
-        if (should_show_name && !data_.names.empty() && context.font != nullptr) {
+        if (should_show_name && context.font != nullptr) {
             const std::string name = getName();
-            cached_text_size_ = Vector2<int>(context.font->width(name), context.font->height());
+            if (!name.empty()) {
+                cached_text_size_ = Vector2<int>(context.font->width(name), context.font->height());
+            } else {
+                cached_text_size_ = Vector2<int>(0, 0);
+            }
         } else {
             cached_text_size_ = Vector2<int>(0, 0);
         }

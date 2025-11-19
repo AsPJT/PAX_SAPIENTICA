@@ -45,9 +45,8 @@ public:
 
     /// @brief 地物の名前を取得
     /// @brief Get feature name
-    /// @param language 言語コード（デフォルト: "ja-JP"） / Language code (default: "ja-JP")
     /// @return 地物の名前 / Feature name
-    virtual std::string getName(const std::string& language = "ja-JP") const = 0;
+    virtual std::string getName() const = 0;
 
     /// @brief 地物の種別ハッシュを取得
     /// @brief Get feature type hash identifier

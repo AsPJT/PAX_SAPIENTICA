@@ -60,16 +60,18 @@ public:
         return 0;
     }
 
-    std::string getName(const std::string& language = "ja-JP") const override {
-        const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        const auto iterator = data_.names.find(lang_hash);
-        if (iterator != data_.names.end()) {
-            return iterator->second;
+    std::string getName() const override {
+        // Geographic features do not have names - they are represented by icons only
+        // Future: If geographic features need names, uncomment below and create GeographicFeatureNames domain
+        /*
+        const std::uint_least32_t geographic_feature_names_domain_hash = MurMur3::calcHash("GeographicFeatureNames");
+        const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
+        const std::string* name = Fonts().getLocalesText(geographic_feature_names_domain_hash, key_hash);
+        if (name != nullptr) {
+            return *name;
         }
-        if (!data_.names.empty()) {
-            return data_.names.begin()->second;
-        }
-        return "";
+        */
+        return data_.key;
     }
 
     std::uint_least32_t getFeatureTypeHash() const override {

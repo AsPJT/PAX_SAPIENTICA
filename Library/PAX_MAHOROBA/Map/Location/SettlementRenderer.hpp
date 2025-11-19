@@ -102,9 +102,8 @@ namespace paxs {
         /// @brief Create LocationPoint from settlement position
         /// @param position 集落の位置 / Settlement position
         static LocationPoint createLocationPoint(const paxs::Vector2<int>& position) {
-            return LocationPoint{
+            return LocationPoint(
                 "settlement_" + std::to_string(position.x) + "_" + std::to_string(position.y),  // key
-                paxs::UnorderedMap<std::uint_least32_t, std::string>(),
                 paxs::MercatorDeg(getLocation(
                     SimulationConstants::getInstance().getStartArea(),
                     position,
@@ -116,7 +115,7 @@ namespace paxs {
                 MurMur3::calcHash("agent1"),
                 0,  // テクスチャキーなし / No source
                 1.0 // 拡大率 / Zoom factor
-            };
+            );
         }
 
         /// @brief 言語番号から色を取得

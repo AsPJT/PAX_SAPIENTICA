@@ -146,7 +146,6 @@ namespace paxs {
         Range<double> zoom_range{0.0, 0.0};
         Range<double> year_range{0.0, 0.0};
         std::uint_least32_t texture_hash = 0;
-        paxs::UnorderedMap<std::uint_least32_t, std::string> names;
 
         /// @brief 追加カラムデータ
         /// @brief Extra column data
@@ -157,33 +156,6 @@ namespace paxs {
     /// @brief Helper class for loading location data
     class LocationDataLoader {
     public:
-        /// @brief 多言語名を読み込む
-        /// @brief Load multilingual names
-        // TODO: locales対応したら削除
-        static paxs::UnorderedMap<std::uint_least32_t, std::string> loadNames(
-            const TsvTable& table,
-            std::size_t row_index,
-            const ColumnHashes& hashes,
-            const ColumnFlags& flags
-        ) {
-            paxs::UnorderedMap<std::uint_least32_t, std::string> names;
-
-            if (flags.has_ja_jp) {
-                const std::string& ja_jp_str = table.get(row_index, hashes.ja_jp);
-                if (!ja_jp_str.empty()) {
-                    names.emplace(MurMur3::calcHash("ja-JP"), ja_jp_str);
-                }
-            }
-            if (flags.has_en_us) {
-                const std::string& en_us_str = table.get(row_index, hashes.en_us);
-                if (!en_us_str.empty()) {
-                    names.emplace(MurMur3::calcHash("en-US"), en_us_str);
-                }
-            }
-
-            return names;
-        }
-
         /// @brief 日付範囲を計算（ユリウス日または年から）
         /// @brief Calculate date range from Julian Day or year
         static double calculateJulianDay(
@@ -293,9 +265,6 @@ namespace paxs {
                 return std::nullopt;
             }
             data.latitude = *lat_opt;
-
-            // 多言語名の読み込み
-            data.names = loadNames(table, row_index, hashes, flags);
 
             // オプションカラムの読み込み
             const std::string& overall_length_str = flags.has_overall_length ? table.get(row_index, hashes.overall_length) : "";

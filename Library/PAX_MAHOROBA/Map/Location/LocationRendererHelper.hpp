@@ -62,55 +62,6 @@ namespace paxs {
             return false;
         }
 
-        /// @brief バイリンガルテキスト描画（日本語/英語）
-        /// @brief Draw bilingual text (Japanese/English)
-        /// @param place_name 言語別の名前マップ
-        /// @param draw_pos 描画位置
-        /// @param text_mode 描画モード ("topCenter", "at", "bottomCenter")
-        /// @param outline_color アウトラインの色（デフォルト: 243, 243, 243）
-        static void drawBilingualText(
-            const paxs::UnorderedMap<std::uint_least32_t, std::string>& place_name,
-            const paxg::Vec2<double>& draw_pos,
-            const char* text_mode = "topCenter",
-            const paxg::Color& outline_color = paxg::Color(243, 243, 243)
-        ) {
-            const std::uint_least32_t ja_jp = MurMur3::calcHash("ja-JP");
-            const std::uint_least32_t en_us = MurMur3::calcHash("en-US");
-
-            const bool has_ja = place_name.contains(ja_jp);
-            const bool has_en = place_name.contains(en_us);
-
-            paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
-            paxg::Font* en_font = Fonts().getFont(FontProfiles::ENGLISH);
-
-            // 日本語のみ
-            if (has_ja && !has_en) {
-                font->setOutline(0, 0.6, outline_color);
-                drawTextByMode(font, place_name.at(ja_jp), draw_pos, paxg::Color(0, 0, 0), text_mode);
-            }
-            // 英語のみ
-            else if (!has_ja && has_en) {
-                // PlaceNameRendererは異なるoutline_colorを使用
-                paxg::Color en_outline = (std::strcmp(text_mode, "at") == 0)
-                    ? paxg::Color(243, 243, 243)
-                    : outline_color;
-                en_font->setOutline(0, 0.6, en_outline);
-                drawTextByMode(en_font, place_name.at(en_us), draw_pos, paxg::Color(0, 0, 0), text_mode);
-            }
-            // 両方ある場合
-            else if (has_ja && has_en) {
-                // 英語を下に
-                paxg::Color en_outline = (std::strcmp(text_mode, "at") == 0)
-                    ? paxg::Color(243, 243, 243)
-                    : outline_color;
-                en_font->setOutline(0, 0.6, en_outline);
-                en_font->drawBottomCenter(place_name.at(en_us), draw_pos, paxg::Color(0, 0, 0));
-                // 日本語を上に
-                font->setOutline(0, 0.6, outline_color);
-                font->drawTopCenter(place_name.at(ja_jp), draw_pos, paxg::Color(0, 0, 0));
-            }
-        }
-
         /// @brief 範囲内判定
         /// @param coordinate メルカトル座標 / Mercator coordinate
         /// @param map_view_size マップビューのサイズ / Map view size

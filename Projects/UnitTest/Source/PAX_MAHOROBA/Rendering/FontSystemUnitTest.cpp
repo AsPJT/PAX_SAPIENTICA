@@ -84,8 +84,6 @@ TEST_F(FontSystemTest, DefaultProfiles) {
     EXPECT_TRUE(Fonts().hasProfile(FontProfiles::MAIN));
     EXPECT_TRUE(Fonts().hasProfile(FontProfiles::PULLDOWN));
     EXPECT_TRUE(Fonts().hasProfile(FontProfiles::KOYOMI));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::PINYIN));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::ENGLISH));
     EXPECT_TRUE(Fonts().hasProfile(FontProfiles::UI_SMALL));
     EXPECT_TRUE(Fonts().hasProfile(FontProfiles::UI_MEDIUM));
     EXPECT_TRUE(Fonts().hasProfile(FontProfiles::UI_LARGE));

@@ -43,8 +43,6 @@ namespace paxs {
     namespace FontProfiles {
         constexpr const char* MAIN = "main";           // カレンダー・地名・人名
         constexpr const char* PULLDOWN = "pulldown";   // プルダウンメニュー
-        constexpr const char* PINYIN = "pinyin";       // ピンイン表示
-        constexpr const char* ENGLISH = "english";     // 英語表示
         constexpr const char* KOYOMI = "koyomi";       // 暦表示
         constexpr const char* UI_SMALL = "ui_small";   // 小さいUIテキスト
         constexpr const char* UI_MEDIUM = "ui_medium"; // 中サイズUIテキスト
@@ -97,10 +95,6 @@ namespace paxs {
             registerProfile(FontProfiles::PULLDOWN,
                             paxg::FontConfig::PULLDOWN_FONT_SIZE,
                             paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
-
-            // レガシー互換プロファイル
-            registerProfile(FontProfiles::PINYIN, 14, 2);
-            registerProfile(FontProfiles::ENGLISH, 20, 2);
 
             // 新規プロファイル
             registerProfile(FontProfiles::UI_SMALL, 12, 2);

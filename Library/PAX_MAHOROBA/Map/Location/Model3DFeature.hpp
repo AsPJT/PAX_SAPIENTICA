@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_MODEL_3D_FEATURE_HPP
 
 #include <string>
-#include <vector>
 
 #include <PAX_GRAPHICA/3DModel.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -25,6 +24,7 @@
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/Model3DRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
@@ -40,6 +40,9 @@ namespace paxs {
 /// @note 将来の実装: 古墳の石室、建物などの3Dオブジェクトを地図上に配置
 /// @note Future implementation: Place 3D objects like burial chambers, buildings on the map
 class Model3DFeature : public MapFeature {
+private:
+    static constexpr std::uint_least32_t place_info_domain_hash = MurMur3::calcHash("Model3DNames");
+
 public:
     /// @brief コンストラクタ
     /// @brief Constructor
@@ -66,16 +69,15 @@ public:
         return 0;
     }
 
-    std::string getName(const std::string& language = "ja-JP") const override {
-        const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        const auto iterator = data_.names.find(lang_hash);
-        if (iterator != data_.names.end()) {
-            return iterator->second;
-        }
-        if (!data_.names.empty()) {
-            return data_.names.begin()->second;
-        }
-        return "";
+    std::string getName() const override {
+        // data_.keyをハッシュ化してLocalesシステムから名前を取得
+        // const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
+        // const std::string* name = Fonts().getLocalesText(place_info_domain_hash, key_hash);
+        // if (name != nullptr) {
+        //     return *name;
+        // }
+        // フォールバック: keyをそのまま返す
+        return data_.key;
     }
 
     std::uint_least32_t getFeatureTypeHash() const override {

@@ -31,7 +31,6 @@ namespace paxs {
         explicit LocationPoint() = default;
         explicit LocationPoint(
             std::string  key_,  // 地物の一意キー
-            const paxs::UnorderedMap<std::uint_least32_t, std::string>& names_,  // 地物名（多言語対応）
             const paxs::MercatorDeg& coordinate_,  // 経緯度
             const double overall_length_,  // 全長
             const Range<double>& zoom_range_,  // 表示するズームレベル範囲
@@ -41,13 +40,12 @@ namespace paxs {
             const double zoom_, // 拡大率
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& extra_data_ = {}  // 追加カラムデータ
         ) noexcept
-            : key(std::move(key_)), names(names_), coordinate(coordinate_), overall_length(overall_length_),
+            : key(std::move(key_)), coordinate(coordinate_), overall_length(overall_length_),
             zoom_range(zoom_range_), year_range(year_range_),
             feature_type_hash(feature_type_hash_), texture_key(texture_key_), zoom(zoom_),
             extra_data(extra_data_){}
 
         std::string key;  // 地物の一意キー（TSVのkeyカラムから）
-        paxs::UnorderedMap<std::uint_least32_t, std::string> names; // 地物名（多言語対応：地名、遺跡名、古墳名、人物名、ゲノム名など）
         paxs::MercatorDeg coordinate; // 経緯度
         double overall_length = 10; // 全長
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
