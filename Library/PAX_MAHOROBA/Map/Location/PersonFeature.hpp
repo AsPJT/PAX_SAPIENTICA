@@ -69,18 +69,6 @@ public:
             return *name;
         }
         PAXS_WARNING("[PersonFeature] getName FAILED: key=" + data_.key + ", language=" + language + " - returning nullptr from Locales");
-
-        // TODO: Localesシステムへの完全移行後、以下のフォールバックコードは削除可能
-        // フォールバック: 既存のnamesマップから取得
-        const std::uint_least32_t lang_hash = MurMur3::calcHash(language.c_str());
-        const auto iterator = data_.names.find(lang_hash);
-        if (iterator != data_.names.end()) {
-            return iterator->second;
-        }
-        // フォールバック: 最初の名前を返す
-        if (!data_.names.empty()) {
-            return data_.names.begin()->second;
-        }
         return "";
     }
 

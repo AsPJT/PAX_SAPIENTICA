@@ -29,6 +29,7 @@ namespace paxs {
     /// @brief 地物リスト読み込みの共通パラメータ
     /// @brief Common parameters for feature list loading
     struct FeatureListParams {
+        std::string key;        // 地物の一意キー（TSVのkeyカラムから）
         std::string file_path;
         std::string type;
         Range<double> zoom_range;
@@ -67,6 +68,7 @@ namespace paxs {
             }
 
             // カラムハッシュキーを取得
+            const std::uint_least32_t key_hash = MurMur3::calcHash("key");
             const std::uint_least32_t file_path_hash = MurMur3::calcHash("file_path");
             const std::uint_least32_t type_hash = MurMur3::calcHash("type");
             const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
@@ -78,6 +80,7 @@ namespace paxs {
             const std::uint_least32_t first_year_hash = MurMur3::calcHash("first_year");
             const std::uint_least32_t last_year_hash = MurMur3::calcHash("last_year");
 
+            const bool has_key = table.hasColumn(key_hash);
             const bool has_type = table.hasColumn(type_hash);
             const bool has_min_size = table.hasColumn(min_size_hash);
             const bool has_max_size = table.hasColumn(max_size_hash);
@@ -95,6 +98,8 @@ namespace paxs {
             // 1 行ずつ読み込み
             table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
                 (void)row;
+                const std::string key_str = has_key ? table.get(row_index, key_hash) : "";
+
                 const std::string& file_path_str = table.get(row_index, file_path_hash);
 
                 // パスが空の場合は読み込まない
@@ -149,6 +154,7 @@ namespace paxs {
 
                 // コールバックを呼び出し
                 callback(FeatureListParams(
+                    key_str,
                     file_path_str,
                     type_str,
                     Range<double>(min_zoom_level, max_zoom_level),

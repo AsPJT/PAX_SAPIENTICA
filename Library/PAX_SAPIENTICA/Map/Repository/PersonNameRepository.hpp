@@ -53,14 +53,11 @@ namespace paxs {
             std::vector<PersonLocationPoint> person_location_list{}; // 人物の一覧
             const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
-            // ファイル名からキーを抽出（拡張子を除く）
-            std::string person_key;
-            {
-                const std::size_t last_slash = params.file_path.find_last_of("/\\");
-                const std::size_t last_dot = params.file_path.find_last_of('.');
-                const std::size_t start_pos = (last_slash == std::string::npos) ? 0 : last_slash + 1;
-                const std::size_t end_pos = (last_dot == std::string::npos || last_dot < start_pos) ? params.file_path.length() : last_dot;
-                person_key = params.file_path.substr(start_pos, end_pos - start_pos);
+            // PersonNames.tsvのkeyカラムから取得したキーを使用
+            const std::string person_key = params.key;
+            if (person_key.empty()) {
+                PAXS_WARNING("PersonNames.tsv key is empty for file: " + params.file_path + ", using filename as fallback: " + person_key);
+                return PersonLocationGroup();
             }
 
             paxs::TsvTable table(params.file_path);
