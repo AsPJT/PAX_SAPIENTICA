@@ -67,6 +67,17 @@ namespace paxs {
 
         std::size_t koyomi_date_list_size = 0;
 
+        // イベント購読（RAII対応） / Event subscriptions (RAII-safe)
+        ScopedSubscription window_resize_subscription_;
+        ScopedSubscription language_changed_subscription_;
+        ScopedSubscription feature_visibility_changed_subscription_;
+        ScopedSubscription feature_selected_subscription_;
+        ScopedSubscription feature_deselected_subscription_;
+#ifdef PAXS_USING_SIMULATOR
+        ScopedSubscription settlement_display_changed_subscription_;
+        ScopedSubscription simulation_state_changed_subscription_;
+#endif
+
         void sortPanelsByLayer() {
             std::sort(panels.begin(), panels.end(),
                 [](IWidget* left, IWidget* right) {
@@ -78,8 +89,9 @@ namespace paxs {
         /// @brief イベントを購読
         void subscribeToEvents() {
             paxs::EventBus& event_bus = paxs::EventBus::getInstance();
+
             // ウィンドウリサイズイベントの購読
-            event_bus.subscribe<WindowResizedEvent>(
+            window_resize_subscription_ = event_bus.subscribeScoped<WindowResizedEvent>(
                 [this](const WindowResizedEvent& event) {
                     (void)event;
                     // UIレイアウトを再計算
@@ -92,7 +104,7 @@ namespace paxs {
             );
 
             // 言語変更イベントの購読
-            event_bus.subscribe<LanguageChangedEvent>(
+            language_changed_subscription_ = event_bus.subscribeScoped<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent& event) {
                     (void)event;
                     // 言語変更時はレイアウト再計算が必要
@@ -104,7 +116,7 @@ namespace paxs {
             );
 
             // 機能可視性変更イベントの購読
-            event_bus.subscribe<FeatureVisibilityChangedEvent>(
+            feature_visibility_changed_subscription_ = event_bus.subscribeScoped<FeatureVisibilityChangedEvent>(
                 [this](const FeatureVisibilityChangedEvent& event) {
                     (void)event;
                     // 背景の可視性をパネルと同期
@@ -119,7 +131,7 @@ namespace paxs {
             );
 
             // Feature選択イベントの購読（背景の可視性を更新）
-            event_bus.subscribe<FeatureSelectedEvent>(
+            feature_selected_subscription_ = event_bus.subscribeScoped<FeatureSelectedEvent>(
                 [this](const FeatureSelectedEvent& event) {
                     (void)event;
                     // FeatureInfoPanelが表示されるので背景も表示
@@ -128,7 +140,7 @@ namespace paxs {
             );
 
             // Feature選択解除イベントの購読（背景の可視性を更新）
-            event_bus.subscribe<FeatureDeselectedEvent>(
+            feature_deselected_subscription_ = event_bus.subscribeScoped<FeatureDeselectedEvent>(
                 [this](const FeatureDeselectedEvent& event) {
                     (void)event;
                     // FeatureInfoPanelが非表示になるので背景も非表示
@@ -138,7 +150,7 @@ namespace paxs {
 
 #ifdef PAXS_USING_SIMULATOR
             // 集落表示設定変更イベントの購読
-            event_bus.subscribe<SettlementDisplayChangedEvent>(
+            settlement_display_changed_subscription_ = event_bus.subscribeScoped<SettlementDisplayChangedEvent>(
                 [this](const SettlementDisplayChangedEvent& event) {
                     // SettlementStatusPanelの表示モードを更新
                     settlement_status_panel.setSelectDraw(event.select_draw);
@@ -146,7 +158,7 @@ namespace paxs {
             );
 
             // シミュレーション状態変更イベントの購読
-            event_bus.subscribe<SimulationStateChangedEvent>(
+            simulation_state_changed_subscription_ = event_bus.subscribeScoped<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
                     // シミュレーションが停止状態になったら表示
                     if (event.new_state == SimulationState::Stopped) {

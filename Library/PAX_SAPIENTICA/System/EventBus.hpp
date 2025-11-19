@@ -12,6 +12,7 @@
 #ifndef PAX_SAPIENTICA_SYSTEM_EVENT_BUS_HPP
 #define PAX_SAPIENTICA_SYSTEM_EVENT_BUS_HPP
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -37,6 +38,46 @@ struct Event {
 /// @brief Event handler function type
 template<typename EventType>
 using EventHandler = std::function<void(const EventType&)>;
+
+/// @brief 購読ハンドル（購読解除用）
+/// @brief Subscription handle (for unsubscribing)
+struct SubscriptionHandle {
+    std::type_index type_id;
+    std::size_t handler_id;
+
+    SubscriptionHandle(std::type_index type, std::size_t handler_index)
+        : type_id(type), handler_id(handler_index) {}
+
+    [[nodiscard]] auto isValid() const -> bool { return handler_id != 0; }
+};
+
+/// @brief RAII スコープ付き購読
+/// @brief RAII scoped subscription
+/// @details デストラクタで自動的に購読解除
+/// @details Automatically unsubscribes in destructor
+class ScopedSubscription {
+public:
+    ScopedSubscription() = default;
+    explicit ScopedSubscription(SubscriptionHandle handle);
+    ~ScopedSubscription();
+
+    // ムーブのみ許可
+    ScopedSubscription(const ScopedSubscription&) = delete;
+    auto operator=(const ScopedSubscription&) -> ScopedSubscription& = delete;
+    ScopedSubscription(ScopedSubscription&& other) noexcept;
+    auto operator=(ScopedSubscription&& other) noexcept -> ScopedSubscription&;
+
+    /// @brief 購読を解除
+    /// @brief Unsubscribe
+    void unsubscribe();
+
+    /// @brief 有効かチェック
+    /// @brief Check if valid
+    [[nodiscard]] auto isValid() const -> bool { return handle_.isValid(); }
+
+private:
+    SubscriptionHandle handle_{std::type_index(typeid(void)), 0};
+};
 
 /// @brief 中央イベントバス（シングルトン）
 /// @brief Central event bus (singleton)
@@ -71,11 +112,60 @@ public:
 
         auto it = subscribers_.find(type_id);
         if (it != subscribers_.end()) {
-            it->second.emplace_back(wrapper);
+            it->second.emplace_back(HandlerEntry{next_handler_id_++, wrapper});
         } else {
-            std::vector<EventHandlerWrapper> handlers;
-            handlers.emplace_back(wrapper);
+            std::vector<HandlerEntry> handlers;
+            handlers.emplace_back(HandlerEntry{next_handler_id_++, wrapper});
             subscribers_.emplace(type_id, std::move(handlers));
+        }
+    }
+
+    /// @brief イベントを購読（RAII対応）
+    /// @brief Subscribe to an event type (RAII-safe)
+    /// @tparam EventType イベント型
+    /// @param handler イベントハンドラー
+    /// @return ScopedSubscription オブジェクト / ScopedSubscription object
+    template<typename EventType>
+    [[nodiscard]] auto subscribeScoped(EventHandler<EventType> handler) -> ScopedSubscription {
+        static_assert(std::is_base_of_v<Event, EventType>, "EventType must derive from Event");
+
+        const std::type_index type_id(typeid(EventType));
+        const std::size_t handler_id = next_handler_id_++;
+
+        auto wrapper = [handler](const Event& event) {
+            handler(static_cast<const EventType&>(event));
+        };
+
+        auto it = subscribers_.find(type_id);
+        if (it != subscribers_.end()) {
+            it->second.emplace_back(HandlerEntry{handler_id, wrapper});
+        } else {
+            std::vector<HandlerEntry> handlers;
+            handlers.emplace_back(HandlerEntry{handler_id, wrapper});
+            subscribers_.emplace(type_id, std::move(handlers));
+        }
+
+        return ScopedSubscription(SubscriptionHandle(type_id, handler_id));
+    }
+
+    /// @brief 購読を解除
+    /// @brief Unsubscribe
+    /// @param handle 購読ハンドル / Subscription handle
+    void unsubscribe(const SubscriptionHandle& handle) {
+        if (!handle.isValid()) {
+            return;
+        }
+
+        auto it = subscribers_.find(handle.type_id);
+        if (it != subscribers_.end()) {
+            auto& handlers = it->second;
+            handlers.erase(
+                std::remove_if(handlers.begin(), handlers.end(),
+                    [handler_id = handle.handler_id](const HandlerEntry& entry) {
+                        return entry.id == handler_id;
+                    }),
+                handlers.end()
+            );
         }
     }
 
@@ -91,8 +181,8 @@ public:
 
         const auto iterator = subscribers_.find(type_id);
         if (iterator != subscribers_.end()) {
-            for (const auto& handler : iterator->second) {
-                handler(event);
+            for (const auto& entry : iterator->second) {
+                entry.handler(event);
             }
         }
     }
@@ -118,8 +208,8 @@ public:
             const std::type_index type_id(typeid(event_ref));
             const auto iterator = subscribers_.find(type_id);
             if (iterator != subscribers_.end()) {
-                for (const auto& handler : iterator->second) {
-                    handler(event_ref);
+                for (const auto& entry : iterator->second) {
+                    entry.handler(event_ref);
                 }
             }
 
@@ -161,12 +251,52 @@ public:
 private:
     using EventHandlerWrapper = std::function<void(const Event&)>;
 
-    paxs::UnorderedMap<std::type_index, std::vector<EventHandlerWrapper>> subscribers_;
+    /// @brief ハンドラーエントリー（ID付き）
+    /// @brief Handler entry (with ID)
+    struct HandlerEntry {
+        std::size_t id;
+        EventHandlerWrapper handler;
+    };
+
+    paxs::UnorderedMap<std::type_index, std::vector<HandlerEntry>> subscribers_;
     std::queue<std::unique_ptr<Event>> event_queue_;
+    std::size_t next_handler_id_ = 1;  ///< 次のハンドラーID（0は無効値） / Next handler ID (0 is invalid)
 
     EventBus() = default;
     ~EventBus() = default;
 };
+
+// ============================================================================
+// ScopedSubscription の実装
+// ============================================================================
+
+inline ScopedSubscription::ScopedSubscription(SubscriptionHandle handle)
+    : handle_(handle) {}
+
+inline ScopedSubscription::~ScopedSubscription() {
+    unsubscribe();
+}
+
+inline ScopedSubscription::ScopedSubscription(ScopedSubscription&& other) noexcept
+    : handle_(other.handle_) {
+    other.handle_ = SubscriptionHandle(std::type_index(typeid(void)), 0);
+}
+
+inline auto ScopedSubscription::operator=(ScopedSubscription&& other) noexcept -> ScopedSubscription& {
+    if (this != &other) {
+        unsubscribe();
+        handle_ = other.handle_;
+        other.handle_ = SubscriptionHandle(std::type_index(typeid(void)), 0);
+    }
+    return *this;
+}
+
+inline void ScopedSubscription::unsubscribe() {
+    if (handle_.isValid()) {
+        EventBus::getInstance().unsubscribe(handle_);
+        handle_ = SubscriptionHandle(std::type_index(typeid(void)), 0);
+    }
+}
 
 } // namespace paxs
 

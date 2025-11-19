@@ -46,6 +46,9 @@ namespace paxs {
         paxg::Color border_color_{200, 200, 200, 255};    ///< 枠線色 / Border color
         paxg::Color text_color_{0, 0, 0, 255};            ///< テキスト色 / Text color
 
+        // イベント購読（RAII対応） / Event subscription (RAII-safe)
+        ScopedSubscription window_resize_subscription_;   ///< ウィンドウリサイズイベント購読 / Window resize event subscription
+
         /// @brief ウィンドウサイズに基づいて位置を更新
         /// @brief Update position based on window size
         void updatePosition() {
@@ -68,12 +71,13 @@ namespace paxs {
             int bar_width = 400,
             int bar_height = 30,
             paxg::Font* bar_font = nullptr
-        ) : handle_(handle), x_(pos_x), y_(pos_y), width_(bar_width), height_(bar_height), font_(bar_font) {
-            // ウィンドウリサイズイベントを購読 / Subscribe to window resize event
-            EventBus::getInstance().subscribe<WindowResizedEvent>([this](const WindowResizedEvent&) {
-                updatePosition();
-            });
-
+        ) : handle_(handle), x_(pos_x), y_(pos_y), width_(bar_width), height_(bar_height), font_(bar_font),
+            window_resize_subscription_(
+                EventBus::getInstance().subscribeScoped<WindowResizedEvent>([this](const WindowResizedEvent&) {
+                    updatePosition();
+                })
+            )
+        {
             // 初期位置を設定 / Set initial position
             updatePosition();
         }

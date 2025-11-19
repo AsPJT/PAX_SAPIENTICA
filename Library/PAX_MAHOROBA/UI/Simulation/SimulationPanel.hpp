@@ -53,17 +53,21 @@ namespace paxs {
         // イベントから同期された状態 / State synchronized from events
         paxs::SimulationState simulation_state_ = paxs::SimulationState::Uninitialized;
 
+        // イベント購読（RAII対応） / Event subscriptions (RAII-safe)
+        ScopedSubscription language_changed_subscription_;
+        ScopedSubscription simulation_state_changed_subscription_;
+
         /// @brief イベント購読を設定
         void subscribeToEvents() {
             // 言語変更イベントを購読してプルダウンのレイアウトを更新
-            EventBus::getInstance().subscribe<LanguageChangedEvent>(
+            language_changed_subscription_ = EventBus::getInstance().subscribeScoped<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent&) {
                     simulation_pulldown.updateLayout();
                 }
             );
 
             // SimulationStateChangedイベントを購読
-            EventBus::getInstance().subscribe<SimulationStateChangedEvent>(
+            simulation_state_changed_subscription_ = EventBus::getInstance().subscribeScoped<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
                     simulation_state_ = event.new_state;
                     // SimulationControlButtonsに状態を通知
