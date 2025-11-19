@@ -51,14 +51,49 @@ namespace paxs {
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
         }
         /// @brief 環境を設定
-        void setEnvironment(const std::string& map_list_path, const std::string& japan_provinces_path, /*const int z,*/ const unsigned seed = 0) noexcept {
+        /// @brief Set environment
+        /// @param map_list_path マップリストファイルパス / Map list file path
+        /// @param japan_provinces_path 行政区画ファイルパス / Provinces file path
+        /// @param seed 乱数シード / Random seed
+        /// @param progress_callback 進捗コールバック（オプション） / Progress callback (optional)
+        template <typename ProgressCallback = std::nullptr_t>
+        void setEnvironment(
+            const std::string& map_list_path,
+            const std::string& japan_provinces_path,
+            const unsigned seed = 0,
+            ProgressCallback&& progress_callback = nullptr
+        ) noexcept {
+            // 進捗報告のヘルパー関数
+            auto report_progress = [&](float progress) {
+                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
+                    progress_callback(progress);
+                }
+            };
+
+            report_progress(0.0f);
+
             environment.reset();
-            environment = std::make_unique<Environment>(map_list_path);
+            report_progress(0.05f);
+
+            // Environment読み込み（進捗: 5% - 80%）
+            environment = std::make_unique<Environment>(
+                map_list_path,
+                [&](float env_progress) {
+                    // Environmentの進捗（0.0-1.0）を全体の進捗（5%-80%）にマッピング
+                    const float overall = 0.05f + (env_progress * 0.75f);
+                    report_progress(overall);
+                }
+            );
+            report_progress(0.8f);
 
             gen = std::mt19937(seed);
+            report_progress(0.85f);
 
             japan_provinces.reset();
+            report_progress(0.9f);
+
             japan_provinces = std::make_unique<paxs::JapanProvinces>(japan_provinces_path);
+            report_progress(1.0f);
         }
 
         /// @brief シミュレーション入力データを再読み込み
@@ -259,7 +294,8 @@ namespace paxs {
         /// @brief Initialize the simulator.
         /// @brief 集落の初期化
         /// @details 集落をクリアし、地域ごとに指定されたエージェント数になるようにランダムに配置する
-        void init() {
+        template <typename ProgressCallback = std::nullptr_t>
+        void init(ProgressCallback&& progress_callback = nullptr) {
             initResults();
             settlement_grids.clear();
             population_num = 0; // 人口数
@@ -273,7 +309,7 @@ namespace paxs {
             marriage_pos_list.clear();
 
             initRandomizeSettlements();
-            randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/);
+            randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/, std::forward<ProgressCallback>(progress_callback));
             calcPop(); // 人口を計算
 
             // 可住地の数を出力
@@ -742,11 +778,19 @@ namespace paxs {
 
         /// @brief Randomly place settlements.
         /// @brief 集落をランダムに配置する
+        template <typename ProgressCallback = std::nullptr_t>
         void randomizeSettlements(
             bool is_ad200,
             bool is_farming, // 渡来人であるか？
-            bool is_bronze // 青銅文化であるか？
+            bool is_bronze, // 青銅文化であるか？
+            ProgressCallback&& progress_callback = nullptr
         ) noexcept {
+            // 進捗報告のヘルパー関数
+            auto report_progress = [&](float progress) {
+                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
+                    progress_callback(progress);
+                }
+            };
             // 地区 ID の最大値
             std::uint_least8_t district_id_max = 0;
 
@@ -782,6 +826,9 @@ namespace paxs {
                     ) {
                     if (step_count == 0) {
                         StatusDisplayer::displayProgressBar(population_sum, all_population);
+                        if (all_population > 0) {
+                            report_progress(static_cast<float>(population_sum) / static_cast<float>(all_population));
+                        }
                     }
 
                     // 重みからインデックスを取得するための分布
@@ -868,6 +915,7 @@ namespace paxs {
             }
             if (step_count == 0) {
                 StatusDisplayer::displayProgressBar(all_population, all_population);
+                report_progress(1.0f); // 完了
                 std::cout << std::endl;
             }
             // 地区の人口が残っている場合は、ランダムに配置

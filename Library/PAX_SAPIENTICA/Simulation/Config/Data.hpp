@@ -36,12 +36,30 @@ namespace paxs {
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
+
+        /// @brief コンストラクタ（進捗コールバックなし）
+        /// @brief Constructor without progress callback
         explicit Data(const std::string& directory_path, const std::string name, const int default_z) noexcept : name(name), default_z(default_z) {
             z_mag = std::pow(2, default_z - SimulationConstants::getInstance().getZ());
             GridType area_x = SimulationConstants::getInstance().getEndArea().x - SimulationConstants::getInstance().getStartArea().x + 1;
             column_size = static_cast<int>(area_x * pixel_size * z_mag);
 
-            load(directory_path);
+            load(directory_path, nullptr);
+        }
+
+        /// @brief コンストラクタ（進捗コールバック付き）
+        /// @brief Constructor with progress callback
+        /// @param directory_path ディレクトリパス / Directory path
+        /// @param name データの名前 / Data name
+        /// @param default_z データのz値 / Data z value
+        /// @param progress_callback 進捗コールバック / Progress callback
+        template <typename ProgressCallback>
+        explicit Data(const std::string& directory_path, const std::string name, const int default_z, ProgressCallback&& progress_callback) noexcept : name(name), default_z(default_z) {
+            z_mag = std::pow(2, default_z - SimulationConstants::getInstance().getZ());
+            GridType area_x = SimulationConstants::getInstance().getEndArea().x - SimulationConstants::getInstance().getStartArea().x + 1;
+            column_size = static_cast<int>(area_x * pixel_size * z_mag);
+
+            load(directory_path, std::forward<ProgressCallback>(progress_callback));
         }
         Data(const Data& other) noexcept
             : name(other.name),
@@ -96,7 +114,8 @@ namespace paxs {
 
         /// @brief Load the file.
         /// @brief ファイルのロード
-        void load(const std::string& directory_path) noexcept {
+        template <typename ProgressCallback = std::nullptr_t>
+        void load(const std::string& directory_path, ProgressCallback&& progress_callback) noexcept {
             std::cout << "Loading " << name << " data..." << std::endl;
             std::vector<std::string> file_paths = FileSystem::getFilePaths(directory_path);
 
@@ -108,15 +127,15 @@ namespace paxs {
             }
 
             if(file_paths[0].find(".tsv") != std::string::npos) {
-                loadNumericTSV(directory_path);
+                loadNumericTSV(directory_path, std::forward<ProgressCallback>(progress_callback));
             } else if(file_paths[0].find(".txt") != std::string::npos) {
-                if (z_mag > 1) loadNumericTextAndCompress(file_paths);
-                else loadNumericText(file_paths);
+                if (z_mag > 1) loadNumericTextAndCompress(file_paths, std::forward<ProgressCallback>(progress_callback));
+                else loadNumericText(file_paths, std::forward<ProgressCallback>(progress_callback));
             } else if(file_paths[0].find(".bin") != std::string::npos) {
                 if constexpr (std::is_same<DataType, std::uint_least8_t>::value) {
-                    loadBinary<paxs::Input8BitBinary>(directory_path);
+                    loadBinary<paxs::Input8BitBinary>(directory_path, std::forward<ProgressCallback>(progress_callback));
                 } else if constexpr (std::is_same<DataType, std::int_least16_t>::value) {
-                    loadBinary<paxs::Input16BitBinary>(directory_path);
+                    loadBinary<paxs::Input16BitBinary>(directory_path, std::forward<ProgressCallback>(progress_callback));
                 }
             } else {
                 PAXS_WARNING("File type is invalid: " + file_paths[0]);
@@ -125,8 +144,8 @@ namespace paxs {
 
         /// @brief Load binary files.
         /// @brief バイナリファイルのロード
-        template <typename BinaryDataType>
-        void loadBinary(const std::string& directory_path) noexcept {
+        template <typename BinaryDataType, typename ProgressCallback = std::nullptr_t>
+        void loadBinary(const std::string& directory_path, ProgressCallback&& progress_callback) noexcept {
             const Vector2 start_position = SimulationConstants::getInstance().getStartArea() * z_mag;
             const Vector2 end_position = SimulationConstants::getInstance().getEndArea() * z_mag;
 
@@ -134,6 +153,13 @@ namespace paxs {
 
             std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
+
+            // 進捗報告のヘルパー関数
+            auto report_progress = [&](float progress) {
+                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
+                    progress_callback(progress);
+                }
+            };
 
             for (GridType y = start_position.y; y <= end_position.y; ++y) {
                 for (GridType x = start_position.x; x <= end_position.x; ++x) {
@@ -155,6 +181,7 @@ namespace paxs {
 
                     ++load_count;
                     StatusDisplayer::displayProgressBar(load_count, file_count);
+                    report_progress(static_cast<float>(load_count) / static_cast<float>(file_count));
                 }
             }
 
@@ -209,7 +236,8 @@ namespace paxs {
 
         /// @brief Load numeric TSV files.
         /// @brief 数値TSVファイルのロード
-        void loadNumericTSV(const std::string& directory_path) noexcept {
+        template <typename ProgressCallback = std::nullptr_t>
+        void loadNumericTSV(const std::string& directory_path, ProgressCallback&& progress_callback) noexcept {
             const Vector2 start_position = SimulationConstants::getInstance().getStartArea() * z_mag;
             const Vector2 end_position = SimulationConstants::getInstance().getEndArea() * z_mag;
 
@@ -217,6 +245,13 @@ namespace paxs {
 
             std::uint_least32_t file_count = (end_position.x - start_position.x + 1) * (end_position.y - start_position.y + 1);
             std::uint_least32_t load_count = 0;
+
+            // 進捗報告のヘルパー関数
+            auto report_progress = [&](float progress) {
+                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
+                    progress_callback(progress);
+                }
+            };
 
             for (GridType y = start_position.y; y <= end_position.y; ++y) {
                 for (GridType x = start_position.x; x <= end_position.x; ++x) {
@@ -269,6 +304,7 @@ namespace paxs {
 
                     ++load_count;
                     StatusDisplayer::displayProgressBar(load_count, file_count);
+                    report_progress(static_cast<float>(load_count) / static_cast<float>(file_count));
                 }
             }
 
@@ -350,13 +386,21 @@ namespace paxs {
 
         /// @brief Load numeric text file.
         /// @brief 数値テキストファイルのロード
-        void loadNumericText(const std::vector<std::string>& file_paths) noexcept {
+        template <typename ProgressCallback = std::nullptr_t>
+        void loadNumericText(const std::vector<std::string>& file_paths, ProgressCallback&& progress_callback) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
             const Vector2 start_xyz_position = SimulationConstants::getInstance().getStartArea() * pixel_size * z_mag;
             const Vector2 end_xyz_position = SimulationConstants::getInstance().getEndArea() * pixel_size * z_mag;
             const Vector2 size = end_xyz_position - start_xyz_position;
+
+            // 進捗報告のヘルパー関数
+            auto report_progress = [&](float progress) {
+                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
+                    progress_callback(progress);
+                }
+            };
 
             for(const auto& file_path : file_paths) {
                 StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
@@ -393,6 +437,7 @@ namespace paxs {
                 }
                 ++file_count;
                 ++load_count;
+                report_progress(static_cast<float>(file_count) / static_cast<float>(file_paths.size()));
             }
             StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
             std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
@@ -401,13 +446,21 @@ namespace paxs {
 
         /// @brief Load numeric text files and compress the data.
         /// @brief 数値テキストファイルのロードしてデータを圧縮する
-        void loadNumericTextAndCompress(const std::vector<std::string>& file_paths) noexcept {
+        template <typename ProgressCallback = std::nullptr_t>
+        void loadNumericTextAndCompress(const std::vector<std::string>& file_paths, ProgressCallback&& progress_callback) noexcept {
             std::uint_least32_t file_count = 0;
             std::uint_least32_t load_count = 0;
 
             const Vector2 start_xyz_position = SimulationConstants::getInstance().getStartArea() * pixel_size;
             const Vector2 end_xyz_position = SimulationConstants::getInstance().getEndArea() * pixel_size;
             const Vector2 size = end_xyz_position - start_xyz_position;
+
+            // 進捗報告のヘルパー関数
+            auto report_progress = [&](float progress) {
+                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
+                    progress_callback(progress);
+                }
+            };
 
             for(const auto& file_path : file_paths) {
                 StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
@@ -454,6 +507,7 @@ namespace paxs {
                 }
                 ++file_count;
                 ++load_count;
+                report_progress(static_cast<float>(file_count) / static_cast<float>(file_paths.size()));
             }
 
             z_mag = 1;

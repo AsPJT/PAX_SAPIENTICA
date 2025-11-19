@@ -12,6 +12,8 @@
 #ifndef PAX_MAHOROBA_CORE_APP_STATE_MANAGER_HPP
 #define PAX_MAHOROBA_CORE_APP_STATE_MANAGER_HPP
 
+#include <cstdint>
+
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
@@ -23,9 +25,17 @@
 #ifdef PAXS_USING_SIMULATOR
 #include <PAX_MAHOROBA/Core/SimulationController.hpp>
 #include <PAX_SAPIENTICA/Simulation/Manager/SimulationManager.hpp>
+#include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
 #endif
 
 namespace paxs {
+
+/// @brief アプリケーション状態
+/// @brief Application state
+enum class AppState : std::uint8_t {
+    Running,        ///< 通常実行中 / Normal running
+    Loading         ///< ロード中 / Loading
+};
 
 /// @brief アプリケーション状態管理クラス
 /// @brief Application state manager class
@@ -65,6 +75,27 @@ public:
 
     /// @brief 機能可視性マネージャーを取得（mutable版）
     FeatureVisibilityManager& getVisibilityManager() { return visibility_manager_; }
+
+    /// @brief アプリケーション状態を取得
+    /// @brief Get application state
+    /// @return アプリケーション状態 / Application state
+    AppState getAppState() const { return app_state_; }
+
+#ifdef PAXS_USING_SIMULATOR
+    /// @brief ロードハンドルを取得（const版）
+    /// @brief Get loading handle (const version)
+    /// @return ロードハンドルへの参照 / Reference to loading handle
+    const LoadingHandle<bool>& getLoadingHandle() const { return loading_handle_; }
+
+    /// @brief ロード中かチェック
+    /// @brief Check if loading
+    /// @return ロード中ならtrue / True if loading
+    bool isLoading() const {
+        return app_state_ == AppState::Loading &&
+               loading_handle_.isValid() &&
+               !loading_handle_.isFinished();
+    }
+#endif
 
     // ============================================================================
     // 状態変更（イベント発行付き）
@@ -140,6 +171,23 @@ public:
         paxs::EventBus::getInstance().publish(SimulationInitializeCommandEvent(model_name));
     }
 
+    /// @brief シミュレーション非同期初期化を開始
+    /// @brief Start asynchronous simulation initialization
+    /// @param model_name モデル名 / Model name
+    void executeSimulationInitializeAsync(const std::string& model_name) {
+        // すでにロード中の場合はキャンセル
+        if (loading_handle_.isValid() && !loading_handle_.isFinished()) {
+            loading_handle_.cancel();
+            loading_handle_.join();
+        }
+
+        // アプリケーション状態をLoading に変更
+        app_state_ = AppState::Loading;
+
+        // 非同期初期化を開始
+        loading_handle_ = simulation_manager_.simulationInitializeAsync(model_name);
+    }
+
     /// @brief シミュレーション入力データ再読み込みコマンドを実行
     /// @param model_name モデル名
     void executeReloadInputData(const std::string& model_name) const {
@@ -194,6 +242,42 @@ public:
         // SimulationControllerの更新（自動繰り返し実行制御）
         simulation_controller_.update(simulation_manager_, koyomi_, "");
     }
+
+    /// @brief 非同期ロード状態を更新
+    /// @brief Update async loading state
+    void updateLoadingState() {
+        // ロード中でない場合は何もしない
+        if (app_state_ != AppState::Loading) {
+            return;
+        }
+
+        // ロードが完了したかチェック
+        if (loading_handle_.isValid() && loading_handle_.isFinished()) {
+            // ロード結果を取得
+            const bool* result = loading_handle_.getResult();
+
+            if (result && *result) {
+                // ロード成功 - 人間データを初期化
+                simulation_manager_.initSimulation();
+
+                // SimulationConstantsからstart_julian_dayを取得してKoyomiにセット
+                koyomi_.jdn.setDay(SimulationConstants::getInstance().start_julian_day);
+                resetKoyomiToStoppedState();
+
+                // 状態変更イベント発行
+                paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
+                publishDateChangedEvent();
+            } else {
+                // ロード失敗またはキャンセル
+                if (loading_handle_.hasError()) {
+                    PAXS_ERROR("Simulation initialization failed");
+                }
+            }
+
+            // アプリケーション状態をRunningに戻す
+            app_state_ = AppState::Running;
+        }
+    }
 #endif
 
 private:
@@ -203,8 +287,10 @@ private:
 #ifdef PAXS_USING_SIMULATOR
     SimulationManager simulation_manager_;
     SimulationController simulation_controller_;
+    LoadingHandle<bool> loading_handle_;  ///< 非同期ロード用ハンドル / Loading handle for async operations
 #endif
     FeatureVisibilityManager visibility_manager_;
+    AppState app_state_ = AppState::Running;  ///< アプリケーション状態 / Application state
 
     /// @brief 初期状態をイベントで通知
     /// @brief Publish initial state via events

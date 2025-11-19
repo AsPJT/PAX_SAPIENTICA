@@ -22,6 +22,8 @@
 #include <PAX_SAPIENTICA/Simulation/Manager/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
+#include <PAX_SAPIENTICA/System/Async/ProgressToken.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
@@ -168,6 +170,112 @@ namespace paxs {
             }
 
             initialize(map_list_path, japan_provinces_path, seed, model_name);
+        }
+
+        /// @brief 地理データを読み込んでシミュレーションを非同期に初期化（進捗表示付き）
+        /// @brief Initialize simulation asynchronously with progress reporting
+        /// @param model_name モデル名 / Model name
+        /// @param seed 乱数シード（0の場合は自動生成） / Random seed (auto-generated if 0)
+        /// @return LoadingHandle<bool> ロードハンドル（成功時true、失敗時false） / Loading handle
+        LoadingHandle<bool> simulationInitializeAsync(const std::string& model_name, std::uint_least32_t seed = 0) {
+            // パス生成とバリデーションを先に実行（メインスレッドで）
+            auto [map_list_path, japan_provinces_path] = generatePaths(model_name);
+
+            // パスの存在確認
+            if (!FileSystem::exists(map_list_path)) {
+                PAXS_WARNING("Model '" + model_name + "' does not exist (MapList not found: " + map_list_path + "). Available models: Sample, EpiJomon, Yaponesia, AynuMosir, Philippines, Aotearoa");
+                // 即座に失敗を返すダミーハンドルを作成
+                return LoadingHandle<bool>();
+            }
+            if (!FileSystem::exists(japan_provinces_path)) {
+                PAXS_WARNING("Model '" + model_name + "' does not exist (Provinces path not found: " + japan_provinces_path + "). Available models: Sample, EpiJomon, Yaponesia, AynuMosir, Philippines, Aotearoa");
+                // 即座に失敗を返すダミーハンドルを作成
+                return LoadingHandle<bool>();
+            }
+
+            // 非同期タスクを開始
+            return startAsyncTask<bool>([this, model_name, map_list_path, japan_provinces_path, seed](ProgressToken<bool>& token) -> bool {
+                try {
+                    // Step 1: SimulationConstants初期化 (進捗: 0% - 2%)
+                    token.setMessage("Loading simulation constants...");
+                    token.setProgress(0.0f);
+                    SimulationConstants::getInstance(model_name).init(model_name);
+                    token.setProgress(0.02f);
+
+                    // キャンセルチェック
+                    if (token.isCancelled()) {
+                        return false;
+                    }
+
+                    // Step 2: シミュレータ基本構造の準備 (進捗: 2% - 5%)
+                    token.setMessage("Preparing simulator structure...");
+                    token.setProgress(0.03f);
+
+                    // シードが0の場合はランダムに生成
+                    std::uint_least32_t actual_seed = seed;
+                    if (actual_seed == 0) {
+                        std::random_device seed_gen;
+                        actual_seed = seed_gen();
+                    }
+
+                    // 空のシミュレータを作成
+                    auto new_simulator = std::make_unique<paxs::SettlementSimulator>();
+                    token.setProgress(0.05f);
+
+                    // キャンセルチェック
+                    if (token.isCancelled()) {
+                        return false;
+                    }
+
+                    // Step 3: 環境データの読み込み (進捗: 5% - 95%)
+                    token.setMessage("Loading environment data...");
+
+                    // 環境データを段階的に読み込み（進捗コールバック付き）
+                    new_simulator->setEnvironment(
+                        map_list_path,
+                        japan_provinces_path,
+                        actual_seed,
+                        [&token](float env_progress) {
+                            // setEnvironmentの進捗（0.0-1.0）を全体の進捗（5%-95%）にマッピング
+                            const float overall_progress = 0.05f + (env_progress * 0.9f);
+                            token.setProgress(overall_progress);
+                        }
+                    );
+
+                    token.setProgress(0.95f);
+
+                    // キャンセルチェック
+                    if (token.isCancelled()) {
+                        return false;
+                    }
+
+                    // Step 4: 最終確認と設定 (進捗: 95% - 98%)
+                    token.setMessage("Finalizing simulator setup...");
+                    token.setProgress(0.97f);
+
+                    // キャンセルチェック
+                    if (token.isCancelled()) {
+                        return false;
+                    }
+
+                    // Step 5: メンバ変数への反映 (進捗: 98% - 100%)
+                    token.setMessage("Applying configuration...");
+                    simulator_ = std::move(new_simulator);
+                    current_model_name_ = model_name;
+                    is_initialized_ = true;
+
+                    token.setMessage("Initialization complete!");
+                    token.setProgress(1.0f);
+
+                    return true;
+                } catch (const std::exception& e) {
+                    PAXS_ERROR("Simulation initialization failed: " + std::string(e.what()));
+                    return false;
+                } catch (...) {
+                    PAXS_ERROR("Simulation initialization failed: Unknown error");
+                    return false;
+                }
+            });
         }
 
         /// @brief 人間データを初期化

@@ -41,14 +41,43 @@ namespace paxs {
 
         explicit Environment() noexcept = default;
         explicit Environment(const std::string& setting_file_path) noexcept {
-            std::vector<std::vector<std::string>> settings;
+            loadFromFile(setting_file_path, nullptr);
+        }
 
+        /// @brief コンストラクタ（進捗コールバック付き）
+        /// @brief Constructor with progress callback
+        /// @param setting_file_path 設定ファイルパス / Setting file path
+        /// @param progress_callback 進捗コールバック / Progress callback
+        template <typename ProgressCallback>
+        explicit Environment(const std::string& setting_file_path, ProgressCallback&& progress_callback) noexcept {
+            loadFromFile(setting_file_path, std::forward<ProgressCallback>(progress_callback));
+        }
+
+    private:
+        /// @brief ファイルからデータを読み込む
+        /// @brief Load data from file
+        /// @param setting_file_path 設定ファイルパス / Setting file path
+        /// @param progress_callback 進捗コールバック（nullptrの場合は進捗報告なし） / Progress callback
+        template <typename ProgressCallback = std::nullptr_t>
+        void loadFromFile(const std::string& setting_file_path, ProgressCallback&& progress_callback) noexcept {
+            // 進捗報告のヘルパー関数
+            auto report_progress = [&](float progress) {
+                if constexpr (!std::is_same_v<std::decay_t<ProgressCallback>, std::nullptr_t>) {
+                    progress_callback(progress);
+                }
+            };
+
+            report_progress(0.0f);
+
+            std::vector<std::vector<std::string>> settings;
             settings = FileSystem::readTSV(setting_file_path);
 
             if (settings.empty()) {
                 PAXS_ERROR("Failed to read TSV file: " + setting_file_path);
                 return;
             }
+
+            report_progress(0.05f);
 
             // 1行目からdata_typeのカラム番号を取得
             int key_column = -1;
@@ -74,29 +103,49 @@ namespace paxs {
                 return;
             }
 
+            report_progress(0.1f);
+
+            // データファイルの総数を計算
+            const std::size_t total_data_files = settings.size() - 1;
+
             for (std::size_t i = 1; i < settings.size(); ++i) {
+                // 各ファイルの進捗範囲を計算
+                const float file_weight = 0.9f / static_cast<float>(total_data_files);
+                const float file_start = 0.1f + (static_cast<float>(i - 1) / static_cast<float>(total_data_files)) * 0.9f;
+
                 // 型名をstringからTに変換
                 const std::uint_least32_t data_type = MurMur3::calcHash(settings[i][data_type_column].size(), settings[i][data_type_column].c_str());
                 const std::uint_least32_t key = MurMur3::calcHash(settings[i][key_column].size(), settings[i][key_column].c_str());
                 const std::string& key_str = settings[i][key_column];
                 const int z_value = StringUtils::safeStoi(settings[i][z_column], 0, true);
+
+                // Data読み込み用の進捗コールバック
+                auto data_progress_callback = [&](float data_progress) {
+                    const float overall = file_start + (file_weight * data_progress);
+                    report_progress(overall);
+                };
+
                 if (data_type == MurMur3::calcHash("u8")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t>(settings[i][file_path_column], key_str, z_value)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t>(settings[i][file_path_column], key_str, z_value, data_progress_callback)));
                 }
                 else if (data_type == MurMur3::calcHash("u32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t>(settings[i][file_path_column], key_str, z_value)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t>(settings[i][file_path_column], key_str, z_value, data_progress_callback)));
                 }
                 else if (data_type == MurMur3::calcHash("f32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float>(settings[i][file_path_column], key_str, z_value)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float>(settings[i][file_path_column], key_str, z_value, data_progress_callback)));
                 }
                 else if (data_type == MurMur3::calcHash("s16")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t>(settings[i][file_path_column], key_str, z_value)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t>(settings[i][file_path_column], key_str, z_value, data_progress_callback)));
                 }
                 else {
                     PAXS_WARNING("data_type is not found in " + setting_file_path);
                 }
             }
+
+            report_progress(1.0f);
         }
+
+    public:
 
         /// @brief Get data.
         /// @brief データの取得

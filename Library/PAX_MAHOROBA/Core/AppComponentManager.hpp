@@ -21,6 +21,7 @@
 #include <PAX_MAHOROBA/Map/Tile/MapTileLayer.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
+#include <PAX_MAHOROBA/UI/LoadingProgressBar.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>
 
@@ -45,6 +46,10 @@ namespace paxs {
         UILayer ui_layer_;
         MenuBar menu_bar_;
 
+#ifdef PAXS_USING_SIMULATOR
+        LoadingProgressBar<bool> loading_progress_bar_;  ///< ロード進捗バー / Loading progress bar
+#endif
+
 #ifdef PAXS_DEVELOPMENT
         DebugLayer debug_layer_;
 #endif
@@ -63,6 +68,16 @@ namespace paxs {
                 map_content_layer_.getRenderContext(),
                 app_state.getVisibilityManager()
             )
+#ifdef PAXS_USING_SIMULATOR
+            , loading_progress_bar_(
+                &app_state.getLoadingHandle(),
+                static_cast<int>(paxg::Window::width()) / 2 - 200,
+                static_cast<int>(paxg::Window::height()) / 2 - 15,
+                400,
+                30,
+                Fonts().getFont(FontProfiles::UI_MEDIUM)
+            )
+#endif
 #ifdef PAXS_DEVELOPMENT
             , debug_layer_()
 #endif
@@ -100,6 +115,21 @@ namespace paxs {
                 render_layer_manager_.renderAll();
             }
         }
+
+#ifdef PAXS_USING_SIMULATOR
+        /// @brief ロード中モードでの描画（タイル・メニューバー・進捗バーのみ）
+        /// @brief Render in loading mode (tiles, menubar, and progress bar only)
+        void renderLoadingMode() {
+            // タイルレイヤーを描画
+            map_tile_layer_.render();
+
+            // メニューバーを描画
+            menu_bar_.render();
+
+            // ロード進捗バーを描画
+            loading_progress_bar_.render();
+        }
+#endif
 
         /// @brief 入力ハンドラーにウィジェットを登録
         /// @brief Register widgets to input handlers

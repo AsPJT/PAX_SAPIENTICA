@@ -99,27 +99,58 @@ namespace paxs {
             // 画像の拡大縮小の方式を設定
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampNearest };
 
-            // 1. 入力処理（イベント収集・ルーティング）
-            input_manager.processInput();
+#ifdef PAXS_USING_SIMULATOR
+            // アプリケーション状態に応じて処理を分岐
+            if (app_state.getAppState() == AppState::Loading) {
+                // ========================================
+                // ロード中の処理
+                // ========================================
 
-            // 2. イベントキュー処理（遅延イベントの処理）
-            event_bus.processQueue();
+                // 1. ウィンドウリサイズ検知（UIの再配置のため）
+                input_manager.detectWindowResize();
 
-            // 3. 暦更新（暦再生時の時間進行）
-            app_state.updateKoyomi();
+                // 2. ロード状態の更新（ロード完了のチェック）
+                app_state.updateLoadingState();
 
-#ifdef PAXS_DEVELOPMENT
-            // 4. デバッグレイヤーの更新（自動削除チェック）
-            component_manager.getDebugLayer().update(
-                component_manager.getDebugLayer().getCurrentTime()
-            );
+                // 3. イベントキュー処理（最小限）
+                event_bus.processQueue();
+
+                // 4. 描画処理（タイルとメニューバーのみ）
+                component_manager.renderLoadingMode();
+
+                // 5. タッチ入力の状態更新
+                paxg::TouchInput::updateState();
+            } else
+#endif
+            {
+                // ========================================
+                // 通常実行中の処理
+                // ========================================
+
+                // 1. 入力処理（イベント収集・ルーティング）
+                input_manager.processInput();
+
+                // 2. イベントキュー処理（遅延イベントの処理）
+                event_bus.processQueue();
+
+#ifdef PAXS_USING_SIMULATOR
+                // 3. 暦更新（暦再生時の時間進行）
+                app_state.updateKoyomi();
 #endif
 
-            // 5. 描画処理
-            component_manager.render();
+#ifdef PAXS_DEVELOPMENT
+                // 4. デバッグレイヤーの更新（自動削除チェック）
+                component_manager.getDebugLayer().update(
+                    component_manager.getDebugLayer().getCurrentTime()
+                );
+#endif
 
-            // 6. タッチ入力の状態更新
-            paxg::TouchInput::updateState();
+                // 5. 描画処理
+                component_manager.render();
+
+                // 6. タッチ入力の状態更新
+                paxg::TouchInput::updateState();
+            }
         }
     }
 }

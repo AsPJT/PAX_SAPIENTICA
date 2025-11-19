@@ -38,7 +38,7 @@ namespace paxs {
     class SimulationPanel : public IWidget {
     private:
         const paxs::FeatureVisibilityManager& visibility_manager_;
-        const AppStateManager& app_state_manager_;
+        AppStateManager& app_state_manager_;
         const UILayout& ui_layout_;
 
         std::vector<std::uint_least32_t> simulation_key;
@@ -78,8 +78,8 @@ namespace paxs {
 
             switch (id) {
             case SimulationControlButton::Id::Initialize: {
-                // シミュレーション初期化コマンドを発行
-                app_state_manager_.executeSimulationInitialize(model_name);
+                // シミュレーション非同期初期化を開始
+                app_state_manager_.executeSimulationInitializeAsync(model_name);
                 break;
             }
             case SimulationControlButton::Id::Stop: {
@@ -131,7 +131,7 @@ namespace paxs {
         // コンストラクタ
         SimulationPanel(
             const paxs::FeatureVisibilityManager& visibility_manager,
-            const AppStateManager& app_state_manager,
+            AppStateManager& app_state_manager,
             const UILayout& ui_layout
         ) : visibility_manager_(visibility_manager),
             app_state_manager_(app_state_manager),

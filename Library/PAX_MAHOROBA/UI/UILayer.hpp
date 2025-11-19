@@ -164,7 +164,7 @@ namespace paxs {
         }
 
     public:
-        UILayer(const AppStateManager& app_state_manager)
+        UILayer(AppStateManager& app_state_manager)
             : visible_manager(app_state_manager.getVisibilityManager()),
               calendar_panel(ui_layout, visible_manager, app_state_manager),
               debug_info_panel(ui_layout, visible_manager, app_state_manager.getMapViewport(), app_state_manager.getKoyomi()),
