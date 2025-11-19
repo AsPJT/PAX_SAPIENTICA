@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_PERSON_FEATURE_HPP
 
 #include <string>
-#include <vector>
 
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>

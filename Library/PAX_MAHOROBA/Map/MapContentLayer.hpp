@@ -291,18 +291,17 @@ namespace paxs {
         auto operator=(MapContentLayer&&) -> MapContentLayer& = delete;
 
         void render() const override {
-            if (!isVisible()) {
-                return;
-            }
-
-            MapFeatureRenderer::drawFeatures(features_, render_context_, asset_registry_.getMergedMap());
-
 #ifdef PAXS_USING_SIMULATOR
             // SettlementManager を描画（シミュレーション表示時）
             if (app_state_manager_.getVisibilityManager().isVisible(ViewMenu::simulation)) {
                 settlement_manager_.render();
             }
 #endif
+
+            if (app_state_manager_.getVisibilityManager().isVisible(ViewMenu::map)) {
+                MapFeatureRenderer::drawFeatures(features_, render_context_, asset_registry_.getMergedMap());
+            }
+
         }
 
 #ifdef PAXS_USING_SIMULATOR
@@ -341,9 +340,7 @@ namespace paxs {
             return nullptr;
         }
 
-        bool isVisible() const override {
-            return app_state_manager_.getVisibilityManager().isVisible(ViewMenu::map);
-        }
+        bool isVisible() const override { return true; }
         RenderLayer getLayer() const override { return RenderLayer::MapContent; }
     };
 }

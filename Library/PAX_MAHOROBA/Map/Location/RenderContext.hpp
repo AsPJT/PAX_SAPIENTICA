@@ -35,18 +35,31 @@ struct RenderContext {
     paxg::Font* font = nullptr; ///< 地名・人名描画用フォント / Font for place/person names
     const UnorderedMap<std::uint_least32_t, paxg::Texture>* texture_map = nullptr; ///< テクスチャマップ / Texture map
 
-    /// @brief 座標がビューの範囲内にあるかチェック
-    /// @brief Check if coordinates are within view bounds
-    /// @param mercator_x メルカトル座標X / Mercator X coordinate
-    /// @param mercator_y メルカトル座標Y / Mercator Y coordinate
+    /// @brief 座標がビューの範囲内にあるかチェック（日付変更線対応）
+    /// @brief Check if coordinates are within view bounds (with date line wrapping)
+    /// @param mercator_pos メルカトル座標 / Mercator position
     /// @param margin マージン倍率（デフォルト1.6） / Margin multiplier (default 1.6)
     /// @return 範囲内ならtrue / True if within bounds
+    /// @details 経度が±180°で循環するため、3つのラップ座標（-360°, 0°, +360°）のいずれかが範囲内にあるかチェックします
+    /// @details Checks if any of the three wrapped coordinates (-360°, 0°, +360°) are within bounds since longitude wraps at ±180°
     [[nodiscard]] bool isInViewBounds(Vector2<double> mercator_pos, double margin = 1.6) const {
         const Rect<double> view_rect = Rect<double>::fromCenter(
             map_view_center,
             map_view_size * margin
         );
-        return view_rect.contains(mercator_pos);
+
+        // 経度の3つのラップ座標（-360°, 0°, +360°）のいずれかが範囲内にあるかチェック
+        // Check if any of the three longitude-wrapped coordinates are within bounds
+        for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
+            const Vector2<double> wrapped_pos(
+                mercator_pos.x + (offset_mult * 360.0),
+                mercator_pos.y
+            );
+            if (view_rect.contains(wrapped_pos)) {
+                return true;
+            }
+        }
+        return false;
     }
 };
 
