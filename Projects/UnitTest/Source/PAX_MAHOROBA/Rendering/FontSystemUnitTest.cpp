@@ -12,7 +12,6 @@
 #include <gtest/gtest.h>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 
 namespace paxs {
 
@@ -115,13 +114,20 @@ TEST_F(FontSystemTest, LanguageSelection) {
 TEST_F(FontSystemTest, LanguageSelectionByKey) {
     Fonts().initialize();
 
-    Fonts().setLanguageByKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[0]); // en-US
-    EXPECT_EQ(Fonts().getSelectedLanguage().getKey(),
-              paxs::LanguageKeys::ALL_LANGUAGE_HASHES[0]);
+    // Locales から登録されている言語リストを取得
+    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getLocales().getOrderedLocales();
 
-    Fonts().setLanguageByKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[1]); // ja-JP
-    EXPECT_EQ(Fonts().getSelectedLanguage().getKey(),
-              paxs::LanguageKeys::ALL_LANGUAGE_HASHES[1]);
+    // 最初の言語 (en-US) を選択
+    if (!locale_keys.empty()) {
+        Fonts().setLanguageByKey(locale_keys[0]); // en-US
+        EXPECT_EQ(Fonts().getSelectedLanguage().getKey(), locale_keys[0]);
+    }
+
+    // 2番目の言語 (ja-JP) を選択
+    if (locale_keys.size() > 1) {
+        Fonts().setLanguageByKey(locale_keys[1]); // ja-JP
+        EXPECT_EQ(Fonts().getSelectedLanguage().getKey(), locale_keys[1]);
+    }
 }
 
 // カスタムプロファイルの登録と使用

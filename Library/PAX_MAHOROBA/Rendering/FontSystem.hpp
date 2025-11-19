@@ -18,10 +18,11 @@
 #include <PAX_GRAPHICA/Font.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
-#include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
+#include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/Language.hpp>
 #include <PAX_SAPIENTICA/System/Locales.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -125,34 +126,20 @@ namespace paxs {
         /// @brief 言語フォントの設定
         /// @brief Setup language fonts
         void setupLanguageFonts() {
-            static constexpr std::array path_list = {
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf",
-                "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf",
-                "Data/Font/noto-sans-kr/NotoSansKR-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans/NotoSans-Regular.ttf",
-                "Data/Font/noto-sans/NotoSans-Regular.ttf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans/NotoSans-Regular.ttf",
-                "Data/Font/noto-sans/NotoSans-Regular.ttf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf",
-                "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf",
-                "Data/Font/noto-sans-ar/NotoNaskhArabic-VariableFont_wght.ttf",
-                "Data/Font/noto-sans-jp/NotoSansJP-Regular.otf"
-            };
+            const std::string font_tsv_path = paxs::AppConfig::getInstance().getSettingPath(paxs::MurMur3::calcHash("Font"));
+            paxs::KeyValueTSV<std::string> font_tsv;
 
-            // 言語ごとのフォントパスを登録
-            for (std::size_t i = 0; i < path_list.size(); ++i) {
-                language_font_paths_.emplace(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[i], path_list[i]);
+            if (!font_tsv.input(font_tsv_path)) {
+                PAXS_WARNING("Failed to load Font.tsv: " + font_tsv_path);
+                return;
+            }
+
+            // Font.tsv から key-value ペアを取得
+            const paxs::UnorderedMap<std::uint_least32_t, std::string>& font_entries = font_tsv.get();
+
+            // 各言語に対してフォントパスを登録
+            for (const auto& [language_key, font_path] : font_entries) {
+                language_font_paths_.emplace(language_key, font_path);
             }
         }
 
