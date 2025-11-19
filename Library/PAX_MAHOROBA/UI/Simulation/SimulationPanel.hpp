@@ -55,10 +55,10 @@ namespace paxs {
 
         /// @brief イベント購読を設定
         void subscribeToEvents() {
-            // 言語変更イベントを購読してプルダウンの言語を更新
+            // 言語変更イベントを購読してプルダウンのレイアウトを更新
             EventBus::getInstance().subscribe<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent&) {
-                    simulation_pulldown.updateLanguage();
+                    simulation_pulldown.updateLayout();
                 }
             );
 

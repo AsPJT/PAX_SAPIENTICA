@@ -29,8 +29,7 @@ namespace paxs {
 
     /// @brief 地名・人名・集落レンダリングの共通ヘルパー
     /// @brief Common helper utilities for location, person name, and settlement rendering
-    class LocationRendererHelper {
-    public:
+    struct LocationRendererHelper {
         /// @brief agent1/agent2アイコンを描画
         /// @brief Draw agent1/agent2 icons
         /// @param texture テクスチャマップ
@@ -60,46 +59,6 @@ namespace paxs {
                 return true;
             }
             return false;
-        }
-
-        /// @brief 範囲内判定
-        /// @param coordinate メルカトル座標 / Mercator coordinate
-        /// @param map_view_size マップビューのサイズ / Map view size
-        /// @param map_view_center マップビューの中心座標 / Map view center
-        /// @param margin_factor マージン係数（デフォルト: 1.6） / Margin factor (default: 1.6)
-        static bool isInViewBounds(
-            const Vector2<double>& coordinate,
-            const Vector2<double>& map_view_size,
-            const Vector2<double>& map_view_center,
-            double margin_factor = 1.6
-        ) {
-            const double half_width = map_view_size.x / 2 * margin_factor;
-            const double half_height = map_view_size.y / 2 * margin_factor;
-            return (coordinate.x >= map_view_center.x - half_width &&
-                    coordinate.x <= map_view_center.x + half_width &&
-                    coordinate.y >= map_view_center.y - half_height &&
-                    coordinate.y <= map_view_center.y + half_height);
-        }
-
-    private:
-        LocationRendererHelper() = default;
-
-        /// @brief モードに応じてテキスト描画
-        /// @brief Draw text according to specified mode
-        static void drawTextByMode(
-            paxg::Font* font,
-            const std::string& text,
-            const paxg::Vec2<double>& pos,
-            const paxg::Color& color,
-            const char* mode
-        ) {
-            if (std::strcmp(mode, "topCenter") == 0) {
-                font->drawTopCenter(text, pos, color);
-            } else if (std::strcmp(mode, "at") == 0) {
-                font->drawAt(text, pos, color);
-            } else if (std::strcmp(mode, "bottomCenter") == 0) {
-                font->drawBottomCenter(text, pos, color);
-            }
         }
     };
 

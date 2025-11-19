@@ -50,7 +50,7 @@ namespace paxs {
 
         // カレンダーを描画（言語に応じて自動選択）
         void renderInternal() const {
-            const std::uint_least32_t current_language = Fonts().getSelectedLanguage().getKey();
+            const std::uint_least32_t current_language = Fonts().getSelectedLanguageKey();
 
             // 日本語・中国語・台湾語の場合はアジア式カレンダー
             if (current_language == MurMur3::calcHash("ja-JP")
@@ -97,7 +97,7 @@ namespace paxs {
 
                 // 暦描画フォントを指定
                 paxg::Font* one_font = Fonts().getFont(
-                    Fonts().getSelectedLanguage().getKey(),
+                    Fonts().getSelectedLanguageKey(),
                     static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                     static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                 );
@@ -227,7 +227,7 @@ namespace paxs {
 
                 // 暦描画フォントを指定
                 paxg::Font* one_font = Fonts().getFont(
-                    Fonts().getSelectedLanguage().getKey(),
+                    Fonts().getSelectedLanguageKey(),
                     static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                     static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
                 );

@@ -72,36 +72,53 @@ TEST_F(AppStateManagerTest, GettersReturnNonConstReferences) {
 // ============================================================================
 
 TEST_F(AppStateManagerTest, SetLanguagePublishesEvent) {
+    // FontSystem を初期化
+    Fonts().initialize();
+
     AppStateManager app_state{};
 
-    std::uint_least8_t received_index = 255;
+    std::uint_least32_t received_key = 0;
 
     event_bus_.subscribe<LanguageChangedEvent>(
-        [&received_index](const LanguageChangedEvent& event) {
-            received_index = event.new_language;
+        [&received_key](const LanguageChangedEvent& event) {
+            received_key = event.language_key;
         }
     );
 
-    app_state.setLanguage(5, 0); // 言語インデックス5、キーは0（テスト用ダミー値）
+    // 有効なロケールキーを使用（デフォルトとは異なる言語を選択）
+    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getOrderedLocales();
+    ASSERT_GT(locale_keys.size(), 1); // 最低2つの言語が必要
+    const std::uint_least32_t test_key = locale_keys[1]; // ja-JP を使用（デフォルトは en-US）
 
-    EXPECT_EQ(received_index, 5);
-    EXPECT_EQ(app_state.getCurrentLanguageIndex(), 5);
+    app_state.setLanguage(test_key);
+
+    EXPECT_EQ(received_key, test_key);
 }
 
 TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
+    // FontSystem を初期化
+    Fonts().initialize();
+
     AppStateManager app_state{};
-    app_state.setLanguage(3, 0); // 言語インデックス3、キーは0（テスト用ダミー値）
+
+    // 有効なロケールキーを使用（登録されている言語から取得）
+    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getOrderedLocales();
+    ASSERT_GT(locale_keys.size(), 1); // 最低2つの言語が必要
+    const std::uint_least32_t test_key = locale_keys[1]; // ja-JP を使用
+
+    app_state.setLanguage(test_key);
 
     int event_count = 0;
 
     event_bus_.subscribe<LanguageChangedEvent>(
         [&event_count](const LanguageChangedEvent& event) {
+            (void)event;
             event_count++;
         }
     );
 
     // 同じ値を設定（イベントは発行されない）
-    app_state.setLanguage(3, 0); // 言語インデックス3、キーは0（テスト用ダミー値）
+    app_state.setLanguage(test_key);
 
     EXPECT_EQ(event_count, 0);
 }

@@ -66,6 +66,25 @@ namespace paxs {
             }
         }
 
+        /// @brief 範囲内判定
+        /// @param coordinate メルカトル座標 / Mercator coordinate
+        /// @param map_view_size マップビューのサイズ / Map view size
+        /// @param map_view_center マップビューの中心座標 / Map view center
+        /// @param margin_factor マージン係数（デフォルト: 1.6） / Margin factor (default: 1.6)
+        static bool isInViewBounds(
+            const Vector2<double>& coordinate,
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center,
+            double margin_factor = 1.6
+        ) {
+            const double half_width = map_view_size.x / 2 * margin_factor;
+            const double half_height = map_view_size.y / 2 * margin_factor;
+            return (coordinate.x >= map_view_center.x - half_width &&
+                    coordinate.x <= map_view_center.x + half_width &&
+                    coordinate.y >= map_view_center.y - half_height &&
+                    coordinate.y <= map_view_center.y + half_height);
+        }
+
     private:
         // 描画定数
         static constexpr double MAX_POPULATION_VISUALIZATION = 75.0;  // 人口可視化の最大値
@@ -145,8 +164,7 @@ namespace paxs {
                     const auto location_point = createLocationPoint(settlement.getPosition());
 
                     // 経緯度の範囲外を除去
-                    if (!LocationRendererHelper::isInViewBounds(
-                        location_point.coordinate,
+                    if (!isInViewBounds(location_point.coordinate,
                         map_view_size, map_view_center)) continue;
 
                     // 時間範囲外を除去
@@ -216,8 +234,7 @@ namespace paxs {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
                     const auto location_point = createLocationPoint(settlement.getPosition());
 
-                    if (!LocationRendererHelper::isInViewBounds(
-                        location_point.coordinate,
+                    if (!isInViewBounds(location_point.coordinate,
                         map_view_size, map_view_center)) continue;
 
                     if (location_point.year_range.excludes(jdn)) continue;
@@ -280,8 +297,7 @@ namespace paxs {
             for (const auto& marriage_pos : *marriage_pos_list) {
                 const auto location_point = createLocationPoint(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
-                if (!LocationRendererHelper::isInViewBounds(
-                    location_point.coordinate,
+                if (!isInViewBounds(location_point.coordinate,
                     map_view_size, map_view_center)) continue;
 
                 if (location_point.year_range.excludes(jdn)) continue;

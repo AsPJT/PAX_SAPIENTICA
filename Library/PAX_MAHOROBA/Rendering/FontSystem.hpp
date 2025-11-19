@@ -26,20 +26,9 @@
 
 namespace paxs {
 
-    // 選択言語
-    class SelectLanguage {
-    private:
-        std::size_t select_language = 0; // 選択している言語
-        std::uint_least32_t select_key = 0; // 選択している言語
-    public:
-        constexpr void set(const std::size_t select_language_) { select_language = select_language_; }
-        constexpr void setKey(const std::uint_least32_t select_key_) { select_key = select_key_; }
-        constexpr std::size_t get() const { return select_language; }
-        constexpr std::uint_least32_t getKey() const { return select_key; }
-    };
-
     /// @brief フォントプロファイル名定数
     /// @brief Font profile name constants
+    // TODO: スネークケース
     namespace FontProfiles {
         constexpr const char* MAIN = "main";           // カレンダー・地名・人名
         constexpr const char* PULLDOWN = "pulldown";   // プルダウンメニュー
@@ -61,13 +50,12 @@ namespace paxs {
 
         // 言語ごとのフォントパス
         paxs::UnorderedMap<std::uint_least32_t, std::string> language_font_paths_;
-        std::string default_font_path_;
 
         // Locales システム
-        paxs::Locales locales_;
+        paxs::Locales locales;
 
-        // 選択言語
-        SelectLanguage select_language_;
+        // 選択されている言語キー
+        std::uint_least32_t selected_language_key_ = 0;
 
         // フォント設定プロファイル
         struct FontProfile {
@@ -81,8 +69,26 @@ namespace paxs {
         // 初期化フラグ
         bool initialized_ = false;
 
-        /// @brief コンストラクタ（private）
         FontSystem() = default;
+
+        /// @brief カスタムプロファイルを登録
+        /// @brief Register custom profile
+        /// @param name プロファイル名 / Profile name
+        /// @param size フォントサイズ / Font size
+        /// @param buffer_thickness バッファー厚 / Buffer thickness
+        void registerProfile(const std::string& name,
+                             std::uint_least8_t size,
+                             std::uint_least8_t buffer_thickness) {
+            profiles_.emplace(name, FontProfile( size, buffer_thickness ));
+        }
+
+        /// @brief プロファイルが存在するか確認
+        /// @brief Check if profile exists
+        /// @param name プロファイル名 / Profile name
+        /// @return 存在すれば true / true if exists
+        [[nodiscard]] bool hasProfile(const std::string& name) const {
+            return profiles_.contains(name);
+        }
 
         /// @brief デフォルトプロファイルの登録
         /// @brief Register default profiles
@@ -129,7 +135,6 @@ namespace paxs {
                 return;
             }
 
-            // Font.tsv から key-value ペアを取得
             const paxs::UnorderedMap<std::uint_least32_t, std::string>& font_entries = font_tsv.get();
 
             // 各言語に対してフォントパスを登録
@@ -165,21 +170,19 @@ namespace paxs {
                 return;
             }
 
-            // デフォルトフォントパスの設定
-            default_font_path_ = "Data/Font/noto-sans-sc/NotoSansSC-Regular.otf";
-
             // デフォルトプロファイルの登録
             registerDefaultProfiles();
 
             // 言語フォントの設定
             setupLanguageFonts();
 
-
             // デフォルト言語を設定（en-US）
-            // TODO: マジックナンバー回避
-            const std::uint_least32_t default_language_key = MurMur3::calcHash("en-US");
-            select_language_.setKey(default_language_key);
-            select_language_.set(1);  // en-USは通常インデックス1
+            const std::uint_least32_t default_language_key = Locales::getDefaultLocaleKey();
+            if (locales.isValidLocaleKey(default_language_key)) {
+                selected_language_key_ = default_language_key;
+            } else {
+                PAXS_ERROR("FontSystem::initialize - Default locale 'en-US' is not registered in Locales.tsv");
+            }
 
             initialized_ = true;
         }
@@ -207,7 +210,7 @@ namespace paxs {
         /// @param profile_name プロファイル名（例: "main", "pulldown"） / Profile name (e.g., "main", "pulldown")
         /// @return フォントへのポインタ、失敗時は nullptr / Pointer to font, nullptr on failure
         paxg::Font* getFont(const std::string& profile_name) {
-            return getFont(select_language_.getKey(), profile_name);
+            return getFont(selected_language_key_, profile_name);
         }
 
         /// @brief 指定言語のフォントを取得
@@ -229,7 +232,7 @@ namespace paxs {
         /// @param buffer_thickness バッファー厚 / Buffer thickness
         /// @return フォントへのポインタ、失敗時は nullptr / Pointer to font, nullptr on failure
         paxg::Font* getFont(std::uint_least8_t size, std::uint_least8_t buffer_thickness) {
-            return getFont(select_language_.getKey(), size, buffer_thickness);
+            return getFont(selected_language_key_, size, buffer_thickness);
         }
 
         /// @brief 指定言語のフォントを取得（サイズとバッファー厚を直接指定）
@@ -244,25 +247,23 @@ namespace paxs {
             const std::uint_least64_t cache_key = createFontCacheKey(language_key, size, buffer_thickness);
 
             // キャッシュに存在すればそれを返す
-            auto it = font_cache_.find(cache_key);
-            if (it != font_cache_.end()) {
-                return &(it->second);
+            const auto iterator = font_cache_.find(cache_key);
+            if (iterator != font_cache_.end()) {
+                return &(iterator->second);
             }
 
             // フォントパスを取得
-            std::string font_path;
-            auto path_it = language_font_paths_.find(language_key);
-            if (path_it != language_font_paths_.end()) {
-                font_path = path_it->second;
-            } else {
-                // パスが見つからない場合はデフォルトフォントを使用
-                font_path = default_font_path_;
+            const auto path_it = language_font_paths_.find(language_key);
+
+            if (path_it == language_font_paths_.end()) {
+                PAXS_WARNING("FontSystem::getFont - Font path not found for language key: " + std::to_string(language_key));
+                return nullptr;
             }
 
             // 新しいフォントを作成してキャッシュに追加
             font_cache_.emplace(
                 cache_key,
-                paxg::Font(static_cast<int>(size), font_path, static_cast<int>(buffer_thickness))
+                paxg::Font(static_cast<int>(size), path_it->second, static_cast<int>(buffer_thickness))
             );
 
             return &(font_cache_.at(cache_key));
@@ -273,49 +274,23 @@ namespace paxs {
         // Language selection API
         // ========================================
 
-        /// @brief 言語をインデックスで設定
-        /// @brief Set language by index
-        /// @param language_index 言語インデックス（0から始まる） / Language index (starting from 0)
-        void setLanguage(std::size_t language_index) {
-            select_language_.set(language_index);
-        }
-
         /// @brief 言語をキーで設定
         /// @brief Set language by key
         /// @param language_key 言語キー（MurMur3ハッシュ値） / Language key (MurMur3 hash value)
-        void setLanguageByKey(std::uint_least32_t language_key) {
-            select_language_.setKey(language_key);
+        [[nodiscard]] bool setLanguageKey(std::uint_least32_t language_key) {
+            if (locales.isValidLocaleKey(language_key)) {
+                selected_language_key_ = language_key;
+                return true;
+            }
+            PAXS_WARNING("FontSystem::setLanguageKey - Invalid key: " + std::to_string(language_key));
+            return false;
         }
 
-        /// @brief 選択言語を取得
-        /// @brief Get selected language
-        /// @return SelectLanguage への const 参照 / const reference to SelectLanguage
-        const SelectLanguage& getSelectedLanguage() const {
-            return select_language_;
-        }
-
-        // ========================================
-        // フォントプロファイル管理API
-        // Font profile management API
-        // ========================================
-
-        /// @brief カスタムプロファイルを登録
-        /// @brief Register custom profile
-        /// @param name プロファイル名 / Profile name
-        /// @param size フォントサイズ / Font size
-        /// @param buffer_thickness バッファー厚 / Buffer thickness
-        void registerProfile(const std::string& name,
-                             std::uint_least8_t size,
-                             std::uint_least8_t buffer_thickness) {
-            profiles_.emplace(name, FontProfile( size, buffer_thickness ));
-        }
-
-        /// @brief プロファイルが存在するか確認
-        /// @brief Check if profile exists
-        /// @param name プロファイル名 / Profile name
-        /// @return 存在すれば true / true if exists
-        bool hasProfile(const std::string& name) const {
-            return profiles_.contains(name);
+        /// @brief 選択されている言語キーを取得
+        /// @brief Get selected language key
+        /// @return 言語キー / Language key
+        [[nodiscard]] constexpr std::uint_least32_t getSelectedLanguageKey() const {
+            return selected_language_key_;
         }
 
         // ========================================
@@ -327,7 +302,7 @@ namespace paxs {
         /// @brief Get list of registered locales
         /// @return ロケールキーのベクタ / Vector of locale keys
         const std::vector<std::uint_least32_t>& getOrderedLocales() const {
-            return locales_.getOrderedLocales();
+            return locales.getOrderedLocales();
         }
 
         /// @brief 現在選択されている言語でLocalesからテキストを取得（ハッシュキー版）
@@ -340,12 +315,7 @@ namespace paxs {
             const std::uint_least32_t domain_key,
             const std::uint_least32_t text_key,
             const bool suppress_warning = false) const {
-
-            // 選択されている言語のキーを取得
-            const std::uint_least32_t selected_lang_key = select_language_.getKey();
-
-            // Localesからテキストを取得（3つのハッシュキーを使用）
-            return locales_.getStringPtr(domain_key, text_key, selected_lang_key, suppress_warning);
+            return locales.getStringPtr(domain_key, text_key, selected_language_key_, suppress_warning);
         }
 
     };

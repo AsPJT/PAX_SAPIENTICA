@@ -66,34 +66,35 @@ public:
     /// @brief 機能可視性マネージャーを取得（mutable版）
     FeatureVisibilityManager& getVisibilityManager() { return visibility_manager_; }
 
-    /// @brief 現在の言語インデックスを取得
-    std::uint_least8_t getCurrentLanguageIndex() const { return current_language_index_; }
-
     // ============================================================================
     // 状態変更（イベント発行付き）
     // ============================================================================
 
     /// @brief 言語を設定
-    /// @param index 言語インデックス
-    /// @param language_key 言語キー（MurMur3ハッシュ値）
-    void setLanguage(std::uint_least8_t index, std::uint_least32_t language_key) {
-        if (current_language_index_ != index) {
-            current_language_index_ = index;
-            Fonts().setLanguage(static_cast<std::size_t>(index));
-            Fonts().setLanguageByKey(language_key);
-            paxs::EventBus::getInstance().publish(LanguageChangedEvent(index));
+    /// @brief Set language
+    /// @param language_key 言語キー（MurMur3ハッシュ値） / Language key (MurMur3 hash value)
+    static bool setLanguage(std::uint_least32_t language_key) {
+        const std::uint_least32_t current_key = Fonts().getSelectedLanguageKey();
+        if (current_key != language_key) {
+            bool changed = Fonts().setLanguageKey(language_key);
+            if (changed) {
+                paxs::EventBus::getInstance().publish(LanguageChangedEvent(language_key));
+                return true;
+            }
+            PAXS_WARNING("[AppStateManager] setLanguage FAILED: Invalid language key: " + std::to_string(language_key));
         }
+        return false;
     }
 
     /// @brief 時間再生制御コマンドを実行
     /// @param action 再生制御アクション
-    void executeTimePlaybackControl(TimePlaybackControlEvent::Action action) const {
+    static void executeTimePlaybackControl(TimePlaybackControlEvent::Action action) {
         paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(action));
     }
 
     /// @brief 日付移動コマンドを実行
     /// @param days 移動日数
-    void executeDateNavigation(double days) const {
+    static void executeDateNavigation(double days) {
         paxs::EventBus::getInstance().publish(DateNavigationEvent(days));
     }
 
@@ -205,9 +206,6 @@ private:
 #endif
     FeatureVisibilityManager visibility_manager_;
 
-    // 状態変数
-    std::uint_least8_t current_language_index_ = 0;
-
     /// @brief 初期状態をイベントで通知
     /// @brief Publish initial state via events
     void publishInitialState() {
@@ -223,8 +221,8 @@ private:
 
         // 言語変更コマンドの購読
         event_bus.subscribe<LanguageChangeCommandEvent>(
-            [this](const LanguageChangeCommandEvent& event) {
-                setLanguage(event.language_index, event.language_key);
+            [this](const LanguageChangeCommandEvent& event) -> void {
+                setLanguage(event.language_key);
             }
         );
 

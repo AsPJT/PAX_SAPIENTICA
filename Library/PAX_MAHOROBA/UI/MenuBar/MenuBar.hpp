@@ -53,10 +53,10 @@ namespace paxs {
 
             github_button_.init(language_selector_);
 
-            // 言語選択のコールバックを設定
-            language_selector_.setOnSelectionChanged([this](std::size_t index, bool is_selected) {
+            // 言語選択のコールバックを設定（キーベース）
+            language_selector_.setOnSelectionChanged([this](std::uint_least32_t key, bool is_selected) {
                 (void)is_selected;
-                handleLanguageChanged(index);
+                handleLanguageChanged(key);
             });
 
             // メニューバーにメニュー項目を追加（FontSystem経由）
@@ -99,15 +99,12 @@ namespace paxs {
             return language_selector_.getRect().height();
         }
 
-        /// @brief 言語変更時のハンドラー（コールバック駆動）
-        /// @brief Language change handler (callback-driven)
-        void handleLanguageChanged(std::size_t new_index) {
-            const std::uint_least32_t language_key = language_selector_.getKey();
-            // EventBus経由で言語変更コマンドを発行
-            paxs::EventBus::getInstance().publish(LanguageChangeCommandEvent(
-                static_cast<std::uint_least8_t>(new_index),
-                language_key
-            ));
+        /// @brief 言語変更時のハンドラー（コールバック駆動、キーベース）
+        /// @brief Language change handler (callback-driven, key-based)
+        /// @param language_key 選択された言語のキー / Selected language key
+        void handleLanguageChanged(std::uint_least32_t language_key) {
+            // EventBus経由で言語変更コマンドを発行（キーのみ）
+            paxs::EventBus::getInstance().publish(LanguageChangeCommandEvent(language_key));
         }
 
         /// @brief メニュー項目トグル時のハンドラー（コールバック駆動）
@@ -292,6 +289,7 @@ namespace paxs {
             EventBus::getInstance().subscribe<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent&) {
                     menu_system.updateMenuWidth();
+                    language_selector_.updateLayout();  // 言語選択プルダウンのレイアウトを更新
                     calculateLayout();
                 }
             );

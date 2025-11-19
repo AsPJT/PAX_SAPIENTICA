@@ -354,6 +354,43 @@ namespace paxs {
             return ordered_locales_;
         }
 
+        /// @brief ロケールキーが有効かを検証
+        /// @brief Check if locale key is valid
+        /// @param key ロケールキー / Locale key
+        /// @return 有効であれば true / true if valid
+        [[nodiscard]] bool isValidLocaleKey(std::uint_least32_t key) const {
+            return locale_key_to_index_.contains(key);
+        }
+
+        /// @brief ロケールキーからインデックスへのマッピングを取得
+        /// @brief Get locale key to index mapping
+        /// @return ロケールキー → インデックス のマップ / Map from locale key to index
+        [[nodiscard]] const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& getLocaleKeyToIndex() const {
+            return locale_key_to_index_;
+        }
+
+        /// @brief ロケールキーから名前へのマッピングを取得
+        /// @brief Get locale key to name mapping
+        /// @return ロケールキー → 名前 のマップ / Map from locale key to name
+        [[nodiscard]] const paxs::UnorderedMap<std::uint_least32_t, std::string>& getLocaleKeyToName() const {
+            return locale_key_to_name_;
+        }
+
+        /// @brief デフォルトロケールのキーを取得
+        /// @brief Get default locale key
+        /// @return デフォルトロケールのキー / Default locale key
+        [[nodiscard]] static std::uint_least32_t getDefaultLocaleKey() {
+            return MurMur3::calcHash(default_locale_name_);
+        }
+
+        /// @brief ロケール名からキーを取得
+        /// @brief Get locale key from name
+        /// @param locale_name ロケール名（例: "en-US"） / Locale name (e.g., "en-US")
+        /// @return ロケールキー / Locale key
+        [[nodiscard]] static std::uint_least32_t getKeyByName(const std::string& locale_name) {
+            return MurMur3::calcHash(locale_name.c_str());
+        }
+
     };
 
 }

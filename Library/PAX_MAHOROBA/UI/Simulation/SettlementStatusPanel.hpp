@@ -52,7 +52,7 @@ namespace paxs {
 
             // フォントを取得
             paxg::Font* font = Fonts().getFont(
-                Fonts().getSelectedLanguage().getKey(),
+                Fonts().getSelectedLanguageKey(),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );

@@ -67,14 +67,14 @@ TEST_F(EventBusTest, MultipleSubscribers) {
 
     // 複数のハンドラーを購読
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { call_count1++; }
+        [&](const LanguageChangedEvent& event) { (void)event; call_count1++; }
     );
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { call_count2++; }
+        [&](const LanguageChangedEvent& event) { (void)event; call_count2++; }
     );
 
-    // イベントを発行
-    EventBus::getInstance().publish(LanguageChangedEvent(1));
+    // イベントを発行（キーベース）
+    EventBus::getInstance().publish(LanguageChangedEvent(12345));
 
     // 両方のハンドラーが呼ばれることを確認
     EXPECT_EQ(call_count1, 1);
@@ -88,10 +88,10 @@ TEST_F(EventBusTest, EventTypeSeparation) {
 
     // 異なるイベントタイプのハンドラーを購読
     EventBus::getInstance().subscribe<WindowResizedEvent>(
-        [&](const WindowResizedEvent& event) { window_call_count++; }
+        [&](const WindowResizedEvent& event) { (void)event; window_call_count++; }
     );
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { language_call_count++; }
+        [&](const LanguageChangedEvent& event) { (void)event; language_call_count++; }
     );
 
     // WindowResizedEventを発行
@@ -99,8 +99,9 @@ TEST_F(EventBusTest, EventTypeSeparation) {
     EXPECT_EQ(window_call_count, 1);
     EXPECT_EQ(language_call_count, 0);
 
-    // LanguageChangedEventを発行
-    EventBus::getInstance().publish(LanguageChangedEvent(0));
+    // LanguageChangedEventを発行（キーベース）
+    constexpr std::uint_least32_t test_language_key = 54321;
+    EventBus::getInstance().publish(LanguageChangedEvent(test_language_key));
     EXPECT_EQ(window_call_count, 1);
     EXPECT_EQ(language_call_count, 1);
 }
