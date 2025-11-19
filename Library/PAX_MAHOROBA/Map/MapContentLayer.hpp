@@ -39,7 +39,7 @@
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/GenomeRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/GeographicFeatureRepository.hpp>
-#include <PAX_SAPIENTICA/Map/Repository/PersonNameRepository.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/PersonRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PlaceNameRepository.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
@@ -184,7 +184,7 @@ namespace paxs {
             features_.reserve(current_capacity + estimated_person_count);
 
             // PersonFeatureに変換
-            auto all_persons = PersonNameRepository::loadPersonNameList();
+            auto all_persons = PersonRepository::loadPersonList();
             for (const auto& [person_data, person_list] : all_persons) {
                 features_.emplace_back(
                     std::make_unique<PersonFeature>(person_data, person_list)

@@ -43,7 +43,7 @@ namespace paxs {
     struct FeatureListLoader {
         /// @brief TSVから地物リストを読み込み
         /// @brief Load feature list from TSV
-        /// @param config_key 設定ファイルのキー（"Genomes", "PlaceNames", "PersonNames"など）
+        /// @param config_key 設定ファイルのキー（"Genomes", "PlaceNames", "Persons"など）
         /// @param callback 各行を処理するコールバック関数
         static void loadFeatureList(
             const std::string& config_key,
