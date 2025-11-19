@@ -32,13 +32,13 @@
 namespace paxs {
 
     /// @brief 人物名のデータ読み込みを担当する構造体 (Infrastructure Layer)
-    struct PersonNameRepository {
+    struct PersonRepository {
         /// @brief 人物名リストを読み込み、全てのPersonLocationPointを返す
         /// @brief Load person name data file list and return all PersonLocationPoints
-        static std::vector<std::pair<PersonLocationPoint, PersonLocationGroup>> loadPersonNameList() {
+        static std::vector<std::pair<PersonLocationPoint, PersonLocationGroup>> loadPersonList() {
             std::vector<std::pair<PersonLocationPoint, PersonLocationGroup>> all_persons;
 
-            FeatureListLoader::loadFeatureList("PersonNames", [&all_persons](const FeatureListParams& params) {
+            FeatureListLoader::loadFeatureList("Persons", [&all_persons](const FeatureListParams& params) {
                 auto loaded = loadPersonFromFile(params);
                 for (const auto& person_data : loaded.person_location_list) {
                     all_persons.emplace_back(person_data, loaded);
@@ -53,10 +53,9 @@ namespace paxs {
             std::vector<PersonLocationPoint> person_location_list{}; // 人物の一覧
             const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
-            // PersonNames.tsvのkeyカラムから取得したキーを使用
             const std::string person_key = params.key;
             if (person_key.empty()) {
-                PAXS_WARNING("PersonNames.tsv key is empty for file: " + params.file_path + ", using filename as fallback: " + person_key);
+                PAXS_WARNING("Persons.tsv key is empty for file: " + params.file_path + ", using filename as fallback: " + person_key);
                 return PersonLocationGroup();
             }
 
