@@ -58,11 +58,15 @@ public:
         // ローディング画面の画像を読み込んで保持
         loading_texture_ = std::make_unique<paxg::Texture>("Data/LoadingScreen/LoadingScreen.png");
 
+        // 初期ウィンドウサイズを記録
+        last_window_width_ = paxg::Window::width();
+        last_window_height_ = paxg::Window::height();
+
         // 初期化用の進捗バーを作成
         init_progress_bar_ = std::make_unique<LoadingProgressBar<bool>>(
             &init_loading_handle_,
-            static_cast<int>(paxg::Window::width()) / 2 - 200,
-            static_cast<int>(paxg::Window::height()) / 2 - 15,
+            last_window_width_ / 2 - 200,
+            last_window_height_ / 2 - 15,
             400,
             30,
             Fonts().getFont(FontProfiles::UI_MEDIUM)
@@ -180,6 +184,8 @@ private:
     LoadingHandle<bool> init_loading_handle_;
     std::unique_ptr<LoadingProgressBar<bool>> init_progress_bar_;
     std::unique_ptr<paxg::Texture> loading_texture_;  ///< ローディング画面の画像 / Loading screen texture
+    int last_window_width_ = 0;   ///< 前回のウィンドウ幅 / Last window width
+    int last_window_height_ = 0;  ///< 前回のウィンドウ高さ / Last window height
 
     /// @brief 初期化中の更新処理
     void updateInitializingMode() {
@@ -214,15 +220,29 @@ private:
             const int window_width = paxg::Window::width();
             const int window_height = paxg::Window::height();
 
+            // ウィンドウサイズが変更された場合、進捗バーを再作成
+            if (init_progress_bar_ && (window_width != last_window_width_ || window_height != last_window_height_)) {
+                last_window_width_ = window_width;
+                last_window_height_ = window_height;
+                init_progress_bar_ = std::make_unique<LoadingProgressBar<bool>>(
+                    &init_loading_handle_,
+                    (window_width / 2) - 200,
+                    (window_height / 2) - 15,
+                    400,
+                    30,
+                    Fonts().getFont(FontProfiles::UI_MEDIUM)
+                );
+            }
+
             // 画像のサイズを取得
             const float texture_width = static_cast<float>(loading_texture_->width());
             const float texture_height = static_cast<float>(loading_texture_->height());
 
             // 画像をウィンドウサイズに合わせてスケーリング
-            // アスペクト比を維持しながらウィンドウに収まるようにする
+            // アスペクト比を維持しながらウィンドウ全体を覆うようにする（大きい方のスケールを使用）
             const float scale_x = static_cast<float>(window_width) / texture_width;
             const float scale_y = static_cast<float>(window_height) / texture_height;
-            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
+            const float scale = (scale_x > scale_y) ? scale_x : scale_y;
 
             const int scaled_width = static_cast<int>(texture_width * scale);
             const int scaled_height = static_cast<int>(texture_height * scale);
