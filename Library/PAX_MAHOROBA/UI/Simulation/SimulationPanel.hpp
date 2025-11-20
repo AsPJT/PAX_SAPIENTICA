@@ -79,42 +79,43 @@ namespace paxs {
         void onControlButtonClicked(SimulationControlButton::Id id) {
 #ifdef PAXS_USING_SIMULATOR
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
+            auto& event_bus = EventBus::getInstance();
 
             switch (id) {
             case SimulationControlButton::Id::Initialize: {
-                // シミュレーション非同期初期化を開始
-                app_state_manager_.executeSimulationInitializeAsync(model_name);
+                // シミュレーション非同期初期化コマンドを発行
+                event_bus.publish(SimulationInitializeAsyncCommandEvent(model_name));
                 break;
             }
             case SimulationControlButton::Id::Stop: {
                 // 停止コマンドを発行
-                app_state_manager_.executeSimulationStop();
+                event_bus.publish(SimulationStopCommandEvent());
                 break;
             }
             case SimulationControlButton::Id::ReloadInputData: {
                 // シミュレーション入力データ再読み込みコマンドを発行
-                app_state_manager_.executeReloadInputData(model_name);
+                event_bus.publish(ReloadInputDataCommandEvent(model_name));
                 break;
             }
             case SimulationControlButton::Id::InitHumanData: {
                 // 人間データ初期化コマンドを発行
-                app_state_manager_.executeInitHumanData(model_name);
+                event_bus.publish(InitHumanDataCommandEvent(model_name));
                 break;
             }
             case SimulationControlButton::Id::Clear: {
-                // シミュレーションをクリア（初期化前の状態に戻す）
-                app_state_manager_.executeSimulationClear();
+                // シミュレーションクリアコマンドを発行
+                event_bus.publish(SimulationClearCommandEvent());
                 break;
             }
             case SimulationControlButton::Id::Play: {
                 // 再生コマンドを発行（読み込み済みチェックはAppStateManagerで行う）
                 const int iterations = SimulationConstants::getInstance(model_name).num_iterations;
-                app_state_manager_.executeSimulationPlay(iterations);
+                event_bus.publish(SimulationPlayCommandEvent(iterations));
                 break;
             }
             case SimulationControlButton::Id::Step: {
                 // 1ステップ実行コマンドを発行
-                app_state_manager_.executeSimulationStep(1);
+                event_bus.publish(SimulationStepCommandEvent(1));
                 break;
             }
             case SimulationControlButton::Id::None:

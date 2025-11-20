@@ -168,8 +168,9 @@ TEST_F(UIComponentsEventDrivenTest, SimulationStopEventIsPublished) {
         [&event_received](const SimulationStopCommandEvent&) {
             event_received = true;
         }
+    );
     // イベント発行
-    app_state_manager().executeSimulationStop();
+    event_bus().publish(SimulationStopCommandEvent());
 
     // イベントが受信されたことを確認
     EXPECT_TRUE(event_received);
@@ -188,9 +189,10 @@ TEST_F(UIComponentsEventDrivenTest, SimulationStepEventIsPublished) {
             event_received = true;
             received_steps = event.steps;
         }
+    );
     // イベント発行
     const int test_steps = 5;
-    app_state_manager().executeSimulationStep(test_steps);
+    event_bus().publish(SimulationStepCommandEvent(test_steps));
 
     // イベントが受信されたことを確認
     EXPECT_TRUE(event_received);

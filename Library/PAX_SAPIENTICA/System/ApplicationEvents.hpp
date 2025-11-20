@@ -143,11 +143,20 @@ struct SimulationStepCommandEvent : Event {
         : steps(step_count) {}
 };
 
-/// @brief シミュレーション初期化コマンドイベント
+/// @brief シミュレーション初期化コマンドイベント（同期版）
 struct SimulationInitializeCommandEvent : Event {
     const std::string model_name;
 
     explicit SimulationInitializeCommandEvent(const std::string& model)
+        : model_name(model) {}
+};
+
+/// @brief シミュレーション非同期初期化コマンドイベント
+/// @brief Simulation async initialization command event
+struct SimulationInitializeAsyncCommandEvent : Event {
+    const std::string model_name;
+
+    explicit SimulationInitializeAsyncCommandEvent(const std::string& model)
         : model_name(model) {}
 };
 

@@ -208,8 +208,8 @@ TEST_F(AppStateManagerTest, SimulationCommandsAreHandled) {
         }
     );
 
-    // 人間データ初期化コマンドを実行
-    app_state.executeInitHumanData("test_model");
+    // 人間データ初期化コマンドイベントを発行
+    event_bus_.publish(InitHumanDataCommandEvent("test_model"));
 
     // 状態変更イベントが発行されることを確認
     EXPECT_GE(state_event_count, 1);
@@ -229,10 +229,10 @@ TEST_F(AppStateManagerTest, SimulationPlayCommandPublishesEvent) {
     );
 
     // 人間データ初期化してから再生
-    app_state.executeInitHumanData("test_model");
+    event_bus_.publish(InitHumanDataCommandEvent("test_model"));
     state_event_count = 0;  // カウントをリセット
 
-    app_state.executeSimulationPlay();
+    event_bus_.publish(SimulationPlayCommandEvent());
 
     EXPECT_EQ(state_event_count, 1);
     EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Playing);
@@ -252,11 +252,11 @@ TEST_F(AppStateManagerTest, SimulationPauseCommandPublishesEvent) {
     );
 
     // 人間データ初期化して再生してから一時停止
-    app_state.executeInitHumanData("test_model");
-    app_state.executeSimulationPlay();
+    event_bus_.publish(InitHumanDataCommandEvent("test_model"));
+    event_bus_.publish(SimulationPlayCommandEvent());
     state_event_count = 0;  // カウントをリセット
 
-    app_state.executeSimulationPause();
+    event_bus_.publish(SimulationPauseCommandEvent());
 
     EXPECT_EQ(state_event_count, 1);
     EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Stopped);
@@ -276,11 +276,11 @@ TEST_F(AppStateManagerTest, SimulationStopCommandPublishesEvent) {
     );
 
     // 人間データ初期化して再生してから停止
-    app_state.executeInitHumanData("test_model");
-    app_state.executeSimulationPlay();
+    event_bus_.publish(InitHumanDataCommandEvent("test_model"));
+    event_bus_.publish(SimulationPlayCommandEvent());
     state_event_count = 0;  // カウントをリセット
 
-    app_state.executeSimulationStop();
+    event_bus_.publish(SimulationStopCommandEvent());
 
     EXPECT_EQ(state_event_count, 1);
     EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Stopped);

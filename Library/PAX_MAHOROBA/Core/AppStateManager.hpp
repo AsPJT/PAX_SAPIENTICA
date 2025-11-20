@@ -139,75 +139,6 @@ public:
     }
 
     // ============================================================================
-    // コマンド実行（UIから呼ばれる）
-    // ============================================================================
-
-#ifdef PAXS_USING_SIMULATOR
-    /// @brief シミュレーション再生コマンドを実行
-    /// @param iterations 繰り返し回数
-    void executeSimulationPlay(int iterations = 1) const {
-        paxs::EventBus::getInstance().publish(SimulationPlayCommandEvent(iterations));
-    }
-
-    /// @brief シミュレーション一時停止コマンドを実行
-    void executeSimulationPause() const {
-        paxs::EventBus::getInstance().publish(SimulationPauseCommandEvent());
-    }
-
-    /// @brief シミュレーション停止コマンドを実行
-    void executeSimulationStop() const {
-        paxs::EventBus::getInstance().publish(SimulationStopCommandEvent());
-    }
-
-    /// @brief シミュレーションステップ進行コマンドを実行
-    /// @param steps ステップ数
-    void executeSimulationStep(int steps = 1) const {
-        paxs::EventBus::getInstance().publish(SimulationStepCommandEvent(steps));
-    }
-
-    /// @brief シミュレーション初期化コマンドを実行
-    /// @param model_name モデル名
-    void executeSimulationInitialize(const std::string& model_name) const {
-        paxs::EventBus::getInstance().publish(SimulationInitializeCommandEvent(model_name));
-    }
-
-    /// @brief シミュレーション非同期初期化を開始
-    /// @brief Start asynchronous simulation initialization
-    /// @param model_name モデル名 / Model name
-    void executeSimulationInitializeAsync(const std::string& model_name) {
-        // すでにロード中の場合はキャンセル
-        if (loading_handle_.isValid() && !loading_handle_.isFinished()) {
-            loading_handle_.cancel();
-            loading_handle_.join();
-        }
-
-        // アプリケーション状態をLoading に変更
-        app_state_ = AppState::Loading;
-
-        // 非同期初期化を開始
-        loading_handle_ = simulation_manager_.simulationInitializeAsync(model_name);
-    }
-
-    /// @brief シミュレーション入力データ再読み込みコマンドを実行
-    /// @param model_name モデル名
-    void executeReloadInputData(const std::string& model_name) const {
-        paxs::EventBus::getInstance().publish(ReloadInputDataCommandEvent(model_name));
-    }
-
-    /// @brief 人間データ初期化コマンドを実行
-    /// @param model_name モデル名
-    void executeInitHumanData(const std::string& model_name) const {
-        paxs::EventBus::getInstance().publish(InitHumanDataCommandEvent(model_name));
-    }
-
-    /// @brief シミュレーションクリアコマンドを実行
-    /// @brief Execute simulation clear command
-    void executeSimulationClear() const {
-        paxs::EventBus::getInstance().publish(SimulationClearCommandEvent());
-    }
-#endif
-
-    // ============================================================================
     // 更新処理（メインループから呼ばれる）
     // ============================================================================
 
@@ -362,10 +293,17 @@ private:
             }
         );
 
-        // シミュレーション初期化コマンドの購読
+        // シミュレーション初期化コマンドの購読（同期版）
         event_bus.subscribe<SimulationInitializeCommandEvent>(
             [this](const SimulationInitializeCommandEvent& event) {
                 handleSimulationInitialize(event);
+            }
+        );
+
+        // シミュレーション非同期初期化コマンドの購読
+        event_bus.subscribe<SimulationInitializeAsyncCommandEvent>(
+            [this](const SimulationInitializeAsyncCommandEvent& event) {
+                handleSimulationInitializeAsync(event);
             }
         );
 
@@ -467,7 +405,7 @@ private:
     }
 
 #ifdef PAXS_USING_SIMULATOR
-    /// @brief シミュレーション初期化コマンドを処理
+    /// @brief シミュレーション初期化コマンドを処理（同期版）
     void handleSimulationInitialize(const SimulationInitializeCommandEvent& event) {
         simulation_manager_.simulationInitialize(event.model_name);
 
@@ -481,6 +419,22 @@ private:
         // 状態変更イベント発行
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
         publishDateChangedEvent();
+    }
+
+    /// @brief シミュレーション非同期初期化コマンドを処理
+    /// @brief Handle simulation async initialization command
+    void handleSimulationInitializeAsync(const SimulationInitializeAsyncCommandEvent& event) {
+        // すでにロード中の場合はキャンセル
+        if (loading_handle_.isValid() && !loading_handle_.isFinished()) {
+            loading_handle_.cancel();
+            loading_handle_.join();
+        }
+
+        // アプリケーション状態をLoading に変更
+        app_state_ = AppState::Loading;
+
+        // 非同期初期化を開始
+        loading_handle_ = simulation_manager_.simulationInitializeAsync(event.model_name);
     }
 
     /// @brief シミュレーション再生コマンドを処理
