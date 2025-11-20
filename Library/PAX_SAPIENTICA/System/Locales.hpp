@@ -149,18 +149,17 @@ namespace paxs {
 
             for (const auto& [text_key, value_str] : entries) {
                 // 辞書に追加
-                CombinedKey combined_key{domain_key, text_key, locale_key};
-                if (!text_dictionary_.contains(combined_key)) {
-                    text_dictionary_.emplace(combined_key, value_str);
+                CombinedKey combined_key(domain_key, text_key, locale_key);
+                const auto [iter, inserted] = text_dictionary_.try_emplace(combined_key, std::string(value_str));
+                (void)iter;  // 未使用変数の警告を抑制
+                if (inserted) {
                     ++line_count;
                 }
 
                 // フォールバック用キーを登録（en-US のみ）
                 if (locale_name == default_locale_name_) {
-                    DomainTextKey dt_key{domain_key, text_key};
-                    if (!fallback_text_key_.contains(dt_key)) {
-                        fallback_text_key_.emplace(dt_key, combined_key);
-                    }
+                    DomainTextKey dt_key(domain_key, text_key);
+                    fallback_text_key_.try_emplace(dt_key, CombinedKey(domain_key, text_key, locale_key));
                 }
             }
         }
@@ -200,8 +199,9 @@ namespace paxs {
                 const std::uint_least32_t locale_key = MurMur3::calcHash(locale_name.size(), locale_name.c_str());
 
                 // 重複チェック
-                if (!locale_key_to_index_.contains(locale_key)) {
-                    locale_key_to_index_.emplace(locale_key, ordered_locales_.size());
+                const auto [iter, inserted] = locale_key_to_index_.try_emplace(locale_key, ordered_locales_.size());
+                (void)iter;  // 未使用変数の警告を抑制
+                if (inserted) {
                     ordered_locales_.emplace_back(locale_key);
                     locale_key_to_name_.emplace(locale_key, locale_name);
                 } else {
