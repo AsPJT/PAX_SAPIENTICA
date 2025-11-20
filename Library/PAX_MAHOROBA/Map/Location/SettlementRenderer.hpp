@@ -204,7 +204,7 @@ namespace paxs {
                             break;
                         case 2:
                             pop_original = settlement.getFarmingPopulation() /
-                                float(settlement.getPopulation()) * MAX_POPULATION_VISUALIZATION;
+                                static_cast<double>(settlement.getPopulation()) * MAX_POPULATION_VISUALIZATION;
                             break;
                         case 3:
                             pop_original = settlement.getMostMtDNA() /

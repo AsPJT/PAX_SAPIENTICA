@@ -102,8 +102,8 @@ namespace paxs {
 
             // 画像をウィンドウサイズに合わせてスケーリング
             // アスペクト比を維持しながらウィンドウに収まるようにする
-            const float scale_x = static_cast<float>(window_width) / static_cast<float>(texture_width);
-            const float scale_y = static_cast<float>(window_height) / static_cast<float>(texture_height);
+            const float scale_x = static_cast<float>(window_width) / texture_width;
+            const float scale_y = static_cast<float>(window_height) / texture_height;
             const float scale = (scale_x < scale_y) ? scale_x : scale_y;
 
             const int scaled_width = static_cast<int>(texture_width * scale);

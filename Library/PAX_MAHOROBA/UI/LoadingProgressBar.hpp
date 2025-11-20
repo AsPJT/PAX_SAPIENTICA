@@ -52,8 +52,8 @@ namespace paxs {
         /// @brief ウィンドウサイズに基づいて位置を更新
         /// @brief Update position based on window size
         void updatePosition() {
-            x_ = static_cast<int>(paxg::Window::width() / 2) - (width_ / 2);
-            y_ = static_cast<int>(paxg::Window::height() / 2) - (height_ / 2);
+            x_ = (paxg::Window::width() / 2) - (width_ / 2);
+            y_ = (paxg::Window::height() / 2) - (height_ / 2);
         }
 
     public:

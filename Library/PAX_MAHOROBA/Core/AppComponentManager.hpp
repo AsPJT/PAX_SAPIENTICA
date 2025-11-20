@@ -71,8 +71,8 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
             , loading_progress_bar_(
                 &app_state.getLoadingHandle(),
-                static_cast<int>(paxg::Window::width()) / 2 - 200,
-                static_cast<int>(paxg::Window::height()) / 2 - 15,
+                paxg::Window::width() / 2 - 200,
+                paxg::Window::height() / 2 - 15,
                 400,
                 30,
                 Fonts().getFont(FontProfiles::UI_MEDIUM)
