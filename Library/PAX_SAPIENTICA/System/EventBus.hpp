@@ -58,14 +58,30 @@ struct SubscriptionHandle {
 class ScopedSubscription {
 public:
     ScopedSubscription() = default;
-    explicit ScopedSubscription(SubscriptionHandle handle);
-    ~ScopedSubscription();
+    explicit ScopedSubscription(SubscriptionHandle handle)
+        : handle_(handle) {}
+
+    ~ScopedSubscription() {
+        unsubscribe();
+    }
 
     // ムーブのみ許可
     ScopedSubscription(const ScopedSubscription&) = delete;
     auto operator=(const ScopedSubscription&) -> ScopedSubscription& = delete;
-    ScopedSubscription(ScopedSubscription&& other) noexcept;
-    auto operator=(ScopedSubscription&& other) noexcept -> ScopedSubscription&;
+
+    ScopedSubscription(ScopedSubscription&& other) noexcept
+        : handle_(other.handle_) {
+        other.handle_ = SubscriptionHandle(std::type_index(typeid(void)), 0);
+    }
+
+    auto operator=(ScopedSubscription&& other) noexcept -> ScopedSubscription& {
+        if (this != &other) {
+            unsubscribe();
+            handle_ = other.handle_;
+            other.handle_ = SubscriptionHandle(std::type_index(typeid(void)), 0);
+        }
+        return *this;
+    }
 
     /// @brief 購読を解除
     /// @brief Unsubscribe
@@ -267,29 +283,8 @@ private:
 };
 
 // ============================================================================
-// ScopedSubscription の実装
+// ScopedSubscription implementation (after EventBus is fully defined)
 // ============================================================================
-
-inline ScopedSubscription::ScopedSubscription(SubscriptionHandle handle)
-    : handle_(handle) {}
-
-inline ScopedSubscription::~ScopedSubscription() {
-    unsubscribe();
-}
-
-inline ScopedSubscription::ScopedSubscription(ScopedSubscription&& other) noexcept
-    : handle_(other.handle_) {
-    other.handle_ = SubscriptionHandle(std::type_index(typeid(void)), 0);
-}
-
-inline auto ScopedSubscription::operator=(ScopedSubscription&& other) noexcept -> ScopedSubscription& {
-    if (this != &other) {
-        unsubscribe();
-        handle_ = other.handle_;
-        other.handle_ = SubscriptionHandle(std::type_index(typeid(void)), 0);
-    }
-    return *this;
-}
 
 inline void ScopedSubscription::unsubscribe() {
     if (handle_.isValid()) {

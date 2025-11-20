@@ -90,7 +90,7 @@ TEST_F(AppStateManagerTest, SetLanguagePublishesEvent) {
     ASSERT_GT(locale_keys.size(), 1); // 最低2つの言語が必要
     const std::uint_least32_t test_key = locale_keys[1]; // ja-JP を使用（デフォルトは en-US）
 
-    app_state.setLanguage(test_key);
+    app_state.setLanguageKey(test_key);
 
     EXPECT_EQ(received_key, test_key);
 }
@@ -106,7 +106,7 @@ TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
     ASSERT_GT(locale_keys.size(), 1); // 最低2つの言語が必要
     const std::uint_least32_t test_key = locale_keys[1]; // ja-JP を使用
 
-    app_state.setLanguage(test_key);
+    app_state.setLanguageKey(test_key);
 
     int event_count = 0;
 
@@ -118,7 +118,7 @@ TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
     );
 
     // 同じ値を設定（イベントは発行されない）
-    app_state.setLanguage(test_key);
+    app_state.setLanguageKey(test_key);
 
     EXPECT_EQ(event_count, 0);
 }

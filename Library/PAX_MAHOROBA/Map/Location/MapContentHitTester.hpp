@@ -42,7 +42,11 @@ public:
         int mouse_y,
         const paxg::Vec2i& center,
         int radius
-    );
+    ) {
+        const int dx = mouse_x - center.x();
+        const int dy = mouse_y - center.y();
+        return (dx * dx + dy * dy) <= (radius * radius);
+    }
 
     /// @brief 円形ヒット判定 (Vec2<double>版)
     /// @brief Circle hit test (Vec2<double> version)
@@ -51,7 +55,11 @@ public:
         int mouse_y,
         const paxg::Vec2<double>& center,
         int radius
-    );
+    ) {
+        const double dx = static_cast<double>(mouse_x) - center.x();
+        const double dy = static_cast<double>(mouse_y) - center.y();
+        return (dx * dx + dy * dy) <= static_cast<double>(radius * radius);
+    }
 
     /// @brief 矩形ヒット判定
     /// @brief Rectangle hit test
@@ -63,7 +71,9 @@ public:
         int mouse_x,
         int mouse_y,
         const paxg::Rect& rect
-    );
+    ) {
+        return rect.contains(static_cast<float>(mouse_x), static_cast<float>(mouse_y));
+    }
 
     /// @brief テキストバウンディングボックスのヒット判定
     /// @brief Text bounding box hit test
@@ -75,13 +85,18 @@ public:
     /// @param align アライメント / Alignment
     /// @return ヒットした場合true / True if hit
     static bool textHitTest(
-        int mouse_x,
-        int mouse_y,
-        const std::string& text,
-        const paxg::Vec2i& pos,
-        paxg::Font* font,
-        const char* align = "topCenter"
-    );
+        [[maybe_unused]] int mouse_x,
+        [[maybe_unused]] int mouse_y,
+        [[maybe_unused]] const std::string& text,
+        [[maybe_unused]] const paxg::Vec2i& pos,
+        [[maybe_unused]] paxg::Font* font,
+        [[maybe_unused]] const char* align = "topCenter"
+    ) {
+        // TODO: Font::getSize()が実装されたら有効化
+        // const auto bounding_rect = getTextBoundingRect(text, pos, font, align);
+        // return rectHitTest(mouse_x, mouse_y, bounding_rect);
+        return false;
+    }
 
     /// @brief 経度ラップを考慮した複数座標のヒット判定
     /// @brief Hit test with multiple positions (considering longitude wrapping)
@@ -110,11 +125,34 @@ public:
     /// @brief テキストのバウンディングボックスを計算（公開メソッド）
     /// @brief Calculate text bounding box (public method)
     static paxg::Rect getTextBoundingRect(
-        const std::string& text,
+        [[maybe_unused]] const std::string& text,
         const paxg::Vec2i& pos,
-        paxg::Font* font,
-        const char* align
-    );
+        [[maybe_unused]] paxg::Font* font,
+        [[maybe_unused]] const char* align
+    ) {
+        // TODO: Font::getSize()が実装されたら有効化
+        // if (font == nullptr || text.empty()) {
+        // 	return paxg::Rect{0, 0, 0, 0};
+        // }
+        // const auto text_size = font->getSize(text);
+        // float x = static_cast<float>(pos.x());
+        // float y = static_cast<float>(pos.y());
+        // // アライメントに応じて位置を調整
+        // if (std::string(align).find("Center") != std::string::npos) {
+        // 	x -= text_size.x / 2.0f;
+        // } else if (std::string(align).find("Right") != std::string::npos) {
+        // 	x -= text_size.x;
+        // }
+        // if (std::string(align).find("middle") != std::string::npos) {
+        // 	y -= text_size.y / 2.0f;
+        // } else if (std::string(align).find("bottom") != std::string::npos) {
+        // 	y -= text_size.y;
+        // }
+        // return paxg::Rect{x, y, text_size.x, text_size.y};
+
+        // 仮実装：position周辺の矩形を返す
+        return paxg::Rect{static_cast<float>(pos.x()), static_cast<float>(pos.y()), 100.0f, 20.0f};
+    }
 
     /// @brief Featureリストからマウス座標でヒットしたFeatureを検索
     /// @brief Find feature at mouse coordinates from feature list
@@ -130,84 +168,6 @@ public:
         int mouse_y
     );
 };
-
-// ========================================
-// インライン実装
-// ========================================
-
-inline bool MapContentHitTester::circleHitTest(
-    int mouse_x,
-    int mouse_y,
-    const paxg::Vec2i& center,
-    int radius
-) {
-    const int dx = mouse_x - center.x();
-    const int dy = mouse_y - center.y();
-    return (dx * dx + dy * dy) <= (radius * radius);
-}
-
-inline bool MapContentHitTester::circleHitTest(
-    int mouse_x,
-    int mouse_y,
-    const paxg::Vec2<double>& center,
-    int radius
-) {
-    const double dx = static_cast<double>(mouse_x) - center.x();
-    const double dy = static_cast<double>(mouse_y) - center.y();
-    return (dx * dx + dy * dy) <= static_cast<double>(radius * radius);
-}
-
-inline bool MapContentHitTester::rectHitTest(
-    int mouse_x,
-    int mouse_y,
-    const paxg::Rect& rect
-) {
-    return rect.contains(static_cast<float>(mouse_x), static_cast<float>(mouse_y));
-}
-
-inline bool MapContentHitTester::textHitTest(
-    [[maybe_unused]] int mouse_x,
-    [[maybe_unused]] int mouse_y,
-    [[maybe_unused]] const std::string& text,
-    [[maybe_unused]] const paxg::Vec2i& pos,
-    [[maybe_unused]] paxg::Font* font,
-    [[maybe_unused]] const char* align
-) {
-    // TODO: Font::getSize()が実装されたら有効化
-    // const auto bounding_rect = getTextBoundingRect(text, pos, font, align);
-    // return rectHitTest(mouse_x, mouse_y, bounding_rect);
-    return false;
-}
-
-inline paxg::Rect MapContentHitTester::getTextBoundingRect(
-    [[maybe_unused]] const std::string& text,
-    const paxg::Vec2i& pos,
-    [[maybe_unused]] paxg::Font* font,
-    [[maybe_unused]] const char* align
-) {
-    // TODO: Font::getSize()が実装されたら有効化
-    // if (font == nullptr || text.empty()) {
-    // 	return paxg::Rect{0, 0, 0, 0};
-    // }
-    // const auto text_size = font->getSize(text);
-    // float x = static_cast<float>(pos.x());
-    // float y = static_cast<float>(pos.y());
-    // // アライメントに応じて位置を調整
-    // if (std::string(align).find("Center") != std::string::npos) {
-    // 	x -= text_size.x / 2.0f;
-    // } else if (std::string(align).find("Right") != std::string::npos) {
-    // 	x -= text_size.x;
-    // }
-    // if (std::string(align).find("middle") != std::string::npos) {
-    // 	y -= text_size.y / 2.0f;
-    // } else if (std::string(align).find("bottom") != std::string::npos) {
-    // 	y -= text_size.y;
-    // }
-    // return paxg::Rect{x, y, text_size.x, text_size.y};
-
-    // 仮実装：position周辺の矩形を返す
-    return paxg::Rect{static_cast<float>(pos.x()), static_cast<float>(pos.y()), 100.0f, 20.0f};
-}
 
 // findFeatureAtの実装は循環依存を避けるためMapFeature.hppをインクルードした後に提供される
 // この関数はヘッダーオンリーではなく、MapContentInputHandler.hpp内でインライン実装される

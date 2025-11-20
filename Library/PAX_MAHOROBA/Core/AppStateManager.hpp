@@ -100,7 +100,7 @@ public:
     /// @brief 言語を設定
     /// @brief Set language
     /// @param language_key 言語キー（MurMur3ハッシュ値） / Language key (MurMur3 hash value)
-    static bool setLanguage(std::uint_least32_t language_key) {
+    static bool setLanguageKey(std::uint_least32_t language_key) {
         const std::uint_least32_t current_key = Fonts().getSelectedLanguageKey();
         if (current_key != language_key) {
             bool changed = Fonts().setLanguageKey(language_key);
@@ -152,6 +152,121 @@ public:
         map_viewport_.applyConstraints();
         map_viewport_.notifyViewportChanged();
     }
+
+    /// @brief 時間再生の状態を設定
+    /// @brief Set time playback state
+    /// @param forward 順再生フラグ / Forward playback flag
+    /// @param backward 逆再生フラグ / Backward playback flag
+    void setTimePlayback(bool forward, bool backward) {
+        koyomi_.move_forward_in_time = forward;
+        koyomi_.go_back_in_time = backward;
+    }
+
+    /// @brief 日付を移動
+    /// @brief Navigate date
+    /// @param days 移動日数 / Days to navigate
+    void navigateDate(double days) {
+        koyomi_.jdn.addDays(days);
+        koyomi_.calcDate();
+        publishDateChangedEvent();
+    }
+
+#ifdef PAXS_USING_SIMULATOR
+    /// @brief シミュレーションを初期化（同期版）
+    /// @brief Initialize simulation (synchronous)
+    /// @param model_name モデル名 / Model name
+    void initializeSimulation(const std::string& model_name) {
+        simulation_manager_.simulationInitialize(model_name);
+        simulation_manager_.initSimulation();
+        koyomi_.jdn.setDay(SimulationConstants::getInstance().start_julian_day);
+        resetKoyomiToStoppedState();
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
+        publishDateChangedEvent();
+    }
+
+    /// @brief シミュレーションを非同期初期化
+    /// @brief Initialize simulation asynchronously
+    /// @param model_name モデル名 / Model name
+    void initializeSimulationAsync(const std::string& model_name) {
+        if (loading_handle_.isValid() && !loading_handle_.isFinished()) {
+            loading_handle_.cancel();
+            loading_handle_.join();
+        }
+        app_state_ = AppState::Loading;
+        loading_handle_ = simulation_manager_.simulationInitializeAsync(model_name);
+    }
+
+    /// @brief シミュレーションを再生
+    /// @brief Play simulation
+    /// @param iterations 実行回数 / Number of iterations
+    void playSimulation(int iterations) {
+        koyomi_.is_agent_update = true;
+        koyomi_.move_forward_in_time = true;
+        if (iterations > 1) {
+            simulation_controller_.startAutoExecution(iterations, "");
+        }
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Playing));
+    }
+
+    /// @brief シミュレーションを一時停止
+    /// @brief Pause simulation
+    void pauseSimulation() {
+        koyomi_.move_forward_in_time = false;
+        koyomi_.go_back_in_time = false;
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
+    }
+
+    /// @brief シミュレーションを停止
+    /// @brief Stop simulation
+    void stopSimulation() {
+        koyomi_.is_agent_update = false;
+        koyomi_.move_forward_in_time = false;
+        koyomi_.go_back_in_time = false;
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
+    }
+
+    /// @brief シミュレーションをステップ実行
+    /// @brief Step simulation
+    /// @param steps ステップ数 / Number of steps
+    void stepSimulation(int steps) {
+        for (int i = 0; i < steps; ++i) {
+            simulation_manager_.step();
+            koyomi_.steps.setDay(koyomi_.steps.getDay() + 1);
+        }
+        koyomi_.jdn += steps;
+        paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
+            static_cast<std::uint_least32_t>(koyomi_.steps.getDay()),
+            static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
+        ));
+        publishDateChangedEvent();
+    }
+
+    /// @brief 入力データを再読み込み
+    /// @brief Reload input data
+    /// @param model_name モデル名 / Model name
+    void reloadInputData(const std::string& model_name) {
+        simulation_manager_.reloadData(model_name);
+    }
+
+    /// @brief 人間データを初期化
+    /// @brief Initialize human data
+    /// @param model_name モデル名 / Model name
+    void initHumanData(const std::string& model_name) {
+        simulation_manager_.initHumanData(model_name);
+        resetKoyomiToStoppedState();
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
+        publishDateChangedEvent();
+    }
+
+    /// @brief シミュレーションをクリア
+    /// @brief Clear simulation
+    void clearSimulation() {
+        simulation_manager_.clear();
+        resetKoyomiStepsAndDate();
+        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Uninitialized));
+        publishDateChangedEvent();
+    }
+#endif
 
     // ============================================================================
     // 更新処理（メインループから呼ばれる）
@@ -274,7 +389,7 @@ private:
         // 言語変更コマンドの購読
         event_bus.subscribe<LanguageChangeCommandEvent>(
             [this](const LanguageChangeCommandEvent& event) -> void {
-                setLanguage(event.language_key);
+                setLanguageKey(event.language_key);
             }
         );
 
@@ -285,122 +400,11 @@ private:
             }
         );
 
-        // 時間再生制御コマンドの購読
-        event_bus.subscribe<TimePlaybackControlEvent>(
-            [this](const TimePlaybackControlEvent& event) {
-                handleTimePlaybackControl(event);
-            }
-        );
-
-        // 日付移動コマンドの購読
-        event_bus.subscribe<DateNavigationEvent>(
-            [this](const DateNavigationEvent& event) {
-                handleDateNavigation(event);
-            }
-        );
-
-#ifdef PAXS_USING_SIMULATOR
-        // シミュレーション再生コマンドの購読
-        event_bus.subscribe<SimulationPlayCommandEvent>(
-            [this](const SimulationPlayCommandEvent& event) {
-                handleSimulationPlay(event);
-            }
-        );
-
-        // シミュレーション一時停止コマンドの購読
-        event_bus.subscribe<SimulationPauseCommandEvent>(
-            [this](const SimulationPauseCommandEvent& event) {
-                handleSimulationPause(event);
-            }
-        );
-
-        // シミュレーション停止コマンドの購読
-        event_bus.subscribe<SimulationStopCommandEvent>(
-            [this](const SimulationStopCommandEvent& event) {
-                handleSimulationStop(event);
-            }
-        );
-
-        // シミュレーションステップ進行コマンドの購読
-        event_bus.subscribe<SimulationStepCommandEvent>(
-            [this](const SimulationStepCommandEvent& event) {
-                handleSimulationStep(event);
-            }
-        );
-
-        // シミュレーション初期化コマンドの購読（同期版）
-        event_bus.subscribe<SimulationInitializeCommandEvent>(
-            [this](const SimulationInitializeCommandEvent& event) {
-                handleSimulationInitialize(event);
-            }
-        );
-
-        // シミュレーション非同期初期化コマンドの購読
-        event_bus.subscribe<SimulationInitializeAsyncCommandEvent>(
-            [this](const SimulationInitializeAsyncCommandEvent& event) {
-                handleSimulationInitializeAsync(event);
-            }
-        );
-
-        // シミュレーション入力データ再読み込みコマンドの購読
-        event_bus.subscribe<ReloadInputDataCommandEvent>(
-            [this](const ReloadInputDataCommandEvent& event) {
-                handleReloadInputData(event);
-            }
-        );
-
-        // 人間データ初期化コマンドの購読
-        event_bus.subscribe<InitHumanDataCommandEvent>(
-            [this](const InitHumanDataCommandEvent& event) {
-                handleInitHumanData(event);
-            }
-        );
-
-        // シミュレーションクリアコマンドの購読
-        event_bus.subscribe<SimulationClearCommandEvent>(
-            [this](const SimulationClearCommandEvent& event) {
-                handleSimulationClear(event);
-            }
-        );
-#endif
     }
 
     // ============================================================================
-    // コマンドハンドラー（ドメインロジック実行）
+    // ヘルパーメソッド
     // ============================================================================
-
-    /// @brief 時間再生制御コマンドを処理
-    void handleTimePlaybackControl(const TimePlaybackControlEvent& event) {
-        using Action = TimePlaybackControlEvent::Action;
-
-#ifdef PAXS_USING_SIMULATOR
-        // シミュレーション再生中は暦の逆再生・停止を無効化（シミュレーションを停止する）
-        if (koyomi_.is_agent_update) {
-            if (event.action == Action::Reverse || event.action == Action::Stop) {
-                // シミュレーションを停止
-                paxs::EventBus::getInstance().publish(SimulationStopCommandEvent());
-                return;
-            }
-            // Forward の場合は何もしない（既にシミュレーション再生中）
-            return;
-        }
-#endif
-
-        switch (event.action) {
-        case Action::Forward:
-            koyomi_.move_forward_in_time = true;
-            koyomi_.go_back_in_time = false;
-            break;
-        case Action::Reverse:
-            koyomi_.move_forward_in_time = false;
-            koyomi_.go_back_in_time = true;
-            break;
-        case Action::Stop:
-            koyomi_.move_forward_in_time = false;
-            koyomi_.go_back_in_time = false;
-            break;
-        }
-    }
 
     /// @brief 日付変更イベントを発行
     /// @brief Publish date changed event
@@ -429,125 +433,6 @@ private:
         koyomi_.is_agent_update = false;
         koyomi_.move_forward_in_time = false;
         koyomi_.go_back_in_time = false;
-    }
-#endif
-
-    /// @brief 日付移動コマンドを処理
-    void handleDateNavigation(const DateNavigationEvent& event) {
-        koyomi_.jdn.addDays(event.days);
-        koyomi_.calcDate();
-        publishDateChangedEvent();
-    }
-
-#ifdef PAXS_USING_SIMULATOR
-    /// @brief シミュレーション初期化コマンドを処理（同期版）
-    void handleSimulationInitialize(const SimulationInitializeCommandEvent& event) {
-        simulation_manager_.simulationInitialize(event.model_name);
-
-        // シミュレーション初期化
-        simulation_manager_.initSimulation();
-
-        // SimulationConstantsからstart_julian_dayを取得してKoyomiにセット
-        koyomi_.jdn.setDay(SimulationConstants::getInstance().start_julian_day);
-        resetKoyomiToStoppedState();
-
-        // 状態変更イベント発行
-        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
-        publishDateChangedEvent();
-    }
-
-    /// @brief シミュレーション非同期初期化コマンドを処理
-    /// @brief Handle simulation async initialization command
-    void handleSimulationInitializeAsync(const SimulationInitializeAsyncCommandEvent& event) {
-        // すでにロード中の場合はキャンセル
-        if (loading_handle_.isValid() && !loading_handle_.isFinished()) {
-            loading_handle_.cancel();
-            loading_handle_.join();
-        }
-
-        // アプリケーション状態をLoading に変更
-        app_state_ = AppState::Loading;
-
-        // 非同期初期化を開始
-        loading_handle_ = simulation_manager_.simulationInitializeAsync(event.model_name);
-    }
-
-    /// @brief シミュレーション再生コマンドを処理
-    void handleSimulationPlay(const SimulationPlayCommandEvent& event) {
-        koyomi_.is_agent_update = true;
-        koyomi_.move_forward_in_time = true;
-
-        // SimulationControllerに自動実行を開始（iterations > 1の場合）
-        if (event.iterations > 1) {
-            simulation_controller_.startAutoExecution(event.iterations, "");
-        }
-
-        // 状態変更イベント発行
-        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Playing));
-    }
-
-    /// @brief シミュレーション一時停止コマンドを処理
-    void handleSimulationPause(const SimulationPauseCommandEvent& event) {
-        (void)event;
-        koyomi_.move_forward_in_time = false;
-        koyomi_.go_back_in_time = false;
-
-        // 状態変更イベント発行
-        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
-    }
-
-    /// @brief シミュレーション停止コマンドを処理
-    void handleSimulationStop(const SimulationStopCommandEvent& event) {
-        (void)event;
-        koyomi_.is_agent_update = false;
-        koyomi_.move_forward_in_time = false;
-        koyomi_.go_back_in_time = false;
-
-        // 状態変更イベント発行
-        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
-    }
-
-    /// @brief シミュレーションステップ進行コマンドを処理
-    void handleSimulationStep(const SimulationStepCommandEvent& event) {
-        for (int i = 0; i < event.steps; ++i) {
-            simulation_manager_.step();
-            koyomi_.steps.setDay(koyomi_.steps.getDay() + 1);
-        }
-        koyomi_.jdn += event.steps;
-
-        // 状態変更イベント発行
-        paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
-            static_cast<std::uint_least32_t>(koyomi_.steps.getDay()),
-            static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
-        ));
-        publishDateChangedEvent();
-    }
-
-    /// @brief シミュレーション入力データ再読み込みコマンドを処理
-    void handleReloadInputData(const ReloadInputDataCommandEvent& event) {
-        simulation_manager_.reloadData(event.model_name);
-    }
-
-    /// @brief 人間データ初期化コマンドを処理
-    void handleInitHumanData(const InitHumanDataCommandEvent& event) {
-        simulation_manager_.initHumanData(event.model_name);
-        resetKoyomiToStoppedState();
-
-        // 状態変更イベント発行
-        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
-        publishDateChangedEvent();
-    }
-
-    /// @brief シミュレーションクリアコマンドを処理
-    /// @brief Handle simulation clear command
-    void handleSimulationClear(const SimulationClearCommandEvent& /*event*/) {
-        // シミュレーションを初期化前の状態に戻す
-        simulation_manager_.clear();
-        resetKoyomiStepsAndDate();
-
-        // 状態変更イベント発行（初期化前の状態に戻す）
-        paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Uninitialized));
-        publishDateChangedEvent();
     }
 #endif
 };

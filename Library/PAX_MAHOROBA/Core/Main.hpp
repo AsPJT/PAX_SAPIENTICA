@@ -23,6 +23,7 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 
 #include <PAX_MAHOROBA/Core/AppComponentManager.hpp>
+#include <PAX_MAHOROBA/Core/ApplicationEventHandler.hpp>
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Core/InitLogo.hpp>
 #include <PAX_MAHOROBA/Input/InputManager.hpp>
@@ -53,13 +54,16 @@ namespace paxs {
         // 2. AppStateManager作成（ドメインロジック集約）
         AppStateManager app_state{};
 
-        // 3. InputManager作成（入力処理統合）
+        // 3. ApplicationEventHandler作成（イベント購読管理）
+        ApplicationEventHandler event_handler{app_state};
+
+        // 4. InputManager作成（入力処理統合）
         InputManager input_manager{};
 
-        // 4. AppComponentManager作成（コンポーネント統合管理）
+        // 5. AppComponentManager作成（コンポーネント統合管理）
         AppComponentManager component_manager(app_state);
 
-        // 5. 入力ハンドラー登録
+        // 6. 入力ハンドラー登録
         std::unique_ptr<MapViewportInputHandler> map_viewport_input_handler =
             std::make_unique<MapViewportInputHandler>(app_state.getMapViewportForInputHandler());
 
