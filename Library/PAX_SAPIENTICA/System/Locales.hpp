@@ -141,6 +141,12 @@ namespace paxs {
             const UnorderedMap<std::uint_least32_t, std::string>& entries = kv_tsv.get();
             std::size_t line_count = 0;
 
+            // ハッシュテーブルを事前予約（リハッシュを回避）
+            text_dictionary_.reserve(text_dictionary_.size() + entries.size());
+            if (locale_name == default_locale_name_) {
+                fallback_text_key_.reserve(fallback_text_key_.size() + entries.size());
+            }
+
             for (const auto& [text_key, value_str] : entries) {
                 // 辞書に追加
                 CombinedKey combined_key{domain_key, text_key, locale_key};

@@ -154,6 +154,13 @@ namespace paxs {
             return map_.empty();
         }
 
+        /// @brief バケット数を事前予約（リハッシュを回避）
+        /// @brief Reserve bucket count (avoid rehashing)
+        /// @param count 予約する要素数 / Number of elements to reserve
+        void reserve(size_t count) {
+            map_.reserve(count);
+        }
+
         /// @brief イテレータの取得
         iterator begin() noexcept { return map_.begin(); }
         const_iterator begin() const noexcept { return map_.begin(); }
