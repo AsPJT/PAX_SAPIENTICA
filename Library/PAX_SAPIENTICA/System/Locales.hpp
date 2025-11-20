@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/System/InputFile.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
@@ -32,6 +33,10 @@ namespace paxs {
     /// @brief Locale management class
     class Locales {
     private:
+        /// @brief 進捗報告インターフェース
+        /// @brief Progress reporter interface
+        IProgressReporter* progress_reporter_ = nullptr;
+
         /// @brief デフォルトロケール名（フォールバック言語）
         /// @brief Default locale name (fallback language)
         static constexpr const char* default_locale_name_ = "en-US";
@@ -275,9 +280,28 @@ namespace paxs {
         }
 
     public:
-        Locales() {
+        /// @brief コンストラクタ
+        /// @brief Constructor
+        /// @param reporter 進捗報告インターフェース（オプショナル） / Progress reporter (optional)
+        /// @param progress_start 進捗開始値（0.0～1.0） / Progress start value (0.0 to 1.0)
+        /// @param progress_end 進捗終了値（0.0～1.0） / Progress end value (0.0 to 1.0)
+        explicit Locales(IProgressReporter* reporter = nullptr, float progress_start = 0.0f, float progress_end = 1.0f)
+            : progress_reporter_(reporter) {
+
+            if (progress_reporter_) {
+                progress_reporter_->reportProgress(progress_start, "Loading locale list...");
+            }
             loadLocaleList();
+
+            const float progress_mid = progress_start + (progress_end - progress_start) * 0.1f;
+            if (progress_reporter_) {
+                progress_reporter_->reportProgress(progress_mid, "Loading locale files...");
+            }
             loadAllDomains();
+
+            if (progress_reporter_) {
+                progress_reporter_->reportProgress(progress_end, "Locales initialized");
+            }
         }
 
         /// @brief テキストを取得（ドメイン名ハッシュ版）
