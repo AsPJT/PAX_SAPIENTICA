@@ -112,10 +112,9 @@ public:
 
     /// @brief ビューポート中心座標を設定（制約適用・通知付き）
     /// @brief Set viewport center with constraints and notification
-    /// @param x X座標 / X coordinate
-    /// @param y Y座標 / Y coordinate
-    void setViewportCenter(double x, double y) {
-        domain_core_.setViewportCenter(x, y);
+    /// @param center 中心座標 / Center position
+    void setViewportCenter(Vector2<double> center) {
+        domain_core_.setViewportCenter(center);
         domain_core_.notifyViewportChanged();
     }
 

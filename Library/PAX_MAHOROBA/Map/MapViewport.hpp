@@ -161,10 +161,9 @@ namespace paxs {
                 width = height / double(paxg::Window::height()) * double(paxg::Window::width());
             }
         }
-        void setCenter(const double x_, const double y_) {
-            if (isDifferent(center.getX(), x_) || isDifferent(center.getY(), y_)) {
-                center.setX(x_);
-                center.setY(y_);
+        void setCenter(Vector2<double> position) {
+            if (isDifferent(center.getX(), position.x) || isDifferent(center.getY(), position.y)) {
+                center.set(position);
             }
         }
 

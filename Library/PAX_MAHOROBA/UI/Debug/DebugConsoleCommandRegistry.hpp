@@ -64,7 +64,7 @@ private:
             // メルカトル座標に変換
             paxs::Vector2<double> equirect_coords(longitude, app_state.getMapViewport().getCenterY());
             paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-            app_state.setViewportCenter(mercator_coords.getX(), app_state.getMapViewport().getCenterY());
+            app_state.setViewportCenter(Vector2<double>(mercator_coords.getX(), app_state.getMapViewport().getCenterY()));
         });
 
         // y <latitude>: 緯度を設定（範囲: 0.0～90.0）
@@ -86,7 +86,7 @@ private:
             // メルカトル座標に変換
             paxs::Vector2<double> equirect_coords(app_state.getMapViewport().getCenterX(), latitude);
             paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-            app_state.setViewportCenter(app_state.getMapViewport().getCenterX(), mercator_coords.getY());
+            app_state.setViewportCenter(Vector2<double>(app_state.getMapViewport().getCenterX(), mercator_coords.getY()));
         });
 
         // z <zoom>: 拡大率を設定

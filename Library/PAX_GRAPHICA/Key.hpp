@@ -283,6 +283,10 @@ namespace paxg {
         void setY(const double y_) {
             coordinate.y = y_;
         }
+        void set(paxs::Vector2<double> position) {
+            coordinate.x = position.x;
+            coordinate.y = position.y;
+        }
 
         double toEquirectangularRadY() const {
             return coordinate.toEquirectangularRadY();

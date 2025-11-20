@@ -112,8 +112,8 @@ namespace paxs {
         }
 
         /// @brief 渡来数の取得
-        std::uint_least64_t getEmigrationCount() const {
-            return emigration_count;
+        std::uint_least64_t getMigrationCount() const {
+            return migration_count;
         }
 
         /// @brief
@@ -174,7 +174,7 @@ namespace paxs {
             processing_time = 0.0;
             move_processing_time = 0.0;
             marriage_processing_time = 0.0;
-            emigration_count = 0;
+            migration_count = 0;
             step_count = 0;
             land_positions.clear();
             marriage_pos_list.clear();
@@ -504,7 +504,7 @@ namespace paxs {
 
         KanakumaLifeSpan kanakuma_life_span;
 
-        std::uint_least64_t emigration_count = 0;
+        std::uint_least64_t migration_count = 0;
         std::uint_least64_t step_count = 0;
 
         // 陸の位置のリストを取得
@@ -696,7 +696,7 @@ namespace paxs {
                             static_cast<std::uint_least8_t>(japan_provinces->getHunterGatherer(immigration_and_district_id)),
                             static_cast<std::uint_least8_t>(japan_provinces->getLanguage(immigration_and_district_id))
                         ), static_cast<std::size_t>(i));
-                        if (is_farming) ++emigration_count; // 農耕カウント
+                        if (is_farming) ++migration_count; // 農耕カウント
                     }
 
                     // 地区の人口を減らす
@@ -765,7 +765,7 @@ namespace paxs {
                             static_cast<std::uint_least8_t>(japan_provinces->getLanguage(immigration_and_district_id))
                         );
                         if (is_farming) {
-                            ++emigration_count; // 農耕カウント
+                            ++migration_count; // 農耕カウント
                         }
                     }
                     settlement.addAgents(agents);

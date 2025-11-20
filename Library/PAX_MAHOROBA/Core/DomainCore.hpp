@@ -47,8 +47,8 @@ public:
 #endif
 
     /// @brief ビューポート中心座標を設定（制約適用付き）
-    void setViewportCenter(double x, double y) {
-        map_viewport_.setCenter(x, y);
+    void setViewportCenter(Vector2<double> center) {
+        map_viewport_.setCenter(center);
         map_viewport_.applyConstraints();
     }
 

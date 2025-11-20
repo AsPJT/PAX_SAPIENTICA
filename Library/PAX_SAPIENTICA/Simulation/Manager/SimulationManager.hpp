@@ -320,7 +320,7 @@ namespace paxs {
         /// @brief 渡来数を取得
         /// @return 渡来数 / Number of migrants
         std::uint_least64_t getMigrationCount() const {
-            return simulator_ ? simulator_->getEmigrationCount() : 0;
+            return simulator_ ? simulator_->getMigrationCount() : 0;
         }
 
         /// @brief 集落グリッドへのconst参照を取得（描画用）

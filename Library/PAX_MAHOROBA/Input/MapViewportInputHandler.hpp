@@ -100,7 +100,7 @@ namespace paxs {
                 }
 
                 // X座標とY座標を同時に設定
-                viewport_.setCenter(center_x, center_y);
+                viewport_.setCenter(Vector2<double>(center_x, center_y));
             }
 #endif
         }
@@ -149,7 +149,7 @@ namespace paxs {
                 }
 
                 // X座標とY座標を同時に設定（イベント通知は1回のみ）
-                viewport.setCenter(center_x, center_y);
+                viewport.setCenter(Vector2<double>(center_x, center_y));
             }
             // 2本指タッチ：ピンチズーム
             else if (old_touch_num == 2 && touch_num == 2) {
@@ -283,7 +283,7 @@ namespace paxs {
 
             // 座標が変更された場合はビューポートに設定
             if (changed) {
-                viewport_.setCenter(center_x, center_y);
+                viewport_.setCenter(Vector2<double>(center_x, center_y));
             }
 
             return changed;

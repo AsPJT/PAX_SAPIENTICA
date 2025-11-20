@@ -663,9 +663,9 @@ namespace paxs {
             agents.insert(agents.end(), children.begin(), children.end());
         }
 
-        /// @brief Emigration.
+        /// @brief Migration.
         /// @brief 渡来
-        void emigration(KanakumaLifeSpan& kanakuma_life_span) noexcept {
+        void migration(KanakumaLifeSpan& kanakuma_life_span) noexcept {
             if (agents.size() >= 60) {
 
                 Genome genome = Genome::generateRandom(*gen);
