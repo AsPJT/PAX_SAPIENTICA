@@ -60,11 +60,11 @@ public:
 
     std::string getName() const override {
         // data_.keyをハッシュ化してLocalesシステムから名前を取得
-        // const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
-        // const std::string* name = Fonts().getLocalesText(place_info_domain_hash, key_hash);
-        // if (name != nullptr) {
-        //     return *name;
-        // }
+         const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
+         const std::string* name = Fonts().getLocalesText(place_info_domain_hash, key_hash);
+         if (name != nullptr) {
+             return *name;
+         }
         // フォールバック: keyをそのまま返す
         return data_.key;
     }
