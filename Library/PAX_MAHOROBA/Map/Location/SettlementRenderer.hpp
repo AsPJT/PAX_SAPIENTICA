@@ -80,9 +80,9 @@ namespace paxs {
             const double half_width = map_view_size.x / 2 * margin_factor;
             const double half_height = map_view_size.y / 2 * margin_factor;
             return (coordinate.x >= map_view_center.x - half_width &&
-                    coordinate.x <= map_view_center.x + half_width &&
-                    coordinate.y >= map_view_center.y - half_height &&
-                    coordinate.y <= map_view_center.y + half_height);
+                coordinate.x <= map_view_center.x + half_width &&
+                coordinate.y >= map_view_center.y - half_height &&
+                coordinate.y <= map_view_center.y + half_height);
         }
 
     private:
@@ -103,8 +103,10 @@ namespace paxs {
         static constexpr paxg::Color LANGUAGE_COLOR_2 = paxg::Color(45, 87, 154);  // 青色
         static constexpr paxg::Color LANGUAGE_COLOR_3 = paxg::Color(182, 40, 46);  // 赤色
         static constexpr paxg::Color LANGUAGE_COLOR_4 = paxg::Color(230, 207, 0);  // 黄色
-        static constexpr paxg::Color MARRIAGE_COLOR_MATRILOCAL = paxg::Color(221, 67, 98);  // 母方居住婚（ピンク）
-        static constexpr paxg::Color MARRIAGE_COLOR_PATRILOCAL = paxg::Color(87, 66, 221);  // 父方居住婚（紫）
+
+        // 婚姻色の定義
+        static constexpr paxg::Color MARRIAGE_COLOR_MATRILOCAL = paxg::Color(221, 67, 98);  // 母方居住婚（ピンク） #DD4362
+        static constexpr paxg::Color MARRIAGE_COLOR_PATRILOCAL = paxg::Color(87, 66, 221);  // 父方居住婚（紫） #5742DD
 
         SettlementRenderer() = default;
 
@@ -129,7 +131,8 @@ namespace paxs {
                     ZOOM_LEVEL
                 )),
                 10,
-                Range<double>(0, 100),
+                // 修正: 年代の範囲を広げて、シミュレーション期間中常に表示されるようにする
+                Range<double>(0, 99999999),
                 Range<double>(0, 99999999),
                 MurMur3::calcHash("agent1"),
                 0,  // テクスチャキーなし / No source
@@ -277,8 +280,8 @@ namespace paxs {
                             first_lli.coordinate,
                             map_view_size,
                             map_view_center);
-                        paxg::Line{first_pos, draw_pos}
-                            .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
+                        paxg::Line{ first_pos, draw_pos }
+                        .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                     }
                     else {
                         // 単純な移動線
@@ -287,13 +290,14 @@ namespace paxs {
                             old_lli.coordinate,
                             map_view_size,
                             map_view_center);
-                        paxg::Line{old_pos, draw_pos}
-                            .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
+                        paxg::Line{ old_pos, draw_pos }
+                        .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                     }
                 }
             }
 
             // 婚姻移動を描画
+            // 移動線（黒）より後に描画することで、レイヤー順を上にする
             for (const auto& marriage_pos : *marriage_pos_list) {
                 const auto location_point = createLocationPoint(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
@@ -316,8 +320,10 @@ namespace paxs {
 
                 const paxg::Color marriage_color = marriage_pos.is_matrilocality
                     ? MARRIAGE_COLOR_MATRILOCAL : MARRIAGE_COLOR_PATRILOCAL;
-                paxg::Line{old_pos, draw_pos}
-                    .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, marriage_color);
+
+                // 直線の矢印を描画
+                paxg::Line{ old_pos, draw_pos }
+                .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, marriage_color);
             }
         }
 
