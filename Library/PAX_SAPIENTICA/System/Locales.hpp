@@ -60,26 +60,6 @@ namespace paxs {
             }
         };
 
-        /// @brief フォールバック用2次元キー（ドメイン + テキスト）
-        /// @brief 2-dimensional key for fallback (domain + text)
-        struct DomainTextKey {
-            std::uint_least32_t domain_key;
-            std::uint_least32_t text_key;
-
-            bool operator==(const DomainTextKey& other) const {
-                return domain_key == other.domain_key && text_key == other.text_key;
-            }
-        };
-
-        /// @brief DomainTextKeyのハッシュ関数
-        /// @brief Hash function for DomainTextKey
-        struct DomainTextKeyHash {
-            std::size_t operator()(const DomainTextKey& key) const {
-                return static_cast<std::size_t>(key.domain_key)
-                    ^ (static_cast<std::size_t>(key.text_key) << 16);
-            }
-        };
-
         /// @brief 登録されたロケールのリスト（登録順）
         /// @brief List of registered locales (in registration order)
         std::vector<std::uint_least32_t> ordered_locales_;
@@ -95,10 +75,6 @@ namespace paxs {
         /// @brief (ドメインキー + テキストキー + ロケールキー) → テキスト のマッピング
         /// @brief Mapping from (domain key + text key + locale key) to text
         paxs::UnorderedMap<CombinedKey, std::string, CombinedKeyHash> text_dictionary_;
-
-        /// @brief (ドメインキー + テキストキー) → フォールバックキー のマッピング
-        /// @brief Mapping from (domain key + text key) to fallback key
-        paxs::UnorderedMap<DomainTextKey, CombinedKey, DomainTextKeyHash> fallback_text_key_;
 
         /// @brief ロケールキーからロケール名を取得
         /// @brief Get locale name from locale key
@@ -143,23 +119,14 @@ namespace paxs {
 
             // ハッシュテーブルを事前予約（リハッシュを回避）
             text_dictionary_.reserve(text_dictionary_.size() + entries.size());
-            if (locale_name == default_locale_name_) {
-                fallback_text_key_.reserve(fallback_text_key_.size() + entries.size());
-            }
 
             for (const auto& [text_key, value_str] : entries) {
                 // 辞書に追加
-                CombinedKey combined_key(domain_key, text_key, locale_key);
+                const CombinedKey combined_key(domain_key, text_key, locale_key);
                 const auto [iter, inserted] = text_dictionary_.try_emplace(combined_key, std::string(value_str));
                 (void)iter;  // 未使用変数の警告を抑制
                 if (inserted) {
                     ++line_count;
-                }
-
-                // フォールバック用キーを登録（en-US のみ）
-                if (locale_name == default_locale_name_) {
-                    DomainTextKey dt_key(domain_key, text_key);
-                    fallback_text_key_.try_emplace(dt_key, CombinedKey(domain_key, text_key, locale_key));
                 }
             }
         }
@@ -328,29 +295,19 @@ namespace paxs {
             const bool suppress_warning = false) const {
 
             // 指定されたロケールでテキストを検索
-            CombinedKey combined_key{domain_name_hash, text_key_hash, locale_key};
+            const CombinedKey combined_key{domain_name_hash, text_key_hash, locale_key};
             const auto iterator = text_dictionary_.find(combined_key);
             if (iterator != text_dictionary_.end()) {
                 return &(iterator->second);
             }
 
-            // フォールバック処理
-            DomainTextKey dt_key(domain_name_hash, text_key_hash);
-            const auto fallback_it = fallback_text_key_.find(dt_key);
-            if (fallback_it == fallback_text_key_.end()) {
-                // テキストキー自体が登録されていない
-                if (!suppress_warning) {
-                    PAXS_WARNING("[Locales::getStringPtr] Fallback key NOT found - returning nullptr");
-                }
-                return nullptr;
-            }
-
-            const CombinedKey& fallback_key = fallback_it->second;
+            // フォールバック処理：en-USで再検索
+            const CombinedKey fallback_key{domain_name_hash, text_key_hash, getDefaultLocaleKey()};
             const auto fallback_text_it = text_dictionary_.find(fallback_key);
             if (fallback_text_it == text_dictionary_.end()) {
-                // フォールバックテキストも見つからない（内部エラー）
+                // テキストキー自体が登録されていない
                 if (!suppress_warning) {
-                    PAXS_ERROR("[Locales::getStringPtr] INTERNAL ERROR: fallback text not found in dictionary");
+                    PAXS_WARNING("[Locales::getStringPtr] Text key NOT found in default locale (en-US) - returning nullptr");
                 }
                 return nullptr;
             }
