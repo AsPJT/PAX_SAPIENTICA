@@ -59,9 +59,9 @@ TEST_F(AppStateManagerTest, GettersReturnConstReferences) {
 TEST_F(AppStateManagerTest, GettersReturnNonConstReferences) {
     AppStateManager app_state{};
 
-    // 非const参照が返されることを確認
-    Koyomi& koyomi = app_state.getKoyomi();
-    MapViewport& viewport = app_state.getMapViewport();
+    // const参照が返されることを確認
+    const Koyomi& koyomi = app_state.getKoyomi();
+    const MapViewport& viewport = app_state.getMapViewport();
 
     // 使用できることを確認（コンパイルが通ればOK）
     SUCCEED();
@@ -182,10 +182,8 @@ TEST_F(AppStateManagerTest, MapViewportSizeChangePublishesEvent) {
         }
     );
 
-    // サイズ変更
-    MapViewport& viewport = app_state.getMapViewport();
-    viewport.setSize(20.0);
-    viewport.notifyViewportChanged();
+    // サイズ変更（AppStateManagerのコマンドメソッドを使用）
+    app_state.setViewportSize(20.0);
 
     // イベントが発行されることを確認
     EXPECT_EQ(event_count, 1);

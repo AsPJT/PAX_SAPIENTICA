@@ -64,9 +64,7 @@ private:
             // メルカトル座標に変換
             paxs::Vector2<double> equirect_coords(longitude, app_state.getMapViewport().getCenterY());
             paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-            app_state.getMapViewport().setCenter(mercator_coords.getX(), app_state.getMapViewport().getCenterY());
-            app_state.getMapViewport().applyConstraints();
-            app_state.getMapViewport().notifyViewportChanged();
+            app_state.setViewportCenter(mercator_coords.getX(), app_state.getMapViewport().getCenterY());
         });
 
         // y <latitude>: 緯度を設定（範囲: 0.0～90.0）
@@ -88,9 +86,7 @@ private:
             // メルカトル座標に変換
             paxs::Vector2<double> equirect_coords(app_state.getMapViewport().getCenterX(), latitude);
             paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-            app_state.getMapViewport().setCenter(app_state.getMapViewport().getCenterX(), mercator_coords.getY());
-            app_state.getMapViewport().applyConstraints();
-            app_state.getMapViewport().notifyViewportChanged();
+            app_state.setViewportCenter(app_state.getMapViewport().getCenterX(), mercator_coords.getY());
         });
 
         // z <zoom>: 拡大率を設定
@@ -113,9 +109,7 @@ private:
                 PAXS_WARNING("Zoom must be between " + std::to_string(min_h) + " and " + std::to_string(max_h));
                 return;
             }
-            app_state.getMapViewport().setSize(zoom);
-            app_state.getMapViewport().applyConstraints();
-            app_state.getMapViewport().notifyViewportChanged();
+            app_state.setViewportSize(zoom);
         });
     }
 

@@ -18,6 +18,7 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
+#include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
@@ -43,8 +44,10 @@ enum class AppState : std::uint8_t {
 class AppStateManager {
 public:
     explicit AppStateManager() {
+        // 機能可視性の初期化
+        initializeFeatureVisibility();
+        // イベント購読の設定
         subscribeToEvents();
-
         // 初期状態を通知
         publishInitialState();
     }
@@ -55,16 +58,16 @@ public:
 
     /// @brief 暦を取得
     const Koyomi& getKoyomi() const { return koyomi_; }
-    Koyomi& getKoyomi() { return koyomi_; }
 
     /// @brief 地図ビューポートを取得
     const MapViewport& getMapViewport() const { return map_viewport_; }
-    MapViewport& getMapViewport() { return map_viewport_; }
+
+    /// @brief 地図ビューポートを取得（InputHandler専用）
+    MapViewport& getMapViewportForInputHandler() { return map_viewport_; }
 
 #ifdef PAXS_USING_SIMULATOR
     /// @brief シミュレーションマネージャーを取得
     const SimulationManager& getSimulationManager() const { return simulation_manager_; }
-    SimulationManager& getSimulationManager() { return simulation_manager_; }
 
     /// @brief シミュレーションコントローラーを取得
     const SimulationController& getSimulationController() const { return simulation_controller_; }
@@ -73,23 +76,16 @@ public:
     /// @brief 機能可視性マネージャーを取得（const版）
     const FeatureVisibilityManager& getVisibilityManager() const { return visibility_manager_; }
 
-    /// @brief 機能可視性マネージャーを取得（mutable版）
-    FeatureVisibilityManager& getVisibilityManager() { return visibility_manager_; }
-
     /// @brief アプリケーション状態を取得
     /// @brief Get application state
     /// @return アプリケーション状態 / Application state
     AppState getAppState() const { return app_state_; }
 
 #ifdef PAXS_USING_SIMULATOR
-    /// @brief ロードハンドルを取得（const版）
-    /// @brief Get loading handle (const version)
-    /// @return ロードハンドルへの参照 / Reference to loading handle
+    /// @brief ロードハンドルを取得
     const LoadingHandle<bool>& getLoadingHandle() const { return loading_handle_; }
 
     /// @brief ロード中かチェック
-    /// @brief Check if loading
-    /// @return ロード中ならtrue / True if loading
     bool isLoading() const {
         return app_state_ == AppState::Loading &&
                loading_handle_.isValid() &&
@@ -136,6 +132,25 @@ public:
         if (visibility_manager_.setVisibility(key, visible)) {
             paxs::EventBus::getInstance().publish(FeatureVisibilityChangedEvent(key, visible));
         }
+    }
+
+    /// @brief ビューポート中心座標を設定（制約適用・通知付き）
+    /// @brief Set viewport center with constraints and notification
+    /// @param x X座標 / X coordinate
+    /// @param y Y座標 / Y coordinate
+    void setViewportCenter(double x, double y) {
+        map_viewport_.setCenter(x, y);
+        map_viewport_.applyConstraints();
+        map_viewport_.notifyViewportChanged();
+    }
+
+    /// @brief ビューポートサイズを設定（制約適用・通知付き）
+    /// @brief Set viewport size with constraints and notification
+    /// @param size サイズ / Size (zoom level)
+    void setViewportSize(double size) {
+        map_viewport_.setSize(size);
+        map_viewport_.applyConstraints();
+        map_viewport_.notifyViewportChanged();
     }
 
     // ============================================================================
@@ -212,16 +227,36 @@ public:
 #endif
 
 private:
-    // ドメインオブジェクト（AppStateManagerが所有）
     Koyomi koyomi_;
     MapViewport map_viewport_;
 #ifdef PAXS_USING_SIMULATOR
     SimulationManager simulation_manager_;
     SimulationController simulation_controller_;
-    LoadingHandle<bool> loading_handle_;  ///< 非同期ロード用ハンドル / Loading handle for async operations
+    LoadingHandle<bool> loading_handle_;  ///< 非同期ロード用ハンドル
 #endif
     FeatureVisibilityManager visibility_manager_;
-    AppState app_state_ = AppState::Running;  ///< アプリケーション状態 / Application state
+    AppState app_state_ = AppState::Running;
+
+    /// @brief 機能可視性の初期値を設定
+    /// @brief Initialize feature visibility default values
+    void initializeFeatureVisibility() {
+        // View メニューの初期値
+        visibility_manager_.emplace(ViewMenu::calendar, true);
+        visibility_manager_.emplace(ViewMenu::map, true);
+        visibility_manager_.emplace(ViewMenu::ui, true);
+        visibility_manager_.emplace(ViewMenu::simulation, true);
+        visibility_manager_.emplace(ViewMenu::person, true);
+        visibility_manager_.emplace(ViewMenu::license, false);
+        visibility_manager_.emplace(ViewMenu::debug, false);
+        visibility_manager_.emplace(ViewMenu::view_3d, false);
+
+        // Map レイヤーメニューの初期値
+        visibility_manager_.emplace(MapLayersMenu::land_and_water, false);
+        visibility_manager_.emplace(MapLayersMenu::soil, false);
+        visibility_manager_.emplace(MapLayersMenu::ryosei_line, true);
+        visibility_manager_.emplace(MapLayersMenu::slope, true);
+        visibility_manager_.emplace(MapLayersMenu::line1, false);
+    }
 
     /// @brief 初期状態をイベントで通知
     /// @brief Publish initial state via events

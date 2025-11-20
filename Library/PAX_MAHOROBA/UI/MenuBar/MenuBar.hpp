@@ -40,7 +40,7 @@ namespace paxs {
         static constexpr int github_button_margin = 8;
 
     public:
-        MenuBar(paxs::FeatureVisibilityManager& visible_manager) :
+        MenuBar(const paxs::FeatureVisibilityManager& visible_manager) :
             language_selector_(paxs::MurMur3::calcHash("Language"),
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
@@ -85,7 +85,8 @@ namespace paxs {
                           static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
                           MenuBarType::map);
 
-            initializeVisibility(visible_manager);
+            // FeatureVisibilityManagerから初期状態を読み込んでメニューに反映
+            initializeMenuFromVisibility(visible_manager);
 
             // 各メニューにコールバックを設定
             setupMenuCallbacks();
@@ -315,24 +316,9 @@ namespace paxs {
             });
         }
 
-        /// @brief 可視性状態を反映
-        void initializeVisibility(paxs::FeatureVisibilityManager& visible_manager) {
-            // 可視性の初期化
-            visible_manager.emplace(ViewMenu::calendar, true); // 暦
-            visible_manager.emplace(ViewMenu::map, true); // 地図
-            visible_manager.emplace(ViewMenu::ui, true); // UI
-            visible_manager.emplace(ViewMenu::simulation, true); // シミュレーション
-            visible_manager.emplace(ViewMenu::person, true); // 人物
-            visible_manager.emplace(ViewMenu::license, false); // ライセンス
-            visible_manager.emplace(ViewMenu::debug, false); // デバッグ
-            visible_manager.emplace(ViewMenu::view_3d, false); // 360度写真
-
-            visible_manager.emplace(MapLayersMenu::land_and_water, false); // 陸水境界
-            visible_manager.emplace(MapLayersMenu::soil, false); // 土壌
-            visible_manager.emplace(MapLayersMenu::ryosei_line, true); // 陸生国境界線
-            visible_manager.emplace(MapLayersMenu::slope, true); // 傾斜
-            visible_manager.emplace(MapLayersMenu::line1, false); // 線1
-
+        /// @brief FeatureVisibilityManagerからメニューの初期状態を読み込む
+        /// @brief Load initial menu state from FeatureVisibilityManager
+        void initializeMenuFromVisibility(const paxs::FeatureVisibilityManager& visible_manager) {
             // View メニューの状態を初期化
             paxs::DropDownMenu* view_menu = menu_system.getDropDownMenu(paxs::MenuBarType::view);
             if (view_menu != nullptr) {
