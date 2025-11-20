@@ -69,23 +69,28 @@ public:
 
         // 非同期初期化を開始
         init_loading_handle_ = startAsyncTask<bool>([this](ProgressToken<bool>& token) {
+            // Localesシステムを初期化（時間がかかる処理）
+            token.setProgress(0.05f);
+            token.setMessage("Initializing locales...");
+            Fonts().initializeLocales();
+
             // ApplicationEventHandler作成（イベント購読管理）
-            token.setProgress(0.1f);
+            token.setProgress(0.65f);
             token.setMessage("Creating ApplicationEventHandler...");
             this->event_handler_ = std::make_unique<ApplicationEventHandler>(*this->app_state_);
 
             // InputManager作成（入力処理統合）
-            token.setProgress(0.2f);
+            token.setProgress(0.7f);
             token.setMessage("Creating InputManager...");
             this->input_manager_ = std::make_unique<InputManager>();
 
             // AppComponentManager作成（コンポーネント統合管理）
-            token.setProgress(0.3f);
+            token.setProgress(0.75f);
             token.setMessage("Creating AppComponentManager...");
             this->component_manager_ = std::make_unique<AppComponentManager>(*this->app_state_);
 
             // 入力ハンドラー作成と登録
-            token.setProgress(0.6f);
+            token.setProgress(0.8f);
             token.setMessage("Creating input handlers...");
             this->map_viewport_input_handler_ = std::make_unique<MapViewportInputHandler>(
                 this->app_state_->getMapViewportForInputHandler()
@@ -99,7 +104,7 @@ public:
 #endif
 
             // InputManagerに入力ハンドラーを登録
-            token.setProgress(0.7f);
+            token.setProgress(0.85f);
             token.setMessage("Registering input handlers...");
             this->input_manager_->registerHandler(this->map_viewport_input_handler_.get());
             this->input_manager_->registerHandler(this->ui_input_handler_.get());
@@ -108,7 +113,7 @@ public:
 #endif
 
             // AppComponentManagerが内部のウィジェット/ハンドラーを登録
-            token.setProgress(0.8f);
+            token.setProgress(0.9f);
             token.setMessage("Registering widgets...");
             this->component_manager_->registerToInputHandlers(
                 *this->ui_input_handler_,
@@ -117,7 +122,7 @@ public:
 
 #ifdef PAXS_DEVELOPMENT
             // デバッグコンソールにカスタムコマンドを登録
-            token.setProgress(0.9f);
+            token.setProgress(0.95f);
             token.setMessage("Registering debug commands...");
             DebugConsoleCommandRegistry::registerAllCommands(
                 this->component_manager_->getDebugLayer().getConsole(),

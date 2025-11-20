@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_FONT_SYSTEM_HPP
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 #include <PAX_GRAPHICA/Font.hpp>
@@ -52,7 +53,7 @@ namespace paxs {
         paxs::UnorderedMap<std::uint_least32_t, std::string> language_font_paths_;
 
         // Locales システム
-        paxs::Locales locales;
+        std::unique_ptr<paxs::Locales> locales_;
 
         // 選択されている言語キー
         std::uint_least32_t selected_language_key_ = 0;
@@ -68,6 +69,7 @@ namespace paxs {
 
         // 初期化フラグ
         bool initialized_ = false;
+        bool locales_initialized_ = false;
 
         FontSystem() = default;
 
@@ -176,15 +178,28 @@ namespace paxs {
             // 言語フォントの設定
             setupLanguageFonts();
 
-            // デフォルト言語を設定（en-US）
-            const std::uint_least32_t default_language_key = Locales::getDefaultLocaleKey();
-            if (locales.isValidLocaleKey(default_language_key)) {
-                selected_language_key_ = default_language_key;
-            } else {
-                PAXS_ERROR("FontSystem::initialize - Default locale 'en-US' is not registered in Locales.tsv");
-            }
+            // デフォルト言語キーを設定（Localesの検証は後で行う）
+            selected_language_key_ = Locales::getDefaultLocaleKey();
 
             initialized_ = true;
+        }
+
+        /// @brief Localesを初期化
+        /// @details 時間がかかるため非同期で呼び出すことを推奨 / Recommended to call asynchronously due to time consumption
+        void initializeLocales() {
+            if (locales_initialized_) {
+                return;
+            }
+
+            // Localesシステムを初期化
+            locales_ = std::make_unique<paxs::Locales>();
+
+            // デフォルト言語が有効か確認
+            if (!locales_->isValidLocaleKey(selected_language_key_)) {
+                PAXS_ERROR("FontSystem::initializeLocales - Default locale 'en-US' is not registered in Locales.tsv");
+            }
+
+            locales_initialized_ = true;
         }
 
         /// @brief リソース解放（テスト用）
@@ -193,7 +208,9 @@ namespace paxs {
         static void clearForTesting() {
             if (instance_ != nullptr) {
                 instance_->font_cache_.clear();
+                instance_->locales_.reset();
                 instance_->initialized_ = false;
+                instance_->locales_initialized_ = false;
             }
         }
 
@@ -278,7 +295,7 @@ namespace paxs {
         /// @brief Set language by key
         /// @param language_key 言語キー（MurMur3ハッシュ値） / Language key (MurMur3 hash value)
         [[nodiscard]] bool setLanguageKey(std::uint_least32_t language_key) {
-            if (locales.isValidLocaleKey(language_key)) {
+            if (locales_initialized_ && locales_ && locales_->isValidLocaleKey(language_key)) {
                 selected_language_key_ = language_key;
                 return true;
             }
@@ -301,8 +318,12 @@ namespace paxs {
         /// @brief 登録されているロケール一覧を取得
         /// @brief Get list of registered locales
         /// @return ロケールキーのベクタ / Vector of locale keys
-        const std::vector<std::uint_least32_t>& getOrderedLocales() const {
-            return locales.getOrderedLocales();
+        [[nodiscard]] const std::vector<std::uint_least32_t>& getOrderedLocales() const {
+            if (locales_initialized_ && locales_) {
+                return locales_->getOrderedLocales();
+            }
+            static const std::vector<std::uint_least32_t> empty_vector;
+            return empty_vector;
         }
 
         /// @brief 現在選択されている言語でLocalesからテキストを取得（ハッシュキー版）
@@ -311,11 +332,14 @@ namespace paxs {
         /// @param text_key テキストキー（ハッシュ値） / Text key (hash value)
         /// @param suppress_warning 警告を抑制するか（デフォルト: false） / Suppress warning (default: false)
         /// @return テキストへのポインタ、見つからない場合はnullptr / Pointer to text, nullptr if not found
-        const std::string* getLocalesText(
+        [[nodiscard]] const std::string* getLocalesText(
             const std::uint_least32_t domain_key,
             const std::uint_least32_t text_key,
             const bool suppress_warning = false) const {
-            return locales.getStringPtr(domain_key, text_key, selected_language_key_, suppress_warning);
+            if (locales_initialized_ && locales_) {
+                return locales_->getStringPtr(domain_key, text_key, selected_language_key_, suppress_warning);
+            }
+            return nullptr;
         }
 
     };
