@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_SETTLEMENT_MANAGER_HPP
 
 #include <vector>
+#include <utility>
 
 #include <PAX_MAHOROBA/Map/Location/SettlementRenderer.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
@@ -30,8 +31,9 @@ namespace paxs {
         double cached_jdn_ = 0.0;
         const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* cached_agents_ = nullptr;
         const std::vector<GridType4>* cached_marriage_pos_list_ = nullptr;
-        Vector2<double> cached_map_view_size_{0.0, 0.0};
-        Vector2<double> cached_map_view_center_{0.0, 0.0};
+        const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>* cached_bronze_share_list_ = nullptr;
+        Vector2<double> cached_map_view_size_{ 0.0, 0.0 };
+        Vector2<double> cached_map_view_center_{ 0.0, 0.0 };
         std::size_t select_draw_ = 1;
         bool is_line_ = false;
         bool is_arrow_ = true;
@@ -41,10 +43,10 @@ namespace paxs {
         SettlementManager() = default;
 
         void render() const override {
-            if (!isVisible() || (cached_agents_ == nullptr) || (cached_marriage_pos_list_ == nullptr)) {
+            if (!isVisible() || (cached_agents_ == nullptr) || (cached_marriage_pos_list_ == nullptr) || (cached_bronze_share_list_ == nullptr)) {
                 return;
             }
-            SettlementRenderer::draw(cached_jdn_, cached_agents_, cached_marriage_pos_list_,
+            SettlementRenderer::draw(cached_jdn_, cached_agents_, cached_marriage_pos_list_, cached_bronze_share_list_,
                 cached_map_view_size_, cached_map_view_center_,
                 select_draw_, is_line_, is_arrow_);
         }
@@ -54,6 +56,7 @@ namespace paxs {
             const double jdn,
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>& agents,
             const std::vector<GridType4>& marriage_pos_list,
+            const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>& bronze_share_list,
             const Vector2<double>& map_view_size,
             const Vector2<double>& map_view_center,
             const std::size_t select_draw, const bool is_line, const bool is_arrow
@@ -61,6 +64,7 @@ namespace paxs {
             cached_jdn_ = jdn;
             cached_agents_ = &agents;
             cached_marriage_pos_list_ = &marriage_pos_list;
+            cached_bronze_share_list_ = &bronze_share_list;
             cached_map_view_size_ = map_view_size;
             cached_map_view_center_ = map_view_center;
             select_draw_ = select_draw;
@@ -73,6 +77,7 @@ namespace paxs {
         void clearCache() {
             cached_agents_ = nullptr;
             cached_marriage_pos_list_ = nullptr;
+            cached_bronze_share_list_ = nullptr;
             cached_jdn_ = 0.0;
             cached_map_view_size_ = Vector2<double>(0.0, 0.0);
             cached_map_view_center_ = Vector2<double>(0.0, 0.0);

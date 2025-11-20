@@ -52,14 +52,14 @@ namespace paxs {
         /// @brief モデル名からパスを生成
         /// @param model_name モデル名 / Model name
         /// @return <マップリストパス, 都道府県パス> / <map list path, provinces path>
-        static std::pair<std::string, std::string> generatePaths(const std::string& model_name)  {
+        static std::pair<std::string, std::string> generatePaths(const std::string& model_name) {
             std::string map_list_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationXYZTiles"));
             std::string japan_provinces_path = AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationProvincesPath"));
 
             paxs::StringUtils::replace(map_list_path, "Sample", model_name);
             paxs::StringUtils::replace(japan_provinces_path, "Sample", model_name);
 
-            return {map_list_path, japan_provinces_path};
+            return { map_list_path, japan_provinces_path };
         }
 
         /// @brief シミュレーションを初期化
@@ -273,14 +273,16 @@ namespace paxs {
                     token.setProgress(1.0f);
 
                     return true;
-                } catch (const std::exception& e) {
+                }
+                catch (const std::exception& e) {
                     PAXS_ERROR("Simulation initialization failed: " + std::string(e.what()));
                     return false;
-                } catch (...) {
+                }
+                catch (...) {
                     PAXS_ERROR("Simulation initialization failed: Unknown error");
                     return false;
                 }
-            });
+                });
         }
 
         /// @brief 人間データを初期化
@@ -335,6 +337,13 @@ namespace paxs {
         const auto& getMarriagePositions() const {
             static const std::vector<GridType4> empty_vec;
             return simulator_ ? simulator_->getMarriagePosList() : empty_vec;
+        }
+
+        /// @brief 青銅交換リストへのconst参照を取得（描画用）
+        /// @return 青銅交換リスト / Bronze share list
+        const auto& getBronzeShareList() const {
+            static const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>> empty_vec;
+            return simulator_ ? simulator_->getBronzeShareList() : empty_vec;
         }
     };
 

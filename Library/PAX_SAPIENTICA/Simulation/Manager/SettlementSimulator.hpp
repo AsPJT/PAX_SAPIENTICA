@@ -20,6 +20,7 @@
 #include <memory>
 #include <random>
 #include <vector>
+#include <utility> // for std::pair
 
 #include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/KanakumaLifeSpan.hpp>
@@ -46,6 +47,8 @@ namespace paxs {
     public:
         using Agent = paxs::SettlementAgent;
         using Vector2 = paxs::Vector2<GridType>;
+        // 青銅交換リストの型定義: <開始位置, 終了位置>
+        using BronzeShareList = std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>;
 
         explicit SettlementSimulator() = default;
 
@@ -146,11 +149,11 @@ namespace paxs {
             }
         }
         // 結果の文字列を出力
-        static void outputResultString(std::ofstream& ofs_)  {
+        static void outputResultString(std::ofstream& ofs_) {
             ofs_ << "step_count" << '\t' << "settlement" << '\t' << "population" << '\t';
         }
         // 結果の最後の文字列を出力
-        static void outputResultLastString(std::ofstream& ofs_)  {
+        static void outputResultLastString(std::ofstream& ofs_) {
             ofs_ << "step_count" << '\n';
         }
         // 結果の地区名を出力
@@ -178,6 +181,7 @@ namespace paxs {
             step_count = 0;
             land_positions.clear();
             marriage_pos_list.clear();
+            bronze_share_list.clear();
 
             initRandomizeSettlements();
             randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/);
@@ -198,7 +202,8 @@ namespace paxs {
             for (int i = 0; i < step_count_; ++i) {
                 if (progress_reporter_) {
                     progress_reporter_->reportProgress(static_cast<float>(i) / static_cast<float>(step_count_), "Step: " + std::to_string(i + 1));
-                } else {
+                }
+                else {
                     std::cout << "Step: " << i + 1 << std::endl;
                 }
                 step();
@@ -346,7 +351,7 @@ namespace paxs {
             }
 
             std::vector<std::tuple<std::uint_least32_t, Vector2, Vector2>> move_list;
-            for (auto& settlement_grid  : settlement_grids) {
+            for (auto& settlement_grid : settlement_grids) {
                 std::vector<Settlement>& settlements = settlement_grid.second.getSettlements();
                 for (std::size_t i = 0; i < settlements.size(); ++i) {
                     // 集落の過去の位置情報を削除
@@ -385,6 +390,7 @@ namespace paxs {
 
             m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
             marriage_pos_list.clear();
+            bronze_share_list.clear(); // 青銅交換リストのクリア
 
             // 結婚の条件を満たすエージェントを取得
             std::vector<std::size_t> marriageable_female_index;
@@ -416,6 +422,12 @@ namespace paxs {
                         std::uint_fast32_t bronze = (close_settlements->front().getBronze() + close_settlements->back().getBronze()) / 2;
                         close_settlements->front().setBronze(bronze);
                         close_settlements->back().setBronze(bronze);
+
+                        // 青銅交換の矢印のための記録
+                        bronze_share_list.emplace_back(
+                            close_settlements->front().getPosition(),
+                            close_settlements->back().getPosition()
+                        );
                     }
                 }
                 for (auto& settlement : settlements) {
@@ -458,6 +470,9 @@ namespace paxs {
 
         // 婚姻時に移動した位置一覧を取得する
         const std::vector<GridType4>& getMarriagePosList() const { return marriage_pos_list; }
+
+        // 青銅交換の位置一覧を取得する
+        const BronzeShareList& getBronzeShareList() const { return bronze_share_list; }
 
         /// @brief Get the agent list.
         /// @brief エージェントのリストを取得する
@@ -529,6 +544,9 @@ namespace paxs {
         // 婚姻時に移動前の位置と移動後の位置を記録
         std::vector<GridType4> marriage_pos_list;
 
+        // 青銅交換の位置を記録
+        BronzeShareList bronze_share_list;
+
         // 進捗報告インターフェース
         IProgressReporter* progress_reporter_ = nullptr;
 
@@ -537,7 +555,8 @@ namespace paxs {
         bool initRandomizeSettlements() {
             if (progress_reporter_ != nullptr) {
                 progress_reporter_->startProgress(0, "Randomize settlements...");
-            } else {
+            }
+            else {
                 std::cout << "Randomize settlements..." << std::endl;
             }
 
@@ -548,7 +567,8 @@ namespace paxs {
             if (live_list.get() == nullptr) {
                 if (progress_reporter_ != nullptr) {
                     progress_reporter_->reportProgress(0.0f, "Low memory");
-                } else {
+                }
+                else {
                     std::cout << "Low memory" << std::endl;
                 }
                 return false; // 処理失敗
@@ -599,7 +619,7 @@ namespace paxs {
             // 地区と人口のマップ
             paxs::UnorderedMap<std::uint_least8_t, std::uint_least32_t> district_population_map;
             for (const auto& district : japan_provinces->cgetDistrictList()) {
-                if (((is_ad200)? district.init_pop : district.immigrant) == 0) {
+                if (((is_ad200) ? district.init_pop : district.immigrant) == 0) {
                     continue;
                 }
                 district_population_map.emplace(district.id, ((is_ad200) ? district.init_pop : district.immigrant));
@@ -631,7 +651,8 @@ namespace paxs {
                             if (all_population > 0) {
                                 progress_reporter_->reportProgress(static_cast<float>(population_sum) / static_cast<float>(all_population), "Randomizing settlements...");
                             }
-                        } else {
+                        }
+                        else {
                             StatusDisplayer::displayProgressBar(population_sum, all_population);
                         }
                     }
@@ -721,7 +742,8 @@ namespace paxs {
             if (step_count == 0) {
                 if (progress_reporter_ != nullptr) {
                     progress_reporter_->endProgress();
-                } else {
+                }
+                else {
                     StatusDisplayer::displayProgressBar(all_population, all_population);
                     std::cout << std::endl;
                 }
@@ -779,7 +801,8 @@ namespace paxs {
             if (step_count == 0) {
                 if (progress_reporter_ != nullptr) {
                     progress_reporter_->reportProgress(1.0f, "Done.");
-                } else {
+                }
+                else {
                     std::cout << "Done." << std::endl;
                 }
             }

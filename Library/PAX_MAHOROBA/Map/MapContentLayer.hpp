@@ -80,6 +80,7 @@ namespace paxs {
                     koyomi.jdn.getDay(),
                     simulation_manager.getSettlementGrids(),
                     simulation_manager.getMarriagePositions(),
+                    simulation_manager.getBronzeShareList(), // ここに引数を追加
                     Vector2<double>(map_viewport_.getWidth(), map_viewport_.getHeight()),
                     Vector2<double>(map_viewport_.getCenterX(), map_viewport_.getCenterY()),
                     settlement_input_handler_.getSelectDraw(),
@@ -123,7 +124,8 @@ namespace paxs {
                     // 停止状態になった時（初期化完了時）に集落データを更新
                     if (event.new_state == SimulationState::Stopped) {
                         updateSettlementData();
-                    } else if (event.new_state == SimulationState::Uninitialized) {
+                    }
+                    else if (event.new_state == SimulationState::Uninitialized) {
                         // クリアされた場合はキャッシュをクリアして無効な参照を防ぐ
                         settlement_manager_.clearCache();
                     }
@@ -286,9 +288,9 @@ namespace paxs {
         // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
         ~MapContentLayer() override = default;
         MapContentLayer(const MapContentLayer&) = delete;
-        auto operator=(const MapContentLayer&) -> MapContentLayer& = delete;
+        auto operator=(const MapContentLayer&)->MapContentLayer & = delete;
         MapContentLayer(MapContentLayer&&) = delete;
-        auto operator=(MapContentLayer&&) -> MapContentLayer& = delete;
+        auto operator=(MapContentLayer&&)->MapContentLayer & = delete;
 
         void render() const override {
 #ifdef PAXS_USING_SIMULATOR

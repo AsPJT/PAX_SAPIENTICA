@@ -12,6 +12,9 @@
 #ifndef PAX_MAHOROBA_MAP_SETTLEMENT_RENDERER_HPP
 #define PAX_MAHOROBA_MAP_SETTLEMENT_RENDERER_HPP
 
+#include <vector>
+#include <utility>
+
 #include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
@@ -39,6 +42,7 @@ namespace paxs {
         /// @param jdn ユリウス日
         /// @param agents 集落グリッド
         /// @param marriage_pos_list 婚姻移動のリスト
+        /// @param bronze_share_list 青銅交換のリスト
         /// @param map_view_size マップビューのサイズ
         /// @param map_view_center マップビューの中心座標
         /// @param select_draw 表示モード (1-6)
@@ -47,6 +51,7 @@ namespace paxs {
         static void draw(const double jdn,
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
             const std::vector<GridType4>* marriage_pos_list,
+            const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>* bronze_share_list,
             const Vector2<double>& map_view_size,
             const Vector2<double>& map_view_center,
             const std::size_t select_draw, const bool is_line, const bool is_arrow
@@ -61,6 +66,9 @@ namespace paxs {
 
             // 移動線を描画
             if (is_arrow) {
+                // 青銅交換の矢印（移動・婚姻より下のレイヤーに描画）
+                drawBronzeShareLines(jdn, bronze_share_list, map_view_size, map_view_center);
+
                 drawMovementLines(jdn, agents, marriage_pos_list,
                     map_view_size, map_view_center);
             }
@@ -105,8 +113,11 @@ namespace paxs {
         static constexpr paxg::Color LANGUAGE_COLOR_4 = paxg::Color(230, 207, 0);  // 黄色
 
         // 婚姻色の定義
-        static constexpr paxg::Color MARRIAGE_COLOR_MATRILOCAL = paxg::Color(221, 67, 98);  // 母方居住婚（ピンク） #DD4362
-        static constexpr paxg::Color MARRIAGE_COLOR_PATRILOCAL = paxg::Color(87, 66, 221);  // 父方居住婚（紫） #5742DD
+        static constexpr paxg::Color MARRIAGE_COLOR_MATRILOCAL = paxg::Color(221, 67, 98);  // 母方居住婚（ピンク）
+        static constexpr paxg::Color MARRIAGE_COLOR_PATRILOCAL = paxg::Color(87, 66, 221);  // 父方居住婚（紫）
+
+        // 青銅交換色の定義
+        static constexpr paxg::Color BRONZE_SHARE_COLOR = paxg::Color(221, 215, 66); // 黄色 #DDD742
 
         SettlementRenderer() = default;
 
@@ -131,7 +142,6 @@ namespace paxs {
                     ZOOM_LEVEL
                 )),
                 10,
-                // 修正: 年代の範囲を広げて、シミュレーション期間中常に表示されるようにする
                 Range<double>(0, 99999999),
                 Range<double>(0, 99999999),
                 MurMur3::calcHash("agent1"),
@@ -223,6 +233,39 @@ namespace paxs {
             }
         }
 
+        /// @brief 青銅交換の矢印を描画
+        static void drawBronzeShareLines(
+            const double jdn,
+            const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>* bronze_share_list,
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center
+        ) {
+            if (!bronze_share_list) return;
+
+            for (const auto& share : *bronze_share_list) {
+                const auto end_lli = createLocationPoint(share.second);
+
+                if (!isInViewBounds(end_lli.coordinate, map_view_size, map_view_center)) continue;
+                // 時間判定はシミュレータ側でステップごとに生成されているため、ここでは省略可能だが、念のためexcludesチェックはcreateLocationPointで範囲を広げているので通過する
+                if (end_lli.year_range.excludes(jdn)) continue;
+
+                const paxg::Vec2<double> end_pos = MapCoordinateConverter::toScreenPos(
+                    end_lli.coordinate,
+                    map_view_size,
+                    map_view_center);
+
+                const auto start_lli = createLocationPoint(share.first);
+                const paxg::Vec2<double> start_pos = MapCoordinateConverter::toScreenPos(
+                    start_lli.coordinate,
+                    map_view_size,
+                    map_view_center);
+
+                // 青銅交換を表す直線の矢印を描画
+                paxg::Line{ start_pos, end_pos }
+                .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, BRONZE_SHARE_COLOR);
+            }
+        }
+
         /// @brief 移動線を描画
         /// @brief Draw movement lines
         static void drawMovementLines(
@@ -297,7 +340,6 @@ namespace paxs {
             }
 
             // 婚姻移動を描画
-            // 移動線（黒）より後に描画することで、レイヤー順を上にする
             for (const auto& marriage_pos : *marriage_pos_list) {
                 const auto location_point = createLocationPoint(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
@@ -320,8 +362,6 @@ namespace paxs {
 
                 const paxg::Color marriage_color = marriage_pos.is_matrilocality
                     ? MARRIAGE_COLOR_MATRILOCAL : MARRIAGE_COLOR_PATRILOCAL;
-
-                // 直線の矢印を描画
                 paxg::Line{ old_pos, draw_pos }
                 .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, marriage_color);
             }
