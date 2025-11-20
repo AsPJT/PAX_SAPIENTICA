@@ -233,7 +233,9 @@ namespace paxs {
 
         /// @brief Data/Locales/以下の全てのロケールファイルを再帰的に読み込む
         /// @brief Load all locale files under Data/Locales/ recursively
-        void loadAllDomains() {
+        /// @param progress_start 進捗開始値 / Progress start value
+        /// @param progress_end 進捗終了値 / Progress end value
+        void loadAllDomains(float progress_start = 0.0f, float progress_end = 1.0f) {
             const std::string locales_dir = "Data/Locales/";
 
             if (!FileSystem::exists(locales_dir)) {
@@ -243,8 +245,9 @@ namespace paxs {
 
             // Data/Locales/以下の全ファイルを再帰的に取得
             const std::vector<std::string> all_files = FileSystem::getFilePathsRecursive(locales_dir);
-            std::size_t file_count = 0;
 
+            // 対象ファイルをフィルタリング（.tsvファイルかつ登録済みロケール）
+            std::vector<std::string> target_files;
             for (const std::string& file_path : all_files) {
                 // .tsvファイルのみを対象
                 if (file_path.size() < 4 || file_path.substr(file_path.size() - 4) != ".tsv") {
@@ -266,11 +269,35 @@ namespace paxs {
                     continue;  // 未登録のロケールはスキップ
                 }
 
+                target_files.push_back(file_path);
+            }
+
+            // ファイルを読み込む
+            const std::size_t total_files = target_files.size();
+            std::size_t file_count = 0;
+
+            for (const std::string& file_path : target_files) {
+                // ファイル名を抽出
+                const std::size_t last_slash = file_path.find_last_of("/\\");
+                const std::string file_name = (last_slash != std::string::npos)
+                    ? file_path.substr(last_slash + 1)
+                    : file_path;
+
+                // ロケール名を抽出
+                const std::string locale_name = file_name.substr(0, file_name.size() - 4);
+
                 // domain.tsv からドメイン名を取得
                 const std::string domain_name = getDomainNameFromPath(file_path, locales_dir);
                 if (domain_name.empty()) {
                     PAXS_WARNING("domain.tsv not found or domain mapping not found for: " + file_path);
                     continue;  // ドメイン名が取得できない場合はスキップ
+                }
+
+                // 進捗を報告
+                if (progress_reporter_ && total_files > 0) {
+                    const float progress = progress_start + (progress_end - progress_start) * (static_cast<float>(file_count) / static_cast<float>(total_files));
+                    const std::string message = "Loading " + domain_name + "/" + locale_name + ".tsv (" + std::to_string(file_count + 1) + "/" + std::to_string(total_files) + ")";
+                    progress_reporter_->reportProgress(progress, message);
                 }
 
                 // ファイルを読み込む（ドメイン名を使用）
@@ -288,16 +315,16 @@ namespace paxs {
         explicit Locales(IProgressReporter* reporter = nullptr, float progress_start = 0.0f, float progress_end = 1.0f)
             : progress_reporter_(reporter) {
 
+            // ロケールリスト読み込み（進捗の10%）
             if (progress_reporter_) {
                 progress_reporter_->reportProgress(progress_start, "Loading locale list...");
             }
             loadLocaleList();
 
-            const float progress_mid = progress_start + (progress_end - progress_start) * 0.1f;
-            if (progress_reporter_) {
-                progress_reporter_->reportProgress(progress_mid, "Loading locale files...");
-            }
-            loadAllDomains();
+            // ロケールファイル読み込み（進捗の90%）
+            const float files_start = progress_start + (progress_end - progress_start) * 0.1f;
+            const float files_end = progress_end;
+            loadAllDomains(files_start, files_end);
 
             if (progress_reporter_) {
                 progress_reporter_->reportProgress(progress_end, "Locales initialized");
