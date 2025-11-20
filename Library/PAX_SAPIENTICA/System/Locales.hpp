@@ -351,9 +351,18 @@ namespace paxs {
             if (iterator != text_dictionary_.end()) {
                 return &(iterator->second);
             }
+            const std::uint_least32_t default_locale_key_ = getDefaultLocaleKey();
+            if (locale_key == default_locale_key_) {
+                // 指定されたロケールが見つからない場合の警告
+                if (!suppress_warning) {
+                    const std::string locale_name = getLocaleNameFromKey(locale_key);
+                    PAXS_WARNING("[Locales::getStringPtr] Text key NOT found in locale '" + locale_name + "' - falling back to default locale");
+                    return nullptr;
+                }
+            }
 
             // フォールバック処理：en-USで再検索
-            const CombinedKey fallback_key{domain_name_hash, text_key_hash, getDefaultLocaleKey()};
+            const CombinedKey fallback_key(domain_name_hash, text_key_hash, default_locale_key_);
             const auto fallback_text_it = text_dictionary_.find(fallback_key);
             if (fallback_text_it == text_dictionary_.end()) {
                 // テキストキー自体が登録されていない
