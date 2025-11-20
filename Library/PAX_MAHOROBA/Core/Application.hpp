@@ -25,7 +25,9 @@
 #include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+#include <PAX_MAHOROBA/UI/LoadingProgressBar.hpp>
 
+#include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 #ifdef PAXS_DEVELOPMENT
@@ -46,59 +48,87 @@ public:
         // 初期化とロゴの表示
         paxs::PaxSapienticaInit::firstInit();
 
-        // フォントシステムを初期化
-        Fonts().initialize();
-
-        // 1. EventBus作成（シングルトン）
         event_bus_ = &EventBus::getInstance();
-
-        // 2. AppStateManager作成（ドメインロジック集約）
         app_state_ = std::make_unique<AppStateManager>();
 
-        // 3. ApplicationEventHandler作成（イベント購読管理）
-        event_handler_ = std::make_unique<ApplicationEventHandler>(*app_state_);
+        // フォントシステムを初期化（進捗バーの描画に必要）
+        Fonts().initialize();
 
-        // 4. InputManager作成（入力処理統合）
-        input_manager_ = std::make_unique<InputManager>();
+        // ローディング画面の画像を読み込んで保持
+        loading_texture_ = std::make_unique<paxg::Texture>("Data/LoadingScreen/LoadingScreen.png");
 
-        // 5. AppComponentManager作成（コンポーネント統合管理）
-        component_manager_ = std::make_unique<AppComponentManager>(*app_state_);
-
-        // 6. 入力ハンドラー作成と登録
-        map_viewport_input_handler_ = std::make_unique<MapViewportInputHandler>(
-            app_state_->getMapViewportForInputHandler()
+        // 初期化用の進捗バーを作成
+        init_progress_bar_ = std::make_unique<LoadingProgressBar<bool>>(
+            &init_loading_handle_,
+            static_cast<int>(paxg::Window::width()) / 2 - 200,
+            static_cast<int>(paxg::Window::height()) / 2 - 15,
+            400,
+            30,
+            Fonts().getFont(FontProfiles::UI_MEDIUM)
         );
-        ui_input_handler_ = std::make_unique<UIInputHandler>();
+
+        // 非同期初期化を開始
+        init_loading_handle_ = startAsyncTask<bool>([this](ProgressToken<bool>& token) {
+            // ApplicationEventHandler作成（イベント購読管理）
+            token.setProgress(0.1f);
+            token.setMessage("Creating ApplicationEventHandler...");
+            this->event_handler_ = std::make_unique<ApplicationEventHandler>(*this->app_state_);
+
+            // InputManager作成（入力処理統合）
+            token.setProgress(0.2f);
+            token.setMessage("Creating InputManager...");
+            this->input_manager_ = std::make_unique<InputManager>();
+
+            // AppComponentManager作成（コンポーネント統合管理）
+            token.setProgress(0.3f);
+            token.setMessage("Creating AppComponentManager...");
+            this->component_manager_ = std::make_unique<AppComponentManager>(*this->app_state_);
+
+            // 入力ハンドラー作成と登録
+            token.setProgress(0.6f);
+            token.setMessage("Creating input handlers...");
+            this->map_viewport_input_handler_ = std::make_unique<MapViewportInputHandler>(
+                this->app_state_->getMapViewportForInputHandler()
+            );
+            this->ui_input_handler_ = std::make_unique<UIInputHandler>();
 
 #ifdef PAXS_DEVELOPMENT
-        debug_input_handler_ = std::make_unique<DebugInputHandler>(
-            &component_manager_->getDebugLayer()
-        );
+            this->debug_input_handler_ = std::make_unique<DebugInputHandler>(
+                &this->component_manager_->getDebugLayer()
+            );
 #endif
 
-        // InputManagerに入力ハンドラーを登録
-        input_manager_->registerHandler(map_viewport_input_handler_.get());
-        input_manager_->registerHandler(ui_input_handler_.get());
+            // InputManagerに入力ハンドラーを登録
+            token.setProgress(0.7f);
+            token.setMessage("Registering input handlers...");
+            this->input_manager_->registerHandler(this->map_viewport_input_handler_.get());
+            this->input_manager_->registerHandler(this->ui_input_handler_.get());
 #ifdef PAXS_DEVELOPMENT
-        input_manager_->registerHandler(debug_input_handler_.get());
+            this->input_manager_->registerHandler(this->debug_input_handler_.get());
 #endif
 
-        // AppComponentManagerが内部のウィジェット/ハンドラーを登録
-        component_manager_->registerToInputHandlers(
-            *ui_input_handler_,
-            input_manager_->getInputRouter()
-        );
+            // AppComponentManagerが内部のウィジェット/ハンドラーを登録
+            token.setProgress(0.8f);
+            token.setMessage("Registering widgets...");
+            this->component_manager_->registerToInputHandlers(
+                *this->ui_input_handler_,
+                this->input_manager_->getInputRouter()
+            );
 
 #ifdef PAXS_DEVELOPMENT
-        // デバッグコンソールにカスタムコマンドを登録
-        DebugConsoleCommandRegistry::registerAllCommands(
-            component_manager_->getDebugLayer().getConsole(),
-            *app_state_
-        );
+            // デバッグコンソールにカスタムコマンドを登録
+            token.setProgress(0.9f);
+            token.setMessage("Registering debug commands...");
+            DebugConsoleCommandRegistry::registerAllCommands(
+                this->component_manager_->getDebugLayer().getConsole(),
+                *this->app_state_
+            );
 #endif
 
-        // ローディング画面終了
-        paxs::PaxSapienticaInit::endLoadingScreen();
+            token.setProgress(1.0f);
+            token.setMessage("Initialization complete!");
+            return true;
+        });
     }
 
     /// @brief メインループを実行
@@ -107,13 +137,16 @@ public:
             // 画像の拡大縮小の方式を設定
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampNearest };
 
-#ifdef PAXS_USING_SIMULATOR
             // アプリケーション状態に応じて処理を分岐
-            if (app_state_->getAppState() == AppState::Loading) {
+            if (app_state_ && app_state_->getAppState() == AppState::Initializing) {
+                updateInitializingMode();
+            }
+#ifdef PAXS_USING_SIMULATOR
+            else if (app_state_->getAppState() == AppState::Loading) {
                 updateLoadingMode();
-            } else
+            }
 #endif
-            {
+            else {
                 updateRunningMode();
             }
         }
@@ -133,6 +166,74 @@ private:
 #ifdef PAXS_DEVELOPMENT
     std::unique_ptr<DebugInputHandler> debug_input_handler_;
 #endif
+
+    // 初期化用
+    LoadingHandle<bool> init_loading_handle_;
+    std::unique_ptr<LoadingProgressBar<bool>> init_progress_bar_;
+    std::unique_ptr<paxg::Texture> loading_texture_;  ///< ローディング画面の画像 / Loading screen texture
+
+    /// @brief 初期化中の更新処理
+    void updateInitializingMode() {
+        // 1. ロード状態の更新（ロード完了のチェック）
+        if (init_loading_handle_.isValid() && init_loading_handle_.isFinished()) {
+            const bool* result = init_loading_handle_.getResult();
+
+            if ((result != nullptr) && *result) {
+                // 初期化成功 - アプリケーション状態をRunningに変更
+                app_state_->updateInitializationComplete();
+
+                // ローディング画面終了
+                paxs::PaxSapienticaInit::endLoadingScreen();
+            } else {
+                // 初期化失敗
+                if (init_loading_handle_.hasError()) {
+                    PAXS_ERROR("Application initialization failed");
+                }
+            }
+
+            // 進捗バーとローディング画像をクリア
+            init_progress_bar_.reset();
+            loading_texture_.reset();
+        }
+
+        // 2. 描画処理（ローディング画像 + 進捗バー）
+        if (loading_texture_) {
+            // ウィンドウをクリア
+            paxg::Window::clear();
+
+            // 画面サイズを取得
+            const int window_width = paxg::Window::width();
+            const int window_height = paxg::Window::height();
+
+            // 画像のサイズを取得
+            const float texture_width = static_cast<float>(loading_texture_->width());
+            const float texture_height = static_cast<float>(loading_texture_->height());
+
+            // 画像をウィンドウサイズに合わせてスケーリング
+            // アスペクト比を維持しながらウィンドウに収まるようにする
+            const float scale_x = static_cast<float>(window_width) / texture_width;
+            const float scale_y = static_cast<float>(window_height) / texture_height;
+            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+            const int scaled_width = static_cast<int>(texture_width * scale);
+            const int scaled_height = static_cast<int>(texture_height * scale);
+
+            // 中央配置の座標を計算
+            const int pos_x = (window_width - scaled_width) / 2;
+            const int pos_y = (window_height - scaled_height) / 2;
+
+            // ローディング画像をリサイズして描画
+            loading_texture_->resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{pos_x, pos_y});
+        }
+
+        // 進捗バーを描画
+        if (init_progress_bar_) {
+            init_progress_bar_->render();
+        }
+
+        // 3. タッチ入力の状態更新
+        paxg::TouchInput::updateState();
+    }
 
 #ifdef PAXS_USING_SIMULATOR
     /// @brief ロード中の更新処理

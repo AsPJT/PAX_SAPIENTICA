@@ -31,6 +31,7 @@ namespace paxs {
 /// @brief アプリケーション状態
 /// @brief Application state
 enum class AppState : std::uint8_t {
+    Initializing,   ///< 初期化中 / Initializing
     Running,        ///< 通常実行中 / Normal running
     Loading         ///< ロード中 / Loading
 };
@@ -68,6 +69,12 @@ public:
     /// @brief Get application state
     /// @return アプリケーション状態 / Application state
     AppState getAppState() const { return app_state_; }
+
+    /// @brief 初期化完了時に呼ばれる
+    /// @brief Called when initialization is complete
+    void updateInitializationComplete() {
+        app_state_ = AppState::Running;
+    }
 
 #ifdef PAXS_USING_SIMULATOR
     /// @brief ロードハンドルを取得
@@ -286,7 +293,7 @@ private:
     LoadingHandle<bool> loading_handle_;
 #endif
     FeatureVisibilityManager visibility_manager_;
-    AppState app_state_ = AppState::Running;
+    AppState app_state_ = AppState::Initializing;
 
     /// @brief 機能可視性の初期値を設定
     /// @brief Initialize feature visibility default values
