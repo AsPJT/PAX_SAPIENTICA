@@ -14,18 +14,15 @@
 
 #include <cstdint>
 
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Core/DomainCore.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
-#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 #ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/Core/SimulationController.hpp>
-#include <PAX_SAPIENTICA/Simulation/Manager/SimulationManager.hpp>
 #include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
 #endif
 
@@ -54,21 +51,14 @@ public:
     // Getter（読み取り専用アクセス）
     // ============================================================================
 
-    /// @brief 暦を取得
-    const Koyomi& getKoyomi() const { return koyomi_; }
-
-    /// @brief 地図ビューポートを取得
-    const MapViewport& getMapViewport() const { return map_viewport_; }
-
+    const Koyomi& getKoyomi() const { return domain_core_.getKoyomi(); }
+    const MapViewport& getMapViewport() const { return domain_core_.getMapViewport(); }
     /// @brief 地図ビューポートを取得（InputHandler専用）
-    MapViewport& getMapViewportForInputHandler() { return map_viewport_; }
+    MapViewport& getMapViewportForInputHandler() { return domain_core_.getMapViewportForInputHandler(); }
 
 #ifdef PAXS_USING_SIMULATOR
-    /// @brief シミュレーションマネージャーを取得
-    const SimulationManager& getSimulationManager() const { return simulation_manager_; }
-
-    /// @brief シミュレーションコントローラーを取得
-    const SimulationController& getSimulationController() const { return simulation_controller_; }
+    const SimulationManager& getSimulationManager() const { return domain_core_.getSimulationManager(); }
+    const SimulationController& getSimulationController() const { return domain_core_.getSimulationController(); }
 #endif
 
     /// @brief 機能可視性マネージャーを取得（const版）
@@ -125,18 +115,16 @@ public:
     /// @param x X座標 / X coordinate
     /// @param y Y座標 / Y coordinate
     void setViewportCenter(double x, double y) {
-        map_viewport_.setCenter(x, y);
-        map_viewport_.applyConstraints();
-        map_viewport_.notifyViewportChanged();
+        domain_core_.setViewportCenter(x, y);
+        domain_core_.notifyViewportChanged();
     }
 
     /// @brief ビューポートサイズを設定（制約適用・通知付き）
     /// @brief Set viewport size with constraints and notification
     /// @param size サイズ / Size (zoom level)
     void setViewportSize(double size) {
-        map_viewport_.setSize(size);
-        map_viewport_.applyConstraints();
-        map_viewport_.notifyViewportChanged();
+        domain_core_.setViewportSize(size);
+        domain_core_.notifyViewportChanged();
     }
 
     /// @brief 時間再生の状態を設定
@@ -144,16 +132,14 @@ public:
     /// @param forward 順再生フラグ / Forward playback flag
     /// @param backward 逆再生フラグ / Backward playback flag
     void setTimePlayback(bool forward, bool backward) {
-        koyomi_.move_forward_in_time = forward;
-        koyomi_.go_back_in_time = backward;
+        domain_core_.setTimePlayback(forward, backward);
     }
 
     /// @brief 日付を移動
     /// @brief Navigate date
     /// @param days 移動日数 / Days to navigate
     void navigateDate(double days) {
-        koyomi_.jdn.addDays(days);
-        koyomi_.calcDate();
+        domain_core_.navigateDate(days);
         publishDateChangedEvent();
     }
 
@@ -162,10 +148,7 @@ public:
     /// @brief Initialize simulation (synchronous)
     /// @param model_name モデル名 / Model name
     void initializeSimulation(const std::string& model_name) {
-        simulation_manager_.simulationInitialize(model_name);
-        simulation_manager_.initSimulation();
-        koyomi_.jdn.setDay(SimulationConstants::getInstance().start_julian_day);
-        resetKoyomiToStoppedState();
+        domain_core_.initializeSimulation(model_name);
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
         publishDateChangedEvent();
     }
@@ -179,35 +162,28 @@ public:
             loading_handle_.join();
         }
         app_state_ = AppState::Loading;
-        loading_handle_ = simulation_manager_.simulationInitializeAsync(model_name);
+        loading_handle_ = domain_core_.startSimulationInitializeAsync(model_name);
     }
 
     /// @brief シミュレーションを再生
     /// @brief Play simulation
     /// @param iterations 実行回数 / Number of iterations
     void playSimulation(int iterations) {
-        koyomi_.is_agent_update = true;
-        koyomi_.move_forward_in_time = true;
-        if (iterations > 1) {
-            simulation_controller_.startAutoExecution(iterations, "");
-        }
+        domain_core_.playSimulation(iterations);
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Playing));
     }
 
     /// @brief シミュレーションを一時停止
     /// @brief Pause simulation
     void pauseSimulation() {
-        koyomi_.move_forward_in_time = false;
-        koyomi_.go_back_in_time = false;
+        domain_core_.pauseSimulation();
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
     }
 
     /// @brief シミュレーションを停止
     /// @brief Stop simulation
     void stopSimulation() {
-        koyomi_.is_agent_update = false;
-        koyomi_.move_forward_in_time = false;
-        koyomi_.go_back_in_time = false;
+        domain_core_.stopSimulation();
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
     }
 
@@ -215,14 +191,10 @@ public:
     /// @brief Step simulation
     /// @param steps ステップ数 / Number of steps
     void stepSimulation(int steps) {
-        for (int i = 0; i < steps; ++i) {
-            simulation_manager_.step();
-            koyomi_.steps.setDay(koyomi_.steps.getDay() + 1);
-        }
-        koyomi_.jdn += steps;
+        domain_core_.stepSimulation(steps);
         paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
-            static_cast<std::uint_least32_t>(koyomi_.steps.getDay()),
-            static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
+            static_cast<std::uint_least32_t>(domain_core_.getKoyomi().steps.getDay()),
+            static_cast<std::uint_least32_t>(domain_core_.getSimulationManager().getPopulation())
         ));
         publishDateChangedEvent();
     }
@@ -231,15 +203,14 @@ public:
     /// @brief Reload input data
     /// @param model_name モデル名 / Model name
     void reloadInputData(const std::string& model_name) {
-        simulation_manager_.reloadData(model_name);
+        domain_core_.reloadInputData(model_name);
     }
 
     /// @brief 人間データを初期化
     /// @brief Initialize human data
     /// @param model_name モデル名 / Model name
     void initHumanData(const std::string& model_name) {
-        simulation_manager_.initHumanData(model_name);
-        resetKoyomiToStoppedState();
+        domain_core_.initHumanData(model_name);
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
         publishDateChangedEvent();
     }
@@ -247,8 +218,7 @@ public:
     /// @brief シミュレーションをクリア
     /// @brief Clear simulation
     void clearSimulation() {
-        simulation_manager_.clear();
-        resetKoyomiStepsAndDate();
+        domain_core_.clearSimulation();
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Uninitialized));
         publishDateChangedEvent();
     }
@@ -263,31 +233,21 @@ public:
     /// @details 暦の再生状態に応じて時間を進行・巻き戻す
     /// @details シミュレーションの再生時にはシミュレーションをステップ実行する
     void updateKoyomi() {
-        if (koyomi_.move_forward_in_time || koyomi_.go_back_in_time) {
-            const double old_jdn = koyomi_.jdn.getDay();
+        const double old_jdn = domain_core_.getKoyomi().jdn.getDay();
 
-            koyomi_.update();
+        bool date_changed = domain_core_.updateKoyomi();
 
-            // シミュレーション実行制御（is_agent_updateがtrueの場合のみ）
-            if (koyomi_.is_agent_update && simulation_manager_.isActive()) {
-                // シミュレーションを1ステップ実行
-                simulation_manager_.step();
-
-                // シミュレーションステップ実行イベントを発行
-                paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
-                    static_cast<std::uint_least32_t>(koyomi_.steps.getDay()),
-                    static_cast<std::uint_least32_t>(simulation_manager_.getPopulation())
-                ));
-            }
-
-            const double new_jdn = koyomi_.jdn.getDay();
-            if (old_jdn != new_jdn) {
-                publishDateChangedEvent();
-            }
+        if (date_changed) {
+            // シミュレーションステップ実行イベントを発行
+            paxs::EventBus::getInstance().publish(SimulationStepExecutedEvent(
+                static_cast<std::uint_least32_t>(domain_core_.getKoyomi().steps.getDay()),
+                static_cast<std::uint_least32_t>(domain_core_.getSimulationManager().getPopulation())
+            ));
+            publishDateChangedEvent();
         }
 
         // SimulationControllerの更新（自動繰り返し実行制御）
-        simulation_controller_.update(simulation_manager_, koyomi_, "");
+        domain_core_.updateSimulationController("");
     }
 
     /// @brief 非同期ロード状態を更新
@@ -305,11 +265,7 @@ public:
 
             if (result && *result) {
                 // ロード成功 - 人間データを初期化
-                simulation_manager_.initSimulation();
-
-                // SimulationConstantsからstart_julian_dayを取得してKoyomiにセット
-                koyomi_.jdn.setDay(SimulationConstants::getInstance().start_julian_day);
-                resetKoyomiToStoppedState();
+                domain_core_.completeSimulationInitialization();
 
                 // 状態変更イベント発行
                 paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Stopped));
@@ -328,12 +284,9 @@ public:
 #endif
 
 private:
-    Koyomi koyomi_;
-    MapViewport map_viewport_;
+    DomainCore domain_core_;
 #ifdef PAXS_USING_SIMULATOR
-    SimulationManager simulation_manager_;
-    SimulationController simulation_controller_;
-    LoadingHandle<bool> loading_handle_;  ///< 非同期ロード用ハンドル
+    LoadingHandle<bool> loading_handle_;
 #endif
     FeatureVisibilityManager visibility_manager_;
     AppState app_state_ = AppState::Running;
@@ -375,32 +328,15 @@ private:
     /// @brief 日付変更イベントを発行
     /// @brief Publish date changed event
     void publishDateChangedEvent() const {
-        auto gregorian_date = koyomi_.jdn.toGregorianCalendar();
+        const auto& koyomi = domain_core_.getKoyomi();
+        auto gregorian_date = koyomi.jdn.toGregorianCalendar();
         paxs::EventBus::getInstance().publish(DateChangedEvent(
-            koyomi_.jdn.getDay(),
+            koyomi.jdn.getDay(),
             gregorian_date.getYear(),
             gregorian_date.getMonth(),
             gregorian_date.getDay()
         ));
     }
-
-#ifdef PAXS_USING_SIMULATOR
-    /// @brief Koyomiのステップと日付をリセット
-    /// @brief Reset Koyomi steps and date
-    void resetKoyomiStepsAndDate() {
-        koyomi_.steps.setDay(0);
-        koyomi_.calcDate();
-    }
-
-    /// @brief Koyomiの状態をリセット（シミュレーション停止状態へ）
-    /// @brief Reset Koyomi state to stopped simulation state
-    void resetKoyomiToStoppedState() {
-        resetKoyomiStepsAndDate();
-        koyomi_.is_agent_update = false;
-        koyomi_.move_forward_in_time = false;
-        koyomi_.go_back_in_time = false;
-    }
-#endif
 };
 
 } // namespace paxs
