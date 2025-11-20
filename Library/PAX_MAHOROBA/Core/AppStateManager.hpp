@@ -46,8 +46,6 @@ public:
     explicit AppStateManager() {
         // 機能可視性の初期化
         initializeFeatureVisibility();
-        // イベント購読の設定
-        subscribeToEvents();
         // 初期状態を通知
         publishInitialState();
     }
@@ -111,18 +109,6 @@ public:
             PAXS_WARNING("[AppStateManager] setLanguage FAILED: Invalid language key: " + std::to_string(language_key));
         }
         return false;
-    }
-
-    /// @brief 時間再生制御コマンドを実行
-    /// @param action 再生制御アクション
-    static void executeTimePlaybackControl(TimePlaybackControlEvent::Action action) {
-        paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(action));
-    }
-
-    /// @brief 日付移動コマンドを実行
-    /// @param days 移動日数
-    static void executeDateNavigation(double days) {
-        paxs::EventBus::getInstance().publish(DateNavigationEvent(days));
     }
 
     /// @brief 機能の可視性を設定
@@ -380,26 +366,6 @@ private:
         // Simulationの初期状態を通知
         paxs::EventBus::getInstance().publish(SimulationStateChangedEvent(SimulationState::Uninitialized));
 #endif
-    }
-
-    /// @brief イベント購読を初期化
-    void subscribeToEvents() {
-        paxs::EventBus& event_bus = paxs::EventBus::getInstance();
-
-        // 言語変更コマンドの購読
-        event_bus.subscribe<LanguageChangeCommandEvent>(
-            [this](const LanguageChangeCommandEvent& event) -> void {
-                setLanguageKey(event.language_key);
-            }
-        );
-
-        // 地物可視性変更コマンドの購読
-        event_bus.subscribe<FeatureVisibilityChangeCommandEvent>(
-            [this](const FeatureVisibilityChangeCommandEvent& event) {
-                setFeatureVisibility(event.feature_key, event.is_visible);
-            }
-        );
-
     }
 
     // ============================================================================

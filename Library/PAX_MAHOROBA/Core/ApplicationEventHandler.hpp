@@ -153,6 +153,24 @@ private:
             )
         );
 #endif
+
+        // 言語変更コマンドの購読
+        subscriptions_.push_back(
+            event_bus.subscribeScoped<LanguageChangeCommandEvent>(
+                [this](const LanguageChangeCommandEvent& event) {
+                    handleLanguageChange(event);
+                }
+            )
+        );
+
+        // 地物可視性変更コマンドの購読
+        subscriptions_.push_back(
+            event_bus.subscribeScoped<FeatureVisibilityChangeCommandEvent>(
+                [this](const FeatureVisibilityChangeCommandEvent& event) {
+                    handleFeatureVisibilityChange(event);
+                }
+            )
+        );
     }
 
     // ============================================================================
@@ -253,6 +271,18 @@ private:
         app_state_.clearSimulation();
     }
 #endif
+
+    /// @brief 言語変更コマンドを処理
+    /// @brief Handle language change command
+    void handleLanguageChange(const LanguageChangeCommandEvent& event) {
+        AppStateManager::setLanguageKey(event.language_key);
+    }
+
+    /// @brief 地物可視性変更コマンドを処理
+    /// @brief Handle feature visibility change command
+    void handleFeatureVisibilityChange(const FeatureVisibilityChangeCommandEvent& event) {
+        app_state_.setFeatureVisibility(event.feature_key, event.is_visible);
+    }
 };
 
 } // namespace paxs

@@ -281,11 +281,11 @@ namespace paxs {
 
             // 再生コントロール
             if (id == Id::PlaybackReverse) {
-                app_state_manager_.executeTimePlaybackControl(Action::Reverse);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(Action::Reverse));
             } else if (id == Id::PlaybackStop) {
-                app_state_manager_.executeTimePlaybackControl(Action::Stop);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(Action::Stop));
             } else if (id == Id::PlaybackForward) {
-                app_state_manager_.executeTimePlaybackControl(Action::Forward);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(Action::Forward));
             } else {
                 // 日付移動系
                 constexpr double day   = 1.0;
@@ -300,7 +300,7 @@ namespace paxs {
 
                 const int index = static_cast<int>(id) - static_cast<int>(Id::DayBackward);
                 if (index >= 0 && index < 14) {
-                    app_state_manager_.executeDateNavigation(days_map[index]);
+                    paxs::EventBus::getInstance().publish(DateNavigationEvent(days_map[index]));
                 }
             }
         }

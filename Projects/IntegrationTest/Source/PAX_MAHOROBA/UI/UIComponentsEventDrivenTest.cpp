@@ -71,7 +71,7 @@ TEST_F(UIComponentsEventDrivenTest, TimePlaybackControlEventIsPublished) {
             received_action = event.action;
         });
     // イベント発行
-    app_state_manager().executeTimePlaybackControl(TimePlaybackControlEvent::Action::Forward);
+    paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(TimePlaybackControlEvent::Action::Forward));
 
     // イベントが受信されたことを確認
     EXPECT_TRUE(event_received);

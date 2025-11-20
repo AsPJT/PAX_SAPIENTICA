@@ -134,10 +134,10 @@ private:
                 EventBus::getInstance().publish(SimulationInitializeCommandEvent(model_name));
                 PAXS_INFO("Simulation initialized with model: " + model_name);
             } else if (subcommand == "start") {
-                app_state.executeTimePlaybackControl(TimePlaybackControlEvent::Action::Forward);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(TimePlaybackControlEvent::Action::Forward));
                 PAXS_INFO("Simulation started");
             } else if (subcommand == "stop") {
-                app_state.executeTimePlaybackControl(TimePlaybackControlEvent::Action::Stop);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(TimePlaybackControlEvent::Action::Stop));
                 PAXS_INFO("Simulation stopped");
             } else {
                 PAXS_WARNING("Unknown sim subcommand: " + subcommand);
