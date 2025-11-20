@@ -210,41 +210,53 @@ namespace paxs {
             });
         }
 
-        /// @brief domain.txt からドメイン名を読み込む
-        /// @brief Load domain name from domain.txt
-        /// @param directory_path ディレクトリパス / Directory path
+        /// @brief ファイルパスからドメイン名を取得
+        /// @brief Get domain name from file path using domain.tsv
+        /// @param file_path ファイルパス / File path
+        /// @param locales_dir ロケールディレクトリのルート / Locales directory root
         /// @return ドメイン名、見つからない場合は空文字列 / Domain name, empty string if not found
-        std::string loadDomainName(const std::string& directory_path) {
-            const std::string domain_txt_path = directory_path + "/domain.txt";
+        std::string getDomainNameFromPath(const std::string& file_path, const std::string& locales_dir) {
+            // ファイルパスからディレクトリパスを抽出
+            const std::size_t last_slash = file_path.find_last_of("/\\");
+            if (last_slash == std::string::npos) {
+                return std::string{};
+            }
+            const std::string directory_path = file_path.substr(0, last_slash);
 
-            if (!FileSystem::exists(domain_txt_path)) {
+            // 親ディレクトリパスを取得
+            const std::size_t parent_slash = directory_path.find_last_of("/\\");
+            if (parent_slash == std::string::npos) {
+                return std::string{};
+            }
+            const std::string parent_directory_path = directory_path.substr(0, parent_slash);
+
+            // domain.tsv のパスを構築
+            const std::string domain_tsv_path = parent_directory_path + "/domain.tsv";
+
+            if (!FileSystem::exists(domain_tsv_path)) {
                 return std::string{};
             }
 
-            // InputFile を使用して domain.txt の内容を読み込む（1行目のみ）
-            InputFile file(domain_txt_path);
-            if (file.fail()) {
+            // domain.tsv を読み込む
+            KeyValueTSV<std::string> kv_tsv;
+            if (!kv_tsv.input(domain_tsv_path)) {
                 return std::string{};
             }
 
-            if (!file.getLine()) {
-                return std::string{};
+            // ディレクトリ名を取得（最後のパス要素）
+            const std::string dir_name = directory_path.substr(parent_slash + 1);
+
+            // ディレクトリ名のハッシュを計算
+            const std::uint_least32_t dir_name_hash = MurMur3::calcHash(dir_name.size(), dir_name.c_str());
+
+            // マッピングから取得
+            const UnorderedMap<std::uint_least32_t, std::string>& entries = kv_tsv.get();
+            const auto it = entries.find(dir_name_hash);
+            if (it != entries.end()) {
+                return it->second;
             }
 
-            // BOM を削除
-            file.deleteBOM();
-
-            // 前後の空白を除去
-            std::string domain_name = file.pline;
-            if (!domain_name.empty()) {
-                const std::size_t start = domain_name.find_first_not_of(" \t\r\n");
-                const std::size_t end = domain_name.find_last_not_of(" \t\r\n");
-                if (start != std::string::npos && end != std::string::npos) {
-                    domain_name = domain_name.substr(start, end - start + 1);
-                }
-            }
-
-            return domain_name;
+            return std::string{};
         }
 
         /// @brief Data/Locales/以下の全てのロケールファイルを再帰的に読み込む
@@ -282,17 +294,10 @@ namespace paxs {
                     continue;  // 未登録のロケールはスキップ
                 }
 
-                // ディレクトリパスを抽出（Data/Locales/からの相対パス、ファイル名を除く）
-                // 例: "Data/Locales/Features/Persons/Names/ja-JP.tsv" -> "Data/Locales/Features/Persons/Names"
-                std::string directory_path;
-                if (file_path.size() > locales_dir.size() && last_slash != std::string::npos) {
-                    directory_path = file_path.substr(0, last_slash);
-                }
-
-                // domain.txt からドメイン名を読み込む
-                const std::string domain_name = loadDomainName(directory_path);
+                // domain.tsv からドメイン名を取得
+                const std::string domain_name = getDomainNameFromPath(file_path, locales_dir);
                 if (domain_name.empty()) {
-                    PAXS_WARNING("domain.txt not found or empty in: " + directory_path);
+                    PAXS_WARNING("domain.tsv not found or domain mapping not found for: " + file_path);
                     continue;  // ドメイン名が取得できない場合はスキップ
                 }
 
