@@ -27,6 +27,7 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/UI/LoadingProgressBar.hpp>
 
+#include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
 #include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 
@@ -70,9 +71,12 @@ public:
         // 非同期初期化を開始
         init_loading_handle_ = startAsyncTask<bool>([this](ProgressToken<bool>& token) {
             // Localesシステムを初期化（時間がかかる処理）
-            token.setProgress(0.05f);
-            token.setMessage("Initializing locales...");
-            Fonts().initializeLocales();
+            // 進捗範囲: 0.05 ～ 0.65
+            paxs::CallbackProgressReporter locales_reporter([&token](float progress, const std::string& message) {
+                token.setProgress(progress);
+                token.setMessage(message);
+            });
+            Fonts().initializeLocales(&locales_reporter, 0.05f, 0.65f);
 
             // ApplicationEventHandler作成（イベント購読管理）
             token.setProgress(0.65f);

@@ -19,6 +19,7 @@
 #include <PAX_GRAPHICA/Font.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/Locales.hpp>
@@ -186,13 +187,16 @@ namespace paxs {
 
         /// @brief Localesを初期化
         /// @details 時間がかかるため非同期で呼び出すことを推奨 / Recommended to call asynchronously due to time consumption
-        void initializeLocales() {
+        /// @param reporter 進捗報告インターフェース（オプショナル） / Progress reporter (optional)
+        /// @param progress_start 進捗開始値（0.0～1.0） / Progress start value (0.0 to 1.0)
+        /// @param progress_end 進捗終了値（0.0～1.0） / Progress end value (0.0 to 1.0)
+        void initializeLocales(paxs::IProgressReporter* reporter = nullptr, float progress_start = 0.0f, float progress_end = 1.0f) {
             if (locales_initialized_) {
                 return;
             }
 
             // Localesシステムを初期化
-            locales_ = std::make_unique<paxs::Locales>();
+            locales_ = std::make_unique<paxs::Locales>(reporter, progress_start, progress_end);
 
             // デフォルト言語が有効か確認
             if (!locales_->isValidLocaleKey(selected_language_key_)) {
