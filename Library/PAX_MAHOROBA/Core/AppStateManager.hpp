@@ -232,8 +232,6 @@ public:
     /// @details 暦の再生状態に応じて時間を進行・巻き戻す
     /// @details シミュレーションの再生時にはシミュレーションをステップ実行する
     void updateKoyomi() {
-        const double old_jdn = domain_core_.getKoyomi().jdn.getDay();
-
         bool date_changed = domain_core_.updateKoyomi();
 
         if (date_changed) {
