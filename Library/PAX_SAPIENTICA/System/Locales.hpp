@@ -114,16 +114,16 @@ namespace paxs {
             );
 
             // KeyValueTSVから全エントリを取得
-            const UnorderedMap<std::uint_least32_t, std::string>& entries = kv_tsv.get();
+            UnorderedMap<std::uint_least32_t, std::string>& entries = kv_tsv.get();
             std::size_t line_count = 0;
 
             // ハッシュテーブルを事前予約（リハッシュを回避）
             text_dictionary_.reserve(text_dictionary_.size() + entries.size());
 
-            for (const auto& [text_key, value_str] : entries) {
+            for (auto& [text_key, value_str] : entries) {
                 // 辞書に追加
                 const CombinedKey combined_key(domain_key, text_key, locale_key);
-                const auto [iter, inserted] = text_dictionary_.try_emplace(combined_key, std::string(value_str));
+                const auto [iter, inserted] = text_dictionary_.try_emplace(combined_key, std::move(value_str));
                 (void)iter;  // 未使用変数の警告を抑制
                 if (inserted) {
                     ++line_count;
