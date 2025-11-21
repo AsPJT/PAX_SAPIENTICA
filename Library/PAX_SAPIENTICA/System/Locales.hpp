@@ -331,6 +331,18 @@ namespace paxs {
             }
         }
 
+        /// @brief デストラクタ
+        /// @brief Destructor
+        /// @details プログラム終了時のシングルトン破棄順序問題を回避するため、
+        ///          EventBus::isBeingDestroyed() チェックがLoggerIntegrationにあるので自動破棄に任せる
+        ~Locales() = default;
+
+        // コピー・移動禁止（FontSystemのunique_ptrで管理されるため）
+        Locales(const Locales&) = delete;
+        Locales& operator=(const Locales&) = delete;
+        Locales(Locales&&) = delete;
+        Locales& operator=(Locales&&) = delete;
+
         /// @brief テキストを取得（ドメイン名ハッシュ版）
         /// @brief Get text string (domain name hash version)
         /// @param domain_name_hash ドメイン名のハッシュ値 / Domain name hash

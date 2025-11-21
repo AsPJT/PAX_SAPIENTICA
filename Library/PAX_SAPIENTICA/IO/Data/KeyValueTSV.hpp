@@ -132,6 +132,14 @@ namespace paxs {
             return iterator != path_list.end() ? iterator->second : Value{};
         }
 
+        /// @brief 全要素をクリア（Two-Phase Destruction用）
+        /// @brief Clear all elements (for Two-Phase Destruction)
+        void clear() {
+            path_list.clear();
+            is_successfully_loaded = false;
+            is_loaded = false;
+        }
+
     };
 
 }

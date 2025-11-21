@@ -26,6 +26,7 @@
 #include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/UI/LoadingProgressBar.hpp>
+#include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
 #include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
 #include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
@@ -163,6 +164,12 @@ public:
                 updateRunningMode();
             }
         }
+
+        // Two-Phase Destruction: メインループ終了後にリソースをクリーンアップ
+        // SFML破棄前にテクスチャを解放（mutex error回避）
+        component_manager_->cleanup();  // MapAssetRegistry内のテクスチャをクリア
+        IconButton::cleanup();          // IconButton内の静的テクスチャをクリア
+        Fonts().cleanup();              // FontSystem内のフォントキャッシュをクリア
     }
 
 private:

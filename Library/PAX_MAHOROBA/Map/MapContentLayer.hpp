@@ -332,6 +332,16 @@ namespace paxs {
             return nullptr;
         }
 
+        /// @brief リソースのクリーンアップ（Two-Phase Destruction）
+        /// @brief Clean up resources (Two-Phase Destruction)
+        /// @details プログラム終了前に呼び出してSFMLテクスチャを安全に解放する
+        ///          Application::run()のメインループ終了後に自動的に呼ばれる
+        void cleanup() {
+            // MapAssetRegistry内のSFMLテクスチャをクリア
+            // Clear SFML textures inside MapAssetRegistry
+            asset_registry_.cleanup();
+        }
+
         /// @brief マウス座標でFeatureを検索（入力処理用）
         MapFeature* findFeatureAt(const paxs::Vector2<int>& mouse_pos) {
             for (auto& feature : features_) {

@@ -159,6 +159,16 @@ namespace paxs {
             return debug_layer_;
         }
 #endif
+
+        /// @brief リソースのクリーンアップ（Two-Phase Destruction）
+        /// @brief Clean up resources (Two-Phase Destruction)
+        /// @details プログラム終了前に呼び出してSFMLテクスチャを安全に解放する
+        ///          Application::run()のメインループ終了後に自動的に呼ばれる
+        void cleanup() {
+            // MapContentLayer内のMapAssetRegistryをクリア
+            // Clear MapAssetRegistry inside MapContentLayer
+            map_content_layer_.cleanup();
+        }
     };
 }
 

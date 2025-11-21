@@ -58,10 +58,28 @@ namespace paxs {
         paxs::Rect<int> rect;
 
         inline static paxs::KeyValueTSV<paxg::Texture> icon_textures;
+        inline static bool cleaned_up_ = false;
 
         static void loadIconTextures() {
             icon_textures.input(AppConfig::getInstance().getSettingPath(MurMur3::calcHash("MenuIcons")),
                 [&](const std::string& value_) { return paxg::Texture(value_); });
+        }
+
+    public:
+        /// @brief リソースのクリーンアップ（Two-Phase Destruction）
+        /// @brief Clean up resources (Two-Phase Destruction)
+        /// @details プログラム終了前に呼び出してSFMLテクスチャを安全に解放する
+        ///          Application::run()のメインループ終了後に自動的に呼ばれる
+        static void cleanup() {
+            if (cleaned_up_) {
+                return;  // 二重呼び出し防止 / Prevent double cleanup
+            }
+
+            // SFMLテクスチャをクリア（SFML破棄前に実行）
+            // Clear SFML textures (execute before SFML destruction)
+            icon_textures.clear();
+
+            cleaned_up_ = true;
         }
     };
 }

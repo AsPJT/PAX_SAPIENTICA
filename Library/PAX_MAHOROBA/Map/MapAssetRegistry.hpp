@@ -34,8 +34,37 @@ private:
     UnorderedMap<std::uint_least32_t, paxg::Texture> merged_textures_;
     bool is_merged_ = false;
 
+    // Two-Phase Destruction用のフラグ
+    bool cleaned_up_ = false;
+
 public:
     MapAssetRegistry() = default;
+
+    /// @brief リソースのクリーンアップ（Two-Phase Destruction）
+    /// @brief Clean up resources (Two-Phase Destruction)
+    /// @details プログラム終了前に呼び出してSFMLテクスチャを安全に解放する
+    ///          Application::run()のメインループ終了後に自動的に呼ばれる
+    void cleanup() {
+        if (cleaned_up_) {
+            return;  // 二重呼び出し防止 / Prevent double cleanup
+        }
+
+        // SFMLテクスチャをクリア（SFML破棄前に実行）
+        // Clear SFML textures (execute before SFML destruction)
+        person_textures_.clear();
+        map_icon_textures_.clear();
+        merged_textures_.clear();
+
+        cleaned_up_ = true;
+    }
+
+    /// @brief デストラクタ
+    /// @details cleanup()が呼ばれていればスキップ（二重破棄防止）
+    ///          呼ばれていなければ自動破棄に任せる
+    ~MapAssetRegistry() {
+        // cleanup()が既に呼ばれていれば何もしない
+        // リソースは既にクリア済み
+    }
 
     // ============================================================================
     // ロード / Loading

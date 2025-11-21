@@ -44,8 +44,6 @@ namespace paxs {
     /// @brief Font and Language Unified Management Singleton Class
     class FontSystem {
     private:
-        // シングルトンインスタンス
-        static FontSystem* instance_;
 
         // フォントキャッシュ（language_key + size + thickness → Font）
         paxs::UnorderedMap<std::uint_least64_t, paxg::Font> font_cache_;
@@ -71,6 +69,9 @@ namespace paxs {
         // 初期化フラグ
         bool initialized_ = false;
         bool locales_initialized_ = false;
+
+        // クリーンアップ済みフラグ（二重破棄防止）
+        bool cleaned_up_ = false;
 
         FontSystem() = default;
 
@@ -147,17 +148,42 @@ namespace paxs {
         }
 
     public:
-        /// @brief デストラクタ
-        ~FontSystem() = default;
+        /// @brief リソースのクリーンアップ（Two-Phase Destruction）
+        /// @brief Clean up resources (Two-Phase Destruction)
+        /// @details プログラム終了前に呼び出してリソースを安全に解放する
+        ///          Application::run()のメインループ終了後に自動的に呼ばれる
+        void cleanup() {
+            if (cleaned_up_) {
+                return;  // 二重呼び出し防止 / Prevent double cleanup
+            }
 
-        /// @brief シングルトンインスタンス取得
-        /// @brief Get singleton instance
+            // 他のシングルトン（EventBus等）がまだ有効な状態でリソースをクリア
+            // Clear resources while other singletons (EventBus, etc.) are still valid
+            font_cache_.clear();
+
+            // locales_.reset() は呼ばない：
+            // Localesのデストラクタ内でPAXS_ERROR等が呼ばれる可能性があり、
+            // それがEventBus::getInstance()にアクセスしてmutex errorを引き起こす
+            // 自動破棄に任せる
+            // locales_.reset();
+
+            cleaned_up_ = true;
+        }
+
+        /// @brief デストラクタ
+        /// @details cleanup()が呼ばれていればスキップ（二重破棄防止）
+        ///          呼ばれていなければ自動破棄に任せる
+        ~FontSystem() {
+            // cleanup()が既に呼ばれていれば何もしない
+            // 呼ばれていなければ自動破棄に任せる（テストケースなど）
+        }
+
+        /// @brief シングルトンインスタンス取得（Meyers' Singleton）
+        /// @brief Get singleton instance (Meyers' Singleton)
         /// @return FontSystem instance reference
         static FontSystem& getInstance() {
-            if (instance_ == nullptr) {
-                instance_ = new FontSystem();
-            }
-            return *instance_;
+            static FontSystem instance;
+            return instance;
         }
 
         // コピー・移動禁止
@@ -206,16 +232,15 @@ namespace paxs {
             locales_initialized_ = true;
         }
 
-        /// @brief リソース解放（テスト用）
-        /// @brief Release resources (for testing)
+        /// @brief リソースリセット（テスト用）
+        /// @brief Reset resources (for testing)
         /// @details テストで状態をリセットしたい場合のみ使用 / Use only for resetting state in tests
-        static void clearForTesting() {
-            if (instance_ != nullptr) {
-                instance_->font_cache_.clear();
-                instance_->locales_.reset();
-                instance_->initialized_ = false;
-                instance_->locales_initialized_ = false;
-            }
+        void resetForTesting() {
+            font_cache_.clear();
+            locales_.reset();
+            initialized_ = false;
+            locales_initialized_ = false;
+            cleaned_up_ = false;
         }
 
         /// @brief 初期化済みか確認
@@ -347,8 +372,6 @@ namespace paxs {
         }
 
     };
-
-    inline FontSystem* FontSystem::instance_ = nullptr;
 
     /// @brief グローバルアクセス用ヘルパー関数
     inline FontSystem& Fonts() {
