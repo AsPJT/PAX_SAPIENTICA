@@ -219,7 +219,20 @@ private:
         const int display_size = feature.getDisplaySize();
 
         // 名前表示の閾値（表示サイズが小さい場合は名前を表示しない）
-        const bool should_show_name = (display_size >= 15);
+        bool should_show_name = (display_size >= 15);
+
+        // フォント設定
+        paxg::Font* font = nullptr;
+        if (should_show_name) {
+            font = Fonts().getFont(FontProfiles::MAIN);
+            if (font == nullptr) {
+                // フォントが取得できない場合は名前表示をスキップ
+                PAXS_WARNING("Font not found for genome feature name rendering");
+                should_show_name = false;
+            } else {
+                font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+            }
+        }
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
@@ -249,11 +262,7 @@ private:
                         draw_pos.x(),
                         draw_pos.y() - (display_size / 2) - 5  // アイコンの上部から少し離す
                     };
-                    paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
-                    if (font != nullptr) {
-                        font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
-                        font->drawBottomCenter(name, text_pos, paxg::Color(0, 0, 0));
-                    }
+                    font->drawBottomCenter(name, text_pos, paxg::Color(0, 0, 0));
                 }
             }
         }
@@ -268,15 +277,23 @@ private:
         const auto& screen_positions = feature.getScreenPositions();
         const std::string name = feature.getName();
 
+        // 名前が空の場合は早期リターン
+        if (name.empty()) {
+            return;
+        }
+
+        // フォント設定（ループ外で1回のみ）
+        paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+        if (font == nullptr) {
+            PAXS_WARNING("Font not found for place name feature rendering");
+            return;
+        }
+
+        font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
-            if (!name.empty()) {
-                paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
-                if (font != nullptr) {
-                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
-                    font->drawAt(name, draw_pos, paxg::Color(0, 0, 0));
-                }
-            }
+            font->drawAt(name, draw_pos, paxg::Color(0, 0, 0));
         }
     }
 
