@@ -74,8 +74,6 @@ namespace paxs {
         // 状態
         bool visible_ = false;  // ドロップダウンの表示状態（MenuBarが制御）
 
-        std::uint_least32_t old_language_key = 0;
-
     public:
         DropDownMenu() = default;
 

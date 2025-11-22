@@ -190,6 +190,7 @@ namespace paxg {
             }
 #else
             (void)color;
+            (void)shape_;  // Suppress unused warning for Siv3D builds
 #endif
         }
     };

@@ -277,8 +277,6 @@ namespace paxs {
         const char* getName() const override { return "MenuBar"; }
 
     private:
-        std::size_t previous_language_index_ = 0;
-
         paxs::Pulldown language_selector_;
         paxs::MenuSystem menu_system;
         paxs::GitHubButton github_button_;

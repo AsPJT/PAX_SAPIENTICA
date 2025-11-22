@@ -73,7 +73,7 @@ namespace paxs {
             CoordinateBounds bounds;
 
             // 1 行ずつ読み込み
-            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) {
                 auto row_data_opt = LocationDataLoader::loadRowData(table, row_index, hashes, flags, params);
                 if (!row_data_opt.has_value()) {
                     PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + params.file_path + ": missing coordinates");

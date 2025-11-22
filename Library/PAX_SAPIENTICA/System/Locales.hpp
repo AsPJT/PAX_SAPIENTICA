@@ -120,7 +120,6 @@ namespace paxs {
 
             // KeyValueTSVから全エントリを取得
             UnorderedMap<std::uint_least32_t, std::string>& entries = kv_tsv.get();
-            std::size_t line_count = 0;
 
             // ハッシュテーブルを事前予約（リハッシュを回避）
             text_dictionary_.reserve(text_dictionary_.size() + entries.size());
@@ -128,11 +127,7 @@ namespace paxs {
             for (auto& [text_key, value_str] : entries) {
                 // 辞書に追加
                 const CombinedKey combined_key(domain_key, text_key, locale_key);
-                const auto [iter, inserted] = text_dictionary_.try_emplace(combined_key, std::move(value_str));
-                (void)iter;  // 未使用変数の警告を抑制
-                if (inserted) {
-                    ++line_count;
-                }
+                text_dictionary_.try_emplace(combined_key, std::move(value_str));
             }
         }
 
@@ -161,7 +156,7 @@ namespace paxs {
             const std::uint_least32_t key_hash = MurMur3::calcHash("key");
 
             // 各行を読み込む（keyカラムだけを読み込む）
-            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) -> void {
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) -> void {
                 const std::string& locale_name = table.get(row_index, key_hash);
 
                 if (locale_name.empty()) {
@@ -185,9 +180,8 @@ namespace paxs {
         /// @brief ファイルパスからドメイン名を取得
         /// @brief Get domain name from file path using domain.tsv
         /// @param file_path ファイルパス / File path
-        /// @param locales_dir ロケールディレクトリのルート / Locales directory root
         /// @return ドメイン名、見つからない場合は空文字列 / Domain name, empty string if not found
-        std::string getDomainNameFromPath(const std::string& file_path, const std::string& locales_dir) {
+        std::string getDomainNameFromPath(const std::string& file_path) {
             // ファイルパスからディレクトリパスを抽出
             const std::size_t last_slash = file_path.find_last_of("/\\");
             if (last_slash == std::string::npos) {
@@ -287,7 +281,7 @@ namespace paxs {
                 const std::string locale_name = file_name.substr(0, file_name.size() - 4);
 
                 // domain.tsv からドメイン名を取得
-                const std::string domain_name = getDomainNameFromPath(file_path, locales_dir);
+                const std::string domain_name = getDomainNameFromPath(file_path);
                 if (domain_name.empty()) {
                     PAXS_WARNING("domain.tsv not found or domain mapping not found for: " + file_path);
                     continue;  // ドメイン名が取得できない場合はスキップ

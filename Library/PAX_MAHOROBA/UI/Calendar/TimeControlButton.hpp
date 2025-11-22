@@ -136,7 +136,6 @@ namespace paxs {
 
         TimeControlButtons(const UILayout& ui_layout, const AppStateManager& app_state_manager)
             : ui_layout_(ui_layout)
-            , app_state_manager_(app_state_manager)
             , koyomi(app_state_manager.getKoyomi()) {
             buildButtons();
         }
@@ -227,7 +226,6 @@ namespace paxs {
         std::vector<TimeControlButton> buttons_;
         const paxs::Koyomi& koyomi;
         const UILayout& ui_layout_;
-        const AppStateManager& app_state_manager_;
         paxs::Vector2<int> pos_{0, 0};
         ClickCallback on_click_;
 

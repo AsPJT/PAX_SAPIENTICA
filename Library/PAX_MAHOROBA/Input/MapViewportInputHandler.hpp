@@ -437,7 +437,7 @@ namespace paxs {
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
-        bool isHit(const paxs::Vector2<int>& pos) const override {
+        bool isHit(const paxs::Vector2<int>&) const override {
             // 画面全体が対象なので常にtrue
             return true;
         }

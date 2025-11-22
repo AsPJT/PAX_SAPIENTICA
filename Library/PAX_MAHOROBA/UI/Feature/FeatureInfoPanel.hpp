@@ -356,7 +356,7 @@ namespace paxs {
             );
 
             // 閉じるボタンのコールバックを設定
-            close_button_.setOnClick([this]() {
+            close_button_.setOnClick([]() {
                 EventBus::getInstance().publish(FeatureDeselectedEvent());
             });
         }

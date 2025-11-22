@@ -62,9 +62,18 @@ namespace paxs {
             return !(maximum < other.minimum || minimum > other.maximum);
         }
 
-        /// @brief デフォルトの比較演算子
-        /// @brief Default comparison operator
-        constexpr auto operator<=>(const Range<T>& other) const noexcept = default;
+        /// @brief 等価比較演算子
+        /// @brief Equality comparison operator
+        constexpr bool operator==(const Range<T>& other) const noexcept {
+            return minimum == other.minimum && maximum == other.maximum;
+        }
+
+        /// @brief 三方比較演算子
+        /// @brief Three-way comparison operator
+        constexpr auto operator<=>(const Range<T>& other) const noexcept {
+            if (auto cmp = minimum <=> other.minimum; cmp != 0) return cmp;
+            return maximum <=> other.maximum;
+        }
     };
 
 } // namespace paxs

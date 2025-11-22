@@ -60,13 +60,13 @@ public:
                 drawPerson(static_cast<const PersonFeature&>(*feature), context, texture_map);
                 break;
             case FeatureType::Geographic:
-                drawGeographic(static_cast<const GeographicFeature&>(*feature), context, texture_map);
+                drawGeographic(static_cast<const GeographicFeature&>(*feature), texture_map);
                 break;
             case FeatureType::PlaceName:
-                drawPlaceName(static_cast<const PlaceNameFeature&>(*feature), context, texture_map);
+                drawPlaceName(static_cast<const PlaceNameFeature&>(*feature));
                 break;
             case FeatureType::Genome:
-                drawGenome(static_cast<const GenomeFeature&>(*feature), context, texture_map);
+                drawGenome(static_cast<const GenomeFeature&>(*feature), texture_map);
                 break;
             case FeatureType::Model3D:
                 drawModel3D(static_cast<const Model3DFeature&>(*feature), context, texture_map);
@@ -132,11 +132,9 @@ private:
     /// @brief 地理的地物を描画
     /// @brief Draw geographic feature
     /// @param feature 地理的地物 / Geographic feature
-    /// @param context 描画コンテキスト / Rendering context
     /// @param texture_map テクスチャマップ / Texture map
     static void drawGeographic(
         const GeographicFeature& feature,
-        const RenderContext& context,
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
     ) {
         const auto& data = feature.getData();
@@ -214,7 +212,6 @@ private:
 
     static void drawGenome(
         const GenomeFeature& feature,
-        const RenderContext& context,
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
     ) {
         const auto& data = feature.getData();
@@ -265,12 +262,8 @@ private:
     /// @brief 地名地物を描画
     /// @brief Draw place name feature
     /// @param feature 地名地物 / Place name feature
-    /// @param context 描画コンテキスト / Rendering context
-    /// @param texture_map テクスチャマップ / Texture map
     static void drawPlaceName(
-        const PlaceNameFeature& feature,
-        const RenderContext& context,
-        const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
+        const PlaceNameFeature& feature
     ) {
         const auto& screen_positions = feature.getScreenPositions();
         const std::string name = feature.getName();

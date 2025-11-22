@@ -97,7 +97,7 @@ namespace paxs {
             flags.setFromTable(table, hashes);
 
             // 1 行ずつ読み込み
-            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) {
                 const std::string& start_longitude_str = table.get(row_index, start_longitude_hash);
                 const std::string& start_latitude_str = table.get(row_index, start_latitude_hash);
                 const std::string& end_longitude_str = table.get(row_index, end_longitude_hash);
