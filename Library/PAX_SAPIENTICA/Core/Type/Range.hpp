@@ -64,7 +64,7 @@ namespace paxs {
 
         /// @brief デフォルトの比較演算子
         /// @brief Default comparison operator
-        auto operator<=>(const Range<T>& other) const noexcept = default;
+        constexpr auto operator<=>(const Range<T>& other) const noexcept = default;
     };
 
 } // namespace paxs

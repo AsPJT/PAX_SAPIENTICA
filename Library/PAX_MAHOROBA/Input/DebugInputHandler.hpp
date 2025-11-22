@@ -163,8 +163,10 @@ public:
                 right_key_was_pressed_ = right_pressed;
             }
 
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
             // 英数字と記号の入力（簡易実装）
             handleTextInput();
+#endif
 
             return EventHandlingResult::Handled();
         }
@@ -175,6 +177,7 @@ public:
 
 private:
 #ifdef PAXS_DEVELOPMENT
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
     /// @brief テキスト入力を処理（英数字と記号）
     void handleTextInput() {
         // アルファベット（小文字）
@@ -238,6 +241,7 @@ private:
             key_states_[key_code] = is_pressed;
         }
     }
+#endif // defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
 #endif // PAXS_DEVELOPMENT
 
 public:

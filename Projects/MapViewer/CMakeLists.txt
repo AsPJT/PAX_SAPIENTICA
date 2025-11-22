@@ -53,7 +53,7 @@ if(WIN32)
     add_executable(${BINARY_NAME} ${CPP_FILE})
     target_link_libraries(${BINARY_NAME} PRIVATE SFML::Graphics)
     if(MSVC)
-        target_compile_options(${BINARY_NAME} PRIVATE /utf-8)
+        target_compile_options(${BINARY_NAME} PRIVATE /utf-8 /bigobj)
     endif()
 
     # Copy SFML DLLs if available
@@ -210,6 +210,7 @@ if(WIN32 AND DxLib_FOUND)
         target_compile_options(${DXLIB_BINARY_NAME} PRIVATE
             /utf-8
             /openmp
+            /bigobj
         )
         # Use MultiThreaded runtime library
         set_property(TARGET ${DXLIB_BINARY_NAME} PROPERTY
@@ -287,6 +288,7 @@ if(WIN32 AND Siv3D_FOUND)
             /openmp
             /std:c++latest
             /Zc:__cplusplus
+            /bigobj
         )
         # Use MultiThreaded runtime library
         set_property(TARGET ${SIV3D_BINARY_NAME} PROPERTY
@@ -350,7 +352,7 @@ if(APPLE OR WIN32)
     )
 
     if(MSVC)
-        target_compile_options(${CONSOLE_BINARY_NAME} PRIVATE /utf-8)
+        target_compile_options(${CONSOLE_BINARY_NAME} PRIVATE /utf-8 /bigobj)
     endif()
 
     if(PAXS_BUILD_TYPE STREQUAL "Development")
