@@ -1,4 +1,4 @@
 ﻿key	file_path	type	description	min_size	max_size	first_julian_day	last_julian_day	texture	zoom
-JomonYayoi	Data/Genomes/HomoSapiens/JomonYayoi.tsv	human_bone	人骨	0	30				7
-mtDNA	Data/Genomes/HomoSapiens/HaplogroupInfo/mtDNA-Haplogroup.tsv	mtdna	世界のmtDNA	0	30			Mitochondria	10
-mtDNA_JP	Data/Genomes/HomoSapiens/Yaponesia/mtDNA-Haplogroup.tsv	mtdna	ヤポネシアmtDNA	0	30			Mitochondria	10
+JomonYayoi	Data/Genomes/HomoSapiens/JomonYayoi.tsv	human_bone	人骨	0	20				7
+mtDNA	Data/Genomes/HomoSapiens/HaplogroupInfo/mtDNA-Haplogroup.tsv	mtdna	世界のmtDNA	0	20			Mitochondria	10
+mtDNA_JP	Data/Genomes/HomoSapiens/Yaponesia/mtDNA-Haplogroup.tsv	mtdna	ヤポネシアmtDNA	0	20			Mitochondria	10
