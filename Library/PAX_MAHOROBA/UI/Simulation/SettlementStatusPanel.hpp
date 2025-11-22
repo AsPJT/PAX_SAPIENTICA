@@ -62,7 +62,7 @@ namespace paxs {
             }
 
             // テキストを描画
-            font->draw(text, paxg::Vec2i{ start_x + font_space_x, start_y + font_space_y },
+            font->draw(text,  start_pos + font_space,
                       paxg::Color{ 0, 0, 0 });
         }
 
@@ -92,14 +92,12 @@ namespace paxs {
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 
     private:
-        static constexpr int start_x = 40;  // 背景端の左上の X 座標
-        static constexpr int start_y = 80;  // 背景端の左上の Y 座標
-        static constexpr int font_space_x = 20;  // 文字端から背景端までの幅
-        static constexpr int font_space_y = 18;  // 文字端から背景端までの高さ
+        static constexpr Vector2<int> start_pos{ 40, 80 };  // 背景端の左上座標
+        static constexpr Vector2<int> font_space{ 20, 18 };  // 文字端から背景端までの幅と高さ
 
         std::size_t select_draw_ = 1;  // 表示モード (1-6)
         bool visible_ = false;  // シミュレーション初期化後に表示
-        paxs::Vector2<int> pos_{ start_x, start_y };
+        paxs::Vector2<int> pos_{ start_pos };
 
         const paxs::FeatureVisibilityManager& visible_manager_;
 

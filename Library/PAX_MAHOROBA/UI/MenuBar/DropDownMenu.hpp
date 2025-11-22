@@ -50,8 +50,7 @@ namespace paxs {
         // 描画定数
         static constexpr float arrow_radius = 8.0f;
         static constexpr float arrow_rotation_pi = 3.1416f;  // π radians (down)
-        static constexpr int shadow_offset_x = 1;
-        static constexpr int shadow_offset_y = 1;
+        static constexpr paxg::Vec2i shadow_offset{ 1, 1 };
         static constexpr int shadow_blur_radius = 4;
         static constexpr int shadow_spread = 1;
 
@@ -361,7 +360,7 @@ namespace paxs {
             // 最初の項目（ヘッダー）をスキップ
             const std::size_t display_item_count = items_key.size() - 1;
             const paxg::Rect back_rect{ pos, all_rect_width, static_cast<float>(rect.h() * display_item_count) };
-            back_rect.drawShadow({ shadow_offset_x, shadow_offset_y }, shadow_blur_radius, shadow_spread).draw();
+            back_rect.drawShadow(shadow_offset, shadow_blur_radius, shadow_spread).draw();
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const std::string* i_str = Fonts().getLocalesText(menubar_domain_key, items_key[i]);
