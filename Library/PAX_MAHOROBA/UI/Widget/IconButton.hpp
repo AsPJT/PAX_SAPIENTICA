@@ -28,7 +28,7 @@ namespace paxs {
     class IconButton : public IWidget {
     public:
         IconButton(const char* button_name, const std::uint_least32_t icon_texture_path_hash)
-            : name(button_name), icon_texture_path_hash(icon_texture_path_hash) {}
+            : icon_texture_path_hash(icon_texture_path_hash), name(button_name) {}
 
         void render() const override {
             if (!isVisible()) return;

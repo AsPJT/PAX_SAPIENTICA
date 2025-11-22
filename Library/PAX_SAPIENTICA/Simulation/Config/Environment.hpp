@@ -48,6 +48,15 @@ namespace paxs {
         explicit Environment(const std::string& setting_file_path) noexcept {
             loadFromFile(setting_file_path);
         }
+        virtual ~Environment() = default;
+
+        // コピー禁止（unique_ptrを含むため）
+        Environment(const Environment&) = delete;
+        Environment& operator=(const Environment&) = delete;
+
+        // ムーブは許可
+        Environment(Environment&&) noexcept = default;
+        Environment& operator=(Environment&&) noexcept = default;
 
         /// @brief 進捗報告インターフェースを設定
         /// @brief Set progress reporter

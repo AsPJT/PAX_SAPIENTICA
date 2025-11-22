@@ -66,7 +66,6 @@ namespace paxs {
 
             // カラムインデックスを取得
             const std::size_t menu_bar_index = getMenuIndexMap(menu, MurMur3::calcHash("menu_bar"));
-            const std::size_t visible_menu_bar_index = getMenuIndexMap(menu, MurMur3::calcHash("visible_menu_bar"));
             const std::size_t texture_input_type_index = getMenuIndexMap(menu, MurMur3::calcHash("texture_input_type"));
             const std::size_t binary_input_type_index = getMenuIndexMap(menu, MurMur3::calcHash("binary_input_type"));
             const std::size_t binary_path_index = getMenuIndexMap(menu, MurMur3::calcHash("binary_path"));
@@ -84,10 +83,7 @@ namespace paxs {
             while (input_file.getLine()) {
                 std::vector<std::string> strvec = input_file.split('\t');
 
-                // 描画の種類 例）画像 texture やグリッド grid など
-                // const bool menu_bar_map_bool = (visible_menu_bar_index >= strvec.size()) ? false :
-                //     ((strvec[visible_menu_bar_index].size() == 0) ? false :
-                //         (strvec[visible_menu_bar_index] == "1"));
+                // TODO: 必要か確認
                 const bool menu_bar_map_bool = true;
 
                 // 描画の種類 例）画像 texture やグリッド grid など

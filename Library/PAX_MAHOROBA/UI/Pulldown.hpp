@@ -164,10 +164,10 @@ namespace paxs {
             const paxg::Vec2i& pos_ = { 0,0 },
             PulldownDisplayType display_type_ = PulldownDisplayType::SelectedValue,
             const bool is_one_font_ = false)
-            : domain_hash(domain_hash_)
-            , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
+            : rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
             , display_type(display_type_)
-            , is_one_font(is_one_font_) {
+            , is_one_font(is_one_font_)
+            , domain_hash(domain_hash_) {
         }
 
         void setItemsKey(const std::span<const std::uint_least32_t> items_key_) {

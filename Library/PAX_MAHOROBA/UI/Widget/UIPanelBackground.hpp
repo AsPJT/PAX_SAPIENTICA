@@ -45,10 +45,10 @@ namespace paxs {
             int corner_radius = 10
         )
             : name_(name)
-            , bg_color_(bg_color)
-            , corner_radius_(corner_radius)
             , layout(layout)
             , widget_(nullptr)
+            , bg_color_(bg_color)
+            , corner_radius_(corner_radius)
         {}
 
         /// @brief コンストラクタ（IWidget使用 - 動的パネル用）
@@ -63,10 +63,10 @@ namespace paxs {
             int corner_radius = 10
         )
             : name_(name)
-            , bg_color_(bg_color)
-            , corner_radius_(corner_radius)
             , layout(nullptr)
             , widget_(widget)
+            , bg_color_(bg_color)
+            , corner_radius_(corner_radius)
         {}
 
         Rect<int> getRect() const override {

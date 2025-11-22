@@ -56,23 +56,22 @@ namespace paxs {
     private:
         // 始点 元の座標
         AStarVec2 start_vec2_original{};
-        // 終点 元の座標
-        AStarVec2 end_vec2_original{};
         // 始点
         AStarVec2 start_vec2{};
         // 終点
         AStarVec2 end_vec2{};
-        // 範囲
-        Range<AStarVec2> search_range{};
 
         GridType z{};
+
+        // 範囲
+        Range<AStarVec2> search_range{};
 
         std::deque<AStarNode> open{};
         std::deque<AStarNode> closed{};
 
     public:
         AStar(const AStarVec2& start_vec2_, const AStarVec2& end_vec2_, const GridType z_) noexcept
-            :start_vec2_original(start_vec2_), end_vec2_original(end_vec2_),
+            :start_vec2_original(start_vec2_),
             start_vec2(start_vec2_ / z_), end_vec2(end_vec2_ / z_),
             z(z_),
             search_range(
@@ -175,7 +174,6 @@ namespace paxs {
                 std::abs(start_vec2_original.x - start_vec2.x * z) / 2,
                 std::abs(start_vec2_original.y - start_vec2.y * z) / 2
             };
-            // path_.emplace_back(end_vec2_original);
             path_.emplace_back(closed.back().position * z + sub);
             AStarVec2 parent_node{ closed.back().parent_node };
             for (auto&& i{ closed.rbegin() }; i != closed.rend(); ++i) {

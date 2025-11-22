@@ -38,8 +38,9 @@ namespace paxs {
     class SimulationPanel : public IWidget {
     private:
         const paxs::FeatureVisibilityManager& visibility_manager_;
-        AppStateManager& app_state_manager_;
+#ifdef PAXS_USING_SIMULATOR
         const UILayout& ui_layout_;
+#endif
 
         std::vector<std::uint_least32_t> simulation_key;
         std::vector<std::string> simulation_model_name;
@@ -139,10 +140,8 @@ namespace paxs {
             AppStateManager& app_state_manager,
             const UILayout& ui_layout
         ) : visibility_manager_(visibility_manager),
-            app_state_manager_(app_state_manager),
-            ui_layout_(ui_layout),
 #ifdef PAXS_USING_SIMULATOR
-            stats_widget_(app_state_manager.getSimulationManager()),
+            ui_layout_(ui_layout),
 #endif
             simulation_pulldown(
                 paxs::MurMur3::calcHash("SimulationModels"),
@@ -150,6 +149,9 @@ namespace paxs {
                 paxs::PulldownDisplayType::SelectedValue,
                 false
             )
+#ifdef PAXS_USING_SIMULATOR
+            , stats_widget_(app_state_manager.getSimulationManager())
+#endif
         {
             const std::string models_path = paxs::AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationModels"));
             paxs::InputFile models_tsv(models_path);

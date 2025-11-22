@@ -32,9 +32,9 @@ namespace paxs {
             std::uint_least8_t hunter_gatherer_, // 狩猟採集文化
             std::uint_least8_t language_ // 言語
         ) noexcept
-            : id(id),
-            age(age), life_span(life_span), genome(genome),
-            farming(farming_), hunter_gatherer(hunter_gatherer_), language(language_) {}
+            : farming(farming_), hunter_gatherer(hunter_gatherer_), language(language_),
+            age(age), life_span(life_span),
+            id(id), genome(genome) {}
 
         /// @brief Get the id.
         /// @brief idを取得
