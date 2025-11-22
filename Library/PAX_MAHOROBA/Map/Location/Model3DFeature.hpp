@@ -23,7 +23,6 @@
 #include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/Model3DRenderer.hpp>
-#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
@@ -84,30 +83,6 @@ public:
     }
 
     // ========== 状態管理 / State Management ==========
-
-    void update(const RenderContext& context) override {
-        // 地物種別の可視性チェック（最優先）
-        if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
-            cached_screen_positions_.clear();
-            return;
-        }
-        // 空間フィルタリング：ビューの範囲外の場合はスキップ
-        if (!context.isInViewBounds(data_.coordinate)) {
-            cached_screen_positions_.clear();
-            return;
-        }
-
-        // スクリーン座標に変換（経度ラップ処理付き）
-        MapCoordinateConverter::toScreenPositions(
-            data_.coordinate,
-            context.map_view_size,
-            context.map_view_center,
-            cached_screen_positions_
-        );
-
-        // 3Dモデルの状態を更新（回転など）
-        renderer_.update();
-    }
 
     bool isVisible() const override {
         return visible_;

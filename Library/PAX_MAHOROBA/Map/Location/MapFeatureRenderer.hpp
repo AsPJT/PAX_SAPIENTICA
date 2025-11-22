@@ -27,7 +27,7 @@
 #include <PAX_MAHOROBA/Map/Location/Model3DFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
@@ -47,7 +47,7 @@ public:
     /// @param texture_map テクスチャマップ / Texture map
     static void drawFeatures(
         const std::vector<std::unique_ptr<MapFeature>>& features,
-        const RenderContext& context,
+        const UnifiedContext& context,
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
     ) {
         for (const auto& feature : features) {
@@ -88,15 +88,12 @@ private:
     /// @param texture_map テクスチャマップ / Texture map
     static void drawPerson(
         const PersonFeature& feature,
-        const RenderContext& context,
+        const UnifiedContext& context,
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
     ) {
         const auto& data = feature.getData();
         const auto& group_data = feature.getGroupData();
         const auto& screen_positions = feature.getScreenPositions();
-        const int display_size = feature.getDisplaySize();
-
-        const bool is_small_size = data.zoom_range.excludes(context.map_view_size.x);
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
@@ -109,25 +106,21 @@ private:
             const std::uint_least32_t place_tex = (data.texture_key == 0) ? group_data.texture_key : data.texture_key;
             if (!texture_map.contains(place_tex)) continue;
 
-            if (is_small_size) {
-                // 肖像画のみ描画
-                texture_map.at(place_tex).resizedDrawAt(display_size, draw_pos);
-            }
-            else {
-                // 肖像画とテキストを描画
-                texture_map.at(place_tex).resizedDrawAt(120, draw_pos);
+            // 肖像画を120×120で描画
+            texture_map.at(place_tex).resizedDrawAt(120, draw_pos);
 
-                // テキスト位置
-                const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x(), draw_pos.y() - 60 };
+            // テキスト位置（肖像画の上部）
+            const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x(), draw_pos.y() - 60 };
 
-                const std::string name = feature.getName();
-                if (!name.empty()) {
-                    paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
-                    font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
-                    font->drawTopCenter(name, draw_font_pos, paxg::Color(0, 0, 0));
-                }
+            const std::string name = feature.getName();
+            if (!name.empty()) {
+                paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+                font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
+                font->drawTopCenter(name, draw_font_pos, paxg::Color(0, 0, 0));
             }
         }
+
+        (void)context;  // 未使用警告を抑制
     }
 
     /// @brief 地理的地物を描画
@@ -307,7 +300,7 @@ private:
     /// @note Future implementation: Implement 3D model rendering
     static void drawModel3D(
         const Model3DFeature& feature,
-        const RenderContext& context,
+        const UnifiedContext& context,
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map
     ) {
         // 現在は未実装（将来的にModel3DRendererを使用して描画）

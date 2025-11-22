@@ -23,7 +23,6 @@
 #include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
@@ -117,23 +116,12 @@ public:
             cached_screen_positions_
         );
 
-        // 表示サイズの計算（ズーム範囲チェック）
-        const bool out_of_range = data_.zoom_range.excludes(context.map_view_size.x);
-        cached_display_size_ = out_of_range ? 5 : 60;
+        // 表示サイズの計算（人物は常に通常サイズで表示）
+        cached_display_size_ = 60;
 
-        // テクスチャサイズを取得
-        const std::uint_least32_t tex_key = (data_.texture_key == 0) ? group_data_.texture_key : data_.texture_key;
-        if (context.texture_map != nullptr) {
-            const auto iterator = context.texture_map->find(tex_key);
-            if (iterator != context.texture_map->end()) {
-                const auto& tex = iterator->second;
-                cached_texture_size_ = Vector2<int>(tex.width(), tex.height());
-            } else {
-                cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
-            }
-        } else {
-            cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
-        }
+        // テクスチャサイズを描画時のサイズに合わせる（MapFeatureRenderer.hppと同じ）
+        // 描画時は resizedDrawAt(120) を使用するため、当たり判定は70×110
+        cached_texture_size_ = Vector2<int>(70, 110);
 
         visible_ = true;
     }
@@ -153,28 +141,6 @@ public:
         }
     }
 
-    /// @brief 既存のupdate()メソッド（後方互換性のため維持）
-    /// @brief Legacy update() method (kept for backward compatibility)
-    /// @deprecated Use updateTemporal(), updateSpatial(), and updateLocalization() instead
-    void update(const RenderContext& context) override {
-        // 時間的更新
-        TemporalContext temporal_ctx;
-        temporal_ctx.jdn = context.jdn;
-        updateTemporal(temporal_ctx);
-
-        // 空間的更新
-        SpatialContext spatial_ctx;
-        spatial_ctx.visibility_manager = context.visibility_manager;
-        spatial_ctx.texture_map = context.texture_map;
-        spatial_ctx.map_view_size = context.map_view_size;
-        spatial_ctx.map_view_center = context.map_view_center;
-        updateSpatial(spatial_ctx);
-
-        // ローカライゼーション更新
-        LocalizationContext loc_ctx;
-        loc_ctx.font = context.font;
-        updateLocalization(loc_ctx);
-    }
 
     bool isVisible() const override {
         return visible_;

@@ -29,7 +29,6 @@
 #include <PAX_MAHOROBA/Map/Location/MapFeatureRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
 #include <PAX_MAHOROBA/UI/Debug/PerformanceScope.hpp>
 #include <PAX_MAHOROBA/Map/MapAssetRegistry.hpp>
@@ -59,8 +58,7 @@ namespace paxs {
     private:
         // 新しいFeatureベース構造
         std::vector<std::unique_ptr<MapFeature>> features_; ///< 地物のコレクション / Collection of features
-        RenderContext render_context_; ///< 描画コンテキスト（後方互換性のため維持） / Render context (kept for backward compatibility)
-        UnifiedContext unified_context_; ///< 統合コンテキスト（新しい更新機構用） / Unified context (for new update mechanism)
+        UnifiedContext unified_context_; ///< 統合コンテキスト / Unified context
 
         // アセット管理
         MapAssetRegistry asset_registry_; ///< 地図アイコンアセットレジストリ / Map icon asset registry
@@ -164,25 +162,6 @@ namespace paxs {
                 }
             );
 #endif
-        }
-
-        /// @brief RenderContextを更新
-        void updateRenderContext() {
-            const auto& koyomi = app_state_manager_.getKoyomi();
-            render_context_.jdn = koyomi.jdn.getDay();
-            render_context_.map_view_size = map_viewport_.getSize();
-            render_context_.map_view_center = map_viewport_.getCenter();
-            render_context_.visibility_manager = &app_state_manager_.getVisibilityManager();
-        }
-
-        /// @brief 全Featureのupdate()を呼び出し
-        void updateAllFeatures() {
-            updateRenderContext();
-            for (auto& feature : features_) {
-                if (feature && feature->isInTimeRange(render_context_.jdn)) {
-                    feature->update(render_context_);
-                }
-            }
         }
 
         /// @brief UnifiedContextを更新
@@ -392,16 +371,7 @@ namespace paxs {
 #endif
 
             if (app_state_manager_.getVisibilityManager().isVisible(ViewMenu::map)) {
-                // RenderContextをUnifiedContextから作成（描画時点の最新状態を使用）
-                RenderContext current_render_context;
-                current_render_context.jdn = unified_context_.jdn;
-                current_render_context.map_view_size = unified_context_.map_view_size;
-                current_render_context.map_view_center = unified_context_.map_view_center;
-                current_render_context.visibility_manager = unified_context_.visibility_manager;
-                current_render_context.texture_map = unified_context_.texture_map;
-                current_render_context.font = unified_context_.font;
-
-                MapFeatureRenderer::drawFeatures(features_, current_render_context, asset_registry_.getMergedMap());
+                MapFeatureRenderer::drawFeatures(features_, unified_context_, asset_registry_.getMergedMap());
             }
 
         }
@@ -417,9 +387,10 @@ namespace paxs {
             return features_;
         }
 
-        /// @brief RenderContextへの参照を取得（入力処理用）
-        const RenderContext& getRenderContext() const {
-            return render_context_;
+        /// @brief UnifiedContextへの参照を取得（入力処理用）
+        /// @brief Get UnifiedContext reference (for input handling)
+        const UnifiedContext& getUnifiedContext() const {
+            return unified_context_;
         }
 
         /// @brief IDでFeatureを検索

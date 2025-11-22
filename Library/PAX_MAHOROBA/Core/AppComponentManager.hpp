@@ -62,7 +62,7 @@ namespace paxs {
             , map_content_layer_(app_state)
             , map_content_input_handler_(
                 map_content_layer_.getFeatures(),
-                map_content_layer_.getRenderContext(),
+                map_content_layer_.getUnifiedContext(),
                 app_state.getVisibilityManager()
             )
             , photo360_layer_(app_state.getVisibilityManager())

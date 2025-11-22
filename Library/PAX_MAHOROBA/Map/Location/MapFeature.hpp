@@ -17,7 +17,6 @@
 
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
-#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp>
@@ -56,11 +55,6 @@ public:
     virtual std::uint_least32_t getFeatureTypeHash() const = 0;
 
     // ========== 状態管理 / State Management ==========
-
-    /// @brief 状態を更新（座標計算、キャッシュ更新など）
-    /// @brief Update state (coordinate calculation, cache update, etc.)
-    /// @param context 描画コンテキスト / Render context
-    virtual void update(const RenderContext& context) = 0;
 
     /// @brief 可視性を取得
     /// @brief Get visibility

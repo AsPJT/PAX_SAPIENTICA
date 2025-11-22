@@ -23,7 +23,6 @@
 #include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
@@ -129,26 +128,6 @@ public:
         cached_display_size_ = cached_text_size_.y;
     }
 
-    /// @brief 既存のupdate()メソッド（後方互換性のため維持）
-    /// @brief Legacy update() method (kept for backward compatibility)
-    /// @deprecated Use updateSpatial() and updateLocalization() instead
-    void update(const RenderContext& context) override {
-        // RenderContextをSpatialContextとして扱う
-        SpatialContext spatial_ctx;
-        spatial_ctx.visibility_manager = context.visibility_manager;
-        spatial_ctx.texture_map = context.texture_map;
-        spatial_ctx.map_view_size = context.map_view_size;
-        spatial_ctx.map_view_center = context.map_view_center;
-        updateSpatial(spatial_ctx);
-
-        // RenderContextをLocalizationContextとして扱う
-        LocalizationContext localization_ctx;
-        localization_ctx.visibility_manager = context.visibility_manager;
-        localization_ctx.texture_map = context.texture_map;
-        localization_ctx.font = context.font;
-        localization_ctx.language_key = 0; // RenderContextには言語情報がないのでデフォルト値
-        updateLocalization(localization_ctx);
-    }
 
     bool isVisible() const override {
         return visible_;

@@ -24,7 +24,6 @@ namespace paxs {
 
 // 前方宣言
 class MapFeature;
-struct RenderContext;
 
 /// @brief 地図コンテンツのヒット判定ヘルパークラス
 /// @brief Map content hit test helper class
@@ -154,23 +153,9 @@ public:
         return paxg::Rect{static_cast<float>(pos.x()), static_cast<float>(pos.y()), 100.0f, 20.0f};
     }
 
-    /// @brief Featureリストからマウス座標でヒットしたFeatureを検索
-    /// @brief Find feature at mouse coordinates from feature list
-    /// @param features Featureのリスト / List of features
-    /// @param context 描画コンテキスト / Render context
-    /// @param mouse_x マウスX座標 / Mouse X coordinate
-    /// @param mouse_y マウスY座標 / Mouse Y coordinate
-    /// @return ヒットしたFeature（見つからない場合nullptr） / Hit feature (nullptr if not found)
-    static MapFeature* findFeatureAt(
-        const std::vector<std::unique_ptr<MapFeature>>& features,
-        const RenderContext& context,
-        int mouse_x,
-        int mouse_y
-    );
 };
 
-// findFeatureAtの実装は循環依存を避けるためMapFeature.hppをインクルードした後に提供される
-// この関数はヘッダーオンリーではなく、MapContentInputHandler.hpp内でインライン実装される
+// MapContentHitTesterの実装は完了
 
 } // namespace paxs
 

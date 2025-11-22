@@ -23,7 +23,6 @@
 #include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
@@ -118,34 +117,13 @@ public:
         // 表示サイズの計算（zoom適用）
         cached_display_size_ = static_cast<int>(data_.overall_length / 2 * data_.zoom);
 
-        // テクスチャサイズを取得してキャッシュ
-        if (context.texture_map != nullptr) {
-            const auto iterator = context.texture_map->find(data_.texture_key);
-            if (iterator != context.texture_map->end()) {
-                const auto& tex = iterator->second;
-                cached_texture_size_ = Vector2<int>(tex.width(), tex.height());
-            } else {
-                cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
-            }
-        } else {
-            cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
-        }
+        // テクスチャサイズを描画時のサイズに合わせる（MapFeatureRenderer.hppと同じ）
+        // 描画時は resizedDrawAt(display_size) を使用するため、当たり判定もdisplay_sizeに合わせる
+        cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
 
         visible_ = true;
     }
 
-    /// @brief 既存のupdate()メソッド（後方互換性のため維持）
-    /// @brief Legacy update() method (kept for backward compatibility)
-    /// @deprecated Use updateSpatial() instead
-    void update(const RenderContext& context) override {
-        // RenderContextをSpatialContextとして扱う
-        SpatialContext spatial_ctx;
-        spatial_ctx.visibility_manager = context.visibility_manager;
-        spatial_ctx.texture_map = context.texture_map;
-        spatial_ctx.map_view_size = context.map_view_size;
-        spatial_ctx.map_view_center = context.map_view_center;
-        updateSpatial(spatial_ctx);
-    }
 
     bool isVisible() const override {
         return visible_;
