@@ -35,6 +35,7 @@ private:
     bool tab_key_was_pressed_ = false;
     bool p_key_was_pressed_ = false;
     bool v_key_was_pressed_ = false;
+    bool m_key_was_pressed_ = false;
 #ifdef PAXS_DEVELOPMENT
     bool enter_key_was_pressed_ = false;
     bool backspace_key_was_pressed_ = false;
@@ -110,6 +111,17 @@ public:
                 debug_layer_->toggleVariableWatcher();
             }
             v_key_was_pressed_ = v_key_is_pressed;
+        }
+
+        // M key: パフォーマンスモニターのモード切り替え（モニター表示中のみ）
+        {
+            bool m_key_is_pressed = paxg::Key(paxg::PAXG_KEY_M).isPressed();
+            if (m_key_is_pressed && !m_key_was_pressed_ &&
+                !debug_layer_->getConsole().isVisible() &&
+                debug_layer_->getPerformanceMonitor().isVisible()) {
+                debug_layer_->getPerformanceMonitor().toggleDisplayMode();
+            }
+            m_key_was_pressed_ = m_key_is_pressed;
         }
 
 #ifdef PAXS_DEVELOPMENT

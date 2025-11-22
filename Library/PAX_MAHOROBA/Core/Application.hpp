@@ -25,6 +25,7 @@
 #include <PAX_MAHOROBA/Input/MapViewportInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/UIInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+#include <PAX_MAHOROBA/UI/Debug/PerformanceScope.hpp>
 #include <PAX_MAHOROBA/UI/LoadingProgressBar.hpp>
 
 #include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
@@ -65,8 +66,8 @@ public:
         // 初期化用の進捗バーを作成
         init_progress_bar_ = std::make_unique<LoadingProgressBar<bool>>(
             &init_loading_handle_,
-            last_window_width_ / 2 - 200,
-            last_window_height_ / 2 - 15,
+            (last_window_width_ / 2) - 200,
+            (last_window_height_ / 2) - 15,
             400,
             30,
             Fonts().getFont(FontProfiles::UI_MEDIUM)
@@ -147,21 +148,29 @@ public:
     /// @brief メインループを実行
     void run() {
         while (paxg::Window::update()) {
+            PERF_BEGIN_FRAME();
+            PERF_SCOPE("MainLoop");
+
             // 画像の拡大縮小の方式を設定
             const paxg::ScopedSamplerState sampler{ paxg::SamplerState::ClampNearest };
 
             // アプリケーション状態に応じて処理を分岐
             if (app_state_ && app_state_->getAppState() == AppState::Initializing) {
+                PERF_SCOPE("Initializing");
                 updateInitializingMode();
             }
 #ifdef PAXS_USING_SIMULATOR
             else if (app_state_->getAppState() == AppState::Loading) {
+                PERF_SCOPE("Loading");
                 updateLoadingMode();
             }
 #endif
             else {
+                PERF_SCOPE("Running");
                 updateRunningMode();
             }
+
+            PERF_END_FRAME();
         }
     }
 
@@ -287,28 +296,46 @@ private:
     /// @brief 通常実行中の更新処理
     void updateRunningMode() {
         // 1. 入力処理（イベント収集・ルーティング）
-        input_manager_->processInput();
+        {
+            PERF_SCOPE("InputProcessing");
+            input_manager_->processInput();
+        }
 
         // 2. イベントキュー処理（遅延イベントの処理）
-        event_bus_->processQueue();
+        {
+            PERF_SCOPE("EventQueue");
+            event_bus_->processQueue();
+        }
 
 #ifdef PAXS_USING_SIMULATOR
         // 3. 暦更新（暦再生時の時間進行）
-        app_state_->updateKoyomi();
+        {
+            PERF_SCOPE("KoyomiUpdate");
+            app_state_->updateKoyomi();
+        }
 #endif
 
 #ifdef PAXS_DEVELOPMENT
         // 4. デバッグレイヤーの更新（自動削除チェック）
-        component_manager_->getDebugLayer().update(
-            component_manager_->getDebugLayer().getCurrentTime()
-        );
+        {
+            PERF_SCOPE("DebugLayerUpdate");
+            component_manager_->getDebugLayer().update(
+                component_manager_->getDebugLayer().getCurrentTime()
+            );
+        }
 #endif
 
         // 5. 描画処理
-        component_manager_->render();
+        {
+            PERF_SCOPE("Rendering");
+            component_manager_->render();
+        }
 
         // 6. タッチ入力の状態更新
-        paxg::TouchInput::updateState();
+        {
+            PERF_SCOPE("TouchInputUpdate");
+            paxg::TouchInput::updateState();
+        }
     }
 };
 
