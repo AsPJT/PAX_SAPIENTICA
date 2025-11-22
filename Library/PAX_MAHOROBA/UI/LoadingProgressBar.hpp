@@ -45,6 +45,7 @@ namespace paxs {
         paxg::Color progress_color_{100, 200, 100, 255};  ///< 進捗バー色 / Progress bar color
         paxg::Color border_color_{200, 200, 200, 255};    ///< 枠線色 / Border color
         paxg::Color text_color_{0, 0, 0, 255};            ///< テキスト色 / Text color
+        paxg::Color outline_color_{243, 243, 243, 255};   ///< アウトライン色 / Outline color
 
         // イベント購読（RAII対応） / Event subscription (RAII-safe)
         ScopedSubscription window_resize_subscription_;   ///< ウィンドウリサイズイベント購読 / Window resize event subscription
@@ -113,18 +114,22 @@ namespace paxs {
 
             // 進捗テキストの描画 / Draw progress text
             if (font_ != nullptr) {
+                // アウトラインを設定 / Set outline
+                font_->setOutline(0, 0.6, outline_color_);
+
                 const int percent = static_cast<int>(progress * 100.0F);
                 const std::string percent_text = std::to_string(percent) + "%";
 
-                // パーセンテージを中央に描画 / Draw percentage in center
-                const int text_x = x_ + (width_ / 2) - 20;
-                const int text_y = y_ + (height_ / 2) - 10;
+                // パーセンテージをバーの中央に描画 / Draw percentage in center of bar
+                const int text_x = x_ + (width_ / 2);
+                const int text_y = y_ + (height_ / 2);
                 font_->drawAt(percent_text, paxg::Vec2i{text_x, text_y}, text_color_);
 
                 // メッセージをバーの下に描画 / Draw message below bar
                 if (!message.empty()) {
-                    const int msg_y = y_ + height_ + 10;
-                    font_->drawAt(message, paxg::Vec2i{x_, msg_y}, text_color_);
+                    const int msg_x = x_ + (width_ / 2);
+                    const int msg_y = y_ + height_ + 20;
+                    font_->drawAt(message, paxg::Vec2i{msg_x, msg_y}, text_color_);
                 }
             }
 
@@ -132,8 +137,9 @@ namespace paxs {
             if (handle_->hasError()) {
                 if (font_ != nullptr) {
                     const std::string error_text = "Error occurred during loading";
-                    const int error_y = y_ + height_ + 30;
-                    font_->drawAt(error_text, paxg::Vec2i{x_, error_y}, paxg::Color{255, 50, 50, 255});
+                    const int error_x = x_ + (width_ / 2);
+                    const int error_y = y_ + height_ + 50;
+                    font_->drawAt(error_text, paxg::Vec2i{error_x, error_y}, paxg::Color{255, 50, 50, 255});
                 }
             }
         }
@@ -169,6 +175,10 @@ namespace paxs {
         /// @brief テキスト色を設定
         /// @brief Set text color
         void setTextColor(const paxg::Color& color) { text_color_ = color; }
+
+        /// @brief アウトライン色を設定
+        /// @brief Set outline color
+        void setOutlineColor(const paxg::Color& color) { outline_color_ = color; }
     };
 
 } // namespace paxs

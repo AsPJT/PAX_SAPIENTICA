@@ -50,10 +50,11 @@ if(WIN32)
 
     # Copy SFML DLLs if available
     if(SFML_ROOT_DIR AND EXISTS "${SFML_ROOT_DIR}/bin")
+        # Set DLL names based on configuration (Debug or Release)
         set(SFML_DLLS
-            "${SFML_ROOT_DIR}/bin/sfml-graphics-d-3.dll"
-            "${SFML_ROOT_DIR}/bin/sfml-window-d-3.dll"
-            "${SFML_ROOT_DIR}/bin/sfml-system-d-3.dll"
+            "${SFML_ROOT_DIR}/bin/sfml-graphics$<$<CONFIG:Debug>:-d>-3.dll"
+            "${SFML_ROOT_DIR}/bin/sfml-window$<$<CONFIG:Debug>:-d>-3.dll"
+            "${SFML_ROOT_DIR}/bin/sfml-system$<$<CONFIG:Debug>:-d>-3.dll"
         )
         add_custom_command(
             TARGET ${BINARY_NAME} POST_BUILD
