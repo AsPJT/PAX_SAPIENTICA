@@ -10,13 +10,15 @@ include_directories(
     ${PROJECT_ROOT_DIR}/ExternalLibrary
 )
 
-# Determine OS-specific directory name (same as parent CMakeLists.txt)
-if(APPLE)
-    set(OS "macOS")
-elseif(UNIX)
-    set(OS "Ubuntu")
-elseif(WIN32)
-    set(OS "Windows")
+# Determine OS-specific directory name (inherit from parent if already set)
+if(NOT DEFINED OS)
+    if(APPLE)
+        set(OS "macOS" CACHE STRING "Operating System name")
+    elseif(UNIX)
+        set(OS "Ubuntu" CACHE STRING "Operating System name")
+    elseif(WIN32)
+        set(OS "Windows" CACHE STRING "Operating System name")
+    endif()
 endif()
 
 set(TSV_SOURCE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Config.tsv")
