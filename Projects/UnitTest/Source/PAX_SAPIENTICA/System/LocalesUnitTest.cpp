@@ -37,7 +37,7 @@ TEST_F(LocalesTest, LoadLocaleList) {
 	// ロケールリストが正しく読み込まれているかを確認
 	// （ordered_locales_が空でも、実際にテキストが取得できれば正常）
 	const std::uint_least32_t domain_key = paxs::MurMur3::calcHash("MenuBar");
-	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("menu_file");
+	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("view_header");
 	const std::uint_least32_t locale_key = paxs::MurMur3::calcHash("ja-JP");
 
 	// テキストが取得できることを確認
@@ -54,14 +54,14 @@ TEST_F(LocalesTest, AddDomainAndGetTextHashKey) {
 
 	// ハッシュキー版でテキストを取得
 	const std::uint_least32_t domain_key = paxs::MurMur3::calcHash("MenuBar");
-	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("menu_file");
+	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("view_header");
 	const std::uint_least32_t locale_key_ja = paxs::MurMur3::calcHash("ja-JP");
 
 	const std::string* text = locales->getStringPtr(domain_key, text_key, locale_key_ja);
 
 	// ファイルが存在する場合のみテスト
 	if (text != nullptr) {
-		EXPECT_EQ(*text, "ファイル(F)");
+		EXPECT_EQ(*text, "表示");
 	}
 }
 
@@ -70,13 +70,13 @@ TEST_F(LocalesTest, AddDomainAndGetTextHashKey) {
 TEST_F(LocalesTest, GetTextStringKey) {
 	// ハッシュキー版でテキストを取得
 	const std::uint_least32_t domain_key = paxs::MurMur3::calcHash("MenuBar");
-	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("menu_file");
+	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("view_header");
 	const std::uint_least32_t locale_key = paxs::MurMur3::calcHash("ja-JP");
 	const std::string* text = locales->getStringPtr(domain_key, text_key, locale_key);
 
 	// ファイルが存在する場合のみテスト
 	if (text != nullptr) {
-		EXPECT_EQ(*text, "ファイル(F)");
+		EXPECT_EQ(*text, "表示");
 	}
 }
 
@@ -84,13 +84,13 @@ TEST_F(LocalesTest, GetTextStringKey) {
 // Test English locale
 TEST_F(LocalesTest, EnglishLocale) {
 	const std::uint_least32_t domain_key = paxs::MurMur3::calcHash("MenuBar");
-	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("menu_file");
+	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("view_header");
 	const std::uint_least32_t locale_key = paxs::MurMur3::calcHash("en-US");
 	const std::string* text = locales->getStringPtr(domain_key, text_key, locale_key);
 
 	// ファイルが存在する場合のみテスト
 	if (text != nullptr) {
-		EXPECT_EQ(*text, "File(F)");
+		EXPECT_EQ(*text, "View");
 	}
 }
 
@@ -99,7 +99,7 @@ TEST_F(LocalesTest, EnglishLocale) {
 TEST_F(LocalesTest, FallbackToDefaultLocale) {
 	// 存在しないロケールでテキストを要求
 	const std::uint_least32_t domain_key = paxs::MurMur3::calcHash("MenuBar");
-	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("menu_file");
+	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("view_header");
 	const std::uint_least32_t invalid_locale_key = paxs::MurMur3::calcHash("xx-XX");
 
 	const std::string* text = locales->getStringPtr(domain_key, text_key, invalid_locale_key);
@@ -137,13 +137,13 @@ TEST_F(LocalesTest, NonexistentDomain) {
 // Test individual file loading
 TEST_F(LocalesTest, AddIndividualFile) {
 	const std::uint_least32_t domain_key = paxs::MurMur3::calcHash("MenuBar");
-	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("menu_file");
+	const std::uint_least32_t text_key = paxs::MurMur3::calcHash("view_header");
 	const std::uint_least32_t locale_key = paxs::MurMur3::calcHash("en-US");
 	const std::string* text = locales->getStringPtr(domain_key, text_key, locale_key);
 
 	// ファイルが存在する場合のみテスト
 	if (text != nullptr) {
-		EXPECT_EQ(*text, "File(F)");
+		EXPECT_EQ(*text, "View");
 	}
 }
 
@@ -154,20 +154,20 @@ TEST_F(LocalesTest, MultipleTextKeys) {
 	const std::uint_least32_t locale_key = paxs::MurMur3::calcHash("en-US");
 
 	// 複数のキーでテキストを取得
-	const std::string* file_text = locales->getStringPtr(
+	const std::string* view_text = locales->getStringPtr(
 		domain_key,
-		paxs::MurMur3::calcHash("menu_file"),
+		paxs::MurMur3::calcHash("view_header"),
 		locale_key
 	);
-	const std::string* edit_text = locales->getStringPtr(
+	const std::string* calendar_text = locales->getStringPtr(
 		domain_key,
-		paxs::MurMur3::calcHash("menu_edit"),
+		paxs::MurMur3::calcHash("view_calendar"),
 		locale_key
 	);
 
 	// ファイルが存在する場合のみテスト
-	if (file_text != nullptr && edit_text != nullptr) {
-		EXPECT_EQ(*file_text, "File(F)");
-		EXPECT_EQ(*edit_text, "Edit(E)");
+	if (view_text != nullptr && calendar_text != nullptr) {
+		EXPECT_EQ(*view_text, "View");
+		EXPECT_EQ(*calendar_text, "Calendar");
 	}
 }

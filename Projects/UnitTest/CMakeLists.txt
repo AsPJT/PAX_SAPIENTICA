@@ -12,8 +12,6 @@ include_directories(
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest ${CMAKE_BINARY_DIR}/googletest)
 
-add_definitions(-DPROJECT_ROOT_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/../..\")
-
 set(TEST_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 
 file(GLOB_RECURSE TEST_SOURCES "${TEST_SOURCE_DIR}/*.cpp")
@@ -39,9 +37,13 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
     endif()
 endforeach()
 
-set(PROJECT_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-set(PATH_TSV_FILE "${CMAKE_CURRENT_BINARY_DIR}/Config.tsv")
-set(TSV_CONTENT "key\tvalue\nasset_file\t${PROJECT_ROOT_PATH}/\n")
+# Calculate relative path from CMAKE_BINARY_DIR to project root
+file(RELATIVE_PATH PROJECT_ROOT_RELATIVE_PATH
+    "${CMAKE_BINARY_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../.."
+)
+set(PATH_TSV_FILE "${CMAKE_BINARY_DIR}/Config.tsv")
+set(TSV_CONTENT "key\tvalue\nasset_file\t${PROJECT_ROOT_RELATIVE_PATH}\n")
 
 file(WRITE ${PATH_TSV_FILE} ${TSV_CONTENT})
 
