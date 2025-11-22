@@ -110,39 +110,39 @@ namespace paxs {
                 case paxs::cal::DateOutputType::name_and_ymd:
                 {
                     // GregorianDate
-                    if (const auto* ptr = std::get_if<cal::GregorianDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
+                    if (const auto* gregorian_ptr = std::get_if<cal::GregorianDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(gregorian_ptr->getYear());
+                        date_month = static_cast<int>(gregorian_ptr->getMonth());
+                        date_day = static_cast<int>(gregorian_ptr->getDay());
                         date_lm = paxs::cal::GregorianDate::isLeapMonth();
                     }
                     // JulianDate
-                    else if (const auto* ptr = std::get_if<cal::JulianDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
+                    else if (const auto* julian_ptr = std::get_if<cal::JulianDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(julian_ptr->getYear());
+                        date_month = static_cast<int>(julian_ptr->getMonth());
+                        date_day = static_cast<int>(julian_ptr->getDay());
                         date_lm = paxs::cal::JulianDate::isLeapMonth();
                     }
                     // IslamicDate
-                    else if (const auto* ptr = std::get_if<cal::IslamicDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
+                    else if (const auto* islamic_ptr = std::get_if<cal::IslamicDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(islamic_ptr->getYear());
+                        date_month = static_cast<int>(islamic_ptr->getMonth());
+                        date_day = static_cast<int>(islamic_ptr->getDay());
                         date_lm = paxs::cal::IslamicDate::isLeapMonth();
                     }
                     // JapanDate
-                    else if (const auto* ptr = std::get_if<cal::JapanDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
-                        date_lm = ptr->isLeapMonth();
+                    else if (const auto* japan_ptr = std::get_if<cal::JapanDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(japan_ptr->getYear());
+                        date_month = static_cast<int>(japan_ptr->getMonth());
+                        date_day = static_cast<int>(japan_ptr->getDay());
+                        date_lm = japan_ptr->isLeapMonth();
                     }
                     // ChinaDate
-                    else if (const auto* ptr = std::get_if<cal::ChinaDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
-                        date_lm = ptr->isLeapMonth();
+                    else if (const auto* china_ptr = std::get_if<cal::ChinaDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(china_ptr->getYear());
+                        date_month = static_cast<int>(china_ptr->getMonth());
+                        date_day = static_cast<int>(china_ptr->getDay());
+                        date_lm = china_ptr->isLeapMonth();
                     }
 
                     if (date_day <= 0 || date_month <= 0) {
@@ -250,39 +250,39 @@ namespace paxs {
                 switch (output_type) {
                 case paxs::cal::DateOutputType::name_and_ymd:
                     // GregorianDate
-                    if (const auto* ptr = std::get_if<cal::GregorianDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
+                    if (const auto* gregorian_ptr = std::get_if<cal::GregorianDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(gregorian_ptr->getYear());
+                        date_month = static_cast<int>(gregorian_ptr->getMonth());
+                        date_day = static_cast<int>(gregorian_ptr->getDay());
                         date_lm = paxs::cal::GregorianDate::isLeapMonth();
                     }
                     // JulianDate
-                    else if (const auto* ptr = std::get_if<cal::JulianDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
+                    else if (const auto* julian_ptr = std::get_if<cal::JulianDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(julian_ptr->getYear());
+                        date_month = static_cast<int>(julian_ptr->getMonth());
+                        date_day = static_cast<int>(julian_ptr->getDay());
                         date_lm = paxs::cal::JulianDate::isLeapMonth();
                     }
                     // IslamicDate
-                    else if (const auto* ptr = std::get_if<cal::IslamicDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
+                    else if (const auto* islamic_ptr = std::get_if<cal::IslamicDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(islamic_ptr->getYear());
+                        date_month = static_cast<int>(islamic_ptr->getMonth());
+                        date_day = static_cast<int>(islamic_ptr->getDay());
                         date_lm = paxs::cal::IslamicDate::isLeapMonth();
                     }
                     // JapanDate
-                    else if (const auto* ptr = std::get_if<cal::JapanDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
-                        date_lm = ptr->isLeapMonth();
+                    else if (const auto* japan_ptr = std::get_if<cal::JapanDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(japan_ptr->getYear());
+                        date_month = static_cast<int>(japan_ptr->getMonth());
+                        date_day = static_cast<int>(japan_ptr->getDay());
+                        date_lm = japan_ptr->isLeapMonth();
                     }
                     // ChinaDate
-                    else if (const auto* ptr = std::get_if<cal::ChinaDate>(&koyomi_.date_list[i].date)) {
-                        date_year = static_cast<int>(ptr->getYear());
-                        date_month = static_cast<int>(ptr->getMonth());
-                        date_day = static_cast<int>(ptr->getDay());
-                        date_lm = ptr->isLeapMonth();
+                    else if (const auto* china_ptr = std::get_if<cal::ChinaDate>(&koyomi_.date_list[i].date)) {
+                        date_year = static_cast<int>(china_ptr->getYear());
+                        date_month = static_cast<int>(china_ptr->getMonth());
+                        date_day = static_cast<int>(china_ptr->getDay());
+                        date_lm = china_ptr->isLeapMonth();
                     }
 
                     if (date_day <= 0 || date_month <= 0) {
