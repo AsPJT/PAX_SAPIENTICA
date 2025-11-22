@@ -275,7 +275,7 @@ namespace paxs {
                             const std::uint_least8_t region_id = japan_provinces->getJapanRegionId(ryo_id);
 
                             // mtDNA と言語 ごとにカウント
-                            for (int popi = 0; popi < settlement.cgetAgents().size(); ++popi) {
+                            for (std::size_t popi = 0; popi < settlement.cgetAgents().size(); ++popi) {
                                 const auto get_mtdna = settlement.cgetAgents()[popi].cgetGenome().getMtDNA();
                                 mtdna_num[ryo_id][get_mtdna] += 1;
                                 if (region_id < 10) mtdna_region_num[region_id][get_mtdna] += 1;

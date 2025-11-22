@@ -120,7 +120,7 @@ private:
     /// @brief Register simulation-related commands
     static void registerSimulationCommands(DebugConsole& console, AppStateManager& app_state) {
         // sim init [model_name]: シミュレーションを初期化
-        console.registerCommand("sim", [&app_state](const std::vector<std::string>& args) {
+        console.registerCommand("sim", [](const std::vector<std::string>& args) {
             if (args.size() < 2) {
                 PAXS_WARNING("Usage: sim <init [model_name]|start|stop>");
                 return;

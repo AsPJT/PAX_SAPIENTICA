@@ -87,7 +87,7 @@ namespace paxs {
         void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_ && visible_manager_.isVisible(ViewMenu::simulation); }
         void setPos(const Vector2<int>& pos) override { pos_ = pos; }
-        bool isHit(const paxs::Vector2<int>& pos) const override { return false; }
+        bool isHit(const paxs::Vector2<int>&) const override { return false; }
         const char* getName() const override { return "SettlementStatusPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 

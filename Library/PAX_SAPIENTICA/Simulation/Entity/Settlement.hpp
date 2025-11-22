@@ -294,7 +294,7 @@ namespace paxs {
         /// @brief Death.
         /// @brief 死亡
         void death() noexcept {
-            for (auto i = 0; i < agents.size();) {
+            for (std::size_t i = 0; i < agents.size();) {
                 // 年齢を１増やす
                 agents[i].incrementAge();
                 // もし死んでいなかったら次のエージェントを見る
