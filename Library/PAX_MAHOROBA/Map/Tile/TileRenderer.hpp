@@ -216,7 +216,7 @@ namespace paxs {
 
             // フォントサイズをセルサイズに応じて調整
             const int font_size = static_cast<int>(cell_height_px / 5);
-            paxg::Font* font = Fonts().getFont(font_size, 3);
+            paxg::Font* font = Fonts().getFont(static_cast<std::uint_least8_t>(font_size), static_cast<std::uint_least8_t>(3));
             font->setOutline(0, 0.5, paxg::Color{ 243, 243, 243 });
 
             double current_y = pos_y;

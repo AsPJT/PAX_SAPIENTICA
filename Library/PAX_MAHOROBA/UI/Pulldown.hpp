@@ -375,13 +375,13 @@ namespace paxs {
         // Pulldown 固有のメソッド
         size_t getIndex() const { return index; }
         // 引数の添え字番号の項目が TRUE か FALSE になっているか調べる
-        bool getIsItems(const std::size_t index) const {
+        bool getIsItems(const std::size_t item_index) const {
             if (is_items.size() == 0) {
                 PAXS_WARNING("Pulldown::getIsItems: No items available.");
                 return true; // データがない場合
             }
-            if (index < is_items.size()) {
-                return is_items[index];
+            if (item_index < is_items.size()) {
+                return is_items[item_index];
             }
             return is_items.front();
         }

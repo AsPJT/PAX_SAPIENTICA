@@ -38,8 +38,8 @@ namespace paxs {
         float h = 0.f;
 
         for (paxs::DropDownMenu& menu : menu_list) {
-            const float w = menu.getRect().width();
-            const float item_h = menu.getRect().height();
+            const float w = static_cast<float>(menu.getRect().width());
+            const float item_h = static_cast<float>(menu.getRect().height());
 
             menu.setRectX(x);
 

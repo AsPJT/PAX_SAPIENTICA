@@ -36,7 +36,7 @@ namespace paxs {
     /// @brief ステップ統計データ
     /// @brief Step statistics data
     struct StepStatistics {
-        int step_count = 0;
+        std::uint_least64_t step_count = 0;
         std::size_t settlement_count = 0;
         std::size_t population_count = 0;
         std::vector<DistrictStatistics> district_stats;
@@ -345,7 +345,7 @@ namespace paxs {
             std::ofstream& pop, std::ofstream& mtdna, std::ofstream& lang_dna, std::ofstream& snp, std::ofstream& lang,
             std::ofstream& pop_reg, std::ofstream& mtdna_reg, std::ofstream& lang_dna_reg, std::ofstream& snp_reg, std::ofstream& lang_reg
         ) {
-            const int sc = stats.step_count;
+            const std::uint_least64_t sc = stats.step_count;
             const std::size_t set_count = stats.settlement_count;
             const std::size_t pop_count = stats.population_count;
 

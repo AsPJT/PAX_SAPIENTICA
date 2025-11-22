@@ -276,6 +276,7 @@ namespace paxs {
                 }
                 catch (const std::exception& e) {
                     PAXS_ERROR("Simulation initialization failed: " + std::string(e.what()));
+                    (void)e; // Suppress unused variable warning
                     return false;
                 }
                 catch (...) {

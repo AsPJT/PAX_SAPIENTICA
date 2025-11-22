@@ -196,6 +196,7 @@ namespace paxs {
             }
             catch (const std::exception& e) {
                 PAXS_ERROR("Failed to recursively scan directory: " + relative_directory_path + " (" + e.what() + ")");
+                (void)e; // Suppress unused variable warning
                 return {};
             }
 
