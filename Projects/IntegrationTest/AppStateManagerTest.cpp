@@ -52,6 +52,11 @@ TEST_F(AppStateManagerTest, GettersReturnConstReferences) {
     const MapViewport& viewport = app_state.getMapViewport();
     const FeatureVisibilityManager& vis_manager = app_state.getVisibilityManager();
 
+    // 未使用警告を抑制
+    (void)koyomi;
+    (void)viewport;
+    (void)vis_manager;
+
     // 使用できることを確認（コンパイルが通ればOK）
     SUCCEED();
 }
@@ -62,6 +67,10 @@ TEST_F(AppStateManagerTest, GettersReturnNonConstReferences) {
     // const参照が返されることを確認
     const Koyomi& koyomi = app_state.getKoyomi();
     const MapViewport& viewport = app_state.getMapViewport();
+
+    // 未使用警告を抑制
+    (void)koyomi;
+    (void)viewport;
 
     // 使用できることを確認（コンパイルが通ればOK）
     SUCCEED();
@@ -156,7 +165,7 @@ TEST_F(AppStateManagerTest, SetFeatureVisibilitySameValueDoesNotPublish) {
     int event_count = 0;
 
     event_bus_.subscribe<FeatureVisibilityChangedEvent>(
-        [&event_count](const FeatureVisibilityChangedEvent& event) {
+        [&event_count](const FeatureVisibilityChangedEvent& /*event*/) {
             event_count++;
         }
     );
@@ -177,7 +186,7 @@ TEST_F(AppStateManagerTest, MapViewportSizeChangePublishesEvent) {
     int event_count = 0;
 
     event_bus_.subscribe<ViewportChangedEvent>(
-        [&event_count](const ViewportChangedEvent& event) {
+        [&event_count](const ViewportChangedEvent& /*event*/) {
             event_count++;
         }
     );

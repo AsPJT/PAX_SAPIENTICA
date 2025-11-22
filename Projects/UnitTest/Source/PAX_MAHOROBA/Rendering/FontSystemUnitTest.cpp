@@ -82,13 +82,13 @@ TEST_F(FontSystemTest, LanguageSelection) {
 
     // 最初の言語 (en-US) を選択
     if (!locale_keys.empty()) {
-        Fonts().setLanguageKey(locale_keys[0]);
+        [[maybe_unused]] bool result = Fonts().setLanguageKey(locale_keys[0]);
         EXPECT_EQ(Fonts().getSelectedLanguageKey(), locale_keys[0]);
     }
 
     // 2番目の言語 (ja-JP) を選択
     if (locale_keys.size() > 1) {
-        Fonts().setLanguageKey(locale_keys[1]);
+        [[maybe_unused]] bool result = Fonts().setLanguageKey(locale_keys[1]);
         EXPECT_EQ(Fonts().getSelectedLanguageKey(), locale_keys[1]);
     }
 }
@@ -102,13 +102,13 @@ TEST_F(FontSystemTest, LanguageSelectionByKey) {
 
     // 最初の言語 (en-US) を選択
     if (!locale_keys.empty()) {
-        Fonts().setLanguageKey(locale_keys[0]); // en-US
+        [[maybe_unused]] bool result = Fonts().setLanguageKey(locale_keys[0]); // en-US
         EXPECT_EQ(Fonts().getSelectedLanguageKey(), locale_keys[0]);
     }
 
     // 2番目の言語 (ja-JP) を選択
     if (locale_keys.size() > 1) {
-        Fonts().setLanguageKey(locale_keys[1]); // ja-JP
+        [[maybe_unused]] bool result = Fonts().setLanguageKey(locale_keys[1]); // ja-JP
         EXPECT_EQ(Fonts().getSelectedLanguageKey(), locale_keys[1]);
     }
 }

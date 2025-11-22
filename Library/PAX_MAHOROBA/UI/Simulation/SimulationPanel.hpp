@@ -77,7 +77,13 @@ namespace paxs {
             );
         }
 
-        void onControlButtonClicked(SimulationControlButton::Id id) {
+        void onControlButtonClicked(SimulationControlButton::Id
+#ifdef PAXS_USING_SIMULATOR
+            id
+#else
+            /*id*/
+#endif
+        ) {
 #ifdef PAXS_USING_SIMULATOR
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
             auto& event_bus = EventBus::getInstance();
@@ -137,8 +143,13 @@ namespace paxs {
         // コンストラクタ
         SimulationPanel(
             const paxs::FeatureVisibilityManager& visibility_manager,
+#ifdef PAXS_USING_SIMULATOR
             AppStateManager& app_state_manager,
             const UILayout& ui_layout
+#else
+            AppStateManager& /*app_state_manager*/,
+            const UILayout& /*ui_layout*/
+#endif
         ) : visibility_manager_(visibility_manager),
 #ifdef PAXS_USING_SIMULATOR
             ui_layout_(ui_layout),
