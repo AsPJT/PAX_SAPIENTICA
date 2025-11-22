@@ -31,15 +31,7 @@ if(NOT SFML_FOUND)
     # Add cmake module path
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 
-    if(WIN32 OR APPLE)
-        # Set SFML_ROOT_DIR for project-local SFML installation
-        if(NOT SFML_ROOT_DIR)
-            set(SFML_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0")
-        endif()
-        find_package(SFMLCustom REQUIRED)
-    elseif(UNIX)
-        find_package(SFML COMPONENTS Graphics QUIET)
-    endif()
+    find_package(SFMLCustom QUIET)
 endif()
 
 if(PAXS_BUILD_TYPE STREQUAL "Development")
