@@ -135,8 +135,8 @@ namespace paxs {
         static constexpr int ICON_MOVE_Y = static_cast<int>(TIME_ICON_SIZE * 1.1);
 
         TimeControlButtons(const UILayout& ui_layout, const AppStateManager& app_state_manager)
-            : ui_layout_(ui_layout)
-            , koyomi(app_state_manager.getKoyomi()) {
+            : koyomi(app_state_manager.getKoyomi())
+            , ui_layout_(ui_layout) {
             buildButtons();
         }
 

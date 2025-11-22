@@ -343,17 +343,20 @@ namespace paxs {
 
     public:
         MapViewportInputHandler(MapViewport& viewport)
-            : viewport_(viewport),
-              enl_keys{paxg::Key(paxg::PAXG_KEY_Q)}, esc_keys{paxg::Key(paxg::PAXG_KEY_E)},
+            : enl_keys{paxg::Key(paxg::PAXG_KEY_Q)},
+              esc_keys{paxg::Key(paxg::PAXG_KEY_E)},
               move_left_keys{paxg::Key(paxg::PAXG_KEY_A), paxg::Key(paxg::PAXG_KEY_LEFT)},
               move_right_keys{paxg::Key(paxg::PAXG_KEY_D), paxg::Key(paxg::PAXG_KEY_RIGHT)},
               move_up_keys{paxg::Key(paxg::PAXG_KEY_W), paxg::Key(paxg::PAXG_KEY_UP)},
               move_down_keys{paxg::Key(paxg::PAXG_KEY_S), paxg::Key(paxg::PAXG_KEY_DOWN)}
 #ifdef __ANDROID__
-            , touch_num(0), old_touch_num(0)
-            , pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
-            , old_pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
+              , touch_num(0), old_touch_num(0)
+              , pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
+              , old_pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
 #endif
+              , viewport_(viewport)
+              , is_dragging_(false)
+              , drag_event_fired_(false)
         {}
 
         /// @brief キーボードイベント処理

@@ -271,8 +271,8 @@ namespace paxs {
 
     public:
         MapContentLayer(const AppStateManager& app_state_manager)
-            : app_state_manager_(app_state_manager)
-            , map_viewport_(app_state_manager.getMapViewport()) {
+            : map_viewport_(app_state_manager.getMapViewport())
+            , app_state_manager_(app_state_manager) {
             // データロード（初回のみ）
             if (features_.empty()) {
                 loadAllFeatures();

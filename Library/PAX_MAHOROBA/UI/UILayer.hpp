@@ -182,19 +182,29 @@ namespace paxs {
     public:
         UILayer(AppStateManager& app_state_manager)
             : visible_manager(app_state_manager.getVisibilityManager()),
+              ui_layout(),
               calendar_panel(ui_layout, visible_manager, app_state_manager),
-              debug_info_panel(ui_layout, visible_manager, app_state_manager.getMapViewport(), app_state_manager.getKoyomi()),
-              feature_info_panel(ui_layout, visible_manager),
-#ifdef PAXS_USING_SIMULATOR
-              settlement_status_panel(visible_manager),
-              simulation_panel(visible_manager, app_state_manager, ui_layout),
-#endif
               calendar_bg_("CalendarBackground", &ui_layout.calendar_panel),
+              debug_info_panel(ui_layout, visible_manager, app_state_manager.getMapViewport(), app_state_manager.getKoyomi()),
               debug_info_bg_("DebugInfoBackground", &ui_layout.debug_info_panel),
+              feature_info_panel(ui_layout, visible_manager),
               feature_info_bg_("FeatureInfoBackground", &feature_info_panel)
 #ifdef PAXS_USING_SIMULATOR
+              , simulation_panel(visible_manager, app_state_manager, ui_layout)
               , simulation_bg_("SimulationBackground", &ui_layout.simulation_panel)
+              , settlement_status_panel(visible_manager)
               , settlement_status_bg_("SettlementStatusBackground", &ui_layout.settlement_status_panel)
+#endif
+              , panels()
+              , koyomi_date_list_size(0)
+              , window_resize_subscription_()
+              , language_changed_subscription_()
+              , feature_visibility_changed_subscription_()
+              , feature_selected_subscription_()
+              , feature_deselected_subscription_()
+#ifdef PAXS_USING_SIMULATOR
+              , settlement_display_changed_subscription_()
+              , simulation_state_changed_subscription_()
 #endif
         {
             // 影描画用のRenderTextureを最大画面サイズで初期化（一回のみ）

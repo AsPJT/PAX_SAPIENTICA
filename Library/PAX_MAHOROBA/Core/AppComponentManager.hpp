@@ -57,17 +57,18 @@ namespace paxs {
     public:
         AppComponentManager(AppStateManager& app_state)
             : app_state_(app_state)
+            , render_layer_manager_()
             , map_tile_layer_(app_state)
             , map_content_layer_(app_state)
-            , photo360_layer_(app_state.getVisibilityManager())
-            , photo360_input_handler_(photo360_layer_)
-            , ui_layer_(app_state)
-            , menu_bar_(app_state_.getVisibilityManager())
             , map_content_input_handler_(
                 map_content_layer_.getFeatures(),
                 map_content_layer_.getRenderContext(),
                 app_state.getVisibilityManager()
             )
+            , photo360_layer_(app_state.getVisibilityManager())
+            , photo360_input_handler_(photo360_layer_)
+            , ui_layer_(app_state)
+            , menu_bar_(app_state_.getVisibilityManager())
 #ifdef PAXS_USING_SIMULATOR
             , loading_progress_bar_(
                 &app_state.getLoadingHandle(),

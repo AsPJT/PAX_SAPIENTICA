@@ -40,8 +40,8 @@ namespace paxs {
             , const paxs::FeatureVisibilityManager& visibility_manager
             , const AppStateManager& app_state_manager)
             : visibility_manager_(visibility_manager)
-            , calendar_content(ui_layout, app_state_manager.getKoyomi())
-            , time_control_widget_(ui_layout, app_state_manager) {}
+            , time_control_widget_(ui_layout, app_state_manager)
+            , calendar_content(ui_layout, app_state_manager.getKoyomi()) {}
 
         /// @brief ボタンレイアウトを更新（UILayoutが変更された時に呼ぶ）
         void updateButtonLayout() {

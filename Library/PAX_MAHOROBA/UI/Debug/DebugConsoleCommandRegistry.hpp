@@ -37,7 +37,7 @@ public:
     static void registerAllCommands(DebugConsole& console, AppStateManager& app_state) {
         registerMapCommands(console, app_state);
 #ifdef PAXS_USING_SIMULATOR
-        registerSimulationCommands(console, app_state);
+        registerSimulationCommands(console);
 #endif
     }
 
@@ -118,7 +118,7 @@ private:
 #ifdef PAXS_USING_SIMULATOR
     /// @brief シミュレーション関連コマンドを登録
     /// @brief Register simulation-related commands
-    static void registerSimulationCommands(DebugConsole& console, AppStateManager& app_state) {
+    static void registerSimulationCommands(DebugConsole& console) {
         // sim init [model_name]: シミュレーションを初期化
         console.registerCommand("sim", [](const std::vector<std::string>& args) {
             if (args.size() < 2) {

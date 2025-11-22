@@ -35,16 +35,22 @@ private:
     bool tab_key_was_pressed_ = false;
     bool p_key_was_pressed_ = false;
     bool v_key_was_pressed_ = false;
+#ifdef PAXS_DEVELOPMENT
     bool enter_key_was_pressed_ = false;
     bool backspace_key_was_pressed_ = false;
     bool up_key_was_pressed_ = false;
     bool down_key_was_pressed_ = false;
     bool left_key_was_pressed_ = false;
     bool right_key_was_pressed_ = false;
+#endif
     int test_notification_counter_ = 0;
 
+#ifdef PAXS_DEVELOPMENT
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
     // 文字入力用のキー状態（簡易実装）
     std::map<int, bool> key_states_;
+#endif
+#endif
 
     // テスト用変数
     int test_int_value_ = 42;

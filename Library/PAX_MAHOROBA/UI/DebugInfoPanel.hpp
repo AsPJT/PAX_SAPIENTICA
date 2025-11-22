@@ -52,9 +52,9 @@ namespace paxs {
             const paxs::FeatureVisibilityManager& visible_manager,
             const MapViewport& map_viewport,
             const Koyomi& koyomi)
-            : ui_layout_(ui_layout)
-            , visible_manager_(visible_manager)
+            : visible_manager_(visible_manager)
             , map_viewport_(map_viewport)
+            , ui_layout_(ui_layout)
             , koyomi_(koyomi) {}
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {

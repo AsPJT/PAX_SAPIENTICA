@@ -329,7 +329,7 @@ namespace paxs {
 
     public:
         CalendarContent(const paxs::UILayout& ui_layout, const paxs::Koyomi& koyomi)
-        : ui_layout_(ui_layout), koyomi_(koyomi) {}
+        : koyomi_(koyomi), ui_layout_(ui_layout) {}
 
         void render() const override {
             renderInternal();
