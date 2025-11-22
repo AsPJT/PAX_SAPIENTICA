@@ -52,7 +52,6 @@ public:
         : data_(data)
         , renderer_(model_config)
     {
-        visible_ = true;
     }
 
     // ========== 基本情報 / Basic Information ==========
@@ -176,6 +175,7 @@ private:
 
     // キャッシュされた状態 / Cached state
     WrappedScreenPositions cached_screen_positions_;  ///< 経度ラップされたスクリーン座標 / Wrapped screen positions
+    bool visible_ = true;                              ///< 可視性 / Visibility
 };
 
 } // namespace paxs

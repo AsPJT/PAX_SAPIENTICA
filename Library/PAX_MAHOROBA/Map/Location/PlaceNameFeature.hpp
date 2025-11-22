@@ -19,10 +19,12 @@
 
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
+#include <PAX_MAHOROBA/Map/Location/IUpdatable.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
@@ -37,7 +39,8 @@ namespace paxs {
 
 /// @brief 地名（テキストのみ）を表す地物クラス
 /// @brief Feature class representing a place name (text only)
-class PlaceNameFeature : public MapFeature {
+/// @details 空間更新とローカライゼーション更新が必要（時間更新は不要）
+class PlaceNameFeature : public MapFeature, public ISpatiallyUpdatable, public ILocalizable {
 private:
     static constexpr std::uint_least32_t place_names_domain_hash = MurMur3::calcHash("PlaceNames");
 
@@ -45,7 +48,6 @@ public:
     /// @param data 地名の位置データ / Place location data
     PlaceNameFeature(const LocationPoint& data)
         : data_(data) {
-        visible_ = true;
     }
 
     FeatureType getType() const override {
@@ -75,21 +77,29 @@ public:
         return data_.feature_type_hash;
     }
 
-    void update(const RenderContext& context) override {
+    // ========== 更新メソッド / Update Methods ==========
+
+    /// @brief 空間的更新（ISpatiallyUpdatableの実装）
+    /// @brief Spatial update (ISpatiallyUpdatable implementation)
+    void updateSpatial(const SpatialContext& context) override {
         // 地物種別の可視性チェック（最優先）
         if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
             cached_screen_positions_.clear();
+            visible_ = false;
             return;
         }
+
         // 空間フィルタリング：ビューの範囲外の場合はスキップ
         if (!context.isInViewBounds(data_.coordinate)) {
             cached_screen_positions_.clear();
+            visible_ = false;
             return;
         }
 
         // ズームレベルフィルタリング：範囲外の場合はスキップ
         if (data_.zoom_range.excludes(context.map_view_size.y)) {
             cached_screen_positions_.clear();
+            visible_ = false;
             return;
         }
 
@@ -100,16 +110,44 @@ public:
             context.map_view_center,
             cached_screen_positions_
         );
+        visible_ = true;
+    }
+
+    /// @brief ローカライゼーション更新（ILocalizableの実装）
+    /// @brief Localization update (ILocalizable implementation)
+    void updateLocalization(const LocalizationContext& context) override {
+        // 名前を取得してキャッシュ
+        cached_name_ = getName();
 
         // フォントからテキストサイズを計算
-        if (context.font != nullptr) {
-            const std::string name = getName();
-            cached_text_size_ = Vector2<int>(context.font->width(name), context.font->height());
+        if (context.font != nullptr && !cached_name_.empty()) {
+            cached_text_size_ = Vector2<int>(context.font->width(cached_name_), context.font->height());
         } else {
             // フォントが利用できない場合はデフォルト値を使用
             cached_text_size_ = Vector2<int>(100, 20);
         }
         cached_display_size_ = cached_text_size_.y;
+    }
+
+    /// @brief 既存のupdate()メソッド（後方互換性のため維持）
+    /// @brief Legacy update() method (kept for backward compatibility)
+    /// @deprecated Use updateSpatial() and updateLocalization() instead
+    void update(const RenderContext& context) override {
+        // RenderContextをSpatialContextとして扱う
+        SpatialContext spatial_ctx;
+        spatial_ctx.visibility_manager = context.visibility_manager;
+        spatial_ctx.texture_map = context.texture_map;
+        spatial_ctx.map_view_size = context.map_view_size;
+        spatial_ctx.map_view_center = context.map_view_center;
+        updateSpatial(spatial_ctx);
+
+        // RenderContextをLocalizationContextとして扱う
+        LocalizationContext localization_ctx;
+        localization_ctx.visibility_manager = context.visibility_manager;
+        localization_ctx.texture_map = context.texture_map;
+        localization_ctx.font = context.font;
+        localization_ctx.language_key = 0; // RenderContextには言語情報がないのでデフォルト値
+        updateLocalization(localization_ctx);
     }
 
     bool isVisible() const override {
@@ -164,6 +202,8 @@ private:
     WrappedScreenPositions cached_screen_positions_;  ///< 経度ラップされたスクリーン座標 / Wrapped screen positions
     int cached_display_size_ = 50;
     Vector2<int> cached_text_size_{100, 20};  ///< キャッシュされたテキストサイズ / Cached text size
+    std::string cached_name_;  ///< キャッシュされた名前 / Cached name
+    bool visible_ = true;  ///< 可視性 / Visibility
 };
 
 } // namespace paxs

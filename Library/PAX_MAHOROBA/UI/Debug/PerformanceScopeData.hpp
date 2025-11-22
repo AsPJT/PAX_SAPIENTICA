@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <deque>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace paxs {
@@ -45,9 +46,9 @@ public:
 
     PerformanceScopeData() = default;
 
-    explicit PerformanceScopeData(const std::string& scope_name, const std::string& parent = "", int d = 0)
-        : name(scope_name)
-        , parent_name(parent)
+    explicit PerformanceScopeData(std::string  scope_name, std::string  parent = "", int d = 0)
+        : name(std::move(scope_name))
+        , parent_name(std::move(parent))
         , depth(d)
     {}
 

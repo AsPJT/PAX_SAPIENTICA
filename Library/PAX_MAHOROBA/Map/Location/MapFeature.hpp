@@ -107,9 +107,6 @@ public:
         // デフォルト実装は何もしない / Default implementation does nothing
         (void)context;
     }
-
-protected:
-    bool visible_ = true;           ///< 可視性 / Visibility
 };
 
 } // namespace paxs

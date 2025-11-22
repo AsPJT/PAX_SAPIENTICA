@@ -19,10 +19,12 @@
 
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
+#include <PAX_MAHOROBA/Map/Location/IUpdatable.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
@@ -36,7 +38,8 @@ namespace paxs {
 
 /// @brief 地理的地物（アイコン）を表す地物クラス
 /// @brief Feature class representing a geographic feature (icon)
-class GeographicFeature : public MapFeature {
+/// @details 空間更新のみ必要（時間・ローカライゼーションは不要）
+class GeographicFeature : public MapFeature, public ISpatiallyUpdatable {
 public:
     /// @brief コンストラクタ
     /// @brief Constructor
@@ -80,22 +83,27 @@ public:
 
     // ========== 状態管理 / State Management ==========
 
-    void update(const RenderContext& context) override {
+    /// @brief 空間的更新（ISpatiallyUpdatableの実装）
+    /// @brief Spatial update (ISpatiallyUpdatable implementation)
+    void updateSpatial(const SpatialContext& context) override {
         // 地物種別の可視性チェック（最優先）
         if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
             cached_screen_positions_.clear();
+            visible_ = false;
             return;
         }
 
         // 空間フィルタリング：ビューの範囲外の場合はスキップ
         if (!context.isInViewBounds(data_.coordinate)) {
             cached_screen_positions_.clear();
+            visible_ = false;
             return;
         }
 
         // ズームレベルフィルタリング：範囲外の場合はスキップ
         if (data_.zoom_range.excludes(context.map_view_size.y)) {
             cached_screen_positions_.clear();
+            visible_ = false;
             return;
         }
 
@@ -122,6 +130,21 @@ public:
         } else {
             cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
         }
+
+        visible_ = true;
+    }
+
+    /// @brief 既存のupdate()メソッド（後方互換性のため維持）
+    /// @brief Legacy update() method (kept for backward compatibility)
+    /// @deprecated Use updateSpatial() instead
+    void update(const RenderContext& context) override {
+        // RenderContextをSpatialContextとして扱う
+        SpatialContext spatial_ctx;
+        spatial_ctx.visibility_manager = context.visibility_manager;
+        spatial_ctx.texture_map = context.texture_map;
+        spatial_ctx.map_view_size = context.map_view_size;
+        spatial_ctx.map_view_center = context.map_view_center;
+        updateSpatial(spatial_ctx);
     }
 
     bool isVisible() const override {
@@ -198,6 +221,7 @@ private:
     WrappedScreenPositions cached_screen_positions_; ///< 経度ラップされたスクリーン座標 / Wrapped screen positions
     int cached_display_size_ = 50;                     ///< 表示サイズ / Display size
     Vector2<int> cached_texture_size_{50, 50};         ///< キャッシュされたテクスチャサイズ / Cached texture size
+    bool visible_ = true;                              ///< 可視性 / Visibility
 };
 
 } // namespace paxs

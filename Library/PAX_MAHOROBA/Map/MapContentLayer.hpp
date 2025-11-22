@@ -24,13 +24,17 @@
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Map/Location/GenomeFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/GeographicFeature.hpp>
+#include <PAX_MAHOROBA/Map/Location/IUpdatable.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeatureRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
+#include <PAX_MAHOROBA/UI/Debug/PerformanceScope.hpp>
 #include <PAX_MAHOROBA/Map/MapAssetRegistry.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
@@ -55,7 +59,8 @@ namespace paxs {
     private:
         // 新しいFeatureベース構造
         std::vector<std::unique_ptr<MapFeature>> features_; ///< 地物のコレクション / Collection of features
-        RenderContext render_context_; ///< 描画コンテキスト / Render context
+        RenderContext render_context_; ///< 描画コンテキスト（後方互換性のため維持） / Render context (kept for backward compatibility)
+        UnifiedContext unified_context_; ///< 統合コンテキスト（新しい更新機構用） / Unified context (for new update mechanism)
 
         // アセット管理
         MapAssetRegistry asset_registry_; ///< 地図アイコンアセットレジストリ / Map icon asset registry
@@ -97,11 +102,11 @@ namespace paxs {
             paxs::EventBus& event_bus = paxs::EventBus::getInstance();
 
             // ビューポート変更イベントの購読
-            // すべてのコンテンツを更新（ビューポート変更時は全て再描画が必要）
+            // 空間的な更新のみ実施（座標変換、範囲チェック、ズームフィルタ）
             event_bus.subscribe<ViewportChangedEvent>(
                 [this](const ViewportChangedEvent& event) {
                     (void)event;
-                    updateAllFeatures();
+                    updateAllSpatial();
 #ifdef PAXS_USING_SIMULATOR
                     updateSettlementData();
 #endif
@@ -109,11 +114,20 @@ namespace paxs {
             );
 
             // 日付変更イベントの購読
-            // Settlement以外のコンテンツを更新（人物肖像画、地理的特徴は日付依存）
+            // 時間的な更新のみ実施（PersonFeatureの補間座標計算など）
             event_bus.subscribe<DateChangedEvent>(
                 [this](const DateChangedEvent& event) {
                     (void)event;
-                    updateAllFeatures();
+                    updateAllTemporal();
+                }
+            );
+
+            // 言語変更イベントの購読
+            // ローカライゼーション更新のみ実施（フォント幅計算、名前の再取得）
+            event_bus.subscribe<LanguageChangedEvent>(
+                [this](const LanguageChangedEvent& event) {
+                    (void)event;
+                    updateAllLocalization();
                 }
             );
 
@@ -167,6 +181,79 @@ namespace paxs {
             for (auto& feature : features_) {
                 if (feature && feature->isInTimeRange(render_context_.jdn)) {
                     feature->update(render_context_);
+                }
+            }
+        }
+
+        /// @brief UnifiedContextを更新
+        /// @brief Update UnifiedContext
+        void updateUnifiedContext() {
+            const auto& koyomi = app_state_manager_.getKoyomi();
+            unified_context_.jdn = koyomi.jdn.getDay();
+            unified_context_.map_view_size = map_viewport_.getSize();
+            unified_context_.map_view_center = map_viewport_.getCenter();
+            unified_context_.visibility_manager = &app_state_manager_.getVisibilityManager();
+            unified_context_.texture_map = &asset_registry_.getMergedMap();
+            unified_context_.font = Fonts().getFont(FontProfiles::MAIN);
+            unified_context_.language_key = Fonts().getSelectedLanguageKey();
+        }
+
+        /// @brief 全地物の空間的更新
+        /// @brief Update all features spatially
+        void updateAllSpatial() {
+            PERF_SCOPE("MapContentLayer::updateAllSpatial");
+            updateUnifiedContext();
+            const SpatialContext ctx = unified_context_.toSpatial();
+
+            for (auto& feature : features_) {
+                if (!feature || !feature->isInTimeRange(unified_context_.jdn)) {
+                    continue;
+                }
+
+                // ISpatiallyUpdatableを実装している地物のみ更新
+                if (auto* spatial = dynamic_cast<ISpatiallyUpdatable*>(feature.get())) {
+                    spatial->updateSpatial(ctx);
+                }
+            }
+        }
+
+        /// @brief 全地物の時間的更新
+        /// @brief Update all features temporally
+        void updateAllTemporal() {
+            PERF_SCOPE("MapContentLayer::updateAllTemporal");
+            updateUnifiedContext();
+            const TemporalContext ctx = unified_context_.toTemporal();
+
+            for (auto& feature : features_) {
+                if (!feature) {
+                    continue;
+                }
+
+                // ITemporallyUpdatableを実装している地物のみ更新
+                if (auto* temporal = dynamic_cast<ITemporallyUpdatable*>(feature.get())) {
+                    // 時間範囲チェックは更新前に行う
+                    if (feature->isInTimeRange(unified_context_.jdn)) {
+                        temporal->updateTemporal(ctx);
+                    }
+                }
+            }
+        }
+
+        /// @brief 全地物のローカライゼーション更新
+        /// @brief Update all features for localization
+        void updateAllLocalization() {
+            PERF_SCOPE("MapContentLayer::updateAllLocalization");
+            updateUnifiedContext();
+            const LocalizationContext ctx = unified_context_.toLocalization();
+
+            for (auto& feature : features_) {
+                if (!feature || !feature->isInTimeRange(unified_context_.jdn)) {
+                    continue;
+                }
+
+                // ILocalizableを実装している地物のみ更新
+                if (auto* localizable = dynamic_cast<ILocalizable*>(feature.get())) {
+                    localizable->updateLocalization(ctx);
                 }
             }
         }
@@ -278,8 +365,12 @@ namespace paxs {
                 loadAllFeatures();
             }
             subscribeToEvents();
-            // 初回更新を即座に実行
-            updateAllFeatures();
+            // 初回更新を即座に実行（全ての更新が必要）
+            // 注意: PersonFeatureはupdateTemporal()で補間座標を計算するため、
+            //       updateSpatial()の前にupdateTemporal()を呼ぶ必要がある
+            updateAllTemporal();
+            updateAllSpatial();
+            updateAllLocalization();
 #ifdef PAXS_USING_SIMULATOR
             updateSettlementData();
 #endif
@@ -301,7 +392,16 @@ namespace paxs {
 #endif
 
             if (app_state_manager_.getVisibilityManager().isVisible(ViewMenu::map)) {
-                MapFeatureRenderer::drawFeatures(features_, render_context_, asset_registry_.getMergedMap());
+                // RenderContextをUnifiedContextから作成（描画時点の最新状態を使用）
+                RenderContext current_render_context;
+                current_render_context.jdn = unified_context_.jdn;
+                current_render_context.map_view_size = unified_context_.map_view_size;
+                current_render_context.map_view_center = unified_context_.map_view_center;
+                current_render_context.visibility_manager = unified_context_.visibility_manager;
+                current_render_context.texture_map = unified_context_.texture_map;
+                current_render_context.font = unified_context_.font;
+
+                MapFeatureRenderer::drawFeatures(features_, current_render_context, asset_registry_.getMergedMap());
             }
 
         }

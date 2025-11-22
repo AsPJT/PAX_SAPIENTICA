@@ -19,10 +19,12 @@
 
 #include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
 #include <PAX_MAHOROBA/Map/Location/FeatureType.hpp>
+#include <PAX_MAHOROBA/Map/Location/IUpdatable.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapCoordinateConverter.hpp>
 #include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/RenderContext.hpp>
+#include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
@@ -38,7 +40,11 @@ namespace paxs {
 
 /// @brief 人物（肖像画+名前）を表す地物クラス
 /// @brief Feature class representing a person (portrait + name)
-class PersonFeature : public MapFeature {
+/// @details 空間・時間・ローカライゼーション全ての更新が必要
+class PersonFeature : public MapFeature,
+                      public ISpatiallyUpdatable,
+                      public ITemporallyUpdatable,
+                      public ILocalizable {
 public:
     /// @param data 人物の位置データ / Person location data
     /// @param group_data 人物グループデータ / Person group data
@@ -75,22 +81,31 @@ public:
         return data_.feature_type_hash;
     }
 
-    void update(const RenderContext& context) override {
-        // 地物種別の可視性チェック（最優先）
-        if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
-            cached_screen_positions_.clear();
-            return;
-        }
-
+    /// @brief 時間的更新（ITemporallyUpdatableの実装）
+    /// @brief Temporal update (ITemporallyUpdatable implementation)
+    void updateTemporal(const TemporalContext& context) override {
         // 時間補間座標の計算
         interpolated_pos_ = MapCoordinateConverter::interpolatePosition(
             data_.start_coordinate, data_.end_coordinate,
             context.jdn, data_.year_range.minimum, data_.year_range.maximum
         );
+        cached_jdn_ = context.jdn;
+    }
 
-        // 空間フィルタリング：ビューの範囲外の場合はスキップ
+    /// @brief 空間的更新（ISpatiallyUpdatableの実装）
+    /// @brief Spatial update (ISpatiallyUpdatable implementation)
+    void updateSpatial(const SpatialContext& context) override {
+        // 地物種別の可視性チェック（最優先）
+        if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
+            cached_screen_positions_.clear();
+            visible_ = false;
+            return;
+        }
+
+        // 空間フィルタリング：ビューの範囲外の場合はスキップ（補間済み座標を使用）
         if (!context.isInViewBounds(interpolated_pos_)) {
             cached_screen_positions_.clear();
+            visible_ = false;
             return;
         }
 
@@ -102,13 +117,11 @@ public:
             cached_screen_positions_
         );
 
-        // 表示サイズの計算
+        // 表示サイズの計算（ズーム範囲チェック）
         const bool out_of_range = data_.zoom_range.excludes(context.map_view_size.x);
-        cached_display_size_ = out_of_range
-            ? 5  // 範囲外時の小さい表示サイズ
-            : 60;  // 120 / 2
+        cached_display_size_ = out_of_range ? 5 : 60;
 
-        // テクスチャサイズとテキストサイズを取得
+        // テクスチャサイズを取得
         const std::uint_least32_t tex_key = (data_.texture_key == 0) ? group_data_.texture_key : data_.texture_key;
         if (context.texture_map != nullptr) {
             const auto iterator = context.texture_map->find(tex_key);
@@ -122,14 +135,45 @@ public:
             cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
         }
 
-        if (!out_of_range && context.font != nullptr) {
-            const std::string name = getName();
-            cached_text_size_ = Vector2<int>(context.font->width(name), context.font->height());
+        visible_ = true;
+    }
+
+    /// @brief ローカライゼーション更新（ILocalizableの実装）
+    /// @brief Localization update (ILocalizable implementation)
+    void updateLocalization(const LocalizationContext& context) override {
+        // 名前を取得（言語に応じて変わる）
+        cached_name_ = getName();
+
+        // フォント幅を計算（ズーム範囲内の場合のみ）
+        const bool out_of_range = data_.zoom_range.excludes(cached_display_size_);
+        if (!out_of_range && context.font != nullptr && !cached_name_.empty()) {
+            cached_text_size_ = Vector2<int>(context.font->width(cached_name_), context.font->height());
         } else {
             cached_text_size_ = Vector2<int>(0, 0);
         }
+    }
 
-        cached_jdn_ = context.jdn;
+    /// @brief 既存のupdate()メソッド（後方互換性のため維持）
+    /// @brief Legacy update() method (kept for backward compatibility)
+    /// @deprecated Use updateTemporal(), updateSpatial(), and updateLocalization() instead
+    void update(const RenderContext& context) override {
+        // 時間的更新
+        TemporalContext temporal_ctx;
+        temporal_ctx.jdn = context.jdn;
+        updateTemporal(temporal_ctx);
+
+        // 空間的更新
+        SpatialContext spatial_ctx;
+        spatial_ctx.visibility_manager = context.visibility_manager;
+        spatial_ctx.texture_map = context.texture_map;
+        spatial_ctx.map_view_size = context.map_view_size;
+        spatial_ctx.map_view_center = context.map_view_center;
+        updateSpatial(spatial_ctx);
+
+        // ローカライゼーション更新
+        LocalizationContext loc_ctx;
+        loc_ctx.font = context.font;
+        updateLocalization(loc_ctx);
     }
 
     bool isVisible() const override {
@@ -216,7 +260,9 @@ private:
     int cached_display_size_ = 60;                    ///< 表示サイズ / Display size
     Vector2<int> cached_texture_size_{60, 60};        ///< キャッシュされたテクスチャサイズ / Cached texture size
     Vector2<int> cached_text_size_{0, 0};             ///< キャッシュされたテキストサイズ / Cached text size
+    std::string cached_name_;                         ///< キャッシュされた名前 / Cached name
     double cached_jdn_ = 0.0;                         ///< キャッシュされたJDN / Cached JDN
+    bool visible_ = true;                             ///< 可視性 / Visibility
 };
 
 } // namespace paxs
