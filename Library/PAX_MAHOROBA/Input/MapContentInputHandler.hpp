@@ -58,14 +58,6 @@ namespace paxs {
                 return EventHandlingResult::NotHandled();
             }
 
-            // キャッシュが有効かチェック
-            if (!hit_cache_.valid || hit_cache_.cached_pos != event.pos) {
-                // isHit() が先に呼ばれているはずだが、念のため再チェック
-                if (!isHit(event.pos)) {
-                    return EventHandlingResult::NotHandled();
-                }
-            }
-
             // キャッシュされたFeatureに対してonClickを呼び出し
             if (hit_cache_.hit_feature != nullptr) {
                 ClickContext context;
@@ -75,9 +67,9 @@ namespace paxs {
 
                 // EventBus経由でFeatureSelectedEventを発行
                 EventBus::getInstance().publish(FeatureSelectedEvent(hit_cache_.hit_feature));
-                return EventHandlingResult::Handled();
             }
 
+            // 地図のドラッグ処理を妨げないようにNotHandledを返す
             return EventHandlingResult::NotHandled();
         }
 

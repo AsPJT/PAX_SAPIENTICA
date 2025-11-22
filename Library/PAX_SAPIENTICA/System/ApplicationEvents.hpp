@@ -14,11 +14,11 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationState.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
-#include <utility>
 
 namespace paxs {
 
@@ -28,6 +28,18 @@ struct WindowResizedEvent : Event {
 
     explicit WindowResizedEvent(Vector2<int> size)
         : new_size(size) {}
+};
+
+/// @brief UIレイアウト変更イベント
+/// @brief UI layout changed event (triggered after layout recalculation)
+struct UILayoutChangedEvent : Event {
+    UILayoutChangedEvent() = default;
+};
+
+/// @brief マップビューポートのドラッグ開始イベント
+/// @brief Map viewport drag started event (fired once when drag movement actually begins)
+struct MapViewportDragStartedEvent : Event {
+    MapViewportDragStartedEvent() = default;
 };
 
 /// @brief 言語設定変更イベント（通知用）

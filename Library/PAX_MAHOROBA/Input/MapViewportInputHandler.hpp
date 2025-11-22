@@ -25,6 +25,9 @@
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
+
 namespace paxs {
 
     /// @brief MapViewport の入力処理を担当するクラス（UI層）
@@ -51,6 +54,9 @@ namespace paxs {
 
         /// @brief ドラッグ中フラグ（地図上でドラッグが開始されたか）
         bool is_dragging_ = false;
+
+        /// @brief ドラッグイベント発行済みフラグ（ドラッグ開始イベントを既に発行したか）
+        bool drag_event_fired_ = false;
 
         /// @brief マウスホイールによるズーム処理
         bool handleMouseWheelZoom(const MouseWheelEvent& event) {
@@ -355,6 +361,12 @@ namespace paxs {
             }
             // ドラッグ中（Held状態）：ドラッグフラグONの時にドラッグ処理
             else if (event.left_button_state == MouseButtonState::Held && is_dragging_) {
+                // 実際にマウスが動いた時のみイベントを発行（初回のみ）
+                if (!drag_event_fired_ && (event.pos.x != event.prev_pos.x || event.pos.y != event.prev_pos.y)) {
+                    drag_event_fired_ = true;
+                    EventBus::getInstance().publish(MapViewportDragStartedEvent());
+                }
+
                 handleMouseDrag(event);
                 viewport_.applyConstraints();
                 viewport_.notifyViewportChanged();
@@ -366,6 +378,7 @@ namespace paxs {
                 if (is_dragging_) {
                     // ドラッグフラグON + Up時：フラグを外して処理完了（UIには渡さない）
                     is_dragging_ = false;
+                    drag_event_fired_ = false;  // イベント発行フラグもリセット
                     return EventHandlingResult::Handled();
                 }
                 // ドラッグフラグOFFの場合は NotHandled でUIに処理させる

@@ -100,6 +100,8 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
                     simulation_panel.calculateLayout();
 #endif
+                    // UIレイアウト変更イベントを発行
+                    paxs::EventBus::getInstance().publish(UILayoutChangedEvent());
                 }
             );
 
@@ -112,6 +114,8 @@ namespace paxs {
 #ifdef PAXS_USING_SIMULATOR
                     simulation_panel.calculateLayout();
 #endif
+                    // UIレイアウト変更イベントを発行
+                    paxs::EventBus::getInstance().publish(UILayoutChangedEvent());
                 }
             );
 

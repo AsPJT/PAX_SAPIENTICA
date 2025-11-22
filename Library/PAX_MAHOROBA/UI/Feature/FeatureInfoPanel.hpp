@@ -27,6 +27,7 @@
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
@@ -72,11 +73,15 @@ namespace paxs {
         paxs::UnorderedMap<std::uint_least32_t, std::string> extra_data_;
 
         // 動的に計算されるパネルの高さ
-        mutable int calculated_height_ = 0;
-        mutable int calculated_lines_ = 0;
+        int calculated_height_ = 0;
+        int calculated_lines_ = 0;
 
         // 閉じるボタン
         FeatureCloseButton close_button_;
+
+        // イベント購読（RAII対応）
+        ScopedSubscription ui_layout_changed_subscription_;
+        ScopedSubscription map_drag_started_subscription_;
 
         /// @brief パネルのY座標を計算（下部固定）
         int calculatePanelY() const {
@@ -87,15 +92,160 @@ namespace paxs {
 
         /// @brief 閉じるボタンの位置を更新
         /// @brief Update close button position
-        void updateCloseButtonPosition() const {
+        void updateCloseButtonPosition() {
             const int panel_y = calculatePanelY();
             const int close_button_size = 20;
             const int close_button_x = ui_layout_.feature_info_panel.x +
                                       ui_layout_.feature_info_panel.width - close_button_size - 5;
             const int close_button_y = panel_y + 5;
 
-            // constメソッドからsetPosを呼ぶため、const_castを使用
-            const_cast<FeatureCloseButton&>(close_button_).setPos(Vector2<int>{ close_button_x, close_button_y });
+            close_button_.setPos(Vector2<int>{ close_button_x, close_button_y });
+        }
+
+        /// @brief パネルの状態を更新
+        /// @brief Update panel state (positions, layout, etc.)
+        void update() {
+            if (!isVisible()) {
+                return;
+            }
+
+            updateCloseButtonPosition();
+            // 将来的に他の更新処理もここに追加可能
+        }
+
+        /// @brief テキストの必要行数を計算
+        /// @brief Calculate required lines for text
+        /// @param text 計算するテキスト / Text to calculate
+        /// @param max_width 最大幅 / Maximum width
+        /// @return 必要な行数 / Required number of lines
+        static int calculateTextLines(const std::string& text, int max_width) {
+            if (text.empty()) {
+                return 0;
+            }
+
+            const int avg_char_width = 12;
+            const int max_chars_per_line = max_width / avg_char_width;
+
+            int line_count = 0;
+            std::string remaining_text = text;
+
+            while (!remaining_text.empty()) {
+                std::size_t split_pos = max_chars_per_line;
+
+                if (remaining_text.length() <= split_pos) {
+                    line_count++;
+                    break;
+                }
+
+                std::size_t last_space = remaining_text.rfind(' ', split_pos);
+                std::size_t last_comma = remaining_text.rfind(',', split_pos);
+                std::size_t last_jp_comma = remaining_text.rfind(reinterpret_cast<const char*>(u8"、"), split_pos);
+
+                std::size_t actual_split = split_pos;
+                if (last_space != std::string::npos && last_space > split_pos / 2) {
+                    actual_split = last_space + 1;
+                } else if (last_comma != std::string::npos && last_comma > split_pos / 2) {
+                    actual_split = last_comma + 1;
+                } else if (last_jp_comma != std::string::npos && last_jp_comma > split_pos / 2) {
+                    actual_split = last_jp_comma + 3;
+                }
+
+                line_count++;
+                remaining_text = remaining_text.substr(actual_split);
+            }
+
+            return line_count;
+        }
+
+        /// @brief パネルに必要な行数を計算
+        /// @brief Calculate required lines for panel content
+        /// @return 必要な行数 / Required number of lines
+        int calculateRequiredLines() const {
+            const int padding_left = 10;
+            const int max_text_width = ui_layout_.feature_info_panel.width - padding_left * 2;
+
+            int total_lines = 0;
+
+            // タイトル（1行）
+            const std::string* title_text = Fonts().getLocalesText(feature_info_domain_hash, title_key);
+            if (title_text) {
+                total_lines++;
+            }
+
+            // 種別
+            if (!feature_type_name_.empty()) {
+                const std::string* type_label = Fonts().getLocalesText(feature_info_domain_hash, label_type_key);
+                if (type_label) {
+                    total_lines += calculateTextLines(*type_label + " " + feature_type_name_, max_text_width);
+                }
+            }
+
+            // 名前
+            if (!feature_name_.empty()) {
+                const std::string* name_label = Fonts().getLocalesText(feature_info_domain_hash, label_name_key);
+                if (name_label) {
+                    total_lines += calculateTextLines(*name_label + " " + feature_name_, max_text_width);
+                }
+            }
+
+            // 追加情報
+            if (!extra_data_.empty()) {
+                // 空行
+                total_lines++;
+
+                // 既知のカラム
+                struct KnownColumn {
+                    std::uint_least32_t data_hash;
+                    std::uint_least32_t label_key;
+                };
+                const std::array known_columns = {
+                    KnownColumn(location_hash, extra_location_key),
+                    KnownColumn(type_hash, extra_type_key),
+                    KnownColumn(era_hash, extra_era_key),
+                    KnownColumn(site_hash, extra_site_key),
+                    KnownColumn(altitude_hash, extra_altitude_key),
+                    KnownColumn(artifact_hash, extra_artifact_key)
+                };
+
+                for (const auto& col : known_columns) {
+                    const auto iterator = extra_data_.find(col.data_hash);
+                    if (iterator != extra_data_.end()) {
+                        const std::string* label = Fonts().getLocalesText(feature_info_domain_hash, col.label_key);
+                        if (label) {
+                            total_lines += calculateTextLines(*label + ": " + iterator->second, max_text_width);
+                        }
+                    }
+                }
+
+                // 未知のカラム
+                for (const auto& [hash, value] : extra_data_) {
+                    bool is_known = false;
+                    for (const auto& col : known_columns) {
+                        if (hash == col.data_hash) {
+                            is_known = true;
+                            break;
+                        }
+                    }
+
+                    if (!is_known && !value.empty()) {
+                        total_lines += calculateTextLines(value, max_text_width);
+                    }
+                }
+            }
+
+            return total_lines;
+        }
+
+        /// @brief パネルの高さを計算して更新
+        /// @brief Update and update panel height
+        void updatePanelHeight() {
+            const int line_height = 25;
+            const int padding_top = 10;
+            const int padding_bottom = 10;
+
+            const int required_lines = calculateRequiredLines();
+            calculated_lines_ = required_lines;
+            calculated_height_ = ((required_lines + 1) * line_height) + padding_top + padding_bottom;
         }
 
         /// @brief 長い文字列を複数行に分割して描画
@@ -190,6 +340,25 @@ namespace paxs {
                 }
             );
 
+            // UILayoutChangedEventを購読
+            ui_layout_changed_subscription_ = EventBus::getInstance().subscribeScoped<UILayoutChangedEvent>(
+                [this](const UILayoutChangedEvent& event) {
+                    (void)event;
+                    update();
+                }
+            );
+
+            // MapViewportDragStartedEventを購読（パネル表示中のドラッグで非表示化）
+            map_drag_started_subscription_ = EventBus::getInstance().subscribeScoped<MapViewportDragStartedEvent>(
+                [this](const MapViewportDragStartedEvent& event) {
+                    (void)event;
+                    // ドラッグ開始時、パネルが表示されていれば非表示にする
+                    if (isVisible()) {
+                        EventBus::getInstance().publish(FeatureDeselectedEvent());
+                    }
+                }
+            );
+
             // 閉じるボタンのコールバックを設定
             close_button_.setOnClick([this]() {
                 EventBus::getInstance().publish(FeatureDeselectedEvent());
@@ -197,10 +366,9 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!isVisible()) return EventHandlingResult::NotHandled();
-
-            // 閉じるボタンの位置を更新
-            updateCloseButtonPosition();
+            if (!isVisible()) {
+                return EventHandlingResult::NotHandled();
+            }
 
             // 閉じるボタンのヒット判定とイベント処理
             if (close_button_.isHit(event.pos)) {
@@ -211,8 +379,9 @@ namespace paxs {
         }
 
         void render() const override {
-            if (!isVisible()) return;
-            if (selected_feature_ == nullptr) return;
+            if (!isVisible() || selected_feature_ == nullptr) {
+                return;
+            }
 
             paxg::Font* font = Fonts().getFont(paxs::FontProfiles::KOYOMI);
             if (font == nullptr) return;
@@ -341,14 +510,8 @@ namespace paxs {
                 }
             }
 
-            // 閉じるボタンを描画（動的に計算されたパネル位置を使用）
-            updateCloseButtonPosition();
+            // 閉じるボタンを描画
             close_button_.render();
-
-            // 計算された行数と高さを保存
-            calculated_lines_ = current_line;
-            const int padding_bottom = 10;
-            calculated_height_ = (current_line + 1) * line_height + padding_top + padding_bottom;
         }
 
         Rect<int> getRect() const override {
@@ -366,10 +529,9 @@ namespace paxs {
         }
 
         bool isHit(const paxs::Vector2<int>& pos) const override {
-            if (!isVisible()) return false;
-
-            // 閉じるボタンの位置を更新
-            updateCloseButtonPosition();
+            if (!isVisible()) {
+                return false;
+            }
 
             // 閉じるボタンのヒット判定
             return close_button_.isHit(paxs::Vector2<int>(pos.x, pos.y));
@@ -389,7 +551,9 @@ namespace paxs {
         /// @brief Handler for FeatureSelectedEvent
         void onFeatureSelected(const FeatureSelectedEvent& event) {
             selected_feature_ = event.feature;
-            if (selected_feature_ == nullptr) return;
+            if (selected_feature_ == nullptr) {
+                return;
+            }
 
             // Featureの名前を取得
             feature_name_ = selected_feature_->getName();
@@ -449,6 +613,12 @@ namespace paxs {
                 default:
                     break;
             }
+
+            // パネルの高さを計算
+            updatePanelHeight();
+
+            // パネルの状態を更新
+            update();
         }
 
         /// @brief FeatureDeselectedEventのハンドラー
@@ -458,6 +628,9 @@ namespace paxs {
             feature_name_.clear();
             feature_type_name_.clear();
             extra_data_.clear();
+
+            // パネルの状態を更新
+            update();
         }
     };
 
