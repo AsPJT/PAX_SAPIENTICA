@@ -277,6 +277,14 @@ namespace paxg {
         double getY() const {
             return coordinate.y;
         }
+
+        /// @brief Get coordinate as Vector2
+        /// @brief 座標をVector2として取得
+        /// @return Vector2<double> containing x and y coordinates
+        paxs::Vector2<double> getVector2() const {
+            return paxs::Vector2<double>(coordinate.x, coordinate.y);
+        }
+
         void setX(const double x_) {
             coordinate.x = x_;
         }

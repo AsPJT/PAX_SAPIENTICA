@@ -97,7 +97,7 @@ namespace paxs {
         void notifyViewportChanged() {
             const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
             paxs::EventBus::getInstance().publish(ViewportChangedEvent(
-                {center.getX(), center.getY()}, zoom_level));
+                center.getVector2(), zoom_level));
         }
 
         /// @brief ビューポートの境界制約を適用（Domain層の責任）
@@ -111,8 +111,7 @@ namespace paxs {
             width = height / double(paxg::Window::height()) * double(paxg::Window::width());
 
             // 境界制約適用前の座標を保存
-            const double old_center_x = center.getX();
-            const double old_center_y = center.getY();
+            const Vector2<double> old_center = center.getVector2();
 
 #ifdef PAXS_MAHOROBA
             constexpr double west_max = (208.0 / MapViewportConstants::tile_size) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
@@ -149,7 +148,8 @@ namespace paxs {
 #endif
 
             // 座標が変更されたかチェック
-            if (isDifferent(center.getX(), old_center_x) || isDifferent(center.getY(), old_center_y)) {
+            const Vector2<double> new_center = center.getVector2();
+            if (isDifferent(new_center.x, old_center.x) || isDifferent(new_center.y, old_center.y)) {
                 changed = true;
             }
 
@@ -162,7 +162,8 @@ namespace paxs {
             }
         }
         void setCenter(Vector2<double> position) {
-            if (isDifferent(center.getX(), position.x) || isDifferent(center.getY(), position.y)) {
+            const Vector2<double> current_center = center.getVector2();
+            if (isDifferent(current_center.x, position.x) || isDifferent(current_center.y, position.y)) {
                 center.set(position);
             }
         }
@@ -170,14 +171,11 @@ namespace paxs {
         paxg::Coordinate& getCoordinate() {
             return center;
         }
-        double getCenterX() const {
-            return center.getX();
+        Vector2<double> getCenter() const {
+            return center.getVector2();
         }
-        double getCenterY() const {
-            return center.getY();
-        }
-        double getWidth() const {
-            return width;
+        Vector2<double> getSize() const {
+            return Vector2<double>(width, height);
         }
         double getHeight() const {
             return height;

@@ -81,8 +81,8 @@ namespace paxs {
                     simulation_manager.getSettlementGrids(),
                     simulation_manager.getMarriagePositions(),
                     simulation_manager.getBronzeShareList(), // ここに引数を追加
-                    Vector2<double>(map_viewport_.getWidth(), map_viewport_.getHeight()),
-                    Vector2<double>(map_viewport_.getCenterX(), map_viewport_.getCenterY()),
+                    map_viewport_.getSize(),
+                    map_viewport_.getCenter(),
                     settlement_input_handler_.getSelectDraw(),
                     settlement_input_handler_.getIsLine(),
                     settlement_input_handler_.getIsArrow()
@@ -156,8 +156,8 @@ namespace paxs {
         void updateRenderContext() {
             const auto& koyomi = app_state_manager_.getKoyomi();
             render_context_.jdn = koyomi.jdn.getDay();
-            render_context_.map_view_size = Vector2<double>(map_viewport_.getWidth(), map_viewport_.getHeight());
-            render_context_.map_view_center = Vector2<double>(map_viewport_.getCenterX(), map_viewport_.getCenterY());
+            render_context_.map_view_size = map_viewport_.getSize();
+            render_context_.map_view_center = map_viewport_.getCenter();
             render_context_.visibility_manager = &app_state_manager_.getVisibilityManager();
         }
 

@@ -69,7 +69,7 @@ namespace paxs {
         // レイアウト
         paxg::Rect rect;
         paxg::Vec2i padding{ default_padding_x, default_padding_y };
-        float all_rect_x{}; // 全ての項目の文字幅
+        float all_rect_width{}; // 全ての項目の文字幅
 
         // 状態
         bool visible_ = false;  // ドロップダウンの表示状態（MenuBarが制御）
@@ -123,7 +123,7 @@ namespace paxs {
             }
 
             rect.setW(0);
-            all_rect_x = 0;
+            all_rect_width = 0;
             for (std::size_t i = 0; i < items_key.size(); ++i) {
                 const std::string* str = Fonts().getLocalesText(menubar_domain_key, items_key[i]);
                 if (str == nullptr || str->size() == 0) continue;
@@ -131,7 +131,7 @@ namespace paxs {
                 paxg::Font* item_font = Fonts().getFont(font_size, font_buffer_thickness_size);
                 if (item_font == nullptr) continue;
 
-                all_rect_x = (std::max)(all_rect_x, static_cast<float>((*item_font).width(*str)));
+                all_rect_width = (std::max)(all_rect_width, static_cast<float>((*item_font).width(*str)));
 
                 // 最初の項目（ヘッダー）の幅を使用
                 if (i == 0) {
@@ -140,10 +140,10 @@ namespace paxs {
             }
 
             rect.setW(rect.w() + (padding.x() * 2 + down_button_size));
-            all_rect_x += (padding.x() * 2 + down_button_size);
+            all_rect_width += (padding.x() * 2 + down_button_size);
 
             // チェックマークの幅を追加
-            all_rect_x += checkmark_width;
+            all_rect_width += checkmark_width;
 
 #if defined(PAXS_USING_DXLIB) && (__ANDROID__)
             all_rect_x *= android_width_scale;
@@ -160,7 +160,7 @@ namespace paxs {
             pos.setY((int)(pos.y() + rect.h()));
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
-                const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
+                const paxg::Rect item_rect{ pos, all_rect_width, rect.h() };
                 if (item_rect.contains(static_cast<float>(event.pos.x), static_cast<float>(event.pos.y))) {
                     // もともとやってたトグル処理
                     if (i < is_items.size()) {
@@ -303,7 +303,7 @@ namespace paxs {
             pos.setY((int)(pos.y() + rect.h()));
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
-                const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
+                const paxg::Rect item_rect{ pos, all_rect_width, rect.h() };
                 if (item_rect.contains((float)mouse_pos.x, (float)mouse_pos.y)) {
                     return true;
                 }
@@ -362,14 +362,14 @@ namespace paxs {
 
             // 最初の項目（ヘッダー）をスキップ
             const std::size_t display_item_count = items_key.size() - 1;
-            const paxg::Rect back_rect{ pos, all_rect_x, static_cast<float>(rect.h() * display_item_count) };
+            const paxg::Rect back_rect{ pos, all_rect_width, static_cast<float>(rect.h() * display_item_count) };
             back_rect.drawShadow({ shadow_offset_x, shadow_offset_y }, shadow_blur_radius, shadow_spread).draw();
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const std::string* i_str = Fonts().getLocalesText(menubar_domain_key, items_key[i]);
                 if (i_str == nullptr || i_str->size() == 0) continue;
 
-                const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };
+                const paxg::Rect rect_tmp{ pos, all_rect_width, rect.h() };
                 if (rect_tmp.mouseOver()) {
                     rect_tmp.draw(paxg::Color{ 135, 206, 235 });
                 }

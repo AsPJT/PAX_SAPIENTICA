@@ -252,19 +252,15 @@ namespace paxs {
         /// @brief Draw long text with word wrapping
         /// @param font フォント / Font
         /// @param text 描画するテキスト / Text to draw
-        /// @param text_x X座標 / X coordinate
-        /// @param text_y Y座標 / Y coordinate
+        /// @param bounds 描画領域（x, y, width, heightを含む矩形） / Drawing bounds (rect with x, y, width, height)
         /// @param line_height 行の高さ / Line height
-        /// @param max_width 最大幅 / Maximum width
         /// @param current_line 現在の行番号（参照渡し） / Current line number (by reference)
         /// @param color 文字色 / Text color
         void drawWrappedText(
             paxg::Font* font,
             const std::string& text,
-            int text_x,
-            int text_y,
+            const paxs::Rect<int>& bounds,
             int line_height,
-            int max_width,
             int& current_line,
             const paxg::Color& color
         ) const {
@@ -273,7 +269,7 @@ namespace paxs {
             // 簡易的な文字列分割（文字数ベース）
             // UTF-8の文字数を大まかに見積もる（1文字あたり平均2.5バイト程度と仮定）
             const int avg_char_width = 12; // フォントサイズに応じた平均文字幅
-            const int max_chars_per_line = max_width / avg_char_width;
+            const int max_chars_per_line = bounds.width() / avg_char_width;
 
             std::string remaining_text = text;
             while (!remaining_text.empty()) {
@@ -284,7 +280,7 @@ namespace paxs {
                     // 残りが全て1行に収まる
                     font->draw(
                         remaining_text.c_str(),
-                        paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                        paxg::Vec2i(bounds.x(), bounds.y() + line_height * current_line++),
                         color
                     );
                     break;
@@ -309,7 +305,7 @@ namespace paxs {
                 std::string line_text = remaining_text.substr(0, actual_split);
                 font->draw(
                     line_text.c_str(),
-                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxg::Vec2i(bounds.x(), bounds.y() + line_height * current_line++),
                     color
                 );
 
@@ -398,6 +394,9 @@ namespace paxs {
             const int text_y = panel_y + padding_top;
             const int max_text_width = ui_layout_.feature_info_panel.width - padding_left * 2;
 
+            // 描画領域を定義
+            const paxs::Rect<int> text_bounds(text_x, text_y, max_text_width, 0);
+
             int current_line = 0;
 
             // タイトル
@@ -417,10 +416,8 @@ namespace paxs {
                     drawWrappedText(
                         font,
                         *type_label + " " + feature_type_name_,
-                        text_x,
-                        text_y,
+                        text_bounds,
                         line_height,
-                        max_text_width,
                         current_line,
                         paxg::Color(0, 0, 0)
                     );
@@ -434,10 +431,8 @@ namespace paxs {
                     drawWrappedText(
                         font,
                         *name_label + " " + feature_name_,
-                        text_x,
-                        text_y,
+                        text_bounds,
                         line_height,
-                        max_text_width,
                         current_line,
                         paxg::Color(0, 0, 0)
                     );
@@ -473,10 +468,8 @@ namespace paxs {
                             drawWrappedText(
                                 font,
                                 display_text,
-                                text_x,
-                                text_y,
+                                text_bounds,
                                 line_height,
-                                max_text_width,
                                 current_line,
                                 paxg::Color(0, 0, 0)
                             );
@@ -499,10 +492,8 @@ namespace paxs {
                         drawWrappedText(
                             font,
                             value,
-                            text_x,
-                            text_y,
+                            text_bounds,
                             line_height,
-                            max_text_width,
                             current_line,
                             paxg::Color(100, 100, 100)
                         );

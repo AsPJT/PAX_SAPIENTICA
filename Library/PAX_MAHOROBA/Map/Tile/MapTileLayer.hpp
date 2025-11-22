@@ -73,17 +73,15 @@ namespace paxs {
             const auto& visible = app_state_manager_.getVisibilityManager();
             const auto& map_viewport = app_state_manager_.getMapViewport();
 
-            const double map_viewport_width = map_viewport.getWidth();
-            const double map_viewport_height = map_viewport.getHeight();
-            const double map_viewport_center_x = map_viewport.getCenterX();
-            const double map_viewport_center_y = map_viewport.getCenterY();
+            const Vector2<double> map_viewport_size = map_viewport.getSize();
+            const Vector2<double> map_viewport_center = map_viewport.getCenter();
 
             // 更新処理
             for (auto&& xyz_tile : xyz_tile_list) {
                 if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) {
                     continue;
                 }
-                xyz_tile.update(map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
+                xyz_tile.update(map_viewport_size, map_viewport_center);
             }
         }
         /// @brief イベントを購読

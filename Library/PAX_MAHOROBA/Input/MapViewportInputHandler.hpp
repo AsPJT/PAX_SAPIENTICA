@@ -58,20 +58,68 @@ namespace paxs {
         /// @brief ドラッグイベント発行済みフラグ（ドラッグ開始イベントを既に発行したか）
         bool drag_event_fired_ = false;
 
-        /// @brief マウスホイールによるズーム処理
+        /// @brief マウスホイールによるズーム処理（マウスカーソル位置を中心に拡大縮小）
         bool handleMouseWheelZoom(const MouseWheelEvent& event) {
             if (event.wheel_rotation == 0) {
                 return false; // ズーム変更なし
             }
 
-            double height = viewport_.getHeight();
+            // ズーム前の状態を保存
+            const Vector2<double> old_center = viewport_.getCenter();
+            const Vector2<double> old_size = viewport_.getSize();
+
+            // 新しい高さを計算
             const double min_height = viewport_.getMinHeight();
             const double max_height = viewport_.getMaxHeight();
+            double new_height = old_size.y * (1.0 + (event.wheel_rotation / MapViewportConstants::mouse_wheel_sensitivity));
+            new_height = (std::clamp)(new_height, min_height, max_height);
 
-            height *= (1.0 + (event.wheel_rotation / MapViewportConstants::mouse_wheel_sensitivity));
-            height = (std::clamp)(height, min_height, max_height);
+            // ウィンドウサイズ
+            const Vector2<double> window_size(
+                static_cast<double>(paxg::Window::width()),
+                static_cast<double>(paxg::Window::height())
+            );
 
-            viewport_.setSize(height);
+            // マウス位置を正規化座標に変換（-0.5 ~ 0.5）
+            const Vector2<double> normalized_mouse(
+                (static_cast<double>(event.mouse_pos.x) / window_size.x) - 0.5,
+                0.5 - (static_cast<double>(event.mouse_pos.y) / window_size.y)
+            );
+
+            // マウス位置のワールド座標
+            const Vector2<double> mouse_world(
+                old_center.x + normalized_mouse.x * old_size.x,
+                old_center.y + normalized_mouse.y * old_size.y
+            );
+
+            // 新しいサイズを設定
+            viewport_.setSize(new_height);
+
+            // 新しいサイズを取得
+            const Vector2<double> new_size = viewport_.getSize();
+
+            // ズーム後もマウスカーソル位置が同じワールド座標を指すように中心を調整
+            Vector2<double> new_center(
+                mouse_world.x - normalized_mouse.x * new_size.x,
+                mouse_world.y - normalized_mouse.y * new_size.y
+            );
+
+            // 経度の範囲調整
+            if (new_center.x < MapViewportConstants::longitude_min) {
+                new_center.x += MapViewportConstants::longitude_range;
+            }
+            if (new_center.x >= MapViewportConstants::longitude_max) {
+                new_center.x -= MapViewportConstants::longitude_range;
+            }
+            if (new_center.y < MapViewportConstants::longitude_min) {
+                new_center.y += MapViewportConstants::longitude_range;
+            }
+            if (new_center.y >= MapViewportConstants::longitude_max) {
+                new_center.y -= MapViewportConstants::longitude_range;
+            }
+
+            // 新しい中心座標を設定
+            viewport_.setCenter(new_center);
 
             return true;
         }
@@ -82,31 +130,31 @@ namespace paxs {
             // 左ボタンが押されている場合のみドラッグ処理
             // Only process drag if left button is pressed
             if (event.left_button_state == MouseButtonState::Held || event.left_button_state == MouseButtonState::Pressed) {
-                const double height = viewport_.getHeight();
-                double center_x = viewport_.getCenterX();
-                double center_y = viewport_.getCenterY();
+                const double height = viewport_.getSize().y;
 
-                center_x += height / static_cast<double>(paxg::Window::height()) *
+                Vector2<double> center = viewport_.getCenter();
+
+                center.x += height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(event.prev_pos.x - event.pos.x);
-                center_y += height / static_cast<double>(paxg::Window::height()) *
+                center.y += height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(event.pos.y - event.prev_pos.y);
 
                 // 経度の範囲調整
-                if (center_x < MapViewportConstants::longitude_min) {
-                    center_x += MapViewportConstants::longitude_range;
+                if (center.x < MapViewportConstants::longitude_min) {
+                    center.x += MapViewportConstants::longitude_range;
                 }
-                if (center_x >= MapViewportConstants::longitude_max) {
-                    center_x -= MapViewportConstants::longitude_range;
+                if (center.x >= MapViewportConstants::longitude_max) {
+                    center.x -= MapViewportConstants::longitude_range;
                 }
-                if (center_y < MapViewportConstants::longitude_min) {
-                    center_y -= MapViewportConstants::longitude_max;
+                if (center.y < MapViewportConstants::longitude_min) {
+                    center.y -= MapViewportConstants::longitude_max;
                 }
-                if (center_y > MapViewportConstants::longitude_max) {
-                    center_y += MapViewportConstants::longitude_max;
+                if (center.y > MapViewportConstants::longitude_max) {
+                    center.y += MapViewportConstants::longitude_max;
                 }
 
                 // X座標とY座標を同時に設定
-                viewport_.setCenter(Vector2<double>(center_x, center_y));
+                viewport_.setCenter(center);
             }
 #endif
         }
@@ -131,31 +179,30 @@ namespace paxs {
 
             // 1本指タッチ：移動
             if (old_touch_num == 1 && touch_num == 1) {
-                const double height = viewport.getHeight();
-                double center_x = viewport.getCenterX();
-                double center_y = viewport.getCenterY();
+                const double height = viewport_.getHeight();
+                Vector2<double> center = viewport_.getCenter();
 
-                center_x += height / static_cast<double>(paxg::Window::height()) *
+                center.x += height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(old_pos[0].x - pos[0].x);
-                center_y += height / static_cast<double>(paxg::Window::height()) *
+                center.y += height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(pos[0].y - old_pos[0].y);
 
                 // 経度の範囲調整
-                if (center_x < MapViewportConstants::longitude_min) {
-                    center_x += MapViewportConstants::longitude_range;
+                if (center.x < MapViewportConstants::longitude_min) {
+                    center.x += MapViewportConstants::longitude_range;
                 }
-                if (center_x >= MapViewportConstants::longitude_max) {
-                    center_x -= MapViewportConstants::longitude_range;
+                if (center.x >= MapViewportConstants::longitude_max) {
+                    center.x -= MapViewportConstants::longitude_range;
                 }
-                if (center_y < MapViewportConstants::longitude_min) {
-                    center_y -= MapViewportConstants::longitude_max;
+                if (center.y < MapViewportConstants::longitude_min) {
+                    center.y -= MapViewportConstants::longitude_max;
                 }
-                if (center_y > MapViewportConstants::longitude_max) {
-                    center_y += MapViewportConstants::longitude_max;
+                if (center.y > MapViewportConstants::longitude_max) {
+                    center.y += MapViewportConstants::longitude_max;
                 }
 
                 // X座標とY座標を同時に設定（イベント通知は1回のみ）
-                viewport.setCenter(Vector2<double>(center_x, center_y));
+                viewport_.setCenter(center);
             }
             // 2本指タッチ：ピンチズーム
             else if (old_touch_num == 2 && touch_num == 2) {
@@ -163,10 +210,10 @@ namespace paxs {
                 const int old_len = (old_pos[0].x - old_pos[1].x) * (old_pos[0].x - old_pos[1].x) + (old_pos[0].y - old_pos[1].y) * (old_pos[0].y - old_pos[1].y);
                 const int sub = std::abs(len - old_len);
 
-                double height = viewport.getHeight();
-                const double min_height = viewport.getMinHeight();
-                const double max_height = viewport.getMaxHeight();
-                const double expansion_size = viewport.getExpansionSize();
+                double height = viewport_.getHeight();
+                const double min_height = viewport_.getMinHeight();
+                const double max_height = viewport_.getMaxHeight();
+                const double expansion_size = viewport_.getExpansionSize();
 
                 if (len > old_len) {
                     // ズームイン
@@ -187,8 +234,8 @@ namespace paxs {
                     }
                 }
 
-                viewport_->setHeight(height);
-                viewport_->setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
+                viewport_.setHeight(height);
+                viewport_.setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
             }
 #endif
         }
@@ -247,24 +294,23 @@ namespace paxs {
                 return false;
             }
 
-            double center_x = viewport_.getCenterX();
-            double center_y = viewport_.getCenterY();
-            const double width = viewport_.getWidth();
+            Vector2<double> center = viewport_.getCenter();
+            const double width = viewport_.getSize().x;
             const double movement_size = MapViewportConstants::default_movement_size;
             bool changed = false;
 
             // X軸の移動（左右が同時押しでない場合のみ）
             if (!horizontal_cancel) {
                 if (move_left) {
-                    center_x -= (width / movement_size);
-                    if (center_x < MapViewportConstants::longitude_min) {
-                        center_x += MapViewportConstants::longitude_range;
+                    center.x -= (width / movement_size);
+                    if (center.x < MapViewportConstants::longitude_min) {
+                        center.x += MapViewportConstants::longitude_range;
                     }
                     changed = true;
                 } else {
-                    center_x += (width / movement_size);
-                    if (center_x >= MapViewportConstants::longitude_max) {
-                        center_x -= MapViewportConstants::longitude_range;
+                    center.x += (width / movement_size);
+                    if (center.x >= MapViewportConstants::longitude_max) {
+                        center.x -= MapViewportConstants::longitude_range;
                     }
                     changed = true;
                 }
@@ -273,15 +319,15 @@ namespace paxs {
             // Y軸の移動（上下が同時押しでない場合のみ）
             if (!vertical_cancel) {
                 if (move_down) {
-                    center_y -= (width / movement_size);
-                    if (center_y < MapViewportConstants::longitude_min) {
-                        center_y += MapViewportConstants::longitude_range;
+                    center.y -= (width / movement_size);
+                    if (center.y < MapViewportConstants::longitude_min) {
+                        center.y += MapViewportConstants::longitude_range;
                     }
                     changed = true;
                 } else {
-                    center_y += (width / movement_size);
-                    if (center_y >= MapViewportConstants::longitude_max) {
-                        center_y -= MapViewportConstants::longitude_range;
+                    center.y += (width / movement_size);
+                    if (center.y >= MapViewportConstants::longitude_max) {
+                        center.y -= MapViewportConstants::longitude_range;
                     }
                     changed = true;
                 }
@@ -289,7 +335,7 @@ namespace paxs {
 
             // 座標が変更された場合はビューポートに設定
             if (changed) {
-                viewport_.setCenter(Vector2<double>(center_x, center_y));
+                viewport_.setCenter(center);
             }
 
             return changed;

@@ -91,7 +91,8 @@ public:
         paxg::Mouse* mouse = paxg::Mouse::getInstance();
         const int wheel_rotation = mouse->getWheelRotVol();
         if (wheel_rotation != 0) {
-            MouseWheelEvent wheel_event(wheel_rotation);
+            const Vector2<int> mouse_pos = mouse->getPos();
+            MouseWheelEvent wheel_event(wheel_rotation, mouse_pos);
             input_router_.routeEvent(wheel_event);
         }
 

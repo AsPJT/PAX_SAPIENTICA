@@ -73,6 +73,7 @@ namespace paxs {
 
             const int text_x = ui_layout_.debug_info_panel.x + 15; // パネル内の左端
             const int text_y = ui_layout_.debug_info_panel.y + 10; // パネル内の上端
+            const Vector2<double> map_viewport_center = map_viewport_.getCenter();
             const int line_height = 25;
 
             int current_line = 0;
@@ -127,7 +128,7 @@ namespace paxs {
                 );
             }
             font->draw(
-                std::to_string(map_viewport_.getCenterX()),
+                std::to_string(map_viewport_center.x),
                 paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
@@ -145,7 +146,7 @@ namespace paxs {
                 );
             }
             font->draw(
-                std::to_string(map_viewport_.getCenterY()),
+                std::to_string(map_viewport_center.y),
                 paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
@@ -163,7 +164,7 @@ namespace paxs {
                 );
             }
             // メルカトル座標から正距円筒図法の緯度に変換
-            const paxs::MercatorDeg merc_coord(paxs::Vector2<double>(map_viewport_.getCenterX(), map_viewport_.getCenterY()));
+            const paxs::MercatorDeg merc_coord(paxs::Vector2<double>(map_viewport_center.x, map_viewport_center.y));
             font->draw(
                 std::to_string(merc_coord.toEquirectangularDegY()),
                 paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),

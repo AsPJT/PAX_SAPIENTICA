@@ -76,9 +76,11 @@ namespace paxs {
     struct MouseWheelEvent {
         /// @brief ホイール回転量
         int wheel_rotation = 0;
+        /// @brief マウス座標
+        Vector2<int> mouse_pos{};
 
         MouseWheelEvent() = default;
-        explicit MouseWheelEvent(int rotation) : wheel_rotation(rotation) {}
+        MouseWheelEvent(int rotation, const Vector2<int>& pos) : wheel_rotation(rotation), mouse_pos(pos) {}
     };
 
     /// @brief イベント処理結果

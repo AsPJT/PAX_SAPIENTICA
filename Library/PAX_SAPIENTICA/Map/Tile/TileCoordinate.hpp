@@ -39,23 +39,19 @@ namespace paxs {
 
         /// @brief 始点セルを計算
         /// @brief Calculate start cell
-        /// @param map_view_center_x マップビュー中心のX座標（経度）
-        /// @param map_view_center_y マップビュー中心のY座標（緯度）
-        /// @param map_view_width マップビューの幅（度）
-        /// @param map_view_height マップビューの高さ（度）
-        /// @return 始点セルの座標
+        /// @param map_view_center マップビュー中心座標（経度, 緯度） / Map view center (longitude, latitude)
+        /// @param map_view_size マップビューサイズ（幅, 高さ） / Map view size (width, height)
+        /// @return 始点セルの座標 / Start cell coordinates
         Vector2<int> calculateStartCell(
-            double map_view_center_x,
-            double map_view_center_y,
-            double map_view_width,
-            double map_view_height
+            const Vector2<double>& map_view_center,
+            const Vector2<double>& map_view_size
         ) const {
             const int start_x = static_cast<int>(
-                (((map_view_center_x - map_view_width / 2) + 180.0) / 360.0) * z_num_ + z_num_
+                (((map_view_center.x - map_view_size.x / 2) + 180.0) / 360.0) * z_num_ + z_num_
             ) - static_cast<int>(z_num_);
 
             const int start_y = static_cast<int>(
-                ((360.0 - ((map_view_center_y + map_view_height / 2) + 180.0)) / 360.0) * z_num_ + z_num_
+                ((360.0 - ((map_view_center.y + map_view_size.y / 2) + 180.0)) / 360.0) * z_num_ + z_num_
             ) - static_cast<int>(z_num_);
 
             return Vector2<int>{start_x, start_y};
@@ -63,23 +59,19 @@ namespace paxs {
 
         /// @brief 終点セルを計算
         /// @brief Calculate end cell
-        /// @param map_view_center_x マップビュー中心のX座標（経度）
-        /// @param map_view_center_y マップビュー中心のY座標（緯度）
-        /// @param map_view_width マップビューの幅（度）
-        /// @param map_view_height マップビューの高さ（度）
-        /// @return 終点セルの座標
+        /// @param map_view_center マップビュー中心座標（経度, 緯度） / Map view center (longitude, latitude)
+        /// @param map_view_size マップビューサイズ（幅, 高さ） / Map view size (width, height)
+        /// @return 終点セルの座標 / End cell coordinates
         Vector2<int> calculateEndCell(
-            double map_view_center_x,
-            double map_view_center_y,
-            double map_view_width,
-            double map_view_height
+            const Vector2<double>& map_view_center,
+            const Vector2<double>& map_view_size
         ) const {
             const int end_x = static_cast<int>(
-                (((map_view_center_x + map_view_width / 2) + 180.0) / 360.0) * z_num_ + z_num_
+                (((map_view_center.x + map_view_size.x / 2) + 180.0) / 360.0) * z_num_ + z_num_
             ) - static_cast<int>(z_num_);
 
             const int end_y = static_cast<int>(
-                ((360.0 - ((map_view_center_y - map_view_height / 2) + 180.0)) / 360.0) * z_num_ + z_num_
+                ((360.0 - ((map_view_center.y - map_view_size.y / 2) + 180.0)) / 360.0) * z_num_ + z_num_
             ) - static_cast<int>(z_num_);
 
             return Vector2<int>{end_x, end_y};
