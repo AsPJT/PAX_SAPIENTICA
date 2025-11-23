@@ -25,7 +25,7 @@
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Events/FeatureEvents.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>
 #include <PAX_MAHOROBA/UI/Feature/FeatureInfoPanel.hpp>
@@ -45,7 +45,7 @@ namespace paxs {
 
     /// @brief UIレイヤーの統合管理を担当するクラス
     /// @brief Integrated management class for UI layer
-    class UILayer : public IWidget{
+    class UILayer : public InteractiveUIComponent{
     private:
         const paxs::FeatureVisibilityManager& visible_manager;
 
@@ -63,7 +63,7 @@ namespace paxs {
         paxs::SettlementStatusPanel settlement_status_panel;
         paxs::UIPanelBackground settlement_status_bg_;
 #endif
-        std::vector<IWidget*> panels;
+        std::vector<InteractiveUIComponent*> panels;
 
         std::size_t koyomi_date_list_size = 0;
 
@@ -80,7 +80,7 @@ namespace paxs {
 
         void sortPanelsByLayer() {
             std::sort(panels.begin(), panels.end(),
-                [](IWidget* left, IWidget* right) {
+                [](InteractiveUIComponent* left, InteractiveUIComponent* right) {
                     // 降順
                     return left->getLayer() > right->getLayer();
                 });
@@ -237,7 +237,7 @@ namespace paxs {
 #endif
         }
 
-        // コピー・ムーブ禁止（メンバー変数へのポインタをvector<IWidget*>に格納しているため）
+        // コピー・ムーブ禁止（メンバー変数へのポインタをvector<InteractiveUIComponent*>に格納しているため）
         UILayer(const UILayer&) = delete;
         UILayer& operator=(const UILayer&) = delete;
         UILayer(UILayer&&) = delete;
@@ -285,7 +285,7 @@ namespace paxs {
 
         bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) return false;
-            for (const IWidget* panel : panels) {
+            for (const InteractiveUIComponent* panel : panels) {
                 if (panel) {
                     if (panel->isHit(pos)) {
                         return true;
@@ -298,7 +298,7 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            for (IWidget* panel : panels) {
+            for (InteractiveUIComponent* panel : panels) {
                 if (panel) {
                     if (panel->isHit(event.pos)) {
                         EventHandlingResult result = panel->handleEvent(event);

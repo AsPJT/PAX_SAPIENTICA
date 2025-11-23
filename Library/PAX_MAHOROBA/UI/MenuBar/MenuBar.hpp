@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/GitHubButton.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuSystem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
@@ -35,7 +35,7 @@
 namespace paxs {
 
     /// @brief アプリ上部のメニューバー
-    class MenuBar : public IWidget{
+    class MenuBar : public InteractiveUIComponent{
     private:
         static constexpr int github_button_margin = 8;
 

@@ -22,7 +22,7 @@
 #include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Feature/FeatureCloseButton.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 
@@ -36,7 +36,7 @@ namespace paxs {
 
     /// @brief Feature詳細情報パネルを表示するクラス
     /// @brief Class to display Feature info panel
-    class FeatureInfoPanel : public IWidget {
+    class FeatureInfoPanel : public InteractiveUIComponent {
     private:
         // FeatureInfo domain hash
         static constexpr std::uint_least32_t feature_info_domain_hash = MurMur3::calcHash("FeatureInfo");

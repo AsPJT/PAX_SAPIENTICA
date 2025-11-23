@@ -16,7 +16,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Widget/PanelBackgroundRenderer.hpp>
 
@@ -24,11 +24,11 @@ namespace paxs {
 
     /// @brief UIパネルの背景を描画するクラス
     /// @brief UI panel background rendering class
-    class UIPanelBackground : public IWidget {
+    class UIPanelBackground : public InteractiveUIComponent {
     private:
         const char* name_;
         const PanelLayout* layout;
-        const IWidget* widget_; // 動的なパネル用（優先）
+        const InteractiveUIComponent* widget_; // 動的なパネル用（優先）
         const paxg::Color bg_color_;
         const int corner_radius_;
         bool visible_ = true;
@@ -58,7 +58,7 @@ namespace paxs {
         /// @param corner_radius 角の丸み半径
         UIPanelBackground(
             const char* name,
-            const IWidget* widget,
+            const InteractiveUIComponent* widget,
             const paxg::Color& bg_color = paxg::Color{243, 243, 243},
             int corner_radius = 10
         )

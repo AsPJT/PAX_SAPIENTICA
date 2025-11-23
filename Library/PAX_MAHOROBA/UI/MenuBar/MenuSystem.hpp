@@ -14,14 +14,14 @@
 
 #include <vector>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/DropDownMenu.hpp>
 
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 
 namespace paxs {
     /// @brief DropDownMenu（固定ヘッダー型）を複数持つ
-    class MenuSystem : public IWidget {
+    class MenuSystem : public InteractiveUIComponent {
     private:
         // メニューバーに付属するメニュー項目が左から順番に格納されている
         std::vector<paxs::DropDownMenu> menu_list;

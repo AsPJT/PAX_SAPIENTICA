@@ -9,10 +9,9 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_I_BUTTON_HPP
-#define PAX_MAHOROBA_I_BUTTON_HPP
+#ifndef PAX_MAHOROBA_UI_COMPONENT_HPP
+#define PAX_MAHOROBA_UI_COMPONENT_HPP
 
-#include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
@@ -20,25 +19,29 @@
 
 namespace paxs {
 
-    class IWidget : public IRenderable, public IInputHandler {
+    /// @brief UI基底コンポーネント（表示専用）
+    /// @brief Base UI component (display only)
+    class UIComponent : public IRenderable {
     public:
-        virtual ~IWidget() = default;
+        virtual ~UIComponent() = default;
 
         // 位置・サイズ管理
         // Position and size management
+
+        /// @brief コンポーネントの矩形領域を取得
+        /// @brief Get the rectangular area of the component
+        /// @return 矩形領域 / Rectangular area
         virtual Rect<int> getRect() const = 0;
+
+        /// @brief コンポーネントの位置を設定
+        /// @brief Set the position of the component
+        /// @param pos 新しい位置 / New position
         virtual void setPos(const Vector2<int>& pos) = 0;
 
-        // 可視性管理
-        // Visibility management
-        bool isVisible() const override = 0;
-
-        // コンポーネント情報
-        // Component information
+        /// @brief コンポーネント名を取得
+        /// @brief Get the component name
+        /// @return コンポーネント名 / Component name
         virtual const char* getName() const = 0;
-
-        // IRenderable の実装
-        // IRenderable implementation
 
         /// @brief レンダリング処理
         /// @brief Rendering process
@@ -49,18 +52,12 @@ namespace paxs {
         /// @return レンダリングレイヤー / Rendering layer
         RenderLayer getLayer() const override = 0;
 
-        // IInputHandler の実装
-        // IInputHandler implementation
-
-        /// @brief ヒットテスト
-        /// @param pos マウス座標 / Mouse position
-        /// @return 範囲内ならtrue / true if within bounds
-        bool isHit(const Vector2<int>& pos) const override {
-            if (!isVisible()) return false;
-            return getRect().contains(pos);
-        }
+        /// @brief オブジェクトが表示可能かどうかを取得
+        /// @brief Check if the object is visible
+        /// @return 表示可能ならtrue / true if visible
+        bool isVisible() const override = 0;
     };
 
-}
+} // namespace paxs
 
-#endif // !PAX_MAHOROBA_I_BUTTON_HPP
+#endif // !PAX_MAHOROBA_UI_COMPONENT_HPP

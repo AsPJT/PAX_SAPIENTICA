@@ -15,7 +15,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
@@ -28,7 +28,7 @@ namespace paxs {
     /// @brief Settlement display mode status panel
     ///
     /// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
-    class SettlementStatusPanel : public IWidget {
+    class SettlementStatusPanel : public InteractiveUIComponent {
     private:
         // SimulationStats domain hash
         static constexpr std::uint_least32_t simulation_stats_domain_hash = MurMur3::calcHash("SimulationStats");

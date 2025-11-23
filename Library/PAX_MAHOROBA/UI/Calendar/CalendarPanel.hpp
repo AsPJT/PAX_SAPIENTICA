@@ -18,7 +18,7 @@
 #include <PAX_MAHOROBA/UI/Calendar/CalendarContent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/TimeControlButton.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
@@ -27,7 +27,7 @@ namespace paxs {
 
     /// @brief カレンダーパネル - 時間操作とカレンダー表示を統合管理
     /// @brief Calendar Panel - Integrates time control and calendar display with shared background
-    class CalendarPanel : public IWidget {
+    class CalendarPanel : public InteractiveUIComponent {
     private:
         const paxs::FeatureVisibilityManager& visibility_manager_;
 

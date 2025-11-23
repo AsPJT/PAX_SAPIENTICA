@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/Map/MapViewport.hpp>
 
@@ -30,7 +30,7 @@
 namespace paxs {
 
     /// @brief デバッグ情報パネルを表示するクラス
-    class DebugInfoPanel : public IWidget {
+    class DebugInfoPanel : public InteractiveUIComponent {
     private:
         const paxs::FeatureVisibilityManager& visible_manager_;
         const MapViewport& map_viewport_;

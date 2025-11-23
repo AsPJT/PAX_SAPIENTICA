@@ -18,7 +18,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationControlButton.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationStatsWidget.hpp>
@@ -35,7 +35,7 @@
 
 namespace paxs {
 
-    class SimulationPanel : public IWidget {
+    class SimulationPanel : public InteractiveUIComponent {
     private:
         const paxs::FeatureVisibilityManager& visibility_manager_;
 #ifdef PAXS_USING_SIMULATOR

@@ -81,7 +81,7 @@ namespace paxs {
         ClickCallback on_click_;
     };
 
-    class SimulationControlButtons : public IWidget {
+    class SimulationControlButtons : public InteractiveUIComponent {
     public:
         using ClickCallback = std::function<void(SimulationControlButton::Id)>;
 

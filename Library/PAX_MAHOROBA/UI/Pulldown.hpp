@@ -22,7 +22,7 @@
 #include <PAX_GRAPHICA/Triangle.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 namespace paxs {
@@ -42,7 +42,7 @@ namespace paxs {
     /// @details 2つのモードで動作:
     ///          - SelectedValue: 選択した値がヘッダーに表示される（言語選択など）
     ///          - FixedHeader: 固定のヘッダー名が表示される（メニューバーなど）
-    class Pulldown : public IWidget {
+    class Pulldown : public InteractiveUIComponent {
     private:
         std::span<const std::uint_least32_t> items_key; // 項目の Key 一覧
 

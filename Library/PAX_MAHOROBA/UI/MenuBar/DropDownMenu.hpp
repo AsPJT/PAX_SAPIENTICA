@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
@@ -29,7 +29,7 @@
 namespace paxs {
 
     /// @brief メニューバー用のドロップダウン項目
-    class DropDownMenu : public IWidget {
+    class DropDownMenu : public InteractiveUIComponent {
     private:
         // UI要素のサイズ定数
         static constexpr int default_padding_x = 6;
