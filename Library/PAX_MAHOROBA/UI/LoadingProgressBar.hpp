@@ -19,10 +19,12 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
+
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
-#include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
+
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {

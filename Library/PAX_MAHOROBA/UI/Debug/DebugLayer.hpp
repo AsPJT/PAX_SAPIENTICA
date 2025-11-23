@@ -13,8 +13,8 @@
 #define PAX_MAHOROBA_UI_DEBUG_DEBUG_LAYER_HPP
 
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
-#include <PAX_MAHOROBA/UI/Debug/DebugNotificationManager.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugConsole.hpp>
+#include <PAX_MAHOROBA/UI/Debug/DebugNotificationManager.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugPerformanceMonitor.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugVariableWatcher.hpp>
 

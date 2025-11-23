@@ -17,7 +17,7 @@
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Input/MapContentInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/Photo360InputHandler.hpp>
-#include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
+#include <PAX_MAHOROBA/Map/Content/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/MapTileLayer.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>

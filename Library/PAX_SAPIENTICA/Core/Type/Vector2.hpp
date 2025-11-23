@@ -13,8 +13,8 @@
 #define PAX_SAPIENTICA_CORE_TYPE_VECTOR2_HPP
 
 #include <cmath>
-#include <iostream>
 #include <cstdint>
+#include <iostream>
 #include <string>
 
 namespace paxs {

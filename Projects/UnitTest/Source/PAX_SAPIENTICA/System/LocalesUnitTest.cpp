@@ -13,8 +13,8 @@
 
 #include <memory>
 
-#include <PAX_SAPIENTICA/System/Locales.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/Locales.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 // Locales クラスのユニットテスト

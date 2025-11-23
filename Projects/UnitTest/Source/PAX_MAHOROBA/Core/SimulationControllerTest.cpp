@@ -10,6 +10,7 @@
 ##########################################################################################*/
 
 #include <gtest/gtest.h>
+
 #include <PAX_MAHOROBA/Core/SimulationController.hpp>
 
 #include <PAX_SAPIENTICA/System/EventBus.hpp>

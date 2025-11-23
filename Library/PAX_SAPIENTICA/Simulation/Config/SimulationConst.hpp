@@ -18,12 +18,12 @@
 #include <string>
 #include <vector>
 
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/IO/Data/SimulationRange.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
-#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 // M_PI が定義されていない場合
 #ifndef M_PI

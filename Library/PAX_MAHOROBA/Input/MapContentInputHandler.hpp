@@ -16,12 +16,12 @@
 #include <vector>
 
 #include <PAX_MAHOROBA/Events/FeatureEvents.hpp>
-#include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
-#include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
-#include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
-#include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/UpdateContext.hpp>
+#include <PAX_MAHOROBA/Input/InputEvents.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Interaction/ClickContext.hpp>
+#include <PAX_MAHOROBA/Map/Content/Interaction/MapContentHitTester.hpp>
+#include <PAX_MAHOROBA/Map/Content/Update/UpdateContext.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 #include <PAX_SAPIENTICA/System/EventBus.hpp>

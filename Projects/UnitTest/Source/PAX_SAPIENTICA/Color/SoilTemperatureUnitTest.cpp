@@ -10,6 +10,7 @@
 ##########################################################################################*/
 
 #include <gtest/gtest.h>
+
 #include <PAX_SAPIENTICA/Color/SoilTemperature.hpp>
 
 namespace paxs {

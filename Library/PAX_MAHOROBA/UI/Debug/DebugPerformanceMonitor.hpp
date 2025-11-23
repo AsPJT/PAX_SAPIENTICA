@@ -116,11 +116,10 @@ public:
         }
 
         const int window_width = paxg::Window::width();
-        const int pos_x = window_width - MONITOR_WIDTH - MONITOR_MARGIN;
-        const int pos_y = MONITOR_MARGIN;
+        const Vector2<int> pos = Vector2<int>(window_width - MONITOR_WIDTH - MONITOR_MARGIN, MONITOR_MARGIN);
 
         // 背景パネル
-        paxg::Rect(pos_x, pos_y, MONITOR_WIDTH, MONITOR_HEIGHT)
+        paxg::Rect(pos.x, pos.y, MONITOR_WIDTH, MONITOR_HEIGHT)
             .draw(paxg::Color(20, 20, 20, 200));
 
         // タイトルとモード表示
@@ -131,32 +130,32 @@ public:
             case DisplayMode::Flat: mode_text = "[Flat]"; break;
         }
         font_text->draw("Performance Monitor " + mode_text,
-                       paxg::Vec2i(pos_x + PADDING, pos_y + PADDING),
+                       paxg::Vec2i(pos.x + PADDING, pos.y + PADDING),
                        paxg::Color(0, 0, 0));
 
         // FPS情報（常に表示）
-        const int text_y = pos_y + PADDING + 20;
+        const int text_y = pos.y + PADDING + 20;
         const paxg::Color fps_color = getFPSColor(fps_);
 
         font_text->draw("FPS: " + formatDouble(fps_, 1),
-                       paxg::Vec2i(pos_x + PADDING, text_y),
+                       paxg::Vec2i(pos.x + PADDING, text_y),
                        fps_color);
 
         font_text->draw("Frame Time: " + formatDouble(frame_time_ms_, 2) + " ms",
-                       paxg::Vec2i(pos_x + PADDING, text_y + 20),
+                       paxg::Vec2i(pos.x + PADDING, text_y + 20),
                        paxg::Color(0, 0, 0));
 
         // モードに応じた描画
         const int content_y = text_y + 50;
         switch (display_mode_) {
             case DisplayMode::FPS:
-                renderFPSMode(pos_x, pos_y, content_y, font_text);
+                renderFPSMode(pos, content_y, font_text);
                 break;
             case DisplayMode::Tree:
-                renderTreeMode(pos_x, pos_y, content_y, font_text);
+                renderTreeMode(pos, content_y, font_text);
                 break;
             case DisplayMode::Flat:
-                renderFlatMode(pos_x, pos_y, content_y, font_text);
+                renderFlatMode(pos, content_y, font_text);
                 break;
         }
     }
@@ -248,7 +247,7 @@ private:
     }
 
     /// @brief FPSモードの描画
-    void renderFPSMode(int pos_x, int pos_y, int content_y, paxg::Font* font_text) const {
+    void renderFPSMode(Vector2<int> pos, int content_y, paxg::Font* font_text) const {
         // 統計情報
         if (!frame_times_.empty()) {
             double min_fps = 1000.0;
@@ -262,38 +261,38 @@ private:
             }
 
             font_text->draw("Min: " + formatDouble(min_fps, 1) + " / Max: " + formatDouble(max_fps, 1),
-                           paxg::Vec2i(pos_x + PADDING, content_y),
+                           paxg::Vec2i(pos.x + PADDING, content_y),
                            paxg::Color(0, 0, 0));
         }
 
         // FPSグラフ
         const int graph_y = content_y + 30;
-        drawFPSGraph(pos_x + PADDING, graph_y,
+        drawFPSGraph(pos.x + PADDING, graph_y,
                     MONITOR_WIDTH - PADDING * 2, GRAPH_HEIGHT);
 
         // グラフの目盛り
         font_text->draw("60",
-                       paxg::Vec2i(pos_x + PADDING - 20, graph_y),
+                       paxg::Vec2i(pos.x + PADDING - 20, graph_y),
                        paxg::Color(100, 100, 100));
         font_text->draw("30",
-                       paxg::Vec2i(pos_x + PADDING - 20, graph_y + GRAPH_HEIGHT / 2),
+                       paxg::Vec2i(pos.x + PADDING - 20, graph_y + GRAPH_HEIGHT / 2),
                        paxg::Color(100, 100, 100));
         font_text->draw("0",
-                       paxg::Vec2i(pos_x + PADDING - 20, graph_y + GRAPH_HEIGHT),
+                       paxg::Vec2i(pos.x + PADDING - 20, graph_y + GRAPH_HEIGHT),
                        paxg::Color(100, 100, 100));
     }
 
     /// @brief ツリーモードの描画（階層構造）
-    void renderTreeMode(int pos_x, int pos_y, int content_y, paxg::Font* font_text) const {
+    void renderTreeMode(Vector2<int> pos, int content_y, paxg::Font* font_text) const {
         const auto& profiler = PerformanceProfiler::getInstance();
         const auto& root_scopes = profiler.getRootScopes();
 
         int current_y = content_y;
-        const int max_y = pos_y + MONITOR_HEIGHT - PADDING;
+        const int max_y = pos.y + MONITOR_HEIGHT - PADDING;
 
         for (const auto& root_name : root_scopes) {
             if (current_y >= max_y) break;
-            current_y = renderScopeTree(pos_x, current_y, max_y, root_name, 0, font_text);
+            current_y = renderScopeTree(pos.x, current_y, max_y, root_name, 0, font_text);
         }
     }
 
@@ -340,7 +339,7 @@ private:
     }
 
     /// @brief フラットモードの描画（時間順ソート）
-    void renderFlatMode(int pos_x, int pos_y, int content_y, paxg::Font* font_text) const {
+    void renderFlatMode(Vector2<int> pos, int content_y, paxg::Font* font_text) const {
         const auto& profiler = PerformanceProfiler::getInstance();
         const auto& all_scopes = profiler.getAllScopes();
 
@@ -357,7 +356,7 @@ private:
 
         // 上位スコープを描画
         int current_y = content_y;
-        const int max_y = pos_y + MONITOR_HEIGHT - PADDING;
+        const int max_y = pos.y + MONITOR_HEIGHT - PADDING;
         const std::size_t max_items = (max_y - current_y) / LINE_HEIGHT;
 
         for (std::size_t i = 0; i < sorted_scopes.size() && i < max_items; ++i) {
@@ -373,7 +372,7 @@ private:
 
             paxg::Color text_color = getTimeColor(scope_data->current_time_ms);
             font_text->draw(text,
-                           paxg::Vec2i(pos_x + PADDING, current_y),
+                           paxg::Vec2i(pos.x + PADDING, current_y),
                            text_color);
 
             current_y += LINE_HEIGHT;

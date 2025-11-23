@@ -21,8 +21,8 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>

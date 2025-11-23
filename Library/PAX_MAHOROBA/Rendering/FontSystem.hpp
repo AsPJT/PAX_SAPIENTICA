@@ -19,8 +19,8 @@
 #include <PAX_GRAPHICA/Font.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
-#include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/Locales.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>

@@ -18,9 +18,9 @@
 #include <utility>
 #include <vector>
 
-#include <PAX_MAHOROBA/Map/Tile/BinaryTileLoader.hpp>
-#include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>
-#include <PAX_MAHOROBA/Map/Tile/UrlTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/BinaryTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/FileTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/UrlTileLoader.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>

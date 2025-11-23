@@ -12,7 +12,7 @@
 #ifndef PAX_MAHOROBA_CORE_DOMAIN_CORE_HPP
 #define PAX_MAHOROBA_CORE_DOMAIN_CORE_HPP
 
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 

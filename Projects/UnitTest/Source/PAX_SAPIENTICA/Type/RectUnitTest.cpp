@@ -10,6 +10,7 @@
 ##########################################################################################*/
 
 #include <gtest/gtest.h>
+
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 
 namespace paxs {

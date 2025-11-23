@@ -13,7 +13,7 @@
 #define PAX_MAHOROBA_UI_DEBUG_DEBUG_CONSOLE_COMMAND_REGISTRY_HPP
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugConsole.hpp>
 
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>

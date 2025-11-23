@@ -14,8 +14,8 @@
 
 #include <memory>
 
-#include <PAX_SAPIENTICA/Simulation/Entity/Settlement.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Settlement.hpp>
 
 namespace paxs {
 

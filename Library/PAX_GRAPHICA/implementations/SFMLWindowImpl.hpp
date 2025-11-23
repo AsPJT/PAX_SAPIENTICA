@@ -16,8 +16,8 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
 #include <PAX_GRAPHICA/SFML_Event.hpp>
+#include <PAX_GRAPHICA/WindowImpl.hpp>
 
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/AppConst.hpp>

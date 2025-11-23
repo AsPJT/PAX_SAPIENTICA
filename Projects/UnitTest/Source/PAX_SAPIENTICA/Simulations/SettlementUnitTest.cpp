@@ -14,8 +14,8 @@
 #include <memory>
 #include <random>
 
-#include <PAX_SAPIENTICA/Simulation/Entity/Settlement.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Settlement.hpp>
 
 // Settlement クラスの基本的なテスト
 

@@ -9,11 +9,13 @@
 
 ##########################################################################################*/
 
-#include <gtest/gtest.h>
-#include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <filesystem>
 #include <fstream>
+#include <gtest/gtest.h>
+
+#include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
+
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 namespace paxs {
 

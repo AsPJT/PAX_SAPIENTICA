@@ -10,6 +10,7 @@
 ##########################################################################################*/
 
 #include <gtest/gtest.h>
+
 #include <PAX_SAPIENTICA/Color/Ryoseikoku.hpp>
 
 namespace paxs {

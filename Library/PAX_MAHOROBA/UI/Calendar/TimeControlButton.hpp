@@ -17,9 +17,9 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
-#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>

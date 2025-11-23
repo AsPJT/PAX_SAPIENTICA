@@ -21,7 +21,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>

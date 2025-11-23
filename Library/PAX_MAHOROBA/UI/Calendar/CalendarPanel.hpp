@@ -15,10 +15,10 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/UI/Calendar/CalendarContent.hpp>
-#include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/UI/Calendar/TimeControlButton.hpp>
 #include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/CalendarContent.hpp>
+#include <PAX_MAHOROBA/UI/Calendar/TimeControlButton.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>

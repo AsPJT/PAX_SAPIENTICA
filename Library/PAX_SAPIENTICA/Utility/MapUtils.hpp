@@ -12,8 +12,8 @@
 #ifndef PAX_SAPIENTICA_MAP_UTILS_HPP
 #define PAX_SAPIENTICA_MAP_UTILS_HPP
 
-#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 
 namespace paxs {
 

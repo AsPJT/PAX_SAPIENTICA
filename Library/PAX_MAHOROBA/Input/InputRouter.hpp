@@ -15,11 +15,11 @@
 #include <algorithm>
 #include <vector>
 
-#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
-#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxs {
 

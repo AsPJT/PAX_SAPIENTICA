@@ -19,12 +19,12 @@
 #include <random>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
-#include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
-#include <PAX_SAPIENTICA/Simulation/Config/KanakumaLifeSpan.hpp>
-#include <PAX_SAPIENTICA/Simulation/Config/JapanProvinces.hpp>
-#include <PAX_SAPIENTICA/Simulation/Entity/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Algorithm/AStar.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/JapanProvinces.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/KanakumaLifeSpan.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/SettlementAgent.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/UniqueIdentification.hpp>
 

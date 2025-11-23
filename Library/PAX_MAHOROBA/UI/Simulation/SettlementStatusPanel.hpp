@@ -15,8 +15,8 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>

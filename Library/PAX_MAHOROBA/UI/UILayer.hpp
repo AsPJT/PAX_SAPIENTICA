@@ -24,7 +24,7 @@
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Events/FeatureEvents.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarPanel.hpp>
 #include <PAX_MAHOROBA/UI/DebugInfoPanel.hpp>

@@ -14,8 +14,8 @@
 
 #include <limits>
 
-#include <PAX_SAPIENTICA/Simulation/Entity/Genome.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Genome.hpp>
 
 namespace paxs {
 

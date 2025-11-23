@@ -14,8 +14,8 @@
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
 
-#include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 

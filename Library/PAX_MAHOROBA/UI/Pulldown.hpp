@@ -14,9 +14,9 @@
 
 #include <algorithm>
 #include <functional>
+#include <span>
 #include <string>
 #include <vector>
-#include <span>
 
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>

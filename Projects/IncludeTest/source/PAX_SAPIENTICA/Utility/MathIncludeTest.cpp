@@ -1,3 +1,3 @@
-#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
+#include <PAX_SAPIENTICA/Utility/Math.hpp>
 
 int main(){}

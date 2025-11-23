@@ -14,10 +14,10 @@
 
 #include <memory>
 
-#include <PAX_SAPIENTICA/Simulation/Entity/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/KanakumaLifeSpan.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Agent.hpp>
 #include <PAX_SAPIENTICA/Utility/StatusDisplayer.hpp>
 #include <PAX_SAPIENTICA/Utility/UniqueIdentification.hpp>
 

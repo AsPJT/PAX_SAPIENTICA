@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/TileRepository.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>

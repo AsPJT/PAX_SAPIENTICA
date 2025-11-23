@@ -17,10 +17,10 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Events/FeatureEvents.hpp>
-#include <PAX_MAHOROBA/Map/Location/GenomeFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/GeographicFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/PersonFeature.hpp>
-#include <PAX_MAHOROBA/Map/Location/PlaceNameFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/GenomeFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/GeographicFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/PersonFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/PlaceNameFeature.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Feature/FeatureCloseButton.hpp>

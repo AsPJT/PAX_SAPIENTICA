@@ -13,13 +13,13 @@
 #define PAX_SAPIENTICA_SIMULATION_OUTPUT_SIMULATION_RESULT_WRITER_HPP
 
 #include <fstream>
-#include <string>
 #include <functional>
 #include <map>
+#include <string>
 
+#include <PAX_SAPIENTICA/Core/Utility/TimeUtils.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/TimeUtils.hpp>
 
 namespace paxs {
 

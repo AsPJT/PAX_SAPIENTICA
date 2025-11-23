@@ -9,9 +9,8 @@
 
 ##########################################################################################*/
 
-#include <gtest/gtest.h>
-
 #include <fstream>
+#include <gtest/gtest.h>
 #include <string>
 
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
