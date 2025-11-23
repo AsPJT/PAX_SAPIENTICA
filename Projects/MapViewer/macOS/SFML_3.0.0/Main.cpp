@@ -14,8 +14,6 @@
 #include <SFML/Graphics.hpp>
 #include <PAX_MAHOROBA/Core/Main.hpp>
 
-#include <iostream>
-
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #include <libgen.h>

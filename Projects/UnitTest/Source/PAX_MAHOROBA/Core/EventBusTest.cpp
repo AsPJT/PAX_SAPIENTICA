@@ -130,12 +130,12 @@ TEST_F(EventBusTest, GetSubscriberCount) {
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<ViewportChangedEvent>(), 0);
 
     EventBus::getInstance().subscribe<ViewportChangedEvent>(
-        [](const ViewportChangedEvent& event) {}
+        [](const ViewportChangedEvent&) {}
     );
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<ViewportChangedEvent>(), 1);
 
     EventBus::getInstance().subscribe<ViewportChangedEvent>(
-        [](const ViewportChangedEvent& event) {}
+        [](const ViewportChangedEvent&) {}
     );
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<ViewportChangedEvent>(), 2);
 }
@@ -193,19 +193,19 @@ TEST_F(EventBusTest, CommandEvents) {
     int step_count = 0;
 
     EventBus::getInstance().subscribe<InitHumanDataCommandEvent>(
-        [&](const InitHumanDataCommandEvent& event) { init_count++; }
+        [&](const InitHumanDataCommandEvent&) { init_count++; }
     );
     EventBus::getInstance().subscribe<SimulationPlayCommandEvent>(
-        [&](const SimulationPlayCommandEvent& event) { play_count++; }
+        [&](const SimulationPlayCommandEvent&) { play_count++; }
     );
     EventBus::getInstance().subscribe<SimulationPauseCommandEvent>(
-        [&](const SimulationPauseCommandEvent& event) { pause_count++; }
+        [&](const SimulationPauseCommandEvent&) { pause_count++; }
     );
     EventBus::getInstance().subscribe<SimulationStopCommandEvent>(
-        [&](const SimulationStopCommandEvent& event) { stop_count++; }
+        [&](const SimulationStopCommandEvent&) { stop_count++; }
     );
     EventBus::getInstance().subscribe<SimulationStepCommandEvent>(
-        [&](const SimulationStepCommandEvent& event) { step_count++; }
+        [&](const SimulationStepCommandEvent&) { step_count++; }
     );
 
     // 各コマンドイベントを発行

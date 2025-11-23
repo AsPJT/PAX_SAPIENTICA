@@ -4,10 +4,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_testing()
 
+set(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+
+# Include helper functions for graphics libraries
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/GraphicsLibraryHelpers.cmake)
+
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Library
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest/googletest/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary
+    ${PROJECT_ROOT_DIR}/Library
+    ${PROJECT_ROOT_DIR}/ExternalLibrary/googletest/googletest/include
+    ${PROJECT_ROOT_DIR}/ExternalLibrary
 )
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest ${CMAKE_BINARY_DIR}/googletest)
@@ -32,21 +37,10 @@ foreach(TEST_SOURCE ${TEST_SOURCES})
     # Auto-detect PathTSV dependency by checking if test reads Config.tsv
     file(READ ${TEST_SOURCE} TEST_FILE_CONTENT)
     if(TEST_FILE_CONTENT MATCHES "Config\\.tsv" OR TEST_FILE_CONTENT MATCHES "AppConfig::getInstance")
-        add_dependencies(${TARGET_NAME} CreatePathTSV)
+        add_dependencies(${TARGET_NAME} GenerateConfigTSV)
         message(STATUS "Auto-detected Config.tsv dependency: ${TARGET_NAME}")
     endif()
 endforeach()
 
-# Calculate relative path from CMAKE_BINARY_DIR to project root
-file(RELATIVE_PATH PROJECT_ROOT_RELATIVE_PATH
-    "${CMAKE_BINARY_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/../.."
-)
-set(PATH_TSV_FILE "${CMAKE_BINARY_DIR}/Config.tsv")
-set(TSV_CONTENT "key\tvalue\nasset_file\t${PROJECT_ROOT_RELATIVE_PATH}\n")
-
-file(WRITE ${PATH_TSV_FILE} ${TSV_CONTENT})
-
-add_custom_target(CreatePathTSV ALL
-    DEPENDS ${PATH_TSV_FILE}
-)
+# Generate Config.tsv with relative path to project root
+paxs_generate_config_tsv()

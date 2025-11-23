@@ -12,12 +12,10 @@
 #ifndef PAX_SAPIENTICA_LOGGER_HPP
 #define PAX_SAPIENTICA_LOGGER_HPP
 
-#include <chrono>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
-#include <iomanip>
-#include <sstream>
+#include <iostream>
 
 #include <PAX_SAPIENTICA/Core/Utility/TimeUtils.hpp>
 
@@ -50,7 +48,12 @@ namespace paxs {
         static void log(const Level level, const std::string& filename, const int line, const std::string& message) noexcept {
             const std::string directory = "Save";
             if (!std::filesystem::exists(directory)) {
-                std::filesystem::create_directories(directory);
+                bool created = std::filesystem::create_directories(directory);
+                if (!created) {
+                    // ディレクトリ作成失敗
+                    std::cerr << "Failed to create log directory: " << directory << std::endl;
+                    return;
+                }
             }
 
             std::ofstream file(directory + "/log.txt", std::ios::app);

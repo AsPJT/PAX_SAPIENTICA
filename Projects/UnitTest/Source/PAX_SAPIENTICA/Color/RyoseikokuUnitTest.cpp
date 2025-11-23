@@ -84,13 +84,9 @@ namespace paxs {
 
 	// constexpr配列のコンパイル時計算テスト
 	TEST_F(RyoseikokuColorTest, ConstexprArrayTest) {
-		// 配列がconstexprで定義されていることを確認
-		// （コンパイル時に評価される）
-		constexpr std::size_t array_size = 91;
-
 		// 実行時にサイズを確認（間接的な検証）
 		// soil_tempはprivateなので直接アクセスできないが、
-		// getIndexの動作から91要素あることを確認
+		// getIndexの動作から90要素あることを確認
 		EXPECT_EQ(ryoseikoku.getIndex(RGBA{250, 100, 100, 255}), 90); // 最後の要素
 	}
 
