@@ -15,7 +15,9 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <queue>
+#include <shared_mutex>
 #include <typeindex>
 #include <vector>
 
@@ -126,6 +128,7 @@ public:
             handler(static_cast<const EventType&>(event));
         };
 
+        std::unique_lock lock(mutex_);  // 書き込みロック
         auto it = subscribers_.find(type_id);
         if (it != subscribers_.end()) {
             it->second.emplace_back(HandlerEntry{next_handler_id_++, wrapper});
@@ -146,6 +149,8 @@ public:
         static_assert(std::is_base_of_v<Event, EventType>, "EventType must derive from Event");
 
         const std::type_index type_id(typeid(EventType));
+
+        std::unique_lock lock(mutex_);  // 書き込みロック
         const std::size_t handler_id = next_handler_id_++;
 
         auto wrapper = [handler](const Event& event) {
@@ -172,6 +177,7 @@ public:
             return;
         }
 
+        std::unique_lock lock(mutex_);  // 書き込みロック
         auto it = subscribers_.find(handle.type_id);
         if (it != subscribers_.end()) {
             auto& handlers = it->second;
@@ -195,6 +201,7 @@ public:
 
         const std::type_index type_id(typeid(EventType));
 
+        std::shared_lock lock(mutex_);  // 読み取りロック
         const auto iterator = subscribers_.find(type_id);
         if (iterator != subscribers_.end()) {
             for (const auto& entry : iterator->second) {
@@ -211,12 +218,14 @@ public:
     void enqueue(const EventType& event) {
         static_assert(std::is_base_of_v<Event, EventType>, "EventType must derive from Event");
 
+        std::unique_lock lock(mutex_);  // 書き込みロック（キューへの追加）
         event_queue_.push(std::make_unique<EventType>(event));
     }
 
     /// @brief キューに溜まったイベントを処理
     /// @brief Process all queued events
     void processQueue() {
+        std::unique_lock lock(mutex_);  // 書き込みロック（キューとsubscribers_両方にアクセス）
         while (!event_queue_.empty()) {
             const std::unique_ptr<Event>& event = event_queue_.front();
 
@@ -242,6 +251,7 @@ public:
         static_assert(std::is_base_of_v<Event, EventType>, "EventType must derive from Event");
 
         const std::type_index type_id(typeid(EventType));
+        std::shared_lock lock(mutex_);  // 読み取りロック
         const auto iterator = subscribers_.find(type_id);
         return iterator != subscribers_.end() ? iterator->second.size() : 0;
     }
@@ -250,6 +260,7 @@ public:
     /// @brief Get queue size (for debugging)
     /// @return キューに溜まっているイベント数
     std::size_t getQueueSize() const {
+        std::shared_lock lock(mutex_);  // 読み取りロック
         return event_queue_.size();
     }
 
@@ -258,6 +269,7 @@ public:
     /// @details テストで状態をリセットしたい場合のみ使用 / Use only for resetting state in tests
     /// @details Meyer's singletonは自動破棄されるため、このメソッドはテスト専用
     void clearForTesting() {
+        std::unique_lock lock(mutex_);  // 書き込みロック
         subscribers_.clear();
         while (!event_queue_.empty()) {
             event_queue_.pop();
@@ -274,6 +286,7 @@ private:
         EventHandlerWrapper handler;
     };
 
+    mutable std::shared_mutex mutex_;  ///< スレッド保護用mutex / Mutex for thread safety
     paxs::UnorderedMap<std::type_index, std::vector<HandlerEntry>> subscribers_;
     std::queue<std::unique_ptr<Event>> event_queue_;
     std::size_t next_handler_id_ = 1;  ///< 次のハンドラーID（0は無効値） / Next handler ID (0 is invalid)
