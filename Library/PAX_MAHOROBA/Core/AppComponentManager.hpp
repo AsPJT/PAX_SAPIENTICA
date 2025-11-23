@@ -29,7 +29,14 @@
 #include <PAX_MAHOROBA/UI/Debug/DebugLayer.hpp>
 #endif
 
+#ifdef PAXS_USING_SIMULATOR
+#include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
+#endif
+
 namespace paxs {
+
+    // Forward declaration (for non-simulator builds)
+    class SettlementInputHandler;
 
     /// @brief アプリケーションコンポーネント統合管理クラス
     /// @brief Application component integrated management class
@@ -150,8 +157,13 @@ namespace paxs {
             // 統合入力ルーターに登録（レイヤーベース優先度制御）
             input_router.registerHandler(&photo360_input_handler_);
             input_router.registerHandler(&map_content_input_handler_);
+
+            // Settlement入力ハンドラーを登録（シミュレーション有効時のみ）
 #ifdef PAXS_USING_SIMULATOR
-            input_router.registerHandler(&map_content_layer_.getSettlementInputHandler());
+            SettlementInputHandler* settlement_handler = map_content_layer_.getSettlementInputHandler();
+            if (settlement_handler != nullptr) {
+                input_router.registerHandler(settlement_handler);
+            }
 #endif
         }
 

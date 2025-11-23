@@ -16,18 +16,19 @@
 #include <memory>
 #include <vector>
 
-#ifdef PAXS_USING_SIMULATOR
-#include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
-#include <PAX_MAHOROBA/Map/Simulation/SimulationManager.hpp>
-#endif
-
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Manager/FeatureCollectionManager.hpp>
 #include <PAX_MAHOROBA/Map/Content/Manager/UpdateCoordinator.hpp>
 #include <PAX_MAHOROBA/Map/Content/Renderer/MapFeatureRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Content/Update/UpdateContext.hpp>
+#include <PAX_MAHOROBA/Map/Simulation/ISimulationProvider.hpp>
+#include <PAX_MAHOROBA/Map/Simulation/NullSimulationProvider.hpp>
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
+
+#ifdef PAXS_USING_SIMULATOR
+#include <PAX_MAHOROBA/Map/Simulation/SettlementSimulationProvider.hpp>
+#endif
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
@@ -37,7 +38,7 @@ namespace paxs {
     /// @brief 地図コンテンツレイヤークラス（Facade）
     /// @brief Map Content Layer (Facade)
     ///
-    /// - FeatureCollectionManager、UpdateCoordinator、MapContentSimulationManagerを統合
+    /// - FeatureCollectionManager、UpdateCoordinator、ISimulationProviderを統合
     class MapContentLayer : public IRenderable {
     private:
         const AppStateManager& app_state_manager_;
@@ -45,30 +46,27 @@ namespace paxs {
         // 3つのマネージャー
         FeatureCollectionManager feature_collection_manager_; ///< 地物コレクション管理
         UpdateCoordinator update_coordinator_; ///< 更新調整
-
-#ifdef PAXS_USING_SIMULATOR
-        std::unique_ptr<MapContentSimulationManager> simulation_manager_; ///< シミュレーション管理
-#endif
+        std::unique_ptr<ISimulationProvider> simulation_provider_; ///< シミュレーション機能（Strategy パターン）
 
     public:
         MapContentLayer(const AppStateManager& app_state_manager)
             : app_state_manager_(app_state_manager)
             , update_coordinator_(app_state_manager)
 #ifdef PAXS_USING_SIMULATOR
-            , simulation_manager_(std::make_unique<MapContentSimulationManager>(app_state_manager))
+            , simulation_provider_(std::make_unique<SettlementSimulationProvider>(app_state_manager))
+#else
+            , simulation_provider_(std::make_unique<NullSimulationProvider>())
 #endif
         {
             // データロード（初回のみ）
             feature_collection_manager_.loadAllFeatures();
 
-#ifdef PAXS_USING_SIMULATOR
-            // Settlement更新コールバックを設定
+            // Settlement更新コールバックを設定（Strategy パターンで常に設定可能）
             update_coordinator_.setSettlementUpdateCallback(
                 [this]() {
-                    simulation_manager_->updateSettlementData();
+                    simulation_provider_->updateSettlementData();
                 }
             );
-#endif
 
             // イベント購読
             update_coordinator_.subscribeToEvents(
@@ -76,10 +74,8 @@ namespace paxs {
                 feature_collection_manager_.getAssetRegistry()
             );
 
-#ifdef PAXS_USING_SIMULATOR
-            // シミュレーション関連イベント購読
-            simulation_manager_->subscribeToSimulationEvents();
-#endif
+            // シミュレーション関連イベント購読（Strategy パターンで常に呼び出し可能）
+            simulation_provider_->subscribeToSimulationEvents();
 
             // 初回更新を即座に実行（全ての更新が必要）
             // 注意: PersonFeatureはupdateTemporal()で補間座標を計算するため、
@@ -97,9 +93,8 @@ namespace paxs {
                 feature_collection_manager_.getAssetRegistry()
             );
 
-#ifdef PAXS_USING_SIMULATOR
-            simulation_manager_->updateSettlementData();
-#endif
+            // Settlementデータ更新（Strategy パターンで常に呼び出し可能）
+            simulation_provider_->updateSettlementData();
         }
 
         // コピー・ムーブ禁止（観察ポインタとイベント購読を持つため）
@@ -110,12 +105,9 @@ namespace paxs {
         auto operator=(MapContentLayer&&)->MapContentLayer & = delete;
 
         void render() const override {
-#ifdef PAXS_USING_SIMULATOR
-            // SettlementManager を描画（シミュレーション表示時）
             if (app_state_manager_.getVisibilityManager().isVisible(ViewMenu::simulation)) {
-                simulation_manager_->getSettlementManager().render();
+                simulation_provider_->render();
             }
-#endif
 
             if (app_state_manager_.getVisibilityManager().isVisible(ViewMenu::map)) {
                 MapFeatureRenderer::drawFeatures(
@@ -126,12 +118,12 @@ namespace paxs {
             }
         }
 
-#ifdef PAXS_USING_SIMULATOR
         /// @brief SettlementInputHandler への参照を取得（AppComponentManager での登録用）
-        SettlementInputHandler& getSettlementInputHandler() {
-            return simulation_manager_->getSettlementInputHandler();
+        /// @brief Get SettlementInputHandler reference (for AppComponentManager registration)
+        /// @return SettlementInputHandler* (nullptrの場合あり)
+        SettlementInputHandler* getSettlementInputHandler() {
+            return simulation_provider_->getSettlementInputHandler();
         }
-#endif
 
         const std::vector<std::unique_ptr<MapFeature>>& getFeatures() const {
             return feature_collection_manager_.getFeatures();
