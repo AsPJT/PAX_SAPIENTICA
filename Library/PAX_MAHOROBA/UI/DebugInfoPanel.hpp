@@ -18,7 +18,7 @@
 
 #include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
+#include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
@@ -30,7 +30,7 @@
 namespace paxs {
 
     /// @brief デバッグ情報パネルを表示するクラス
-    class DebugInfoPanel : public InteractiveUIComponent {
+    class DebugInfoPanel : public UIComponent {
     private:
         const paxs::FeatureVisibilityManager& visible_manager_;
         const MapViewport& map_viewport_;
@@ -56,12 +56,6 @@ namespace paxs {
             , map_viewport_(map_viewport)
             , ui_layout_(ui_layout)
             , koyomi_(koyomi) {}
-
-        EventHandlingResult handleEvent(const MouseEvent& event) override {
-            // DebugInfoPanelは入力処理を行わない
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
 
         void render() const override {
             if (!isVisible()) return;
@@ -212,12 +206,6 @@ namespace paxs {
 
         Rect<int> getRect() const override {
             return ui_layout_.debug_info_panel.getRect();
-        }
-
-        bool isHit(const paxs::Vector2<int>& pos) const override {
-            if (!isVisible()) return false;
-            (void)pos.x; (void)pos.y;
-            return false;
         }
 
         bool isVisible() const override {

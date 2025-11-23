@@ -63,7 +63,7 @@ namespace paxs {
         paxs::SettlementStatusPanel settlement_status_panel;
         paxs::UIPanelBackground settlement_status_bg_;
 #endif
-        std::vector<InteractiveUIComponent*> panels;
+        std::vector<UIComponent*> panels;
 
         std::size_t koyomi_date_list_size = 0;
 
@@ -80,7 +80,7 @@ namespace paxs {
 
         void sortPanelsByLayer() {
             std::sort(panels.begin(), panels.end(),
-                [](InteractiveUIComponent* left, InteractiveUIComponent* right) {
+                [](UIComponent* left, UIComponent* right) {
                     // 降順
                     return left->getLayer() > right->getLayer();
                 });
@@ -285,10 +285,13 @@ namespace paxs {
 
         bool isHit(const paxs::Vector2<int>& pos) const override {
             if (!isVisible()) return false;
-            for (const InteractiveUIComponent* panel : panels) {
+            for (const UIComponent* panel : panels) {
                 if (panel) {
-                    if (panel->isHit(pos)) {
-                        return true;
+                    // InteractiveUIComponentにキャストしてisHit()を呼ぶ
+                    if (const auto* interactive = dynamic_cast<const InteractiveUIComponent*>(panel)) {
+                        if (interactive->isHit(pos)) {
+                            return true;
+                        }
                     }
                 } else {
                     PAXS_WARNING("UILayer::isHit: panel is nullptr");
@@ -298,12 +301,15 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            for (InteractiveUIComponent* panel : panels) {
+            for (UIComponent* panel : panels) {
                 if (panel) {
-                    if (panel->isHit(event.pos)) {
-                        EventHandlingResult result = panel->handleEvent(event);
-                        if (result.handled) {
-                            return result;
+                    // InteractiveUIComponentにキャストしてhandleEvent()を呼ぶ
+                    if (auto* interactive = dynamic_cast<InteractiveUIComponent*>(panel)) {
+                        if (interactive->isHit(event.pos)) {
+                            EventHandlingResult result = interactive->handleEvent(event);
+                            if (result.handled) {
+                                return result;
+                            }
                         }
                     }
                 } else {

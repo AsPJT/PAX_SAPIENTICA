@@ -12,19 +12,20 @@
 #ifndef PAX_MAHOROBA_UI_DEBUG_DEBUG_LAYER_HPP
 #define PAX_MAHOROBA_UI_DEBUG_DEBUG_LAYER_HPP
 
-#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
+#include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugConsole.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugNotificationManager.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugPerformanceMonitor.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugVariableWatcher.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxs {
 
 /// @brief デバッグレイヤー（デバッグ機能の統合管理）
 /// @brief Debug layer (integrated management of debug features)
-class DebugLayer : public IRenderable {
+class DebugLayer : public UIComponent {
 private:
     DebugNotificationManager notification_manager_;
     DebugConsole console_;
@@ -134,6 +135,10 @@ public:
 
     RenderLayer getLayer() const override { return RenderLayer::Debug; }
     bool isVisible() const override { return visible_; }
+
+    Rect<int> getRect() const override { return {0, 0, 0, 0}; }
+    const char* getName() const override { return "DebugLayer"; }
+    void setPos(const Vector2<int>& /*pos*/) override {}
 
 };
 

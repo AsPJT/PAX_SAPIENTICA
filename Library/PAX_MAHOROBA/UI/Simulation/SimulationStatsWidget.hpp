@@ -20,7 +20,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
+#include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
 
 #include <PAX_SAPIENTICA/Simulation/Manager/SimulationManager.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
@@ -30,7 +30,7 @@ namespace paxs {
     /// @brief シミュレーション統計情報表示ウィジェット
     /// @brief Simulation statistics display widget
     /// @details 人口数、集落数、渡来数を表示
-    class SimulationStatsWidget : public InteractiveUIComponent {
+    class SimulationStatsWidget : public UIComponent {
     private:
         // SimulationStats domain hash
         static constexpr std::uint_least32_t simulation_stats_domain_hash = MurMur3::calcHash("SimulationStats");
@@ -101,10 +101,6 @@ namespace paxs {
                 paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
                 paxg::Color(0, 0, 0)
             );
-        }
-
-        EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
-            return EventHandlingResult::NotHandled();
         }
 
         Rect<int> getRect() const override {

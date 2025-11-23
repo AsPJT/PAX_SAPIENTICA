@@ -16,13 +16,10 @@
 #include <vector>
 
 #include <PAX_GRAPHICA/Circle.hpp>
-#include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Line.hpp>
-#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Spline2D.hpp>
-#include <PAX_GRAPHICA/String.hpp>
 
-#include <PAX_MAHOROBA/Map/Content/Renderer/LocationRendererHelper.hpp>
+#include <PAX_MAHOROBA/Map/Content/Renderer/GeometryRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Core/MapCoordinateConverter.hpp>
 #include <PAX_MAHOROBA/Rendering/SimulationColor.hpp>
 
@@ -35,7 +32,7 @@
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する
     /// @brief Visualize simulation settlements
-    class SettlementRenderer {
+    class SettlementRenderer : public GeometryRenderer {
     public:
         /// @brief エージェント（集落）を描画（private化）
         /// @brief Draw agents (settlements) - made private
@@ -72,25 +69,6 @@ namespace paxs {
                 drawMovementLines(jdn, agents, marriage_pos_list,
                     map_view_size, map_view_center);
             }
-        }
-
-        /// @brief 範囲内判定
-        /// @param coordinate メルカトル座標 / Mercator coordinate
-        /// @param map_view_size マップビューのサイズ / Map view size
-        /// @param map_view_center マップビューの中心座標 / Map view center
-        /// @param margin_factor マージン係数（デフォルト: 1.6） / Margin factor (default: 1.6)
-        static bool isInViewBounds(
-            const Vector2<double>& coordinate,
-            const Vector2<double>& map_view_size,
-            const Vector2<double>& map_view_center,
-            double margin_factor = 1.6
-        ) {
-            const double half_width = map_view_size.x / 2 * margin_factor;
-            const double half_height = map_view_size.y / 2 * margin_factor;
-            return (coordinate.x >= map_view_center.x - half_width &&
-                coordinate.x <= map_view_center.x + half_width &&
-                coordinate.y >= map_view_center.y - half_height &&
-                coordinate.y <= map_view_center.y + half_height);
         }
 
     private:
@@ -177,7 +155,7 @@ namespace paxs {
                     const auto location_point = createLocationPoint(settlement.getPosition());
 
                     // 経緯度の範囲外を除去
-                    if (!isInViewBounds(location_point.coordinate,
+                    if (!isInViewport(location_point.coordinate,
                         map_view_size, map_view_center)) continue;
 
                     // 時間範囲外を除去
@@ -245,7 +223,9 @@ namespace paxs {
             for (const auto& share : *bronze_share_list) {
                 const auto end_lli = createLocationPoint(share.second);
 
-                if (!isInViewBounds(end_lli.coordinate, map_view_size, map_view_center)) continue;
+                if (!isInViewport(end_lli.coordinate, map_view_size, map_view_center)) {
+                    continue;
+                }
                 // 時間判定はシミュレータ側でステップごとに生成されているため、ここでは省略可能だが、念のためexcludesチェックはcreateLocationPointで範囲を広げているので通過する
                 if (end_lli.year_range.excludes(jdn)) continue;
 
@@ -280,8 +260,10 @@ namespace paxs {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
                     const auto location_point = createLocationPoint(settlement.getPosition());
 
-                    if (!isInViewBounds(location_point.coordinate,
-                        map_view_size, map_view_center)) continue;
+                    if (!isInViewport(location_point.coordinate,
+                        map_view_size, map_view_center)) {
+                        continue;
+                    }
 
                     if (location_point.year_range.excludes(jdn)) continue;
 
@@ -343,8 +325,10 @@ namespace paxs {
             for (const auto& marriage_pos : *marriage_pos_list) {
                 const auto location_point = createLocationPoint(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
-                if (!isInViewBounds(location_point.coordinate,
-                    map_view_size, map_view_center)) continue;
+                if (!isInViewport(location_point.coordinate,
+                    map_view_size, map_view_center)) {
+                    continue;
+                }
 
                 if (location_point.year_range.excludes(jdn)) continue;
                 if (marriage_pos.sx == -1 || marriage_pos.sx == 0) continue;

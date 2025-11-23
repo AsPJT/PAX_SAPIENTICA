@@ -26,6 +26,7 @@
 #include <PAX_MAHOROBA/Map/Content/Feature/Model3DFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/PlaceNameFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Renderer/GeometryRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Content/Renderer/LocationRendererHelper.hpp>
 #include <PAX_MAHOROBA/Map/Content/Update/UpdateContext.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
@@ -38,7 +39,7 @@ namespace paxs {
 
 /// @brief 地物の描画を統括するレンダラークラス
 /// @brief Renderer class that manages drawing of all map features
-class MapFeatureRenderer {
+class MapFeatureRenderer : public GeometryRenderer {
 public:
     /// @brief 地物のリストを描画
     /// @brief Draw list of features
@@ -102,12 +103,11 @@ private:
                 continue;
             }
 
-            // テクスチャを取得
-            const std::uint_least32_t place_tex = (data.texture_key == 0) ? group_data.texture_key : data.texture_key;
-            if (!texture_map.contains(place_tex)) continue;
-
             // 肖像画を120×120で描画
-            texture_map.at(place_tex).resizedDrawAt(120, draw_pos);
+            const std::uint_least32_t place_tex = (data.texture_key == 0) ? group_data.texture_key : data.texture_key;
+            if (!drawTexture(texture_map, place_tex, draw_pos, 120)) {
+                continue;
+            }
 
             // テキスト位置（肖像画の上部）
             const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x(), draw_pos.y() - 60 };
@@ -235,17 +235,12 @@ private:
                 continue;
             }
 
-            // テクスチャを取得
+            // テクスチャを描画（失敗時は警告表示）
             const std::uint_least32_t place_tex = data.texture_key;
-
-            // テクスチャが見つからない場合は警告表示
-            if (place_tex == 0 || !texture_map.contains(place_tex)) {
+            if (!drawTexture(texture_map, place_tex, draw_pos, display_size)) {
                 drawWarningTexture(draw_pos, display_size > 0 ? display_size : 20);
                 continue;
             }
-
-            // テクスチャを描画
-            texture_map.at(place_tex).resizedDrawAt(display_size, draw_pos);
 
             // 名前を描画（表示サイズが十分な場合のみ）
             if (should_show_name) {

@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
+#include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
@@ -29,7 +29,7 @@
 namespace paxs {
 
     /// @brief カレンダーコンテンツの描画クラス
-    class CalendarContent : public IRenderable {
+    class CalendarContent : public UIComponent {
     private:
         // Locales ドメインキー定数
         static constexpr std::uint_least32_t calendar_type_domain_key = MurMur3::calcHash("CalendarType");
@@ -337,6 +337,9 @@ namespace paxs {
 
         bool isVisible() const override { return true; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
+        Rect<int> getRect() const override { return ui_layout_.calendar_panel.getRect(); }
+        const char* getName() const override { return "CalendarContent"; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
     };
 
 }

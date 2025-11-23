@@ -14,6 +14,7 @@
 
 #include <functional>
 
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationState.hpp>

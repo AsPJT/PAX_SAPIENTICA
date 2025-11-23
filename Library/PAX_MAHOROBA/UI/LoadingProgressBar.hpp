@@ -20,8 +20,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
-#include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
+#include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
 
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/Async/LoadingHandle.hpp>
@@ -33,7 +32,7 @@ namespace paxs {
     /// @brief Loading progress bar
     /// @tparam ResultT ロード結果の型 / Result type of loading operation
     template <class ResultT>
-    class LoadingProgressBar : public IRenderable {
+    class LoadingProgressBar : public UIComponent {
     private:
         const LoadingHandle<ResultT>* handle_ = nullptr;  ///< ロードハンドルへの参照 / Reference to loading handle
         int x_ = 0;                                       ///< X座標 / X coordinate
@@ -181,6 +180,16 @@ namespace paxs {
         /// @brief アウトライン色を設定
         /// @brief Set outline color
         void setOutlineColor(const paxg::Color& color) { outline_color_ = color; }
+
+        // UIComponent interface
+        [[nodiscard]] Rect<int> getRect() const override {
+            return {x_, y_, width_, height_};
+        }
+        [[nodiscard]] const char* getName() const override { return "LoadingProgressBar"; }
+        void setPos(const Vector2<int>& pos) override {
+            x_ = pos.x;
+            y_ = pos.y;
+        }
     };
 
 } // namespace paxs

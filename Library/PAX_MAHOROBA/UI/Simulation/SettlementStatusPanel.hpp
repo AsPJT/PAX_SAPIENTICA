@@ -16,7 +16,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
+#include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
 
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
@@ -28,7 +28,7 @@ namespace paxs {
     /// @brief Settlement display mode status panel
     ///
     /// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
-    class SettlementStatusPanel : public InteractiveUIComponent {
+    class SettlementStatusPanel : public UIComponent {
     private:
         // SimulationStats domain hash
         static constexpr std::uint_least32_t simulation_stats_domain_hash = MurMur3::calcHash("SimulationStats");
@@ -79,15 +79,9 @@ namespace paxs {
             };
         }
 
-        EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
-            // このパネルはマウス入力を処理しない
-            return EventHandlingResult::NotHandled();
-        }
-
         void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_ && visible_manager_.isVisible(ViewMenu::simulation); }
         void setPos(const Vector2<int>& pos) override { pos_ = pos; }
-        bool isHit(const paxs::Vector2<int>& /*pos*/) const override { return false; }
         const char* getName() const override { return "SettlementStatusPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 
