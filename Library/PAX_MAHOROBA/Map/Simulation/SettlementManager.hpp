@@ -28,7 +28,6 @@ namespace paxs {
     /// @brief Class to manage settlement rendering
     class SettlementManager : public IRenderable {
     private:
-        double cached_jdn_ = 0.0;
         const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* cached_agents_ = nullptr;
         const std::vector<GridType4>* cached_marriage_pos_list_ = nullptr;
         const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>* cached_bronze_share_list_ = nullptr;
@@ -46,14 +45,13 @@ namespace paxs {
             if (!isVisible() || (cached_agents_ == nullptr) || (cached_marriage_pos_list_ == nullptr) || (cached_bronze_share_list_ == nullptr)) {
                 return;
             }
-            SettlementRenderer::draw(cached_jdn_, cached_agents_, cached_marriage_pos_list_, cached_bronze_share_list_,
+            SettlementRenderer::draw(cached_agents_, cached_marriage_pos_list_, cached_bronze_share_list_,
                 cached_map_view_size_, cached_map_view_center_,
                 select_draw_, is_line_, is_arrow_);
         }
 
         /// @brief 描画パラメータを設定
         void setDrawParams(
-            const double jdn,
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>& agents,
             const std::vector<GridType4>& marriage_pos_list,
             const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>& bronze_share_list,
@@ -61,7 +59,6 @@ namespace paxs {
             const Vector2<double>& map_view_center,
             const std::size_t select_draw, const bool is_line, const bool is_arrow
         ) {
-            cached_jdn_ = jdn;
             cached_agents_ = &agents;
             cached_marriage_pos_list_ = &marriage_pos_list;
             cached_bronze_share_list_ = &bronze_share_list;
@@ -78,7 +75,6 @@ namespace paxs {
             cached_agents_ = nullptr;
             cached_marriage_pos_list_ = nullptr;
             cached_bronze_share_list_ = nullptr;
-            cached_jdn_ = 0.0;
             cached_map_view_size_ = Vector2<double>(0.0, 0.0);
             cached_map_view_center_ = Vector2<double>(0.0, 0.0);
         }

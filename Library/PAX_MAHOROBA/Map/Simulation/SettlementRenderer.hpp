@@ -25,7 +25,7 @@
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Simulation/Entity/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
 
@@ -36,7 +36,6 @@ namespace paxs {
     public:
         /// @brief エージェント（集落）を描画（private化）
         /// @brief Draw agents (settlements) - made private
-        /// @param jdn ユリウス日
         /// @param agents 集落グリッド
         /// @param marriage_pos_list 婚姻移動のリスト
         /// @param bronze_share_list 青銅交換のリスト
@@ -45,7 +44,7 @@ namespace paxs {
         /// @param select_draw 表示モード (1-6)
         /// @param is_line グリッド線を表示するか
         /// @param is_arrow 移動矢印を表示するか
-        static void draw(const double jdn,
+        static void draw(
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
             const std::vector<GridType4>* marriage_pos_list,
             const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>* bronze_share_list,
@@ -54,7 +53,7 @@ namespace paxs {
             const std::size_t select_draw, const bool is_line, const bool is_arrow
         ) {
             // 集落を描画
-            drawSettlements(jdn, agents, map_view_size, map_view_center, select_draw);
+            drawSettlements(agents, map_view_size, map_view_center, select_draw);
 
             // グリッド線を描画
             if (is_line) {
@@ -64,9 +63,9 @@ namespace paxs {
             // 移動線を描画
             if (is_arrow) {
                 // 青銅交換の矢印（移動・婚姻より下のレイヤーに描画）
-                drawBronzeShareLines(jdn, bronze_share_list, map_view_size, map_view_center);
+                drawBronzeShareLines(bronze_share_list, map_view_size, map_view_center);
 
-                drawMovementLines(jdn, agents, marriage_pos_list,
+                drawMovementLines(agents, marriage_pos_list,
                     map_view_size, map_view_center);
             }
         }
@@ -99,33 +98,16 @@ namespace paxs {
 
         SettlementRenderer() = default;
 
-        /// @brief Get the mercator coordinate from the XYZTile coordinate.
-        /// @brief 座標をメルカトル座標で取得
-        static paxs::Vector2<double> getLocation(
-            const paxs::Vector2<int>& start_position,
-            const paxs::Vector2<int>& position,
-            const int z) {
-            return MapUtils::convertToMercatorCoordinate(start_position, position, z);
-        }
-
-        /// @brief 集落の位置からLocationPointを作成
-        /// @brief Create LocationPoint from settlement position
-        /// @param position 集落の位置 / Settlement position
-        static LocationPoint createLocationPoint(const paxs::Vector2<int>& position) {
-            return LocationPoint(
-                "settlement_" + std::to_string(position.x) + "_" + std::to_string(position.y),  // key
-                paxs::MercatorDeg(getLocation(
-                    SimulationConstants::getInstance().getStartArea(),
-                    position,
-                    ZOOM_LEVEL
-                )),
-                10,
-                Range<double>(0, 99999999),
-                Range<double>(0, 99999999),
-                MurMur3::calcHash("agent1"),
-                0,  // テクスチャキーなし / No source
-                1.0 // 拡大率 / Zoom factor
-            );
+        /// @brief グリッド座標をメルカトル座標に変換
+        /// @brief Convert grid coordinate to Mercator coordinate
+        /// @param position グリッド座標 / Grid coordinate
+        /// @return メルカトル座標 / Mercator coordinate
+        static paxs::MercatorDeg positionToMercator(const paxs::Vector2<int>& position) {
+            return paxs::MercatorDeg(MapUtils::convertToMercatorCoordinate(
+                SimulationConstants::getInstance().getStartArea(),
+                position,
+                ZOOM_LEVEL
+            ));
         }
 
         /// @brief 言語番号から色を取得
@@ -144,7 +126,6 @@ namespace paxs {
         /// @brief 集落を描画
         /// @brief Draw settlements
         static void drawSettlements(
-            const double jdn,
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
             const Vector2<double>& map_view_size,
             const Vector2<double>& map_view_center,
@@ -152,18 +133,14 @@ namespace paxs {
         ) {
             for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    const auto location_point = createLocationPoint(settlement.getPosition());
+                    const auto coordinate = positionToMercator(settlement.getPosition());
 
                     // 経緯度の範囲外を除去
-                    if (!isInViewport(location_point.coordinate,
-                        map_view_size, map_view_center)) continue;
-
-                    // 時間範囲外を除去
-                    if (location_point.year_range.excludes(jdn)) continue;
+                    if (!isInViewport(coordinate, map_view_size, map_view_center)) continue;
 
                     // 描画位置
                     const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
-                        location_point.coordinate,
+                        coordinate,
                         map_view_size,
                         map_view_center
                     );
@@ -213,7 +190,6 @@ namespace paxs {
 
         /// @brief 青銅交換の矢印を描画
         static void drawBronzeShareLines(
-            const double jdn,
             const std::vector<std::pair<paxs::Vector2<int>, paxs::Vector2<int>>>* bronze_share_list,
             const Vector2<double>& map_view_size,
             const Vector2<double>& map_view_center
@@ -221,22 +197,20 @@ namespace paxs {
             if (!bronze_share_list) return;
 
             for (const auto& share : *bronze_share_list) {
-                const auto end_lli = createLocationPoint(share.second);
+                const auto end_coord = positionToMercator(share.second);
 
-                if (!isInViewport(end_lli.coordinate, map_view_size, map_view_center)) {
+                if (!isInViewport(end_coord, map_view_size, map_view_center)) {
                     continue;
                 }
-                // 時間判定はシミュレータ側でステップごとに生成されているため、ここでは省略可能だが、念のためexcludesチェックはcreateLocationPointで範囲を広げているので通過する
-                if (end_lli.year_range.excludes(jdn)) continue;
 
                 const paxg::Vec2<double> end_pos = MapCoordinateConverter::toScreenPos(
-                    end_lli.coordinate,
+                    end_coord,
                     map_view_size,
                     map_view_center);
 
-                const auto start_lli = createLocationPoint(share.first);
+                const auto start_coord = positionToMercator(share.first);
                 const paxg::Vec2<double> start_pos = MapCoordinateConverter::toScreenPos(
-                    start_lli.coordinate,
+                    start_coord,
                     map_view_size,
                     map_view_center);
 
@@ -249,7 +223,6 @@ namespace paxs {
         /// @brief 移動線を描画
         /// @brief Draw movement lines
         static void drawMovementLines(
-            const double jdn,
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
             const std::vector<GridType4>* marriage_pos_list,
             const Vector2<double>& map_view_size,
@@ -258,17 +231,14 @@ namespace paxs {
             // 集落の移動履歴を描画
             for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    const auto location_point = createLocationPoint(settlement.getPosition());
+                    const auto coordinate = positionToMercator(settlement.getPosition());
 
-                    if (!isInViewport(location_point.coordinate,
-                        map_view_size, map_view_center)) {
+                    if (!isInViewport(coordinate, map_view_size, map_view_center)) {
                         continue;
                     }
 
-                    if (location_point.year_range.excludes(jdn)) continue;
-
                     const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
-                        location_point.coordinate,
+                        coordinate,
                         map_view_size,
                         map_view_center);
 
@@ -280,18 +250,18 @@ namespace paxs {
                         spline_points.emplace_back(draw_pos);
 
                         for (auto&& p : settlement.getPositions()) {
-                            auto one_lli = createLocationPoint(paxs::Vector2<int>(p.x, p.y));
+                            const auto one_coord = positionToMercator(paxs::Vector2<int>(p.x, p.y));
                             const paxg::Vec2<double> one_pos = MapCoordinateConverter::toScreenPos(
-                                one_lli.coordinate,
+                                one_coord,
                                 map_view_size,
                                 map_view_center);
                             spline_points.emplace_back(paxg::Vec2f{
                                 static_cast<float>(one_pos.x()), static_cast<float>(one_pos.y()) });
                         }
 
-                        auto old_lli = createLocationPoint(settlement.getOldPosition());
+                        const auto old_coord = positionToMercator(settlement.getOldPosition());
                         const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
-                            old_lli.coordinate,
+                            old_coord,
                             map_view_size,
                             map_view_center);
                         spline_points.emplace_back(paxg::Vec2f{
@@ -300,9 +270,9 @@ namespace paxs {
                         paxg::Spline2D(spline_points).draw(MOVEMENT_LINE_WIDTH, paxg::Color(0, 0, 0));
 
                         // 矢印を描画
-                        auto first_lli = createLocationPoint(settlement.getPositions()[0]);
+                        const auto first_coord = positionToMercator(settlement.getPositions()[0]);
                         const paxg::Vec2<double> first_pos = MapCoordinateConverter::toScreenPos(
-                            first_lli.coordinate,
+                            first_coord,
                             map_view_size,
                             map_view_center);
                         paxg::Line{ first_pos, draw_pos }
@@ -310,9 +280,9 @@ namespace paxs {
                     }
                     else {
                         // 単純な移動線
-                        auto old_lli = createLocationPoint(settlement.getOldPosition());
+                        const auto old_coord = positionToMercator(settlement.getOldPosition());
                         const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
-                            old_lli.coordinate,
+                            old_coord,
                             map_view_size,
                             map_view_center);
                         paxg::Line{ old_pos, draw_pos }
@@ -323,24 +293,22 @@ namespace paxs {
 
             // 婚姻移動を描画
             for (const auto& marriage_pos : *marriage_pos_list) {
-                const auto location_point = createLocationPoint(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
+                const auto coordinate = positionToMercator(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
-                if (!isInViewport(location_point.coordinate,
-                    map_view_size, map_view_center)) {
+                if (!isInViewport(coordinate, map_view_size, map_view_center)) {
                     continue;
                 }
 
-                if (location_point.year_range.excludes(jdn)) continue;
                 if (marriage_pos.sx == -1 || marriage_pos.sx == 0) continue;
 
                 const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
-                    location_point.coordinate,
+                    coordinate,
                     map_view_size,
                     map_view_center);
 
-                auto old_lli = createLocationPoint(paxs::Vector2<int>(marriage_pos.sx, marriage_pos.sy));
+                const auto old_coord = positionToMercator(paxs::Vector2<int>(marriage_pos.sx, marriage_pos.sy));
                 const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
-                    old_lli.coordinate,
+                    old_coord,
                     map_view_size,
                     map_view_center);
 
@@ -362,9 +330,7 @@ namespace paxs {
             const auto area_height = SimulationConstants::getInstance().getEndArea().y -
                 SimulationConstants::getInstance().getStartArea().y;
 
-            const paxs::MercatorDeg start_coordinate = paxs::MercatorDeg(getLocation(
-                SimulationConstants::getInstance().getStartArea(),
-                paxs::Vector2<int>(0, 0), ZOOM_LEVEL));
+            const paxs::MercatorDeg start_coordinate = positionToMercator(paxs::Vector2<int>(0, 0));
             const paxg::Vec2f draw_start_pos = paxg::Vec2f{
                 static_cast<float>((start_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
                     map_view_size.x * double(paxg::Window::width())),
@@ -373,9 +339,8 @@ namespace paxs {
                         map_view_size.y * double(paxg::Window::height())))
             };
 
-            const paxs::MercatorDeg end_coordinate = paxs::MercatorDeg(getLocation(
-                SimulationConstants::getInstance().getStartArea(),
-                paxs::Vector2<int>(area_width * 256, area_height * 256), ZOOM_LEVEL));
+            const paxs::MercatorDeg end_coordinate = positionToMercator(
+                paxs::Vector2<int>(area_width * 256, area_height * 256));
             const paxg::Vec2f draw_end_pos = paxg::Vec2f{
                 static_cast<float>((end_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
                     map_view_size.x * double(paxg::Window::width())),
@@ -384,10 +349,9 @@ namespace paxs {
                         map_view_size.y * double(paxg::Window::height())))
             };
 
-            const paxs::MercatorDeg tile_coordinate = paxs::MercatorDeg(getLocation(
-                SimulationConstants::getInstance().getStartArea(),
+            const paxs::MercatorDeg tile_coordinate = positionToMercator(
                 paxs::Vector2<int>(SimulationConstants::getInstance().cell_group_length,
-                    SimulationConstants::getInstance().cell_group_length), ZOOM_LEVEL));
+                    SimulationConstants::getInstance().cell_group_length));
             const paxg::Vec2f tile_pos = paxg::Vec2f{
                 static_cast<float>((tile_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
                     map_view_size.x * double(paxg::Window::width())) - draw_start_pos.x(),

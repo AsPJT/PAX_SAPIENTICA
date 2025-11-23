@@ -27,7 +27,6 @@
 #include <PAX_MAHOROBA/Map/Content/Feature/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/PlaceNameFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Renderer/GeometryRenderer.hpp>
-#include <PAX_MAHOROBA/Map/Content/Renderer/LocationRendererHelper.hpp>
 #include <PAX_MAHOROBA/Map/Content/Update/UpdateContext.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
@@ -98,11 +97,6 @@ private:
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
-            // エージェントアイコン描画
-            if (LocationRendererHelper::drawAgentIcon(texture_map, data.feature_type_hash, draw_pos)) {
-                continue;
-            }
-
             // 肖像画を120×120で描画
             const std::uint_least32_t place_tex = (data.texture_key == 0) ? group_data.texture_key : data.texture_key;
             if (!drawTexture(texture_map, place_tex, draw_pos, 120)) {
@@ -138,11 +132,6 @@ private:
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
-            // エージェントアイコン描画
-            if (LocationRendererHelper::drawAgentIcon(texture_map, data.feature_type_hash, draw_pos)) {
-                continue;
-            }
-
             // テクスチャを取得（親のテクスチャをフォールバック）
             // Note: GeographicFeature は LocationPoint を使用しているため、親のテクスチャ情報は含まれていない
             // 将来的には LocationPointGroup への参照も保持する必要があるかもしれない
@@ -230,11 +219,6 @@ private:
 
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
-            // エージェントアイコン描画
-            if (LocationRendererHelper::drawAgentIcon(texture_map, data.feature_type_hash, draw_pos)) {
-                continue;
-            }
-
             // テクスチャを描画（失敗時は警告表示）
             const std::uint_least32_t place_tex = data.texture_key;
             if (!drawTexture(texture_map, place_tex, draw_pos, display_size)) {

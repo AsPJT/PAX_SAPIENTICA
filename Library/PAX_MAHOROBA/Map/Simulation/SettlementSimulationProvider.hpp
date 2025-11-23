@@ -30,7 +30,7 @@ namespace paxs {
 
     public:
         explicit SettlementSimulationProvider(const AppStateManager& app_state_manager)
-            : simulation_manager_(app_state_manager) {
+            : simulation_manager_(app_state_manager.getSimulationManager(), app_state_manager.getMapViewport()) {
         }
 
         ~SettlementSimulationProvider() override = default;

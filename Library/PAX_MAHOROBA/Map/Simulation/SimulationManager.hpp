@@ -14,12 +14,10 @@
 
 #ifdef PAXS_USING_SIMULATOR
 
-#include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
 #include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Simulation/SettlementManager.hpp>
 
-#include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/Simulation/Manager/SimulationManager.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
@@ -35,16 +33,16 @@ namespace paxs {
     /// - シミュレーション関連イベントの購読
     class MapContentSimulationManager {
     private:
-        const AppStateManager& app_state_manager_;
+        const paxs::SimulationManager& simulation_manager_;
         const MapViewport& map_viewport_;
 
         SettlementManager settlement_manager_{}; ///< 集落管理
         SettlementInputHandler settlement_input_handler_; ///< 集落入力処理
 
     public:
-        MapContentSimulationManager(const AppStateManager& app_state_manager)
-            : app_state_manager_(app_state_manager)
-            , map_viewport_(app_state_manager.getMapViewport()) {
+        MapContentSimulationManager(const paxs::SimulationManager& simulation_manager, const MapViewport& map_viewport)
+            : simulation_manager_(simulation_manager)
+            , map_viewport_(map_viewport) {
         }
 
         ~MapContentSimulationManager() = default;
@@ -58,16 +56,12 @@ namespace paxs {
         /// @brief Settlementデータのみ更新
         /// @brief Update settlement data only
         void updateSettlementData() {
-            const auto& koyomi = app_state_manager_.getKoyomi();
-            const auto& simulation_manager = app_state_manager_.getSimulationManager();
-
             // SettlementManager に描画パラメータを設定
-            if (simulation_manager.isActive()) {
+            if (simulation_manager_.isActive()) {
                 settlement_manager_.setDrawParams(
-                    koyomi.jdn.getDay(),
-                    simulation_manager.getSettlementGrids(),
-                    simulation_manager.getMarriagePositions(),
-                    simulation_manager.getBronzeShareList(),
+                    simulation_manager_.getSettlementGrids(),
+                    simulation_manager_.getMarriagePositions(),
+                    simulation_manager_.getBronzeShareList(),
                     map_viewport_.getSize(),
                     map_viewport_.getCenter(),
                     settlement_input_handler_.getSelectDraw(),
