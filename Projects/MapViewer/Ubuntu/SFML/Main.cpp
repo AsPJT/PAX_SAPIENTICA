@@ -11,6 +11,11 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #define PAXS_USING_SFML
+
+// STB implementation must be defined in exactly one cpp file per executable
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image_write.h>
+
 #include <SFML/Graphics.hpp>
 #include <PAX_MAHOROBA/Core/Main.hpp>
 

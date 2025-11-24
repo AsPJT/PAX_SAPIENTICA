@@ -12,12 +12,6 @@
 #ifndef PAX_SAPIENTICA_IO_FILE_IMAGE_WRITER_HPP
 #define PAX_SAPIENTICA_IO_FILE_IMAGE_WRITER_HPP
 
-#ifndef PAXS_STB_IMAGE_WRITE_IMPLEMENTED
-#define PAXS_STB_IMAGE_WRITE_IMPLEMENTED
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#endif
-#include <stb/stb_image_write.h>
-
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
