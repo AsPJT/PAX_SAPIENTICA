@@ -34,6 +34,15 @@ if(NOT SFML_FOUND)
     # Add cmake module path
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 
+    # Set SFML_ROOT_DIR for project-local SFML installation
+    if(NOT SFML_ROOT_DIR)
+        set(SFML_LOCAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0")
+        if(EXISTS "${SFML_LOCAL_PATH}")
+            set(SFML_ROOT_DIR "${SFML_LOCAL_PATH}")
+            message(STATUS "Using project-local SFML: ${SFML_ROOT_DIR}")
+        endif()
+    endif()
+
     find_package(SFMLCustom QUIET)
 endif()
 
@@ -55,10 +64,11 @@ elseif(APPLE)
         # Production: macOS .app bundle
 
         # Read version information
-        include(cmake/ReadVersion.cmake)
+        include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/ReadVersion.cmake)
         read_pax_sapientica_version()
 
         add_executable(${BINARY_NAME} MACOSX_BUNDLE ${CPP_FILE})
+        paxs_setup_common_options(${BINARY_NAME})
 
         set_target_properties(${BINARY_NAME} PROPERTIES
             MACOSX_BUNDLE TRUE
@@ -132,7 +142,7 @@ elseif(UNIX AND SFML_FOUND)
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
     # バージョンの読み込み
-    include(cmake/ReadVersion.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/ReadVersion.cmake)
     read_pax_sapientica_version()
 
     set(CPACK_GENERATOR "DEB")
