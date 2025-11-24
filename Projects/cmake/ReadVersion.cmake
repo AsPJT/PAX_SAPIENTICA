@@ -13,7 +13,7 @@
 
 function(read_pax_sapientica_version)
     # Read Version.hpp file
-    file(READ ${PROJECT_ROOT_DIR}/Library/PAX_SAPIENTICA/Version.hpp VERSION_HPP)
+    file(READ ${PROJECT_ROOT_DIR}/Library/PAX_SAPIENTICA/System/Version.hpp VERSION_HPP)
 
     # Extract MAJOR version
     string(REGEX MATCH "PAX_SAPIENTICA_LIBRARY_MAJOR \\(([0-9]+)\\)" _ ${VERSION_HPP})
