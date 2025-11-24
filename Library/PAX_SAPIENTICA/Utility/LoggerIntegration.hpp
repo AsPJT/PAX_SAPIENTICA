@@ -29,7 +29,7 @@ inline void Logger::publishLogEvent(const Level level,
                                     const std::string& timestamp) noexcept {
 #ifdef PAXS_DEVELOPMENT
     try {
-        LogEvent::Level event_level;
+        LogEvent::Level event_level = LogEvent::Level::Info;  // デフォルト値で初期化
         switch(level) {
             case Level::PAX_INFO:
                 event_level = LogEvent::Level::Info;
@@ -39,6 +39,10 @@ inline void Logger::publishLogEvent(const Level level,
                 break;
             case Level::PAX_ERROR:
                 event_level = LogEvent::Level::Error;
+                break;
+            default:
+                // 未知のレベルの場合はInfoとして扱う
+                event_level = LogEvent::Level::Info;
                 break;
         }
 

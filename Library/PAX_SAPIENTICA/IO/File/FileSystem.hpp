@@ -15,7 +15,10 @@
 #include <filesystem>
 #include <vector>
 
+#ifndef PAXS_STB_IMAGE_WRITE_IMPLEMENTED
+#define PAXS_STB_IMAGE_WRITE_IMPLEMENTED
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#endif
 #include <stb/stb_image_write.h>
 
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
