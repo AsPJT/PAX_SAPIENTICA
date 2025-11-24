@@ -22,6 +22,7 @@
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Terrain/Slope.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/IO/File/ImageWriter.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
 namespace paxs {
@@ -130,7 +131,7 @@ namespace paxs {
             }
 
             // PNGファイルとして保存
-            FileSystem::writePngImage(relative_path, tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data());
+            ImageWriter::writePngImage(relative_path, tile_size, tile_size, static_cast<int>(sizeof(TileRGBA)), rgba_buffer.data());
 
             // ファイル存在チェック（相対パスを使用）
             if (!FileSystem::exists(relative_path)) {
