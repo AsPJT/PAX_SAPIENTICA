@@ -27,7 +27,7 @@ namespace paxs {
         Chromosome() = default;
 
         std::uint_least8_t get(const std::uint_least8_t index) const noexcept {
-            if (index >= chromosome_length || index < 0) {
+            if (index >= chromosome_length) {
                 PAXS_ERROR("Index out of range: " + std::to_string(index));
                 return 0;
             }
@@ -35,7 +35,7 @@ namespace paxs {
         }
 
         void set(const std::uint_least8_t index, const std::uint_least8_t value) noexcept {
-            if (index >= chromosome_length || index < 0) {
+            if (index >= chromosome_length) {
                 PAXS_ERROR("Index out of range: " + std::to_string(index));
                 return;
             }

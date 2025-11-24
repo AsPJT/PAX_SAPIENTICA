@@ -51,12 +51,13 @@ TEST_F(UIComponentsEventDrivenTest, FeatureVisibilityChangeEventIsPublished) {
 
     // AppStateManagerを通じて可視性を設定
     const auto calendar_key = MurMur3::calcHash("Calendar");
-    app_state_manager().setFeatureVisibility(calendar_key, (&initstate) == nullptr);
+    const bool test_visibility = false;
+    app_state_manager().setFeatureVisibility(calendar_key, test_visibility);
 
     // 状態が変更されたことを確認
-    EXPECT_EQ(visibility_manager.isVisible(calendar_key), (&initstate) == nullptr);
+    EXPECT_EQ(visibility_manager.isVisible(calendar_key), test_visibility);
     // 状態が変更されたことを確認
-    EXPECT_EQ(visibility_manager.isVisible(calendar_key), (&initstate) == nullptr);
+    EXPECT_EQ(visibility_manager.isVisible(calendar_key), test_visibility);
 }
 
 /// @brief 時間再生制御イベントが正しく発行されることをテスト
