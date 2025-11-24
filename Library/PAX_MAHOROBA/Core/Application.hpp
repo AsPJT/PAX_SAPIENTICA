@@ -198,33 +198,8 @@ private:
 
     /// @brief 初期化中の更新処理
     void updateInitializingMode() {
-        // 1. ロード状態の更新（ロード完了のチェック）
-        if (init_loading_handle_.isValid() && init_loading_handle_.isFinished()) {
-            const bool* result = init_loading_handle_.getResult();
-
-            if ((result != nullptr) && *result) {
-                // 初期化成功 - アプリケーション状態をRunningに変更
-                app_state_->updateInitializationComplete();
-
-                // ローディング画面終了
-                paxs::PaxSapienticaInit::endLoadingScreen();
-            } else {
-                // 初期化失敗
-                if (init_loading_handle_.hasError()) {
-                    PAXS_ERROR("Application initialization failed");
-                }
-            }
-
-            // 進捗バーとローディング画像をクリア
-            init_progress_bar_.reset();
-            loading_texture_.reset();
-        }
-
-        // 2. 描画処理（ローディング画像 + 進捗バー）
+        // 1. 描画処理を先に実行（ローディング画像 + 進捗バー）
         if (loading_texture_) {
-            // ウィンドウをクリア
-            paxg::Window::clear();
-
             // 画面サイズを取得
             const int window_width = paxg::Window::width();
             const int window_height = paxg::Window::height();
@@ -267,6 +242,29 @@ private:
         // 進捗バーを描画
         if (init_progress_bar_) {
             init_progress_bar_->render();
+        }
+
+        // 2. ロード状態の更新（ロード完了のチェック）
+        // 描画後にチェックすることで、最後のフレームが確実に表示される
+        if (init_loading_handle_.isValid() && init_loading_handle_.isFinished()) {
+            const bool* result = init_loading_handle_.getResult();
+
+            if ((result != nullptr) && *result) {
+                // 初期化成功 - アプリケーション状態をRunningに変更
+                app_state_->updateInitializationComplete();
+
+                // ローディング画面終了
+                paxs::PaxSapienticaInit::endLoadingScreen();
+
+                // 進捗バーとローディング画像をクリア
+                init_progress_bar_.reset();
+                loading_texture_.reset();
+            } else {
+                // 初期化失敗
+                if (init_loading_handle_.hasError()) {
+                    PAXS_ERROR("Application initialization failed");
+                }
+            }
         }
 
         // 3. タッチ入力の状態更新
