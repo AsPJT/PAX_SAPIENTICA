@@ -274,6 +274,7 @@ TestMap/
 SavedMap/
 *.exe
 AS_DEBUG/
+Intermediate/
 
 .DS_Store
 .vscode
