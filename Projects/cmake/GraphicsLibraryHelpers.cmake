@@ -34,7 +34,8 @@ function(paxs_setup_sfml TARGET_NAME)
 
     # macOS and Ubuntu need curl
     if(APPLE OR (UNIX AND NOT WIN32))
-        target_link_libraries(${TARGET_NAME} PRIVATE curl)
+        find_package(CURL REQUIRED)
+        target_link_libraries(${TARGET_NAME} PRIVATE CURL::libcurl)
     endif()
 
     # Windows: Copy SFML DLLs

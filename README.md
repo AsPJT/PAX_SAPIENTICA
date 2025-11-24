@@ -98,10 +98,28 @@ The GUI supports the following libraries
 
 * SFML (CMake)
 * [SFML v3.0.0 (.sln / for Windows)](Projects/MapViewer/Windows/SFML_3.0.0) - Available without installation. The Windows version of SFML in the `PAX_SAPIENTICA/Projects/MapViewer/Windows/SFML_3.0.0` directory can run in Visual Studio 2022 (compiler is MSVC).
+* [SFML (vcpkg / for Linux)](Projects/MapViewer/Ubuntu/SFML) - Use vcpkg package manager to install SFML on Linux. See the [setup guide](Projects/MapViewer/Ubuntu/SFML/README.md) for details.
 * OpenSiv3D (tested with v0.6.13 & Visual Studio Community 2022 v17.8.3)
 * DxLib (tested on Windows and Android versions)
 
 Any of the above libraries will launch the GUI software.
+
+#### Quick Start for Linux (with vcpkg)
+
+To build MapViewer on Linux with SFML 3.0.0:
+
+```bash
+# Setup vcpkg and install SFML 3.0.0
+./Scripts/setup_vcpkg_linux.sh
+
+# Build the project
+mkdir -p Projects/build && cd Projects/build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=../../vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build .
+
+# Run MapViewer
+./MapViewer/SFMLMapViewer
+```
 
 ### CUI
 

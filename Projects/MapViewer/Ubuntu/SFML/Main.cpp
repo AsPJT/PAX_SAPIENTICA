@@ -15,7 +15,6 @@
 #include <PAX_MAHOROBA/Core/Main.hpp>
 
 int main() {
-
     paxs::startMain();
     return 0;
 }

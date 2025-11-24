@@ -286,3 +286,7 @@ DevelopmentBuild/
 ProductionBuild/
 SimulationResults/
 LabeledSimulationResults/
+
+# vcpkg
+vcpkg/
+vcpkg_installed/
