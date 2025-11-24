@@ -448,3 +448,105 @@ TEST(SettlementUnitTest, GetPopulationWeight_WithNoAgents_ReturnsZero) {
 	// Then: 0が返る
 	EXPECT_EQ(weight, 0.0);
 }
+
+// ========================================
+// Language Tests
+// ========================================
+
+TEST(SettlementUnitTest, GetLanguage_ReturnsZeroWhenNoAgents) {
+	// Given: エージェントがいない集落
+	std::mt19937 gen(12345);
+	auto environment = std::make_shared<paxs::Environment>();
+	paxs::Settlement settlement(1, gen, environment);
+
+	// When: 言語を取得
+	std::uint_least8_t language = settlement.getLanguage();
+
+	// Then: 0が返る（初期値）
+	EXPECT_EQ(language, 0);
+}
+
+TEST(SettlementUnitTest, GetLanguage_ReturnsMostFrequentLanguage) {
+	// Given: 複数の言語を持つエージェントがいる集落
+	std::mt19937 gen(12345);
+	auto environment = std::make_shared<paxs::Environment>();
+	paxs::Settlement settlement(1, gen, environment);
+
+	// 言語5のエージェントを3人追加
+	for (int i = 0; i < 3; ++i) {
+		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 0, 5);
+		settlement.addAgent(agent);
+	}
+
+	// 言語10のエージェントを2人追加
+	for (int i = 3; i < 5; ++i) {
+		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 0, 10);
+		settlement.addAgent(agent);
+	}
+
+	// When: 言語を取得
+	std::uint_least8_t language = settlement.getLanguage();
+
+	// Then: 最頻の言語5が返る
+	EXPECT_EQ(language, 5);
+}
+
+TEST(SettlementUnitTest, GetLanguage_HandlesTieBreaking) {
+	// Given: 同数の異なる言語を持つエージェントがいる集落
+	std::mt19937 gen(12345);
+	auto environment = std::make_shared<paxs::Environment>();
+	paxs::Settlement settlement(1, gen, environment);
+
+	// 言語3のエージェントを2人
+	for (int i = 0; i < 2; ++i) {
+		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 0, 3);
+		settlement.addAgent(agent);
+	}
+
+	// 言語7のエージェントを2人
+	for (int i = 2; i < 4; ++i) {
+		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 0, 7);
+		settlement.addAgent(agent);
+	}
+
+	// When: 言語を取得
+	std::uint_least8_t language = settlement.getLanguage();
+
+	// Then: いずれかの言語が返る（実装依存だが、最初に見つかった最大値）
+	EXPECT_TRUE(language == 3 || language == 7);
+}
+
+TEST(SettlementUnitTest, GetLanguage_WorksWithSingleAgent) {
+	// Given: 1人のエージェントがいる集落
+	std::mt19937 gen(12345);
+	auto environment = std::make_shared<paxs::Environment>();
+	paxs::Settlement settlement(1, gen, environment);
+
+	paxs::SettlementAgent agent(1, 20, 100, paxs::Genome(), 0, 0, 42);
+	settlement.addAgent(agent);
+
+	// When: 言語を取得
+	std::uint_least8_t language = settlement.getLanguage();
+
+	// Then: そのエージェントの言語が返る
+	EXPECT_EQ(language, 42);
+}
+
+TEST(SettlementUnitTest, GetLanguage_WorksWithAllSameLanguage) {
+	// Given: 全員が同じ言語を話す集落
+	std::mt19937 gen(12345);
+	auto environment = std::make_shared<paxs::Environment>();
+	paxs::Settlement settlement(1, gen, environment);
+
+	// 言語15のエージェントを10人追加
+	for (int i = 0; i < 10; ++i) {
+		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 0, 15);
+		settlement.addAgent(agent);
+	}
+
+	// When: 言語を取得
+	std::uint_least8_t language = settlement.getLanguage();
+
+	// Then: 言語15が返る
+	EXPECT_EQ(language, 15);
+}

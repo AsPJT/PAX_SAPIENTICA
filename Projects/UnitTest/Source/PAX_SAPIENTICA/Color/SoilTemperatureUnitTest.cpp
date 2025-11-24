@@ -82,14 +82,9 @@ namespace paxs {
 
 	// constexpr配列のコンパイル時計算テスト
 	TEST_F(SoilTempTest, ConstexprArrayTest) {
-		// 配列がconstexprで定義されていることを確認
-		// RGBA(const char*)コンストラクタがconstexprであることの検証
-
-		constexpr std::size_t array_size = 91;
-
 		// 実行時にサイズを確認（間接的な検証）
 		// soil_tempはprivateなので直接アクセスできないが、
-		// getIndexの動作から91要素あることを確認
+		// getIndexの動作から配列が正しく初期化されていることを確認できる。
 		EXPECT_EQ(soil_temp.getIndex(RGBA{202, 0, 32, 255}), 26); // 最後の有効要素
 	}
 

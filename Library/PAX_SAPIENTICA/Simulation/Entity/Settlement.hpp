@@ -30,17 +30,6 @@
 
 namespace paxs {
 
-    namespace settlement {
-
-        // 結婚・出産の定数
-        constexpr double sigma = 0.25;
-        constexpr double sigma_p_2 = sigma * sigma;
-        constexpr double sigma_p_2_x_2 = (2.0 * sigma_p_2);
-
-        // sigma * sqrt_2_x_pi
-        constexpr double sigma_x_sqrt_2_x_pi = sigma * sqrt_2_x_pi;
-    }
-
     class Settlement {
     public:
         using Vector2 = paxs::Vector2<GridType>;
@@ -124,8 +113,10 @@ namespace paxs {
             return *it;
         }
 
-        /// @brief Get the agent.
+        /// @brief Get the agents.
         /// @brief エージェントを取得
+        // TODO: 将来的にはcgetAgents()のみを残す
+        std::vector<Agent>& getAgents() noexcept { return agents; }
         const Agent& cgetAgent(const std::uint_least32_t id_) const noexcept {
             auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
             if (it == agents.end()) {
@@ -135,22 +126,6 @@ namespace paxs {
             }
             return *it;
         }
-
-        /// @brief Get the agent copy.
-        /// @brief エージェントを取得
-        Agent getAgentCopy(const std::uint_least32_t id_) const noexcept {
-            auto it = std::find_if(agents.begin(), agents.end(), [id_](const Agent& agent) { return agent.getId() == id_; });
-            if (it == agents.end()) {
-                const std::string message = "Agent not found.";
-                PAXS_ERROR(message);
-                return *agents.begin();
-            }
-            return *it;
-        }
-
-        /// @brief Get the agents.
-        /// @brief エージェントを取得
-        std::vector<Agent>& getAgents() noexcept { return agents; }
 
         /// @brief Get the agents.
         /// @brief エージェントを取得
@@ -178,12 +153,12 @@ namespace paxs {
             for (std::size_t k = 0; k < close_agent.size(); ++k) {
                 if (close_agent[k].isMale() && close_agent[k].getLifeSpan() != 0 && close_agent[k].isAbleToMarriage()) {
                     // 婚姻可能なエージェントを発見
-                    male_settlement_pair = Marriage3{
+                    male_settlement_pair = Marriage3(
                             static_cast<std::uint_least32_t>(k),
                         static_cast<std::uint_least32_t>(j),
                         static_cast<std::uint_least32_t>(i),
                         close_agent[k].cgetFarming()
-                    };
+                    );
                     return true; // 成功
                 }
             }
@@ -525,16 +500,21 @@ namespace paxs {
         /// @brief Get the Language.
         /// @brief 言語を取得
         std::uint_least8_t getLanguage() const noexcept {
-            static std::uint_least8_t language[256];
-            for (std::size_t i = 0; i < 256; ++i) {
-                language[i] = 0;
+            if (agents.empty()) {
+                return 0;
             }
-            for (std::size_t i = 0; i < agents.size(); ++i) {
-                ++language[agents[i].cgetLanguage()];
+
+            // 言語の出現回数をカウント（スタック上の配列を使用）
+            std::array<std::uint_least8_t, 256> language{};  // 値初期化で全て0に
+
+            for (const auto& agent : agents) {
+                ++language[agent.cgetLanguage()];
             }
+
+            // 最頻値を探索
             std::size_t max_count = 0;
             std::size_t max_index = 0;
-            for (std::size_t i = 0; i < 256; ++i) {
+            for (std::size_t i = 0; i < language.size(); ++i) {
                 if (language[i] > max_count) {
                     max_count = language[i];
                     max_index = i;
@@ -661,46 +641,6 @@ namespace paxs {
             // 新しい赤ちゃんがいない場合はエージェントを追加をしない
             if (children.size() == 0) return;
             agents.insert(agents.end(), children.begin(), children.end());
-        }
-
-        /// @brief Migration.
-        /// @brief 渡来
-        void migration(KanakumaLifeSpan& kanakuma_life_span) noexcept {
-            if (agents.size() >= 60) {
-
-                Genome genome = Genome::generateRandom(*gen);
-                const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(true, genome.isMale(), *gen);
-
-                std::uniform_int_distribution<> lifespan_dist{
-                    (std::min)(18 * SimulationConstants::getInstance().steps_per_year + 1, static_cast<int>(set_lifespan - 1)),
-                    static_cast<int>(set_lifespan - 1) }; // 性別の乱数分布
-
-                agents.emplace_back(Agent(
-                    UniqueIdentification<HumanIndexType>::generate(),
-                    static_cast<AgeType>(lifespan_dist(*gen)),
-                    set_lifespan,
-                    genome,
-                    255, // ((gen() % 2) == 0) ? agent.cgetFarming() : agent.cgetPartnerFarming(),
-                    0, // ((gen() % 2) == 0) ? agent.cgetHunterGatherer() : agent.cgetPartnerHunterGatherer()
-                    255
-                ));
-            }
-        }
-
-        /// @brief Age update.
-        /// @brief 年齢更新
-        void ageUpdate() noexcept {
-#ifdef _OPENMPa
-            const int agent_size = static_cast<int>(agents.size());
-#pragma omp parallel for
-            for (int i = 0; i < agent_size; ++i) {
-                agents[i].incrementAge();
-            }
-#else
-            for (auto& agent : agents) {
-                agent.incrementAge();
-            }
-#endif
         }
 
         /// @brief Is the agent married?
