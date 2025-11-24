@@ -67,10 +67,10 @@ TEST_F(EventBusTest, MultipleSubscribers) {
 
     // 複数のハンドラーを購読
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { (void)event; call_count1++; }
+        [&](const LanguageChangedEvent&) { call_count1++; }
     );
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { (void)event; call_count2++; }
+        [&](const LanguageChangedEvent&) { call_count2++; }
     );
 
     // イベントを発行（キーベース）
@@ -88,10 +88,10 @@ TEST_F(EventBusTest, EventTypeSeparation) {
 
     // 異なるイベントタイプのハンドラーを購読
     EventBus::getInstance().subscribe<WindowResizedEvent>(
-        [&](const WindowResizedEvent& event) { (void)event; window_call_count++; }
+        [&](const WindowResizedEvent&) { window_call_count++; }
     );
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { (void)event; language_call_count++; }
+        [&](const LanguageChangedEvent&) { language_call_count++; }
     );
 
     // WindowResizedEventを発行
@@ -111,7 +111,7 @@ TEST_F(EventBusTest, EnqueueAndProcessQueue) {
     int call_count = 0;
 
     EventBus::getInstance().subscribe<DateChangedEvent>(
-        [&](const DateChangedEvent& event) { call_count++; }
+        [&](const DateChangedEvent&) { call_count++; }
     );
 
     // イベントをキューに追加（まだ処理されない）
@@ -145,7 +145,7 @@ TEST_F(EventBusTest, ClearMethod) {
     int call_count = 0;
 
     EventBus::getInstance().subscribe<FeatureVisibilityChangedEvent>(
-        [&](const FeatureVisibilityChangedEvent& event) { call_count++; }
+        [&](const FeatureVisibilityChangedEvent&) { call_count++; }
     );
     EventBus::getInstance().enqueue(FeatureVisibilityChangedEvent(12345, true));
 
