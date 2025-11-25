@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_CORE_UTILITY_STRING_UTILS_HPP
-#define PAX_SAPIENTICA_CORE_UTILITY_STRING_UTILS_HPP
+#ifndef PAX_SAPIENTICA_UTILITY_STRING_UTILS_HPP
+#define PAX_SAPIENTICA_UTILITY_STRING_UTILS_HPP
 
 #include <limits>
 #include <optional>
@@ -410,4 +410,4 @@ namespace paxs {
     };
 }
 
-#endif // !PAX_SAPIENTICA_CORE_UTILITY_STRING_UTILS_HPP
+#endif // !PAX_SAPIENTICA_UTILITY_STRING_UTILS_HPP

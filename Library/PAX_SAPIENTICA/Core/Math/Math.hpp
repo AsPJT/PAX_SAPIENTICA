@@ -17,14 +17,10 @@
 
 namespace paxs {
 
-    // 互換性のための統合型
+    // 統合型
     template<typename T>
     struct Math : public MathConstants<T>, public MathConversions<T> {
     };
-
-    using MathF32 = Math<float>;
-    using MathF64 = Math<double>;
-
 }
 
 #endif // !PAX_SAPIENTICA_CORE_MATH_MATH_HPP

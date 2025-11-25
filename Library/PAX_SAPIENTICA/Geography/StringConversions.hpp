@@ -16,9 +16,9 @@
 #include <cstdint>
 #include <string>
 
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Encoding/ElevationEncoding.hpp>
 #include <PAX_SAPIENTICA/Geography/Encoding/SlopeEncoding.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 

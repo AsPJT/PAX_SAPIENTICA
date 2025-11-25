@@ -9,8 +9,8 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_SAPIENTICA_CORE_UTILITY_TIME_UTILS_HPP
-#define PAX_SAPIENTICA_CORE_UTILITY_TIME_UTILS_HPP
+#ifndef PAX_SAPIENTICA_UTILITY_TIME_UTILS_HPP
+#define PAX_SAPIENTICA_UTILITY_TIME_UTILS_HPP
 
 #include <ctime>
 #include <string>
@@ -86,4 +86,4 @@ namespace paxs {
 
 } // namespace paxs
 
-#endif // !PAX_SAPIENTICA_CORE_UTILITY_TIME_UTILS_HPP
+#endif // !PAX_SAPIENTICA_UTILITY_TIME_UTILS_HPP

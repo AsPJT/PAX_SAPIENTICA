@@ -18,10 +18,10 @@
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 #include <PAX_SAPIENTICA/System/InputFile.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 

@@ -17,7 +17,7 @@
 #include <fstream>
 #include <iostream>
 
-#include <PAX_SAPIENTICA/Core/Utility/TimeUtils.hpp>
+#include <PAX_SAPIENTICA/Utility/TimeUtils.hpp>
 
 namespace paxs {
 

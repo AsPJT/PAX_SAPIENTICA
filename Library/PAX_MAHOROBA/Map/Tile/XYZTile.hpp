@@ -24,11 +24,11 @@
 
 #include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Map/Tile/TileCache.hpp>
 #include <PAX_SAPIENTICA/Map/Tile/TileCoordinate.hpp>
 #include <PAX_SAPIENTICA/Map/Tile/TileMetadata.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 

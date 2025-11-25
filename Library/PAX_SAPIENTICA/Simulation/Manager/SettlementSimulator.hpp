@@ -22,7 +22,6 @@
 #include <utility> // for std::pair
 #include <vector>
 
-#include <PAX_SAPIENTICA/Core/Utility/TimeUtils.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Interface/ConsoleProgressReporter.hpp>
 #include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
@@ -34,6 +33,7 @@
 #include <PAX_SAPIENTICA/Simulation/Entity/SettlementGrid.hpp>
 #include <PAX_SAPIENTICA/Simulation/Output/SimulationResultWriter.hpp>
 #include <PAX_SAPIENTICA/Utility/StatusDisplayer.hpp>
+#include <PAX_SAPIENTICA/Utility/TimeUtils.hpp>
 #include <PAX_SAPIENTICA/Utility/UniqueIdentification.hpp>
 
 namespace paxs {

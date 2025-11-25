@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 TEST (StringExtensionsUnitTest, split) {
     const std::string str = "Test split";

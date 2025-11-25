@@ -30,10 +30,6 @@ namespace paxs {
         // 度からラジアンへ変換
         constexpr static T degToRad(const T value) noexcept { return static_cast<T>(value * degToRad()); }
     };
-
-    using MathConversionsF32 = MathConversions<float>;
-    using MathConversionsF64 = MathConversions<double>;
-
 }
 
 #endif // !PAX_SAPIENTICA_CORE_MATH_CONVERSIONS_HPP

@@ -18,7 +18,6 @@
 #include <utility>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Interface/GUIProgressReporter.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
@@ -28,6 +27,7 @@
 #include <PAX_SAPIENTICA/System/Async/ProgressToken.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
