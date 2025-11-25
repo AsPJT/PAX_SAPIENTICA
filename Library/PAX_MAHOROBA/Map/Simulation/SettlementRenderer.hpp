@@ -103,7 +103,7 @@ namespace paxs {
         /// @param position グリッド座標 / Grid coordinate
         /// @return メルカトル座標 / Mercator coordinate
         static paxs::MercatorDeg positionToMercator(const paxs::Vector2<int>& position) {
-            return paxs::MercatorDeg(MapUtils::convertToMercatorCoordinate(
+            return paxs::MercatorDeg(MapUtils::tilePixelToAngleSpace(
                 SimulationConstants::getInstance().getStartArea(),
                 position,
                 ZOOM_LEVEL

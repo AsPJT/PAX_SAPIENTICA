@@ -12,23 +12,29 @@
 #ifndef PAX_SAPIENTICA_CORE_MATH_CONSTANTS_HPP
 #define PAX_SAPIENTICA_CORE_MATH_CONSTANTS_HPP
 
-// π
-#define PAX_SAPIENTICA_PI (3.1415926535897932384626433832795028841971)
+#include <numbers>
 
 namespace paxs {
 
     template<typename T>
     struct MathConstants {
-        constexpr static T pi() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI); } // π
-        constexpr static T pi2() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 2.0); } // ２π
-        constexpr static T pi3() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 3.0); } // ３π
-        constexpr static T pi4() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 4.0); } // ４π
-        constexpr static T piHalf() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI * 0.5); } // π／２
+        constexpr static T pi() noexcept { return std::numbers::pi_v<T>; } // π
+        constexpr static T pi2() noexcept { return std::numbers::pi_v<T> * 2.0; } // 2π
+        constexpr static T piHalf() noexcept { return std::numbers::pi_v<T> * 0.5; } // π/2
+        constexpr static T invPi() noexcept { return std::numbers::inv_pi_v<T>; } // 1/π
+
+        constexpr static T deg0() noexcept { return static_cast<T>(0); }   // 0度
+        constexpr static T deg90() noexcept { return static_cast<T>(90); } // 90度（π/2 ラジアン相当）
+        constexpr static T deg180() noexcept { return static_cast<T>(180); } // 180度（π ラジアン相当）
+        constexpr static T deg270() noexcept { return static_cast<T>(270); } // 270度（3π/2 ラジアン相当）
+        constexpr static T deg360() noexcept { return static_cast<T>(360); } // 360度（2π ラジアン相当）
+        constexpr static T invDeg180() noexcept { return static_cast<T>(1.0 / 180.0); } // 1/180度
+        constexpr static T invDeg360() noexcept { return static_cast<T>(1.0 / 360.0); } // 1/360度
+
+        constexpr static T e() noexcept { return std::numbers::e_v<T>; } // e
+        constexpr static T log2e() noexcept { return std::numbers::log2e_v<T>; } // log2(e)
+        constexpr static T log10e() noexcept { return std::numbers::log10e_v<T>; } // log10(e)
     };
-
-    using MathConstantsF32 = MathConstants<float>;
-    using MathConstantsF64 = MathConstants<double>;
-
 }
 
 #endif // !PAX_SAPIENTICA_CORE_MATH_CONSTANTS_HPP

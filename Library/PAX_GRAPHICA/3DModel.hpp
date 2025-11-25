@@ -20,6 +20,7 @@
 #include <SFML/Graphics.hpp>
 #endif
 
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 namespace paxg {
@@ -83,7 +84,7 @@ namespace paxg {
             // カメラ設定
             camera_ = s3d::DebugCamera3D{
                 s3d::Graphics3D::GetRenderTargetSize(),
-                config_.camera.verticalFOV / 180.0 * s3d::Math::Pi,
+                paxs::Math<double>::degToRad(config_.camera.verticalFOV),
                 s3d::Vec3{ config_.camera.posX, config_.camera.posY, config_.camera.posZ }
             };
 
@@ -136,7 +137,7 @@ namespace paxg {
             };
             model_.draw(
                 s3d::Vec3{ 0, 0, 0 },
-                s3d::Quaternion::RotateY(rotation_ / 180.0 * s3d::Math::Pi)
+                s3d::Quaternion::RotateY(paxs::Math<double>::degToRad(static_cast<double>(rotation_)))
             );
 
             // RenderTexture を 2D シーンに描画
@@ -175,7 +176,7 @@ namespace paxg {
 #ifdef PAXS_USING_SIV3D
             camera_ = s3d::DebugCamera3D{
                 s3d::Graphics3D::GetRenderTargetSize(),
-                config_.camera.verticalFOV / 180.0 * s3d::Math::Pi,
+                paxs::Math<double>::degToRad(config_.camera.verticalFOV),
                 s3d::Vec3{ config_.camera.posX, config_.camera.posY, config_.camera.posZ }
             };
 #endif

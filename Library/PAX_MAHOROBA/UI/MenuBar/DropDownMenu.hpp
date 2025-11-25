@@ -50,7 +50,7 @@ namespace paxs {
 
         // 描画定数
         static constexpr float arrow_radius = 8.0f;
-        static constexpr float arrow_rotation_pi = 3.1416f;  // π radians (down)
+        static constexpr float arrow_rotation_pi = 3.15f;  // π radians (down)　ずれるので少し大きめに
         static constexpr paxg::Vec2i shadow_offset{ 1, 1 };
         static constexpr int shadow_blur_radius = 4;
         static constexpr int shadow_spread = 1;

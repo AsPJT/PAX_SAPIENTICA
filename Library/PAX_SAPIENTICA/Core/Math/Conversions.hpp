@@ -19,10 +19,10 @@ namespace paxs {
     template<typename T>
     struct MathConversions {
         // ラジアンから度への変換係数
-        constexpr static T radToDeg() noexcept { return static_cast<T>(180.0 / PAX_SAPIENTICA_PI); }
+        constexpr static T radToDeg() noexcept { return paxs::MathConstants<T>::deg180() * paxs::MathConstants<T>::invPi(); }
 
         // 度からラジアンへの変換係数
-        constexpr static T degToRad() noexcept { return static_cast<T>(PAX_SAPIENTICA_PI / 180.0); }
+        constexpr static T degToRad() noexcept { return paxs::MathConstants<T>::pi() * paxs::MathConstants<T>::invDeg180(); }
 
         // ラジアンから度へ変換
         constexpr static T radToDeg(const T value) noexcept { return static_cast<T>(value * radToDeg()); }

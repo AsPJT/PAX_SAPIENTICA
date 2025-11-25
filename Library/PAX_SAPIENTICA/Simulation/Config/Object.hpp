@@ -50,7 +50,7 @@ namespace paxs {
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
         /// @brief 座標をメルカトル座標で取得
         paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const noexcept {
-            return MapUtils::convertToMercatorCoordinate(start_position, position, z);
+            return MapUtils::tilePixelToAngleSpace(start_position, position, z);
         }
 
         bool operator==(const paxs::Object& a) const noexcept {

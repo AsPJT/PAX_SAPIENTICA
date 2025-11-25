@@ -25,18 +25,6 @@ TEST (MathUnitTest, pi2) {
     ASSERT_EQ(expected, actual);
 }
 
-TEST (MathUnitTest, pi3) {
-    const double expected = 9.4247779607693797153879301492785086525914;
-    double actual = paxs::Math<double>::pi3();
-    ASSERT_EQ(expected, actual);
-}
-
-TEST (MathUnitTest, pi4) {
-    const double expected = 12.5663706143591729538505735328380115367886;
-    double actual = paxs::Math<double>::pi4();
-    ASSERT_EQ(expected, actual);
-}
-
 TEST (MathUnitTest, piHalf) {
     const double expected = 1.5707963267948966192313216916397514420986;
     double actual = paxs::Math<double>::piHalf();

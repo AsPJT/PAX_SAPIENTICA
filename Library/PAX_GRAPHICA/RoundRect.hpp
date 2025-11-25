@@ -27,6 +27,8 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
+
 namespace paxg {
 
     struct RoundRect {
@@ -223,7 +225,7 @@ namespace paxg {
             {
                 for (unsigned i = 0; i <= cornerPointCount; ++i) {
                     float ang = startDeg + 90.f * (static_cast<float>(i) / cornerPointCount);
-                    float rad = ang * 3.14159265358979323846f / 180.f;
+                    float rad = paxs::Math<float>::degToRad(ang);
                     float px = center.x + std::cos(rad) * r;
                     float py = center.y + std::sin(rad) * r;
                     shape.setPoint(startIndex + i, {px, py});
@@ -231,13 +233,13 @@ namespace paxg {
             };
 
             unsigned idx = 0;
-            putCorner(idx, c_tl, 180.f);
+            putCorner(idx, c_tl, paxs::Math<float>::deg180());
             idx += cornerPointCount + 1;
-            putCorner(idx, c_tr, 270.f);
+            putCorner(idx, c_tr, paxs::Math<float>::deg270());
             idx += cornerPointCount + 1;
-            putCorner(idx, c_br,   0.f);
+            putCorner(idx, c_br,   paxs::Math<float>::deg0());
             idx += cornerPointCount + 1;
-            putCorner(idx, c_bl,  90.f);
+            putCorner(idx, c_bl,  paxs::Math<float>::deg90());
 
             Window::window().draw(shape);
         }

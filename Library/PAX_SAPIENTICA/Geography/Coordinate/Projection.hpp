@@ -93,10 +93,6 @@ namespace paxs {
             return static_cast<T>(paxs::Math<double>::radToDeg(equirectangularRadYToMercatorRadY(paxs::Math<T>::degToRad(value))));
         }
     };
-
-    using MapProjectionF32 = MapProjection<float>;
-    using MapProjectionF64 = MapProjection<double>;
-
 }
 
 #endif // !PAX_SAPIENTICA_GEOGRAPHY_COORDINATE_PROJECTION_HPP

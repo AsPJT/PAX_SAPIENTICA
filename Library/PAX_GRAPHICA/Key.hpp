@@ -29,14 +29,6 @@
 
 namespace paxg {
 
-    // Coordinate constants
-    namespace CoordinateConstants {
-        // Longitude bounds
-        static constexpr double longitude_min = -180.0;
-        static constexpr double longitude_max = 180.0;
-        static constexpr double longitude_range = 360.0;
-    }
-
     struct InputStruct {
         InputStruct() = default;
 

@@ -75,7 +75,7 @@ namespace paxs {
 
         // UI要素のサイズ定数
         static constexpr float arrow_radius = 8.0f;
-        static constexpr float arrow_rotation_pi = 3.1416f;  // π radians (down)
+        static constexpr float arrow_rotation_pi = 3.15f;  // π radians (down)　ずれるので少し大きめに
         static constexpr int shadow_offset_x = 1;
         static constexpr int shadow_offset_y = 1;
         static constexpr int shadow_blur_radius = 4;

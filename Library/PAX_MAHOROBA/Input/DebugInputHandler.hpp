@@ -55,7 +55,7 @@ private:
 
     // テスト用変数
     int test_int_value_ = 42;
-    double test_float_value_ = 3.14159;
+    double test_float_value_ = 3.1;
     bool test_bool_value_ = true;
     std::string test_string_value_ = "Debug Test";
 
