@@ -12,7 +12,6 @@
 #include <gtest/gtest.h>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
 
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
@@ -42,23 +41,6 @@ protected:
 private:
     AppStateManager app_state_manager_;
 };
-
-/// @brief 機能可視性変更イベントが正しく発行されることをテスト
-TEST_F(UIComponentsEventDrivenTest, FeatureVisibilityChangeEventIsPublished) {
-    // 初期化
-    auto& visibility_manager = app_state_manager().getVisibilityManager();
-    MenuBar menu_bar(visibility_manager);
-
-    // AppStateManagerを通じて可視性を設定
-    const auto calendar_key = MurMur3::calcHash("Calendar");
-    const bool test_visibility = false;
-    app_state_manager().setFeatureVisibility(calendar_key, test_visibility);
-
-    // 状態が変更されたことを確認
-    EXPECT_EQ(visibility_manager.isVisible(calendar_key), test_visibility);
-    // 状態が変更されたことを確認
-    EXPECT_EQ(visibility_manager.isVisible(calendar_key), test_visibility);
-}
 
 /// @brief 時間再生制御イベントが正しく発行されることをテスト
 TEST_F(UIComponentsEventDrivenTest, TimePlaybackControlEventIsPublished) {

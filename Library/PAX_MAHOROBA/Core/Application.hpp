@@ -160,7 +160,7 @@ public:
                 updateInitializingMode();
             }
 #ifdef PAXS_USING_SIMULATOR
-            else if (app_state_->getAppState() == AppState::Loading) {
+            else if (app_state_ && app_state_->getAppState() == AppState::Loading) {
                 PERF_SCOPE("Loading");
                 updateLoadingMode();
             }

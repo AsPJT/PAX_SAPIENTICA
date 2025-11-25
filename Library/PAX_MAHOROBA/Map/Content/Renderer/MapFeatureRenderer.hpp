@@ -54,7 +54,7 @@ public:
         for (const auto& feature : features) {
             if (!feature || !feature->isVisible()) continue;
             if (!feature->isInTimeRange(context.jdn)) continue;
-            
+
             switch (feature->getType()) {
             case FeatureType::Person:
                 drawPerson(static_cast<const PersonFeature&>(*feature), context, texture_map);

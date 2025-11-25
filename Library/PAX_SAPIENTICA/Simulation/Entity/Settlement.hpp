@@ -646,9 +646,11 @@ namespace paxs {
             agents_ref.resize(agents_ref.size() / 2); // 同義 agents_ref.erase(agents_ref.begin() + agents_ref.size() / 2, agents_ref.end());
 
             // パートナー同士は同じ集落に振り分ける
-            for (Agent& agent : agents_ref) {
+            const std::size_t original_agents_ref_size = agents_ref.size();
+            for (std::size_t i = 0; i < original_agents_ref_size; ++i) {
+                const Agent& agent = agents_ref[i];
                 if (agent.isMarried() && agent.isFemale()) {
-                    auto it = std::find_if(new_settlement_agents.begin(), new_settlement_agents.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
+                    auto it = std::find_if(new_settlement_agents.begin(), new_settlement_agents.end(), [&agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
                     if (it != new_settlement_agents.end()) {
                         agents_ref.emplace_back(*it);
                         (*it) = new_settlement_agents.back(); // 同義 new_settlement_agents.erase(it);
@@ -657,9 +659,11 @@ namespace paxs {
                 }
             }
 
-            for (Agent& agent : new_settlement_agents) {
+            const std::size_t original_new_settlement_agents_size = new_settlement_agents.size();
+            for (std::size_t i = 0; i < original_new_settlement_agents_size; ++i) {
+                const Agent& agent = new_settlement_agents[i];
                 if (agent.isMarried() && agent.isFemale()) {
-                    auto it = std::find_if(agents_ref.begin(), agents_ref.end(), [agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
+                    auto it = std::find_if(agents_ref.begin(), agents_ref.end(), [&agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
                     if (it != agents_ref.end()) {
                         new_settlement_agents.emplace_back(*it);
                         (*it) = agents_ref.back(); // 同義 agents_ref.erase(it);
