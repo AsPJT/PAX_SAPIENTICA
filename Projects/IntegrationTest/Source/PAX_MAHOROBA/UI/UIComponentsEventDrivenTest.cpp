@@ -98,7 +98,7 @@ TEST_F(UIComponentsEventDrivenTest, DateNavigationEventIsPublished) {
     );
 
     // イベントを直接発行
-    const double test_days = 365.2422; // 1年
+    const double test_days = 300;
     event_bus().publish(DateNavigationEvent(test_days));
 
     // イベントが受信されたことを確認
