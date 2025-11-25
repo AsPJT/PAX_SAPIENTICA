@@ -12,12 +12,13 @@
 #ifndef PAX_MAHOROBA_UI_DEBUG_PERFORMANCE_PROFILER_HPP
 #define PAX_MAHOROBA_UI_DEBUG_PERFORMANCE_PROFILER_HPP
 
-#include <chrono>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include <PAX_MAHOROBA/UI/Debug/PerformanceScopeData.hpp>
+
+#include <PAX_SAPIENTICA/Utility/TimeUtils.hpp>
 
 namespace paxs {
 
@@ -39,14 +40,14 @@ private:
     bool enabled_ = true;
 
     /// @brief フレーム開始時刻
-    std::chrono::steady_clock::time_point frame_start_time_;
+    TimeUtils::PerformanceTimePoint frame_start_time_;
 
     /// @brief 総フレーム時間（ミリ秒）
     double total_frame_time_ms_ = 0.0;
 
     // シングルトンパターン
     PerformanceProfiler() {
-        frame_start_time_ = std::chrono::steady_clock::now();
+        frame_start_time_ = TimeUtils::now();
     }
 
     ~PerformanceProfiler() = default;
@@ -69,9 +70,9 @@ public:
     /// @brief Begin scope
     /// @param scope_name スコープ名 / Scope name
     /// @return 開始時刻 / Start time
-    std::chrono::steady_clock::time_point beginScope(const std::string& scope_name) {
+    TimeUtils::PerformanceTimePoint beginScope(const std::string& scope_name) {
         if (!enabled_) {
-            return std::chrono::steady_clock::now();
+            return TimeUtils::now();
         }
 
         // 親スコープを取得
@@ -100,21 +101,20 @@ public:
             scopes_[parent_name].addChild(scope_name);
         }
 
-        return std::chrono::steady_clock::now();
+        return TimeUtils::now();
     }
 
     /// @brief スコープの終了
     /// @brief End scope
     /// @param scope_name スコープ名 / Scope name
     /// @param start_time 開始時刻 / Start time
-    void endScope(const std::string& scope_name, std::chrono::steady_clock::time_point start_time) {
+    void endScope(const std::string& scope_name, TimeUtils::PerformanceTimePoint start_time) {
         if (!enabled_) {
             return;
         }
 
-        auto end_time = std::chrono::steady_clock::now();
-        std::chrono::duration<double, std::milli> duration = end_time - start_time;
-        double time_ms = duration.count();
+        auto end_time = TimeUtils::now();
+        double time_ms = TimeUtils::getDifferenceMilliseconds(start_time, end_time);
 
         // スコープデータを更新
         auto it = scopes_.find(scope_name);
@@ -135,7 +135,7 @@ public:
             return;
         }
 
-        frame_start_time_ = std::chrono::steady_clock::now();
+        frame_start_time_ = TimeUtils::now();
 
         // 全スコープのフレームをリセット
         for (auto& pair : scopes_) {
@@ -153,9 +153,8 @@ public:
             return;
         }
 
-        auto end_time = std::chrono::steady_clock::now();
-        std::chrono::duration<double, std::milli> duration = end_time - frame_start_time_;
-        total_frame_time_ms_ = duration.count();
+        auto end_time = TimeUtils::now();
+        total_frame_time_ms_ = TimeUtils::getDifferenceMilliseconds(frame_start_time_, end_time);
     }
 
     /// @brief スコープデータを取得

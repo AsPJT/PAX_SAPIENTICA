@@ -12,7 +12,6 @@
 #ifndef PAX_SAPIENTICA_LOGGER_HPP
 #define PAX_SAPIENTICA_LOGGER_HPP
 
-#include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
