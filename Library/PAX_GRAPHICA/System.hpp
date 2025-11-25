@@ -14,16 +14,22 @@
 
 #include <string>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
+
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
+
 #elif defined(PAXS_USING_SFML)
 #include <cstdlib>
+
 #elif defined(PAXS_USING_DXLIB)
 #include <cstdlib>
-#ifdef __ANDROID__
+
+#if defined(PAXS_PLATFORM_ANDROID)
 #include <jni.h>
 #include <android/native_activity.h>
-#endif
+#endif // PAXS_PLATFORM_ANDROID
+
 #endif
 
 namespace paxg {
@@ -39,14 +45,14 @@ namespace paxg {
             return s3d::System::LaunchBrowser(s3d::Unicode::FromUTF8(url));
 #elif defined(PAXS_USING_SFML)
             // macOS
-#ifdef __APPLE__
+#if defined(PAXS_PLATFORM_MACOS)
             std::string command = "open \"" + url + "\"";
             return std::system(command.c_str()) == 0;
-#elif defined(_WIN32)
+#elif defined(PAXS_PLATFORM_WINDOWS)
             // Windows
             std::string command = "start \"\" \"" + url + "\"";
             return std::system(command.c_str()) == 0;
-#elif defined(__linux__)
+#elif defined(PAXS_PLATFORM_LINUX)
             // Linux
             std::string command = "xdg-open \"" + url + "\"";
             return std::system(command.c_str()) == 0;
@@ -55,7 +61,7 @@ namespace paxg {
             return false;
 #endif
 #elif defined(PAXS_USING_DXLIB)
-#ifdef __ANDROID__
+#if defined(PAXS_PLATFORM_ANDROID)
             // Android - JNI経由でブラウザを開く
             // Note: 実装には ANativeActivity へのアクセスが必要
             // 現時点ではスタブとして false を返す
@@ -63,14 +69,14 @@ namespace paxg {
             return false;
 #else
             // Windows/その他のDxLib環境
-#ifdef _WIN32
+#if defined(PAXS_PLATFORM_WINDOWS)
             std::string command = "start \"\" \"" + url + "\"";
             return std::system(command.c_str()) == 0;
 #else
             (void)url;
             return false;
-#endif
-#endif
+#endif // PAXS_PLATFORM_WINDOWS
+#endif // PAXS_USING_DXLIB
 #else
             (void)url;
             return false;

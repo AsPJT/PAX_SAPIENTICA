@@ -14,16 +14,18 @@
 
 #include <string>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
+
 // Platform-specific includes
-#if defined(__APPLE__)
+#if defined(PAXS_PLATFORM_MACOS)
     #include <mach-o/dyld.h>
     #include <libgen.h>
     #include <unistd.h>
     #include <climits>
-#elif defined(_WIN32) || defined(_WIN64)
+#elif defined(PAXS_PLATFORM_WINDOWS)
     #include <windows.h>
     #include <direct.h>
-#elif defined(__linux__)
+#elif defined(PAXS_PLATFORM_LINUX)
     #include <unistd.h>
     #include <libgen.h>
     #include <climits>
@@ -40,7 +42,7 @@ namespace paxs {
         /// @return 成功した場合は実行ファイルのディレクトリパス、失敗した場合は空文字列
         /// @return Directory path of the executable file on success, empty string on failure
         static std::string getExecutableDirectory() {
-#if defined(__APPLE__)
+#if defined(PAXS_PLATFORM_MACOS)
             // macOS implementation
             char exe_path[PATH_MAX];
             uint32_t size = sizeof(exe_path);
@@ -52,7 +54,7 @@ namespace paxs {
             }
             return "";
 
-#elif defined(_WIN32) || defined(_WIN64)
+#elif defined(PAXS_PLATFORM_WINDOWS)
             // Windows implementation
             char exe_path[MAX_PATH];
             DWORD length = GetModuleFileNameA(NULL, exe_path, MAX_PATH);
@@ -67,7 +69,7 @@ namespace paxs {
             }
             return "";
 
-#elif defined(__linux__)
+#elif defined(PAXS_PLATFORM_LINUX)
             // Linux (Ubuntu) implementation
             char exe_path[PATH_MAX];
             ssize_t len = readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);
@@ -96,11 +98,11 @@ namespace paxs {
                 return false;
             }
 
-#if defined(__APPLE__) || defined(__linux__)
+#if defined(PAXS_PLATFORM_MACOS) || defined(PAXS_PLATFORM_LINUX)
             // macOS and Linux implementation
             return chdir(dir.c_str()) == 0;
 
-#elif defined(_WIN32) || defined(_WIN64)
+#elif defined(PAXS_PLATFORM_WINDOWS)
             // Windows implementation
             return _chdir(dir.c_str()) == 0;
 
@@ -115,7 +117,7 @@ namespace paxs {
         /// @return 成功した場合は実行ファイルのフルパス、失敗した場合は空文字列
         /// @return Full path of the executable file on success, empty string on failure
         static std::string getExecutablePath() {
-#if defined(__APPLE__)
+#if defined(PAXS_PLATFORM_MACOS)
             // macOS implementation
             char exe_path[PATH_MAX];
             uint32_t size = sizeof(exe_path);
@@ -124,7 +126,7 @@ namespace paxs {
             }
             return "";
 
-#elif defined(_WIN32) || defined(_WIN64)
+#elif defined(PAXS_PLATFORM_WINDOWS)
             // Windows implementation
             char exe_path[MAX_PATH];
             DWORD length = GetModuleFileNameA(NULL, exe_path, MAX_PATH);
@@ -133,7 +135,7 @@ namespace paxs {
             }
             return "";
 
-#elif defined(__linux__)
+#elif defined(PAXS_PLATFORM_LINUX)
             // Linux (Ubuntu) implementation
             char exe_path[PATH_MAX];
             ssize_t len = readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);

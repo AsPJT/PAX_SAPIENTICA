@@ -15,6 +15,7 @@
 #include <filesystem>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/InputFile.hpp>
@@ -80,7 +81,7 @@ namespace paxs {
         /// @brief Create directories recursively.
         /// @brief ディレクトリを再帰的に作成する。
         static bool createDirectories(const std::string& directory_path) noexcept {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             return false; // std::filesystem が動作しないため何もしない
 #else
             // 相対パスの場合は getRootPath() を使って絶対パスに変換
@@ -101,7 +102,7 @@ namespace paxs {
         /// @brief ファイルまたはディレクトリの存在を確認する。
         /// @param relative_path アセットの相対パス / Relative to the root path configured in AppConfig.
         static bool exists(const std::string& relative_path) noexcept {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             // Android DxLib: アセットファイルは std::filesystem::exists で検出できないため
             // InputFile で試行して判定
             InputFile file(relative_path);
@@ -126,7 +127,7 @@ namespace paxs {
         /// @param relative_directory_path アセットルートからの相対ディレクトリパス / Relative directory path from the asset root.
         /// @return 相対ファイルパスのベクター / Vector of relative file paths from the asset root.
         static std::vector<std::string> getFilePaths(const std::string& relative_directory_path) noexcept {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             return {}; // std::filesystem が動作しないため何もしない
 #else
             if (!exists(relative_directory_path)) {
@@ -167,7 +168,7 @@ namespace paxs {
         /// @param relative_directory_path アセットルートからの相対ディレクトリパス / Relative directory path from the asset root.
         /// @return 相対ファイルパスのベクター / Vector of relative file paths from the asset root.
         static std::vector<std::string> getFilePathsRecursive(const std::string& relative_directory_path) noexcept {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             return {}; // std::filesystem が動作しないため何もしない
 #else
             if (!exists(relative_directory_path)) {

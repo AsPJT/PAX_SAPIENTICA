@@ -16,9 +16,11 @@
 
 #include <DxLib.h>
 
-#if defined(_WIN32)
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
+
+#if defined(PAXS_PLATFORM_WINDOWS)
 #include <Windows.h>
-#endif
+#endif // PAXS_PLATFORM_WINDOWS
 
 #include <PAX_GRAPHICA/WindowImpl.hpp>
 
@@ -56,13 +58,13 @@ namespace paxg {
         void updateCache() const {
             if (!cacheDirty) return;
 
-#if defined(__ANDROID__)
+#if defined(PAXS_PLATFORM_ANDROID)
             DxLib::GetAndroidDisplayResolution(&cachedWidth, &cachedHeight);
-#elif defined(__APPLE__)
+#elif defined(PAXS_PLATFORM_MACOS)
             // iOS specific processing
             cachedWidth = 1;
             cachedHeight = 1;
-#elif defined(__LINUX__)
+#elif defined(PAXS_PLATFORM_LINUX)
             // Linux specific processing
             cachedWidth = 1;
             cachedHeight = 1;
@@ -76,7 +78,7 @@ namespace paxg {
         /// @brief DxLib_Init() の前に呼び出される初期化処理
         /// @brief Pre-initialization called before DxLib_Init()
         void preInit() override {
-#if !defined(__ANDROID__) && !defined(__APPLE__) && !defined(__LINUX__)
+#if defined(PAXS_PLATFORM_WINDOWS)
             // ウィンドウモードを通常ウィンドウに設定（DxLib_Init の前）
             DxLib::ChangeWindowMode(TRUE);
 
@@ -100,7 +102,7 @@ namespace paxg {
         /// @brief Main initialization
         void init(int width, int height, const std::string& title) override {
             DxLib::SetGraphMode(width, height, 32);
-#if !defined(__ANDROID__) && !defined(__APPLE__) && !defined(__LINUX__)
+#if defined(PAXS_PLATFORM_WINDOWS)
             DxLib::SetMainWindowText(title.c_str());
 #endif
             cachedWidth = width;
@@ -115,7 +117,7 @@ namespace paxg {
         }
 
         void setTitle(const std::string& title) override {
-#if !defined(__ANDROID__) && !defined(__APPLE__) && !defined(__LINUX__)
+#if defined(PAXS_PLATFORM_WINDOWS)
             DxLib::SetMainWindowText(title.c_str());
 #else
             (void)title; // Suppress unused parameter warning
@@ -138,7 +140,7 @@ namespace paxg {
         }
 
         void setIcon(const std::string& path) override {
-#if defined(_WIN32) && !defined(__ANDROID__)
+#if defined(PAXS_PLATFORM_WINDOWS)
             // Windows API を使ってアイコンを設定
             HWND hWnd = DxLib::GetMainWindowHandle();
             if (hWnd) {

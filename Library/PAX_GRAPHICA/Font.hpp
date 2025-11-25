@@ -27,6 +27,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
@@ -194,7 +195,7 @@ namespace paxg{
                 // デフォルトフォントを使用
                 font = DxLib::CreateFontToHandle(NULL, size_, -1,
                     (buffer_thickness <= 0) ? DX_FONTTYPE_NORMAL :
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
                     DX_FONTTYPE_EDGE
 #else
                     DX_FONTTYPE_ANTIALIASING_8X8
@@ -577,7 +578,7 @@ namespace paxg{
     struct FontConfig {
         // プルダウンメニューのフォント設定
         static constexpr int PULLDOWN_FONT_SIZE =
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             40;
 #else
             24;

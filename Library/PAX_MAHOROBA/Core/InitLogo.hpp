@@ -18,6 +18,7 @@
 #include <PAX_MAHOROBA/Core/Init.hpp>
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/System/AppConst.hpp>
 #include <PAX_SAPIENTICA/System/Version.hpp>
 
@@ -34,7 +35,7 @@ namespace paxs {
             // === Phase 1: ライブラリ初期化前の設定 ===
             paxg::Window::PreInit();
 
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             // Android: 初期化処理は不要
 #else
             // ウィンドウのサイズを設定
@@ -66,7 +67,7 @@ namespace paxs {
 #elif defined(PAXS_USING_DXLIB)
             // DxLib は初期化後にアイコンを設定
             paxg::Window::setIcon("Images/Logo/LogoRed.ico");
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             // DxLibのアンドロイド版の画面サイズを変更
             int w{ paxs::AppConst::default_window_size.x }, h{ paxs::AppConst::default_window_size.y };
             DxLib::GetAndroidDisplayResolution(&w, &h);

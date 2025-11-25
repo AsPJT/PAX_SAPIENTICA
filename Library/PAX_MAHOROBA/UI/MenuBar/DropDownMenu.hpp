@@ -23,6 +23,7 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -142,7 +143,7 @@ namespace paxs {
             // チェックマークの幅を追加
             all_rect_width += checkmark_width;
 
-#if defined(PAXS_USING_DXLIB) && (__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             all_rect_x *= android_width_scale;
             rect.setW(rect.w() * android_rect_width_scale);
             rect.setH(rect.h() * android_height_scale);

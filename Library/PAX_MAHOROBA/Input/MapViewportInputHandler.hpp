@@ -25,6 +25,7 @@
 #include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 
@@ -43,7 +44,7 @@ namespace paxs {
         std::array<paxg::Key, 2> move_up_keys;    // 上移動キー (W, Up)
         std::array<paxg::Key, 2> move_down_keys;  // 下移動キー (S, Down)
 
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
         int touch_num = 0;
         int old_touch_num = 0;
         std::array<paxs::Vector2<int>, MapViewportConstants::max_touch_points> pos;
@@ -126,7 +127,7 @@ namespace paxs {
 
         /// @brief マウスドラッグによる移動処理（デスクトップ）
         void handleMouseDrag(const MouseEvent& event) {
-#ifndef __ANDROID__
+#ifndef PAXS_PLATFORM_ANDROID
             // 左ボタンが押されている場合のみドラッグ処理
             // Only process drag if left button is pressed
             if (event.left_button_state == MouseButtonState::Held || event.left_button_state == MouseButtonState::Pressed) {
@@ -162,7 +163,7 @@ namespace paxs {
         /// @brief タッチ入力による移動・ズーム処理（Android）
         /// @brief Handle movement and zoom by touch input (Android)
         void handleTouchInput() {
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             old_touch_num = touch_num;
             old_pos = pos;
 
@@ -349,7 +350,7 @@ namespace paxs {
               move_right_keys{paxg::Key(paxg::PAXG_KEY_D), paxg::Key(paxg::PAXG_KEY_RIGHT)},
               move_up_keys{paxg::Key(paxg::PAXG_KEY_W), paxg::Key(paxg::PAXG_KEY_UP)},
               move_down_keys{paxg::Key(paxg::PAXG_KEY_S), paxg::Key(paxg::PAXG_KEY_DOWN)}
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
               , touch_num(0), old_touch_num(0)
               , pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
               , old_pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}

@@ -9,28 +9,18 @@
 
 ##########################################################################################*/
 
-#ifndef PAX_MAHOROBA_MAIN_HPP
-#define PAX_MAHOROBA_MAIN_HPP
+#ifndef PAX_SAPIENTICA_CORE_PLATFORM_HPP
+#define PAX_SAPIENTICA_CORE_PLATFORM_HPP
 
-#include <PAX_SAPIENTICA/Core/Platform.hpp>
-
-#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
-// シミュレーションを使用しない
-#else
-#define PAXS_USING_SIMULATOR
+#if defined(_WIN32)
+#define PAXS_PLATFORM_WINDOWS
+#elif defined(__APPLE__) && defined(__MACH__)
+#define PAXS_PLATFORM_MACOS
+#elif defined(__LINUX__)
+#define PAXS_PLATFORM_LINUX
+#elif defined(__ANDROID__)
+#define PAXS_PLATFORM_ANDROID
 #endif
 
-#include <PAX_MAHOROBA/Core/Application.hpp>
+#endif // !PAX_SAPIENTICA_CORE_PLATFORM_HPP
 
-namespace paxs {
-
-/// @brief メイン関数
-void startMain() {
-    Application app;
-    app.initialize();
-    app.run();
-}
-
-} // namespace paxs
-
-#endif // !PAX_MAHOROBA_MAIN_HPP

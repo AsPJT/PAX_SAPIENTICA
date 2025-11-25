@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/StringConversions.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -55,12 +56,12 @@ namespace paxs {
 
         // ファイルが読み込まれたか確認する（読み込まれていない時は true ）
         bool fail() const {
-#if defined (PAXS_USING_DXLIB) && (__ANDROID__)
+#if defined (PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             return (type == paxs::MurMur3::calcHash("asset_file")) ?
                 (file_handle == 0) : (pifs.fail());
 #else
             return pifs.fail();
-#endif // PAXS_USING_DXLIB && __ANDROID__
+#endif // PAXS_USING_DXLIB && PAXS_PLATFORM_ANDROID
         }
 
         /// @brief 読み込んだファイルパスを取得
@@ -97,16 +98,16 @@ namespace paxs {
 
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
             type = type_; // フォルダの読み書きの種類を格納
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             static char file_path[InputFileConstants::file_path_buffer_size];
             switch (type) {
             case paxs::MurMur3::calcHash("asset_file"):
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
                 file_size = DxLib::FileRead_size(str_.c_str());
                 file_handle = DxLib::FileRead_open(str_.c_str());
 #else // Android 以外の場合の処理も記載
                 file_handle = DxLib::FileRead_open(std::string(root_path + str_).c_str());
-#endif // __ANDROID__
+#endif // PAXS_PLATFORM_ANDROID
                 DxLib::FileRead_set_format(file_handle, DX_CHARCODEFORMAT_UTF8); // UTF-8 を読み込む
                 if (file_handle != 0) {
                     pline0.resize(InputFileConstants::line_buffer_size);
@@ -146,7 +147,7 @@ namespace paxs {
         // 1 行読み込む
         bool getLine() {
 #ifdef PAXS_USING_DXLIB // PAXS_USING_DXLIB
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             if (type == paxs::MurMur3::calcHash("asset_file")) {
                 const int dline = DxLib::FileRead_gets(&(pline0[0]), static_cast<int>(InputFileConstants::line_buffer_size), file_handle);
                 if (dline == -1 || dline == 0) {
@@ -217,7 +218,7 @@ namespace paxs {
 
         // バイナリ分割
         std::size_t splitBinary(char* const result, const std::size_t size) {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             if (type == paxs::MurMur3::calcHash("asset_file")) {
                 const std::size_t read_size = (std::min)(static_cast<std::size_t>(file_size), size); // 読み込むサイズ
                 DxLib::FileRead_read(result, static_cast<int>(read_size), file_handle);

@@ -24,6 +24,7 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 namespace paxs {
 
@@ -145,7 +146,7 @@ namespace paxs {
             all_rect_x += (padding.x() * 2 + down_button_size);
 
 #ifdef PAXS_USING_DXLIB
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             all_rect_x *= android_width_scale;
             rect.setW(rect.w() * android_rect_width_scale);
             rect.setH(rect.h() * android_height_scale);

@@ -22,6 +22,7 @@
 #include <PAX_MAHOROBA/Map/Tile/Loader/FileTileLoader.hpp>
 #include <PAX_MAHOROBA/Map/Tile/Loader/UrlTileLoader.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Map/Tile/TileCache.hpp>
@@ -156,7 +157,7 @@ namespace paxs {
             const std::string& map_file_path_name,
             const std::string& file_name_format_
         ) {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             static char internal_data_path[1024]{};
 
             switch (texture_root_path_type) {
