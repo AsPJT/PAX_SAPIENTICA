@@ -1,0 +1,3 @@
+﻿key	file_path	type	description	min_size	max_size	first_year	last_year	color	line_width
+TestTerritories	Data/Territories/TestTerritories.tsv	view_territory	???	0	100	100	1000	black	55.5
+TestTerritories	Data/Territories/TestTerritories2.tsv	view_territory	???	0	100	100	1000	black	55.5

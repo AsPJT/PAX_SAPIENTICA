@@ -4,6 +4,7 @@ Locales	Data/Settings/Locales.tsv
 MapIcons	Data/Settings/MapIcons.tsv
 MenuIcons	Data/Settings/MenuIcons.tsv
 Persons	Data/Settings/Persons.tsv
+Territories	Data/Settings/Territories.tsv
 PlaceNames	Data/Settings/PlaceNames.tsv
 GeographicFeatures	Data/Settings/GeographicFeatures.tsv
 Genomes	Data/Settings/Genomes.tsv

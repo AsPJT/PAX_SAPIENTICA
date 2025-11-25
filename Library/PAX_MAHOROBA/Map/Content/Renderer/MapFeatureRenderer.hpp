@@ -26,6 +26,7 @@
 #include <PAX_MAHOROBA/Map/Content/Feature/Model3DFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/PlaceNameFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/TerritoryFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Renderer/GeometryRenderer.hpp>
 #include <PAX_MAHOROBA/Map/Content/Update/UpdateContext.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
@@ -53,7 +54,7 @@ public:
         for (const auto& feature : features) {
             if (!feature || !feature->isVisible()) continue;
             if (!feature->isInTimeRange(context.jdn)) continue;
-
+            
             switch (feature->getType()) {
             case FeatureType::Person:
                 drawPerson(static_cast<const PersonFeature&>(*feature), context, texture_map);
@@ -69,6 +70,9 @@ public:
                 break;
             case FeatureType::Model3D:
                 drawModel3D(static_cast<const Model3DFeature&>(*feature), context, texture_map);
+                break;
+            case FeatureType::Territory:
+                drawTerritory(static_cast<const TerritoryFeature&>(*feature));
                 break;
             default:
                 break;
@@ -292,6 +296,15 @@ private:
         //     // 3Dモデルを描画位置に配置
         //     feature.getRenderer().render();
         // }
+    }
+
+    /// @brief 領域地物を描画（スプライン曲線）
+    /// @brief Draw territory feature (spline curve)
+    /// @param feature 領域地物 / Territory feature
+    static void drawTerritory(const TerritoryFeature& feature) {
+        // TerritoryFeatureの描画メソッドを呼び出し
+        // Call TerritoryFeature's rendering method
+        feature.renderSpline();
     }
 
 };

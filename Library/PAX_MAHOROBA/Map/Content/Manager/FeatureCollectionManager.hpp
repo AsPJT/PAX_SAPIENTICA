@@ -22,6 +22,7 @@
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/PersonFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/PlaceNameFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/TerritoryFeature.hpp>
 #include <PAX_MAHOROBA/Map/Core/MapAssetRegistry.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
@@ -30,6 +31,7 @@
 #include <PAX_SAPIENTICA/Map/Repository/GeographicFeatureRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PersonRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PlaceNameRepository.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/TerritoryRepository.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 namespace paxs {
@@ -39,7 +41,7 @@ namespace paxs {
     ///
     /// 責務:
     /// - features_の管理
-    /// - データ読み込み（Person, Geographic, PlaceName, Genome）
+    /// - データ読み込み（Person, Geographic, PlaceName, Genome, Territory）
     /// - Feature検索（ID検索、座標検索）
     /// - asset_registry_の管理
     class FeatureCollectionManager {
@@ -118,6 +120,23 @@ namespace paxs {
             }
         }
 
+        /// @brief 領域データを読み込み
+        /// @brief Load territory features
+        void loadTerritoryFeatures() {
+            // 容量を事前確保
+            const std::size_t current_capacity = features_.capacity();
+            const std::size_t estimated_territory_count = 100;
+            features_.reserve(current_capacity + estimated_territory_count);
+
+            // TerritoryFeatureに変換
+            auto all_territories = TerritoryRepository::loadTerritoryList();
+            for (const auto& [territory_data, territory_group] : all_territories) {
+                features_.emplace_back(
+                    std::make_unique<TerritoryFeature>(territory_data, territory_group)
+                );
+            }
+        }
+
     public:
         FeatureCollectionManager() = default;
         ~FeatureCollectionManager() = default;
@@ -138,9 +157,13 @@ namespace paxs {
                 asset_registry_.loadMapIcons(map_icons_path);
             }
 
-            // 描画順序: 地名 → ゲノム → 地理 → 人物
+            // 描画順序: 領域 → 地名 → ゲノム → 地理 → 人物
+            // Territories are drawn first (background layer)
+            loadTerritoryFeatures();
+            std::cout << "Territory features loaded: " << features_.size() << "\n";
+
             loadPlaceNameFeatures();
-            std::cout << "Place name features loaded: " << features_.size() << "\n";
+            std::cout << "Place name features loaded: " << features_.size() << " total\n";
 
             loadGenomeFeatures();
             std::cout << "Genome features loaded: " << features_.size() << " total\n";
