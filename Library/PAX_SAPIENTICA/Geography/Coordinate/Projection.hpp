@@ -42,7 +42,7 @@ namespace paxs {
         }
         // Ｙ軸を正距円筒図法（度）へ変換した値を返す
         double toEquirectangularDegY() const noexcept {
-            return static_cast<double>(paxs::Math<double>::radToDeg(toEquirectangularRadY()));
+            return paxs::Math<double>::radToDeg(toEquirectangularRadY());
         }
         // 正距円筒図法（度）へ変換した値を返す
         operator EquirectangularDeg() const noexcept;
@@ -57,7 +57,7 @@ namespace paxs {
         }
         // Ｙ軸をメルカトル図法（度）へ変換した値を返す
         double toMercatorDegY() const noexcept {
-            return static_cast<double>(paxs::Math<double>::radToDeg(toMercatorRadY()));
+            return paxs::Math<double>::radToDeg(toMercatorRadY());
         }
         // メルカトル図法（度）へ変換した値を返す
         operator MercatorDeg() const noexcept {

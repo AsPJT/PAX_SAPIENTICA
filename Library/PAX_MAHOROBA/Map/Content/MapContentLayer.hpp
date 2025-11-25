@@ -61,7 +61,7 @@ namespace paxs {
             // データロード（初回のみ）
             feature_collection_manager_.loadAllFeatures();
 
-            // Settlement更新コールバックを設定（Strategy パターンで常に設定可能）
+            // Settlement更新コールバックを設定
             update_coordinator_.setSettlementUpdateCallback(
                 [this]() {
                     simulation_provider_->updateSettlementData();

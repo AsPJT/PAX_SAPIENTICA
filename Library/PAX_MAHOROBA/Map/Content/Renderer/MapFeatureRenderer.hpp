@@ -53,8 +53,6 @@ public:
         for (const auto& feature : features) {
             if (!feature || !feature->isVisible()) continue;
             if (!feature->isInTimeRange(context.jdn)) continue;
-            // 空間フィルタリング済み（update()でスクリーン座標が空の場合はスキップ）
-            if (feature->getScreenPositions().empty()) continue;
 
             switch (feature->getType()) {
             case FeatureType::Person:

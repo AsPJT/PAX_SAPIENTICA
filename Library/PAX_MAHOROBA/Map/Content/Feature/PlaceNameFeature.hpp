@@ -80,13 +80,6 @@ public:
     /// @brief 空間的更新（ISpatiallyUpdatableの実装）
     /// @brief Spatial update (ISpatiallyUpdatable implementation)
     void updateSpatial(const SpatialContext& context) override {
-        // 地物種別の可視性チェック（最優先）
-        if ((context.visibility_manager != nullptr) && !context.visibility_manager->isVisible(data_.feature_type_hash)) {
-            cached_screen_positions_.clear();
-            visible_ = false;
-            return;
-        }
-
         // 空間フィルタリング：ビューの範囲外の場合はスキップ
         if (!context.isInViewBounds(data_.coordinate)) {
             cached_screen_positions_.clear();

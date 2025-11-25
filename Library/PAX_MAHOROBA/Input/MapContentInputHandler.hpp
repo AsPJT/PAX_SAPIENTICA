@@ -101,11 +101,6 @@ namespace paxs {
                         continue;
                     }
 
-                    // 描画されていないFeatureはクリック不可（空間・ズームレベルフィルタリング済み）
-                    if (feature->getScreenPositions().empty()) {
-                        continue;
-                    }
-
                     // Featureのヒット判定メソッドを呼び出し
                     if (feature->isHit(pos)) {
                         hit_cache_.hit_feature = feature.get();
