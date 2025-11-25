@@ -20,15 +20,17 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
     /// @brief メニューバー用のドロップダウン項目
-    class DropDownMenu : public IWidget {
+    class DropDownMenu : public InteractiveUIComponent {
     private:
         // UI要素のサイズ定数
         static constexpr int default_padding_x = 6;
@@ -36,6 +38,9 @@ namespace paxs {
         static constexpr int down_button_size = 20;
         static constexpr int checkmark_width = 20;
         static constexpr int checkmark_x_offset = 5;
+
+        // Locales ドメインキー定数
+        static constexpr std::uint_least32_t menubar_domain_key = MurMur3::calcHash("MenuBar");
 
         // プラットフォーム固有の表示調整定数
         static constexpr float android_width_scale = 2.5f;
@@ -45,9 +50,8 @@ namespace paxs {
 
         // 描画定数
         static constexpr float arrow_radius = 8.0f;
-        static constexpr float arrow_rotation_pi = 3.1416f;  // π radians (down)
-        static constexpr int shadow_offset_x = 1;
-        static constexpr int shadow_offset_y = 1;
+        static constexpr float arrow_rotation_pi = 3.15f;  // π radians (down)　ずれるので少し大きめに
+        static constexpr paxg::Vec2i shadow_offset{ 1, 1 };
         static constexpr int shadow_blur_radius = 4;
         static constexpr int shadow_spread = 1;
 
@@ -65,12 +69,10 @@ namespace paxs {
         // レイアウト
         paxg::Rect rect;
         paxg::Vec2i padding{ default_padding_x, default_padding_y };
-        float all_rect_x{}; // 全ての項目の文字幅
+        float all_rect_width{}; // 全ての項目の文字幅
 
         // 状態
         bool visible_ = false;  // ドロップダウンの表示状態（MenuBarが制御）
-
-        std::uint_least32_t old_language_key = 0;
 
     public:
         DropDownMenu() = default;
@@ -119,15 +121,15 @@ namespace paxs {
             }
 
             rect.setW(0);
-            all_rect_x = 0;
+            all_rect_width = 0;
             for (std::size_t i = 0; i < items_key.size(); ++i) {
-                const std::string* str = Fonts().getText(items_key[i], LanguageDomain::UI);
+                const std::string* str = Fonts().getLocalesText(menubar_domain_key, items_key[i]);
                 if (str == nullptr || str->size() == 0) continue;
 
                 paxg::Font* item_font = Fonts().getFont(font_size, font_buffer_thickness_size);
                 if (item_font == nullptr) continue;
 
-                all_rect_x = (std::max)(all_rect_x, static_cast<float>((*item_font).width(*str)));
+                all_rect_width = (std::max)(all_rect_width, static_cast<float>((*item_font).width(*str)));
 
                 // 最初の項目（ヘッダー）の幅を使用
                 if (i == 0) {
@@ -136,12 +138,12 @@ namespace paxs {
             }
 
             rect.setW(rect.w() + (padding.x() * 2 + down_button_size));
-            all_rect_x += (padding.x() * 2 + down_button_size);
+            all_rect_width += (padding.x() * 2 + down_button_size);
 
             // チェックマークの幅を追加
-            all_rect_x += checkmark_width;
+            all_rect_width += checkmark_width;
 
-#if defined(PAXS_USING_DXLIB) && (__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             all_rect_x *= android_width_scale;
             rect.setW(rect.w() * android_rect_width_scale);
             rect.setH(rect.h() * android_height_scale);
@@ -156,7 +158,7 @@ namespace paxs {
             pos.setY((int)(pos.y() + rect.h()));
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
-                const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
+                const paxg::Rect item_rect{ pos, all_rect_width, rect.h() };
                 if (item_rect.contains(static_cast<float>(event.pos.x), static_cast<float>(event.pos.y))) {
                     // もともとやってたトグル処理
                     if (i < is_items.size()) {
@@ -299,7 +301,7 @@ namespace paxs {
             pos.setY((int)(pos.y() + rect.h()));
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
-                const paxg::Rect item_rect{ pos, all_rect_x, rect.h() };
+                const paxg::Rect item_rect{ pos, all_rect_width, rect.h() };
                 if (item_rect.contains((float)mouse_pos.x, (float)mouse_pos.y)) {
                     return true;
                 }
@@ -333,7 +335,7 @@ namespace paxs {
                 return;
             }
 
-            const std::string* str = Fonts().getText(items_key.front(), LanguageDomain::UI);
+            const std::string* str = Fonts().getLocalesText(menubar_domain_key, items_key.front());
             if (str == nullptr || str->size() == 0) {
                 PAXS_WARNING("DropDownMenu: Missing text for header item.");
                 return;
@@ -358,14 +360,14 @@ namespace paxs {
 
             // 最初の項目（ヘッダー）をスキップ
             const std::size_t display_item_count = items_key.size() - 1;
-            const paxg::Rect back_rect{ pos, all_rect_x, static_cast<float>(rect.h() * display_item_count) };
-            back_rect.drawShadow({ shadow_offset_x, shadow_offset_y }, shadow_blur_radius, shadow_spread).draw();
+            const paxg::Rect back_rect{ pos, all_rect_width, static_cast<float>(rect.h() * display_item_count) };
+            back_rect.drawShadow(shadow_offset, shadow_blur_radius, shadow_spread).draw();
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
-                const std::string* i_str = Fonts().getText(items_key[i], LanguageDomain::UI);
+                const std::string* i_str = Fonts().getLocalesText(menubar_domain_key, items_key[i]);
                 if (i_str == nullptr || i_str->size() == 0) continue;
 
-                const paxg::Rect rect_tmp{ pos, all_rect_x, rect.h() };
+                const paxg::Rect rect_tmp{ pos, all_rect_width, rect.h() };
                 if (rect_tmp.mouseOver()) {
                     rect_tmp.draw(paxg::Color{ 135, 206, 235 });
                 }

@@ -15,10 +15,10 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarContent.hpp>
-#include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/TimeControlButton.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
@@ -27,7 +27,7 @@ namespace paxs {
 
     /// @brief カレンダーパネル - 時間操作とカレンダー表示を統合管理
     /// @brief Calendar Panel - Integrates time control and calendar display with shared background
-    class CalendarPanel : public IWidget {
+    class CalendarPanel : public InteractiveUIComponent {
     private:
         const paxs::FeatureVisibilityManager& visibility_manager_;
 
@@ -40,8 +40,8 @@ namespace paxs {
             , const paxs::FeatureVisibilityManager& visibility_manager
             , const AppStateManager& app_state_manager)
             : visibility_manager_(visibility_manager)
-            , calendar_content(ui_layout, app_state_manager.getKoyomi())
-            , time_control_widget_(ui_layout, app_state_manager) {}
+            , time_control_widget_(ui_layout, app_state_manager)
+            , calendar_content(ui_layout, app_state_manager.getKoyomi()) {}
 
         /// @brief ボタンレイアウトを更新（UILayoutが変更された時に呼ぶ）
         void updateButtonLayout() {

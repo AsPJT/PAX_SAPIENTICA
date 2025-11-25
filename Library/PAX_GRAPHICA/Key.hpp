@@ -29,14 +29,6 @@
 
 namespace paxg {
 
-    // Coordinate constants
-    namespace CoordinateConstants {
-        // Longitude bounds
-        static constexpr double longitude_min = -180.0;
-        static constexpr double longitude_max = 180.0;
-        static constexpr double longitude_range = 360.0;
-    }
-
     struct InputStruct {
         InputStruct() = default;
 
@@ -277,11 +269,23 @@ namespace paxg {
         double getY() const {
             return coordinate.y;
         }
+
+        /// @brief Get coordinate as Vector2
+        /// @brief 座標をVector2として取得
+        /// @return Vector2<double> containing x and y coordinates
+        paxs::Vector2<double> getVector2() const {
+            return paxs::Vector2<double>(coordinate.x, coordinate.y);
+        }
+
         void setX(const double x_) {
             coordinate.x = x_;
         }
         void setY(const double y_) {
             coordinate.y = y_;
+        }
+        void set(paxs::Vector2<double> position) {
+            coordinate.x = position.x;
+            coordinate.y = position.y;
         }
 
         double toEquirectangularRadY() const {

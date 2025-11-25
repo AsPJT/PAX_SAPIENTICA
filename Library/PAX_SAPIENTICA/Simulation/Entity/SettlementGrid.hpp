@@ -14,8 +14,8 @@
 
 #include <memory>
 
-#include <PAX_SAPIENTICA/Simulation/Entity/Settlement.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Settlement.hpp>
 
 namespace paxs {
 
@@ -27,7 +27,7 @@ namespace paxs {
         constexpr SettlementGrid() = default;
 
         explicit SettlementGrid(const Vector2& grid_position, std::shared_ptr<Environment> environment,
-            std::mt19937& gen_) noexcept : grid_position(grid_position), environment(environment), gen(&gen_) {}
+            std::mt19937& gen_) noexcept : environment(environment), grid_position(grid_position), gen(&gen_) {}
 
         /// @brief Add a settlement to the grid.
         /// @brief 集落をグリッドに追加

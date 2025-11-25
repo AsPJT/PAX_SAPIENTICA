@@ -21,7 +21,7 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
@@ -53,10 +53,8 @@ namespace paxs {
             const MapViewport& map_viewport,
             cal::JDN_F64 jdn
         ) {
-            const double map_viewport_width = map_viewport.getWidth();
-            const double map_viewport_height = map_viewport.getHeight();
-            const double map_viewport_center_x = map_viewport.getCenterX();
-            const double map_viewport_center_y = map_viewport.getCenterY();
+            const Vector2<double> map_viewport_size = map_viewport.getSize();
+            const Vector2<double> map_viewport_center = map_viewport.getCenter();
             const int date = static_cast<int>(jdn.getDay());
 
             for (const auto& tile : tiles) {
@@ -68,15 +66,15 @@ namespace paxs {
                 // 描画タイプに応じて描画
                 switch (tile.getDrawType()) {
                 case paxs::MurMur3::calcHash("texture"): // 画像を描画
-                    drawTileTextures(tile, map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, date);
+                    drawTileTextures(tile, map_viewport_size, map_viewport_center, date);
                     break;
                 case paxs::MurMur3::calcHash("texture_and_grid"): // 画像とグリッドを描画
-                    drawTileTextures(tile, map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, date);
-                    drawTileGridLines(tile, map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, 0.8, paxg::Color{ 95, 99, 104 });
+                    drawTileTextures(tile, map_viewport_size, map_viewport_center, date);
+                    drawTileGridLines(tile, map_viewport_size, map_viewport_center, 0.8, paxg::Color{ 95, 99, 104 });
                     break;
                 case paxs::MurMur3::calcHash("grid_and_string"): // 線と文字列を描画
-                    drawTileGridLines(tile, map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y, 0.8, paxg::Color{ 95, 99, 104 });
-                    drawTileDebugInfo(tile, map_viewport_width, map_viewport_height, map_viewport_center_x, map_viewport_center_y);
+                    drawTileGridLines(tile, map_viewport_size, map_viewport_center, 0.8, paxg::Color{ 95, 99, 104 });
+                    drawTileDebugInfo(tile, map_viewport_size, map_viewport_center);
                     break;
                 }
             }
@@ -86,12 +84,15 @@ namespace paxs {
         TileRenderer() = default;
 
         /// @brief タイルのテクスチャを描画
+        /// @brief Draw tile textures
+        /// @param tile タイル / Tile
+        /// @param map_view_size マップビューのサイズ（幅, 高さ） / Map view size (width, height)
+        /// @param map_view_center マップビューの中心座標（X, Y） / Map view center (x, y)
+        /// @param date 日付 / Date
         static void drawTileTextures(
             const XYZTile& tile,
-            const double map_view_width,
-            const double map_view_height,
-            const double map_view_center_x,
-            const double map_view_center_y,
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center,
             const int date
         ) {
             // 拡大率が描画範囲外の場合は終了
@@ -108,8 +109,8 @@ namespace paxs {
             const Vector2<int> end_cell = tile.getEndCell();
 
             paxg::Vec2f tile_size = paxg::Vec2f(
-                static_cast<float>((360.0 / z_num) / map_view_width * static_cast<double>(paxg::Window::width())),
-                static_cast<float>((360.0 / z_num) / map_view_height * static_cast<double>(paxg::Window::height()))
+                static_cast<float>((360.0 / z_num) / map_view_size.x * static_cast<double>(paxg::Window::width())),
+                static_cast<float>((360.0 / z_num) / map_view_size.y * static_cast<double>(paxg::Window::height()))
             );
 
             for (int i = start_cell.y; i <= end_cell.y; ++i) {
@@ -122,8 +123,8 @@ namespace paxs {
                         };
                         texture->resizedDraw(tile_size,
                             paxg::Vec2f(
-                                static_cast<float>((map_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width())),
-                                static_cast<float>(double(paxg::Window::height()) - ((map_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height())))
+                                static_cast<float>((map_pos.x - (map_view_center.x - map_view_size.x / 2)) / map_view_size.x * double(paxg::Window::width())),
+                                static_cast<float>(double(paxg::Window::height()) - ((map_pos.y - (map_view_center.y - map_view_size.y / 2)) / map_view_size.y * double(paxg::Window::height())))
                             ));
                     }
                 }
@@ -131,12 +132,16 @@ namespace paxs {
         }
 
         /// @brief タイルのグリッド線を描画
+        /// @brief Draw tile grid lines
+        /// @param tile タイル / Tile
+        /// @param map_view_size マップビューのサイズ（幅, 高さ） / Map view size (width, height)
+        /// @param map_view_center マップビューの中心座標（X, Y） / Map view center (x, y)
+        /// @param thickness 線の太さ / Line thickness
+        /// @param color 線の色 / Line color
         static void drawTileGridLines(
             const XYZTile& tile,
-            const double map_view_width,
-            const double map_view_height,
-            const double map_view_center_x,
-            const double map_view_center_y,
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center,
             const double thickness,
             const paxg::Color& color
         ) {
@@ -155,10 +160,10 @@ namespace paxs {
                 (360.0 - start_cell.y * 360.0 / z_num) - 180.0
             };
 
-            double pos_x = (map_start_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width());
-            double pos_y = double(paxg::Window::height()) - ((map_start_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()));
-            const double move_x = (360.0 / z_num) / map_view_width * double(paxg::Window::width());
-            const double move_y = (360.0 / z_num) / map_view_height * double(paxg::Window::height());
+            double pos_x = (map_start_pos.x - (map_view_center.x - map_view_size.x / 2)) / map_view_size.x * double(paxg::Window::width());
+            double pos_y = double(paxg::Window::height()) - ((map_start_pos.y - (map_view_center.y - map_view_size.y / 2)) / map_view_size.y * double(paxg::Window::height()));
+            const double move_x = (360.0 / z_num) / map_view_size.x * double(paxg::Window::width());
+            const double move_y = (360.0 / z_num) / map_view_size.y * double(paxg::Window::height());
 
             // 水平線を描画
             for (int i = start_cell.y; i <= end_cell.y; ++i, pos_y += move_y) {
@@ -178,12 +183,14 @@ namespace paxs {
         }
 
         /// @brief タイルのデバッグ情報を描画
+        /// @brief Draw tile debug information
+        /// @param tile タイル / Tile
+        /// @param map_view_size マップビューのサイズ（幅, 高さ） / Map view size (width, height)
+        /// @param map_view_center マップビューの中心座標（X, Y） / Map view center (x, y)
         static void drawTileDebugInfo(
             const XYZTile& tile,
-            const double map_view_width,
-            const double map_view_height,
-            const double map_view_center_x,
-            const double map_view_center_y
+            const Vector2<double>& map_view_size,
+            const Vector2<double>& map_view_center
         ) {
             // 拡大率が描画範囲外の場合は終了
             const unsigned int z = tile.getZ();
@@ -200,16 +207,16 @@ namespace paxs {
                 (360.0 - start_cell.y * 360.0 / z_num) - 180.0
             };
 
-            double pos_x = (map_start_pos.x - (map_view_center_x - map_view_width / 2)) / map_view_width * double(paxg::Window::width());
-            double pos_y = double(paxg::Window::height()) - ((map_start_pos.y - (map_view_center_y - map_view_height / 2)) / map_view_height * double(paxg::Window::height()));
+            double pos_x = (map_start_pos.x - (map_view_center.x - map_view_size.x / 2)) / map_view_size.x * double(paxg::Window::width());
+            double pos_y = double(paxg::Window::height()) - ((map_start_pos.y - (map_view_center.y - map_view_size.y / 2)) / map_view_size.y * double(paxg::Window::height()));
 
             // セル1つあたりのピクセル幅（グリッドと同じ計算）
-            const double cell_width_px = (360.0 / z_num) / map_view_width * double(paxg::Window::width());
-            const double cell_height_px = (360.0 / z_num) / map_view_height * double(paxg::Window::height());
+            const double cell_width_px = (360.0 / z_num) / map_view_size.x * double(paxg::Window::width());
+            const double cell_height_px = (360.0 / z_num) / map_view_size.y * double(paxg::Window::height());
 
             // フォントサイズをセルサイズに応じて調整
             const int font_size = static_cast<int>(cell_height_px / 5);
-            paxg::Font* font = Fonts().getFont(font_size, 3);
+            paxg::Font* font = Fonts().getFont(static_cast<std::uint_least8_t>(font_size), static_cast<std::uint_least8_t>(3));
             font->setOutline(0, 0.5, paxg::Color{ 243, 243, 243 });
 
             double current_y = pos_y;

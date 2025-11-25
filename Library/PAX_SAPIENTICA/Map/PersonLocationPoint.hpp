@@ -15,9 +15,9 @@
 #include <cstdint>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
-#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -28,7 +28,6 @@ namespace paxs {
         explicit PersonLocationPoint() = default;
         explicit PersonLocationPoint(
             std::string  key_,  // 人物の一意キー
-            const paxs::UnorderedMap<std::uint_least32_t, std::string>& names_,
             const paxs::MercatorDeg& start_coordinate_,
             const paxs::MercatorDeg& end_coordinate_,
             const Range<double>& zoom_range_,
@@ -36,11 +35,10 @@ namespace paxs {
             const std::uint_least32_t feature_type_hash_,
             const std::uint_least32_t texture_key_
         ) noexcept
-            : key(std::move(key_)), names(names_), start_coordinate(start_coordinate_), end_coordinate(end_coordinate_),
+            : key(std::move(key_)), start_coordinate(start_coordinate_), end_coordinate(end_coordinate_),
             zoom_range(zoom_range_), year_range(year_range_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
 
-        std::string key;  // 人物の一意キー（ファイル名から）
-        paxs::UnorderedMap<std::uint_least32_t, std::string> names; // 人物名（多言語対応）
+        std::string key;  // 人物の一意キー
         paxs::MercatorDeg start_coordinate; // 開始時の経緯度
         paxs::MercatorDeg end_coordinate; // 終了時の経緯度
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲

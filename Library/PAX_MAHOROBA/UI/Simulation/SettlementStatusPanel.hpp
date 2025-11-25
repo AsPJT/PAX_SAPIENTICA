@@ -15,11 +15,12 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
+#include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
 
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -27,7 +28,17 @@ namespace paxs {
     /// @brief Settlement display mode status panel
     ///
     /// Settlement の表示モード（人口、農耕文化、mtDNA等）を表示するUIパネル。
-    class SettlementStatusPanel : public IWidget {
+    class SettlementStatusPanel : public UIComponent {
+    private:
+        // SimulationStats domain hash
+        static constexpr std::uint_least32_t simulation_stats_domain_hash = MurMur3::calcHash("SimulationStats");
+        static constexpr std::uint_least32_t display_mode_population_key = MurMur3::calcHash("display_mode_population");
+        static constexpr std::uint_least32_t display_mode_farming_key = MurMur3::calcHash("display_mode_farming");
+        static constexpr std::uint_least32_t display_mode_mtdna_key = MurMur3::calcHash("display_mode_mtdna");
+        static constexpr std::uint_least32_t display_mode_snp_key = MurMur3::calcHash("display_mode_snp");
+        static constexpr std::uint_least32_t display_mode_language_key = MurMur3::calcHash("display_mode_language");
+        static constexpr std::uint_least32_t display_mode_bronze_key = MurMur3::calcHash("display_mode_bronze");
+
     public:
         SettlementStatusPanel(const paxs::FeatureVisibilityManager& visible_manager)
             : visible_manager_(visible_manager) {}
@@ -41,7 +52,7 @@ namespace paxs {
 
             // フォントを取得
             paxg::Font* font = Fonts().getFont(
-                Fonts().getSelectedLanguage().getKey(),
+                Fonts().getSelectedLanguageKey(),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_SIZE),
                 static_cast<std::uint_least8_t>(paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS)
             );
@@ -51,7 +62,7 @@ namespace paxs {
             }
 
             // テキストを描画
-            font->draw(text, paxg::Vec2i{ start_x + font_space_x, start_y + font_space_y },
+            font->draw(text,  start_pos + font_space,
                       paxg::Color{ 0, 0, 0 });
         }
 
@@ -68,27 +79,19 @@ namespace paxs {
             };
         }
 
-        EventHandlingResult handleEvent(const MouseEvent& /*event*/) override {
-            // このパネルはマウス入力を処理しない
-            return EventHandlingResult::NotHandled();
-        }
-
         void setVisible(bool visible) { visible_ = visible; }
         bool isVisible() const override { return visible_ && visible_manager_.isVisible(ViewMenu::simulation); }
         void setPos(const Vector2<int>& pos) override { pos_ = pos; }
-        bool isHit(const paxs::Vector2<int>& pos) const override { return false; }
         const char* getName() const override { return "SettlementStatusPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
 
     private:
-        static constexpr int start_x = 40;  // 背景端の左上の X 座標
-        static constexpr int start_y = 80;  // 背景端の左上の Y 座標
-        static constexpr int font_space_x = 20;  // 文字端から背景端までの幅
-        static constexpr int font_space_y = 18;  // 文字端から背景端までの高さ
+        static constexpr Vector2<int> start_pos{ 40, 80 };  // 背景端の左上座標
+        static constexpr Vector2<int> font_space{ 20, 18 };  // 文字端から背景端までの幅と高さ
 
         std::size_t select_draw_ = 1;  // 表示モード (1-6)
         bool visible_ = false;  // シミュレーション初期化後に表示
-        paxs::Vector2<int> pos_{ start_x, start_y };
+        paxs::Vector2<int> pos_{ start_pos };
 
         const paxs::FeatureVisibilityManager& visible_manager_;
 
@@ -97,22 +100,38 @@ namespace paxs {
         /// @param select_draw 表示モード (1-6)
         /// @return 表示するテキスト / Text to display
         std::string getStatusText() const {
+            const std::string* text = nullptr;
+            std::uint_least32_t key = 0;
+
             switch (select_draw_) {
                 case 1:
-                    return reinterpret_cast<const char*>(u8"1. 人口 Population");
+                    key = display_mode_population_key;
+                    break;
                 case 2:
-                    return reinterpret_cast<const char*>(u8"2. 農耕文化 Farming");
+                    key = display_mode_farming_key;
+                    break;
                 case 3:
-                    return reinterpret_cast<const char*>(u8"3. mtDNA haplogroup");
+                    key = display_mode_mtdna_key;
+                    break;
                 case 4:
-                    return reinterpret_cast<const char*>(u8"4. SNP / Genome");
+                    key = display_mode_snp_key;
+                    break;
                 case 5:
-                    return reinterpret_cast<const char*>(u8"5. 言語 Language");
+                    key = display_mode_language_key;
+                    break;
                 case 6:
-                    return reinterpret_cast<const char*>(u8"6. 青銅 Bronze");
+                    key = display_mode_bronze_key;
+                    break;
                 default:
                     return "";
             }
+
+            text = Fonts().getLocalesText(simulation_stats_domain_hash, key);
+            if (text == nullptr) {
+                PAXS_WARNING("[SettlementStatusPanel] Missing text for display mode " + std::to_string(select_draw_));
+                return "";
+            }
+            return *text;
         }
     };
 

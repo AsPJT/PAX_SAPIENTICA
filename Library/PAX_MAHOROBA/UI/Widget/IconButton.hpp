@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -25,10 +25,10 @@
 namespace paxs {
 
     /// @brief アイコンボタンウィジェット
-    class IconButton : public IWidget {
+    class IconButton : public InteractiveUIComponent {
     public:
         IconButton(const char* button_name, const std::uint_least32_t icon_texture_path_hash)
-            : name(button_name), icon_texture_path_hash(icon_texture_path_hash) {}
+            : icon_texture_path_hash(icon_texture_path_hash), name(button_name) {}
 
         void render() const override {
             if (!isVisible()) return;

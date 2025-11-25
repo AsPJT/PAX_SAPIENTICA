@@ -16,8 +16,8 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
 #include <PAX_GRAPHICA/SFML_Event.hpp>
+#include <PAX_GRAPHICA/WindowImpl.hpp>
 
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/AppConst.hpp>
@@ -62,9 +62,15 @@ namespace paxg {
         }
 
         bool update() override {
+            // 1. 前フレームの描画内容を表示
+            // 2. イベント処理
+            // 3. 次フレーム用にバッファをクリア
             m_window.display();
             bool upd = paxg::SFML_Event::getInstance()->update(m_window);
-            m_window.clear(backgroundColor.color);
+            if (upd) {
+                // ウィンドウが開いている場合のみクリア
+                m_window.clear(backgroundColor.color);
+            }
             return upd;
         }
 

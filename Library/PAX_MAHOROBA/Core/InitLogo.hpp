@@ -18,6 +18,7 @@
 #include <PAX_MAHOROBA/Core/Init.hpp>
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/System/AppConst.hpp>
 #include <PAX_SAPIENTICA/System/Version.hpp>
 
@@ -34,7 +35,7 @@ namespace paxs {
             // === Phase 1: ライブラリ初期化前の設定 ===
             paxg::Window::PreInit();
 
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             // Android: 初期化処理は不要
 #else
             // ウィンドウのサイズを設定
@@ -66,7 +67,7 @@ namespace paxs {
 #elif defined(PAXS_USING_DXLIB)
             // DxLib は初期化後にアイコンを設定
             paxg::Window::setIcon("Images/Logo/LogoRed.ico");
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             // DxLibのアンドロイド版の画面サイズを変更
             int w{ paxs::AppConst::default_window_size.x }, h{ paxs::AppConst::default_window_size.y };
             DxLib::GetAndroidDisplayResolution(&w, &h);
@@ -102,8 +103,8 @@ namespace paxs {
 
             // 画像をウィンドウサイズに合わせてスケーリング
             // アスペクト比を維持しながらウィンドウに収まるようにする
-            const float scale_x = static_cast<float>(window_width) / static_cast<float>(texture_width);
-            const float scale_y = static_cast<float>(window_height) / static_cast<float>(texture_height);
+            const float scale_x = static_cast<float>(window_width) / texture_width;
+            const float scale_y = static_cast<float>(window_height) / texture_height;
             const float scale = (scale_x < scale_y) ? scale_x : scale_y;
 
             const int scaled_width = static_cast<int>(texture_width * scale);
@@ -136,12 +137,6 @@ namespace paxs {
             paxg::Window::update();
             paxg::Window::update();
             paxg::Window::setDecorated(true);
-#endif
-
-#ifdef PAXS_USING_SFML
-            // SFMLでは黒画面のフラッシュを防ぐため、背景色でクリア＆表示
-            paxg::Window::clear();
-            paxg::Window::display();
 #endif
         }
     };

@@ -32,13 +32,35 @@ namespace paxg {
 
     // 実行時定数
     class Mouse {
+    private:
+        static Mouse instance;
+
+        int pos_x_before_1frame = 0; // 1 フレーム前の位置
+        int pos_y_before_1frame = 0; // 1 フレーム前の位置
+
+        int pos_x = -1, pos_y = -1;
+
+        bool left_before_1frame = false; // 1 フレーム前の左クリック判定
+
+        bool left = false;
+        bool right = false;
+        bool middle = false;
+
+        int wheel_rot_vol = 0;
+
+        Mouse() = default;
+        ~Mouse() = default;
+
     public:
+        // Delete copy and move operations
+        Mouse(const Mouse&) = delete;
+        Mouse& operator=(const Mouse&) = delete;
+        Mouse(Mouse&&) = delete;
+        Mouse& operator=(Mouse&&) = delete;
+
         // インスタンスを取得
         static Mouse* getInstance() {
-            if (instance == nullptr) {
-                instance = new Mouse();
-            }
-            return instance;
+            return &instance;
         }
         // マウスの回転量を取得
         int getWheelRotVol() const {
@@ -135,32 +157,10 @@ namespace paxg {
             return std::nullopt;
 #endif
         }
-
-    private:
-        static Mouse* instance;
-
-        int pos_x_before_1frame = 0; // 1 フレーム前の位置
-        int pos_y_before_1frame = 0; // 1 フレーム前の位置
-
-        int pos_x = -1, pos_y = -1;
-
-        bool left_before_1frame = false; // 1 フレーム前の左クリック判定
-
-        bool left = false;
-        bool right = false;
-        bool middle = false;
-
-        int wheel_rot_vol = 0;
-
-        Mouse() = default;
-
-        ~Mouse() {
-            delete instance;
-        }
-
     };
 
-    Mouse* Mouse::instance = nullptr;
+    // Static member definition
+    Mouse Mouse::instance;
 
 }
 

@@ -55,15 +55,15 @@ namespace paxg {
         using NativeVec2 = sf::Vector2<T>;
         NativeVec2 vec2{};
 
-        Vec2(const T x, const T y) : vec2(x, y) {}
-        Vec2(const NativeVec2& vec2) : vec2(vec2) {}
+        constexpr Vec2(const T x, const T y) : vec2(x, y) {}
+        constexpr Vec2(const NativeVec2& vec2) : vec2(vec2) {}
 
         // 型変換コンストラクタ (conversion constructor for different numeric types)
         template<typename U>
-        Vec2(const Vec2<U>& other) : vec2(static_cast<T>(other.x()), static_cast<T>(other.y())) {}
+        constexpr Vec2(const Vec2<U>& other) : vec2(static_cast<T>(other.x()), static_cast<T>(other.y())) {}
 
         // paxs::Vector2からの変換コンストラクタ
-        Vec2(const paxs::Vector2<T>& v) : vec2(static_cast<T>(v.x), static_cast<T>(v.y)) {}
+        constexpr Vec2(const paxs::Vector2<T>& v) : vec2(static_cast<T>(v.x), static_cast<T>(v.y)) {}
 
         operator NativeVec2() const { return vec2; }
 

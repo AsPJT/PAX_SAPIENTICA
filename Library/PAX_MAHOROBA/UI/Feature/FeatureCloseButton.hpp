@@ -21,7 +21,7 @@
 namespace paxs {
 
     /// @brief Feature詳細パネルの閉じるボタン
-    /// @brief Close button for Feature detail panel
+    /// @brief Close button for Feature info panel
     class FeatureCloseButton : public IconButton {
     public:
         using ClickCallback = std::function<void()>;

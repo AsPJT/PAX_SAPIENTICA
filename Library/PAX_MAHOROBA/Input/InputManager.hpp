@@ -53,6 +53,18 @@ public:
         input_router_.registerHandler(handler);
     }
 
+    /// @brief ウィンドウリサイズを検知してイベントを発行
+    /// @brief Detect window resize and publish event
+    void detectWindowResize() {
+        const Vector2<int> current_size(paxg::Window::width(), paxg::Window::height());
+
+        if (current_size != last_window_size_) {
+            EventBus::getInstance().publish(WindowResizedEvent(current_size));
+
+            last_window_size_ = current_size;
+        }
+    }
+
     /// @brief 入力を処理
     /// @brief Process input
     /// @details 1. ウィンドウリサイズ検知
@@ -79,7 +91,8 @@ public:
         paxg::Mouse* mouse = paxg::Mouse::getInstance();
         const int wheel_rotation = mouse->getWheelRotVol();
         if (wheel_rotation != 0) {
-            MouseWheelEvent wheel_event(wheel_rotation);
+            const Vector2<int> mouse_pos = mouse->getPos();
+            MouseWheelEvent wheel_event(wheel_rotation, mouse_pos);
             input_router_.routeEvent(wheel_event);
         }
 
@@ -125,18 +138,6 @@ private:
 
     // ウィンドウサイズキャッシュ
     Vector2<int> last_window_size_;
-
-    /// @brief ウィンドウリサイズを検知してイベントを発行
-    /// @brief Detect window resize and publish event
-    void detectWindowResize() {
-        const Vector2<int> current_size(paxg::Window::width(), paxg::Window::height());
-
-        if (current_size != last_window_size_) {
-            EventBus::getInstance().publish(WindowResizedEvent(current_size));
-
-            last_window_size_ = current_size;
-        }
-    }
 };
 
 } // namespace paxs

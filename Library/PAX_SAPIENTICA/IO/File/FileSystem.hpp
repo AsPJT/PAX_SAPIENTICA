@@ -15,13 +15,11 @@
 #include <filesystem>
 #include <vector>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb/stb_image_write.h>
-
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/InputFile.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
@@ -83,7 +81,7 @@ namespace paxs {
         /// @brief Create directories recursively.
         /// @brief ディレクトリを再帰的に作成する。
         static bool createDirectories(const std::string& directory_path) noexcept {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             return false; // std::filesystem が動作しないため何もしない
 #else
             // 相対パスの場合は getRootPath() を使って絶対パスに変換
@@ -104,7 +102,7 @@ namespace paxs {
         /// @brief ファイルまたはディレクトリの存在を確認する。
         /// @param relative_path アセットの相対パス / Relative to the root path configured in AppConfig.
         static bool exists(const std::string& relative_path) noexcept {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             // Android DxLib: アセットファイルは std::filesystem::exists で検出できないため
             // InputFile で試行して判定
             InputFile file(relative_path);
@@ -129,7 +127,7 @@ namespace paxs {
         /// @param relative_directory_path アセットルートからの相対ディレクトリパス / Relative directory path from the asset root.
         /// @return 相対ファイルパスのベクター / Vector of relative file paths from the asset root.
         static std::vector<std::string> getFilePaths(const std::string& relative_directory_path) noexcept {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             return {}; // std::filesystem が動作しないため何もしない
 #else
             if (!exists(relative_directory_path)) {
@@ -165,6 +163,45 @@ namespace paxs {
 #endif
         }
 
+        /// @brief Get the file paths in the directory recursively.
+        /// @brief ディレクトリ内のファイルパスを再帰的に取得する。
+        /// @param relative_directory_path アセットルートからの相対ディレクトリパス / Relative directory path from the asset root.
+        /// @return 相対ファイルパスのベクター / Vector of relative file paths from the asset root.
+        static std::vector<std::string> getFilePathsRecursive(const std::string& relative_directory_path) noexcept {
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
+            return {}; // std::filesystem が動作しないため何もしない
+#else
+            if (!exists(relative_directory_path)) {
+                PAXS_ERROR("Failed to access: " + relative_directory_path);
+                return {};
+            }
+            const std::string root_path = paxs::AppConfig::getInstance().getRootPath();
+            const std::string dir_path_str = root_path + relative_directory_path;
+            std::vector<std::string> result;
+
+            try {
+                for (const auto& entry : std::filesystem::recursive_directory_iterator(dir_path_str)) {
+                    if (entry.is_regular_file()) {
+                        // 絶対パスから相対パスに変換
+                        std::string absolute_path = entry.path().string();
+                        if (absolute_path.find(root_path) == 0) {
+                            result.emplace_back(absolute_path.substr(root_path.size()));
+                        } else {
+                            result.emplace_back(absolute_path);
+                        }
+                    }
+                }
+            }
+            catch (const std::exception& e) {
+                PAXS_ERROR("Failed to recursively scan directory: " + relative_directory_path + " (" + e.what() + ")");
+                (void)e; // Suppress unused variable warning
+                return {};
+            }
+
+            return result;
+#endif
+        }
+
         /// @brief Get parent directory path from a file path.
         /// @brief ファイルパスから親ディレクトリパスを取得する。
         /// @param file_path ファイルパス / File path.
@@ -177,34 +214,16 @@ namespace paxs {
             return file_path.substr(0, last_slash);
         }
 
-        /// @brief Write PNG image file.
-        /// @brief PNGファイルに画像を書き込む。
-        /// @param relative_path アセットルートからの相対パス / Relative path from the asset root.
-        /// @param width 画像の幅 / Image width.
-        /// @param height 画像の高さ / Image height.
-        /// @param channels チャンネル数（例：RGBA=4） / Number of channels (e.g., RGBA=4).
-        /// @param data 画像データ / Image data.
-        /// @return 成功時true / True on success.
-        static bool writePngImage(
-            const std::string& relative_path,
-            int width,
-            int height,
-            int channels,
-            const void* data
-        ) noexcept {
-            // 相対パスを絶対パスに変換
-            const std::string root_path = AppConfig::getInstance().getRootPath();
-            const std::string full_path = root_path + relative_path;
-
-            // PNG書き込み（stbi_write_pngは外部ライブラリなので絶対パスが必要）
-            const int result = stbi_write_png(full_path.c_str(), width, height, channels, data, 0);
-
-            if (result == 0) {
-                PAXS_ERROR("Failed to write PNG file: " + relative_path);
-                return false;
+        /// @brief Get filename from a file path.
+        /// @brief ファイルパスからファイル名を取得する。
+        /// @param relative_path アセットルートからの相対ファイルパス、または任意のパス文字列 / Relative file path from the asset root, or any path string.
+        /// @return ファイル名（拡張子込み） / Filename (with extension).
+        static std::string getFilename(const std::string& relative_path) noexcept {
+            std::size_t last_slash = relative_path.find_last_of("/\\");
+            if (last_slash == std::string::npos) {
+                return relative_path; // ディレクトリ区切りがない場合はそのまま返す
             }
-
-            return true;
+            return relative_path.substr(last_slash + 1);
         }
     };
 }

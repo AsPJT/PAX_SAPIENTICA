@@ -17,7 +17,7 @@
 #include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxg {
 

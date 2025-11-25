@@ -12,10 +12,10 @@
 #ifndef PAX_MAHOROBA_I_INPUT_HANDLER_HPP
 #define PAX_MAHOROBA_I_INPUT_HANDLER_HPP
 
-#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-
 #include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxs {
 

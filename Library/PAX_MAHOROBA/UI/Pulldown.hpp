@@ -14,16 +14,17 @@
 
 #include <algorithm>
 #include <functional>
+#include <span>
 #include <string>
 #include <vector>
-#include <span>
 
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Triangle.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 namespace paxs {
 
@@ -42,12 +43,10 @@ namespace paxs {
     /// @details 2つのモードで動作:
     ///          - SelectedValue: 選択した値がヘッダーに表示される（言語選択など）
     ///          - FixedHeader: 固定のヘッダー名が表示される（メニューバーなど）
-    class Pulldown : public IWidget {
+    class Pulldown : public InteractiveUIComponent {
     private:
         std::span<const std::uint_least32_t> items_key; // 項目の Key 一覧
 
-        std::size_t language_index = 0; // 言語の要素番号
-        std::uint_least32_t old_language_key = 0; // 選択されている言語の Key
         std::vector<bool> is_items; // 項目が TRUE か FALSE になっているか格納
         paxs::UnorderedMap<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
 
@@ -55,7 +54,7 @@ namespace paxs {
         PulldownDisplayType display_type{}; // 表示タイプ (SelectedValue or FixedHeader)
         bool is_one_font = false;
 
-        const LanguageDomain language_domain{}; // 言語ドメイン
+        const std::uint_least32_t domain_hash{}; // ドメイン名のハッシュ値
 
         size_t index = 0;
         paxg::Vec2i padding{ default_padding_x, default_padding_y };
@@ -64,8 +63,9 @@ namespace paxs {
 
         bool visible_ = true;
 
-        // コールバック関数
-        std::function<void(std::size_t index, bool is_selected)> on_selection_changed_;
+        // コールバック関数（キーベース）
+        // Callback function (key-based)
+        std::function<void(std::uint_least32_t key, bool is_selected)> on_selection_changed_;
 
         // プラットフォーム固有の表示調整定数
         static constexpr float android_width_scale = 2.5f;
@@ -75,7 +75,7 @@ namespace paxs {
 
         // UI要素のサイズ定数
         static constexpr float arrow_radius = 8.0f;
-        static constexpr float arrow_rotation_pi = 3.1416f;  // π radians (down)
+        static constexpr float arrow_rotation_pi = 3.15f;  // π radians (down)　ずれるので少し大きめに
         static constexpr int shadow_offset_x = 1;
         static constexpr int shadow_offset_y = 1;
         static constexpr int shadow_blur_radius = 4;
@@ -91,8 +91,9 @@ namespace paxs {
         void setRectX(const std::size_t x = 0) {
             rect.setX(static_cast<float>(x));
         }
-        // 言語変更による更新処理
-        void updateLanguage() {
+        /// @brief レイアウトを更新（フォント変更時などに呼び出す）
+        /// @brief Update layout (call when font changes, etc.)
+        void updateLayout() {
             paxg::Font* one_font = Fonts().getFont(FontProfiles::PULLDOWN);
             if (one_font == nullptr) {
                 rect.setH(static_cast<float>(paxg::FontConfig::PULLDOWN_FONT_SIZE) * 2.f);
@@ -111,14 +112,14 @@ namespace paxs {
                 const std::string* str = nullptr;
 
                 // 言語辞書から取得
-                str = Fonts().getText(items_key[i], language_domain);
+                str = Fonts().getLocalesText(domain_hash, items_key[i]);
 
                 if (str == nullptr || str->size() == 0) {
                     PAXS_WARNING("Pulldown: Missing text for key " + std::to_string(items_key[i]));
                     continue;
                 }
 
-                const std::uint_least32_t font_key = (is_one_font ? items_key[i] : Fonts().getSelectedLanguage().getKey());
+                const std::uint_least32_t font_key = (is_one_font ? items_key[i] : Fonts().getSelectedLanguageKey());
                 paxg::Font* item_font = Fonts().getFont(font_key, FontProfiles::PULLDOWN);
                 if (item_font == nullptr) {
                     PAXS_WARNING("Pulldown: Missing font for item.");
@@ -145,7 +146,7 @@ namespace paxs {
             all_rect_x += (padding.x() * 2 + down_button_size);
 
 #ifdef PAXS_USING_DXLIB
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             all_rect_x *= android_width_scale;
             rect.setW(rect.w() * android_rect_width_scale);
             rect.setH(rect.h() * android_height_scale);
@@ -160,20 +161,20 @@ namespace paxs {
         /// @param display_type_ 表示タイプ（SelectedValue or FixedHeader）
         /// @param is_one_font_ 単一フォントを使用するか
         Pulldown(
-            const LanguageDomain language_domain_,
+            const std::uint_least32_t domain_hash_,
             const paxg::Vec2i& pos_ = { 0,0 },
             PulldownDisplayType display_type_ = PulldownDisplayType::SelectedValue,
             const bool is_one_font_ = false)
-            : language_domain(language_domain_)
-            , rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
+            : rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
             , display_type(display_type_)
-            , is_one_font(is_one_font_) {
+            , is_one_font(is_one_font_)
+            , domain_hash(domain_hash_) {
         }
 
         void setItemsKey(const std::span<const std::uint_least32_t> items_key_) {
             items_key = items_key_;
 
-            updateLanguage();
+            updateLayout();
 
             // Key List を作成
             for (std::size_t i = 0; i < items_key.size(); ++i) {
@@ -182,8 +183,10 @@ namespace paxs {
             }
         }
 
-        /// @brief 選択変更時のコールバックを設定
-        void setOnSelectionChanged(std::function<void(std::size_t, bool)> callback) {
+        /// @brief 選択変更時のコールバックを設定（キーベース）
+        /// @brief Set callback for selection changes (key-based)
+        /// @param callback コールバック関数(key, is_selected) / Callback function (key, is_selected)
+        void setOnSelectionChanged(std::function<void(std::uint_least32_t, bool)> callback) {
             on_selection_changed_ = std::move(callback);
         }
 
@@ -191,14 +194,6 @@ namespace paxs {
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             if (!visible_ || items_key.empty()) {
                 return EventHandlingResult::NotHandled(); // 非表示または無効の場合は処理をしない
-            }
-
-            // 言語が変わっていたら更新処理
-            const std::uint_least32_t current_language_key = Fonts().getSelectedLanguage().getKey();
-            if (old_language_key != current_language_key) {
-                language_index = Fonts().getSelectedLanguage().get();
-                old_language_key = current_language_key;
-                updateLanguage();
             }
 
             // Pressed/Heldイベント：プルダウン範囲内ならイベントを消費（ドラッグ防止）
@@ -268,9 +263,9 @@ namespace paxs {
                                 is_items[i] = !(is_items[i]);
                                 is_open = false;
 
-                                // ★コールバック呼び出し：選択が変更された場合のみ
+                                // ★コールバック呼び出し：選択が変更された場合のみ（キーで通知）
                                 if (on_selection_changed_ && (old_index != index || old_value != is_items[i])) {
-                                    on_selection_changed_(index, is_items[i]);
+                                    on_selection_changed_(items_key[index], is_items[i]);
                                 }
 
                                 return EventHandlingResult::Handled();
@@ -306,13 +301,13 @@ namespace paxs {
 
             paxg::Vec2i pos = rect.pos();
 
-            const std::uint_least32_t select_key = (is_one_font ? items_key[item_index] : Fonts().getSelectedLanguage().getKey());
+            const std::uint_least32_t select_key = (is_one_font ? items_key[item_index] : Fonts().getSelectedLanguageKey());
 
             // 種別によって描画処理を変える
             if (display_type == PulldownDisplayType::SelectedValue) {
                 const std::string* str = nullptr;
 
-                str = Fonts().getText(items_key[index], language_domain);
+                str = Fonts().getLocalesText(domain_hash, items_key[index]);
 
                 if (str == nullptr || str->size() == 0) return;
 
@@ -329,7 +324,7 @@ namespace paxs {
             else {
                 const std::string* str0 = nullptr;
 
-                str0 = Fonts().getText(items_key.front(), language_domain);
+                str0 = Fonts().getLocalesText(domain_hash, items_key.front());
 
                 if (str0 == nullptr || str0->size() == 0) return;
 
@@ -353,7 +348,7 @@ namespace paxs {
             for (std::size_t i = start_index; i < item_count; ++i) {
                 const std::string* i_str = nullptr;
 
-                i_str = Fonts().getText(items_key[i], language_domain);
+                i_str = Fonts().getLocalesText(domain_hash, items_key[i]);
 
                 if (i_str == nullptr || i_str->size() == 0) continue;
 
@@ -362,7 +357,7 @@ namespace paxs {
                     // 四角形の色を変える
                     rect_tmp.draw(paxg::Color{ 135, 206, 235 });
                 }
-                const std::uint_least32_t select_font_key = ((is_one_font) ? items_key[i] : Fonts().getSelectedLanguage().getKey());
+                const std::uint_least32_t select_font_key = ((is_one_font) ? items_key[i] : Fonts().getSelectedLanguageKey());
 
                 paxg::Font* one_font = Fonts().getFont(select_font_key, FontProfiles::PULLDOWN);
                 if (one_font == nullptr) {
@@ -381,13 +376,13 @@ namespace paxs {
         // Pulldown 固有のメソッド
         size_t getIndex() const { return index; }
         // 引数の添え字番号の項目が TRUE か FALSE になっているか調べる
-        bool getIsItems(const std::size_t index) const {
+        bool getIsItems(const std::size_t item_index) const {
             if (is_items.size() == 0) {
                 PAXS_WARNING("Pulldown::getIsItems: No items available.");
                 return true; // データがない場合
             }
-            if (index < is_items.size()) {
-                return is_items[index];
+            if (item_index < is_items.size()) {
+                return is_items[item_index];
             }
             return is_items.front();
         }

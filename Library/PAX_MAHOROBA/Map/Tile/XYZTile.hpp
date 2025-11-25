@@ -18,31 +18,30 @@
 #include <utility>
 #include <vector>
 
-#include <PAX_MAHOROBA/Map/Tile/BinaryTileLoader.hpp>
-#include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>
-#include <PAX_MAHOROBA/Map/Tile/UrlTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/BinaryTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/FileTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/UrlTileLoader.hpp>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Map/Tile/TileCache.hpp>
 #include <PAX_SAPIENTICA/Map/Tile/TileCoordinate.hpp>
 #include <PAX_SAPIENTICA/Map/Tile/TileMetadata.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
     /// @brief ビューポート状態
     /// @brief Viewport state
     struct ViewportState {
-        double width;
-        double height;
-        double center_x;
-        double center_y;
+        Vector2<double> size;
+        Vector2<double> center;
 
         bool operator==(const ViewportState& other) const {
-            return !isDifferent(width, other.width) &&
-                   !isDifferent(center_x, other.center_x) &&
-                   !isDifferent(center_y, other.center_y);
+            return !isDifferent(size.x, other.size.x) &&
+                   !isDifferent(center.x, other.center.x) &&
+                   !isDifferent(center.y, other.center.y);
         }
 
         bool operator!=(const ViewportState& other) const {
@@ -142,7 +141,7 @@ namespace paxs {
         unsigned int draw_max_z = 999; // 描画最大 Z
         unsigned int z_num = (1 << z); // 2 の z 乗 // std::pow(2, z) と等価
 
-        ViewportState current_viewport_{0.0, 0.0, 0.0, 0.0};
+        ViewportState current_viewport_{{0.0, 0.0}, {0.0, 0.0}};
         ZoomState current_zoom_{0, 0, 0};
         TileRange current_range_{{0, 0}, {0, 0}};
 
@@ -158,7 +157,7 @@ namespace paxs {
             const std::string& map_file_path_name,
             const std::string& file_name_format_
         ) {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             static char internal_data_path[1024]{};
 
             switch (texture_root_path_type) {
@@ -216,14 +215,8 @@ namespace paxs {
             TileCoordinate coord(zoom.actual_z, zoom.z_num);
 
             TileRange range;
-            range.start = coord.calculateStartCell(
-                viewport.center_x, viewport.center_y,
-                viewport.width, viewport.height
-            );
-            range.end = coord.calculateEndCell(
-                viewport.center_x, viewport.center_y,
-                viewport.width, viewport.height
-            );
+            range.start = coord.calculateStartCell(viewport.center, viewport.size);
+            range.end = coord.calculateEndCell(viewport.center, viewport.size);
 
             return range;
         }
@@ -355,18 +348,17 @@ namespace paxs {
     public:
         XYZTile() = default;
 
-        // タイルを更新
-        void update(const double map_view_width, // 描画される地図の経度幅
-            const double map_view_height, // 描画される地図の緯度幅
-            const double map_view_center_x, // 描画される地図の中心経度
-            const double map_view_center_y // 描画される地図の中心緯度
+        /// @brief タイルを更新
+        /// @brief Update tiles
+        /// @param map_view_size 描画される地図のサイズ（経度幅, 緯度幅） / Map view size (longitude width, latitude height)
+        /// @param map_view_center 描画される地図の中心座標（中心経度, 中心緯度） / Map view center (center longitude, center latitude)
+        void update(
+            const Vector2<double> map_view_size,
+            const Vector2<double> map_view_center
         ) {
             // 1. 新しい状態を計算
-            ViewportState new_viewport{
-                map_view_width, map_view_height,
-                map_view_center_x, map_view_center_y
-            };
-            ZoomState new_zoom = calculateZoom(map_view_height);
+            ViewportState new_viewport(map_view_size, map_view_center);
+            ZoomState new_zoom = calculateZoom(map_view_size.y);
             TileRange new_range = calculateTileRange(new_viewport, new_zoom);
 
             // 2. 変更を検出

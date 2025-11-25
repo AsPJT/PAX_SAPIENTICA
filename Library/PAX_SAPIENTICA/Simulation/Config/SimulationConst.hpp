@@ -18,17 +18,13 @@
 #include <string>
 #include <vector>
 
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
 #include <PAX_SAPIENTICA/IO/Data/SimulationRange.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
-#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
-
-// M_PI が定義されていない場合
-#ifndef M_PI
-#define M_PI 3.141592653589
-#endif
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
@@ -39,9 +35,8 @@ namespace paxs {
     constexpr std::uint_least8_t female_value = 0; // 女性
     constexpr std::uint_least8_t male_value = 1; // 男性
 
-    constexpr double pi_per_4 = M_PI / 4.0; // π／４
-    constexpr double pi_per_8 = M_PI / 8.0; // π／８
-    // constexpr double pi_per_4m8 = pi_per_4 - pi_per_8; // π／４ーπ／８
+    constexpr double pi_per_4 = paxs::Math<double>::pi() / 4.0; // π／４
+    constexpr double pi_per_8 = paxs::Math<double>::pi() / 8.0; // π／８
 
     constexpr double sqrt_2_x_pi = static_cast<double>(2.506628275);
 
@@ -207,17 +202,17 @@ namespace paxs {
         std::uniform_int_distribution<int> step_per_year_dist = std::uniform_int_distribution<int>( 0, 11 ); // 乱数分布
 
         std::uniform_int_distribution<int> move_dist = std::uniform_int_distribution<int>(min_move_distance, max_move_distance);
-        std::uniform_real_distribution<double> theta_dist = std::uniform_real_distribution<double>(0.0, static_cast<double>(2.0 * M_PI));
+        std::uniform_real_distribution<double> theta_dist = std::uniform_real_distribution<double>(0.0, paxs::Math<double>::pi2()); // 0 ～ 2π
 
         std::array<std::uniform_real_distribution<double>, 8> theta_dist_array = {
-            std::uniform_real_distribution<double>(-pi_per_8, pi_per_8),
-            std::uniform_real_distribution<double>(pi_per_8, pi_per_8 + pi_per_4),
-            std::uniform_real_distribution<double>(pi_per_8 + pi_per_4, pi_per_8 + 2* pi_per_4),
-            std::uniform_real_distribution<double>(pi_per_8 + 2 * pi_per_4, pi_per_8 + 3 * pi_per_4),
-            std::uniform_real_distribution<double>(pi_per_8 + 3 * pi_per_4, pi_per_8 + 4 * pi_per_4),
-            std::uniform_real_distribution<double>(pi_per_8 + 4 * pi_per_4, pi_per_8 + 5 * pi_per_4),
-            std::uniform_real_distribution<double>(pi_per_8 + 5 * pi_per_4, pi_per_8 + 6 * pi_per_4),
-            std::uniform_real_distribution<double>(pi_per_8 + 7 * pi_per_4, pi_per_8 + 8 * pi_per_4)
+            std::uniform_real_distribution<double>(-pi_per_8, pi_per_8), // -π／８ ～ π／８
+            std::uniform_real_distribution<double>(pi_per_8, pi_per_8 + pi_per_4), // π／８ ～ 3π／８
+            std::uniform_real_distribution<double>(pi_per_8 + pi_per_4, pi_per_8 + 2* pi_per_4), // 3π／８ ～ ５π／８
+            std::uniform_real_distribution<double>(pi_per_8 + 2 * pi_per_4, pi_per_8 + 3 * pi_per_4), // ５π／８ ～ ７π／８
+            std::uniform_real_distribution<double>(pi_per_8 + 3 * pi_per_4, pi_per_8 + 4 * pi_per_4), // ７π／８ ～ ９π／８
+            std::uniform_real_distribution<double>(pi_per_8 + 4 * pi_per_4, pi_per_8 + 5 * pi_per_4), // ９π／８ ～ １１π／８
+            std::uniform_real_distribution<double>(pi_per_8 + 5 * pi_per_4, pi_per_8 + 6 * pi_per_4), // １１π／８ ～ １３π／８
+            std::uniform_real_distribution<double>(pi_per_8 + 7 * pi_per_4, pi_per_8 + 8 * pi_per_4)  // １５π／８ ～ １７π／８
         };
 
         std::string output_directory_name = "Sample";

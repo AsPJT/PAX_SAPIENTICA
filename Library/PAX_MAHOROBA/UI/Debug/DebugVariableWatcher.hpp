@@ -74,8 +74,10 @@ public:
         if (!font_text) return;
 
         const int window_width = paxg::Window::width();
-        const int pos_x = window_width - WATCHER_WIDTH - WATCHER_MARGIN;
-        const int pos_y = WATCHER_MARGIN + 260;  // パフォーマンスモニターの下に配置
+        const paxs::Vector2<int> pos = paxs::Vector2<int>(
+            window_width - WATCHER_WIDTH - WATCHER_MARGIN,
+            WATCHER_MARGIN + 260  // パフォーマンスモニターの下に配置
+        );
 
         // 高さを動的に計算
         const int watcher_height = (std::max)(
@@ -84,20 +86,20 @@ public:
         );
 
         // 背景パネル
-        paxg::Rect(pos_x, pos_y, WATCHER_WIDTH, watcher_height)
+        paxg::Rect(pos.x, pos.y, WATCHER_WIDTH, watcher_height)
             .draw(paxg::Color(20, 20, 20, 200));
 
         // タイトル
         font_text->draw("Variable Watcher",
-                       paxg::Vec2i(pos_x + PADDING, pos_y + PADDING),
+                       pos + paxs::Vector2<int>(PADDING, PADDING),
                        paxg::Color(200, 200, 200));
 
         // 変数リスト描画
-        int current_y = pos_y + PADDING + 25;
+        int current_y = pos.y + PADDING + 25;
         for (const auto& [name, var] : watched_variables_) {
             // 変数名
             font_text->draw(name + ":",
-                           paxg::Vec2i(pos_x + PADDING, current_y),
+                           pos + paxs::Vector2<int>(PADDING, current_y),
                            paxg::Color(150, 200, 255));
 
             // 変数値
@@ -106,7 +108,7 @@ public:
                 : paxg::Color(200, 255, 150);  // 通常時は緑
 
             font_text->draw(var.last_value,
-                           paxg::Vec2i(pos_x + PADDING + 120, current_y),
+                           pos + paxs::Vector2<int>(PADDING + 120, current_y),
                            value_color);
 
             current_y += LINE_HEIGHT;
@@ -115,8 +117,8 @@ public:
         // フッター（変数数を表示）
         const std::string count_info = std::to_string(watched_variables_.size()) + " variable(s)";
         font_text->draw(count_info,
-                       paxg::Vec2i(pos_x + PADDING, pos_y + watcher_height - PADDING - 15),
-                       paxg::Color(150, 150, 150));
+                        pos + paxs::Vector2<int>(PADDING, watcher_height - PADDING - 15),
+                        paxg::Color(150, 150, 150));
     }
 
     /// @brief 変数を追加

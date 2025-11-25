@@ -22,10 +22,10 @@
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
@@ -85,7 +85,7 @@ namespace paxs {
             const bool has_z = table.hasColumn(z_hash);
 
             // 各行を処理
-            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) {
                 const std::string& key_str = table.get(row_index, key_hash);
                 if (key_str.empty()) return; // キーが空の場合はスキップ
 

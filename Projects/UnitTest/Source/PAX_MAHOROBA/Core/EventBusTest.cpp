@@ -11,8 +11,8 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {
 
@@ -67,14 +67,14 @@ TEST_F(EventBusTest, MultipleSubscribers) {
 
     // 複数のハンドラーを購読
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { call_count1++; }
+        [&](const LanguageChangedEvent&) { call_count1++; }
     );
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { call_count2++; }
+        [&](const LanguageChangedEvent&) { call_count2++; }
     );
 
-    // イベントを発行
-    EventBus::getInstance().publish(LanguageChangedEvent(1));
+    // イベントを発行（キーベース）
+    EventBus::getInstance().publish(LanguageChangedEvent(12345));
 
     // 両方のハンドラーが呼ばれることを確認
     EXPECT_EQ(call_count1, 1);
@@ -88,10 +88,10 @@ TEST_F(EventBusTest, EventTypeSeparation) {
 
     // 異なるイベントタイプのハンドラーを購読
     EventBus::getInstance().subscribe<WindowResizedEvent>(
-        [&](const WindowResizedEvent& event) { window_call_count++; }
+        [&](const WindowResizedEvent&) { window_call_count++; }
     );
     EventBus::getInstance().subscribe<LanguageChangedEvent>(
-        [&](const LanguageChangedEvent& event) { language_call_count++; }
+        [&](const LanguageChangedEvent&) { language_call_count++; }
     );
 
     // WindowResizedEventを発行
@@ -99,8 +99,9 @@ TEST_F(EventBusTest, EventTypeSeparation) {
     EXPECT_EQ(window_call_count, 1);
     EXPECT_EQ(language_call_count, 0);
 
-    // LanguageChangedEventを発行
-    EventBus::getInstance().publish(LanguageChangedEvent(0));
+    // LanguageChangedEventを発行（キーベース）
+    constexpr std::uint_least32_t test_language_key = 54321;
+    EventBus::getInstance().publish(LanguageChangedEvent(test_language_key));
     EXPECT_EQ(window_call_count, 1);
     EXPECT_EQ(language_call_count, 1);
 }
@@ -110,7 +111,7 @@ TEST_F(EventBusTest, EnqueueAndProcessQueue) {
     int call_count = 0;
 
     EventBus::getInstance().subscribe<DateChangedEvent>(
-        [&](const DateChangedEvent& event) { call_count++; }
+        [&](const DateChangedEvent&) { call_count++; }
     );
 
     // イベントをキューに追加（まだ処理されない）
@@ -129,12 +130,12 @@ TEST_F(EventBusTest, GetSubscriberCount) {
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<ViewportChangedEvent>(), 0);
 
     EventBus::getInstance().subscribe<ViewportChangedEvent>(
-        [](const ViewportChangedEvent& event) {}
+        [](const ViewportChangedEvent&) {}
     );
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<ViewportChangedEvent>(), 1);
 
     EventBus::getInstance().subscribe<ViewportChangedEvent>(
-        [](const ViewportChangedEvent& event) {}
+        [](const ViewportChangedEvent&) {}
     );
     EXPECT_EQ(EventBus::getInstance().getSubscriberCount<ViewportChangedEvent>(), 2);
 }
@@ -144,7 +145,7 @@ TEST_F(EventBusTest, ClearMethod) {
     int call_count = 0;
 
     EventBus::getInstance().subscribe<FeatureVisibilityChangedEvent>(
-        [&](const FeatureVisibilityChangedEvent& event) { call_count++; }
+        [&](const FeatureVisibilityChangedEvent&) { call_count++; }
     );
     EventBus::getInstance().enqueue(FeatureVisibilityChangedEvent(12345, true));
 
@@ -192,19 +193,19 @@ TEST_F(EventBusTest, CommandEvents) {
     int step_count = 0;
 
     EventBus::getInstance().subscribe<InitHumanDataCommandEvent>(
-        [&](const InitHumanDataCommandEvent& event) { init_count++; }
+        [&](const InitHumanDataCommandEvent&) { init_count++; }
     );
     EventBus::getInstance().subscribe<SimulationPlayCommandEvent>(
-        [&](const SimulationPlayCommandEvent& event) { play_count++; }
+        [&](const SimulationPlayCommandEvent&) { play_count++; }
     );
     EventBus::getInstance().subscribe<SimulationPauseCommandEvent>(
-        [&](const SimulationPauseCommandEvent& event) { pause_count++; }
+        [&](const SimulationPauseCommandEvent&) { pause_count++; }
     );
     EventBus::getInstance().subscribe<SimulationStopCommandEvent>(
-        [&](const SimulationStopCommandEvent& event) { stop_count++; }
+        [&](const SimulationStopCommandEvent&) { stop_count++; }
     );
     EventBus::getInstance().subscribe<SimulationStepCommandEvent>(
-        [&](const SimulationStepCommandEvent& event) { step_count++; }
+        [&](const SimulationStepCommandEvent&) { step_count++; }
     );
 
     // 各コマンドイベントを発行

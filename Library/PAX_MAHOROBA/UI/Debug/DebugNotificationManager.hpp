@@ -91,12 +91,12 @@ public:
 
             // アイコン描画
             font_icon->draw(getLevelIcon(item.level),
-                           paxg::Vec2i(item.panel_rect.x() + 10, item.panel_rect.y() + 15),
+                           paxg::Vec2i(static_cast<int>(item.panel_rect.x() + 10), static_cast<int>(item.panel_rect.y() + 15)),
                            getLevelIconColor(item.level));
 
             // メッセージテキスト描画
             font_text->draw(item.display_text,
-                           paxg::Vec2i(item.panel_rect.x() + ICON_SIZE + 20, item.panel_rect.y() + 10),
+                           paxg::Vec2i(static_cast<int>(item.panel_rect.x() + ICON_SIZE + 20), static_cast<int>(item.panel_rect.y() + 10)),
                            paxg::Color(40, 40, 40));
 
             // 閉じるボタン描画

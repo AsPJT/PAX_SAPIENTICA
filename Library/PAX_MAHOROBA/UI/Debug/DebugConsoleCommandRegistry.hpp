@@ -13,14 +13,14 @@
 #define PAX_MAHOROBA_UI_DEBUG_DEBUG_CONSOLE_COMMAND_REGISTRY_HPP
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/UI/Debug/DebugConsole.hpp>
 
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
@@ -37,7 +37,7 @@ public:
     static void registerAllCommands(DebugConsole& console, AppStateManager& app_state) {
         registerMapCommands(console, app_state);
 #ifdef PAXS_USING_SIMULATOR
-        registerSimulationCommands(console, app_state);
+        registerSimulationCommands(console);
 #endif
     }
 
@@ -62,11 +62,10 @@ private:
                 return;
             }
             // メルカトル座標に変換
-            paxs::Vector2<double> equirect_coords(longitude, app_state.getMapViewport().getCenterY());
+            const Vector2<double> map_viewport_center = app_state.getMapViewport().getCenter();
+            paxs::Vector2<double> equirect_coords(longitude, map_viewport_center.y);
             paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-            app_state.getMapViewport().setCenter(mercator_coords.getX(), app_state.getMapViewport().getCenterY());
-            app_state.getMapViewport().applyConstraints();
-            app_state.getMapViewport().notifyViewportChanged();
+            app_state.setViewportCenter(Vector2<double>(mercator_coords.getX(), map_viewport_center.y));
         });
 
         // y <latitude>: 緯度を設定（範囲: 0.0～90.0）
@@ -86,11 +85,10 @@ private:
                 return;
             }
             // メルカトル座標に変換
-            paxs::Vector2<double> equirect_coords(app_state.getMapViewport().getCenterX(), latitude);
+            const Vector2<double> map_viewport_center = app_state.getMapViewport().getCenter();
+            paxs::Vector2<double> equirect_coords(map_viewport_center.x, latitude);
             paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-            app_state.getMapViewport().setCenter(app_state.getMapViewport().getCenterX(), mercator_coords.getY());
-            app_state.getMapViewport().applyConstraints();
-            app_state.getMapViewport().notifyViewportChanged();
+            app_state.setViewportCenter(Vector2<double>(map_viewport_center.x, mercator_coords.getY()));
         });
 
         // z <zoom>: 拡大率を設定
@@ -113,18 +111,16 @@ private:
                 PAXS_WARNING("Zoom must be between " + std::to_string(min_h) + " and " + std::to_string(max_h));
                 return;
             }
-            app_state.getMapViewport().setSize(zoom);
-            app_state.getMapViewport().applyConstraints();
-            app_state.getMapViewport().notifyViewportChanged();
+            app_state.setViewportSize(zoom);
         });
     }
 
 #ifdef PAXS_USING_SIMULATOR
     /// @brief シミュレーション関連コマンドを登録
     /// @brief Register simulation-related commands
-    static void registerSimulationCommands(DebugConsole& console, AppStateManager& app_state) {
+    static void registerSimulationCommands(DebugConsole& console) {
         // sim init [model_name]: シミュレーションを初期化
-        console.registerCommand("sim", [&app_state](const std::vector<std::string>& args) {
+        console.registerCommand("sim", [](const std::vector<std::string>& args) {
             if (args.size() < 2) {
                 PAXS_WARNING("Usage: sim <init [model_name]|start|stop>");
                 return;
@@ -140,10 +136,10 @@ private:
                 EventBus::getInstance().publish(SimulationInitializeCommandEvent(model_name));
                 PAXS_INFO("Simulation initialized with model: " + model_name);
             } else if (subcommand == "start") {
-                app_state.executeTimePlaybackControl(TimePlaybackControlEvent::Action::Forward);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(TimePlaybackControlEvent::Action::Forward));
                 PAXS_INFO("Simulation started");
             } else if (subcommand == "stop") {
-                app_state.executeTimePlaybackControl(TimePlaybackControlEvent::Action::Stop);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(TimePlaybackControlEvent::Action::Stop));
                 PAXS_INFO("Simulation stopped");
             } else {
                 PAXS_WARNING("Unknown sim subcommand: " + subcommand);

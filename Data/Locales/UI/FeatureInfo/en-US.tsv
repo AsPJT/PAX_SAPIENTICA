@@ -1,0 +1,14 @@
+key	value
+title	Feature Detail
+label_type	Type
+label_name	Name
+type_geographic	Geographic Feature
+type_place_name	Place Name
+type_genome	Genome
+type_person	Person
+extra_location	Location
+extra_type	Type
+extra_era	Era
+extra_site	Site
+extra_altitude	Altitude
+extra_artifact	Artifact

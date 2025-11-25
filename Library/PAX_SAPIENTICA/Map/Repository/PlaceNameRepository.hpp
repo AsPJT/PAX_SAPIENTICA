@@ -23,7 +23,6 @@
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/FeatureListLoader.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/LocationDataLoader.hpp>
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -74,7 +73,7 @@ namespace paxs {
             CoordinateBounds bounds;
 
             // 1 行ずつ読み込み
-            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) {
                 auto row_data_opt = LocationDataLoader::loadRowData(table, row_index, hashes, flags, params);
                 if (!row_data_opt.has_value()) {
                     PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + params.file_path + ": missing coordinates");
@@ -89,7 +88,6 @@ namespace paxs {
                 // LocationPointを構築（地名は常にparams.texture_hashを使用）
                 location_point_list.emplace_back(
                     data.key,
-                    data.names,
                     paxs::EquirectangularDeg(
                         paxs::Vector2<double>(data.longitude, data.latitude)).toMercatorDeg(),
                     data.overall_length,

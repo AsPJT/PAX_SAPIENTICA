@@ -18,7 +18,7 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationControlButton.hpp>
 #include <PAX_MAHOROBA/UI/Simulation/SimulationStatsWidget.hpp>
@@ -35,11 +35,15 @@
 
 namespace paxs {
 
-    class SimulationPanel : public IWidget {
+    class SimulationPanel : public InteractiveUIComponent {
     private:
         const paxs::FeatureVisibilityManager& visibility_manager_;
-        const AppStateManager& app_state_manager_;
+#ifdef PAXS_USING_SIMULATOR
         const UILayout& ui_layout_;
+#endif
+
+        std::vector<std::uint_least32_t> simulation_key;
+        std::vector<std::string> simulation_model_name;
 
         paxs::Pulldown simulation_pulldown;
         SimulationControlButtons control_buttons_;
@@ -50,17 +54,21 @@ namespace paxs {
         // イベントから同期された状態 / State synchronized from events
         paxs::SimulationState simulation_state_ = paxs::SimulationState::Uninitialized;
 
+        // イベント購読（RAII対応） / Event subscriptions (RAII-safe)
+        ScopedSubscription language_changed_subscription_;
+        ScopedSubscription simulation_state_changed_subscription_;
+
         /// @brief イベント購読を設定
         void subscribeToEvents() {
-            // 言語変更イベントを購読してプルダウンの言語を更新
-            EventBus::getInstance().subscribe<LanguageChangedEvent>(
+            // 言語変更イベントを購読してプルダウンのレイアウトを更新
+            language_changed_subscription_ = EventBus::getInstance().subscribeScoped<LanguageChangedEvent>(
                 [this](const LanguageChangedEvent&) {
-                    simulation_pulldown.updateLanguage();
+                    simulation_pulldown.updateLayout();
                 }
             );
 
             // SimulationStateChangedイベントを購読
-            EventBus::getInstance().subscribe<SimulationStateChangedEvent>(
+            simulation_state_changed_subscription_ = EventBus::getInstance().subscribeScoped<SimulationStateChangedEvent>(
                 [this](const SimulationStateChangedEvent& event) {
                     simulation_state_ = event.new_state;
                     // SimulationControlButtonsに状態を通知
@@ -69,45 +77,52 @@ namespace paxs {
             );
         }
 
-        void onControlButtonClicked(SimulationControlButton::Id id) {
+        void onControlButtonClicked(SimulationControlButton::Id
+#ifdef PAXS_USING_SIMULATOR
+            id
+#else
+            /*id*/
+#endif
+        ) {
 #ifdef PAXS_USING_SIMULATOR
             const std::string model_name = simulation_model_name[simulation_pulldown.getIndex()];
+            auto& event_bus = EventBus::getInstance();
 
             switch (id) {
             case SimulationControlButton::Id::Initialize: {
-                // シミュレーション初期化コマンドを発行
-                app_state_manager_.executeSimulationInitialize(model_name);
+                // シミュレーション非同期初期化コマンドを発行
+                event_bus.publish(SimulationInitializeAsyncCommandEvent(model_name));
                 break;
             }
             case SimulationControlButton::Id::Stop: {
                 // 停止コマンドを発行
-                app_state_manager_.executeSimulationStop();
+                event_bus.publish(SimulationStopCommandEvent());
                 break;
             }
             case SimulationControlButton::Id::ReloadInputData: {
                 // シミュレーション入力データ再読み込みコマンドを発行
-                app_state_manager_.executeReloadInputData(model_name);
+                event_bus.publish(ReloadInputDataCommandEvent(model_name));
                 break;
             }
             case SimulationControlButton::Id::InitHumanData: {
                 // 人間データ初期化コマンドを発行
-                app_state_manager_.executeInitHumanData(model_name);
+                event_bus.publish(InitHumanDataCommandEvent(model_name));
                 break;
             }
             case SimulationControlButton::Id::Clear: {
-                // シミュレーションをクリア（初期化前の状態に戻す）
-                app_state_manager_.executeSimulationClear();
+                // シミュレーションクリアコマンドを発行
+                event_bus.publish(SimulationClearCommandEvent());
                 break;
             }
             case SimulationControlButton::Id::Play: {
                 // 再生コマンドを発行（読み込み済みチェックはAppStateManagerで行う）
                 const int iterations = SimulationConstants::getInstance(model_name).num_iterations;
-                app_state_manager_.executeSimulationPlay(iterations);
+                event_bus.publish(SimulationPlayCommandEvent(iterations));
                 break;
             }
             case SimulationControlButton::Id::Step: {
                 // 1ステップ実行コマンドを発行
-                app_state_manager_.executeSimulationStep(1);
+                event_bus.publish(SimulationStepCommandEvent(1));
                 break;
             }
             case SimulationControlButton::Id::None:
@@ -125,26 +140,29 @@ namespace paxs {
         }
 
     public:
-        std::vector<std::uint_least32_t> simulation_key;
-        std::vector<std::string> simulation_model_name;
-
         // コンストラクタ
         SimulationPanel(
             const paxs::FeatureVisibilityManager& visibility_manager,
-            const AppStateManager& app_state_manager,
-            const UILayout& ui_layout
-        ) : visibility_manager_(visibility_manager),
-            app_state_manager_(app_state_manager),
-            ui_layout_(ui_layout),
 #ifdef PAXS_USING_SIMULATOR
-            stats_widget_(app_state_manager.getSimulationManager()),
+            AppStateManager& app_state_manager,
+            const UILayout& ui_layout
+#else
+            AppStateManager& /*app_state_manager*/,
+            const UILayout& /*ui_layout*/
+#endif
+        ) : visibility_manager_(visibility_manager),
+#ifdef PAXS_USING_SIMULATOR
+            ui_layout_(ui_layout),
 #endif
             simulation_pulldown(
-                paxs::LanguageDomain::SIMULATION,
+                paxs::MurMur3::calcHash("SimulationModels"),
                 paxg::Vec2i{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
                 false
             )
+#ifdef PAXS_USING_SIMULATOR
+            , stats_widget_(app_state_manager.getSimulationManager())
+#endif
         {
             const std::string models_path = paxs::AppConfig::getInstance().getSettingPath(MurMur3::calcHash("SimulationModels"));
             paxs::InputFile models_tsv(models_path);
@@ -200,9 +218,8 @@ namespace paxs {
             if (simulation_pulldown.isHit(event.pos)) {
                 if (event.left_button_state == MouseButtonState::Released) {
                     return simulation_pulldown.handleEvent(event);
-                } else {
-                    return EventHandlingResult::Handled();
                 }
+                return EventHandlingResult::Handled();
             }
 
             // 次にボタンを処理

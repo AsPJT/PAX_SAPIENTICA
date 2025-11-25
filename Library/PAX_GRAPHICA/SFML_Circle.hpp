@@ -20,41 +20,35 @@ namespace paxg {
 
     // 実行時定数
     class SFML_Circle {
-    public:
-#if defined(PAXS_USING_SFML)
-        sf::CircleShape circle;
-#endif
-    public:
-        // インスタンスを取得
-        static SFML_Circle* getInstance() {
-            if (instance == nullptr) {
-                instance = new SFML_Circle();
-            }
-            return instance;
-        }
-
-#if defined(PAXS_USING_SFML)
-
-#endif
-
     private:
-        static SFML_Circle* instance;
+        static SFML_Circle instance;
 
 #if defined(PAXS_USING_SFML)
-        SFML_Circle() {
-
-        }
+        SFML_Circle() {}
 #else
         SFML_Circle() = default;
 #endif
+        ~SFML_Circle() = default;
 
-        ~SFML_Circle() {
-            delete instance;
+    public:
+        // Delete copy and move operations
+        SFML_Circle(const SFML_Circle&) = delete;
+        SFML_Circle& operator=(const SFML_Circle&) = delete;
+        SFML_Circle(SFML_Circle&&) = delete;
+        SFML_Circle& operator=(SFML_Circle&&) = delete;
+
+#if defined(PAXS_USING_SFML)
+        sf::CircleShape circle;
+#endif
+
+        // インスタンスを取得
+        static SFML_Circle* getInstance() {
+            return &instance;
         }
-
     };
 
-    SFML_Circle* SFML_Circle::instance = nullptr;
+    // Static member definition
+    SFML_Circle SFML_Circle::instance;
 
 }
 

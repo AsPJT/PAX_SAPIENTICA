@@ -20,6 +20,7 @@
 #include <SFML/Graphics.hpp>
 #endif
 
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 namespace paxg {
@@ -90,7 +91,7 @@ namespace paxg {
             // カメラ設定
             camera_ = s3d::DebugCamera3D{
                 s3d::Graphics3D::GetRenderTargetSize(),
-                config_.camera.verticalFOV / 180.0 * s3d::Math::Pi,
+                paxs::Math<double>::degToRad(config_.camera.verticalFOV),
                 s3d::Vec3{ config_.camera.posX, config_.camera.posY, config_.camera.posZ }
             };
 
@@ -138,8 +139,8 @@ namespace paxg {
                     viewPositionZ_,
                     config_.sphere.radius
                 }.draw(
-                    s3d::Quaternion::RotateY(viewRotationX_ / 180.0 * s3d::Math::Pi) *
-                    s3d::Quaternion::RotateX(viewRotationY_ / 180.0 * s3d::Math::Pi),
+                    s3d::Quaternion::RotateY(paxs::Math<double>::degToRad(viewRotationX_)) *
+                    s3d::Quaternion::RotateX(paxs::Math<double>::degToRad(viewRotationY_)),
                     photo_texture_
                 );
             }
@@ -179,7 +180,7 @@ namespace paxg {
 #ifdef PAXS_USING_SIV3D
             camera_ = s3d::DebugCamera3D{
                 s3d::Graphics3D::GetRenderTargetSize(),
-                config_.camera.verticalFOV / 180.0 * s3d::Math::Pi,
+                paxs::Math<double>::degToRad(config_.camera.verticalFOV),
                 s3d::Vec3{ config_.camera.posX, config_.camera.posY, config_.camera.posZ }
             };
 #endif

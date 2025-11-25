@@ -13,20 +13,17 @@
 #define PAX_SAPIENTICA_SIMULATION_CONFIG_DATA_HPP
 
 #include <cmath>
-#include <filesystem>
-#include <iostream>
+#include <map>
 #include <regex>
 #include <stdexcept>
-#include <map>
 
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Geography/Terrain/Slope.hpp>
-#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Geography/Terrain/Slope.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
-#include <PAX_SAPIENTICA/Utility/StatusDisplayer.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
@@ -36,7 +33,15 @@ namespace paxs {
     class Data {
     public:
         using Vector2 = paxs::Vector2<GridType>;
-        explicit Data(const std::string& directory_path, const std::string name, const int default_z) noexcept : name(name), default_z(default_z) {
+
+        /// @brief コンストラクタ
+        /// @brief Constructor
+        /// @param directory_path ディレクトリパス / Directory path
+        /// @param name データの名前 / Data name
+        /// @param default_z データのz値 / Data z value
+        /// @param reporter 進捗報告インターフェース / Progress reporter interface
+        explicit Data(const std::string& directory_path, const std::string name, const int default_z, IProgressReporter* reporter = nullptr) noexcept
+            : name(name), default_z(default_z), progress_reporter_(reporter) {
             z_mag = std::pow(2, default_z - SimulationConstants::getInstance().getZ());
             GridType area_x = SimulationConstants::getInstance().getEndArea().x - SimulationConstants::getInstance().getStartArea().x + 1;
             column_size = static_cast<int>(area_x * pixel_size * z_mag);
@@ -48,7 +53,8 @@ namespace paxs {
             data(other.data),
             default_z(other.default_z),
             z_mag(other.z_mag),
-            column_size(other.column_size) {}
+            column_size(other.column_size),
+            progress_reporter_(other.progress_reporter_) {}
 
         // Copy assignment operator
         constexpr Data& operator=(const Data& other) noexcept {
@@ -58,6 +64,7 @@ namespace paxs {
                 default_z = other.default_z;
                 z_mag = other.z_mag;
                 column_size = other.column_size;
+                progress_reporter_ = other.progress_reporter_;
             }
             return *this;
         }
@@ -73,10 +80,9 @@ namespace paxs {
             return itr->second;
         }
 
-        /// @brief Get the data of the key.
-        /// @brief キーをvectorで取得
-        /// @return keyのvector
-        constexpr void getKeys(std::vector<DataGridsType>& keys) const noexcept {
+        /// @brief Append all stored keys to the specified vector.
+        /// @brief 登録済みのキーをベクターに追記する
+        constexpr void appendKeys(std::vector<DataGridsType>& keys) const noexcept {
             keys.reserve(data.size());
             for (const auto& [key, value] : data) {
                 keys.emplace_back(key);
@@ -94,18 +100,21 @@ namespace paxs {
         int default_z; // データのz値
         double z_mag; // シミュレーションのz値からデータのz値に変換するときの倍率
         int column_size; // シミュレーションの列数
+        IProgressReporter* progress_reporter_ = nullptr; // 進捗報告インターフェース / Progress reporter interface
 
         /// @brief Load the file.
         /// @brief ファイルのロード
         void load(const std::string& directory_path) noexcept {
-            std::cout << "Loading " << name << " data..." << std::endl;
             std::vector<std::string> file_paths = FileSystem::getFilePaths(directory_path);
-
-            std::cout << file_paths.size() << " files are found." << std::endl;
 
             if(file_paths.size() == 0) {
                 PAXS_ERROR("No files are found: " + directory_path);
                 return;
+            }
+
+            if (progress_reporter_) {
+                progress_reporter_->startProgress(static_cast<int>(file_paths.size()),
+                                                 "Loading " + name + " data (" + std::to_string(file_paths.size()) + " files found)...");
             }
 
             if(file_paths[0].find(".tsv") != std::string::npos) {
@@ -142,7 +151,9 @@ namespace paxs {
 
                     if (!FileSystem::exists(directory_path + file_name)) {
                         --file_count;
-                        StatusDisplayer::displayProgressBar(load_count, file_count);
+                        if (progress_reporter_) {
+                            progress_reporter_->reportProgress(static_cast<float>(load_count) / static_cast<float>(file_count));
+                        }
                         continue;
                     }
 
@@ -155,12 +166,16 @@ namespace paxs {
                     );
 
                     ++load_count;
-                    StatusDisplayer::displayProgressBar(load_count, file_count);
+                    if (progress_reporter_) {
+                        progress_reporter_->reportProgress(static_cast<float>(load_count) / static_cast<float>(file_count));
+                    }
                 }
             }
 
-            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
-            std::cout << load_count << " files are loaded.\n" << std::endl;
+            if (progress_reporter_) {
+                progress_reporter_->endProgress();
+                progress_reporter_->reportProgress(1.0f, "Loading " + name + " is completed. " + std::to_string(load_count) + " files are loaded.");
+            }
         }
 
         /// @brief Load binary files.
@@ -176,7 +191,9 @@ namespace paxs {
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_path : file_paths) {
-                StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
+                if (progress_reporter_) {
+                    progress_reporter_->reportProgress(static_cast<float>(file_count) / static_cast<float>(file_paths.size()));
+                }
 
                 Vector2 xyz_position;
                 try {
@@ -203,9 +220,10 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
-            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
-            std::cout << load_count << " files are loaded.\n" << std::endl;
+            if (progress_reporter_) {
+                progress_reporter_->endProgress();
+                progress_reporter_->reportProgress(1.0f, "Loading " + name + " is completed. " + std::to_string(load_count) + " files are loaded.");
+            }
         }
 
         /// @brief Load numeric TSV files.
@@ -225,7 +243,9 @@ namespace paxs {
 
                     if (!FileSystem::exists(directory_path + file_name)) {
                         --file_count;
-                        StatusDisplayer::displayProgressBar(load_count, file_count);
+                        if (progress_reporter_) {
+                            progress_reporter_->reportProgress(static_cast<float>(load_count) / static_cast<float>(file_count));
+                        }
                         continue;
                     }
 
@@ -269,12 +289,16 @@ namespace paxs {
                     }
 
                     ++load_count;
-                    StatusDisplayer::displayProgressBar(load_count, file_count);
+                    if (progress_reporter_) {
+                        progress_reporter_->reportProgress(static_cast<float>(load_count) / static_cast<float>(file_count));
+                    }
                 }
             }
 
-            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
-            std::cout << load_count << " files are loaded.\n" << std::endl;
+            if (progress_reporter_) {
+                progress_reporter_->endProgress();
+                progress_reporter_->reportProgress(1.0f, "Loading " + name + " is completed. " + std::to_string(load_count) + " files are loaded.");
+            }
         }
 
         /// @brief Load numeric TSV files.
@@ -289,7 +313,9 @@ namespace paxs {
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_path : file_paths) {
-                StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
+                if (progress_reporter_) {
+                    progress_reporter_->reportProgress(static_cast<float>(file_count) / static_cast<float>(file_paths.size()));
+                }
 
                 Vector2 xyz_position;
                 try {
@@ -344,9 +370,10 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
-            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
-            std::cout << load_count << " files are loaded.\n" << std::endl;
+            if (progress_reporter_) {
+                progress_reporter_->endProgress();
+                progress_reporter_->reportProgress(1.0f, "Loading " + name + " is completed. " + std::to_string(load_count) + " files are loaded.");
+            }
         }
 
         /// @brief Load numeric text file.
@@ -360,7 +387,9 @@ namespace paxs {
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_path : file_paths) {
-                StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
+                if (progress_reporter_) {
+                    progress_reporter_->reportProgress(static_cast<float>(file_count) / static_cast<float>(file_paths.size()));
+                }
 
                 Vector2 xyz_position;
                 try {
@@ -395,9 +424,10 @@ namespace paxs {
                 ++file_count;
                 ++load_count;
             }
-            StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
-            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
-            std::cout << load_count << " files are loaded.\n" << std::endl;
+            if (progress_reporter_) {
+                progress_reporter_->endProgress();
+                progress_reporter_->reportProgress(1.0f, "Loading " + name + " is completed. " + std::to_string(load_count) + " files are loaded.");
+            }
         }
 
         /// @brief Load numeric text files and compress the data.
@@ -411,7 +441,9 @@ namespace paxs {
             const Vector2 size = end_xyz_position - start_xyz_position;
 
             for(const auto& file_path : file_paths) {
-                StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
+                if (progress_reporter_) {
+                    progress_reporter_->reportProgress(static_cast<float>(file_count) / static_cast<float>(file_paths.size()));
+                }
 
                 Vector2 xyz_position;
                 try {
@@ -460,17 +492,16 @@ namespace paxs {
             z_mag = 1;
             default_z = SimulationConstants::getInstance().getZ();
 
-            StatusDisplayer::displayProgressBar(file_count, int(file_paths.size()));
-            std::cout << std::endl << "Loading " << name << " is completed." << std::endl;
-            std::cout << load_count << " files are loaded.\n" << std::endl;
+            if (progress_reporter_) {
+                progress_reporter_->endProgress();
+                progress_reporter_->reportProgress(1.0f, "Loading " + name + " is completed. " + std::to_string(load_count) + " files are loaded.");
+            }
         }
 
         /// @brief Get X and Y coordinates from file name.
         /// @brief ファイルの名前からX座標とY座標を取得
-        // TODO: 動作確認
         Vector2 getXAndYFromFileName(const std::string& file_path) {
-            std::filesystem::path path(file_path);
-            std::string filename = path.filename().string();
+            std::string filename = FileSystem::getFilename(file_path);
 
             const std::regex pattern(R"((\w+)_(\d+)_(\d+)_(\d+)\.(\w+))");
             std::smatch matches;

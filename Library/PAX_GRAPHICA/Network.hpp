@@ -14,24 +14,30 @@
 
 #include <string>
 
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
+
 #elif defined(PAXS_USING_SFML)
 #include <fstream>
 #include <filesystem>
-#ifdef __APPLE__
+
+#if defined(PAXS_PLATFORM_MACOS)
 #include <curl/curl.h>
-#elif defined(_WIN32)
+
+#elif defined(PAXS_PLATFORM_WINDOWS)
 #include <windows.h>
 #include <wininet.h>
 #pragma comment(lib, "wininet.lib")
-#elif defined(__linux__)
+
+#elif defined(PAXS_PLATFORM_LINUX)
 #include <curl/curl.h>
-#endif
-#endif
+
+#endif // PAXS_PLATFORM_MACOS, PAXS_PLATFORM_WINDOWS, PAXS_PLATFORM_LINUX
+#endif // PAXS_USING_SFML
 
 namespace paxg {
 
@@ -47,30 +53,31 @@ namespace paxg {
             const s3d::URL siv_url = s3d::Unicode::FromUTF8(url);
             return s3d::SimpleHTTP::Save(siv_url, s3d::Unicode::FromUTF8(save_path)).isOK();
 #elif defined(PAXS_USING_SFML)
-#ifdef __APPLE__
+
+#if defined(PAXS_PLATFORM_MACOS)
             // macOS: libcurl を使用
             return downloadWithCurl(url, save_path);
-#elif defined(_WIN32)
+#elif defined(PAXS_PLATFORM_WINDOWS)
             // Windows: WinINet を使用
             return downloadWithWinINet(url, save_path);
-#elif defined(__linux__)
+#elif defined(PAXS_PLATFORM_LINUX)
             // Linux: libcurl を使用
             return downloadWithCurl(url, save_path);
 #else
             (void)url;
             (void)save_path;
             return false;
-#endif
+#endif // PAXS_PLATFORM_MACOS, PAXS_PLATFORM_WINDOWS, PAXS_PLATFORM_LINUX
 #else
             (void)url;
             (void)save_path;
             return false;
-#endif
+#endif // PAXS_USING_SIV3D, PAXS_USING_SFML
         }
 
     private:
 #if defined(PAXS_USING_SFML)
-#if defined(__APPLE__) || defined(__linux__)
+#if defined(PAXS_PLATFORM_MACOS) || defined(PAXS_PLATFORM_LINUX)
         // libcurl を使用したダウンロード
         static size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp) {
             std::ofstream* out = static_cast<std::ofstream*>(userp);
@@ -121,9 +128,9 @@ namespace paxg {
 
             return true;
         }
-#endif
+#endif // PAXS_PLATFORM_MACOS, PAXS_PLATFORM_LINUX
 
-#ifdef _WIN32
+#if defined(PAXS_PLATFORM_WINDOWS)
         // WinINet を使用したダウンロード（Windows）
         static bool downloadWithWinINet(const std::string& url, const std::string& save_path) {
             // 相対パスを絶対パスに変換
@@ -176,7 +183,7 @@ namespace paxg {
 
             return success;
         }
-#endif
+#endif // PAXS_PLATFORM_WINDOWS
 #endif // PAXS_USING_SFML
     };
 

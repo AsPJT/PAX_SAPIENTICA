@@ -61,7 +61,7 @@ namespace paxs {
         PanelLayout simulation_panel;
         PanelLayout debug_info_panel;
         PanelLayout settlement_status_panel;
-        PanelLayout feature_detail_panel;
+        PanelLayout feature_info_panel;
 
         // カレンダーテキストの位置
         const int koyomi_font_y = paxg::FontConfig::PULLDOWN_FONT_SIZE + 43;
@@ -86,8 +86,8 @@ namespace paxs {
         // デバッグ情報パネルの位置
         const int debug_info_panel_x = 10;
         const int debug_info_panel_y = 10;
-        const int debug_info_panel_width = 300;
-        const int debug_info_panel_height = 250;
+        const int debug_info_panel_width = 380;
+        const int debug_info_panel_height = 280;
 
         // シミュレーション情報パネルの位置
         const int simulation_info_panel_x = 40;
@@ -102,10 +102,10 @@ namespace paxs {
         const int settlement_status_panel_height = 60; // テキスト高さ + パディ
 
         // Feature詳細パネルの位置（debug_info_panelの右側に配置）
-        const int feature_detail_panel_x = 10 + 300 + 20; // debug_info_panel_x + width + margin
-        const int feature_detail_panel_width = 450; // テキスト幅 + パディング（長い文字列に対応）
-        const int feature_detail_panel_height = 350; // テキスト高さ + パディング（より多くの情報に対応）
-        const int feature_detail_panel_bottom_margin = 10; // 画面下部からのマージン
+        const int feature_info_panel_x = debug_info_panel_x + debug_info_panel_width + 10; // debug_info_panel_x + width + margin
+        const int feature_info_panel_width = 420; // テキスト幅 + パディング（長い文字列に対応）
+        const int feature_info_panel_height = 350; // テキスト高さ + パディング（より多くの情報に対応）
+        const int feature_info_panel_bottom_margin = 10; // 画面下部からのマージン
 
         // シミュレーションコントロールボタンの位置
         int simulation_buttons_base_y = 0;  // calculate()内で設定
@@ -120,9 +120,9 @@ namespace paxs {
             settlement_status_panel.calculateContentArea();
 
             // Feature詳細パネルのレイアウト（初期値設定）
-            feature_detail_panel.x = feature_detail_panel_x;
-            feature_detail_panel.width = feature_detail_panel_width;
-            feature_detail_panel.height = feature_detail_panel_height;
+            feature_info_panel.x = feature_info_panel_x;
+            feature_info_panel.width = feature_info_panel_width;
+            feature_info_panel.height = feature_info_panel_height;
             // y座標はcalculate()内で設定（ウィンドウサイズに依存するため）
         }
 
@@ -172,9 +172,9 @@ namespace paxs {
             debug_info_panel.height = debug_info_panel_height;
             debug_info_panel.calculateContentArea();
 
-            // FeatureDetailPanelのレイアウト（debug_info_panelと同じY座標）
-            feature_detail_panel.y = paxg::Window::height() - feature_detail_panel_height - debug_info_panel_y;
-            feature_detail_panel.calculateContentArea();
+            // FeatureInfoPanelのレイアウト（debug_info_panelと同じY座標）
+            feature_info_panel.y = paxg::Window::height() - feature_info_panel_height - debug_info_panel_y;
+            feature_info_panel.calculateContentArea();
         }
     };
 

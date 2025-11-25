@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_SAPIENTICA/Core/Utility/Random.hpp>
+#include <PAX_SAPIENTICA/Utility/RandomSelector.hpp>
 
 TEST(RandomSelectorUnitTest, select1) {
     std::random_device rd;

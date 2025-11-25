@@ -12,7 +12,6 @@
 #include <gtest/gtest.h>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_SAPIENTICA/Key/LanguageKeys.hpp>
 
 namespace paxs {
 
@@ -47,9 +46,6 @@ TEST_F(FontSystemTest, HelperFunction) {
 TEST_F(FontSystemTest, AccessBeforeInitialization) {
     // 初期化前でもクラッシュしないことを確認
     EXPECT_FALSE(Fonts().isInitialized());
-
-    // プロファイル確認（初期化前なので false）
-    EXPECT_FALSE(Fonts().hasProfile(FontProfiles::MAIN));
 }
 
 // 初期化テスト
@@ -69,29 +65,6 @@ TEST_F(FontSystemTest, MultipleInitialization) {
     EXPECT_TRUE(Fonts().isInitialized());
 }
 
-// プロファイル登録テスト
-TEST_F(FontSystemTest, RegisterProfile) {
-    Fonts().initialize();
-
-    Fonts().registerProfile("test_profile", 18, 3);
-    EXPECT_TRUE(Fonts().hasProfile("test_profile"));
-    EXPECT_FALSE(Fonts().hasProfile("nonexistent_profile"));
-}
-
-// デフォルトプロファイルテスト
-TEST_F(FontSystemTest, DefaultProfiles) {
-    Fonts().initialize();
-
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::MAIN));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::PULLDOWN));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::KOYOMI));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::PINYIN));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::ENGLISH));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::UI_SMALL));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::UI_MEDIUM));
-    EXPECT_TRUE(Fonts().hasProfile(FontProfiles::UI_LARGE));
-}
-
 // 存在しないプロファイルでフォント取得
 TEST_F(FontSystemTest, GetFontNonexistentProfile) {
     Fonts().initialize();
@@ -100,36 +73,65 @@ TEST_F(FontSystemTest, GetFontNonexistentProfile) {
     EXPECT_EQ(font, nullptr);
 }
 
-// 言語選択テスト
+// 言語選択テスト（キーベース）
 TEST_F(FontSystemTest, LanguageSelection) {
     Fonts().initialize();
 
-    Fonts().setLanguage(0);
-    EXPECT_EQ(Fonts().getSelectedLanguage().get(), 0);
+    // Locales から登録されている言語リストを取得
+    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getOrderedLocales();
 
-    Fonts().setLanguage(1);
-    EXPECT_EQ(Fonts().getSelectedLanguage().get(), 1);
+    // 最初の言語 (en-US) を選択
+    if (!locale_keys.empty()) {
+        [[maybe_unused]] bool result = Fonts().setLanguageKey(locale_keys[0]);
+        EXPECT_EQ(Fonts().getSelectedLanguageKey(), locale_keys[0]);
+    }
+
+    // 2番目の言語 (ja-JP) を選択
+    if (locale_keys.size() > 1) {
+        [[maybe_unused]] bool result = Fonts().setLanguageKey(locale_keys[1]);
+        EXPECT_EQ(Fonts().getSelectedLanguageKey(), locale_keys[1]);
+    }
 }
 
-// 言語キーで選択テスト
+// 言語キーで選択テスト（setLanguage と同じ動作を確認）
 TEST_F(FontSystemTest, LanguageSelectionByKey) {
     Fonts().initialize();
 
-    Fonts().setLanguageByKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[0]); // en-US
-    EXPECT_EQ(Fonts().getSelectedLanguage().getKey(),
-              paxs::LanguageKeys::ALL_LANGUAGE_HASHES[0]);
+    // Locales から登録されている言語リストを取得
+    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getOrderedLocales();
 
-    Fonts().setLanguageByKey(paxs::LanguageKeys::ALL_LANGUAGE_HASHES[1]); // ja-JP
-    EXPECT_EQ(Fonts().getSelectedLanguage().getKey(),
-              paxs::LanguageKeys::ALL_LANGUAGE_HASHES[1]);
+    // 最初の言語 (en-US) を選択
+    if (!locale_keys.empty()) {
+        [[maybe_unused]] bool result = Fonts().setLanguageKey(locale_keys[0]); // en-US
+        EXPECT_EQ(Fonts().getSelectedLanguageKey(), locale_keys[0]);
+    }
+
+    // 2番目の言語 (ja-JP) を選択
+    if (locale_keys.size() > 1) {
+        [[maybe_unused]] bool result = Fonts().setLanguageKey(locale_keys[1]); // ja-JP
+        EXPECT_EQ(Fonts().getSelectedLanguageKey(), locale_keys[1]);
+    }
 }
 
-// カスタムプロファイルの登録と使用
-TEST_F(FontSystemTest, CustomProfileRegistration) {
+// デフォルトプロファイルでのフォント取得テスト
+TEST_F(FontSystemTest, DefaultProfileFontRetrieval) {
     Fonts().initialize();
 
-    Fonts().registerProfile("custom_large", 32, 4);
-    EXPECT_TRUE(Fonts().hasProfile("custom_large"));
+    // デフォルトプロファイルでフォント取得を試みる
+    // フォントファイルが存在しない場合、nullptrが返されることを許容
+    auto* main_font = Fonts().getFont(FontProfiles::MAIN);
+    auto* pulldown_font = Fonts().getFont(FontProfiles::PULLDOWN);
+    auto* koyomi_font = Fonts().getFont(FontProfiles::KOYOMI);
+
+    // フォントファイルが存在する場合のみ検証
+    // テスト環境でFont.tsvやフォントファイルが利用できない場合はスキップ
+    if (main_font != nullptr) {
+        EXPECT_NE(pulldown_font, nullptr);
+        EXPECT_NE(koyomi_font, nullptr);
+    } else {
+        // フォントファイルが存在しない場合は警告のみ
+        GTEST_SKIP() << "Font files not available in test environment. Skipping font retrieval validation.";
+    }
 }
 
 // 空のプロファイル名

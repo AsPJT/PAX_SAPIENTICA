@@ -14,6 +14,7 @@
 
 #include <functional>
 
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationState.hpp>
@@ -81,7 +82,7 @@ namespace paxs {
         ClickCallback on_click_;
     };
 
-    class SimulationControlButtons : public IWidget {
+    class SimulationControlButtons : public InteractiveUIComponent {
     public:
         using ClickCallback = std::function<void(SimulationControlButton::Id)>;
 
@@ -180,7 +181,7 @@ namespace paxs {
             for (auto& btn : buttons_) {
                 switch (btn.getId()) {
                 case SimulationControlButton::Id::Initialize:
-                    btn.placeFromRight(X_LOAD_OR_DELETE, base_y, TIME_ICON_SIZE);
+                    btn.placeFromRight(X_LOAD_OR_DELETE, base_y, INITIALIZE_ICON_SIZE);
                     break;
                 case SimulationControlButton::Id::Clear:
                     // 同じ位置に置いておいて、表示のON/OFFは外部状態で切る想定でもOK
@@ -222,6 +223,7 @@ namespace paxs {
         SimulationState simulation_state_ = SimulationState::Uninitialized;
 
         static constexpr int TIME_ICON_SIZE = 40;
+        static constexpr int INITIALIZE_ICON_SIZE = 45; // 初期化ボタンは少し大きく
 
         // 右端からの固定オフセット
         static constexpr int X_LOAD_OR_DELETE = 360; // 地形データ読み込み/削除

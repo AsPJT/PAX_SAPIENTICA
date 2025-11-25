@@ -17,9 +17,9 @@
 #include <type_traits>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Calendar/ChineseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
-#include <PAX_SAPIENTICA/Calendar/ChineseEra.hpp>
 
 namespace paxs::cal {
 

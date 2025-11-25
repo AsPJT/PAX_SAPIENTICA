@@ -12,7 +12,8 @@
 #ifndef PAX_MAHOROBA_EVENTS_FEATURE_EVENTS_HPP
 #define PAX_MAHOROBA_EVENTS_FEATURE_EVENTS_HPP
 
-#include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
+
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {

@@ -13,6 +13,8 @@
 
 #include <PAX_GRAPHICA/Triangle.hpp>
 
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
+
 // Test default constructor
 TEST(TriangleUnitTest, DefaultConstruction) {
     paxg::Triangle triangle;
@@ -24,11 +26,11 @@ TEST(TriangleUnitTest, DefaultConstruction) {
 
 // Test constructor with parameters
 TEST(TriangleUnitTest, ParameterizedConstruction) {
-    paxg::Triangle triangle(100.0f, 200.0f, 50.0f, 3.14159f);
+    paxg::Triangle triangle(100.0f, 200.0f, 50.0f, paxs::MathConstants<float>::pi());
     EXPECT_FLOAT_EQ(triangle.centerX(), 100.0f);
     EXPECT_FLOAT_EQ(triangle.centerY(), 200.0f);
     EXPECT_FLOAT_EQ(triangle.radius(), 50.0f);
-    EXPECT_FLOAT_EQ(triangle.rotation(), 3.14159f);
+    EXPECT_FLOAT_EQ(triangle.rotation(), paxs::MathConstants<float>::pi());
 }
 
 // Test Vec2f constructor
@@ -69,7 +71,7 @@ TEST(TriangleUnitTest, Setters) {
 
 // Test rotation values for different directions
 TEST(TriangleUnitTest, RotationDirections) {
-    const float pi = 3.14159265358979323846f;
+    const float pi = paxs::MathConstants<float>::pi();
 
     // Right-pointing triangle (0 radians)
     paxg::Triangle rightTriangle(100.0f, 100.0f, 20.0f, 0.0f);

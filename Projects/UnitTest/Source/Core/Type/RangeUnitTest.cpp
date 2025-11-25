@@ -10,6 +10,7 @@
 ##########################################################################################*/
 
 #include <gtest/gtest.h>
+
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 
 // Range型の基本動作テスト

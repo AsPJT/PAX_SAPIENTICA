@@ -11,9 +11,9 @@
 
 #include <gtest/gtest.h>
 
-#include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/String.hpp>
 #include <PAX_GRAPHICA/Image.hpp>
+#include <PAX_GRAPHICA/String.hpp>
+#include <PAX_GRAPHICA/Texture.hpp>
 
 // Test Texture default construction
 TEST(TextureUnitTest, DefaultConstruction) {

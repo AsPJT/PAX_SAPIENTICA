@@ -21,9 +21,13 @@
 #include <PAX_GRAPHICA/TouchInput.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
+
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {
 
@@ -40,7 +44,7 @@ namespace paxs {
         std::array<paxg::Key, 2> move_up_keys;    // 上移動キー (W, Up)
         std::array<paxg::Key, 2> move_down_keys;  // 下移動キー (S, Down)
 
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
         int touch_num = 0;
         int old_touch_num = 0;
         std::array<paxs::Vector2<int>, MapViewportConstants::max_touch_points> pos;
@@ -52,55 +56,106 @@ namespace paxs {
         /// @brief ドラッグ中フラグ（地図上でドラッグが開始されたか）
         bool is_dragging_ = false;
 
-        /// @brief マウスホイールによるズーム処理
+        /// @brief ドラッグイベント発行済みフラグ（ドラッグ開始イベントを既に発行したか）
+        bool drag_event_fired_ = false;
+
+        /// @brief マウスホイールによるズーム処理（マウスカーソル位置を中心に拡大縮小）
         bool handleMouseWheelZoom(const MouseWheelEvent& event) {
             if (event.wheel_rotation == 0) {
                 return false; // ズーム変更なし
             }
 
-            double height = viewport_.getHeight();
+            // ズーム前の状態を保存
+            const Vector2<double> old_center = viewport_.getCenter();
+            const Vector2<double> old_size = viewport_.getSize();
+
+            // 新しい高さを計算
             const double min_height = viewport_.getMinHeight();
             const double max_height = viewport_.getMaxHeight();
+            double new_height = old_size.y * (1.0 + (event.wheel_rotation / MapViewportConstants::mouse_wheel_sensitivity));
+            new_height = (std::clamp)(new_height, min_height, max_height);
 
-            height *= (1.0 + (event.wheel_rotation / MapViewportConstants::mouse_wheel_sensitivity));
-            height = (std::clamp)(height, min_height, max_height);
+            // ウィンドウサイズ
+            const Vector2<double> window_size(
+                static_cast<double>(paxg::Window::width()),
+                static_cast<double>(paxg::Window::height())
+            );
 
-            viewport_.setSize(height);
+            // マウス位置を正規化座標に変換（-0.5 ~ 0.5）
+            const Vector2<double> normalized_mouse(
+                (static_cast<double>(event.mouse_pos.x) / window_size.x) - 0.5,
+                0.5 - (static_cast<double>(event.mouse_pos.y) / window_size.y)
+            );
+
+            // マウス位置のワールド座標
+            const Vector2<double> mouse_world(
+                old_center.x + normalized_mouse.x * old_size.x,
+                old_center.y + normalized_mouse.y * old_size.y
+            );
+
+            // 新しいサイズを設定
+            viewport_.setSize(new_height);
+
+            // 新しいサイズを取得
+            const Vector2<double> new_size = viewport_.getSize();
+
+            // ズーム後もマウスカーソル位置が同じワールド座標を指すように中心を調整
+            Vector2<double> new_center(
+                mouse_world.x - normalized_mouse.x * new_size.x,
+                mouse_world.y - normalized_mouse.y * new_size.y
+            );
+
+            // 経度の範囲調整
+            if (new_center.x < MapViewportConstants::longitude_min) {
+                new_center.x += MapViewportConstants::longitude_range;
+            }
+            if (new_center.x >= MapViewportConstants::longitude_max) {
+                new_center.x -= MapViewportConstants::longitude_range;
+            }
+            if (new_center.y < MapViewportConstants::longitude_min) {
+                new_center.y += MapViewportConstants::longitude_range;
+            }
+            if (new_center.y >= MapViewportConstants::longitude_max) {
+                new_center.y -= MapViewportConstants::longitude_range;
+            }
+
+            // 新しい中心座標を設定
+            viewport_.setCenter(new_center);
 
             return true;
         }
 
         /// @brief マウスドラッグによる移動処理（デスクトップ）
         void handleMouseDrag(const MouseEvent& event) {
-#ifndef __ANDROID__
+#ifndef PAXS_PLATFORM_ANDROID
             // 左ボタンが押されている場合のみドラッグ処理
             // Only process drag if left button is pressed
             if (event.left_button_state == MouseButtonState::Held || event.left_button_state == MouseButtonState::Pressed) {
-                const double height = viewport_.getHeight();
-                double center_x = viewport_.getCenterX();
-                double center_y = viewport_.getCenterY();
+                const double height = viewport_.getSize().y;
 
-                center_x += height / static_cast<double>(paxg::Window::height()) *
+                Vector2<double> center = viewport_.getCenter();
+
+                center.x += height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(event.prev_pos.x - event.pos.x);
-                center_y += height / static_cast<double>(paxg::Window::height()) *
+                center.y += height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(event.pos.y - event.prev_pos.y);
 
                 // 経度の範囲調整
-                if (center_x < MapViewportConstants::longitude_min) {
-                    center_x += MapViewportConstants::longitude_range;
+                if (center.x < MapViewportConstants::longitude_min) {
+                    center.x += MapViewportConstants::longitude_range;
                 }
-                if (center_x >= MapViewportConstants::longitude_max) {
-                    center_x -= MapViewportConstants::longitude_range;
+                if (center.x >= MapViewportConstants::longitude_max) {
+                    center.x -= MapViewportConstants::longitude_range;
                 }
-                if (center_y < MapViewportConstants::longitude_min) {
-                    center_y -= MapViewportConstants::longitude_max;
+                if (center.y < MapViewportConstants::longitude_min) {
+                    center.y -= MapViewportConstants::longitude_max;
                 }
-                if (center_y > MapViewportConstants::longitude_max) {
-                    center_y += MapViewportConstants::longitude_max;
+                if (center.y > MapViewportConstants::longitude_max) {
+                    center.y += MapViewportConstants::longitude_max;
                 }
 
                 // X座標とY座標を同時に設定
-                viewport_.setCenter(center_x, center_y);
+                viewport_.setCenter(center);
             }
 #endif
         }
@@ -108,7 +163,7 @@ namespace paxs {
         /// @brief タッチ入力による移動・ズーム処理（Android）
         /// @brief Handle movement and zoom by touch input (Android)
         void handleTouchInput() {
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             old_touch_num = touch_num;
             old_pos = pos;
 
@@ -125,31 +180,30 @@ namespace paxs {
 
             // 1本指タッチ：移動
             if (old_touch_num == 1 && touch_num == 1) {
-                const double height = viewport.getHeight();
-                double center_x = viewport.getCenterX();
-                double center_y = viewport.getCenterY();
+                const double height = viewport_.getHeight();
+                Vector2<double> center = viewport_.getCenter();
 
-                center_x += height / static_cast<double>(paxg::Window::height()) *
+                center.x += height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(old_pos[0].x - pos[0].x);
-                center_y += height / static_cast<double>(paxg::Window::height()) *
+                center.y += height / static_cast<double>(paxg::Window::height()) *
                     static_cast<double>(pos[0].y - old_pos[0].y);
 
                 // 経度の範囲調整
-                if (center_x < MapViewportConstants::longitude_min) {
-                    center_x += MapViewportConstants::longitude_range;
+                if (center.x < MapViewportConstants::longitude_min) {
+                    center.x += MapViewportConstants::longitude_range;
                 }
-                if (center_x >= MapViewportConstants::longitude_max) {
-                    center_x -= MapViewportConstants::longitude_range;
+                if (center.x >= MapViewportConstants::longitude_max) {
+                    center.x -= MapViewportConstants::longitude_range;
                 }
-                if (center_y < MapViewportConstants::longitude_min) {
-                    center_y -= MapViewportConstants::longitude_max;
+                if (center.y < MapViewportConstants::longitude_min) {
+                    center.y -= MapViewportConstants::longitude_max;
                 }
-                if (center_y > MapViewportConstants::longitude_max) {
-                    center_y += MapViewportConstants::longitude_max;
+                if (center.y > MapViewportConstants::longitude_max) {
+                    center.y += MapViewportConstants::longitude_max;
                 }
 
                 // X座標とY座標を同時に設定（イベント通知は1回のみ）
-                viewport.setCenter(center_x, center_y);
+                viewport_.setCenter(center);
             }
             // 2本指タッチ：ピンチズーム
             else if (old_touch_num == 2 && touch_num == 2) {
@@ -157,10 +211,10 @@ namespace paxs {
                 const int old_len = (old_pos[0].x - old_pos[1].x) * (old_pos[0].x - old_pos[1].x) + (old_pos[0].y - old_pos[1].y) * (old_pos[0].y - old_pos[1].y);
                 const int sub = std::abs(len - old_len);
 
-                double height = viewport.getHeight();
-                const double min_height = viewport.getMinHeight();
-                const double max_height = viewport.getMaxHeight();
-                const double expansion_size = viewport.getExpansionSize();
+                double height = viewport_.getHeight();
+                const double min_height = viewport_.getMinHeight();
+                const double max_height = viewport_.getMaxHeight();
+                const double expansion_size = viewport_.getExpansionSize();
 
                 if (len > old_len) {
                     // ズームイン
@@ -181,8 +235,8 @@ namespace paxs {
                     }
                 }
 
-                viewport_->setHeight(height);
-                viewport_->setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
+                viewport_.setHeight(height);
+                viewport_.setWidth(height / double(paxg::Window::height()) * double(paxg::Window::width()));
             }
 #endif
         }
@@ -241,24 +295,23 @@ namespace paxs {
                 return false;
             }
 
-            double center_x = viewport_.getCenterX();
-            double center_y = viewport_.getCenterY();
-            const double width = viewport_.getWidth();
+            Vector2<double> center = viewport_.getCenter();
+            const double width = viewport_.getSize().x;
             const double movement_size = MapViewportConstants::default_movement_size;
             bool changed = false;
 
             // X軸の移動（左右が同時押しでない場合のみ）
             if (!horizontal_cancel) {
                 if (move_left) {
-                    center_x -= (width / movement_size);
-                    if (center_x < MapViewportConstants::longitude_min) {
-                        center_x += MapViewportConstants::longitude_range;
+                    center.x -= (width / movement_size);
+                    if (center.x < MapViewportConstants::longitude_min) {
+                        center.x += MapViewportConstants::longitude_range;
                     }
                     changed = true;
                 } else {
-                    center_x += (width / movement_size);
-                    if (center_x >= MapViewportConstants::longitude_max) {
-                        center_x -= MapViewportConstants::longitude_range;
+                    center.x += (width / movement_size);
+                    if (center.x >= MapViewportConstants::longitude_max) {
+                        center.x -= MapViewportConstants::longitude_range;
                     }
                     changed = true;
                 }
@@ -267,15 +320,15 @@ namespace paxs {
             // Y軸の移動（上下が同時押しでない場合のみ）
             if (!vertical_cancel) {
                 if (move_down) {
-                    center_y -= (width / movement_size);
-                    if (center_y < MapViewportConstants::longitude_min) {
-                        center_y += MapViewportConstants::longitude_range;
+                    center.y -= (width / movement_size);
+                    if (center.y < MapViewportConstants::longitude_min) {
+                        center.y += MapViewportConstants::longitude_range;
                     }
                     changed = true;
                 } else {
-                    center_y += (width / movement_size);
-                    if (center_y >= MapViewportConstants::longitude_max) {
-                        center_y -= MapViewportConstants::longitude_range;
+                    center.y += (width / movement_size);
+                    if (center.y >= MapViewportConstants::longitude_max) {
+                        center.y -= MapViewportConstants::longitude_range;
                     }
                     changed = true;
                 }
@@ -283,7 +336,7 @@ namespace paxs {
 
             // 座標が変更された場合はビューポートに設定
             if (changed) {
-                viewport_.setCenter(center_x, center_y);
+                viewport_.setCenter(center);
             }
 
             return changed;
@@ -291,17 +344,20 @@ namespace paxs {
 
     public:
         MapViewportInputHandler(MapViewport& viewport)
-            : viewport_(viewport),
-              enl_keys{paxg::Key(paxg::PAXG_KEY_Q)}, esc_keys{paxg::Key(paxg::PAXG_KEY_E)},
+            : enl_keys{paxg::Key(paxg::PAXG_KEY_Q)},
+              esc_keys{paxg::Key(paxg::PAXG_KEY_E)},
               move_left_keys{paxg::Key(paxg::PAXG_KEY_A), paxg::Key(paxg::PAXG_KEY_LEFT)},
               move_right_keys{paxg::Key(paxg::PAXG_KEY_D), paxg::Key(paxg::PAXG_KEY_RIGHT)},
               move_up_keys{paxg::Key(paxg::PAXG_KEY_W), paxg::Key(paxg::PAXG_KEY_UP)},
               move_down_keys{paxg::Key(paxg::PAXG_KEY_S), paxg::Key(paxg::PAXG_KEY_DOWN)}
-#ifdef __ANDROID__
-            , touch_num(0), old_touch_num(0)
-            , pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
-            , old_pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
+#ifdef PAXS_PLATFORM_ANDROID
+              , touch_num(0), old_touch_num(0)
+              , pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
+              , old_pos{paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}, paxs::Vector2<int>{0,0}}
 #endif
+              , viewport_(viewport)
+              , is_dragging_(false)
+              , drag_event_fired_(false)
         {}
 
         /// @brief キーボードイベント処理
@@ -355,6 +411,12 @@ namespace paxs {
             }
             // ドラッグ中（Held状態）：ドラッグフラグONの時にドラッグ処理
             else if (event.left_button_state == MouseButtonState::Held && is_dragging_) {
+                // 実際にマウスが動いた時のみイベントを発行（初回のみ）
+                if (!drag_event_fired_ && (event.pos.x != event.prev_pos.x || event.pos.y != event.prev_pos.y)) {
+                    drag_event_fired_ = true;
+                    EventBus::getInstance().publish(MapViewportDragStartedEvent());
+                }
+
                 handleMouseDrag(event);
                 viewport_.applyConstraints();
                 viewport_.notifyViewportChanged();
@@ -366,6 +428,7 @@ namespace paxs {
                 if (is_dragging_) {
                     // ドラッグフラグON + Up時：フラグを外して処理完了（UIには渡さない）
                     is_dragging_ = false;
+                    drag_event_fired_ = false;  // イベント発行フラグもリセット
                     return EventHandlingResult::Handled();
                 }
                 // ドラッグフラグOFFの場合は NotHandled でUIに処理させる
@@ -378,7 +441,7 @@ namespace paxs {
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
-        bool isHit(const paxs::Vector2<int>& pos) const override {
+        bool isHit(const paxs::Vector2<int>&) const override {
             // 画面全体が対象なので常にtrue
             return true;
         }

@@ -14,11 +14,11 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationState.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
-#include <utility>
 
 namespace paxs {
 
@@ -30,21 +30,38 @@ struct WindowResizedEvent : Event {
         : new_size(size) {}
 };
 
-/// @brief 言語設定変更イベント（通知用）
-struct LanguageChangedEvent : Event {
-    const std::uint_least8_t new_language;
+/// @brief UIレイアウト変更イベント
+/// @brief UI layout changed event (triggered after layout recalculation)
+struct UILayoutChangedEvent : Event {
+    UILayoutChangedEvent() = default;
+};
 
-    explicit LanguageChangedEvent(std::uint_least8_t language)
-        : new_language(language) {}
+/// @brief マップビューポートのドラッグ開始イベント
+/// @brief Map viewport drag started event (fired once when drag movement actually begins)
+struct MapViewportDragStartedEvent : Event {
+    MapViewportDragStartedEvent() = default;
+};
+
+/// @brief 言語設定変更イベント（通知用）
+/// @brief Language changed event (for notification)
+/// @details キーのみで言語を識別（インデックスは Pulldown 内部の実装詳細）
+/// @details Language is identified by key only (index is an implementation detail inside Pulldown)
+struct LanguageChangedEvent : Event {
+    const std::uint_least32_t language_key;
+
+    explicit LanguageChangedEvent(std::uint_least32_t key)
+        : language_key(key) {}
 };
 
 /// @brief 言語変更コマンドイベント（UI → Domain）
+/// @brief Language change command event (UI → Domain)
+/// @details キーのみで言語を識別
+/// @details Language is identified by key only
 struct LanguageChangeCommandEvent : Event {
-    const std::uint_least8_t language_index;
     const std::uint_least32_t language_key;
 
-    LanguageChangeCommandEvent(std::uint_least8_t index, std::uint_least32_t key)
-        : language_index(index), language_key(key) {}
+    explicit LanguageChangeCommandEvent(std::uint_least32_t key)
+        : language_key(key) {}
 };
 
 /// @brief 日付変更イベント
@@ -138,11 +155,20 @@ struct SimulationStepCommandEvent : Event {
         : steps(step_count) {}
 };
 
-/// @brief シミュレーション初期化コマンドイベント
+/// @brief シミュレーション初期化コマンドイベント（同期版）
 struct SimulationInitializeCommandEvent : Event {
     const std::string model_name;
 
     explicit SimulationInitializeCommandEvent(const std::string& model)
+        : model_name(model) {}
+};
+
+/// @brief シミュレーション非同期初期化コマンドイベント
+/// @brief Simulation async initialization command event
+struct SimulationInitializeAsyncCommandEvent : Event {
+    const std::string model_name;
+
+    explicit SimulationInitializeAsyncCommandEvent(const std::string& model)
         : model_name(model) {}
 };
 

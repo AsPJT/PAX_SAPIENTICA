@@ -35,20 +35,27 @@ private:
     bool tab_key_was_pressed_ = false;
     bool p_key_was_pressed_ = false;
     bool v_key_was_pressed_ = false;
+    bool m_key_was_pressed_ = false;
+#ifdef PAXS_DEVELOPMENT
     bool enter_key_was_pressed_ = false;
     bool backspace_key_was_pressed_ = false;
     bool up_key_was_pressed_ = false;
     bool down_key_was_pressed_ = false;
     bool left_key_was_pressed_ = false;
     bool right_key_was_pressed_ = false;
+#endif
     int test_notification_counter_ = 0;
 
+#ifdef PAXS_DEVELOPMENT
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
     // 文字入力用のキー状態（簡易実装）
     std::map<int, bool> key_states_;
+#endif
+#endif
 
     // テスト用変数
     int test_int_value_ = 42;
-    double test_float_value_ = 3.14159;
+    double test_float_value_ = 3.1;
     bool test_bool_value_ = true;
     std::string test_string_value_ = "Debug Test";
 
@@ -104,6 +111,17 @@ public:
                 debug_layer_->toggleVariableWatcher();
             }
             v_key_was_pressed_ = v_key_is_pressed;
+        }
+
+        // M key: パフォーマンスモニターのモード切り替え（モニター表示中のみ）
+        {
+            bool m_key_is_pressed = paxg::Key(paxg::PAXG_KEY_M).isPressed();
+            if (m_key_is_pressed && !m_key_was_pressed_ &&
+                !debug_layer_->getConsole().isVisible() &&
+                debug_layer_->getPerformanceMonitor().isVisible()) {
+                debug_layer_->getPerformanceMonitor().toggleDisplayMode();
+            }
+            m_key_was_pressed_ = m_key_is_pressed;
         }
 
 #ifdef PAXS_DEVELOPMENT
@@ -163,8 +181,10 @@ public:
                 right_key_was_pressed_ = right_pressed;
             }
 
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
             // 英数字と記号の入力（簡易実装）
             handleTextInput();
+#endif
 
             return EventHandlingResult::Handled();
         }
@@ -175,6 +195,7 @@ public:
 
 private:
 #ifdef PAXS_DEVELOPMENT
+#if defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
     /// @brief テキスト入力を処理（英数字と記号）
     void handleTextInput() {
         // アルファベット（小文字）
@@ -238,6 +259,7 @@ private:
             key_states_[key_code] = is_pressed;
         }
     }
+#endif // defined(PAXS_USING_SIV3D) || defined(PAXS_USING_DXLIB) || defined(PAXS_USING_SFML)
 #endif // PAXS_DEVELOPMENT
 
 public:

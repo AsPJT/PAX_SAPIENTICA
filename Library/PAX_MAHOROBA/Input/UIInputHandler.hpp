@@ -16,7 +16,6 @@
 #include <vector>
 
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 namespace paxs {

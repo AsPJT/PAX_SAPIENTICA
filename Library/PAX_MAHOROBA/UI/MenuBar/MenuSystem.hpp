@@ -14,14 +14,14 @@
 
 #include <vector>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/DropDownMenu.hpp>
 
 #include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
 
 namespace paxs {
     /// @brief DropDownMenu（固定ヘッダー型）を複数持つ
-    class MenuSystem : public IWidget {
+    class MenuSystem : public InteractiveUIComponent {
     private:
         // メニューバーに付属するメニュー項目が左から順番に格納されている
         std::vector<paxs::DropDownMenu> menu_list;
@@ -31,15 +31,15 @@ namespace paxs {
         // 各メニュー項目に紐づけられた Key 値
         paxs::UnorderedMap<paxs::MenuBarType, std::size_t> menu_list_key;
 
-        std::size_t start_x = 0;
+        int start_x = 0;
 
     void layout() {
         float x = 0.f;
         float h = 0.f;
 
         for (paxs::DropDownMenu& menu : menu_list) {
-            const float w = menu.getRect().width();
-            const float item_h = menu.getRect().height();
+            const float w = static_cast<float>(menu.getRect().width());
+            const float item_h = static_cast<float>(menu.getRect().height());
 
             menu.setRectX(x);
 
@@ -66,14 +66,14 @@ namespace paxs {
             const paxs::MenuBarType menu_type_) {
 
             if (menu_list.size() != 0) {
-                start_x += static_cast<std::size_t>(menu_list.back().getRect().width());
+                start_x += menu_list.back().getRect().width();
             }
             menu_list_key.emplace(menu_type_, menu_list.size());
             menu_list.emplace_back(paxs::DropDownMenu(
                 items_key_,
                 font_size_,
                 font_buffer_thickness_size_,
-                paxg::Vec2i{ static_cast<int>(start_x), 0 }));
+                paxg::Vec2i{ start_x, 0 }));
 
             layout();
         }

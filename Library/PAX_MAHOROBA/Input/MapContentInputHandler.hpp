@@ -16,11 +16,12 @@
 #include <vector>
 
 #include <PAX_MAHOROBA/Events/FeatureEvents.hpp>
-#include <PAX_MAHOROBA/Input/InputEvents.hpp>
 #include <PAX_MAHOROBA/Input/IInputHandler.hpp>
-#include <PAX_MAHOROBA/Map/Location/ClickContext.hpp>
-#include <PAX_MAHOROBA/Map/Location/MapContentHitTester.hpp>
-#include <PAX_MAHOROBA/Map/Location/MapFeature.hpp>
+#include <PAX_MAHOROBA/Input/InputEvents.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
+#include <PAX_MAHOROBA/Map/Content/Interaction/ClickContext.hpp>
+#include <PAX_MAHOROBA/Map/Content/Interaction/MapContentHitTester.hpp>
+#include <PAX_MAHOROBA/Map/Content/Update/UpdateContext.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
 
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
@@ -34,15 +35,15 @@ namespace paxs {
     class MapContentInputHandler : public IInputHandler {
     public:
         /// @param features 地物のリスト / List of features
-        /// @param render_context 描画コンテキスト / Render context
+        /// @param unified_context 統合コンテキスト / Unified context
         /// @param visibility_manager 可視性マネージャー / Visibility manager
         MapContentInputHandler(
             const std::vector<std::unique_ptr<MapFeature>>& features,
-            const RenderContext& render_context,
+            const UnifiedContext& unified_context,
             const FeatureVisibilityManager& visibility_manager
         )
             : features_(features)
-            , render_context_(render_context)
+            , unified_context_(unified_context)
             , visibility_manager_(visibility_manager)
         {
         }
@@ -58,14 +59,6 @@ namespace paxs {
                 return EventHandlingResult::NotHandled();
             }
 
-            // キャッシュが有効かチェック
-            if (!hit_cache_.valid || hit_cache_.cached_pos != event.pos) {
-                // isHit() が先に呼ばれているはずだが、念のため再チェック
-                if (!isHit(event.pos)) {
-                    return EventHandlingResult::NotHandled();
-                }
-            }
-
             // キャッシュされたFeatureに対してonClickを呼び出し
             if (hit_cache_.hit_feature != nullptr) {
                 ClickContext context;
@@ -75,9 +68,9 @@ namespace paxs {
 
                 // EventBus経由でFeatureSelectedEventを発行
                 EventBus::getInstance().publish(FeatureSelectedEvent(hit_cache_.hit_feature));
-                return EventHandlingResult::Handled();
             }
 
+            // 地図のドラッグ処理を妨げないようにNotHandledを返す
             return EventHandlingResult::NotHandled();
         }
 
@@ -94,13 +87,26 @@ namespace paxs {
             if (!hit_cache_.valid) {
                 hit_cache_.cached_pos = pos;
 
-                // 新システム: MapContentHitTesterを使用してヒットテスト
-                MapFeature* hit_feature = MapContentHitTester::findFeatureAt(features_, render_context_, pos.x, pos.y);
+                // 逆順で検索（後に描画されたものが優先）
+                for (auto it = features_.rbegin(); it != features_.rend(); ++it) {
+                    const auto& feature = *it;
+                    if (!feature) continue;
 
-                if (hit_feature != nullptr) {
-                    hit_cache_.hit_feature = hit_feature;
-                    hit_cache_.valid = true;
-                    return true;
+                    if (!feature->isVisible()) {
+                        continue;
+                    }
+
+                    // 時間フィルタリング：現在の時刻に表示されないFeatureはクリック不可
+                    if (!feature->isInTimeRange(unified_context_.jdn)) {
+                        continue;
+                    }
+
+                    // Featureのヒット判定メソッドを呼び出し
+                    if (feature->isHit(pos)) {
+                        hit_cache_.hit_feature = feature.get();
+                        hit_cache_.valid = true;
+                        return true;
+                    }
                 }
 
                 // ヒットなし
@@ -117,7 +123,7 @@ namespace paxs {
 
     private:
         const std::vector<std::unique_ptr<MapFeature>>& features_;
-        const RenderContext& render_context_;
+        const UnifiedContext& unified_context_;
         const FeatureVisibilityManager& visibility_manager_;
 
         /// @brief ヒットテスト結果のキャッシュ
@@ -129,36 +135,6 @@ namespace paxs {
         };
         mutable HitCache hit_cache_;
     };
-
-    // ========================================
-    // MapContentHitTester::findFeatureAt の実装
-    // ========================================
-
-    /// @brief Featureリストからマウス座標でヒットしたFeatureを検索
-    inline MapFeature* MapContentHitTester::findFeatureAt(
-        const std::vector<std::unique_ptr<MapFeature>>& features,
-        const RenderContext& context,
-        int mouse_x,
-        int mouse_y
-    ) {
-        // 逆順で検索（後に描画されたものが優先）
-        for (auto it = features.rbegin(); it != features.rend(); ++it) {
-            const auto& feature = *it;
-            if (!feature || !feature->isVisible()) continue;
-
-            // 時間フィルタリング：現在の時刻に表示されないFeatureはクリック不可
-            if (!feature->isInTimeRange(context.jdn)) continue;
-
-            // 描画されていないFeatureはクリック不可（空間・ズームレベルフィルタリング済み）
-            if (feature->getScreenPositions().empty()) continue;
-
-            // Featureのヒット判定メソッドを呼び出し
-            if (feature->isHit(paxs::Vector2<int>(mouse_x, mouse_y))) {
-                return feature.get();
-            }
-        }
-        return nullptr;
-    }
 
 } // namespace paxs
 

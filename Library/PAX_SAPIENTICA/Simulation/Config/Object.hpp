@@ -12,8 +12,8 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_CONFIG_OBJECT_HPP
 #define PAX_SAPIENTICA_SIMULATION_CONFIG_OBJECT_HPP
 
-#include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
 
 namespace paxs {
 
@@ -50,7 +50,7 @@ namespace paxs {
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
         /// @brief 座標をメルカトル座標で取得
         paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const noexcept {
-            return MapUtils::convertToMercatorCoordinate(start_position, position, z);
+            return MapUtils::tilePixelToAngleSpace(start_position, position, z);
         }
 
         bool operator==(const paxs::Object& a) const noexcept {

@@ -26,6 +26,8 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
+
 namespace paxg {
 
     /// @brief Compile-time calculation of triangle vertex offsets
@@ -40,12 +42,12 @@ namespace paxg {
         /// @param radius Radius of the circumscribed circle
         /// @param rotation Rotation angle in radians
         constexpr TriangleShape(const float radius_, const float rotation_)
-            : offset1_x(radius_ * constexprCos(rotation_ - 1.5707963267948966f))
-            , offset1_y(radius_ * constexprSin(rotation_ - 1.5707963267948966f))
-            , offset2_x(radius_ * constexprCos(rotation_ - 1.5707963267948966f + 2.0943951023931953f))
-            , offset2_y(radius_ * constexprSin(rotation_ - 1.5707963267948966f + 2.0943951023931953f))
-            , offset3_x(radius_ * constexprCos(rotation_ - 1.5707963267948966f + 4.1887902047863906f))
-            , offset3_y(radius_ * constexprSin(rotation_ - 1.5707963267948966f + 4.1887902047863906f))
+            : offset1_x(radius_ * constexprCos(rotation_ - paxs::Math<float>::piHalf()))
+            , offset1_y(radius_ * constexprSin(rotation_ - paxs::Math<float>::piHalf()))
+            , offset2_x(radius_ * constexprCos(rotation_ - paxs::Math<float>::piHalf() + paxs::Math<float>::pi2() / 3.0f))
+            , offset2_y(radius_ * constexprSin(rotation_ - paxs::Math<float>::piHalf() + paxs::Math<float>::pi2() / 3.0f))
+            , offset3_x(radius_ * constexprCos(rotation_ - paxs::Math<float>::piHalf() + paxs::Math<float>::pi2() * 2.0f / 3.0f))
+            , offset3_y(radius_ * constexprSin(rotation_ - paxs::Math<float>::piHalf() + paxs::Math<float>::pi2() * 2.0f / 3.0f))
             , radius(radius_)
             , rotation(rotation_)
         {}
@@ -54,8 +56,8 @@ namespace paxg {
         // Constexpr implementations of trigonometric functions (Taylor series approximation)
         static constexpr float constexprSin(float x) {
             // Normalize to [-π, π]
-            while (x > 3.14159265358979323846f) x -= 6.28318530717958647692f;
-            while (x < -3.14159265358979323846f) x += 6.28318530717958647692f;
+            while (x > paxs::Math<float>::pi()) x -= paxs::Math<float>::pi2();
+            while (x < -paxs::Math<float>::pi()) x += paxs::Math<float>::pi2();
             // Taylor series: sin(x) ≈ x - x³/3! + x⁵/5! - x⁷/7!
             const float x2 = x * x;
             return x * (1.0f - x2 / 6.0f * (1.0f - x2 / 20.0f * (1.0f - x2 / 42.0f)));
@@ -63,7 +65,7 @@ namespace paxg {
 
         static constexpr float constexprCos(float x) {
             // cos(x) = sin(x + π/2)
-            return constexprSin(x + 1.5707963267948966f);
+            return constexprSin(x + paxs::Math<float>::piHalf());
         }
     };
 
@@ -141,9 +143,9 @@ namespace paxg {
                 triangle.setPoint(2, sf::Vector2f(center_x_ + shape_->offset3_x, center_y_ + shape_->offset3_y));
             } else {
                 // Calculate vertices at runtime (for dynamic triangles)
-                const float angle1 = rotation_ - 1.5707963267948966f; // -π/2
-                const float angle2 = angle1 + 2.0943951023931953f;    // +2π/3
-                const float angle3 = angle2 + 2.0943951023931953f;    // +2π/3
+                const float angle1 = rotation_ - paxs::Math<float>::piHalf(); // -π/2
+                const float angle2 = angle1 + paxs::Math<float>::pi2() / 3.0f; // +2π/3
+                const float angle3 = angle2 + paxs::Math<float>::pi2() / 3.0f; // +2π/3
 
                 triangle.setPoint(0, sf::Vector2f(
                     center_x_ + radius_ * std::cos(angle1),
@@ -175,9 +177,9 @@ namespace paxg {
                 DxLib::DrawTriangle(x1, y1, x2, y2, x3, y3, DxLib::GetColor(color.r, color.g, color.b), TRUE);
             } else {
                 // Calculate vertices at runtime (for dynamic triangles)
-                const float angle1 = rotation_ - 1.5707963267948966f; // -π/2
-                const float angle2 = angle1 + 2.0943951023931953f;    // +2π/3
-                const float angle3 = angle2 + 2.0943951023931953f;    // +2π/3
+                const float angle1 = rotation_ - paxs::Math<float>::piHalf(); // -π/2
+                const float angle2 = angle1 + paxs::Math<float>::pi2() / 3.0f; // +2π/3
+                const float angle3 = angle2 + paxs::Math<float>::pi2() / 3.0f; // +2π/3
 
                 const int x1 = static_cast<int>(center_x_ + radius_ * std::cos(angle1));
                 const int y1 = static_cast<int>(center_y_ + radius_ * std::sin(angle1));
@@ -190,6 +192,7 @@ namespace paxg {
             }
 #else
             (void)color;
+            (void)shape_;  // Suppress unused warning for Siv3D builds
 #endif
         }
     };

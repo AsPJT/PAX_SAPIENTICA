@@ -17,9 +17,9 @@
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
@@ -120,7 +120,7 @@ namespace paxs {
 
     /// @brief 時間操作ボタン群の管理クラス
     /// @brief Time control buttons manager class
-    class TimeControlButtons : public IWidget {
+    class TimeControlButtons : public InteractiveUIComponent {
     public:
         using ClickCallback = std::function<void(TimeControlButton::Id)>;
 
@@ -135,9 +135,8 @@ namespace paxs {
         static constexpr int ICON_MOVE_Y = static_cast<int>(TIME_ICON_SIZE * 1.1);
 
         TimeControlButtons(const UILayout& ui_layout, const AppStateManager& app_state_manager)
-            : ui_layout_(ui_layout)
-            , app_state_manager_(app_state_manager)
-            , koyomi(app_state_manager.getKoyomi()) {
+            : koyomi(app_state_manager.getKoyomi())
+            , ui_layout_(ui_layout) {
             buildButtons();
         }
 
@@ -227,7 +226,6 @@ namespace paxs {
         std::vector<TimeControlButton> buttons_;
         const paxs::Koyomi& koyomi;
         const UILayout& ui_layout_;
-        const AppStateManager& app_state_manager_;
         paxs::Vector2<int> pos_{0, 0};
         ClickCallback on_click_;
 
@@ -281,11 +279,11 @@ namespace paxs {
 
             // 再生コントロール
             if (id == Id::PlaybackReverse) {
-                app_state_manager_.executeTimePlaybackControl(Action::Reverse);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(Action::Reverse));
             } else if (id == Id::PlaybackStop) {
-                app_state_manager_.executeTimePlaybackControl(Action::Stop);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(Action::Stop));
             } else if (id == Id::PlaybackForward) {
-                app_state_manager_.executeTimePlaybackControl(Action::Forward);
+                paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(Action::Forward));
             } else {
                 // 日付移動系
                 constexpr double day   = 1.0;
@@ -300,7 +298,7 @@ namespace paxs {
 
                 const int index = static_cast<int>(id) - static_cast<int>(Id::DayBackward);
                 if (index >= 0 && index < 14) {
-                    app_state_manager_.executeDateNavigation(days_map[index]);
+                    paxs::EventBus::getInstance().publish(DateNavigationEvent(days_map[index]));
                 }
             }
         }

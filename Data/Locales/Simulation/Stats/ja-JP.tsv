@@ -1,0 +1,10 @@
+key	value
+label_population	人口
+label_settlements	集落
+label_migration	渡来
+display_mode_population	1. 人口
+display_mode_farming	2. 農耕文化
+display_mode_mtdna	3. mtDNAハプログループ
+display_mode_snp	4. SNP / ゲノム
+display_mode_language	5. 言語
+display_mode_bronze	6. 青銅

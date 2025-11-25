@@ -17,10 +17,11 @@
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
 #include <PAX_MAHOROBA/Input/MapContentInputHandler.hpp>
 #include <PAX_MAHOROBA/Input/Photo360InputHandler.hpp>
-#include <PAX_MAHOROBA/Map/MapContentLayer.hpp>
+#include <PAX_MAHOROBA/Map/Content/MapContentLayer.hpp>
 #include <PAX_MAHOROBA/Map/Tile/MapTileLayer.hpp>
 #include <PAX_MAHOROBA/Rendering/Photo360Layer.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayerManager.hpp>
+#include <PAX_MAHOROBA/UI/LoadingProgressBar.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuBar.hpp>
 #include <PAX_MAHOROBA/UI/UILayer.hpp>
 
@@ -28,7 +29,14 @@
 #include <PAX_MAHOROBA/UI/Debug/DebugLayer.hpp>
 #endif
 
+#ifdef PAXS_USING_SIMULATOR
+#include <PAX_MAHOROBA/Input/SettlementInputHandler.hpp>
+#endif
+
 namespace paxs {
+
+    // Forward declaration (for non-simulator builds)
+    class SettlementInputHandler;
 
     /// @brief アプリケーションコンポーネント統合管理クラス
     /// @brief Application component integrated management class
@@ -45,6 +53,10 @@ namespace paxs {
         UILayer ui_layer_;
         MenuBar menu_bar_;
 
+#ifdef PAXS_USING_SIMULATOR
+        LoadingProgressBar<bool> loading_progress_bar_;  ///< ロード進捗バー / Loading progress bar
+#endif
+
 #ifdef PAXS_DEVELOPMENT
         DebugLayer debug_layer_;
 #endif
@@ -52,17 +64,28 @@ namespace paxs {
     public:
         AppComponentManager(AppStateManager& app_state)
             : app_state_(app_state)
+            , render_layer_manager_()
             , map_tile_layer_(app_state)
             , map_content_layer_(app_state)
+            , map_content_input_handler_(
+                map_content_layer_.getFeatures(),
+                map_content_layer_.getUnifiedContext(),
+                app_state.getVisibilityManager()
+            )
             , photo360_layer_(app_state.getVisibilityManager())
             , photo360_input_handler_(photo360_layer_)
             , ui_layer_(app_state)
             , menu_bar_(app_state_.getVisibilityManager())
-            , map_content_input_handler_(
-                map_content_layer_.getFeatures(),
-                map_content_layer_.getRenderContext(),
-                app_state.getVisibilityManager()
+#ifdef PAXS_USING_SIMULATOR
+            , loading_progress_bar_(
+                &app_state.getLoadingHandle(),
+                paxg::Window::width() / 2 - 200,
+                paxg::Window::height() / 2 - 15,
+                400,
+                30,
+                Fonts().getFont(FontProfiles::UI_MEDIUM)
             )
+#endif
 #ifdef PAXS_DEVELOPMENT
             , debug_layer_()
 #endif
@@ -101,6 +124,21 @@ namespace paxs {
             }
         }
 
+#ifdef PAXS_USING_SIMULATOR
+        /// @brief ロード中モードでの描画（タイル・メニューバー・進捗バーのみ）
+        /// @brief Render in loading mode (tiles, menubar, and progress bar only)
+        void renderLoadingMode() {
+            // タイルレイヤーを描画
+            map_tile_layer_.render();
+
+            // メニューバーを描画
+            menu_bar_.render();
+
+            // ロード進捗バーを描画
+            loading_progress_bar_.render();
+        }
+#endif
+
         /// @brief 入力ハンドラーにウィジェットを登録
         /// @brief Register widgets to input handlers
         /// @param ui_input_handler UI入力ハンドラー / UI input handler
@@ -119,8 +157,13 @@ namespace paxs {
             // 統合入力ルーターに登録（レイヤーベース優先度制御）
             input_router.registerHandler(&photo360_input_handler_);
             input_router.registerHandler(&map_content_input_handler_);
+
+            // Settlement入力ハンドラーを登録（シミュレーション有効時のみ）
 #ifdef PAXS_USING_SIMULATOR
-            input_router.registerHandler(&map_content_layer_.getSettlementInputHandler());
+            SettlementInputHandler* settlement_handler = map_content_layer_.getSettlementInputHandler();
+            if (settlement_handler != nullptr) {
+                input_router.registerHandler(settlement_handler);
+            }
 #endif
         }
 

@@ -4,48 +4,50 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_testing()
 
+set(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+
+# Include helper functions for graphics libraries
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/GraphicsLibraryHelpers.cmake)
+
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Library
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../ExternalLibrary/googletest/googletest/include
+    ${PROJECT_ROOT_DIR}/Library
+    ${PROJECT_ROOT_DIR}/ExternalLibrary/googletest/googletest/include
 )
 
+# Generate Config.tsv with relative path to project root
+paxs_generate_config_tsv()
+
 add_executable(EnvironmentTest Source/EnvironmentTest.cpp)
-add_executable(WindowTest Source/WindowTest.cpp)
 
+# WindowTest for each graphics library
 if(SFML_FOUND)
-    target_compile_definitions(WindowTest PRIVATE PAXS_USING_SFML)
-
     add_executable(SFMLTest Source/SFMLTest.cpp)
-    if(WIN32 OR APPLE)
-        target_link_libraries(SFMLTest PRIVATE SFML::Graphics)
-        target_link_libraries(WindowTest PRIVATE SFML::Graphics)
-    elseif(UNIX)
-        target_link_libraries(SFMLTest PRIVATE sfml-graphics)
-        target_link_libraries(WindowTest PRIVATE sfml-graphics)
-    endif()
+    paxs_setup_sfml(SFMLTest)
 
-    if(WIN32)
-        set(SFML_DLLS
-            "${SFML_ROOT_DIR}/bin/sfml-graphics-d-3.dll"
-            "${SFML_ROOT_DIR}/bin/sfml-window-d-3.dll"
-            "${SFML_ROOT_DIR}/bin/sfml-system-d-3.dll"
-        )
-        add_custom_command(
-            TARGET SFMLTest POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DLLS}  $<TARGET_FILE_DIR:SFMLTest>
-        )
-        add_custom_command(
-            TARGET WindowTest POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SFML_DLLS} $<TARGET_FILE_DIR:WindowTest>
-        )
-    endif()
+    add_executable(SFMLWindowTest Source/WindowTest.cpp)
+    paxs_setup_sfml(SFMLWindowTest DEFINE_MACRO)
+    paxs_copy_generated_config_tsv(SFMLWindowTest)
+endif()
+
+if(WIN32 AND DxLib_FOUND)
+    add_executable(DxLibWindowTest Source/WindowTest.cpp)
+    paxs_setup_dxlib(DxLibWindowTest DEFINE_MACRO)
+    paxs_copy_generated_config_tsv(DxLibWindowTest)
+endif()
+
+if(WIN32 AND Siv3D_FOUND)
+    add_executable(Siv3DWindowTest Source/WindowTest.cpp)
+    paxs_setup_siv3d(Siv3DWindowTest DEFINE_MACRO)
+    paxs_copy_generated_config_tsv(Siv3DWindowTest)
 endif()
 
 add_executable(SimulatorTest Source/SimulatorTest.cpp)
 target_compile_definitions(SimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
+paxs_copy_generated_config_tsv(SimulatorTest)
 
 add_executable(SettlementSimulatorTest Source/SettlementSimulatorTest.cpp)
 target_compile_definitions(SettlementSimulatorTest PRIVATE PAX_SAPIENTICA_DEBUG)
+paxs_copy_generated_config_tsv(SettlementSimulatorTest)
 
 add_executable(AppStateManagerTest AppStateManagerTest.cpp)
 target_link_libraries(AppStateManagerTest PRIVATE gtest_main)
@@ -59,7 +61,3 @@ add_test(
 )
 set_tests_properties(UIComponentsEventDrivenTest PROPERTIES LABELS "Integration")
 
-add_custom_target(CopyTSV ALL
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/Data/Config.tsv" ${CMAKE_CURRENT_BINARY_DIR}
-)
-add_dependencies(SettlementSimulatorTest CopyTSV)

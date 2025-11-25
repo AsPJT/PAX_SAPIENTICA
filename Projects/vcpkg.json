@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "pax-sapientica",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "name": "sfml",
+      "version>=": "3.0.0"
+    },
+    "curl"
+  ],
+  "builtin-baseline": "75cdbf55732bc8f36e8286d0254feb8083a6dd2a"
+}

@@ -9,12 +9,11 @@
 
 ##########################################################################################*/
 
+#include <gtest/gtest.h>
 #include <memory>
 
-#include <gtest/gtest.h>
-
-#include <PAX_SAPIENTICA/Simulation/Entity/Agent.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/Simulation/Entity/Agent.hpp>
 
 using Vector2 = paxs::Vector2<paxs::GridType>;
 

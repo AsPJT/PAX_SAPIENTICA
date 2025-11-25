@@ -17,19 +17,24 @@
 #include <variant>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Core/Utility/StringUtils.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
+#include <PAX_SAPIENTICA/Interface/IProgressReporter.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/Data.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
-#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
     /// @brief A class that manages data required for simulation.
     /// @brief シミュレーションに必要なデータを管理するクラス
     class Environment {
+    private:
+        /// @brief 進捗報告インターフェース
+        /// @brief Progress reporter interface
+        IProgressReporter* progress_reporter_ = nullptr;
+
     public:
         using Vector2 = paxs::Vector2<GridType>;
 
@@ -41,8 +46,29 @@ namespace paxs {
 
         explicit Environment() noexcept = default;
         explicit Environment(const std::string& setting_file_path) noexcept {
-            std::vector<std::vector<std::string>> settings;
+            loadFromFile(setting_file_path);
+        }
+        virtual ~Environment() = default;
 
+        // コピー禁止（unique_ptrを含むため）
+        Environment(const Environment&) = delete;
+        Environment& operator=(const Environment&) = delete;
+
+        // ムーブは許可
+        Environment(Environment&&) noexcept = default;
+        Environment& operator=(Environment&&) noexcept = default;
+
+        /// @brief 進捗報告インターフェースを設定
+        /// @brief Set progress reporter
+        void setProgressReporter(IProgressReporter* reporter) {
+            progress_reporter_ = reporter;
+        }
+
+        /// @brief ファイルからデータを読み込む
+        /// @brief Load data from file
+        /// @param setting_file_path 設定ファイルパス / Setting file path
+        void loadFromFile(const std::string& setting_file_path) noexcept {
+            std::vector<std::vector<std::string>> settings;
             settings = FileSystem::readTSV(setting_file_path);
 
             if (settings.empty()) {
@@ -80,17 +106,18 @@ namespace paxs {
                 const std::uint_least32_t key = MurMur3::calcHash(settings[i][key_column].size(), settings[i][key_column].c_str());
                 const std::string& key_str = settings[i][key_column];
                 const int z_value = StringUtils::safeStoi(settings[i][z_column], 0, true);
+
                 if (data_type == MurMur3::calcHash("u8")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t>(settings[i][file_path_column], key_str, z_value)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least8_t>(settings[i][file_path_column], key_str, z_value, progress_reporter_)));
                 }
                 else if (data_type == MurMur3::calcHash("u32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t>(settings[i][file_path_column], key_str, z_value)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::uint_least32_t>(settings[i][file_path_column], key_str, z_value, progress_reporter_)));
                 }
                 else if (data_type == MurMur3::calcHash("f32")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float>(settings[i][file_path_column], key_str, z_value)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<float>(settings[i][file_path_column], key_str, z_value, progress_reporter_)));
                 }
                 else if (data_type == MurMur3::calcHash("s16")) {
-                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t>(settings[i][file_path_column], key_str, z_value)));
+                    data_map.emplace(key, std::make_unique<DataVariant>(Data<std::int_least16_t>(settings[i][file_path_column], key_str, z_value, progress_reporter_)));
                 }
                 else {
                     PAXS_WARNING("data_type is not found in " + setting_file_path);
@@ -115,7 +142,7 @@ namespace paxs {
         /// @brief Get the land position list.
         /// @brief 陸の位置リストの取得
         void getLandPositions(std::vector<DataGridsType>& keys) const {
-            std::get<Data<std::uint_least8_t>>(*data_map.at(SimulationConstants::getInstance().land_key)).getKeys(keys);
+            std::get<Data<std::uint_least8_t>>(*data_map.at(SimulationConstants::getInstance().land_key)).appendKeys(keys);
         }
 
         /// @brief Is it possible to live?

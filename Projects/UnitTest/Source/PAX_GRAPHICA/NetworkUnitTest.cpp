@@ -9,9 +9,10 @@
 
 ##########################################################################################*/
 
-#include <gtest/gtest.h>
-#include <PAX_GRAPHICA/Network.hpp>
 #include <filesystem>
+#include <gtest/gtest.h>
+
+#include <PAX_GRAPHICA/Network.hpp>
 
 // downloadFile のテスト（実際にダウンロードするわけにはいかないので、単に呼び出せることを確認）
 TEST(NetworkTest, DownloadFileDoesNotCrash) {
