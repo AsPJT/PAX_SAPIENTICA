@@ -12,7 +12,6 @@
 #ifndef PAX_MAHOROBA_MAP_VIEWPORT_HPP
 #define PAX_MAHOROBA_MAP_VIEWPORT_HPP
 
-#include <PAX_GRAPHICA/Key.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
@@ -56,9 +55,7 @@ namespace paxs {
     class MapViewport {
     private:
         // 中央の座標を指定
-        paxg::Coordinate center = paxg::Coordinate(
-            paxs::WebMercatorDeg(paxs::EPSG4326_WGS84Deg(paxs::Vector2<double>(145, 48))) // 韓国 128, 37 // 日本 135, 35 // 北海道 // 東アジア 127, 31, 75.0 // 全世界 100, 0
-        ); // マップ座標の中央
+        paxs::WebMercatorDeg center = paxs::WebMercatorDeg(paxs::EPSG4326_WGS84Deg(paxs::Vector2<double>(145, 48))); // マップ座標の中央
         double height = MapViewportConstants::default_height; // 各国 16.0; // 全世界 240.0 // マップの高さ
 
         // マップの最大高さ
@@ -97,7 +94,7 @@ namespace paxs {
         void notifyViewportChanged() {
             const int zoom_level = static_cast<int>(std::log2(MapViewportConstants::longitude_range / height));
             paxs::EventBus::getInstance().publish(ViewportChangedEvent(
-                center.getVector2(), zoom_level));
+                center, zoom_level));
         }
 
         /// @brief ビューポートの境界制約を適用（Domain層の責任）
@@ -111,7 +108,7 @@ namespace paxs {
             width = height / double(paxg::Window::height()) * double(paxg::Window::width());
 
             // 境界制約適用前の座標を保存
-            const Vector2<double> old_center = center.getVector2();
+            const Vector2<double> old_center = center;
 
 #ifdef PAXS_MAHOROBA
             constexpr double west_max = (208.0 / MapViewportConstants::tile_size) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
@@ -139,17 +136,16 @@ namespace paxs {
             constexpr double south_max = (1.0 - (MapViewportConstants::tile_size / MapViewportConstants::tile_size)) * MapViewportConstants::longitude_range - MapViewportConstants::longitude_max;
 
             // Y座標の位置調整のみ（PAXS_MAHOROBA以外）
-            if (center.getY() + height / 2 > north_max) {
-                center.setY(north_max - height / 2);
+            if (center.y + height / 2 > north_max) {
+                center.y = north_max - height / 2;
             }
-            if (center.getY() - height / 2 < south_max) {
-                center.setY(south_max + height / 2);
+            if (center.y - height / 2 < south_max) {
+                center.y = south_max + height / 2;
             }
 #endif
 
             // 座標が変更されたかチェック
-            const Vector2<double> new_center = center.getVector2();
-            if (isDifferent(new_center.x, old_center.x) || isDifferent(new_center.y, old_center.y)) {
+            if (isDifferent(center.x, old_center.x) || isDifferent(center.y, old_center.y)) {
                 changed = true;
             }
 
@@ -162,17 +158,13 @@ namespace paxs {
             }
         }
         void setCenter(Vector2<double> position) {
-            const Vector2<double> current_center = center.getVector2();
-            if (isDifferent(current_center.x, position.x) || isDifferent(current_center.y, position.y)) {
-                center.set(position);
+            if (isDifferent(center.x, position.x) || isDifferent(center.y, position.y)) {
+                center = paxs::WebMercatorDeg(position);
             }
         }
 
-        paxg::Coordinate& getCoordinate() {
-            return center;
-        }
         Vector2<double> getCenter() const {
-            return center.getVector2();
+            return center;
         }
         Vector2<double> getSize() const {
             return Vector2<double>(width, height);
