@@ -17,6 +17,7 @@
 #include <string>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Core/Calendar/Calendar.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
@@ -25,16 +26,6 @@
 #include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
-
-    // 内部実装用の名前空間
-    namespace location_data_loader_detail {
-        // 日付計算用の定数（Repository用の簡易版）
-        // Note: LocationPoint.hppには365.2425と1721060.0が定義されているが、
-        // 既存のRepository実装との互換性のため、ここでは整数値を使用
-        // TODO: 確認
-        constexpr int days_in_a_year = 365;
-        constexpr int julian_day_on_m1_1_1 = 1721058;
-    }
 
     /// @brief TSVカラムのハッシュ値を事前計算して保持する構造体
     /// @brief Struct to hold pre-computed hash values for TSV columns
@@ -175,9 +166,12 @@ namespace paxs {
 
             // 年が指定されている場合
             if (!year_str.empty()) {
+                const double days_in_a_year = Calendar<double>::daysInYearGregorian();
+                const double julian_day_on_m1_1_1 = Calendar<double>::jdOfGregorianYear1Start();
+
                 auto year_opt = StringUtils::toDouble(year_str);
                 if (year_opt) {
-                    return (*year_opt * location_data_loader_detail::days_in_a_year) + location_data_loader_detail::julian_day_on_m1_1_1;
+                    return (*year_opt * days_in_a_year) + julian_day_on_m1_1_1;
                 }
                 PAXS_WARNING("Invalid year value: \"" + year_str + "\", using default: " + std::to_string(default_value));
                 return default_value;

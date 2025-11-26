@@ -34,6 +34,14 @@ struct CalendarConstants {
     /// @brief Length of the tropical year (mean solar year), in days
     constexpr static T daysInTropicalYear() noexcept { return static_cast<T>(365.24219); }
 
+    /// @brief 平均太陽年（tropical year）の一月の長さ（日）
+    /// @brief Length of the tropical year (mean solar year), in days per month
+    constexpr static T daysInTropicalMonth() noexcept { return daysInTropicalYear() / static_cast<T>(12); }
+
+    /// @brief 平均太陽年（tropical year）の一日の長さ（日）
+    /// @brief Length of the tropical year (mean solar year), in days per day
+    constexpr static T daysInTropicalDay() noexcept { return static_cast<T>(1); }
+
     /// @brief 紀元1年1月1日 00:00 UT のユリウス日（プロレプティック・グレゴリオ暦）
     /// @brief Julian Date for 0001-01-01 00:00 UT (Proleptic Gregorian calendar)
     /// @note JD = 1721425.5 が標準的な値

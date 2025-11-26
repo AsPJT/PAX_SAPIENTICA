@@ -24,9 +24,6 @@
 
 namespace paxs {
 
-    constexpr double days_in_a_year = 365.2425;
-    constexpr double julian_day_on_m1_1_1 = 1721060.0;
-
     // 地物の位置情報
     struct LocationPoint {
         explicit LocationPoint() = default;

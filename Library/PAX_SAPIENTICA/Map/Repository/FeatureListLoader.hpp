@@ -17,6 +17,7 @@
 #include <string>
 
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Core/Calendar/Calendar.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -91,9 +92,8 @@ namespace paxs {
             const bool has_first_year = table.hasColumn(first_year_hash);
             const bool has_last_year = table.hasColumn(last_year_hash);
 
-            // 定数
-            constexpr double local_days_in_a_year = 365.24;
-            constexpr double local_julian_day_on_m1_1_1 = 1721423.5;
+            const double days_in_a_year = Calendar<double>::daysInYearGregorian();
+            const double julian_day_on_m1_1_1 = Calendar<double>::jdOfGregorianYear1Start();
 
             // 1 行ずつ読み込み
             table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
@@ -131,7 +131,7 @@ namespace paxs {
                 const int min_year = !first_jd_str.empty() ?
                     StringUtils::safeStoi(first_jd_str, -99999999, true) :
                     (!first_year_str.empty() ?
-                        static_cast<int>(StringUtils::safeStod(first_year_str, -99999999.0, true) * local_days_in_a_year + local_julian_day_on_m1_1_1) :
+                        static_cast<int>(StringUtils::safeStod(first_year_str, -99999999.0, true) * days_in_a_year + julian_day_on_m1_1_1) :
                         -99999999);
 
                 // 可視化する時代（～新しい年）
@@ -140,7 +140,7 @@ namespace paxs {
                 const int max_year = !last_jd_str.empty() ?
                     StringUtils::safeStoi(last_jd_str, 99999999, true) :
                     (!last_year_str.empty() ?
-                        static_cast<int>(StringUtils::safeStod(last_year_str, 99999999.0, true) * local_days_in_a_year + local_julian_day_on_m1_1_1) :
+                        static_cast<int>(StringUtils::safeStod(last_year_str, 99999999.0, true) * days_in_a_year + julian_day_on_m1_1_1) :
                         99999999);
 
                 // 画像
