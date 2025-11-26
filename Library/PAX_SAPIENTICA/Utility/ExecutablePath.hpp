@@ -70,7 +70,7 @@ namespace paxs {
             return "";
 
 #elif defined(PAXS_PLATFORM_LINUX)
-            // Linux (Ubuntu) implementation
+            // Linux implementation
             char exe_path[PATH_MAX];
             ssize_t len = readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);
             if (len != -1) {
@@ -136,7 +136,7 @@ namespace paxs {
             return "";
 
 #elif defined(PAXS_PLATFORM_LINUX)
-            // Linux (Ubuntu) implementation
+            // Linux implementation
             char exe_path[PATH_MAX];
             ssize_t len = readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);
             if (len != -1) {
