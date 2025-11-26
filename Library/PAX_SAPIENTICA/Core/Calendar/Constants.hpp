@@ -22,6 +22,10 @@ struct CalendarConstants {
     /// @brief Average days in a year in the Gregorian calendar (including leap years)
     constexpr static T daysInYearGregorian() noexcept { return static_cast<T>(365.2425); }
 
+    /// @brief ユリウス暦における1年の平均日数（閏年を含む）
+    /// @brief Average days in a year in the Julian calendar (including leap years)
+    constexpr static T daysInYearJulian() noexcept { return static_cast<T>(365.25); }
+
     /// @brief 一般的な1年の日数（平年の日数）
     /// @brief Common days in a year (non-leap year)
     constexpr static T daysInYearCommon() noexcept { return static_cast<T>(365); }
