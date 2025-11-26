@@ -36,6 +36,7 @@ namespace paxg {
         s3d::Spline2D spline;
 #else
         std::vector<Vec2f> points_;
+        bool is_closed_ = false;  // 閉じたループかどうか / Whether it's a closed loop
 #endif
 
         static Vec2f calculateCatmullRom(const Vec2f& p0, const Vec2f& p1, const Vec2f& p2, const Vec2f& p3, float t) {
@@ -53,10 +54,36 @@ namespace paxg {
             return Vec2f{ x, y };
         }
 
+        /// @brief 閉じたループかどうかを自動判定し、重複する最後の点を除去
+        /// @brief Automatically detect closed loop and remove duplicate last point
+        /// @return true if closed loop detected (and duplicate removed)
+        bool detectAndFixClosedLoop(std::vector<Vec2f>& points) const {
+            if (points.size() < 3) return false;
+            
+            const Vec2f& first = points.front();
+            const Vec2f& last = points.back();
+            
+            // 最初と最後の点が十分近ければ閉じたループとみなす
+            // Consider it a closed loop if first and last points are close enough
+            constexpr float threshold = 0.1f;
+            float dx = first.x() - last.x();
+            float dy = first.y() - last.y();
+            float dist_sq = dx * dx + dy * dy;
+            
+            if (dist_sq < threshold * threshold) {
+                // 閉じたループの場合、最後の重複点を除去
+                // Remove duplicate last point for closed loops
+                points.pop_back();
+                return true;
+            }
+            
+            return false;
+        }
+
     public:
         Spline2D() = default;
 
-        explicit Spline2D(const std::vector<Vec2f>& points) {
+        explicit Spline2D(const std::vector<Vec2f>& points, bool is_closed = false) {
 #ifdef PAXS_USING_SIV3D
             s3d::Array<s3d::Vec2> siv3d_points;
             for (const auto& p : points) {
@@ -65,10 +92,31 @@ namespace paxg {
             spline = s3d::Spline2D(siv3d_points);
 #else
             points_ = points;
+            // 閉じたループを自動判定し、重複する最後の点を除去
+            // Auto-detect closed loop and remove duplicate last point
+            if (!is_closed) {
+                is_closed_ = detectAndFixClosedLoop(points_);
+            } else {
+                is_closed_ = true;
+                // 明示的に閉じたループが指定された場合も重複チェック
+                // Also check for duplicates when explicitly specified as closed
+                if (points_.size() >= 2) {
+                    const Vec2f& first = points_.front();
+                    const Vec2f& last = points_.back();
+                    constexpr float threshold = 0.1f;
+                    float dx = first.x() - last.x();
+                    float dy = first.y() - last.y();
+                    float dist_sq = dx * dx + dy * dy;
+                    
+                    if (dist_sq < threshold * threshold) {
+                        points_.pop_back();
+                    }
+                }
+            }
 #endif
         }
 
-        explicit Spline2D(const std::vector<Vec2i>& points) {
+        explicit Spline2D(const std::vector<Vec2i>& points, bool is_closed = false) {
 #ifdef PAXS_USING_SIV3D
             s3d::Array<s3d::Vec2> siv3d_points;
             for (const auto& p : points) {
@@ -78,6 +126,28 @@ namespace paxg {
 #else
             for (const auto& p : points) {
                 points_.emplace_back(static_cast<float>(p.x()), static_cast<float>(p.y()));
+            }
+            
+            // 閉じたループを自動判定し、重複する最後の点を除去
+            // Auto-detect closed loop and remove duplicate last point
+            if (!is_closed) {
+                is_closed_ = detectAndFixClosedLoop(points_);
+            } else {
+                is_closed_ = true;
+                // 明示的に閉じたループが指定された場合も重複チェック
+                // Also check for duplicates when explicitly specified as closed
+                if (points_.size() >= 2) {
+                    const Vec2f& first = points_.front();
+                    const Vec2f& last = points_.back();
+                    constexpr float threshold = 0.1f;
+                    float dx = first.x() - last.x();
+                    float dy = first.y() - last.y();
+                    float dist_sq = dx * dx + dy * dy;
+                    
+                    if (dist_sq < threshold * threshold) {
+                        points_.pop_back();
+                    }
+                }
             }
 #endif
         }
@@ -89,12 +159,32 @@ namespace paxg {
             if (points_.size() < 2) return;
 
             const int divisions = 20;
+            const std::size_t point_count = points_.size();
 
-            for (std::size_t i = 0; i < points_.size() - 1; ++i) {
-                Vec2f p0 = (i == 0) ? points_[0] : points_[i - 1];
-                Vec2f p1 = points_[i];
-                Vec2f p2 = points_[i + 1];
-                Vec2f p3 = (i + 2 >= points_.size()) ? points_[i + 1] : points_[i + 2];
+            // 閉じたループの場合、最後の点から最初の点への繋ぎも描画
+            // For closed loops, also draw the connection from the last point to the first
+            const std::size_t loop_count = is_closed_ ? point_count : (point_count - 1);
+
+            for (std::size_t i = 0; i < loop_count; ++i) {
+                // 閉じたループの場合、インデックスを循環させる
+                // For closed loops, wrap indices around
+                Vec2f p0, p1, p2, p3;
+                
+                if (is_closed_) {
+                    // 閉じたループ：全ての点でモジュロ演算を使用
+                    // Closed loop: use modulo for all point indices
+                    p0 = points_[(i + point_count - 1) % point_count];
+                    p1 = points_[i];
+                    p2 = points_[(i + 1) % point_count];
+                    p3 = points_[(i + 2) % point_count];
+                } else {
+                    // 開いた曲線：既存のロジック
+                    // Open curve: existing logic
+                    p0 = (i == 0) ? points_[0] : points_[i - 1];
+                    p1 = points_[i];
+                    p2 = points_[i + 1];
+                    p3 = (i + 2 >= point_count) ? points_[i + 1] : points_[i + 2];
+                }
 
                 Vec2f current_pos = p1;
 
@@ -102,7 +192,6 @@ namespace paxg {
                     float t = static_cast<float>(j) / divisions;
                     Vec2f next_pos = calculateCatmullRom(p0, p1, p2, p3, t);
 
-                    // 修正: Lineのコンストラクタに float x, y を明示的に渡すことで曖昧さを回避
                     paxg::Line(current_pos.x(), current_pos.y(), next_pos.x(), next_pos.y()).draw(thickness, color);
 
                     current_pos = next_pos;

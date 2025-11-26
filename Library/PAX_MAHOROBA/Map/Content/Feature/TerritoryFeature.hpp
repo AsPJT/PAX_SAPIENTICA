@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_TERRITORY_FEATURE_HPP
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -38,15 +37,19 @@ namespace paxs {
 
 /// @brief 領域（国や文化圏などのスプライン曲線）を表す地物クラス
 /// @brief Feature class representing a territory (spline curves for countries, cultural areas, etc.)
-/// @details 空間の更新が必要
-class TerritoryFeature : public MapFeature, public ISpatiallyUpdatable {
+/// @details 空間・時間の更新が必要（ローカライゼーションはオプション）
+class TerritoryFeature : public MapFeature,
+                          public ISpatiallyUpdatable,
+                          public ITemporallyUpdatable {
 public:
     /// @param data 領域の位置データ / Territory location data
     /// @param group_data 領域グループデータ / Territory group data
-    TerritoryFeature(TerritoryLocationData  data, TerritoryLocationGroup  group_data)
-        : data_(std::move(data))
-        , group_data_(std::move(group_data))
+    TerritoryFeature(const TerritoryLocationData& data, const TerritoryLocationGroup& group_data)
+        : data_(data)
+        , group_data_(group_data)
+        , cached_screen_points_()
         , color_(0, 0, 0, 255)  // デフォルト色（黒） / Default color (black)
+        , visible_(true)
     {
         // 色情報からRGBAを取得（将来的にはAppConfigから色マッピングを読み込む）
         // TODO: 色情報の管理システムを実装
@@ -71,6 +74,14 @@ public:
         return data_.feature_type_hash;
     }
 
+    /// @brief 時間的更新（ITemporallyUpdatableの実装）
+    /// @brief Temporal update (ITemporallyUpdatable implementation)
+    void updateTemporal(const TemporalContext& context) override {
+        // 領域は時間変化しないため、特に処理は不要
+        // Territories don't change over time, so no processing needed
+        (void)context;
+    }
+
     /// @brief 空間的更新（ISpatiallyUpdatableの実装）
     /// @brief Spatial update (ISpatiallyUpdatable implementation)
     void updateSpatial(const SpatialContext& context) override {
@@ -81,18 +92,127 @@ public:
             return;
         }
 
-        // スクリーン座標に変換
-        cached_screen_points_.clear();
-        cached_screen_points_.reserve(data_.coordinates.size());
+        // データが空の場合は早期リターン
+        if (data_.coordinates.empty()) {
+            cached_screen_points_.clear();
+            visible_ = false;
+            return;
+        }
 
-        bool any_in_view = false;
-
+        // 領域のバウンディングボックスを計算（最小・最大経度/緯度）
+        // Calculate bounding box of the territory (min/max longitude/latitude)
+        double min_lon = data_.coordinates[0].x;
+        double max_lon = data_.coordinates[0].x;
+        double min_lat = data_.coordinates[0].y;
+        double max_lat = data_.coordinates[0].y;
+        
         for (const auto& coord : data_.coordinates) {
-            // ビューの範囲チェック（少なくとも1点が範囲内なら描画）
-            if (context.isInViewBounds(coord)) {
-                any_in_view = true;
-            }
+            min_lon = (std::min)(min_lon, coord.x);
+            max_lon = (std::max)(max_lon, coord.x);
+            min_lat = (std::min)(min_lat, coord.y);
+            max_lat = (std::max)(max_lat, coord.y);
+        }
 
+        // 日付変更線をまたぐかチェック（経度差が180°以上）
+        // Check if territory crosses date line (longitude difference >= 180°)
+        const bool crosses_dateline = (max_lon - min_lon) > 180.0;
+
+        // ±3°のマージンを追加
+        // Add ±3° margin
+        constexpr double bbox_margin = 3.0;
+        min_lon -= bbox_margin;
+        max_lon += bbox_margin;
+        min_lat -= bbox_margin;
+        max_lat += bbox_margin;
+
+        // 画面の範囲を計算
+        // Calculate screen bounds
+        const double view_half_width = context.map_view_size.x / 2.0;
+        const double view_half_height = context.map_view_size.y / 2.0;
+        const double view_min_lon = context.map_view_center.x - view_half_width;
+        const double view_max_lon = context.map_view_center.x + view_half_width;
+        const double view_min_lat = context.map_view_center.y - view_half_height;
+        const double view_max_lat = context.map_view_center.y + view_half_height;
+
+        // 経度ラップ処理：3つのオフセット候補（-360°, 0°, +360°）で試す
+        // Longitude wrapping: try 3 offset candidates (-360°, 0°, +360°)
+        int best_offset_mult = 0;
+        bool found_overlap = false;
+
+        for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
+            const double offset_min_lon = min_lon + (offset_mult * 360.0);
+            const double offset_max_lon = max_lon + (offset_mult * 360.0);
+
+            // バウンディングボックスが画面範囲と重なるかチェック
+            // Check if bounding box overlaps with screen bounds
+            const bool lon_overlap = (offset_min_lon <= view_max_lon) && (offset_max_lon >= view_min_lon);
+            const bool lat_overlap = (min_lat <= view_max_lat) && (max_lat >= view_min_lat);
+
+            if (lon_overlap && lat_overlap) {
+                best_offset_mult = offset_mult;
+                found_overlap = true;
+                break;  // 最初に見つかったオフセットを使用
+            }
+        }
+
+        // 画面範囲と重ならない場合は非表示
+        // Hide if no overlap with screen bounds
+        if (!found_overlap) {
+            cached_screen_points_.clear();
+            visible_ = false;
+            return;
+        }
+
+        // 最適なオフセットを適用した後、日付変更線をまたぐ場合の経度正規化
+        // Apply best offset, then normalize longitude for date line wrapping
+        std::vector<paxs::MercatorDeg> normalized_coords;
+        normalized_coords.reserve(data_.coordinates.size());
+
+        // 最初の点にオフセットを適用
+        const double first_x = data_.coordinates[0].x + (best_offset_mult * 360.0);
+        normalized_coords.push_back(paxs::MercatorDeg(paxs::Vector2<double>(first_x, data_.coordinates[0].y)));
+
+        // 2点目以降は、日付変更線をまたぐ場合のみ正規化
+        // For subsequent points, normalize only if crossing date line
+        if (crosses_dateline) {
+            // 日付変更線をまたぐ場合：前の点との経度差が180°を超えないように正規化
+            // Date line crossing: normalize so longitude difference from previous point doesn't exceed 180°
+            for (size_t i = 1; i < data_.coordinates.size(); ++i) {
+                const double prev_lon = normalized_coords[i - 1].x;
+                double current_lon = data_.coordinates[i].x + (best_offset_mult * 360.0);
+
+                // 経度差を計算
+                double lon_diff = current_lon - prev_lon;
+
+                // 差が180°を超える場合、短い方の経路を選択
+                // If difference exceeds 180°, choose shorter path
+                if (lon_diff > 180.0) {
+                    current_lon -= 360.0;
+                } else if (lon_diff < -180.0) {
+                    current_lon += 360.0;
+                }
+
+                normalized_coords.push_back(paxs::MercatorDeg(
+                    paxs::Vector2<double>(current_lon, data_.coordinates[i].y)
+                ));
+            }
+        } else {
+            // 日付変更線をまたがない場合：そのままオフセットを適用
+            // Non-crossing: simply apply offset
+            for (size_t i = 1; i < data_.coordinates.size(); ++i) {
+                const double current_lon = data_.coordinates[i].x + (best_offset_mult * 360.0);
+                normalized_coords.push_back(paxs::MercatorDeg(
+                    paxs::Vector2<double>(current_lon, data_.coordinates[i].y)
+                ));
+            }
+        }
+
+        // 正規化された座標をスクリーン座標に変換
+        // Convert normalized coordinates to screen coordinates
+        cached_screen_points_.clear();
+        cached_screen_points_.reserve(normalized_coords.size());
+        
+        for (const auto& coord : normalized_coords) {
             // スクリーン座標に変換
             const paxg::Vec2<double> screen_pos = MapCoordinateConverter::toScreenPos(
                 Vector2<double>(coord.x, coord.y),
@@ -106,7 +226,7 @@ public:
             );
         }
 
-        visible_ = any_in_view && (cached_screen_points_.size() >= 2);
+        visible_ = (cached_screen_points_.size() >= 2);
     }
 
     bool isVisible() const override {
@@ -151,7 +271,9 @@ public:
         // グループデータから線幅を取得
         const float line_width = group_data_.line_width;
 
-        // スプライン曲線で描画（Settlementと同じ方法）
+        // スプライン曲線で描画
+        // Spline2Dは最初と最後の点が同じ場合、自動的に閉じたループとして綺麗に描画する
+        // Spline2D automatically detects closed loops when first and last points are the same
         paxg::Spline2D(cached_screen_points_).draw(line_width, color_);
     }
 
@@ -173,7 +295,7 @@ private:
 
     std::vector<paxg::Vec2f> cached_screen_points_;  ///< キャッシュされたスクリーン座標列 / Cached screen points
     paxg::Color color_;                              ///< 描画色 / Drawing color
-    bool visible_{};                                   ///< 可視性 / Visibility
+    bool visible_;                                   ///< 可視性 / Visibility
 };
 
 } // namespace paxs
