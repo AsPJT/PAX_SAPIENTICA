@@ -120,7 +120,7 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
         static constexpr float circumRadiusToSiv3dSides(const float circumRadius) {
             // Siv3Dは sides を受け取って内部で ×(1/√3) してるので、逆にこっちは ×√3 する
-            return circumRadius * 1.7320508075688772f; // std::sqrt(3.0f) の定数化
+            return circumRadius * MathConstants<float>::sqrt3();
         }
 #endif
 

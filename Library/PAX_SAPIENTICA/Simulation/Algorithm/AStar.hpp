@@ -19,6 +19,7 @@
 #include <memory>
 #include <vector>
 
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/Environment.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
@@ -145,7 +146,7 @@ namespace paxs {
                 const AStarVec2 neighbour_z = neighbour * z;
                 if (!search_range.contains(neighbour)) continue;
                 // コスト計算
-                const double node_cost = calcCost(environment, neighbour_z) * ((x <= 3 /* 斜め移動 */) ? 1.41421356237 : 1.0) + node_.cost;
+                const double node_cost = calcCost(environment, neighbour_z) * ((x <= 3 /* 斜め移動 */) ? MathConstants<double>::sqrt2() : 1.0) + node_.cost;
                 const GridType distance = calculateDistance(neighbour);
                 if (existPoint(neighbour, node_cost + distance)) continue;
                 open.emplace_back(AStarNode(neighbour, node_.position, distance, node_cost));
