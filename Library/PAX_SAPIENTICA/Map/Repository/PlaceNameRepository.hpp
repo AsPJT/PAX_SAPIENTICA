@@ -88,7 +88,7 @@ namespace paxs {
                 // LocationPointを構築（地名は常にparams.texture_hashを使用）
                 location_point_list.emplace_back(
                     data.key,
-                    paxs::EquirectangularDeg(
+                    paxs::EPSG4326_WGS84Deg(
                         paxs::Vector2<double>(data.longitude, data.latitude)).toMercatorDeg(),
                     data.overall_length,
                     data.zoom_range,
@@ -108,9 +108,9 @@ namespace paxs {
 
             // LocationPointGroupを構築して返す
             return LocationPointGroup(location_point_list,
-                paxs::EquirectangularDeg(
+                paxs::EPSG4326_WGS84Deg(
                     paxs::Vector2<double>(bounds.start_longitude, bounds.start_latitude)).toMercatorDeg(),
-                paxs::EquirectangularDeg(
+                paxs::EPSG4326_WGS84Deg(
                     paxs::Vector2<double>(bounds.end_longitude, bounds.end_latitude)).toMercatorDeg(),
                 params.zoom_range,
                 params.year_range,

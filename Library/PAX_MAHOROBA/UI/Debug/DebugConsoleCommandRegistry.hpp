@@ -64,7 +64,7 @@ private:
             // メルカトル座標に変換
             const Vector2<double> map_viewport_center = app_state.getMapViewport().getCenter();
             paxs::Vector2<double> equirect_coords(longitude, map_viewport_center.y);
-            paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
+            paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EPSG4326_WGS84Deg(equirect_coords));
             app_state.setViewportCenter(Vector2<double>(mercator_coords.getX(), map_viewport_center.y));
         });
 
@@ -87,7 +87,7 @@ private:
             // メルカトル座標に変換
             const Vector2<double> map_viewport_center = app_state.getMapViewport().getCenter();
             paxs::Vector2<double> equirect_coords(map_viewport_center.x, latitude);
-            paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
+            paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EPSG4326_WGS84Deg(equirect_coords));
             app_state.setViewportCenter(Vector2<double>(map_viewport_center.x, mercator_coords.getY()));
         });
 

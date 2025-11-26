@@ -145,7 +145,7 @@ namespace paxs {
                 paxg::Color(0, 0, 0)
             );
 
-            // 緯度（Equirectangular）
+            // 緯度（EPSG4326_WGS84）
             const std::string* const lat_label_ptr = Fonts().getLocalesText(
                 ui_map_domain_key,
                 latitude_key
@@ -157,10 +157,10 @@ namespace paxs {
                     paxg::Color(0, 0, 0)
                 );
             }
-            // メルカトル座標から正距円筒図法の緯度に変換
+            // メルカトル座標から EPSG:4326(WGS84) の緯度に変換
             const paxs::MercatorDeg merc_coord(paxs::Vector2<double>(map_viewport_center.x, map_viewport_center.y));
             font->draw(
-                std::to_string(merc_coord.toEquirectangularDegY()),
+                std::to_string(merc_coord.toEPSG4326_WGS84DegY()),
                 paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );

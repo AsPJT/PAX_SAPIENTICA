@@ -110,7 +110,7 @@ namespace paxs {
 
                 // メルカトル座標に変換して格納
                 coordinates.emplace_back(
-                    paxs::EquirectangularDeg(
+                    paxs::EPSG4326_WGS84Deg(
                         paxs::Vector2<double>(point_longitude, point_latitude)
                     ).toMercatorDeg()
                 );

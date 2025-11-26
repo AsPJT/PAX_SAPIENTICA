@@ -288,11 +288,11 @@ namespace paxg {
             coordinate.y = position.y;
         }
 
-        double toEquirectangularRadY() const {
-            return coordinate.toEquirectangularRadY();
+        double toEPSG4326_WGS84RadY() const {
+            return coordinate.toEPSG4326_WGS84RadY();
         }
-        double toEquirectangularDegY() const {
-            return coordinate.toEquirectangularDegY();
+        double toEPSG4326_WGS84DegY() const {
+            return coordinate.toEPSG4326_WGS84DegY();
         }
 
     private:

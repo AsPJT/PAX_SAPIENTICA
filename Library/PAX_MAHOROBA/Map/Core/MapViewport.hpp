@@ -57,7 +57,7 @@ namespace paxs {
     private:
         // 中央の座標を指定
         paxg::Coordinate center = paxg::Coordinate(
-            paxs::MercatorDeg(paxs::EquirectangularDeg(paxs::Vector2<double>(145, 48))) // 韓国 128, 37 // 日本 135, 35 // 北海道 // 東アジア 127, 31, 75.0 // 全世界 100, 0
+            paxs::MercatorDeg(paxs::EPSG4326_WGS84Deg(paxs::Vector2<double>(145, 48))) // 韓国 128, 37 // 日本 135, 35 // 北海道 // 東アジア 127, 31, 75.0 // 全世界 100, 0
         ); // マップ座標の中央
         double height = MapViewportConstants::default_height; // 各国 16.0; // 全世界 240.0 // マップの高さ
 

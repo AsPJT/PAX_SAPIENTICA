@@ -21,7 +21,7 @@ namespace paxs {
 
     // |	X min 	|	X max 	|	Y min 	|	Y max 	|	MapProjection 地図投影法
     // |	----	|	----	|	----	|	----	|	------------------
-    // |	-180  	|	180  	|	 -90  	|	  90  	|	EquirectangularDeg 正距円筒図法（度）
+    // |	-180  	|	180  	|	 -90  	|	  90  	|	EPSG:4326(WGS84)
     // |	----	|	----	|	----	|	----	|	------------------
     // |	-180  	|	180  	|	 -∞  	|	  ∞  	|	MercatorDeg メルカトル図法（度）
     // |	----	|	----	|	----	|	----	|	------------------
@@ -30,27 +30,27 @@ namespace paxs {
     // 前方宣言
     // forward declaration
     struct MercatorDeg; // メルカトル図法（度）
-    struct EquirectangularDeg; // 正距円筒図法（度）
+    struct EPSG4326_WGS84Deg; // EPSG:4326(WGS84)
 
     // メルカトル図法（度）
     struct MercatorDeg : paxs::Vector2<double> {
         constexpr explicit MercatorDeg() : Vector2() {}
         constexpr explicit MercatorDeg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
-        // Ｙ軸を正距円筒図法（ラジアン）へ変換した値を返す
-        double toEquirectangularRadY() const noexcept {
+        // Ｙ軸を EPSG:4326(WGS84) （ラジアン）へ変換した値を返す
+        double toEPSG4326_WGS84RadY() const noexcept {
             return std::asin(std::tanh(paxs::Math<double>::degToRad(this->y)));
         }
-        // Ｙ軸を正距円筒図法（度）へ変換した値を返す
-        double toEquirectangularDegY() const noexcept {
-            return paxs::Math<double>::radToDeg(toEquirectangularRadY());
+        // Ｙ軸を EPSG:4326(WGS84) （度）へ変換した値を返す
+        double toEPSG4326_WGS84DegY() const noexcept {
+            return paxs::Math<double>::radToDeg(toEPSG4326_WGS84RadY());
         }
-        // 正距円筒図法（度）へ変換した値を返す
-        operator EquirectangularDeg() const noexcept;
+        // EPSG:4326(WGS84) （度）へ変換した値を返す
+        operator EPSG4326_WGS84Deg() const noexcept;
     };
 
-    // 正距円筒図法（度）
-    struct EquirectangularDeg : paxs::Vector2<double> {
-        constexpr explicit EquirectangularDeg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
+    // EPSG:4326(WGS84) （度）
+    struct EPSG4326_WGS84Deg : paxs::Vector2<double> {
+        constexpr explicit EPSG4326_WGS84Deg(const paxs::Vector2<double>& v) noexcept : paxs::Vector2<double>(v) {}
         // Ｙ軸をメルカトル図法（ラジアン）へ変換した値を返す
         double toMercatorRadY() const noexcept {
             return static_cast<double>((y >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::Math<double>::pi() / 4.0 - paxs::Math<double>::degToRad(y) / 2.0)))));
@@ -68,29 +68,29 @@ namespace paxs {
             return MercatorDeg(paxs::Vector2<double>(x, toMercatorDegY()));
         }
     };
-    // メルカトル図法（度）を正距円筒図法（度）へ変換した値を返す
-    MercatorDeg::operator EquirectangularDeg() const noexcept {
-        return EquirectangularDeg(paxs::Vector2<double>(x, toEquirectangularDegY()));
+    // メルカトル図法（度）を EPSG:4326(WGS84) （度）へ変換した値を返す
+    MercatorDeg::operator EPSG4326_WGS84Deg() const noexcept {
+        return EPSG4326_WGS84Deg(paxs::Vector2<double>(x, toEPSG4326_WGS84DegY()));
     }
 
     // 個別の変換
     template<typename T>
     struct MapProjection {
-        // 正距円筒図法（ラジアン）からメルカトル図法へ変換（ラジアン）
-        constexpr static T equirectangularRadYToMercatorRadY(const T value) noexcept {
+        // EPSG:4326(WGS84) （ラジアン）からメルカトル図法へ変換（ラジアン）
+        constexpr static T EPSG4326_WGS84RadYToMercatorRadY(const T value) noexcept {
             return static_cast<T>((value >= 0 ? 1 : -1) * std::abs(std::log(std::abs(std::tan(paxs::Math<double>::pi() / 4.0 - double(value) / 2.0)))));
         }
-        // 正距円筒図法（度）からメルカトル図法へ変換（ラジアン）
-        constexpr static T equirectangularDegYToMercatorRadY(const T value) noexcept {
-            return static_cast<T>(equirectangularRadYToMercatorRadY(paxs::Math<T>::degToRad(value)));
+        // EPSG:4326(WGS84) （度）からメルカトル図法へ変換（ラジアン）
+        constexpr static T EPSG4326_WGS84DegYToMercatorRadY(const T value) noexcept {
+            return static_cast<T>(EPSG4326_WGS84RadYToMercatorRadY(paxs::Math<T>::degToRad(value)));
         }
-        // 正距円筒図法（ラジアン）からメルカトル図法へ変換（度）
-        constexpr static T equirectangularRadYToMercatorDegY(const T value) noexcept {
-            return static_cast<T>(paxs::Math<double>::radToDeg(equirectangularRadYToMercatorRadY(value)));
+        // EPSG:4326(WGS84) （ラジアン）からメルカトル図法へ変換（度）
+        constexpr static T EPSG4326_WGS84RadYToMercatorDegY(const T value) noexcept {
+            return static_cast<T>(paxs::Math<double>::radToDeg(EPSG4326_WGS84RadYToMercatorRadY(value)));
         }
-        // 正距円筒図法（度）からメルカトル図法へ変換（度）
-        constexpr static T equirectangularDegYToMercatorDegY(const T value) noexcept {
-            return static_cast<T>(paxs::Math<double>::radToDeg(equirectangularRadYToMercatorRadY(paxs::Math<T>::degToRad(value))));
+        // EPSG:4326(WGS84) （度）からメルカトル図法へ変換（度）
+        constexpr static T EPSG4326_WGS84DegYToMercatorDegY(const T value) noexcept {
+            return static_cast<T>(paxs::Math<double>::radToDeg(EPSG4326_WGS84RadYToMercatorRadY(paxs::Math<T>::degToRad(value))));
         }
     };
 }
