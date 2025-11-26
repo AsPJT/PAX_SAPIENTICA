@@ -231,16 +231,11 @@ namespace paxs {
             language_selector_.render();
 
             // トグルボタンを描画
+            toggle_button_.update();
             toggle_button_.render();
 
             // GitHubボタンを描画
             github_button_.render();
-        }
-
-        /// @brief Update UI components (especially toggle button animation)
-        /// @brief UIコンポーネントを更新（特にトグルボタンのアニメーション）
-        void update() {
-            toggle_button_.update();
         }
 
         Rect<int> getRect() const override {
@@ -294,7 +289,7 @@ namespace paxs {
     private:
         paxs::Pulldown language_selector_;
         paxs::MenuSystem menu_system;
-        paxs::MenuBarToggleButton toggle_button_;
+        mutable paxs::MenuBarToggleButton toggle_button_;
         paxs::GitHubButton github_button_;
 
         /// @brief イベント購読を設定
