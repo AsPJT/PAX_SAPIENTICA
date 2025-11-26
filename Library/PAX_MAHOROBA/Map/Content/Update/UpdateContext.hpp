@@ -69,6 +69,47 @@ struct SpatialContext : BaseContext {
 /// @brief Temporal context - Date-related information
 struct TemporalContext : BaseContext {
     double jdn = 0.0;  ///< ユリウス日 / Julian Day Number
+
+    Vector2<double> map_view_size{0.0, 0.0};    ///< 地図ビューのサイズ（幅、高さ） / Map view size (width, height)
+    Vector2<double> map_view_center{0.0, 0.0};  ///< 地図ビューの中心座標 / Map view center
+
+    /// @brief 座標がビューの範囲内にあるかチェック（日付変更線対応）
+    /// @brief Check if coordinates are within view bounds (with date line wrapping)
+    /// @param mercator_pos メルカトル座標 / Mercator position
+    /// @param margin マージン倍率（デフォルト1.6） / Margin multiplier (default 1.6)
+    /// @return 範囲内ならtrue / True if within bounds
+    /// @details 経度が±180°で循環するため、3つのラップ座標（-360°, 0°, +360°）のいずれかが範囲内にあるかチェックします
+    /// @details Checks if any of the three wrapped coordinates (-360°, 0°, +360°) are within bounds since longitude wraps at ±180°
+    [[nodiscard]] bool isInViewBounds(Vector2<double> mercator_pos, double margin = 1.6) const {
+        const Rect<double> view_rect = Rect<double>::fromCenter(
+            map_view_center,
+            map_view_size * margin
+        );
+
+        // 経度の3つのラップ座標（-360°, 0°, +360°）のいずれかが範囲内にあるかチェック
+        // Check if any of the three longitude-wrapped coordinates are within bounds
+        for (int offset_mult = -1; offset_mult <= 1; ++offset_mult) {
+            const Vector2<double> wrapped_pos(
+                mercator_pos.x + (offset_mult * 360.0),
+                mercator_pos.y
+            );
+            if (view_rect.contains(wrapped_pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// @brief 空間的コンテキストに変換
+    /// @brief Convert to spatial context
+    [[nodiscard]] SpatialContext toSpatial() const {
+        SpatialContext ctx;
+        ctx.visibility_manager = visibility_manager;
+        ctx.texture_map = texture_map;
+        ctx.map_view_size = map_view_size;
+        ctx.map_view_center = map_view_center;
+        return ctx;
+    }
 };
 
 /// @brief ローカライゼーションコンテキスト - 言語とフォントに関する情報
@@ -110,6 +151,8 @@ struct UnifiedContext : BaseContext {
         ctx.visibility_manager = visibility_manager;
         ctx.texture_map = texture_map;
         ctx.jdn = jdn;
+        ctx.map_view_size = map_view_size;
+        ctx.map_view_center = map_view_center;
         return ctx;
     }
 

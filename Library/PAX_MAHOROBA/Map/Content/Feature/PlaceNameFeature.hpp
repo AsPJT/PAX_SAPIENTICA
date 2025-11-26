@@ -13,7 +13,7 @@
 #define PAX_MAHOROBA_PLACE_NAME_FEATURE_HPP
 
 #include <string>
-#include <vector>
+#include <utility>
 
 #include <PAX_GRAPHICA/Vec2.hpp>
 
@@ -37,15 +37,17 @@ namespace paxs {
 
 /// @brief 地名（テキストのみ）を表す地物クラス
 /// @brief Feature class representing a place name (text only)
-/// @details 空間更新とローカライゼーション更新が必要（時間更新は不要）
-class PlaceNameFeature : public MapFeature, public ISpatiallyUpdatable, public ILocalizable {
+class PlaceNameFeature : public MapFeature,
+                         public ISpatiallyUpdatable,
+                         public ITemporallyUpdatable,
+                         public ILocalizable {
 private:
     static constexpr std::uint_least32_t place_names_domain_hash = MurMur3::calcHash("PlaceNames");
 
 public:
     /// @param data 地名の位置データ / Place location data
-    PlaceNameFeature(const LocationPoint& data)
-        : data_(data) {
+    PlaceNameFeature(LocationPoint  data)
+        : data_(std::move(data)) {
     }
 
     FeatureType getType() const override {
@@ -75,7 +77,22 @@ public:
         return data_.feature_type_hash;
     }
 
-    // ========== 更新メソッド / Update Methods ==========
+    /// @brief 時間的更新（ITemporallyUpdatableの実装）
+    /// @brief Temporal update (ITemporallyUpdatable implementation)
+    void updateTemporal(const TemporalContext& context) override {
+        const bool previous_in_time_range = in_time_range_;
+        in_time_range_ = isInTimeRange(context.jdn);
+        if (!in_time_range_) {
+            // 時間範囲外なら可視化しない
+            return;
+        }
+        if (previous_in_time_range == in_time_range_) {
+            // 可視性が変化した場合のみ更新
+            return;
+        }
+
+        updateSpatial(context.toSpatial());
+    }
 
     /// @brief 空間的更新（ISpatiallyUpdatableの実装）
     /// @brief Spatial update (ISpatiallyUpdatable implementation)
@@ -175,6 +192,7 @@ private:
     Vector2<int> cached_text_size_{100, 20};  ///< キャッシュされたテキストサイズ / Cached text size
     std::string cached_name_;  ///< キャッシュされた名前 / Cached name
     bool visible_ = true;  ///< 可視性 / Visibility
+    bool in_time_range_ = true;  ///< 時間範囲内か / Whether within time range
 };
 
 } // namespace paxs

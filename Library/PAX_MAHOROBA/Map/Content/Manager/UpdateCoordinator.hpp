@@ -131,6 +131,9 @@ namespace paxs {
             const SpatialContext ctx = unified_context_.toSpatial();
 
             for (auto& feature : features) {
+                if (!feature || !feature->isInTimeRange(unified_context_.jdn)) {
+                    continue;
+                }
                 // ISpatiallyUpdatableを実装している地物のみ更新
                 if (auto* spatial = dynamic_cast<ISpatiallyUpdatable*>(feature.get())) {
                     spatial->updateSpatial(ctx);
@@ -155,10 +158,7 @@ namespace paxs {
 
                 // ITemporallyUpdatableを実装している地物のみ更新
                 if (auto* temporal = dynamic_cast<ITemporallyUpdatable*>(feature.get())) {
-                    // 時間範囲チェックは更新前に行う
-                    if (feature->isInTimeRange(unified_context_.jdn)) {
-                        temporal->updateTemporal(ctx);
-                    }
+                    temporal->updateTemporal(ctx);
                 }
             }
         }

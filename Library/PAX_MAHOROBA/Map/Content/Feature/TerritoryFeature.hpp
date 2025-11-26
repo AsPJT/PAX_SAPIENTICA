@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_TERRITORY_FEATURE_HPP
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -37,19 +38,15 @@ namespace paxs {
 
 /// @brief 領域（国や文化圏などのスプライン曲線）を表す地物クラス
 /// @brief Feature class representing a territory (spline curves for countries, cultural areas, etc.)
-/// @details 空間・時間の更新が必要（ローカライゼーションはオプション）
-class TerritoryFeature : public MapFeature,
-                          public ISpatiallyUpdatable,
-                          public ITemporallyUpdatable {
+/// @details 空間の更新が必要
+class TerritoryFeature : public MapFeature, public ISpatiallyUpdatable {
 public:
     /// @param data 領域の位置データ / Territory location data
     /// @param group_data 領域グループデータ / Territory group data
-    TerritoryFeature(const TerritoryLocationData& data, const TerritoryLocationGroup& group_data)
-        : data_(data)
-        , group_data_(group_data)
-        , cached_screen_points_()
+    TerritoryFeature(TerritoryLocationData  data, TerritoryLocationGroup  group_data)
+        : data_(std::move(data))
+        , group_data_(std::move(group_data))
         , color_(0, 0, 0, 255)  // デフォルト色（黒） / Default color (black)
-        , visible_(true)
     {
         // 色情報からRGBAを取得（将来的にはAppConfigから色マッピングを読み込む）
         // TODO: 色情報の管理システムを実装
@@ -72,14 +69,6 @@ public:
 
     std::uint_least32_t getFeatureTypeHash() const override {
         return data_.feature_type_hash;
-    }
-
-    /// @brief 時間的更新（ITemporallyUpdatableの実装）
-    /// @brief Temporal update (ITemporallyUpdatable implementation)
-    void updateTemporal(const TemporalContext& context) override {
-        // 領域は時間変化しないため、特に処理は不要
-        // Territories don't change over time, so no processing needed
-        (void)context;
     }
 
     /// @brief 空間的更新（ISpatiallyUpdatableの実装）
@@ -184,7 +173,7 @@ private:
 
     std::vector<paxg::Vec2f> cached_screen_points_;  ///< キャッシュされたスクリーン座標列 / Cached screen points
     paxg::Color color_;                              ///< 描画色 / Drawing color
-    bool visible_;                                   ///< 可視性 / Visibility
+    bool visible_{};                                   ///< 可視性 / Visibility
 };
 
 } // namespace paxs

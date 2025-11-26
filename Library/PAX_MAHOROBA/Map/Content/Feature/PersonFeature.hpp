@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_PERSON_FEATURE_HPP
 
 #include <string>
+#include <utility>
 
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -39,7 +40,6 @@ namespace paxs {
 
 /// @brief 人物（肖像画+名前）を表す地物クラス
 /// @brief Feature class representing a person (portrait + name)
-/// @details 空間・時間・ローカライゼーション全ての更新が必要
 class PersonFeature : public MapFeature,
                       public ISpatiallyUpdatable,
                       public ITemporallyUpdatable,
@@ -47,10 +47,10 @@ class PersonFeature : public MapFeature,
 public:
     /// @param data 人物の位置データ / Person location data
     /// @param group_data 人物グループデータ / Person group data
-    PersonFeature(const PersonLocationPoint& data, const PersonLocationGroup& group_data)
-        : data_(data)
-        , group_data_(group_data) {
-        visible_ = true;
+    PersonFeature(PersonLocationPoint  data, PersonLocationGroup  group_data)
+        : data_(std::move(data))
+        , group_data_(std::move(group_data)) {
+
     }
 
     FeatureType getType() const override {
@@ -83,12 +83,17 @@ public:
     /// @brief 時間的更新（ITemporallyUpdatableの実装）
     /// @brief Temporal update (ITemporallyUpdatable implementation)
     void updateTemporal(const TemporalContext& context) override {
+        if (!isInTimeRange(context.jdn)) {
+            return;
+        }
         // 時間補間座標の計算
         interpolated_pos_ = MapCoordinateConverter::interpolatePosition(
             data_.start_coordinate, data_.end_coordinate,
             context.jdn, data_.year_range.minimum, data_.year_range.maximum
         );
         cached_jdn_ = context.jdn;
+
+        updateSpatial(context.toSpatial());
     }
 
     /// @brief 空間的更新（ISpatiallyUpdatableの実装）
