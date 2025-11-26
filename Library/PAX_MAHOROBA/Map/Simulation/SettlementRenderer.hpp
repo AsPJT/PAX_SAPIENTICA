@@ -101,7 +101,7 @@ namespace paxs {
         /// @brief グリッド座標をEPSG:3857(Webメルカトル) 座標に変換
         /// @brief Convert grid coordinate to Mercator coordinate
         /// @param position グリッド座標 / Grid coordinate
-        /// @return EPSG:3857(Webメルカトル) 座標 / Mercator coordinate
+        /// @return EPSG:3857(Webメルカトル) 座標 / Web Mercator coordinate
         static paxs::WebMercatorDeg positionToMercator(const paxs::Vector2<int>& position) {
             return paxs::WebMercatorDeg(MapUtils::tilePixelToAngleSpace(
                 SimulationConstants::getInstance().getStartArea(),

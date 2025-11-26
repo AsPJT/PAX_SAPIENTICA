@@ -26,7 +26,7 @@ namespace paxs {
 struct MapCoordinateConverter {
     /// @brief EPSG:3857(Webメルカトル) 座標→スクリーン座標変換（経度ラップ処理付き）
     /// @brief Convert Mercator coordinates to screen positions (with longitude wrapping)
-    /// @param mercator_pos EPSG:3857(Webメルカトル) 座標 / Mercator position
+    /// @param mercator_pos EPSG:3857(Webメルカトル) 座標 / Web Mercator position
     /// @param map_view_size ビューポートサイズ / Viewport size
     /// @param map_view_center ビューポート中心 / Viewport center
     /// @param out_positions 出力先（経度ラップされた3つのスクリーン座標） / Output (three wrapped screen positions)
@@ -75,7 +75,7 @@ struct MapCoordinateConverter {
 
     /// @brief 単一の座標をスクリーン座標に変換
     /// @brief Convert single coordinate to screen position
-    /// @param mercator_pos EPSG:3857(Webメルカトル) 座標 / Mercator position
+    /// @param mercator_pos EPSG:3857(Webメルカトル) 座標 / Web Mercator position
     /// @param map_view_size ビューポートサイズ / Viewport size
     /// @param map_view_center ビューポート中心 / Viewport center
     /// @return スクリーン座標 / Screen position

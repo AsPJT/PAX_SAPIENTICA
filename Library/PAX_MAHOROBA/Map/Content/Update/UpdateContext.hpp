@@ -39,7 +39,7 @@ struct SpatialContext : BaseContext {
 
     /// @brief 座標がビューの範囲内にあるかチェック（日付変更線対応）
     /// @brief Check if coordinates are within view bounds (with date line wrapping)
-    /// @param mercator_pos Webメルカトル座標 / Mercator position
+    /// @param mercator_pos EPSG:3857(Webメルカトル) 座標 / Web Mercator position
     /// @param margin マージン倍率（デフォルト1.6） / Margin multiplier (default 1.6)
     /// @return 範囲内ならtrue / True if within bounds
     /// @details 経度が±180°で循環するため、3つのラップ座標（-360°, 0°, +360°）のいずれかが範囲内にあるかチェックします
@@ -75,7 +75,7 @@ struct TemporalContext : BaseContext {
 
     /// @brief 座標がビューの範囲内にあるかチェック（日付変更線対応）
     /// @brief Check if coordinates are within view bounds (with date line wrapping)
-    /// @param mercator_pos Webメルカトル座標 / Mercator position
+    /// @param mercator_pos EPSG:3857(Webメルカトル) 座標 / Web Mercator position
     /// @param margin マージン倍率（デフォルト1.6） / Margin multiplier (default 1.6)
     /// @return 範囲内ならtrue / True if within bounds
     /// @details 経度が±180°で循環するため、3つのラップ座標（-360°, 0°, +360°）のいずれかが範囲内にあるかチェックします

@@ -31,7 +31,7 @@ protected:
 
     /// @brief 座標が表示範囲内にあるかを判定
     /// @brief Check if coordinate is within view bounds
-    /// @param coordinate EPSG:3857(Webメルカトル) 座標 / Mercator coordinate
+    /// @param coordinate EPSG:3857(Webメルカトル) 座標 / Web Mercator coordinate
     /// @param map_view_size マップビューのサイズ / Map view size
     /// @param map_view_center マップビューの中心座標 / Map view center
     /// @param margin_factor マージン係数（デフォルト: 1.6） / Margin factor (default: 1.6)
