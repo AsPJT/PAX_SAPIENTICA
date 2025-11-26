@@ -356,7 +356,9 @@ namespace paxg {
             knob.setPosition(sf::Vector2f(knob_x, knob_y));
             knob.setFillColor(color_knob_.color);
             paxg::Window::window().draw(knob);
-
+#else
+            (void)radius;
+            (void)bg_color;
 #endif
         }
 
