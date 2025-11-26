@@ -22,6 +22,7 @@
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/GitHubButton.hpp>
+#include <PAX_MAHOROBA/UI/MenuBar/MenuBarToggleButton.hpp>
 #include <PAX_MAHOROBA/UI/MenuBar/MenuSystem.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 
@@ -35,14 +36,14 @@
 namespace paxs {
 
     /// @brief アプリ上部のメニューバー
-    class MenuBar : public InteractiveUIComponent{
+    class MenuBar : public InteractiveUIComponent {
     private:
         static constexpr int github_button_margin = 8;
 
     public:
         MenuBar(const paxs::FeatureVisibilityManager& visible_manager) :
             language_selector_(paxs::MurMur3::calcHash("Language"),
-                paxg::Vec2i{3000, 0},
+                paxg::Vec2i{ 3000, 0 },
                 paxs::PulldownDisplayType::SelectedValue,
                 true
             ) {
@@ -57,33 +58,33 @@ namespace paxs {
             language_selector_.setOnSelectionChanged([this](std::uint_least32_t key, bool is_selected) {
                 (void)is_selected;
                 handleLanguageChanged(key);
-            });
+                });
 
             // メニューバーにメニュー項目を追加（FontSystem経由）
             menu_system.add(paxs::MenuBarKeys::view_menu_hashes,
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
-                          MenuBarType::view);
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                MenuBarType::view);
             menu_system.add(paxs::MenuBarKeys::place_names_menu_hashes,
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
-                          MenuBarType::place_names);
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                MenuBarType::place_names);
             menu_system.add(paxs::MenuBarKeys::item_menu_hashes,
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
-                          MenuBarType::item);
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                MenuBarType::item);
             menu_system.add(paxs::MenuBarKeys::structure_menu_hashes,
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
-                          MenuBarType::structure);
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                MenuBarType::structure);
             menu_system.add(paxs::MenuBarKeys::genome_menu_hashes,
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
-                          MenuBarType::genomes);
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                MenuBarType::genomes);
             menu_system.add(paxs::MenuBarKeys::map_menu_hashes,
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
-                          static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
-                          MenuBarType::map);
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_SIZE),
+                static_cast<std::uint_least8_t>(paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS),
+                MenuBarType::map);
 
             // FeatureVisibilityManagerから初期状態を読み込んでメニューに反映
             initializeMenuFromVisibility(visible_manager);
@@ -171,7 +172,7 @@ namespace paxs {
             if (view_menu != nullptr) {
                 view_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::view, index, is_checked);
-                });
+                    });
             }
 
             // Place Names メニューのコールバック
@@ -179,7 +180,7 @@ namespace paxs {
             if (place_names_menu != nullptr) {
                 place_names_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::place_names, index, is_checked);
-                });
+                    });
             }
 
             // Item メニューのコールバック
@@ -187,7 +188,7 @@ namespace paxs {
             if (item_menu != nullptr) {
                 item_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::item, index, is_checked);
-                });
+                    });
             }
 
             // Structure メニューのコールバック
@@ -195,7 +196,7 @@ namespace paxs {
             if (structure_menu != nullptr) {
                 structure_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::structure, index, is_checked);
-                });
+                    });
             }
 
             // Genome メニューのコールバック
@@ -203,7 +204,7 @@ namespace paxs {
             if (genome_menu != nullptr) {
                 genome_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::genomes, index, is_checked);
-                });
+                    });
             }
 
             // Map メニューのコールバック
@@ -211,7 +212,7 @@ namespace paxs {
             if (map_menu != nullptr) {
                 map_menu->setOnItemToggled([this](std::size_t index, bool is_checked) {
                     handleMenuItemToggled(paxs::MenuBarType::map, index, is_checked);
-                });
+                    });
             }
         }
 
@@ -229,8 +230,17 @@ namespace paxs {
             menu_system.render();
             language_selector_.render();
 
+            // トグルボタンを描画
+            toggle_button_.render();
+
             // GitHubボタンを描画
             github_button_.render();
+        }
+
+        /// @brief Update UI components (especially toggle button animation)
+        /// @brief UIコンポーネントを更新（特にトグルボタンのアニメーション）
+        void update() {
+            toggle_button_.update();
         }
 
         Rect<int> getRect() const override {
@@ -258,6 +268,11 @@ namespace paxs {
                 return language_selector_.handleEvent(event);
             }
 
+            // トグルボタンのマウス入力処理
+            if (toggle_button_.isHit(event.pos)) {
+                return toggle_button_.handleEvent(event);
+            }
+
             // GitHubボタンのマウス入力処理
             if (github_button_.isHit(event.pos)) {
                 return github_button_.handleEvent(event);
@@ -279,6 +294,7 @@ namespace paxs {
     private:
         paxs::Pulldown language_selector_;
         paxs::MenuSystem menu_system;
+        paxs::MenuBarToggleButton toggle_button_;
         paxs::GitHubButton github_button_;
 
         /// @brief イベント購読を設定
@@ -306,12 +322,18 @@ namespace paxs {
             // 言語選択プルダウンを右端に配置
             language_selector_.setPos(Vector2<int>{
                 static_cast<int>(paxg::Window::width() - language_selector_.getRect().width()),
-                0
+                    0
             });
             github_button_.setPos(Vector2<int>{
                 language_selector_.getRect().x() - github_button_.getRect().width() - github_button_margin,
-                (language_selector_.getRect().height() - github_button_.getRect().height()) / 2
+                    (language_selector_.getRect().height() - github_button_.getRect().height()) / 2
             });
+
+            // トグルボタンをGitHubボタンの左隣に配置
+            toggle_button_.init(
+                github_button_.getRect().x(),
+                language_selector_.getRect().height()
+            );
         }
 
         /// @brief FeatureVisibilityManagerからメニューの初期状態を読み込む
@@ -323,7 +345,8 @@ namespace paxs {
                 for (std::size_t i = 0; i < paxs::MenuBarKeys::view_menu_items.size(); ++i) {
                     view_menu->setIsItems(i, visible_manager.isVisible(paxs::MenuBarKeys::view_menu_items[i]));
                 }
-            } else {
+            }
+            else {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'view' menu not found.");
             }
 
@@ -333,7 +356,8 @@ namespace paxs {
                 for (std::size_t i = 0; i < paxs::MenuBarKeys::map_menu_items.size(); ++i) {
                     map_menu->setIsItems(i, visible_manager.isVisible(paxs::MenuBarKeys::map_menu_items[i]));
                 }
-            } else {
+            }
+            else {
                 PAXS_WARNING("MenuBar::initializeMenuFromVisibility: 'map' menu not found.");
             }
         }
