@@ -60,12 +60,7 @@ namespace paxs {
         }
 
         Rect<int> getRect() const override {
-            return {
-                static_cast<int>(toggle_button_.x()),
-                static_cast<int>(toggle_button_.y()),
-                static_cast<int>(toggle_button_.width()),
-                static_cast<int>(toggle_button_.height())
-            };
+            return toggle_button_.getRect().toType<int>();
         }
 
         const char* getName() const override { return "MenuBarToggleButton"; }
@@ -74,23 +69,17 @@ namespace paxs {
             toggle_button_.setPosition(static_cast<float>(pos.x), static_cast<float>(pos.y));
         }
 
-        bool isHit(const paxs::Vector2<int>& pos) const override {
-            if (!isVisible()) return false;
-            return getRect().contains(pos);
-        }
-
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             if (!isVisible()) {
-                return EventHandlingResult::NotHandled();
+                return EventHandlingResult::Handled();
             }
 
-            // クリックを離した瞬間（Released）のみトグルを切り替える
-            if (event.left_button_state == MouseButtonState::Released &&
-                isHit(event.pos)) {
+            // クリックを押した瞬間（Pressed）のみトグルを切り替える
+            if (event.left_button_state == MouseButtonState::Pressed) {
 
-                // Toggle the state
                 toggle_button_.toggle();
 
+                // TODO: 処理を削除
                 // Publish feature visibility change event for Territory (map_line1)
                 paxs::EventBus::getInstance().publish(
                     FeatureVisibilityChangeCommandEvent(
@@ -102,7 +91,7 @@ namespace paxs {
                 return EventHandlingResult::Handled();
             }
 
-            return EventHandlingResult::NotHandled();
+            return EventHandlingResult::Handled();
         }
 
         RenderLayer getLayer() const override {

@@ -12,34 +12,6 @@
 #ifndef PAX_GRAPHICA_TOGGLE_BUTTON_HPP
 #define PAX_GRAPHICA_TOGGLE_BUTTON_HPP
 
-/*
-    Usage Example / 使用例:
-
-    // Create toggle button / トグルボタンを作成
-    paxg::ToggleButton toggle(100, 100);  // x=100, y=100
-    
-    // Or with custom size / カスタムサイズで
-    paxg::ToggleButton toggle2(100, 150, 60, 35);  // x, y, width, height
-    
-    // Main loop / メインループ内で:
-    while (paxg::Window::update()) {
-        // Update button state (handles click detection) / ボタンの状態を更新（クリック判定を処理）
-        toggle.update();
-        
-        // Draw the button / ボタンを描画
-        toggle.draw();
-        
-        // Check state / 状態を確認
-        if (toggle.isOn()) {
-            // Do something when ON / ONの時の処理
-        }
-    }
-    
-    // You can also manually control the state / 状態を手動で制御することもできます:
-    toggle.setOn(true);   // Set to ON / ONにセット
-    toggle.toggle();      // 状態を切り替え
-*/
-
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -48,22 +20,21 @@
 #include <SFML/Graphics.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Circle.hpp>
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/Mouse.hpp>
-#include <PAX_GRAPHICA/RoundRect.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
 
     /// @brief Toggle button component with sliding knob (inspired by CSS switch design)
     /// @brief スライドするつまみ付きトグルボタンコンポーネント（CSSスイッチデザインに触発）
-    /// 
+    ///
     /// Features / 機能:
     /// - Rounded rectangle background (pill shape) / 角丸長方形の背景（ピル型）
     /// - Sliding circular knob / スライドする円形のつまみ
     /// - Smooth animation / スムーズなアニメーション
-    /// - Click detection / クリック判定
     /// - Color changes based on state (green=ON, gray=OFF) / 状態に応じた色の変化（緑=ON、灰色=OFF）
     /// - Shadow effect on knob / つまみに影効果
     class ToggleButton {
@@ -72,7 +43,6 @@ namespace paxg {
         float width_{50.0f};        // Width (幅)
         float height_{30.0f};       // Height (高さ)
         bool is_on_{false};         // Toggle state (トグル状態)
-        bool is_hovered_{false};    // Hover state (ホバー状態)
 
         // Colors (色)
         static constexpr paxg::Color color_on_{0, 222, 0};        // Green when ON #00de00 (ONの時の緑)
@@ -144,22 +114,10 @@ namespace paxg {
             is_on_ = !is_on_;
         }
 
-        /// @brief Check if mouse is over the button
-        /// @brief マウスがボタンの上にあるかチェック
-        /// @return true if mouse is over (マウスが上にある場合true)
-        bool mouseOver() const {
-            const int mx = paxg::Mouse::getInstance()->getPosX();
-            const int my = paxg::Mouse::getInstance()->getPosY();
-            return (mx >= x_ && mx <= x_ + width_ &&
-                    my >= y_ && my <= y_ + height_);
-        }
-
         /// @brief Update button state (call every frame in main loop)
         /// @brief ボタンの状態を更新（メインループで毎フレーム呼び出す）
         /// @details Handles animation and click detection / アニメーションとクリック判定を処理
         void update() {
-            is_hovered_ = mouseOver();
-
             // Animate knob position (smooth transition)
             const float target_position = is_on_ ? 1.0f : 0.0f;
             if (knob_position_ < target_position) {
@@ -168,11 +126,6 @@ namespace paxg {
             } else if (knob_position_ > target_position) {
                 knob_position_ -= animation_speed_;
                 if (knob_position_ < target_position) knob_position_ = target_position;
-            }
-
-            // Handle click
-            if (is_hovered_ && paxg::Mouse::getInstance()->downLeft()) {
-                toggle();
             }
         }
 
@@ -204,10 +157,10 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             // Left circle
             s3d::Circle(x_ + radius, y_ + radius, radius).draw(bg_color.color);
-            
+
             // Center rectangle
             s3d::Rect(x_ + radius, y_, width_ - height_, height_).draw(bg_color.color);
-            
+
             // Right circle
             s3d::Circle(x_ + width_ - radius, y_ + radius, radius).draw(bg_color.color);
 
@@ -218,7 +171,7 @@ namespace paxg {
 
             // Shadow
             s3d::Circle(knob_x + 2, knob_y + 2, knob_radius).draw(s3d::ColorF(0, 0, 0, 0.2));
-            
+
             // Knob circle
             s3d::Circle(knob_x, knob_y, knob_radius).draw(color_knob_.color);
 
@@ -236,7 +189,7 @@ namespace paxg {
                 DxLib::GetColor(bg_r, bg_g, bg_b),
                 TRUE
             );
-            
+
             // Center rectangle
             DxLib::DrawBox(
                 static_cast<int>(x_ + radius),
@@ -246,7 +199,7 @@ namespace paxg {
                 DxLib::GetColor(bg_r, bg_g, bg_b),
                 TRUE
             );
-            
+
             // Right circle
             DxLib::DrawCircle(
                 static_cast<int>(x_ + width_ - radius),
@@ -324,13 +277,13 @@ namespace paxg {
             left_circle.setPosition(sf::Vector2f(x_ + radius, y_ + radius));
             left_circle.setFillColor(bg_color.color);
             paxg::Window::window().draw(left_circle);
-            
+
             // Center rectangle
             sf::RectangleShape center_rect(sf::Vector2f(width_ - height_, height_));
             center_rect.setPosition(sf::Vector2f(x_ + radius, y_));
             center_rect.setFillColor(bg_color.color);
             paxg::Window::window().draw(center_rect);
-            
+
             // Right circle
             sf::CircleShape right_circle(radius);
             right_circle.setOrigin(sf::Vector2f(radius, radius));
@@ -362,21 +315,20 @@ namespace paxg {
 #endif
         }
 
-        /// @brief Get X position
-        /// @brief X座標を取得
-        float x() const { return x_; }
+        /// @brief Get position
+        paxs::Vector2<float> getPosition() const {
+            return paxs::Vector2<float>{x_, y_};
+        }
 
-        /// @brief Get Y position
-        /// @brief Y座標を取得
-        float y() const { return y_; }
+        /// @brief Get size
+        paxs::Vector2<float> getSize() const {
+            return paxs::Vector2<float>{width_, height_};
+        }
 
-        /// @brief Get width
-        /// @brief 幅を取得
-        float width() const { return width_; }
-
-        /// @brief Get height
-        /// @brief 高さを取得
-        float height() const { return height_; }
+        /// @brief Get bounding rectangle
+        paxs::Rect<float> getRect() const {
+            return paxs::Rect<float>{x_, y_, width_, height_};
+        }
     };
 
 } // namespace paxg

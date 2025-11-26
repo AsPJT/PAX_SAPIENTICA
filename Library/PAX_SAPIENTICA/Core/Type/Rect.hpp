@@ -109,6 +109,17 @@ namespace paxs {
 
         auto operator<=>(const Rect<T>& rect) const noexcept = default;
 
+        /// @brief Convert rectangle to another type
+        /// @brief 矩形を別の型に変換
+        template<typename U>
+        [[nodiscard]] Rect<U> toType() const noexcept {
+            return Rect<U>(
+                static_cast<U>(position.x),
+                static_cast<U>(position.y),
+                static_cast<U>(size.x),
+                static_cast<U>(size.y)
+            );
+        }
     };
 
 } // namespace paxs
