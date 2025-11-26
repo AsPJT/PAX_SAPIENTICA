@@ -201,7 +201,7 @@ public:
     }
 
 
-    MercatorDeg getInterpolatedPosition() const {
+    WebMercatorDeg getInterpolatedPosition() const {
         return interpolated_pos_;
     }
 
@@ -219,7 +219,7 @@ private:
     PersonLocationPoint data_;           ///< 人物位置データ / Person location data
     PersonLocationGroup group_data_;     ///< 人物グループデータ / Person group data
 
-    MercatorDeg interpolated_pos_;                    ///< 補間された座標 / Interpolated position
+    WebMercatorDeg interpolated_pos_;                    ///< 補間された座標 / Interpolated position
     WrappedScreenPositions cached_screen_positions_;  ///< 経度ラップされたスクリーン座標 / Wrapped screen positions
     int cached_display_size_ = 60;                    ///< 表示サイズ / Display size
     Vector2<int> cached_texture_size_{60, 60};        ///< キャッシュされたテクスチャサイズ / Cached texture size

@@ -80,7 +80,7 @@ namespace paxs {
             const std::uint_least32_t latitude_hash = MurMur3::calcHash("latitude");
 
             // 座標列を読み込み
-            std::vector<paxs::MercatorDeg> coordinates;
+            std::vector<paxs::WebMercatorDeg> coordinates;
 
             // 1 行ずつ読み込み
             table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) {
@@ -108,11 +108,11 @@ namespace paxs {
                 }
                 double point_latitude = *lat_opt;
 
-                // メルカトル座標に変換して格納
+                // EPSG:3857(Webメルカトル) 座標に変換して格納
                 coordinates.emplace_back(
                     paxs::EPSG4326_WGS84Deg(
                         paxs::Vector2<double>(point_longitude, point_latitude)
-                    ).toMercatorDeg()
+                    ).toWebMercatorDeg()
                 );
             });
 

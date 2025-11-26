@@ -24,9 +24,9 @@ namespace paxs {
 /// @brief 地図座標変換ヘルパークラス
 /// @brief Map coordinate conversion helper class
 struct MapCoordinateConverter {
-    /// @brief メルカトル座標→スクリーン座標変換（経度ラップ処理付き）
+    /// @brief EPSG:3857(Webメルカトル) 座標→スクリーン座標変換（経度ラップ処理付き）
     /// @brief Convert Mercator coordinates to screen positions (with longitude wrapping)
-    /// @param mercator_pos メルカトル座標 / Mercator position
+    /// @param mercator_pos EPSG:3857(Webメルカトル) 座標 / Mercator position
     /// @param map_view_size ビューポートサイズ / Viewport size
     /// @param map_view_center ビューポート中心 / Viewport center
     /// @param out_positions 出力先（経度ラップされた3つのスクリーン座標） / Output (three wrapped screen positions)
@@ -55,9 +55,9 @@ struct MapCoordinateConverter {
     /// @param min_year 開始年 / Start year
     /// @param max_year 終了年 / End year
     /// @return 補間された座標 / Interpolated position
-    static MercatorDeg interpolatePosition(
-        const MercatorDeg& start,
-        const MercatorDeg& end,
+    static WebMercatorDeg interpolatePosition(
+        const WebMercatorDeg& start,
+        const WebMercatorDeg& end,
         double jdn,
         double min_year,
         double max_year
@@ -70,12 +70,12 @@ struct MapCoordinateConverter {
 
         const Vector2<double> coordinate_displacement = end - start;
 
-        return MercatorDeg(start + coordinate_displacement * year_normalization);
+        return WebMercatorDeg(start + coordinate_displacement * year_normalization);
     }
 
     /// @brief 単一の座標をスクリーン座標に変換
     /// @brief Convert single coordinate to screen position
-    /// @param mercator_pos メルカトル座標 / Mercator position
+    /// @param mercator_pos EPSG:3857(Webメルカトル) 座標 / Mercator position
     /// @param map_view_size ビューポートサイズ / Viewport size
     /// @param map_view_center ビューポート中心 / Viewport center
     /// @return スクリーン座標 / Screen position
@@ -84,7 +84,7 @@ struct MapCoordinateConverter {
         const Vector2<double>& map_view_size,
         const Vector2<double>& map_view_center
     ) {
-        // メルカトル座標をスクリーン座標に変換
+        // EPSG:3857(Webメルカトル) 座標をスクリーン座標に変換
         return paxg::Vec2<double>(
             (mercator_pos.x - (map_view_center.x - map_view_size.x / 2))
             / map_view_size.x * double(paxg::Window::width()),

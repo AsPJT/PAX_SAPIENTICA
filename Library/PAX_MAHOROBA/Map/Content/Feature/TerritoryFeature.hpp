@@ -153,12 +153,12 @@ public:
 
         // 最適なオフセットを適用した後、日付変更線をまたぐ場合の経度正規化
         // Apply best offset, then normalize longitude for date line wrapping
-        std::vector<paxs::MercatorDeg> normalized_coords;
+        std::vector<paxs::WebMercatorDeg> normalized_coords;
         normalized_coords.reserve(data_.coordinates.size());
 
         // 最初の点にオフセットを適用
         const double first_x = data_.coordinates[0].x + (best_offset_mult * 360.0);
-        normalized_coords.push_back(paxs::MercatorDeg(paxs::Vector2<double>(first_x, data_.coordinates[0].y)));
+        normalized_coords.push_back(paxs::WebMercatorDeg(paxs::Vector2<double>(first_x, data_.coordinates[0].y)));
 
         // 2点目以降は、日付変更線をまたぐ場合のみ正規化
         // For subsequent points, normalize only if crossing date line
@@ -180,7 +180,7 @@ public:
                     current_lon += 360.0;
                 }
 
-                normalized_coords.push_back(paxs::MercatorDeg(
+                normalized_coords.push_back(paxs::WebMercatorDeg(
                     paxs::Vector2<double>(current_lon, data_.coordinates[i].y)
                 ));
             }
@@ -189,7 +189,7 @@ public:
             // Non-crossing: simply apply offset
             for (size_t i = 1; i < data_.coordinates.size(); ++i) {
                 const double current_lon = data_.coordinates[i].x + (best_offset_mult * 360.0);
-                normalized_coords.push_back(paxs::MercatorDeg(
+                normalized_coords.push_back(paxs::WebMercatorDeg(
                     paxs::Vector2<double>(current_lon, data_.coordinates[i].y)
                 ));
             }

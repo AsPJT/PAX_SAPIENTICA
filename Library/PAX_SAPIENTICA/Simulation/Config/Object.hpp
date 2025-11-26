@@ -48,7 +48,7 @@ namespace paxs {
         constexpr void setPosition(const Vector2& pos) noexcept { position = pos; }
 
         /// @brief Get the mercator coordinate from the XYZTile coordinate.
-        /// @brief 座標をメルカトル座標で取得
+        /// @brief 座標をWebメルカトル座標で取得
         paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const noexcept {
             return MapUtils::tilePixelToAngleSpace(start_position, position, z);
         }

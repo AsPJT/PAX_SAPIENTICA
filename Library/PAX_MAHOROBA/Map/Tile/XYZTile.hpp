@@ -106,7 +106,7 @@ namespace paxs {
         // 浮動小数点比較の許容誤差
         static constexpr double VIEWPORT_EPSILON = 1e-9;
 
-        // XYZ タイルの 1 つのセルのメルカトル座標を保持
+        // XYZ タイルの 1 つのセルのWebメルカトル座標を保持
         // 基本的に Z = 19 は無い
 
         paxs::TileCache<paxg::Texture> tile_cache_;

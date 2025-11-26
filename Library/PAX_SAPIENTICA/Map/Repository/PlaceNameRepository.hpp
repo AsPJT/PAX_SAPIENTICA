@@ -89,7 +89,7 @@ namespace paxs {
                 location_point_list.emplace_back(
                     data.key,
                     paxs::EPSG4326_WGS84Deg(
-                        paxs::Vector2<double>(data.longitude, data.latitude)).toMercatorDeg(),
+                        paxs::Vector2<double>(data.longitude, data.latitude)).toWebMercatorDeg(),
                     data.overall_length,
                     data.zoom_range,
                     data.year_range,
@@ -109,9 +109,9 @@ namespace paxs {
             // LocationPointGroupを構築して返す
             return LocationPointGroup(location_point_list,
                 paxs::EPSG4326_WGS84Deg(
-                    paxs::Vector2<double>(bounds.start_longitude, bounds.start_latitude)).toMercatorDeg(),
+                    paxs::Vector2<double>(bounds.start_longitude, bounds.start_latitude)).toWebMercatorDeg(),
                 paxs::EPSG4326_WGS84Deg(
-                    paxs::Vector2<double>(bounds.end_longitude, bounds.end_latitude)).toMercatorDeg(),
+                    paxs::Vector2<double>(bounds.end_longitude, bounds.end_latitude)).toWebMercatorDeg(),
                 params.zoom_range,
                 params.year_range,
                 feature_type_hash, params.texture_hash);

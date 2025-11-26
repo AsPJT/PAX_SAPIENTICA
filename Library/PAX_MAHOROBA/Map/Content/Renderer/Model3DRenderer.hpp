@@ -36,7 +36,7 @@ namespace paxs {
     /// auto feature = std::make_unique<Model3DFeature>(
     ///     "tomb_001",                    // ID
     ///     "石室",                         // 名前 / Name
-    ///     MercatorDeg(135.0, 35.0),      // 座標 / Coordinate
+    ///     WebMercatorDeg(135.0, 35.0),      // 座標 / Coordinate
     ///     2440000.0,                     // 開始年 / Start year (JDN)
     ///     2450000.0,                     // 終了年 / End year (JDN)
     ///     model_config                   // 3Dモデル設定 / 3D model config

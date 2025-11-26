@@ -260,7 +260,7 @@ namespace paxg {
 
     class Coordinate {
     public:
-        Coordinate(const paxs::MercatorDeg& coordinate_)
+        Coordinate(const paxs::WebMercatorDeg& coordinate_)
             : coordinate(coordinate_){}
 
         double getX() const {
@@ -296,7 +296,7 @@ namespace paxg {
         }
 
     private:
-        paxs::MercatorDeg coordinate; // マップ座標の中央
+        paxs::WebMercatorDeg coordinate; // マップ座標の中央
     };
 
 }

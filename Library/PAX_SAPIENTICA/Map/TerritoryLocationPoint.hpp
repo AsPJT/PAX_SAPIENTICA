@@ -29,7 +29,7 @@ namespace paxs {
         explicit TerritoryLocationData() = default;
         explicit TerritoryLocationData(
             std::string  key_,  // 領域の一意キー / Unique key for territory
-            std::vector<paxs::MercatorDeg>&& coordinates_,  // スプライン曲線の座標列 / Coordinates for spline curve
+            std::vector<paxs::WebMercatorDeg>&& coordinates_,  // スプライン曲線の座標列 / Coordinates for spline curve
             const Range<double>& zoom_range_,
             const Range<double>& year_range_,
             const std::uint_least32_t feature_type_hash_
@@ -41,7 +41,7 @@ namespace paxs {
               feature_type_hash(feature_type_hash_) {}
 
         std::string key;  // 領域の一意キー / Unique key for territory
-        std::vector<paxs::MercatorDeg> coordinates; // スプライン曲線の座標列 / Coordinates for spline curve
+        std::vector<paxs::WebMercatorDeg> coordinates; // スプライン曲線の座標列 / Coordinates for spline curve
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲 / Zoom level range
         Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代 / Time range
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("territory"); // 地物の種別 / Feature type hash

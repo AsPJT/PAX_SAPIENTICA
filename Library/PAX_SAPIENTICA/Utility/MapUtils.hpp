@@ -32,7 +32,7 @@ namespace paxs {
          * @param z ズームレベル（0から始まる）
          * @return Vector2(経度 longitude, 緯度 latitude) 度数法、-180～180度
         */
-        // TODO: これを使っている場所でメルカトル座標として扱っている箇所を確認する
+        // TODO: これを使っている場所でWebメルカトル座標として扱っている箇所を確認する
         static paxs::Vector2<double> tilePixelToAngleSpace(const paxs::Vector2<GridType>& start_position, const paxs::Vector2<GridType>& position, const int z) noexcept {
             const double n = std::pow(2, z); // ズームレベルzにおけるタイル数（2^z）
             const double pixel_sum = pixel_size * n; // 全体のピクセル数
