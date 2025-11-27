@@ -14,9 +14,7 @@
 
 #include <algorithm>
 #include <array>
-#include <chrono>
 #include <cstdint>
-#include <ctime>
 #include <memory>
 #include <random>
 #include <utility> // for std::pair
@@ -40,7 +38,7 @@ namespace paxs {
 
     // シミュレーション出力フォルダ用の時刻取得
     std::string calcDateTime() {
-        return TimeUtils::getCurrentDateTime("%Y-%m-%d-%H-%M-%S");
+        return TimeUtils::getFilenameSafeDateTime();
     }
 
     class SettlementSimulator {
@@ -237,8 +235,8 @@ namespace paxs {
         /// @brief Execute the simulation for the one step.
         /// @brief シミュレーションを1ステップ実行する
         void step() noexcept {
-            std::chrono::system_clock::time_point  start_time, end_time, move_time, m_start_time, m_end_time;
-            start_time = std::chrono::system_clock::now(); // 計測開始
+            // パフォーマンス計測開始（TimeUtilsを使用）
+            const auto start_time = TimeUtils::now();
 
             // 指定したステップおきに出力する
             if (step_count % SimulationConstants::getInstance().output_step_frequency == 0) {
@@ -372,8 +370,8 @@ namespace paxs {
             for (auto& move : move_list) {
                 moveSettlement(std::get<0>(move), std::get<1>(move), std::get<2>(move));
             }
-            move_time = std::chrono::system_clock::now(); // 移動
-            move_processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(move_time - start_time).count() / 1000.0);
+            const auto move_time = TimeUtils::now(); // 移動計測
+            move_processing_time = TimeUtils::getDifferenceSeconds(start_time, move_time);
 
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
@@ -388,7 +386,7 @@ namespace paxs {
                 randomizeSettlements(false, true /* 渡来人 */, (step_count >= SimulationConstants::getInstance().bronze_start_steps)/*青銅*/);
             }
 
-            m_start_time = std::chrono::system_clock::now();  // 婚姻計測開始
+            const auto m_start_time = TimeUtils::now();  // 婚姻計測開始
             marriage_pos_list.clear();
             bronze_share_list.clear(); // 青銅交換リストのクリア
 
@@ -438,8 +436,8 @@ namespace paxs {
                 }
             }
 
-            m_end_time = std::chrono::system_clock::now();  // 婚姻計測終了
-            marriage_processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(m_end_time - m_start_time).count() / 1000.0);
+            const auto m_end_time = TimeUtils::now();  // 婚姻計測終了
+            marriage_processing_time = TimeUtils::getDifferenceSeconds(m_start_time, m_end_time);
 
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
@@ -464,8 +462,8 @@ namespace paxs {
                 japan_provinces->update();
             }
             ++step_count; // ステップ数を増やす
-            end_time = std::chrono::system_clock::now();  // 計測終了
-            processing_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() / 1000.0);
+            const auto end_time = TimeUtils::now();  // 計測終了
+            processing_time = TimeUtils::getDifferenceSeconds(start_time, end_time);
         }
 
         // 婚姻時に移動した位置一覧を取得する

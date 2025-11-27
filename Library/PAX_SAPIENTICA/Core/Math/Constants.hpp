@@ -34,6 +34,12 @@ namespace paxs {
         constexpr static T e() noexcept { return std::numbers::e_v<T>; } // e
         constexpr static T log2e() noexcept { return std::numbers::log2e_v<T>; } // log2(e)
         constexpr static T log10e() noexcept { return std::numbers::log10e_v<T>; } // log10(e)
+        constexpr static T ln2() noexcept { return std::numbers::ln2_v<T>; } // ln(2)
+        constexpr static T ln10() noexcept { return std::numbers::ln10_v<T>; } // ln(10)
+
+        constexpr static T sqrt2() noexcept { return std::numbers::sqrt2_v<T>; } // √2
+        constexpr static T sqrt3() noexcept { return std::numbers::sqrt3_v<T>; } // √3
+        constexpr static T invSqrt3() noexcept { return std::numbers::inv_sqrt3_v<T>; } // 1/
     };
 }
 

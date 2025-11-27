@@ -258,47 +258,6 @@ namespace paxg {
         return false;
     }
 
-    class Coordinate {
-    public:
-        Coordinate(const paxs::MercatorDeg& coordinate_)
-            : coordinate(coordinate_){}
-
-        double getX() const {
-            return coordinate.x;
-        }
-        double getY() const {
-            return coordinate.y;
-        }
-
-        /// @brief Get coordinate as Vector2
-        /// @brief 座標をVector2として取得
-        /// @return Vector2<double> containing x and y coordinates
-        paxs::Vector2<double> getVector2() const {
-            return paxs::Vector2<double>(coordinate.x, coordinate.y);
-        }
-
-        void setX(const double x_) {
-            coordinate.x = x_;
-        }
-        void setY(const double y_) {
-            coordinate.y = y_;
-        }
-        void set(paxs::Vector2<double> position) {
-            coordinate.x = position.x;
-            coordinate.y = position.y;
-        }
-
-        double toEquirectangularRadY() const {
-            return coordinate.toEquirectangularRadY();
-        }
-        double toEquirectangularDegY() const {
-            return coordinate.toEquirectangularDegY();
-        }
-
-    private:
-        paxs::MercatorDeg coordinate; // マップ座標の中央
-    };
-
 }
 
 #endif // !PAX_GRAPHICA_KEY_HPP

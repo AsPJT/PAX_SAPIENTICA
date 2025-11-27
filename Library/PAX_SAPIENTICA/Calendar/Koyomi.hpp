@@ -26,6 +26,7 @@
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
+#include <PAX_SAPIENTICA/Core/Calendar/Calendar.hpp>
 #include <PAX_SAPIENTICA/Key/CalendarKeys.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -88,7 +89,7 @@ namespace paxs {
 
     private:
         // 暦の更新に関する定数
-        static constexpr double days_per_year = 365.2425; // グレゴリオ暦の1年の平均日数
+        static constexpr double days_per_year = paxs::Calendar<double>::daysInTropicalYear(); // 平均太陽年の日数
         static constexpr double time_scale_factor = 18.0; // 時間経過の速度調整係数
         static constexpr int calendar_update_threshold = 0; // 暦更新のしきい値
 

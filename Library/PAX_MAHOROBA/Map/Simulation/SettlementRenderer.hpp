@@ -98,12 +98,12 @@ namespace paxs {
 
         SettlementRenderer() = default;
 
-        /// @brief グリッド座標をメルカトル座標に変換
+        /// @brief グリッド座標をEPSG:3857(Webメルカトル) 座標に変換
         /// @brief Convert grid coordinate to Mercator coordinate
         /// @param position グリッド座標 / Grid coordinate
-        /// @return メルカトル座標 / Mercator coordinate
-        static paxs::MercatorDeg positionToMercator(const paxs::Vector2<int>& position) {
-            return paxs::MercatorDeg(MapUtils::tilePixelToAngleSpace(
+        /// @return EPSG:3857(Webメルカトル) 座標 / Web Mercator coordinate
+        static paxs::WebMercatorDeg positionToMercator(const paxs::Vector2<int>& position) {
+            return paxs::WebMercatorDeg(MapUtils::tilePixelToAngleSpace(
                 SimulationConstants::getInstance().getStartArea(),
                 position,
                 ZOOM_LEVEL
@@ -330,7 +330,7 @@ namespace paxs {
             const auto area_height = SimulationConstants::getInstance().getEndArea().y -
                 SimulationConstants::getInstance().getStartArea().y;
 
-            const paxs::MercatorDeg start_coordinate = positionToMercator(paxs::Vector2<int>(0, 0));
+            const paxs::WebMercatorDeg start_coordinate = positionToMercator(paxs::Vector2<int>(0, 0));
             const paxg::Vec2f draw_start_pos = paxg::Vec2f{
                 static_cast<float>((start_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
                     map_view_size.x * double(paxg::Window::width())),
@@ -339,7 +339,7 @@ namespace paxs {
                         map_view_size.y * double(paxg::Window::height())))
             };
 
-            const paxs::MercatorDeg end_coordinate = positionToMercator(
+            const paxs::WebMercatorDeg end_coordinate = positionToMercator(
                 paxs::Vector2<int>(area_width * 256, area_height * 256));
             const paxg::Vec2f draw_end_pos = paxg::Vec2f{
                 static_cast<float>((end_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
@@ -349,7 +349,7 @@ namespace paxs {
                         map_view_size.y * double(paxg::Window::height())))
             };
 
-            const paxs::MercatorDeg tile_coordinate = positionToMercator(
+            const paxs::WebMercatorDeg tile_coordinate = positionToMercator(
                 paxs::Vector2<int>(SimulationConstants::getInstance().cell_group_length,
                     SimulationConstants::getInstance().cell_group_length));
             const paxg::Vec2f tile_pos = paxg::Vec2f{

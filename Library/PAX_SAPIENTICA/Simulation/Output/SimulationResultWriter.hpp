@@ -90,7 +90,7 @@ namespace paxs {
         /// @brief Get current date and time as string
         /// @return YYYY-MM-DD-HH-MM-SS 形式の文字列 / String in YYYY-MM-DD-HH-MM-SS format
         std::string calcDateTime() const {
-            return TimeUtils::getCurrentDateTime("%Y-%m-%d-%H-%M-%S");
+            return TimeUtils::getFilenameSafeDateTime();
         }
 
         /// @brief ファイルストリームを閉じる

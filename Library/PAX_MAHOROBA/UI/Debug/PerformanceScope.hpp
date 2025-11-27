@@ -13,10 +13,11 @@
 #define PAX_MAHOROBA_UI_DEBUG_PERFORMANCE_SCOPE_HPP
 
 #ifdef PAXS_DEVELOPMENT
-#include <chrono>
 #include <string>
 
 #include <PAX_MAHOROBA/UI/Debug/PerformanceProfiler.hpp>
+
+#include <PAX_SAPIENTICA/Utility/TimeUtils.hpp>
 
 namespace paxs {
 
@@ -25,9 +26,9 @@ namespace paxs {
 /// @details コンストラクタで計測開始、デストラクタで計測終了
 class PerformanceScope {
 private:
-    std::string scope_name_;                          ///< スコープ名 / Scope name
-    std::chrono::steady_clock::time_point start_time_; ///< 開始時刻 / Start time
-    bool active_;                                     ///< アクティブフラグ / Active flag
+    std::string scope_name_;                   ///< スコープ名 / Scope name
+    paxs::TimeUtils::PerformanceTimePoint start_time_; ///< 開始時刻 / Start time
+    bool active_;                              ///< アクティブフラグ / Active flag
 
 public:
     /// @brief コンストラクタ（計測開始）

@@ -24,15 +24,12 @@
 
 namespace paxs {
 
-    constexpr double days_in_a_year = 365.2425;
-    constexpr double julian_day_on_m1_1_1 = 1721060.0;
-
     // 地物の位置情報
     struct LocationPoint {
         explicit LocationPoint() = default;
         explicit LocationPoint(
             std::string  key_,  // 地物の一意キー
-            const paxs::MercatorDeg& coordinate_,  // 経緯度
+            const paxs::WebMercatorDeg& coordinate_,  // 経緯度
             const double overall_length_,  // 全長
             const Range<double>& zoom_range_,  // 表示するズームレベル範囲
             const Range<double>& year_range_,  // 可視化する時代範囲
@@ -47,7 +44,7 @@ namespace paxs {
             extra_data(extra_data_){}
 
         std::string key;  // 地物の一意キー（TSVのkeyカラムから）
-        paxs::MercatorDeg coordinate; // 経緯度
+        paxs::WebMercatorDeg coordinate; // 経緯度
         double overall_length = 10; // 全長
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
         Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
@@ -77,8 +74,8 @@ namespace paxs {
     struct LocationPointGroup {
         std::vector<LocationPoint> location_point_list; // 地物の一覧
 
-        paxs::MercatorDeg start_coordinate; // 経緯度
-        paxs::MercatorDeg end_coordinate; // 経緯度
+        paxs::WebMercatorDeg start_coordinate; // 経緯度
+        paxs::WebMercatorDeg end_coordinate; // 経緯度
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
         Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("place_name"); // 地物の種別を識別するハッシュ値（例: "tomb", "site", "person"）
@@ -87,8 +84,8 @@ namespace paxs {
         explicit LocationPointGroup() = default;
         explicit LocationPointGroup(
             const std::vector<LocationPoint>& location_point_list_,  // 地物
-            paxs::MercatorDeg start_coordinate_, // 経緯度
-            paxs::MercatorDeg end_coordinate_, // 経緯度
+            paxs::WebMercatorDeg start_coordinate_, // 経緯度
+            paxs::WebMercatorDeg end_coordinate_, // 経緯度
             const Range<double>& zoom_range_,  // 表示するズームレベル範囲
             const Range<double>& year_range_,  // 可視化する時代範囲
             const std::uint_least32_t feature_type_hash_,  // 地物の種別を識別するハッシュ値

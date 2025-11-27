@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_UI_DEBUG_DEBUG_PERFORMANCE_MONITOR_HPP
 
 #include <algorithm>
-#include <chrono>
 #include <deque>
 #include <string>
 #include <vector>
@@ -27,6 +26,8 @@
 #include <PAX_MAHOROBA/UI/Debug/PerformanceProfiler.hpp>
 #include <PAX_MAHOROBA/UI/Debug/PerformanceScopeData.hpp>
 
+#include <PAX_SAPIENTICA/Utility/TimeUtils.hpp>
+
 namespace paxs {
 
 /// @brief パフォーマンスモニター（FPS、メモリ使用量などを表示）
@@ -37,7 +38,7 @@ private:
 
     // FPS計測用
     std::deque<double> frame_times_;
-    std::chrono::steady_clock::time_point last_frame_time_;
+    paxs::TimeUtils::PerformanceTimePoint last_frame_time_;
     double fps_ = 0.0;
     double frame_time_ms_ = 0.0;
 
@@ -46,7 +47,7 @@ private:
     static constexpr std::size_t MAX_FPS_HISTORY = 120;  // 2秒分（60FPS想定）
 
     // 更新間隔
-    std::chrono::steady_clock::time_point last_update_time_;
+    paxs::TimeUtils::PerformanceTimePoint last_update_time_;
     static constexpr double UPDATE_INTERVAL = 0.5;  // 0.5秒ごとに更新
 
     // 表示モード
@@ -67,7 +68,7 @@ private:
 
 public:
     DebugPerformanceMonitor() {
-        last_frame_time_ = std::chrono::steady_clock::now();
+        last_frame_time_ = paxs::TimeUtils::now();
         last_update_time_ = last_frame_time_;
     }
 
@@ -76,11 +77,10 @@ public:
     /// @brief 更新処理（毎フレーム呼び出し）
     /// @brief Update process (called every frame)
     void update() {
-        auto current_time = std::chrono::steady_clock::now();
+        auto current_time = paxs::TimeUtils::now();
 
         // フレーム時間を計測
-        std::chrono::duration<double> frame_duration = current_time - last_frame_time_;
-        double frame_time = frame_duration.count();
+        double frame_time = paxs::TimeUtils::getDifferenceSeconds(last_frame_time_, current_time);
         last_frame_time_ = current_time;
 
         // フレーム時間を記録
@@ -90,8 +90,8 @@ public:
         }
 
         // 定期的にFPSを更新
-        std::chrono::duration<double> update_duration = current_time - last_update_time_;
-        if (update_duration.count() >= UPDATE_INTERVAL) {
+        double update_elapsed = paxs::TimeUtils::getDifferenceSeconds(last_update_time_, current_time);
+        if (update_elapsed >= UPDATE_INTERVAL) {
             calculateFPS();
             last_update_time_ = current_time;
 

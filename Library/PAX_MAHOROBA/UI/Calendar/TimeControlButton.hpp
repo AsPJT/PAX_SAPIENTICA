@@ -22,6 +22,7 @@
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
+#include <PAX_SAPIENTICA/Core/Calendar/Calendar.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
@@ -286,9 +287,9 @@ namespace paxs {
                 paxs::EventBus::getInstance().publish(TimePlaybackControlEvent(Action::Forward));
             } else {
                 // 日付移動系
-                constexpr double day   = 1.0;
-                constexpr double month = 365.2422 / 12.0;
-                constexpr double year  = 365.2422;
+                constexpr double day   = paxs::Calendar<double>::daysInTropicalDay();
+                constexpr double month = paxs::Calendar<double>::daysInTropicalMonth();
+                constexpr double year  = paxs::Calendar<double>::daysInTropicalYear();
 
                 // ボタンIDから日数を計算
                 const double days_map[] = {

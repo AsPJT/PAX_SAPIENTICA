@@ -26,6 +26,7 @@ enum class FeatureType : std::uint_least8_t {
     Settlement,       ///< 集落 / Settlement
     Model3D,          ///< 3Dモデル（古墳の石室など） / 3D model (burial chamber, etc.)
     Territory,        ///< 領域（国や文化圏などのスプライン曲線） / Territory (spline curves for countries, cultural areas, etc.)
+    FlowCurve,        ///< フロー曲線（移動や交易などを示すスプライン曲線） / Flow curve (spline curves for movement, trade, etc.)
 };
 
 } // namespace paxs

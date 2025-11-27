@@ -13,7 +13,6 @@
 #define PAX_MAHOROBA_UI_DEBUG_DEBUG_NOTIFICATION_MANAGER_HPP
 
 #include <algorithm>
-#include <chrono>
 #include <deque>
 #include <string>
 
@@ -27,6 +26,7 @@
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
 #include <PAX_SAPIENTICA/System/EventBus.hpp>
+#include <PAX_SAPIENTICA/Utility/TimeUtils.hpp>
 
 namespace paxs {
 
@@ -157,10 +157,7 @@ public:
     }
 
     double getCurrentTime() const {
-        using namespace std::chrono;
-        auto now = steady_clock::now();
-        auto duration = now.time_since_epoch();
-        return duration_cast<milliseconds>(duration).count() / 1000.0;
+        return paxs::TimeUtils::getCurrentTimestampMillis() / 1000.0;
     }
 
 private:

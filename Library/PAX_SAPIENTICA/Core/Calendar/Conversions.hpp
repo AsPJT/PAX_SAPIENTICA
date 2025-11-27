@@ -31,15 +31,6 @@ struct CalendarConversions {
              + (year - static_cast<T>(1)) * CalendarConstants<T>::daysInYearGregorian();
     }
 
-    /// @brief 年をユリウス日に変換（平年 365 日を用いた簡易近似）
-    /// @brief Convert calendar year to Julian Date (simple approx., using 365-day common year)
-    /// @param year 西暦年
-    /// @return ユリウス日（0001-01-01 00:00 UT を基準とした近似値）
-    constexpr static T yearToJulianDayCommon(const T year) noexcept {
-        return CalendarConstants<T>::jdOfGregorianYear1Start()
-             + (year - static_cast<T>(1)) * CalendarConstants<T>::daysInYearCommon();
-    }
-
     /// @brief 年をユリウス日に変換（平均太陽年を使用した近似）
     /// @brief Convert calendar year to Julian Date (approx., using tropical year length)
     /// @param year 西暦年
@@ -58,16 +49,6 @@ struct CalendarConversions {
         return static_cast<T>(1)
              + (julianDay - CalendarConstants<T>::jdOfGregorianYear1Start())
              / CalendarConstants<T>::daysInYearGregorian();
-    }
-
-    /// @brief ユリウス日を年に変換（平年 365 日を用いた簡易近似）
-    /// @brief Convert Julian Date to calendar year (simple approx., using 365-day common year)
-    /// @param julianDay ユリウス日
-    /// @return 近似的な西暦年
-    constexpr static T julianDayToYearCommon(const T julianDay) noexcept {
-        return static_cast<T>(1)
-             + (julianDay - CalendarConstants<T>::jdOfGregorianYear1Start())
-             / CalendarConstants<T>::daysInYearCommon();
     }
 
     /// @brief ユリウス日を年に変換（平均太陽年を使用した近似）

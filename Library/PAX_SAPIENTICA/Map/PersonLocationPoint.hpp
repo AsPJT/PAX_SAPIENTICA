@@ -28,8 +28,8 @@ namespace paxs {
         explicit PersonLocationPoint() = default;
         explicit PersonLocationPoint(
             std::string  key_,  // 人物の一意キー
-            const paxs::MercatorDeg& start_coordinate_,
-            const paxs::MercatorDeg& end_coordinate_,
+            const paxs::WebMercatorDeg& start_coordinate_,
+            const paxs::WebMercatorDeg& end_coordinate_,
             const Range<double>& zoom_range_,
             const Range<double>& year_range_,
             const std::uint_least32_t feature_type_hash_,
@@ -39,8 +39,8 @@ namespace paxs {
             zoom_range(zoom_range_), year_range(year_range_), feature_type_hash(feature_type_hash_), texture_key(texture_key_) {}
 
         std::string key;  // 人物の一意キー
-        paxs::MercatorDeg start_coordinate; // 開始時の経緯度
-        paxs::MercatorDeg end_coordinate; // 終了時の経緯度
+        paxs::WebMercatorDeg start_coordinate; // 開始時の経緯度
+        paxs::WebMercatorDeg end_coordinate; // 終了時の経緯度
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲
         Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代（古い年～新しい年）
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("person"); // 地物の種別を識別するハッシュ値

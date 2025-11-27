@@ -20,6 +20,7 @@
 #include <PAX_SAPIENTICA/Calendar/ChineseEra.hpp>
 #include <PAX_SAPIENTICA/Calendar/Date.hpp>
 #include <PAX_SAPIENTICA/Calendar/JapaneseEra.hpp>
+#include <PAX_SAPIENTICA/Core/Calendar/Calendar.hpp>
 
 namespace paxs::cal {
 
@@ -85,8 +86,8 @@ namespace paxs::cal {
             double L = static_cast<double>(static_cast<std::int_least64_t>(day) + 1402);
             const double N = std::floor((L - 1) / 1461);
             L = L - 1461 * N;
-            const double I = std::floor((L - 1) / 365) - std::floor(L / 1461);
-            L = L - 365 * I + 30;
+            const double I = std::floor((L - 1) / paxs::Calendar<int>::daysInYearCommon()) - std::floor(L / 1461);
+            L = L - (paxs::Calendar<int>::daysInYearCommon() * I) + 30;
             const double J = std::floor(80 * L / 2447);
             ymd.setDay(static_cast<DateDay>(L - std::floor(2447 * J / 80)));
             L = std::floor(J / 11);

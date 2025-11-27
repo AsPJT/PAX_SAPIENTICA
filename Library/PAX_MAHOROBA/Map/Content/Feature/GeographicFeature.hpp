@@ -13,6 +13,7 @@
 #define PAX_MAHOROBA_GEOGRAPHIC_FEATURE_HPP
 
 #include <string>
+#include <utility>
 
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
@@ -37,14 +38,15 @@ namespace paxs {
 
 /// @brief 地理的地物（アイコン）を表す地物クラス
 /// @brief Feature class representing a geographic feature (icon)
-/// @details 空間更新のみ必要（時間・ローカライゼーションは不要）
-class GeographicFeature : public MapFeature, public ISpatiallyUpdatable {
+class GeographicFeature : public MapFeature,
+                          public ISpatiallyUpdatable,
+                          public ITemporallyUpdatable {
 public:
     /// @brief コンストラクタ
     /// @brief Constructor
     /// @param data 地物の位置データ / Geographic feature location data
-    GeographicFeature(const LocationPoint& data)
-        : data_(data) {
+    GeographicFeature(LocationPoint  data)
+        : data_(std::move(data)) {
         visible_ = true;
     }
 
@@ -80,7 +82,22 @@ public:
         return data_.feature_type_hash;
     }
 
-    // ========== 状態管理 / State Management ==========
+    /// @brief 時間的更新（ITemporallyUpdatableの実装）
+    /// @brief Temporal update (ITemporallyUpdatable implementation)
+    void updateTemporal(const TemporalContext& context) override {
+        const bool previous_in_time_range = in_time_range_;
+        in_time_range_ = isInTimeRange(context.jdn);
+        if (!in_time_range_) {
+            // 時間範囲外なら可視化しない
+            return;
+        }
+        if (previous_in_time_range == in_time_range_) {
+            // 可視性が変化した場合のみ更新
+            return;
+        }
+
+        updateSpatial(context.toSpatial());
+    }
 
     /// @brief 空間的更新（ISpatiallyUpdatableの実装）
     /// @brief Spatial update (ISpatiallyUpdatable implementation)
@@ -193,6 +210,7 @@ private:
     int cached_display_size_ = 50;                     ///< 表示サイズ / Display size
     Vector2<int> cached_texture_size_{50, 50};         ///< キャッシュされたテクスチャサイズ / Cached texture size
     bool visible_ = true;                              ///< 可視性 / Visibility
+    bool in_time_range_ = true;  ///< 時間範囲内か / Whether within time range
 };
 
 } // namespace paxs

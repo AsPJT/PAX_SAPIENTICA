@@ -61,11 +61,11 @@ private:
                 PAXS_WARNING("Longitude must be between 0.0 and 180.0");
                 return;
             }
-            // メルカトル座標に変換
+            // EPSG:3857(Webメルカトル) 座標に変換
             const Vector2<double> map_viewport_center = app_state.getMapViewport().getCenter();
             paxs::Vector2<double> equirect_coords(longitude, map_viewport_center.y);
-            paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-            app_state.setViewportCenter(Vector2<double>(mercator_coords.getX(), map_viewport_center.y));
+            paxs::WebMercatorDeg mercator_coords = paxs::WebMercatorDeg(paxs::EPSG4326_WGS84Deg(equirect_coords));
+            app_state.setViewportCenter(Vector2<double>(mercator_coords.x, map_viewport_center.y));
         });
 
         // y <latitude>: 緯度を設定（範囲: 0.0～90.0）
@@ -84,11 +84,11 @@ private:
                 PAXS_WARNING("Latitude must be between 0.0 and 90.0");
                 return;
             }
-            // メルカトル座標に変換
+            // EPSG:3857(Webメルカトル) 座標に変換
             const Vector2<double> map_viewport_center = app_state.getMapViewport().getCenter();
             paxs::Vector2<double> equirect_coords(map_viewport_center.x, latitude);
-            paxg::Coordinate mercator_coords = paxs::MercatorDeg(paxs::EquirectangularDeg(equirect_coords));
-            app_state.setViewportCenter(Vector2<double>(map_viewport_center.x, mercator_coords.getY()));
+            paxs::WebMercatorDeg mercator_coords = paxs::WebMercatorDeg(paxs::EPSG4326_WGS84Deg(equirect_coords));
+            app_state.setViewportCenter(Vector2<double>(map_viewport_center.x, mercator_coords.y));
         });
 
         // z <zoom>: 拡大率を設定

@@ -49,7 +49,7 @@ public:
     /// @param context 時間的コンテキスト / Temporal context
     /// @details 以下の処理を実行する:
     /// @details - 時間補間座標の計算（PersonFeatureなど移動する地物）
-    /// @details - 時間範囲チェック
+    /// @details - 時間範囲チェック（呼び出し側で除外しないので、地物側で処理する）
     virtual void updateTemporal(const TemporalContext& context) = 0;
 };
 

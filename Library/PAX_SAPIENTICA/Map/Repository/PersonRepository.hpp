@@ -151,14 +151,14 @@ namespace paxs {
                 // 格納
                 person_location_list.emplace_back(
                     person_key,
-                    paxs::EquirectangularDeg(
+                    paxs::EPSG4326_WGS84Deg(
                         paxs::Vector2<double>(
                             start_point_longitude, // 経度
-                            start_point_latitude)).toMercatorDeg(), // 緯度
-                    paxs::EquirectangularDeg(
+                            start_point_latitude)).toWebMercatorDeg(), // 緯度
+                    paxs::EPSG4326_WGS84Deg(
                         paxs::Vector2<double>(
                             end_point_longitude, // 経度
-                            end_point_latitude)).toMercatorDeg(), // 緯度
+                            end_point_latitude)).toWebMercatorDeg(), // 緯度
                     Range<double>(
                         StringUtils::safeStod(min_size_str, params.zoom_range.minimum, true),
                         StringUtils::safeStod(max_size_str, params.zoom_range.maximum, true)

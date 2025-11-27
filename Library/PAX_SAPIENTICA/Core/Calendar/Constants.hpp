@@ -22,6 +22,10 @@ struct CalendarConstants {
     /// @brief Average days in a year in the Gregorian calendar (including leap years)
     constexpr static T daysInYearGregorian() noexcept { return static_cast<T>(365.2425); }
 
+    /// @brief ユリウス暦における1年の平均日数（閏年を含む）
+    /// @brief Average days in a year in the Julian calendar (including leap years)
+    constexpr static T daysInYearJulian() noexcept { return static_cast<T>(365.25); }
+
     /// @brief 一般的な1年の日数（平年の日数）
     /// @brief Common days in a year (non-leap year)
     constexpr static T daysInYearCommon() noexcept { return static_cast<T>(365); }
@@ -29,6 +33,14 @@ struct CalendarConstants {
     /// @brief 平均太陽年（tropical year）の長さ（日）
     /// @brief Length of the tropical year (mean solar year), in days
     constexpr static T daysInTropicalYear() noexcept { return static_cast<T>(365.24219); }
+
+    /// @brief 平均太陽年（tropical year）の一月の長さ（日）
+    /// @brief Length of the tropical year (mean solar year), in days per month
+    constexpr static T daysInTropicalMonth() noexcept { return daysInTropicalYear() / static_cast<T>(12); }
+
+    /// @brief 平均太陽年（tropical year）の一日の長さ（日）
+    /// @brief Length of the tropical year (mean solar year), in days per day
+    constexpr static T daysInTropicalDay() noexcept { return static_cast<T>(1); }
 
     /// @brief 紀元1年1月1日 00:00 UT のユリウス日（プロレプティック・グレゴリオ暦）
     /// @brief Julian Date for 0001-01-01 00:00 UT (Proleptic Gregorian calendar)
