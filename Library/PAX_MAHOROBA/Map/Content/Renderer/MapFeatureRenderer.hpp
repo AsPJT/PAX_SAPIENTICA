@@ -20,6 +20,7 @@
 #include <PAX_GRAPHICA/Texture.hpp>
 
 #include <PAX_MAHOROBA/Map/Content/Feature/FeatureType.hpp>
+#include <PAX_MAHOROBA/Map/Content/Feature/FlowCurveFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/GenomeFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/GeographicFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
@@ -73,6 +74,9 @@ public:
                 break;
             case FeatureType::Territory:
                 drawTerritory(static_cast<const TerritoryFeature&>(*feature));
+                break;
+            case FeatureType::FlowCurve:
+                drawFlowCurve(static_cast<const FlowCurveFeature&>(*feature));
                 break;
             default:
                 break;
@@ -304,6 +308,15 @@ private:
     static void drawTerritory(const TerritoryFeature& feature) {
         // TerritoryFeatureの描画メソッドを呼び出し
         // Call TerritoryFeature's rendering method
+        feature.renderSpline();
+    }
+
+    /// @brief フロー曲線地物を描画（スプライン曲線）
+    /// @brief Draw flow curve feature (spline curve)
+    /// @param feature フロー曲線地物 / Flow curve feature
+    static void drawFlowCurve(const FlowCurveFeature& feature) {  // constに戻す
+        // FlowCurveFeatureの描画メソッドを呼び出し（アニメーション更新含む）
+        // Call FlowCurveFeature's rendering method (includes animation update)
         feature.renderSpline();
     }
 

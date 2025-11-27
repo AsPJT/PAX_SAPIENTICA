@@ -17,6 +17,7 @@
 #include <memory>
 #include <vector>
 
+#include <PAX_MAHOROBA/Map/Content/Feature/FlowCurveFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/GenomeFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/GeographicFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
@@ -27,6 +28,7 @@
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/IO/Data/KeyValueTSV.hpp>
+#include <PAX_SAPIENTICA/Map/Repository/FlowCurveRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/GenomeRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/GeographicFeatureRepository.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/PersonRepository.hpp>
@@ -41,7 +43,7 @@ namespace paxs {
     ///
     /// 責務:
     /// - features_の管理
-    /// - データ読み込み（Person, Geographic, PlaceName, Genome, Territory）
+    /// - データ読み込み（Person, Geographic, PlaceName, Genome, Territory, FlowCurve）
     /// - Feature検索（ID検索、座標検索）
     /// - asset_registry_の管理
     class FeatureCollectionManager {
@@ -137,6 +139,23 @@ namespace paxs {
             }
         }
 
+        /// @brief フロー曲線データを読み込み
+        /// @brief Load flow curve features
+        void loadFlowCurveFeatures() {
+            // 容量を事前確保
+            const std::size_t current_capacity = features_.capacity();
+            const std::size_t estimated_flow_arrow_count = 100;
+            features_.reserve(current_capacity + estimated_flow_arrow_count);
+
+            // FlowCurveFeatureに変換
+            auto all_flow_arrows = FlowCurveRepository::loadFlowCurveList();
+            for (const auto& [flow_arrow_data, flow_arrow_group] : all_flow_arrows) {
+                features_.emplace_back(
+                    std::make_unique<FlowCurveFeature>(flow_arrow_data, flow_arrow_group)
+                );
+            }
+        }
+
     public:
         FeatureCollectionManager() = default;
         ~FeatureCollectionManager() = default;
@@ -157,10 +176,13 @@ namespace paxs {
                 asset_registry_.loadMapIcons(map_icons_path);
             }
 
-            // 描画順序: 領域 → 地名 → ゲノム → 地理 → 人物
-            // Territories are drawn first (background layer)
+            // 描画順序: 領域 → フロー曲線 → 地名 → ゲノム → 地理 → 人物
+            // Territories are drawn first (background layer), then flow curves
             loadTerritoryFeatures();
             std::cout << "Territory features loaded: " << features_.size() << "\n";
+
+            loadFlowCurveFeatures();
+            std::cout << "Flow curve features loaded: " << features_.size() << " total\n";
 
             loadPlaceNameFeatures();
             std::cout << "Place name features loaded: " << features_.size() << " total\n";
