@@ -13,11 +13,11 @@
 
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 
-const paxs::MercatorDeg mercatorDeg({0.0, 0.0});
+const paxs::WebMercatorDeg mercatorDeg({0.0, 0.0});
 
 TEST (MapProjectionUnitTest, toEquirectangularRadY) {
     double expected = 0.0;
-    double actual = mercatorDeg.toEquirectangularRadY();
+    double actual = mercatorDeg.toEPSG4326_WGS84RadY();
     ASSERT_EQ(expected, actual);
 }
 

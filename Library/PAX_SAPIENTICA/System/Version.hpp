@@ -37,11 +37,6 @@
 #define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.4.0 MAKEMAKE"
 #endif
 
-//char name[
-//	10
-//		+ ((PAX_SAPIENTICA_LIBRARY_PATCHLEVEL >= 10) ? 1 : 0)
-//];
-
 /*##########################################################################################
 	更新履歴
 	バージョン	| 更新日		| 概要
