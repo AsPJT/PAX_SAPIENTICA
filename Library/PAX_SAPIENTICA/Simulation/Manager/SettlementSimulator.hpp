@@ -359,7 +359,11 @@ namespace paxs {
                         continue;
                     }
 
-                    auto [target_id, current_key, target_key] = settlements[i].move(gen, japan_provinces->getDistrict(environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, settlements[i].getPosition())));
+                    auto [target_id, current_key, target_key] = settlements[i].move(
+                        gen,
+                        japan_provinces->getDistrict(environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, settlements[i].getPosition())),
+                        japan_provinces.get()
+                    );
 
                     if (target_id != 0) {
                         move_list.emplace_back(target_id, current_key, target_key);
@@ -375,7 +379,7 @@ namespace paxs {
 
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
-                    settlement.preUpdate(kanakuma_life_span);
+                    settlement.preUpdate(kanakuma_life_span, japan_provinces.get());
                 }
             }
             // 渡来期間
@@ -431,7 +435,8 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     settlement.marriage(
                         close_settlements_list,
-                        marriage_pos_list
+                        marriage_pos_list,
+                        japan_provinces.get()
                     );
                 }
             }

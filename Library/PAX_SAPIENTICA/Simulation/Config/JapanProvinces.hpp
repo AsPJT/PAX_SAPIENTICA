@@ -57,6 +57,7 @@ namespace paxs {
             double increased_immigration = 0;
             std::uint_least32_t mtdna_region_hash = 0;
             std::uint_least32_t language_region_hash = 0;
+            std::uint_least8_t agricultural_capable = 1; // 農耕が可能か (1: 可能, 0: 不可能)
 
             std::uint_least32_t direction_min_distance = 100;
             // std::array<double, 8> direction_weight{};
@@ -233,6 +234,7 @@ namespace paxs {
             static const std::uint_least32_t language_region_hash_key = MurMur3::calcHash("language_region");
             static const std::uint_least32_t direction_min_distance_hash = MurMur3::calcHash("direction_min_distance");
             static const std::uint_least32_t directions_hash = MurMur3::calcHash("directions");
+            static const std::uint_least32_t agricultural_capable_hash = MurMur3::calcHash("agricultural_capable");
 
             if (!table.hasColumn(id_hash) || !table.hasColumn(name_hash) ||
                 !table.hasColumn(region_hash) || !table.hasColumn(language_hash) ||
@@ -263,6 +265,7 @@ namespace paxs {
                 district.immigrant_f64 = static_cast<double>(district.immigrant);
                 district.increased_immigration = StringUtils::safeStod(table.get(row, increased_immigration_hash), 0.0, true);
                 district.direction_min_distance = static_cast<std::uint_least32_t>(std::stoul(table.get(row, direction_min_distance_hash)));
+                district.agricultural_capable = static_cast<std::uint_least8_t>(std::stoul(table.get(row, agricultural_capable_hash)));
 
                 std::vector<std::string> direction_split = paxs::StringUtils::split(table.get(row, directions_hash), '/');
                 for (std::size_t di = 0; di < direction_split.size() && di < 8; ++di) {
