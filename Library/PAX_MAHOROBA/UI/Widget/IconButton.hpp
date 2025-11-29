@@ -13,7 +13,9 @@
 #ifndef PAX_MAHOROBA_UI_ICON_BUTTON_HPP
 #define PAX_MAHOROBA_UI_ICON_BUTTON_HPP
 
+#include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
+#include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
@@ -38,9 +40,47 @@ namespace paxs {
             if (!icon_textures.isSuccessfullyLoaded()) return;
             if (!icon_textures.contains(icon_texture_path_hash)) return;
 
+            // ボタン状態に応じた背景を描画（3pxのマージン付き）
+            constexpr int margin = 3;
+            if (is_pressed) {
+                // 押された時: 濃い灰色 (RGB: 213, 213, 213)
+                paxg::RoundRect background(
+                    rect.x() - margin,
+                    rect.y() - margin,
+                    rect.width() + (margin * 2),
+                    rect.height() + (margin * 2)
+                );
+                background.draw(paxg::Color(213, 213, 213));
+            }
+            else if (is_hovered) {
+                // ホバー時: 薄い灰色 (RGB: 228, 228, 228)
+                paxg::RoundRect background(
+                    rect.x() - margin,
+                    rect.y() - margin,
+                    rect.width() + (margin * 2),
+                    rect.height() + (margin * 2)
+                );
+                background.draw(paxg::Color(228, 228, 228));
+            }
+
+            // アイコンを描画
             icon_textures.at(icon_texture_path_hash).resizedDraw(rect.width(),
                 paxg::Vec2i{ rect.x(), rect.y() }
             );
+        }
+
+        EventHandlingResult handleEvent(const MouseEvent& event) override {
+            if (!isVisible()) {
+                is_hovered = false;
+                is_pressed = false;
+                return EventHandlingResult::NotHandled();
+            }
+
+            // ホバー状態を更新
+            is_hovered = isHit(event.pos);
+            is_pressed = is_hovered && (event.left_button_state != MouseButtonState::None);
+
+            return EventHandlingResult::NotHandled();
         }
 
         Rect<int> getRect() const override { return rect; }
@@ -56,6 +96,9 @@ namespace paxs {
         const char* name;
 
         paxs::Rect<int> rect;
+
+        mutable bool is_hovered = false;
+        mutable bool is_pressed = false;
 
         inline static paxs::KeyValueTSV<paxg::Texture> icon_textures;
 

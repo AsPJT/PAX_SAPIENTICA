@@ -23,7 +23,7 @@ From the project root directory, run the vcpkg setup script:
 
 ```bash
 cd /path/to/PAX_SAPIENTICA
-./Scripts/setup_vcpkg_linux.sh
+./Scripts/SetupVcpkgLinux.sh
 ```
 
 このスクリプトは以下を自動的に実行します：

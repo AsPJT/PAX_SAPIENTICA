@@ -79,8 +79,7 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (event.left_button_state == MouseButtonState::Held ||
-                event.left_button_state == MouseButtonState::Released) {
+            if (event.left_button_state != MouseButtonState::Pressed) {
                 return EventHandlingResult::Handled();
             }
 

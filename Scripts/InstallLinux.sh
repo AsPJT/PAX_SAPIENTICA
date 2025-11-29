@@ -68,7 +68,7 @@ if [ "$SFML_AVAILABLE" = false ]; then
     echo "You have two options:"
     echo ""
     echo "Option 1: Use vcpkg (recommended)"
-    echo "  Run: ./Scripts/setup_vcpkg_linux.sh"
+    echo "  Run: ./Scripts/SetupVcpkgLinux"
     echo "  Then run this script again"
     echo ""
     echo "Option 2: Install system SFML"

@@ -18,6 +18,7 @@
 
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
+// TODO: メニューバーキー定数群を整理する
 namespace paxs {
 
     /// @brief メニュー項目識別子の基底クラス（CRTP）
