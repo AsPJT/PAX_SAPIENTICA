@@ -94,7 +94,7 @@ namespace paxs {
         /// @brief レイアウトを更新（フォント変更時などに呼び出す）
         /// @brief Update layout (call when font changes, etc.)
         void updateLayout() {
-            paxg::Font* one_font = Fonts().getFont(FontProfiles::PULLDOWN);
+            paxg::Font* one_font = Fonts().getFont(FontProfiles::pulldown);
             if (one_font == nullptr) {
                 rect.setH(static_cast<float>(paxg::FontConfig::PULLDOWN_FONT_SIZE) * 2.f);
             }
@@ -120,7 +120,7 @@ namespace paxs {
                 }
 
                 const std::uint_least32_t font_key = (is_one_font ? items_key[i] : Fonts().getSelectedLanguageKey());
-                paxg::Font* item_font = Fonts().getFont(font_key, FontProfiles::PULLDOWN);
+                paxg::Font* item_font = Fonts().getFont(font_key, FontProfiles::pulldown);
                 if (item_font == nullptr) {
                     PAXS_WARNING("Pulldown: Missing font for item.");
                     continue;
@@ -311,7 +311,7 @@ namespace paxs {
 
                 if (str == nullptr || str->size() == 0) return;
 
-                paxg::Font* one_font = Fonts().getFont(select_key, FontProfiles::PULLDOWN);
+                paxg::Font* one_font = Fonts().getFont(select_key, FontProfiles::pulldown);
                 if (one_font == nullptr) {
                     PAXS_WARNING("Pulldown::render: Font not found.");
                     return;
@@ -328,7 +328,7 @@ namespace paxs {
 
                 if (str0 == nullptr || str0->size() == 0) return;
 
-                paxg::Font* one_font = Fonts().getFont(select_key, FontProfiles::PULLDOWN);
+                paxg::Font* one_font = Fonts().getFont(select_key, FontProfiles::pulldown);
                 if (one_font == nullptr) return;
                 // 文字を描画
                 (*one_font).draw(
@@ -359,7 +359,7 @@ namespace paxs {
                 }
                 const std::uint_least32_t select_font_key = ((is_one_font) ? items_key[i] : Fonts().getSelectedLanguageKey());
 
-                paxg::Font* one_font = Fonts().getFont(select_font_key, FontProfiles::PULLDOWN);
+                paxg::Font* one_font = Fonts().getFont(select_font_key, FontProfiles::pulldown);
                 if (one_font == nullptr) {
                     continue;
                 }

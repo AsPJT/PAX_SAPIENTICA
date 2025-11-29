@@ -16,6 +16,7 @@
 
 #include <PAX_SAPIENTICA/Core/Math/Math.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 
 namespace paxs {
 
@@ -104,6 +105,18 @@ namespace paxs {
         }
         // EPSG:4326(WGS84) （度）へ変換した値を返す
         operator EPSG4326_WGS84Deg() const noexcept;
+
+        static WebMercatorDeg fromXYZTile(const paxs::Vector2<GridType>& start_position, const paxs::Vector2<GridType>& position, const int z) noexcept {
+            const double n = std::pow(2, z); // ズームレベルzにおけるタイル数（2^z）
+            const double pixel_sum = 256 * n; // 全体のピクセル数
+            const double u = (double)position.x / pixel_sum + start_position.x / n; // 正規化座標 u (0～1)
+            const double v = (double)position.y / pixel_sum + start_position.y / n; // 正規化座標 v (0～1)
+
+            const double x = u * Math<double>::deg360() - Math<double>::deg180(); // X座標 (-180～180)
+            const double y = -v * Math<double>::deg360() + Math<double>::deg180(); // Y座標 (-180～180)
+
+            return WebMercatorDeg(paxs::Vector2<double>(x, y));
+        }
     };
 
     // EPSG:4326(WGS84) （度）
@@ -132,6 +145,7 @@ namespace paxs {
     }
 
     // 個別の変換
+    // TODO: 必要かどうか確認する
     template<typename T>
     struct MapProjection {
         // EPSG:4326(WGS84) （ラジアン）から EPSG:3857(Webメルカトル) へ変換（ラジアン）

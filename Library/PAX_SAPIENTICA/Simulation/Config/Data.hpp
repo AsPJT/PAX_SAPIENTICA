@@ -102,6 +102,8 @@ namespace paxs {
         int column_size; // シミュレーションの列数
         IProgressReporter* progress_reporter_ = nullptr; // 進捗報告インターフェース / Progress reporter interface
 
+        static constexpr int pixel_size = 256; // ピクセルサイズ / Pixel size
+
         /// @brief Load the file.
         /// @brief ファイルのロード
         void load(const std::string& directory_path) noexcept {
