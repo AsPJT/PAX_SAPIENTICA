@@ -174,7 +174,7 @@ public:
     }
 
     void onClick(const ClickContext& context) override {
-        std::cout << "PlaceName clicked: " << getName() << "\n";
+        // std::cout << "PlaceName clicked: " << getName() << "\n";
         (void)context;
     }
 

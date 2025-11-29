@@ -120,7 +120,7 @@ public:
     // ========== イベント処理 / Event Handling ==========
 
     void onClick(const ClickContext& context) override {
-        std::cout << "3D Model clicked: " << getName() << std::endl;
+        // std::cout << "3D Model clicked: " << getName() << std::endl;
         (void)context;
     }
 

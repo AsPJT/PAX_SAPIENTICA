@@ -165,7 +165,7 @@ public:
     }
 
     void onClick(const ClickContext& context) override {
-        std::cout << "Geographic feature clicked: " << getName() << "\n";
+        // std::cout << "Geographic feature clicked: " << getName() << "\n";
         (void)context;
     }
 

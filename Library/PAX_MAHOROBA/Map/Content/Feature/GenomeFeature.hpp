@@ -197,7 +197,7 @@ public:
     }
 
     void onClick(const ClickContext& context) override {
-        std::cout << "Genome feature clicked: " << getName() << "\n";
+        // std::cout << "Genome feature clicked: " << getName() << "\n";
         (void)context;
     }
 

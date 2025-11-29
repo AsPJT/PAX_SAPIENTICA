@@ -195,8 +195,7 @@ public:
     }
 
     void onClick(const ClickContext& context) override {
-        // クリック時の処理（デバッグ出力）
-        std::cout << "Person clicked: " << getName() << std::endl;
+        // std::cout << "Person clicked: " << getName() << std::endl;
         (void)context;  // 未使用警告を抑制
     }
 

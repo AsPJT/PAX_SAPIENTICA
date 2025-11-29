@@ -93,7 +93,7 @@ public:
         double max_lon = data_.coordinates[0].x;
         double min_lat = data_.coordinates[0].y;
         double max_lat = data_.coordinates[0].y;
-        
+
         for (const auto& coord : data_.coordinates) {
             min_lon = (std::min)(min_lon, coord.x);
             max_lon = (std::max)(max_lon, coord.x);
@@ -199,7 +199,7 @@ public:
         // Convert normalized coordinates to screen coordinates
         cached_screen_points_.clear();
         cached_screen_points_.reserve(normalized_coords.size());
-        
+
         for (const auto& coord : normalized_coords) {
             // スクリーン座標に変換
             const paxg::Vec2<double> screen_pos = MapCoordinateConverter::toScreenPos(
@@ -244,8 +244,7 @@ public:
     }
 
     void onClick(const ClickContext& context) override {
-        // クリック時の処理（デバッグ出力）
-        std::cout << "Territory clicked: " << getName() << std::endl;
+        // std::cout << "Territory clicked: " << getName() << std::endl;
         (void)context;
     }
 

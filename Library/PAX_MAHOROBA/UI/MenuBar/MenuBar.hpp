@@ -230,10 +230,6 @@ namespace paxs {
             menu_system.render();
             language_selector_.render();
 
-            // トグルボタンを描画
-            toggle_button_.update();
-            toggle_button_.render();
-
             // GitHubボタンを描画
             github_button_.render();
         }
@@ -263,11 +259,6 @@ namespace paxs {
                 return language_selector_.handleEvent(event);
             }
 
-            // トグルボタンのマウス入力処理
-            if (toggle_button_.isHit(event.pos)) {
-                return toggle_button_.handleEvent(event);
-            }
-
             // GitHubボタンのマウス入力処理
             if (github_button_.isHit(event.pos)) {
                 return github_button_.handleEvent(event);
@@ -289,7 +280,6 @@ namespace paxs {
     private:
         paxs::Pulldown language_selector_;
         paxs::MenuSystem menu_system;
-        mutable paxs::MenuBarToggleButton toggle_button_;
         paxs::GitHubButton github_button_;
 
         /// @brief イベント購読を設定
@@ -323,12 +313,6 @@ namespace paxs {
                 language_selector_.getRect().x() - github_button_.getRect().width() - github_button_margin,
                     (language_selector_.getRect().height() - github_button_.getRect().height()) / 2
             });
-
-            // トグルボタンをGitHubボタンの左隣に配置
-            toggle_button_.init(
-                github_button_.getRect().x(),
-                language_selector_.getRect().height()
-            );
         }
 
         /// @brief FeatureVisibilityManagerからメニューの初期状態を読み込む
