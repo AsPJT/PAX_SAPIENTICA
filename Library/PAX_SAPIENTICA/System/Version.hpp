@@ -14,7 +14,7 @@
 
 // 正式バージョン数値
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION
-#define PAX_SAPIENTICA_LIBRARY_VERSION (20251110L)
+#define PAX_SAPIENTICA_LIBRARY_VERSION (20251130L)
 #endif
 
 // PAX_SAPIENTICA 主要バージョン ( 0 がテスト版 , 1 から正式リリース版 ) [vX.a.a]
@@ -29,22 +29,33 @@
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (4)
 #endif
 
 // バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.4.0 MAKEMAKE"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.4.4 MAKEMAKE"
 #endif
 
 /*##########################################################################################
 	更新履歴
 	バージョン	| 更新日		| 概要
-	6.0.1.0.X	| 2024/0X/XX	| コピペ用
-    6.0.1.3.14	| 2024/09/04	| GUIシミュレーションの実験繰り返し機能を追加。言語DNA変数の追加。 #136
-    6.0.1.3.13	| 2024/06/02	| SFML3.0.0対応 #134
-	6.0.1.3.12	| 2024/05/18	| シミュレーションモデルを選択するプルダウンメニューを追加 #132
-	6.0.1.3.11	| 2024/05/17	| 警告を解消 #131
+	6.0.1.0.X	| 2026/0X/XX	| コピペ用
+    6.0.1.4.4	| 2025/11/27	| 座標系の整備 #149
+    6.0.1.4.3	| 2025/11/27	| Synchronize unit tests with source files in Library #148
+    6.0.1.4.2	| 2025/11/25	| 多言語対応 #147
+    6.0.1.4.1	| 2025/11/18	| 地物のクリック機能を追加 #146
+    6.0.1.4.0	| 2025/11/10	| v1.4.0 #145
+    6.0.1.3.20	| 2025/11/09	| イベント駆動型に修正 #144
+    6.0.1.3.19	| 2025/11/06	| マウスイベントのハンドリングを修正 #143
+    6.0.1.3.18	| 2025/10/31	| MAHOROBAの依存関係を再設計 #140
+    6.0.1.3.17	| 2025/10/30	| UI周りの責務分離 #139
+    6.0.1.3.16	| 2025/10/29	| refactor: PAX_GRAPHICAとPAX_MAHOROBAの責務分離とコード構成の改善 #138
+    6.0.1.3.15	| 2025/10/28	| refactor: PAX_GRAPHICAの大規模リファクタリング - デザインパターンとモダンC++の適用 #137
+    6.0.1.3.14	| 2025/09/04	| GUIシミュレーションの実験繰り返し機能を追加。言語DNA変数の追加。 #136
+    6.0.1.3.13	| 2025/06/02	| SFML3.0.0対応 #134
+	6.0.1.3.12	| 2025/05/18	| シミュレーションモデルを選択するプルダウンメニューを追加 #132
+	6.0.1.3.11	| 2025/05/17	| 警告を解消 #131
     6.0.1.3.10  | 2025/05/14    | シミュレーション結果のRegionテキスト出力機能追加 #130
     6.0.1.3.9   | 2025/04/24    | SFML3.0.0対応（Mac） #129
     6.0.1.3.8   | 2025/04/23    | CMR46 & CMR49 #127 #128
