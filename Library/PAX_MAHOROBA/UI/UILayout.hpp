@@ -109,7 +109,7 @@ namespace paxs {
 
         // シミュレーションコントロールボタンの位置
         int simulation_buttons_base_y = 0;  // calculate()内で設定
-        static constexpr int simulation_pulldown_right_margin = 200;
+        static constexpr int simulation_pulldown_right_margin = 50;
         static constexpr int simulation_pulldown_y_position = 600;
 
         UILayout() {

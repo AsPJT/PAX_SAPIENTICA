@@ -2,6 +2,7 @@ key	value
 label_population	人口
 label_settlements	集落
 label_migration	渡来
+label_tfr	合計特殊出生率
 display_mode_population	1. 人口
 display_mode_farming	2. 農耕文化
 display_mode_mtdna	3. mtDNAハプログループ

@@ -326,6 +326,13 @@ namespace paxs {
             return simulator_ ? simulator_->getMigrationCount() : 0;
         }
 
+        /// @brief 合計特殊出生率(TFR)を取得
+        /// @brief Get Total Fertility Rate
+        /// @return TFR値 / TFR value
+        double getTotalFertilityRate() const {
+            return simulator_ ? simulator_->calculateTotalFertilityRate() : 0.0;
+        }
+
         /// @brief 集落グリッドへのconst参照を取得（描画用）
         /// @return 集落グリッド / Settlement grids
         const auto& getSettlementGrids() const {

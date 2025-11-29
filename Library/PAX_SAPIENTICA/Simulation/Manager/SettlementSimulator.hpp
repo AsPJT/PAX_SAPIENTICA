@@ -117,6 +117,55 @@ namespace paxs {
             return migration_count;
         }
 
+        /// @brief 合計特殊出生率(TFR)を計算
+        /// @brief Calculate Total Fertility Rate
+        /// @return TFR値 / TFR value
+        double calculateTotalFertilityRate() const {
+            // 15歳から49歳までの女性人口をカウント
+            std::size_t childbearing_age_female_count = 0;
+
+            // 全集落を走査して出産可能年齢の女性人口を集計
+            for (const auto& settlement_grid : settlement_grids) {
+                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
+                    for (const auto& agent : settlement.cgetAgents()) {
+                        if (!agent.isMale()) {
+                            const std::size_t age_in_years = agent.getAgeSizeT();
+                            // 15歳から49歳の女性をカウント
+                            if (age_in_years >= SimulationConstants::getInstance().childbearing_age_min &&
+                                age_in_years < SimulationConstants::getInstance().childbearing_age_max) {
+                                childbearing_age_female_count++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 出産可能年齢の女性がいない場合は0を返す
+            if (childbearing_age_female_count == 0) {
+                return 0.0;
+            }
+
+            // 直近1年間の出生数を取得（循環バッファの合計）
+            std::size_t total_births_last_year = 0;
+            for (const auto& count : birth_count_history_) {
+                total_births_last_year += count;
+            }
+
+            // TFR = (年間出生数 / 出産可能年齢の女性人口) × 出産可能年齢の年数
+            const double births_per_woman = static_cast<double>(total_births_last_year) /
+                static_cast<double>(childbearing_age_female_count);
+
+            // 出産可能年齢の範囲（通常は35年：15歳から49歳）
+            const std::size_t childbearing_age_range =
+                SimulationConstants::getInstance().childbearing_age_max -
+                SimulationConstants::getInstance().childbearing_age_min;
+
+            // TFRを計算
+            const double tfr = births_per_woman * static_cast<double>(childbearing_age_range);
+
+            return tfr;
+        }
+
         /// @brief
         /// @brief 生命表を取得
         void outputLifeSpan(const int loop_num_) {
@@ -180,6 +229,10 @@ namespace paxs {
             land_positions.clear();
             marriage_pos_list.clear();
             bronze_share_list.clear();
+
+            // 出生数履歴の初期化（1年分のステップ数）
+            birth_count_history_.assign(SimulationConstants::getInstance().steps_per_year, 0);
+            birth_history_index_ = 0;
 
             initRandomizeSettlements();
             randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/);
@@ -377,11 +430,34 @@ namespace paxs {
             const auto move_time = TimeUtils::now(); // 移動計測
             move_processing_time = TimeUtils::getDifferenceSeconds(start_time, move_time);
 
+            // このステップでの出生数をカウント（preUpdate前の人口）
+            std::size_t population_before_birth = 0;
+            for (const auto& settlement_grid : settlement_grids) {
+                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
+                    population_before_birth += settlement.getPopulation();
+                }
+            }
+
             for (auto& settlement_grid : settlement_grids) {
                 for (auto& settlement : settlement_grid.second.getSettlements()) {
                     settlement.preUpdate(kanakuma_life_span, japan_provinces.get());
                 }
             }
+
+            // このステップでの出生数をカウント（preUpdate後の人口増加分）
+            std::size_t population_after_birth = 0;
+            for (const auto& settlement_grid : settlement_grids) {
+                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
+                    population_after_birth += settlement.getPopulation();
+                }
+            }
+
+            // 出生数を記録（循環バッファ）
+            const std::size_t births_this_step = (population_after_birth > population_before_birth) ?
+                (population_after_birth - population_before_birth) : 0;
+            birth_count_history_[birth_history_index_] = births_this_step;
+            birth_history_index_ = (birth_history_index_ + 1) % SimulationConstants::getInstance().steps_per_year;
+
             // 渡来期間
             if (SimulationConstants::getInstance().immigration_step_interval > 0 &&
                 step_count >= SimulationConstants::getInstance().immigration_start_steps &&
@@ -552,6 +628,10 @@ namespace paxs {
 
         // 進捗報告インターフェース
         IProgressReporter* progress_reporter_ = nullptr;
+
+        // 直近1年間（steps_per_year分）の出生数を記録する循環バッファ
+        std::vector<std::size_t> birth_count_history_;
+        std::size_t birth_history_index_ = 0;
 
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
