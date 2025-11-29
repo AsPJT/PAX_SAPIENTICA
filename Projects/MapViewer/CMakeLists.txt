@@ -34,16 +34,24 @@ if(NOT SFML_FOUND)
     # Add cmake module path
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 
-    # Set SFML_ROOT_DIR for project-local SFML installation
-    if(NOT SFML_ROOT_DIR)
-        set(SFML_LOCAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0")
-        if(EXISTS "${SFML_LOCAL_PATH}")
-            set(SFML_ROOT_DIR "${SFML_LOCAL_PATH}")
-            message(STATUS "Using project-local SFML: ${SFML_ROOT_DIR}")
-        endif()
-    endif()
+    # First try to find SFML via vcpkg (standard CMake config)
+    find_package(SFML 3 QUIET COMPONENTS Graphics Window System)
 
-    find_package(SFMLCustom QUIET)
+    # If not found via vcpkg, try project-local SFML
+    if(NOT SFML_FOUND)
+        # Set SFML_ROOT_DIR for project-local SFML installation
+        if(NOT SFML_ROOT_DIR)
+            set(SFML_LOCAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0")
+            if(EXISTS "${SFML_LOCAL_PATH}")
+                set(SFML_ROOT_DIR "${SFML_LOCAL_PATH}")
+                message(STATUS "Using project-local SFML: ${SFML_ROOT_DIR}")
+            endif()
+        endif()
+
+        find_package(SFMLCustom QUIET)
+    else()
+        message(STATUS "Found SFML ${SFML_VERSION} via CMake config")
+    endif()
 endif()
 
 if(PAXS_BUILD_TYPE STREQUAL "Development")
@@ -138,18 +146,56 @@ elseif(UNIX AND SFML_FOUND)
     paxs_setup_sfml(${BINARY_NAME})
     paxs_copy_config_tsv(${BINARY_NAME} ${TSV_SOURCE_PATH})
 
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Config.tsv DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
     # バージョンの読み込み
     include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/ReadVersion.cmake)
     read_pax_sapientica_version()
 
-    set(CPACK_GENERATOR "DEB")
-    set(CPACK_PACKAGE_NAME "PAX_SAPIENTICA")
-    set(CPACK_PACKAGE_VERSION ${PAX_SAPIENTICA_LIBRARY_VERSION})
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PAX_SAPIENTICA")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsfml-dev")
+    if(PAXS_BUILD_TYPE STREQUAL "Production")
+        # Production build: Create DEB package with Data directory
+
+        # Install binary to /usr/local/bin
+        install(TARGETS ${BINARY_NAME}
+            RUNTIME DESTINATION bin
+        )
+
+        # Install Config.tsv to /usr/local/share/pax_sapientica
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Config.tsv
+            DESTINATION share/pax_sapientica
+        )
+
+        # Install Data directory if it exists
+        if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data)
+            install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data
+                DESTINATION share/pax_sapientica
+            )
+        endif()
+
+        # CPack settings for DEB package
+        set(CPACK_GENERATOR "DEB")
+        set(CPACK_PACKAGE_NAME "pax-sapientica")
+        set(CPACK_PACKAGE_VERSION ${PAX_SAPIENTICA_LIBRARY_VERSION})
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "PAX SAPIENTICA - Historical Simulation Viewer")
+        set(CPACK_PACKAGE_DESCRIPTION "PAX SAPIENTICA is a historical simulation and map viewer application.")
+        set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PAX SAPIENTICA Team")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsfml-graphics2.6 (>= 2.6.0), libsfml-window2.6 (>= 2.6.0), libsfml-system2.6 (>= 2.6.0)")
+        set(CPACK_DEBIAN_PACKAGE_SECTION "graphics")
+        set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+        set(CPACK_PACKAGE_CONTACT "https://github.com/guinpen/PAX_SAPIENTICA")
+
+        # Include CPack module to enable package generation
+        include(CPack)
+    else()
+        # Development build: Install to build directory for local testing
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Config.tsv
+            DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+        )
+
+        if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data)
+            install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data
+                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+            )
+        endif()
+    endif()
 endif()
 
 # DxLib target
