@@ -83,7 +83,7 @@ namespace paxs {
                 paxg::Window::height() / 2 - 15,
                 400,
                 30,
-                Fonts().getFont(FontProfiles::UI_MEDIUM)
+                Fonts().getFont(FontProfiles::ui_medium)
             )
 #endif
 #ifdef PAXS_DEVELOPMENT

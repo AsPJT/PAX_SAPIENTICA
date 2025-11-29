@@ -30,15 +30,14 @@ namespace paxs {
 
     /// @brief フォントプロファイル名定数
     /// @brief Font profile name constants
-    // TODO: スネークケース
-    namespace FontProfiles {
-        constexpr const char* MAIN = "main";           // カレンダー・地名・人名
-        constexpr const char* PULLDOWN = "pulldown";   // プルダウンメニュー
-        constexpr const char* KOYOMI = "koyomi";       // 暦表示
-        constexpr const char* UI_SMALL = "ui_small";   // 小さいUIテキスト
-        constexpr const char* UI_MEDIUM = "ui_medium"; // 中サイズUIテキスト
-        constexpr const char* UI_LARGE = "ui_large";   // 大きいUIテキスト
-    }
+    struct FontProfiles {
+        constexpr static const char* main = "main";           // カレンダー・地名・人名
+        constexpr static const char* pulldown = "pulldown";   // プルダウンメニュー
+        constexpr static const char* koyomi = "koyomi";       // 暦表示
+        constexpr static const char* ui_small = "ui_small";   // 小さいUIテキスト
+        constexpr static const char* ui_medium = "ui_medium"; // 中サイズUIテキスト
+        constexpr static const char* ui_large = "ui_large";   // 大きいUIテキスト
+    };
 
     /// @brief フォント・言語統合管理シングルトンクラス
     /// @brief Font and Language Unified Management Singleton Class
@@ -97,21 +96,21 @@ namespace paxs {
         /// @brief Register default profiles
         void registerDefaultProfiles() {
             // PAX_GRAPHICA/FontConfig.hpp の値を使用
-            registerProfile(FontProfiles::KOYOMI,
+            registerProfile(FontProfiles::koyomi,
                             paxg::FontConfig::KOYOMI_FONT_SIZE,
                             paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS);
 
-            registerProfile(FontProfiles::PULLDOWN,
+            registerProfile(FontProfiles::pulldown,
                             paxg::FontConfig::PULLDOWN_FONT_SIZE,
                             paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
 
             // 新規プロファイル
-            registerProfile(FontProfiles::UI_SMALL, 12, 2);
-            registerProfile(FontProfiles::UI_MEDIUM, 16, 2);
-            registerProfile(FontProfiles::UI_LARGE, 24, 2);
+            registerProfile(FontProfiles::ui_small, 12, 2);
+            registerProfile(FontProfiles::ui_medium, 16, 2);
+            registerProfile(FontProfiles::ui_large, 24, 2);
 
             // MAIN は KOYOMI と同じ設定
-            registerProfile(FontProfiles::MAIN,
+            registerProfile(FontProfiles::main,
                             paxg::FontConfig::KOYOMI_FONT_SIZE,
                             paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS);
         }

@@ -78,7 +78,7 @@ namespace paxs {
 
             // 更新処理
             for (auto&& xyz_tile : xyz_tile_list) {
-                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) {
+                if (xyz_tile.getMenuBarMap() != 0 && !visible.isVisible(xyz_tile.getMenuBarMap())) {
                     continue;
                 }
                 xyz_tile.update(map_viewport_size, map_viewport_center);

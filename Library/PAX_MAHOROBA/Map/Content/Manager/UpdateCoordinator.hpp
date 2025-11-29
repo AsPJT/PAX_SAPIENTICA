@@ -58,7 +58,7 @@ namespace paxs {
             unified_context_.map_view_center = map_viewport_.getCenter();
             unified_context_.visibility_manager = &app_state_manager_.getVisibilityManager();
             unified_context_.texture_map = &asset_registry.getMergedMap();
-            unified_context_.font = Fonts().getFont(FontProfiles::MAIN);
+            unified_context_.font = Fonts().getFont(FontProfiles::main);
             unified_context_.language_key = Fonts().getSelectedLanguageKey();
         }
 

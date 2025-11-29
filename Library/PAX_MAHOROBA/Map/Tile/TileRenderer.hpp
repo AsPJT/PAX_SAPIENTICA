@@ -59,7 +59,7 @@ namespace paxs {
 
             for (const auto& tile : tiles) {
                 // 可視性チェック
-                if (tile.getMenuBarMap() != 0 && visible.isVisible(tile.getMenuBarMap()) != tile.getMenuBarMapBool()) {
+                if (tile.getMenuBarMap() != 0 && !visible.isVisible(tile.getMenuBarMap())) {
                     continue;
                 }
 
@@ -75,6 +75,8 @@ namespace paxs {
                 case paxs::MurMur3::calcHash("grid_and_string"): // 線と文字列を描画
                     drawTileGridLines(tile, map_viewport_size, map_viewport_center, 0.8, paxg::Color{ 95, 99, 104 });
                     drawTileDebugInfo(tile, map_viewport_size, map_viewport_center);
+                    break;
+                default:
                     break;
                 }
             }

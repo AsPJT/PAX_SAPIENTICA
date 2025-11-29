@@ -145,7 +145,6 @@ namespace paxs {
         ZoomState current_zoom_{0, 0, 0};
         TileRange current_range_{{0, 0}, {0, 0}};
 
-    private:
         /// @brief ファイル名フォーマットを構築（プラットフォーム固有処理を含む）
         /// @brief Build file name format (including platform-specific processing)
         /// @param texture_root_path_type テクスチャルートパスタイプ
@@ -384,7 +383,6 @@ namespace paxs {
 
         XYZTile(
             const std::uint_least32_t menu_bar_map_,
-            const bool menu_bar_map_bool_,
             const std::uint_least32_t texture_root_path_type_,
             const std::uint_least32_t binary_root_path_type_,
             const std::string& map_binary_name_,
@@ -396,7 +394,6 @@ namespace paxs {
         {
             // TileMetadata を初期化
             metadata_.menu_bar_map = menu_bar_map_;
-            metadata_.menu_bar_map_bool = menu_bar_map_bool_;
             metadata_.texture_root_path_type = texture_root_path_type_;
             metadata_.binary_root_path_type = binary_root_path_type_;
             metadata_.map_binary_name = map_binary_name_;
@@ -440,9 +437,6 @@ namespace paxs {
         }
         std::uint_least32_t getDrawType() const {
             return metadata_.draw_type;
-        }
-        bool getMenuBarMapBool() const {
-            return metadata_.menu_bar_map_bool;
         }
         std::uint_least32_t getMenuBarMap() const {
             return metadata_.menu_bar_map;
