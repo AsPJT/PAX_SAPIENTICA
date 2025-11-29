@@ -13,7 +13,7 @@
 #define PAX_SAPIENTICA_SIMULATION_CONFIG_OBJECT_HPP
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 
 namespace paxs {
 

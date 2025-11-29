@@ -27,7 +27,6 @@
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Simulation/Entity/SettlementGrid.hpp>
-#include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
 
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する
