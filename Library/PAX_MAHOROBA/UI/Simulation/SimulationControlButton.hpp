@@ -57,9 +57,15 @@ namespace paxs {
 
         SimulationControlButton::Id getId() const { return id_; }
 
+        /// @brief ボタンのイベント処理
+        /// @brief Handle button events
+        /// @note クリック判定もここで行う
         EventHandlingResult handleEvent(const MouseEvent& event) override {
+            // 継承元の処理を呼ぶ
+            IconButton::handleEvent(event);
+
             // 左クリックが押されたら
-            if (event.left_button_state == MouseButtonState::Pressed) {
+            if (isHit(event.pos) && event.left_button_state == MouseButtonState::Pressed) {
                 if (on_click_) {
                     on_click_(id_);
                 }
@@ -167,11 +173,9 @@ namespace paxs {
                 if (btn.getId() == SimulationControlButton::Id::Initialize || btn.getId() == SimulationControlButton::Id::Stop) {
                     continue;
                 }
-                if (btn.isHit(event.pos)) {
-                    return btn.handleEvent(event);
-                }
+                btn.handleEvent(event);
             }
-            return EventHandlingResult::NotHandled();
+            return EventHandlingResult::Handled();
         }
 
         void layoutButtons() {

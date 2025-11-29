@@ -37,6 +37,9 @@ namespace paxs {
                 return EventHandlingResult::NotHandled();
             }
 
+            // 継承元の処理を呼ぶ
+            IconButton::handleEvent(event);
+
             // クリック時にGitHubリポジトリを開く
             if (event.left_button_state == MouseButtonState::Pressed) {
                 paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");

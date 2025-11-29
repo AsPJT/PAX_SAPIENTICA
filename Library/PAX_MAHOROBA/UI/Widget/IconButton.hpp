@@ -67,6 +67,9 @@ namespace paxs {
             icon_textures.at(icon_texture_path_hash).resizedDraw(rect.width(),
                 paxg::Vec2i{ rect.x(), rect.y() }
             );
+
+            is_hovered = false;
+            is_pressed = false;
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
