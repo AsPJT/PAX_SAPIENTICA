@@ -1,5 +1,5 @@
 #!/bin/bash
-# vcpkg setup script for Linux
+# vcpkg setup script for macOS
 # This script installs vcpkg and SFML 3.0.0+ for PAX_SAPIENTICA
 
 set -e
@@ -9,7 +9,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 VCPKG_DIR="$PROJECT_ROOT/vcpkg"
 
 echo "========================================="
-echo "PAX_SAPIENTICA vcpkg Setup for Linux"
+echo "PAX_SAPIENTICA vcpkg Setup for macOS"
 echo "========================================="
 
 # Check if vcpkg is already installed
@@ -26,34 +26,28 @@ if [ -d "$VCPKG_DIR" ]; then
     rm -rf "$VCPKG_DIR"
 fi
 
+# Check if Homebrew is installed
+if ! command -v brew &> /dev/null; then
+    echo ""
+    echo "Error: Homebrew is not installed."
+    echo "Please install Homebrew first: https://brew.sh"
+    echo ""
+    echo "Run this command:"
+    echo '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+    exit 1
+fi
+
 # Install required system packages
 echo ""
-echo "Installing system dependencies..."
-echo "You may be prompted for your password (sudo required)."
+echo "Installing system dependencies via Homebrew..."
 
-sudo apt update
-
-# SFML 3.0 dependencies for Ubuntu/Debian
-sudo apt install -y \
+# Install build tools and SFML dependencies
+brew install \
     git \
-    curl \
-    zip \
-    unzip \
-    tar \
     cmake \
-    ninja-build \
+    ninja \
     pkg-config \
-    libxrandr-dev \
-    libxcursor-dev \
-    libxi-dev \
-    libudev-dev \
-    libfreetype-dev \
-    libflac-dev \
-    libvorbis-dev \
-    libgl1-mesa-dev \
-    libegl1-mesa-dev \
-    libdrm-dev \
-    libgbm-dev
+    curl
 
 echo ""
 echo "System dependencies installed successfully."
@@ -73,8 +67,17 @@ cd "$VCPKG_DIR"
 # Install SFML using vcpkg.json manifest mode
 echo ""
 echo "Installing SFML 3.0+ and dependencies via vcpkg..."
-cd "$PROJECT_ROOT"
-"$VCPKG_DIR/vcpkg" install
+cd "$PROJECT_ROOT/Projects"
+
+# Detect architecture and set appropriate triplet
+if [ "$(uname -m)" = "arm64" ]; then
+    VCPKG_TRIPLET="arm64-osx"
+else
+    VCPKG_TRIPLET="x64-osx"
+fi
+
+echo "Detected architecture: $(uname -m), using triplet: $VCPKG_TRIPLET"
+"$VCPKG_DIR/vcpkg" install --triplet="$VCPKG_TRIPLET"
 
 echo ""
 echo "========================================="

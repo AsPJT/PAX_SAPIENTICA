@@ -1,6 +1,0 @@
-var searchData=
-[
-  ['begin_0',['begin',['../classsf_1_1String.html#a8ec30ddc08e3a6bd11c99aed782f6dfe',1,'sf::String::begin()'],['../classsf_1_1String.html#a0e4755d6b4d51de7c3dc2e984b79f95d',1,'sf::String::begin() const']]],
-  ['bind_1',['bind',['../classsf_1_1Shader.html#a09778f78afcbeb854d608c8dacd8ea30',1,'sf::Shader::bind()'],['../classsf_1_1Texture.html#a2f78031f82912436804d9b76290b3534',1,'sf::Texture::bind()'],['../classsf_1_1VertexBuffer.html#a1c623e9701b43125e4b3661bc0d0b65b',1,'sf::VertexBuffer::bind()'],['../classsf_1_1UdpSocket.html#a1bd7b273613665d5ef4dcecf5767ed75',1,'sf::UdpSocket::bind()']]],
-  ['blendmode_2',['BlendMode',['../structsf_1_1BlendMode.html#a4bb8a066a2d88e7c18e9e7fe04008d98',1,'sf::BlendMode::BlendMode()=default'],['../structsf_1_1BlendMode.html#a6ca312911698dcdf0994c2f5c0b65dfe',1,'sf::BlendMode::BlendMode(Factor sourceFactor, Factor destinationFactor, Equation blendEquation=Equation::Add)'],['../structsf_1_1BlendMode.html#a69a12c596114e77126616e7e0f7d798b',1,'sf::BlendMode::BlendMode(Factor colorSourceFactor, Factor colorDestinationFactor, Equation colorBlendEquation, Factor alphaSourceFactor, Factor alphaDestinationFactor, Equation alphaBlendEquation)']]]
-];

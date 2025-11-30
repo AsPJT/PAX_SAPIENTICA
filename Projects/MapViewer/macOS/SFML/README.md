@@ -1,14 +1,15 @@
-# SFML MapViewer for Linux (Ubuntu)
+# SFML MapViewer for macOS
 
 ## 概要 (Overview)
 
-このディレクトリには、Linux（Ubuntu）環境でSFMLを使用してMapViewerをビルドするためのファイルが含まれています。
+このディレクトリには、macOS環境でSFMLを使用してMapViewerをビルドするためのファイルが含まれています。
 
-This directory contains files for building MapViewer with SFML on Linux (Ubuntu).
+This directory contains files for building MapViewer with SFML on macOS.
 
 ## 必要な環境 (Requirements)
 
-- Ubuntu 20.04 以降 (Ubuntu 20.04 or later)
+- macOS 11.0 (Big Sur) 以降 (macOS 11.0 or later)
+- Homebrew
 - CMake 3.16 以降 (CMake 3.16 or later)
 - C++20 対応コンパイラ (C++20 compatible compiler)
 - Git
@@ -23,16 +24,16 @@ From the project root directory, run the vcpkg setup script:
 
 ```bash
 cd /path/to/PAX_SAPIENTICA
-./Scripts/SetupVcpkgLinux.sh
+./Scripts/SetupVcpkgMac.sh
 ```
 
 このスクリプトは以下を自動的に実行します：
-- 必要なシステムパッケージのインストール
+- Homebrewを使用した必要なシステムパッケージのインストール
 - vcpkgのクローンとブートストラップ
 - SFMLのインストール
 
 This script will automatically:
-- Install required system packages
+- Install required system packages using Homebrew
 - Clone and bootstrap vcpkg
 - Install SFML
 
@@ -46,8 +47,6 @@ cmake --build build
 
 **重要なオプション (Important options)**:
 - `-DSFML_STATIC_LIBRARIES=TRUE`: vcpkg版SFMLのスタティックライブラリを使用（必須 / required）
-- `-DVCPKG_INSTALLED_DIR=vcpkg_installed`: vcpkgのインストール先をプロジェクトルートに指定（推奨 / recommended）
-- `-B build -S Projects`: ビルドディレクトリをプロジェクトルートに作成（Build directory at project root）
 
 ### ステップ3: 実行 (Step 3: Run)
 
@@ -64,24 +63,10 @@ If you want to build SFML from source without vcpkg:
 ### 依存関係のインストール (Install dependencies)
 
 ```bash
-sudo apt update
-sudo apt install -y \
-    cmake \
-    ninja-build \
-    libxrandr-dev \
-    libxcursor-dev \
-    libxi-dev \
-    libudev-dev \
-    libfreetype-dev \
-    libflac-dev \
-    libvorbis-dev \
-    libgl1-mesa-dev \
-    libegl1-mesa-dev \
-    libdrm-dev \
-    libgbm-dev
+brew install cmake ninja pkg-config
 ```
 
-### SFML のビルドとインストール (Build and install SFML)
+### SFMLのビルドとインストール (Build and install SFML)
 
 ```bash
 # SFML 3.0.0をクローン
@@ -107,6 +92,12 @@ cmake ..
 cmake --build .
 ```
 
+## Apple Siliconについて (About Apple Silicon)
+
+Apple Siliconを使用している場合、vcpkgは自動的に `arm64-osx` トリプレットを使用します。Intel Macの場合は `x64-osx` が使用されます。
+
+When using Apple Silicon, vcpkg will automatically use the `arm64-osx` triplet. For Intel Macs, `x64-osx` will be used.
+
 ## トラブルシューティング (Troubleshooting)
 
 ### SFML が見つからない (SFML not found)
@@ -122,17 +113,25 @@ SFML not found - MapViewer will not be built
 2. CMake実行時に `-DCMAKE_TOOLCHAIN_FILE` オプションを指定しているか確認
 3. vcpkgディレクトリが正しい場所に存在するか確認
 
-### ビルドエラー (Build errors)
+### Homebrewがインストールされていない (Homebrew not installed)
 
-システムの依存関係が不足している場合、以下を実行：
+Homebrewがインストールされていない場合、以下のコマンドでインストールしてください：
 
 ```bash
-sudo apt update
-sudo apt install -y build-essential cmake pkg-config
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### ビルドエラー (Build errors)
+
+Xcodeコマンドラインツールが不足している場合、以下を実行：
+
+```bash
+xcode-select --install
 ```
 
 ## 参考リンク (References)
 
 - [SFML 3.0 公式ドキュメント](https://www.sfml-dev.org/tutorials/3.0/)
 - [vcpkg 公式サイト](https://vcpkg.io/)
+- [Homebrew 公式サイト](https://brew.sh)
 - [PAX_SAPIENTICA メインREADME](../../../../README.md)
