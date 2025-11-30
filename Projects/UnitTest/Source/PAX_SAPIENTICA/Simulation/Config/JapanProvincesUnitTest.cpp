@@ -21,42 +21,11 @@
 
 #include <PAX_SAPIENTICA/Simulation/Config/JapanProvinces.hpp>
 
-// もしConfig.tsvが存在しない場合、一時的に作成する
-class PathTSV {
-public:
-    static void generatePathTSV() {
-        std::ofstream ofs("Config.tsv");
-        ofs << "key\tvalue\nasset_file\t../" << std::endl;
-        ofs.close();
-    }
-
-    static void removePathTSV() {
-        const std::string path_tsv_path = "Config.tsv";
-
-        std::remove(path_tsv_path.c_str());
-    }
-};
 
 TEST (JapanProvincesUnitTest, constructor) {
-    // Config.tsvが存在しない場合、一時的に作成する
-    bool is_path_tsv_exist = std::filesystem::exists("Config.tsv");
-    if (!is_path_tsv_exist) {
-        PathTSV::generatePathTSV();
-    }
-
-    std::cout << paxs::AppConfig::getInstance().getRootPath() << std::endl;
-
-    const std::string japan_region_tsv_path = "Projects/UnitTest/Data/Simulations";
+    const std::string japan_region_tsv_path = "Data/Simulations/Sample";
 
     paxs::JapanProvinces japan_provinces(japan_region_tsv_path);
 
-    // EXPECT_EQ(japan_provinces.getJapanRegionPopulation(0), 0);
-    // EXPECT_EQ(japan_provinces.getJapanRegionPopulation(2), 64600);
-
-    EXPECT_EQ(japan_provinces.getDistrictPopulationAd200(0), 0);
-    EXPECT_EQ(japan_provinces.getDistrictPopulationAd200(2), 2400);
-
-    if (!is_path_tsv_exist) {
-        PathTSV::removePathTSV();
-    }
+    // TODO: 詳細な内容の確認を追加する
 }

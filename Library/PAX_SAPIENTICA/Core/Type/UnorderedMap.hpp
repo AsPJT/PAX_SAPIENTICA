@@ -107,6 +107,30 @@ namespace paxs {
             return iterator->second;
         }
 
+        /// @brief キーが存在すればその値を返し、存在しなければ default_value を返す
+        /// @example auto val = map.value_or("key", 0);
+        Value value_or(const Key& key, const Value& default_value) const {
+            const auto iterator = map_.find(key);
+            if (iterator != map_.end()) {
+                return iterator->second;
+            }
+            return default_value;
+        }
+
+        /// @brief キーが存在すれば値へのポインタを返し、存在しなければ nullptr を返す
+        /// @note ポインタ経由で値を変更可能
+        /// @example if (auto* val = map.try_get("key")) { *val = 10; }
+        Value* try_get(const Key& key) {
+            auto iterator = map_.find(key);
+            return (iterator != map_.end()) ? &(iterator->second) : nullptr;
+        }
+
+        /// @brief キーが存在すれば値へのポインタを返し、存在しなければ nullptr を返す (const版)
+        const Value* try_get(const Key& key) const {
+            auto iterator = map_.find(key);
+            return (iterator != map_.end()) ? &(iterator->second) : nullptr;
+        }
+
         /// @brief キーが存在するかチェック
         bool contains(const Key& key) const {
             return map_.find(key) != map_.end();

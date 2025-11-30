@@ -267,15 +267,14 @@ namespace paxs {
             const std::uint_least64_t cache_key = createFontCacheKey(language_key, size, buffer_thickness);
 
             // キャッシュに存在すればそれを返す
-            const auto iterator = font_cache_.find(cache_key);
-            if (iterator != font_cache_.end()) {
-                return &(iterator->second);
+            if (auto* cached_font = font_cache_.try_get(cache_key)) {
+                return cached_font;
             }
 
             // フォントパスを取得
-            const auto path_it = language_font_paths_.find(language_key);
+            const auto* path_ptr = language_font_paths_.try_get(language_key);
 
-            if (path_it == language_font_paths_.end()) {
+            if (path_ptr == nullptr) {
                 PAXS_WARNING("FontSystem::getFont - Font path not found for language key: " + std::to_string(language_key));
                 return nullptr;
             }
@@ -283,7 +282,7 @@ namespace paxs {
             // 新しいフォントを作成してキャッシュに追加
             font_cache_.emplace(
                 cache_key,
-                paxg::Font(static_cast<int>(size), path_it->second, static_cast<int>(buffer_thickness))
+                paxg::Font(static_cast<int>(size), *path_ptr, static_cast<int>(buffer_thickness))
             );
 
             return &(font_cache_.at(cache_key));

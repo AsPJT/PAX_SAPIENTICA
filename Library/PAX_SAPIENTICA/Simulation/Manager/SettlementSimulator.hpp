@@ -205,12 +205,12 @@ namespace paxs {
         }
         // 結果の地区名を出力
         void outputResultDistrictName(std::ofstream& ofs_, const std::size_t i_) const {
-            ofs_ << japan_provinces->cgetDistrictList()[i_].name << '\t';
+            ofs_ << japan_provinces->getDistrictList()[i_].name << '\t';
         }
         // 集落の初期化時にシミュレーション変数を出力
         void initResults() {
             result_writer_ = std::make_unique<SimulationResultWriter>();
-            result_writer_->initialize(SimulationConstants::getInstance().output_directory_name, japan_provinces->cgetDistrictList());
+            result_writer_->initialize(SimulationConstants::getInstance().output_directory_name, japan_provinces->getDistrictList());
         }
 
         /// @brief Initialize the simulator.
@@ -241,7 +241,7 @@ namespace paxs {
             // 可住地の数を出力
             for (std::size_t i = 1; i < max_number_of_districts; ++i) {
                 result_writer_->writeHabitableLand(
-                    japan_provinces->cgetDistrictList()[i].name,
+                    japan_provinces->getDistrictList()[i].name,
                     (*live_list)[i + 1].habitable_land_positions.size()
                 );
             }
@@ -266,23 +266,23 @@ namespace paxs {
             const auto target_index = target_key.to(SettlementGridsType{});
 
             // ターゲットの地域が登録されているか？
-            const auto target_iterator = settlement_grids.find(target_index);
-            const auto current_iterator = settlement_grids.find(current_index);
-            if (current_iterator == settlement_grids.end()) {
+            auto* const target_ptr = settlement_grids.try_get(target_index);
+            auto* const current_ptr = settlement_grids.try_get(current_index);
+            if (current_ptr == nullptr) {
                 return; // current_indexが存在しない場合は何もしない
             }
 
-            if (target_iterator != settlement_grids.end()) {
+            if (target_ptr != nullptr) {
                 // 登録されている場合はそのターゲット地域へ移動
-                target_iterator->second.moveSettlementToThis(current_iterator->second.getSettlement(settlement_id));
+                target_ptr->moveSettlementToThis(current_ptr->getSettlement(settlement_id));
             }
             else {
                 // 登録されていない場合は新しく地域を作成
                 SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance().cell_group_length, environment, gen);
-                settlement_grid.moveSettlementToThis(current_iterator->second.getSettlement(settlement_id));
+                settlement_grid.moveSettlementToThis(current_ptr->getSettlement(settlement_id));
                 settlement_grids.emplace(target_index, std::move(settlement_grid));
             }
-            current_iterator->second.deleteSettlement(settlement_id);
+            current_ptr->deleteSettlement(settlement_id);
         }
 
         /// @brief Execute the simulation for the one step.
@@ -345,7 +345,7 @@ namespace paxs {
                 stats.settlement_count = sat_num;
                 stats.population_count = pop_num;
                 stats.get_mtdna_name = [this](std::uint_least8_t id) { return japan_provinces->getMtDNA_Name(id); };
-                stats.get_language_name = [this](std::uint_least8_t id) { return japan_provinces->getLanguage_Name(id); };
+                stats.get_language_name = [this](std::uint_least8_t id) { return japan_provinces->getLanguageName(id); };
 
                 // Aggregate region stats and prepare district stats
                 for (std::size_t i = 1; i < max_number_of_districts; ++i) {
@@ -701,7 +701,7 @@ namespace paxs {
 
             // 地区と人口のマップ
             paxs::UnorderedMap<std::uint_least8_t, std::uint_least32_t> district_population_map;
-            for (const auto& district : japan_provinces->cgetDistrictList()) {
+            for (const auto& district : japan_provinces->getDistrictList()) {
                 if (((is_ad200) ? district.init_pop : district.immigrant) == 0) {
                     continue;
                 }
@@ -759,7 +759,7 @@ namespace paxs {
                     }
 
                     // 配置する集落の人口を決定
-                    paxs::District district = japan_provinces->cgetDistrict(district_id);
+                    paxs::District district = japan_provinces->getDistrict(district_id);
                     int settlement_population = std::uniform_int_distribution<>(district.settlement_pop_min, district.settlement_pop_max)(gen);
                     settlement_population = (std::min)(settlement_population, static_cast<int>(district_population_it->second));
 

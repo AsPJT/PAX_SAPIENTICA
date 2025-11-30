@@ -309,7 +309,7 @@ namespace paxs {
                         if (female_is_agricultural) {
                             const std::uint_least8_t female_district_id = environment->template getData<std::uint_least8_t>(
                                 SimulationConstants::getInstance().district_key, data_.getPosition());
-                            const District& female_district = japan_provinces_ptr->cgetDistrict(female_district_id);
+                            const District& female_district = japan_provinces_ptr->getDistrict(female_district_id);
                             if (female_district.agricultural_capable == 0) {
                                 // 女性が農耕不可能な地域にいる場合、婚姻できない
                                 continue;
@@ -320,7 +320,7 @@ namespace paxs {
                         if (male_is_agricultural) {
                             const std::uint_least8_t male_district_id = environment->template getData<std::uint_least8_t>(
                                 SimulationConstants::getInstance().district_key, close_settlement.getPosition());
-                            const District& male_district = japan_provinces_ptr->cgetDistrict(male_district_id);
+                            const District& male_district = japan_provinces_ptr->getDistrict(male_district_id);
                             if (male_district.agricultural_capable == 0) {
                                 // 男性が農耕不可能な地域にいる場合、婚姻できない
                                 continue;
@@ -331,7 +331,7 @@ namespace paxs {
                         if (SimulationConstants::getInstance().maternal_residence_probability > 0.0f && male_is_agricultural) {
                             const std::uint_least8_t female_district_id = environment->template getData<std::uint_least8_t>(
                                 SimulationConstants::getInstance().district_key, data_.getPosition());
-                            const District& female_district = japan_provinces_ptr->cgetDistrict(female_district_id);
+                            const District& female_district = japan_provinces_ptr->getDistrict(female_district_id);
                             if (female_district.agricultural_capable == 0) {
                                 continue; // 移動先が農耕不可能なので婚姻不可
                             }
@@ -341,7 +341,7 @@ namespace paxs {
                         if (SimulationConstants::getInstance().maternal_residence_probability < 1.0f && female_is_agricultural) {
                             const std::uint_least8_t male_district_id = environment->template getData<std::uint_least8_t>(
                                 SimulationConstants::getInstance().district_key, close_settlement.getPosition());
-                            const District& male_district = japan_provinces_ptr->cgetDistrict(male_district_id);
+                            const District& male_district = japan_provinces_ptr->getDistrict(male_district_id);
                             if (male_district.agricultural_capable == 0) {
                                 continue; // 移動先が農耕不可能なので婚姻不可
                             }
@@ -594,7 +594,7 @@ namespace paxs {
                 if (has_agricultural_agents && japan_provinces_ptr != nullptr) {
                     const std::uint_least8_t target_district_id = environment->template getData<std::uint_least8_t>(
                         SimulationConstants::getInstance().district_key, target_position);
-                    const District& target_district = japan_provinces_ptr->cgetDistrict(target_district_id);
+                    const District& target_district = japan_provinces_ptr->getDistrict(target_district_id);
                     if (target_district.agricultural_capable == 0) {
                         ++loop_count;
                         continue;
@@ -656,7 +656,7 @@ namespace paxs {
                     if (has_agricultural_agents && japan_provinces_ptr != nullptr) {
                         const std::uint_least8_t target_district_id = environment->template getData<std::uint_least8_t>(
                             SimulationConstants::getInstance().district_key, target_position);
-                        const District& target_district = japan_provinces_ptr->cgetDistrict(target_district_id);
+                        const District& target_district = japan_provinces_ptr->getDistrict(target_district_id);
                         if (target_district.agricultural_capable == 0) {
                             ++loop_count;
                             continue;
@@ -794,7 +794,7 @@ namespace paxs {
             if (japan_provinces_ptr != nullptr) {
                 const std::uint_least8_t current_district_id = environment->template getData<std::uint_least8_t>(
                     SimulationConstants::getInstance().district_key, data_.getPosition());
-                const District& current_district = japan_provinces_ptr->cgetDistrict(current_district_id);
+                const District& current_district = japan_provinces_ptr->getDistrict(current_district_id);
                 is_agricultural_capable = (current_district.agricultural_capable != 0);
             }
 

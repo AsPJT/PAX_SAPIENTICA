@@ -117,12 +117,12 @@ namespace paxs {
         /// @param type メニュー項目の種類
         /// @return メニュー項目のポインタ（存在しない場合はnullptr）
         paxs::DropDownMenu* getDropDownMenu(const paxs::MenuBarType type) {
-            const auto iterator = menu_list_key.find(type);
-            return iterator != menu_list_key.end() ? &menu_list[iterator->second] : nullptr;
+            const auto* index_ptr = menu_list_key.try_get(type);
+            return index_ptr != nullptr ? &menu_list[*index_ptr] : nullptr;
         }
         const paxs::DropDownMenu* getDropDownMenu(const paxs::MenuBarType type) const {
-            const auto iterator = menu_list_key.find(type);
-            return iterator != menu_list_key.end() ? &menu_list[iterator->second] : nullptr;
+            const auto* index_ptr = menu_list_key.try_get(type);
+            return index_ptr != nullptr ? &menu_list[*index_ptr] : nullptr;
         }
 
         bool isHit(const paxs::Vector2<int>& pos) const override {

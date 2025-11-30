@@ -286,9 +286,6 @@ namespace paxs {
 
     public:
         explicit JapanProvinces(const std::string& japan_provinces_path) noexcept {
-
-            //const std::string japan_region_tsv_path = japan_provinces_path + "/JapanRegion.tsv";
-
             inputMtDNA_List(japan_provinces_path);
             inputMtDNA_Region(japan_provinces_path);
             inputLanguage_List(japan_provinces_path);
@@ -306,21 +303,6 @@ namespace paxs {
                 district.immigrant_f64 += district.increased_immigration;
                 district.immigrant = static_cast<std::uint_least32_t>(district.immigrant_f64);
             }
-        }
-
-        /// @brief 日本の地方区分のIDから人口を取得する
-        /// @param id 日本の地方区分のID
-        /// @return 人口
-        /// @note IDが不正な場合は0を返す
-        std::uint_least32_t getJapanRegionPopulation(const std::uint_least8_t id) const noexcept {
-            for (const auto& japan_region : japan_regions) {
-                if (japan_region.id == id) {
-                    return japan_region.population;
-                }
-            }
-            PAXS_WARNING("Failed to get Japan region population: " + std::to_string(id));
-
-            return 0;
         }
 
         // 言語を取得
@@ -383,7 +365,7 @@ namespace paxs {
 
             return district_list[0];
         }
-        const District& cgetDistrict(const std::uint_least8_t id) const noexcept {
+        const District& getDistrict(const std::uint_least8_t id) const noexcept {
             for (const auto& district : district_list) {
                 if (district.id == id) {
                     return district;
@@ -405,7 +387,7 @@ namespace paxs {
             auto& weight_list = language_region_list.at(district_list[0].language_region_hash);
             return weight_list.id[weight_list.dist(gen)];
         }
-        const std::string& getLanguage_Name(const std::uint_least8_t id) const noexcept {
+        const std::string& getLanguageName(const std::uint_least8_t id) const noexcept {
             return language_list[id];
         }
         std::size_t getSizeLanguage() const noexcept {
@@ -431,21 +413,6 @@ namespace paxs {
             return mtdna_list.size();
         }
 
-        /// @brief 日本の地区のIDから人口を取得する
-        /// @param id 日本の地区のID
-        /// @return 人口
-        /// @note IDが不正な場合は0を返す
-        std::uint_least32_t getDistrictPopulationAd200(const std::uint_least8_t id) const noexcept {
-            for (const auto& district : district_list) {
-                if (district.id == id) {
-                    return district.init_pop;
-                }
-            }
-            PAXS_WARNING("Failed to get District population: " + std::to_string(id));
-
-            return 0;
-        }
-
         /// @brief 日本の地区のIDから地方区分のIDを取得する
         /// @param id 日本の地区のID
         /// @return 地方区分のID
@@ -461,12 +428,7 @@ namespace paxs {
             return 0;
         }
 
-        /// @brief Get a list of District
-        /// @brief 地区のリストを取得する
-        std::vector<District>& getDistrictList() noexcept {
-            return district_list;
-        }
-        const std::vector<District>& cgetDistrictList() const noexcept {
+        const std::vector<District>& getDistrictList() const noexcept {
             return district_list;
         }
     private:
@@ -474,7 +436,6 @@ namespace paxs {
         std::vector<District> district_list; // 日本の地区
         paxs::UnorderedMap<std::uint_least32_t, mtDNA_Region> mtdna_region_list; // mtDNA 地方区分
         paxs::UnorderedMap<std::uint_least32_t, mtDNA_Region> language_region_list; // 言語 地方区分
-        //std::vector<std::uint_least32_t> mtdna_region_hash_list; // mtDNA ハッシュ計算用
         std::vector<std::string> mtdna_list; // mtDNA
         std::vector<std::string> language_list; // 言語
     };
