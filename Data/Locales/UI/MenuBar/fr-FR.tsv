@@ -5,6 +5,8 @@ view_map	Carte
 view_ui	UI
 view_simulation	Simulation
 view_person	Personne
+view_territory	Territoire
+view_flow_curve	Courbe de flux
 view_license	Licence
 view_debug	Débogage
 view_3d	3D

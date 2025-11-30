@@ -5,6 +5,8 @@ view_map	Harita
 view_ui	UI
 view_simulation	Simülasyon
 view_person	Kişi
+view_territory	Bölge
+view_flow_curve	Akış Eğrisi
 view_license	Lisans
 view_debug	Hata Ayıklama
 view_3d	3D

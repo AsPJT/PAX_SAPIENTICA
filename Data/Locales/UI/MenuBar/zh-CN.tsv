@@ -5,6 +5,8 @@ view_map	地图
 view_ui	UI
 view_simulation	仿真
 view_person	人物
+view_territory	区域线
+view_flow_curve	流动曲线
 view_license	许可
 view_debug	调试
 view_3d	3D

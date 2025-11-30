@@ -5,6 +5,8 @@ view_map	地図
 view_ui	UI
 view_simulation	ステップ数
 view_person	人物
+view_territory	地域線
+view_flow_curve	流れの曲線
 view_license	ライセンス
 view_debug	デバッグ
 view_3d	3D

@@ -5,6 +5,8 @@ view_map	Sinrunoka
 view_ui	UI
 view_simulation	Simulation
 view_person	Person
+view_territory	Territory
+view_flow_curve	Flow Curve
 view_license	License
 view_debug	Debug
 view_3d	3D

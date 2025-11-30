@@ -5,6 +5,8 @@ view_map	Карта
 view_ui	UI
 view_simulation	Симулирование
 view_person	Человек
+view_territory	Территория
+view_flow_curve	Кривая потока
 view_license	Лицензия
 view_debug	Отладка
 view_3d	3D

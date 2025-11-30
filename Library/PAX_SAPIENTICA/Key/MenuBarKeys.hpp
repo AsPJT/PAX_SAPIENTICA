@@ -44,6 +44,8 @@ namespace paxs {
         constexpr const char* view_ui = "view_ui";
         constexpr const char* view_simulation = "view_simulation";
         constexpr const char* view_person = "view_person";
+        constexpr const char* view_territory = "view_territory";
+        constexpr const char* view_flow_curve = "view_flow_curve";
         constexpr const char* view_license = "view_license";
         constexpr const char* view_debug = "view_debug";
         constexpr const char* view_3d = "view_3d";
@@ -56,6 +58,8 @@ namespace paxs {
             MurMur3::calcHash(view_ui),
             MurMur3::calcHash(view_simulation),
             MurMur3::calcHash(view_person),
+            MurMur3::calcHash(view_territory),
+            MurMur3::calcHash(view_flow_curve),
             MurMur3::calcHash(view_license),
             MurMur3::calcHash(view_debug)
             // MurMur3::calcHash(view_3d)
@@ -164,6 +168,8 @@ namespace paxs {
         ui         = MurMur3::calcHash(MenuBarKeys::view_ui),
         simulation = MurMur3::calcHash(MenuBarKeys::view_simulation),
         person     = MurMur3::calcHash(MenuBarKeys::view_person),
+        territory = MurMur3::calcHash(MenuBarKeys::view_territory),
+        flow_curve = MurMur3::calcHash(MenuBarKeys::view_flow_curve),
         license    = MurMur3::calcHash(MenuBarKeys::view_license),
         debug      = MurMur3::calcHash(MenuBarKeys::view_debug),
         view_3d    = MurMur3::calcHash(MenuBarKeys::view_3d),
@@ -242,6 +248,8 @@ namespace paxs {
             paxs::ViewMenu::ui,
             paxs::ViewMenu::simulation,
             paxs::ViewMenu::person,
+            paxs::ViewMenu::territory,
+            paxs::ViewMenu::flow_curve,
             paxs::ViewMenu::license,
             paxs::ViewMenu::debug
         };

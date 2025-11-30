@@ -5,6 +5,8 @@ view_map	خريطة
 view_ui	UI
 view_simulation	محاكاة
 view_person	شخص
+view_territory	الإقليم
+view_flow_curve	منحنى التدفق
 view_license	رخصة
 view_debug	Debug
 view_3d	ثلاثي الأبعاد
