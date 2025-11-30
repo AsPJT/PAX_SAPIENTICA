@@ -17,7 +17,6 @@
 #include <string>
 #include <utility>
 
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Interface/GUIProgressReporter.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>

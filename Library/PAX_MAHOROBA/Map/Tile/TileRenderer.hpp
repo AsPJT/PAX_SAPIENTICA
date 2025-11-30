@@ -26,7 +26,6 @@
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
@@ -46,16 +45,15 @@ namespace paxs {
         /// @param tiles タイルのリスト
         /// @param visible 可視性管理
         /// @param map_viewport マップビューポート
-        /// @param jdn ユリウス日
+        /// @param date 日付
         static void drawTiles(
             const std::vector<XYZTile>& tiles,
             const FeatureVisibilityManager& visible,
             const MapViewport& map_viewport,
-            cal::JDN_F64 jdn
+            const int date
         ) {
             const Vector2<double> map_viewport_size = map_viewport.getSize();
             const Vector2<double> map_viewport_center = map_viewport.getCenter();
-            const int date = static_cast<int>(jdn.getDay());
 
             for (const auto& tile : tiles) {
                 // 可視性チェック

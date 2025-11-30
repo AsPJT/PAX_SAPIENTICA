@@ -16,7 +16,6 @@
 #include <functional>
 #include <string>
 
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/Core/Calendar/Calendar.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
