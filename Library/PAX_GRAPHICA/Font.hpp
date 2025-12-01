@@ -579,14 +579,14 @@ namespace paxg{
         // プルダウンメニューのフォント設定
         static constexpr int PULLDOWN_FONT_SIZE =
 #if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
-            40;
+            34;
 #else
-            24;
+            21;
 #endif
         static constexpr int PULLDOWN_FONT_BUFFER_THICKNESS = 3;
 
         // 暦表示のフォント設定
-        static constexpr int KOYOMI_FONT_SIZE = 22;
+        static constexpr int KOYOMI_FONT_SIZE = 19;
         static constexpr int KOYOMI_FONT_BUFFER_THICKNESS = 3;
     };
 

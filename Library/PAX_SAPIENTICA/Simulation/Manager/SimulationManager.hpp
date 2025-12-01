@@ -17,7 +17,6 @@
 #include <string>
 #include <utility>
 
-#include <PAX_SAPIENTICA/Calendar/JulianDayNumber.hpp>
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Interface/GUIProgressReporter.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
@@ -324,6 +323,13 @@ namespace paxs {
         /// @return 渡来数 / Number of migrants
         std::uint_least64_t getMigrationCount() const {
             return simulator_ ? simulator_->getMigrationCount() : 0;
+        }
+
+        /// @brief 合計特殊出生率(TFR)を取得
+        /// @brief Get Total Fertility Rate
+        /// @return TFR値 / TFR value
+        double getTotalFertilityRate() const {
+            return simulator_ ? simulator_->calculateTotalFertilityRate() : 0.0;
         }
 
         /// @brief 集落グリッドへのconst参照を取得（描画用）

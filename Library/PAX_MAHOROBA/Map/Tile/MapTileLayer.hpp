@@ -61,7 +61,8 @@ namespace paxs {
             const auto& koyomi = app_state_manager_.getKoyomi();
 
             TileRenderer::drawBackground();
-            TileRenderer::drawTiles(xyz_tile_list, visible, map_viewport, koyomi.jdn.getDay());
+            const int date = static_cast<int>(koyomi.jdn.getDay());
+            TileRenderer::drawTiles(xyz_tile_list, visible, map_viewport, date);
         }
 
         RenderLayer getLayer() const override { return RenderLayer::MapTile; }
@@ -78,7 +79,7 @@ namespace paxs {
 
             // 更新処理
             for (auto&& xyz_tile : xyz_tile_list) {
-                if (xyz_tile.getMenuBarMap() != 0 && visible.isVisible(xyz_tile.getMenuBarMap()) != xyz_tile.getMenuBarMapBool()) {
+                if (xyz_tile.getMenuBarMap() != 0 && !visible.isVisible(xyz_tile.getMenuBarMap())) {
                     continue;
                 }
                 xyz_tile.update(map_viewport_size, map_viewport_center);

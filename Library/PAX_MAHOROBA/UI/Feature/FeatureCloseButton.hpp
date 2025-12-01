@@ -39,6 +39,9 @@ namespace paxs {
         }
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
+            // 継承元の処理を呼ぶ
+            IconButton::handleEvent(event);
+
             // 左クリックが押されたら
             if (event.left_button_state == MouseButtonState::Pressed) {
                 if (on_click_) {

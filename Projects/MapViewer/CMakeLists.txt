@@ -34,16 +34,15 @@ if(NOT SFML_FOUND)
     # Add cmake module path
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 
-    # Set SFML_ROOT_DIR for project-local SFML installation
-    if(NOT SFML_ROOT_DIR)
-        set(SFML_LOCAL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0")
-        if(EXISTS "${SFML_LOCAL_PATH}")
-            set(SFML_ROOT_DIR "${SFML_LOCAL_PATH}")
-            message(STATUS "Using project-local SFML: ${SFML_ROOT_DIR}")
-        endif()
-    endif()
+    # First try to find SFML via vcpkg (standard CMake config)
+    find_package(SFML 3 QUIET COMPONENTS Graphics Window System)
 
-    find_package(SFMLCustom QUIET)
+    # If not found via vcpkg, try custom finder (includes project-local SFML for Windows and legacy macOS)
+    if(NOT SFML_FOUND)
+        find_package(SFMLCustom QUIET)
+    else()
+        message(STATUS "Found SFML ${SFML_VERSION} via CMake config (vcpkg or system)")
+    endif()
 endif()
 
 if(PAXS_BUILD_TYPE STREQUAL "Development")
@@ -57,8 +56,10 @@ if(WIN32)
     add_executable(${BINARY_NAME} ${CPP_FILE})
     paxs_setup_sfml(${BINARY_NAME})
     paxs_copy_config_tsv(${BINARY_NAME} ${TSV_SOURCE_PATH})
-elseif(APPLE)
-    set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML_3.0.0/Main.cpp")
+elseif(APPLE AND SFML_FOUND)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML/Main.cpp")
+        set(CPP_FILE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/SFML/Main.cpp")
+    endif()
 
     if(PAXS_BUILD_TYPE STREQUAL "Production")
         # Production: macOS .app bundle
@@ -80,51 +81,48 @@ elseif(APPLE)
 
         target_link_libraries(${BINARY_NAME} PRIVATE SFML::Graphics curl)
 
-        # Copy SFML frameworks to the bundle
-        if(SFML_FOUND)
-            # Get SFML library paths
-            get_target_property(SFML_GRAPHICS_LIB SFML::Graphics IMPORTED_LOCATION_RELEASE)
-            if(NOT SFML_GRAPHICS_LIB)
-                get_target_property(SFML_GRAPHICS_LIB SFML::Graphics IMPORTED_LOCATION)
-            endif()
+        # Get SFML library paths
+        get_target_property(SFML_GRAPHICS_LIB SFML::Graphics IMPORTED_LOCATION_RELEASE)
+        if(NOT SFML_GRAPHICS_LIB)
+            get_target_property(SFML_GRAPHICS_LIB SFML::Graphics IMPORTED_LOCATION)
+        endif()
 
-            if(SFML_GRAPHICS_LIB)
-                get_filename_component(SFML_LIB_DIR ${SFML_GRAPHICS_LIB} DIRECTORY)
-                set(APP_FRAMEWORKS_DIR "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Frameworks")
+        if(SFML_GRAPHICS_LIB)
+            get_filename_component(SFML_LIB_DIR ${SFML_GRAPHICS_LIB} DIRECTORY)
+            set(APP_FRAMEWORKS_DIR "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Frameworks")
 
-                add_custom_command(
-                    TARGET ${BINARY_NAME} POST_BUILD
-                    # MacOS/にProdConfig.tsvをコピー
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                        "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/ProdConfig.tsv"
-                        "$<TARGET_FILE_DIR:${BINARY_NAME}>/Config.tsv"
+            add_custom_command(
+                TARGET ${BINARY_NAME} POST_BUILD
+                # MacOS/にProdConfig.tsvをコピー
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/ProdConfig.tsv"
+                    "$<TARGET_FILE_DIR:${BINARY_NAME}>/Config.tsv"
 
-                    # Resources/にappicon.icnsをコピー
-                    COMMAND ${CMAKE_COMMAND} -E make_directory
-                        "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources"
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                        "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/appicon.icns"
-                        "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources/appicon.icns"
+                # Resources/にappicon.icnsをコピー
+                COMMAND ${CMAKE_COMMAND} -E make_directory
+                    "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources"
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/appicon.icns"
+                    "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources/appicon.icns"
 
-                    # SFML の dylib をコピーして install_name_tool でパスを修正
-                    COMMAND ${CMAKE_COMMAND} -E make_directory
-                        ${APP_FRAMEWORKS_DIR}
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                        ${SFML_LIB_DIR}/libsfml-graphics.3.0.dylib
-                        ${APP_FRAMEWORKS_DIR}/
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                        ${SFML_LIB_DIR}/libsfml-window.3.0.dylib
-                        ${APP_FRAMEWORKS_DIR}/
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                        ${SFML_LIB_DIR}/libsfml-system.3.0.dylib
-                        ${APP_FRAMEWORKS_DIR}/
+                # SFML の dylib をコピーして install_name_tool でパスを修正
+                COMMAND ${CMAKE_COMMAND} -E make_directory
+                    ${APP_FRAMEWORKS_DIR}
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${SFML_LIB_DIR}/libsfml-graphics.3.0.dylib
+                    ${APP_FRAMEWORKS_DIR}/
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${SFML_LIB_DIR}/libsfml-window.3.0.dylib
+                    ${APP_FRAMEWORKS_DIR}/
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${SFML_LIB_DIR}/libsfml-system.3.0.dylib
+                    ${APP_FRAMEWORKS_DIR}/
 
-                    COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-graphics.3.0.dylib @rpath/libsfml-graphics.3.0.dylib $<TARGET_FILE:${BINARY_NAME}>
-                    COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-window.3.0.dylib   @rpath/libsfml-window.3.0.dylib   $<TARGET_FILE:${BINARY_NAME}>
-                    COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-system.3.0.dylib   @rpath/libsfml-system.3.0.dylib   $<TARGET_FILE:${BINARY_NAME}>
-                    COMMENT "Copying SFML dylibs to app bundle and fixing install names..."
-                )
-            endif()
+                COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-graphics.3.0.dylib @rpath/libsfml-graphics.3.0.dylib $<TARGET_FILE:${BINARY_NAME}>
+                COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-window.3.0.dylib   @rpath/libsfml-window.3.0.dylib   $<TARGET_FILE:${BINARY_NAME}>
+                COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-system.3.0.dylib   @rpath/libsfml-system.3.0.dylib   $<TARGET_FILE:${BINARY_NAME}>
+                COMMENT "Copying SFML dylibs to app bundle and fixing install names..."
+            )
         endif()
     else()
         # Development: standard executable
@@ -138,18 +136,56 @@ elseif(UNIX AND SFML_FOUND)
     paxs_setup_sfml(${BINARY_NAME})
     paxs_copy_config_tsv(${BINARY_NAME} ${TSV_SOURCE_PATH})
 
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Config.tsv DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
     # バージョンの読み込み
     include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/ReadVersion.cmake)
     read_pax_sapientica_version()
 
-    set(CPACK_GENERATOR "DEB")
-    set(CPACK_PACKAGE_NAME "PAX_SAPIENTICA")
-    set(CPACK_PACKAGE_VERSION ${PAX_SAPIENTICA_LIBRARY_VERSION})
-    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PAX_SAPIENTICA")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsfml-dev")
+    if(PAXS_BUILD_TYPE STREQUAL "Production")
+        # Production build: Create DEB package with Data directory
+
+        # Install binary to /usr/local/bin
+        install(TARGETS ${BINARY_NAME}
+            RUNTIME DESTINATION bin
+        )
+
+        # Install Config.tsv to /usr/local/share/pax_sapientica
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Config.tsv
+            DESTINATION share/pax_sapientica
+        )
+
+        # Install Data directory if it exists
+        if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data)
+            install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data
+                DESTINATION share/pax_sapientica
+            )
+        endif()
+
+        # CPack settings for DEB package
+        set(CPACK_GENERATOR "DEB")
+        set(CPACK_PACKAGE_NAME "pax-sapientica")
+        set(CPACK_PACKAGE_VERSION ${PAX_SAPIENTICA_LIBRARY_VERSION})
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "PAX SAPIENTICA - Historical Simulation Viewer")
+        set(CPACK_PACKAGE_DESCRIPTION "PAX SAPIENTICA is a historical simulation and map viewer application.")
+        set(CPACK_DEBIAN_PACKAGE_MAINTAINER "PAX SAPIENTICA Team")
+        set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsfml-graphics2.6 (>= 2.6.0), libsfml-window2.6 (>= 2.6.0), libsfml-system2.6 (>= 2.6.0)")
+        set(CPACK_DEBIAN_PACKAGE_SECTION "graphics")
+        set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+        set(CPACK_PACKAGE_CONTACT "https://github.com/guinpen/PAX_SAPIENTICA")
+
+        # Include CPack module to enable package generation
+        include(CPack)
+    else()
+        # Development build: Install to build directory for local testing
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Config.tsv
+            DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+        )
+
+        if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data)
+            install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${OS}/Data
+                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+            )
+        endif()
+    endif()
 endif()
 
 # DxLib target

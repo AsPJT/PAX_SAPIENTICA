@@ -5,6 +5,8 @@ view_map	지도
 view_ui	UI
 view_simulation	시뮬레이션
 view_person	인물
+view_territory	지역선
+view_flow_curve	흐름 곡선
 view_license	라이선스
 view_debug	디버깅
 view_3d	3D

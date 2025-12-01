@@ -114,7 +114,7 @@ private:
 
             const std::string name = feature.getName();
             if (!name.empty()) {
-                paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+                paxg::Font* font = Fonts().getFont(FontProfiles::main);
                 font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
                 font->drawTopCenter(name, draw_font_pos, paxg::Color(0, 0, 0));
             }
@@ -213,7 +213,7 @@ private:
         // フォント設定
         paxg::Font* font = nullptr;
         if (should_show_name) {
-            font = Fonts().getFont(FontProfiles::MAIN);
+            font = Fonts().getFont(FontProfiles::main);
             if (font == nullptr) {
                 // フォントが取得できない場合は名前表示をスキップ
                 PAXS_WARNING("Font not found for genome feature name rendering");
@@ -262,7 +262,7 @@ private:
         }
 
         // フォント設定（ループ外で1回のみ）
-        paxg::Font* font = Fonts().getFont(FontProfiles::MAIN);
+        paxg::Font* font = Fonts().getFont(FontProfiles::main);
         if (font == nullptr) {
             PAXS_WARNING("Font not found for place name feature rendering");
             return;

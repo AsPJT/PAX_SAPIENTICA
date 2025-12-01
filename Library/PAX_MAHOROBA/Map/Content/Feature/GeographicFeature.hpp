@@ -25,6 +25,7 @@
 #include <PAX_MAHOROBA/Map/Content/Update/IUpdatable.hpp>
 #include <PAX_MAHOROBA/Map/Content/Update/UpdateContext.hpp>
 #include <PAX_MAHOROBA/Map/Core/MapCoordinateConverter.hpp>
+#include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
@@ -46,11 +47,7 @@ public:
     /// @brief Constructor
     /// @param data 地物の位置データ / Geographic feature location data
     GeographicFeature(LocationPoint  data)
-        : data_(std::move(data)) {
-        visible_ = true;
-    }
-
-    // ========== 基本情報 / Basic Information ==========
+        : data_(std::move(data)) {}
 
     FeatureType getType() const override {
         return FeatureType::Geographic;
@@ -65,17 +62,13 @@ public:
     }
 
     std::string getName() const override {
-        // Geographic features do not have names - they are represented by icons only
-        // Future: If geographic features need names, uncomment below and create GeographicFeatureNames domain
-        /*
-        const std::uint_least32_t geographic_feature_names_domain_hash = MurMur3::calcHash("GeographicFeatureNames");
-        const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
-        const std::string* name = Fonts().getLocalesText(geographic_feature_names_domain_hash, key_hash);
+        // data_.keyをハッシュ化してLocalesシステムから名前を取得
+         const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
+        const std::string* name = Fonts().getLocalesText(feature_names_domain_hash, key_hash, true);
         if (name != nullptr) {
             return *name;
         }
-        */
-        return data_.key;
+        return "";
     }
 
     std::uint_least32_t getFeatureTypeHash() const override {
@@ -143,8 +136,6 @@ public:
         return data_.year_range.contains(jdn);
     }
 
-    // ========== 座標・描画 / Coordinates & Rendering ==========
-
     const WrappedScreenPositions& getScreenPositions() const override {
         return cached_screen_positions_;
     }
@@ -152,8 +143,6 @@ public:
     int getDisplaySize() const override {
         return cached_display_size_;
     }
-
-    // ========== ヒット判定 / Hit Testing ==========
 
     bool isHit(const paxs::Vector2<int>& mouse_pos) const override {
         if (!visible_) {
@@ -175,14 +164,10 @@ public:
         );
     }
 
-    // ========== イベント処理 / Event Handling ==========
-
     void onClick(const ClickContext& context) override {
-        std::cout << "Geographic feature clicked: " << getName() << "\n";
+        // std::cout << "Geographic feature clicked: " << getName() << "\n";
         (void)context;
     }
-
-    // ========== Geographic 固有のアクセサ / Geographic-specific Accessors ==========
 
     /// @brief 描画個数を取得（extra_dataから）
     /// @brief Get draw count from extra_data
@@ -211,6 +196,8 @@ private:
     Vector2<int> cached_texture_size_{50, 50};         ///< キャッシュされたテクスチャサイズ / Cached texture size
     bool visible_ = true;                              ///< 可視性 / Visibility
     bool in_time_range_ = true;  ///< 時間範囲内か / Whether within time range
+
+    static constexpr std::uint_least32_t feature_names_domain_hash = MurMur3::calcHash("FeatureNames");
 };
 
 } // namespace paxs

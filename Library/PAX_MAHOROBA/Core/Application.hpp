@@ -70,7 +70,7 @@ public:
             (last_window_height_ / 2) - 15,
             400,
             30,
-            Fonts().getFont(FontProfiles::UI_MEDIUM)
+            Fonts().getFont(FontProfiles::ui_medium)
         );
 
         // 非同期初期化を開始
@@ -214,7 +214,7 @@ private:
                     (window_height / 2) - 15,
                     400,
                     30,
-                    Fonts().getFont(FontProfiles::UI_MEDIUM)
+                    Fonts().getFont(FontProfiles::ui_medium)
                 );
             }
 

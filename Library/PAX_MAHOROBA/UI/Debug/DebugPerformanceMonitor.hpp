@@ -110,7 +110,7 @@ public:
             return;
         }
 
-        paxg::Font* font_text = Fonts().getFont(FontProfiles::UI_SMALL);
+        paxg::Font* font_text = Fonts().getFont(FontProfiles::ui_small);
         if (font_text == nullptr) {
             return;
         }

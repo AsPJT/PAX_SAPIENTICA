@@ -18,7 +18,13 @@
 
 #include <PAX_MAHOROBA/Core/Main.hpp>
 
+#include <PAX_SAPIENTICA/Utility/ExecutablePath.hpp>
+
 int main() {
+    // 実行ファイルのディレクトリにカレントディレクトリを変更
+    // Change the current directory to the executable file's directory
+    paxs::ExecutablePath::changeToExecutableDirectory();
+
     paxs::startMain();
     return 0;
 }

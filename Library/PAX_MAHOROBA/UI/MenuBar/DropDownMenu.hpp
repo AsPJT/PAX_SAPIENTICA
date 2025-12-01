@@ -229,13 +229,13 @@ namespace paxs {
 
         /// @brief 項目の状態を設定（キー指定）
         void setIsItems(const std::uint_least32_t key, const bool is_item) {
-            if (item_index_key.find(key) == item_index_key.end()) {
+            const auto* index = item_index_key.try_get(key);
+            if (index == nullptr) {
                 PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
                 return;
             }
-            const std::size_t index = item_index_key.at(key);
-            if (index < is_items.size()) {
-                is_items[index] = is_item;
+            if (*index < is_items.size()) {
+                is_items[*index] = is_item;
             }
         }
 

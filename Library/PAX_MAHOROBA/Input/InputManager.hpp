@@ -102,36 +102,34 @@ public:
 
         // 左ボタンの状態を更新してイベントを発行
         InputStateManager::State left_state = left_button_state_manager_.update(current_left_button);
-        if (left_state != InputStateManager::State::None) {
-            MouseEvent event(mouse_pos);
+        MouseEvent event(mouse_pos);
 
-            // 修飾キーの設定
-            if (paxg::Key::isShiftPressed()) event.modifier_keys |= MouseEvent::MODIFIER_SHIFT;
-            if (paxg::Key::isCtrlPressed()) event.modifier_keys |= MouseEvent::MODIFIER_CTRL;
-            if (paxg::Key::isAltPressed()) event.modifier_keys |= MouseEvent::MODIFIER_ALT;
-            if (paxg::Key::isCommandPressed()) event.modifier_keys |= MouseEvent::MODIFIER_COMMAND;
+        // 修飾キーの設定
+        if (paxg::Key::isShiftPressed()) event.modifier_keys |= MouseEvent::MODIFIER_SHIFT;
+        if (paxg::Key::isCtrlPressed()) event.modifier_keys |= MouseEvent::MODIFIER_CTRL;
+        if (paxg::Key::isAltPressed()) event.modifier_keys |= MouseEvent::MODIFIER_ALT;
+        if (paxg::Key::isCommandPressed()) event.modifier_keys |= MouseEvent::MODIFIER_COMMAND;
 
-            // 前フレームの座標を設定
-            event.prev_pos = mouse->getPosBefore1Frame();
+        // 前フレームの座標を設定
+        event.prev_pos = mouse->getPosBefore1Frame();
 
-            // ボタン状態の設定
-            if (left_state == InputStateManager::State::Down) {
-                event.left_button_state = MouseButtonState::Pressed;
-            }
-            else if (left_state == InputStateManager::State::Held) {
-                event.left_button_state = MouseButtonState::Held;
-            }
-            else if (left_state == InputStateManager::State::Up) {
-                event.left_button_state = MouseButtonState::Released;
-            }
-
-            input_router_.routeEvent(event);
+        // ボタン状態の設定
+        if (left_state == InputStateManager::State::Down) {
+            event.left_button_state = MouseButtonState::Pressed;
         }
+        else if (left_state == InputStateManager::State::Held) {
+            event.left_button_state = MouseButtonState::Held;
+        }
+        else if (left_state == InputStateManager::State::Up) {
+            event.left_button_state = MouseButtonState::Released;
+        }
+
+        input_router_.routeEvent(event);
     }
 
 private:
     // 統合入力ルーティングシステム
-    InputRouter input_router_{};  // 全ての入力イベント（キーボード、マウス、マウスホイール）
+    InputRouter input_router_;  // 全ての入力イベント（キーボード、マウス、マウスホイール）
 
     // マウスボタン状態管理
     InputStateManager left_button_state_manager_;

@@ -379,8 +379,10 @@ namespace paxs {
                 return;
             }
 
-            paxg::Font* font = Fonts().getFont(paxs::FontProfiles::KOYOMI);
-            if (font == nullptr) return;
+            paxg::Font* font = Fonts().getFont(paxs::FontProfiles::koyomi);
+            if (font == nullptr) {
+                return;
+            }
 
             font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 

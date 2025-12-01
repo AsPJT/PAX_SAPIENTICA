@@ -23,9 +23,6 @@ namespace paxs {
         /// @brief メニューバーマップID
         std::uint_least32_t menu_bar_map = 0;
 
-        /// @brief メニューバーマップ表示フラグ
-        bool menu_bar_map_bool = true;
-
         /// @brief テクスチャのルートパス種別
         std::uint_least32_t texture_root_path_type = 0;
 

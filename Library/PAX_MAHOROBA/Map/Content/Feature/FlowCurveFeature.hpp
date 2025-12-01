@@ -80,7 +80,7 @@ public:
         // アニメーションオフセットを更新
         // Update animation offset
         animation_offset_ += animation_speed_;
-        
+
         // オフセットが1.0を超えたらリセット（ループアニメーション）
         // Reset when offset exceeds 1.0 (loop animation)
         if (animation_offset_ >= 1.0f) {
@@ -111,7 +111,7 @@ public:
         double max_lon = data_.coordinates[0].x;
         double min_lat = data_.coordinates[0].y;
         double max_lat = data_.coordinates[0].y;
-        
+
         for (const auto& coord : data_.coordinates) {
             min_lon = (std::min)(min_lon, coord.x);
             max_lon = (std::max)(max_lon, coord.x);
@@ -217,7 +217,7 @@ public:
         // Convert normalized coordinates to screen coordinates
         cached_screen_points_.clear();
         cached_screen_points_.reserve(normalized_coords.size());
-        
+
         for (const auto& coord : normalized_coords) {
             // スクリーン座標に変換
             const paxg::Vec2<double> screen_pos = MapCoordinateConverter::toScreenPos(
@@ -262,8 +262,7 @@ public:
     }
 
     void onClick(const ClickContext& context) override {
-        // クリック時の処理（デバッグ出力）
-        std::cout << "FlowCurve clicked: " << getName() << std::endl;
+        // std::cout << "FlowCurve clicked: " << getName() << std::endl;
         (void)context;
     }
 
@@ -290,7 +289,7 @@ public:
         // Draw multiple animated moving curve segments (7 flow paths)
         // 各線の開始位置と開始時間をずらしてバラつきを出す
         // Stagger start position and timing for each line to create variation
-        
+
         // 流路定義：{lateral_offset, time_offset, start_position_offset}
         // Flow path definition: {lateral_offset, time_offset, start_position_offset}
         struct FlowPath {
@@ -298,7 +297,7 @@ public:
             float time_offset;         // 時間オフセット（0.0～1.0） / Time offset (0.0-1.0)
             float start_pos_offset;    // 開始位置オフセット（0.0～1.0） / Start position offset (0.0-1.0)
         };
-        
+
         constexpr FlowPath flow_paths[] = {
             {-6.0f, 0.0f,  0.0f},    // 左外側 / Left outer
             {-4.0f, 0.14f * 1.5, 0.4f},    // 左中外 / Left mid-outer
@@ -308,19 +307,19 @@ public:
             { 4.0f, 0.70f * 1.5, 0.9f},    // 右中外 / Right mid-outer
             { 6.0f, 0.84f * 1.5, 0.5f}     // 右外側 / Right outer
         };
-        
+
         constexpr int num_segments_per_line = 4;  // 各流路あたりの動く曲線の本数 / Number of moving segments per flow path
-        
+
         for (const auto& path : flow_paths) {
             for (int i = 0; i < num_segments_per_line; ++i) {
                 // 各線内での位相オフセット
                 // Phase offset within each line
                 const float phase_offset = static_cast<float>(i) / num_segments_per_line;
-                
+
                 // 時間オフセットを加算してバラつきを出す
                 // Add time offset for variation
                 const float total_offset = phase_offset + path.time_offset;
-                
+
                 drawAnimatedSegment(line_width, total_offset, path.lateral_offset, path.start_pos_offset);
             }
         }
@@ -345,13 +344,13 @@ private:
     std::vector<paxg::Vec2f> cached_screen_points_;  ///< キャッシュされたスクリーン座標列 / Cached screen points
     paxg::Color color_;                              ///< 描画色 / Drawing color
     bool visible_{true};                             ///< 可視性 / Visibility
-    
+
     mutable float animation_offset_;                 ///< アニメーションオフセット (0.0 ~ 1.0) / Animation offset
     float animation_speed_;                          ///< アニメーション速度 / Animation speed
 
     /// @brief Catmull-Romスプライン補間
     /// @brief Catmull-Rom spline interpolation
-    static paxg::Vec2f calculateCatmullRom(const paxg::Vec2f& p0, const paxg::Vec2f& p1, 
+    static paxg::Vec2f calculateCatmullRom(const paxg::Vec2f& p0, const paxg::Vec2f& p1,
                                            const paxg::Vec2f& p2, const paxg::Vec2f& p3, float t) {
         float t2 = t * t;
         float t3 = t2 * t;
@@ -379,86 +378,86 @@ private:
         // 移動する線分の長さ（始点から約3点分の長さ）
         // Length of moving segment (approximately 3 points from start)
         constexpr float segment_length = 3.0f;
-        
+
         const std::size_t point_count = cached_screen_points_.size();
-        
+
         // スプライン曲線全体の長さに基づいて、アニメーションオフセットを適用
         // Apply animation offset based on total spline curve length
         const float total_segments = static_cast<float>(point_count - 1);
-        
+
         // 時間オフセットと開始位置オフセットを組み合わせる
         // Combine time offset and start position offset
         float animated_position = (animation_offset_ + phase_offset);
-        
+
         // 位相オフセットが1.0を超える場合、0.0～1.0に正規化
         // Normalize phase offset to 0.0-1.0 range
         while (animated_position >= 1.0f) {
             animated_position -= 1.0f;
         }
-        
+
         // 開始位置オフセットを追加（各線の開始位置をずらす）
         // Add start position offset (stagger start position for each line)
         animated_position = animated_position + start_position_offset;
         if (animated_position >= 1.0f) {
             animated_position -= 1.0f;
         }
-        
+
         animated_position *= total_segments;
-        
+
         // 移動する線分の開始点と終了点を計算
         // Calculate start and end points of moving segment
         const float start_pos = animated_position;
         const float end_pos = animated_position + segment_length;
-        
+
         // 線分を構成する点を収集
         // Collect points for the segment
         std::vector<paxg::Vec2f> segment_points;
         segment_points.reserve(static_cast<size_t>(segment_length * 20 + 2));
-        
+
         // スプライン曲線上の点を補間して収集
         // Interpolate and collect points on spline curve
         const int divisions = 20;  // 各セグメント間の分割数 / Divisions per segment
-        
+
         for (std::size_t i = 0; i < point_count - 1; ++i) {
             const float segment_start = static_cast<float>(i);
             const float segment_end = static_cast<float>(i + 1);
-            
+
             // このセグメントが移動線分の範囲内にあるかチェック
             // Check if this segment is within the moving segment range
             if (segment_end < start_pos || segment_start > end_pos) {
                 continue;  // 範囲外なのでスキップ / Skip if outside range
             }
-            
+
             // Catmull-Rom補間用の制御点を取得
             // Get control points for Catmull-Rom interpolation
             paxg::Vec2f p0 = (i == 0) ? cached_screen_points_[0] : cached_screen_points_[i - 1];
             paxg::Vec2f p1 = cached_screen_points_[i];
             paxg::Vec2f p2 = cached_screen_points_[i + 1];
             paxg::Vec2f p3 = (i + 2 >= point_count) ? cached_screen_points_[i + 1] : cached_screen_points_[i + 2];
-            
+
             // このセグメント内で補間する範囲を計算
             // Calculate interpolation range within this segment
             const float local_start = (std::max)(0.0f, start_pos - segment_start);
             const float local_end = (std::min)(1.0f, end_pos - segment_start);
-            
+
             const int start_div = static_cast<int>(local_start * divisions);
             const int end_div = static_cast<int>(local_end * divisions);
-            
+
             for (int j = start_div; j <= end_div; ++j) {
                 float t = static_cast<float>(j) / divisions;
                 paxg::Vec2f point = calculateCatmullRom(p0, p1, p2, p3, t);
-                
+
                 // 固定の左右オフセットを適用
                 // Apply fixed lateral offset
                 if (std::abs(fixed_lateral_offset) > 0.01f) {
                     // 曲線の向き（接線方向）を計算
                     // Calculate tangent direction
                     paxg::Vec2f tangent = calculateTangent(p0, p1, p2, p3, t);
-                    
+
                     // 接線に垂直な方向を計算（右向き）
                     // Calculate perpendicular direction (rightward)
                     paxg::Vec2f perpendicular(-tangent.y(), tangent.x());
-                    
+
                     // 垂直方向にオフセットを適用
                     // Apply perpendicular offset
                     point = paxg::Vec2f(
@@ -466,11 +465,11 @@ private:
                         point.y() + perpendicular.y() * fixed_lateral_offset
                     );
                 }
-                
+
                 segment_points.push_back(point);
             }
         }
-        
+
         // 収集した点で線分を描画
         // Draw segment with collected points
         if (segment_points.size() >= 2) {
@@ -479,21 +478,21 @@ private:
             const float alpha_factor = 1.0f - (phase_offset * 0.4f);  // 0.6 ~ 1.0
             const int alpha = static_cast<int>(180 * alpha_factor + 50);  // 50 ~ 230
             paxg::Color segment_color(0, 0, 0, alpha);  // 黒色、透明度可変 / Black with variable opacity
-            
+
             for (size_t i = 0; i < segment_points.size() - 1; ++i) {
                 paxg::Line(segment_points[i], segment_points[i + 1]).draw(line_width * 0.6f, segment_color);
             }
-            
+
             // 線分の終端に小さい矢印を描画（位相オフセットが小さく、中央付近の流路のみ）
             // Draw small arrow at the end of segment (only for small phase offset and near-center paths)
             if (segment_points.size() >= 2 && phase_offset < 0.3f && std::abs(fixed_lateral_offset) < 4.0f) {
                 const size_t last_idx = segment_points.size() - 1;
                 const paxg::Vec2f& prev = segment_points[last_idx - 1];
                 const paxg::Vec2f& end = segment_points[last_idx];
-                
+
                 const float arrow_length = line_width * 4.0f;
                 const float arrow_width = line_width * 2.5f;
-                
+
                 paxg::Line(prev, end).drawArrow(line_width * 0.6f, paxg::Vec2f(arrow_width, arrow_length), segment_color);
             }
         }
@@ -504,19 +503,19 @@ private:
     static paxg::Vec2f calculateTangent(const paxg::Vec2f& p0, const paxg::Vec2f& p1,
                                         const paxg::Vec2f& p2, const paxg::Vec2f& p3, float t) {
         const float t2 = t * t;
-        
+
         // Catmull-Romスプラインの1次微分
         // First derivative of Catmull-Rom spline
         const float v0_x = (p2.x() - p0.x()) * 0.5f;
         const float v1_x = (p3.x() - p1.x()) * 0.5f;
-        const float dx = (2 * p1.x() - 2 * p2.x() + v0_x + v1_x) * 3.0f * t2 + 
+        const float dx = (2 * p1.x() - 2 * p2.x() + v0_x + v1_x) * 3.0f * t2 +
                          (-3 * p1.x() + 3 * p2.x() - 2 * v0_x - v1_x) * 2.0f * t + v0_x;
-        
+
         const float v0_y = (p2.y() - p0.y()) * 0.5f;
         const float v1_y = (p3.y() - p1.y()) * 0.5f;
-        const float dy = (2 * p1.y() - 2 * p2.y() + v0_y + v1_y) * 3.0f * t2 + 
+        const float dy = (2 * p1.y() - 2 * p2.y() + v0_y + v1_y) * 3.0f * t2 +
                          (-3 * p1.y() + 3 * p2.y() - 2 * v0_y - v1_y) * 2.0f * t + v0_y;
-        
+
         // 正規化（単位ベクトル化）
         // Normalize to unit vector
         const float length = std::sqrt(dx * dx + dy * dy);

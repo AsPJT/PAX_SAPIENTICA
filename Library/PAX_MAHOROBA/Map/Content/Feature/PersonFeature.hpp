@@ -195,8 +195,7 @@ public:
     }
 
     void onClick(const ClickContext& context) override {
-        // クリック時の処理（デバッグ出力）
-        std::cout << "Person clicked: " << getName() << std::endl;
+        // std::cout << "Person clicked: " << getName() << std::endl;
         (void)context;  // 未使用警告を抑制
     }
 
@@ -214,8 +213,6 @@ public:
     }
 
 private:
-    static constexpr std::uint_least32_t person_names_domain_hash = MurMur3::calcHash("PersonNames");
-
     PersonLocationPoint data_;           ///< 人物位置データ / Person location data
     PersonLocationGroup group_data_;     ///< 人物グループデータ / Person group data
 
@@ -227,6 +224,8 @@ private:
     std::string cached_name_;                         ///< キャッシュされた名前 / Cached name
     double cached_jdn_ = 0.0;                         ///< キャッシュされたJDN / Cached JDN
     bool visible_ = true;                             ///< 可視性 / Visibility
+
+    static constexpr std::uint_least32_t person_names_domain_hash = MurMur3::calcHash("PersonNames");
 };
 
 } // namespace paxs

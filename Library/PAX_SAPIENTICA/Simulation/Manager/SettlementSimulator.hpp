@@ -117,6 +117,55 @@ namespace paxs {
             return migration_count;
         }
 
+        /// @brief 合計特殊出生率(TFR)を計算
+        /// @brief Calculate Total Fertility Rate
+        /// @return TFR値 / TFR value
+        double calculateTotalFertilityRate() const {
+            // 15歳から49歳までの女性人口をカウント
+            std::size_t childbearing_age_female_count = 0;
+
+            // 全集落を走査して出産可能年齢の女性人口を集計
+            for (const auto& settlement_grid : settlement_grids) {
+                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
+                    for (const auto& agent : settlement.cgetAgents()) {
+                        if (!agent.isMale()) {
+                            const std::size_t age_in_years = agent.getAgeSizeT();
+                            // 15歳から49歳の女性をカウント
+                            if (age_in_years >= SimulationConstants::getInstance().childbearing_age_min &&
+                                age_in_years < SimulationConstants::getInstance().childbearing_age_max) {
+                                childbearing_age_female_count++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 出産可能年齢の女性がいない場合は0を返す
+            if (childbearing_age_female_count == 0) {
+                return 0.0;
+            }
+
+            // 直近1年間の出生数を取得（循環バッファの合計）
+            std::size_t total_births_last_year = 0;
+            for (const auto& count : birth_count_history_) {
+                total_births_last_year += count;
+            }
+
+            // TFR = (年間出生数 / 出産可能年齢の女性人口) × 出産可能年齢の年数
+            const double births_per_woman = static_cast<double>(total_births_last_year) /
+                static_cast<double>(childbearing_age_female_count);
+
+            // 出産可能年齢の範囲（通常は35年：15歳から49歳）
+            const std::size_t childbearing_age_range =
+                SimulationConstants::getInstance().childbearing_age_max -
+                SimulationConstants::getInstance().childbearing_age_min;
+
+            // TFRを計算
+            const double tfr = births_per_woman * static_cast<double>(childbearing_age_range);
+
+            return tfr;
+        }
+
         /// @brief
         /// @brief 生命表を取得
         void outputLifeSpan(const int loop_num_) {
@@ -156,12 +205,12 @@ namespace paxs {
         }
         // 結果の地区名を出力
         void outputResultDistrictName(std::ofstream& ofs_, const std::size_t i_) const {
-            ofs_ << japan_provinces->cgetDistrictList()[i_].name << '\t';
+            ofs_ << japan_provinces->getDistrictList()[i_].name << '\t';
         }
         // 集落の初期化時にシミュレーション変数を出力
         void initResults() {
             result_writer_ = std::make_unique<SimulationResultWriter>();
-            result_writer_->initialize(SimulationConstants::getInstance().output_directory_name, japan_provinces->cgetDistrictList());
+            result_writer_->initialize(SimulationConstants::getInstance().output_directory_name, japan_provinces->getDistrictList());
         }
 
         /// @brief Initialize the simulator.
@@ -181,6 +230,10 @@ namespace paxs {
             marriage_pos_list.clear();
             bronze_share_list.clear();
 
+            // 出生数履歴の初期化（1年分のステップ数）
+            birth_count_history_.assign(SimulationConstants::getInstance().steps_per_year, 0);
+            birth_history_index_ = 0;
+
             initRandomizeSettlements();
             randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/);
             calcPop(); // 人口を計算
@@ -188,7 +241,7 @@ namespace paxs {
             // 可住地の数を出力
             for (std::size_t i = 1; i < max_number_of_districts; ++i) {
                 result_writer_->writeHabitableLand(
-                    japan_provinces->cgetDistrictList()[i].name,
+                    japan_provinces->getDistrictList()[i].name,
                     (*live_list)[i + 1].habitable_land_positions.size()
                 );
             }
@@ -213,23 +266,23 @@ namespace paxs {
             const auto target_index = target_key.to(SettlementGridsType{});
 
             // ターゲットの地域が登録されているか？
-            const auto target_iterator = settlement_grids.find(target_index);
-            const auto current_iterator = settlement_grids.find(current_index);
-            if (current_iterator == settlement_grids.end()) {
+            auto* const target_ptr = settlement_grids.try_get(target_index);
+            auto* const current_ptr = settlement_grids.try_get(current_index);
+            if (current_ptr == nullptr) {
                 return; // current_indexが存在しない場合は何もしない
             }
 
-            if (target_iterator != settlement_grids.end()) {
+            if (target_ptr != nullptr) {
                 // 登録されている場合はそのターゲット地域へ移動
-                target_iterator->second.moveSettlementToThis(current_iterator->second.getSettlement(settlement_id));
+                target_ptr->moveSettlementToThis(current_ptr->getSettlement(settlement_id));
             }
             else {
                 // 登録されていない場合は新しく地域を作成
                 SettlementGrid settlement_grid = SettlementGrid(target_key * SimulationConstants::getInstance().cell_group_length, environment, gen);
-                settlement_grid.moveSettlementToThis(current_iterator->second.getSettlement(settlement_id));
+                settlement_grid.moveSettlementToThis(current_ptr->getSettlement(settlement_id));
                 settlement_grids.emplace(target_index, std::move(settlement_grid));
             }
-            current_iterator->second.deleteSettlement(settlement_id);
+            current_ptr->deleteSettlement(settlement_id);
         }
 
         /// @brief Execute the simulation for the one step.
@@ -292,7 +345,7 @@ namespace paxs {
                 stats.settlement_count = sat_num;
                 stats.population_count = pop_num;
                 stats.get_mtdna_name = [this](std::uint_least8_t id) { return japan_provinces->getMtDNA_Name(id); };
-                stats.get_language_name = [this](std::uint_least8_t id) { return japan_provinces->getLanguage_Name(id); };
+                stats.get_language_name = [this](std::uint_least8_t id) { return japan_provinces->getLanguageName(id); };
 
                 // Aggregate region stats and prepare district stats
                 for (std::size_t i = 1; i < max_number_of_districts; ++i) {
@@ -359,7 +412,11 @@ namespace paxs {
                         continue;
                     }
 
-                    auto [target_id, current_key, target_key] = settlements[i].move(gen, japan_provinces->getDistrict(environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, settlements[i].getPosition())));
+                    auto [target_id, current_key, target_key] = settlements[i].move(
+                        gen,
+                        japan_provinces->getDistrict(environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, settlements[i].getPosition())),
+                        japan_provinces.get()
+                    );
 
                     if (target_id != 0) {
                         move_list.emplace_back(target_id, current_key, target_key);
@@ -373,11 +430,34 @@ namespace paxs {
             const auto move_time = TimeUtils::now(); // 移動計測
             move_processing_time = TimeUtils::getDifferenceSeconds(start_time, move_time);
 
-            for (auto& settlement_grid : settlement_grids) {
-                for (auto& settlement : settlement_grid.second.getSettlements()) {
-                    settlement.preUpdate(kanakuma_life_span);
+            // このステップでの出生数をカウント（preUpdate前の人口）
+            std::size_t population_before_birth = 0;
+            for (const auto& settlement_grid : settlement_grids) {
+                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
+                    population_before_birth += settlement.getPopulation();
                 }
             }
+
+            for (auto& settlement_grid : settlement_grids) {
+                for (auto& settlement : settlement_grid.second.getSettlements()) {
+                    settlement.preUpdate(kanakuma_life_span, japan_provinces.get());
+                }
+            }
+
+            // このステップでの出生数をカウント（preUpdate後の人口増加分）
+            std::size_t population_after_birth = 0;
+            for (const auto& settlement_grid : settlement_grids) {
+                for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
+                    population_after_birth += settlement.getPopulation();
+                }
+            }
+
+            // 出生数を記録（循環バッファ）
+            const std::size_t births_this_step = (population_after_birth > population_before_birth) ?
+                (population_after_birth - population_before_birth) : 0;
+            birth_count_history_[birth_history_index_] = births_this_step;
+            birth_history_index_ = (birth_history_index_ + 1) % SimulationConstants::getInstance().steps_per_year;
+
             // 渡来期間
             if (SimulationConstants::getInstance().immigration_step_interval > 0 &&
                 step_count >= SimulationConstants::getInstance().immigration_start_steps &&
@@ -408,9 +488,8 @@ namespace paxs {
                 close_settlements_list.clear();
                 for (int i = -1; i <= 1; ++i) {
                     for (int j = -1; j <= 1; ++j) {
-                        auto it = settlement_grids.find((grid_position + Vector2(i, j)).to(SettlementGridsType{}));
-                        if (it != settlement_grids.end()) {
-                            close_settlements_list.emplace_back(&(it->second.getSettlements()));
+                        if (auto* const ptr = settlement_grids.try_get((grid_position + Vector2(i, j)).to(SettlementGridsType{}))) {
+                            close_settlements_list.emplace_back(&(ptr->getSettlements()));
                         }
                     }
                 }
@@ -431,7 +510,8 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     settlement.marriage(
                         close_settlements_list,
-                        marriage_pos_list
+                        marriage_pos_list,
+                        japan_provinces.get()
                     );
                 }
             }
@@ -548,6 +628,43 @@ namespace paxs {
         // 進捗報告インターフェース
         IProgressReporter* progress_reporter_ = nullptr;
 
+        // 直近1年間（steps_per_year分）の出生数を記録する循環バッファ
+        std::vector<std::size_t> birth_count_history_;
+        std::size_t birth_history_index_ = 0;
+
+        /// @brief エージェントをランダムに生成するヘルパーメソッド
+        /// @brief Create a random agent helper method
+        /// @param is_farming 農耕民かどうか / Is farming
+        /// @param district_id 地区ID / District ID
+        /// @return 生成されたエージェント / Generated agent
+        Agent createRandomAgent(bool is_farming, std::uint_least8_t district_id) {
+            Genome genome = Genome::generateRandomSetMtDNA(
+                gen,
+                japan_provinces->getMtDNA(district_id, gen),
+                static_cast<std::uint_least8_t>(japan_provinces->getSNP(district_id)),
+                japan_provinces->getLanguage(district_id, gen)
+            );
+            const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(is_farming, genome.isMale(), gen);
+
+            AgeType age_value = 0;
+            if (set_lifespan > SimulationConstants::getInstance().init_lifespan_grace_period) {
+                std::uniform_int_distribution<> lifespan_dist{
+                    0, static_cast<int>(set_lifespan - SimulationConstants::getInstance().init_lifespan_grace_period)
+                };
+                age_value = static_cast<AgeType>(lifespan_dist(gen));
+            }
+
+            return Agent(
+                UniqueIdentification<std::uint_least32_t>::generate(),
+                age_value,
+                set_lifespan,
+                genome,
+                static_cast<std::uint_least8_t>(japan_provinces->getFarming(district_id)),
+                static_cast<std::uint_least8_t>(japan_provinces->getHunterGatherer(district_id)),
+                static_cast<std::uint_least8_t>(japan_provinces->getLanguage(district_id))
+            );
+        }
+
         /// @brief ()
         /// @brief 集落をランダムに配置する前の初期化処理
         bool initRandomizeSettlements() {
@@ -616,7 +733,7 @@ namespace paxs {
 
             // 地区と人口のマップ
             paxs::UnorderedMap<std::uint_least8_t, std::uint_least32_t> district_population_map;
-            for (const auto& district : japan_provinces->cgetDistrictList()) {
+            for (const auto& district : japan_provinces->getDistrictList()) {
                 if (((is_ad200) ? district.init_pop : district.immigrant) == 0) {
                     continue;
                 }
@@ -639,7 +756,7 @@ namespace paxs {
             // 集落配置
             for (std::uint_least8_t district_id = 0; district_id < district_id_max; ++district_id) {
 
-                Live live = (*live_list)[district_id];
+                Live& live = (*live_list)[district_id];
 
                 while (live.live_probabilities.size() > 0 && // 集落を配置し切るまで
                     district_population_map.find(district_id) != district_population_map.end() // 地区が残っている間
@@ -661,9 +778,6 @@ namespace paxs {
                     const int live_probability_index = live_probability_dist(gen);
                     const Vector2 live_position = Vector2::from(live.habitable_land_positions[live_probability_index]);
 
-                    // 地区ごとに人口が決められているので、人口に空きがあるかどうかを判定
-                    // std::uint_least8_t district_id = environment->template getData<std::uint_least8_t>(SimulationConstants::getInstance().district_key, live_position);
-
                     auto district_population_it = district_population_map.find(district_id);
                     if (district_population_it == district_population_map.end()) {
                         live.live_probabilities[live_probability_index] = live.live_probabilities.back();
@@ -674,7 +788,7 @@ namespace paxs {
                     }
 
                     // 配置する集落の人口を決定
-                    paxs::District district = japan_provinces->cgetDistrict(district_id);
+                    paxs::District district = japan_provinces->getDistrict(district_id);
                     int settlement_population = std::uniform_int_distribution<>(district.settlement_pop_min, district.settlement_pop_max)(gen);
                     settlement_population = (std::min)(settlement_population, static_cast<int>(district_population_it->second));
 
@@ -697,24 +811,7 @@ namespace paxs {
                     const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance().immigration_district_id/*toraijin*/ : district_id;
                     settlement.resizeAgents(settlement_population);
                     for (int i = 0; i < settlement_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)), japan_provinces->getLanguage(immigration_and_district_id, gen));
-                        const AgeType set_lifespan = kanakuma_life_span.setLifeSpan((is_farming), genome.isMale(), gen);
-
-                        AgeType age_value = 0;
-                        if (set_lifespan > SimulationConstants::getInstance().init_lifespan_grace_period) {
-                            // 寿命の乱数分布
-                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance().init_lifespan_grace_period) };
-                            age_value = static_cast<AgeType>(lifespan_dist(gen));
-                        }
-
-                        settlement.setAgent(Agent(UniqueIdentification<std::uint_least32_t>::generate(),
-                            age_value,
-                            set_lifespan,
-                            genome,
-                            static_cast<std::uint_least8_t>(japan_provinces->getFarming(immigration_and_district_id)),
-                            static_cast<std::uint_least8_t>(japan_provinces->getHunterGatherer(immigration_and_district_id)),
-                            static_cast<std::uint_least8_t>(japan_provinces->getLanguage(immigration_and_district_id))
-                        ), static_cast<std::size_t>(i));
+                        settlement.setAgent(createRandomAgent(is_farming, immigration_and_district_id), static_cast<std::size_t>(i));
                         if (is_farming) ++migration_count; // 農耕カウント
                     }
 
@@ -765,25 +862,7 @@ namespace paxs {
                 for (auto& settlement : settlements) {
                     std::vector<Agent> agents(add_population);
                     for (int i = 0; i < add_population; ++i) {
-                        Genome genome = Genome::generateRandomSetMtDNA(gen, japan_provinces->getMtDNA(immigration_and_district_id, gen), static_cast<std::uint_least8_t>(japan_provinces->getSNP(immigration_and_district_id)), japan_provinces->getLanguage(immigration_and_district_id, gen));
-                        const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(is_farming, genome.isMale(), gen);
-
-                        AgeType age_value = 0;
-                        if (set_lifespan > SimulationConstants::getInstance().init_lifespan_grace_period) {
-                            // 寿命の乱数分布
-                            std::uniform_int_distribution<> lifespan_dist{ 0, static_cast<int>(set_lifespan - SimulationConstants::getInstance().init_lifespan_grace_period) };
-                            age_value = static_cast<AgeType>(lifespan_dist(gen));
-                        }
-
-                        agents[i] = Agent(
-                            UniqueIdentification<std::uint_least32_t>::generate(),
-                            age_value,
-                            set_lifespan,
-                            genome,
-                            static_cast<std::uint_least8_t>(japan_provinces->getFarming(immigration_and_district_id)),
-                            static_cast<std::uint_least8_t>(japan_provinces->getHunterGatherer(immigration_and_district_id)),
-                            static_cast<std::uint_least8_t>(japan_provinces->getLanguage(immigration_and_district_id))
-                        );
+                        agents[i] = createRandomAgent(is_farming, immigration_and_district_id);
                         if (is_farming) {
                             ++migration_count; // 農耕カウント
                         }

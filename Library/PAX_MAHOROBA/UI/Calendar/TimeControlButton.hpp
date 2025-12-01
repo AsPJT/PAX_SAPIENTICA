@@ -99,8 +99,14 @@ namespace paxs {
 
         Id getId() const { return id_; }
 
+        /// @brief イベント処理
+        /// @brief Event handling
+        /// @note クリック判定もここで行う
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (event.left_button_state == MouseButtonState::Pressed) {
+            // 継承元の処理を呼ぶ
+            IconButton::handleEvent(event);
+
+            if (isHit(event.pos) && event.left_button_state == MouseButtonState::Pressed) {
                 if (on_click_) {
                     on_click_(id_);
                 }
@@ -173,11 +179,9 @@ namespace paxs {
 
         EventHandlingResult handleEvent(const MouseEvent& event) override {
             for (auto& btn : buttons_) {
-                if (btn.isHit(event.pos)) {
-                    return btn.handleEvent(event);
-                }
+                btn.handleEvent(event);
             }
-            return EventHandlingResult::NotHandled();
+            return EventHandlingResult::Handled();
         }
 
         Rect<int> getRect() const override {

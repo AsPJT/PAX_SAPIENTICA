@@ -40,11 +40,6 @@ namespace paxs {
 
         paxs::UnorderedMap<std::uint_least32_t, StartAndEnd> path_list;
     public:
-
-        StartAndEnd operator[](const std::uint_least32_t key_) {
-            return (path_list.find(key_) == path_list.end()) ? StartAndEnd{} : path_list.at(key_);
-        }
-
         paxs::Vector2<int>& getStart(const std::uint_least32_t key_) {
             return path_list.at(key_).start_position;
         }

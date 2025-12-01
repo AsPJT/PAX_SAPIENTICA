@@ -32,20 +32,9 @@ TEST(SimulationConstUnitTest, GetInstance_ReturnsSameInstance) {
 // Basic Constants Tests
 // ========================================
 
-TEST(SimulationConstUnitTest, PixelSize_IsConstant) {
-	// Then: pixel_sizeが256
-	EXPECT_EQ(paxs::pixel_size, 256);
-}
-
 TEST(SimulationConstUnitTest, MaxNumberOfDistricts_IsConstant) {
 	// Then: 最大地区数が90
 	EXPECT_EQ(paxs::max_number_of_districts, 90);
-}
-
-TEST(SimulationConstUnitTest, GenderValues_AreCorrect) {
-	// Then: 女性=0、男性=1
-	EXPECT_EQ(paxs::female_value, 0);
-	EXPECT_EQ(paxs::male_value, 1);
 }
 
 // ========================================

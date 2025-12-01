@@ -281,7 +281,9 @@ namespace paxs {
         bool marriagePair(
             Marriage3& male_settlement_pair,
             std::discrete_distribution<std::size_t>& csl_dist,
-            const std::vector<std::vector<Settlement>*>& close_settlements_list
+            const std::vector<std::vector<Settlement>*>& close_settlements_list,
+            const bool female_is_agricultural,
+            JapanProvinces* japan_provinces_ptr
         ) {
             // 近隣の集落を探し、エージェントIDと集落IDのペアを作成
             std::size_t i = csl_dist(*gen);
@@ -299,9 +301,55 @@ namespace paxs {
             const std::vector<Agent>& close_agent = close_settlement.cgetAgents();
             for (std::size_t k = 0; k < close_agent.size(); ++k) {
                 if (close_agent[k].isMale() && close_agent[k].getLifeSpan() != 0 && close_agent[k].isAbleToMarriage()) {
-                    // 婚姻可能なエージェントを発見
+                    const bool male_is_agricultural = (close_agent[k].cgetFarming() > 0);
+
+                    // 農耕民の婚姻時の地域チェック
+                    if (japan_provinces_ptr != nullptr) {
+                        // 女性が農耕民の場合、女性の集落が農耕不可能な地域にいるか確認
+                        if (female_is_agricultural) {
+                            const std::uint_least8_t female_district_id = environment->template getData<std::uint_least8_t>(
+                                SimulationConstants::getInstance().district_key, data_.getPosition());
+                            const District& female_district = japan_provinces_ptr->getDistrict(female_district_id);
+                            if (female_district.agricultural_capable == 0) {
+                                // 女性が農耕不可能な地域にいる場合、婚姻できない
+                                continue;
+                            }
+                        }
+
+                        // 男性が農耕民の場合、男性の集落が農耕不可能な地域にいるか確認
+                        if (male_is_agricultural) {
+                            const std::uint_least8_t male_district_id = environment->template getData<std::uint_least8_t>(
+                                SimulationConstants::getInstance().district_key, close_settlement.getPosition());
+                            const District& male_district = japan_provinces_ptr->getDistrict(male_district_id);
+                            if (male_district.agricultural_capable == 0) {
+                                // 男性が農耕不可能な地域にいる場合、婚姻できない
+                                continue;
+                            }
+                        }
+
+                        // 母方居住婚: 男性が女性の集落に移動する場合
+                        if (SimulationConstants::getInstance().maternal_residence_probability > 0.0f && male_is_agricultural) {
+                            const std::uint_least8_t female_district_id = environment->template getData<std::uint_least8_t>(
+                                SimulationConstants::getInstance().district_key, data_.getPosition());
+                            const District& female_district = japan_provinces_ptr->getDistrict(female_district_id);
+                            if (female_district.agricultural_capable == 0) {
+                                continue; // 移動先が農耕不可能なので婚姻不可
+                            }
+                        }
+
+                        // 父方居住婚: 女性が男性の集落に移動する場合
+                        if (SimulationConstants::getInstance().maternal_residence_probability < 1.0f && female_is_agricultural) {
+                            const std::uint_least8_t male_district_id = environment->template getData<std::uint_least8_t>(
+                                SimulationConstants::getInstance().district_key, close_settlement.getPosition());
+                            const District& male_district = japan_provinces_ptr->getDistrict(male_district_id);
+                            if (male_district.agricultural_capable == 0) {
+                                continue; // 移動先が農耕不可能なので婚姻不可
+                            }
+                        }
+                    }
+
                     male_settlement_pair = Marriage3(
-                            static_cast<std::uint_least32_t>(k),
+                        static_cast<std::uint_least32_t>(k),
                         static_cast<std::uint_least32_t>(j),
                         static_cast<std::uint_least32_t>(i),
                         close_agent[k].cgetFarming()
@@ -316,7 +364,8 @@ namespace paxs {
         /// @brief 婚姻
         void marriage(
             const std::vector<std::vector<Settlement>*>& close_settlements_list,
-            std::vector<GridType4>& marriage_pos_list
+            std::vector<GridType4>& marriage_pos_list,
+            JapanProvinces* japan_provinces_ptr = nullptr
         ) noexcept {
             if (close_settlements_list.size() == 0) return;
 
@@ -366,10 +415,11 @@ namespace paxs {
 
                     Marriage3 male_settlement_pair{};
                     bool pair_result = false; // ペアが見つかったか？
-                    for (std::size_t pair_loop = 0; pair_loop < 50/*婚姻相手を見つけるループの回数*/ && !pair_result; ++pair_loop) {
-                        pair_result = marriagePair(
-                            male_settlement_pair, csl_dist, close_settlements_list
-                        );
+                    const bool female_is_agricultural = (female.cgetFarming() > 0);
+
+                    for (std::size_t pair_loop = 0; pair_loop < 50 && !pair_result; ++pair_loop) {
+                        pair_result = marriagePair(male_settlement_pair, csl_dist, close_settlements_list,
+                            female_is_agricultural, japan_provinces_ptr);
                     }
                     // ペアが見つからなかったので婚姻を諦める
                     if (!pair_result) continue;
@@ -410,8 +460,8 @@ namespace paxs {
 
         /// @brief Pre update.
         /// @brief 事前更新
-        void preUpdate(KanakumaLifeSpan& kanakuma_life_span) noexcept {
-            birth(kanakuma_life_span);
+        void preUpdate(KanakumaLifeSpan& kanakuma_life_span, JapanProvinces* japan_provinces_ptr = nullptr) noexcept {
+            birth(kanakuma_life_span, japan_provinces_ptr);
         }
 
         /// @brief Death.
@@ -440,11 +490,12 @@ namespace paxs {
         }
 
         // A* の経路探索
-        void moveAStar(std::mt19937& engine, District& district_, const Vector2& current_position, Vector2& target_position) noexcept {
+        void moveAStar(std::mt19937& engine, District& district_, const Vector2& current_position, Vector2& target_position,
+            const bool has_agricultural_agents, JapanProvinces* japan_provinces_ptr) noexcept {
             double cost = -1.0;
             const int distance = SimulationConstants::getInstance().move_dist(engine);
 
-            const GridType cw = /*environment->getSlopeCellWidth() * */SimulationConstants::getInstance().move_astar_distance;
+            const GridType cw = SimulationConstants::getInstance().move_astar_distance;
             const Vector2 cp_cw = current_position / cw;
 #ifdef _OPENMP
             double max_cost = 1.0;
@@ -456,7 +507,7 @@ namespace paxs {
             std::vector<std::vector<Vector2>> route_list(loop);
 
             for (int i = 0; i < loop; ++i) {
-                move_list[i] = calcMovePosition(engine, district_, current_position, distance);
+                move_list[i] = calcMovePosition(engine, district_, current_position, distance, has_agricultural_agents, japan_provinces_ptr);
                 slope_list[i] = environment->getSlope(move_list[i]);
             }
             {
@@ -474,7 +525,7 @@ namespace paxs {
 #ifdef _OPENMP
                 const Vector2 move_position = move_list[i];
 #else
-                const Vector2 move_position = calcMovePosition(engine, district_, current_position, distance);
+                const Vector2 move_position = calcMovePosition(engine, district_, current_position, distance, has_agricultural_agents, japan_provinces_ptr);
                 // 移動先が今の位置ならやり直し（可住地が見つからなかった）
                 if (move_position == current_position) continue;
                 const Vector2 mp_cw = move_position / cw;
@@ -517,23 +568,46 @@ namespace paxs {
             target_position = pos_list[index_num];
             data_.setPositions(route_list[index_num]);
 #endif
-        }
+            }
 
         // 移動先を計算する
-        Vector2 calcMovePosition(std::mt19937& engine, District& district_, const Vector2& current_position, const int distance) const noexcept {
+        Vector2 calcMovePosition(std::mt19937& engine, District& district_, const Vector2& current_position, const int distance,
+            const bool has_agricultural_agents, JapanProvinces* japan_provinces_ptr) const noexcept {
             Vector2 target_position = current_position;
-            std::uint_least32_t  loop_count = 0; // 無限ループ回避用のループ上限値
-            // 小さい領域のシミュレーションでは無限ループする可能性がある
-            while (target_position == current_position || !environment->isLive(target_position)) {
-                // 無限ループに陥った場合は無視
+            std::uint_least32_t loop_count = 0;
+
+            while (loop_count < SimulationConstants::getInstance().move_redo) {
                 if (loop_count >= SimulationConstants::getInstance().move_redo) return current_position;
 
-                // 移動距離が偏りのある方向を指定する距離以上か判定し、方向を格納する
                 const double theta = (distance >= static_cast<int>(district_.direction_min_distance)) ?
                     SimulationConstants::getInstance().theta_dist_array[district_.direction_dist(engine)](engine) :
                     SimulationConstants::getInstance().theta_dist(engine);
                 target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
-                ++loop_count;
+
+                // 基本的な可住地チェック
+                if (target_position == current_position || !environment->isLive(target_position)) {
+                    ++loop_count;
+                    continue;
+                }
+
+                // 農耕民がいる場合、農耕不可能地域への移動を禁止
+                if (has_agricultural_agents && japan_provinces_ptr != nullptr) {
+                    const std::uint_least8_t target_district_id = environment->template getData<std::uint_least8_t>(
+                        SimulationConstants::getInstance().district_key, target_position);
+                    const District& target_district = japan_provinces_ptr->getDistrict(target_district_id);
+                    if (target_district.agricultural_capable == 0) {
+                        ++loop_count;
+                        continue;
+                    }
+                }
+
+                // すべてのチェックをパスした場合のみループを抜ける
+                break;
+            }
+
+            // 移動先が見つからなかった場合は現在位置を返す
+            if (loop_count >= SimulationConstants::getInstance().move_redo) {
+                return current_position;
             }
             return target_position;
         }
@@ -541,7 +615,7 @@ namespace paxs {
         /// @brief Move.
         /// @brief 移動
         /// @return 集落グリッドを移動したかどうか
-        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, District& district_) noexcept {
+        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, District& district_, JapanProvinces* japan_provinces_ptr = nullptr) noexcept {
             // 確率で移動
             if (SimulationConstants::getInstance().random_dist(engine) > SimulationConstants::getInstance().move_probability) return { 0, Vector2(), Vector2() };
 
@@ -554,16 +628,16 @@ namespace paxs {
             Vector2 current_position = data_.getPosition();
             Vector2 target_position = data_.getPosition();
 
+            // 集落に農耕民がいるかチェック
+            const bool has_agricultural_agents = (getFarmingPopulation() > 0);
+
             // A* を使った方法
             if(SimulationConstants::getInstance().move_method == MurMur3::calcHash("astar") && SimulationConstants::getInstance().move_astar_loop >= 1){
-                moveAStar(engine, district_, current_position, target_position);
+                moveAStar(engine, district_, current_position, target_position, has_agricultural_agents, japan_provinces_ptr);
             }
             else {
-                std::uint_least32_t  loop_count = 0; // 無限ループ回避用のループ上限値
-                // 小さい領域のシミュレーションでは無限ループする可能性がある
-                while (target_position == current_position || !environment->isLive(target_position)) {
-                    // 無限ループに陥った場合は無視
-                    if (loop_count >= SimulationConstants::getInstance().move_redo) return { 0, Vector2(), Vector2() };
+                std::uint_least32_t loop_count = 0;
+                while (loop_count < SimulationConstants::getInstance().move_redo) {
                     int distance = SimulationConstants::getInstance().move_dist(engine);
 
                     // 移動距離が偏りのある方向を指定する距離以上か判定し、方向を格納する
@@ -571,7 +645,31 @@ namespace paxs {
                         SimulationConstants::getInstance().theta_dist_array[district_.direction_dist(engine)](engine) :
                         SimulationConstants::getInstance().theta_dist(engine);
                     target_position = current_position + Vector2(static_cast<GridType>(std::cos(theta) * distance), static_cast<GridType>(std::sin(theta) * distance));
-                    ++loop_count;
+
+                    // 基本的な可住地チェック
+                    if (target_position == current_position || !environment->isLive(target_position)) {
+                        ++loop_count;
+                        continue;
+                    }
+
+                    // 農耕民がいる場合、移動先が農耕不可能地域なら移動不可
+                    if (has_agricultural_agents && japan_provinces_ptr != nullptr) {
+                        const std::uint_least8_t target_district_id = environment->template getData<std::uint_least8_t>(
+                            SimulationConstants::getInstance().district_key, target_position);
+                        const District& target_district = japan_provinces_ptr->getDistrict(target_district_id);
+                        if (target_district.agricultural_capable == 0) {
+                            ++loop_count;
+                            continue;
+                        }
+                    }
+
+                    // すべてのチェックをパスした場合のみループを抜ける
+                    break;
+                }
+
+                // 移動先が見つからなかった場合は移動しない
+                if (loop_count >= SimulationConstants::getInstance().move_redo) {
+                    return { 0, Vector2(), Vector2() };
                 }
             }
             current_key = current_position / SimulationConstants::getInstance().cell_group_length;
@@ -687,9 +785,19 @@ namespace paxs {
 
         /// @brief Birth.
         /// @brief 出産
-        void birth(KanakumaLifeSpan& kanakuma_life_span) noexcept {
+        void birth(KanakumaLifeSpan& kanakuma_life_span, JapanProvinces* japan_provinces_ptr = nullptr) noexcept {
             std::vector<Agent> children;
             std::vector<Agent>& agents_ref = data_.getAgents();
+
+            // 集落の位置の地区IDと農耕可能性をチェック
+            bool is_agricultural_capable = true;
+            if (japan_provinces_ptr != nullptr) {
+                const std::uint_least8_t current_district_id = environment->template getData<std::uint_least8_t>(
+                    SimulationConstants::getInstance().district_key, data_.getPosition());
+                const District& current_district = japan_provinces_ptr->getDistrict(current_district_id);
+                is_agricultural_capable = (current_district.agricultural_capable != 0);
+            }
+
             for (auto& agent : agents_ref) {
                 if (agent.getBirthIntervalCount() > 0) {
                     std::uint_least8_t count = agent.decrementBirthIntervalCount();
@@ -705,7 +813,7 @@ namespace paxs {
                             // 死産
                             if (SimulationConstants::getInstance().random_dist_f32(*gen) < stillbirth_rate) continue;
                         }
-                        const std::uint_least8_t farming =
+                        std::uint_least8_t farming =
                             // 両親が農耕文化であれば両親の半分の値を引き継ぐ
                             (agent.cgetFarming() > 0 && agent.cgetPartnerFarming() > 0) ?
                             static_cast<std::uint_least8_t>((int(agent.cgetFarming()) + int(agent.cgetPartnerFarming())) / 2)
@@ -716,7 +824,13 @@ namespace paxs {
                                     // 農耕文化を持つ親から値を引き継ぐ
                                     ((agent.cgetFarming() == 0) ? agent.cgetPartnerFarming() : agent.cgetFarming()) :
                                     0
-                                ));
+                                    ));
+
+                        // 農耕不可能な地域では子供の農耕変数を0に設定
+                        if (!is_agricultural_capable) {
+                            farming = 0;
+                        }
+
                         const Genome genome = Genome::generateFromParents(*gen, agent.cgetGenome(), agent.cgetPartnerGenome());
                         children.emplace_back(Agent(
                             UniqueIdentification<HumanIndexType>::generate(),

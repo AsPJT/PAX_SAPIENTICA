@@ -95,7 +95,7 @@ public:
             return;
         }
 
-        paxg::Font* font_text = Fonts().getFont(FontProfiles::UI_MEDIUM);
+        paxg::Font* font_text = Fonts().getFont(FontProfiles::ui_medium);
         if (!font_text) {
             return;
         }

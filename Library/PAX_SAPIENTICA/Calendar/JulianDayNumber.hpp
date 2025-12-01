@@ -27,7 +27,17 @@ namespace paxs::cal {
     template<typename Day>
     class JulianDayNumber {
     private:
-        Day day{ 1940571 /*西暦601年1月1日*/}; // 1808286 西暦238年10月26日
+        Day day{ 1816023 /*西暦260年1月1日*/}; // 1808286 西暦238年10月26日 // 1940571 西暦601年1月1日
+
+        // グレゴリオ暦の計算用
+        constexpr static double getK(const double month) { return std::floor((14 - month) / 12); }
+
+        // ヒジュラ暦の閏年かどうか
+        constexpr bool isIslamicLeapYear(const int year) const { return ((((11 * year) + 14) % 30) < 11); }
+        // ヒジュラ暦の月の日数計算
+        constexpr int getLastMonthDay(const int year, const int month) const {
+            return (((month % 2) == 1) || ((month == 12) && isIslamicLeapYear(year))) ? 30 : 29;
+        }
     public:
         constexpr JulianDayNumber() = default;
         template<typename T>
@@ -45,25 +55,22 @@ namespace paxs::cal {
         constexpr Day operator+=(const Day day_) { return (day += day_); }
         constexpr Day operator-=(const Day day_) { return (day -= day_); }
 
-    private:
-        // グレゴリオ暦の計算用
-        constexpr static double getK(const double month) { return std::floor((14 - month) / 12); }
-    public:
         // グレゴリオ暦からユリウス日を取得
-        constexpr void fromGregorianCalendar(const double year, const double month = 1.0, const double day_ = 1.0) {
+        constexpr static JulianDayNumber fromGregorianCalendar(const double year, const double month = 1.0, const double day_ = 1.0) {
             const double K = getK(month);
-            this->day = static_cast<Day>(std::floor((-K + year + 4800) * 1461 / 4)
+            return JulianDayNumber(static_cast<Day>(std::floor((-K + year + 4800) * 1461 / 4)
                 + std::floor((K * 12 + month - 2) * 367 / 12)
                 - std::floor(std::floor((-K + year + 4900) / 100) * 3 / 4)
-                + day_ - 32075);
+                + day_ - 32075));
         }
         // ユリウス暦からユリウス日を取得
-        constexpr void fromJulianCalendar(const double year, const double month = 1.0, const double day_ = 1.0) {
+        constexpr static JulianDayNumber fromJulianCalendar(const double year, const double month = 1.0, const double day_ = 1.0) {
             const double K = getK(month);
-            this->day = static_cast<Day>(std::floor((-K + year + 4800) * 1461 / 4)
+            return JulianDayNumber(static_cast<Day>(std::floor((-K + year + 4800) * 1461 / 4)
                 + std::floor((K * 12 + month - 2) * 367 / 12)
-                + day_ - 32113);
+                + day_ - 32113));
         }
+
         // グレゴリオ暦を取得
         constexpr GregorianDate toGregorianCalendar() const {
             GregorianDate ymd;
@@ -227,14 +234,7 @@ namespace paxs::cal {
             else value = 1950 - value;
             return CalBP{ value };
         }
-    private:
-        // ヒジュラ暦の閏年かどうか
-        constexpr bool isIslamicLeapYear(const int year) const { return ((((11 * year) + 14) % 30) < 11); }
-        // ヒジュラ暦の月の日数計算
-        constexpr int getLastMonthDay(const int year, const int month) const {
-            return (((month % 2) == 1) || ((month == 12) && isIslamicLeapYear(year))) ? 30 : 29;
-        }
-    public:
+
         // ヒジュラ暦を取得
         constexpr IslamicDate toIslamicCalendar() const {
             // islamic_day(227014) = jdn(1948439)

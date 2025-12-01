@@ -93,16 +93,7 @@ namespace paxs {
         static constexpr double time_scale_factor = 18.0; // 時間経過の速度調整係数
         static constexpr int calendar_update_threshold = 0; // 暦更新のしきい値
 
-        /// @brief グレゴリオ暦に変換
-        void updateGregorianDate(OutputDate& output_date) const {
-            output_date.date = jdn.toGregorianCalendar();
-        }
-
-        /// @brief ユリウス暦に変換
-        void updateJulianDate(OutputDate& output_date) const {
-            output_date.date = jdn.toJulianCalendar();
-        }
-
+        // TODO: name_keyの仕様を確認する
         /// @brief 和暦に変換
         void updateJapaneseDate(OutputDate& output_date) const {
             const paxs::cal::JapanDate jp_date = jdn.toJapaneseCalendar(japanese_era_list);
@@ -119,57 +110,39 @@ namespace paxs {
             output_date.date = cn_date;
         }
 
-        /// @brief ユリウス通日を格納
-        void updateJulianDayNumber(OutputDate& output_date) {
-            output_date.date = jdn;
-        }
-
-        /// @brief BP（年代測定）に変換
-        void updateCalBP(OutputDate& output_date) const {
-            output_date.date = jdn.toCalBP();
-        }
-
-        /// @brief イスラム暦（ヒジュラ暦）に変換
-        void updateIslamicDate(OutputDate& output_date) const {
-            output_date.date = jdn.toIslamicCalendar();
-        }
-
-        /// @brief シミュレーションステップ数を格納
-        void updateSimulationSteps(OutputDate& output_date) {
-            output_date.date = steps;
-        }
-
     public:
         void calcDate() {
             // 暦データを更新
             for (auto& dl : date_list) {
                 switch (dl.date.index()) {
-                case cal::gregorian_date_type:
-                    updateGregorianDate(dl);
-                    break;
-                case cal::julian_date_type:
-                    updateJulianDate(dl);
-                    break;
-                case cal::japan_date_type:
-                    updateJapaneseDate(dl);
-                    break;
-                case cal::china_date_type:
-                    updateChineseDate(dl);
-                    break;
-                case cal::jdn_f64_type:
-                case cal::jdn_s32_type:
-                case cal::jdn_s64_type:
-                    updateJulianDayNumber(dl);
-                    break;
-                case cal::calbp_type:
-                    updateCalBP(dl);
-                    break;
-                case cal::islamic_date_type:
-                    updateIslamicDate(dl);
-                    break;
-                case cal::simulation_steps_type:
-                    updateSimulationSteps(dl);
-                    break;
+                    case cal::gregorian_date_type:
+                        dl.date = jdn.toGregorianCalendar();
+                        break;
+                    case cal::julian_date_type:
+                        dl.date = jdn.toJulianCalendar();
+                        break;
+                    case cal::japan_date_type:
+                        updateJapaneseDate(dl);
+                        break;
+                    case cal::china_date_type:
+                        updateChineseDate(dl);
+                        break;
+                    case cal::jdn_f64_type:
+                    case cal::jdn_s32_type:
+                    case cal::jdn_s64_type:
+                        dl.date = jdn;
+                        break;
+                    case cal::calbp_type:
+                        dl.date = jdn.toCalBP();
+                        break;
+                    case cal::islamic_date_type:
+                        dl.date = jdn.toIslamicCalendar();
+                        break;
+                    case cal::simulation_steps_type:
+                        dl.date = steps;
+                        break;
+                    default:
+                        break;
                 }
             }
         }

@@ -27,13 +27,8 @@
 #include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
-
-    constexpr int pixel_size = 256; // 1画像あたりの縦横のピクセル数
-
+    // TODO: fix this
     constexpr std::size_t max_number_of_districts = 90; // 最大地区数
-
-    constexpr std::uint_least8_t female_value = 0; // 女性
-    constexpr std::uint_least8_t male_value = 1; // 男性
 
     constexpr double pi_per_4 = paxs::Math<double>::pi() / 4.0; // π／４
     constexpr double pi_per_8 = paxs::Math<double>::pi() / 8.0; // π／８

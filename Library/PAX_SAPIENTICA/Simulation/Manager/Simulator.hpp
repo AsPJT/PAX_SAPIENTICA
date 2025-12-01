@@ -92,8 +92,8 @@ namespace paxs {
         /// @brief エージェントをランダムに配置する
         void randomizeAgents(const int agent_count) {
             const Vector2& offset = SimulationConstants::getInstance().getEndArea() - SimulationConstants::getInstance().getStartArea();
-            std::uniform_int_distribution<> x_dist(0, pixel_size * offset.x);
-            std::uniform_int_distribution<> y_dist(0, pixel_size * offset.y);
+            std::uniform_int_distribution<> x_dist(0, 256 * offset.x);
+            std::uniform_int_distribution<> y_dist(0, 256 * offset.y);
             std::uniform_int_distribution<> age_dist(0, 20);
             std::cout << "Randomizing agents..." << std::endl;
             for(int i = 0;i < agent_count;++i) {

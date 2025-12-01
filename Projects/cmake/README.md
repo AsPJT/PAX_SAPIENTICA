@@ -15,17 +15,18 @@
 SFML は以下の優先順位で検出されます:
 
 1. **プロジェクトローカルのSFML（デフォルト）**
-   - Windows/macOS: `Projects/MapViewer/Windows/SFML_3.0.0` または `Projects/MapViewer/macOS/SFML_3.0.0`
+   - Windows: `Projects/MapViewer/Windows/SFML_3.0.0`
+   - macOS: `Projects/MapViewer/macOS/SFML`
    - Linux: `Projects/MapViewer/Ubuntu/SFML`
 
 2. **CMake変数で指定**
    ```bash
-   cmake ../Projects -DSFML_ROOT_DIR="C:/SFML-3.0.0"
+   cmake ../Projects -DSFML_ROOT_DIR="C:/SFML"
    ```
 
 3. **環境変数で指定**
    ```bash
-   set SFML_DIR=C:\SFML-3.0.0
+   set SFML_DIR=C:\SFML
    cmake ../Projects
    ```
 
@@ -95,7 +96,7 @@ cmake --build . --config Debug
 ```bash
 # システムワイドまたはカスタムパスのSFMLを使用
 cmake ../Projects -G "Visual Studio 17 2022" -A x64 ^
-  -DSFML_ROOT_DIR="C:/custom/SFML-3.0.0"
+  -DSFML_ROOT_DIR="C:/custom/SFML"
 cmake --build . --config Debug
 ```
 
@@ -151,6 +152,6 @@ C:/OpenSiv3D_0.6.13/
 
 ## 注意事項
 
-- DxLib と Siv3D のサポートは現在 Windows のみです
+- Siv3D のサポートは現在 Windows のみです
 - SFML は Windows/macOS/Linux でサポートされています
 - ライブラリが見つからない場合は警告が表示されますが、ビルドは継続されます

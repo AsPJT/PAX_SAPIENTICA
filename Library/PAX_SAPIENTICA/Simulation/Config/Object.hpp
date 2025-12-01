@@ -13,7 +13,7 @@
 #define PAX_SAPIENTICA_SIMULATION_CONFIG_OBJECT_HPP
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
+#include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 
 namespace paxs {
 
@@ -46,12 +46,6 @@ namespace paxs {
 
         /// @brief Set the coordinate. オブジェクトの座標をセット
         constexpr void setPosition(const Vector2& pos) noexcept { position = pos; }
-
-        /// @brief Get the mercator coordinate from the XYZTile coordinate.
-        /// @brief 座標をWebメルカトル座標で取得
-        paxs::Vector2<double> getLocation(const paxs::Vector2<int>& start_position, const int z) const noexcept {
-            return MapUtils::tilePixelToAngleSpace(start_position, position, z);
-        }
 
         bool operator==(const paxs::Object& a) const noexcept {
             return a.position == position && a.id == id && a.name == name;

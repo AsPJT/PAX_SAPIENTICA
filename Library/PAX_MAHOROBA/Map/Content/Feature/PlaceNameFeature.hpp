@@ -41,9 +41,6 @@ class PlaceNameFeature : public MapFeature,
                          public ISpatiallyUpdatable,
                          public ITemporallyUpdatable,
                          public ILocalizable {
-private:
-    static constexpr std::uint_least32_t place_names_domain_hash = MurMur3::calcHash("PlaceNames");
-
 public:
     /// @param data 地名の位置データ / Place location data
     PlaceNameFeature(LocationPoint  data)
@@ -177,7 +174,7 @@ public:
     }
 
     void onClick(const ClickContext& context) override {
-        std::cout << "PlaceName clicked: " << getName() << "\n";
+        // std::cout << "PlaceName clicked: " << getName() << "\n";
         (void)context;
     }
 
@@ -193,6 +190,8 @@ private:
     std::string cached_name_;  ///< キャッシュされた名前 / Cached name
     bool visible_ = true;  ///< 可視性 / Visibility
     bool in_time_range_ = true;  ///< 時間範囲内か / Whether within time range
+
+    static constexpr std::uint_least32_t place_names_domain_hash = MurMur3::calcHash("PlaceNames");
 };
 
 } // namespace paxs

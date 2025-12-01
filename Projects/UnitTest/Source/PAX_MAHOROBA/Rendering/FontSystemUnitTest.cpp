@@ -119,9 +119,9 @@ TEST_F(FontSystemTest, DefaultProfileFontRetrieval) {
 
     // デフォルトプロファイルでフォント取得を試みる
     // フォントファイルが存在しない場合、nullptrが返されることを許容
-    auto* main_font = Fonts().getFont(FontProfiles::MAIN);
-    auto* pulldown_font = Fonts().getFont(FontProfiles::PULLDOWN);
-    auto* koyomi_font = Fonts().getFont(FontProfiles::KOYOMI);
+    auto* main_font = Fonts().getFont(FontProfiles::main);
+    auto* pulldown_font = Fonts().getFont(FontProfiles::pulldown);
+    auto* koyomi_font = Fonts().getFont(FontProfiles::koyomi);
 
     // フォントファイルが存在する場合のみ検証
     // テスト環境でFont.tsvやフォントファイルが利用できない場合はスキップ

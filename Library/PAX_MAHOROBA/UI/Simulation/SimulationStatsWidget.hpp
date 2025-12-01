@@ -13,6 +13,8 @@
 #define PAX_MAHOROBA_UI_SIMULATION_STATS_WIDGET_HPP
 
 #include <string>
+#include <iomanip>
+#include <sstream>
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
@@ -29,7 +31,7 @@ namespace paxs {
 
     /// @brief シミュレーション統計情報表示ウィジェット
     /// @brief Simulation statistics display widget
-    /// @details 人口数、集落数、渡来数を表示
+    /// @details 人口数、集落数、渡来数、合計特殊出生率を表示
     class SimulationStatsWidget : public UIComponent {
     private:
         // SimulationStats domain hash
@@ -37,6 +39,7 @@ namespace paxs {
         static constexpr std::uint_least32_t label_population_key = MurMur3::calcHash("label_population");
         static constexpr std::uint_least32_t label_settlements_key = MurMur3::calcHash("label_settlements");
         static constexpr std::uint_least32_t label_migration_key = MurMur3::calcHash("label_migration");
+        static constexpr std::uint_least32_t label_tfr_key = MurMur3::calcHash("label_tfr");
 
         const SimulationManager& simulation_manager_;
         paxs::Vector2<int> pos_ {0, 0};
@@ -101,12 +104,30 @@ namespace paxs {
                 paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
                 paxg::Color(0, 0, 0)
             );
+
+            // 合計特殊出生率(TFR)
+            const std::string* tfr_label = Fonts().getLocalesText(simulation_stats_domain_hash, label_tfr_key);
+            if (tfr_label != nullptr) {
+                font->draw(
+                    *tfr_label + ": ",
+                    paxg::Vec2i(pos_.x, pos_.y + (line_height_ * current_line)),
+                    paxg::Color(0, 0, 0)
+                );
+            }
+            // TFR値を小数点2桁で表示
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(2) << simulation_manager_.getTotalFertilityRate();
+            font->draw(
+                oss.str(),
+                paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
+                paxg::Color(0, 0, 0)
+            );
         }
 
         Rect<int> getRect() const override {
             return { pos_.x, pos_.y,
                 label_width_ + 100,  // ラベル幅 + 数値表示幅
-                line_height_ * 3      // 3行分（人口、集落、渡来）
+                line_height_ * 4      // 4行分（人口、集落、渡来、TFR）
             };
         }
         bool isVisible() const override { return true; }

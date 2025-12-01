@@ -78,8 +78,8 @@ public:
             return;
         }
 
-        paxg::Font* font_icon = Fonts().getFont(FontProfiles::UI_MEDIUM);
-        paxg::Font* font_text = Fonts().getFont(FontProfiles::UI_MEDIUM);
+        paxg::Font* font_icon = Fonts().getFont(FontProfiles::ui_medium);
+        paxg::Font* font_text = Fonts().getFont(FontProfiles::ui_medium);
         if (!font_icon || !font_text) {
             return;
         }

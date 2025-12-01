@@ -6,6 +6,8 @@ view_ui	UI
 view_simulation	Simulatie
 view_person	Persoon
 view_license	Licentie
+view_territory	Gebied
+view_flow_curve	Stroomcurve
 view_debug	Debug
 view_3d	3D
 place_names_header	Plaatsnamen

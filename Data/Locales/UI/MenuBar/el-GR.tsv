@@ -5,6 +5,8 @@ view_map	Χάρτης
 view_ui	UI
 view_simulation	Προσομοίωση
 view_person	Πρόσωπο
+view_territory	Περιοχή
+view_flow_curve	Καμπύλη ροής
 view_license	Άδεια
 view_debug	Αποσφαλμάτωση
 view_3d	3D

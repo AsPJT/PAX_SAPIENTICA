@@ -179,22 +179,22 @@ namespace paxs {
             // 描画順序: 領域 → フロー曲線 → 地名 → ゲノム → 地理 → 人物
             // Territories are drawn first (background layer), then flow curves
             loadTerritoryFeatures();
-            std::cout << "Territory features loaded: " << features_.size() << "\n";
+            // std::cout << "Territory features loaded: " << features_.size() << "\n";
 
             loadFlowCurveFeatures();
-            std::cout << "Flow curve features loaded: " << features_.size() << " total\n";
+            // std::cout << "Flow curve features loaded: " << features_.size() << " total\n";
 
             loadPlaceNameFeatures();
-            std::cout << "Place name features loaded: " << features_.size() << " total\n";
+            // std::cout << "Place name features loaded: " << features_.size() << " total\n";
 
             loadGenomeFeatures();
-            std::cout << "Genome features loaded: " << features_.size() << " total\n";
+            // std::cout << "Genome features loaded: " << features_.size() << " total\n";
 
             loadGeographicFeatures();
-            std::cout << "Geographic features loaded: " << features_.size() << " total\n";
+            // std::cout << "Geographic features loaded: " << features_.size() << " total\n";
 
             loadPersonFeatures();
-            std::cout << "Person features loaded: " << features_.size() << " total\n";
+            // std::cout << "Person features loaded: " << features_.size() << " total\n";
 
             // 全アイコンをマージ
             asset_registry_.mergeCategories();

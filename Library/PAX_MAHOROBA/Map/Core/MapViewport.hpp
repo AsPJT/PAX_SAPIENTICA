@@ -29,7 +29,7 @@ namespace paxs {
         // Map view default values
         static constexpr double default_movement_size = 200.0;
         static constexpr double default_expansion_size = 50.0;
-        static constexpr double default_height = 24.0;
+        static constexpr double default_height = 15.0;
         static constexpr double max_height_default = 240.0;
         static constexpr double max_height_mahoroba = 30.0;
         static constexpr double min_height = 0.005;
@@ -55,7 +55,7 @@ namespace paxs {
     class MapViewport {
     private:
         // 中央の座標を指定
-        paxs::WebMercatorDeg center = paxs::WebMercatorDeg(paxs::EPSG4326_WGS84Deg(paxs::Vector2<double>(145, 48))); // マップ座標の中央
+        paxs::WebMercatorDeg center = paxs::WebMercatorDeg(paxs::EPSG4326_WGS84Deg(paxs::Vector2<double>(138, 39))); // マップ座標の中央
         double height = MapViewportConstants::default_height; // 各国 16.0; // 全世界 240.0 // マップの高さ
 
         // マップの最大高さ

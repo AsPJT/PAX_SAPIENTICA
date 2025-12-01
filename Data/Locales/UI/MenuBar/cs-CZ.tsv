@@ -5,6 +5,8 @@ view_map	Mapa
 view_ui	UI
 view_simulation	Simulace
 view_person	Osoba
+view_territory	Oblast
+view_flow_curve	Křivka toku
 view_license	Licence
 view_debug	Ladění
 view_3d	3D

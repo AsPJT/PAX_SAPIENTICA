@@ -57,9 +57,15 @@ namespace paxs {
 
         SimulationControlButton::Id getId() const { return id_; }
 
+        /// @brief ボタンのイベント処理
+        /// @brief Handle button events
+        /// @note クリック判定もここで行う
         EventHandlingResult handleEvent(const MouseEvent& event) override {
+            // 継承元の処理を呼ぶ
+            IconButton::handleEvent(event);
+
             // 左クリックが押されたら
-            if (event.left_button_state == MouseButtonState::Pressed) {
+            if (isHit(event.pos) && event.left_button_state == MouseButtonState::Pressed) {
                 if (on_click_) {
                     on_click_(id_);
                 }
@@ -167,11 +173,9 @@ namespace paxs {
                 if (btn.getId() == SimulationControlButton::Id::Initialize || btn.getId() == SimulationControlButton::Id::Stop) {
                     continue;
                 }
-                if (btn.isHit(event.pos)) {
-                    return btn.handleEvent(event);
-                }
+                btn.handleEvent(event);
             }
-            return EventHandlingResult::NotHandled();
+            return EventHandlingResult::Handled();
         }
 
         void layoutButtons() {
@@ -181,7 +185,7 @@ namespace paxs {
             for (auto& btn : buttons_) {
                 switch (btn.getId()) {
                 case SimulationControlButton::Id::Initialize:
-                    btn.placeFromRight(X_LOAD_OR_DELETE, base_y, INITIALIZE_ICON_SIZE);
+                    btn.placeFromRight(X_STEP, base_y, INITIALIZE_ICON_SIZE);
                     break;
                 case SimulationControlButton::Id::Clear:
                     // 同じ位置に置いておいて、表示のON/OFFは外部状態で切る想定でもOK
@@ -223,7 +227,7 @@ namespace paxs {
         SimulationState simulation_state_ = SimulationState::Uninitialized;
 
         static constexpr int TIME_ICON_SIZE = 40;
-        static constexpr int INITIALIZE_ICON_SIZE = 45; // 初期化ボタンは少し大きく
+        static constexpr int INITIALIZE_ICON_SIZE = 70; // 初期化ボタンは少し大きく
 
         // 右端からの固定オフセット
         static constexpr int X_LOAD_OR_DELETE = 360; // 地形データ読み込み/削除

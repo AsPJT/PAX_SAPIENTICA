@@ -83,9 +83,6 @@ namespace paxs {
             while (input_file.getLine()) {
                 std::vector<std::string> strvec = input_file.split('\t');
 
-                // TODO: 必要か確認
-                const bool menu_bar_map_bool = true;
-
                 // 描画の種類 例）画像 texture やグリッド grid など
                 const std::uint_least32_t draw_type = (draw_type_index >= strvec.size()) ? paxs::MurMur3::calcHash("texture") :
                     ((strvec[draw_type_index].size() == 0) ? paxs::MurMur3::calcHash("texture") :
@@ -145,9 +142,8 @@ namespace paxs {
                     99999999 : ((strvec[draw_max_z_index].size() == 0) ?
                         99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[draw_max_z_index], 99999999, true)));
 
-                XYZTile xyz_tile(menu_bar_map, menu_bar_map_bool,
-                    texture_input_type, binary_input_type, binary_path,
-                    texture_path, format, draw_type, texture_url);
+                XYZTile xyz_tile(menu_bar_map, texture_input_type, binary_input_type,
+                    binary_path, texture_path, format, draw_type, texture_url);
 
                 if (map_name.size() != 0) xyz_tile.setMapName(map_name);
                 if (min_z != 99999999) xyz_tile.setMinZ(min_z);
@@ -164,7 +160,7 @@ namespace paxs {
         /// @brief グリッド線タイルを作成
         /// @return グリッド線タイル
         XYZTile createGridLineTile() const {
-            XYZTile xyz_tile(static_cast<std::uint_least32_t>(paxs::MapLayersMenu::line1), true,
+            XYZTile xyz_tile(static_cast<std::uint_least32_t>(paxs::MapLayersMenu::line1),
                 paxs::MurMur3::calcHash("asset_file"), 0, "", "",
                 (""), paxs::MurMur3::calcHash("grid_and_string"), "");
             return xyz_tile;

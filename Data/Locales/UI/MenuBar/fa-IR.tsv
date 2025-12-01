@@ -5,6 +5,8 @@ view_map	نقشه
 view_ui	UI
 view_simulation	شبیه‌سازی
 view_person	شخص
+view_territory	قلمرو
+view_flow_curve	منحنی جریان
 view_license	مجوز
 view_debug	اشکال زدایی
 view_3d	سه بعدی

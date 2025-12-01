@@ -5,6 +5,8 @@ view_map	Peta
 view_ui	UI
 view_simulation	Simulasi
 view_person	Orang
+view_territory	Wilayah
+view_flow_curve	Kurva Aliran
 view_license	Lisensi
 view_debug	Debug
 view_3d	3D

@@ -30,15 +30,14 @@ namespace paxs {
 
     /// @brief フォントプロファイル名定数
     /// @brief Font profile name constants
-    // TODO: スネークケース
-    namespace FontProfiles {
-        constexpr const char* MAIN = "main";           // カレンダー・地名・人名
-        constexpr const char* PULLDOWN = "pulldown";   // プルダウンメニュー
-        constexpr const char* KOYOMI = "koyomi";       // 暦表示
-        constexpr const char* UI_SMALL = "ui_small";   // 小さいUIテキスト
-        constexpr const char* UI_MEDIUM = "ui_medium"; // 中サイズUIテキスト
-        constexpr const char* UI_LARGE = "ui_large";   // 大きいUIテキスト
-    }
+    struct FontProfiles {
+        constexpr static const char* main = "main";           // カレンダー・地名・人名
+        constexpr static const char* pulldown = "pulldown";   // プルダウンメニュー
+        constexpr static const char* koyomi = "koyomi";       // 暦表示
+        constexpr static const char* ui_small = "ui_small";   // 小さいUIテキスト
+        constexpr static const char* ui_medium = "ui_medium"; // 中サイズUIテキスト
+        constexpr static const char* ui_large = "ui_large";   // 大きいUIテキスト
+    };
 
     /// @brief フォント・言語統合管理シングルトンクラス
     /// @brief Font and Language Unified Management Singleton Class
@@ -97,21 +96,21 @@ namespace paxs {
         /// @brief Register default profiles
         void registerDefaultProfiles() {
             // PAX_GRAPHICA/FontConfig.hpp の値を使用
-            registerProfile(FontProfiles::KOYOMI,
+            registerProfile(FontProfiles::koyomi,
                             paxg::FontConfig::KOYOMI_FONT_SIZE,
                             paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS);
 
-            registerProfile(FontProfiles::PULLDOWN,
+            registerProfile(FontProfiles::pulldown,
                             paxg::FontConfig::PULLDOWN_FONT_SIZE,
                             paxg::FontConfig::PULLDOWN_FONT_BUFFER_THICKNESS);
 
             // 新規プロファイル
-            registerProfile(FontProfiles::UI_SMALL, 12, 2);
-            registerProfile(FontProfiles::UI_MEDIUM, 16, 2);
-            registerProfile(FontProfiles::UI_LARGE, 24, 2);
+            registerProfile(FontProfiles::ui_small, 12, 2);
+            registerProfile(FontProfiles::ui_medium, 16, 2);
+            registerProfile(FontProfiles::ui_large, 24, 2);
 
             // MAIN は KOYOMI と同じ設定
-            registerProfile(FontProfiles::MAIN,
+            registerProfile(FontProfiles::main,
                             paxg::FontConfig::KOYOMI_FONT_SIZE,
                             paxg::FontConfig::KOYOMI_FONT_BUFFER_THICKNESS);
         }
@@ -268,15 +267,14 @@ namespace paxs {
             const std::uint_least64_t cache_key = createFontCacheKey(language_key, size, buffer_thickness);
 
             // キャッシュに存在すればそれを返す
-            const auto iterator = font_cache_.find(cache_key);
-            if (iterator != font_cache_.end()) {
-                return &(iterator->second);
+            if (auto* cached_font = font_cache_.try_get(cache_key)) {
+                return cached_font;
             }
 
             // フォントパスを取得
-            const auto path_it = language_font_paths_.find(language_key);
+            const auto* path_ptr = language_font_paths_.try_get(language_key);
 
-            if (path_it == language_font_paths_.end()) {
+            if (path_ptr == nullptr) {
                 PAXS_WARNING("FontSystem::getFont - Font path not found for language key: " + std::to_string(language_key));
                 return nullptr;
             }
@@ -284,7 +282,7 @@ namespace paxs {
             // 新しいフォントを作成してキャッシュに追加
             font_cache_.emplace(
                 cache_key,
-                paxg::Font(static_cast<int>(size), path_it->second, static_cast<int>(buffer_thickness))
+                paxg::Font(static_cast<int>(size), *path_ptr, static_cast<int>(buffer_thickness))
             );
 
             return &(font_cache_.at(cache_key));

@@ -27,7 +27,6 @@
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Simulation/Entity/SettlementGrid.hpp>
-#include <PAX_SAPIENTICA/Utility/MapUtils.hpp>
 
 namespace paxs {
     /// @brief シミュレーションの集落を可視化する
@@ -102,12 +101,12 @@ namespace paxs {
         /// @brief Convert grid coordinate to Mercator coordinate
         /// @param position グリッド座標 / Grid coordinate
         /// @return EPSG:3857(Webメルカトル) 座標 / Web Mercator coordinate
-        static paxs::WebMercatorDeg positionToMercator(const paxs::Vector2<int>& position) {
-            return paxs::WebMercatorDeg(MapUtils::tilePixelToAngleSpace(
+        static paxs::WebMercatorDeg positionToWebMercator(const paxs::Vector2<int>& position) {
+            return paxs::WebMercatorDeg::fromXYZTile(
                 SimulationConstants::getInstance().getStartArea(),
                 position,
                 ZOOM_LEVEL
-            ));
+            );
         }
 
         /// @brief 言語番号から色を取得
@@ -133,7 +132,7 @@ namespace paxs {
         ) {
             for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    const auto coordinate = positionToMercator(settlement.getPosition());
+                    const auto coordinate = positionToWebMercator(settlement.getPosition());
 
                     // 経緯度の範囲外を除去
                     if (!isInViewport(coordinate, map_view_size, map_view_center)) continue;
@@ -197,7 +196,7 @@ namespace paxs {
             if (!bronze_share_list) return;
 
             for (const auto& share : *bronze_share_list) {
-                const auto end_coord = positionToMercator(share.second);
+                const auto end_coord = positionToWebMercator(share.second);
 
                 if (!isInViewport(end_coord, map_view_size, map_view_center)) {
                     continue;
@@ -208,7 +207,7 @@ namespace paxs {
                     map_view_size,
                     map_view_center);
 
-                const auto start_coord = positionToMercator(share.first);
+                const auto start_coord = positionToWebMercator(share.first);
                 const paxg::Vec2<double> start_pos = MapCoordinateConverter::toScreenPos(
                     start_coord,
                     map_view_size,
@@ -231,7 +230,7 @@ namespace paxs {
             // 集落の移動履歴を描画
             for (const auto& agent : *agents) {
                 for (const auto& settlement : agent.second.cgetSettlements()) {
-                    const auto coordinate = positionToMercator(settlement.getPosition());
+                    const auto coordinate = positionToWebMercator(settlement.getPosition());
 
                     if (!isInViewport(coordinate, map_view_size, map_view_center)) {
                         continue;
@@ -250,7 +249,7 @@ namespace paxs {
                         spline_points.emplace_back(draw_pos);
 
                         for (auto&& p : settlement.getPositions()) {
-                            const auto one_coord = positionToMercator(paxs::Vector2<int>(p.x, p.y));
+                            const auto one_coord = positionToWebMercator(paxs::Vector2<int>(p.x, p.y));
                             const paxg::Vec2<double> one_pos = MapCoordinateConverter::toScreenPos(
                                 one_coord,
                                 map_view_size,
@@ -259,7 +258,7 @@ namespace paxs {
                                 static_cast<float>(one_pos.x()), static_cast<float>(one_pos.y()) });
                         }
 
-                        const auto old_coord = positionToMercator(settlement.getOldPosition());
+                        const auto old_coord = positionToWebMercator(settlement.getOldPosition());
                         const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
                             old_coord,
                             map_view_size,
@@ -270,7 +269,7 @@ namespace paxs {
                         paxg::Spline2D(spline_points).draw(MOVEMENT_LINE_WIDTH, paxg::Color(0, 0, 0));
 
                         // 矢印を描画
-                        const auto first_coord = positionToMercator(settlement.getPositions()[0]);
+                        const auto first_coord = positionToWebMercator(settlement.getPositions()[0]);
                         const paxg::Vec2<double> first_pos = MapCoordinateConverter::toScreenPos(
                             first_coord,
                             map_view_size,
@@ -280,7 +279,7 @@ namespace paxs {
                     }
                     else {
                         // 単純な移動線
-                        const auto old_coord = positionToMercator(settlement.getOldPosition());
+                        const auto old_coord = positionToWebMercator(settlement.getOldPosition());
                         const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
                             old_coord,
                             map_view_size,
@@ -293,7 +292,7 @@ namespace paxs {
 
             // 婚姻移動を描画
             for (const auto& marriage_pos : *marriage_pos_list) {
-                const auto coordinate = positionToMercator(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
+                const auto coordinate = positionToWebMercator(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
                 if (!isInViewport(coordinate, map_view_size, map_view_center)) {
                     continue;
@@ -306,7 +305,7 @@ namespace paxs {
                     map_view_size,
                     map_view_center);
 
-                const auto old_coord = positionToMercator(paxs::Vector2<int>(marriage_pos.sx, marriage_pos.sy));
+                const auto old_coord = positionToWebMercator(paxs::Vector2<int>(marriage_pos.sx, marriage_pos.sy));
                 const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
                     old_coord,
                     map_view_size,
@@ -330,7 +329,7 @@ namespace paxs {
             const auto area_height = SimulationConstants::getInstance().getEndArea().y -
                 SimulationConstants::getInstance().getStartArea().y;
 
-            const paxs::WebMercatorDeg start_coordinate = positionToMercator(paxs::Vector2<int>(0, 0));
+            const paxs::WebMercatorDeg start_coordinate = positionToWebMercator(paxs::Vector2<int>(0, 0));
             const paxg::Vec2f draw_start_pos = paxg::Vec2f{
                 static_cast<float>((start_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
                     map_view_size.x * double(paxg::Window::width())),
@@ -339,7 +338,7 @@ namespace paxs {
                         map_view_size.y * double(paxg::Window::height())))
             };
 
-            const paxs::WebMercatorDeg end_coordinate = positionToMercator(
+            const paxs::WebMercatorDeg end_coordinate = positionToWebMercator(
                 paxs::Vector2<int>(area_width * 256, area_height * 256));
             const paxg::Vec2f draw_end_pos = paxg::Vec2f{
                 static_cast<float>((end_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
@@ -349,7 +348,7 @@ namespace paxs {
                         map_view_size.y * double(paxg::Window::height())))
             };
 
-            const paxs::WebMercatorDeg tile_coordinate = positionToMercator(
+            const paxs::WebMercatorDeg tile_coordinate = positionToWebMercator(
                 paxs::Vector2<int>(SimulationConstants::getInstance().cell_group_length,
                     SimulationConstants::getInstance().cell_group_length));
             const paxg::Vec2f tile_pos = paxg::Vec2f{

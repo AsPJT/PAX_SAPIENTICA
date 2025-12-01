@@ -1,10 +1,10 @@
-# SFML 3.0.0 MapViewer for Linux (Ubuntu)
+# SFML MapViewer for Linux (Ubuntu)
 
 ## 概要 (Overview)
 
-このディレクトリには、Linux（Ubuntu）環境でSFML 3.0.0を使用してMapViewerをビルドするためのファイルが含まれています。
+このディレクトリには、Linux（Ubuntu）環境でSFMLを使用してMapViewerをビルドするためのファイルが含まれています。
 
-This directory contains files for building MapViewer with SFML 3.0.0 on Linux (Ubuntu).
+This directory contains files for building MapViewer with SFML on Linux (Ubuntu).
 
 ## 必要な環境 (Requirements)
 
@@ -23,39 +23,43 @@ From the project root directory, run the vcpkg setup script:
 
 ```bash
 cd /path/to/PAX_SAPIENTICA
-./Scripts/setup_vcpkg_linux.sh
+./Scripts/SetupVcpkgLinux.sh
 ```
 
 このスクリプトは以下を自動的に実行します：
 - 必要なシステムパッケージのインストール
 - vcpkgのクローンとブートストラップ
-- SFML 3.0.0のインストール
+- SFMLのインストール
 
 This script will automatically:
 - Install required system packages
 - Clone and bootstrap vcpkg
-- Install SFML 3.0.0
+- Install SFML
 
 ### ステップ2: プロジェクトのビルド (Step 2: Build the project)
 
 ```bash
-mkdir -p Projects/build
-cd Projects/build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../../vcpkg/scripts/buildsystems/vcpkg.cmake
-cmake --build .
+cd /path/to/PAX_SAPIENTICA
+cmake -B build -S Projects -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake -DSFML_STATIC_LIBRARIES=TRUE -DVCPKG_INSTALLED_DIR=vcpkg_installed
+cmake --build build
 ```
+
+**重要なオプション (Important options)**:
+- `-DSFML_STATIC_LIBRARIES=TRUE`: vcpkg版SFMLのスタティックライブラリを使用（必須 / required）
+- `-DVCPKG_INSTALLED_DIR=vcpkg_installed`: vcpkgのインストール先をプロジェクトルートに指定（推奨 / recommended）
+- `-B build -S Projects`: ビルドディレクトリをプロジェクトルートに作成（Build directory at project root）
 
 ### ステップ3: 実行 (Step 3: Run)
 
 ```bash
-./MapViewer/SFMLMapViewer
+./build/MapViewer/SFMLMapViewer
 ```
 
 ## vcpkgを使用しない場合 (Without vcpkg)
 
-vcpkgを使用せずにSFML 3.0.0をソースからビルドする場合：
+vcpkgを使用せずにSFMLをソースからビルドする場合：
 
-If you want to build SFML 3.0.0 from source without vcpkg:
+If you want to build SFML from source without vcpkg:
 
 ### 依存関係のインストール (Install dependencies)
 
@@ -77,7 +81,7 @@ sudo apt install -y \
     libgbm-dev
 ```
 
-### SFML 3.0.0のビルドとインストール (Build and install SFML 3.0.0)
+### SFML のビルドとインストール (Build and install SFML)
 
 ```bash
 # SFML 3.0.0をクローン
