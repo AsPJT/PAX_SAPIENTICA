@@ -251,8 +251,8 @@ public:
 
         const std::type_index type_id(typeid(EventType));
         std::shared_lock lock(mutex_);  // 読み取りロック
-        const auto iterator = subscribers_.find(type_id);
-        return iterator != subscribers_.end() ? iterator->second.size() : 0;
+        const auto* const ptr = subscribers_.try_get(type_id);
+        return ptr != nullptr ? ptr->size() : 0;
     }
 
     /// @brief キューのサイズを取得（デバッグ用）

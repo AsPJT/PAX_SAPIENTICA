@@ -216,9 +216,9 @@ TEST_F(TsvTableTest, GetHeaderMap) {
     paxs::TsvTable table(test_file_path);
     const auto& map = table.getHeaderMap();
     EXPECT_EQ(3u, map.size());
-    EXPECT_TRUE(map.find(paxs::MurMur3::calcHash("key")) != map.end());
-    EXPECT_TRUE(map.find(paxs::MurMur3::calcHash("value")) != map.end());
-    EXPECT_TRUE(map.find(paxs::MurMur3::calcHash("count")) != map.end());
+    EXPECT_TRUE(map.contains(paxs::MurMur3::calcHash("key")));
+    EXPECT_TRUE(map.contains(paxs::MurMur3::calcHash("value")));
+    EXPECT_TRUE(map.contains(paxs::MurMur3::calcHash("count")));
 }
 
 // Test with BOM

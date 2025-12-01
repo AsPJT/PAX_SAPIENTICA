@@ -93,8 +93,7 @@ namespace paxs {
         /// @param feature_id 機能ID（ハッシュ値）
         /// @return 可視状態（登録されていない場合はtrue）
         [[nodiscard]] bool isVisible(const std::uint_least32_t& feature_id) const {
-            const auto iterator = visible_features.find(feature_id);
-            return iterator != visible_features.end() ? iterator->second : true;
+            return visible_features.value_or(feature_id, true);
         }
 
         /// @brief 指定した機能の可視状態を取得（enum版）

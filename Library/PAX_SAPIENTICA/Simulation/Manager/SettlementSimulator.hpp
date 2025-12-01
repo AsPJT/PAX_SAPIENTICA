@@ -759,7 +759,7 @@ namespace paxs {
                 Live& live = (*live_list)[district_id];
 
                 while (live.live_probabilities.size() > 0 && // 集落を配置し切るまで
-                    district_population_map.find(district_id) != district_population_map.end() // 地区が残っている間
+                    district_population_map.contains(district_id) // 地区が残っている間
                     ) {
                     if (step_count == 0) {
                         if (progress_reporter_ != nullptr) {
