@@ -434,10 +434,8 @@ namespace paxs {
                 // ドラッグフラグOFFの場合は NotHandled でUIに処理させる
                 return EventHandlingResult::NotHandled();
             }
-
             handleTouchInput();
-            viewport_.applyConstraints();
-            viewport_.notifyViewportChanged();
+            // TODO: タッチ判定を取得して、処理されたらapplyConstraintsとnotifyViewportChangedを呼ぶ
             return EventHandlingResult::NotHandled(); // 他のハンドラーにも処理を継続
         }
 
