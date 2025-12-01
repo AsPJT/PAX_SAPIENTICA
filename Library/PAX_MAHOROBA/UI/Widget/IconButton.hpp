@@ -38,7 +38,9 @@ namespace paxs {
                 loadIconTextures();
             }
             if (!icon_textures.isSuccessfullyLoaded()) return;
-            if (!icon_textures.contains(icon_texture_path_hash)) return;
+
+            const paxg::Texture* const icon_texture_ptr = icon_textures.try_get(icon_texture_path_hash);
+            if (icon_texture_ptr == nullptr) return;
 
             // ボタン状態に応じた背景を描画（3pxのマージン付き）
             constexpr int margin = 3;
@@ -64,7 +66,7 @@ namespace paxs {
             }
 
             // アイコンを描画
-            icon_textures.at(icon_texture_path_hash).resizedDraw(rect.width(),
+            icon_texture_ptr->resizedDraw(rect.width(),
                 paxg::Vec2i{ rect.x(), rect.y() }
             );
 

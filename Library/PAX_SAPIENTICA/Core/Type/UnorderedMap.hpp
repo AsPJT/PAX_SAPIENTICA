@@ -136,7 +136,6 @@ namespace paxs {
             return map_.find(key) != map_.end();
         }
 
-
         /// @brief 要素を検索
         iterator find(const Key& key) {
             return map_.find(key);

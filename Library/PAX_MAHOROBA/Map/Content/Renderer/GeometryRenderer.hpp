@@ -66,11 +66,11 @@ protected:
         if (texture_key == 0) {
             return false;
         }
-        auto iter = texture_map.find(texture_key);
-        if (iter == texture_map.end()) {
+        const auto* const ptr = texture_map.try_get(texture_key);
+        if (ptr == nullptr) {
             return false;
         }
-        iter->second.resizedDrawAt(size, draw_pos);
+        ptr->resizedDrawAt(size, draw_pos);
         return true;
     }
 };

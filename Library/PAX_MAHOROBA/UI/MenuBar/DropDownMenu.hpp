@@ -255,18 +255,18 @@ namespace paxs {
 
         /// @brief 項目の状態を取得（キー指定）
         bool getIsItems(const std::uint_least32_t key) const {
-            if (!item_index_key.contains(key)) {
+            const std::size_t* const index_ptr = item_index_key.try_get(key);
+            if (index_ptr == nullptr) {
                 PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
                 return true;
             }
-            const std::size_t index = item_index_key.at(key);
             // キーで取得する場合、インデックスは既に正しい位置を指しているので
             // ヘッダー（インデックス0）を参照している場合のみスキップ
-            if (index == 0) {
+            if (*index_ptr == 0) {
                 return true; // ヘッダー自体は常にtrue
             }
-            if (index < is_items.size()) {
-                return is_items[index];
+            if (*index_ptr < is_items.size()) {
+                return is_items[*index_ptr];
             }
             return is_items.front();
         }
@@ -277,11 +277,13 @@ namespace paxs {
                 PAXS_WARNING("DropDownMenu: No items to check for key.");
                 return true; // データがない場合
             }
-            if (!item_index_key.contains(key)) {
+
+            const std::size_t* const index_ptr = item_index_key.try_get(key);
+            if (index_ptr == nullptr) {
                 PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
                 return true; // 引数の Key が存在しない場合
             }
-            return getIsItems(item_index_key.at(key));
+            return getIsItems(*index_ptr);
         }
 
         bool isHitHeader(int x, int y) const {

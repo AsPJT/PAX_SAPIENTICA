@@ -139,16 +139,15 @@ private:
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
             // テクスチャを取得（親のテクスチャをフォールバック）
-            // Note: GeographicFeature は LocationPoint を使用しているため、親のテクスチャ情報は含まれていない
-            // 将来的には LocationPointGroup への参照も保持する必要があるかもしれない
             const std::uint_least32_t place_tex = data.texture_key;
-            if (!texture_map.contains(place_tex)) continue;
-
-            const auto& texture = texture_map.at(place_tex);
+            const auto* const texture_ptr = texture_map.try_get(place_tex);
+            if (texture_ptr == nullptr) {
+                continue;
+            }
 
             // draw_countが1の場合は通常描画
             if (draw_count == 1) {
-                texture.resizedDrawAt(display_size, draw_pos);
+                texture_ptr->resizedDrawAt(display_size, draw_pos);
             } else {
                 // draw_countが2以上の場合は横に複数並べて描画（中央揃え）
                 constexpr int spacing = 4;  // テクスチャ間の間隔
@@ -160,7 +159,7 @@ private:
                         static_cast<double>(start_x + i * spacing),
                         draw_pos.y()
                     };
-                    texture.resizedDrawAt(display_size, draw_item_pos);
+                    texture_ptr->resizedDrawAt(display_size, draw_item_pos);
                 }
             }
         }

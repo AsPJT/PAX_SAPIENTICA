@@ -208,11 +208,11 @@ namespace paxs {
                 };
 
                 for (const auto& col : known_columns) {
-                    const auto iterator = extra_data_.find(col.data_hash);
-                    if (iterator != extra_data_.end()) {
+                    const auto* const ptr = extra_data_.try_get(col.data_hash);
+                    if (ptr != nullptr) {
                         const std::string* label = Fonts().getLocalesText(feature_info_domain_hash, col.label_key);
                         if (label) {
-                            total_lines += calculateTextLines(*label + ": " + iterator->second, max_text_width);
+                            total_lines += calculateTextLines(*label + ": " + *ptr, max_text_width);
                         }
                     }
                 }
@@ -461,12 +461,11 @@ namespace paxs {
                 };
 
                 for (const auto& col : known_columns) {
-                    const auto iterator = extra_data_.find(col.data_hash);
-                    if (iterator != extra_data_.end()) {
+                    const auto* const ptr = extra_data_.try_get(col.data_hash);
+                    if (ptr != nullptr) {
                         const std::string* label = Fonts().getLocalesText(feature_info_domain_hash, col.label_key);
                         if (label) {
-                            const std::string display_text = *label + ": " + iterator->second;
-
+                            const std::string display_text = *label + ": " + *ptr;
                             drawWrappedText(
                                 font,
                                 display_text,

@@ -219,9 +219,9 @@ namespace paxs {
     private:
         template<typename Func_>
         void stoiFunc(KeyValueTSV<std::string>& key_value_tsv_, const std::uint_least32_t key_, Func_&& func_) {
-            const std::string str = key_value_tsv_.getOrDefault(key_);
-            if (str.size() == 0) return;
-            func_(str);
+            const auto* const ptr = key_value_tsv_.try_get(key_);
+            if (ptr == nullptr || ptr->size() == 0) return;
+            func_(*ptr);
         }
 
     public:

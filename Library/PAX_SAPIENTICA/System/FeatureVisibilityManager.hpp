@@ -47,9 +47,9 @@ namespace paxs {
         /// @brief 指定した機能の可視状態を反転（ハッシュ値版）
         /// @param feature_id 機能ID（ハッシュ値）
         void toggle(const std::uint_least32_t& feature_id) {
-            auto iterator = visible_features.find(feature_id);
-            if (iterator != visible_features.end()) {
-                iterator->second = !iterator->second;
+            auto* const ptr = visible_features.try_get(feature_id);
+            if (ptr != nullptr) {
+                *ptr = !*ptr;
             }
         }
 
@@ -66,12 +66,12 @@ namespace paxs {
         /// @param is_visible 可視状態
         /// @return 値が変更されたらtrue
         bool setVisibility(const std::uint_least32_t& feature_id, const bool is_visible) {
-            auto iterator = visible_features.find(feature_id);
-            if (iterator != visible_features.end()) {
-                if (iterator->second == is_visible) {
+            auto* const ptr = visible_features.try_get(feature_id);
+            if (ptr != nullptr) {
+                if (*ptr == is_visible) {
                     return false; // 変更なし
                 }
-                iterator->second = is_visible;
+                *ptr = is_visible;
                 return true; // 変更あり
             }
             // 要素が存在しない場合は新規追加
