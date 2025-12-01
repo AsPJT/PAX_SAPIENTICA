@@ -139,6 +139,31 @@ elseif(APPLE AND SFML_FOUND)
         else()
             message(STATUS "Using static SFML libraries - no dylibs to copy")
         endif()
+
+        # CPack settings for DMG generation
+        set(CPACK_GENERATOR "DragNDrop")
+        set(CPACK_PACKAGE_NAME "PAX_SAPIENTICA")
+        set(CPACK_PACKAGE_VERSION ${PAX_SAPIENTICA_LIBRARY_VERSION})
+        set(CPACK_PACKAGE_FILE_NAME "PAX_SAPIENTICA-${PAX_SAPIENTICA_LIBRARY_VERSION}")
+        set(CPACK_PACKAGE_VENDOR "PAX SAPIENTICA Team")
+        set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "PAX SAPIENTICA - Historical Simulation Viewer")
+        set(CPACK_DMG_VOLUME_NAME "PAX SAPIENTICA ${PAX_SAPIENTICA_LIBRARY_VERSION}")
+        set(CPACK_DMG_FORMAT "UDBZ")
+        set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/DMGBackground.png")
+        set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/appicon.icns")
+        set(CPACK_SYSTEM_NAME "")
+
+        # Note: CPACK_DMG_DS_STORE_SETUP_SCRIPT is disabled due to AppleScript compatibility issues
+        # The DMG will use default layout with background image
+        # set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/DMGSetup.scpt")
+
+        # Install the .app bundle
+        install(TARGETS ${BINARY_NAME}
+            BUNDLE DESTINATION .
+        )
+
+        # Include CPack module to enable DMG generation
+        include(CPack)
     else()
         # Development: standard executable
         add_executable(${BINARY_NAME} ${CPP_FILE})
