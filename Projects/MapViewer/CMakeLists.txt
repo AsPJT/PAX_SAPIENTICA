@@ -79,7 +79,13 @@ elseif(APPLE AND SFML_FOUND)
             BUILD_WITH_INSTALL_RPATH TRUE
         )
 
-        target_link_libraries(${BINARY_NAME} PRIVATE SFML::Graphics curl)
+        target_link_libraries(${BINARY_NAME} PRIVATE
+            SFML::Graphics
+            curl
+            "-framework OpenGL"
+            "-framework IOKit"
+            "-framework CoreFoundation"
+        )
 
         # Get SFML library paths
         get_target_property(SFML_GRAPHICS_LIB SFML::Graphics IMPORTED_LOCATION_RELEASE)

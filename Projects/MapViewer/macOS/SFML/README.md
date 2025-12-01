@@ -30,23 +30,63 @@ cd /path/to/PAX_SAPIENTICA
 このスクリプトは以下を自動的に実行します：
 - Homebrewを使用した必要なシステムパッケージのインストール
 - vcpkgのクローンとブートストラップ
-- SFMLのインストール
+- カスタムtriplet（arm64-osx-static / x64-osx-static）を使用したSFMLの静的リンクインストール
+- アーキテクチャの自動検出（ARM64 / Intel x64）
 
 This script will automatically:
 - Install required system packages using Homebrew
 - Clone and bootstrap vcpkg
-- Install SFML
+- Install SFML with static linking using custom triplets (arm64-osx-static / x64-osx-static)
+- Auto-detect architecture (ARM64 / Intel x64)
 
 ### ステップ2: プロジェクトのビルド (Step 2: Build the project)
 
+#### 方法1: ビルドスクリプトを使用（推奨 / Recommended）
+
+**開発ビルド（Development Build）**:
 ```bash
 cd /path/to/PAX_SAPIENTICA
-cmake -B build -S Projects -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake -DSFML_STATIC_LIBRARIES=TRUE -DVCPKG_INSTALLED_DIR=vcpkg_installed
+./Scripts/DevelopmentBuild.sh
+./DevelopmentBuild/SFMLMapViewer
+```
+
+**本番ビルド（Production Build）**:
+```bash
+cd /path/to/PAX_SAPIENTICA
+./Scripts/ProductionBuild.sh
+./ProductionBuild/SFMLMapViewer.app/Contents/MacOS/SFMLMapViewer
+```
+
+#### 方法2: CMakeを直接使用
+
+```bash
+cd /path/to/PAX_SAPIENTICA
+
+# ARM64 Mac (Apple Silicon)の場合
+cmake -B build -S Projects \
+  -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DSFML_STATIC_LIBRARIES=TRUE \
+  -DVCPKG_INSTALLED_DIR=vcpkg_installed \
+  -DVCPKG_OVERLAY_TRIPLETS=Projects/cmake \
+  -DVCPKG_TARGET_TRIPLET=arm64-osx-static
+
+# Intel Macの場合
+cmake -B build -S Projects \
+  -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DSFML_STATIC_LIBRARIES=TRUE \
+  -DVCPKG_INSTALLED_DIR=vcpkg_installed \
+  -DVCPKG_OVERLAY_TRIPLETS=Projects/cmake \
+  -DVCPKG_TARGET_TRIPLET=x64-osx-static
+
 cmake --build build
 ```
 
 **重要なオプション (Important options)**:
-- `-DSFML_STATIC_LIBRARIES=TRUE`: vcpkg版SFMLのスタティックライブラリを使用（必須 / required）
+- `-DSFML_STATIC_LIBRARIES=TRUE`: SFMLの静的リンクを使用（必須 / required for static linking）
+- `-DVCPKG_OVERLAY_TRIPLETS=Projects/cmake`: カスタムtripletの場所を指定（Custom triplet location）
+- `-DVCPKG_TARGET_TRIPLET`: アーキテクチャ別の静的リンク設定を指定（Static linking configuration per architecture）
+  - `arm64-osx-static`: Apple Silicon (M1/M2/M3) Mac用
+  - `x64-osx-static`: Intel Mac用
 
 ### ステップ3: 実行 (Step 3: Run)
 
@@ -94,9 +134,35 @@ cmake --build .
 
 ## Apple Siliconについて (About Apple Silicon)
 
-Apple Siliconを使用している場合、vcpkgは自動的に `arm64-osx` トリプレットを使用します。Intel Macの場合は `x64-osx` が使用されます。
+このプロジェクトではカスタムtripletを使用して静的リンクを行います：
+- **Apple Silicon (M1/M2/M3)**: `arm64-osx-static` を使用
+- **Intel Mac**: `x64-osx-static` を使用
 
-When using Apple Silicon, vcpkg will automatically use the `arm64-osx` triplet. For Intel Macs, `x64-osx` will be used.
+セットアップスクリプトとビルドスクリプトはアーキテクチャを自動検出し、適切なtripletを選択します。
+
+This project uses custom triplets for static linking:
+- **Apple Silicon (M1/M2/M3)**: Uses `arm64-osx-static`
+- **Intel Mac**: Uses `x64-osx-static`
+
+Setup and build scripts automatically detect the architecture and select the appropriate triplet.
+
+### カスタムtripletについて (About Custom Triplets)
+
+カスタムtriplet設定ファイルは `Projects/cmake/` に配置されています：
+- `arm64-osx-static.cmake`: ARM64 Mac用の静的リンク設定
+- `x64-osx-static.cmake`: Intel Mac用の静的リンク設定
+
+これらのtripletは以下を設定します：
+- 静的リンク（`VCPKG_LIBRARY_LINKAGE=static`）
+- X11パスの除外（macOSネイティブのOpenGLフレームワークを使用）
+
+Custom triplet configuration files are located in `Projects/cmake/`:
+- `arm64-osx-static.cmake`: Static linking configuration for ARM64 Macs
+- `x64-osx-static.cmake`: Static linking configuration for Intel Macs
+
+These triplets configure:
+- Static linking (`VCPKG_LIBRARY_LINKAGE=static`)
+- Exclusion of X11 paths (to use macOS native OpenGL framework)
 
 ## トラブルシューティング (Troubleshooting)
 
@@ -110,8 +176,13 @@ SFML not found - MapViewer will not be built
 
 解決方法：
 1. vcpkgのセットアップスクリプトが正常に完了したか確認
-2. CMake実行時に `-DCMAKE_TOOLCHAIN_FILE` オプションを指定しているか確認
+2. CMake実行時に以下のオプションを指定しているか確認：
+   - `-DCMAKE_TOOLCHAIN_FILE`
+   - `-DVCPKG_INSTALLED_DIR`
+   - `-DVCPKG_OVERLAY_TRIPLETS`
+   - `-DVCPKG_TARGET_TRIPLET`
 3. vcpkgディレクトリが正しい場所に存在するか確認
+4. `vcpkg_installed/` ディレクトリがプロジェクトルートに存在するか確認
 
 ### Homebrewがインストールされていない (Homebrew not installed)
 

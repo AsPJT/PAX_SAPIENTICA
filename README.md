@@ -96,29 +96,61 @@ This software has both a GUI and a CUI.
 
 The GUI supports the following libraries
 
-* SFML (CMake)
-* [SFML v3.0.0 (.sln / for Windows)](Projects/MapViewer/Windows/SFML_3.0.0) - Available without installation. The Windows version of SFML in the `PAX_SAPIENTICA/Projects/MapViewer/Windows/SFML_3.0.0` directory can run in Visual Studio 2022 (compiler is MSVC).
-* [SFML (vcpkg / for Linux)](Projects/MapViewer/Ubuntu/SFML) - Use vcpkg package manager to install SFML on Linux. See the [setup guide](Projects/MapViewer/Ubuntu/SFML/README.md) for details.
+* SFML (Recommended - via vcpkg)
+  - [macOS Setup Guide](Projects/MapViewer/macOS/SFML/README.md) - Use vcpkg to install SFML
+  - [Linux Setup Guide](Projects/MapViewer/Linux/SFML/README.md) - Use vcpkg to install SFML
+* [SFML v3.0.0 (.sln, CMake / for Windows)](Projects/MapViewer/Windows/SFML_3.0.0) - Bundled binaries available (also supports vcpkg)
 * OpenSiv3D (tested with v0.6.13 & Visual Studio Community 2022 v17.8.3)
 * DxLib (tested on Windows and Android versions)
 
 Any of the above libraries will launch the GUI software.
 
-#### Quick Start for Linux (with vcpkg)
+#### Quick Start with vcpkg (macOS/Linux)
 
-To build MapViewer on Linux with SFML 3.0.0:
-
+**macOS**:
 ```bash
-# Setup vcpkg and install SFML 3.0.0
-./Scripts/setup_vcpkg_linux.sh
+# Setup vcpkg and install SFML with static linking
+./Scripts/SetupVcpkgMac.sh
 
-# Build the project
-mkdir -p Projects/build && cd Projects/build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../../vcpkg/scripts/buildsystems/vcpkg.cmake
-cmake --build .
+# Development build (no optimizations, faster builds)
+./Scripts/DevelopmentBuild.sh
+./DevelopmentBuild/SFMLMapViewer
 
-# Run MapViewer
-./MapViewer/SFMLMapViewer
+# Production build (optimized for distribution)
+./Scripts/ProductionBuild.sh
+./ProductionBuild/SFMLMapViewer.app/Contents/MacOS/SFMLMapViewer
+
+# Or use CMake directly (auto-detects ARM64/x64 architecture)
+cmake -B build -S Projects \
+  -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DSFML_STATIC_LIBRARIES=TRUE \
+  -DVCPKG_INSTALLED_DIR=vcpkg_installed \
+  -DVCPKG_OVERLAY_TRIPLETS=Projects/cmake \
+  -DVCPKG_TARGET_TRIPLET=arm64-osx-static  # or x64-osx-static for Intel Macs
+cmake --build build
+./build/MapViewer/SFMLMapViewer
+```
+
+**Linux**:
+```bash
+# Setup vcpkg and install SFML
+./Scripts/SetupVcpkgLinux.sh
+
+# Development build (no optimizations, faster builds)
+./Scripts/DevelopmentBuild.sh
+./DevelopmentBuild/SFMLMapViewer
+
+# Production build (optimized for distribution)
+./Scripts/ProductionBuild.sh
+./ProductionBuild/SFMLMapViewer
+
+# Or use CMake directly
+cmake -B build -S Projects \
+  -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake \
+  -DSFML_STATIC_LIBRARIES=TRUE \
+  -DVCPKG_INSTALLED_DIR=vcpkg_installed
+cmake --build build
+./build/MapViewer/SFMLMapViewer
 ```
 
 ### CUI
