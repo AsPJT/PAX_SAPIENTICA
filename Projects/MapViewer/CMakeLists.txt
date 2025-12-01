@@ -87,24 +87,37 @@ elseif(APPLE AND SFML_FOUND)
             get_target_property(SFML_GRAPHICS_LIB SFML::Graphics IMPORTED_LOCATION)
         endif()
 
-        if(SFML_GRAPHICS_LIB)
+        # Check if SFML is statically or dynamically linked
+        set(SFML_IS_STATIC FALSE)
+        if(SFML_GRAPHICS_LIB AND SFML_GRAPHICS_LIB MATCHES "\\.a$")
+            set(SFML_IS_STATIC TRUE)
+        elseif(SFML_STATIC_LIBRARIES)
+            set(SFML_IS_STATIC TRUE)
+        endif()
+
+        add_custom_command(
+            TARGET ${BINARY_NAME} POST_BUILD
+            # MacOS/にProdConfig.tsvをコピー
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/ProdConfig.tsv"
+                "$<TARGET_FILE_DIR:${BINARY_NAME}>/Config.tsv"
+
+            # Resources/にappicon.icnsをコピー
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/appicon.icns"
+                "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources/appicon.icns"
+            COMMENT "Setting up app bundle resources..."
+        )
+
+        # Only copy SFML dylibs if using dynamic linking
+        if(SFML_GRAPHICS_LIB AND NOT SFML_IS_STATIC)
             get_filename_component(SFML_LIB_DIR ${SFML_GRAPHICS_LIB} DIRECTORY)
             set(APP_FRAMEWORKS_DIR "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Frameworks")
 
             add_custom_command(
                 TARGET ${BINARY_NAME} POST_BUILD
-                # MacOS/にProdConfig.tsvをコピー
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/ProdConfig.tsv"
-                    "$<TARGET_FILE_DIR:${BINARY_NAME}>/Config.tsv"
-
-                # Resources/にappicon.icnsをコピー
-                COMMAND ${CMAKE_COMMAND} -E make_directory
-                    "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources"
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    "${CMAKE_CURRENT_SOURCE_DIR}/${OS}/appicon.icns"
-                    "$<TARGET_BUNDLE_CONTENT_DIR:${BINARY_NAME}>/Resources/appicon.icns"
-
                 # SFML の dylib をコピーして install_name_tool でパスを修正
                 COMMAND ${CMAKE_COMMAND} -E make_directory
                     ${APP_FRAMEWORKS_DIR}
@@ -123,6 +136,8 @@ elseif(APPLE AND SFML_FOUND)
                 COMMAND install_name_tool -change ${SFML_LIB_DIR}/libsfml-system.3.0.dylib   @rpath/libsfml-system.3.0.dylib   $<TARGET_FILE:${BINARY_NAME}>
                 COMMENT "Copying SFML dylibs to app bundle and fixing install names..."
             )
+        else()
+            message(STATUS "Using static SFML libraries - no dylibs to copy")
         endif()
     else()
         # Development: standard executable
