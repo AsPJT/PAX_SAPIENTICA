@@ -24,23 +24,24 @@
 
 // PAX_SAPIENTICA 補助バージョン  [v6.0.a.X.a]
 #ifndef PAX_SAPIENTICA_LIBRARY_MINOR
-#define PAX_SAPIENTICA_LIBRARY_MINOR (4)
+#define PAX_SAPIENTICA_LIBRARY_MINOR (5)
 #endif
 
 // PAX_SAPIENTICA 微修正バージョン [v6.0.a.a.X]
 #ifndef PAX_SAPIENTICA_LIBRARY_PATCHLEVEL
-#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (4)
+#define PAX_SAPIENTICA_LIBRARY_PATCHLEVEL (0)
 #endif
 
 // バージョン名 ( https://github.com/AsPJT/PAX_SAPIENTICA )
 #ifndef PAX_SAPIENTICA_LIBRARY_VERSION_NAME
-#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.4.4 MAKEMAKE"
+#define PAX_SAPIENTICA_LIBRARY_VERSION_NAME "1.5.0 KUROSHIO"
 #endif
 
 /*##########################################################################################
     更新履歴
     バージョン	| 更新日		| 概要
     6.0.1.0.X	| 2026/0X/XX	| コピペ用
+    6.0.1.5.0	| 2025/12/01	| v1.5.0 #150
     6.0.1.4.4	| 2025/11/27	| 座標系の整備 #149
     6.0.1.4.3	| 2025/11/27	| Synchronize unit tests with source files in Library #148
     6.0.1.4.2	| 2025/11/25	| 多言語対応 #147

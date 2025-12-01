@@ -67,17 +67,19 @@ cd "$VCPKG_DIR"
 # Install SFML using vcpkg.json manifest mode
 echo ""
 echo "Installing SFML 3.0+ and dependencies via vcpkg..."
-cd "$PROJECT_ROOT/Projects"
+cd "$PROJECT_ROOT"
 
-# Detect architecture and set appropriate triplet
+# Detect architecture and set appropriate triplet (static linking)
 if [ "$(uname -m)" = "arm64" ]; then
-    VCPKG_TRIPLET="arm64-osx"
+    VCPKG_TRIPLET="arm64-osx-static"
 else
-    VCPKG_TRIPLET="x64-osx"
+    VCPKG_TRIPLET="x64-osx-static"
 fi
 
 echo "Detected architecture: $(uname -m), using triplet: $VCPKG_TRIPLET"
-"$VCPKG_DIR/vcpkg" install --triplet="$VCPKG_TRIPLET"
+"$VCPKG_DIR/vcpkg" install \
+    --triplet="$VCPKG_TRIPLET" \
+    --overlay-triplets="$PROJECT_ROOT/Projects/cmake"
 
 echo ""
 echo "========================================="
