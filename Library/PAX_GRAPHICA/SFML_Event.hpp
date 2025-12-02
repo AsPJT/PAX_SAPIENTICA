@@ -14,7 +14,7 @@
 
 #ifdef PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
-#include <PAX_SAPIENTICA/AppConst.hpp>
+#include <PAX_SAPIENTICA/System/AppConst.hpp>
 #endif
 
 namespace paxg {

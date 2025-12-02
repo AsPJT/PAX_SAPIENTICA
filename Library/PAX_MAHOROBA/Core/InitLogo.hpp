@@ -18,8 +18,9 @@
 #include <PAX_MAHOROBA/Core/Init.hpp>
 #include <PAX_MAHOROBA/Rendering/BackgroundColor.hpp>
 
-#include <PAX_SAPIENTICA/AppConst.hpp>
-#include <PAX_SAPIENTICA/Version.hpp>
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
+#include <PAX_SAPIENTICA/System/AppConst.hpp>
+#include <PAX_SAPIENTICA/System/Version.hpp>
 
 namespace paxs {
 
@@ -34,7 +35,7 @@ namespace paxs {
             // === Phase 1: ライブラリ初期化前の設定 ===
             paxg::Window::PreInit();
 
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             // Android: 初期化処理は不要
 #else
             // ウィンドウのサイズを設定
@@ -66,7 +67,7 @@ namespace paxs {
 #elif defined(PAXS_USING_DXLIB)
             // DxLib は初期化後にアイコンを設定
             paxg::Window::setIcon("Images/Logo/LogoRed.ico");
-#ifdef __ANDROID__
+#ifdef PAXS_PLATFORM_ANDROID
             // DxLibのアンドロイド版の画面サイズを変更
             int w{ paxs::AppConst::default_window_size.x }, h{ paxs::AppConst::default_window_size.y };
             DxLib::GetAndroidDisplayResolution(&w, &h);
@@ -97,25 +98,24 @@ namespace paxs {
             const int window_height = paxg::Window::height();
 
             // 画像のサイズを取得
-            const int texture_width = loading_texture.width();
-            const int texture_height = loading_texture.height();
+            const float texture_width = static_cast<float>(loading_texture.width());
+            const float texture_height = static_cast<float>(loading_texture.height());
 
             // 画像をウィンドウサイズに合わせてスケーリング
             // アスペクト比を維持しながらウィンドウに収まるようにする
-            const float scale_x = static_cast<float>(window_width) / static_cast<float>(texture_width);
-            const float scale_y = static_cast<float>(window_height) / static_cast<float>(texture_height);
+            const float scale_x = static_cast<float>(window_width) / texture_width;
+            const float scale_y = static_cast<float>(window_height) / texture_height;
             const float scale = (scale_x < scale_y) ? scale_x : scale_y;
 
             const int scaled_width = static_cast<int>(texture_width * scale);
             const int scaled_height = static_cast<int>(texture_height * scale);
 
             // 中央配置の座標を計算
-            const int x = (window_width - scaled_width) / 2;
-            const int y = (window_height - scaled_height) / 2;
+            const int new_x = (window_width - scaled_width) / 2;
+            const int new_y = (window_height - scaled_height) / 2;
 
             // 画像をリサイズして描画
-            loading_texture.resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{x, y});
-
+            loading_texture.resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{new_x, new_y});
             // 画面を更新
 #ifdef PAXS_USING_SFML
             paxg::Window::display();
@@ -137,12 +137,6 @@ namespace paxs {
             paxg::Window::update();
             paxg::Window::update();
             paxg::Window::setDecorated(true);
-#endif
-
-#ifdef PAXS_USING_SFML
-            // SFMLでは黒画面のフラッシュを防ぐため、背景色でクリア＆表示
-            paxg::Window::clear();
-            paxg::Window::display();
 #endif
         }
     };

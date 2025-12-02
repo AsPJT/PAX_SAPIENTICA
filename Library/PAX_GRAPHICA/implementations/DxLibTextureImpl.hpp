@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
     PAX SAPIENTICA Library 💀🌿🌏
 
@@ -18,9 +18,10 @@
 
 #include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/TextureImpl.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
+
 namespace paxg {
 
     class DxLibTextureImpl : public TextureImpl {
@@ -42,7 +43,7 @@ namespace paxg {
 
         DxLibTextureImpl(const paxg::String& path) {
             std::string path_str = convertSvgToPng(path.string);
-            texture = DxLib::LoadGraph((paxs::AppConfig::getInstance()->getRootPath() + path_str).c_str());
+            texture = DxLib::LoadGraph((paxs::AppConfig::getInstance().getRootPath() + path_str).c_str());
             if (texture == -1) {
                 PAXS_WARNING("[DxLibTextureImpl] Failed to load texture: " + path_str);
             }
@@ -51,7 +52,7 @@ namespace paxg {
 
         DxLibTextureImpl(const std::string& path) {
             std::string path_str = convertSvgToPng(path);
-            texture = DxLib::LoadGraph((paxs::AppConfig::getInstance()->getRootPath() + path_str).c_str());
+            texture = DxLib::LoadGraph((paxs::AppConfig::getInstance().getRootPath() + path_str).c_str());
             if (texture == -1) {
                 PAXS_WARNING("[DxLibTextureImpl] Failed to load texture: " + path_str);
             }
@@ -136,10 +137,17 @@ namespace paxg {
         }
 
         void resizedDrawAt(int resize, const Vec2i& pos) const override {
-            const int resize_x = resize * cachedWidth / cachedHeight;
+            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
+            const float scale_x = static_cast<float>(resize) / cachedWidth;
+            const float scale_y = static_cast<float>(resize) / cachedHeight;
+            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+            const int new_width = static_cast<int>(cachedWidth * scale);
+            const int new_height = static_cast<int>(cachedHeight * scale);
+
             DxLib::DrawExtendGraph(
-                pos.x() - (resize_x / 2), pos.y() - (resize / 2),
-                pos.x() + (resize_x / 2), pos.y() + (resize / 2),
+                pos.x() - (new_width / 2), pos.y() - (new_height / 2),
+                pos.x() + (new_width / 2), pos.y() + (new_height / 2),
                 texture, TRUE);
         }
 
@@ -153,11 +161,19 @@ namespace paxg {
         }
 
         void resizedDrawAt(int resize, const Vec2f& pos) const override {
+            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
+            const float scale_x = static_cast<float>(resize) / cachedWidth;
+            const float scale_y = static_cast<float>(resize) / cachedHeight;
+            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+            const float new_width = cachedWidth * scale;
+            const float new_height = cachedHeight * scale;
+
             DxLib::DrawExtendGraph(
-                static_cast<int>(pos.x() - (resize / 2.0f)),
-                static_cast<int>(pos.y() - (resize / 2.0f)),
-                static_cast<int>(pos.x() + (resize / 2.0f)),
-                static_cast<int>(pos.y() + (resize / 2.0f)),
+                static_cast<int>(pos.x() - (new_width / 2.0f)),
+                static_cast<int>(pos.y() - (new_height / 2.0f)),
+                static_cast<int>(pos.x() + (new_width / 2.0f)),
+                static_cast<int>(pos.y() + (new_height / 2.0f)),
                 texture, TRUE);
         }
 
@@ -169,9 +185,17 @@ namespace paxg {
         }
 
         void resizedDraw(int resize, const Vec2i& pos) const override {
+            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
+            const float scale_x = static_cast<float>(resize) / cachedWidth;
+            const float scale_y = static_cast<float>(resize) / cachedHeight;
+            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+            const int new_width = static_cast<int>(cachedWidth * scale);
+            const int new_height = static_cast<int>(cachedHeight * scale);
+
             DxLib::DrawExtendGraph(
                 pos.x(), pos.y(),
-                pos.x() + resize, pos.y() + resize,
+                pos.x() + new_width, pos.y() + new_height,
                 texture, TRUE);
         }
 
@@ -183,9 +207,17 @@ namespace paxg {
         }
 
         void resizedDraw(int resize, const Vec2f& pos) const override {
+            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
+            const float scale_x = static_cast<float>(resize) / cachedWidth;
+            const float scale_y = static_cast<float>(resize) / cachedHeight;
+            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
+
+            const float new_width = cachedWidth * scale;
+            const float new_height = cachedHeight * scale;
+
             DxLib::DrawExtendGraph(
                 static_cast<int>(pos.x()), static_cast<int>(pos.y()),
-                static_cast<int>(pos.x() + resize), static_cast<int>(pos.y() + resize),
+                static_cast<int>(pos.x() + new_width), static_cast<int>(pos.y() + new_height),
                 texture, TRUE);
         }
     };

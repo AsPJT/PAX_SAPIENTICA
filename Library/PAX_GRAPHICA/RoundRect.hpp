@@ -18,6 +18,7 @@
 #include <DxLib.h>
 #elif defined(PAXS_USING_SFML)
 #include <SFML/Graphics.hpp>
+#include <algorithm> // std::min, std::max (SFMLで使用)
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
@@ -26,7 +27,7 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <algorithm> // std::min, std::max (SFMLで使用)
+#include <PAX_SAPIENTICA/Core/Math/Math.hpp>
 
 namespace paxg {
 
@@ -224,7 +225,7 @@ namespace paxg {
             {
                 for (unsigned i = 0; i <= cornerPointCount; ++i) {
                     float ang = startDeg + 90.f * (static_cast<float>(i) / cornerPointCount);
-                    float rad = ang * 3.14159265358979323846f / 180.f;
+                    float rad = paxs::Math<float>::degToRad(ang);
                     float px = center.x + std::cos(rad) * r;
                     float py = center.y + std::sin(rad) * r;
                     shape.setPoint(startIndex + i, {px, py});
@@ -232,13 +233,13 @@ namespace paxg {
             };
 
             unsigned idx = 0;
-            putCorner(idx, c_tl, 180.f);
+            putCorner(idx, c_tl, paxs::Math<float>::deg180());
             idx += cornerPointCount + 1;
-            putCorner(idx, c_tr, 270.f);
+            putCorner(idx, c_tr, paxs::Math<float>::deg270());
             idx += cornerPointCount + 1;
-            putCorner(idx, c_br,   0.f);
+            putCorner(idx, c_br,   paxs::Math<float>::deg0());
             idx += cornerPointCount + 1;
-            putCorner(idx, c_bl,  90.f);
+            putCorner(idx, c_bl,  paxs::Math<float>::deg90());
 
             Window::window().draw(shape);
         }
@@ -450,42 +451,6 @@ namespace paxg {
 #else
         void drawFrame(const double, const double, const paxg::Color&) const {}
 #endif
-
-        bool leftClicked() const {
-#if defined(PAXS_USING_SIV3D)
-            return rect.leftClicked();
-#elif defined(PAXS_USING_DXLIB)
-            if (paxg::TouchInput::getPreviousTouchCount() == 1) {
-                const int touch_num = paxg::TouchInput::getTouchCount();
-                // 1 フレーム前にタッチされている
-                if (touch_num == 0) {
-                    const auto& prev_pos = paxg::TouchInput::getPreviousTouchPosition();
-                    const auto& mx = prev_pos.x;
-                    const auto& my = prev_pos.y;
-                    return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
-                }
-            }
-            // 1 フレーム前にタッチされている
-            if (paxg::Mouse::getInstance()->upLeft()) {
-                int mx = 0, my = 0;
-                DxLib::GetMousePoint(&mx, &my);
-                return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
-            }
-            return false;
-#elif defined(PAXS_USING_SFML)
-            // 1 フレーム前にタッチされている
-            if (paxg::Mouse::getInstance()->upLeft()) {
-                int mx = sf::Mouse::getPosition(Window::window()).x, my = sf::Mouse::getPosition(Window::window()).y;
-                return (mx >= x0 &&
-                    my >= y0 &&
-                    mx < x0 + w0 &&
-                    my < y0 + h0);
-            }
-            return false;
-#else
-            return false;
-#endif
-        }
 
         bool mouseOver() const {
 #if defined(PAXS_USING_SIV3D)

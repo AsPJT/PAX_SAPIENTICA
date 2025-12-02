@@ -15,57 +15,44 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
+#include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/CalendarContent.hpp>
-#include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Calendar/TimeControlButton.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 
     /// @brief カレンダーパネル - 時間操作とカレンダー表示を統合管理
     /// @brief Calendar Panel - Integrates time control and calendar display with shared background
-    class CalendarPanel : public IWidget {
+    class CalendarPanel : public InteractiveUIComponent {
     private:
-        const paxs::FeatureVisibilityManager* visibility_manager_ptr = nullptr;
+        const paxs::FeatureVisibilityManager& visibility_manager_;
 
         TimeControlButtons time_control_widget_;
-        CalendarContent calendar_widget_;
-        const UILayout* ui_layout_;
+        CalendarContent calendar_content;
 
     public:
-        CalendarPanel(const UILayout& ui_layout, const paxs::FeatureVisibilityManager* visibility_manager)
-            : ui_layout_(&ui_layout), visibility_manager_ptr(visibility_manager) {}
-
-        /// @brief カレンダー描画パラメータを設定
-        /// @brief Set calendar rendering parameters
-        void setCalendarParams(
-            const paxs::Koyomi& koyomi
-        ) {
-            calendar_widget_.setRenderParams(koyomi, *ui_layout_);
-        }
-
-        void setTimeControlParams(const paxs::Koyomi& koyomi, AppStateManager* app_state_manager = nullptr) {
-            if (!ui_layout_) return;
-            time_control_widget_.setReferences(koyomi, *ui_layout_);
-            if (app_state_manager) {
-                time_control_widget_.setAppStateManager(app_state_manager);
-            }
-        }
+        CalendarPanel(
+            const UILayout& ui_layout
+            , const paxs::FeatureVisibilityManager& visibility_manager
+            , const AppStateManager& app_state_manager)
+            : visibility_manager_(visibility_manager)
+            , time_control_widget_(ui_layout, app_state_manager)
+            , calendar_content(ui_layout, app_state_manager.getKoyomi()) {}
 
         /// @brief ボタンレイアウトを更新（UILayoutが変更された時に呼ぶ）
-        /// @brief Update button layout (call when UILayout has changed)
         void updateButtonLayout() {
             time_control_widget_.layoutButtons();
         }
 
         void render() const override {
-            if (!isVisible() || !ui_layout_) return;
+            if (!isVisible()) return;
 
             time_control_widget_.render();
-            calendar_widget_.render();
+            calendar_content.render();
         }
 
         /// @brief 時間操作ウィジェットの高さを取得
@@ -78,21 +65,18 @@ namespace paxs {
             return time_control_widget_.handleEvent(event);
         }
 
-        bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
-            return time_control_widget_.isHit(x, y);
+        bool isHit(const paxs::Vector2<int>& pos) const override {
+            if (!isVisible()) return false;
+            return time_control_widget_.isHit(paxs::Vector2<int>(pos.x, pos.y));
         }
 
         bool isVisible() const override {
-            return visibility_manager_ptr->isVisible(FeatureVisibilityManager::View::Calendar);
+            return visibility_manager_.isVisible(ViewMenu::calendar);
         }
         const char* getName() const override { return "CalendarPanel"; }
         RenderLayer getLayer() const override { return RenderLayer::UIContent; }
-        void setVisible(bool /*visible*/) override {}
-        void setEnabled(bool /*enabled*/) override {}
-        bool isEnabled() const override { return true; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
-        paxg::Rect getRect() const override { return paxg::Rect{}; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
+        Rect<int> getRect() const override { return {0, 0, 0, 0}; }
     };
 
 } // namespace paxs

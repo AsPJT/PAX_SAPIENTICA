@@ -17,9 +17,11 @@
 
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
 
-#include <PAX_SAPIENTICA/InputFile.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
+#include <PAX_SAPIENTICA/Key/MenuBarKeys.hpp>
+#include <PAX_SAPIENTICA/System/InputFile.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
@@ -30,7 +32,8 @@ namespace paxs {
         // 項目の ID を返す
         static std::size_t getMenuIndexMap(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
             // Key が登録されていたら Key の中身（添え字）を返す
-            return (menu.find(str_) != menu.end()) ? menu.at(str_) :
+            const auto iterator = menu.find(str_);
+            return iterator != menu.end() ? iterator->second :
                 SIZE_MAX; // 登録されていない場合は最大値を返す
         }
 
@@ -38,28 +41,31 @@ namespace paxs {
         TileRepository() = default;
 
         /// @brief ファイルからXYZタイルを読み込む
-        /// @param file_path ファイルパス
+        /// @param relative_path 相対パス
         /// @return 読み込んだタイルのリスト
-        std::vector<XYZTile> loadFromFile(const std::string& file_path) const {
+        std::vector<XYZTile> loadFromFile(const std::string& relative_path) const {
             std::vector<XYZTile> tiles;
 
-            paxs::InputFile pifs(file_path);
-            if (pifs.fail()) return tiles;
+            paxs::InputFile input_file(relative_path);
+            if (input_file.fail()) {
+                PAXS_ERROR(relative_path + " could not be opened.");
+                return tiles;
+            }
 
             // 1 行目を読み込む
-            if (!(pifs.getLine())) {
+            if (!(input_file.getLine())) {
+                PAXS_ERROR("The first line (header) of " + relative_path + " could not be read.");
                 return tiles; // 何もない場合
             }
 
             // BOM を削除
-            pifs.deleteBOM();
+            input_file.deleteBOM();
 
             // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = pifs.splitHashMapMurMur3('\t');
+            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = input_file.splitHashMapMurMur3('\t');
 
             // カラムインデックスを取得
             const std::size_t menu_bar_index = getMenuIndexMap(menu, MurMur3::calcHash("menu_bar"));
-            const std::size_t visible_menu_bar_index = getMenuIndexMap(menu, MurMur3::calcHash("visible_menu_bar"));
             const std::size_t texture_input_type_index = getMenuIndexMap(menu, MurMur3::calcHash("texture_input_type"));
             const std::size_t binary_input_type_index = getMenuIndexMap(menu, MurMur3::calcHash("binary_input_type"));
             const std::size_t binary_path_index = getMenuIndexMap(menu, MurMur3::calcHash("binary_path"));
@@ -74,14 +80,8 @@ namespace paxs {
             const std::size_t draw_max_z_index = getMenuIndexMap(menu, MurMur3::calcHash("draw_max_z"));
 
             // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
-
-                // 描画の種類 例）画像 texture やグリッド grid など
-                // const bool menu_bar_map_bool = (visible_menu_bar_index >= strvec.size()) ? false :
-                //     ((strvec[visible_menu_bar_index].size() == 0) ? false :
-                //         (strvec[visible_menu_bar_index] == "1"));
-                const bool menu_bar_map_bool = true;
+            while (input_file.getLine()) {
+                std::vector<std::string> strvec = input_file.split('\t');
 
                 // 描画の種類 例）画像 texture やグリッド grid など
                 const std::uint_least32_t draw_type = (draw_type_index >= strvec.size()) ? paxs::MurMur3::calcHash("texture") :
@@ -125,26 +125,25 @@ namespace paxs {
                 // 読み込む地図の最小範囲
                 const unsigned int min_z = (min_z_index >= strvec.size()) ?
                     99999999 : ((strvec[min_z_index].size() == 0) ?
-                        99999999 : std::stoi(strvec[min_z_index]));
+                        99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[min_z_index], 99999999, true)));
 
                 // 読み込む地図の最大範囲
                 const unsigned int max_z = (max_z_index >= strvec.size()) ?
                     99999999 : ((strvec[max_z_index].size() == 0) ?
-                        99999999 : std::stoi(strvec[max_z_index]));
+                        99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[max_z_index], 99999999, true)));
 
-                // 可視化する地図の最小範囲
+                // 表示する最小ズームレベル
                 const unsigned int draw_min_z = (draw_min_z_index >= strvec.size()) ?
                     99999999 : ((strvec[draw_min_z_index].size() == 0) ?
-                        99999999 : std::stoi(strvec[draw_min_z_index]));
+                        99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[draw_min_z_index], 99999999, true)));
 
-                // 可視化する地図の最大範囲
+                // 表示する最大ズームレベル
                 const unsigned int draw_max_z = (draw_max_z_index >= strvec.size()) ?
                     99999999 : ((strvec[draw_max_z_index].size() == 0) ?
-                        99999999 : std::stoi(strvec[draw_max_z_index]));
+                        99999999 : static_cast<unsigned int>(StringUtils::safeStoi(strvec[draw_max_z_index], 99999999, true)));
 
-                XYZTile xyz_tile(menu_bar_map, menu_bar_map_bool,
-                    texture_input_type, binary_input_type, binary_path,
-                    texture_path, format, draw_type, texture_url);
+                XYZTile xyz_tile(menu_bar_map, texture_input_type, binary_input_type,
+                    binary_path, texture_path, format, draw_type, texture_url);
 
                 if (map_name.size() != 0) xyz_tile.setMapName(map_name);
                 if (min_z != 99999999) xyz_tile.setMinZ(min_z);
@@ -161,7 +160,7 @@ namespace paxs {
         /// @brief グリッド線タイルを作成
         /// @return グリッド線タイル
         XYZTile createGridLineTile() const {
-            XYZTile xyz_tile(MurMur3::calcHash("menu_bar_map_line2"), true,
+            XYZTile xyz_tile(static_cast<std::uint_least32_t>(paxs::MapLayersMenu::line1),
                 paxs::MurMur3::calcHash("asset_file"), 0, "", "",
                 (""), paxs::MurMur3::calcHash("grid_and_string"), "");
             return xyz_tile;

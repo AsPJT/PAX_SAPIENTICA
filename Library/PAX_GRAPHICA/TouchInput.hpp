@@ -12,7 +12,8 @@
 #ifndef PAX_GRAPHICA_TOUCH_INPUT_HPP
 #define PAX_GRAPHICA_TOUCH_INPUT_HPP
 
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
 
@@ -33,7 +34,7 @@ namespace paxg {
         /// @details On Android with DxLib, returns the actual number of simultaneous touches.
         ///          On other platforms, always returns 0.
         static int getTouchCount() {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             return DxLib::GetTouchInputNum();
 #else
             return 0;
@@ -48,7 +49,7 @@ namespace paxg {
         /// @details Retrieves the screen coordinates of the specified touch point.
         ///          Returns false on platforms that don't support multi-touch or if the index is invalid.
         static bool getTouchPosition(int index, paxs::Vector2<int>& pos) {
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
             int x = 0, y = 0;
             if (DxLib::GetTouchInput(index, &x, &y, NULL, NULL) == 0) {
                 pos.x = x;

@@ -25,30 +25,23 @@ endif()
 # Set SFML root directory based on OS and priority:
 # 1. User-specified SFML_ROOT_DIR (CMake variable)
 # 2. Environment variable SFML_DIR
-# 3. Project-local SFML installation
-# 4. System-wide installation (handled by find_package)
+# 3. vcpkg or system-wide installation (handled by find_package) - preferred for macOS/Linux
+# 4. Project-local SFML installation (Windows only, for backward compatibility)
 
 if(NOT SFML_ROOT_DIR)
     if(DEFINED ENV{SFML_DIR})
         set(SFML_ROOT_DIR "$ENV{SFML_DIR}")
         message(STATUS "Using SFML from environment variable: ${SFML_ROOT_DIR}")
-    elseif(WIN32 OR APPLE)
-        # Try project-local SFML 3.0.0 installation
+    elseif(WIN32)
+        # Try project-local SFML 3.0.0 installation (Windows only)
         set(SFML_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/MapViewer/${SFML_OS_DIR}/SFML_3.0.0")
         if(EXISTS "${SFML_ROOT_DIR}")
             message(STATUS "Using project-local SFML: ${SFML_ROOT_DIR}")
         else()
             unset(SFML_ROOT_DIR)
         endif()
-    elseif(UNIX AND NOT APPLE)
-        # Try project-local SFML installation (Linux)
-        set(SFML_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/MapViewer/${SFML_OS_DIR}/SFML")
-        if(EXISTS "${SFML_ROOT_DIR}")
-            message(STATUS "Using project-local SFML: ${SFML_ROOT_DIR}")
-        else()
-            unset(SFML_ROOT_DIR)
-        endif()
     endif()
+    # Note: Linux and macOS now prefer vcpkg, with legacy fallback for macOS only
 endif()
 
 # Add SFML CMake config path to CMAKE_PREFIX_PATH
@@ -64,7 +57,7 @@ if(SFML_ROOT_DIR AND EXISTS "${SFML_ROOT_DIR}")
 endif()
 
 # Find SFML package using its CMake config files
-# Version 3.0 is required
+# First try version 3.0+ (may come from vcpkg or system)
 find_package(SFML 3.0 COMPONENTS Graphics Window System QUIET)
 
 # If SFML 3.0 is not found, try to find any version

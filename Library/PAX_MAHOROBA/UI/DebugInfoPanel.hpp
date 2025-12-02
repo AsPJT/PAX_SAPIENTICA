@@ -16,123 +16,167 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/Vec2.hpp>
 
-#include <PAX_MAHOROBA/UI/UILayout.hpp>
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
+#include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
-#include <PAX_MAHOROBA/Map/MapViewport.hpp>
+#include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
+#include <PAX_MAHOROBA/UI/UILayout.hpp>
 
 #include <PAX_SAPIENTICA/Calendar/Koyomi.hpp>
-#include <PAX_SAPIENTICA/FeatureVisibilityManager.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
     /// @brief デバッグ情報パネルを表示するクラス
-    class DebugInfoPanel : public IWidget {
+    class DebugInfoPanel : public UIComponent {
     private:
-        const MapViewport* map_viewport_ptr = nullptr;
-        const paxs::FeatureVisibilityManager* visible_manager_ptr = nullptr;
-        const UILayout* ui_layout_ = nullptr;
-        Koyomi* koyomi_ = nullptr;
+        const paxs::FeatureVisibilityManager& visible_manager_;
+        const MapViewport& map_viewport_;
+        const UILayout& ui_layout_;
+        const Koyomi& koyomi_;
 
-        // TODO: 表示
-        std::size_t map_viewport_width_str_index = MurMur3::calcHash(25, "debug_magnification_power");
-        std::size_t map_viewport_center_x_str_index = MurMur3::calcHash(24, "debug_mercator_longitude");
-        std::size_t map_viewport_center_y_str_index = MurMur3::calcHash(23, "debug_mercator_latitude");
-        std::size_t map_viewport_center_lat_str_index = MurMur3::calcHash(14, "debug_latitude");
+        // Locales ドメインキー定数
+        static constexpr std::uint_least32_t ui_map_domain_key = MurMur3::calcHash("Map");
+
+        // デバッグ情報のテキストキー定数
+        static constexpr std::uint_least32_t magnification_power_key = MurMur3::calcHash("magnification_power");
+        static constexpr std::uint_least32_t mercator_longitude_key = MurMur3::calcHash("mercator_longitude");
+        static constexpr std::uint_least32_t mercator_latitude_key = MurMur3::calcHash("mercator_latitude");
+        static constexpr std::uint_least32_t latitude_key = MurMur3::calcHash("latitude");
+        static constexpr std::uint_least32_t xyz_tiles_z_key = MurMur3::calcHash("xyz_tiles_z");
 
     public:
         DebugInfoPanel(const UILayout& ui_layout,
-            const paxs::FeatureVisibilityManager* visible_manager,
-            const MapViewport* map_viewport
-        ) : ui_layout_(&ui_layout), visible_manager_ptr(visible_manager), map_viewport_ptr(map_viewport) {}
-
-        const char* getName() const override {
-            return "DebugInfoPanel";
-        }
-
-        /// @brief レンダリングレイヤーを取得（背景レイヤー）
-        /// @brief Get rendering layer (background layer)
-        RenderLayer getLayer() const override {
-            return RenderLayer::UIContent;
-        }
-
-        bool isVisible() const override {
-            return visible_manager_ptr->isVisible(FeatureVisibilityManager::View::Debug);
-        }
-
-
-    public:
-        // IWidget インターフェースの実装
-        EventHandlingResult handleEvent(const MouseEvent& event) override {
-            // DebugInfoPanelは入力処理を行わない
-            (void)event;
-            return EventHandlingResult::NotHandled();
-        }
+            const paxs::FeatureVisibilityManager& visible_manager,
+            const MapViewport& map_viewport,
+            const Koyomi& koyomi)
+            : visible_manager_(visible_manager)
+            , map_viewport_(map_viewport)
+            , ui_layout_(ui_layout)
+            , koyomi_(koyomi) {}
 
         void render() const override {
             if (!isVisible()) return;
 
-            paxg::Font* font = Fonts().getFont(paxs::FontProfiles::KOYOMI);
+            paxg::Font* font = Fonts().getFont(paxs::FontProfiles::koyomi);
             if (font == nullptr) return;
 
             font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 
-            const int text_x = ui_layout_->debug_info_panel.x + 15; // パネル内の左端
-            const int text_y = ui_layout_->debug_info_panel.y + 15; // パネル内の上端
+            const int text_x = ui_layout_.debug_info_panel.x + 15; // パネル内の左端
+            const int text_y = ui_layout_.debug_info_panel.y + 10; // パネル内の上端
+            const Vector2<double> map_viewport_center = map_viewport_.getCenter();
             const int line_height = 25;
 
             int current_line = 0;
 
-            // タイトル
-            font->draw(
-                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                    reinterpret_cast<const char*>(u8"デバッグ情報") : "Debug Info",
-                paxg::Vec2i(text_x, text_y + line_height * current_line++),
-                paxg::Color(0, 0, 0)
-            );
-
             // マップの拡大率
-            font->draw(
-                (Fonts().getSelectedLanguage().cgetKey() == MurMur3::calcHash("ja-JP")) ?
-                    reinterpret_cast<const char*>(u8"拡大率: ") : "Zoom: ",
-                paxg::Vec2i(text_x, text_y + line_height * current_line),
-                paxg::Color(0, 0, 0)
+            const std::string* const mag_label_ptr = Fonts().getLocalesText(
+                ui_map_domain_key,
+                magnification_power_key
             );
+            if (mag_label_ptr != nullptr) {
+                font->draw(
+                    *mag_label_ptr,
+                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxg::Color(0, 0, 0)
+                );
+            }
             font->draw(
-                std::to_string(map_viewport_ptr->getHeight()),
-                paxg::Vec2i(text_x + 100, text_y + line_height * current_line++),
+                std::to_string(map_viewport_.getHeight()),
+                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
             // XYZ Tiles Z拡大率
-            const int z_magnification = static_cast<int>(-std::log2(map_viewport_ptr->getHeight()) + 12.5);
-            const std::string* const xyz_label_ptr = Fonts().getText(
-                MurMur3::calcHash("debug_xyz_tiles_z"),
-                LanguageDomain::UI
+            const int z_magnification = static_cast<int>(-std::log2(map_viewport_.getHeight()) + 12.5);
+            const std::string* const xyz_label_ptr = Fonts().getLocalesText(
+                ui_map_domain_key,
+                xyz_tiles_z_key
             );
             if (xyz_label_ptr != nullptr) {
                 font->draw(
-                    (*xyz_label_ptr + ":").c_str(),
-                    paxg::Vec2i(text_x, text_y + line_height * current_line),
+                    *xyz_label_ptr,
+                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
             }
             font->draw(
                 std::to_string(z_magnification),
-                paxg::Vec2i(text_x + 130, text_y + line_height * current_line++),
+                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
+                paxg::Color(0, 0, 0)
+            );
+
+            // EPSG:3857(Webメルカトル) 経度
+            const std::string* const merc_lon_label_ptr = Fonts().getLocalesText(
+                ui_map_domain_key,
+                mercator_longitude_key
+            );
+            if (merc_lon_label_ptr != nullptr) {
+                font->draw(
+                    *merc_lon_label_ptr,
+                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxg::Color(0, 0, 0)
+                );
+            }
+            font->draw(
+                std::to_string(map_viewport_center.x),
+                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
+                paxg::Color(0, 0, 0)
+            );
+
+            // EPSG:3857(Webメルカトル) 緯度
+            const std::string* const merc_lat_label_ptr = Fonts().getLocalesText(
+                ui_map_domain_key,
+                mercator_latitude_key
+            );
+            if (merc_lat_label_ptr != nullptr) {
+                font->draw(
+                    *merc_lat_label_ptr,
+                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxg::Color(0, 0, 0)
+                );
+            }
+            font->draw(
+                std::to_string(map_viewport_center.y),
+                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
+                paxg::Color(0, 0, 0)
+            );
+
+            // 緯度（EPSG4326_WGS84）
+            const std::string* const lat_label_ptr = Fonts().getLocalesText(
+                ui_map_domain_key,
+                latitude_key
+            );
+            if (lat_label_ptr != nullptr) {
+                font->draw(
+                    *lat_label_ptr,
+                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxg::Color(0, 0, 0)
+                );
+            }
+            // EPSG:3857(Webメルカトル) 座標から EPSG:4326(WGS84) の緯度に変換
+            const paxs::WebMercatorDeg merc_coord(paxs::Vector2<double>(map_viewport_center.x, map_viewport_center.y));
+            font->draw(
+                std::to_string(merc_coord.toEPSG4326_WGS84DegY()),
+                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
             // 大きな年号を描画
-            if (koyomi_ != nullptr && !koyomi_->date_list.empty()) {
+            if (!koyomi_.date_list.empty()) {
                 // グレゴリオ暦の年を取得（date_list[1]がグレゴリオ暦）
-                if (koyomi_->date_list.size() > 1) {
+                if (koyomi_.date_list.size() > 1) {
                     const int date_year = [&]() {
                         int year = 0;
                         std::visit([&](const auto& x) {
-                            year = int(x.cgetYear());
-                        }, koyomi_->date_list[1].date);
+                            using T = std::decay_t<decltype(x)>;
+                            if constexpr (paxs::cal::YearMonthDayDateType<T>) {
+                                year = int(x.getYear());
+                            }
+                        }, koyomi_.date_list[1].date);
                         return year;
                     }();
 
@@ -145,11 +189,11 @@ namespace paxs {
                         if (big_year_font != nullptr) {
                             big_year_font->setOutline(0, 0.6, paxg::Color(243, 243, 243));
 
-                            // パネル内の下部に配置
-                            const int big_year_x = text_x;
-                            const int big_year_y = ui_layout_->debug_info_panel.y + ui_layout_->debug_info_panel.height - 80;  // パネル下部から80px上
+                            // パネル内の右下に配置（右揃え）
+                            const int big_year_x = ui_layout_.debug_info_panel.x + ui_layout_.debug_info_panel.width - 15;  // 右端から15px左
+                            const int big_year_y = ui_layout_.debug_info_panel.y + ui_layout_.debug_info_panel.height - 25;  // パネル下部から25px上
 
-                            big_year_font->draw(
+                            big_year_font->drawBottomRight(
                                 std::to_string(date_year),
                                 paxg::Vec2i(big_year_x, big_year_y),
                                 paxg::Color(0, 0, 0)
@@ -160,21 +204,17 @@ namespace paxs {
             }
         }
 
-        paxg::Rect getRect() const override {
-            return ui_layout_->debug_info_panel.getRect();
+        Rect<int> getRect() const override {
+            return ui_layout_.debug_info_panel.getRect();
         }
 
-        bool isHit(int x, int y) const override {
-            if (!isVisible() || !isEnabled()) return false;
-            (void)x; (void)y;
-            return false;
-            // TODO: child
+        bool isVisible() const override {
+            return visible_manager_.isVisible(ViewMenu::debug);
         }
 
-        void setVisible(bool /*visible*/) override {}
-        void setEnabled(bool /*enabled*/) override {}
-        bool isEnabled() const override { return true; }
-        void setPos(const paxg::Vec2i& /*pos*/) override {}
+        RenderLayer getLayer() const override { return RenderLayer::UIContent; }
+        const char* getName() const override { return "DebugInfoPanel"; }
+        void setPos(const Vector2<int>& /*pos*/) override {}
     };
 
 }

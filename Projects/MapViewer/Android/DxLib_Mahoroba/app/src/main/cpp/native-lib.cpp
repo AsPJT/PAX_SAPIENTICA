@@ -15,7 +15,7 @@
 
 #include <PAX_GRAPHICA/Window.hpp>
 #include <PAX_MAHOROBA/Core/Main.hpp>
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 #include <filesystem>
 #include <iostream>

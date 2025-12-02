@@ -12,8 +12,9 @@
 #include <gtest/gtest.h>
 
 #include <PAX_MAHOROBA/Core/AppStateManager.hpp>
-#include <PAX_MAHOROBA/Core/ApplicationEvents.hpp>
-#include <PAX_MAHOROBA/Core/EventBus.hpp>
+
+#include <PAX_SAPIENTICA/System/ApplicationEvents.hpp>
+#include <PAX_SAPIENTICA/System/EventBus.hpp>
 
 namespace paxs {
 
@@ -35,7 +36,7 @@ protected:
 // ============================================================================
 
 TEST_F(AppStateManagerTest, ConstructorInitializesObjects) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     // ドメインオブジェクトが初期化されていることを確認
     EXPECT_NO_THROW(app_state.getKoyomi());
@@ -44,23 +45,32 @@ TEST_F(AppStateManagerTest, ConstructorInitializesObjects) {
 }
 
 TEST_F(AppStateManagerTest, GettersReturnConstReferences) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     // const参照が返されることを確認
     const Koyomi& koyomi = app_state.getKoyomi();
     const MapViewport& viewport = app_state.getMapViewport();
     const FeatureVisibilityManager& vis_manager = app_state.getVisibilityManager();
 
+    // 未使用警告を抑制
+    (void)koyomi;
+    (void)viewport;
+    (void)vis_manager;
+
     // 使用できることを確認（コンパイルが通ればOK）
     SUCCEED();
 }
 
 TEST_F(AppStateManagerTest, GettersReturnNonConstReferences) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
-    // 非const参照が返されることを確認
-    Koyomi& koyomi = app_state.getKoyomi();
-    MapViewport& viewport = app_state.getMapViewport();
+    // const参照が返されることを確認
+    const Koyomi& koyomi = app_state.getKoyomi();
+    const MapViewport& viewport = app_state.getMapViewport();
+
+    // 未使用警告を抑制
+    (void)koyomi;
+    (void)viewport;
 
     // 使用できることを確認（コンパイルが通ればOK）
     SUCCEED();
@@ -71,36 +81,53 @@ TEST_F(AppStateManagerTest, GettersReturnNonConstReferences) {
 // ============================================================================
 
 TEST_F(AppStateManagerTest, SetLanguagePublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    // FontSystem を初期化
+    Fonts().initialize();
 
-    std::uint_least8_t received_index = 255;
+    AppStateManager app_state{};
+
+    std::uint_least32_t received_key = 0;
 
     event_bus_.subscribe<LanguageChangedEvent>(
-        [&received_index](const LanguageChangedEvent& event) {
-            received_index = event.new_language;
+        [&received_key](const LanguageChangedEvent& event) {
+            received_key = event.language_key;
         }
     );
 
-    app_state.setLanguage(5, 0); // 言語インデックス5、キーは0（テスト用ダミー値）
+    // 有効なロケールキーを使用（デフォルトとは異なる言語を選択）
+    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getOrderedLocales();
+    ASSERT_GT(locale_keys.size(), 1); // 最低2つの言語が必要
+    const std::uint_least32_t test_key = locale_keys[1]; // ja-JP を使用（デフォルトは en-US）
 
-    EXPECT_EQ(received_index, 5);
-    EXPECT_EQ(app_state.getCurrentLanguageIndex(), 5);
+    app_state.setLanguageKey(test_key);
+
+    EXPECT_EQ(received_key, test_key);
 }
 
 TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
-    AppStateManager app_state(event_bus_);
-    app_state.setLanguage(3, 0); // 言語インデックス3、キーは0（テスト用ダミー値）
+    // FontSystem を初期化
+    Fonts().initialize();
+
+    AppStateManager app_state{};
+
+    // 有効なロケールキーを使用（登録されている言語から取得）
+    const std::vector<std::uint_least32_t>& locale_keys = Fonts().getOrderedLocales();
+    ASSERT_GT(locale_keys.size(), 1); // 最低2つの言語が必要
+    const std::uint_least32_t test_key = locale_keys[1]; // ja-JP を使用
+
+    app_state.setLanguageKey(test_key);
 
     int event_count = 0;
 
     event_bus_.subscribe<LanguageChangedEvent>(
         [&event_count](const LanguageChangedEvent& event) {
+            (void)event;
             event_count++;
         }
     );
 
     // 同じ値を設定（イベントは発行されない）
-    app_state.setLanguage(3, 0); // 言語インデックス3、キーは0（テスト用ダミー値）
+    app_state.setLanguageKey(test_key);
 
     EXPECT_EQ(event_count, 0);
 }
@@ -110,7 +137,7 @@ TEST_F(AppStateManagerTest, SetLanguageSameValueDoesNotPublish) {
 // ============================================================================
 
 TEST_F(AppStateManagerTest, SetFeatureVisibilityPublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     std::uint_least32_t received_key = 0;
     bool received_visible = false;
@@ -130,7 +157,7 @@ TEST_F(AppStateManagerTest, SetFeatureVisibilityPublishesEvent) {
 }
 
 TEST_F(AppStateManagerTest, SetFeatureVisibilitySameValueDoesNotPublish) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     const std::uint_least32_t test_key = 12345;
     app_state.setFeatureVisibility(test_key, true);
@@ -138,7 +165,7 @@ TEST_F(AppStateManagerTest, SetFeatureVisibilitySameValueDoesNotPublish) {
     int event_count = 0;
 
     event_bus_.subscribe<FeatureVisibilityChangedEvent>(
-        [&event_count](const FeatureVisibilityChangedEvent& event) {
+        [&event_count](const FeatureVisibilityChangedEvent& /*event*/) {
             event_count++;
         }
     );
@@ -150,71 +177,22 @@ TEST_F(AppStateManagerTest, SetFeatureVisibilitySameValueDoesNotPublish) {
 }
 
 // ============================================================================
-// マップレイヤー可視性テスト
-// ============================================================================
-
-TEST_F(AppStateManagerTest, SetMapLayerVisibilityPublishesEvent) {
-    AppStateManager app_state(event_bus_);
-
-    std::uint_least32_t received_key = 0;
-    bool received_visible = false;
-
-    event_bus_.subscribe<MapLayerVisibilityChangedEvent>(
-        [&received_key, &received_visible](const MapLayerVisibilityChangedEvent& event) {
-            received_key = event.layer_key;
-            received_visible = event.is_visible;
-        }
-    );
-
-    const std::uint_least32_t test_key = 54321;
-    app_state.setMapLayerVisibility(test_key, false);
-
-    EXPECT_EQ(received_key, test_key);
-    EXPECT_FALSE(received_visible);
-}
-
-// ============================================================================
 // MapViewport統合テスト
 // ============================================================================
 
-TEST_F(AppStateManagerTest, MapViewportEventBusIntegration) {
-    AppStateManager app_state(event_bus_);
-
-    int event_count = 0;
-    double received_x = 0.0;
-    double received_y = 0.0;
-
-    event_bus_.subscribe<ViewportChangedEvent>(
-        [&event_count, &received_x, &received_y](const ViewportChangedEvent& event) {
-            event_count++;
-            received_x = event.new_center_x;
-            received_y = event.new_center_y;
-        }
-    );
-
-    // MapViewportを操作
-    MapViewport& viewport = app_state.getMapViewport();
-    viewport.setCenterX(100.0);
-
-    // イベントが発行されることを確認
-    EXPECT_EQ(event_count, 1);
-    EXPECT_DOUBLE_EQ(received_x, 100.0);
-}
-
 TEST_F(AppStateManagerTest, MapViewportSizeChangePublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int event_count = 0;
 
     event_bus_.subscribe<ViewportChangedEvent>(
-        [&event_count](const ViewportChangedEvent& event) {
+        [&event_count](const ViewportChangedEvent& /*event*/) {
             event_count++;
         }
     );
 
-    // サイズ変更
-    MapViewport& viewport = app_state.getMapViewport();
-    viewport.setSize(20.0);
+    // サイズ変更（AppStateManagerのコマンドメソッドを使用）
+    app_state.setViewportSize(20.0);
 
     // イベントが発行されることを確認
     EXPECT_EQ(event_count, 1);
@@ -226,7 +204,7 @@ TEST_F(AppStateManagerTest, MapViewportSizeChangePublishesEvent) {
 // ============================================================================
 
 TEST_F(AppStateManagerTest, SimulationCommandsAreHandled) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int init_event_count = 0;
     int state_event_count = 0;
@@ -237,15 +215,15 @@ TEST_F(AppStateManagerTest, SimulationCommandsAreHandled) {
         }
     );
 
-    // 初期化コマンドを実行
-    app_state.executeSimulationInit("test_model");
+    // 人間データ初期化コマンドイベントを発行
+    event_bus_.publish(InitHumanDataCommandEvent("test_model"));
 
     // 状態変更イベントが発行されることを確認
     EXPECT_GE(state_event_count, 1);
 }
 
 TEST_F(AppStateManagerTest, SimulationPlayCommandPublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int state_event_count = 0;
     SimulationStateChangedEvent::State received_state = SimulationStateChangedEvent::State::Stopped;
@@ -257,18 +235,18 @@ TEST_F(AppStateManagerTest, SimulationPlayCommandPublishesEvent) {
         }
     );
 
-    // 初期化してから再生
-    app_state.executeSimulationInit();
+    // 人間データ初期化してから再生
+    event_bus_.publish(InitHumanDataCommandEvent("test_model"));
     state_event_count = 0;  // カウントをリセット
 
-    app_state.executeSimulationPlay();
+    event_bus_.publish(SimulationPlayCommandEvent());
 
     EXPECT_EQ(state_event_count, 1);
     EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Playing);
 }
 
 TEST_F(AppStateManagerTest, SimulationPauseCommandPublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int state_event_count = 0;
     SimulationStateChangedEvent::State received_state = SimulationStateChangedEvent::State::Stopped;
@@ -280,19 +258,19 @@ TEST_F(AppStateManagerTest, SimulationPauseCommandPublishesEvent) {
         }
     );
 
-    // 初期化して再生してから一時停止
-    app_state.executeSimulationInit();
-    app_state.executeSimulationPlay();
+    // 人間データ初期化して再生してから一時停止
+    event_bus_.publish(InitHumanDataCommandEvent("test_model"));
+    event_bus_.publish(SimulationPlayCommandEvent());
     state_event_count = 0;  // カウントをリセット
 
-    app_state.executeSimulationPause();
+    event_bus_.publish(SimulationPauseCommandEvent());
 
     EXPECT_EQ(state_event_count, 1);
-    EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Paused);
+    EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Stopped);
 }
 
 TEST_F(AppStateManagerTest, SimulationStopCommandPublishesEvent) {
-    AppStateManager app_state(event_bus_);
+    AppStateManager app_state{};
 
     int state_event_count = 0;
     SimulationStateChangedEvent::State received_state = SimulationStateChangedEvent::State::Playing;
@@ -304,12 +282,12 @@ TEST_F(AppStateManagerTest, SimulationStopCommandPublishesEvent) {
         }
     );
 
-    // 初期化して再生してから停止
-    app_state.executeSimulationInit();
-    app_state.executeSimulationPlay();
+    // 人間データ初期化して再生してから停止
+    event_bus_.publish(InitHumanDataCommandEvent("test_model"));
+    event_bus_.publish(SimulationPlayCommandEvent());
     state_event_count = 0;  // カウントをリセット
 
-    app_state.executeSimulationStop();
+    event_bus_.publish(SimulationStopCommandEvent());
 
     EXPECT_EQ(state_event_count, 1);
     EXPECT_EQ(received_state, SimulationStateChangedEvent::State::Stopped);

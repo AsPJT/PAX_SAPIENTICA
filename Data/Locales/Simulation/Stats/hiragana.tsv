@@ -1,0 +1,11 @@
+key	value
+label_population	じんこう
+label_settlements	しゅうらく
+label_migration	とらい
+label_tfr	TFR
+display_mode_population	1. じんこう
+display_mode_farming	2. のうこうぶんか
+display_mode_mtdna	3. mtDNAはぷろぐるーぷ
+display_mode_snp	4. SNP / げのむ
+display_mode_language	5. げんご
+display_mode_bronze	6. せいどう

@@ -13,13 +13,13 @@
 #define PAX_SAPIENTICA_CALENDAR_JAPANESE_ERA_HPP
 
 #include <array>
-#include <cmath>
-#include <fstream>
 #include <string>
 #include <vector>
 
-#include <PAX_SAPIENTICA/InputFile.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
@@ -47,8 +47,8 @@ namespace paxs {
             number_of_days_of_leap_month(number_of_days_of_leap_month_),
             leap_month(leap_month_) {}
     private:
-        constexpr static int emptyCharSupportStoi(const std::string& str_) {
-            return (str_.size() == 0) ? 0 : std::stoi(str_);
+        static int emptyCharSupportStoi(const std::string& str_) {
+            return StringUtils::safeStoi(str_, 0, false);
         }
 
     public:
@@ -57,36 +57,56 @@ namespace paxs {
         /// @param path 元号一覧のファイルパス
         static void inputList(std::vector<paxs::JapaneseEra>& japanese_era_list, const std::string& path) {
 
-            paxs::InputFile pifs(path);
-            if (pifs.fail()) return;
-            pifs.getLine(); // 最初は破棄
+            paxs::TsvTable table(path);
+            if (!table.isSuccessfullyLoaded()) {
+                PAXS_ERROR(path + " could not be loaded.");
+                return;
+            }
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (pifs.getLine()) {
-                std::vector<std::string> strvec = pifs.split('\t');
+            // 必須カラム数の確認（最低25列必要：0-24）
+            if (table.columnCount() < 25) {
+                PAXS_ERROR(path + " has insufficient columns (expected at least 25 columns).");
+                return;
+            }
+
+            // 1 行ずつ読み込み
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>& row) {
+                // 列数が不足している行はスキップ
+                if (row.size() < 25) {
+                    return;
+                }
 
                 japanese_era_list.emplace_back(
                     std::array<int, 4>({
-                        emptyCharSupportStoi(strvec[14]),
-                        emptyCharSupportStoi(strvec[16]),
-                        emptyCharSupportStoi(strvec[18]),
-                        emptyCharSupportStoi(strvec[20]) }),
-                        std::array<int, 4>({
-                            ((strvec[15].size() == 0) ? 0 : emptyCharSupportStoi(strvec[15])),
-                            ((strvec[17].size() == 0) ? 0 : emptyCharSupportStoi(strvec[17])),
-                            ((strvec[19].size() == 0) ? 0 : emptyCharSupportStoi(strvec[19])),
-                            ((strvec[21].size() == 0) ? 0 : emptyCharSupportStoi(strvec[21])) }),
-                            ((strvec[22].size() == 0) ? 0 : emptyCharSupportStoi(strvec[22])),
-                            std::array<int, 2>({ ((strvec[23].size() == 0) ? 0 : emptyCharSupportStoi(strvec[23])),
-                            ((strvec[24].size() == 0) ? 0 : emptyCharSupportStoi(strvec[24])) }),
-                            std::array<int, 12>(
-                                { emptyCharSupportStoi(strvec[0]), emptyCharSupportStoi(strvec[1]), emptyCharSupportStoi(strvec[2]),
-                                emptyCharSupportStoi(strvec[3]), emptyCharSupportStoi(strvec[4]), emptyCharSupportStoi(strvec[5]),
-                                emptyCharSupportStoi(strvec[6]), emptyCharSupportStoi(strvec[7]), emptyCharSupportStoi(strvec[8]),
-                                emptyCharSupportStoi(strvec[9]), emptyCharSupportStoi(strvec[10]), emptyCharSupportStoi(strvec[11]) }),
-                    ((strvec[12].size() == 0) ? 0 : emptyCharSupportStoi(strvec[12])),
-                    ((strvec[13].size() == 0) ? 0 : emptyCharSupportStoi(strvec[13])));
-            }
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(14))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(16))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(18))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(20))) }),
+                    std::array<int, 4>({
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(15))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(17))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(19))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(21))) }),
+                    emptyCharSupportStoi(table.get(row_index, std::size_t(22))),
+                    std::array<int, 2>({
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(23))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(24))) }),
+                    std::array<int, 12>({
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(0))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(1))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(2))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(3))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(4))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(5))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(6))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(7))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(8))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(9))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(10))),
+                        emptyCharSupportStoi(table.get(row_index, std::size_t(11))) }),
+                    emptyCharSupportStoi(table.get(row_index, std::size_t(12))),
+                    emptyCharSupportStoi(table.get(row_index, std::size_t(13))));
+            });
         }
     };
 }

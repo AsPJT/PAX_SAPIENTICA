@@ -16,12 +16,12 @@
 
 #include <SFML/Graphics.hpp>
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
 #include <PAX_GRAPHICA/SFML_Event.hpp>
+#include <PAX_GRAPHICA/WindowImpl.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/AppConst.hpp>
-#include <PAX_SAPIENTICA/Logger.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
+#include <PAX_SAPIENTICA/System/AppConst.hpp>
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
 namespace paxg {
 
     class SFMLWindowImpl : public WindowImpl {
@@ -62,9 +62,15 @@ namespace paxg {
         }
 
         bool update() override {
+            // 1. 前フレームの描画内容を表示
+            // 2. イベント処理
+            // 3. 次フレーム用にバッファをクリア
             m_window.display();
             bool upd = paxg::SFML_Event::getInstance()->update(m_window);
-            m_window.clear(backgroundColor.color);
+            if (upd) {
+                // ウィンドウが開いている場合のみクリア
+                m_window.clear(backgroundColor.color);
+            }
             return upd;
         }
 
@@ -89,7 +95,7 @@ namespace paxg {
 
         void setIcon(const std::string& path) override {
             sf::Image icon;
-            if (!icon.loadFromFile(paxs::AppConfig::getInstance()->getRootPath() + path)){
+            if (!icon.loadFromFile(paxs::AppConfig::getInstance().getRootPath() + path)){
                 PAXS_WARNING("Failed to load icon from: " + path);
                 return;
             }

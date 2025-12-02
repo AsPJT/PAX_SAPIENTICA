@@ -10,8 +10,14 @@
 ##########################################################################################*/
 
 #include <gtest/gtest.h>
+
+// STB implementation must be defined in exactly one cpp file per executable
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image_write.h>
+
 #include <PAX_MAHOROBA/Map/Tile/XYZTile.hpp>
-#include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
+
+#include <PAX_SAPIENTICA/Map/Tile/TileCoordinate.hpp>
 
 namespace paxs {
 
@@ -222,8 +228,8 @@ TEST_F(TileCoordinateTest, TileCoordinateClassUsage) {
     EXPECT_EQ(auto_z, 6);
 
     // 東京付近（139.6917°E, 35.6895°N）を中心に、幅90度表示
-    Vector2<int> start_cell = coord.calculateStartCell(139.6917, 35.6895, 90.0, 90.0);
-    Vector2<int> end_cell = coord.calculateEndCell(139.6917, 35.6895, 90.0, 90.0);
+    Vector2<int> start_cell = coord.calculateStartCell({139.6917, 35.6895}, {90.0, 90.0});
+    Vector2<int> end_cell = coord.calculateEndCell({139.6917, 35.6895}, {90.0, 90.0});
 
     // 始点 <= 終点
     EXPECT_LE(start_cell.x, end_cell.x);
@@ -266,30 +272,30 @@ TEST_F(TileCoordinateTest, TileCoordinateMatchesOriginalLogic) {
     unsigned int z_num = paxs::TileCoordinate::calculateZNum(z);
     paxs::TileCoordinate coord(z, z_num);
 
-    std::vector<std::tuple<double, double, double, double>> test_cases = {
-        {0.0, 0.0, 360.0, 360.0},         // 全世界
-        {139.6917, 35.6895, 90.0, 90.0},  // 東京
-        {-74.006, 40.7128, 45.0, 45.0},   // ニューヨーク
-        {2.3522, 48.8566, 60.0, 60.0},    // パリ
+    std::vector<std::tuple<Vector2<double>, Vector2<double>>> test_cases = {
+        {{0.0, 0.0}, {360.0, 360.0}},         // 全世界
+        {{139.6917, 35.6895}, {90.0, 90.0}},  // 東京
+        {{-74.006, 40.7128}, {45.0, 45.0}},   // ニューヨーク
+        {{2.3522, 48.8566}, {60.0, 60.0}},    // パリ
     };
 
-    for (const auto& [center_x, center_y, width, height] : test_cases) {
-        Vector2<int> start_cell = coord.calculateStartCell(center_x, center_y, width, height);
-        Vector2<int> end_cell = coord.calculateEndCell(center_x, center_y, width, height);
+    for (const auto& [center, size] : test_cases) {
+        Vector2<int> start_cell = coord.calculateStartCell(center, size);
+        Vector2<int> end_cell = coord.calculateEndCell(center, size);
 
-        int original_start_x = calcOriginalStartX(center_x, width, z_num);
-        int original_start_y = calcOriginalStartY(center_y, height, z_num);
-        int original_end_x = calcOriginalEndX(center_x, width, z_num);
-        int original_end_y = calcOriginalEndY(center_y, height, z_num);
+        int original_start_x = calcOriginalStartX(center.x, size.x, z_num);
+        int original_start_y = calcOriginalStartY(center.y, size.y, z_num);
+        int original_end_x = calcOriginalEndX(center.x, size.x, z_num);
+        int original_end_y = calcOriginalEndY(center.y, size.y, z_num);
 
         EXPECT_EQ(start_cell.x, original_start_x)
-            << "Start X mismatch at (" << center_x << ", " << center_y << ")";
+            << "Start X mismatch at (" << center.x << ", " << center.y << ")";
         EXPECT_EQ(start_cell.y, original_start_y)
-            << "Start Y mismatch at (" << center_x << ", " << center_y << ")";
+            << "Start Y mismatch at (" << center.x << ", " << center.y << ")";
         EXPECT_EQ(end_cell.x, original_end_x)
-            << "End X mismatch at (" << center_x << ", " << center_y << ")";
+            << "End X mismatch at (" << center.x << ", " << center.y << ")";
         EXPECT_EQ(end_cell.y, original_end_y)
-            << "End Y mismatch at (" << center_x << ", " << center_y << ")";
+            << "End Y mismatch at (" << center.x << ", " << center.y << ")";
     }
 }
 

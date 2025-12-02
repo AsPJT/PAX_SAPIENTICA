@@ -13,10 +13,17 @@
 #define PAX_MAHOROBA_RENDER_LAYER_MANAGER_HPP
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_MAHOROBA/Rendering/RenderLayer.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Range.hpp>
+
+#ifdef PAXS_DEVELOPMENT
+#include <PAX_MAHOROBA/UI/Debug/PerformanceScope.hpp>
+#endif
 
 namespace paxs {
 
@@ -93,6 +100,10 @@ namespace paxs {
         /// 非表示のオブジェクトはスキップされます。
         /// Invisible objects are skipped.
         void renderAll() {
+#ifdef PAXS_DEVELOPMENT
+            PERF_SCOPE("RenderLayerManager::renderAll");
+#endif
+
             // ソートされていない場合は自動的にソート
             if (!is_sorted_) {
                 sort();
@@ -101,6 +112,11 @@ namespace paxs {
             // Z順序（背景→前面）で描画
             for (IRenderable* renderable : renderables_) {
                 if (renderable != nullptr && renderable->isVisible()) {
+#ifdef PAXS_DEVELOPMENT
+                    // レイヤー名を取得して個別に計測
+                    std::string layer_name = getLayerName(renderable->getLayer());
+                    PERF_SCOPE(layer_name);
+#endif
                     renderable->render();
                 }
             }
@@ -108,9 +124,8 @@ namespace paxs {
 
         /// @brief 指定されたレイヤーの範囲内のオブジェクトのみを描画
         /// @brief Render only objects within the specified layer range
-        /// @param min_layer 最小レイヤー / Minimum layer (inclusive)
-        /// @param max_layer 最大レイヤー / Maximum layer (inclusive)
-        void renderRange(RenderLayer min_layer, RenderLayer max_layer) {
+        /// @param layer_range レイヤー範囲 / Layer range
+        void renderRange(const Range<RenderLayer>& layer_range) {
             // ソートされていない場合は自動的にソート
             if (!is_sorted_) {
                 sort();
@@ -120,8 +135,7 @@ namespace paxs {
             for (IRenderable* renderable : renderables_) {
                 if (renderable == nullptr || !renderable->isVisible()) continue;
 
-                RenderLayer layer = renderable->getLayer();
-                if (layer >= min_layer && layer <= max_layer) {
+                if (layer_range.contains(renderable->getLayer())) {
                     renderable->render();
                 }
             }
@@ -138,6 +152,23 @@ namespace paxs {
                 if (renderable->getLayer() == target_layer) {
                     renderable->render();
                 }
+            }
+        }
+
+    private:
+        /// @brief レイヤー名を取得（デバッグ用）
+        /// @brief Get layer name (for debugging)
+        std::string getLayerName(RenderLayer layer) const {
+            switch (layer) {
+                case RenderLayer::MapTile: return "MapTile";
+                case RenderLayer::MapContent: return "MapContent";
+                case RenderLayer::Photo360: return "Photo360";
+                case RenderLayer::UIBackground: return "UIBackground";
+                case RenderLayer::UIContent: return "UIContent";
+                case RenderLayer::UIOverlay: return "UIOverlay";
+                case RenderLayer::MenuBar: return "MenuBar";
+                case RenderLayer::Debug: return "Debug";
+                default: return "Unknown";
             }
         }
     };

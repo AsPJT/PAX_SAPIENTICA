@@ -12,12 +12,7 @@
 #ifndef PAX_GRAPHICA_KEY_HPP
 #define PAX_GRAPHICA_KEY_HPP
 
-#include <algorithm>
 #include <array>
-#include <cmath>
-#include <memory>
-#include <new>
-#include <vector>
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>
@@ -27,21 +22,12 @@
 #include <SFML/Graphics.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
-#include <PAX_SAPIENTICA/MapProjection.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 
-namespace paxs {
-
-    // Coordinate constants
-    namespace CoordinateConstants {
-        // Longitude bounds
-        static constexpr double longitude_min = -180.0;
-        static constexpr double longitude_max = 180.0;
-        static constexpr double longitude_range = 360.0;
-    }
+namespace paxg {
 
     struct InputStruct {
         InputStruct() = default;
@@ -108,6 +94,11 @@ namespace paxs {
     constexpr InputKey PAXG_KEY_RIGHT = s3d::KeyRight;
     constexpr InputKey PAXG_KEY_DOWN = s3d::KeyDown;
     constexpr InputKey PAXG_KEY_UP = s3d::KeyUp;
+    constexpr InputKey PAXG_KEY_ENTER = s3d::KeyEnter;
+    constexpr InputKey PAXG_KEY_BACKSPACE = s3d::KeyBackspace;
+    constexpr InputKey PAXG_KEY_SPACE = s3d::KeySpace;
+    constexpr InputKey PAXG_KEY_TAB = s3d::KeyTab;
+    constexpr InputKey PAXG_KEY_MINUS = s3d::KeyMinus;
 #undef PAXG_DEFINE_KEY_COMMON
 
 #elif defined(PAXS_USING_DXLIB)
@@ -130,6 +121,13 @@ namespace paxs {
     PAXG_DXLIB_KEY(RIGHT)
     PAXG_DXLIB_KEY(DOWN)
     PAXG_DXLIB_KEY(UP)
+    PAXG_DXLIB_KEY(RETURN)  // Enter key
+    inline const InputKey PAXG_KEY_ENTER = PAXG_KEY_RETURN;
+    PAXG_DXLIB_KEY(BACK)  // Backspace key
+    inline const InputKey PAXG_KEY_BACKSPACE = PAXG_KEY_BACK;
+    PAXG_DXLIB_KEY(SPACE)
+    PAXG_DXLIB_KEY(TAB)
+    PAXG_DXLIB_KEY(MINUS)
 #undef PAXG_DXLIB_KEY
 
 #elif defined(PAXS_USING_SFML)
@@ -158,6 +156,11 @@ namespace paxs {
     inline const InputKey PAXG_KEY_RIGHT = InputKey{sf::Keyboard::Key::Right};
     inline const InputKey PAXG_KEY_DOWN = InputKey{sf::Keyboard::Key::Down};
     inline const InputKey PAXG_KEY_UP = InputKey{sf::Keyboard::Key::Up};
+    inline const InputKey PAXG_KEY_ENTER = InputKey{sf::Keyboard::Key::Enter};
+    inline const InputKey PAXG_KEY_BACKSPACE = InputKey{sf::Keyboard::Key::Backspace};
+    inline const InputKey PAXG_KEY_SPACE = InputKey{sf::Keyboard::Key::Space};
+    inline const InputKey PAXG_KEY_TAB = InputKey{sf::Keyboard::Key::Tab};
+    inline const InputKey PAXG_KEY_MINUS = InputKey{sf::Keyboard::Key::Hyphen};
 
 #else
     using InputKey = InputStruct;
@@ -166,6 +169,13 @@ namespace paxs {
     #define PAXG_DEFINE_KEY(name) inline const InputKey PAXG_KEY_##name = InputStruct{};
     PAXG_KEY_LIST(PAXG_DEFINE_KEY)
     #undef PAXG_DEFINE_KEY
+
+    // Additional keys for null implementation
+    inline const InputKey PAXG_KEY_ENTER = InputStruct{};
+    inline const InputKey PAXG_KEY_BACKSPACE = InputStruct{};
+    inline const InputKey PAXG_KEY_SPACE = InputStruct{};
+    inline const InputKey PAXG_KEY_TAB = InputStruct{};
+    inline const InputKey PAXG_KEY_MINUS = InputStruct{};
 
 #endif
 
@@ -247,35 +257,6 @@ namespace paxs {
         }
         return false;
     }
-
-    class Coordinate {
-    public:
-        Coordinate(const paxs::MercatorDeg& coordinate_)
-            : coordinate(coordinate_){}
-
-        double getX() const {
-            return coordinate.x;
-        }
-        double getY() const {
-            return coordinate.y;
-        }
-        void setX(const double x_) {
-            coordinate.x = x_;
-        }
-        void setY(const double y_) {
-            coordinate.y = y_;
-        }
-
-        double toEquirectangularRadY() const {
-            return coordinate.toEquirectangularRadY();
-        }
-        double toEquirectangularDegY() const {
-            return coordinate.toEquirectangularDegY();
-        }
-
-    private:
-        paxs::MercatorDeg coordinate; // マップ座標の中央
-    };
 
 }
 

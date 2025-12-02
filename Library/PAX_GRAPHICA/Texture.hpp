@@ -114,6 +114,22 @@ namespace paxg {
             if (impl) impl->resizedDrawAt(resize, pos);
         }
 
+        // Template overloads for Vec2<double>
+        void drawAt(const Vec2<double>& pos) const {
+            if (impl) impl->drawAt(Vec2f{static_cast<float>(pos.x()), static_cast<float>(pos.y())});
+        }
+
+        void resizedDrawAt(int resize, const Vec2<double>& pos) const {
+            if (impl) impl->resizedDrawAt(resize, Vec2f{static_cast<float>(pos.x()), static_cast<float>(pos.y())});
+        }
+
+        void resizedDrawAt(const Vec2<double>& resize, const Vec2<double>& pos) const {
+            if (impl) impl->resizedDrawAt(
+                Vec2f{static_cast<float>(resize.x()), static_cast<float>(resize.y())},
+                Vec2f{static_cast<float>(pos.x()), static_cast<float>(pos.y())}
+            );
+        }
+
         void resizedDraw(const Vec2i& resize, const Vec2i& pos) const {
             if (impl) impl->resizedDraw(resize, pos);
         }

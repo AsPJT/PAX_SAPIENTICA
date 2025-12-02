@@ -18,7 +18,6 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
-#include <PAX_MAHOROBA/Rendering/IWidget.hpp>
 #include <PAX_MAHOROBA/UI/Pulldown.hpp>
 #include <PAX_MAHOROBA/UI/Widget/IconButton.hpp>
 
@@ -34,9 +33,12 @@ namespace paxs {
             return RenderLayer::MenuBar;
         }
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            if (!isVisible() || !isEnabled()) {
+            if (!isVisible()) {
                 return EventHandlingResult::NotHandled();
             }
+
+            // 継承元の処理を呼ぶ
+            IconButton::handleEvent(event);
 
             // クリック時にGitHubリポジトリを開く
             if (event.left_button_state == MouseButtonState::Pressed) {
@@ -45,10 +47,10 @@ namespace paxs {
             return EventHandlingResult::Handled();
         }
         void init(const paxs::Pulldown& language_selector) {
-            const int github_x = paxg::Window::width() - static_cast<int>(language_selector.getRect().w()) - 32;
-            const int github_y = static_cast<int>((language_selector.getRect().h() - ICON_SIZE) / 2);
-            setPos(paxg::Vec2i{ github_x, github_y });
-            setSize(paxg::Vec2i{ ICON_SIZE, ICON_SIZE });
+            const int github_x = paxg::Window::width() - language_selector.getRect().width() - 32;
+            const int github_y = (language_selector.getRect().height() - ICON_SIZE) / 2;
+            setPos(Vector2<int>{ github_x, github_y });
+            setSize(Vector2<int>{ ICON_SIZE, ICON_SIZE });
         }
     };
 } // namespace paxs

@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
+#include <PAX_SAPIENTICA/StringUtils.hpp>
 
 
 // CSV/TSV ファイルを読み込み、左の文字列を右の文字列へ変換する
@@ -30,7 +30,7 @@ void convertLeftToRight(
 	if (ifs.fail()) return;
 	std::string line;
 	while (std::getline(ifs, line)) {
-		std::vector<std::string> strvec = paxs::StringExtensions::split(line, delimiter_);
+		std::vector<std::string> strvec = paxs::StringUtils::split(line, delimiter_);
 		if (strvec.size() == 0) continue;
 		else if (strvec.size() == 1) {
 			to.emplace_back(strvec[0]);
@@ -49,7 +49,7 @@ void convertLeftToRight(
 	if (ifs2.fail()) return;
 	std::string line2;
 	while (std::getline(ifs2, line2)) {
-		paxs::StringExtensions::replaceList(line2, to, from);
+		paxs::StringUtils::replaceList(line2, to, from);
 		ofs << line2 << '\n';
 	}
 }

@@ -26,6 +26,9 @@
 #include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+
 namespace paxg {
 
     struct Rect {
@@ -36,6 +39,7 @@ namespace paxg {
         constexpr Rect(const Vec2i& pos, const Vec2i& size) : rect(pos.x(), pos.y(), size.x(), size.y()) {}
         constexpr Rect(const Vec2i& pos, const float w, const float h) : rect(pos.x(), pos.y(), w, h) {}
         constexpr Rect(const float x, const float y, const Vec2i& size) : rect(x, y, size.x(), size.y()) {}
+        constexpr Rect(const paxs::Rect<int>& r) : rect(static_cast<float>(r.x()), static_cast<float>(r.y()), static_cast<float>(r.width()), static_cast<float>(r.height())) {}
         constexpr operator s3d::RectF() const { return rect; }
         void setX(const float x_) { rect.x = x_; }
         void setY(const float y_) { rect.y = y_; }
@@ -67,6 +71,9 @@ namespace paxg {
             return (rect.x <= x_) && (x_ <= (rect.x + rect.w)) &&
                 (rect.y <= y_) && (y_ <= (rect.y + rect.h));
         }
+        bool contains(const paxs::Vector2<int>& pos) const {
+            return contains(static_cast<float>(pos.x), static_cast<float>(pos.y));
+        }
 
 #elif defined(PAXS_USING_SFML)
         sf::RectangleShape rect{};
@@ -75,6 +82,7 @@ namespace paxg {
         Rect(const sf::Vector2i& pos, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
         Rect(const sf::Vector2i& pos, const float w, const float h) : rect(sf::Vector2f(w, h)) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
         Rect(const float x, const float y, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ x, y }); }
+        Rect(const paxs::Rect<int>& r) : rect(sf::Vector2f(static_cast<float>(r.width()), static_cast<float>(r.height()))) { rect.setPosition({ static_cast<float>(r.x()), static_cast<float>(r.y()) }); }
         operator sf::RectangleShape() const { return rect; }
         void setX(const float x_) { rect.setPosition({ x_, rect.getPosition().y }); }
         void setY(const float y_) { rect.setPosition({ rect.getPosition().x, y_ }); }
@@ -94,6 +102,9 @@ namespace paxg {
             return x_ >= rect.getPosition().x && x_ <= (rect.getPosition().x + rect.getSize().x) &&
                    y_ >= rect.getPosition().y && y_ <= (rect.getPosition().y + rect.getSize().y);
         }
+        bool contains(const paxs::Vector2<int>& pos) const {
+            return contains(static_cast<float>(pos.x), static_cast<float>(pos.y));
+        }
 #else
         float x0{}, y0{}, w0{}, h0{};
         constexpr Rect() = default;
@@ -106,6 +117,8 @@ namespace paxg {
             x0(static_cast<float>(pos.x())), y0(static_cast<float>(pos.y())), w0(w), h0(h) {}
         constexpr Rect(const float x, const float y, const Vec2i& size)
             : x0(x), y0(y), w0(static_cast<float>(size.x())), h0(static_cast<float>(size.y())) {}
+        constexpr Rect(const paxs::Rect<int>& r) :
+            x0(static_cast<float>(r.x())), y0(static_cast<float>(r.y())), w0(static_cast<float>(r.width())), h0(static_cast<float>(r.height())) {}
         void setX(const float x_) { x0 = x_; }
         void setY(const float y_) { y0 = y_; }
         void setW(const float w_) { w0 = w_; }
@@ -135,6 +148,9 @@ namespace paxg {
         bool contains(const float x_, const float y_) const {
             return x0 <= x_ && x_ <= x0 + w0 &&
                    y0 <= y_ && y_ <= y0 + h0;
+        }
+        bool contains(const paxs::Vector2<int>& pos) const {
+            return contains(static_cast<float>(pos.x), static_cast<float>(pos.y));
         }
 #endif
 
@@ -327,42 +343,6 @@ namespace paxg {
 #else
         void drawFrame(const double, const double, const paxg::Color&) const {}
 #endif
-
-        bool leftClicked() const {
-#if defined(PAXS_USING_SIV3D)
-            return rect.leftClicked();
-#elif defined(PAXS_USING_DXLIB)
-            if (paxg::TouchInput::getPreviousTouchCount() == 1) {
-                const int touch_num = paxg::TouchInput::getTouchCount();
-                // 1 フレーム前にタッチされている
-                if (touch_num == 0) {
-                    const auto& prev_pos = paxg::TouchInput::getPreviousTouchPosition();
-                    const auto& mx = prev_pos.x;
-                    const auto& my = prev_pos.y;
-                    return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
-                }
-            }
-            // 1 フレーム前にタッチされている
-            if (paxg::Mouse::getInstance()->upLeft()) {
-                int mx = 0, my = 0;
-                DxLib::GetMousePoint(&mx, &my);
-                return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
-            }
-            return false;
-#elif defined(PAXS_USING_SFML)
-            // 1 フレーム前にタッチされている
-            if (paxg::Mouse::getInstance()->upLeft()) {
-                int mx = sf::Mouse::getPosition(Window::window()).x, my = sf::Mouse::getPosition(Window::window()).y;
-                return (mx >= rect.getPosition().x &&
-                    my >= rect.getPosition().y &&
-                    mx < rect.getPosition().x + rect.getSize().x &&
-                    my < rect.getPosition().y + rect.getSize().y);
-            }
-            return false;
-#else
-            return false;
-#endif
-        }
 
         bool mouseOver() const {
 #if defined(PAXS_USING_SIV3D)

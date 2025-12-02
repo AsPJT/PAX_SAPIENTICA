@@ -11,8 +11,9 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
+[Dd]ebug/*
 [Dd]ebugPublic/
+!Library/**/Debug/
 [Rr]elease/
 [Rr]eleases/
 x64/
@@ -273,6 +274,7 @@ TestMap/
 SavedMap/
 *.exe
 AS_DEBUG/
+Intermediate/
 
 .DS_Store
 .vscode
@@ -285,3 +287,7 @@ DevelopmentBuild/
 ProductionBuild/
 SimulationResults/
 LabeledSimulationResults/
+
+# vcpkg
+vcpkg/
+vcpkg_installed/

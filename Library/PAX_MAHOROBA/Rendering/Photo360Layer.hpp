@@ -12,25 +12,24 @@
 #ifndef PAX_MAHOROBA_RENDERING_PHOTO_360_LAYER_HPP
 #define PAX_MAHOROBA_RENDERING_PHOTO_360_LAYER_HPP
 
-#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
 #include <PAX_GRAPHICA/Photo360.hpp>
+
+#include <PAX_MAHOROBA/Rendering/IRenderable.hpp>
+
+#include <PAX_SAPIENTICA/System/FeatureVisibilityManager.hpp>
 
 namespace paxs {
 
     /// @brief 360度写真描画レイヤー
     /// @details UIレイヤーの次に描画される全画面没入型ビューア
-    /// PAX_GRAPHICA/Photo360.hpp のラッパークラス
     class Photo360Layer : public IRenderable {
     private:
         mutable paxg::Photo360 photo360_;
-        bool visible_ = true;
+        const FeatureVisibilityManager& visibility_manager_;
 
     public:
-        /// @brief デフォルト設定でコンストラクタ
-        Photo360Layer() = default;
-
-        /// @brief カスタム設定でコンストラクタ
-        explicit Photo360Layer(const paxg::Photo360Config& cfg) : photo360_(cfg) {}
+        Photo360Layer(const FeatureVisibilityManager& visibility_manager)
+            : visibility_manager_(visibility_manager) {}
 
         /// @brief 360度写真を更新・描画
         void render() const override {
@@ -54,8 +53,8 @@ namespace paxs {
         }
 
         /// @brief 背景色設定を更新
-        void setBackgroundConfig(const paxg::Photo360Config::Background& bg) {
-            photo360_.setBackgroundConfig(bg);
+        void setBackgroundConfig(const paxg::Photo360Config::Background& background) {
+            photo360_.setBackgroundConfig(background);
         }
 
         /// @brief 現在の視点回転角度を取得（度）
@@ -68,20 +67,8 @@ namespace paxs {
             photo360_.setViewRotation(x, y, z);
         }
 
-        /// @brief レンダリングレイヤーを取得
-        RenderLayer getLayer() const override {
-            return RenderLayer::Map3D;
-        }
-
-        /// @brief 可視性を取得
-        bool isVisible() const override {
-            return visible_;
-        }
-
-        /// @brief 可視性を設定
-        void setVisible(bool visible) override {
-            visible_ = visible;
-        }
+        RenderLayer getLayer() const override { return RenderLayer::Photo360; }
+        bool isVisible() const override { return visibility_manager_.isVisible(ViewMenu::view_3d); }
     };
 
 }

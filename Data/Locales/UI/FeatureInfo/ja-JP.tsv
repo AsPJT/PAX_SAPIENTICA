@@ -1,0 +1,14 @@
+key	value
+title	地物詳細
+label_type	種別
+label_name	名称
+type_geographic	地理的特徴
+type_place_name	地名
+type_genome	ゲノム
+type_person	人物
+extra_location	所在地
+extra_type	種別
+extra_era	時代
+extra_site	立地
+extra_altitude	標高
+extra_artifact	出土遺物

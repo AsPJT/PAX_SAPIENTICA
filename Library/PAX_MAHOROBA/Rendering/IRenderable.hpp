@@ -45,11 +45,6 @@ namespace paxs {
         /// @brief Check if the object is visible
         /// @return 表示可能ならtrue / true if visible
         virtual bool isVisible() const = 0;
-
-        /// @brief オブジェクトの表示/非表示を設定
-        /// @brief Set the visibility of the object
-        /// @param visible 表示する場合はtrue / true to show
-        virtual void setVisible(bool visible) = 0;
     };
 
 } // namespace paxs

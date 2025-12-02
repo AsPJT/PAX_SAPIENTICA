@@ -13,38 +13,35 @@
 #define PAX_MAHOROBA_XYZ_TILE_HPP
 
 #include <cmath>
-#include <filesystem>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <PAX_MAHOROBA/Map/Tile/BinaryTileLoader.hpp>
-#include <PAX_MAHOROBA/Map/Tile/FileTileLoader.hpp>
-#include <PAX_MAHOROBA/Map/Tile/UrlTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/BinaryTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/FileTileLoader.hpp>
+#include <PAX_MAHOROBA/Map/Tile/Loader/UrlTileLoader.hpp>
 
-#include <PAX_SAPIENTICA/AppConfig.hpp>
-#include <PAX_SAPIENTICA/Map/TileCache.hpp>
-#include <PAX_SAPIENTICA/Map/TileCoordinate.hpp>
-#include <PAX_SAPIENTICA/Map/TileMetadata.hpp>
-#include <PAX_SAPIENTICA/MurMur3.hpp>
-#include <PAX_SAPIENTICA/StringExtensions.hpp>
-#include <PAX_SAPIENTICA/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Core/Platform.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+#include <PAX_SAPIENTICA/Map/Tile/TileCache.hpp>
+#include <PAX_SAPIENTICA/Map/Tile/TileCoordinate.hpp>
+#include <PAX_SAPIENTICA/Map/Tile/TileMetadata.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
     /// @brief ビューポート状態
     /// @brief Viewport state
     struct ViewportState {
-        double width;
-        double height;
-        double center_x;
-        double center_y;
+        Vector2<double> size;
+        Vector2<double> center;
 
         bool operator==(const ViewportState& other) const {
-            return !isDifferent(width, other.width) &&
-                   !isDifferent(center_x, other.center_x) &&
-                   !isDifferent(center_y, other.center_y);
+            return !isDifferent(size.x, other.size.x) &&
+                   !isDifferent(center.x, other.center.x) &&
+                   !isDifferent(center.y, other.center.y);
         }
 
         bool operator!=(const ViewportState& other) const {
@@ -109,7 +106,7 @@ namespace paxs {
         // 浮動小数点比較の許容誤差
         static constexpr double VIEWPORT_EPSILON = 1e-9;
 
-        // XYZ タイルの 1 つのセルのメルカトル座標を保持
+        // XYZ タイルの 1 つのセルのWebメルカトル座標を保持
         // 基本的に Z = 19 は無い
 
         paxs::TileCache<paxg::Texture> tile_cache_;
@@ -121,7 +118,6 @@ namespace paxs {
         std::string binary_file_name_format = ""; // バイナリデータ
         std::string map_name = ""; // 地図名
         std::string file_name_format = ("{z}/{x}/{y}");
-        std::string texture_full_path_folder = ""; // フルパスのフォルダまでのパスを返す
 
         // XYZ タイルの画面上の始点セル
         Vector2<int> start_cell{};
@@ -145,30 +141,49 @@ namespace paxs {
         unsigned int draw_max_z = 999; // 描画最大 Z
         unsigned int z_num = (1 << z); // 2 の z 乗 // std::pow(2, z) と等価
 
-        // ★ リファクタリング Phase 1: 新しい構造体変数（既存変数と並行して使用）
-        ViewportState current_viewport_{0.0, 0.0, 0.0, 0.0};
+        ViewportState current_viewport_{{0.0, 0.0}, {0.0, 0.0}};
         ZoomState current_zoom_{0, 0, 0};
         TileRange current_range_{{0, 0}, {0, 0}};
 
-    private:
-        // フルパスのフォルダまでのパスを返す
-        std::string setFullPathFolder() const {
-            std::size_t slash_index = 99999999;
-            for (std::size_t i = 0; i < file_name_format.size(); ++i) {
-                if (file_name_format[i] == '/') {
-                    slash_index = i;
-                }
-            }
-            // スラッシュがない場合は空文字を返す
-            if (slash_index == 99999999) {
-                return "";
-            }
-            // スラッシュがある場合は最後のスラッシュまでのフォルダパスを返す
-            std::string str = file_name_format;
-            str[slash_index] = 0; // 終端文字を入れる
-            return std::string(str.c_str());
-        }
+        /// @brief ファイル名フォーマットを構築（プラットフォーム固有処理を含む）
+        /// @brief Build file name format (including platform-specific processing)
+        /// @param texture_root_path_type テクスチャルートパスタイプ
+        /// @param map_file_path_name マップファイルパス名
+        /// @param file_name_format_ ファイル名フォーマット
+        /// @return 構築されたファイル名フォーマット
+        static std::string buildFileNameFormat(
+            std::uint_least32_t texture_root_path_type,
+            const std::string& map_file_path_name,
+            const std::string& file_name_format_
+        ) {
+#if defined(PAXS_USING_DXLIB) && defined(PAXS_PLATFORM_ANDROID)
+            static char internal_data_path[1024]{};
 
+            switch (texture_root_path_type) {
+            case paxs::MurMur3::calcHash("asset_file"):
+                return map_file_path_name + file_name_format_ + ".png";
+            case paxs::MurMur3::calcHash("internal_file"):
+                DxLib::GetInternalDataPath(internal_data_path, 1024);
+                return std::string(internal_data_path) + "/" +
+                    map_file_path_name + file_name_format_ + ".png";
+            case paxs::MurMur3::calcHash("external_file"):
+                DxLib::GetExternalDataPath(internal_data_path, 1024);
+                return std::string(internal_data_path) + "/" +
+                    map_file_path_name + file_name_format_ + ".png";
+            default:
+                printfDx("\n[error:%u,%s,%s,%s]",
+                    texture_root_path_type,
+                    "", // map_binary_name
+                    map_file_path_name.c_str(),
+                    file_name_format_.c_str());
+                return map_file_path_name + file_name_format_ + ".png";
+            }
+#else
+            // アセットルートからの相対パスとして保持
+            (void)texture_root_path_type; // 未使用警告を抑制
+            return map_file_path_name + file_name_format_ + ".png";
+#endif
+        }
 
         /// @brief ビューポートから新しいズーム状態を計算
         /// @param map_view_height ビューポートの高さ
@@ -199,14 +214,8 @@ namespace paxs {
             TileCoordinate coord(zoom.actual_z, zoom.z_num);
 
             TileRange range;
-            range.start = coord.calculateStartCell(
-                viewport.center_x, viewport.center_y,
-                viewport.width, viewport.height
-            );
-            range.end = coord.calculateEndCell(
-                viewport.center_x, viewport.center_y,
-                viewport.width, viewport.height
-            );
+            range.start = coord.calculateStartCell(viewport.center, viewport.size);
+            range.end = coord.calculateEndCell(viewport.center, viewport.size);
 
             return range;
         }
@@ -246,8 +255,8 @@ namespace paxs {
 
             const std::string z_value = std::to_string(z); // Z の値
             std::string local_file_path_zn = file_name_format;
-            paxs::StringExtensions::replace(local_file_path_zn, "{z}", z_value);
-            if (map_name.size() != 0) paxs::StringExtensions::replace(local_file_path_zn, "{n}", map_name);
+            paxs::StringUtils::replace(local_file_path_zn, "{z}", z_value);
+            if (map_name.size() != 0) paxs::StringUtils::replace(local_file_path_zn, "{n}", map_name);
 
             const std::uint_least64_t index_z = tile_cache_.encodeKeyZ(static_cast<std::uint_least64_t>(z));
 
@@ -256,33 +265,25 @@ namespace paxs {
 
                 const std::string y_value = std::to_string((i + z_num) & (z_num - 1)); // Y の値
                 std::string local_file_path_zny = local_file_path_zn;
-                paxs::StringExtensions::replace(local_file_path_zny, "{y}", y_value);
+                paxs::StringUtils::replace(local_file_path_zny, "{y}", y_value);
 
                 const std::uint_least64_t index_zy = tile_cache_.encodeKeyY(static_cast<std::uint_least64_t>((i + z_num) & (z_num - 1))) + index_z;
 
                 // URL と Binary のパスを Y 置換まで事前計算（X ループ外）
                 std::string url_path_zny;
                 std::string binary_path_zny;
-                std::string texture_folder_path_zny;
 
                 if (!metadata_.texture_url.empty()) {
                     url_path_zny = metadata_.texture_url;
-                    paxs::StringExtensions::replace(url_path_zny, "{z}", z_value);
-                    paxs::StringExtensions::replace(url_path_zny, "{y}", y_value);
+                    paxs::StringUtils::replace(url_path_zny, "{z}", z_value);
+                    paxs::StringUtils::replace(url_path_zny, "{y}", y_value);
                 }
 
                 if (!binary_file_name_format.empty()) {
                     binary_path_zny = binary_file_name_format;
-                    paxs::StringExtensions::replace(binary_path_zny, "{z}", z_value);
-                    paxs::StringExtensions::replace(binary_path_zny, "{y}", y_value);
-                    if (map_name.size() != 0) paxs::StringExtensions::replace(binary_path_zny, "{n}", map_name);
-                }
-
-                if (!texture_full_path_folder.empty()) {
-                    texture_folder_path_zny = texture_full_path_folder;
-                    paxs::StringExtensions::replace(texture_folder_path_zny, "{z}", z_value);
-                    paxs::StringExtensions::replace(texture_folder_path_zny, "{y}", y_value);
-                    if (map_name.size() != 0) paxs::StringExtensions::replace(texture_folder_path_zny, "{n}", map_name);
+                    paxs::StringUtils::replace(binary_path_zny, "{z}", z_value);
+                    paxs::StringUtils::replace(binary_path_zny, "{y}", y_value);
+                    if (map_name.size() != 0) paxs::StringUtils::replace(binary_path_zny, "{n}", map_name);
                 }
 
                 for (int j = start_cell.x; j <= end_cell.x; ++j, ++k) {
@@ -309,13 +310,9 @@ namespace paxs {
 
                     // 2. UrlTileLoader（URL からダウンロード）
                     if (!metadata_.texture_url.empty()) {
-                        std::string texture_folder_path_znyx = texture_folder_path_zny;
-                        paxs::StringExtensions::replace(texture_folder_path_znyx, "{x}", x_value);
-
                         texture = UrlTileLoader::load(
                             url_path_zny,
                             local_file_path_zny,
-                            texture_folder_path_znyx,
                             x_value
                         );
 
@@ -326,14 +323,10 @@ namespace paxs {
                     }
 
                     // 3. BinaryTileLoader（バイナリデータから PNG 生成）
-                    if (!binary_file_name_format.empty() && !texture_full_path_folder.empty()) {
-                        std::string texture_folder_path_znyx = texture_folder_path_zny;
-                        paxs::StringExtensions::replace(texture_folder_path_znyx, "{x}", x_value);
-
+                    if (!binary_file_name_format.empty()) {
                         texture = BinaryTileLoader::load(
                             binary_path_zny,
                             local_file_path_zny,
-                            texture_folder_path_znyx,
                             x_value,
                             binary_buffer_,  // バッファを渡す
                             rgba_buffer_     // バッファを渡す
@@ -354,19 +347,17 @@ namespace paxs {
     public:
         XYZTile() = default;
 
-        // タイルを更新
-        void update(const double map_view_width, // 描画される地図の経度幅
-            const double map_view_height, // 描画される地図の緯度幅
-            const double map_view_center_x, // 描画される地図の中心経度
-            const double map_view_center_y // 描画される地図の中心緯度
+        /// @brief タイルを更新
+        /// @brief Update tiles
+        /// @param map_view_size 描画される地図のサイズ（経度幅, 緯度幅） / Map view size (longitude width, latitude height)
+        /// @param map_view_center 描画される地図の中心座標（中心経度, 中心緯度） / Map view center (center longitude, center latitude)
+        void update(
+            const Vector2<double> map_view_size,
+            const Vector2<double> map_view_center
         ) {
-            // ★ Phase 3: 新しい構造体ベースのロジックに完全移行
             // 1. 新しい状態を計算
-            ViewportState new_viewport{
-                map_view_width, map_view_height,
-                map_view_center_x, map_view_center_y
-            };
-            ZoomState new_zoom = calculateZoom(map_view_height);
+            ViewportState new_viewport(map_view_size, map_view_center);
+            ZoomState new_zoom = calculateZoom(map_view_size.y);
             TileRange new_range = calculateTileRange(new_viewport, new_zoom);
 
             // 2. 変更を検出
@@ -392,7 +383,6 @@ namespace paxs {
 
         XYZTile(
             const std::uint_least32_t menu_bar_map_,
-            const bool menu_bar_map_bool_,
             const std::uint_least32_t texture_root_path_type_,
             const std::uint_least32_t binary_root_path_type_,
             const std::string& map_binary_name_,
@@ -404,7 +394,6 @@ namespace paxs {
         {
             // TileMetadata を初期化
             metadata_.menu_bar_map = menu_bar_map_;
-            metadata_.menu_bar_map_bool = menu_bar_map_bool_;
             metadata_.texture_root_path_type = texture_root_path_type_;
             metadata_.binary_root_path_type = binary_root_path_type_;
             metadata_.map_binary_name = map_binary_name_;
@@ -423,35 +412,11 @@ namespace paxs {
             // フォーマットが指定されている場合
             if (file_name_format_.size() != 0) {
                 // 地図のテクスチャのファイルパスを保存
-#if defined(PAXS_USING_DXLIB) && defined(__ANDROID__)
-                static char internal_data_path[1024]{};
-
-                switch (texture_root_path_type_) {
-                case paxs::MurMur3::calcHash("asset_file"):
-                    file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
-                    break;
-                case paxs::MurMur3::calcHash("internal_file"):
-                    DxLib::GetInternalDataPath(internal_data_path, 1024);
-                    file_name_format = std::string(internal_data_path) + "/" +
-                        map_file_path_name_ + file_name_format_ + std::string(".png");
-                    break;
-                case paxs::MurMur3::calcHash("external_file"):
-                    DxLib::GetExternalDataPath(internal_data_path, 1024);
-                    file_name_format = std::string(internal_data_path) + "/" +
-                        map_file_path_name_ + file_name_format_ + std::string(".png");
-                    break;
-                default:
-                    file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
-                    printfDx("\n[error:%u,%s,%s,%s]", texture_root_path_type_, map_binary_name_.c_str(), map_file_path_name_.c_str(), file_name_format_.c_str());
-                    break;
-                }
-#else
-                // アセットルートからの相対パスとして保持（getRootPathは使用時に前置）
-                file_name_format = map_file_path_name_ + file_name_format_ + std::string(".png");
-#endif
-            }
-            if (file_name_format.size() != 0) {
-                texture_full_path_folder = setFullPathFolder();
+                file_name_format = buildFileNameFormat(
+                    texture_root_path_type_,
+                    map_file_path_name_,
+                    file_name_format_
+                );
             }
         }
 
@@ -472,9 +437,6 @@ namespace paxs {
         }
         std::uint_least32_t getDrawType() const {
             return metadata_.draw_type;
-        }
-        bool getMenuBarMapBool() const {
-            return metadata_.menu_bar_map_bool;
         }
         std::uint_least32_t getMenuBarMap() const {
             return metadata_.menu_bar_map;

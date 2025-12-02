@@ -1,14 +1,12 @@
-ja-JP	en-US	longitude	latitude	min_size	max_size
-ノッシツ	Nosshitsu	156.907524	57.671767	1	16
-ノッシュツベツ	Nosshutsu-pet	156.771798	57.072794	1	4
-タツコフベツ	Tatsukofu-pet	156.659515	57.042734	1	4
-レプンイショ	Repunisho	156.586132	57.17482	1	48
-タツコフ	Tatsukofu	156.535732	57.080268	1	4
-シラルホ	Shiraruho	155.591242	55.043277	1	48
-レプンライシャシ	Repunraishashi	156.66476	50.865417	1	48
-ヤツオチウシ	Yatsuochiushi	157.552216	51.494346	1	16
-イヤカンヌフリ	Iyakan-nupuri	158.703882	52.886238	1	48
-トウサンベツ	Tosam-pet	160.031889	53.099494	1	16
-ポンルルカ	Ponruruka	162.619893	56.229044	1	48
-ヒルスコイ	Hirusukoi			1	16
-ペトルヤー	Petoruya			1	16
+key	longitude	latitude	min_size	max_size
+KamchatkaAinu1	156.907524	57.671767	1	16
+KamchatkaAinu2	156.771798	57.072794	1	4
+KamchatkaAinu3	156.659515	57.042734	1	4
+KamchatkaAinu4	156.586132	57.17482	1	16
+KamchatkaAinu5	156.535732	57.080268	1	4
+KamchatkaAinu6	155.591242	55.043277	1	16
+KamchatkaAinu7	156.66476	50.865417	1	16
+KamchatkaAinu8	157.552216	51.494346	1	16
+KamchatkaAinu9	158.703882	52.886238	1	16
+KamchatkaAinu10	160.031889	53.099494	1	16
+KamchatkaAinu11	162.619893	56.229044	1	16
