@@ -17,6 +17,9 @@
     Loads binary table files and provides table-like access
 ##########################################################################################*/
 
+#include <algorithm>
+#include <array>
+#include <charconv> // std::to_chars (C++17)
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -68,47 +71,56 @@ namespace paxs {
         bool is_loaded_{ false };
         bool is_successfully_loaded_{ false };
 
-        /// @brief Read a null-terminated string from binary stream
-        /// @brief バイナリストリームからヌル終端文字列を読み込む
-        /// @param ifs Input file stream / 入力ファイルストリーム
-        /// @return Read string / 読み込んだ文字列
-        static std::string readString(std::ifstream& ifs) {
-            std::string result;
-            char ch;
-            while (ifs.read(&ch, 1) && ch != '\0') {
-                result += ch;
+        /// @brief Helper to read data from memory buffer
+        struct BufferReader {
+            const char* ptr;
+            const char* end;
+
+            explicit BufferReader(const std::vector<char>& buffer)
+                : ptr(buffer.data()), end(buffer.data() + buffer.size()) {}
+
+            bool safeCheck(std::size_t size) const {
+                return ptr + size <= end;
             }
-            return result;
+
+            template <typename T>
+            T read() {
+                if (!safeCheck(sizeof(T))) return T{};
+                T value;
+                std::memcpy(&value, ptr, sizeof(T));
+                ptr += sizeof(T);
+                return value;
+            }
+
+            std::string readString() {
+                const char* start = ptr;
+                while (ptr < end && *ptr != '\0') {
+                    ptr++;
+                }
+                std::string s(start, ptr - start);
+                if (ptr < end) ptr++; // Skip null terminator
+                return s;
+            }
+        };
+
+        /// @brief Fast float to string conversion using std::to_chars
+        static std::string fastFloatToString(float value) {
+            std::array<char, 32> buffer;
+            auto [ptr, ec] = std::to_chars(buffer.data(), buffer.data() + buffer.size(), value);
+            if (ec == std::errc()) {
+                return std::string(buffer.data(), ptr - buffer.data());
+            }
+            return std::to_string(value); // Fallback
         }
 
-        /// @brief Read float value from binary stream
-        /// @brief バイナリストリームからfloat値を読み込む
-        /// @param ifs Input file stream / 入力ファイルストリーム
-        /// @return Read float value / 読み込んだfloat値
-        static float readFloat(std::ifstream& ifs) {
-            float value;
-            ifs.read(reinterpret_cast<char*>(&value), sizeof(float));
-            return value;
-        }
-
-        /// @brief Read int32 value from binary stream
-        /// @brief バイナリストリームからint32値を読み込む
-        /// @param ifs Input file stream / 入力ファイルストリーム
-        /// @return Read int32 value / 読み込んだint32値
-        static std::int32_t readInt32(std::ifstream& ifs) {
-            std::int32_t value;
-            ifs.read(reinterpret_cast<char*>(&value), sizeof(std::int32_t));
-            return value;
-        }
-
-        /// @brief Read uint32 value from binary stream
-        /// @brief バイナリストリームからuint32値を読み込む
-        /// @param ifs Input file stream / 入力ファイルストリーム
-        /// @return Read uint32 value / 読み込んだuint32値
-        static std::uint32_t readUint32(std::ifstream& ifs) {
-            std::uint32_t value;
-            ifs.read(reinterpret_cast<char*>(&value), sizeof(std::uint32_t));
-            return value;
+        /// @brief Fast int to string conversion using std::to_chars
+        static std::string fastIntToString(std::int32_t value) {
+            std::array<char, 16> buffer;
+            auto [ptr, ec] = std::to_chars(buffer.data(), buffer.data() + buffer.size(), value);
+            if (ec == std::errc()) {
+                return std::string(buffer.data(), ptr - buffer.data());
+            }
+            return std::to_string(value);
         }
 
     public:
@@ -137,23 +149,44 @@ namespace paxs {
             // Construct full path
             const std::string full_path = AppConfig::getInstance().getRootPath() + relative_path;
 
-            std::ifstream ifs(full_path, std::ios::binary);
+            // Open file at the end to get size
+            std::ifstream ifs(full_path, std::ios::binary | std::ios::ate);
             if (!ifs.is_open()) {
                 PAXS_ERROR("Failed to open binary file: " + relative_path);
                 return false;
             }
 
+            // Get file size and read entire content into buffer
+            std::streamsize size = ifs.tellg();
+            ifs.seekg(0, std::ios::beg);
+
+            if (size <= 0) {
+                PAXS_WARNING("Binary file is empty: " + relative_path);
+                return false;
+            }
+
+            std::vector<char> buffer(static_cast<std::size_t>(size));
+            if (!ifs.read(buffer.data(), size)) {
+                PAXS_ERROR("Failed to read binary file content: " + relative_path);
+                return false;
+            }
+
+            // Close file early
+            ifs.close();
+
+            BufferReader reader(buffer);
+
             // 1バイト目：カラムの個数
-            std::uint8_t column_count;
-            ifs.read(reinterpret_cast<char*>(&column_count), 1);
+            if (!reader.safeCheck(1)) return false;
+            std::uint8_t column_count = reader.read<std::uint8_t>();
             if (column_count == 0) {
                 PAXS_WARNING("Binary file has 0 columns: " + relative_path);
                 return false;
             }
 
             // 2バイト目：データの個数のバイト数
-            std::uint8_t data_count_bytes;
-            ifs.read(reinterpret_cast<char*>(&data_count_bytes), 1);
+            if (!reader.safeCheck(1)) return false;
+            std::uint8_t data_count_bytes = reader.read<std::uint8_t>();
             if (data_count_bytes == 0 || data_count_bytes > 4) {
                 PAXS_ERROR("Invalid data count byte size: " + std::to_string(data_count_bytes));
                 return false;
@@ -161,21 +194,21 @@ namespace paxs {
 
             // 3～6バイト目：データの個数
             std::uint32_t data_count = 0;
+            if (!reader.safeCheck(data_count_bytes)) return false;
             for (std::uint8_t i = 0; i < data_count_bytes; ++i) {
-                std::uint8_t byte_value;
-                ifs.read(reinterpret_cast<char*>(&byte_value), 1);
+                std::uint8_t byte_value = reader.read<std::uint8_t>();
                 data_count = (data_count << 8) | byte_value;
             }
 
             // カラム定義を読み込む
+            if (!reader.safeCheck(column_count)) return false;
             column_types_.resize(column_count);
             std::size_t longitude_index = SIZE_MAX;
             std::size_t latitude_index = SIZE_MAX;
             std::size_t key_hash_index = SIZE_MAX;
 
             for (std::uint8_t i = 0; i < column_count; ++i) {
-                std::uint8_t column_type_id;
-                ifs.read(reinterpret_cast<char*>(&column_type_id), 1);
+                std::uint8_t column_type_id = reader.read<std::uint8_t>();
                 column_types_[i] = static_cast<BinaryColumnType>(column_type_id);
 
                 // カラムマッピングを設定
@@ -208,26 +241,26 @@ namespace paxs {
             }
 
             // データを読み込む
-            rows_.reserve(data_count);
+            rows_.resize(data_count); // 事前確保
             if (key_hash_index != SIZE_MAX) {
                 key_hashes_.reserve(data_count);
             }
 
             for (std::uint32_t row = 0; row < data_count; ++row) {
-                std::vector<std::string> row_data(column_count);
+                // 行ベクトルのサイズを確保
+                rows_[row].resize(column_count);
+                std::vector<std::string>& row_data = rows_[row];
 
-                // 各カラムのデータを読み込む
-                // longitude と latitude は同時に読み込む
                 bool longitude_latitude_read = false;
 
                 for (std::size_t col = 0; col < column_count; ++col) {
                     // longitude/latitude は同時に読み込む
                     if (column_types_[col] == BinaryColumnType::Longitude) {
                         if (!longitude_latitude_read && latitude_index != SIZE_MAX) {
-                            float lon = readFloat(ifs);
-                            float lat = readFloat(ifs);
-                            row_data[col] = std::to_string(lon);
-                            row_data[latitude_index] = std::to_string(lat);
+                            float lon = reader.read<float>();
+                            float lat = reader.read<float>();
+                            row_data[col] = fastFloatToString(lon);
+                            row_data[latitude_index] = fastFloatToString(lat);
                             longitude_latitude_read = true;
                         }
                     }
@@ -239,22 +272,19 @@ namespace paxs {
                         }
                     }
                     else if (column_types_[col] == BinaryColumnType::KeyHash) {
-                        // keyハッシュをuint32として読み込み、key_hashes_に保存
-                        std::uint32_t key_hash = readUint32(ifs);
+                        std::uint32_t key_hash = reader.read<std::uint32_t>();
                         key_hashes_.push_back(key_hash);
-                        row_data[col] = "";  // keyは空文字列のまま
+                        // keyは空文字列のまま
                     }
                     else if (column_types_[col] == BinaryColumnType::ValueString) {
-                        row_data[col] = readString(ifs);
+                        row_data[col] = reader.readString();
                     }
                     else if (column_types_[col] == BinaryColumnType::FirstYear ||
                         column_types_[col] == BinaryColumnType::LastYear) {
-                        std::int32_t year = readInt32(ifs);
-                        row_data[col] = std::to_string(year);
+                        std::int32_t year = reader.read<std::int32_t>();
+                        row_data[col] = fastIntToString(year);
                     }
                 }
-
-                rows_.emplace_back(std::move(row_data));
             }
 
             is_successfully_loaded_ = true;
