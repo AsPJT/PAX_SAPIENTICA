@@ -27,6 +27,7 @@
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
+#include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxs {
 
@@ -77,7 +78,8 @@ namespace paxs {
             std::string binary_path = relative_path;
             if (binary_path.size() >= 4 && binary_path.substr(binary_path.size() - 4) == ".tsv") {
                 binary_path = binary_path.substr(0, binary_path.size() - 4) + ".bin";
-            } else if (binary_path.size() < 4 || binary_path.substr(binary_path.size() - 4) != ".bin") {
+            }
+            else if (binary_path.size() < 4 || binary_path.substr(binary_path.size() - 4) != ".bin") {
                 binary_path += ".bin";
             }
 
@@ -93,7 +95,8 @@ namespace paxs {
             std::string tsv_path = relative_path;
             if (tsv_path.size() >= 4 && tsv_path.substr(tsv_path.size() - 4) == ".bin") {
                 tsv_path = tsv_path.substr(0, tsv_path.size() - 4) + ".tsv";
-            } else if (tsv_path.size() < 4 || tsv_path.substr(tsv_path.size() - 4) != ".tsv") {
+            }
+            else if (tsv_path.size() < 4 || tsv_path.substr(tsv_path.size() - 4) != ".tsv") {
                 tsv_path += ".tsv";
             }
 
@@ -148,12 +151,30 @@ namespace paxs {
             return is_binary_ ? binary_table_.get(row_index, column_key) : tsv_table_.get(row_index, column_key);
         }
 
+        /// @brief Get double value by row index and column hash key
+        /// @brief 行インデックスとカラムハッシュキーでdouble値を取得
+        /// @param row_index Row index / 行インデックス
+        /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
+        /// @return Double value, or 0.0 if not found / double値、見つからない場合は0.0
+        double getDouble(std::size_t row_index, const std::uint_least32_t column_key) const {
+            if (is_binary_) {
+                return binary_table_.getDouble(row_index, column_key);
+            }
+            else {
+                // TSV形式の場合は文字列から変換
+                const std::string& val_str = tsv_table_.get(row_index, column_key);
+                if (val_str.empty()) return 0.0;
+                auto opt = StringUtils::toDouble(val_str);
+                return opt ? *opt : 0.0;
+            }
+        }
+
         /// @brief Get entire row by index
         /// @brief 行インデックスで行全体を取得
         /// @param row_index Row index / 行インデックス
         /// @return Row data, or empty vector if out of bounds / 行データ、範囲外の場合は空のベクター
         const std::vector<std::string>& getRow(std::size_t row_index) const {
-            return is_binary_ ? binary_table_.getRow(row_index) : tsv_table_.getRow(row_index);
+            return is_binary_ ? std::vector<std::string>{} : tsv_table_.getRow(row_index);
         }
 
         /// @brief Get all header column keys (TSV only)
@@ -223,7 +244,8 @@ namespace paxs {
         void forEachRow(Func&& callback) const {
             if (is_binary_) {
                 binary_table_.forEachRow(std::forward<Func>(callback));
-            } else {
+            }
+            else {
                 tsv_table_.forEachRow(std::forward<Func>(callback));
             }
         }

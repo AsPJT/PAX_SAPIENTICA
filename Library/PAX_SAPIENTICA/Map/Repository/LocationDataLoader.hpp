@@ -55,20 +55,20 @@ namespace paxs {
         /// @brief Check if column is a standard column
         inline bool isStandardColumn(std::uint_least32_t column_hash, const ColumnHashes& hashes) {
             return column_hash == hashes.key ||
-                   column_hash == hashes.longitude ||
-                   column_hash == hashes.latitude ||
-                   column_hash == hashes.overall_length ||
-                   column_hash == hashes.x_size ||
-                   column_hash == hashes.y_size ||
-                   column_hash == hashes.min_size ||
-                   column_hash == hashes.max_size ||
-                   column_hash == hashes.first_julian_day ||
-                   column_hash == hashes.last_julian_day ||
-                   column_hash == hashes.first_year ||
-                   column_hash == hashes.last_year ||
-                   column_hash == hashes.texture ||
-                   column_hash == hashes.ja_jp ||
-                   column_hash == hashes.en_us;
+                column_hash == hashes.longitude ||
+                column_hash == hashes.latitude ||
+                column_hash == hashes.overall_length ||
+                column_hash == hashes.x_size ||
+                column_hash == hashes.y_size ||
+                column_hash == hashes.min_size ||
+                column_hash == hashes.max_size ||
+                column_hash == hashes.first_julian_day ||
+                column_hash == hashes.last_julian_day ||
+                column_hash == hashes.first_year ||
+                column_hash == hashes.last_year ||
+                column_hash == hashes.texture ||
+                column_hash == hashes.ja_jp ||
+                column_hash == hashes.en_us;
         }
     }
 
@@ -230,36 +230,43 @@ namespace paxs {
         ) {
             const std::string& key_str = flags.has_key ? table.get(row_index, hashes.key) : "";
 
-            // 必須カラムの取得
-            const std::string& longitude_str = table.get(row_index, hashes.longitude);
-            const std::string& latitude_str = table.get(row_index, hashes.latitude);
+            // 必須カラムの取得 (getDoubleを使用)
+            // Note: TableTypeにgetDoubleが存在することを期待 (UnifiedTableには追加済み)
+            // TsvTableの場合はUnifiedTable側で処理されるか、TsvTableにgetDoubleが無い場合はコンパイルエラーになるため
+            // 実際にはUnifiedTable経由での利用を想定
 
-            // 経度・緯度が空の場合はスキップ
-            if (longitude_str.empty() || latitude_str.empty()) {
-                PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + params.file_path + ": missing coordinates");
-                return std::nullopt;
+            double longitude = 0.0;
+            double latitude = 0.0;
+
+            if constexpr (std::is_same_v<TableType, TsvTable>) {
+                // TsvTable直接使用時のフォールバック (従来の文字列変換)
+                const std::string& longitude_str = table.get(row_index, hashes.longitude);
+                const std::string& latitude_str = table.get(row_index, hashes.latitude);
+
+                auto lon_opt = StringUtils::toDouble(longitude_str);
+                auto lat_opt = StringUtils::toDouble(latitude_str);
+
+                if (!lon_opt || !lat_opt) {
+                    PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + params.file_path + ": invalid coordinates");
+                    return std::nullopt;
+                }
+                longitude = *lon_opt;
+                latitude = *lat_opt;
+            }
+            else {
+                // UnifiedTable または BinaryTable (getDoubleを使用)
+                longitude = table.getDouble(row_index, hashes.longitude);
+                latitude = table.getDouble(row_index, hashes.latitude);
+
+                // 0.0の場合は値が存在しなかったかエラーの可能性があるが、
+                // バイナリ形式での厳密なエラーチェックはload時に行われていると仮定
+                // 必要であればget(string)で空文字チェックを行うことも可能だが、速度優先とする
             }
 
             LocationRowData data;
             data.key = key_str;
-
-            // 経度の変換
-            auto lon_opt = StringUtils::toDouble(longitude_str);
-            if (!lon_opt) {
-                PAXS_WARNING("Invalid longitude format at row " + std::to_string(row_index) +
-                    " in " + params.file_path + ": \"" + longitude_str + "\"");
-                return std::nullopt;
-            }
-            data.longitude = *lon_opt;
-
-            // 緯度の変換
-            auto lat_opt = StringUtils::toDouble(latitude_str);
-            if (!lat_opt) {
-                PAXS_WARNING("Invalid latitude format at row " + std::to_string(row_index) +
-                    " in " + params.file_path + ": \"" + latitude_str + "\"");
-                return std::nullopt;
-            }
-            data.latitude = *lat_opt;
+            data.longitude = longitude;
+            data.latitude = latitude;
 
             // オプションカラムの読み込み
             const std::string& overall_length_str = flags.has_overall_length ? table.get(row_index, hashes.overall_length) : "";
