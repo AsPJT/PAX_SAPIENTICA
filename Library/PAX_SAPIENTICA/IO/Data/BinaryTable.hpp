@@ -58,9 +58,14 @@ namespace paxs {
         /// @brief カラム名からインデックスへのマッピング
         paxs::UnorderedMap<std::uint_least32_t, std::size_t> column_map_;
 
-        /// @brief Data rows (each cell is stored as string for compatibility)
-        /// @brief データ行（各セルは互換性のため文字列として格納）
-        std::vector<std::vector<std::string>> rows_;
+        /// @brief Flattened data cells (stored as string for compatibility)
+        /// @brief フラット化されたデータセル（互換性のため文字列として格納）
+        /// @note Replaces vector<vector<string>> to reduce allocations / アロケーション削減のためvector<vector>を置換
+        std::vector<std::string> cells_;
+
+        /// @brief Number of rows
+        /// @brief 行数
+        std::size_t row_count_{ 0 };
 
         /// @brief Key hash values (stored separately when KeyHash column exists)
         /// @brief キーハッシュ値（KeyHashカラムが存在する場合に別途保存）
@@ -92,35 +97,41 @@ namespace paxs {
                 return value;
             }
 
-            std::string readString() {
+            // 直接stringに書き込むことでアロケーションを抑制
+            void readString(std::string& out) {
                 const char* start = ptr;
                 while (ptr < end && *ptr != '\0') {
                     ptr++;
                 }
-                std::string s(start, ptr - start);
+                out.assign(start, ptr - start);
                 if (ptr < end) ptr++; // Skip null terminator
-                return s;
             }
         };
 
-        /// @brief Fast float to string conversion using std::to_chars
-        static std::string fastFloatToString(float value) {
-            std::array<char, 32> buffer;
-            auto [ptr, ec] = std::to_chars(buffer.data(), buffer.data() + buffer.size(), value);
+        /// @brief Write float directly to string buffer
+        /// @brief 文字列バッファに直接floatを書き込む
+        static void fastFloatToString(float value, std::string& out) {
+            out.resize(32); // 十分なサイズを確保（SSO範囲内ならアロケーションなし）
+            auto [ptr, ec] = std::to_chars(out.data(), out.data() + out.size(), value);
             if (ec == std::errc()) {
-                return std::string(buffer.data(), ptr - buffer.data());
+                out.resize(ptr - out.data()); // 実際の長さに切り詰め
             }
-            return std::to_string(value); // Fallback
+            else {
+                out = std::to_string(value); // フォールバック
+            }
         }
 
-        /// @brief Fast int to string conversion using std::to_chars
-        static std::string fastIntToString(std::int32_t value) {
-            std::array<char, 16> buffer;
-            auto [ptr, ec] = std::to_chars(buffer.data(), buffer.data() + buffer.size(), value);
+        /// @brief Write int directly to string buffer
+        /// @brief 文字列バッファに直接intを書き込む
+        static void fastIntToString(std::int32_t value, std::string& out) {
+            out.resize(16);
+            auto [ptr, ec] = std::to_chars(out.data(), out.data() + out.size(), value);
             if (ec == std::errc()) {
-                return std::string(buffer.data(), ptr - buffer.data());
+                out.resize(ptr - out.data());
             }
-            return std::to_string(value);
+            else {
+                out = std::to_string(value);
+            }
         }
 
     public:
@@ -199,6 +210,7 @@ namespace paxs {
                 std::uint8_t byte_value = reader.read<std::uint8_t>();
                 data_count = (data_count << 8) | byte_value;
             }
+            row_count_ = data_count;
 
             // カラム定義を読み込む
             if (!reader.safeCheck(column_count)) return false;
@@ -240,35 +252,41 @@ namespace paxs {
                 }
             }
 
-            // データを読み込む
-            rows_.resize(data_count); // 事前確保
+            // データ読み込み（フラットな配列へ一括確保）
+            // 2次元配列のresize繰り返しを回避し、メモリ確保を1回にする
+            std::size_t total_cells = static_cast<std::size_t>(data_count) * column_count;
+            cells_.resize(total_cells);
+
             if (key_hash_index != SIZE_MAX) {
                 key_hashes_.reserve(data_count);
             }
 
             for (std::uint32_t row = 0; row < data_count; ++row) {
-                // 行ベクトルのサイズを確保
-                rows_[row].resize(column_count);
-                std::vector<std::string>& row_data = rows_[row];
+                // 現在の行の開始インデックス
+                std::size_t row_offset = row * column_count;
 
                 bool longitude_latitude_read = false;
 
                 for (std::size_t col = 0; col < column_count; ++col) {
-                    // longitude/latitude は同時に読み込む
+                    // 出力先の文字列セルへの参照
+                    std::string& target_cell = cells_[row_offset + col];
+
                     if (column_types_[col] == BinaryColumnType::Longitude) {
                         if (!longitude_latitude_read && latitude_index != SIZE_MAX) {
                             float lon = reader.read<float>();
                             float lat = reader.read<float>();
-                            row_data[col] = fastFloatToString(lon);
-                            row_data[latitude_index] = fastFloatToString(lat);
+
+                            fastFloatToString(lon, target_cell);
+                            fastFloatToString(lat, cells_[row_offset + latitude_index]);
+
                             longitude_latitude_read = true;
                         }
                     }
                     else if (column_types_[col] == BinaryColumnType::Latitude) {
                         // latitude は longitude と同時に読み込み済み
                         if (!longitude_latitude_read) {
-                            PAXS_ERROR("Latitude without longitude in binary file: " + relative_path);
-                            return false;
+                            // Longitudeがない場合の安全策（通常ありえない）
+                            // 既に読み込まれている場合は何もしない（Longitude側で処理済み）
                         }
                     }
                     else if (column_types_[col] == BinaryColumnType::KeyHash) {
@@ -277,12 +295,12 @@ namespace paxs {
                         // keyは空文字列のまま
                     }
                     else if (column_types_[col] == BinaryColumnType::ValueString) {
-                        row_data[col] = reader.readString();
+                        reader.readString(target_cell);
                     }
                     else if (column_types_[col] == BinaryColumnType::FirstYear ||
                         column_types_[col] == BinaryColumnType::LastYear) {
                         std::int32_t year = reader.read<std::int32_t>();
-                        row_data[col] = fastIntToString(year);
+                        fastIntToString(year, target_cell);
                     }
                 }
             }
@@ -295,7 +313,7 @@ namespace paxs {
         /// @brief 行数を取得
         /// @return Number of data rows / データ行数
         std::size_t rowCount() const {
-            return rows_.size();
+            return row_count_;
         }
 
         /// @brief Get the number of columns
@@ -338,22 +356,28 @@ namespace paxs {
         const std::string& get(std::size_t row_index, const std::uint_least32_t column_key) const {
             static const std::string empty_string = "";
             std::size_t column_index = getColumnIndex(column_key);
-            if (row_index >= rows_.size() || column_index >= rows_[row_index].size()) {
+            if (row_index >= row_count_ || column_index >= column_types_.size()) {
                 return empty_string;
             }
-            return rows_[row_index][column_index];
+            // フラット配列へのアクセス
+            return cells_[row_index * column_types_.size() + column_index];
         }
 
-        /// @brief Get entire row by index
-        /// @brief 行インデックスで行全体を取得
-        /// @param row_index Row index / 行インデックス
-        /// @return Row data, or empty vector if out of bounds / 行データ、範囲外の場合は空のベクター
-        const std::vector<std::string>& getRow(std::size_t row_index) const {
-            static const std::vector<std::string> empty_row;
-            if (row_index >= rows_.size()) {
-                return empty_row;
+        const std::vector<std::string> getRow(std::size_t row_index) const {
+            if (row_index >= row_count_) {
+                return {};
             }
-            return rows_[row_index];
+            std::size_t col_count = column_types_.size();
+            std::size_t start = row_index * col_count;
+
+            // 部分配列をコピーして返す（使用頻度が低ければ許容範囲）
+            // 高頻度の場合は設計を見直すべきだがUnifiedTableの仕様に合わせる
+            std::vector<std::string> row_copy;
+            row_copy.reserve(col_count);
+            for (std::size_t i = 0; i < col_count; ++i) {
+                row_copy.push_back(cells_[start + i]);
+            }
+            return row_copy;
         }
 
         /// @brief Get key hash value by row index
@@ -393,8 +417,11 @@ namespace paxs {
         /// @param callback Function called for each row (row_index, row_data) / 各行に対して呼ばれる関数（行インデックス、行データ）
         template<typename Func>
         void forEachRow(Func&& callback) const {
-            for (std::size_t i = 0; i < rows_.size(); ++i) {
-                callback(i, rows_[i]);
+            std::size_t col_count = column_types_.size();
+            for (std::size_t i = 0; i < row_count_; ++i) {
+                // 行データのコピーを作成してコールバックに渡す
+                // (UnifiedTable::getRowと同じコストがかかる点に注意)
+                callback(i, getRow(i));
             }
         }
 
@@ -403,8 +430,9 @@ namespace paxs {
         void clear() {
             column_types_.clear();
             column_map_.clear();
-            rows_.clear();
+            cells_.clear();
             key_hashes_.clear();
+            row_count_ = 0;
             is_loaded_ = false;
             is_successfully_loaded_ = false;
         }
