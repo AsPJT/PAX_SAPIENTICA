@@ -12,7 +12,6 @@
 #ifndef PAX_MAHOROBA_MAP_COORDINATE_CONVERTER_HPP
 #define PAX_MAHOROBA_MAP_COORDINATE_CONVERTER_HPP
 
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
@@ -79,19 +78,19 @@ struct MapCoordinateConverter {
     /// @param map_view_size ビューポートサイズ / Viewport size
     /// @param map_view_center ビューポート中心 / Viewport center
     /// @return スクリーン座標 / Screen position
-    static paxg::Vec2<double> toScreenPos(
+    static paxs::Vector2<double> toScreenPos(
         const Vector2<double>& mercator_pos,
         const Vector2<double>& map_view_size,
         const Vector2<double>& map_view_center
     ) {
         // EPSG:3857(Webメルカトル) 座標をスクリーン座標に変換
-        return paxg::Vec2<double>(
+        return {
             (mercator_pos.x - (map_view_center.x - map_view_size.x / 2))
             / map_view_size.x * double(paxg::Window::width()),
             double(paxg::Window::height())
             - ((mercator_pos.y - (map_view_center.y - map_view_size.y / 2))
             / map_view_size.y * double(paxg::Window::height()))
-        );
+        };
     }
 };
 

@@ -15,7 +15,7 @@
 #include <array>
 #include <cstddef>
 
-#include <PAX_GRAPHICA/Vec2.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxs {
 
@@ -34,11 +34,15 @@ struct WrappedScreenPositions {
 
     /// @brief 3つのスクリーン座標（-360°, 0°, +360°）
     /// @brief Three screen positions (-360°, 0°, +360°)
-    std::array<paxg::Vec2<double>, POSITION_COUNT> positions;
+    std::array<paxs::Vector2<double>, POSITION_COUNT> positions;
 
     /// @brief 有効な座標を持つかどうか（clear()で無効化、toScreenPositions()で有効化）
     /// @brief Whether this holds valid positions (invalidated by clear(), validated by toScreenPositions())
     bool is_valid = false;
+
+    /// @brief デフォルトコンストラクタ
+    /// @brief Default constructor
+    WrappedScreenPositions() noexcept {}
 
     // ========== イテレータサポート（既存コードとの互換性） ==========
     // Iterator support (for compatibility with existing code)
@@ -51,11 +55,11 @@ struct WrappedScreenPositions {
     // ========== 配列的アクセス ==========
     // Array-like access
 
-    const paxg::Vec2<double>& operator[](std::size_t i) const noexcept {
+    const paxs::Vector2<double>& operator[](std::size_t i) const noexcept {
         return positions[i];
     }
 
-    paxg::Vec2<double>& operator[](std::size_t i) noexcept {
+    paxs::Vector2<double>& operator[](std::size_t i) noexcept {
         return positions[i];
     }
 

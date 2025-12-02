@@ -16,7 +16,6 @@
 #include <utility>
 
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Map/Content/Feature/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
@@ -166,10 +165,10 @@ public:
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x, mouse_pos.y, cached_screen_positions_,
-            [texture_size, text_size](int mouse_x, int mouse_y, const paxg::Vec2<double>& pos) {
+            [texture_size, text_size](int mouse_x, int mouse_y, const paxs::Vector2<double>& pos) {
                 // テクスチャの矩形判定（中心から描画）
                 const Rect<int> texture_rect = Rect<int>::fromCenter(
-                    Vector2<int>(static_cast<int>(pos.x()), static_cast<int>(pos.y())),
+                    Vector2<int>(pos),
                     texture_size
                 );
                 if (texture_rect.contains(mouse_x, mouse_y)) {
@@ -180,9 +179,9 @@ public:
                 // text_pos.y = pos.y() - display_size / 2 - 5（アイコンの上部から少し離す）
                 // drawBottomCenterなので、そこから上にtext_heightの範囲
                 if (text_size.x > 0 && text_size.y > 0) {
-                    const int text_bottom_y = static_cast<int>(pos.y()) - (texture_size.y / 2) - 5;  // テキスト下端
+                    const int text_bottom_y = static_cast<int>(pos.y) - (texture_size.y / 2) - 5;  // テキスト下端
                     const Rect<int> text_rect = Rect<int>::fromCenter(
-                        Vector2<int>(static_cast<int>(pos.x()), text_bottom_y - (text_size.y / 2)),
+                        Vector2<int>(static_cast<int>(pos.x), text_bottom_y - (text_size.y / 2)),
                         text_size
                     );
                     if (text_rect.contains(mouse_x, mouse_y)) {
