@@ -67,7 +67,7 @@ namespace paxs {
 
             // アイコンを描画
             icon_texture_ptr->resizedDraw(rect.width(),
-                paxg::Vec2i{ rect.x(), rect.y() }
+                paxs::Vector2<int>{ rect.x(), rect.y() }
             );
 
             is_hovered = false;

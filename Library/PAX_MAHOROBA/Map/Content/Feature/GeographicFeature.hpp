@@ -120,8 +120,7 @@ public:
         // 表示サイズの計算（zoom適用）
         cached_display_size_ = static_cast<int>(data_.overall_length / 2 * data_.zoom);
 
-        // テクスチャサイズを描画時のサイズに合わせる（MapFeatureRenderer.hppと同じ）
-        // 描画時は resizedDrawAt(display_size) を使用するため、当たり判定もdisplay_sizeに合わせる
+        // テクスチャサイズを描画時のサイズに合わせる
         cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
 
         visible_ = true;

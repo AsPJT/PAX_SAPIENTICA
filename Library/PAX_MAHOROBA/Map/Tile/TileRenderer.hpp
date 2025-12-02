@@ -108,7 +108,7 @@ namespace paxs {
             const Vector2<int> start_cell = tile.getStartCell();
             const Vector2<int> end_cell = tile.getEndCell();
 
-            paxg::Vec2f tile_size = paxg::Vec2f(
+            paxs::Vector2<float> tile_size = paxs::Vector2<float>(
                 static_cast<float>((360.0 / z_num) / map_view_size.x * static_cast<double>(paxg::Window::width())),
                 static_cast<float>((360.0 / z_num) / map_view_size.y * static_cast<double>(paxg::Window::height()))
             );
@@ -122,7 +122,7 @@ namespace paxs {
                             (360.0 - i * 360.0 / z_num) - 180.0
                         };
                         texture->resizedDraw(tile_size,
-                            paxg::Vec2f(
+                            paxs::Vector2<float>(
                                 static_cast<float>((map_pos.x - (map_view_center.x - map_view_size.x / 2)) / map_view_size.x * double(paxg::Window::width())),
                                 static_cast<float>(double(paxg::Window::height()) - ((map_pos.y - (map_view_center.y - map_view_size.y / 2)) / map_view_size.y * double(paxg::Window::height())))
                             ));

@@ -117,8 +117,8 @@ public:
         // 表示サイズの計算（人物は常に通常サイズで表示）
         cached_display_size_ = 60;
 
-        // テクスチャサイズを描画時のサイズに合わせる（MapFeatureRenderer.hppと同じ）
-        // 描画時は resizedDrawAt(120) を使用するため、当たり判定は70×110
+        // テクスチャサイズを描画時のサイズに合わせる
+        // 当たり判定は70×110
         cached_texture_size_ = Vector2<int>(70, 110);
 
         visible_ = true;

@@ -16,10 +16,11 @@
 
 #include <PAX_GRAPHICA/ColorF.hpp>
 #include <PAX_GRAPHICA/Interface/RenderTextureImpl.hpp>
-#include <PAX_GRAPHICA/Null/NullRenderTextureImpl.hpp>
 
 #if defined(PAXS_USING_SIV3D)
 #include <PAX_GRAPHICA/Siv3D/Siv3DRenderTextureImpl.hpp>
+#else
+#include <PAX_GRAPHICA/Null/NullRenderTextureImpl.hpp>
 #endif
 
 namespace paxg {
@@ -30,6 +31,15 @@ namespace paxg {
     class RenderTexture {
     private:
         std::shared_ptr<RenderTextureImpl> impl;
+
+        template<typename... Args>
+        void createImpl(Args&&... args) {
+#if defined(PAXS_USING_SIV3D)
+            impl = std::make_shared<Siv3DRenderTextureImpl>(std::forward<Args>(args)...);
+#else
+            impl = std::make_shared<NullRenderTextureImpl>(std::forward<Args>(args)...);
+#endif
+        }
 
     public:
         /// @brief Default constructor (creates empty render texture without implementation)
@@ -43,21 +53,13 @@ namespace paxg {
         /// @param size Size as Vector2<int>
         /// @param color Color as ColorF
         RenderTexture(const paxs::Vector2<int>& size, const ColorF& color) {
-#if defined(PAXS_USING_SIV3D)
-            impl = std::make_shared<Siv3DRenderTextureImpl>(size.x, size.y, color.r, color.g, color.b, color.a);
-#else
-            impl = std::make_shared<NullRenderTextureImpl>(size.x, size.y, color.r, color.g, color.b, color.a);
-#endif
+            createImpl(size.x, size.y, color.r, color.g, color.b, color.a);
         }
 
         /// @brief Constructor with size only
         /// @param size Size as Vector2<int>
         explicit RenderTexture(const paxs::Vector2<int>& size) {
-#if defined(PAXS_USING_SIV3D)
-            impl = std::make_shared<Siv3DRenderTextureImpl>(size.x, size.y);
-#else
-            impl = std::make_shared<NullRenderTextureImpl>(size.x, size.y);
-#endif
+            createImpl(size.x, size.y);
         }
 
         /// @brief Get the size of the render texture

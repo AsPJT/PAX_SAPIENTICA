@@ -236,7 +236,7 @@ private:
             const int pos_y = (window_height - scaled_height) / 2;
 
             // ローディング画像をリサイズして描画
-            loading_texture_->resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{pos_x, pos_y});
+            loading_texture_->resizedDraw(paxs::Vector2<int>{scaled_width, scaled_height}, paxs::Vector2<int>{pos_x, pos_y});
         }
 
         // 進捗バーを描画

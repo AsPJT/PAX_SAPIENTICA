@@ -60,7 +60,7 @@ protected:
     static bool drawTexture(
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map,
         std::uint_least32_t texture_key,
-        const paxg::Vec2<double>& draw_pos,
+        const paxs::Vector2<double>& draw_pos,
         int size
     ) {
         if (texture_key == 0) {

@@ -15,8 +15,8 @@
 #include <string>
 
 #include <PAX_GRAPHICA/String.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Utility/StringUtils.hpp>
 
 namespace paxg {
@@ -31,18 +31,19 @@ namespace paxg {
         virtual int height() const = 0;
 
         virtual void draw() const = 0;
-        virtual void drawAt(const paxg::Vec2f& pos) const = 0;
-        virtual void drawAt(const paxg::Vec2i& pos) const = 0;
 
-        virtual void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const = 0;
-        virtual void resizedDrawAt(int resize, const paxg::Vec2i& pos) const = 0;
-        virtual void resizedDrawAt(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const = 0;
-        virtual void resizedDrawAt(int resize, const paxg::Vec2f& pos) const = 0;
+        virtual void drawAt(const paxs::Vector2<int>& pos) const = 0;
+        virtual void drawAt(const paxs::Vector2<float>& pos) const = 0;
 
-        virtual void resizedDraw(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const = 0;
-        virtual void resizedDraw(int resize, const paxg::Vec2i& pos) const = 0;
-        virtual void resizedDraw(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const = 0;
-        virtual void resizedDraw(int resize, const paxg::Vec2f& pos) const = 0;
+        virtual void resizedDraw(const paxs::Vector2<int>& resize, const paxs::Vector2<int>& pos) const = 0;
+        virtual void resizedDraw(int resize, const paxs::Vector2<int>& pos) const = 0;
+        virtual void resizedDraw(const paxs::Vector2<float>& resize, const paxs::Vector2<float>& pos) const = 0;
+        virtual void resizedDraw(int resize, const paxs::Vector2<float>& pos) const = 0;
+
+        virtual void resizedDrawAt(const paxs::Vector2<int>& resize, const paxs::Vector2<int>& pos) const = 0;
+        virtual void resizedDrawAt(int resize, const paxs::Vector2<int>& pos) const = 0;
+        virtual void resizedDrawAt(const paxs::Vector2<float>& resize, const paxs::Vector2<float>& pos) const = 0;
+        virtual void resizedDrawAt(int resize, const paxs::Vector2<float>& pos) const = 0;
 
     protected:
         // Helper to convert SVG paths to PNG

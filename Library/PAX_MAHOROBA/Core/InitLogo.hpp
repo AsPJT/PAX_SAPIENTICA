@@ -115,7 +115,7 @@ namespace paxs {
             const int new_y = (window_height - scaled_height) / 2;
 
             // 画像をリサイズして描画
-            loading_texture.resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{new_x, new_y});
+            loading_texture.resizedDraw(paxs::Vector2<int>{scaled_width, scaled_height}, paxs::Vector2<int>{new_x, new_y});
             // 画面を更新
 #ifdef PAXS_USING_SFML
             paxg::Window::display();

@@ -105,7 +105,9 @@ private:
         for (const auto& draw_pos : screen_positions) {
             // 肖像画を120×120で描画
             const std::uint_least32_t place_tex = (data.texture_key == 0) ? group_data.texture_key : data.texture_key;
-            if (!drawTexture(texture_map, place_tex, draw_pos, 120)) {
+            // TODO: fix this
+            const paxs::Vector2<double> draw_pos_fixed = paxs::Vector2<double>(draw_pos.x(), draw_pos.y());
+            if (!drawTexture(texture_map, place_tex, draw_pos_fixed, 120)) {
                 continue;
             }
 
@@ -147,7 +149,9 @@ private:
 
             // draw_countが1の場合は通常描画
             if (draw_count == 1) {
-                texture_ptr->resizedDrawAt(display_size, draw_pos);
+                // TODO: fix this
+                const paxs::Vector2<double> draw_pos_fixed = paxs::Vector2<double>(draw_pos.x(), draw_pos.y());
+                texture_ptr->resizedDrawAt(display_size, draw_pos_fixed);
             } else {
                 // draw_countが2以上の場合は横に複数並べて描画（中央揃え）
                 constexpr int spacing = 4;  // テクスチャ間の間隔
@@ -155,7 +159,7 @@ private:
                 const int start_x = static_cast<int>(draw_pos.x()) - total_width / 2;
 
                 for (int i = 0; i < draw_count; ++i) {
-                    const paxg::Vec2<double> draw_item_pos{
+                    const paxs::Vector2<double> draw_item_pos{
                         static_cast<double>(start_x + i * spacing),
                         draw_pos.y()
                     };
@@ -226,8 +230,10 @@ private:
         for (const auto& draw_pos : screen_positions) {
             // テクスチャを描画（失敗時は警告表示）
             const std::uint_least32_t place_tex = data.texture_key;
-            if (!drawTexture(texture_map, place_tex, draw_pos, display_size)) {
-                drawWarningTexture(draw_pos, display_size > 0 ? display_size : 20);
+            // TODO: fix this
+            const paxs::Vector2<double> draw_pos_fixed = paxs::Vector2<double>(draw_pos.x(), draw_pos.y());
+            if (!drawTexture(texture_map, place_tex, draw_pos_fixed, display_size)) {
+                drawWarningTexture(draw_pos_fixed, display_size > 0 ? display_size : 20);
                 continue;
             }
 

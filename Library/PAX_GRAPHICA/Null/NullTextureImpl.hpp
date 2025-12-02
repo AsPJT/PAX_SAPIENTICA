@@ -30,18 +30,19 @@ namespace paxg {
         int height() const override { return 0; }
 
         void draw() const override {}
-        void drawAt(const Vec2f&) const override {}
-        void drawAt(const Vec2i&) const override {}
 
-        void resizedDrawAt(const Vec2i&, const Vec2i&) const override {}
-        void resizedDrawAt(int, const Vec2i&) const override {}
-        void resizedDrawAt(const Vec2f&, const Vec2f&) const override {}
-        void resizedDrawAt(int, const Vec2f&) const override {}
+        void drawAt(const paxs::Vector2<int>&) const override {}
+        void drawAt(const paxs::Vector2<float>&) const override {}
 
-        void resizedDraw(const Vec2i&, const Vec2i&) const override {}
-        void resizedDraw(int, const Vec2i&) const override {}
-        void resizedDraw(const Vec2f&, const Vec2f&) const override {}
-        void resizedDraw(int, const Vec2f&) const override {}
+        void resizedDraw(const paxs::Vector2<int>&, const paxs::Vector2<int>&) const override {}
+        void resizedDraw(int, const paxs::Vector2<int>&) const override {}
+        void resizedDraw(const paxs::Vector2<float>&, const paxs::Vector2<float>&) const override {}
+        void resizedDraw(int, const paxs::Vector2<float>&) const override {}
+
+        void resizedDrawAt(const paxs::Vector2<int>&, const paxs::Vector2<int>&) const override {}
+        void resizedDrawAt(int, const paxs::Vector2<int>&) const override {}
+        void resizedDrawAt(const paxs::Vector2<float>&, const paxs::Vector2<float>&) const override {}
+        void resizedDrawAt(int, const paxs::Vector2<float>&) const override {}
     };
 
 } // namespace paxg

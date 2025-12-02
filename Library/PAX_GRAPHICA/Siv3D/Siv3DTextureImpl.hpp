@@ -52,44 +52,44 @@ namespace paxg {
             texture.draw();
         }
 
-        void drawAt(const paxg::Vec2f& pos) const override {
-            texture.drawAt(pos.x(), pos.y());
+        void drawAt(const paxs::Vector2<int>& pos) const override {
+            texture.drawAt(pos.x, pos.y);
         }
 
-        void drawAt(const paxg::Vec2i& pos) const override {
-            texture.drawAt(pos.x(), pos.y());
+        void drawAt(const paxs::Vector2<float>& pos) const override {
+            texture.drawAt(pos.x, pos.y);
         }
 
-        void resizedDrawAt(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const override {
-            texture.resized(resize.x(), resize.y()).drawAt(pos.x(), pos.y());
+        void resizedDraw(const paxs::Vector2<int>& resize, const paxs::Vector2<int>& pos) const override {
+            texture.resized(resize.x, resize.y).draw(pos.x, pos.y);
         }
 
-        void resizedDrawAt(int resize, const paxg::Vec2i& pos) const override {
-            texture.resized(resize).drawAt(pos.x(), pos.y());
+        void resizedDraw(int resize, const paxs::Vector2<int>& pos) const override {
+            texture.resized(resize).draw(pos.x, pos.y);
         }
 
-        void resizedDrawAt(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const override {
-            texture.resized(resize.x(), resize.y()).drawAt(pos.x(), pos.y());
+        void resizedDraw(const paxs::Vector2<float>& resize, const paxs::Vector2<float>& pos) const override {
+            texture.resized(resize.x, resize.y).draw(pos.x, pos.y);
         }
 
-        void resizedDrawAt(int resize, const paxg::Vec2f& pos) const override {
-            texture.resized(resize).drawAt(pos.x(), pos.y());
+        void resizedDraw(int resize, const paxs::Vector2<float>& pos) const override {
+            texture.resized(resize).draw(pos.x, pos.y);
         }
 
-        void resizedDraw(const paxg::Vec2i& resize, const paxg::Vec2i& pos) const override {
-            texture.resized(resize.x(), resize.y()).draw(pos.x(), pos.y());
+        void resizedDrawAt(const paxs::Vector2<int>& resize, const paxs::Vector2<int>& pos) const override {
+            texture.resized(resize.x, resize.y).drawAt(pos.x, pos.y);
         }
 
-        void resizedDraw(int resize, const paxg::Vec2i& pos) const override {
-            texture.resized(resize).draw(pos.x(), pos.y());
+        void resizedDrawAt(int resize, const paxs::Vector2<int>& pos) const override {
+            texture.resized(resize).drawAt(pos.x, pos.y);
         }
 
-        void resizedDraw(const paxg::Vec2f& resize, const paxg::Vec2f& pos) const override {
-            texture.resized(resize.x(), resize.y()).draw(pos.x(), pos.y());
+        void resizedDrawAt(const paxs::Vector2<float>& resize, const paxs::Vector2<float>& pos) const override {
+            texture.resized(resize.x, resize.y).drawAt(pos.x, pos.y);
         }
 
-        void resizedDraw(int resize, const paxg::Vec2f& pos) const override {
-            texture.resized(resize).draw(pos.x(), pos.y());
+        void resizedDrawAt(int resize, const paxs::Vector2<float>& pos) const override {
+            texture.resized(resize).drawAt(pos.x, pos.y);
         }
 
         const s3d::Texture& getNativeTexture() const { return texture; }

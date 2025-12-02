@@ -86,64 +86,77 @@ namespace paxg {
             return impl ? impl->height() : 0;
         }
 
+        /// @brief 左上隅を基準に描画
         void draw() const {
             if (impl) impl->draw();
         }
 
-        void drawAt(const Vec2f& pos) const {
+        /// @brief 中心を基準に描画
+        void drawAt(const paxs::Vector2<int>& pos) const {
             if (impl) impl->drawAt(pos);
         }
 
-        void drawAt(const Vec2i& pos) const {
+        /// @brief 中心を基準に描画
+        void drawAt(const paxs::Vector2<float>& pos) const {
             if (impl) impl->drawAt(pos);
         }
 
-        void resizedDrawAt(const Vec2i& resize, const Vec2i& pos) const {
+        /// @brief 中心を基準に描画
+        void drawAt(const paxs::Vector2<double>& pos) const {
+            if (impl) impl->drawAt(paxs::Vector2<float>(pos));
+        }
+
+        /// @brief 左上隅を基準に描画（リサイズ付き）
+        void resizedDraw(const paxs::Vector2<int>& resize, const paxs::Vector2<int>& pos) const {
+            if (impl) impl->resizedDraw(resize, pos);
+        }
+
+        /// @brief 左上隅を基準に描画（リサイズ付き）
+        void resizedDraw(int resize, const paxs::Vector2<int>& pos) const {
+            if (impl) impl->resizedDraw(resize, pos);
+        }
+
+        /// @brief 左上隅を基準に描画（リサイズ付き）
+        void resizedDraw(const paxs::Vector2<float>& resize, const paxs::Vector2<float>& pos) const {
+            if (impl) impl->resizedDraw(resize, pos);
+        }
+
+        /// @brief 左上隅を基準に描画（リサイズ付き）
+        void resizedDraw(int resize, const paxs::Vector2<float>& pos) const {
+            if (impl) impl->resizedDraw(resize, pos);
+        }
+
+        /// @brief 中心を基準に描画（リサイズ付き）
+        void resizedDrawAt(const paxs::Vector2<int>& resize, const paxs::Vector2<int>& pos) const {
             if (impl) impl->resizedDrawAt(resize, pos);
         }
 
-        void resizedDrawAt(int resize, const Vec2i& pos) const {
+        /// @brief 中心を基準に描画（リサイズ付き）
+        void resizedDrawAt(int resize, const paxs::Vector2<int>& pos) const {
             if (impl) impl->resizedDrawAt(resize, pos);
         }
 
-        void resizedDrawAt(const Vec2f& resize, const Vec2f& pos) const {
+        /// @brief 中心を基準に描画（リサイズ付き）
+        void resizedDrawAt(const paxs::Vector2<float>& resize, const paxs::Vector2<float>& pos) const {
             if (impl) impl->resizedDrawAt(resize, pos);
         }
 
-        void resizedDrawAt(int resize, const Vec2f& pos) const {
+        /// @brief 中心を基準に描画（リサイズ付き）
+        void resizedDrawAt(int resize, const paxs::Vector2<float>& pos) const {
             if (impl) impl->resizedDrawAt(resize, pos);
         }
 
-        // Template overloads for Vec2<double>
-        void drawAt(const Vec2<double>& pos) const {
-            if (impl) impl->drawAt(Vec2f{static_cast<float>(pos.x()), static_cast<float>(pos.y())});
+        /// @brief 中心を基準に描画（リサイズ付き）
+        void resizedDrawAt(int resize, const paxs::Vector2<double>& pos) const {
+            if (impl) impl->resizedDrawAt(resize, paxs::Vector2<float>(pos));
         }
 
-        void resizedDrawAt(int resize, const Vec2<double>& pos) const {
-            if (impl) impl->resizedDrawAt(resize, Vec2f{static_cast<float>(pos.x()), static_cast<float>(pos.y())});
-        }
-
-        void resizedDrawAt(const Vec2<double>& resize, const Vec2<double>& pos) const {
+        /// @brief 中心を基準に描画（リサイズ付き）
+        void resizedDrawAt(const paxs::Vector2<double>& resize, const paxs::Vector2<double>& pos) const {
             if (impl) impl->resizedDrawAt(
-                Vec2f{static_cast<float>(resize.x()), static_cast<float>(resize.y())},
-                Vec2f{static_cast<float>(pos.x()), static_cast<float>(pos.y())}
+                paxs::Vector2<float>(resize),
+                paxs::Vector2<float>(pos)
             );
-        }
-
-        void resizedDraw(const Vec2i& resize, const Vec2i& pos) const {
-            if (impl) impl->resizedDraw(resize, pos);
-        }
-
-        void resizedDraw(int resize, const Vec2i& pos) const {
-            if (impl) impl->resizedDraw(resize, pos);
-        }
-
-        void resizedDraw(const Vec2f& resize, const Vec2f& pos) const {
-            if (impl) impl->resizedDraw(resize, pos);
-        }
-
-        void resizedDraw(int resize, const Vec2f& pos) const {
-            if (impl) impl->resizedDraw(resize, pos);
         }
 
 #if defined(PAXS_USING_SIV3D)

@@ -115,28 +115,28 @@ namespace paxg {
             DxLib::DrawGraph(0, 0, texture, TRUE);
         }
 
-        void drawAt(const Vec2f& pos) const override {
+        void drawAt(const paxs::Vector2<int>& pos) const override {
             DxLib::DrawGraph(
-                static_cast<int>(pos.x() - (cachedWidth / 2.0f)),
-                static_cast<int>(pos.y() - (cachedHeight / 2.0f)),
+                pos.x - (cachedWidth / 2),
+                pos.y - (cachedHeight / 2),
                 texture, TRUE);
         }
 
-        void drawAt(const Vec2i& pos) const override {
+        void drawAt(const paxs::Vector2<float>& pos) const override {
             DxLib::DrawGraph(
-                pos.x() - (cachedWidth / 2),
-                pos.y() - (cachedHeight / 2),
+                static_cast<int>(pos.x - (cachedWidth / 2.0f)),
+                static_cast<int>(pos.y - (cachedHeight / 2.0f)),
                 texture, TRUE);
         }
 
-        void resizedDrawAt(const Vec2i& resize, const Vec2i& pos) const override {
+        void resizedDraw(const paxs::Vector2<int>& resize, const paxs::Vector2<int>& pos) const override {
             DxLib::DrawExtendGraph(
-                pos.x() - (resize.x() / 2), pos.y() - (resize.y() / 2),
-                pos.x() + (resize.x() / 2), pos.y() + (resize.y() / 2),
+                pos.x, pos.y,
+                pos.x + resize.x, pos.y + resize.y,
                 texture, TRUE);
         }
 
-        void resizedDrawAt(int resize, const Vec2i& pos) const override {
+        void resizedDraw(int resize, const paxs::Vector2<int>& pos) const override {
             // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
             const float scale_x = static_cast<float>(resize) / cachedWidth;
             const float scale_y = static_cast<float>(resize) / cachedHeight;
@@ -146,45 +146,30 @@ namespace paxg {
             const int new_height = static_cast<int>(cachedHeight * scale);
 
             DxLib::DrawExtendGraph(
-                pos.x() - (new_width / 2), pos.y() - (new_height / 2),
-                pos.x() + (new_width / 2), pos.y() + (new_height / 2),
+                pos.x, pos.y,
+                pos.x + new_width, pos.y + new_height,
                 texture, TRUE);
         }
 
-        void resizedDrawAt(const Vec2f& resize, const Vec2f& pos) const override {
+        void resizedDraw(const paxs::Vector2<float>& resize, const paxs::Vector2<float>& pos) const override {
             DxLib::DrawExtendGraph(
-                static_cast<int>(pos.x() - (resize.x() / 2)),
-                static_cast<int>(pos.y() - (resize.y() / 2)),
-                static_cast<int>(pos.x() + (resize.x() / 2)),
-                static_cast<int>(pos.y() + (resize.y() / 2)),
+                static_cast<int>(pos.x), static_cast<int>(pos.y),
+                static_cast<int>(pos.x + resize.x), static_cast<int>(pos.y + resize.y),
                 texture, TRUE);
         }
 
-        void resizedDrawAt(int resize, const Vec2f& pos) const override {
-            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
-            const float scale_x = static_cast<float>(resize) / cachedWidth;
-            const float scale_y = static_cast<float>(resize) / cachedHeight;
-            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
+        void resizedDraw(int resize, const paxs::Vector2<float>& pos) const override {
+            resizedDraw(resize, paxs::Vector2<int>(pos));
+        }
 
-            const float new_width = cachedWidth * scale;
-            const float new_height = cachedHeight * scale;
-
+        void resizedDrawAt(const paxs::Vector2<int>& resize, const paxs::Vector2<int>& pos) const override {
             DxLib::DrawExtendGraph(
-                static_cast<int>(pos.x() - (new_width / 2.0f)),
-                static_cast<int>(pos.y() - (new_height / 2.0f)),
-                static_cast<int>(pos.x() + (new_width / 2.0f)),
-                static_cast<int>(pos.y() + (new_height / 2.0f)),
+                pos.x - (resize.x / 2), pos.y - (resize.y / 2),
+                pos.x + (resize.x / 2), pos.y + (resize.y / 2),
                 texture, TRUE);
         }
 
-        void resizedDraw(const Vec2i& resize, const Vec2i& pos) const override {
-            DxLib::DrawExtendGraph(
-                pos.x(), pos.y(),
-                pos.x() + resize.x(), pos.y() + resize.y(),
-                texture, TRUE);
-        }
-
-        void resizedDraw(int resize, const Vec2i& pos) const override {
+        void resizedDrawAt(int resize, const paxs::Vector2<int>& pos) const override {
             // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
             const float scale_x = static_cast<float>(resize) / cachedWidth;
             const float scale_y = static_cast<float>(resize) / cachedHeight;
@@ -194,31 +179,22 @@ namespace paxg {
             const int new_height = static_cast<int>(cachedHeight * scale);
 
             DxLib::DrawExtendGraph(
-                pos.x(), pos.y(),
-                pos.x() + new_width, pos.y() + new_height,
+                pos.x - (new_width / 2), pos.y - (new_height / 2),
+                pos.x + (new_width / 2), pos.y + (new_height / 2),
                 texture, TRUE);
         }
 
-        void resizedDraw(const Vec2f& resize, const Vec2f& pos) const override {
+        void resizedDrawAt(const paxs::Vector2<float>& resize, const paxs::Vector2<float>& pos) const override {
             DxLib::DrawExtendGraph(
-                static_cast<int>(pos.x()), static_cast<int>(pos.y()),
-                static_cast<int>(pos.x() + resize.x()), static_cast<int>(pos.y() + resize.y()),
+                static_cast<int>(pos.x - (resize.x / 2)),
+                static_cast<int>(pos.y - (resize.y / 2)),
+                static_cast<int>(pos.x + (resize.x / 2)),
+                static_cast<int>(pos.y + (resize.y / 2)),
                 texture, TRUE);
         }
 
-        void resizedDraw(int resize, const Vec2f& pos) const override {
-            // アスペクト比を維持して 'resize x resize' に収めるスケールを計算
-            const float scale_x = static_cast<float>(resize) / cachedWidth;
-            const float scale_y = static_cast<float>(resize) / cachedHeight;
-            const float scale = (scale_x < scale_y) ? scale_x : scale_y;
-
-            const float new_width = cachedWidth * scale;
-            const float new_height = cachedHeight * scale;
-
-            DxLib::DrawExtendGraph(
-                static_cast<int>(pos.x()), static_cast<int>(pos.y()),
-                static_cast<int>(pos.x() + new_width), static_cast<int>(pos.y() + new_height),
-                texture, TRUE);
+        void resizedDrawAt(int resize, const paxs::Vector2<float>& pos) const override {
+            resizedDrawAt(resize, paxs::Vector2<int>(pos));
         }
     };
 
