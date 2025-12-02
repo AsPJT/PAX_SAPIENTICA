@@ -1,0 +1,36 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Line.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Line.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="496,5,731,60"/>
+<area shape="rect" id="Node000002" href="$Spline2D_8hpp.html" title=" " alt="" coords="310,115,575,170"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="561,70,486,117,483,113,559,65"/>
+<area shape="rect" id="Node000003" href="$FlowCurveFeature_8hpp.html" title=" " alt="" coords="5,225,285,295"/>
+<area shape="poly" id="edge15_Node000001_Node000003" title=" " alt="" coords="483,51,390,73,343,89,299,110,261,136,226,166,172,227,168,223,222,163,257,132,296,106,341,84,388,68,482,46"/>
+<area shape="rect" id="Node000009" href="$MapFeatureRenderer_8hpp.html" title=" " alt="" coords="309,350,616,419"/>
+<area shape="poly" id="edge16_Node000001_Node000009" title=" " alt="" coords="622,73,624,121,623,179,612,239,602,268,589,296,564,327,532,352,529,348,560,324,584,293,597,266,607,238,617,178,619,121,616,74"/>
+<area shape="rect" id="Node000011" href="$SettlementRenderer_8hpp.html" title=" " alt="" coords="651,225,909,295"/>
+<area shape="poly" id="edge17_Node000001_Node000011" title=" " alt="" coords="643,69,757,223,753,227,639,73"/>
+<area shape="rect" id="Node000013" href="$TileRenderer_8hpp.html" title=" " alt="" coords="797,108,1019,177"/>
+<area shape="poly" id="edge18_Node000001_Node000013" title=" " alt="" coords="699,62,817,105,815,110,697,67"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="363,177,233,228,231,223,361,172"/>
+<area shape="rect" id="Node000010" href="$TerritoryFeature_8hpp.html" title=" " alt="" coords="310,225,575,295"/>
+<area shape="poly" id="edge10_Node000002_Node000010" title=" " alt="" coords="445,183,445,225,440,225,440,183"/>
+<area shape="poly" id="edge13_Node000002_Node000011" title=" " alt="" coords="533,172,682,223,680,228,531,177"/>
+<area shape="rect" id="Node000004" href="$FeatureCollectionManager_8hpp.html" title=" " alt="" coords="29,343,285,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="153,308,156,342,151,343,147,308"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="246,297,376,347,375,352,244,302"/>
+<area shape="rect" id="Node000005" href="$MapContentLayer_8hpp.html" title=" " alt="" coords="351,475,574,544"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="273,429,380,472,378,477,271,434"/>
+<area shape="rect" id="Node000006" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="475,592,696,661"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="511,552,551,590,548,594,507,556"/>
+<area shape="rect" id="Node000007" href="$Application_8hpp.html" title=" " alt="" coords="475,709,696,779"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="588,675,588,709,583,709,583,675"/>
+<area shape="rect" id="Node000008" href="$Main_8hpp.html" title=" " alt="" coords="475,827,696,896"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="588,793,588,826,583,826,583,793"/>
+<area shape="poly" id="edge9_Node000009_Node000005" title=" " alt="" coords="465,433,465,474,460,474,460,433"/>
+<area shape="poly" id="edge11_Node000010_Node000004" title=" " alt="" coords="353,302,254,345,251,340,351,298"/>
+<area shape="poly" id="edge12_Node000010_Node000009" title=" " alt="" coords="453,308,460,349,455,350,448,308"/>
+<area shape="rect" id="Node000012" href="$SettlementManager_8hpp.html" title=" " alt="" coords="652,350,908,419"/>
+<area shape="poly" id="edge14_Node000011_Node000012" title=" " alt="" coords="783,308,783,350,777,350,777,308"/>
+<area shape="rect" id="Node000014" href="$MapTileLayer_8hpp.html" title=" " alt="" coords="711,475,932,544"/>
+<area shape="poly" id="edge19_Node000013_Node000014" title=" " alt="" coords="925,190,937,241,944,302,941,366,934,398,922,428,904,455,880,476,877,473,900,451,918,425,929,396,935,365,938,302,931,242,920,191"/>
+<area shape="poly" id="edge20_Node000014_Node000006" title=" " alt="" coords="741,552,655,594,653,589,739,548"/>
+</map>

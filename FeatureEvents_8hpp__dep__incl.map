@@ -1,0 +1,17 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Events/FeatureEvents.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Events/FeatureEvents.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="148,5,381,75"/>
+<area shape="rect" id="Node000002" href="$MapContentInputHandler_8hpp.html" title=" " alt="" coords="5,240,228,309"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="184,85,162,103,144,124,131,152,123,183,118,240,112,239,117,182,126,150,140,121,158,99,180,80"/>
+<area shape="rect" id="Node000006" href="$FeatureInfoPanel_8hpp.html" title=" " alt="" coords="154,123,375,192"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="267,89,267,122,262,122,262,89"/>
+<area shape="rect" id="Node000007" href="$UILayer_8hpp.html" title=" " alt="" coords="253,240,474,309"/>
+<area shape="poly" id="edge8_Node000001_Node000007" title=" " alt="" coords="353,81,374,99,390,121,399,152,399,183,392,214,383,241,378,239,387,212,393,183,394,152,385,124,370,103,350,85"/>
+<area shape="rect" id="Node000003" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="129,357,350,427"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="165,317,205,355,202,359,161,321"/>
+<area shape="rect" id="Node000004" href="$Application_8hpp.html" title=" " alt="" coords="129,475,350,544"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="242,441,242,474,237,474,237,441"/>
+<area shape="rect" id="Node000005" href="$Main_8hpp.html" title=" " alt="" coords="129,592,350,661"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="242,558,242,592,237,592,237,558"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="304,201,336,238,332,242,300,204"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="318,321,277,359,274,355,315,317"/>
+</map>

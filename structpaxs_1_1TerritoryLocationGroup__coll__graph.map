@@ -1,0 +1,5 @@
+<map id="paxs::TerritoryLocationGroup" name="paxs::TerritoryLocationGroup">
+<area shape="rect" id="Node000001" title="領域のグループ" alt="" coords="5,108,215,133"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1Range.html" title=" " alt="" coords="22,5,198,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,45,113,108,107,108,107,45"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="paxs::TimePlaybackControlEvent" name="paxs::TimePlaybackControlEvent">
+<area shape="rect" id="Node000001" title="時間再生制御イベント" alt="" coords="5,79,205,119"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1Event.html" title="イベント型の基底クラス" alt="" coords="56,5,155,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="108,44,108,79,103,79,103,44"/>
+</map>

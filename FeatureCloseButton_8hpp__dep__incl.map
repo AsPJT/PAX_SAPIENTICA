@@ -1,0 +1,13 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Feature/FeatureCloseButton.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Feature/FeatureCloseButton.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,240,75"/>
+<area shape="rect" id="Node000002" href="$FeatureInfoPanel_8hpp.html" title=" " alt="" coords="12,123,233,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,89,125,122,120,122,120,89"/>
+<area shape="rect" id="Node000003" href="$UILayer_8hpp.html" title=" " alt="" coords="12,240,233,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="125,206,125,240,120,240,120,206"/>
+<area shape="rect" id="Node000004" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="12,357,233,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="125,323,125,357,120,357,120,323"/>
+<area shape="rect" id="Node000005" href="$Application_8hpp.html" title=" " alt="" coords="12,475,233,544"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="125,441,125,474,120,474,120,441"/>
+<area shape="rect" id="Node000006" href="$Main_8hpp.html" title=" " alt="" coords="12,592,233,661"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="125,558,125,592,120,592,120,558"/>
+</map>

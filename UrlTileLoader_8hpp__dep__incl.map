@@ -1,0 +1,19 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Map/Tile/Loader/UrlTileLoader.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Map/Tile/Loader/UrlTileLoader.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="28,5,250,75"/>
+<area shape="rect" id="Node000002" href="$XYZTile_8hpp.html" title=" " alt="" coords="28,123,250,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="142,89,142,122,136,122,136,89"/>
+<area shape="rect" id="Node000003" href="$MapTileLayer_8hpp.html" title=" " alt="" coords="28,357,250,427"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="54,202,34,220,19,241,11,259,8,275,11,290,19,308,39,334,65,355,62,359,35,338,14,311,6,292,3,275,6,258,14,239,30,216,50,198"/>
+<area shape="rect" id="Node000007" href="$TileRenderer_8hpp.html" title=" " alt="" coords="28,240,250,309"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="142,206,142,240,136,240,136,206"/>
+<area shape="rect" id="Node000008" href="$TileRepository_8hpp.html" title=" " alt="" coords="274,240,495,309"/>
+<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="224,195,314,237,311,242,222,200"/>
+<area shape="rect" id="Node000004" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="28,475,250,544"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="142,441,142,474,136,474,136,441"/>
+<area shape="rect" id="Node000005" href="$Application_8hpp.html" title=" " alt="" coords="28,592,250,661"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="142,558,142,592,136,592,136,558"/>
+<area shape="rect" id="Node000006" href="$Main_8hpp.html" title=" " alt="" coords="28,709,250,779"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="142,675,142,709,136,709,136,675"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="142,323,142,357,136,357,136,323"/>
+<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="301,318,212,360,210,355,299,313"/>
+</map>

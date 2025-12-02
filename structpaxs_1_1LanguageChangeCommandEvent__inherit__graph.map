@@ -1,0 +1,5 @@
+<map id="paxs::LanguageChangeCommandEvent" name="paxs::LanguageChangeCommandEvent">
+<area shape="rect" id="Node000001" title="言語変更コマンドイベント（UI → Domain）" alt="" coords="5,79,245,119"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1Event.html" title="イベント型の基底クラス" alt="" coords="76,5,175,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="128,44,128,79,123,79,123,44"/>
+</map>

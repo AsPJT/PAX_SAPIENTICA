@@ -1,0 +1,21 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/System/Async/LoadingHandle.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/System/Async/LoadingHandle.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="110,5,349,75"/>
+<area shape="rect" id="Node000002" href="$Application_8hpp.html" title=" " alt="" coords="5,357,227,427"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="144,85,124,103,109,124,97,153,90,184,87,248,95,308,107,356,102,358,90,309,82,248,84,183,92,151,104,121,120,99,141,81"/>
+<area shape="rect" id="Node000004" href="$LoadingProgressBar_8hpp.html" title=" " alt="" coords="119,123,340,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="232,89,232,122,227,122,227,89"/>
+<area shape="rect" id="Node000006" href="$PAX__SAPIENTICA_2Simulation_2Manager_2SimulationManager_8hpp.html" title=" " alt="" coords="380,123,639,192"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="325,78,429,120,426,125,323,82"/>
+<area shape="rect" id="Node000003" href="$Main_8hpp.html" title=" " alt="" coords="5,475,227,544"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,441,119,474,113,474,113,441"/>
+<area shape="poly" id="edge6_Node000004_Node000002" title=" " alt="" coords="174,203,157,221,144,241,132,270,124,301,118,357,113,357,119,300,127,268,139,239,153,218,170,199"/>
+<area shape="rect" id="Node000005" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="153,240,375,309"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="246,205,256,239,251,241,241,206"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="212,320,161,359,158,355,208,316"/>
+<area shape="rect" id="Node000007" href="$SimulationController_8hpp.html" title=" " alt="" coords="399,240,620,309"/>
+<area shape="poly" id="edge8_Node000006_Node000007" title=" " alt="" coords="512,206,512,240,507,240,507,206"/>
+<area shape="rect" id="Node000008" href="$SimulationStatsWidget_8hpp.html" title=" " alt="" coords="644,240,921,309"/>
+<area shape="poly" id="edge9_Node000006_Node000008" title=" " alt="" coords="603,195,704,237,702,242,600,200"/>
+<area shape="rect" id="Node000009" href="$SimulationPanel_8hpp.html" title=" " alt="" coords="666,357,899,427"/>
+<area shape="poly" id="edge10_Node000008_Node000009" title=" " alt="" coords="785,323,785,357,780,357,780,323"/>
+</map>

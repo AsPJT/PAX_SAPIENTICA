@@ -1,0 +1,7 @@
+<map id="paxs::SimulationStatsWidget" name="paxs::SimulationStatsWidget">
+<area shape="rect" id="Node000001" title="シミュレーション統計情報表示ウィジェット" alt="" coords="5,152,216,177"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1UIComponent.html" title="UI基底コンポーネント（表示専用）" alt="" coords="35,79,186,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,118,113,152,108,152,108,118"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1IRenderable.html" title="描画可能オブジェクトの基底インターフェース" alt="" coords="41,5,180,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="113,44,113,79,108,79,108,44"/>
+</map>

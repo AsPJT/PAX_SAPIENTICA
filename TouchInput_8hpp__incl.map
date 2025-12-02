@@ -1,0 +1,15 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/TouchInput.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/TouchInput.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="45,5,322,60"/>
+<area shape="rect" id="Node000002" href="$Platform_8hpp.html" title=" " alt="" coords="5,108,172,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,62,119,100,116,96,155,58"/>
+<area shape="rect" id="Node000003" href="$Vector2_8hpp.html" title=" " alt="" coords="196,108,363,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="212,58,252,96,248,100,209,62"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="109,196,172,221"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="247,150,174,191,172,187,245,146"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="197,196,263,221"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="270,150,247,186,242,183,265,147"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="287,196,367,221"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="293,147,315,183,311,185,289,150"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="391,196,450,221"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="314,146,389,187,386,191,312,150"/>
+</map>

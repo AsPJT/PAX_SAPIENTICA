@@ -1,0 +1,5 @@
+<map id="paxs::Photo360InputHandler" name="paxs::Photo360InputHandler">
+<area shape="rect" id="Node000001" title="Photo360入力ハンドラー" alt="" coords="5,79,212,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1IInputHandler.html" title="統合入力ハンドラーインターフェース" alt="" coords="34,5,183,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,44,111,79,106,79,106,44"/>
+</map>

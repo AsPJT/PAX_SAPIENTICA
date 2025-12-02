@@ -1,0 +1,21 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/IO/File/ImageWriter.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/IO/File/ImageWriter.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="28,5,250,75"/>
+<area shape="rect" id="Node000002" href="$BinaryTileLoader_8hpp.html" title=" " alt="" coords="20,123,258,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="142,89,142,122,136,122,136,89"/>
+<area shape="rect" id="Node000003" href="$XYZTile_8hpp.html" title=" " alt="" coords="28,240,250,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="142,206,142,240,136,240,136,206"/>
+<area shape="rect" id="Node000004" href="$MapTileLayer_8hpp.html" title=" " alt="" coords="28,475,250,544"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="54,319,34,337,19,359,11,377,8,392,11,407,19,425,39,452,65,472,62,477,35,455,14,428,6,409,3,392,6,375,14,356,30,334,50,315"/>
+<area shape="rect" id="Node000008" href="$TileRenderer_8hpp.html" title=" " alt="" coords="28,357,250,427"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="142,323,142,357,136,357,136,323"/>
+<area shape="rect" id="Node000009" href="$TileRepository_8hpp.html" title=" " alt="" coords="274,357,495,427"/>
+<area shape="poly" id="edge9_Node000003_Node000009" title=" " alt="" coords="224,313,314,355,311,360,222,318"/>
+<area shape="rect" id="Node000005" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="28,592,250,661"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="142,558,142,592,136,592,136,558"/>
+<area shape="rect" id="Node000006" href="$Application_8hpp.html" title=" " alt="" coords="28,709,250,779"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="142,675,142,709,136,709,136,675"/>
+<area shape="rect" id="Node000007" href="$Main_8hpp.html" title=" " alt="" coords="28,827,250,896"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="142,793,142,826,136,826,136,793"/>
+<area shape="poly" id="edge8_Node000008_Node000004" title=" " alt="" coords="142,441,142,474,136,474,136,441"/>
+<area shape="poly" id="edge10_Node000009_Node000004" title=" " alt="" coords="301,435,212,477,210,472,299,430"/>
+</map>

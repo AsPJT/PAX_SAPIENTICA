@@ -1,0 +1,21 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Key.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Key.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="249,5,478,60"/>
+<area shape="rect" id="Node000002" href="$DebugInputHandler_8hpp.html" title=" " alt="" coords="53,108,276,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="304,69,228,110,225,105,301,65"/>
+<area shape="rect" id="Node000003" href="$InputManager_8hpp.html" title=" " alt="" coords="5,225,228,295"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="353,74,329,127,312,155,291,179,256,206,217,228,214,223,253,202,287,175,307,152,324,125,348,72"/>
+<area shape="rect" id="Node000006" href="$MapViewportInputHandler_8hpp.html" title=" " alt="" coords="252,225,475,295"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="366,74,366,225,361,225,361,74"/>
+<area shape="rect" id="Node000007" href="$Photo360InputHandler_8hpp.html" title=" " alt="" coords="400,108,623,177"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="412,66,466,105,463,110,409,70"/>
+<area shape="rect" id="Node000009" href="$SettlementInputHandler_8hpp.html" title=" " alt="" coords="647,108,869,177"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="473,61,647,108,646,114,472,66"/>
+<area shape="rect" id="Node000004" href="$Application_8hpp.html" title=" " alt="" coords="253,343,474,412"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="202,298,292,340,290,345,200,303"/>
+<area shape="rect" id="Node000005" href="$Main_8hpp.html" title=" " alt="" coords="253,460,474,529"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="366,426,366,460,361,460,361,426"/>
+<area shape="poly" id="edge6_Node000006_Node000004" title=" " alt="" coords="366,309,366,342,361,342,361,309"/>
+<area shape="rect" id="Node000008" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="499,225,721,295"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="551,186,583,223,579,227,547,190"/>
+<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="527,303,437,345,434,340,525,298"/>
+</map>

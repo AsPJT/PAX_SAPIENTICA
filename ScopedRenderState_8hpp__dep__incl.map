@@ -1,0 +1,18 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/ScopedRenderState.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/ScopedRenderState.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="95,5,367,75"/>
+<area shape="rect" id="Node000002" href="$ShadowRenderer_8hpp.html" title=" " alt="" coords="21,123,275,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="201,88,174,124,170,121,196,84"/>
+<area shape="rect" id="Node000005" href="$UILayer_8hpp.html" title=" " alt="" coords="119,475,340,544"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="270,85,289,122,313,206,318,241,319,275,308,344,282,428,271,453,257,476,253,473,267,450,278,426,303,343,313,275,312,242,307,207,284,124,266,87"/>
+<area shape="rect" id="Node000003" href="$PanelBackgroundRenderer_8hpp.html" title=" " alt="" coords="5,240,280,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="148,206,147,240,142,240,143,206"/>
+<area shape="rect" id="Node000004" href="$UIPanelBackground_8hpp.html" title=" " alt="" coords="38,357,269,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="150,323,153,357,148,357,144,323"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="185,437,209,473,205,476,181,440"/>
+<area shape="rect" id="Node000006" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="119,592,340,661"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="232,558,232,592,227,592,227,558"/>
+<area shape="rect" id="Node000007" href="$Application_8hpp.html" title=" " alt="" coords="119,709,340,779"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="232,675,232,709,227,709,227,675"/>
+<area shape="rect" id="Node000008" href="$Main_8hpp.html" title=" " alt="" coords="119,827,340,896"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="232,793,232,826,227,826,227,793"/>
+</map>

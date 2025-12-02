@@ -1,0 +1,5 @@
+<map id="paxg::NullTextureImpl" name="paxg::NullTextureImpl">
+<area shape="rect" id="Node000001" title="Null implementation for when no graphics library is available." alt="" coords="5,79,171,104"/>
+<area shape="rect" id="Node000002" href="$classpaxg_1_1TextureImpl.html" title="Abstract base class for texture implementations." alt="" coords="19,5,157,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="91,44,91,79,85,79,85,44"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="paxs::LoadingProgressBar&lt; ResultT &gt;" name="paxs::LoadingProgressBar&lt; ResultT &gt;">
+<area shape="rect" id="Node000001" title="ロード進捗表示バー" alt="" coords="5,152,196,192"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1UIComponent.html" title="UI基底コンポーネント（表示専用）" alt="" coords="25,79,176,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,118,103,152,98,152,98,118"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1IRenderable.html" title="描画可能オブジェクトの基底インターフェース" alt="" coords="31,5,170,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="103,44,103,79,98,79,98,44"/>
+</map>

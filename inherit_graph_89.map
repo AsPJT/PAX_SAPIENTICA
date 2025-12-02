@@ -1,0 +1,55 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structpaxs_1_1Event.html" title="イベント型の基底クラス" alt="" coords="5,727,104,752"/>
+<area shape="rect" id="Node000001" href="$structpaxs_1_1DateChangedEvent.html" title="日付変更イベント" alt="" coords="179,5,365,31"/>
+<area shape="poly" id="edge10_Node000000_Node000001" title=" " alt="" coords="53,713,55,573,66,371,78,267,95,172,119,94,133,63,150,40,177,22,180,27,154,44,138,66,124,96,100,173,83,268,71,372,60,574,58,713"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1DateNavigationEvent.html" title="日付移動イベント" alt="" coords="172,55,372,80"/>
+<area shape="poly" id="edge11_Node000000_Node000002" title=" " alt="" coords="53,713,56,582,69,395,81,299,98,211,120,139,134,111,150,89,170,75,173,79,154,93,139,114,125,141,103,212,86,300,74,396,62,583,59,713"/>
+<area shape="rect" id="Node000003" href="$structpaxs_1_1FeatureDeselectedEvent.html" title="Feature の選択が解除された時のイベント" alt="" coords="162,104,382,129"/>
+<area shape="poly" id="edge12_Node000000_Node000003" title=" " alt="" coords="54,712,58,590,72,418,84,330,101,250,122,184,135,158,150,139,165,127,168,132,154,143,140,161,127,186,106,251,90,331,78,419,64,590,59,712"/>
+<area shape="rect" id="Node000004" href="$structpaxs_1_1FeatureSelectedEvent.html" title="Feature がクリックされた時のイベント" alt="" coords="171,153,373,179"/>
+<area shape="poly" id="edge13_Node000000_Node000004" title=" " alt="" coords="54,713,60,600,76,443,88,363,104,290,125,230,137,207,150,189,169,175,172,180,154,193,141,210,129,233,109,292,93,364,81,444,66,600,60,713"/>
+<area shape="rect" id="Node000005" href="$structpaxs_1_1FeatureVisibilityChangeCommandEvent.html" title="地物可視性変更コマンドイベント（UI → Domain）" alt="" coords="164,203,380,243"/>
+<area shape="poly" id="edge14_Node000000_Node000005" title=" " alt="" coords="55,712,64,612,81,475,93,405,109,342,128,289,150,254,164,241,168,246,154,257,132,292,114,343,99,406,86,475,69,612,60,713"/>
+<area shape="rect" id="Node000006" href="$structpaxs_1_1FeatureVisibilityChangedEvent.html" title="地物表示切替イベント（通知用）" alt="" coords="160,267,384,307"/>
+<area shape="poly" id="edge15_Node000000_Node000006" title=" " alt="" coords="56,713,66,624,85,506,113,393,130,348,150,318,165,306,168,310,154,321,135,351,118,394,90,507,72,625,61,713"/>
+<area shape="rect" id="Node000007" href="$structpaxs_1_1InitHumanDataCommandEvent.html" title="人間データ初期化コマンドイベント" alt="" coords="159,331,385,371"/>
+<area shape="poly" id="edge16_Node000000_Node000007" title=" " alt="" coords="52,713,54,646,66,558,78,510,95,463,119,420,150,381,165,369,169,374,154,385,123,423,100,466,83,512,71,559,59,647,58,713"/>
+<area shape="rect" id="Node000008" href="$structpaxs_1_1LanguageChangeCommandEvent.html" title="言語変更コマンドイベント（UI → Domain）" alt="" coords="152,395,392,435"/>
+<area shape="poly" id="edge17_Node000000_Node000008" title=" " alt="" coords="54,713,59,657,74,585,86,547,103,510,124,476,150,445,166,433,170,438,154,449,128,479,107,513,91,549,79,587,65,658,59,713"/>
+<area shape="rect" id="Node000009" href="$structpaxs_1_1LanguageChangedEvent.html" title="言語設定変更イベント（通知用）" alt="" coords="163,460,381,485"/>
+<area shape="poly" id="edge18_Node000000_Node000009" title=" " alt="" coords="56,712,64,665,80,606,108,546,127,518,150,495,168,483,171,488,154,499,131,522,112,548,85,608,69,666,61,713"/>
+<area shape="rect" id="Node000010" href="$structpaxs_1_1LogEvent.html" title="ログイベント（Logger → UI通知）" alt="" coords="211,509,333,535"/>
+<area shape="poly" id="edge19_Node000000_Node000010" title=" " alt="" coords="59,712,70,675,88,629,114,584,150,545,179,530,210,522,211,527,181,535,154,549,118,587,92,632,75,676,64,714"/>
+<area shape="rect" id="Node000011" href="$structpaxs_1_1MapViewportDragStartedEvent.html" title="マップビューポートのドラッグ開始イベント" alt="" coords="159,559,385,599"/>
+<area shape="poly" id="edge20_Node000000_Node000011" title=" " alt="" coords="66,713,99,660,123,633,150,609,172,597,175,602,154,614,126,636,103,664,70,716"/>
+<area shape="rect" id="Node000012" href="$structpaxs_1_1ReloadInputDataCommandEvent.html" title="シミュレーション入力データ再読み込みコマンドイベント" alt="" coords="153,623,391,663"/>
+<area shape="poly" id="edge21_Node000000_Node000012" title=" " alt="" coords="81,716,114,693,151,673,182,661,184,666,153,678,116,698,84,720"/>
+<area shape="rect" id="Node000013" href="$structpaxs_1_1SettlementDisplayChangedEvent.html" title="集落表示設定変更イベント" alt="" coords="153,687,391,727"/>
+<area shape="poly" id="edge22_Node000000_Node000013" title=" " alt="" coords="117,728,152,722,153,728,118,733"/>
+<area shape="rect" id="Node000014" href="$structpaxs_1_1SimulationClearCommandEvent.html" title="シミュレーションクリアコマンドイベント" alt="" coords="156,751,388,791"/>
+<area shape="poly" id="edge23_Node000000_Node000014" title=" " alt="" coords="118,746,156,752,155,757,117,751"/>
+<area shape="rect" id="Node000015" href="$structpaxs_1_1SimulationInitializeAsyncCommandEvent.html" title="シミュレーション非同期初期化コマンドイベント" alt="" coords="179,815,365,855"/>
+<area shape="poly" id="edge24_Node000000_Node000015" title=" " alt="" coords="84,758,116,781,153,801,184,813,182,818,151,806,114,785,81,763"/>
+<area shape="rect" id="Node000016" href="$structpaxs_1_1SimulationInitializeCommandEvent.html" title="シミュレーション初期化コマンドイベント（同期版）" alt="" coords="179,879,365,919"/>
+<area shape="poly" id="edge25_Node000000_Node000016" title=" " alt="" coords="70,763,103,815,126,842,153,865,180,879,177,884,151,870,123,846,99,818,66,765"/>
+<area shape="rect" id="Node000017" href="$structpaxs_1_1SimulationPauseCommandEvent.html" title="シミュレーション一時停止コマンドイベント" alt="" coords="154,943,390,983"/>
+<area shape="poly" id="edge26_Node000000_Node000017" title=" " alt="" coords="64,765,75,802,93,847,119,891,154,929,172,941,169,945,150,933,115,895,89,849,70,804,59,767"/>
+<area shape="rect" id="Node000018" href="$structpaxs_1_1SimulationPlayCommandEvent.html" title="シミュレーション再生コマンドイベント" alt="" coords="159,1007,385,1047"/>
+<area shape="poly" id="edge27_Node000000_Node000018" title=" " alt="" coords="61,765,68,814,84,876,112,939,131,968,154,993,170,1005,167,1009,150,997,126,971,107,942,79,877,63,815,55,766"/>
+<area shape="rect" id="Node000019" href="$structpaxs_1_1SimulationStateChangedEvent.html" title="シミュレーション状態変更イベント" alt="" coords="161,1071,383,1111"/>
+<area shape="poly" id="edge28_Node000000_Node000019" title=" " alt="" coords="58,766,62,826,76,905,88,946,104,987,126,1024,154,1057,169,1069,166,1073,150,1061,122,1027,99,989,83,948,70,906,57,827,53,766"/>
+<area shape="rect" id="Node000020" href="$structpaxs_1_1SimulationStepCommandEvent.html" title="シミュレーションステップ実行コマンドイベント" alt="" coords="159,1135,385,1175"/>
+<area shape="poly" id="edge29_Node000000_Node000020" title=" " alt="" coords="62,765,73,847,93,954,120,1056,136,1095,154,1122,169,1133,165,1137,150,1125,131,1098,115,1057,88,955,68,847,56,766"/>
+<area shape="rect" id="Node000021" href="$structpaxs_1_1SimulationStepExecutedEvent.html" title="シミュレーションステップ実行完了イベント" alt="" coords="163,1199,381,1239"/>
+<area shape="poly" id="edge30_Node000000_Node000021" title=" " alt="" coords="61,766,70,859,88,985,101,1049,116,1107,134,1154,154,1186,168,1197,165,1201,150,1189,129,1156,111,1108,96,1050,83,986,65,860,55,766"/>
+<area shape="rect" id="Node000022" href="$structpaxs_1_1SimulationStopCommandEvent.html" title="シミュレーション停止コマンドイベント" alt="" coords="159,1263,385,1303"/>
+<area shape="poly" id="edge31_Node000000_Node000022" title=" " alt="" coords="60,766,68,871,84,1017,97,1090,112,1158,131,1212,154,1250,168,1261,164,1265,150,1253,127,1215,107,1159,91,1091,79,1017,62,872,55,766"/>
+<area shape="rect" id="Node000023" href="$structpaxs_1_1TimePlaybackControlEvent.html" title="時間再生制御イベント" alt="" coords="172,1327,372,1367"/>
+<area shape="poly" id="edge32_Node000000_Node000023" title=" " alt="" coords="59,766,65,883,80,1047,92,1132,109,1208,129,1271,141,1295,154,1313,173,1329,170,1333,150,1317,136,1298,124,1273,103,1210,87,1133,75,1048,60,883,54,766"/>
+<area shape="rect" id="Node000024" href="$structpaxs_1_1UILayoutChangedEvent.html" title="UIレイアウト変更イベント" alt="" coords="165,1392,379,1417"/>
+<area shape="poly" id="edge33_Node000000_Node000024" title=" " alt="" coords="59,766,62,895,75,1079,87,1174,104,1260,126,1330,139,1357,154,1377,169,1390,166,1394,150,1381,135,1360,121,1332,99,1261,82,1175,70,1080,57,895,53,766"/>
+<area shape="rect" id="Node000025" href="$structpaxs_1_1ViewportChangedEvent.html" title="ビューポート変更イベント" alt="" coords="165,1441,379,1467"/>
+<area shape="poly" id="edge34_Node000000_Node000025" title=" " alt="" coords="58,766,60,904,72,1103,84,1206,101,1299,124,1376,138,1405,154,1427,169,1439,166,1443,150,1431,134,1408,119,1378,96,1300,79,1206,67,1104,55,904,53,766"/>
+<area shape="rect" id="Node000026" href="$structpaxs_1_1WindowResizedEvent.html" title="ウィンドウサイズ変更イベント" alt="" coords="171,1491,373,1516"/>
+<area shape="poly" id="edge35_Node000000_Node000026" title=" " alt="" coords="58,766,59,912,69,1126,81,1237,98,1338,122,1421,137,1452,154,1476,172,1490,169,1494,150,1480,132,1455,117,1423,93,1339,75,1238,64,1127,53,912,53,766"/>
+</map>

@@ -1,0 +1,14 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/System/AppConst.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/System/AppConst.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="118,5,357,75"/>
+<area shape="rect" id="Node000002" href="$InitLogo_8hpp.html" title=" " alt="" coords="5,240,227,309"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="216,88,136,241,131,239,211,86"/>
+<area shape="rect" id="Node000005" href="$UILayer_8hpp.html" title=" " alt="" coords="225,123,447,192"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="277,83,309,121,305,124,273,87"/>
+<area shape="rect" id="Node000003" href="$Application_8hpp.html" title=" " alt="" coords="128,357,349,427"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="164,317,205,355,201,359,160,321"/>
+<area shape="rect" id="Node000004" href="$Main_8hpp.html" title=" " alt="" coords="128,475,349,544"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="241,441,241,474,236,474,236,441"/>
+<area shape="rect" id="Node000006" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="251,240,472,309"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="349,205,357,239,351,240,344,206"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="317,321,276,359,273,355,313,317"/>
+</map>

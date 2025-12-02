@@ -1,0 +1,23 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Utility/LoggerIntegration.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Utility/LoggerIntegration.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="93,5,323,75"/>
+<area shape="rect" id="Node000002" href="$Logger_8hpp.html" title=" " alt="" coords="120,123,296,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="211,75,211,108,205,108,205,75"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,218,96,243"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="175,165,85,214,82,209,172,160"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="121,218,194,243"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="199,164,174,207,169,204,194,162"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="219,218,299,243"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="222,162,247,204,242,207,217,164"/>
+<area shape="rect" id="Node000006" href="$TimeUtils_8hpp.html" title=" " alt="" coords="323,211,499,251"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="254,160,355,203,353,208,251,165"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="200,306,267,331"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="373,253,270,302,268,298,371,248"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="291,306,349,331"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="392,253,344,298,341,294,389,249"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="373,306,448,331"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="413,251,413,292,408,292,408,251"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="472,306,531,331"/>
+<area shape="poly" id="edge9_Node000006_Node000010" title=" " alt="" coords="433,249,481,294,477,298,429,253"/>
+<area shape="rect" id="Node000011" href="$Platform_8hpp.html" title=" " alt="" coords="555,299,722,339"/>
+<area shape="poly" id="edge10_Node000006_Node000011" title=" " alt="" coords="462,248,577,291,575,296,460,253"/>
+</map>

@@ -1,0 +1,28 @@
+var classpaxs_1_1XYZTile =
+[
+    [ "XYZTile", "classpaxs_1_1XYZTile.html#a3f028732576dc582635d0adce183f5e5", null ],
+    [ "XYZTile", "classpaxs_1_1XYZTile.html#ac5ad6625dee487f2596285cde5c579eb", null ],
+    [ "getDefaultZ", "classpaxs_1_1XYZTile.html#a160ee87534a64c0ac812086f6a134170", null ],
+    [ "getDrawMaxZ", "classpaxs_1_1XYZTile.html#a8bbe50d9eb77495466c3e1486133a7c3", null ],
+    [ "getDrawMinZ", "classpaxs_1_1XYZTile.html#a03143d4cdf7a5d3cdaeab75c2179205f", null ],
+    [ "getDrawType", "classpaxs_1_1XYZTile.html#a95da7af720a43a444ea34bd057f6315d", null ],
+    [ "getEndCell", "classpaxs_1_1XYZTile.html#a231ad24e7413f27e68fe688f03684093", null ],
+    [ "getMagnificationZ", "classpaxs_1_1XYZTile.html#a46e321fc2ed22664e3b5a54248180335", null ],
+    [ "getMaxDate", "classpaxs_1_1XYZTile.html#a3847f62c09fe5fd85cf2028bfb2cce62", null ],
+    [ "getMenuBarMap", "classpaxs_1_1XYZTile.html#a8f71555f3b0c3f9d5c48946562d24831", null ],
+    [ "getMinDate", "classpaxs_1_1XYZTile.html#a0cf2c5abe62d67f340d905532ca28d58", null ],
+    [ "getStartCell", "classpaxs_1_1XYZTile.html#ad36b1cdeaac3f6dbde93ef37a43f88b0", null ],
+    [ "getTextureAt", "classpaxs_1_1XYZTile.html#a75bd7af51c1103c83c41e90ad4c73899", null ],
+    [ "getZ", "classpaxs_1_1XYZTile.html#a5dd690653cbc3761b0a8a2f347ad3880", null ],
+    [ "getZNum", "classpaxs_1_1XYZTile.html#a0f1dd7d55904a644b18a54f408833eca", null ],
+    [ "setDefaultZ", "classpaxs_1_1XYZTile.html#a3e68da01bb792197fb4fda9f735cd0dc", null ],
+    [ "setDrawMaxZ", "classpaxs_1_1XYZTile.html#a81a07a7291cc3df57832c9363f1ee289", null ],
+    [ "setDrawMinZ", "classpaxs_1_1XYZTile.html#a1108cbbc102fdda6fba6e39ec2d86516", null ],
+    [ "setMapName", "classpaxs_1_1XYZTile.html#a2ad4489d9841d9d9023db98302143e9c", null ],
+    [ "setMapURL", "classpaxs_1_1XYZTile.html#ad7bd1a99efbfd14e9ac6cdd104160a56", null ],
+    [ "setMaxDate", "classpaxs_1_1XYZTile.html#a94bc79b887c64c9306fe75026cd270d3", null ],
+    [ "setMaxZ", "classpaxs_1_1XYZTile.html#a5d5baffeb1274dd1db4bcaf2e1ab2fa6", null ],
+    [ "setMinDate", "classpaxs_1_1XYZTile.html#aead97d2bf1bb0691eeac838dca5bb199", null ],
+    [ "setMinZ", "classpaxs_1_1XYZTile.html#a610ee17a48bf6d0cd15fc3aefa5146d9", null ],
+    [ "update", "classpaxs_1_1XYZTile.html#a5ba7bde3e8d17f42b7dd17e5c8e9ce64", null ]
+];

@@ -1,0 +1,14 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Photo360.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Photo360.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,273,60"/>
+<area shape="rect" id="Node000002" href="$Photo360Layer_8hpp.html" title=" " alt="" coords="12,108,267,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="142,74,142,108,137,108,137,74"/>
+<area shape="rect" id="Node000003" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="29,343,250,412"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="110,190,94,226,88,260,94,294,103,319,116,341,112,344,99,321,89,295,83,260,89,225,105,188"/>
+<area shape="rect" id="Node000006" href="$Photo360InputHandler_8hpp.html" title=" " alt="" coords="103,225,325,295"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="171,188,194,224,190,227,166,190"/>
+<area shape="rect" id="Node000004" href="$Application_8hpp.html" title=" " alt="" coords="29,460,250,529"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="142,426,142,460,137,460,137,426"/>
+<area shape="rect" id="Node000005" href="$Main_8hpp.html" title=" " alt="" coords="29,577,250,647"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="142,543,142,577,137,577,137,543"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="187,308,163,344,159,341,182,305"/>
+</map>

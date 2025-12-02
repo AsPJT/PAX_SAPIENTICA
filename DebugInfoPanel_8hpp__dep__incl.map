@@ -1,0 +1,11 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/DebugInfoPanel.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/DebugInfoPanel.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,227,75"/>
+<area shape="rect" id="Node000002" href="$UILayer_8hpp.html" title=" " alt="" coords="5,123,227,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,89,119,122,113,122,113,89"/>
+<area shape="rect" id="Node000003" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="5,240,227,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,206,119,240,113,240,113,206"/>
+<area shape="rect" id="Node000004" href="$Application_8hpp.html" title=" " alt="" coords="5,357,227,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="119,323,119,357,113,357,113,323"/>
+<area shape="rect" id="Node000005" href="$Main_8hpp.html" title=" " alt="" coords="5,475,227,544"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="119,441,119,474,113,474,113,441"/>
+</map>

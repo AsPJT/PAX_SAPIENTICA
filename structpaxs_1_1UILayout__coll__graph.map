@@ -1,0 +1,5 @@
+<map id="paxs::UILayout" name="paxs::UILayout">
+<area shape="rect" id="Node000001" title=" " alt="" coords="16,167,135,192"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1PanelLayout.html" title="パネルのレイアウト情報" alt="" coords="5,5,145,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="78,44,78,166,73,166,73,44"/>
+</map>

@@ -1,0 +1,19 @@
+<map id="paxs::IconButton" name="paxs::IconButton">
+<area shape="rect" id="Node000001" title="アイコンボタンウィジェット" alt="" coords="659,80,789,105"/>
+<area shape="rect" id="Node000006" href="$classpaxs_1_1FeatureCloseButton.html" title="Feature詳細パネルの閉じるボタン" alt="" coords="853,5,1043,31"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="761,71,836,39,878,28,879,33,838,45,763,76"/>
+<area shape="rect" id="Node000007" href="$classpaxs_1_1GitHubButton.html" title="GitHubリポジトリへのリンクボタン" alt="" coords="873,55,1023,80"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="803,81,873,73,873,78,803,86"/>
+<area shape="rect" id="Node000008" href="$classpaxs_1_1SimulationControlButton.html" title="シミュレーション制御ボタン" alt="" coords="837,104,1059,129"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="803,98,838,102,837,107,802,104"/>
+<area shape="rect" id="Node000009" href="$classpaxs_1_1TimeControlButton.html" title="時間操作ボタン" alt="" coords="856,153,1040,179"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="764,109,838,139,879,151,878,156,836,145,762,114"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1InteractiveUIComponent.html" title="インタラクティブUI基底コンポーネント（表示+入力処理）" alt="" coords="391,80,611,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="624,90,659,90,659,95,624,95"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1UIComponent.html" title="UI基底コンポーネント（表示専用）" alt="" coords="192,55,343,80"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="357,74,391,78,390,83,356,80"/>
+<area shape="rect" id="Node000004" href="$classpaxs_1_1IRenderable.html" title="描画可能オブジェクトの基底インターフェース" alt="" coords="5,55,144,80"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="158,65,192,65,192,70,158,70"/>
+<area shape="rect" id="Node000005" href="$classpaxs_1_1IInputHandler.html" title="統合入力ハンドラーインターフェース" alt="" coords="193,104,342,129"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="356,105,390,101,391,107,356,110"/>
+</map>

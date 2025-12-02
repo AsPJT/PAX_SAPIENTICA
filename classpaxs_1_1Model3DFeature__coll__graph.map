@@ -1,0 +1,5 @@
+<map id="paxs::Model3DFeature" name="paxs::Model3DFeature">
+<area shape="rect" id="Node000001" title="3Dモデル地物を表すクラス" alt="" coords="5,79,173,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1MapFeature.html" title="地物の基底クラス &#45; すべての地物はこのクラスを継承する" alt="" coords="20,5,159,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="92,44,92,79,87,79,87,44"/>
+</map>

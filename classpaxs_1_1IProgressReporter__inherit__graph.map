@@ -1,0 +1,11 @@
+<map id="paxs::IProgressReporter" name="paxs::IProgressReporter">
+<area shape="rect" id="Node000001" title="進捗報告インターフェース" alt="" coords="5,84,183,109"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1CallbackProgressReporter.html" title="コールバックベースの進捗報告実装" alt="" coords="231,5,460,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="134,76,230,39,274,28,275,33,231,45,136,81"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1ConsoleProgressReporter.html" title="コンソール用進捗報告実装" alt="" coords="233,55,458,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="196,82,236,77,237,83,197,87"/>
+<area shape="rect" id="Node000004" href="$classpaxs_1_1GUIProgressReporter.html" title="GUI用進捗報告実装" alt="" coords="247,105,444,145"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="197,105,247,111,246,116,196,111"/>
+<area shape="rect" id="Node000005" href="$classpaxs_1_1NullProgressReporter.html" title="Null実装（進捗表示なし）" alt="" coords="246,169,445,195"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="134,113,180,134,231,154,278,167,276,172,230,159,178,139,131,118"/>
+</map>

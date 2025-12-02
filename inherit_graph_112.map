@@ -1,0 +1,33 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classpaxs_1_1ILocalizable.html" title="ローカライゼーション可能な地物" alt="" coords="38,31,177,56"/>
+<area shape="rect" id="Node000001" href="$classpaxs_1_1GenomeFeature.html" title="ゲノム情報（人骨、mtDNA、Y&#45;DNA等）を表す地物クラス" alt="" coords="267,5,432,31"/>
+<area shape="poly" id="edge74_Node000000_Node000001" title=" " alt="" coords="190,32,266,24,267,29,191,37"/>
+<area shape="rect" id="Node000007" href="$classpaxs_1_1PersonFeature.html" title="人物（肖像画+名前）を表す地物クラス" alt="" coords="272,55,427,80"/>
+<area shape="poly" id="edge75_Node000000_Node000007" title=" " alt="" coords="191,49,272,57,272,62,190,54"/>
+<area shape="rect" id="Node000008" href="$classpaxs_1_1PlaceNameFeature.html" title="地名（テキストのみ）を表す地物クラス" alt="" coords="257,104,441,129"/>
+<area shape="poly" id="edge76_Node000000_Node000008" title=" " alt="" coords="186,57,210,65,235,77,258,89,296,101,295,106,256,94,232,82,208,70,184,62"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1ISpatiallyUpdatable.html" title="空間的更新が可能な地物" alt="" coords="13,129,202,155"/>
+<area shape="poly" id="edge78_Node000002_Node000001" title=" " alt="" coords="197,121,208,115,224,97,231,78,239,59,256,40,277,28,279,33,259,44,243,62,236,80,228,100,211,119,199,126"/>
+<area shape="poly" id="edge80_Node000002_Node000007" title=" " alt="" coords="182,123,208,114,232,102,256,89,291,78,293,83,258,94,235,106,210,119,183,128"/>
+<area shape="poly" id="edge81_Node000002_Node000008" title=" " alt="" coords="215,128,257,124,258,129,216,133"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1FlowCurveFeature.html" title="フロー曲線（移動や交易などを示すスプライン曲線）を表す地物クラス" alt="" coords="260,252,439,277"/>
+<area shape="poly" id="edge77_Node000002_Node000003" title=" " alt="" coords="202,158,211,164,228,182,236,201,243,220,259,237,282,250,280,254,256,241,239,223,231,203,224,185,208,168,199,163"/>
+<area shape="rect" id="Node000005" href="$classpaxs_1_1GeographicFeature.html" title="地理的地物（アイコン）を表す地物クラス" alt="" coords="257,153,441,179"/>
+<area shape="poly" id="edge79_Node000002_Node000005" title=" " alt="" coords="216,150,258,154,257,160,215,155"/>
+<area shape="rect" id="Node000010" href="$classpaxs_1_1TerritoryFeature.html" title="領域（国や文化圏などのスプライン曲線）を表す地物クラス" alt="" coords="267,203,431,228"/>
+<area shape="poly" id="edge82_Node000002_Node000010" title=" " alt="" coords="186,156,210,164,235,175,258,188,296,200,295,205,256,192,232,180,208,168,184,161"/>
+<area shape="rect" id="Node000006" href="$classpaxs_1_1ITemporallyUpdatable.html" title="時間的更新が可能な地物" alt="" coords="5,80,209,105"/>
+<area shape="poly" id="edge83_Node000006_Node000001" title=" " alt="" coords="182,74,208,65,232,52,256,40,291,28,293,33,258,44,235,57,210,70,183,79"/>
+<area shape="poly" id="edge85_Node000006_Node000007" title=" " alt="" coords="223,78,271,73,272,78,224,83"/>
+<area shape="poly" id="edge86_Node000006_Node000008" title=" " alt="" coords="223,101,257,105,257,110,223,107"/>
+<area shape="poly" id="edge84_Node000006_Node000005" title=" " alt="" coords="186,106,210,114,235,126,258,138,296,151,295,156,256,143,232,131,208,119,184,111"/>
+<area shape="rect" id="Node000004" href="$classpaxs_1_1MapFeature.html" title="地物の基底クラス &#45; すべての地物はこのクラスを継承する" alt="" coords="38,179,177,204"/>
+<area shape="poly" id="edge88_Node000004_Node000001" title=" " alt="" coords="188,176,208,164,220,150,227,135,231,104,235,72,242,56,256,40,273,28,276,33,259,44,247,58,240,73,236,104,232,136,225,152,211,168,191,181"/>
+<area shape="poly" id="edge91_Node000004_Node000007" title=" " alt="" coords="188,175,208,164,224,146,231,128,239,108,256,89,277,78,279,82,259,93,243,111,236,130,228,149,211,168,191,179"/>
+<area shape="poly" id="edge92_Node000004_Node000008" title=" " alt="" coords="182,172,208,164,232,151,256,138,291,127,293,132,258,143,235,156,210,168,183,177"/>
+<area shape="poly" id="edge87_Node000004_Node000003" title=" " alt="" coords="161,206,258,237,302,249,300,254,257,242,159,211"/>
+<area shape="poly" id="edge89_Node000004_Node000005" title=" " alt="" coords="191,180,257,173,257,178,191,185"/>
+<area shape="poly" id="edge93_Node000004_Node000010" title=" " alt="" coords="191,197,267,205,267,210,190,202"/>
+<area shape="rect" id="Node000009" href="$classpaxs_1_1Model3DFeature.html" title="3Dモデル地物を表すクラス" alt="" coords="265,301,433,327"/>
+<area shape="poly" id="edge90_Node000004_Node000009" title=" " alt="" coords="137,210,191,249,258,286,293,299,291,304,256,291,189,253,134,215"/>
+</map>

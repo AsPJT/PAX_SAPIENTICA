@@ -1,0 +1,9 @@
+<map id="paxs::GeographicFeature" name="paxs::GeographicFeature">
+<area shape="rect" id="Node000001" title="地理的地物（アイコン）を表す地物クラス" alt="" coords="171,79,355,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1MapFeature.html" title="地物の基底クラス &#45; すべての地物はこのクラスを継承する" alt="" coords="5,5,144,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,33,233,76,231,81,117,38"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1ISpatiallyUpdatable.html" title="空間的更新が可能な地物" alt="" coords="168,5,357,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="265,44,265,79,260,79,260,44"/>
+<area shape="rect" id="Node000004" href="$classpaxs_1_1ITemporallyUpdatable.html" title="時間的更新が可能な地物" alt="" coords="382,5,586,31"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="436,37,299,81,298,76,435,32"/>
+</map>

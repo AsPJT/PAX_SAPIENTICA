@@ -1,0 +1,30 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/System/Async/LoadingHandle.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/System/Async/LoadingHandle.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="111,5,349,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,299,92,324"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="184,77,159,99,136,124,109,166,87,211,58,286,53,285,82,208,105,163,132,121,155,95,180,73"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="131,218,209,243"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="205,76,190,99,179,123,171,166,171,204,165,204,166,165,174,122,186,96,200,73"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="135,299,199,324"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="200,77,155,136,136,173,122,211,118,231,122,250,132,269,146,287,142,290,128,272,117,252,113,231,117,210,131,171,151,133,196,73"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="427,299,486,324"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="350,56,469,82,519,100,552,121,577,152,590,183,589,216,574,252,559,270,540,284,500,302,498,298,538,280,555,266,569,249,584,215,584,184,572,154,548,125,517,105,468,88,349,61"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="233,130,297,155"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="244,74,259,116,254,118,239,76"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="499,218,559,243"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="350,57,456,83,499,101,527,121,537,141,541,163,538,205,533,204,536,164,532,143,523,124,497,105,455,88,349,62"/>
+<area shape="rect" id="Node000008" href="$LoadingState_8hpp.html" title=" " alt="" coords="233,211,419,251"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="221,75,214,118,216,141,223,161,241,184,265,202,262,206,238,188,218,164,210,142,208,118,215,74"/>
+<area shape="rect" id="Node000011" href="$ProgressToken_8hpp.html" title=" " alt="" coords="321,123,512,163"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="294,73,371,114,368,118,291,77"/>
+<area shape="poly" id="edge9_Node000008_Node000002" title=" " alt="" coords="260,253,103,297,102,292,259,248"/>
+<area shape="poly" id="edge10_Node000008_Node000004" title=" " alt="" coords="289,253,204,295,202,290,287,248"/>
+<area shape="poly" id="edge12_Node000008_Node000005" title=" " alt="" coords="359,249,427,289,424,294,356,253"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="331,299,398,324"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="338,250,355,285,350,287,333,252"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="233,299,307,324"/>
+<area shape="poly" id="edge11_Node000008_Node000010" title=" " alt="" coords="315,252,288,289,284,286,310,249"/>
+<area shape="poly" id="edge14_Node000011_Node000003" title=" " alt="" coords="361,165,222,213,214,216,212,211,220,208,359,160"/>
+<area shape="poly" id="edge15_Node000011_Node000005" title=" " alt="" coords="424,162,453,285,448,286,419,164"/>
+<area shape="poly" id="edge16_Node000011_Node000007" title=" " alt="" coords="443,161,504,207,500,211,440,165"/>
+<area shape="poly" id="edge17_Node000011_Node000008" title=" " alt="" coords="398,165,358,203,354,199,395,161"/>
+</map>

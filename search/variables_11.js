@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['r_0',['r',['../structpaxs_1_1TileRGBA.html#a8c7535aac52b201a781fb7331152b21e',1,'paxs::TileRGBA::r'],['../structpaxg_1_1Graphics3DModelConfig_1_1Background.html#ad8b61c268d139627236fc15b1bbf1d84',1,'paxg::Graphics3DModelConfig::Background::r'],['../structpaxs_1_1RGBA.html#a781b4786368525a5bc2359a490eca34f',1,'paxs::RGBA::r'],['../structpaxg_1_1Photo360Config_1_1Background.html#a74349b9a4b03ee0d40d8e09ef1f5915b',1,'paxg::Photo360Config::Background::r'],['../classs3d_1_1Sphere.html#abea08236a1a3b46b1da9321b1e0afb40',1,'s3d::Sphere::r'],['../classs3d_1_1Color.html#a8fccde0aca2d3e61c18af16531bf5b0b',1,'s3d::Color::r'],['../classs3d_1_1ColorF.html#ad326a2c5464cb74844c6bfdb67835594',1,'s3d::ColorF::r'],['../structpaxg_1_1ColorF.html#aed64bbf3982eb33fc94d16fcaf847276',1,'paxg::ColorF::r'],['../structpaxg_1_1Color.html#a281e77e5a2095271752df2a55add8872',1,'paxg::Color::r'],['../structpaxg_1_1Circle.html#a062a9067363aec4cad64c4cf9cef53ec',1,'paxg::Circle::r']]],
+  ['r0_1',['r0',['../structpaxg_1_1RoundRect.html#ad187a76e930e8e9c13f0a3f56c914e62',1,'paxg::RoundRect']]],
+  ['radius_2',['radius',['../structs3d_1_1Circle.html#ac59929b4d350219ae98a9307d3008b0d',1,'s3d::Circle::radius'],['../structpaxg_1_1Photo360Config_1_1Sphere.html#a4ab22360680e88bc04527121b607955f',1,'paxg::Photo360Config::Sphere::radius'],['../structpaxg_1_1TriangleShape.html#a02a4e1d506d79878a332d4991f90424b',1,'paxg::TriangleShape::radius']]],
+  ['random_5fdist_3',['random_dist',['../structpaxs_1_1SimulationConstants.html#adafdb86e8e86a2e46142b394056a9710',1,'paxs::SimulationConstants']]],
+  ['random_5fdist_5ff32_4',['random_dist_f32',['../structpaxs_1_1SimulationConstants.html#af865ca8bf441e2290a67900cc34bbd52',1,'paxs::SimulationConstants']]],
+  ['range_5fchanged_5',['range_changed',['../structpaxs_1_1TileUpdateDecision.html#afc1bbff7333a4c3af0726234ff8347b5',1,'paxs::TileUpdateDecision']]],
+  ['rasterizerstate_6',['rasterizerState',['../classs3d_1_1ScopedRenderStates3D.html#a10172c2b9be188bd48cf93baeeb72b11',1,'s3d::ScopedRenderStates3D']]],
+  ['rect_5flen_5fx_7',['rect_len_x',['../structpaxs_1_1UILayout.html#afa3a811bb2f3d9822f3294c0b7efa195',1,'paxs::UILayout']]],
+  ['rect_5fstart_5fx_8',['rect_start_x',['../structpaxs_1_1UILayout.html#a477abd99da3f05edda9e183fade2fee6',1,'paxs::UILayout']]],
+  ['region_5fid_9',['region_id',['../structpaxs_1_1District.html#ac4f4965333d21f1c70cdf9edf3d80711',1,'paxs::District']]],
+  ['region_5fstats_10',['region_stats',['../structpaxs_1_1StepStatistics.html#a935d68cceef57010ebf46b4d2400b391',1,'paxs::StepStatistics']]],
+  ['request_5fcapture_11',['request_capture',['../structpaxs_1_1EventHandlingResult.html#a4e6b49d300d577983753f578d19e5a77',1,'paxs::EventHandlingResult']]],
+  ['result_12',['result',['../structpaxs_1_1LoadingState.html#ad4de9620dda2e59345cde5da0bc99030',1,'paxs::LoadingState']]],
+  ['result_5fmutex_13',['result_mutex',['../structpaxs_1_1LoadingState.html#a4012cad24a8872008f7adb2b9bddba31',1,'paxs::LoadingState']]],
+  ['right_5fbutton_5fstate_14',['right_button_state',['../structpaxs_1_1MouseEvent.html#a2b4d4f342f567675647f3341491f062b',1,'paxs::MouseEvent']]],
+  ['rotate_5f13_15',['rotate_13',['../namespacepaxs_1_1MM3.html#a15443fa64ff3900aafc88c3bcd1496b8',1,'paxs::MM3']]],
+  ['rotate_5f15_16',['rotate_15',['../namespacepaxs_1_1MM3.html#ae374656abbefd3980ca74ce2a6d62f19',1,'paxs::MM3']]],
+  ['rotate_5f16_17',['rotate_16',['../namespacepaxs_1_1MM3.html#af743f9082aa7ae59b26ca5d9d92a562e',1,'paxs::MM3']]],
+  ['rotate_5f17_18',['rotate_17',['../namespacepaxs_1_1MM3.html#af59b9ce966f283322f570f3cb714d676',1,'paxs::MM3']]],
+  ['rotate_5f19_19',['rotate_19',['../namespacepaxs_1_1MM3.html#a248b302a19af0302e2e75490b2c347e7',1,'paxs::MM3']]],
+  ['rotation_20',['rotation',['../structpaxg_1_1TriangleShape.html#a2a381bb66058e8c6b466fe3a923dbe01',1,'paxg::TriangleShape']]],
+  ['rotationspeed_21',['rotationSpeed',['../structpaxg_1_1Graphics3DModelConfig.html#a3081210da905f8afdf346661cb952ac9',1,'paxg::Graphics3DModelConfig']]]
+];

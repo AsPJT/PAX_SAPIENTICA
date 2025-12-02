@@ -1,0 +1,13 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/ToggleButton.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/ToggleButton.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,297,60"/>
+<area shape="rect" id="Node000002" href="$MenuBarToggleButton_8hpp.html" title=" " alt="" coords="22,108,281,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="154,74,154,108,149,108,149,74"/>
+<area shape="rect" id="Node000003" href="$MenuBar_8hpp.html" title=" " alt="" coords="41,225,262,295"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="154,191,154,225,149,225,149,191"/>
+<area shape="rect" id="Node000004" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="41,343,262,412"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="154,309,154,342,149,342,149,309"/>
+<area shape="rect" id="Node000005" href="$Application_8hpp.html" title=" " alt="" coords="41,460,262,529"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="154,426,154,460,149,460,149,426"/>
+<area shape="rect" id="Node000006" href="$Main_8hpp.html" title=" " alt="" coords="41,577,262,647"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="154,543,154,577,149,577,149,543"/>
+</map>

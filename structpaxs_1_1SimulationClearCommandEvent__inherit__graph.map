@@ -1,0 +1,5 @@
+<map id="paxs::SimulationClearCommandEvent" name="paxs::SimulationClearCommandEvent">
+<area shape="rect" id="Node000001" title="シミュレーションクリアコマンドイベント" alt="" coords="5,79,237,119"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1Event.html" title="イベント型の基底クラス" alt="" coords="72,5,171,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="124,44,124,79,119,79,119,44"/>
+</map>

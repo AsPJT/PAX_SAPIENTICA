@@ -1,0 +1,16 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Interface/ConsoleProgressReporter.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Interface/ConsoleProgressReporter.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="27,5,274,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,211,64,236"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,77,63,98,44,124,37,142,33,160,33,197,28,197,28,160,32,140,39,121,59,94,85,73"/>
+<area shape="rect" id="Node000003" href="$IProgressReporter_8hpp.html" title=" " alt="" coords="53,123,248,163"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="153,75,153,108,148,108,148,75"/>
+<area shape="rect" id="Node000005" href="$StatusDisplayer_8hpp.html" title=" " alt="" coords="272,123,448,163"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="222,73,310,114,308,119,220,77"/>
+<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="124,165,65,205,62,201,121,161"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="107,211,194,236"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="153,163,153,197,148,197,148,163"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="272,211,347,236"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="350,164,327,200,322,198,345,161"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="371,211,451,236"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="375,161,398,198,393,200,370,164"/>
+</map>

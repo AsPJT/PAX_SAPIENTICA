@@ -1,0 +1,7 @@
+<map id="paxs::DebugLayer" name="paxs::DebugLayer">
+<area shape="rect" id="Node000001" title="デバッグレイヤー（デバッグ機能の統合管理）" alt="" coords="11,152,150,177"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1UIComponent.html" title="UI基底コンポーネント（表示専用）" alt="" coords="5,79,156,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,118,83,152,78,152,78,118"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1IRenderable.html" title="描画可能オブジェクトの基底インターフェース" alt="" coords="11,5,150,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="83,44,83,79,78,79,78,44"/>
+</map>

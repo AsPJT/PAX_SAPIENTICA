@@ -1,0 +1,12 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Debug/PerformanceScopeData.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Debug/PerformanceScopeData.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="16,5,269,75"/>
+<area shape="rect" id="Node000002" href="$DebugPerformanceMonitor_8hpp.html" title=" " alt="" coords="5,240,280,309"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="111,87,95,123,88,157,95,191,105,216,118,238,114,241,100,218,89,193,83,157,89,122,106,85"/>
+<area shape="rect" id="Node000005" href="$PerformanceProfiler_8hpp.html" title=" " alt="" coords="105,123,333,192"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="175,85,199,121,194,124,170,88"/>
+<area shape="rect" id="Node000003" href="$DebugLayer_8hpp.html" title=" " alt="" coords="32,357,253,427"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="145,323,145,357,140,357,140,323"/>
+<area shape="rect" id="Node000004" href="$DebugInputHandler_8hpp.html" title=" " alt="" coords="31,475,254,544"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="145,441,145,474,140,474,140,441"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="191,205,167,241,163,238,187,202"/>
+</map>

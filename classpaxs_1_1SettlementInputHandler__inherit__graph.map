@@ -1,0 +1,5 @@
+<map id="paxs::SettlementInputHandler" name="paxs::SettlementInputHandler">
+<area shape="rect" id="Node000001" title="集落入力処理ハンドラー" alt="" coords="5,79,223,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1IInputHandler.html" title="統合入力ハンドラーインターフェース" alt="" coords="39,5,189,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="117,44,117,79,111,79,111,44"/>
+</map>

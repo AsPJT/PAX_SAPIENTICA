@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classpaxs_1_1GeometryRenderer.html" title="地理的な図形の描画に共通する機能を提供する基底クラス" alt="" coords="5,31,191,56"/>
+<area shape="rect" id="Node000001" href="$classpaxs_1_1MapFeatureRenderer.html" title="地物の描画を統括するレンダラークラス" alt="" coords="239,5,436,31"/>
+<area shape="poly" id="edge36_Node000000_Node000001" title=" " alt="" coords="204,29,238,26,239,31,204,35"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1SettlementRenderer.html" title="シミュレーションの集落を可視化する" alt="" coords="241,55,433,80"/>
+<area shape="poly" id="edge37_Node000000_Node000002" title=" " alt="" coords="204,51,241,55,241,60,204,57"/>
+</map>

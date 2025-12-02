@@ -1,0 +1,11 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$structpaxs_1_1BaseContext.html" title="基底コンテキスト &#45; 全地物共通の不変情報" alt="" coords="5,80,149,105"/>
+<area shape="rect" id="Node000001" href="$structpaxs_1_1LocalizationContext.html" title="ローカライゼーションコンテキスト &#45; 言語とフォントに関する情報" alt="" coords="197,5,388,31"/>
+<area shape="poly" id="edge4_Node000000_Node000001" title=" " alt="" coords="117,72,196,39,235,28,236,33,198,45,119,76"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1SpatialContext.html" title="空間的コンテキスト &#45; ビューポートに関する情報" alt="" coords="214,55,371,80"/>
+<area shape="poly" id="edge5_Node000000_Node000002" title=" " alt="" coords="162,80,214,74,214,79,163,85"/>
+<area shape="rect" id="Node000003" href="$structpaxs_1_1TemporalContext.html" title="時間的コンテキスト &#45; 日付に関する情報" alt="" coords="207,104,379,129"/>
+<area shape="poly" id="edge6_Node000000_Node000003" title=" " alt="" coords="163,100,207,104,206,110,163,105"/>
+<area shape="rect" id="Node000004" href="$structpaxs_1_1UnifiedContext.html" title="統合コンテキスト &#45; 全パラメータを含む（初期化・全更新時のみ使用）" alt="" coords="213,153,372,179"/>
+<area shape="poly" id="edge7_Node000000_Node000004" title=" " alt="" coords="121,108,198,138,241,151,239,156,196,143,119,113"/>
+</map>

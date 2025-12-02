@@ -1,0 +1,30 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Debug/PerformanceProfiler.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Debug/PerformanceProfiler.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="180,5,408,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="394,218,453,243"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="362,73,389,94,411,121,420,142,425,164,428,204,423,204,420,164,415,143,406,124,385,98,359,77"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="43,130,167,155"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="232,77,139,126,137,121,229,73"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,218,68,243"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="181,49,139,58,99,73,62,94,32,124,24,143,22,164,29,204,24,205,16,164,19,141,28,121,59,90,96,68,138,53,179,44"/>
+<area shape="rect" id="Node000005" href="$PerformanceScopeData_8hpp.html" title=" " alt="" coords="191,123,397,163"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="297,75,297,108,291,108,291,75"/>
+<area shape="rect" id="Node000009" href="$TimeUtils_8hpp.html" title=" " alt="" coords="497,123,673,163"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="392,72,518,116,517,121,390,77"/>
+<area shape="poly" id="edge7_Node000005_Node000002" title=" " alt="" coords="324,161,396,208,393,212,321,165"/>
+<area shape="poly" id="edge9_Node000005_Node000004" title=" " alt="" coords="238,165,82,217,80,212,237,160"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="113,218,198,243"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="265,165,187,213,184,208,262,160"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="223,218,285,243"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="288,164,268,207,263,204,283,162"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="309,218,369,243"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="306,162,329,204,324,207,302,164"/>
+<area shape="poly" id="edge14_Node000009_Node000002" title=" " alt="" coords="551,165,458,214,455,209,548,160"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="850,218,917,243"/>
+<area shape="poly" id="edge11_Node000009_Node000010" title=" " alt="" coords="668,160,751,182,839,208,845,210,844,216,837,213,749,187,666,165"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="477,218,535,243"/>
+<area shape="poly" id="edge12_Node000009_Node000011" title=" " alt="" coords="569,165,528,209,524,206,565,161"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="559,218,634,243"/>
+<area shape="poly" id="edge13_Node000009_Node000012" title=" " alt="" coords="590,163,596,204,590,205,585,163"/>
+<area shape="rect" id="Node000013" href="$Platform_8hpp.html" title=" " alt="" coords="659,211,825,251"/>
+<area shape="poly" id="edge15_Node000009_Node000013" title=" " alt="" coords="620,160,697,202,694,207,618,165"/>
+</map>

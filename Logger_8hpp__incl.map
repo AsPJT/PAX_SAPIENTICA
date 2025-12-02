@@ -1,0 +1,21 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Utility/Logger.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Utility/Logger.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="93,5,323,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,130,96,155"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="157,77,81,125,79,120,154,73"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="121,130,194,155"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="193,76,172,118,167,116,188,74"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="219,130,299,155"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="228,74,249,116,244,118,223,76"/>
+<area shape="rect" id="Node000005" href="$TimeUtils_8hpp.html" title=" " alt="" coords="323,123,499,163"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="277,73,362,114,359,119,275,77"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="200,218,267,243"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="373,165,270,214,268,210,371,160"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="291,218,349,243"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="392,165,344,210,341,206,389,161"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="373,218,448,243"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="413,163,413,204,408,204,408,163"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="472,218,531,243"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="433,161,481,206,477,210,429,165"/>
+<area shape="rect" id="Node000010" href="$Platform_8hpp.html" title=" " alt="" coords="555,211,722,251"/>
+<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="462,160,577,203,575,208,460,165"/>
+</map>

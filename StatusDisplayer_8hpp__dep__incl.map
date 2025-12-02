@@ -1,0 +1,18 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Utility/StatusDisplayer.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Utility/StatusDisplayer.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="217,5,447,75"/>
+<area shape="rect" id="Node000002" href="$ConsoleProgressReporter_8hpp.html" title=" " alt="" coords="49,123,295,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="276,85,221,124,217,120,273,81"/>
+<area shape="rect" id="Node000003" href="$SettlementSimulator_8hpp.html" title=" " alt="" coords="123,240,381,309"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="332,89,324,140,309,193,281,241,277,239,304,191,319,139,327,88"/>
+<area shape="rect" id="Node000008" href="$Simulator_8hpp.html" title=" " alt="" coords="369,123,628,192"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="394,81,451,120,448,124,391,85"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="206,202,231,238,226,241,201,205"/>
+<area shape="rect" id="Node000004" href="$PAX__SAPIENTICA_2Simulation_2Manager_2SimulationManager_8hpp.html" title=" " alt="" coords="123,357,381,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="255,323,255,357,249,357,249,323"/>
+<area shape="rect" id="Node000005" href="$SimulationController_8hpp.html" title=" " alt="" coords="5,475,227,544"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="204,437,158,476,154,472,200,433"/>
+<area shape="rect" id="Node000006" href="$SimulationStatsWidget_8hpp.html" title=" " alt="" coords="251,475,528,544"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="304,433,351,472,347,476,301,438"/>
+<area shape="rect" id="Node000007" href="$SimulationPanel_8hpp.html" title=" " alt="" coords="273,592,506,661"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="392,558,392,592,387,592,387,558"/>
+</map>

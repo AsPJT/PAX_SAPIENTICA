@@ -1,0 +1,16 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/IO/Compression/ElevationCodec.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/IO/Compression/ElevationCodec.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,249,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="98,211,165,236"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="75,77,54,96,37,117,30,139,35,161,57,186,87,204,84,208,54,191,30,164,24,139,33,114,50,92,72,73"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="45,130,119,155"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="114,76,95,118,90,116,110,74"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="143,130,202,155"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="145,74,164,116,159,118,140,76"/>
+<area shape="rect" id="Node000005" href="$ElevationEncoding_8hpp.html" title=" " alt="" coords="226,123,463,163"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="201,72,293,115,291,119,199,77"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="294,165,177,208,175,203,293,160"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="271,211,333,236"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="337,164,317,200,312,197,332,162"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="358,211,417,236"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="357,162,377,197,372,200,353,164"/>
+</map>

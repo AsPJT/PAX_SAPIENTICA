@@ -1,0 +1,7 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Map/Tile/TileMetadata.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Map/Tile/TileMetadata.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,227,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="40,123,107,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,76,87,111,82,109,98,74"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="131,123,189,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="134,74,151,109,146,111,129,76"/>
+</map>

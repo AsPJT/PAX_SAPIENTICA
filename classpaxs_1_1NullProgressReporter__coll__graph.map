@@ -1,0 +1,5 @@
+<map id="paxs::NullProgressReporter" name="paxs::NullProgressReporter">
+<area shape="rect" id="Node000001" title="Null実装（進捗表示なし）" alt="" coords="5,79,204,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1IProgressReporter.html" title="進捗報告インターフェース" alt="" coords="16,5,193,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,44,107,79,102,79,102,44"/>
+</map>

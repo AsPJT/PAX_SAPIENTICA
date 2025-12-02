@@ -1,0 +1,24 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Geography" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Geography">
+<area shape="rect" id="node1" href="dir_30d58b392c7570b5d149716298839005.html" title="Simulation" alt="" coords="447,136,539,161"/>
+<area shape="rect" id="node2" href="dir_412382d65639b8d8624ed65291635410.html" title="Utility" alt="" coords="361,136,423,161"/>
+<area shape="rect" id="node3" href="dir_ec91eb5f2291bf336a957e9a9c66e7b3.html" title="Core" alt="" coords="563,136,615,161"/>
+<area shape="rect" id="node4" href="dir_6b0defc770fc6fa70c03152ea22aae2a.html" title="System" alt="" coords="639,136,710,161"/>
+<area shape="poly" id="edge2" href="dir_000021_000053.html" alt="" coords="131,83,348,131,346,137,130,88"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000021_000053.html" title="1" alt="" coords="340,117,350,132"/>
+<area shape="rect" id="node7" href="dir_2c8fcf9f3387fc2fb2dadd7884048242.html" title="Encoding" alt="" coords="43,136,125,161"/>
+<area shape="poly" id="edge1" href="dir_000021_000015.html" alt="" coords="87,88,87,122,81,122,81,88"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000021_000015.html" title="2" alt="" coords="88,110,97,125"/>
+<area shape="rect" id="node6" href="dir_93f91c22b5ae4b867a61b92912b1b48b.html" title="Coordinate" alt="" coords="155,63,248,88"/>
+<area shape="poly" id="edge3" href="dir_000009_000045.html" alt="" coords="249,85,435,130,433,136,248,91"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000009_000045.html" title="1" alt="" coords="427,116,436,131"/>
+<area shape="poly" id="edge5" href="dir_000009_000012.html" alt="" coords="249,83,260,85,404,107,469,116,550,133,549,138,468,122,403,112,260,91,248,88"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000009_000012.html" title="2" alt="" coords="543,119,552,134"/>
+<area shape="rect" id="node9" href="dir_a776ac0614aba203522d87139e14024d.html" title="PAX_GRAPHICA" alt="" coords="735,136,857,161"/>
+<area shape="poly" id="edge4" href="dir_000009_000037.html" alt="" coords="248,83,260,85,389,102,490,110,592,118,721,133,721,138,591,124,490,116,388,107,260,91,248,89"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000009_000037.html" title="1" alt="" coords="713,119,722,134"/>
+<area shape="rect" id="node8" href="dir_f6832492fdca7113a535cfdebe302e74.html" title="Terrain" alt="" coords="272,63,339,88"/>
+<area shape="poly" id="edge6" href="dir_000047_000046.html" alt="" coords="339,80,462,101,626,133,625,138,461,106,338,85"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000047_000046.html" title="1" alt="" coords="618,119,628,134"/>
+<area shape="rect" id="clust2" href="dir_c2be5f060094a9662cce5da82c18a0f1.html" alt="" coords="27,52,349,172"/>
+<area shape="rect" id="clust1" href="dir_9eb0715ef15de70c86db824069b1c4c9.html" title="PAX_SAPIENTICA" alt="" coords="16,16,721,183"/>
+</map>

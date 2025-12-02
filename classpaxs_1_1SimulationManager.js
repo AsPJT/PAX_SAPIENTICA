@@ -1,0 +1,27 @@
+var classpaxs_1_1SimulationManager =
+[
+    [ "SimulationManager", "classpaxs_1_1SimulationManager.html#a02216a403771e9990de25b668adee4fc", null ],
+    [ "~SimulationManager", "classpaxs_1_1SimulationManager.html#a1efca09f035c47fa3ab16759bb6f6f71", null ],
+    [ "SimulationManager", "classpaxs_1_1SimulationManager.html#ae942d6ea1a0fd2f75aa22daa1e891a36", null ],
+    [ "SimulationManager", "classpaxs_1_1SimulationManager.html#a9bd1eda070154ecc06075d033675d4fa", null ],
+    [ "clear", "classpaxs_1_1SimulationManager.html#a22c72fdb68f1a5acea9ff552fe1497b3", null ],
+    [ "getBronzeShareList", "classpaxs_1_1SimulationManager.html#a0c5eadf9be062fe873a44da1abc37ee8", null ],
+    [ "getCurrentModelName", "classpaxs_1_1SimulationManager.html#a22e9028f59e35983949d4820c07fb038", null ],
+    [ "getMarriagePositions", "classpaxs_1_1SimulationManager.html#ae8e1f4fd03f863266628fddec885b932", null ],
+    [ "getMigrationCount", "classpaxs_1_1SimulationManager.html#afbed31ad408d15f8ed0265c3b0dc7e7d", null ],
+    [ "getPopulation", "classpaxs_1_1SimulationManager.html#af0bbc3aef39e82ca9d4a03a80b7d34a9", null ],
+    [ "getSettlementCount", "classpaxs_1_1SimulationManager.html#a0f7c4100feee0f67a7609c0a27b0df97", null ],
+    [ "getSettlementGrids", "classpaxs_1_1SimulationManager.html#ab4b583396d0f9097a2c0b481d88c7990", null ],
+    [ "getTotalFertilityRate", "classpaxs_1_1SimulationManager.html#a1aef8337c74f443c7276921a15c0010c", null ],
+    [ "initHumanData", "classpaxs_1_1SimulationManager.html#a1fdf506b787090b2e03ffdcb9f351171", null ],
+    [ "initSimulation", "classpaxs_1_1SimulationManager.html#abe8c9836b73aec6320ea2e7c7f547644", null ],
+    [ "isActive", "classpaxs_1_1SimulationManager.html#aead824cb72a8697492a639fe703e7a21", null ],
+    [ "isInitialized", "classpaxs_1_1SimulationManager.html#a9dae88f1054707fc0f9e26d15aa43002", null ],
+    [ "operator=", "classpaxs_1_1SimulationManager.html#af0c2694385ec45cc47888bb1d979c1d2", null ],
+    [ "operator=", "classpaxs_1_1SimulationManager.html#af7fe1698815c6e3c9ad0d0f3f2eba9e2", null ],
+    [ "reloadData", "classpaxs_1_1SimulationManager.html#af5197a334f43ad08bde077b4c62d70da", null ],
+    [ "reloadInputData", "classpaxs_1_1SimulationManager.html#aa62cb84ece324f2bddcfe72f7dd3a611", null ],
+    [ "simulationInitialize", "classpaxs_1_1SimulationManager.html#a3c7b50c1139897288b64f14ae31872fd", null ],
+    [ "simulationInitializeAsync", "classpaxs_1_1SimulationManager.html#a19eaa9626512d959c22d37513ff867dc", null ],
+    [ "step", "classpaxs_1_1SimulationManager.html#af19f08365a5ada09af3c9cf671e2c666", null ]
+];

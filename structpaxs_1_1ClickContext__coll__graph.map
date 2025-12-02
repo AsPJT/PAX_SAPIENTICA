@@ -1,0 +1,5 @@
+<map id="paxs::ClickContext" name="paxs::ClickContext">
+<area shape="rect" id="Node000001" title="クリックコンテキスト &#45; クリック時に必要なパラメータをまとめた構造体" alt="" coords="12,93,156,119"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1Vector2.html" title=" " alt="" coords="5,5,163,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,45,87,93,81,93,81,45"/>
+</map>

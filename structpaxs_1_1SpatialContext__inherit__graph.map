@@ -1,0 +1,5 @@
+<map id="paxs::SpatialContext" name="paxs::SpatialContext">
+<area shape="rect" id="Node000001" title="空間的コンテキスト &#45; ビューポートに関する情報" alt="" coords="5,79,163,104"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1BaseContext.html" title="基底コンテキスト &#45; 全地物共通の不変情報" alt="" coords="12,5,156,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,44,87,79,81,79,81,44"/>
+</map>

@@ -1,0 +1,31 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/RenderTextureImpl.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/RenderTextureImpl.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="351,5,625,75"/>
+<area shape="rect" id="Node000002" href="$RenderTexture_8hpp.html" title=" " alt="" coords="245,240,547,295"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="374,84,351,102,333,124,325,141,323,156,333,191,347,216,366,238,362,242,343,219,328,193,318,157,320,140,328,121,347,98,371,80"/>
+<area shape="rect" id="Node000012" href="$NullRenderTextureImpl_8hpp.html" title=" " alt="" coords="343,123,633,192"/>
+<area shape="poly" id="edge14_Node000001_Node000012" title=" " alt="" coords="491,89,491,122,485,122,485,89"/>
+<area shape="rect" id="Node000013" href="$Siv3DRenderTextureImpl_8hpp.html" title=" " alt="" coords="657,123,948,192"/>
+<area shape="poly" id="edge16_Node000001_Node000013" title=" " alt="" coords="594,77,712,120,710,125,592,82"/>
+<area shape="rect" id="Node000003" href="$ScopedRenderTarget_8hpp.html" title=" " alt="" coords="5,343,277,412"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="322,303,222,345,220,340,320,298"/>
+<area shape="rect" id="Node000004" href="$ShadowRenderer_8hpp.html" title=" " alt="" coords="267,460,522,529"/>
+<area shape="poly" id="edge12_Node000002_Node000004" title=" " alt="" coords="363,307,342,344,336,377,343,411,353,436,368,458,363,461,349,438,337,413,330,377,338,342,359,304"/>
+<area shape="rect" id="Node000005" href="$PanelBackgroundRenderer_8hpp.html" title=" " alt="" coords="340,577,615,647"/>
+<area shape="poly" id="edge13_Node000002_Node000005" title=" " alt="" coords="561,296,592,315,617,341,632,372,634,405,626,438,611,471,591,502,567,531,519,579,516,575,563,527,586,499,607,468,621,436,629,405,626,374,612,344,588,319,558,300"/>
+<area shape="rect" id="Node000011" href="$Shader_8hpp.html" title=" " alt="" coords="352,350,603,405"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="426,304,460,348,455,351,422,307"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="229,415,322,457,320,462,226,420"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="429,539,455,576,451,579,425,542"/>
+<area shape="rect" id="Node000006" href="$UIPanelBackground_8hpp.html" title=" " alt="" coords="362,695,593,764"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="480,661,480,694,475,694,475,661"/>
+<area shape="rect" id="Node000007" href="$UILayer_8hpp.html" title=" " alt="" coords="367,812,588,881"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="480,778,480,812,475,812,475,778"/>
+<area shape="rect" id="Node000008" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="367,929,588,999"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="480,895,480,929,475,929,475,895"/>
+<area shape="rect" id="Node000009" href="$Application_8hpp.html" title=" " alt="" coords="367,1047,588,1116"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="480,1013,480,1046,475,1046,475,1013"/>
+<area shape="rect" id="Node000010" href="$Main_8hpp.html" title=" " alt="" coords="367,1164,588,1233"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="480,1130,480,1164,475,1164,475,1130"/>
+<area shape="poly" id="edge11_Node000011_Node000004" title=" " alt="" coords="453,417,421,461,417,458,449,414"/>
+<area shape="poly" id="edge15_Node000012_Node000002" title=" " alt="" coords="453,204,420,242,416,238,448,201"/>
+</map>

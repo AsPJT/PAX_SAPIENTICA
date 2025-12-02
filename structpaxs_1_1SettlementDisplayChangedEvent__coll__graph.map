@@ -1,0 +1,5 @@
+<map id="paxs::SettlementDisplayChangedEvent" name="paxs::SettlementDisplayChangedEvent">
+<area shape="rect" id="Node000001" title="集落表示設定変更イベント" alt="" coords="5,79,244,119"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1Event.html" title="イベント型の基底クラス" alt="" coords="75,5,174,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,44,127,79,122,79,122,44"/>
+</map>

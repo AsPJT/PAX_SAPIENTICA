@@ -1,0 +1,21 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Geography/Coordinate/WrappedScreenPositions.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,296,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="35,123,91,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,77,85,114,81,111,117,73"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="115,123,186,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="153,75,153,109,148,109,148,75"/>
+<area shape="rect" id="Node000004" href="$Vec2_8hpp.html" title=" " alt="" coords="210,123,395,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="207,73,274,113,271,118,204,77"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="181,203,273,229"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="293,150,249,195,245,192,290,146"/>
+<area shape="rect" id="Node000006" href="$Vector2_8hpp.html" title=" " alt="" coords="297,196,463,236"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="316,146,354,184,350,188,312,150"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="210,284,273,309"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="348,238,275,279,273,275,345,234"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="297,284,364,309"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="370,238,347,274,343,271,366,235"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="388,284,468,309"/>
+<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="394,235,416,271,411,273,389,238"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="492,284,551,309"/>
+<area shape="poly" id="edge9_Node000006_Node000010" title=" " alt="" coords="415,234,489,275,487,279,413,238"/>
+</map>

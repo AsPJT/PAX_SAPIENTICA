@@ -1,0 +1,7 @@
+<map id="paxs::Calendar&lt; T &gt;" name="paxs::Calendar&lt; T &gt;">
+<area shape="rect" id="Node000001" title="暦に関する定数と変換関数を統合した型" alt="" coords="165,79,322,104"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1CalendarConstants.html" title="暦に関する基本定数" alt="" coords="5,5,228,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="150,35,224,76,221,81,148,40"/>
+<area shape="rect" id="Node000003" href="$structpaxs_1_1CalendarConversions.html" title="暦に関する変換関数（平均年を用いた近似変換）" alt="" coords="251,5,489,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="339,40,265,81,263,76,336,35"/>
+</map>

@@ -1,0 +1,75 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classpaxs_1_1IInputHandler.html" title="統合入力ハンドラーインターフェース" alt="" coords="213,153,362,179"/>
+<area shape="rect" id="Node000001" href="$classpaxs_1_1DebugInputHandler.html" title="デバッグレイヤー用の入力ハンドラー" alt="" coords="453,5,639,31"/>
+<area shape="poly" id="edge38_Node000000_Node000001" title=" " alt="" coords="306,141,358,89,392,62,429,40,459,28,461,33,432,44,395,67,362,93,310,145"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1InteractiveUIComponent.html" title="インタラクティブUI基底コンポーネント（表示+入力処理）" alt="" coords="436,301,656,327"/>
+<area shape="poly" id="edge39_Node000000_Node000002" title=" " alt="" coords="319,185,385,239,407,266,417,277,432,288,458,299,456,304,429,292,413,281,403,269,381,243,315,189"/>
+<area shape="rect" id="Node000032" href="$classpaxs_1_1MapContentInputHandler.html" title="地図コンテンツ入力処理ハンドラー（新Featureシステム対応）" alt="" coords="434,55,658,80"/>
+<area shape="poly" id="edge57_Node000000_Node000032" title=" " alt="" coords="319,144,370,116,430,89,469,77,470,83,432,94,372,120,321,149"/>
+<area shape="rect" id="Node000033" href="$classpaxs_1_1MapViewportInputHandler.html" title="MapViewport の入力処理を担当するクラス（UI層）" alt="" coords="431,104,661,129"/>
+<area shape="poly" id="edge58_Node000000_Node000033" title=" " alt="" coords="367,148,478,127,479,132,368,153"/>
+<area shape="rect" id="Node000034" href="$classpaxs_1_1Photo360InputHandler.html" title="Photo360入力ハンドラー" alt="" coords="443,153,649,179"/>
+<area shape="poly" id="edge59_Node000000_Node000034" title=" " alt="" coords="376,163,442,163,442,169,376,169"/>
+<area shape="rect" id="Node000035" href="$classpaxs_1_1SettlementInputHandler.html" title="集落入力処理ハンドラー" alt="" coords="437,203,655,228"/>
+<area shape="poly" id="edge60_Node000000_Node000035" title=" " alt="" coords="368,179,479,200,478,205,367,184"/>
+<area shape="rect" id="Node000036" href="$classpaxs_1_1UIInputHandler.html" title="UI入力処理を担当するクラス" alt="" coords="467,252,625,277"/>
+<area shape="poly" id="edge61_Node000000_Node000036" title=" " alt="" coords="321,183,372,212,432,238,470,249,469,255,430,243,370,216,319,188"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1CalendarPanel.html" title="カレンダーパネル &#45; 時間操作とカレンダー表示を統合管理" alt="" coords="746,5,901,31"/>
+<area shape="poly" id="edge40_Node000002_Node000003" title=" " alt="" coords="656,292,659,288,680,259,688,228,688,198,683,166,678,135,677,103,686,71,707,40,725,27,745,19,747,24,727,32,711,44,690,74,682,104,683,134,688,166,693,197,694,229,685,261,663,292,659,296"/>
+<area shape="rect" id="Node000004" href="$classpaxs_1_1DropDownMenu.html" title="メニューバー用のドロップダウン項目" alt="" coords="741,55,906,80"/>
+<area shape="poly" id="edge41_Node000002_Node000004" title=" " alt="" coords="656,292,659,288,677,265,685,241,685,216,683,191,680,165,681,140,689,114,707,89,722,78,739,71,741,76,725,83,711,93,694,117,686,141,685,165,688,190,691,216,690,242,682,267,663,292,659,296"/>
+<area shape="rect" id="Node000005" href="$classpaxs_1_1FeatureInfoPanel.html" title="Feature詳細情報パネルを表示するクラス" alt="" coords="738,104,909,129"/>
+<area shape="poly" id="edge42_Node000002_Node000005" title=" " alt="" coords="655,292,659,288,674,271,681,253,683,215,685,177,692,157,708,139,736,122,739,126,711,143,697,160,690,178,688,215,686,254,678,273,663,292,658,296"/>
+<area shape="rect" id="Node000006" href="$classpaxs_1_1IconButton.html" title="アイコンボタンウィジェット" alt="" coords="758,153,889,179"/>
+<area shape="poly" id="edge43_Node000002_Node000006" title=" " alt="" coords="653,293,660,288,671,277,677,265,683,240,689,214,696,201,708,189,731,176,757,168,759,173,733,181,711,193,700,205,694,216,688,241,682,267,675,280,663,292,656,297"/>
+<area shape="rect" id="Node000011" href="$classpaxs_1_1MenuBar.html" title="アプリ上部のメニューバー" alt="" coords="764,203,883,228"/>
+<area shape="poly" id="edge48_Node000002_Node000011" title=" " alt="" coords="646,294,660,288,674,276,683,264,692,251,708,238,735,227,763,219,764,224,737,232,711,243,696,254,688,267,678,280,663,292,649,299"/>
+<area shape="rect" id="Node000012" href="$classpaxs_1_1MenuBarToggleButton.html" title="メニューバーのTerritory表示切替トグルボタン" alt="" coords="721,252,925,277"/>
+<area shape="poly" id="edge49_Node000002_Node000012" title=" " alt="" coords="631,296,751,275,752,280,632,302"/>
+<area shape="rect" id="Node000013" href="$classpaxs_1_1MenuSystem.html" title="DropDownMenu（固定ヘッダー型）を複数持つ" alt="" coords="750,301,897,327"/>
+<area shape="poly" id="edge50_Node000002_Node000013" title=" " alt="" coords="670,311,750,311,750,317,670,317"/>
+<area shape="rect" id="Node000014" href="$classpaxs_1_1Pulldown.html" title="プルダウンメニューコンポーネント" alt="" coords="763,351,883,376"/>
+<area shape="poly" id="edge51_Node000002_Node000014" title=" " alt="" coords="632,327,764,350,763,355,631,332"/>
+<area shape="rect" id="Node000015" href="$classpaxs_1_1SimulationControlButtons.html" title=" " alt="" coords="709,400,937,425"/>
+<area shape="poly" id="edge52_Node000002_Node000015" title=" " alt="" coords="646,329,663,337,678,349,687,363,696,375,711,386,737,397,735,402,708,391,692,379,683,366,674,353,660,342,643,334"/>
+<area shape="rect" id="Node000016" href="$classpaxs_1_1SimulationPanel.html" title=" " alt="" coords="740,449,907,475"/>
+<area shape="poly" id="edge53_Node000002_Node000016" title=" " alt="" coords="653,331,663,337,675,349,682,362,688,388,694,413,700,425,711,436,741,451,739,456,708,440,696,428,689,415,683,389,677,364,671,353,660,341,650,335"/>
+<area shape="rect" id="Node000017" href="$classpaxs_1_1TimeControlButtons.html" title="時間操作ボタン群の管理クラス" alt="" coords="728,499,919,524"/>
+<area shape="poly" id="edge54_Node000002_Node000017" title=" " alt="" coords="656,332,663,337,678,356,686,375,688,413,690,451,697,468,711,485,729,497,726,502,708,489,692,471,685,452,683,414,681,376,674,359,659,341,653,336"/>
+<area shape="rect" id="Node000018" href="$classpaxs_1_1UILayer.html" title="UIレイヤーの統合管理を担当するクラス" alt="" coords="768,548,879,573"/>
+<area shape="poly" id="edge55_Node000002_Node000018" title=" " alt="" coords="658,333,663,338,682,362,690,388,690,413,688,438,685,463,686,488,694,511,711,535,737,551,768,558,767,563,735,556,708,539,689,514,681,489,680,463,683,438,685,413,684,388,677,365,659,341,654,337"/>
+<area shape="rect" id="Node000019" href="$classpaxs_1_1UIPanelBackground.html" title="UIパネルの背景を描画するクラス" alt="" coords="730,597,917,623"/>
+<area shape="poly" id="edge56_Node000002_Node000019" title=" " alt="" coords="658,332,663,338,685,369,693,400,693,432,688,463,683,494,682,525,690,555,711,584,731,598,728,602,707,588,686,557,677,525,678,494,683,462,687,431,688,401,680,371,659,341,654,336"/>
+<area shape="rect" id="Node000007" href="$classpaxs_1_1FeatureCloseButton.html" title="Feature詳細パネルの閉じるボタン" alt="" coords="1001,80,1191,105"/>
+<area shape="poly" id="edge44_Node000006_Node000007" title=" " alt="" coords="902,149,936,138,960,126,984,114,1024,103,1025,108,986,119,963,131,938,143,903,154"/>
+<area shape="rect" id="Node000008" href="$classpaxs_1_1GitHubButton.html" title="GitHubリポジトリへのリンクボタン" alt="" coords="1021,129,1171,155"/>
+<area shape="poly" id="edge45_Node000006_Node000008" title=" " alt="" coords="902,156,1021,146,1022,151,903,162"/>
+<area shape="rect" id="Node000009" href="$classpaxs_1_1SimulationControlButton.html" title="シミュレーション制御ボタン" alt="" coords="985,179,1207,204"/>
+<area shape="poly" id="edge46_Node000006_Node000009" title=" " alt="" coords="903,171,985,178,985,184,902,176"/>
+<area shape="rect" id="Node000010" href="$classpaxs_1_1TimeControlButton.html" title="時間操作ボタン" alt="" coords="1004,228,1188,253"/>
+<area shape="poly" id="edge47_Node000006_Node000010" title=" " alt="" coords="902,178,938,189,963,202,986,214,1024,225,1023,230,984,219,960,206,936,194,901,183"/>
+<area shape="rect" id="Node000027" href="$classpaxs_1_1IRenderable.html" title="描画可能オブジェクトの基底インターフェース" alt="" coords="5,351,144,376"/>
+<area shape="rect" id="Node000028" href="$classpaxs_1_1MapContentLayer.html" title="地図コンテンツレイヤークラス（Facade）" alt="" coords="199,252,375,277"/>
+<area shape="poly" id="edge62_Node000027_Node000028" title=" " alt="" coords="102,340,143,313,191,288,227,275,229,280,193,292,146,318,105,345"/>
+<area shape="rect" id="Node000029" href="$classpaxs_1_1MapTileLayer.html" title="地図タイルレイヤー" alt="" coords="213,301,362,327"/>
+<area shape="poly" id="edge63_Node000027_Node000029" title=" " alt="" coords="143,345,231,324,232,329,144,350"/>
+<area shape="rect" id="Node000030" href="$classpaxs_1_1Photo360Layer.html" title="360度写真描画レイヤー" alt="" coords="208,351,367,376"/>
+<area shape="poly" id="edge64_Node000027_Node000030" title=" " alt="" coords="158,361,208,361,208,366,158,366"/>
+<area shape="rect" id="Node000031" href="$classpaxs_1_1SettlementManager.html" title="集落の描画を管理するクラス" alt="" coords="192,400,383,425"/>
+<area shape="poly" id="edge65_Node000027_Node000031" title=" " alt="" coords="144,377,232,397,231,403,143,382"/>
+<area shape="rect" id="Node000020" href="$classpaxs_1_1UIComponent.html" title="UI基底コンポーネント（表示専用）" alt="" coords="212,449,363,475"/>
+<area shape="poly" id="edge66_Node000027_Node000020" title=" " alt="" coords="105,382,145,410,193,436,225,447,223,452,191,440,142,414,102,387"/>
+<area shape="poly" id="edge70_Node000020_Node000002" title=" " alt="" coords="374,441,381,436,392,425,398,413,404,388,410,362,417,349,429,337,451,324,454,329,432,341,421,353,415,364,409,389,403,415,396,428,384,440,377,446"/>
+<area shape="rect" id="Node000021" href="$classpaxs_1_1CalendarContent.html" title="カレンダーコンテンツの描画クラス" alt="" coords="461,351,631,376"/>
+<area shape="poly" id="edge67_Node000020_Node000021" title=" " alt="" coords="369,442,381,436,396,424,404,412,414,399,429,386,459,374,461,379,432,391,418,402,409,415,400,428,384,440,371,447"/>
+<area shape="rect" id="Node000022" href="$classpaxs_1_1DebugInfoPanel.html" title="デバッグ情報パネルを表示するクラス" alt="" coords="465,400,627,425"/>
+<area shape="poly" id="edge68_Node000020_Node000022" title=" " alt="" coords="367,444,478,423,479,428,368,449"/>
+<area shape="rect" id="Node000023" href="$classpaxs_1_1DebugLayer.html" title="デバッグレイヤー（デバッグ機能の統合管理）" alt="" coords="477,449,615,475"/>
+<area shape="poly" id="edge69_Node000020_Node000023" title=" " alt="" coords="376,459,476,459,476,465,376,465"/>
+<area shape="rect" id="Node000024" href="$classpaxs_1_1LoadingProgressBar.html" title="ロード進捗表示バー" alt="" coords="451,499,641,539"/>
+<area shape="poly" id="edge71_Node000020_Node000024" title=" " alt="" coords="359,475,456,497,455,502,358,480"/>
+<area shape="rect" id="Node000025" href="$classpaxs_1_1SettlementStatusPanel.html" title="Settlement 表示モードステータスパネル" alt="" coords="441,564,651,589"/>
+<area shape="poly" id="edge72_Node000020_Node000025" title=" " alt="" coords="317,481,369,516,432,549,471,561,469,566,430,554,366,520,314,485"/>
+<area shape="rect" id="Node000026" href="$classpaxs_1_1SimulationStatsWidget.html" title="シミュレーション統計情報表示ウィジェット" alt="" coords="441,613,651,639"/>
+<area shape="poly" id="edge73_Node000020_Node000026" title=" " alt="" coords="308,484,359,543,393,574,432,600,459,611,457,616,429,604,390,578,355,547,304,488"/>
+</map>

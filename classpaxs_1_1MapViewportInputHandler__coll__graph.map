@@ -1,0 +1,5 @@
+<map id="paxs::MapViewportInputHandler" name="paxs::MapViewportInputHandler">
+<area shape="rect" id="Node000001" title="MapViewport の入力処理を担当するクラス（UI層）" alt="" coords="5,79,236,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1IInputHandler.html" title="統合入力ハンドラーインターフェース" alt="" coords="46,5,195,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,44,123,79,118,79,118,44"/>
+</map>

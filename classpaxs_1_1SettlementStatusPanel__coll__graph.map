@@ -1,0 +1,7 @@
+<map id="paxs::SettlementStatusPanel" name="paxs::SettlementStatusPanel">
+<area shape="rect" id="Node000001" title="Settlement 表示モードステータスパネル" alt="" coords="5,152,215,177"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1UIComponent.html" title="UI基底コンポーネント（表示専用）" alt="" coords="35,79,185,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,118,113,152,107,152,107,118"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1IRenderable.html" title="描画可能オブジェクトの基底インターフェース" alt="" coords="41,5,179,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="113,44,113,79,107,79,107,44"/>
+</map>

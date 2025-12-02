@@ -1,0 +1,11 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Interface/GUIProgressReporter.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Interface/GUIProgressReporter.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="129,5,375,75"/>
+<area shape="rect" id="Node000002" href="$PAX__SAPIENTICA_2Simulation_2Manager_2SimulationManager_8hpp.html" title=" " alt="" coords="123,123,381,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="255,89,255,122,249,122,249,89"/>
+<area shape="rect" id="Node000003" href="$SimulationController_8hpp.html" title=" " alt="" coords="5,240,227,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="204,203,158,242,154,238,200,199"/>
+<area shape="rect" id="Node000004" href="$SimulationStatsWidget_8hpp.html" title=" " alt="" coords="251,240,528,309"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="304,199,351,238,347,242,301,203"/>
+<area shape="rect" id="Node000005" href="$SimulationPanel_8hpp.html" title=" " alt="" coords="273,357,506,427"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="392,323,392,357,387,357,387,323"/>
+</map>

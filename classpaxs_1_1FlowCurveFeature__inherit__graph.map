@@ -1,0 +1,7 @@
+<map id="paxs::FlowCurveFeature" name="paxs::FlowCurveFeature">
+<area shape="rect" id="Node000001" title="フロー曲線（移動や交易などを示すスプライン曲線）を表す地物クラス" alt="" coords="79,79,257,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1MapFeature.html" title="地物の基底クラス &#45; すべての地物はこのクラスを継承する" alt="" coords="5,5,144,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="102,37,154,76,151,81,99,41"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1ISpatiallyUpdatable.html" title="空間的更新が可能な地物" alt="" coords="168,5,357,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="238,41,185,81,182,76,235,37"/>
+</map>

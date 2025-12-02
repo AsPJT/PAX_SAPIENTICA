@@ -1,0 +1,11 @@
+<map id="paxg::Photo360Config" name="paxg::Photo360Config">
+<area shape="rect" id="Node000001" title="360度写真描画の設定" alt="" coords="299,109,463,134"/>
+<area shape="rect" id="Node000002" href="$structpaxg_1_1Photo360Config_1_1Camera.html" title="カメラ設定" alt="" coords="5,5,169,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="171,47,276,80,347,106,345,111,274,85,169,52"/>
+<area shape="rect" id="Node000003" href="$structpaxg_1_1Photo360Config_1_1Background.html" title="背景色設定" alt="" coords="5,69,169,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="183,97,299,110,298,115,183,102"/>
+<area shape="rect" id="Node000004" href="$structpaxg_1_1Photo360Config_1_1Sphere.html" title="球体設定" alt="" coords="5,133,169,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="183,140,298,128,299,133,183,146"/>
+<area shape="rect" id="Node000005" href="$structpaxg_1_1Photo360Config_1_1FilePaths.html" title="ファイルパス設定" alt="" coords="5,197,169,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="172,191,274,159,347,132,349,137,276,164,173,196"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="paxs::UIInputHandler" name="paxs::UIInputHandler">
+<area shape="rect" id="Node000001" title="UI入力処理を担当するクラス" alt="" coords="5,79,164,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1IInputHandler.html" title="統合入力ハンドラーインターフェース" alt="" coords="10,5,159,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,44,87,79,82,79,82,44"/>
+</map>

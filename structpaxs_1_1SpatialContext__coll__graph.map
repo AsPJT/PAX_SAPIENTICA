@@ -1,0 +1,11 @@
+<map id="paxs::SpatialContext" name="paxs::SpatialContext">
+<area shape="rect" id="Node000001" title="空間的コンテキスト &#45; ビューポートに関する情報" alt="" coords="755,63,912,88"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1BaseContext.html" title="基底コンテキスト &#45; 全地物共通の不変情報" alt="" coords="423,37,567,63"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="581,54,754,67,754,72,580,59"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1FeatureVisibilityManager.html" title="機能（Feature）の表示/非表示を管理するクラス" alt="" coords="5,5,229,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="243,26,423,41,422,47,243,31"/>
+<area shape="rect" id="Node000004" href="$classpaxs_1_1UnorderedMap.html" title=" " alt="" coords="39,55,196,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="210,72,378,58,422,54,423,59,379,63,210,77"/>
+<area shape="rect" id="Node000005" href="$structpaxs_1_1Vector2.html" title=" " alt="" coords="403,87,587,112"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="601,101,665,100,730,95,784,85,785,91,731,101,665,105,601,106"/>
+</map>

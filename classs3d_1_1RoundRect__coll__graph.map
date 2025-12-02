@@ -1,0 +1,9 @@
+<map id="s3d::RoundRect" name="s3d::RoundRect">
+<area shape="rect" id="Node000001" title=" " alt="" coords="42,168,165,193"/>
+<area shape="rect" id="Node000002" href="$structs3d_1_1Rect.html" title=" " alt="" coords="62,93,145,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,133,106,168,101,168,101,133"/>
+<area shape="rect" id="Node000003" href="$structs3d_1_1Point.html" title=" " alt="" coords="5,5,92,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="66,41,98,91,93,94,61,44"/>
+<area shape="rect" id="Node000004" href="$structs3d_1_1Vec2.html" title=" " alt="" coords="116,5,200,31"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="146,44,113,94,109,91,141,41"/>
+</map>

@@ -1,0 +1,27 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/System/Async/ProgressToken.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/System/Async/ProgressToken.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="301,5,539,75"/>
+<area shape="rect" id="Node000002" href="$GUIProgressReporter_8hpp.html" title=" " alt="" coords="137,123,383,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="364,85,309,124,305,120,361,81"/>
+<area shape="rect" id="Node000003" href="$PAX__SAPIENTICA_2Simulation_2Manager_2SimulationManager_8hpp.html" title=" " alt="" coords="260,240,519,309"/>
+<area shape="poly" id="edge6_Node000001_Node000003" title=" " alt="" coords="416,89,396,240,391,240,411,89"/>
+<area shape="rect" id="Node000007" href="$LoadingHandle_8hpp.html" title=" " alt="" coords="458,123,697,192"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="478,81,533,120,530,124,475,85"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="310,199,353,238,350,242,306,203"/>
+<area shape="rect" id="Node000004" href="$SimulationController_8hpp.html" title=" " alt="" coords="5,357,227,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="298,317,197,360,195,355,296,312"/>
+<area shape="rect" id="Node000005" href="$SimulationStatsWidget_8hpp.html" title=" " alt="" coords="251,357,528,427"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="392,323,392,357,387,357,387,323"/>
+<area shape="rect" id="Node000006" href="$SimulationPanel_8hpp.html" title=" " alt="" coords="269,475,502,544"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="390,441,389,475,384,474,385,440"/>
+<area shape="poly" id="edge14_Node000007_Node000003" title=" " alt="" coords="512,202,446,242,443,237,509,197"/>
+<area shape="rect" id="Node000008" href="$Application_8hpp.html" title=" " alt="" coords="527,475,748,544"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="588,205,605,309,634,474,629,475,600,310,583,206"/>
+<area shape="rect" id="Node000010" href="$LoadingProgressBar_8hpp.html" title=" " alt="" coords="615,240,836,309"/>
+<area shape="poly" id="edge10_Node000007_Node000010" title=" " alt="" coords="633,198,683,238,680,242,630,203"/>
+<area shape="rect" id="Node000009" href="$Main_8hpp.html" title=" " alt="" coords="527,592,748,661"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="640,558,640,592,635,592,635,558"/>
+<area shape="poly" id="edge13_Node000010_Node000008" title=" " alt="" coords="685,322,662,358,652,388,646,419,640,475,635,474,640,418,647,386,658,356,681,319"/>
+<area shape="rect" id="Node000011" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="672,357,893,427"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="751,321,768,356,764,358,746,323"/>
+<area shape="poly" id="edge12_Node000011_Node000008" title=" " alt="" coords="731,437,682,476,678,472,728,433"/>
+</map>

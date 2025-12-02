@@ -1,0 +1,5 @@
+<map id="paxs::TemporalContext" name="paxs::TemporalContext">
+<area shape="rect" id="Node000001" title="時間的コンテキスト &#45; 日付に関する情報" alt="" coords="5,79,177,104"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1BaseContext.html" title="基底コンテキスト &#45; 全地物共通の不変情報" alt="" coords="19,5,163,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,44,94,79,89,79,89,44"/>
+</map>

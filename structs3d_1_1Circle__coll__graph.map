@@ -1,0 +1,5 @@
+<map id="s3d::Circle" name="s3d::Circle">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,93,96,119"/>
+<area shape="rect" id="Node000002" href="$structs3d_1_1Vec2.html" title=" " alt="" coords="9,5,93,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="53,45,53,93,48,93,48,45"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Debug/DebugConsole.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Debug/DebugConsole.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="197,5,418,75"/>
+<area shape="rect" id="Node000002" href="$DebugConsoleCommandRegistry_8hpp.html" title=" " alt="" coords="5,123,319,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="256,85,206,124,203,120,253,81"/>
+<area shape="rect" id="Node000003" href="$DebugLayer_8hpp.html" title=" " alt="" coords="343,123,565,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="362,81,413,120,409,124,359,85"/>
+<area shape="rect" id="Node000004" href="$DebugInputHandler_8hpp.html" title=" " alt="" coords="343,240,565,309"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="457,206,457,240,451,240,451,206"/>
+</map>

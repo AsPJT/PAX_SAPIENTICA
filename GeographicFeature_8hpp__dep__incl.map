@@ -1,0 +1,21 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Map/Content/Feature/GeographicFeature.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Map/Content/Feature/GeographicFeature.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="296,5,581,75"/>
+<area shape="rect" id="Node000002" href="$FeatureCollectionManager_8hpp.html" title=" " alt="" coords="5,123,261,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="344,82,236,125,234,120,342,77"/>
+<area shape="rect" id="Node000007" href="$MapFeatureRenderer_8hpp.html" title=" " alt="" coords="285,130,592,199"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="441,88,441,130,436,130,436,88"/>
+<area shape="rect" id="Node000008" href="$FeatureInfoPanel_8hpp.html" title=" " alt="" coords="616,130,837,199"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="531,78,649,127,647,132,529,82"/>
+<area shape="rect" id="Node000003" href="$MapContentLayer_8hpp.html" title=" " alt="" coords="327,255,550,324"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="249,209,356,252,354,257,247,214"/>
+<area shape="rect" id="Node000004" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="451,372,672,441"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="487,332,527,370,524,374,483,336"/>
+<area shape="rect" id="Node000005" href="$Application_8hpp.html" title=" " alt="" coords="451,489,672,559"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="564,455,564,489,559,489,559,455"/>
+<area shape="rect" id="Node000006" href="$Main_8hpp.html" title=" " alt="" coords="451,607,672,676"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="564,573,564,606,559,606,559,573"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="441,213,441,254,436,254,436,213"/>
+<area shape="rect" id="Node000009" href="$UILayer_8hpp.html" title=" " alt="" coords="595,255,816,324"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="721,213,714,255,709,254,716,212"/>
+<area shape="poly" id="edge10_Node000009_Node000004" title=" " alt="" coords="654,335,605,374,602,370,651,331"/>
+</map>

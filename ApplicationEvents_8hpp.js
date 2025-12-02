@@ -1,0 +1,27 @@
+var ApplicationEvents_8hpp =
+[
+    [ "paxs::WindowResizedEvent", "structpaxs_1_1WindowResizedEvent.html", "structpaxs_1_1WindowResizedEvent" ],
+    [ "paxs::UILayoutChangedEvent", "structpaxs_1_1UILayoutChangedEvent.html", "structpaxs_1_1UILayoutChangedEvent" ],
+    [ "paxs::MapViewportDragStartedEvent", "structpaxs_1_1MapViewportDragStartedEvent.html", "structpaxs_1_1MapViewportDragStartedEvent" ],
+    [ "paxs::LanguageChangedEvent", "structpaxs_1_1LanguageChangedEvent.html", "structpaxs_1_1LanguageChangedEvent" ],
+    [ "paxs::LanguageChangeCommandEvent", "structpaxs_1_1LanguageChangeCommandEvent.html", "structpaxs_1_1LanguageChangeCommandEvent" ],
+    [ "paxs::DateChangedEvent", "structpaxs_1_1DateChangedEvent.html", "structpaxs_1_1DateChangedEvent" ],
+    [ "paxs::ViewportChangedEvent", "structpaxs_1_1ViewportChangedEvent.html", "structpaxs_1_1ViewportChangedEvent" ],
+    [ "paxs::FeatureVisibilityChangedEvent", "structpaxs_1_1FeatureVisibilityChangedEvent.html", "structpaxs_1_1FeatureVisibilityChangedEvent" ],
+    [ "paxs::FeatureVisibilityChangeCommandEvent", "structpaxs_1_1FeatureVisibilityChangeCommandEvent.html", "structpaxs_1_1FeatureVisibilityChangeCommandEvent" ],
+    [ "paxs::SimulationStateChangedEvent", "structpaxs_1_1SimulationStateChangedEvent.html", "structpaxs_1_1SimulationStateChangedEvent" ],
+    [ "paxs::SimulationStepExecutedEvent", "structpaxs_1_1SimulationStepExecutedEvent.html", "structpaxs_1_1SimulationStepExecutedEvent" ],
+    [ "paxs::SettlementDisplayChangedEvent", "structpaxs_1_1SettlementDisplayChangedEvent.html", "structpaxs_1_1SettlementDisplayChangedEvent" ],
+    [ "paxs::SimulationPlayCommandEvent", "structpaxs_1_1SimulationPlayCommandEvent.html", "structpaxs_1_1SimulationPlayCommandEvent" ],
+    [ "paxs::SimulationPauseCommandEvent", "structpaxs_1_1SimulationPauseCommandEvent.html", "structpaxs_1_1SimulationPauseCommandEvent" ],
+    [ "paxs::SimulationStopCommandEvent", "structpaxs_1_1SimulationStopCommandEvent.html", "structpaxs_1_1SimulationStopCommandEvent" ],
+    [ "paxs::SimulationStepCommandEvent", "structpaxs_1_1SimulationStepCommandEvent.html", "structpaxs_1_1SimulationStepCommandEvent" ],
+    [ "paxs::SimulationInitializeCommandEvent", "structpaxs_1_1SimulationInitializeCommandEvent.html", "structpaxs_1_1SimulationInitializeCommandEvent" ],
+    [ "paxs::SimulationInitializeAsyncCommandEvent", "structpaxs_1_1SimulationInitializeAsyncCommandEvent.html", "structpaxs_1_1SimulationInitializeAsyncCommandEvent" ],
+    [ "paxs::ReloadInputDataCommandEvent", "structpaxs_1_1ReloadInputDataCommandEvent.html", "structpaxs_1_1ReloadInputDataCommandEvent" ],
+    [ "paxs::InitHumanDataCommandEvent", "structpaxs_1_1InitHumanDataCommandEvent.html", "structpaxs_1_1InitHumanDataCommandEvent" ],
+    [ "paxs::SimulationClearCommandEvent", "structpaxs_1_1SimulationClearCommandEvent.html", "structpaxs_1_1SimulationClearCommandEvent" ],
+    [ "paxs::TimePlaybackControlEvent", "structpaxs_1_1TimePlaybackControlEvent.html", "structpaxs_1_1TimePlaybackControlEvent" ],
+    [ "paxs::DateNavigationEvent", "structpaxs_1_1DateNavigationEvent.html", "structpaxs_1_1DateNavigationEvent" ],
+    [ "paxs::LogEvent", "structpaxs_1_1LogEvent.html", "structpaxs_1_1LogEvent" ]
+];

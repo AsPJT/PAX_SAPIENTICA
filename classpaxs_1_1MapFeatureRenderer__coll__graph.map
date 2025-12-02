@@ -1,0 +1,5 @@
+<map id="paxs::MapFeatureRenderer" name="paxs::MapFeatureRenderer">
+<area shape="rect" id="Node000001" title="地物の描画を統括するレンダラークラス" alt="" coords="5,79,203,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1GeometryRenderer.html" title="地理的な図形の描画に共通する機能を提供する基底クラス" alt="" coords="11,5,197,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="107,44,107,79,101,79,101,44"/>
+</map>

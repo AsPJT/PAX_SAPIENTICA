@@ -1,0 +1,27 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Simulation/Entity/Chromosome.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_SAPIENTICA/Simulation/Entity/Chromosome.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="227,5,485,75"/>
+<area shape="rect" id="Node000002" href="$Genome_8hpp.html" title=" " alt="" coords="227,123,485,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="359,89,359,122,353,122,353,89"/>
+<area shape="rect" id="Node000003" href="$SettlementAgent_8hpp.html" title=" " alt="" coords="227,240,485,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="359,206,359,240,353,240,353,206"/>
+<area shape="rect" id="Node000004" href="$Settlement_8hpp.html" title=" " alt="" coords="227,357,485,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="359,323,359,357,353,357,353,323"/>
+<area shape="rect" id="Node000005" href="$SettlementGrid_8hpp.html" title=" " alt="" coords="144,475,403,544"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="326,440,300,476,295,473,322,436"/>
+<area shape="rect" id="Node000008" href="$SettlementSimulator_8hpp.html" title=" " alt="" coords="369,592,628,661"/>
+<area shape="poly" id="edge13_Node000004_Node000008" title=" " alt="" coords="392,436,417,473,484,590,479,593,412,476,387,439"/>
+<area shape="rect" id="Node000006" href="$SettlementManager_8hpp.html" title=" " alt="" coords="5,709,261,779"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="133,546,102,567,77,593,70,607,68,621,73,651,87,681,105,707,101,710,82,684,68,653,63,621,65,605,72,591,98,563,130,542"/>
+<area shape="rect" id="Node000007" href="$SettlementRenderer_8hpp.html" title=" " alt="" coords="87,592,345,661"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="253,558,235,593,230,591,248,555"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="352,548,434,589,432,594,350,553"/>
+<area shape="poly" id="edge7_Node000007_Node000006" title=" " alt="" coords="186,674,160,711,155,708,182,671"/>
+<area shape="rect" id="Node000009" href="$PAX__SAPIENTICA_2Simulation_2Manager_2SimulationManager_8hpp.html" title=" " alt="" coords="369,709,628,779"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="501,675,501,709,496,709,496,675"/>
+<area shape="rect" id="Node000010" href="$SimulationController_8hpp.html" title=" " alt="" coords="252,827,473,896"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="450,789,404,828,401,824,447,785"/>
+<area shape="rect" id="Node000011" href="$SimulationStatsWidget_8hpp.html" title=" " alt="" coords="497,827,775,896"/>
+<area shape="poly" id="edge11_Node000009_Node000011" title=" " alt="" coords="551,785,597,824,594,828,547,790"/>
+<area shape="rect" id="Node000012" href="$SimulationPanel_8hpp.html" title=" " alt="" coords="519,944,753,1013"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="639,910,639,944,633,944,633,910"/>
+</map>

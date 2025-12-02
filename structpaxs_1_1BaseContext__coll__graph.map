@@ -1,0 +1,7 @@
+<map id="paxs::BaseContext" name="paxs::BaseContext">
+<area shape="rect" id="Node000001" title="基底コンテキスト &#45; 全地物共通の不変情報" alt="" coords="403,37,547,63"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1FeatureVisibilityManager.html" title="機能（Feature）の表示/非表示を管理するクラス" alt="" coords="5,5,229,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="243,27,403,41,402,46,243,32"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1UnorderedMap.html" title=" " alt="" coords="39,55,196,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="210,73,378,59,402,57,403,62,379,65,210,79"/>
+</map>

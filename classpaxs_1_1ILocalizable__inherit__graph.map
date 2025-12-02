@@ -1,0 +1,9 @@
+<map id="paxs::ILocalizable" name="paxs::ILocalizable">
+<area shape="rect" id="Node000001" title="ローカライゼーション可能な地物" alt="" coords="203,5,341,31"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1GenomeFeature.html" title="ゲノム情報（人骨、mtDNA、Y&#45;DNA等）を表す地物クラス" alt="" coords="5,79,171,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="231,38,119,81,117,76,229,33"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1PersonFeature.html" title="人物（肖像画+名前）を表す地物クラス" alt="" coords="195,79,349,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="275,44,275,79,269,79,269,44"/>
+<area shape="rect" id="Node000004" href="$classpaxs_1_1PlaceNameFeature.html" title="地名（テキストのみ）を表す地物クラス" alt="" coords="373,79,557,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="317,33,435,76,433,81,315,38"/>
+</map>

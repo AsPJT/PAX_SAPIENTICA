@@ -1,0 +1,29 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Widget/IconButton.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Widget/IconButton.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="401,5,622,75"/>
+<area shape="rect" id="Node000002" href="$TimeControlButton_8hpp.html" title=" " alt="" coords="5,123,244,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="389,81,238,125,236,120,387,75"/>
+<area shape="rect" id="Node000008" href="$FeatureCloseButton_8hpp.html" title=" " alt="" coords="269,123,503,192"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="467,86,425,124,421,120,463,82"/>
+<area shape="rect" id="Node000010" href="$GitHubButton_8hpp.html" title=" " alt="" coords="527,123,749,192"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="560,82,603,120,599,124,556,86"/>
+<area shape="rect" id="Node000012" href="$SimulationControlButton_8hpp.html" title=" " alt="" coords="773,123,1061,192"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="636,74,799,120,798,125,634,79"/>
+<area shape="rect" id="Node000003" href="$CalendarPanel_8hpp.html" title=" " alt="" coords="22,240,243,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="131,206,133,240,128,240,125,206"/>
+<area shape="rect" id="Node000004" href="$UILayer_8hpp.html" title=" " alt="" coords="275,357,497,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="220,313,313,355,311,360,218,317"/>
+<area shape="rect" id="Node000005" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="398,475,619,544"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="434,435,475,473,471,476,430,438"/>
+<area shape="rect" id="Node000006" href="$Application_8hpp.html" title=" " alt="" coords="398,592,619,661"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="511,558,511,592,506,592,506,558"/>
+<area shape="rect" id="Node000007" href="$Main_8hpp.html" title=" " alt="" coords="398,709,619,779"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="511,675,511,709,506,709,506,675"/>
+<area shape="rect" id="Node000009" href="$FeatureInfoPanel_8hpp.html" title=" " alt="" coords="275,240,497,309"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="389,206,389,240,383,240,383,206"/>
+<area shape="poly" id="edge9_Node000009_Node000004" title=" " alt="" coords="389,323,389,357,383,357,383,323"/>
+<area shape="rect" id="Node000011" href="$MenuBar_8hpp.html" title=" " alt="" coords="522,357,743,427"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="640,206,636,357,631,357,634,206"/>
+<area shape="poly" id="edge12_Node000011_Node000005" title=" " alt="" coords="588,438,547,476,543,473,584,435"/>
+<area shape="rect" id="Node000013" href="$SimulationPanel_8hpp.html" title=" " alt="" coords="800,240,1033,309"/>
+<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="919,206,919,240,914,240,914,206"/>
+</map>

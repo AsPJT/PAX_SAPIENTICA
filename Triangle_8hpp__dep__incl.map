@@ -1,0 +1,23 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Triangle.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/Triangle.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="135,5,393,60"/>
+<area shape="rect" id="Node000002" href="$DropDownMenu_8hpp.html" title=" " alt="" coords="31,108,252,177"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="225,72,181,110,178,106,222,68"/>
+<area shape="rect" id="Node000008" href="$Pulldown_8hpp.html" title=" " alt="" coords="288,108,509,177"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="309,67,358,106,355,110,306,71"/>
+<area shape="rect" id="Node000003" href="$MenuSystem_8hpp.html" title=" " alt="" coords="5,225,227,295"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="134,191,126,226,121,225,128,190"/>
+<area shape="rect" id="Node000004" href="$MenuBar_8hpp.html" title=" " alt="" coords="153,343,375,412"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="172,301,222,340,219,344,168,305"/>
+<area shape="rect" id="Node000005" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="153,460,375,529"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="267,426,267,460,261,460,261,426"/>
+<area shape="rect" id="Node000006" href="$Application_8hpp.html" title=" " alt="" coords="153,577,375,647"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="267,543,267,577,261,577,261,543"/>
+<area shape="rect" id="Node000007" href="$Main_8hpp.html" title=" " alt="" coords="153,695,375,764"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="267,661,267,694,261,694,261,661"/>
+<area shape="poly" id="edge10_Node000008_Node000004" title=" " alt="" coords="328,188,308,206,292,227,278,255,271,286,265,343,260,342,265,285,273,253,287,224,304,202,324,184"/>
+<area shape="rect" id="Node000009" href="$GitHubButton_8hpp.html" title=" " alt="" coords="301,225,523,295"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="407,191,411,225,405,225,402,192"/>
+<area shape="rect" id="Node000010" href="$SimulationPanel_8hpp.html" title=" " alt="" coords="547,225,781,295"/>
+<area shape="poly" id="edge11_Node000008_Node000010" title=" " alt="" coords="490,180,588,223,585,228,488,185"/>
+<area shape="poly" id="edge9_Node000009_Node000004" title=" " alt="" coords="360,305,309,344,306,340,356,301"/>
+</map>

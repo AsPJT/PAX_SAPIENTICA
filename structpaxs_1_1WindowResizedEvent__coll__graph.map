@@ -1,0 +1,7 @@
+<map id="paxs::WindowResizedEvent" name="paxs::WindowResizedEvent">
+<area shape="rect" id="Node000001" title="ウィンドウサイズ変更イベント" alt="" coords="30,93,231,119"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1Event.html" title="イベント型の基底クラス" alt="" coords="5,5,104,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="76,39,122,91,118,95,72,43"/>
+<area shape="rect" id="Node000003" href="$structpaxs_1_1Vector2.html" title=" " alt="" coords="128,5,285,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="189,43,143,95,139,91,185,39"/>
+</map>

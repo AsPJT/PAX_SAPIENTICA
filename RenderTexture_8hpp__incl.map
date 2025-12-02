@@ -1,0 +1,22 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/RenderTexture.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_GRAPHICA/RenderTexture.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="120,5,421,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,115,83,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,63,85,113,83,108,206,58"/>
+<area shape="rect" id="Node000003" href="$ColorF_8hpp.html" title=" " alt="" coords="107,115,301,141"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="254,62,223,106,218,102,250,59"/>
+<area shape="rect" id="Node000004" href="$RenderTextureImpl_8hpp.html" title=" " alt="" coords="306,196,526,236"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="294,59,394,183,390,187,290,62"/>
+<area shape="rect" id="Node000010" href="$NullRenderTextureImpl_8hpp.html" title=" " alt="" coords="376,108,613,148"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="335,58,438,100,436,105,333,63"/>
+<area shape="rect" id="Node000005" href="$Vector2_8hpp.html" title=" " alt="" coords="333,284,499,324"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="419,236,419,270,413,270,413,236"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="247,372,310,397"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="384,326,312,367,310,363,382,322"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="335,372,401,397"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="407,326,385,361,380,359,402,323"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="425,372,505,397"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="430,323,453,359,449,362,426,326"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="529,372,588,397"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="451,322,527,363,525,368,449,326"/>
+<area shape="poly" id="edge10_Node000010_Node000004" title=" " alt="" coords="479,150,444,188,441,184,475,146"/>
+</map>

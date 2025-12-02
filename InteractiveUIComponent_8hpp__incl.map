@@ -1,0 +1,31 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="297,5,551,75"/>
+<area shape="rect" id="Node000002" href="$IInputHandler_8hpp.html" title=" " alt="" coords="234,123,403,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="390,77,350,115,347,111,386,73"/>
+<area shape="rect" id="Node000010" href="$UIComponent_8hpp.html" title=" " alt="" coords="428,123,631,163"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="461,73,501,111,497,115,458,77"/>
+<area shape="rect" id="Node000003" href="$InputEvents_8hpp.html" title=" " alt="" coords="253,211,422,251"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="325,162,333,197,328,198,320,164"/>
+<area shape="rect" id="Node000005" href="$Vector2_8hpp.html" title=" " alt="" coords="383,299,550,339"/>
+<area shape="poly" id="edge11_Node000002_Node000005" title=" " alt="" coords="370,160,406,181,437,209,456,246,466,284,461,285,451,248,432,212,402,185,368,165"/>
+<area shape="rect" id="Node000009" href="$RenderLayer_8hpp.html" title=" " alt="" coords="25,299,228,339"/>
+<area shape="poly" id="edge9_Node000002_Node000009" title=" " alt="" coords="234,153,170,162,104,174,49,191,29,201,15,212,9,223,8,233,19,254,41,273,70,290,67,295,38,278,15,257,3,234,4,221,11,209,26,196,47,186,103,169,169,156,233,148"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="273,387,340,412"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="336,252,314,374,308,373,331,251"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="367,249,428,289,425,293,364,253"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="429,341,343,383,341,378,427,336"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="447,387,510,412"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="472,338,477,373,472,374,467,339"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="535,387,615,412"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="494,337,549,376,546,380,491,341"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="364,387,423,412"/>
+<area shape="poly" id="edge8_Node000005_Node000008" title=" " alt="" coords="451,341,415,378,412,375,447,337"/>
+<area shape="poly" id="edge10_Node000009_Node000004" title=" " alt="" coords="171,336,269,379,266,384,169,341"/>
+<area shape="poly" id="edge17_Node000010_Node000005" title=" " alt="" coords="525,164,480,287,475,285,520,162"/>
+<area shape="rect" id="Node000011" href="$IRenderable_8hpp.html" title=" " alt="" coords="25,211,228,251"/>
+<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="441,165,228,210,227,205,440,160"/>
+<area shape="rect" id="Node000012" href="$PAX__SAPIENTICA_2Core_2Type_2Rect_8hpp.html" title=" " alt="" coords="549,211,715,251"/>
+<area shape="poly" id="edge15_Node000010_Node000012" title=" " alt="" coords="554,161,600,200,597,204,550,165"/>
+<area shape="poly" id="edge14_Node000011_Node000009" title=" " alt="" coords="129,251,129,285,124,285,124,251"/>
+<area shape="poly" id="edge16_Node000012_Node000005" title=" " alt="" coords="597,253,516,295,514,290,594,248"/>
+</map>

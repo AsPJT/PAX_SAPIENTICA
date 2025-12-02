@@ -1,0 +1,11 @@
+<map id="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Widget/UIPanelBackground.hpp" name="/home/runner/work/PAX_SAPIENTICA/PAX_SAPIENTICA/Library/PAX_MAHOROBA/UI/Widget/UIPanelBackground.hpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,5,236,75"/>
+<area shape="rect" id="Node000002" href="$UILayer_8hpp.html" title=" " alt="" coords="10,123,231,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,89,123,122,118,122,118,89"/>
+<area shape="rect" id="Node000003" href="$AppComponentManager_8hpp.html" title=" " alt="" coords="10,240,231,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="123,206,123,240,118,240,118,206"/>
+<area shape="rect" id="Node000004" href="$Application_8hpp.html" title=" " alt="" coords="10,357,231,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="123,323,123,357,118,357,118,323"/>
+<area shape="rect" id="Node000005" href="$Main_8hpp.html" title=" " alt="" coords="10,475,231,544"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="123,441,123,474,118,474,118,441"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="paxs::CallbackProgressReporter" name="paxs::CallbackProgressReporter">
+<area shape="rect" id="Node000001" title="コールバックベースの進捗報告実装" alt="" coords="5,79,235,104"/>
+<area shape="rect" id="Node000002" href="$classpaxs_1_1IProgressReporter.html" title="進捗報告インターフェース" alt="" coords="31,5,209,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="123,44,123,79,117,79,117,44"/>
+</map>

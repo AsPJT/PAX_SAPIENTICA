@@ -1,0 +1,7 @@
+<map id="paxs::FeatureSelectedEvent" name="paxs::FeatureSelectedEvent">
+<area shape="rect" id="Node000001" title="Feature がクリックされた時のイベント" alt="" coords="24,93,227,119"/>
+<area shape="rect" id="Node000002" href="$structpaxs_1_1Event.html" title="イベント型の基底クラス" alt="" coords="5,5,104,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="75,39,118,91,113,94,71,43"/>
+<area shape="rect" id="Node000003" href="$classpaxs_1_1MapFeature.html" title="地物の基底クラス &#45; すべての地物はこのクラスを継承する" alt="" coords="128,5,267,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="181,43,137,95,133,91,177,39"/>
+</map>
