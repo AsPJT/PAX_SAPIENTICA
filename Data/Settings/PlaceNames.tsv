@@ -10,7 +10,7 @@ HAinu	Data/PlaceNames/EastAsia/Yaponesia/HokkaidoAinu.tsv	indigenous	北海道�
 SAinu	Data/PlaceNames/EastAsia/Yaponesia/SakhalinAinu.tsv	indigenous	サハリンアイヌ	1	4	1721424	9999999		1
 KAinu	Data/PlaceNames/EastAsia/Siberia/KamchatkaAinu.tsv	indigenous	カムサスカアイヌ	1	64	1721424	9999999		1
 Balhae	Data/PlaceNames/EastAsia/Manchuria/Balhae.tsv	historical_state	渤海国	1	100	1976003	2059279		1
-Roma	Data/PlaceNames/Europe/Roma.bin	historical_state	ローマ帝国	1	32		9999999		1
+Roma	Data/PlaceNames/Europe/Roma.bin	historical_state	ローマ帝国	1	4		9999999		1
 PlaceNames	Data/PlaceNames/PlaceNames.tsv	general	汎用的な地名		200				1
 China	Data/PlaceNames/EastAsia/China/China.tsv	general	中国大陸の地名	0.1	24	0	9999999		1
 NRCT	Data/PlaceNames/EastAsia/Yaponesia/Geoshape/NRCT.bin	general	『日本歴史地名大系』地名項目データセット	0	0.1	1721424	9999999		1
