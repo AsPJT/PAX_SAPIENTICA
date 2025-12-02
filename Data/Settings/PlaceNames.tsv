@@ -1,16 +1,16 @@
 key	file_path	type	description	min_size	max_size	first_julian_day	last_julian_day	texture	zoom
 Kojiki	Data/PlaceNames/EastAsia/Yaponesia/KojikiPlaceName.tsv	ancient_text	古事記の地名	0	2	1721424	1940208		1
 SamgukSagi	Data/PlaceNames/EastAsia/Korea/SamgukSagi.tsv	ancient_text	三国史記	0.1	100				1
-Wamyo	Data/PlaceNames/EastAsia/Yaponesia/WamyoRuijushoPlaceName.tsv	ancient_text	倭名類聚抄の地名	0	0.4	1721424	9999999		1
+Wamyo	Data/PlaceNames/EastAsia/Yaponesia/WamyoRuijushoPlaceName.bin	ancient_text	倭名類聚抄の地名	0	0.4	1721424	9999999		1
 Omoro	Data/PlaceNames/EastAsia/Yaponesia/OmoroSoshiPlaceName.tsv	ancient_text	おもろさうしの地名	0	1	1721424	9999999		1
 Ryoseikoku	Data/PlaceNames/EastAsia/Yaponesia/Ryoseikoku.tsv	administrative	令制国名	1	100				1
-WamyoKori	Data/PlaceNames/EastAsia/Yaponesia/WamyoRuijushoKori.tsv	administrative	倭名類聚抄の郡	0.4	20	1721424			1
+WamyoKori	Data/PlaceNames/EastAsia/Yaponesia/WamyoRuijushoKori.bin	administrative	倭名類聚抄の郡	0.4	20	1721424			1
 TAinu	Data/PlaceNames/EastAsia/Yaponesia/TohokuAinu.tsv	indigenous	東北アイヌ	1	4	1721424	9999999		1
 HAinu	Data/PlaceNames/EastAsia/Yaponesia/HokkaidoAinu.tsv	indigenous	北海道アイヌ	1	4	1721424	9999999		1
 SAinu	Data/PlaceNames/EastAsia/Yaponesia/SakhalinAinu.tsv	indigenous	サハリンアイヌ	1	4	1721424	9999999		1
 KAinu	Data/PlaceNames/EastAsia/Siberia/KamchatkaAinu.tsv	indigenous	カムサスカアイヌ	1	64	1721424	9999999		1
 Balhae	Data/PlaceNames/EastAsia/Manchuria/Balhae.tsv	historical_state	渤海国	1	100	1976003	2059279		1
-Roma	Data/PlaceNames/Europe/Roma.tsv	historical_state	ローマ帝国	1	200		9999999		1
+Roma	Data/PlaceNames/Europe/Roma.bin	historical_state	ローマ帝国	1	32		9999999		1
 PlaceNames	Data/PlaceNames/PlaceNames.tsv	general	汎用的な地名		200				1
 China	Data/PlaceNames/EastAsia/China/China.tsv	general	中国大陸の地名	0.1	24	0	9999999		1
-NRCT	Data/PlaceNames/EastAsia/Yaponesia/Geoshape/NRCT.tsv	general	『日本歴史地名大系』地名項目データセット	0	0.1	1721424	9999999		1
+NRCT	Data/PlaceNames/EastAsia/Yaponesia/Geoshape/NRCT.bin	general	『日本歴史地名大系』地名項目データセット	0	0.1	1721424	9999999		1
