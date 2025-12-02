@@ -131,11 +131,7 @@ namespace paxg {
             cacheDirty = false;
         }
 
-        void setPosition(int, int) override {
-            // DxLib does not support window position control
-        }
-
-        void setPosition(const Vec2i&) override {
+        void setPosition(const paxs::Vector2<int>&) override {
             // DxLib does not support window position control
         }
 
@@ -179,24 +175,12 @@ namespace paxg {
             // DxLib does not support mouse cursor visibility control
         }
 
-        void setMouseCursorGrabbed(bool) override {
-            // DxLib does not support mouse cursor grabbing
-        }
-
         void setMouseCursor(const std::string&) override {
             // DxLib does not support mouse cursor setting
         }
 
-        void setMousePosition(int, int) override {
+        void setMousePosition(const paxs::Vector2<int>&) override {
             // DxLib does not support mouse position setting
-        }
-
-        void setMousePosition(const Vec2i&) override {
-            // DxLib does not support mouse position setting
-        }
-
-        void setKeyRepeat(bool) override {
-            // DxLib does not support key repeat control
         }
 
         void setBackgroundColor(const Color color) override {
@@ -215,9 +199,9 @@ namespace paxg {
             DxLib::SetWindowStyleMode(decorated ? 1 : 8); // 1: 通常ウィンドウ, 8: 枠なし
         }
 
-        Vec2i center() const override {
+        paxs::Vector2<int> center() const override {
             updateCache();
-            return Vec2i{cachedWidth / 2, cachedHeight / 2};
+            return paxs::Vector2<int>{cachedWidth / 2, cachedHeight / 2};
         }
 
         int width() const override {
@@ -230,14 +214,14 @@ namespace paxg {
             return cachedHeight;
         }
 
-        Vec2i size() const override {
+        paxs::Vector2<int> size() const override {
             updateCache();
-            return Vec2i{cachedWidth, cachedHeight};
+            return paxs::Vector2<int>{cachedWidth, cachedHeight};
         }
 
-        Vec2i getMousePosition() const override {
+        paxs::Vector2<int> getMousePosition() const override {
             // DxLib does not support mouse position query
-            return Vec2i(0, 0);
+            return paxs::Vector2<int>(0, 0);
         }
 
         bool hasFocus() const override {
@@ -259,6 +243,6 @@ namespace paxg {
 
 } // namespace paxg
 
-#endif // defined(PAXS_USING_DXLIB)
+#endif // PAXS_USING_DXLIB
 
 #endif // !PAX_GRAPHICA_DXLIB_WINDOW_IMPL_HPP

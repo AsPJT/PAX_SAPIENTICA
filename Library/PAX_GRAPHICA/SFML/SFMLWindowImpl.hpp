@@ -28,7 +28,6 @@ namespace paxg {
     private:
         sf::RenderWindow m_window;
         paxg::Color backgroundColor{145, 190, 240};
-        bool m_isDecorated = true;
         std::string m_title = "PAX SAPIENTICA Library";
         int m_width = paxs::AppConst::default_window_size.x;
         int m_height = paxs::AppConst::default_window_size.y;
@@ -85,12 +84,8 @@ namespace paxg {
             m_window.setSize(sf::Vector2u(width, height));
         }
 
-        void setPosition(int x, int y) override {
-            m_window.setPosition(sf::Vector2i(x, y));
-        }
-
-        void setPosition(const Vec2i& pos) override {
-            m_window.setPosition(sf::Vector2i(pos.x(), pos.y()));
+        void setPosition(const paxs::Vector2<int>& pos) override {
+            m_window.setPosition(sf::Vector2i(pos.x, pos.y));
         }
 
         void setIcon(const std::string& path) override {
@@ -118,10 +113,6 @@ namespace paxg {
             m_window.setMouseCursorVisible(visible);
         }
 
-        void setMouseCursorGrabbed(bool grabbed) override {
-            m_window.setMouseCursorGrabbed(grabbed);
-        }
-
         void setMouseCursor(const std::string& path) override {
             sf::Image image;
             if (!image.loadFromFile(path))
@@ -131,16 +122,8 @@ namespace paxg {
             m_window.setMouseCursor(cursor);
         }
 
-        void setMousePosition(int x, int y) override {
-            sf::Mouse::setPosition(sf::Vector2i(x, y), m_window);
-        }
-
-        void setMousePosition(const Vec2i& pos) override {
-            sf::Mouse::setPosition(sf::Vector2i(pos.x(), pos.y()), m_window);
-        }
-
-        void setKeyRepeat(bool repeat) override {
-            m_window.setKeyRepeatEnabled(repeat);
+        void setMousePosition(const paxs::Vector2<int>& pos) override {
+            sf::Mouse::setPosition(sf::Vector2i(pos.x, pos.y), m_window);
         }
 
         void setBackgroundColor(const Color color) override {
@@ -169,8 +152,8 @@ namespace paxg {
             // the desired style from the beginning (in constructor or init())
         }
 
-        paxg::Vec2i center() const override {
-            return paxg::Vec2i{static_cast<int>(m_window.getSize().x / 2), static_cast<int>(m_window.getSize().y / 2)};
+        paxs::Vector2<int> center() const override {
+            return paxs::Vector2<int>{static_cast<int>(m_window.getSize().x / 2), static_cast<int>(m_window.getSize().y / 2)};
         }
 
         int width() const override {
@@ -181,13 +164,13 @@ namespace paxg {
             return static_cast<int>(m_window.getSize().y);
         }
 
-        paxg::Vec2i size() const override {
-            return paxg::Vec2i{static_cast<int>(m_window.getSize().x), static_cast<int>(m_window.getSize().y)};
+        paxs::Vector2<int> size() const override {
+            return paxs::Vector2<int>{static_cast<int>(m_window.getSize().x), static_cast<int>(m_window.getSize().y)};
         }
 
-        paxg::Vec2i getMousePosition() const override {
+        paxs::Vector2<int> getMousePosition() const override {
             auto pos = sf::Mouse::getPosition(m_window);
-            return paxg::Vec2i{pos.x, pos.y};
+            return paxs::Vector2<int>{pos.x, pos.y};
         }
 
         bool hasFocus() const override {
@@ -215,6 +198,6 @@ namespace paxg {
 
 } // namespace paxg
 
-#endif // defined(PAXS_USING_SFML)
+#endif // PAXS_USING_SFML
 
 #endif // !PAX_GRAPHICA_SFML_WINDOW_IMPL_HPP

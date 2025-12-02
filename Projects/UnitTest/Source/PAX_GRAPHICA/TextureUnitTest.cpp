@@ -128,8 +128,8 @@ TEST(TextureUnitTest, DrawMethodsSafe) {
 
     // These should not crash even with invalid texture
     ASSERT_NO_THROW(texture.draw());
-    ASSERT_NO_THROW(texture.drawAt(paxg::Vec2f(0.0f, 0.0f)));
-    ASSERT_NO_THROW(texture.drawAt(paxg::Vec2i(0, 0)));
+    ASSERT_NO_THROW(texture.drawAt(paxs::Vector2<float>(0.0f, 0.0f)));
+    ASSERT_NO_THROW(texture.drawAt(paxs::Vector2<int>(0, 0)));
 }
 
 // Test resized draw methods don't crash with invalid texture
@@ -137,15 +137,15 @@ TEST(TextureUnitTest, ResizedDrawMethodsSafe) {
     paxg::Texture texture;
 
     // These should not crash even with invalid texture
-    ASSERT_NO_THROW(texture.resizedDrawAt(paxg::Vec2i(100, 100), paxg::Vec2i(0, 0)));
-    ASSERT_NO_THROW(texture.resizedDrawAt(2, paxg::Vec2i(0, 0)));
-    ASSERT_NO_THROW(texture.resizedDrawAt(paxg::Vec2f(2.0f, 2.0f), paxg::Vec2f(0.0f, 0.0f)));
-    ASSERT_NO_THROW(texture.resizedDrawAt(2, paxg::Vec2f(0.0f, 0.0f)));
+    ASSERT_NO_THROW(texture.resizedDrawAt(paxs::Vector2<int>(100, 100), paxs::Vector2<int>(0, 0)));
+    ASSERT_NO_THROW(texture.resizedDrawAt(2, paxs::Vector2<int>(0, 0)));
+    ASSERT_NO_THROW(texture.resizedDrawAt(paxs::Vector2<float>(2.0f, 2.0f), paxs::Vector2<float>(0.0f, 0.0f)));
+    ASSERT_NO_THROW(texture.resizedDrawAt(2, paxs::Vector2<float>(0.0f, 0.0f)));
 
-    ASSERT_NO_THROW(texture.resizedDraw(paxg::Vec2i(100, 100), paxg::Vec2i(0, 0)));
-    ASSERT_NO_THROW(texture.resizedDraw(2, paxg::Vec2i(0, 0)));
-    ASSERT_NO_THROW(texture.resizedDraw(paxg::Vec2f(2.0f, 2.0f), paxg::Vec2f(0.0f, 0.0f)));
-    ASSERT_NO_THROW(texture.resizedDraw(2, paxg::Vec2f(0.0f, 0.0f)));
+    ASSERT_NO_THROW(texture.resizedDraw(paxs::Vector2<int>(100, 100), paxs::Vector2<int>(0, 0)));
+    ASSERT_NO_THROW(texture.resizedDraw(2, paxs::Vector2<int>(0, 0)));
+    ASSERT_NO_THROW(texture.resizedDraw(paxs::Vector2<float>(2.0f, 2.0f), paxs::Vector2<float>(0.0f, 0.0f)));
+    ASSERT_NO_THROW(texture.resizedDraw(2, paxs::Vector2<float>(0.0f, 0.0f)));
 }
 
 #if defined(PAXS_USING_SIV3D)

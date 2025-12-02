@@ -24,28 +24,24 @@ namespace paxg {
 
         void setTitle(const std::string&) override {}
         void setSize(int, int) override {}
-        void setPosition(int, int) override {}
-        void setPosition(const Vec2i&) override {}
+        void setPosition(const paxs::Vector2<int>&) override {}
         void setIcon(const std::string&) override {}
         void setVisible(bool) override {}
         void setVSync(bool) override {}
         void setFPS(int) override {}
         void setMouseCursorVisible(bool) override {}
-        void setMouseCursorGrabbed(bool) override {}
         void setMouseCursor(const std::string&) override {}
-        void setMousePosition(int, int) override {}
-        void setMousePosition(const Vec2i&) override {}
-        void setKeyRepeat(bool) override {}
+        void setMousePosition(const paxs::Vector2<int>&) override {}
         void setBackgroundColor(const Color) override {}
         void setLetterbox(const Color) override {}
         void setResizable(bool) override {}
         void setDecorated(bool) override {}
 
-        Vec2i center() const override { return Vec2i{}; }
+        paxs::Vector2<int> center() const override { return {0, 0}; }
         int width() const override { return 1; }
         int height() const override { return 1; }
-        Vec2i size() const override { return Vec2i{}; }
-        Vec2i getMousePosition() const override { return Vec2i(0, 0); }
+        paxs::Vector2<int> size() const override { return {0, 0}; }
+        paxs::Vector2<int> getMousePosition() const override { return {0, 0}; }
         bool hasFocus() const override { return false; }
 
         void clear() override {}

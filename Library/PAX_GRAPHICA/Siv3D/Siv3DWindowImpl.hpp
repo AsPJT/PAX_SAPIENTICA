@@ -39,12 +39,8 @@ namespace paxg {
             s3d::Window::Resize(width, height);
         }
 
-        void setPosition(int x, int y) override {
-            s3d::Window::SetPos(x, y);
-        }
-
-        void setPosition(const Vec2i& pos) override {
-            s3d::Window::SetPos(static_cast<s3d::int32>(pos.x()), static_cast<s3d::int32>(pos.y()));
+        void setPosition(const paxs::Vector2<int>& pos) override {
+            s3d::Window::SetPos(static_cast<s3d::int32>(pos.x), static_cast<s3d::int32>(pos.y));
         }
 
         void setIcon(const std::string& /*path*/) override {
@@ -68,24 +64,12 @@ namespace paxg {
             // Siv3D does not support mouse cursor visibility control
         }
 
-        void setMouseCursorGrabbed(bool) override {
-            // Siv3D does not support mouse cursor grabbing
-        }
-
         void setMouseCursor(const std::string& path) override {
             s3d::Cursor::RequestStyle(s3d::Unicode::FromUTF8(path));
         }
 
-        void setMousePosition(int x, int y) override {
-            s3d::Cursor::SetPos(x, y);
-        }
-
-        void setMousePosition(const Vec2i& pos) override {
-            s3d::Cursor::SetPos(static_cast<s3d::int32>(pos.x()), static_cast<s3d::int32>(pos.y()));
-        }
-
-        void setKeyRepeat(bool) override {
-            // Siv3D does not support key repeat control
+        void setMousePosition(const paxs::Vector2<int>& pos) override {
+            s3d::Cursor::SetPos(static_cast<s3d::int32>(pos.x), static_cast<s3d::int32>(pos.y));
         }
 
         void setBackgroundColor(const Color color) override {
@@ -112,8 +96,8 @@ namespace paxg {
             }
         }
 
-        Vec2i center() const override {
-            return Vec2i(s3d::Scene::Center().x, s3d::Scene::Center().y);
+        paxs::Vector2<int> center() const override {
+            return paxs::Vector2<int>(s3d::Scene::Center().x, s3d::Scene::Center().y);
         }
 
         int width() const override {
@@ -124,12 +108,12 @@ namespace paxg {
             return s3d::Scene::Height();
         }
 
-        Vec2i size() const override {
-            return Vec2i(s3d::Scene::Width(), s3d::Scene::Height());
+        paxs::Vector2<int> size() const override {
+            return paxs::Vector2<int>(s3d::Scene::Width(), s3d::Scene::Height());
         }
 
-        Vec2i getMousePosition() const override {
-            return Vec2i(static_cast<std::int_least32_t>(s3d::Cursor::PosF().x),
+        paxs::Vector2<int> getMousePosition() const override {
+            return paxs::Vector2<int>(static_cast<std::int_least32_t>(s3d::Cursor::PosF().x),
                         static_cast<std::int_least32_t>(s3d::Cursor::PosF().y));
         }
 
@@ -152,6 +136,6 @@ namespace paxg {
 
 } // namespace paxg
 
-#endif // defined(PAXS_USING_SIV3D)
+#endif // PAXS_USING_SIV3D
 
 #endif // !PAX_GRAPHICA_SIV3D_WINDOW_IMPL_HPP
