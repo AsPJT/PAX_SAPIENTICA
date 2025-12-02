@@ -89,9 +89,10 @@ namespace paxs {
         bool has_ja_jp = false;
         bool has_en_us = false;
 
-        /// @brief TsvTableから各カラムの存在を確認して設定
-        /// @brief Set column existence flags from TsvTable
-        void setFromTable(const TsvTable& table, const ColumnHashes& hashes) {
+        /// @brief TsvTable/UnifiedTableから各カラムの存在を確認して設定
+        /// @brief Set column existence flags from TsvTable/UnifiedTable
+        template<typename TableType>
+        void setFromTable(const TableType& table, const ColumnHashes& hashes) {
             has_key = table.hasColumn(hashes.key);
             has_overall_length = table.hasColumn(hashes.overall_length);
             has_x_size = table.hasColumn(hashes.x_size);
@@ -217,10 +218,11 @@ namespace paxs {
             return MurMur3::calcHash(texture_str.size(), texture_str.c_str());
         }
 
-        /// @brief 行データを完全に読み込む
-        /// @brief Load complete row data
+        /// @brief 行データを完全に読み込む (TsvTable/UnifiedTable対応)
+        /// @brief Load complete row data (supports TsvTable/UnifiedTable)
+        template<typename TableType>
         static std::optional<LocationRowData> loadRowData(
-            const TsvTable& table,
+            const TableType& table,
             std::size_t row_index,
             const ColumnHashes& hashes,
             const ColumnFlags& flags,
@@ -285,14 +287,16 @@ namespace paxs {
             // テクスチャハッシュの計算
             data.texture_hash = calculateTextureHash(texture_str, params.texture_hash);
 
-            // 追加カラムの読み込み
-            const std::vector<std::uint_least32_t>& header_keys = table.getHeaderKeys();
-            for (const auto& column_hash : header_keys) {
-                // 標準カラムでない場合は extra_data に格納
-                if (!location_data_loader_detail::isStandardColumn(column_hash, hashes)) {
-                    const std::string& value = table.get(row_index, column_hash);
-                    if (!value.empty()) {
-                        data.extra_data.emplace(column_hash, value);
+            // 追加カラムの読み込み (TsvTableのみ対応)
+            if constexpr (std::is_same_v<TableType, TsvTable>) {
+                const std::vector<std::uint_least32_t>& header_keys = table.getHeaderKeys();
+                for (const auto& column_hash : header_keys) {
+                    // 標準カラムでない場合は extra_data に格納
+                    if (!location_data_loader_detail::isStandardColumn(column_hash, hashes)) {
+                        const std::string& value = table.get(row_index, column_hash);
+                        if (!value.empty()) {
+                            data.extra_data.emplace(column_hash, value);
+                        }
                     }
                 }
             }
@@ -301,6 +305,5 @@ namespace paxs {
         }
     };
 
-} // namespace paxs
-
+}
 #endif // !PAX_SAPIENTICA_MAP_REPOSITORY_LOCATION_DATA_LOADER_HPP
