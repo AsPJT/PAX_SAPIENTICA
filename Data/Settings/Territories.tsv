@@ -1,6 +1,6 @@
 ﻿key	file_path	type	description	min_size	max_size	first_year	last_year	color	line_width
-Territories1	Data/Territories/Sakishima/Shimotabaru.tsv	view_territory	下田原文化	0	100	-2500	-1500	black	55.5
-Territories2	Data/Territories/Sakishima/Mudoki.tsv	view_territory	先島無土器文化	0	100	-200	1200	black	55.5
-Territories3	Data/Territories/Ryukyu/Kaizuka.tsv	view_territory	沖縄貝塚文化	0	100	-4400	1200	black	55.5
-Territories4	Data/Territories/Lapita.tsv	view_territory	ラピタ文化	0	100	-1600	-500	black	55.5
-Territories4	Data/Territories/Afanasievo.tsv	view_territory	???	0	200	-3300	-2500	black	55.5
+Territories1	Data/Territories/Sakishima/Shimotabaru.tsv	view_territory	下田原文化	0	100	-2500	-1500	#888888	55.5
+Territories2	Data/Territories/Sakishima/Mudoki.tsv	view_territory	先島無土器文化	0	100	-200	1200	#888888	55.5
+Territories3	Data/Territories/Ryukyu/Kaizuka.tsv	view_territory	沖縄貝塚文化	0	100	-4400	1200	#888888	55.5
+Territories4	Data/Territories/Lapita.tsv	view_territory	ラピタ文化	0	100	-1600	-500	#888888	55.5
+Territories4	Data/Territories/Afanasievo.tsv	view_territory	???	0	200	-3300	-2500	#888888	55.5

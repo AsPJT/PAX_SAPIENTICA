@@ -1,5 +1,5 @@
 ﻿key	file_path	type	description	min_size	max_size	first_year	last_year	color	line_width
-Test1	Data/FlowCurves/Kuroshio.tsv	view_flow_curve	黒潮	0	200	-2500	1500	black	55.5
-Test2	Data/FlowCurves/Tsushima.tsv	view_flow_curve	対馬海流	0	200	-2500	1500	black	55.5
-Test3	Data/FlowCurves/EastKorea.tsv	view_flow_curve	東朝鮮暖流	0	200	-2500	1500	black	55.5
-Test4	Data/FlowCurves/GulfStream.tsv	view_flow_curve	メキシコ湾流	0	200	-2500	1500	black	55.5
+Test1	Data/FlowCurves/Kuroshio.tsv	view_flow_curve	黒潮	0	200	-2500	1500	#3C6491	55.5
+Test2	Data/FlowCurves/Tsushima.tsv	view_flow_curve	対馬海流	0	200	-2500	1500	#5B88BC	55.5
+Test3	Data/FlowCurves/EastKorea.tsv	view_flow_curve	東朝鮮暖流	0	200	-2500	1500	#5B88BC	55.5
+Test4	Data/FlowCurves/GulfStream.tsv	view_flow_curve	メキシコ湾流	0	200	-2500	1500	#5B88BC	55.5
