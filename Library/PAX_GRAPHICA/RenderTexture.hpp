@@ -15,11 +15,11 @@
 #include <memory>
 
 #include <PAX_GRAPHICA/ColorF.hpp>
-#include <PAX_GRAPHICA/RenderTextureImpl.hpp>
-#include <PAX_GRAPHICA/implementations/NullRenderTextureImpl.hpp>
+#include <PAX_GRAPHICA/Interface/RenderTextureImpl.hpp>
+#include <PAX_GRAPHICA/Null/NullRenderTextureImpl.hpp>
 
 #if defined(PAXS_USING_SIV3D)
-#include <PAX_GRAPHICA/implementations/Siv3DRenderTextureImpl.hpp>
+#include <PAX_GRAPHICA/Siv3D/Siv3DRenderTextureImpl.hpp>
 #endif
 
 namespace paxg {

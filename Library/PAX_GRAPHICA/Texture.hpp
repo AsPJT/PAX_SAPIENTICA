@@ -15,18 +15,18 @@
 #include <memory>
 
 #if defined(PAXS_USING_SIV3D)
-#include <PAX_GRAPHICA/implementations/Siv3DTextureImpl.hpp>
+#include <PAX_GRAPHICA/Siv3D/Siv3DTextureImpl.hpp>
 #elif defined(PAXS_USING_DXLIB)
-#include <PAX_GRAPHICA/implementations/DxLibTextureImpl.hpp>
+#include <PAX_GRAPHICA/DxLib/DxLibTextureImpl.hpp>
 #elif defined(PAXS_USING_SFML)
-#include <PAX_GRAPHICA/implementations/SFMLTextureImpl.hpp>
+#include <PAX_GRAPHICA/SFML/SFMLTextureImpl.hpp>
 #else
-#include <PAX_GRAPHICA/implementations/NullTextureImpl.hpp>
+#include <PAX_GRAPHICA/Null/NullTextureImpl.hpp>
 #endif
 
 #include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/String.hpp>
-#include <PAX_GRAPHICA/TextureImpl.hpp>
+#include <PAX_GRAPHICA/Interface/TextureImpl.hpp>
 
 namespace paxg {
 

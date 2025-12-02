@@ -12,7 +12,7 @@
 #ifndef PAX_GRAPHICA_NULL_RENDER_TEXTURE_IMPL_HPP
 #define PAX_GRAPHICA_NULL_RENDER_TEXTURE_IMPL_HPP
 
-#include <PAX_GRAPHICA/RenderTextureImpl.hpp>
+#include <PAX_GRAPHICA/Interface/RenderTextureImpl.hpp>
 
 namespace paxg {
 

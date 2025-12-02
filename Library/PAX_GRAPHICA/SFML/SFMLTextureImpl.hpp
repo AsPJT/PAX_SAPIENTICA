@@ -16,7 +16,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <PAX_GRAPHICA/Image.hpp>
-#include <PAX_GRAPHICA/TextureImpl.hpp>
+#include <PAX_GRAPHICA/Interface/TextureImpl.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 

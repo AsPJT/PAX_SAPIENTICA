@@ -12,7 +12,7 @@
 #ifndef PAX_GRAPHICA_SIV3D_RENDER_TEXTURE_IMPL_HPP
 #define PAX_GRAPHICA_SIV3D_RENDER_TEXTURE_IMPL_HPP
 
-#include <PAX_GRAPHICA/RenderTextureImpl.hpp>
+#include <PAX_GRAPHICA/Interface/RenderTextureImpl.hpp>
 
 #if defined(PAXS_USING_SIV3D)
 #include <Siv3D.hpp>

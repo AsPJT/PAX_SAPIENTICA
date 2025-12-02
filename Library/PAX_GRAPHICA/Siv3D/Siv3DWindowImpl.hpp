@@ -16,7 +16,7 @@
 
 #include <Siv3D.hpp>
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
+#include <PAX_GRAPHICA/Interface/WindowImpl.hpp>
 
 namespace paxg {
 

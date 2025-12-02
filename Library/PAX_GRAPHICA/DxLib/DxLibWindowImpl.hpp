@@ -22,7 +22,7 @@
 #include <Windows.h>
 #endif // PAXS_PLATFORM_WINDOWS
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
+#include <PAX_GRAPHICA/Interface/WindowImpl.hpp>
 
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/AppConst.hpp>

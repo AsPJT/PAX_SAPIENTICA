@@ -13,7 +13,7 @@
 #define PAX_GRAPHICA_NULL_TEXTURE_IMPL_HPP
 
 #include <PAX_GRAPHICA/Image.hpp>
-#include <PAX_GRAPHICA/TextureImpl.hpp>
+#include <PAX_GRAPHICA/Interface/TextureImpl.hpp>
 
 namespace paxg {
 

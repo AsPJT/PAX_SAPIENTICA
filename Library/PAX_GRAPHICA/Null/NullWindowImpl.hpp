@@ -12,7 +12,7 @@
 #ifndef PAX_GRAPHICA_NULL_WINDOW_IMPL_HPP
 #define PAX_GRAPHICA_NULL_WINDOW_IMPL_HPP
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
+#include <PAX_GRAPHICA/Interface/WindowImpl.hpp>
 
 namespace paxg {
 

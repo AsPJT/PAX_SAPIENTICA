@@ -18,16 +18,16 @@
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 #if defined(PAXS_USING_SIV3D)
-#include <PAX_GRAPHICA/implementations/Siv3DWindowImpl.hpp>
+#include <PAX_GRAPHICA/Siv3D/Siv3DWindowImpl.hpp>
 #elif defined(PAXS_USING_DXLIB)
-#include <PAX_GRAPHICA/implementations/DxLibWindowImpl.hpp>
+#include <PAX_GRAPHICA/DxLib/DxLibWindowImpl.hpp>
 #elif defined(PAXS_USING_SFML)
-#include <PAX_GRAPHICA/implementations/SFMLWindowImpl.hpp>
+#include <PAX_GRAPHICA/SFML/SFMLWindowImpl.hpp>
 #else
-#include <PAX_GRAPHICA/implementations/NullWindowImpl.hpp>
+#include <PAX_GRAPHICA/Null/NullWindowImpl.hpp>
 #endif
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
+#include <PAX_GRAPHICA/Interface/WindowImpl.hpp>
 
 namespace paxg {
 
