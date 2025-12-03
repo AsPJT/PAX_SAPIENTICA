@@ -12,8 +12,7 @@
 #ifndef PAX_GRAPHICA_SFML_WINDOW_IMPL_HPP
 #define PAX_GRAPHICA_SFML_WINDOW_IMPL_HPP
 
-#if defined(PAXS_USING_SFML)
-
+#ifdef PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
 
 #include <PAX_GRAPHICA/Interface/WindowImpl.hpp>

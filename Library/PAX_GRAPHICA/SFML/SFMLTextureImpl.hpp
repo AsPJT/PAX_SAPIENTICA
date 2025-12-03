@@ -12,8 +12,7 @@
 #ifndef PAX_GRAPHICA_SFML_TEXTURE_IMPL_HPP
 #define PAX_GRAPHICA_SFML_TEXTURE_IMPL_HPP
 
-#if defined(PAXS_USING_SFML)
-
+#ifdef PAXS_USING_SFML
 #include <algorithm> // std::min を使用するために追加
 #include <cmath>     // std::min がfloatで曖昧な場合のため (fminでも可)
 
@@ -174,6 +173,6 @@ namespace paxg {
 
 } // namespace paxg
 
-#endif // defined(PAXS_USING_SFML)
+#endif // PAXS_USING_SFML
 
 #endif // !PAX_GRAPHICA_SFML_TEXTURE_IMPL_HPP

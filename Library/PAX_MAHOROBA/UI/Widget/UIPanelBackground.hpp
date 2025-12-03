@@ -19,6 +19,8 @@
 #include <PAX_MAHOROBA/UI/UILayout.hpp>
 #include <PAX_MAHOROBA/UI/Widget/PanelBackgroundRenderer.hpp>
 
+#include <PAX_SAPIENTICA/Utility/Logger.hpp>
+
 namespace paxs {
 
     /// @brief UIパネルの背景を描画するクラス

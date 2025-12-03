@@ -12,8 +12,7 @@
 #ifndef PAX_GRAPHICA_DXLIB_TEXTURE_IMPL_HPP
 #define PAX_GRAPHICA_DXLIB_TEXTURE_IMPL_HPP
 
-#if defined(PAXS_USING_DXLIB)
-
+#ifdef PAXS_USING_DXLIB
 #include <DxLib.h>
 
 #include <PAX_GRAPHICA/Image.hpp>
@@ -200,6 +199,6 @@ namespace paxg {
 
 } // namespace paxg
 
-#endif // defined(PAXS_USING_DXLIB)
+#endif // PAXS_USING_DXLIB
 
 #endif // !PAX_GRAPHICA_DXLIB_TEXTURE_IMPL_HPP

@@ -12,8 +12,7 @@
 #ifndef PAX_GRAPHICA_SIV3D_WINDOW_IMPL_HPP
 #define PAX_GRAPHICA_SIV3D_WINDOW_IMPL_HPP
 
-#if defined(PAXS_USING_SIV3D)
-
+#ifdef PAXS_USING_SIV3D
 #include <Siv3D.hpp>
 
 #include <PAX_GRAPHICA/Interface/WindowImpl.hpp>

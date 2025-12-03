@@ -12,8 +12,7 @@
 #ifndef PAX_GRAPHICA_DXLIB_WINDOW_IMPL_HPP
 #define PAX_GRAPHICA_DXLIB_WINDOW_IMPL_HPP
 
-#if defined(PAXS_USING_DXLIB)
-
+#ifdef PAXS_USING_DXLIB
 #include <DxLib.h>
 
 #include <PAX_SAPIENTICA/Core/Platform.hpp>
