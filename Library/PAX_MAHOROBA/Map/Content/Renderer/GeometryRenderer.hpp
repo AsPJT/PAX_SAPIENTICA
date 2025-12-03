@@ -60,17 +60,17 @@ protected:
     static bool drawTexture(
         const UnorderedMap<std::uint_least32_t, paxg::Texture>& texture_map,
         std::uint_least32_t texture_key,
-        const paxg::Vec2<double>& draw_pos,
+        const paxs::Vector2<double>& draw_pos,
         int size
     ) {
         if (texture_key == 0) {
             return false;
         }
-        auto iter = texture_map.find(texture_key);
-        if (iter == texture_map.end()) {
+        const auto* const ptr = texture_map.try_get(texture_key);
+        if (ptr == nullptr) {
             return false;
         }
-        iter->second.resizedDrawAt(size, draw_pos);
+        ptr->resizedDrawAt(size, draw_pos);
         return true;
     }
 };

@@ -73,7 +73,7 @@ public:
             Fonts().getFont(FontProfiles::ui_medium)
         );
 
-        // 非同期初期化を開始
+        // 非同期初期化を開始 (Phase 1: 描画APIを使わない処理のみ)
         init_loading_handle_ = startAsyncTask<bool>([this](ProgressToken<bool>& token) {
             // Localesシステムを初期化（時間がかかる処理）
             // 進捗範囲: 0.05 ～ 0.65
@@ -88,59 +88,9 @@ public:
             token.setMessage("Creating ApplicationEventHandler...");
             this->event_handler_ = std::make_unique<ApplicationEventHandler>(*this->app_state_);
 
-            // InputManager作成（入力処理統合）
+            // Phase 1完了
             token.setProgress(0.7f);
-            token.setMessage("Creating InputManager...");
-            this->input_manager_ = std::make_unique<InputManager>();
-
-            // AppComponentManager作成（コンポーネント統合管理）
-            token.setProgress(0.75f);
-            token.setMessage("Creating AppComponentManager...");
-            this->component_manager_ = std::make_unique<AppComponentManager>(*this->app_state_);
-
-            // 入力ハンドラー作成と登録
-            token.setProgress(0.8f);
-            token.setMessage("Creating input handlers...");
-            this->map_viewport_input_handler_ = std::make_unique<MapViewportInputHandler>(
-                this->app_state_->getMapViewportForInputHandler()
-            );
-            this->ui_input_handler_ = std::make_unique<UIInputHandler>();
-
-#ifdef PAXS_DEVELOPMENT
-            this->debug_input_handler_ = std::make_unique<DebugInputHandler>(
-                &this->component_manager_->getDebugLayer()
-            );
-#endif
-
-            // InputManagerに入力ハンドラーを登録
-            token.setProgress(0.85f);
-            token.setMessage("Registering input handlers...");
-            this->input_manager_->registerHandler(this->map_viewport_input_handler_.get());
-            this->input_manager_->registerHandler(this->ui_input_handler_.get());
-#ifdef PAXS_DEVELOPMENT
-            this->input_manager_->registerHandler(this->debug_input_handler_.get());
-#endif
-
-            // AppComponentManagerが内部のウィジェット/ハンドラーを登録
-            token.setProgress(0.9f);
-            token.setMessage("Registering widgets...");
-            this->component_manager_->registerToInputHandlers(
-                *this->ui_input_handler_,
-                this->input_manager_->getInputRouter()
-            );
-
-#ifdef PAXS_DEVELOPMENT
-            // デバッグコンソールにカスタムコマンドを登録
-            token.setProgress(0.95f);
-            token.setMessage("Registering debug commands...");
-            DebugConsoleCommandRegistry::registerAllCommands(
-                this->component_manager_->getDebugLayer().getConsole(),
-                *this->app_state_
-            );
-#endif
-
-            token.setProgress(1.0f);
-            token.setMessage("Initialization complete!");
+            token.setMessage("Phase 1 complete. Waiting for Phase 2 on main thread...");
             return true;
         });
     }
@@ -195,6 +145,53 @@ private:
     std::unique_ptr<paxg::Texture> loading_texture_;  ///< ローディング画面の画像 / Loading screen texture
     int last_window_width_ = 0;   ///< 前回のウィンドウ幅 / Last window width
     int last_window_height_ = 0;  ///< 前回のウィンドウ高さ / Last window height
+    bool phase1_completed_ = false;  ///< Phase1完了フラグ / Phase1 completion flag
+    bool phase2_completed_ = false;  ///< Phase2完了フラグ / Phase2 completion flag
+
+    /// @brief Phase 2の初期化を実行（メインスレッドで実行、描画APIを使用）
+    /// @brief Execute Phase 2 initialization (runs on main thread, uses drawing APIs)
+    void performPhase2Initialization() {
+        // InputManager作成（paxg::Window::width/height()を使用）
+        this->input_manager_ = std::make_unique<InputManager>();
+
+        // AppComponentManager作成（paxg::Window, paxg::Font, paxg::Textureを使用）
+        this->component_manager_ = std::make_unique<AppComponentManager>(*this->app_state_);
+
+        // 入力ハンドラー作成と登録
+        this->map_viewport_input_handler_ = std::make_unique<MapViewportInputHandler>(
+            this->app_state_->getMapViewportForInputHandler()
+        );
+        this->ui_input_handler_ = std::make_unique<UIInputHandler>();
+
+#ifdef PAXS_DEVELOPMENT
+        this->debug_input_handler_ = std::make_unique<DebugInputHandler>(
+            &this->component_manager_->getDebugLayer()
+        );
+#endif
+
+        // InputManagerに入力ハンドラーを登録
+        this->input_manager_->registerHandler(this->map_viewport_input_handler_.get());
+        this->input_manager_->registerHandler(this->ui_input_handler_.get());
+#ifdef PAXS_DEVELOPMENT
+        this->input_manager_->registerHandler(this->debug_input_handler_.get());
+#endif
+
+        // AppComponentManagerが内部のウィジェット/ハンドラーを登録
+        this->component_manager_->registerToInputHandlers(
+            *this->ui_input_handler_,
+            this->input_manager_->getInputRouter()
+        );
+
+#ifdef PAXS_DEVELOPMENT
+        // デバッグコンソールにカスタムコマンドを登録
+        DebugConsoleCommandRegistry::registerAllCommands(
+            this->component_manager_->getDebugLayer().getConsole(),
+            *this->app_state_
+        );
+#endif
+
+        phase2_completed_ = true;
+    }
 
     /// @brief 初期化中の更新処理
     void updateInitializingMode() {
@@ -228,15 +225,16 @@ private:
             const float scale_y = static_cast<float>(window_height) / texture_height;
             const float scale = (scale_x > scale_y) ? scale_x : scale_y;
 
-            const int scaled_width = static_cast<int>(texture_width * scale);
-            const int scaled_height = static_cast<int>(texture_height * scale);
+            const paxs::Vector2<int> scaled_size = paxs::Vector2<int>{
+                static_cast<int>(texture_width * scale),
+                static_cast<int>(texture_height * scale)
+            };
 
             // 中央配置の座標を計算
-            const int pos_x = (window_width - scaled_width) / 2;
-            const int pos_y = (window_height - scaled_height) / 2;
+            const paxs::Vector2<int> pos{(window_width - scaled_size.x) / 2, (window_height - scaled_size.y) / 2};
 
             // ローディング画像をリサイズして描画
-            loading_texture_->resizedDraw(paxg::Vec2i{scaled_width, scaled_height}, paxg::Vec2i{pos_x, pos_y});
+            loading_texture_->resizedDraw(scaled_size, pos);
         }
 
         // 進捗バーを描画
@@ -244,27 +242,41 @@ private:
             init_progress_bar_->render();
         }
 
-        // 2. ロード状態の更新（ロード完了のチェック）
+        // 2. ロード状態の更新（Phase 1完了 -> Phase 2実行 -> 完了チェック）
         // 描画後にチェックすることで、最後のフレームが確実に表示される
-        if (init_loading_handle_.isValid() && init_loading_handle_.isFinished()) {
+        if (init_loading_handle_.isValid() && init_loading_handle_.isFinished() && !phase1_completed_) {
+            // Phase 1が完了した
             const bool* result = init_loading_handle_.getResult();
 
             if ((result != nullptr) && *result) {
-                // 初期化成功 - アプリケーション状態をRunningに変更
-                app_state_->updateInitializationComplete();
+                phase1_completed_ = true;
 
-                // ローディング画面終了
-                paxs::PaxSapienticaInit::endLoadingScreen();
-
-                // 進捗バーとローディング画像をクリア
-                init_progress_bar_.reset();
-                loading_texture_.reset();
+                // Phase 2をメインスレッドで実行（描画APIを使用するため）
+                // 進捗バーのメッセージを更新
+                if (init_progress_bar_) {
+                    // Phase 2開始を示すためダミーのLoadingHandleを更新
+                    // 実際の進捗は手動で管理
+                }
+                performPhase2Initialization();
             } else {
-                // 初期化失敗
+                // Phase 1初期化失敗
                 if (init_loading_handle_.hasError()) {
-                    PAXS_ERROR("Application initialization failed");
+                    PAXS_ERROR("Application initialization Phase 1 failed");
                 }
             }
+        }
+
+        // Phase 2完了後、アプリケーション状態をRunningに変更
+        if (phase1_completed_ && phase2_completed_) {
+            // 初期化成功 - アプリケーション状態をRunningに変更
+            app_state_->updateInitializationComplete();
+
+            // ローディング画面終了
+            paxs::PaxSapienticaInit::endLoadingScreen();
+
+            // 進捗バーとローディング画像をクリア
+            init_progress_bar_.reset();
+            loading_texture_.reset();
         }
 
         // 3. タッチ入力の状態更新

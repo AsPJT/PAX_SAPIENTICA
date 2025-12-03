@@ -156,7 +156,7 @@ namespace paxs {
 #endif
             simulation_pulldown(
                 paxs::MurMur3::calcHash("SimulationModels"),
-                paxg::Vec2i{3000, 0},
+                paxs::Vector2<int>{3000, 0},
                 paxs::PulldownDisplayType::SelectedValue,
                 false
             )

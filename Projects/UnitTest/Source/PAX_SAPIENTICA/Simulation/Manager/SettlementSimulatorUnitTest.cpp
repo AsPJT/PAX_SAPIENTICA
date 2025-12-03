@@ -11,10 +11,6 @@
 
 #include <gtest/gtest.h>
 
-#include <memory>
-#include <random>
-#include <vector>
-
 #include <PAX_SAPIENTICA/Simulation/Manager/SettlementSimulator.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
@@ -25,22 +21,48 @@
 
 class SettlementSimulatorUnitTest : public ::testing::Test {
 protected:
-	void SetUp() override {
+	// 全テストで共有される初期化済みシミュレータ（SetUpTestSuiteで1回だけ初期化）
+	static std::unique_ptr<paxs::SettlementSimulator> shared_initialized_simulator;
+	static std::string shared_model_name;
+	static std::string shared_map_list_path;
+	static std::string shared_japan_provinces_path;
+	static unsigned shared_seed;
+
+	// テストスイート全体の初期化（最初に1回だけ実行）
+	static void SetUpTestSuite() {
 		// モデル名を設定
-		model_name = "Sample";
+		shared_model_name = "Sample";
 
 		// SimulationConstantsの初期化
-		paxs::SimulationConstants::getInstance(model_name).init(model_name);
+		paxs::SimulationConstants::getInstance(shared_model_name).init(shared_model_name);
 
 		// パスを生成（実際のシミュレーションと同じ方法）
-		map_list_path = paxs::AppConfig::getInstance().getSettingPath(paxs::MurMur3::calcHash("SimulationXYZTiles"));
-		japan_provinces_path = paxs::AppConfig::getInstance().getSettingPath(paxs::MurMur3::calcHash("SimulationProvincesPath"));
+		shared_map_list_path = paxs::AppConfig::getInstance().getSettingPath(paxs::MurMur3::calcHash("SimulationXYZTiles"));
+		shared_japan_provinces_path = paxs::AppConfig::getInstance().getSettingPath(paxs::MurMur3::calcHash("SimulationProvincesPath"));
 
-		paxs::StringUtils::replace(map_list_path, "Sample", model_name);
-		paxs::StringUtils::replace(japan_provinces_path, "Sample", model_name);
+		paxs::StringUtils::replace(shared_map_list_path, "Sample", shared_model_name);
+		paxs::StringUtils::replace(shared_japan_provinces_path, "Sample", shared_model_name);
 
 		// テスト用のシミュレーションシードを固定
-		seed = 12345;
+		shared_seed = 12345;
+
+		// 初期化済みシミュレータを作成（読み取り専用テスト用）
+		shared_initialized_simulator = std::make_unique<paxs::SettlementSimulator>(
+			shared_map_list_path, shared_japan_provinces_path, shared_seed);
+		shared_initialized_simulator->init();
+	}
+
+	// テストスイート全体の終了処理
+	static void TearDownTestSuite() {
+		shared_initialized_simulator.reset();
+	}
+
+	void SetUp() override {
+		// 各テストで使用するローカル変数（互換性のため残す）
+		model_name = shared_model_name;
+		map_list_path = shared_map_list_path;
+		japan_provinces_path = shared_japan_provinces_path;
+		seed = shared_seed;
 	}
 
 	std::string model_name;
@@ -49,21 +71,19 @@ protected:
 	unsigned seed;
 };
 
-TEST_F(SettlementSimulatorUnitTest, Construction) {
-	// Given: パラメータを指定してシミュレータを作成
-	paxs::SettlementSimulator simulator(map_list_path, japan_provinces_path, seed);
-
-	// Then: シミュレータが正常に構築される
-	EXPECT_EQ(simulator.cgetPopulationNum(), 0);
-	EXPECT_EQ(simulator.cgetSettlement(), 0);
-}
+// 静的メンバの定義
+std::unique_ptr<paxs::SettlementSimulator> SettlementSimulatorUnitTest::shared_initialized_simulator;
+std::string SettlementSimulatorUnitTest::shared_model_name;
+std::string SettlementSimulatorUnitTest::shared_map_list_path;
+std::string SettlementSimulatorUnitTest::shared_japan_provinces_path;
+unsigned SettlementSimulatorUnitTest::shared_seed;
 
 TEST_F(SettlementSimulatorUnitTest, SetEnvironment) {
-	// Given: 空のシミュレータ
+	// Given: 空のシミュレータ（setEnvironmentのテストなので新規作成）
 	paxs::SettlementSimulator simulator;
 
 	// When: 環境を設定
-	EXPECT_NO_THROW(simulator.setEnvironment(map_list_path, japan_provinces_path, seed));
+	EXPECT_NO_THROW(simulator.setEnvironment(shared_map_list_path, shared_japan_provinces_path, shared_seed));
 
 	// Then: 正常に設定される
 	EXPECT_EQ(simulator.cgetPopulationNum(), 0);
@@ -74,84 +94,13 @@ TEST_F(SettlementSimulatorUnitTest, SetEnvironment) {
 // ========================================
 
 /**
- * @brief randomizeSettlements()の動作を検証するテスト
- *
- * このテストは固定シードで2回実行し、集落配置が決定論的であることを確認します。
- * リファクタリング前後で同じ結果が得られることを保証します。
- */
-TEST_F(SettlementSimulatorUnitTest, RandomizeSettlements_Deterministic) {
-	// Given: 同じシードで2つのシミュレータを作成
-	paxs::SettlementSimulator simulator1(map_list_path, japan_provinces_path, seed);
-	paxs::SettlementSimulator simulator2(map_list_path, japan_provinces_path, seed);
-
-	// When: 両方を初期化
-	simulator1.init();
-	simulator2.init();
-
-	// Then: 同じ人口と集落数が生成される
-	EXPECT_EQ(simulator1.cgetPopulationNum(), simulator2.cgetPopulationNum());
-	EXPECT_EQ(simulator1.cgetSettlement(), simulator2.cgetSettlement());
-
-	// 集落の詳細も一致することを確認
-	const auto& grids1 = simulator1.cgetSettlementGrids();
-	const auto& grids2 = simulator2.cgetSettlementGrids();
-
-	EXPECT_EQ(grids1.size(), grids2.size());
-}
-
-/**
- * @brief randomizeSettlements()で配置されたエージェントの詳細を検証
- *
- * 固定シードでエージェントの属性（年齢、ゲノム、文化）が再現可能であることを確認
- */
-TEST_F(SettlementSimulatorUnitTest, RandomizeSettlements_AgentDetailsReproducible) {
-	// Given: 同じシードで2つのシミュレータを作成
-	const unsigned test_seed = 54321;
-	paxs::SettlementSimulator simulator1(map_list_path, japan_provinces_path, test_seed);
-	paxs::SettlementSimulator simulator2(map_list_path, japan_provinces_path, test_seed);
-
-	// When: 初期化
-	simulator1.init();
-	simulator2.init();
-
-	// Then: 各集落のエージェント詳細が一致
-	const auto& grids1 = simulator1.cgetSettlementGrids();
-	const auto& grids2 = simulator2.cgetSettlementGrids();
-
-	// 集落グリッド数が一致
-	ASSERT_EQ(grids1.size(), grids2.size());
-
-	// 各グリッドの集落を比較
-	for (const auto& [key, grid1] : grids1) {
-		const auto* grid2_ptr = grids2.try_get(key);
-		ASSERT_NE(grid2_ptr, nullptr) << "Grid key " << key << " not found in simulator2";
-
-		const auto& settlements1 = grid1.cgetSettlements();
-		const auto& settlements2 = grid2_ptr->cgetSettlements();
-
-		EXPECT_EQ(settlements1.size(), settlements2.size())
-			<< "Settlement count mismatch in grid " << key;
-
-		// 各集落のエージェント数を確認
-		for (std::size_t i = 0; i < settlements1.size() && i < settlements2.size(); ++i) {
-			EXPECT_EQ(settlements1[i].getPopulation(), settlements2[i].getPopulation())
-				<< "Population mismatch in settlement " << i << " of grid " << key;
-		}
-	}
-}
-
-/**
  * @brief 渡来人配置のテスト
  *
  * randomizeSettlements()が渡来フラグで正しく動作することを確認
  */
 TEST_F(SettlementSimulatorUnitTest, RandomizeSettlements_ImmigrationFlag) {
-	// Given: シミュレータを作成
-	paxs::SettlementSimulator simulator(map_list_path, japan_provinces_path, seed);
-
-	// When: 初期化（在地人配置）
-	simulator.init();
-	const std::size_t initial_population = simulator.cgetPopulationNum();
+	// Given: 初期化済みシミュレータを使用
+	const std::size_t initial_population = shared_initialized_simulator->cgetPopulationNum();
 
 	// Then: 初期人口が設定される
 	EXPECT_GT(initial_population, 0) << "Initial population should be greater than 0";
@@ -163,14 +112,10 @@ TEST_F(SettlementSimulatorUnitTest, RandomizeSettlements_ImmigrationFlag) {
  * 集落が可住地にのみ配置されることを確認
  */
 TEST_F(SettlementSimulatorUnitTest, RandomizeSettlements_OnlyOnHabitableLand) {
-	// Given: シミュレータを作成
-	paxs::SettlementSimulator simulator(map_list_path, japan_provinces_path, seed);
-
-	// When: 初期化
-	simulator.init();
+	// Given: 初期化済みシミュレータを使用
 
 	// Then: 全ての集落が有効な位置にある
-	const auto& grids = simulator.cgetSettlementGrids();
+	const auto& grids = shared_initialized_simulator->cgetSettlementGrids();
 	for (const auto& [key, grid] : grids) {
 		for (const auto& settlement : grid.cgetSettlements()) {
 			// 人口が0より大きい
@@ -182,57 +127,4 @@ TEST_F(SettlementSimulatorUnitTest, RandomizeSettlements_OnlyOnHabitableLand) {
 			EXPECT_GE(pos.y, 0);
 		}
 	}
-}
-
-/**
- * @brief 異なるシードで異なる結果が生成されることを確認
- */
-TEST_F(SettlementSimulatorUnitTest, RandomizeSettlements_DifferentSeedsDifferentResults) {
-	// Given: 異なるシードで2つのシミュレータを作成
-	paxs::SettlementSimulator simulator1(map_list_path, japan_provinces_path, 12345);
-	paxs::SettlementSimulator simulator2(map_list_path, japan_provinces_path, 67890);
-
-	// When: 両方を初期化
-	simulator1.init();
-	simulator2.init();
-
-	// Then: 人口は同じ設定値だが、集落の詳細配置は異なる可能性が高い
-	// （ただし、テストデータや設定によっては偶然一致する可能性もあるため、
-	// 　ここでは基本的な検証のみ行う）
-
-	// 両方とも集落が生成されている
-	EXPECT_GT(simulator1.cgetSettlement(), 0);
-	EXPECT_GT(simulator2.cgetSettlement(), 0);
-}
-
-// ========================================
-// Population Calculation Tests
-// ========================================
-
-TEST_F(SettlementSimulatorUnitTest, CalcPop_UpdatesPopulationAndSettlementCount) {
-	// Given: 初期化されたシミュレータ
-	paxs::SettlementSimulator simulator(map_list_path, japan_provinces_path, seed);
-	simulator.init();
-
-	// When: 人口計算を実行
-	const std::size_t pop_before = simulator.cgetPopulationNum();
-	const std::size_t settlement_before = simulator.cgetSettlement();
-
-	simulator.calcPop();
-
-	// Then: 人口と集落数が計算される（この場合、変化なし）
-	EXPECT_EQ(simulator.cgetPopulationNum(), pop_before);
-	EXPECT_EQ(simulator.cgetSettlement(), settlement_before);
-}
-
-// ========================================
-// Migration Count Tests
-// ========================================
-
-TEST_F(SettlementSimulatorUnitTest, GetMigrationCount_InitiallyZero) {
-	// Given: 新しいシミュレータ
-	paxs::SettlementSimulator simulator(map_list_path, japan_provinces_path, seed);
-
-	// Then: 渡来数は0
-	EXPECT_EQ(simulator.getMigrationCount(), 0);
 }

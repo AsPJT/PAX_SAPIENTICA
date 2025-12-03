@@ -138,13 +138,12 @@ namespace paxs {
         /// @param key エンコードされたキー
         /// @return テクスチャへのポインタ（存在しない場合はnullptr）
         const TextureType* getTextureConst(std::uint_least64_t key) const {
-            const auto iterator = cache_map_.find(key);
-            if (iterator == cache_map_.end()) return nullptr;
+            const auto* const ptr = cache_map_.try_get(key);
+            if (ptr == nullptr || !ptr->texture.has_value()) {
+                return nullptr;
+            }
 
-            const CacheEntry& entry = iterator->second;
-            if (!entry.texture.has_value()) return nullptr;
-
-            return &(entry.texture.value());
+            return &(ptr->texture.value());
         }
 
         /// @brief 指定座標のテクスチャを取得（const版、LRU更新なし）

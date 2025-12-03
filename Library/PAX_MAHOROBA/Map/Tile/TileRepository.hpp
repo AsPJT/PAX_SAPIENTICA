@@ -31,10 +31,7 @@ namespace paxs {
     private:
         // 項目の ID を返す
         static std::size_t getMenuIndexMap(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-            // Key が登録されていたら Key の中身（添え字）を返す
-            const auto iterator = menu.find(str_);
-            return iterator != menu.end() ? iterator->second :
-                SIZE_MAX; // 登録されていない場合は最大値を返す
+            return menu.value_or(str_, SIZE_MAX);
         }
 
     public:

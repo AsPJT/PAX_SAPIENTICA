@@ -35,16 +35,12 @@ namespace paxs {
 
         // 項目の ID を返す
          std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-            const auto iterator = menu.find(str_);
-            return iterator != menu.end() ? iterator->second : SIZE_MAX;
+            return menu.value_or(str_, SIZE_MAX);
         }
     public:
 
         void emplace(const std::uint_least32_t key_, const Value& value_) {
             path_list.emplace(key_, value_);
-        }
-        bool contains(const std::uint_least32_t key_) const {
-            return path_list.contains(key_);
         }
 
         UnorderedMap<std::uint_least32_t, Value>& get() {
@@ -126,12 +122,10 @@ namespace paxs {
             return path_list.at(key_);
         }
 
-        /// @brief 要素にアクセス、存在しない場合はデフォルト値のコピーを返す
-        Value getOrDefault(std::uint_least32_t key_) const {
-            const auto iterator = path_list.find(key_);
-            return iterator != path_list.end() ? iterator->second : Value{};
+        /// @brief 要素にアクセス、存在しない場合は nullptr を返す
+        const Value* try_get(std::uint_least32_t key_) const {
+            return path_list.try_get(key_);
         }
-
     };
 
 }

@@ -20,11 +20,32 @@
 
 // Settlement クラスの基本的なテスト
 
-TEST(SettlementUnitTest, Construction) {
-	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
+// Test Fixture: environment を共有することでテスト高速化
+class SettlementUnitTest : public ::testing::Test {
+protected:
+	// 全テストで共有される environment（SetUpTestSuiteで1回だけ初期化）
+	static std::shared_ptr<paxs::Environment> shared_environment;
+	static paxs::KanakumaLifeSpan shared_life_span;
 
-	paxs::Settlement settlement(1, gen, environment);
+	// テストスイート全体の初期化（最初に1回だけ実行）
+	static void SetUpTestSuite() {
+		shared_environment = std::make_shared<paxs::Environment>();
+	}
+
+	// テストスイート全体の終了処理
+	static void TearDownTestSuite() {
+		shared_environment.reset();
+	}
+};
+
+// 静的メンバの定義
+std::shared_ptr<paxs::Environment> SettlementUnitTest::shared_environment;
+paxs::KanakumaLifeSpan SettlementUnitTest::shared_life_span;
+
+TEST_F(SettlementUnitTest, Construction) {
+	std::mt19937 gen(12345);
+
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// IDが正しく設定されていることを確認
 	EXPECT_EQ(settlement.getId(), 1);
@@ -33,11 +54,10 @@ TEST(SettlementUnitTest, Construction) {
 	EXPECT_EQ(settlement.getPopulation(), 0);
 }
 
-TEST(SettlementUnitTest, AddAgent) {
+TEST_F(SettlementUnitTest, AddAgent) {
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
 
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// エージェントを追加
 	paxs::SettlementAgent agent(1, 0, 100, paxs::Genome(), 0, 0, 0);
@@ -47,11 +67,10 @@ TEST(SettlementUnitTest, AddAgent) {
 	EXPECT_EQ(settlement.getPopulation(), 1);
 }
 
-TEST(SettlementUnitTest, Position) {
+TEST_F(SettlementUnitTest, Position) {
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
 
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Vector2<paxs::GridType> pos(100, 200);
 	settlement.setPosition(pos);
@@ -59,11 +78,10 @@ TEST(SettlementUnitTest, Position) {
 	EXPECT_EQ(settlement.getPosition(), pos);
 }
 
-TEST(SettlementUnitTest, ClearAgents) {
+TEST_F(SettlementUnitTest, ClearAgents) {
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
 
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// エージェントを複数追加
 	for (int i = 0; i < 5; ++i) {
@@ -79,11 +97,10 @@ TEST(SettlementUnitTest, ClearAgents) {
 	EXPECT_EQ(settlement.getPopulation(), 0);
 }
 
-TEST(SettlementUnitTest, GetPopulationWeight) {
+TEST_F(SettlementUnitTest, GetPopulationWeight) {
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
 
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// 農耕民を追加
 	paxs::SettlementAgent farming_agent(1, 0, 100, paxs::Genome(), 100, 0, 0);
@@ -102,11 +119,10 @@ TEST(SettlementUnitTest, GetPopulationWeight) {
 // Death Logic Tests
 // ========================================
 
-TEST(SettlementUnitTest, Death_RemovesAgentsWhoExceedLifespan) {
+TEST_F(SettlementUnitTest, Death_RemovesAgentsWhoExceedLifespan) {
 	// Given: 集落と寿命が尽きるエージェント
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome genome;
 	genome.setYDNA(1); // Male
@@ -131,11 +147,10 @@ TEST(SettlementUnitTest, Death_RemovesAgentsWhoExceedLifespan) {
 	EXPECT_EQ(settlement.getAgents()[0].getId(), 2);
 }
 
-TEST(SettlementUnitTest, Death_IncrementsAge) {
+TEST_F(SettlementUnitTest, Death_IncrementsAge) {
 	// Given: 集落と若いエージェント
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome genome;
 	genome.setYDNA(1);
@@ -151,11 +166,10 @@ TEST(SettlementUnitTest, Death_IncrementsAge) {
 	EXPECT_EQ(settlement.getAgents()[0].getAgeInt(), initial_age + 1);
 }
 
-TEST(SettlementUnitTest, Death_DivorcesPartnerWhenAgentDies) {
+TEST_F(SettlementUnitTest, Death_DivorcesPartnerWhenAgentDies) {
 	// Given: 既婚のカップルがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome female_genome, male_genome;
 	female_genome.setYDNA(0); // Female
@@ -189,12 +203,10 @@ TEST(SettlementUnitTest, Death_DivorcesPartnerWhenAgentDies) {
 // Birth Logic Tests
 // ========================================
 
-TEST(SettlementUnitTest, Birth_CreatesChildWhenBirthIntervalReachesZero) {
+TEST_F(SettlementUnitTest, Birth_CreatesChildWhenBirthIntervalReachesZero) {
 	// Given: 出産間隔カウントが1の妊娠中の女性
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
-	paxs::KanakumaLifeSpan life_span;
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome mother_genome, father_genome;
 	mother_genome.setMtDNA(10);
@@ -210,7 +222,7 @@ TEST(SettlementUnitTest, Birth_CreatesChildWhenBirthIntervalReachesZero) {
 	EXPECT_EQ(settlement.getPopulation(), 1);
 
 	// When: 出産処理を実行
-	settlement.preUpdate(life_span);
+	settlement.preUpdate(shared_life_span);
 
 	// Then: 子供が追加される（確率的に死産でなければ）
 	// Note: 死産率により失敗する可能性があるため、どちらも正常
@@ -218,12 +230,10 @@ TEST(SettlementUnitTest, Birth_CreatesChildWhenBirthIntervalReachesZero) {
 	EXPECT_TRUE(settlement.getPopulation() == 1 || settlement.getPopulation() == 2);
 }
 
-TEST(SettlementUnitTest, Birth_DecrementsBirthIntervalCount) {
+TEST_F(SettlementUnitTest, Birth_DecrementsBirthIntervalCount) {
 	// Given: 出産間隔カウントが5の女性
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
-	paxs::KanakumaLifeSpan life_span;
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome genome;
 	genome.setYDNA(0); // Female
@@ -234,18 +244,16 @@ TEST(SettlementUnitTest, Birth_DecrementsBirthIntervalCount) {
 	EXPECT_EQ(settlement.getAgents()[0].getBirthIntervalCount(), 5);
 
 	// When: 出産処理を実行
-	settlement.preUpdate(life_span);
+	settlement.preUpdate(shared_life_span);
 
 	// Then: カウントが減少
 	EXPECT_EQ(settlement.getAgents()[0].getBirthIntervalCount(), 4);
 }
 
-TEST(SettlementUnitTest, Birth_ChildInheritsGenomeFromParents) {
+TEST_F(SettlementUnitTest, Birth_ChildInheritsGenomeFromParents) {
 	// Given: 既婚の女性（カウント1）
 	std::mt19937 gen(54321); // Different seed for better randomness
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
-	paxs::KanakumaLifeSpan life_span;
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome mother_genome, father_genome;
 	mother_genome.setMtDNA(10);
@@ -260,7 +268,7 @@ TEST(SettlementUnitTest, Birth_ChildInheritsGenomeFromParents) {
 	settlement.addAgent(mother);
 
 	// When: 出産処理を実行
-	settlement.preUpdate(life_span);
+	settlement.preUpdate(shared_life_span);
 
 	// Then: 子供が生まれた場合、母のmtDNAを継承
 	if (settlement.getPopulation() > 1) {
@@ -268,12 +276,10 @@ TEST(SettlementUnitTest, Birth_ChildInheritsGenomeFromParents) {
 	}
 }
 
-TEST(SettlementUnitTest, Birth_ChildInheritsCultureFromParents) {
+TEST_F(SettlementUnitTest, Birth_ChildInheritsCultureFromParents) {
 	// Given: 農耕文化を持つ既婚カップル
 	std::mt19937 gen(11111);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
-	paxs::KanakumaLifeSpan life_span;
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome mother_genome, father_genome;
 	mother_genome.setYDNA(0);
@@ -288,7 +294,7 @@ TEST(SettlementUnitTest, Birth_ChildInheritsCultureFromParents) {
 	// When: 出産処理を実行（複数回試行して確実に出産させる）
 	for (int i = 0; i < 10 && settlement.getPopulation() == 1; ++i) {
 		settlement.getAgents()[0].setBirthIntervalCount(1);
-		settlement.preUpdate(life_span);
+		settlement.preUpdate(shared_life_span);
 	}
 
 	// Then: 子供が生まれた場合、両親の農耕文化の平均を継承
@@ -303,11 +309,10 @@ TEST(SettlementUnitTest, Birth_ChildInheritsCultureFromParents) {
 // Agent Management Tests
 // ========================================
 
-TEST(SettlementUnitTest, DeleteAgent_RemovesSpecificAgent) {
+TEST_F(SettlementUnitTest, DeleteAgent_RemovesSpecificAgent) {
 	// Given: 複数のエージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome genome;
 	paxs::SettlementAgent agent1(1, 20, 100, genome, 0, 0, 0);
@@ -327,11 +332,10 @@ TEST(SettlementUnitTest, DeleteAgent_RemovesSpecificAgent) {
 	EXPECT_EQ(settlement.getPopulation(), 2);
 }
 
-TEST(SettlementUnitTest, GetAgent_ReturnsCorrectAgent) {
+TEST_F(SettlementUnitTest, GetAgent_ReturnsCorrectAgent) {
 	// Given: 複数のエージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Genome genome;
 	// 年齢はステップ単位で指定
@@ -349,11 +353,10 @@ TEST(SettlementUnitTest, GetAgent_ReturnsCorrectAgent) {
 	EXPECT_EQ(retrieved.getAgeInt(), 30); // ステップ単位で比較
 }
 
-TEST(SettlementUnitTest, ResizeAgents_ChangesPopulation) {
+TEST_F(SettlementUnitTest, ResizeAgents_ChangesPopulation) {
 	// Given: エージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 5; ++i) {
 		settlement.addAgent(paxs::SettlementAgent(i, 20, 100, paxs::Genome(), 0, 0, 0));
@@ -372,11 +375,10 @@ TEST(SettlementUnitTest, ResizeAgents_ChangesPopulation) {
 // Position Management Tests
 // ========================================
 
-TEST(SettlementUnitTest, SetPosition_UpdatesOldPosition) {
+TEST_F(SettlementUnitTest, SetPosition_UpdatesOldPosition) {
 	// Given: 座標を持つ集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::Vector2<paxs::GridType> initial_pos(100, 200);
 	settlement.setPosition(initial_pos);
@@ -390,11 +392,10 @@ TEST(SettlementUnitTest, SetPosition_UpdatesOldPosition) {
 	EXPECT_EQ(settlement.getOldPosition(), initial_pos);
 }
 
-TEST(SettlementUnitTest, ClearOldPosition_ResetsOldPositionData) {
+TEST_F(SettlementUnitTest, ClearOldPosition_ResetsOldPositionData) {
 	// Given: 座標履歴を持つ集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	settlement.setPosition(paxs::Vector2<paxs::GridType>(100, 200));
 	settlement.setPosition(paxs::Vector2<paxs::GridType>(150, 250));
@@ -412,11 +413,10 @@ TEST(SettlementUnitTest, ClearOldPosition_ResetsOldPositionData) {
 // Population Weight Tests
 // ========================================
 
-TEST(SettlementUnitTest, GetPopulationWeight_WithMixedCultures_CalculatesCorrectly) {
+TEST_F(SettlementUnitTest, GetPopulationWeight_WithMixedCultures_CalculatesCorrectly) {
 	// Given: 異なる生業文化を持つエージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// 農耕文化レベル100のエージェント3人
 	for (int i = 0; i < 3; ++i) {
@@ -436,11 +436,10 @@ TEST(SettlementUnitTest, GetPopulationWeight_WithMixedCultures_CalculatesCorrect
 	EXPECT_LT(weight, 1000.0); // 妥当な範囲内
 }
 
-TEST(SettlementUnitTest, GetPopulationWeight_WithNoAgents_ReturnsZero) {
+TEST_F(SettlementUnitTest, GetPopulationWeight_WithNoAgents_ReturnsZero) {
 	// Given: エージェントがいない集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// When: 人口重みを計算
 	double weight = settlement.getPopulationWeight();
@@ -453,11 +452,10 @@ TEST(SettlementUnitTest, GetPopulationWeight_WithNoAgents_ReturnsZero) {
 // Language Tests
 // ========================================
 
-TEST(SettlementUnitTest, GetLanguage_ReturnsZeroWhenNoAgents) {
+TEST_F(SettlementUnitTest, GetLanguage_ReturnsZeroWhenNoAgents) {
 	// Given: エージェントがいない集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// When: 言語を取得
 	std::uint_least8_t language = settlement.getLanguage();
@@ -466,11 +464,10 @@ TEST(SettlementUnitTest, GetLanguage_ReturnsZeroWhenNoAgents) {
 	EXPECT_EQ(language, 0);
 }
 
-TEST(SettlementUnitTest, GetLanguage_ReturnsMostFrequentLanguage) {
+TEST_F(SettlementUnitTest, GetLanguage_ReturnsMostFrequentLanguage) {
 	// Given: 複数の言語を持つエージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// 言語5のエージェントを3人追加
 	for (int i = 0; i < 3; ++i) {
@@ -491,11 +488,10 @@ TEST(SettlementUnitTest, GetLanguage_ReturnsMostFrequentLanguage) {
 	EXPECT_EQ(language, 5);
 }
 
-TEST(SettlementUnitTest, GetLanguage_HandlesTieBreaking) {
+TEST_F(SettlementUnitTest, GetLanguage_HandlesTieBreaking) {
 	// Given: 同数の異なる言語を持つエージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// 言語3のエージェントを2人
 	for (int i = 0; i < 2; ++i) {
@@ -516,11 +512,10 @@ TEST(SettlementUnitTest, GetLanguage_HandlesTieBreaking) {
 	EXPECT_TRUE(language == 3 || language == 7);
 }
 
-TEST(SettlementUnitTest, GetLanguage_WorksWithSingleAgent) {
+TEST_F(SettlementUnitTest, GetLanguage_WorksWithSingleAgent) {
 	// Given: 1人のエージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::SettlementAgent agent(1, 20, 100, paxs::Genome(), 0, 0, 42);
 	settlement.addAgent(agent);
@@ -532,11 +527,10 @@ TEST(SettlementUnitTest, GetLanguage_WorksWithSingleAgent) {
 	EXPECT_EQ(language, 42);
 }
 
-TEST(SettlementUnitTest, GetLanguage_WorksWithAllSameLanguage) {
+TEST_F(SettlementUnitTest, GetLanguage_WorksWithAllSameLanguage) {
 	// Given: 全員が同じ言語を話す集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// 言語15のエージェントを10人追加
 	for (int i = 0; i < 10; ++i) {
@@ -555,11 +549,10 @@ TEST(SettlementUnitTest, GetLanguage_WorksWithAllSameLanguage) {
 // SNP Tests
 // ========================================
 
-TEST(SettlementUnitTest, GetSNP_ReturnsCorrectAverage) {
+TEST_F(SettlementUnitTest, GetSNP_ReturnsCorrectAverage) {
 	// Given: 異なるSNP値を持つエージェント
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// SNP=128のエージェントを3人
 	for (int i = 0; i < 3; ++i) {
@@ -585,11 +578,10 @@ TEST(SettlementUnitTest, GetSNP_ReturnsCorrectAverage) {
 	EXPECT_NEAR(snp, 0.7012, 0.001);
 }
 
-TEST(SettlementUnitTest, GetSNP_WithAllSameSNP) {
+TEST_F(SettlementUnitTest, GetSNP_WithAllSameSNP) {
 	// Given: 全員同じSNP値
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// SNP=200のエージェントを5人
 	for (int i = 0; i < 5; ++i) {
@@ -606,11 +598,10 @@ TEST(SettlementUnitTest, GetSNP_WithAllSameSNP) {
 	EXPECT_NEAR(snp, 200.0 / 255.0, 0.001);
 }
 
-TEST(SettlementUnitTest, GetSNP_WithZeroSNP) {
+TEST_F(SettlementUnitTest, GetSNP_WithZeroSNP) {
 	// Given: 全員SNP=0
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 3; ++i) {
 		paxs::Genome genome;
@@ -626,11 +617,10 @@ TEST(SettlementUnitTest, GetSNP_WithZeroSNP) {
 	EXPECT_EQ(snp, 0.0);
 }
 
-TEST(SettlementUnitTest, GetSNP_WithMaxSNP) {
+TEST_F(SettlementUnitTest, GetSNP_WithMaxSNP) {
 	// Given: 全員SNP=255（最大値）
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 3; ++i) {
 		paxs::Genome genome;
@@ -650,11 +640,10 @@ TEST(SettlementUnitTest, GetSNP_WithMaxSNP) {
 // Farming Population Tests
 // ========================================
 
-TEST(SettlementUnitTest, GetFarmingPopulation_CountsCorrectly) {
+TEST_F(SettlementUnitTest, GetFarmingPopulation_CountsCorrectly) {
 	// Given: 農耕民と狩猟採集民の混在
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// 農耕民5人（farming > 0）
 	for (int i = 0; i < 5; ++i) {
@@ -675,11 +664,10 @@ TEST(SettlementUnitTest, GetFarmingPopulation_CountsCorrectly) {
 	EXPECT_EQ(farming_pop, 5);
 }
 
-TEST(SettlementUnitTest, GetFarmingPopulation_WithAllFarmers) {
+TEST_F(SettlementUnitTest, GetFarmingPopulation_WithAllFarmers) {
 	// Given: 全員農耕民
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 10; ++i) {
 		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 50, 0, 0);
@@ -689,11 +677,10 @@ TEST(SettlementUnitTest, GetFarmingPopulation_WithAllFarmers) {
 	EXPECT_EQ(settlement.getFarmingPopulation(), 10);
 }
 
-TEST(SettlementUnitTest, GetFarmingPopulation_WithNoFarmers) {
+TEST_F(SettlementUnitTest, GetFarmingPopulation_WithNoFarmers) {
 	// Given: 全員狩猟採集民
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 7; ++i) {
 		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 100, 0);
@@ -703,11 +690,10 @@ TEST(SettlementUnitTest, GetFarmingPopulation_WithNoFarmers) {
 	EXPECT_EQ(settlement.getFarmingPopulation(), 0);
 }
 
-TEST(SettlementUnitTest, GetFarmingPopulation_WithNoAgents) {
+TEST_F(SettlementUnitTest, GetFarmingPopulation_WithNoAgents) {
 	// Given: エージェントがいない集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	EXPECT_EQ(settlement.getFarmingPopulation(), 0);
 }
@@ -716,11 +702,10 @@ TEST(SettlementUnitTest, GetFarmingPopulation_WithNoAgents) {
 // MtDNA Tests
 // ========================================
 
-TEST(SettlementUnitTest, GetMostMtDNA_ReturnsAverage) {
+TEST_F(SettlementUnitTest, GetMostMtDNA_ReturnsAverage) {
 	// Given: 異なるmtDNA値を持つエージェント
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// mtDNA=10のエージェントを3人
 	for (int i = 0; i < 3; ++i) {
@@ -745,11 +730,10 @@ TEST(SettlementUnitTest, GetMostMtDNA_ReturnsAverage) {
 	EXPECT_EQ(mtdna, 14);
 }
 
-TEST(SettlementUnitTest, GetMostMtDNA_WithSameMtDNA) {
+TEST_F(SettlementUnitTest, GetMostMtDNA_WithSameMtDNA) {
 	// Given: 全員同じmtDNA
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 5; ++i) {
 		paxs::Genome genome;
@@ -761,11 +745,10 @@ TEST(SettlementUnitTest, GetMostMtDNA_WithSameMtDNA) {
 	EXPECT_EQ(settlement.getMostMtDNA(), 15);
 }
 
-TEST(SettlementUnitTest, GetMostMtDNA_WithZeroMtDNA) {
+TEST_F(SettlementUnitTest, GetMostMtDNA_WithZeroMtDNA) {
 	// Given: 全員mtDNA=0
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 3; ++i) {
 		paxs::Genome genome;
@@ -781,11 +764,10 @@ TEST(SettlementUnitTest, GetMostMtDNA_WithZeroMtDNA) {
 // Divide Tests
 // ========================================
 
-TEST(SettlementUnitTest, Divide_SplitsAgentsInHalf) {
+TEST_F(SettlementUnitTest, Divide_SplitsAgentsInHalf) {
 	// Given: 10人のエージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 10; ++i) {
 		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 0, 0);
@@ -800,11 +782,10 @@ TEST(SettlementUnitTest, Divide_SplitsAgentsInHalf) {
 	EXPECT_EQ(new_settlement.getPopulation(), 5);
 }
 
-TEST(SettlementUnitTest, Divide_CreatesNewSettlement) {
+TEST_F(SettlementUnitTest, Divide_CreatesNewSettlement) {
 	// Given: エージェントがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 6; ++i) {
 		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 0, 0);
@@ -818,11 +799,10 @@ TEST(SettlementUnitTest, Divide_CreatesNewSettlement) {
 	EXPECT_NE(settlement.getId(), new_settlement.getId());
 }
 
-TEST(SettlementUnitTest, Divide_WithOddNumberOfAgents) {
+TEST_F(SettlementUnitTest, Divide_WithOddNumberOfAgents) {
 	// Given: 奇数人のエージェント
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 7; ++i) {
 		paxs::SettlementAgent agent(i, 20, 100, paxs::Genome(), 0, 0, 0);
@@ -838,11 +818,10 @@ TEST(SettlementUnitTest, Divide_WithOddNumberOfAgents) {
 	EXPECT_EQ(settlement.getPopulation() + new_settlement.getPopulation(), 7);
 }
 
-TEST(SettlementUnitTest, Divide_KeepsMarriedCouplesTogether) {
+TEST_F(SettlementUnitTest, Divide_KeepsMarriedCouplesTogether) {
 	// Given: 既婚カップルがいる集落
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	// 夫婦3組 + 独身4人 = 10人
 	for (int i = 0; i < 3; ++i) {
@@ -890,11 +869,10 @@ TEST(SettlementUnitTest, Divide_KeepsMarriedCouplesTogether) {
 	checkCouplesInSettlement(new_settlement);
 }
 
-TEST(SettlementUnitTest, Divide_WithTwoAgents) {
+TEST_F(SettlementUnitTest, Divide_WithTwoAgents) {
 	// Given: 2人のエージェント
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::SettlementAgent agent1(1, 20, 100, paxs::Genome(), 0, 0, 0);
 	paxs::SettlementAgent agent2(2, 20, 100, paxs::Genome(), 0, 0, 0);
@@ -909,11 +887,10 @@ TEST(SettlementUnitTest, Divide_WithTwoAgents) {
 	EXPECT_EQ(new_settlement.getPopulation(), 1);
 }
 
-TEST(SettlementUnitTest, Divide_WithSingleAgent) {
+TEST_F(SettlementUnitTest, Divide_WithSingleAgent) {
 	// Given: 1人のエージェント
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	paxs::SettlementAgent agent(1, 20, 100, paxs::Genome(), 0, 0, 0);
 	settlement.addAgent(agent);
@@ -926,11 +903,10 @@ TEST(SettlementUnitTest, Divide_WithSingleAgent) {
 	EXPECT_EQ(new_settlement.getPopulation(), 1);
 }
 
-TEST(SettlementUnitTest, Divide_PreservesAgentData) {
+TEST_F(SettlementUnitTest, Divide_PreservesAgentData) {
 	// Given: 特定のデータを持つエージェント
 	std::mt19937 gen(12345);
-	auto environment = std::make_shared<paxs::Environment>();
-	paxs::Settlement settlement(1, gen, environment);
+	paxs::Settlement settlement(1, gen, shared_environment);
 
 	for (int i = 0; i < 4; ++i) {
 		paxs::Genome genome;

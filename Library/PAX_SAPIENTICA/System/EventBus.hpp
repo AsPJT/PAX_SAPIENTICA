@@ -129,9 +129,9 @@ public:
         };
 
         std::unique_lock lock(mutex_);  // 書き込みロック
-        auto it = subscribers_.find(type_id);
-        if (it != subscribers_.end()) {
-            it->second.emplace_back(HandlerEntry{next_handler_id_++, wrapper});
+        auto* const ptr = subscribers_.try_get(type_id);
+        if (ptr != nullptr) {
+            ptr->emplace_back(HandlerEntry{next_handler_id_++, wrapper});
         } else {
             std::vector<HandlerEntry> handlers;
             handlers.emplace_back(HandlerEntry{next_handler_id_++, wrapper});
@@ -157,9 +157,9 @@ public:
             handler(static_cast<const EventType&>(event));
         };
 
-        auto it = subscribers_.find(type_id);
-        if (it != subscribers_.end()) {
-            it->second.emplace_back(HandlerEntry{handler_id, wrapper});
+        auto* const ptr = subscribers_.try_get(type_id);
+        if (ptr != nullptr) {
+            ptr->emplace_back(HandlerEntry{handler_id, wrapper});
         } else {
             std::vector<HandlerEntry> handlers;
             handlers.emplace_back(HandlerEntry{handler_id, wrapper});
@@ -178,15 +178,14 @@ public:
         }
 
         std::unique_lock lock(mutex_);  // 書き込みロック
-        auto it = subscribers_.find(handle.type_id);
-        if (it != subscribers_.end()) {
-            auto& handlers = it->second;
-            handlers.erase(
-                std::remove_if(handlers.begin(), handlers.end(),
+        auto* const ptr = subscribers_.try_get(handle.type_id);
+        if (ptr != nullptr) {
+            ptr->erase(
+                std::remove_if(ptr->begin(), ptr->end(),
                     [handler_id = handle.handler_id](const HandlerEntry& entry) {
                         return entry.id == handler_id;
                     }),
-                handlers.end()
+                ptr->end()
             );
         }
     }
@@ -202,9 +201,9 @@ public:
         const std::type_index type_id(typeid(EventType));
 
         std::shared_lock lock(mutex_);  // 読み取りロック
-        const auto iterator = subscribers_.find(type_id);
-        if (iterator != subscribers_.end()) {
-            for (const auto& entry : iterator->second) {
+        const auto* const ptr = subscribers_.try_get(type_id);
+        if (ptr != nullptr) {
+            for (const auto& entry : *ptr) {
                 entry.handler(event);
             }
         }
@@ -231,9 +230,9 @@ public:
 
             const Event& event_ref = *event;
             const std::type_index type_id(typeid(event_ref));
-            const auto iterator = subscribers_.find(type_id);
-            if (iterator != subscribers_.end()) {
-                for (const auto& entry : iterator->second) {
+            const auto* const ptr = subscribers_.try_get(type_id);
+            if (ptr != nullptr) {
+                for (const auto& entry : *ptr) {
                     entry.handler(event_ref);
                 }
             }
@@ -252,8 +251,8 @@ public:
 
         const std::type_index type_id(typeid(EventType));
         std::shared_lock lock(mutex_);  // 読み取りロック
-        const auto iterator = subscribers_.find(type_id);
-        return iterator != subscribers_.end() ? iterator->second.size() : 0;
+        const auto* const ptr = subscribers_.try_get(type_id);
+        return ptr != nullptr ? ptr->size() : 0;
     }
 
     /// @brief キューのサイズを取得（デバッグ用）

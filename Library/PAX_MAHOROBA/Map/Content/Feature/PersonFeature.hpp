@@ -16,7 +16,6 @@
 #include <utility>
 
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Map/Content/Feature/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
@@ -117,8 +116,8 @@ public:
         // 表示サイズの計算（人物は常に通常サイズで表示）
         cached_display_size_ = 60;
 
-        // テクスチャサイズを描画時のサイズに合わせる（MapFeatureRenderer.hppと同じ）
-        // 描画時は resizedDrawAt(120) を使用するため、当たり判定は70×110
+        // テクスチャサイズを描画時のサイズに合わせる
+        // 当たり判定は70×110
         cached_texture_size_ = Vector2<int>(70, 110);
 
         visible_ = true;
@@ -165,10 +164,10 @@ public:
         // 3つのスクリーン座標でヒット判定（テクスチャ + テキスト）
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x, mouse_pos.y, cached_screen_positions_,
-            [texture_size, text_size](int mx, int my, const paxg::Vec2<double>& pos) {
+            [texture_size, text_size](int mx, int my, const paxs::Vector2<double>& pos) {
                 // テクスチャの矩形判定（中心から描画）
                 const Rect<int> texture_rect = Rect<int>::fromCenter(
-                    Vector2<int>(static_cast<int>(pos.x()), static_cast<int>(pos.y())),
+                    Vector2<int>(pos),
                     texture_size
                 );
                 if (texture_rect.contains(mx, my)) {
@@ -178,9 +177,9 @@ public:
                 // draw_font_pos = {x, y - 60}から描画されるため、
                 // 実際のテキスト位置は pos.y() - 60 から text_height の範囲
                 if (text_size.x > 0 && text_size.y > 0) {
-                    const int text_y = static_cast<int>(pos.y()) - 60;  // テクスチャの上部（MapFeatureRenderer参照）
+                    const int text_y = static_cast<int>(pos.y) - 60;  // テクスチャの上部（MapFeatureRenderer参照）
                     const Rect<int> text_rect(
-                        static_cast<int>(pos.x()) - (text_size.x / 2),
+                        static_cast<int>(pos.x) - (text_size.x / 2),
                         text_y,
                         text_size.x,
                         text_size.y

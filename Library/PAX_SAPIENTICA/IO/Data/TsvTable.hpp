@@ -151,8 +151,7 @@ namespace paxs {
         /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
         /// @return Column index, or SIZE_MAX if not found / カラムインデックス、見つからない場合はSIZE_MAX
         std::size_t getColumnIndex(const std::uint_least32_t column_key) const {
-            const auto iterator = header_map_.find(column_key);
-            return (iterator != header_map_.end()) ? iterator->second : SIZE_MAX;
+            return header_map_.value_or(column_key, SIZE_MAX);
         }
 
         /// @brief Get cell value by row and column index
