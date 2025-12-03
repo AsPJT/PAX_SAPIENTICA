@@ -12,17 +12,14 @@
 #ifndef PAX_GRAPHICA_SFML_CIRCLE_IMPL_HPP
 #define PAX_GRAPHICA_SFML_CIRCLE_IMPL_HPP
 
-#include <PAX_GRAPHICA/Interface/CircleImpl.hpp>
-
 #ifdef PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
-#include <PAX_GRAPHICA/Window.hpp>
+
 #include <PAX_GRAPHICA/Color.hpp>
-#endif
+#include <PAX_GRAPHICA/Interface/CircleImpl.hpp>
+#include <PAX_GRAPHICA/Window.hpp>
 
 namespace paxg {
-
-#ifdef PAXS_USING_SFML
 
     /// @brief SFML implementation of CircleImpl
     class SFMLCircleImpl : public CircleImpl {
@@ -65,8 +62,8 @@ namespace paxg {
         }
     };
 
-#endif // PAXS_USING_SFML
-
 }
+
+#endif // PAXS_USING_SFML
 
 #endif // !PAX_GRAPHICA_SFML_CIRCLE_IMPL_HPP

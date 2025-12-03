@@ -12,15 +12,12 @@
 #ifndef PAX_GRAPHICA_SIV3D_CIRCLE_IMPL_HPP
 #define PAX_GRAPHICA_SIV3D_CIRCLE_IMPL_HPP
 
-#include <PAX_GRAPHICA/Interface/CircleImpl.hpp>
-
 #ifdef PAXS_USING_SIV3D
 #include <Siv3D.hpp>
-#endif
+
+#include <PAX_GRAPHICA/Interface/CircleImpl.hpp>
 
 namespace paxg {
-
-#ifdef PAXS_USING_SIV3D
 
     /// @brief Siv3D implementation of CircleImpl
     class Siv3DCircleImpl : public CircleImpl {
@@ -63,8 +60,8 @@ namespace paxg {
         }
     };
 
-#endif // PAXS_USING_SIV3D
-
 }
+
+#endif // PAXS_USING_SIV3D
 
 #endif // !PAX_GRAPHICA_SIV3D_CIRCLE_IMPL_HPP

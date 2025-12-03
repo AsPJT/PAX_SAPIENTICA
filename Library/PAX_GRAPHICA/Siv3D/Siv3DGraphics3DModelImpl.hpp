@@ -12,19 +12,17 @@
 #ifndef PAX_GRAPHICA_SIV3D_GRAPHICS_3D_MODEL_IMPL_HPP
 #define PAX_GRAPHICA_SIV3D_GRAPHICS_3D_MODEL_IMPL_HPP
 
-#include <PAX_GRAPHICA/Interface/Graphics3DModelImpl.hpp>
-
 #ifdef PAXS_USING_SIV3D
 #include <Siv3D.hpp>
+
+#include <PAX_GRAPHICA/Interface/Graphics3DModelImpl.hpp>
+
 #include <PAX_SAPIENTICA/Core/Math/Math.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
-#endif
 
 namespace paxg {
 
     struct Graphics3DModelConfig;
-
-#ifdef PAXS_USING_SIV3D
 
     /// @brief Siv3D implementation of Graphics3DModelImpl
     class Siv3DGraphics3DModelImpl : public Graphics3DModelImpl {
@@ -145,8 +143,8 @@ namespace paxg {
         }
     };
 
-#endif // PAXS_USING_SIV3D
-
 }
+
+#endif // PAXS_USING_SIV3D
 
 #endif // !PAX_GRAPHICA_SIV3D_GRAPHICS_3D_MODEL_IMPL_HPP

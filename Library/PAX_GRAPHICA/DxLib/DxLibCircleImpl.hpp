@@ -12,16 +12,13 @@
 #ifndef PAX_GRAPHICA_DXLIB_CIRCLE_IMPL_HPP
 #define PAX_GRAPHICA_DXLIB_CIRCLE_IMPL_HPP
 
-#include <PAX_GRAPHICA/Interface/CircleImpl.hpp>
-
 #ifdef PAXS_USING_DXLIB
 #include <DxLib.h>
+
 #include <PAX_GRAPHICA/Color.hpp>
-#endif
+#include <PAX_GRAPHICA/Interface/CircleImpl.hpp>
 
 namespace paxg {
-
-#ifdef PAXS_USING_DXLIB
 
     /// @brief DxLib implementation of CircleImpl
     class DxLibCircleImpl : public CircleImpl {
@@ -63,8 +60,8 @@ namespace paxg {
         }
     };
 
-#endif // PAXS_USING_DXLIB
-
 }
+
+#endif // PAXS_USING_DXLIB
 
 #endif // !PAX_GRAPHICA_DXLIB_CIRCLE_IMPL_HPP
