@@ -23,7 +23,6 @@
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Mouse.hpp>
 #include <PAX_GRAPHICA/TouchInput.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Rect.hpp>
@@ -36,9 +35,9 @@ namespace paxg {
         s3d::RectF rect{};
         constexpr Rect() = default;
         constexpr Rect(const float x, const float y, const float w, const float h) : rect(x, y, w, h) {}
-        constexpr Rect(const Vec2i& pos, const Vec2i& size) : rect(pos.x(), pos.y(), size.x(), size.y()) {}
-        constexpr Rect(const Vec2i& pos, const float w, const float h) : rect(pos.x(), pos.y(), w, h) {}
-        constexpr Rect(const float x, const float y, const Vec2i& size) : rect(x, y, size.x(), size.y()) {}
+        constexpr Rect(const paxs::Vector2<float>& pos, const paxs::Vector2<float>& size) : rect(pos.x, pos.y, size.x, size.y) {}
+        constexpr Rect(const paxs::Vector2<float>& pos, const float w, const float h) : rect(pos.x, pos.y, w, h) {}
+        constexpr Rect(const float x, const float y, const paxs::Vector2<float>& size) : rect(x, y, size.x, size.y) {}
         constexpr Rect(const paxs::Rect<int>& r) : rect(static_cast<float>(r.x()), static_cast<float>(r.y()), static_cast<float>(r.width()), static_cast<float>(r.height())) {}
         constexpr operator s3d::RectF() const { return rect; }
         void setX(const float x_) { rect.x = x_; }
@@ -49,8 +48,8 @@ namespace paxg {
         float y() const { return static_cast<float>(rect.y); }
         float w() const { return static_cast<float>(rect.w); }
         float h() const { return static_cast<float>(rect.h); }
-        Vec2i pos() const { return Vec2i(static_cast<int>(rect.x), static_cast<int>(rect.y)); }
-        Vec2i size() const { return Vec2i(static_cast<int>(rect.w), static_cast<int>(rect.h)); }
+        paxs::Vector2<float> pos() const { return { static_cast<float>(rect.x), static_cast<float>(rect.y) }; }
+        paxs::Vector2<float> size() const { return { static_cast<float>(rect.w), static_cast<float>(rect.h) }; }
         void setPos(const float x_, const float y_) {
             rect.x = x_;
             rect.y = y_;
@@ -159,7 +158,7 @@ namespace paxg {
 
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
-                static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
+                static_cast<int>(pos_.x), static_cast<int>(pos_.y), static_cast<int>(pos_.x + size_.x), static_cast<int>(pos_.y + size_.y),
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
@@ -175,7 +174,7 @@ namespace paxg {
 #elif defined(PAXS_USING_DXLIB)
         void draw(const paxg::Color& c_) const {
             DxLib::DrawBox(
-                static_cast<int>(x0), static_cast<int>(y0), static_cast<int>(x0 + w0), static_cast<int>(y0 + h0),
+                static_cast<int>(pos_.x), static_cast<int>(pos_.y), static_cast<int>(pos_.x + size_.x), static_cast<int>(pos_.y + size_.y),
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
         }
 #elif defined(PAXS_USING_SFML)
@@ -233,10 +232,10 @@ namespace paxg {
                 DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
                 DxLib::DrawBox(
-                    static_cast<int>(x0 + offset.x() + i),
-                    static_cast<int>(y0 + offset.y() + i),
-                    static_cast<int>(x0 + w0 + i),
-                    static_cast<int>(y0 + h0 + i),
+                    static_cast<int>(pos_.x + offset.x() + i),
+                    static_cast<int>(pos_.y + offset.y() + i),
+                    static_cast<int>(pos_.x + size_.x + i),
+                    static_cast<int>(pos_.y + size_.y + i),
                     DxLib::GetColor(0, 0, 0),
                     TRUE
                 );
@@ -257,7 +256,7 @@ namespace paxg {
 
 #elif defined(PAXS_USING_DXLIB)
             DxLib::DrawBox(
-                static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
+                static_cast<int>(pos_.x - size_.x / 2), static_cast<int>(pos_.y - size_.y / 2), static_cast<int>(pos_.x + size_.x / 2), static_cast<int>(pos_.y + size_.y / 2),
                 DxLib::GetColor(255, 255, 255), TRUE);
 
 #elif defined(PAXS_USING_SFML)
@@ -273,7 +272,7 @@ namespace paxg {
 #elif defined(PAXS_USING_DXLIB)
         void drawAt(const paxg::Color& c_) const {
             DxLib::DrawBox(
-                static_cast<int>(x0 - w0 / 2), static_cast<int>(y0 - h0 / 2), static_cast<int>(x0 + w0 / 2), static_cast<int>(y0 + h0 / 2),
+                static_cast<int>(pos_.x - size_.x / 2), static_cast<int>(pos_.y - size_.y / 2), static_cast<int>(pos_.x + size_.x / 2), static_cast<int>(pos_.y + size_.y / 2),
                 DxLib::GetColor(c_.r, c_.g, c_.b), TRUE);
         }
 #elif defined(PAXS_USING_SFML)
@@ -294,20 +293,20 @@ namespace paxg {
 #elif defined(PAXS_USING_DXLIB)
         void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& color_) const {
             DxLib::DrawBox(
-                static_cast<int>(x0 - outer_thickness), static_cast<int>(y0 - outer_thickness),
-                static_cast<int>(x0 + w0 + outer_thickness), static_cast<int>(y0 + inner_thickness),
+                static_cast<int>(pos_.x - outer_thickness), static_cast<int>(pos_.y - outer_thickness),
+                static_cast<int>(pos_.x + size_.x + outer_thickness), static_cast<int>(pos_.y + inner_thickness),
                 DxLib::GetColor(color_.r, color_.g, color_.b), TRUE);
             DxLib::DrawBox(
-                static_cast<int>(x0 - outer_thickness), static_cast<int>(y0 + h0 - inner_thickness),
-                static_cast<int>(x0 + w0 + outer_thickness), static_cast<int>(y0 + h0 + outer_thickness),
+                static_cast<int>(pos_.x - outer_thickness), static_cast<int>(pos_.y + size_.y - inner_thickness),
+                static_cast<int>(pos_.x + size_.x + outer_thickness), static_cast<int>(pos_.y + size_.y + outer_thickness),
                 DxLib::GetColor(color_.r, color_.g, color_.b), TRUE);
             DxLib::DrawBox(
-                static_cast<int>(x0 - outer_thickness), static_cast<int>(y0 - outer_thickness),
-                static_cast<int>(x0 + inner_thickness), static_cast<int>(y0 + h0 + outer_thickness),
+                static_cast<int>(pos_.x - outer_thickness), static_cast<int>(pos_.y - outer_thickness),
+                static_cast<int>(pos_.x + inner_thickness), static_cast<int>(pos_.y + size_.y + outer_thickness),
                 DxLib::GetColor(color_.r, color_.g, color_.b), TRUE);
             DxLib::DrawBox(
-                static_cast<int>(x0 + w0 - inner_thickness), static_cast<int>(y0 - outer_thickness),
-                static_cast<int>(x0 + w0 + outer_thickness), static_cast<int>(y0 + h0 + outer_thickness),
+                static_cast<int>(pos_.x + size_.x - inner_thickness), static_cast<int>(pos_.y - outer_thickness),
+                static_cast<int>(pos_.x + size_.x + outer_thickness), static_cast<int>(pos_.y + size_.y + outer_thickness),
                 DxLib::GetColor(color_.r, color_.g, color_.b), TRUE);
 
         }
@@ -350,7 +349,8 @@ namespace paxg {
 #elif defined(PAXS_USING_DXLIB)
             int mx = 0, my = 0;
             DxLib::GetMousePoint(&mx, &my);
-            return (mx >= x0 && my >= y0 && mx < x0 + w0 && my < y0 + h0);
+            return (mx >= pos_.x && my >= pos_.y &&
+                mx < pos_.x + size_.x && my < pos_.y + size_.y);
 
 #elif defined(PAXS_USING_SFML)
             return rect.getGlobalBounds().contains(
