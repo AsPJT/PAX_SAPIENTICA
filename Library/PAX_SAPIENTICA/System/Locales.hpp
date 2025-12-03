@@ -99,8 +99,9 @@ namespace paxs {
         /// @param locale_name ロケール名 / Locale name
         /// @param file_path ファイルパス（拡張子なし） / File path (without extension)
         void loadFile(const std::string& domain_name, const std::string& locale_name, const std::string& file_path) {
-            KeyValueTSV<std::string> kv_tsv;
-            if (!kv_tsv.input(file_path)) {
+            // UnifiedTableを使用してTSVまたはバイナリ形式を読み込む
+            UnifiedTable table(file_path);
+            if (!table.isSuccessfullyLoaded()) {
                 // en-US ファイルが存在しない場合のみエラー、その他の言語はスキップ
                 if (locale_name == default_locale_name_) {
                     PAXS_ERROR("Required en-US locale file not found: " + file_path);
@@ -118,32 +119,36 @@ namespace paxs {
                 locale_name.c_str()
             );
 
-            // KeyValueTSVから全エントリを取得
-            UnorderedMap<std::uint_least32_t, std::string>& entries = kv_tsv.get();
-
             // ハッシュテーブルを事前予約（リハッシュを回避）
-            text_dictionary_.reserve(text_dictionary_.size() + entries.size());
+            const std::size_t row_count = table.rowCount();
+            text_dictionary_.reserve(text_dictionary_.size() + row_count);
 
-            // デバッグ: 最初の数エントリをログ出力
-            std::size_t debug_count = 0;
-            const std::size_t max_debug = 3;
+            // 手動ループで全行を読み込む（forEachRowは使用しない）
+            std::size_t loaded_count = 0;
+            for (std::size_t row_index = 0; row_index < row_count; ++row_index) {
+                // keyハッシュを取得（バイナリ形式ではkey_hash、TSV形式ではkeyからハッシュ化）
+                const std::uint32_t text_key = table.getKeyHash(row_index);
+                if (text_key == 0) {
+                    continue; // キーが取得できない場合はスキップ
+                }
 
-            for (auto& [text_key, value_str] : entries) {
+                // valueを取得
+                const std::uint_least32_t value_hash = MurMur3::calcHash("value");
+                const std::string& value_str = table.get(row_index, value_hash);
+                if (value_str.empty()) {
+                    continue; // 値が空の場合はスキップ
+                }
+
                 // 辞書に追加
                 const CombinedKey combined_key(domain_key, text_key, locale_key);
-                text_dictionary_.try_emplace(combined_key, std::move(value_str));
-
-                // デバッグログ
-                if (debug_count < max_debug) {
-                    PAXS_INFO("[Locales] Stored: domain=" + domain_name + " (" + std::to_string(domain_key) + 
-                              "), text_key=" + std::to_string(text_key) + 
-                              ", locale=" + locale_name + " (" + std::to_string(locale_key) + 
-                              "), value=" + (value_str.empty() ? "[moved]" : value_str.substr(0, std::min(value_str.size(), static_cast<std::size_t>(20)))));
-                    debug_count++;
-                }
+                text_dictionary_.try_emplace(combined_key, std::string(value_str));
+                ++loaded_count;
             }
 
-            PAXS_INFO("[Locales] Loaded " + std::to_string(entries.size()) + " entries from: " + file_path);
+            // ロード成功時のみログ出力
+            if (loaded_count > 0) {
+                PAXS_INFO("[Locales] Loaded " + std::to_string(loaded_count) + " entries for " + domain_name + "/" + locale_name);
+            }
         }
 
         /// @brief ロケール一覧を読み込む

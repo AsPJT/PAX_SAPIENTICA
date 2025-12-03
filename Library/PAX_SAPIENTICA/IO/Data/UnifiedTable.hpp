@@ -151,8 +151,8 @@ namespace paxs {
             return is_binary_ ? binary_table_.get(row_index, column_key) : tsv_table_.get(row_index, column_key);
         }
 
-        /// @brief Get double value by row index and column hash key
-        /// @brief 行インデックスとカラムハッシュキーでdouble値を取得
+        /// @brief Get double value by row index and column hash key (optimized for lat/lon)
+        /// @brief 行インデックスとカラムハッシュキーでdouble値を取得（緯度経度最適化用）
         /// @param row_index Row index / 行インデックス
         /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
         /// @return Double value, or 0.0 if not found / double値、見つからない場合は0.0
@@ -160,21 +160,40 @@ namespace paxs {
             if (is_binary_) {
                 return binary_table_.getDouble(row_index, column_key);
             }
-            else {
-                // TSV形式の場合は文字列から変換
-                const std::string& val_str = tsv_table_.get(row_index, column_key);
-                if (val_str.empty()) return 0.0;
-                auto opt = StringUtils::toDouble(val_str);
-                return opt ? *opt : 0.0;
-            }
+            // TSV の場合は文字列から変換
+            const std::string& value_str = tsv_table_.get(row_index, column_key);
+            auto value_opt = StringUtils::toDouble(value_str);
+            return value_opt.value_or(0.0);
         }
 
-        /// @brief Get entire row by index
-        /// @brief 行インデックスで行全体を取得
+        /// @brief Get int32 value by row index and column hash key
+        /// @brief 行インデックスとカラムハッシュキーでint32値を取得
         /// @param row_index Row index / 行インデックス
-        /// @return Row data, or empty vector if out of bounds / 行データ、範囲外の場合は空のベクター
-        const std::vector<std::string>& getRow(std::size_t row_index) const {
-            return is_binary_ ? std::vector<std::string>{} : tsv_table_.getRow(row_index);
+        /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
+        /// @return Int32 value, or 0 if not found / int32値、見つからない場合は0
+        std::int32_t getInt32(std::size_t row_index, const std::uint_least32_t column_key) const {
+            if (is_binary_) {
+                return binary_table_.getInt32(row_index, column_key);
+            }
+            // TSV の場合は文字列から変換
+            const std::string& value_str = tsv_table_.get(row_index, column_key);
+            auto value_opt = StringUtils::toInt(value_str);
+            return value_opt.value_or(0);
+        }
+
+        /// @brief Get float value by row index and column hash key
+        /// @brief 行インデックスとカラムハッシュキーでfloat値を取得
+        /// @param row_index Row index / 行インデックス
+        /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
+        /// @return Float value, or 0.0f if not found / float値、見つからない場合は0.0f
+        float getFloat(std::size_t row_index, const std::uint_least32_t column_key) const {
+            if (is_binary_) {
+                return binary_table_.getFloat(row_index, column_key);
+            }
+            // TSV の場合は文字列から変換
+            const std::string& value_str = tsv_table_.get(row_index, column_key);
+            auto value_opt = StringUtils::toDouble(value_str);
+            return value_opt.has_value() ? static_cast<float>(*value_opt) : 0.0f;
         }
 
         /// @brief Get all header column keys (TSV only)
@@ -237,17 +256,22 @@ namespace paxs {
             return is_binary_;
         }
 
-        /// @brief Iterate over all rows with callback
-        /// @brief 全行をコールバックで反復処理
+        /// @brief Iterate over all rows with callback (TSV only)
+        /// @brief 全行をコールバックで反復処理（TSVのみ）
         /// @param callback Function called for each row (row_index, row_data) / 各行に対して呼ばれる関数（行インデックス、行データ）
+        /// @note Binary format does not support row-based iteration. Use get() methods for individual cells.
+        ///       バイナリ形式は行ベースの反復処理をサポートしていません。個々のセルにはget()メソッドを使用してください。
         template<typename Func>
         void forEachRow(Func&& callback) const {
             if (is_binary_) {
-                binary_table_.forEachRow(std::forward<Func>(callback));
+                PAXS_WARNING("forEachRow() is not supported for binary format. Please use get(), getDouble(), getInt32(), or getFloat() instead.");
+                // Binary format では forEachRow をサポートしない
+                // 呼び出し元でループを回して各セルにアクセスする必要がある
+                return;
             }
-            else {
-                tsv_table_.forEachRow(std::forward<Func>(callback));
-            }
+            
+            // TSV format: use TsvTable's forEachRow
+            tsv_table_.forEachRow(std::forward<Func>(callback));
         }
 
         /// @brief Clear all data

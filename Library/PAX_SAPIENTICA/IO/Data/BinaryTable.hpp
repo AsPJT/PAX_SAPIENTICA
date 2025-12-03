@@ -43,7 +43,11 @@ namespace paxs {
         Longitude = 3,        // longitude:float
         Latitude = 4,         // latitude:float
         FirstYear = 5,        // first_year:int32
-        LastYear = 6          // last_year:int32
+        LastYear = 6,         // last_year:int32
+        FirstJulianDay = 7,   // first_julian_day:int32
+        LastJulianDay = 8,    // last_julian_day:int32
+        MinSize = 9,          // min_size:float
+        MaxSize = 10          // max_size:float
     };
 
     /// @brief Binary table class for reading binary format data
@@ -58,13 +62,17 @@ namespace paxs {
         /// @brief カラム名からインデックスへのマッピング
         paxs::UnorderedMap<std::uint_least32_t, std::size_t> column_map_;
 
-        /// @brief Data rows (each cell is stored as string for compatibility)
-        /// @brief データ行（各セルは互換性のため文字列として格納）
-        std::vector<std::vector<std::string>> rows_;
+        /// @brief Number of rows
+        /// @brief 行数
+        std::size_t row_count_{ 0 };
 
         /// @brief Key hash values (stored separately when KeyHash column exists)
         /// @brief キーハッシュ値（KeyHashカラムが存在する場合に別途保存）
         std::vector<std::uint32_t> key_hashes_;
+
+        /// @brief Value string data (stored separately when ValueString column exists)
+        /// @brief 値文字列データ（ValueStringカラムが存在する場合に別途保存）
+        std::vector<std::string> value_strings_;
 
         /// @brief Longitude values stored as double
         /// @brief 経度情報（doubleとして管理）
@@ -73,6 +81,30 @@ namespace paxs {
         /// @brief Latitude values stored as double
         /// @brief 緯度情報（doubleとして管理）
         std::vector<double> latitudes_;
+
+        /// @brief First year values stored as int32
+        /// @brief 開始年情報（int32として管理）
+        std::vector<std::int32_t> first_years_;
+
+        /// @brief Last year values stored as int32
+        /// @brief 終了年情報（int32として管理）
+        std::vector<std::int32_t> last_years_;
+
+        /// @brief First Julian Day values stored as int32
+        /// @brief 開始ユリウス日情報（int32として管理）
+        std::vector<std::int32_t> first_julian_days_;
+
+        /// @brief Last Julian Day values stored as int32
+        /// @brief 終了ユリウス日情報（int32として管理）
+        std::vector<std::int32_t> last_julian_days_;
+
+        /// @brief Min size values stored as float
+        /// @brief 最小サイズ情報（floatとして管理）
+        std::vector<float> min_sizes_;
+
+        /// @brief Max size values stored as float
+        /// @brief 最大サイズ情報（floatとして管理）
+        std::vector<float> max_sizes_;
 
         /// @brief Cache for returning string reference in get()
         /// @brief get()で文字列参照を返すための一時キャッシュ
@@ -89,7 +121,8 @@ namespace paxs {
             const char* end;
 
             explicit BufferReader(const std::vector<char>& buffer)
-                : ptr(buffer.data()), end(buffer.data() + buffer.size()) {}
+                : ptr(buffer.data()), end(buffer.data() + buffer.size()) {
+            }
 
             bool safeCheck(std::size_t size) const {
                 return ptr + size <= end;
@@ -212,18 +245,29 @@ namespace paxs {
                 data_count = (data_count << 8) | byte_value;
             }
 
-            // カラム定義を読み込む
+            row_count_ = data_count;
+
+            // カラム定義を読み込む（最適化: インデックスを事前計算）
             if (!reader.safeCheck(column_count)) return false;
             column_types_.resize(column_count);
+
+            // カラムインデックスを事前計算
             std::size_t longitude_index = SIZE_MAX;
             std::size_t latitude_index = SIZE_MAX;
             std::size_t key_hash_index = SIZE_MAX;
+            std::size_t value_string_index = SIZE_MAX;
+            std::size_t first_year_index = SIZE_MAX;
+            std::size_t last_year_index = SIZE_MAX;
+            std::size_t first_jd_index = SIZE_MAX;
+            std::size_t last_jd_index = SIZE_MAX;
+            std::size_t min_size_index = SIZE_MAX;
+            std::size_t max_size_index = SIZE_MAX;
 
             for (std::uint8_t i = 0; i < column_count; ++i) {
                 std::uint8_t column_type_id = reader.read<std::uint8_t>();
                 column_types_[i] = static_cast<BinaryColumnType>(column_type_id);
 
-                // カラムマッピングを設定
+                // カラムマッピングを設定（同時にインデックスを記録）
                 switch (column_types_[i]) {
                 case BinaryColumnType::KeyHash:
                     column_map_.emplace(MurMur3::calcHash("key"), i);
@@ -231,6 +275,7 @@ namespace paxs {
                     break;
                 case BinaryColumnType::ValueString:
                     column_map_.emplace(MurMur3::calcHash("value"), i);
+                    value_string_index = i;
                     break;
                 case BinaryColumnType::Longitude:
                     column_map_.emplace(MurMur3::calcHash("longitude"), i);
@@ -242,9 +287,27 @@ namespace paxs {
                     break;
                 case BinaryColumnType::FirstYear:
                     column_map_.emplace(MurMur3::calcHash("first_year"), i);
+                    first_year_index = i;
                     break;
                 case BinaryColumnType::LastYear:
                     column_map_.emplace(MurMur3::calcHash("last_year"), i);
+                    last_year_index = i;
+                    break;
+                case BinaryColumnType::FirstJulianDay:
+                    column_map_.emplace(MurMur3::calcHash("first_julian_day"), i);
+                    first_jd_index = i;
+                    break;
+                case BinaryColumnType::LastJulianDay:
+                    column_map_.emplace(MurMur3::calcHash("last_julian_day"), i);
+                    last_jd_index = i;
+                    break;
+                case BinaryColumnType::MinSize:
+                    column_map_.emplace(MurMur3::calcHash("min_size"), i);
+                    min_size_index = i;
+                    break;
+                case BinaryColumnType::MaxSize:
+                    column_map_.emplace(MurMur3::calcHash("max_size"), i);
+                    max_size_index = i;
                     break;
                 default:
                     PAXS_WARNING("Unknown column type: " + std::to_string(column_type_id));
@@ -252,57 +315,55 @@ namespace paxs {
                 }
             }
 
-            // データを読み込む
-            rows_.resize(data_count); // 事前確保
-            if (key_hash_index != SIZE_MAX) {
-                key_hashes_.reserve(data_count);
-            }
-            // 緯度経度の配列確保
-            if (longitude_index != SIZE_MAX) longitudes_.resize(data_count);
-            if (latitude_index != SIZE_MAX) latitudes_.resize(data_count);
+            // 各カラムのベクトル確保（最適化: resize → reserve）
+            if (key_hash_index != SIZE_MAX) key_hashes_.reserve(data_count);
+            if (value_string_index != SIZE_MAX) value_strings_.reserve(data_count);
+            if (longitude_index != SIZE_MAX) longitudes_.reserve(data_count);
+            if (latitude_index != SIZE_MAX) latitudes_.reserve(data_count);
+            if (first_year_index != SIZE_MAX) first_years_.reserve(data_count);
+            if (last_year_index != SIZE_MAX) last_years_.reserve(data_count);
+            if (first_jd_index != SIZE_MAX) first_julian_days_.reserve(data_count);
+            if (last_jd_index != SIZE_MAX) last_julian_days_.reserve(data_count);
+            if (min_size_index != SIZE_MAX) min_sizes_.reserve(data_count);
+            if (max_size_index != SIZE_MAX) max_sizes_.reserve(data_count);
 
+            // データを読み込む（最適化: インデックス比較で条件分岐を削減）
             for (std::uint32_t row = 0; row < data_count; ++row) {
-                // 行ベクトルのサイズを確保
-                rows_[row].resize(column_count);
-                std::vector<std::string>& row_data = rows_[row];
-
-                bool longitude_latitude_read = false;
-
                 for (std::size_t col = 0; col < column_count; ++col) {
-                    // longitude/latitude は同時に読み込む
-                    if (column_types_[col] == BinaryColumnType::Longitude) {
-                        if (!longitude_latitude_read && latitude_index != SIZE_MAX) {
-                            float lon = reader.read<float>();
-                            float lat = reader.read<float>();
-
-                            // 文字列変換せずにdoubleとして保存
-                            longitudes_[row] = static_cast<double>(lon);
-                            latitudes_[row] = static_cast<double>(lat);
-
-                            // rows_ への保存はスキップ (メモリ節約と変換コスト削減)
-                            // string変換は get() 呼び出し時まで遅延
-                            longitude_latitude_read = true;
-                        }
+                    if (col == longitude_index && latitude_index != SIZE_MAX) {
+                        // longitude/latitude は同時に読み込む
+                        const float lon = reader.read<float>();
+                        const float lat = reader.read<float>();
+                        longitudes_.push_back(static_cast<double>(lon));
+                        latitudes_.push_back(static_cast<double>(lat));
                     }
-                    else if (column_types_[col] == BinaryColumnType::Latitude) {
-                        // latitude は longitude と同時に読み込み済み
-                        if (!longitude_latitude_read) {
-                            PAXS_ERROR("Latitude without longitude in binary file: " + relative_path);
-                            return false;
-                        }
+                    else if (col == latitude_index) {
+                        // latitude は longitude と同時に読み込み済み（スキップ）
+                        continue;
                     }
-                    else if (column_types_[col] == BinaryColumnType::KeyHash) {
-                        std::uint32_t key_hash = reader.read<std::uint32_t>();
-                        key_hashes_.push_back(key_hash);
-                        // keyは空文字列のまま
+                    else if (col == key_hash_index) {
+                        key_hashes_.push_back(reader.read<std::uint32_t>());
                     }
-                    else if (column_types_[col] == BinaryColumnType::ValueString) {
-                        row_data[col] = reader.readString();
+                    else if (col == value_string_index) {
+                        value_strings_.push_back(reader.readString());
                     }
-                    else if (column_types_[col] == BinaryColumnType::FirstYear ||
-                        column_types_[col] == BinaryColumnType::LastYear) {
-                        std::int32_t year = reader.read<std::int32_t>();
-                        row_data[col] = fastIntToString(year);
+                    else if (col == first_year_index) {
+                        first_years_.push_back(reader.read<std::int32_t>());
+                    }
+                    else if (col == last_year_index) {
+                        last_years_.push_back(reader.read<std::int32_t>());
+                    }
+                    else if (col == first_jd_index) {
+                        first_julian_days_.push_back(reader.read<std::int32_t>());
+                    }
+                    else if (col == last_jd_index) {
+                        last_julian_days_.push_back(reader.read<std::int32_t>());
+                    }
+                    else if (col == min_size_index) {
+                        min_sizes_.push_back(reader.read<float>());
+                    }
+                    else if (col == max_size_index) {
+                        max_sizes_.push_back(reader.read<float>());
                     }
                 }
             }
@@ -315,7 +376,7 @@ namespace paxs {
         /// @brief 行数を取得
         /// @return Number of data rows / データ行数
         std::size_t rowCount() const {
-            return rows_.size();
+            return row_count_;
         }
 
         /// @brief Get the number of columns
@@ -358,17 +419,87 @@ namespace paxs {
         const std::string& get(std::size_t row_index, const std::uint_least32_t column_key) const {
             static const std::string empty_string = "";
             std::size_t column_index = getColumnIndex(column_key);
-            if (row_index >= rows_.size() || column_index >= rows_[row_index].size()) {
+            if (column_index >= column_types_.size()) {
                 return empty_string;
             }
 
-            // 緯度経度の場合は get 関数を使用しない
-            if (column_types_[column_index] == BinaryColumnType::Longitude || column_types_[column_index] == BinaryColumnType::Latitude) {
-                PAXS_WARNING("The get function cannot be used to obtain latitude and longitude.");
-                return "";
+            // 数値型カラムの場合は get 関数を使用しない
+            if (column_types_[column_index] == BinaryColumnType::Longitude ||
+                column_types_[column_index] == BinaryColumnType::Latitude ||
+                column_types_[column_index] == BinaryColumnType::FirstYear ||
+                column_types_[column_index] == BinaryColumnType::LastYear ||
+                column_types_[column_index] == BinaryColumnType::FirstJulianDay ||
+                column_types_[column_index] == BinaryColumnType::LastJulianDay ||
+                column_types_[column_index] == BinaryColumnType::MinSize ||
+                column_types_[column_index] == BinaryColumnType::MaxSize) {
+                PAXS_WARNING("The get() function cannot be used for numeric columns. Use getInt32(), getFloat(), or getDouble() instead.");
+                return empty_string;
             }
 
-            return rows_[row_index][column_index];
+            // ValueStringカラムの場合
+            if (column_types_[column_index] == BinaryColumnType::ValueString) {
+                if (row_index >= value_strings_.size()) {
+                    return empty_string;
+                }
+                return value_strings_[row_index];
+            }
+
+            // KeyHashカラムの場合は空文字列を返す（ハッシュ値はgetKeyHashで取得）
+            return empty_string;
+        }
+
+        /// @brief Get int32 value by row index and column hash key
+        /// @brief 行インデックスとカラムハッシュキーでint32値を取得
+        /// @param row_index Row index / 行インデックス
+        /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
+        /// @return Int32 value, or 0 if not found / int32値、見つからない場合は0
+        std::int32_t getInt32(std::size_t row_index, const std::uint_least32_t column_key) const {
+            std::size_t column_index = getColumnIndex(column_key);
+            if (row_index >= row_count_ || column_index >= column_types_.size()) {
+                return 0;
+            }
+
+            if (column_types_[column_index] == BinaryColumnType::FirstYear) {
+                if (row_index >= first_years_.size()) return 0;
+                return first_years_[row_index];
+            }
+            else if (column_types_[column_index] == BinaryColumnType::LastYear) {
+                if (row_index >= last_years_.size()) return 0;
+                return last_years_[row_index];
+            }
+            else if (column_types_[column_index] == BinaryColumnType::FirstJulianDay) {
+                if (row_index >= first_julian_days_.size()) return 0;
+                return first_julian_days_[row_index];
+            }
+            else if (column_types_[column_index] == BinaryColumnType::LastJulianDay) {
+                if (row_index >= last_julian_days_.size()) return 0;
+                return last_julian_days_[row_index];
+            }
+
+            return 0;
+        }
+
+        /// @brief Get float value by row index and column hash key
+        /// @brief 行インデックスとカラムハッシュキーでfloat値を取得
+        /// @param row_index Row index / 行インデックス
+        /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
+        /// @return Float value, or 0.0f if not found / float値、見つからない場合は0.0f
+        float getFloat(std::size_t row_index, const std::uint_least32_t column_key) const {
+            const std::size_t column_index = getColumnIndex(column_key);
+            if (row_index >= row_count_ || column_index >= column_types_.size()) {
+                return 0.0f;
+            }
+
+            if (column_types_[column_index] == BinaryColumnType::MinSize) {
+                if (row_index >= min_sizes_.size()) return 0.0f;
+                return min_sizes_[row_index];
+            }
+            else if (column_types_[column_index] == BinaryColumnType::MaxSize) {
+                if (row_index >= max_sizes_.size()) return 0.0f;
+                return max_sizes_[row_index];
+            }
+
+            return 0.0f;
         }
 
         /// @brief Get double value by row index and column hash key (optimized for lat/lon)
@@ -377,16 +508,44 @@ namespace paxs {
         /// @param column_key Column key (MurMur3 hash) / カラムキー（MurMur3ハッシュ）
         /// @return Double value, or 0.0 if not found / double値、見つからない場合は0.0
         double getDouble(std::size_t row_index, const std::uint_least32_t column_key) const {
-            std::size_t column_index = getColumnIndex(column_key);
-            if (row_index >= rows_.size() || column_index >= column_types_.size()) {
+            const std::size_t column_index = getColumnIndex(column_key);
+            if (row_index >= row_count_ || column_index >= column_types_.size()) {
                 return 0.0;
             }
 
             if (column_types_[column_index] == BinaryColumnType::Longitude) {
+                if (row_index >= longitudes_.size()) return 0.0;
                 return longitudes_[row_index];
             }
             else if (column_types_[column_index] == BinaryColumnType::Latitude) {
+                if (row_index >= latitudes_.size()) return 0.0;
                 return latitudes_[row_index];
+            }
+            // int32型もdoubleとして返す（互換性のため）
+            else if (column_types_[column_index] == BinaryColumnType::FirstYear) {
+                if (row_index >= first_years_.size()) return 0.0;
+                return static_cast<double>(first_years_[row_index]);
+            }
+            else if (column_types_[column_index] == BinaryColumnType::LastYear) {
+                if (row_index >= last_years_.size()) return 0.0;
+                return static_cast<double>(last_years_[row_index]);
+            }
+            else if (column_types_[column_index] == BinaryColumnType::FirstJulianDay) {
+                if (row_index >= first_julian_days_.size()) return 0.0;
+                return static_cast<double>(first_julian_days_[row_index]);
+            }
+            else if (column_types_[column_index] == BinaryColumnType::LastJulianDay) {
+                if (row_index >= last_julian_days_.size()) return 0.0;
+                return static_cast<double>(last_julian_days_[row_index]);
+            }
+            // float型もdoubleとして返す
+            else if (column_types_[column_index] == BinaryColumnType::MinSize) {
+                if (row_index >= min_sizes_.size()) return 0.0;
+                return static_cast<double>(min_sizes_[row_index]);
+            }
+            else if (column_types_[column_index] == BinaryColumnType::MaxSize) {
+                if (row_index >= max_sizes_.size()) return 0.0;
+                return static_cast<double>(max_sizes_[row_index]);
             }
 
             return 0.0;
@@ -424,25 +583,22 @@ namespace paxs {
             return is_successfully_loaded_;
         }
 
-        /// @brief Iterate over all rows with callback
-        /// @brief 全行をコールバックで反復処理
-        /// @param callback Function called for each row (row_index, row_data) / 各行に対して呼ばれる関数（行インデックス、行データ）
-        template<typename Func>
-        void forEachRow(Func&& callback) const {
-            for (std::size_t i = 0; i < rows_.size(); ++i) {
-                callback(i, rows_[i]);
-            }
-        }
-
         /// @brief Clear all data
         /// @brief 全データをクリア
         void clear() {
             column_types_.clear();
             column_map_.clear();
-            rows_.clear();
+            row_count_ = 0;
             key_hashes_.clear();
+            value_strings_.clear();
             longitudes_.clear();
             latitudes_.clear();
+            first_years_.clear();
+            last_years_.clear();
+            first_julian_days_.clear();
+            last_julian_days_.clear();
+            min_sizes_.clear();
+            max_sizes_.clear();
             is_loaded_ = false;
             is_successfully_loaded_ = false;
         }

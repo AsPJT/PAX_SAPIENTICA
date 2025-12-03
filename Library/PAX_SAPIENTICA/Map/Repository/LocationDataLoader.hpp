@@ -268,30 +268,79 @@ namespace paxs {
             data.longitude = longitude;
             data.latitude = latitude;
 
-            // オプションカラムの読み込み
+            // オプションカラムの読み込み（数値型カラムは直接数値として取得）
             const std::string& overall_length_str = flags.has_overall_length ? table.get(row_index, hashes.overall_length) : "";
-            const std::string& min_size_str = flags.has_min_size ? table.get(row_index, hashes.min_size) : "";
-            const std::string& max_size_str = flags.has_max_size ? table.get(row_index, hashes.max_size) : "";
-            const std::string& texture_str = flags.has_texture ? table.get(row_index, hashes.texture) : "";
-
             data.overall_length = getOptionalValue(overall_length_str, 10.0);
 
-            // ズーム範囲の計算
-            const double min_size = getOptionalValue(min_size_str, params.zoom_range.minimum);
-            const double max_size = getOptionalValue(max_size_str, params.zoom_range.maximum);
+            // ズーム範囲の計算（min_size, max_sizeは数値として取得）
+            double min_size = params.zoom_range.minimum;
+            double max_size = params.zoom_range.maximum;
+
+            if constexpr (std::is_same_v<TableType, TsvTable>) {
+                // TsvTableの場合は文字列から変換
+                const std::string& min_size_str = flags.has_min_size ? table.get(row_index, hashes.min_size) : "";
+                const std::string& max_size_str = flags.has_max_size ? table.get(row_index, hashes.max_size) : "";
+                min_size = getOptionalValue(min_size_str, params.zoom_range.minimum);
+                max_size = getOptionalValue(max_size_str, params.zoom_range.maximum);
+            }
+            else {
+                // UnifiedTable/BinaryTableの場合は数値として直接取得
+                if (flags.has_min_size) {
+                    float min_size_float = table.getFloat(row_index, hashes.min_size);
+                    if (min_size_float != 0.0f) min_size = static_cast<double>(min_size_float);
+                }
+                if (flags.has_max_size) {
+                    float max_size_float = table.getFloat(row_index, hashes.max_size);
+                    if (max_size_float != 0.0f) max_size = static_cast<double>(max_size_float);
+                }
+            }
             data.zoom_range = Range<double>(min_size, max_size);
 
-            // 日付範囲の計算
-            const std::string& first_jd_str = flags.has_first_julian_day ? table.get(row_index, hashes.first_julian_day) : "";
-            const std::string& first_year_str = flags.has_first_year ? table.get(row_index, hashes.first_year) : "";
-            const std::string& last_jd_str = flags.has_last_julian_day ? table.get(row_index, hashes.last_julian_day) : "";
-            const std::string& last_year_str = flags.has_last_year ? table.get(row_index, hashes.last_year) : "";
+            // 日付範囲の計算（年とユリウス日は数値として取得）
+            double first_julian_day = params.year_range.minimum;
+            double last_julian_day = params.year_range.maximum;
 
-            const double first_julian_day = calculateJulianDay(first_jd_str, first_year_str, params.year_range.minimum);
-            const double last_julian_day = calculateJulianDay(last_jd_str, last_year_str, params.year_range.maximum);
+            if constexpr (std::is_same_v<TableType, TsvTable>) {
+                // TsvTableの場合は従来の文字列処理
+                const std::string& first_jd_str = flags.has_first_julian_day ? table.get(row_index, hashes.first_julian_day) : "";
+                const std::string& first_year_str = flags.has_first_year ? table.get(row_index, hashes.first_year) : "";
+                const std::string& last_jd_str = flags.has_last_julian_day ? table.get(row_index, hashes.last_julian_day) : "";
+                const std::string& last_year_str = flags.has_last_year ? table.get(row_index, hashes.last_year) : "";
+                first_julian_day = calculateJulianDay(first_jd_str, first_year_str, params.year_range.minimum);
+                last_julian_day = calculateJulianDay(last_jd_str, last_year_str, params.year_range.maximum);
+            }
+            else {
+                // UnifiedTable/BinaryTableの場合は数値として直接取得
+                const double days_in_a_year = Calendar<double>::daysInYearGregorian();
+                const double julian_day_on_m1_1_1 = Calendar<double>::jdOfGregorianYear1Start();
+
+                // ユリウス日が指定されている場合は優先
+                if (flags.has_first_julian_day) {
+                    std::int32_t jd = table.getInt32(row_index, hashes.first_julian_day);
+                    if (jd != 0) first_julian_day = static_cast<double>(jd);
+                }
+                else if (flags.has_first_year) {
+                    std::int32_t year = table.getInt32(row_index, hashes.first_year);
+                    if (year != 0) {
+                        first_julian_day = (year * days_in_a_year) + julian_day_on_m1_1_1;
+                    }
+                }
+
+                if (flags.has_last_julian_day) {
+                    std::int32_t jd = table.getInt32(row_index, hashes.last_julian_day);
+                    if (jd != 0) last_julian_day = static_cast<double>(jd);
+                }
+                else if (flags.has_last_year) {
+                    std::int32_t year = table.getInt32(row_index, hashes.last_year);
+                    if (year != 0) {
+                        last_julian_day = (year * days_in_a_year) + julian_day_on_m1_1_1;
+                    }
+                }
+            }
             data.year_range = Range<double>(first_julian_day, last_julian_day);
 
             // テクスチャハッシュの計算
+            const std::string& texture_str = flags.has_texture ? table.get(row_index, hashes.texture) : "";
             data.texture_hash = calculateTextureHash(texture_str, params.texture_hash);
 
             // 追加カラムの読み込み (TsvTableのみ対応)

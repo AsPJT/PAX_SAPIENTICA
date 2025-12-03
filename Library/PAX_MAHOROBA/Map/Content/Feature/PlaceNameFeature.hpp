@@ -78,10 +78,8 @@ public:
 
         // フォールバック: keyがある場合はそれを返す、ない場合は"[Unknown]"
         if (!data_.key.empty()) {
-            PAXS_WARNING("[PlaceNameFeature] Missing localized name for key: " + data_.key + " - using key as fallback");
             return data_.key;
         } else {
-            PAXS_WARNING("[PlaceNameFeature] Missing localized name for key_hash: " + std::to_string(key_hash));
             return "[Unknown]";
         }
     }

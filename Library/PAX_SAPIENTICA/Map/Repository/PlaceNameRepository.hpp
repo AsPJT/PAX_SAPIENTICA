@@ -74,12 +74,15 @@ namespace paxs {
             flags.setFromTable(table, hashes);
             CoordinateBounds bounds;
 
-            // 1 行ずつ読み込み
-            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) {
+            // 行数を取得
+            const std::size_t row_count = table.rowCount();
+
+            // 1 行ずつ読み込み（forEachRow の代わりに手動ループを使用）
+            for (std::size_t row_index = 0; row_index < row_count; ++row_index) {
                 auto row_data_opt = LocationDataLoader::loadRowData(table, row_index, hashes, flags, params);
                 if (!row_data_opt.has_value()) {
                     PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + params.file_path + ": missing coordinates");
-                    return; // 経度・緯度が空の場合はスキップ
+                    continue; // 経度・緯度が空の場合はスキップ
                 }
 
                 const auto& data = row_data_opt.value();
@@ -104,7 +107,7 @@ namespace paxs {
                     data.extra_data,
                     key_hash  // keyのハッシュ値
                 );
-            });
+            }
 
             // 地物を何も読み込んでいない場合は空のLocationPointGroupを返す
             if (location_point_list.size() == 0) {

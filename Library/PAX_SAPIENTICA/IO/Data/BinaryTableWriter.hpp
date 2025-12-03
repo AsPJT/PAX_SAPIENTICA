@@ -80,6 +80,10 @@ namespace paxs {
             const std::uint_least32_t latitude_hash = MurMur3::calcHash("latitude");
             const std::uint_least32_t first_year_hash = MurMur3::calcHash("first_year");
             const std::uint_least32_t last_year_hash = MurMur3::calcHash("last_year");
+            const std::uint_least32_t first_julian_day_hash = MurMur3::calcHash("first_julian_day");
+            const std::uint_least32_t last_julian_day_hash = MurMur3::calcHash("last_julian_day");
+            const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
+            const std::uint_least32_t max_size_hash = MurMur3::calcHash("max_size");
 
             if (hash == key_hash) return BinaryColumnType::KeyHash;
             if (hash == value_hash) return BinaryColumnType::ValueString;
@@ -87,6 +91,10 @@ namespace paxs {
             if (hash == latitude_hash) return BinaryColumnType::Latitude;
             if (hash == first_year_hash) return BinaryColumnType::FirstYear;
             if (hash == last_year_hash) return BinaryColumnType::LastYear;
+            if (hash == first_julian_day_hash) return BinaryColumnType::FirstJulianDay;
+            if (hash == last_julian_day_hash) return BinaryColumnType::LastJulianDay;
+            if (hash == min_size_hash) return BinaryColumnType::MinSize;
+            if (hash == max_size_hash) return BinaryColumnType::MaxSize;
             
             return BinaryColumnType::Unknown;
         }
@@ -132,6 +140,10 @@ namespace paxs {
             const std::uint_least32_t latitude_hash = MurMur3::calcHash("latitude");
             const std::uint_least32_t first_year_hash = MurMur3::calcHash("first_year");
             const std::uint_least32_t last_year_hash = MurMur3::calcHash("last_year");
+            const std::uint_least32_t first_julian_day_hash = MurMur3::calcHash("first_julian_day");
+            const std::uint_least32_t last_julian_day_hash = MurMur3::calcHash("last_julian_day");
+            const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
+            const std::uint_least32_t max_size_hash = MurMur3::calcHash("max_size");
 
             for (std::size_t i = 0; i < column_count; ++i) {
                 const std::uint_least32_t column_key = header_keys[i];
@@ -156,6 +168,18 @@ namespace paxs {
                 } else if (column_key == last_year_hash) {
                     column_types[i] = BinaryColumnType::LastYear;
                     column_names[i] = "last_year";
+                } else if (column_key == first_julian_day_hash) {
+                    column_types[i] = BinaryColumnType::FirstJulianDay;
+                    column_names[i] = "first_julian_day";
+                } else if (column_key == last_julian_day_hash) {
+                    column_types[i] = BinaryColumnType::LastJulianDay;
+                    column_names[i] = "last_julian_day";
+                } else if (column_key == min_size_hash) {
+                    column_types[i] = BinaryColumnType::MinSize;
+                    column_names[i] = "min_size";
+                } else if (column_key == max_size_hash) {
+                    column_types[i] = BinaryColumnType::MaxSize;
+                    column_names[i] = "max_size";
                 } else {
                     column_types[i] = BinaryColumnType::Unknown;
                     PAXS_WARNING("Unknown column type in TSV, skipping: " + std::to_string(column_key));
@@ -195,7 +219,7 @@ namespace paxs {
             }
 
             // データを書き込む
-            for (std::size_t row = 0; row < row_count; ++row) {
+            for (std::size_t row = 0; row_count; ++row) {
                 bool longitude_latitude_written = false;
 
                 for (std::size_t col = 0; col < column_count; ++col) {
@@ -235,14 +259,27 @@ namespace paxs {
                         writeString(ofs, cell_value);
                     }
                     else if (column_types[col] == BinaryColumnType::FirstYear ||
-                        column_types[col] == BinaryColumnType::LastYear) {
-                        // 年をint32として書き込む
-                        auto year_opt = StringUtils::toInt(cell_value);
-                        if (year_opt) {
-                            writeInt32(ofs, static_cast<std::int32_t>(*year_opt));
+                             column_types[col] == BinaryColumnType::LastYear ||
+                             column_types[col] == BinaryColumnType::FirstJulianDay ||
+                             column_types[col] == BinaryColumnType::LastJulianDay) {
+                        // 年/ユリウス日をint32として書き込む
+                        auto value_opt = StringUtils::toInt(cell_value);
+                        if (value_opt) {
+                            writeInt32(ofs, static_cast<std::int32_t>(*value_opt));
                         } else {
-                            PAXS_WARNING("Invalid year value at row " + std::to_string(row) + ": \"" + cell_value + "\"");
+                            PAXS_WARNING("Invalid int32 value at row " + std::to_string(row) + ", col " + std::to_string(col) + ": \"" + cell_value + "\"");
                             writeInt32(ofs, 0);
+                        }
+                    }
+                    else if (column_types[col] == BinaryColumnType::MinSize ||
+                             column_types[col] == BinaryColumnType::MaxSize) {
+                        // サイズをfloatとして書き込む
+                        auto value_opt = StringUtils::toDouble(cell_value);
+                        if (value_opt) {
+                            writeFloat(ofs, static_cast<float>(*value_opt));
+                        } else {
+                            PAXS_WARNING("Invalid float value at row " + std::to_string(row) + ", col " + std::to_string(col) + ": \"" + cell_value + "\"");
+                            writeFloat(ofs, 0.0f);
                         }
                     }
                 }
@@ -281,6 +318,10 @@ namespace paxs {
             const std::uint_least32_t latitude_hash = MurMur3::calcHash("latitude");
             const std::uint_least32_t first_year_hash = MurMur3::calcHash("first_year");
             const std::uint_least32_t last_year_hash = MurMur3::calcHash("last_year");
+            const std::uint_least32_t first_julian_day_hash = MurMur3::calcHash("first_julian_day");
+            const std::uint_least32_t last_julian_day_hash = MurMur3::calcHash("last_julian_day");
+            const std::uint_least32_t min_size_hash = MurMur3::calcHash("min_size");
+            const std::uint_least32_t max_size_hash = MurMur3::calcHash("max_size");
 
             std::vector<std::string> header_names;
             if (binary.hasColumn(key_hash)) header_names.push_back("key");
@@ -289,6 +330,10 @@ namespace paxs {
             if (binary.hasColumn(latitude_hash)) header_names.push_back("latitude");
             if (binary.hasColumn(first_year_hash)) header_names.push_back("first_year");
             if (binary.hasColumn(last_year_hash)) header_names.push_back("last_year");
+            if (binary.hasColumn(first_julian_day_hash)) header_names.push_back("first_julian_day");
+            if (binary.hasColumn(last_julian_day_hash)) header_names.push_back("last_julian_day");
+            if (binary.hasColumn(min_size_hash)) header_names.push_back("min_size");
+            if (binary.hasColumn(max_size_hash)) header_names.push_back("max_size");
 
             for (std::size_t i = 0; i < header_names.size(); ++i) {
                 if (i > 0) ofs << '\t';
