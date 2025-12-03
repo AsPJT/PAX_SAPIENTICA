@@ -24,10 +24,10 @@
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Core/Platform.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
 
@@ -51,131 +51,130 @@ namespace paxg{
 
         /// @brief テキストを左下揃えで描画 (横:左端, 縦:下端)
         /// @brief Draw text with bottom-left alignment (horizontal: left, vertical: bottom)
-        void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawBottomLeft(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
-                    s3d::Arg::bottomLeft = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::bottomLeft = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
-                    s3d::Arg::bottomLeft = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::bottomLeft = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
         }
         /// @brief テキストを右上揃えで描画 (横:右端, 縦:上端)
         /// @brief Draw text with top-right alignment (horizontal: right, vertical: top)
-        void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawTopRight(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
-                    s3d::Arg::topRight = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::topRight = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
-                    s3d::Arg::topRight = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::topRight = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
         }
         /// @brief テキストを右下揃えで描画 (横:右端, 縦:下端)
         /// @brief Draw text with bottom-right alignment (horizontal: right, vertical: bottom)
-        void drawBottomRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawBottomRight(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
-                    s3d::Arg::bottomRight = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::bottomRight = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
-                    s3d::Arg::bottomRight = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::bottomRight = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
         }
         /// @brief テキストを左上揃えで描画 (横:左端, 縦:上端)
         /// @brief Draw text with top-left alignment (horizontal: left, vertical: top)
-        void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void draw(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
-                    s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
-                    s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
         }
         /// @brief テキストを中央下揃えで描画 (横:中央, 縦:下端)
         /// @brief Draw text with bottom-center alignment (horizontal: center, vertical: bottom)
-        void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawBottomCenter(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
-                    s3d::Arg::bottomCenter = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::bottomCenter = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
-                    s3d::Arg::bottomCenter = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::bottomCenter = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
         }
         /// @brief テキストを中央上揃えで描画 (横:中央, 縦:上端)
         /// @brief Draw text with top-center alignment (horizontal: center, vertical: top)
-        void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawTopCenter(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
-                    s3d::Arg::topCenter = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::topCenter = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
-                    s3d::Arg::topCenter = s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Arg::topCenter = s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
         }
         /// @brief テキストを中央揃えで描画 (横:中央, 縦:中央)
         /// @brief Draw text with center alignment (horizontal: center, vertical: center)
-        void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawAt(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             if (is_outline) {
                 font(s3d::Unicode::FromUTF8(str)).drawAt(
                     outline,
-                    s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).drawAt(
-                    s3d::Vec2(pos.x(), pos.y()),
+                    s3d::Vec2(pos.x, pos.y),
                     color.color);
             }
         }
 
-        // Vec2<double> overloads
-        void drawBottomLeft(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomLeft(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomLeft(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomLeft(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawTopRight(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawTopRight(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawTopRight(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawTopRight(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawBottomRight(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomRight(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomRight(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomRight(str, paxs::Vector2<int>{pos}, color);
         }
-        void draw(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            draw(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void draw(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            draw(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawBottomCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomCenter(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomCenter(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawTopCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawTopCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawTopCenter(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawTopCenter(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawAt(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawAt(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawAt(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawAt(str, paxs::Vector2<int>{pos}, color);
         }
 
         int height() const {
@@ -229,7 +228,7 @@ namespace paxg{
 
         }
 
-        void drawAlign(int align, paxg::Vec2i pos, std::string str_, const paxg::Color& color_, unsigned int edge_color = 0) const {
+        void drawAlign(int align, paxs::Vector2<int> pos, std::string str_, const paxg::Color& color_, unsigned int edge_color = 0) const {
             // std::size_t string_length;
             // align　が　0左寄り　1中央寄り　2右寄り
             if (align < 0) align = 0;
@@ -253,101 +252,100 @@ namespace paxg{
                 //     str_len -= (char_count - string_length); // 差分を引いて文字数を調整
                 // }
                 // x座標を調整して一行分描画する
-                DxLib::DrawNStringToHandle(pos.x() + ((align * (sizex - str_width)) / 2), pos.y(),
+                DxLib::DrawNStringToHandle(pos.x + ((align * (sizex - str_width)) / 2), pos.y,
                     str_.c_str(), str_len, DxLib::GetColor(color_.r, color_.g, color_.b), font, edge_color, FALSE);
                 // }
                 char_count += 1; // 改行文字の分
                 str_ = std::string(next + 1); // 次の行の先頭にする(+1は改行文字の分)
-                pos.setY(pos.y() + line_space); // y座標をずらす
+                pos.y += line_space; // y座標をずらす
             }
         }
 
         /// @brief テキストを左下揃えで描画 (横:左端, 縦:下端)
         /// @brief Draw text with bottom-left alignment (horizontal: left, vertical: bottom)
-        void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
-            else DxLib::DrawStringToHandle(pos.x(), pos.y() - 10, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+        void drawBottomLeft(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
+            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            else DxLib::DrawStringToHandle(pos.x, pos.y - 10, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
         }
         /// @brief テキストを右上揃えで描画 (横:右端, 縦:上端)
         /// @brief Draw text with top-right alignment (horizontal: right, vertical: top)
-        void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+        void drawTopRight(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
+            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x() - size_x, pos.y() + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+                DxLib::DrawStringToHandle(pos.x - size_x, pos.y + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
         /// @brief テキストを右下揃えで描画 (横:右端, 縦:下端)
         /// @brief Draw text with bottom-right alignment (horizontal: right, vertical: bottom)
-        void drawBottomRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+        void drawBottomRight(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
+            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
-                // 文字の底部がpos.y()に来るように配置
-                DxLib::DrawStringToHandle(pos.x() - size_x, pos.y() - size_y, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+                // 文字の底部がpos.yに来るように配置
+                DxLib::DrawStringToHandle(pos.x - size_x, pos.y - size_y, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
         /// @brief テキストを左上揃えで描画 (横:左端, 縦:上端)
         /// @brief Draw text with top-left alignment (horizontal: left, vertical: top)
-        void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
-            else DxLib::DrawStringToHandle(pos.x(), pos.y(), str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+        void draw(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
+            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            else DxLib::DrawStringToHandle(pos.x, pos.y, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
         }
         /// @brief テキストを中央下揃えで描画 (横:中央, 縦:下端)
         /// @brief Draw text with bottom-center alignment (horizontal: center, vertical: bottom)
-        void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+        void drawBottomCenter(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
+            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() - size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+                DxLib::DrawStringToHandle(pos.x - size_x / 2, pos.y - size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
         /// @brief テキストを中央上揃えで描画 (横:中央, 縦:上端)
         /// @brief Draw text with top-center alignment (horizontal: center, vertical: top)
-        void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y() + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+        void drawTopCenter(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
+            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+                DxLib::DrawStringToHandle(pos.x - size_x / 2, pos.y + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
         /// @brief テキストを中央揃えで描画 (横:中央, 縦:中央)
         /// @brief Draw text with center alignment (horizontal: center, vertical: center)
-        void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
-            if (font == -1) DxLib::DrawFormatString(pos.x(), pos.y(), DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+        void drawAt(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
+            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0; // 描画した時のサイズと行数を調べる
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
                 // 横方向は中央、縦方向も中央に揃える
-                DxLib::DrawStringToHandle(pos.x() - size_x / 2, pos.y() - size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+                DxLib::DrawStringToHandle(pos.x - size_x / 2, pos.y - size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
 
-        // Vec2<double> overloads
-        void drawBottomLeft(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomLeft(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomLeft(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomLeft(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawTopRight(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawTopRight(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawTopRight(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawTopRight(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawBottomRight(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomRight(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomRight(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomRight(str, paxs::Vector2<int>{pos}, color);
         }
-        void draw(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            draw(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void draw(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            draw(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawBottomCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomCenter(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomCenter(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawTopCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawTopCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawTopCenter(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawTopCenter(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawAt(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawAt(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawAt(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawAt(str, paxs::Vector2<int>{pos}, color);
         }
 
         int height() const {
@@ -380,7 +378,7 @@ namespace paxg{
 
         /// @brief テキストを左下揃えで描画 (横:左端, 縦:下端)
         /// @brief Draw text with bottom-left alignment (horizontal: left, vertical: bottom)
-        void drawBottomLeft(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawBottomLeft(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
@@ -389,13 +387,13 @@ namespace paxg{
             text.setFillColor(color.color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y() - size / 2) });
+            text.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y - size / 2) });
             paxg::Window::window().draw(text);
         }
 
         /// @brief テキストを右上揃えで描画 (横:右端, 縦:上端)
         /// @brief Draw text with top-right alignment (horizontal: right, vertical: top)
-        void drawTopRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawTopRight(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
@@ -404,13 +402,13 @@ namespace paxg{
             text.setFillColor(color.color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x), static_cast<float>(pos.y() + size / 2) });
+            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x), static_cast<float>(pos.y + size / 2) });
             paxg::Window::window().draw(text);
         }
 
         /// @brief テキストを右下揃えで描画 (横:右端, 縦:下端)
         /// @brief Draw text with bottom-right alignment (horizontal: right, vertical: bottom)
-        void drawBottomRight(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawBottomRight(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
@@ -419,14 +417,14 @@ namespace paxg{
             text.setFillColor(color.color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
-            // 文字の底部がpos.y()に来るように、テキストの高さ分上に配置
-            text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x), static_cast<float>(pos.y() - text.getGlobalBounds().size.y) });
+            // 文字の底部がpos.yに来るように、テキストの高さ分上に配置
+            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x), static_cast<float>(pos.y - text.getGlobalBounds().size.y) });
             paxg::Window::window().draw(text);
         }
 
         /// @brief テキストを左上揃えで描画 (横:左端, 縦:上端)
         /// @brief Draw text with top-left alignment (horizontal: left, vertical: top)
-        void draw(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void draw(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
@@ -435,13 +433,13 @@ namespace paxg{
             text.setFillColor(color.color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x()), static_cast<float>(pos.y()) });
+            text.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) });
             paxg::Window::window().draw(text);
         }
 
         /// @brief テキストを中央下揃えで描画 (横:中央, 縦:下端)
         /// @brief Draw text with bottom-center alignment (horizontal: center, vertical: bottom)
-        void drawBottomCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawBottomCenter(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
@@ -450,13 +448,13 @@ namespace paxg{
             text.setFillColor(color.color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y() - size / 2) });
+            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y - size / 2) });
             paxg::Window::window().draw(text);
         }
 
         /// @brief テキストを中央上揃えで描画 (横:中央, 縦:上端)
         /// @brief Draw text with top-center alignment (horizontal: center, vertical: top)
-        void drawTopCenter(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawTopCenter(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
@@ -465,13 +463,13 @@ namespace paxg{
             text.setFillColor(color.color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x() - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y() + size / 2) });
+            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y + size / 2) });
             paxg::Window::window().draw(text);
         }
 
         /// @brief テキストを中央揃えで描画 (横:中央, 縦:中央)
         /// @brief Draw text with center alignment (horizontal: center, vertical: center)
-        void drawAt(const std::string& str, const paxg::Vec2i& pos, const paxg::Color& color) const {
+        void drawAt(const std::string& str, const paxs::Vector2<int>& pos, const paxg::Color& color) const {
             sf::Text text(font);
             std::wstring wstr;
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
@@ -483,8 +481,8 @@ namespace paxg{
             // 横方向は中央、縦方向も中央に揃える
             const sf::FloatRect bounds = text.getGlobalBounds();
             text.setPosition({
-                static_cast<float>(pos.x()) - bounds.size.x / 2,
-                static_cast<float>(pos.y()) - bounds.size.y / 2
+                static_cast<float>(pos.x) - bounds.size.x / 2,
+                static_cast<float>(pos.y) - bounds.size.y / 2
             });
             paxg::Window::window().draw(text);
         }
@@ -504,27 +502,26 @@ namespace paxg{
             // return str_.size() * size * 0.5;
         }
 
-        // Vec2<double> overloads
-        void drawBottomLeft(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomLeft(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomLeft(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomLeft(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawTopRight(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawTopRight(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawTopRight(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawTopRight(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawBottomRight(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomRight(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomRight(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomRight(str, paxs::Vector2<int>{pos}, color);
         }
-        void draw(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            draw(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void draw(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            draw(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawBottomCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawBottomCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawBottomCenter(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawBottomCenter(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawTopCenter(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawTopCenter(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawTopCenter(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawTopCenter(str, paxs::Vector2<int>{pos}, color);
         }
-        void drawAt(const std::string& str, const paxg::Vec2<double>& pos, const paxg::Color& color) const {
-            drawAt(str, paxg::Vec2i{static_cast<int>(pos.x()), static_cast<int>(pos.y())}, color);
+        void drawAt(const std::string& str, const paxs::Vector2<double>& pos, const paxg::Color& color) const {
+            drawAt(str, paxs::Vector2<int>{pos}, color);
         }
 
 #else
@@ -533,35 +530,34 @@ namespace paxg{
         void setOutline([[maybe_unused]] const double inner, [[maybe_unused]] const double outer, [[maybe_unused]] const paxg::Color& color) {
         }
 
-        void drawBottomLeft([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawBottomLeft([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<int>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawTopRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawTopRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<int>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawBottomRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawBottomRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<int>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void draw([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void draw([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<int>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawBottomCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawBottomCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<int>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawTopCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawTopCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<int>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawAt([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2i& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawAt([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<int>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
 
-        // Vec2<double> overloads
-        void drawBottomLeft([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawBottomLeft([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawTopRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawTopRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawBottomRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawBottomRight([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void draw([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void draw([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawBottomCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawBottomCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawTopCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawTopCenter([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
-        void drawAt([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxg::Vec2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
+        void drawAt([[maybe_unused]] const std::string& str, [[maybe_unused]] const paxs::Vector2<double>& pos, [[maybe_unused]] const paxg::Color& color) const {
         }
 
         int height() const {

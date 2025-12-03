@@ -23,8 +23,9 @@
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
 
@@ -34,49 +35,40 @@ namespace paxg {
         s3d::Line line{};
         constexpr Line(const float sx, const float sy, const float ex, const float ey)
             : line(sx, sy, ex, ey) {}
-        constexpr Line(const float sx, const float sy, const paxg::Vec2i& e)
-            : line(sx, sy, e.x(), e.y()) {}
-        constexpr Line(const paxg::Vec2i& s, const paxg::Vec2i& e)
-            : line(s.x(), s.y(), e.x(), e.y()) {}
-
-        // Vec2<float> コンストラクタ
-        constexpr Line(const paxg::Vec2<float>& s, const paxg::Vec2<float>& e)
-            : line(s.x(), s.y(), e.x(), e.y()) {}
-
-        // Vec2<double> コンストラクタ
-        constexpr Line(const paxg::Vec2<double>& s, const paxg::Vec2<double>& e)
-            : line(static_cast<float>(s.x()), static_cast<float>(s.y()),
-                static_cast<float>(e.x()), static_cast<float>(e.y())) {}
-
+        constexpr Line(const float sx, const float sy, const paxs::Vector2<int>& e)
+            : line(sx, sy, e.x, e.y) {}
+        constexpr Line(const paxs::Vector2<int>& s, const paxs::Vector2<int>& e)
+            : line(s.x, s.y, e.x, e.y) {}
+        constexpr Line(const paxs::Vector2<float>& s, const paxs::Vector2<float>& e)
+            : line(s.x, s.y, e.x, e.y) {}
+        constexpr Line(const paxs::Vector2<double>& s, const paxs::Vector2<double>& e)
+            : line(static_cast<float>(s.x), static_cast<float>(s.y),
+                static_cast<float>(e.x), static_cast<float>(e.y)) {}
         void draw(const double thickness, const paxg::Color& color) const {
             line.draw(thickness, color.color);
         }
 
-        void drawArrow(const double thickness, const paxg::Vec2f& arrowSize, const paxg::Color& color) const {
-            line.drawArrow(thickness, s3d::Vec2(arrowSize.x(), arrowSize.y()), color.color);
+        void drawArrow(const double thickness, const paxs::Vector2<float>& arrowSize, const paxg::Color& color) const {
+            line.drawArrow(thickness, s3d::Vec2(arrowSize.x, arrowSize.y), color.color);
         }
 
 #elif defined(PAXS_USING_DXLIB)
         float x0{}, y0{}, w0{}, h0{};
         constexpr Line(const float x, const float y, const float w, const float h) :
             x0(x), y0(y), w0(w), h0(h) {}
-        constexpr Line(const paxg::Vec2i& pos, const paxg::Vec2i& size)
-            : x0(static_cast<float>(pos.x())), y0(static_cast<float>(pos.y())),
-            w0(static_cast<float>(size.x())), h0(static_cast<float>(size.y())) {}
-        constexpr Line(const paxg::Vec2i& pos, const float w, const float h) :
-            x0(static_cast<float>(pos.x())), y0(static_cast<float>(pos.y())), w0(w), h0(h) {}
-        constexpr Line(const float x, const float y, const paxg::Vec2i& size)
-            : x0(x), y0(y), w0(static_cast<float>(size.x())), h0(static_cast<float>(size.y())) {}
-
-        // Vec2<float> コンストラクタ (追加)
-        constexpr Line(const paxg::Vec2<float>& s, const paxg::Vec2<float>& e)
-            : x0(s.x()), y0(s.y()),
-            w0(e.x()), h0(e.y()) {}
-
-        // Vec2<double> コンストラクタ
-        constexpr Line(const paxg::Vec2<double>& s, const paxg::Vec2<double>& e)
-            : x0(static_cast<float>(s.x())), y0(static_cast<float>(s.y())),
-            w0(static_cast<float>(e.x())), h0(static_cast<float>(e.y())) {}
+        constexpr Line(const paxs::Vector2<int>& pos, const paxs::Vector2<int>& size)
+            : x0(static_cast<float>(pos.x)), y0(static_cast<float>(pos.y)),
+            w0(static_cast<float>(size.x)), h0(static_cast<float>(size.y)) {}
+        constexpr Line(const paxs::Vector2<int>& pos, const float w, const float h) :
+            x0(static_cast<float>(pos.x)), y0(static_cast<float>(pos.y)), w0(w), h0(h) {}
+        constexpr Line(const float x, const float y, const paxs::Vector2<int>& size)
+            : x0(x), y0(y), w0(static_cast<float>(size.x)), h0(static_cast<float>(size.y)) {}
+        constexpr Line(const paxs::Vector2<float>& s, const paxs::Vector2<float>& e)
+            : x0(s.x), y0(s.y),
+            w0(e.x), h0(e.y) {}
+        constexpr Line(const paxs::Vector2<double>& s, const paxs::Vector2<double>& e)
+            : x0(static_cast<float>(s.x)), y0(static_cast<float>(s.y)),
+            w0(static_cast<float>(e.x)), h0(static_cast<float>(e.y)) {}
 
         void draw(const double thickness, const paxg::Color& color) const {
             const unsigned int c = DxLib::GetColor(color.r, color.g, color.b);
@@ -105,7 +97,7 @@ namespace paxg {
             }
         }
 
-        void drawArrow(const double thickness, const paxg::Vec2f& arrowSize, const paxg::Color& color) const {
+        void drawArrow(const double thickness, const paxs::Vector2<float>& arrowSize, const paxg::Color& color) const {
             // Draw the main line
             draw(thickness, color);
 
@@ -116,8 +108,8 @@ namespace paxg {
             if (length < 0.001f) return; // Too short to draw arrow
 
             // Adjust arrow size based on line length
-            const float arrowLength = arrowSize.y();
-            const float arrowWidth = arrowSize.x();
+            const float arrowLength = arrowSize.y;
+            const float arrowWidth = arrowSize.x;
             const float scale = (length < arrowLength) ? (length / arrowLength) : 1.0f;
             const float adjustedArrowLength = arrowLength * scale;
             const float adjustedArrowWidth = arrowWidth * scale;
@@ -157,25 +149,21 @@ namespace paxg {
             line[0].position = sf::Vector2f(sx, sy);
             line[1].position = sf::Vector2f(ex, ey);
         }
-        Line(const float sx, const float sy, const paxg::Vec2i& e) {
+        Line(const float sx, const float sy, const paxs::Vector2<int>& e) {
             line[0].position = sf::Vector2f(sx, sy);
-            line[1].position = sf::Vector2f(static_cast<float>(e.x()), static_cast<float>(e.y()));
+            line[1].position = sf::Vector2f(static_cast<float>(e.x), static_cast<float>(e.y));
         }
-        Line(const paxg::Vec2i& s, const paxg::Vec2i& e) {
-            line[0].position = sf::Vector2f(static_cast<float>(s.x()), static_cast<float>(s.y()));
-            line[1].position = sf::Vector2f(static_cast<float>(e.x()), static_cast<float>(e.y()));
+        Line(const paxs::Vector2<int>& s, const paxs::Vector2<int>& e) {
+            line[0].position = sf::Vector2f(static_cast<float>(s.x), static_cast<float>(s.y));
+            line[1].position = sf::Vector2f(static_cast<float>(e.x), static_cast<float>(e.y));
         }
-
-        // Vec2<float> コンストラクタ (追加)
-        Line(const paxg::Vec2<float>& s, const paxg::Vec2<float>& e) {
-            line[0].position = sf::Vector2f(s.x(), s.y());
-            line[1].position = sf::Vector2f(e.x(), e.y());
+        Line(const paxs::Vector2<float>& s, const paxs::Vector2<float>& e) {
+            line[0].position = sf::Vector2f(s.x, s.y);
+            line[1].position = sf::Vector2f(e.x, e.y);
         }
-
-        // Vec2<double> コンストラクタ
-        Line(const paxg::Vec2<double>& s, const paxg::Vec2<double>& e) {
-            line[0].position = sf::Vector2f(static_cast<float>(s.x()), static_cast<float>(s.y()));
-            line[1].position = sf::Vector2f(static_cast<float>(e.x()), static_cast<float>(e.y()));
+        Line(const paxs::Vector2<double>& s, const paxs::Vector2<double>& e) {
+            line[0].position = sf::Vector2f(static_cast<float>(s.x), static_cast<float>(s.y));
+            line[1].position = sf::Vector2f(static_cast<float>(e.x), static_cast<float>(e.y));
         }
 
         void draw(const double /*thickness*/, const paxg::Color& color) {
@@ -184,7 +172,7 @@ namespace paxg {
             paxg::Window::window().draw(line, 2, sf::PrimitiveType::Lines);
         }
 
-        void drawArrow(const double thickness, const paxg::Vec2f& arrowSize, const paxg::Color& color) {
+        void drawArrow(const double thickness, const paxs::Vector2<float>& arrowSize, const paxg::Color& color) {
             draw(thickness, color);
             // ... (SFML arrow code remains the same) ...
             // Calculate direction vector
@@ -193,8 +181,8 @@ namespace paxg {
             const float length = std::sqrt(dx * dx + dy * dy);
             if (length < 0.001f) return;
 
-            const float arrowLength = arrowSize.y();
-            const float arrowWidth = arrowSize.x();
+            const float arrowLength = arrowSize.y;
+            const float arrowWidth = arrowSize.x;
             const float scale = (length < arrowLength) ? (length / arrowLength) : 1.0f;
             const float adjustedArrowLength = arrowLength * scale;
             const float adjustedArrowWidth = arrowWidth * scale;
@@ -234,21 +222,20 @@ namespace paxg {
         float sx0{}, sy0{}, ex0{}, ey0{};
         constexpr Line(const float sx, const float sy, const float ex, const float ey)
             : sx0(sx), sy0(sy), ex0(ex), ey0(ey) {}
-        constexpr Line(const float sx, const float sy, const paxg::Vec2i& e)
-            : sx0(sx), sy0(sy), ex0(static_cast<float>(e.x())), ey0(static_cast<float>(e.y())) {}
-        constexpr Line(const paxg::Vec2i& s, const paxg::Vec2i& e)
-            : sx0(static_cast<float>(s.x())), sy0(static_cast<float>(s.y())),
-            ex0(static_cast<float>(e.x())), ey0(static_cast<float>(e.y())) {}
+        constexpr Line(const float sx, const float sy, const paxs::Vector2<int>& e)
+            : sx0(sx), sy0(sy), ex0(static_cast<float>(e.x)), ey0(static_cast<float>(e.y)) {}
+        constexpr Line(const paxs::Vector2<int>& s, const paxs::Vector2<int>& e)
+            : sx0(static_cast<float>(s.x)), sy0(static_cast<float>(s.y)),
+            ex0(static_cast<float>(e.x)), ey0(static_cast<float>(e.y)) {}
+        constexpr Line(const paxs::Vector2<float>& s, const paxs::Vector2<float>& e)
+            : sx0(s.x), sy0(s.y), ex0(e.x), ey0(e.y) {}
 
-        constexpr Line(const paxg::Vec2<float>& s, const paxg::Vec2<float>& e)
-            : sx0(s.x()), sy0(s.y()), ex0(e.x()), ey0(e.y()) {}
-
-        constexpr Line(const paxg::Vec2<double>& s, const paxg::Vec2<double>& e)
-            : sx0(static_cast<float>(s.x())), sy0(static_cast<float>(s.y())),
-            ex0(static_cast<float>(e.x())), ey0(static_cast<float>(e.y())) {}
+        constexpr Line(const paxs::Vector2<double>& s, const paxs::Vector2<double>& e)
+            : sx0(static_cast<float>(s.x)), sy0(static_cast<float>(s.y)),
+            ex0(static_cast<float>(e.x)), ey0(static_cast<float>(e.y)) {}
 
         void draw([[maybe_unused]] const double thickness, [[maybe_unused]] const paxg::Color& color) const {}
-        void drawArrow([[maybe_unused]] const double thickness, [[maybe_unused]] const paxg::Vec2f& arrowSize, [[maybe_unused]] const paxg::Color& color) const {}
+        void drawArrow([[maybe_unused]] const double thickness, [[maybe_unused]] const paxs::Vector2<float>& arrowSize, [[maybe_unused]] const paxg::Color& color) const {}
 #endif
     };
 }

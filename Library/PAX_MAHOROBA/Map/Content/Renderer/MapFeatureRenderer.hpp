@@ -110,7 +110,7 @@ private:
             }
 
             // テキスト位置（肖像画の上部）
-            const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x, draw_pos.y - 60 };
+            const paxs::Vector2<double> draw_font_pos{ draw_pos.x, draw_pos.y - 60 };
 
             const std::string name = feature.getName();
             if (!name.empty()) {
@@ -172,18 +172,18 @@ private:
     /// @param texture_map テクスチャマップ / Texture map
     /// @brief 警告用のテクスチャを描画（テクスチャが見つからない場合）
     /// @brief Draw warning texture when texture is not found
-    static void drawWarningTexture(const paxg::Vec2<double>& pos, int size) {
+    static void drawWarningTexture(const paxs::Vector2<double>& pos, int size) {
         // 赤い四角形で警告表示
         paxg::Rect(
-            static_cast<float>(pos.x() - size / 2),
-            static_cast<float>(pos.y() - size / 2),
+            static_cast<float>(pos.x - size / 2),
+            static_cast<float>(pos.y - size / 2),
             static_cast<float>(size),
             static_cast<float>(size)
         ).draw(paxg::Color(255, 0, 0, 180)); // 半透明の赤
 
         // 中央に白い×印を描画
-        const float center_x = static_cast<float>(pos.x());
-        const float center_y = static_cast<float>(pos.y());
+        const float center_x = static_cast<float>(pos.x);
+        const float center_y = static_cast<float>(pos.y);
         const float half_size = static_cast<float>(size) * 0.3f;
 
         // ×印の線（太さ3ピクセル）
@@ -236,7 +236,7 @@ private:
                 const std::string name = feature.getName();
                 if (!name.empty()) {
                     // テクスチャの上部に名前を描画
-                    const paxg::Vec2<double> text_pos = paxg::Vec2<double>{
+                    const paxs::Vector2<double> text_pos{
                         draw_pos.x,
                         draw_pos.y - (display_size / 2) - 5  // アイコンの上部から少し離す
                     };

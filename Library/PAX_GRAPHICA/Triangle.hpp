@@ -23,10 +23,10 @@
 #endif
 
 #include <PAX_GRAPHICA/Color.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Core/Math/Math.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
 
@@ -90,8 +90,8 @@ namespace paxg {
         constexpr Triangle(const float center_x, const float center_y, const float radius, const float rotation = 0.0f)
             : center_x_(center_x), center_y_(center_y), radius_(radius), rotation_(rotation) {}
 
-        constexpr Triangle(const paxg::Vec2f& center, const float radius, const float rotation = 0.0f)
-            : center_x_(center.x()), center_y_(center.y()), radius_(radius), rotation_(rotation) {}
+        constexpr Triangle(const paxs::Vector2<float>& center, const float radius, const float rotation = 0.0f)
+            : center_x_(center.x), center_y_(center.y), radius_(radius), rotation_(rotation) {}
 
         /// @brief Optimized constructor using pre-computed shape (no runtime trigonometry)
         /// @param center_x X coordinate of the center
@@ -100,8 +100,8 @@ namespace paxg {
         constexpr Triangle(const float center_x, const float center_y, const TriangleShape& shape)
             : center_x_(center_x), center_y_(center_y), radius_(shape.radius), rotation_(shape.rotation), shape_(&shape) {}
 
-        constexpr Triangle(const paxg::Vec2f& center, const TriangleShape& shape)
-            : center_x_(center.x()), center_y_(center.y()), radius_(shape.radius), rotation_(shape.rotation), shape_(&shape) {}
+        constexpr Triangle(const paxs::Vector2<float>& center, const TriangleShape& shape)
+            : center_x_(center.x), center_y_(center.y), radius_(shape.radius), rotation_(shape.rotation), shape_(&shape) {}
 
         // Getters
         constexpr float centerX() const { return center_x_; }
@@ -113,7 +113,7 @@ namespace paxg {
         void setCenterX(const float x) { center_x_ = x; }
         void setCenterY(const float y) { center_y_ = y; }
         void setCenter(const float x, const float y) { center_x_ = x; center_y_ = y; }
-        void setCenter(const paxg::Vec2f& center) { center_x_ = center.x(); center_y_ = center.y(); }
+        void setCenter(const paxs::Vector2<float>& center) { center_x_ = center.x; center_y_ = center.y; }
         void setRadius(const float r) { radius_ = r; }
         void setRotation(const float rot) { rotation_ = rot; }
 

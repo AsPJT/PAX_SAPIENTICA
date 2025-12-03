@@ -14,7 +14,6 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Map/Core/MapViewport.hpp>
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
@@ -80,13 +79,13 @@ namespace paxs {
             if (mag_label_ptr != nullptr) {
                 font->draw(
                     *mag_label_ptr,
-                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxs::Vector2<int>(text_x, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
             }
             font->draw(
                 std::to_string(map_viewport_.getHeight()),
-                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
+                paxs::Vector2<int>(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
@@ -99,13 +98,13 @@ namespace paxs {
             if (xyz_label_ptr != nullptr) {
                 font->draw(
                     *xyz_label_ptr,
-                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxs::Vector2<int>(text_x, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
             }
             font->draw(
                 std::to_string(z_magnification),
-                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
+                paxs::Vector2<int>(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
@@ -117,13 +116,13 @@ namespace paxs {
             if (merc_lon_label_ptr != nullptr) {
                 font->draw(
                     *merc_lon_label_ptr,
-                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxs::Vector2<int>(text_x, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
             }
             font->draw(
                 std::to_string(map_viewport_center.x),
-                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
+                paxs::Vector2<int>(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
@@ -135,13 +134,13 @@ namespace paxs {
             if (merc_lat_label_ptr != nullptr) {
                 font->draw(
                     *merc_lat_label_ptr,
-                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxs::Vector2<int>(text_x, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
             }
             font->draw(
                 std::to_string(map_viewport_center.y),
-                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
+                paxs::Vector2<int>(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
@@ -153,7 +152,7 @@ namespace paxs {
             if (lat_label_ptr != nullptr) {
                 font->draw(
                     *lat_label_ptr,
-                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxs::Vector2<int>(text_x, text_y + line_height * current_line++),
                     paxg::Color(0, 0, 0)
                 );
             }
@@ -161,7 +160,7 @@ namespace paxs {
             const paxs::WebMercatorDeg merc_coord(paxs::Vector2<double>(map_viewport_center.x, map_viewport_center.y));
             font->draw(
                 std::to_string(merc_coord.toEPSG4326_WGS84DegY()),
-                paxg::Vec2i(text_x + 10, text_y + line_height * current_line++),
+                paxs::Vector2<int>(text_x + 10, text_y + line_height * current_line++),
                 paxg::Color(0, 0, 0)
             );
 
@@ -195,7 +194,7 @@ namespace paxs {
 
                             big_year_font->drawBottomRight(
                                 std::to_string(date_year),
-                                paxg::Vec2i(big_year_x, big_year_y),
+                                paxs::Vector2<int>(big_year_x, big_year_y),
                                 paxg::Color(0, 0, 0)
                             );
                         }

@@ -17,7 +17,6 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Spline2D.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Map/Content/Feature/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
@@ -202,15 +201,15 @@ public:
 
         for (const auto& coord : normalized_coords) {
             // スクリーン座標に変換
-            const paxg::Vec2<double> screen_pos = MapCoordinateConverter::toScreenPos(
-                Vector2<double>(coord.x, coord.y),
+            const paxs::Vector2<double> screen_pos = MapCoordinateConverter::toScreenPos(
+                paxs::Vector2<double>(coord.x, coord.y),
                 context.map_view_size,
                 context.map_view_center
             );
 
             cached_screen_points_.emplace_back(
-                static_cast<float>(screen_pos.x()),
-                static_cast<float>(screen_pos.y())
+                static_cast<float>(screen_pos.x),
+                static_cast<float>(screen_pos.y)
             );
         }
 
@@ -272,7 +271,7 @@ public:
         return group_data_;
     }
 
-    const std::vector<paxg::Vec2f>& getScreenPoints() const {
+    const std::vector<paxs::Vector2<float>>& getScreenPoints() const {
         return cached_screen_points_;
     }
 
@@ -280,9 +279,9 @@ private:
     TerritoryLocationData data_;           ///< 領域位置データ / Territory location data
     TerritoryLocationGroup group_data_;    ///< 領域グループデータ / Territory group data
 
-    std::vector<paxg::Vec2f> cached_screen_points_;  ///< キャッシュされたスクリーン座標列 / Cached screen points
-    paxg::Color color_;                              ///< 描画色 / Drawing color
-    bool visible_{true};                             ///< 可視性 / Visibility
+    std::vector<paxs::Vector2<float>> cached_screen_points_; ///< キャッシュされたスクリーン座標列 / Cached screen points
+    paxg::Color color_; ///< 描画色 / Drawing color
+    bool visible_{ true };
 };
 
 } // namespace paxs

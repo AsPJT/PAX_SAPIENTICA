@@ -58,13 +58,13 @@ namespace paxg {
             rect.w = w_;
             rect.h = h_;
         }
-        void setPos(const Vec2i& pos_) {
-            rect.x = pos_.x();
-            rect.y = pos_.y();
+        void setPos(const paxs::Vector2<int>& pos_) {
+            rect.x = pos_.x;
+            rect.y = pos_.y;
         }
-        void setSize(const Vec2i& size_) {
-            rect.w = size_.x();
-            rect.h = size_.y();
+        void setSize(const paxs::Vector2<int>& size_) {
+            rect.w = size_.x;
+            rect.h = size_.y;
         }
         bool contains(const float x_, const float y_) const {
             return (rect.x <= x_) && (x_ <= (rect.x + rect.w)) &&
@@ -95,8 +95,8 @@ namespace paxg {
         paxs::Vector2<float> size() const { return paxs::Vector2<float>(rect.getSize().x, rect.getSize().y); }
         void setPos(const float x_, const float y_) { rect.setPosition({ x_, y_ }); }
         void setSize(const float w_, const float h_) { rect.setSize(sf::Vector2f(w_, h_)); }
-        void setPos(const Vec2i& pos_) { rect.setPosition({ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()) }); }
-        void setSize(const Vec2i& size_) { rect.setSize(sf::Vector2f(static_cast<float>(size_.x()), static_cast<float>(size_.y()))); }
+        void setPos(const paxs::Vector2<int>& pos_) { rect.setPosition({ static_cast<float>(pos_.x), static_cast<float>(pos_.y) }); }
+        void setSize(const paxs::Vector2<int>& size_) { rect.setSize(sf::Vector2f(static_cast<float>(size_.x), static_cast<float>(size_.y))); }
         bool contains(const float x_, const float y_) const {
             return x_ >= rect.getPosition().x && x_ <= (rect.getPosition().x + rect.getSize().x) &&
                    y_ >= rect.getPosition().y && y_ <= (rect.getPosition().y + rect.getSize().y);
@@ -194,12 +194,12 @@ namespace paxg {
         /// @param spread Spread size (広がりサイズ)
         /// @return Reference to this for method chaining (メソッドチェーン用の自身への参照)
 #if defined(PAXS_USING_SIV3D)
-        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
-            rect.drawShadow({offset.x(), offset.y()}, blur_size, spread);
+        const Rect& drawShadow(const paxs::Vector2<int>& offset, int blur_size, int spread) const {
+            rect.drawShadow({offset.x, offset.y}, blur_size, spread);
             return *this;
         }
 #elif defined(PAXS_USING_SFML)
-        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
+        const Rect& drawShadow(const paxs::Vector2<int>& offset, int blur_size, int spread) const {
             // SFML: Simple shadow using semi-transparent rectangles
             // 複数の半透明矩形を重ねて簡易的な影を表現
             sf::RectangleShape shadow = rect;
@@ -207,8 +207,8 @@ namespace paxg {
 
             for (int i = spread + blur_size; i >= 0; --i) {
                 shadow.setPosition(sf::Vector2f(
-                    rect.getPosition().x + offset.x() + i,
-                    rect.getPosition().y + offset.y() + i
+                    rect.getPosition().x + offset.x + i,
+                    rect.getPosition().y + offset.y + i
                 ));
                 shadow.setSize(sf::Vector2f(
                     rect.getSize().x + i * 2,
@@ -222,7 +222,7 @@ namespace paxg {
             return *this;
         }
 #elif defined(PAXS_USING_DXLIB)
-        const Rect& drawShadow(const Vec2i& offset, int blur_size, int spread) const {
+        const Rect& drawShadow(const paxs::Vector2<int>& offset, int blur_size, int spread) const {
             // DxLib: Simple shadow using semi-transparent rectangles
             // 複数の半透明矩形を重ねて簡易的な影を表現
             DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, 40);
@@ -232,8 +232,8 @@ namespace paxg {
                 DxLib::SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
                 DxLib::DrawBox(
-                    static_cast<int>(pos_.x + offset.x() + i),
-                    static_cast<int>(pos_.y + offset.y() + i),
+                    static_cast<int>(pos_.x + offset.x + i),
+                    static_cast<int>(pos_.y + offset.y + i),
                     static_cast<int>(pos_.x + size_.x + i),
                     static_cast<int>(pos_.y + size_.y + i),
                     DxLib::GetColor(0, 0, 0),
@@ -245,7 +245,7 @@ namespace paxg {
             return *this;
         }
 #else
-        const Rect& drawShadow(const Vec2i&, int, int) const {
+        const Rect& drawShadow(const paxs::Vector2<int>&, int, int) const {
             return *this;
         }
 #endif
