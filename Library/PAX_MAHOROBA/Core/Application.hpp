@@ -152,7 +152,6 @@ private:
     /// @brief Execute Phase 2 initialization (runs on main thread, uses drawing APIs)
     void performPhase2Initialization() {
         // InputManager作成（paxg::Window::width/height()を使用）
-        init_loading_handle_.getProgress();  // 進捗状態を参照（ダミー）
         this->input_manager_ = std::make_unique<InputManager>();
 
         // AppComponentManager作成（paxg::Window, paxg::Font, paxg::Textureを使用）
@@ -226,15 +225,16 @@ private:
             const float scale_y = static_cast<float>(window_height) / texture_height;
             const float scale = (scale_x > scale_y) ? scale_x : scale_y;
 
-            const int scaled_width = static_cast<int>(texture_width * scale);
-            const int scaled_height = static_cast<int>(texture_height * scale);
+            const paxs::Vector2<int> scaled_size = paxs::Vector2<int>{
+                static_cast<int>(texture_width * scale),
+                static_cast<int>(texture_height * scale)
+            };
 
             // 中央配置の座標を計算
-            const int pos_x = (window_width - scaled_width) / 2;
-            const int pos_y = (window_height - scaled_height) / 2;
+            const paxs::Vector2<int> pos{(window_width - scaled_size.x) / 2, (window_height - scaled_size.y) / 2};
 
             // ローディング画像をリサイズして描画
-            loading_texture_->resizedDraw(paxs::Vector2<int>{scaled_width, scaled_height}, paxs::Vector2<int>{pos_x, pos_y});
+            loading_texture_->resizedDraw(scaled_size, pos);
         }
 
         // 進捗バーを描画
