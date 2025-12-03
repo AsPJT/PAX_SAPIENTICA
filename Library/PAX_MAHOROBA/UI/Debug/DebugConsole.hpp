@@ -114,7 +114,7 @@ public:
             .draw(paxg::Color(40, 40, 40, 255));
 
         font_text->draw("Debug Console",
-                       paxg::Vec2i(CONSOLE_MARGIN_X + CONSOLE_PADDING, CONSOLE_MARGIN_Y + 5),
+                       paxs::Vector2<int>(CONSOLE_MARGIN_X + CONSOLE_PADDING, CONSOLE_MARGIN_Y + 5),
                        paxg::Color(0, 0, 0));
 
         // フィルターボタン描画
@@ -151,7 +151,7 @@ public:
             const paxg::Color text_color = getLevelColor(item.level);
 
             font_text->draw(item.display_text,
-                           paxg::Vec2i(CONSOLE_MARGIN_X + CONSOLE_PADDING, current_y),
+                           paxs::Vector2<int>(CONSOLE_MARGIN_X + CONSOLE_PADDING, current_y),
                            text_color);
 
             current_y += LINE_HEIGHT;
@@ -162,7 +162,7 @@ public:
             const std::string scroll_info = "Scroll: " + std::to_string(scroll_offset_) +
                                            " / " + std::to_string(filtered_indices.size() - max_lines);
             font_text->draw(scroll_info,
-                           paxg::Vec2i(CONSOLE_MARGIN_X + console_width - 200, CONSOLE_MARGIN_Y + 5),
+                           paxs::Vector2<int>(CONSOLE_MARGIN_X + console_width - 200, CONSOLE_MARGIN_Y + 5),
                            paxg::Color(150, 150, 150));
         }
 
@@ -170,7 +170,7 @@ public:
         const std::string count_info = "Showing: " + std::to_string(filtered_indices.size()) +
                                        " / " + std::to_string(log_history_.size());
         font_text->draw(count_info,
-                       paxg::Vec2i(CONSOLE_MARGIN_X + console_width - 200, CONSOLE_MARGIN_Y + 25),
+                       paxs::Vector2<int>(CONSOLE_MARGIN_X + console_width - 200, CONSOLE_MARGIN_Y + 25),
                        paxg::Color(0, 0, 0));
 
 #ifdef PAXS_DEVELOPMENT
@@ -187,7 +187,7 @@ public:
 
         // プロンプト記号 ">"
         font_text->draw("> ",
-                       paxg::Vec2i(CONSOLE_MARGIN_X + CONSOLE_PADDING + 5, input_y + 5),
+                       paxs::Vector2<int>(CONSOLE_MARGIN_X + CONSOLE_PADDING + 5, input_y + 5),
                        paxg::Color(0, 0, 0));
 
         // 入力テキスト（カーソル位置にアンダースコアを挿入）
@@ -196,7 +196,7 @@ public:
             display_text.insert(cursor_position_, "_");
         }
         font_text->draw(display_text,
-                       paxg::Vec2i(CONSOLE_MARGIN_X + CONSOLE_PADDING + 25, input_y + 5),
+                       paxs::Vector2<int>(CONSOLE_MARGIN_X + CONSOLE_PADDING + 25, input_y + 5),
                        paxg::Color(0, 0, 0));
 #endif
     }
@@ -394,7 +394,7 @@ private:
         paxg::Rect(x, y, FILTER_BUTTON_WIDTH, FILTER_BUTTON_HEIGHT).draw(bg_color);
 
         // ボタンテキスト
-        font->draw(label, paxg::Vec2i(x + 10, y + 3), text_color);
+        font->draw(label, paxs::Vector2<int>(x + 10, y + 3), text_color);
     }
 
 public:

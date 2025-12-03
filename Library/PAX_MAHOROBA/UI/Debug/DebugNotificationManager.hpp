@@ -91,12 +91,12 @@ public:
 
             // アイコン描画
             font_icon->draw(getLevelIcon(item.level),
-                           paxg::Vec2i(static_cast<int>(item.panel_rect.x() + 10), static_cast<int>(item.panel_rect.y() + 15)),
+                           paxs::Vector2<int>(static_cast<int>(item.panel_rect.x() + 10), static_cast<int>(item.panel_rect.y() + 15)),
                            getLevelIconColor(item.level));
 
             // メッセージテキスト描画
             font_text->draw(item.display_text,
-                           paxg::Vec2i(static_cast<int>(item.panel_rect.x() + ICON_SIZE + 20), static_cast<int>(item.panel_rect.y() + 10)),
+                           paxs::Vector2<int>(static_cast<int>(item.panel_rect.x() + ICON_SIZE + 20), static_cast<int>(item.panel_rect.y() + 10)),
                            paxg::Color(40, 40, 40));
 
             // 閉じるボタン描画
@@ -104,7 +104,7 @@ public:
                 ? paxg::Color(200, 50, 50)
                 : paxg::Color(150, 150, 150);
             font_icon->draw("×",
-                           paxg::Vec2i(item.close_button_rect.x() + 5, item.close_button_rect.y() + 5),
+                           paxs::Vector2<int>(item.close_button_rect.x() + 5, item.close_button_rect.y() + 5),
                            close_color);
         }
     }

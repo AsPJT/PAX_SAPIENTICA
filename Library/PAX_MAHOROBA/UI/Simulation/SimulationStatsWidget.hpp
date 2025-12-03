@@ -19,7 +19,6 @@
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
@@ -65,13 +64,13 @@ namespace paxs {
             if (population_label != nullptr) {
                 font->draw(
                     *population_label + ": ",
-                    paxg::Vec2i(pos_.x, pos_.y + (line_height_ * current_line)),
+                    paxs::Vector2<int>{pos_.x, pos_.y + (line_height_ * current_line)},
                     paxg::Color(0, 0, 0)
                 );
             }
             font->draw(
                 std::to_string(simulation_manager_.getPopulation()),
-                paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
+                paxs::Vector2<int>{pos_.x + label_width_, pos_.y + (line_height_ * current_line++)},
                 paxg::Color(0, 0, 0)
             );
 
@@ -80,13 +79,13 @@ namespace paxs {
             if (settlements_label != nullptr) {
                 font->draw(
                     *settlements_label + ": ",
-                    paxg::Vec2i(pos_.x, pos_.y + (line_height_ * current_line)),
+                    paxs::Vector2<int>{pos_.x, pos_.y + (line_height_ * current_line)},
                     paxg::Color(0, 0, 0)
                 );
             }
             font->draw(
                 std::to_string(simulation_manager_.getSettlementCount()),
-                paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
+                paxs::Vector2<int>{pos_.x + label_width_, pos_.y + (line_height_ * current_line++)},
                 paxg::Color(0, 0, 0)
             );
 
@@ -95,13 +94,13 @@ namespace paxs {
             if (migration_label != nullptr) {
                 font->draw(
                     *migration_label + ": ",
-                    paxg::Vec2i(pos_.x, pos_.y + (line_height_ * current_line)),
+                    paxs::Vector2<int>{pos_.x, pos_.y + (line_height_ * current_line)},
                     paxg::Color(0, 0, 0)
                 );
             }
             font->draw(
                 std::to_string(simulation_manager_.getMigrationCount()),
-                paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
+                paxs::Vector2<int>{pos_.x + label_width_, pos_.y + (line_height_ * current_line++)},
                 paxg::Color(0, 0, 0)
             );
 
@@ -110,7 +109,7 @@ namespace paxs {
             if (tfr_label != nullptr) {
                 font->draw(
                     *tfr_label + ": ",
-                    paxg::Vec2i(pos_.x, pos_.y + (line_height_ * current_line)),
+                    paxs::Vector2<int>{pos_.x, pos_.y + (line_height_ * current_line)},
                     paxg::Color(0, 0, 0)
                 );
             }
@@ -119,7 +118,7 @@ namespace paxs {
             oss << std::fixed << std::setprecision(2) << simulation_manager_.getTotalFertilityRate();
             font->draw(
                 oss.str(),
-                paxg::Vec2i(pos_.x + label_width_, pos_.y + (line_height_ * current_line++)),
+                paxs::Vector2<int>{pos_.x + label_width_, pos_.y + (line_height_ * current_line++)},
                 paxg::Color(0, 0, 0)
             );
         }

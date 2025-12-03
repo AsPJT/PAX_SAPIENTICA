@@ -234,17 +234,17 @@ namespace paxs {
                     // 各行を個別に描画
                     const int line_height = font_size + 2;  // 行間を2px追加
 
-                    font->draw("X:" + std::to_string(j2), paxg::Vec2i(text_x, text_y), paxg::Color{ 0, 0, 0 });
+                    font->draw("X:" + std::to_string(j2), paxs::Vector2<int>(text_x, text_y), paxg::Color{ 0, 0, 0 });
                     text_y += line_height;
 
-                    font->draw("Y:" + std::to_string(i2), paxg::Vec2i(text_x, text_y), paxg::Color{ 0, 0, 0 });
+                    font->draw("Y:" + std::to_string(i2), paxs::Vector2<int>(text_x, text_y), paxg::Color{ 0, 0, 0 });
                     text_y += line_height;
 
-                    font->draw("Z:" + std::to_string(z), paxg::Vec2i(text_x, text_y), paxg::Color{ 0, 0, 0 });
+                    font->draw("Z:" + std::to_string(z), paxs::Vector2<int>(text_x, text_y), paxg::Color{ 0, 0, 0 });
                     text_y += line_height;
 
                     font->draw("L:" + std::to_string(static_cast<std::size_t>(40075016.68 / (1 << z))),
-                              paxg::Vec2i(text_x, text_y), paxg::Color{ 0, 0, 0 });
+                              paxs::Vector2<int>(text_x, text_y), paxg::Color{ 0, 0, 0 });
                 }
             }
         }

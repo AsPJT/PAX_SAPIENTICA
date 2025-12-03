@@ -16,7 +16,6 @@
 
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
@@ -43,7 +42,7 @@ namespace paxs {
     public:
         MenuBar(const paxs::FeatureVisibilityManager& visible_manager) :
             language_selector_(paxs::MurMur3::calcHash("Language"),
-                paxg::Vec2i{ 3000, 0 },
+                paxs::Vector2<int>{ 3000, 0 },
                 paxs::PulldownDisplayType::SelectedValue,
                 true
             ) {

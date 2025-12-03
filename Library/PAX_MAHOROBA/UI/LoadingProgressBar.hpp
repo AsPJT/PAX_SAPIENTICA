@@ -17,7 +17,6 @@
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
@@ -124,13 +123,13 @@ namespace paxs {
                 // パーセンテージをバーの中央に描画 / Draw percentage in center of bar
                 const int text_x = x_ + (width_ / 2);
                 const int text_y = y_ + (height_ / 2);
-                font_->drawAt(percent_text, paxg::Vec2i{text_x, text_y}, text_color_);
+                font_->drawAt(percent_text, paxs::Vector2<int>{text_x, text_y}, text_color_);
 
                 // メッセージをバーの下に描画 / Draw message below bar
                 if (!message.empty()) {
                     const int msg_x = x_ + (width_ / 2);
                     const int msg_y = y_ + height_ + 20;
-                    font_->drawAt(message, paxg::Vec2i{msg_x, msg_y}, text_color_);
+                    font_->drawAt(message, paxs::Vector2<int>{msg_x, msg_y}, text_color_);
                 }
             }
 
@@ -140,7 +139,7 @@ namespace paxs {
                     const std::string error_text = "Error occurred during loading";
                     const int error_x = x_ + (width_ / 2);
                     const int error_y = y_ + height_ + 50;
-                    font_->drawAt(error_text, paxg::Vec2i{error_x, error_y}, paxg::Color{255, 50, 50, 255});
+                    font_->drawAt(error_text, paxs::Vector2<int>{error_x, error_y}, paxg::Color{255, 50, 50, 255});
                 }
             }
         }

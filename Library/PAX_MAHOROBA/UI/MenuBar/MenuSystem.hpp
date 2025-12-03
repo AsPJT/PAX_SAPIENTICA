@@ -69,11 +69,11 @@ namespace paxs {
                 start_x += menu_list.back().getRect().width();
             }
             menu_list_key.emplace(menu_type_, menu_list.size());
-            menu_list.emplace_back(paxs::DropDownMenu(
+            menu_list.emplace_back(
                 items_key_,
                 font_size_,
                 font_buffer_thickness_size_,
-                paxg::Vec2i{ start_x, 0 }));
+                paxs::Vector2<int>{ start_x, 0 });
 
             layout();
         }

@@ -15,7 +15,6 @@
 #include <string>
 
 #include <PAX_GRAPHICA/3DModel.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Map/Content/Feature/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
@@ -111,7 +110,7 @@ public:
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x, mouse_pos.y, cached_screen_positions_,
-            [hit_radius](int mx, int my, const paxg::Vec2<double>& pos) {
+            [hit_radius](int mx, int my, const paxs::Vector2<double>& pos) {
                 return MapContentHitTester::circleHitTest(mx, my, pos, hit_radius);
             }
         );

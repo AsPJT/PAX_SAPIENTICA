@@ -79,9 +79,9 @@ namespace paxg {
         sf::RectangleShape rect{};
         constexpr Rect() = default;
         Rect(const float x, const float y, const float w, const float h) : rect(sf::Vector2f(w, h)) { rect.setPosition({ x, y }); }
-        Rect(const sf::Vector2i& pos, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
-        Rect(const sf::Vector2i& pos, const float w, const float h) : rect(sf::Vector2f(w, h)) { rect.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) }); }
-        Rect(const float x, const float y, const sf::Vector2i& size) : rect(sf::Vector2f(static_cast<float>(size.x), static_cast<float>(size.y))) { rect.setPosition({ x, y }); }
+        Rect(const paxs::Vector2<float>& pos, const paxs::Vector2<float>& size) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition({pos.x, pos.y }); }
+        Rect(const paxs::Vector2<float>& pos, const float w, const float h) : rect(sf::Vector2f(w, h)) { rect.setPosition({ pos.x, pos.y }); }
+        Rect(const float x, const float y, const paxs::Vector2<float>& size) : rect(sf::Vector2f(size.x, size.y)) { rect.setPosition({ x, y }); }
         Rect(const paxs::Rect<int>& r) : rect(sf::Vector2f(static_cast<float>(r.width()), static_cast<float>(r.height()))) { rect.setPosition({ static_cast<float>(r.x()), static_cast<float>(r.y()) }); }
         operator sf::RectangleShape() const { return rect; }
         void setX(const float x_) { rect.setPosition({ x_, rect.getPosition().y }); }
@@ -92,8 +92,8 @@ namespace paxg {
         float y() const { return rect.getPosition().y; }
         float w() const { return rect.getSize().x; }
         float h() const { return rect.getSize().y; }
-        Vec2i pos() const { return Vec2i(static_cast<int>(rect.getPosition().x), static_cast<int>(rect.getPosition().y)); }
-        Vec2i size() const { return Vec2i(static_cast<int>(rect.getSize().x), static_cast<int>(rect.getSize().y)); }
+        paxs::Vector2<float> pos() const { return paxs::Vector2<float>(rect.getPosition().x, rect.getPosition().y); }
+        paxs::Vector2<float> size() const { return paxs::Vector2<float>(rect.getSize().x, rect.getSize().y); }
         void setPos(const float x_, const float y_) { rect.setPosition({ x_, y_ }); }
         void setSize(const float w_, const float h_) { rect.setSize(sf::Vector2f(w_, h_)); }
         void setPos(const Vec2i& pos_) { rect.setPosition({ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()) }); }
@@ -106,48 +106,47 @@ namespace paxg {
             return contains(static_cast<float>(pos.x), static_cast<float>(pos.y));
         }
 #else
-        float x0{}, y0{}, w0{}, h0{};
+        paxs::Vector2<float> pos_{0.0f, 0.0f};
+        paxs::Vector2<float> size_{0.0f, 0.0f};
         constexpr Rect() = default;
         constexpr Rect(const float x, const float y, const float w, const float h) :
-            x0(x), y0(y), w0(w), h0(h) {}
-        constexpr Rect(const Vec2i& pos, const Vec2i& size)
-            : x0(static_cast<float>(pos.x())), y0(static_cast<float>(pos.y())),
-            w0(static_cast<float>(size.x())), h0(static_cast<float>(size.y())) {}
-        constexpr Rect(const Vec2i& pos, const float w, const float h) :
-            x0(static_cast<float>(pos.x())), y0(static_cast<float>(pos.y())), w0(w), h0(h) {}
-        constexpr Rect(const float x, const float y, const Vec2i& size)
-            : x0(x), y0(y), w0(static_cast<float>(size.x())), h0(static_cast<float>(size.y())) {}
-        constexpr Rect(const paxs::Rect<int>& r) :
-            x0(static_cast<float>(r.x())), y0(static_cast<float>(r.y())), w0(static_cast<float>(r.width())), h0(static_cast<float>(r.height())) {}
-        void setX(const float x_) { x0 = x_; }
-        void setY(const float y_) { y0 = y_; }
-        void setW(const float w_) { w0 = w_; }
-        void setH(const float h_) { h0 = h_; }
-        float x() const { return x0; }
-        float y() const { return y0; }
-        float w() const { return w0; }
-        float h() const { return h0; }
-        Vec2i pos() const { return Vec2i(static_cast<int>(x0), static_cast<int>(y0)); }
-        Vec2i size() const { return Vec2i(static_cast<int>(w0), static_cast<int>(h0)); }
+            pos_{x, y}, size_{w, h} {}
+        constexpr Rect(const paxs::Vector2<float>& pos, const paxs::Vector2<float>& size)
+            : pos_{pos}, size_{size} {}
+        constexpr Rect(const paxs::Vector2<float>& pos, const float w, const float h) :
+            pos_{pos}, size_{w, h} {}
+        constexpr Rect(const float x, const float y, const paxs::Vector2<float>& size)
+            : pos_{x, y}, size_{size} {}
+        constexpr Rect(const paxs::Rect<int>& r)
+            : pos_{ static_cast<float>(r.x()), static_cast<float>(r.y()) },
+              size_{ static_cast<float>(r.width()), static_cast<float>(r.height()) } {}
+        void setX(const float x_) { pos_.x = x_; }
+        void setY(const float y_) { pos_.y = y_; }
+        void setW(const float w_) { size_.x = w_; }
+        void setH(const float h_) { size_.y = h_; }
+        float x() const { return pos_.x; }
+        float y() const { return pos_.y; }
+        float w() const { return size_.x; }
+        float h() const { return size_.y; }
+        paxs::Vector2<float> pos() const { return pos_; }
+        paxs::Vector2<float> size() const { return size_; }
         void setPos(const float x_, const float y_) {
-            x0 = x_;
-            y0 = y_;
+            pos_.x = x_;
+            pos_.y = y_;
         }
         void setSize(const float w_, const float h_) {
-            w0 = w_;
-            h0 = h_;
+            size_.x = w_;
+            size_.y = h_;
         }
-        void setPos(const Vec2i& pos_) {
-            x0 = static_cast<float>(pos_.x());
-            y0 = static_cast<float>(pos_.y());
+        void setPos(const paxs::Vector2<int>& pos) {
+            pos_ = paxs::Vector2<float>{ pos };
         }
-        void setSize(const Vec2i& size_) {
-            w0 = static_cast<float>(size_.x());
-            h0 = static_cast<float>(size_.y());
+        void setSize(const paxs::Vector2<int>& size) {
+            size_ = paxs::Vector2<float>{ size };
         }
         bool contains(const float x_, const float y_) const {
-            return x0 <= x_ && x_ <= x0 + w0 &&
-                   y0 <= y_ && y_ <= y0 + h0;
+            return (pos_.x <= x_) && (x_ <= (pos_.x + size_.x)) &&
+                   (pos_.y <= y_) && (y_ <= (pos_.y + size_.y));
         }
         bool contains(const paxs::Vector2<int>& pos) const {
             return contains(static_cast<float>(pos.x), static_cast<float>(pos.y));

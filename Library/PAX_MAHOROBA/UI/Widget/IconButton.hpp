@@ -65,9 +65,7 @@ namespace paxs {
             }
 
             // アイコンを描画
-            icon_texture_ptr->resizedDraw(rect.width(),
-                paxs::Vector2<int>{ rect.x(), rect.y() }
-            );
+            icon_texture_ptr->resizedDraw(rect.width(), rect.position());
 
             is_hovered = false;
             is_pressed = false;
@@ -90,10 +88,10 @@ namespace paxs {
         Rect<int> getRect() const override { return rect; }
         const char* getName() const override { return name; }
         bool isVisible() const override { return true; }
-        void setPos(const Vector2<int>& pos) override { rect.position = pos; }
+        void setPos(const Vector2<int>& pos) override { rect.pos_ = pos; }
 
     protected:
-        void setSize(const Vector2<int>& size) { rect.size = size; }
+        void setSize(const Vector2<int>& size) { rect.sz_ = size; }
 
     private:
         const std::uint_least32_t icon_texture_path_hash;
