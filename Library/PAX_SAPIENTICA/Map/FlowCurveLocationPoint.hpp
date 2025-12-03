@@ -14,10 +14,10 @@
 
 #include <cstdint>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
 #include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
@@ -26,9 +26,15 @@ namespace paxs {
     /// @brief フロー曲線の位置情報（スプライン曲線用の点列）
     /// @brief Flow curve location information (points for spline curves)
     struct FlowCurveLocationData {
+        std::string key;  // フロー曲線の一意キー / Unique key for flow curve
+        std::vector<paxs::WebMercatorDeg> coordinates; // スプライン曲線の座標列 / Coordinates for spline curve
+        Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲 / Zoom level range
+        Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代 / Time range
+        std::uint_least32_t feature_type_hash = MurMur3::calcHash("flow_arrow"); // 地物の種別 / Feature type hash
+
         explicit FlowCurveLocationData() = default;
         explicit FlowCurveLocationData(
-            std::string  key_,  // フロー曲線の一意キー / Unique key for flow curve
+            std::string key_,  // フロー曲線の一意キー / Unique key for flow curve
             std::vector<paxs::WebMercatorDeg>&& coordinates_,  // スプライン曲線の座標列 / Coordinates for spline curve
             const Range<double>& zoom_range_,
             const Range<double>& year_range_,
@@ -39,12 +45,6 @@ namespace paxs {
               zoom_range(zoom_range_),
               year_range(year_range_),
               feature_type_hash(feature_type_hash_) {}
-
-        std::string key;  // フロー曲線の一意キー / Unique key for flow curve
-        std::vector<paxs::WebMercatorDeg> coordinates; // スプライン曲線の座標列 / Coordinates for spline curve
-        Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲 / Zoom level range
-        Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代 / Time range
-        std::uint_least32_t feature_type_hash = MurMur3::calcHash("flow_arrow"); // 地物の種別 / Feature type hash
     };
 
     /// @brief フロー曲線のグループ
@@ -55,7 +55,7 @@ namespace paxs {
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲 / Zoom level range
         Range<double> year_range{-99999999.0, 99999999.0}; // 可視化する時代範囲 / Time range
         std::uint_least32_t feature_type_hash = MurMur3::calcHash("flow_arrow"); // 地物の種別 / Feature type hash
-        std::uint_least32_t color_hash = 0; // 色情報のハッシュ / Color hash
+        std::string color_string;  // 色情報の文字列（例: "#ffffff"） / Color string (e.g., "#ffffff")
         float line_width = 2.0f; // 線の太さ / Line width
 
         explicit FlowCurveLocationGroup() = default;
@@ -64,14 +64,14 @@ namespace paxs {
             const Range<double>& zoom_range_,  // 表示するズームレベル範囲 / Zoom level range
             const Range<double>& year_range_,  // 可視化する時代範囲 / Time range
             const std::uint_least32_t feature_type_hash_,  // 地物の種別 / Feature type hash
-            const std::uint_least32_t color_hash_,  // 色情報のハッシュ / Color hash
+            const std::string& color_string_,  // 色情報の文字列 / Color string
             float line_width_  // 線の太さ / Line width
         ) noexcept
             : flow_arrow_list(flow_arrow_list_),
               zoom_range(zoom_range_),
               year_range(year_range_),
               feature_type_hash(feature_type_hash_),
-              color_hash(color_hash_),
+              color_string(color_string_),
               line_width(line_width_) {}
     };
 

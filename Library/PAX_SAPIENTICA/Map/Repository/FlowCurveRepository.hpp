@@ -131,10 +131,10 @@ namespace paxs {
                 feature_type_hash
             );
 
-            // FlowCurves.tsvからcolor_hashとline_widthを取得（paramsのtexture_hashを色として使用）
-            // TODO: 将来的にはcolorとline_width専用のカラムを追加
-            const std::uint_least32_t flow_arrow_color_hash = params.texture_hash;  // textureカラムを色として使用
-            const float flow_arrow_line_width = static_cast<float>(params.zoom);    // zoomカラムを線幅として使用
+            // FlowCurves.tsvからcolor文字列とline_widthを取得
+            // Get color string and line_width from FlowCurves.tsv
+            const std::string flow_arrow_color_string = params.color_string;  // colorカラムの文字列を直接使用
+            const float flow_arrow_line_width = static_cast<float>(params.line_width);  // line_widthカラムを使用
 
             // 読み込んだファイルを格納する
             return FlowCurveLocationGroup(
@@ -142,7 +142,7 @@ namespace paxs {
                 params.zoom_range,
                 params.year_range,
                 feature_type_hash,
-                flow_arrow_color_hash,
+                flow_arrow_color_string,
                 flow_arrow_line_width
             );
         }

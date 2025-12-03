@@ -193,19 +193,25 @@ namespace paxs {
                 return false;
             }
         }
+        /// @brief Is it coast?
+        /// @brief 海岸かどうかの判定
         bool isCoast(const Vector2& position) const noexcept {
             if (!isLand(position)) {
                 return false; // 陸ではないので海岸ではない
             }
+            
+            // move_astar_distance分の間隔で隣接セルをチェック
+            const GridType offset = SimulationConstants::getInstance().move_astar_distance;
+            
             // 隣接セルが陸地ではない場合は海岸
-            if (!isLand({ position.x - 1, position.y - 1 })
-            || !isLand({ position.x, position.y - 1 })
-            || !isLand({ position.x + 1, position.y - 1 })
-            || !isLand({ position.x - 1, position.y })
-            || !isLand({ position.x + 1, position.y })
-            || !isLand({ position.x - 1, position.y + 1 })
-            || !isLand({ position.x, position.y + 1 })
-            || !isLand({ position.x + 1, position.y + 1 })) {
+            if (!isLand({ position.x - offset, position.y - offset })
+            || !isLand({ position.x, position.y - offset })
+            || !isLand({ position.x + offset, position.y - offset })
+            || !isLand({ position.x - offset, position.y })
+            || !isLand({ position.x + offset, position.y })
+            || !isLand({ position.x - offset, position.y + offset })
+            || !isLand({ position.x, position.y + offset })
+            || !isLand({ position.x + offset, position.y + offset })) {
                 return true;
             }
             return false; // 海岸ではない
