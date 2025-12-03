@@ -12,12 +12,10 @@
 #ifndef PAX_GRAPHICA_CIRCLE_IMPL_HPP
 #define PAX_GRAPHICA_CIRCLE_IMPL_HPP
 
+#include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
-
-    // Forward declarations
-    struct Color;
 
     /// @brief Abstract base class for Circle implementation (Strategy pattern)
     /// @note Each graphics library provides its own implementation

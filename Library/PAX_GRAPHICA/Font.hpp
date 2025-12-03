@@ -46,7 +46,7 @@ namespace paxg{
         s3d::TextStyle outline{};
         void setOutline(const double inner, const double outer, const paxg::Color& color) {
             is_outline = true;
-            outline = s3d::TextStyle::Outline(inner, outer, color.color);
+            outline = s3d::TextStyle::Outline(inner, outer, color);
         }
 
         /// @brief テキストを左下揃えで描画 (横:左端, 縦:下端)
@@ -56,12 +56,12 @@ namespace paxg{
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::bottomLeft = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::bottomLeft = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
         }
         /// @brief テキストを右上揃えで描画 (横:右端, 縦:上端)
@@ -71,12 +71,12 @@ namespace paxg{
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::topRight = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::topRight = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
         }
         /// @brief テキストを右下揃えで描画 (横:右端, 縦:下端)
@@ -86,12 +86,12 @@ namespace paxg{
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::bottomRight = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::bottomRight = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
         }
         /// @brief テキストを左上揃えで描画 (横:左端, 縦:上端)
@@ -101,12 +101,12 @@ namespace paxg{
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
         }
         /// @brief テキストを中央下揃えで描画 (横:中央, 縦:下端)
@@ -116,12 +116,12 @@ namespace paxg{
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::bottomCenter = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::bottomCenter = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
         }
         /// @brief テキストを中央上揃えで描画 (横:中央, 縦:上端)
@@ -131,12 +131,12 @@ namespace paxg{
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::topCenter = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::topCenter = s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
         }
         /// @brief テキストを中央揃えで描画 (横:中央, 縦:中央)
@@ -146,12 +146,12 @@ namespace paxg{
                 font(s3d::Unicode::FromUTF8(str)).drawAt(
                     outline,
                     s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).drawAt(
                     s3d::Vec2(pos.x, pos.y),
-                    color.color);
+                    color);
             }
         }
 
@@ -384,7 +384,7 @@ namespace paxg{
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
-            text.setFillColor(color.color);
+            text.setFillColor(color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y - size / 2) });
@@ -399,7 +399,7 @@ namespace paxg{
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
-            text.setFillColor(color.color);
+            text.setFillColor(color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x), static_cast<float>(pos.y + size / 2) });
@@ -414,7 +414,7 @@ namespace paxg{
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
-            text.setFillColor(color.color);
+            text.setFillColor(color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             // 文字の底部がpos.yに来るように、テキストの高さ分上に配置
@@ -430,7 +430,7 @@ namespace paxg{
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
-            text.setFillColor(color.color);
+            text.setFillColor(color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) });
@@ -445,7 +445,7 @@ namespace paxg{
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
-            text.setFillColor(color.color);
+            text.setFillColor(color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y - size / 2) });
@@ -460,7 +460,7 @@ namespace paxg{
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
-            text.setFillColor(color.color);
+            text.setFillColor(color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y + size / 2) });
@@ -475,7 +475,7 @@ namespace paxg{
             sf::Utf<8>::toWide(str.begin(), str.end(), std::back_inserter(wstr));
             text.setString(wstr);
             text.setCharacterSize(size);
-            text.setFillColor(color.color);
+            text.setFillColor(color);
             text.setOutlineColor(sf::Color::White);
             text.setOutlineThickness(2.0f);
             // 横方向は中央、縦方向も中央に揃える

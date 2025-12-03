@@ -129,8 +129,8 @@ namespace paxg {
 #if defined(PAXS_USING_SIV3D)
             const float siv3dSides = circumRadiusToSiv3dSides(radius_);
             s3d::Triangle{ { center_x_, center_y_ }, siv3dSides, rotation_ }
-                .draw(s3d::ColorF{ color.color });
-            s3d::Triangle{ center_x_, center_y_, radius_, rotation_ }.draw(s3d::ColorF{ color.color });
+                .draw(s3d::ColorF{ color });
+            s3d::Triangle{ center_x_, center_y_, radius_, rotation_ }.draw(s3d::ColorF{ color });
 
 #elif defined(PAXS_USING_SFML)
             sf::ConvexShape triangle;
@@ -161,7 +161,7 @@ namespace paxg {
                 ));
             }
 
-            triangle.setFillColor(color.color);
+            triangle.setFillColor(color);
             paxg::Window::window().draw(triangle);
 
 #elif defined(PAXS_USING_DXLIB)

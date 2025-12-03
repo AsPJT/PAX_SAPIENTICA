@@ -21,8 +21,6 @@
 
 namespace paxg {
 
-    struct Color;
-
 #ifdef PAXS_USING_DXLIB
 
     /// @brief DxLib implementation of CircleImpl

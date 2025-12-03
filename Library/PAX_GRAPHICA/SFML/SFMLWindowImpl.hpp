@@ -68,7 +68,7 @@ namespace paxg {
             bool upd = paxg::SFML_Event::getInstance()->update(m_window);
             if (upd) {
                 // ウィンドウが開いている場合のみクリア
-                m_window.clear(backgroundColor.color);
+                m_window.clear(backgroundColor);
             }
             return upd;
         }
@@ -184,7 +184,7 @@ namespace paxg {
         }
 
         void clear() override {
-            m_window.clear(backgroundColor.color);
+            m_window.clear(backgroundColor);
         }
 
         void display() override {

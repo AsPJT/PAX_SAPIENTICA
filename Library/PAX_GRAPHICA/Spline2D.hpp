@@ -190,7 +190,7 @@ namespace paxg {
 
         void draw(double thickness, const paxg::Color& color) const {
 #ifdef PAXS_USING_SIV3D
-            spline.draw(thickness, s3d::ColorF(color.color));
+            spline.draw(thickness, s3d::ColorF(color));
 #else
             if (points_.size() < 2) return;
 

@@ -20,8 +20,6 @@
 
 namespace paxg {
 
-    struct Color;
-
 #ifdef PAXS_USING_SIV3D
 
     /// @brief Siv3D implementation of CircleImpl
@@ -45,7 +43,7 @@ namespace paxg {
         /// @brief Draw the circle with specified color
         /// @param color The color to draw the circle
         void draw(const Color& color) const override {
-            circle.draw(color.color);
+            circle.draw(color);
         }
 
         /// @brief Get the position of the circle center

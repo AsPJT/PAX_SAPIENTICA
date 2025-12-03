@@ -263,7 +263,7 @@ namespace paxg {
 
 #if defined(PAXS_USING_SIV3D)
         void draw(const paxg::Color& c_) const {
-            rect.draw(c_.color);
+            rect.draw(c_);
         }
 #elif defined(PAXS_USING_DXLIB)
         void draw(const paxg::Color& c_) const {
@@ -275,7 +275,7 @@ namespace paxg {
         void draw(const paxg::Color& c_) const {
             drawInternal(static_cast<float>(x0), static_cast<float>(y0),
                 static_cast<float>(w0), static_cast<float>(h0),
-                static_cast<float>(r0), c_.color);
+                static_cast<float>(r0), c_);
         }
 #else
         void draw(const paxg::Color&) const {}
@@ -370,7 +370,7 @@ namespace paxg {
 
 #if defined(PAXS_USING_SIV3D)
         void drawAt(const paxg::Color&) const {
-            // rect.draw(c_.color); // 元のコードでもコメントアウトされていた
+            // rect.draw(c_); // 元のコードでもコメントアウトされていた
         }
 #elif defined(PAXS_USING_DXLIB)
         void drawAt(const paxg::Color& c_) const {
@@ -384,7 +384,7 @@ namespace paxg {
             drawInternal(static_cast<float>(x0) - static_cast<float>(w0) / 2.0f,
                 static_cast<float>(y0) - static_cast<float>(h0) / 2.0f,
                 static_cast<float>(w0), static_cast<float>(h0),
-                static_cast<float>(r0), c_.color);
+                static_cast<float>(r0), c_);
         }
 #else
         void drawAt(const paxg::Color&) const {}
@@ -392,7 +392,7 @@ namespace paxg {
 
 #if defined(PAXS_USING_SIV3D)
         void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& color_) const {
-            rect.drawFrame(inner_thickness, outer_thickness, color_.color);
+            rect.drawFrame(inner_thickness, outer_thickness, color_);
 
         }
 #elif defined(PAXS_USING_DXLIB)
@@ -425,25 +425,25 @@ namespace paxg {
             sf::RectangleShape rect1(sf::Vector2f(
                 static_cast<float>(w + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
             rect1.setPosition({ x - static_cast<float>(outer_thickness), y - static_cast<float>(outer_thickness) });
-            rect1.setFillColor(c_.color);
+            rect1.setFillColor(c_);
             Window::window().draw(rect1);
 
             sf::RectangleShape rect2(sf::Vector2f(
                 static_cast<float>(w + outer_thickness * 2), static_cast<float>(outer_thickness + inner_thickness)));
             rect2.setPosition({ x - static_cast<float>(outer_thickness), y + h - static_cast<float>(inner_thickness) });
-            rect2.setFillColor(c_.color);
+            rect2.setFillColor(c_);
             Window::window().draw(rect2);
 
             sf::RectangleShape rect3(sf::Vector2f(
                 static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(h + outer_thickness * 2)));
             rect3.setPosition({ x - static_cast<float>(outer_thickness), y - static_cast<float>(outer_thickness) });
-            rect3.setFillColor(c_.color);
+            rect3.setFillColor(c_);
             Window::window().draw(rect3);
 
             sf::RectangleShape rect4(sf::Vector2f(
                 static_cast<float>(outer_thickness + inner_thickness), static_cast<float>(h + outer_thickness * 2)));
             rect4.setPosition({ x + static_cast<float>(w - inner_thickness), y - static_cast<float>(outer_thickness) });
-            rect4.setFillColor(c_.color);
+            rect4.setFillColor(c_);
             Window::window().draw(rect4);
         }
 #else

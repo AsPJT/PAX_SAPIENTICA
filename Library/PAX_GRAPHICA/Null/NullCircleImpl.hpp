@@ -16,8 +16,6 @@
 
 namespace paxg {
 
-    struct Color;
-
     /// @brief Null (no-op) implementation of CircleImpl
     /// @note Used when no graphics library is available
     class NullCircleImpl : public CircleImpl {

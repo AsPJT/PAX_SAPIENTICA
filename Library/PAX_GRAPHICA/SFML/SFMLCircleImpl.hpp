@@ -22,8 +22,6 @@
 
 namespace paxg {
 
-    struct Color;
-
 #ifdef PAXS_USING_SFML
 
     /// @brief SFML implementation of CircleImpl
@@ -51,7 +49,7 @@ namespace paxg {
         void draw(const Color& color) const override {
             circleShape.setRadius(r);
             circleShape.setPosition({x, y});
-            circleShape.setFillColor(color.color);
+            circleShape.setFillColor(color);
             Window::window().draw(circleShape);
         }
 
