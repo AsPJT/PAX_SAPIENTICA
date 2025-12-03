@@ -44,8 +44,6 @@ namespace paxs {
     // Data の辞書型
     using DataGridsType = std::uint_least32_t;
 
-    constexpr std::array <Vector2<GridType>, 8> astar_adjacent_cell{ {Vector2<GridType>(-1, -1),Vector2<GridType>(1, -1),Vector2<GridType>(-1, 1),Vector2<GridType>(1, 1),Vector2<GridType>(0, -1),Vector2<GridType>(-1, 0),Vector2<GridType>(0, 1),Vector2<GridType>(1, 0)} };
-
     // 始点と終点を管理（婚姻の前後の位置情報を保持する用）
     struct GridType4 {
         GridType sx{}, sy{}, ex{}, ey{};

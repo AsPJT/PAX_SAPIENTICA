@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <memory>
 #include <random>
+#include <unordered_map>
 
 #include <PAX_SAPIENTICA/Core/Type/Range.hpp>
 #include <PAX_SAPIENTICA/Simulation/Algorithm/AStar.hpp>
@@ -44,11 +45,14 @@ namespace paxs {
         // Data members
         std::uint_least32_t id = 0;
         Vector2 position{};
-        Vector2 old_position{-1, -1};
+        Vector2 old_position{ -1, -1 };
         std::vector<Vector2> positions{};
         std::vector<Agent> agents{};
         bool is_moved = false;
         std::uint_least32_t bronze = 0;
+
+        // ✅ エージェントID→インデックスのマップ（O(1)検索）
+        std::unordered_map<HumanIndexType, std::size_t> agent_id_to_index_;
 
     public:
 
@@ -82,50 +86,99 @@ namespace paxs {
             bronze = bronze_;
         }
 
-        // Agent management
+        // ✅ Agent management (最適化版)
         void addAgent(const Agent& agent) noexcept {
             agents.emplace_back(agent);
+            agent_id_to_index_[agent.getId()] = agents.size() - 1;
         }
+
         void addAgents(const std::vector<Agent>& agents_) noexcept {
+            const std::size_t start_index = agents.size();
             agents.insert(agents.end(), agents_.begin(), agents_.end());
+            // マップ更新
+            for (std::size_t i = 0; i < agents_.size(); ++i) {
+                agent_id_to_index_[agents[start_index + i].getId()] = start_index + i;
+            }
         }
+
         void clearAgents() noexcept {
             agents.clear();
+            agent_id_to_index_.clear();
         }
+
         void resizeAgents(std::size_t size_) noexcept {
             agents.resize(size_);
+            rebuildAgentIndex();
         }
+
         void setAgents(const std::vector<Agent>& agents_) noexcept {
             agents = agents_;
+            rebuildAgentIndex();
         }
+
         void setAgent(const Agent& agent_, std::size_t index_) noexcept {
+            // 古いIDを削除
+            if (index_ < agents.size()) {
+                agent_id_to_index_.erase(agents[index_].getId());
+            }
             agents[index_] = agent_;
+            agent_id_to_index_[agent_.getId()] = index_;
         }
+
+        // ✅ O(1)でエージェントを検索
+        Agent* findAgentById(HumanIndexType id) noexcept {
+            auto it = agent_id_to_index_.find(id);
+            if (it == agent_id_to_index_.end()) return nullptr;
+            if (it->second >= agents.size()) return nullptr; // 安全性チェック
+            return &agents[it->second];
+        }
+
+        const Agent* findAgentById(HumanIndexType id) const noexcept {
+            auto it = agent_id_to_index_.find(id);
+            if (it == agent_id_to_index_.end()) return nullptr;
+            if (it->second >= agents.size()) return nullptr;
+            return &agents[it->second];
+        }
+
+        // ✅ エージェント削除（インデックス指定）
+        void removeAgentAt(std::size_t index) noexcept {
+            if (index >= agents.size()) return;
+
+            // 削除するエージェントのIDをマップから削除
+            agent_id_to_index_.erase(agents[index].getId());
+
+            // 最後の要素と入れ替え
+            if (index != agents.size() - 1) {
+                agents[index] = agents.back();
+                // 移動したエージェントのインデックスを更新
+                agent_id_to_index_[agents[index].getId()] = index;
+            }
+            agents.pop_back();
+        }
+
         void deleteAgent(std::uint_least32_t id_) noexcept {
-            agents.erase(std::remove_if(agents.begin(), agents.end(),
-                [id_](const Agent& agent) { return agent.getId() == id_; }), agents.end());
+            auto it = agent_id_to_index_.find(id_);
+            if (it != agent_id_to_index_.end()) {
+                removeAgentAt(it->second);
+            }
         }
 
         Agent& getAgent(std::uint_least32_t id_) noexcept {
-            auto it = std::find_if(agents.begin(), agents.end(),
-                [id_](const Agent& agent) { return agent.getId() == id_; });
-            if (it == agents.end()) {
-                const std::string message = "Agent not found.";
-                PAXS_ERROR(message);
+            Agent* agent = findAgentById(id_);
+            if (agent == nullptr) {
+                PAXS_ERROR("Agent not found: " + std::to_string(id_));
                 return *agents.begin();
             }
-            return *it;
+            return *agent;
         }
 
         const Agent& cgetAgent(std::uint_least32_t id_) const noexcept {
-            auto it = std::find_if(agents.begin(), agents.end(),
-                [id_](const Agent& agent) { return agent.getId() == id_; });
-            if (it == agents.end()) {
-                const std::string message = "Agent not found.";
-                PAXS_ERROR(message);
+            const Agent* agent = findAgentById(id_);
+            if (agent == nullptr) {
+                PAXS_ERROR("Agent not found: " + std::to_string(id_));
                 return *agents.begin();
             }
-            return *it;
+            return *agent;
         }
 
         std::vector<Agent>& getAgents() noexcept { return agents; }
@@ -154,6 +207,7 @@ namespace paxs {
         }
 
         double getSNP() const noexcept {
+            if (agents.empty()) return 0.0;
             std::uint_least64_t snp = 0;
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 snp += static_cast<std::uint_least64_t>(agents[i].cgetGenome().getSNP());
@@ -183,11 +237,21 @@ namespace paxs {
         }
 
         std::size_t getMostMtDNA() const noexcept {
+            if (agents.empty()) return 0;
             std::size_t mtdna_max = 0;
             for (std::size_t i = 0; i < agents.size(); ++i) {
                 mtdna_max += agents[i].cgetGenome().getMtDNA();
             }
             return mtdna_max / agents.size();
+        }
+
+    private:
+        // インデックスマップを再構築
+        void rebuildAgentIndex() {
+            agent_id_to_index_.clear();
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                agent_id_to_index_[agents[i].getId()] = i;
+            }
         }
     };
 
@@ -278,6 +342,32 @@ namespace paxs {
         /// @brief エージェントを取得
         const std::vector<Agent>& cgetAgents() const noexcept { return data_.cgetAgents(); }
 
+        /// @brief 婚姻可能エージェントのキャッシュを更新
+        void updateMarriageCache() const {
+            if (marriage_cache_.is_valid) return;
+
+            marriage_cache_.marriageable_male_indices.clear();
+            marriage_cache_.marriageable_female_indices.clear();
+
+            const std::vector<Agent>& agents = data_.cgetAgents();
+            for (std::size_t i = 0; i < agents.size(); ++i) {
+                if (agents[i].getLifeSpan() == 0 || !agents[i].isAbleToMarriage()) continue;
+
+                if (agents[i].isMale()) {
+                    marriage_cache_.marriageable_male_indices.push_back(i);
+                }
+                else if (agents[i].isFemale() && agents[i].getBirthIntervalCount() == 0) {
+                    marriage_cache_.marriageable_female_indices.push_back(i);
+                }
+            }
+            marriage_cache_.is_valid = true;
+        }
+
+        /// @brief 婚姻キャッシュを無効化
+        void invalidateMarriageCache() {
+            marriage_cache_.is_valid = false;
+        }
+
         bool marriagePair(
             Marriage3& male_settlement_pair,
             std::discrete_distribution<std::size_t>& csl_dist,
@@ -285,79 +375,85 @@ namespace paxs {
             const bool female_is_agricultural,
             JapanProvinces* japan_provinces_ptr
         ) {
-            // 近隣の集落を探し、エージェントIDと集落IDのペアを作成
+            // 近隣集落グリッドを選択
             std::size_t i = csl_dist(*gen);
-            if (close_settlements_list.size() <= i) return false; // 配列外
+            if (close_settlements_list.size() <= i) return false;
             const std::vector<Settlement>& close_settlements = (*close_settlements_list[i]);
 
-            const std::size_t close_settlements_size = close_settlements.size();
-            if (close_settlements_size == 0) return false; // 集落が無かったので失敗
+            if (close_settlements.empty()) return false;
 
-            std::uniform_int_distribution<int> dist(0, static_cast<int>(close_settlements_size - 1));
-            const std::size_t j = static_cast<std::size_t>(dist(*gen));
-            const Settlement& close_settlement = close_settlements[j];
-            if (close_settlement.getPosition().distance_pow2(data_.getPosition()) > SimulationConstants::getInstance().marriage_search_range_pow2) return false; // 婚姻距離内に集落が無いため失敗
+            // 集落を選択
+            std::uniform_int_distribution<int> settlement_dist(0, static_cast<int>(close_settlements.size() - 1));
+            const std::size_t j = static_cast<std::size_t>(settlement_dist(*gen));
+            Settlement& close_settlement = const_cast<Settlement&>(close_settlements[j]);
+
+            // 距離チェック
+            if (close_settlement.getPosition().distance_pow2(data_.getPosition()) >
+                SimulationConstants::getInstance().marriage_search_range_pow2) return false;
+
+            // ✅ キャッシュから婚姻可能な男性のみ取得
+            close_settlement.updateMarriageCache();
+            const auto& male_indices = close_settlement.marriage_cache_.marriageable_male_indices;
+
+            if (male_indices.empty()) return false;
+
+            // ランダムに男性を選択
+            std::uniform_int_distribution<> male_dist(0, static_cast<int>(male_indices.size()) - 1);
+            std::size_t k = male_indices[male_dist(*gen)];
 
             const std::vector<Agent>& close_agent = close_settlement.cgetAgents();
-            for (std::size_t k = 0; k < close_agent.size(); ++k) {
-                if (close_agent[k].isMale() && close_agent[k].getLifeSpan() != 0 && close_agent[k].isAbleToMarriage()) {
-                    const bool male_is_agricultural = (close_agent[k].cgetFarming() > 0);
+            const bool male_is_agricultural = (close_agent[k].cgetFarming() > 0);
 
-                    // 農耕民の婚姻時の地域チェック
-                    if (japan_provinces_ptr != nullptr) {
-                        // 女性が農耕民の場合、女性の集落が農耕不可能な地域にいるか確認
-                        if (female_is_agricultural) {
-                            const std::uint_least8_t female_district_id = environment->template getData<std::uint_least8_t>(
-                                SimulationConstants::getInstance().district_key, data_.getPosition());
-                            const District& female_district = japan_provinces_ptr->getDistrict(female_district_id);
-                            if (female_district.agricultural_capable == 0) {
-                                // 女性が農耕不可能な地域にいる場合、婚姻できない
-                                continue;
-                            }
-                        }
-
-                        // 男性が農耕民の場合、男性の集落が農耕不可能な地域にいるか確認
-                        if (male_is_agricultural) {
-                            const std::uint_least8_t male_district_id = environment->template getData<std::uint_least8_t>(
-                                SimulationConstants::getInstance().district_key, close_settlement.getPosition());
-                            const District& male_district = japan_provinces_ptr->getDistrict(male_district_id);
-                            if (male_district.agricultural_capable == 0) {
-                                // 男性が農耕不可能な地域にいる場合、婚姻できない
-                                continue;
-                            }
-                        }
-
-                        // 母方居住婚: 男性が女性の集落に移動する場合
-                        if (SimulationConstants::getInstance().maternal_residence_probability > 0.0f && male_is_agricultural) {
-                            const std::uint_least8_t female_district_id = environment->template getData<std::uint_least8_t>(
-                                SimulationConstants::getInstance().district_key, data_.getPosition());
-                            const District& female_district = japan_provinces_ptr->getDistrict(female_district_id);
-                            if (female_district.agricultural_capable == 0) {
-                                continue; // 移動先が農耕不可能なので婚姻不可
-                            }
-                        }
-
-                        // 父方居住婚: 女性が男性の集落に移動する場合
-                        if (SimulationConstants::getInstance().maternal_residence_probability < 1.0f && female_is_agricultural) {
-                            const std::uint_least8_t male_district_id = environment->template getData<std::uint_least8_t>(
-                                SimulationConstants::getInstance().district_key, close_settlement.getPosition());
-                            const District& male_district = japan_provinces_ptr->getDistrict(male_district_id);
-                            if (male_district.agricultural_capable == 0) {
-                                continue; // 移動先が農耕不可能なので婚姻不可
-                            }
-                        }
+            // ✅ 農耕民の婚姻時の地域チェック
+            if (japan_provinces_ptr != nullptr) {
+                // 女性が農耕民の場合
+                if (female_is_agricultural) {
+                    const std::uint_least8_t female_district_id = environment->template getData<std::uint_least8_t>(
+                        SimulationConstants::getInstance().district_key, data_.getPosition());
+                    const District& female_district = japan_provinces_ptr->getDistrict(female_district_id);
+                    if (female_district.agricultural_capable == 0) {
+                        return false; // 農耕不可能な地域
                     }
+                }
 
-                    male_settlement_pair = Marriage3(
-                        static_cast<std::uint_least32_t>(k),
-                        static_cast<std::uint_least32_t>(j),
-                        static_cast<std::uint_least32_t>(i),
-                        close_agent[k].cgetFarming()
-                    );
-                    return true; // 成功
+                // 男性が農耕民の場合
+                if (male_is_agricultural) {
+                    const std::uint_least8_t male_district_id = environment->template getData<std::uint_least8_t>(
+                        SimulationConstants::getInstance().district_key, close_settlement.getPosition());
+                    const District& male_district = japan_provinces_ptr->getDistrict(male_district_id);
+                    if (male_district.agricultural_capable == 0) {
+                        return false; // 農耕不可能な地域
+                    }
+                }
+
+                // 母方居住婚の移動先チェック
+                if (SimulationConstants::getInstance().maternal_residence_probability > 0.0f && male_is_agricultural) {
+                    const std::uint_least8_t female_district_id = environment->template getData<std::uint_least8_t>(
+                        SimulationConstants::getInstance().district_key, data_.getPosition());
+                    const District& female_district = japan_provinces_ptr->getDistrict(female_district_id);
+                    if (female_district.agricultural_capable == 0) {
+                        return false; // 移動先が農耕不可能
+                    }
+                }
+
+                // 父方居住婚の移動先チェック
+                if (SimulationConstants::getInstance().maternal_residence_probability < 1.0f && female_is_agricultural) {
+                    const std::uint_least8_t male_district_id = environment->template getData<std::uint_least8_t>(
+                        SimulationConstants::getInstance().district_key, close_settlement.getPosition());
+                    const District& male_district = japan_provinces_ptr->getDistrict(male_district_id);
+                    if (male_district.agricultural_capable == 0) {
+                        return false; // 移動先が農耕不可能
+                    }
                 }
             }
-            return false; // 失敗
+
+            male_settlement_pair = Marriage3(
+                static_cast<std::uint_least32_t>(k),
+                static_cast<std::uint_least32_t>(j),
+                static_cast<std::uint_least32_t>(i),
+                close_agent[k].cgetFarming()
+            );
+            return true;
         }
 
         /// @brief Marriage.
@@ -367,22 +463,21 @@ namespace paxs {
             std::vector<GridType4>& marriage_pos_list,
             JapanProvinces* japan_provinces_ptr = nullptr
         ) noexcept {
-            if (close_settlements_list.size() == 0) return;
+            if (close_settlements_list.empty()) return;
 
-            // 居住婚
+            // ✅ 婚姻可能エージェントのキャッシュを更新
+            updateMarriageCache();
+
+            // 居住婚の判定
             bool is_matrilocality = false;
-            // 選択居住婚
             bool is_select_matrilocality = false;
 
-            // 母方居住婚
             if (SimulationConstants::getInstance().maternal_residence_probability >= 1.0f) {
                 is_matrilocality = true;
             }
-            // 父方居住婚
             else if (SimulationConstants::getInstance().maternal_residence_probability <= 0.0f) {
                 is_matrilocality = false;
             }
-            // 選択居住婚
             else {
                 is_select_matrilocality = true;
             }
@@ -391,77 +486,93 @@ namespace paxs {
             std::vector<std::size_t> close_settlements_list_probabilities;
             std::discrete_distribution<std::size_t> csl_dist;
 
-            // 結婚の条件を満たすエージェントを取得
+            // ✅ 婚姻可能な女性のみループ
             std::vector<Agent>& agents = data_.getAgents();
-            for (std::size_t i = 0; i < agents.size(); ++i) {
-                Agent& female = agents[i];
-                // 結婚可能かどうか
-                if (female.isFemale() && female.isAbleToMarriage()) {
-                    // 妊娠していたら婚姻しない（婚姻可能と定義すると再婚者のデータで上書きされ子供への継承が不自然になる）
-                    if (female.getBirthIntervalCount() > 0) continue;
-                    // 婚姻するか乱数で決定
-                    if (!isMarried(female.getAgeSizeT(), female.cgetFarming() > 0)) continue;
+            for (std::size_t idx : marriage_cache_.marriageable_female_indices) {
+                Agent& female = agents[idx];
 
-                    // 集落グリッドを重み付け
-                    if (close_settlements_list_probabilities.size() == 0) {
-                        for (const auto& close_settlements : close_settlements_list) {
-                            close_settlements_list_probabilities.emplace_back(close_settlements->size());
-                        }
-                        csl_dist = std::discrete_distribution<std::size_t>(
-                            close_settlements_list_probabilities.begin(),
-                            close_settlements_list_probabilities.end()
-                        );
-                    }
+                // 婚姻確率チェック
+                if (!isMarried(female.getAgeSizeT(), female.cgetFarming() > 0)) continue;
 
-                    Marriage3 male_settlement_pair{};
-                    bool pair_result = false; // ペアが見つかったか？
-                    const bool female_is_agricultural = (female.cgetFarming() > 0);
+                // ✅ 集落グリッドを重み付け（初回のみ）
+                if (close_settlements_list_probabilities.empty()) {
+                    for (const auto& close_settlements : close_settlements_list) {
+                        close_settlements_list_probabilities.emplace_back(close_settlements->size());
+                    }
+                    csl_dist = std::discrete_distribution<std::size_t>(
+                        close_settlements_list_probabilities.begin(),
+                        close_settlements_list_probabilities.end()
+                    );
+                }
 
-                    for (std::size_t pair_loop = 0; pair_loop < 50 && !pair_result; ++pair_loop) {
-                        pair_result = marriagePair(male_settlement_pair, csl_dist, close_settlements_list,
-                            female_is_agricultural, japan_provinces_ptr);
-                    }
-                    // ペアが見つからなかったので婚姻を諦める
-                    if (!pair_result) continue;
+                Marriage3 male_settlement_pair{};
+                bool pair_result = false;
+                const bool female_is_agricultural = (female.cgetFarming() > 0);
 
-                    // ペアが見つかった場合
-                    const std::uint_least32_t pair_agent_index = male_settlement_pair.first;
-                    const std::uint_least32_t pair_settlement_index = male_settlement_pair.second;
-                    Settlement& pair_settlement = (*(close_settlements_list[male_settlement_pair.third]))[pair_settlement_index];
-                    Agent& male = pair_settlement.getAgents()[pair_agent_index];
-                    // 選択居住婚の場合はどちらの住居に移動するか乱数で決定する
-                    if (is_select_matrilocality) {
-                        is_matrilocality = (SimulationConstants::getInstance().maternal_residence_probability >= SimulationConstants::getInstance().random_dist_f32(*gen));
-                    }
-                    // シミュレーションの設定で母方に移住するか父方に移住するかを決める
-                    // 母方の場合
-                    if (is_matrilocality) {
-                        Agent male_copy = male;
-                        male.setLifeSpan(0);
-                        male.setPartnerId(0);
-                        female.marry(male_copy.getId(), male_copy.cgetGenome(), male_copy.cgetFarming(), male_copy.cgetHunterGatherer(), male_copy.cgetLanguage());
-                        male_copy.marry(female.getId(), female.cgetGenome(), female.cgetFarming(), female.cgetHunterGatherer(), female.cgetLanguage());
-                        marriage_pos_list.emplace_back(GridType4{ pair_settlement.data_.getPosition().x, pair_settlement.data_.getPosition().y, data_.getPosition().x, data_.getPosition().y, is_matrilocality });
-                        data_.addAgent(male_copy);
-                    }
-                    // 父方の場合
-                    else {
-                        Agent female_copy = female;
-                        female.setLifeSpan(0);
-                        female.setPartnerId(0);
-                        female_copy.marry(male.getId(), male.cgetGenome(), male.cgetFarming(), male.cgetHunterGatherer(), male.cgetLanguage());
-                        male.marry(female_copy.getId(), female_copy.cgetGenome(), female_copy.cgetFarming(), female_copy.cgetHunterGatherer(), female_copy.cgetLanguage());
-                        marriage_pos_list.emplace_back(GridType4{ data_.getPosition().x, data_.getPosition().y, pair_settlement.data_.getPosition().x, pair_settlement.data_.getPosition().y, is_matrilocality });
-                        pair_settlement.getAgents().emplace_back(female_copy);
-                    }
+                // ✅ 最大50回試行
+                for (std::size_t pair_loop = 0; pair_loop < 50 && !pair_result; ++pair_loop) {
+                    pair_result = marriagePair(male_settlement_pair, csl_dist, close_settlements_list,
+                        female_is_agricultural, japan_provinces_ptr);
+                }
+
+                if (!pair_result) continue; // ペアが見つからなかった
+
+                // ✅ 婚姻処理
+                const std::uint_least32_t pair_agent_index = male_settlement_pair.first;
+                const std::uint_least32_t pair_settlement_index = male_settlement_pair.second;
+                Settlement& pair_settlement = (*(close_settlements_list[male_settlement_pair.third]))[pair_settlement_index];
+                Agent& male = pair_settlement.getAgents()[pair_agent_index];
+
+                // 選択居住婚の判定
+                if (is_select_matrilocality) {
+                    is_matrilocality = (SimulationConstants::getInstance().maternal_residence_probability >=
+                        SimulationConstants::getInstance().random_dist_f32(*gen));
+                }
+
+                // 母方居住婚
+                if (is_matrilocality) {
+                    Agent male_copy = male;
+                    male.setLifeSpan(0);
+                    male.setPartnerId(0);
+                    female.marry(male_copy.getId(), male_copy.cgetGenome(), male_copy.cgetFarming(),
+                        male_copy.cgetHunterGatherer(), male_copy.cgetLanguage());
+                    male_copy.marry(female.getId(), female.cgetGenome(), female.cgetFarming(),
+                        female.cgetHunterGatherer(), female.cgetLanguage());
+                    marriage_pos_list.emplace_back(GridType4{
+                        pair_settlement.data_.getPosition().x, pair_settlement.data_.getPosition().y,
+                        data_.getPosition().x, data_.getPosition().y,
+                        is_matrilocality
+                        });
+                    data_.addAgent(male_copy);
+                    pair_settlement.invalidateMarriageCache(); // ✅ 相手集落のキャッシュ無効化
+                }
+                // 父方居住婚
+                else {
+                    Agent female_copy = female;
+                    female.setLifeSpan(0);
+                    female.setPartnerId(0);
+                    female_copy.marry(male.getId(), male.cgetGenome(), male.cgetFarming(),
+                        male.cgetHunterGatherer(), male.cgetLanguage());
+                    male.marry(female_copy.getId(), female_copy.cgetGenome(), female_copy.cgetFarming(),
+                        female_copy.cgetHunterGatherer(), female_copy.cgetLanguage());
+                    marriage_pos_list.emplace_back(GridType4{
+                        data_.getPosition().x, data_.getPosition().y,
+                        pair_settlement.data_.getPosition().x, pair_settlement.data_.getPosition().y,
+                        is_matrilocality
+                        });
+                    pair_settlement.getAgents().emplace_back(female_copy);
+                    pair_settlement.invalidateMarriageCache(); // ✅ 相手集落のキャッシュ無効化
                 }
             }
+
+            invalidateMarriageCache(); // ✅ 自集落のキャッシュ無効化
         }
 
         /// @brief Pre update.
         /// @brief 事前更新
         void preUpdate(KanakumaLifeSpan& kanakuma_life_span, JapanProvinces* japan_provinces_ptr = nullptr) noexcept {
             birth(kanakuma_life_span, japan_provinces_ptr);
+            invalidateMarriageCache(); // ✅ 出産後にキャッシュ無効化
         }
 
         /// @brief Death.
@@ -469,9 +580,7 @@ namespace paxs {
         void death() noexcept {
             std::vector<Agent>& agents_ref = data_.getAgents();
             for (std::size_t i = 0; i < agents_ref.size();) {
-                // 年齢を１増やす
                 agents_ref[i].incrementAge();
-                // もし死んでいなかったら次のエージェントを見る
                 if (!(agents_ref[i].isDead())) {
                     ++i;
                     continue;
@@ -479,98 +588,21 @@ namespace paxs {
 
                 const HumanIndexType partner_id = agents_ref[i].getPartnerId();
                 if (partner_id != 0) {
-                    auto partnerIt = std::find_if(agents_ref.begin(), agents_ref.end(), [partner_id](const Agent& agent) { return agent.getId() == partner_id; });
-                    if (partnerIt != agents_ref.end()) {
-                        partnerIt->divorce();
+                    // ✅ O(1)でパートナーを検索
+                    Agent* partner = data_.findAgentById(partner_id);
+                    if (partner) {
+                        partner->divorce();
                     }
                 }
-                agents_ref[i] = agents_ref.back(); // 同義 it = agents.erase(it);
-                agents_ref.pop_back();
+
+                // ✅ O(1)で削除（インデックス管理込み）
+                data_.removeAgentAt(i);
+                // インデックスはそのまま（removeAgentAtで最後の要素が移動するため）
             }
+            invalidateMarriageCache(); // ✅ 死亡後にキャッシュ無効化
         }
 
-        // A* の経路探索
-        void moveAStar(std::mt19937& engine, District& district_, const Vector2& current_position, Vector2& target_position,
-            const bool has_agricultural_agents, JapanProvinces* japan_provinces_ptr) noexcept {
-            double cost = -1.0;
-            const int distance = SimulationConstants::getInstance().move_dist(engine);
-
-            const GridType cw = SimulationConstants::getInstance().move_astar_distance;
-            const Vector2 cp_cw = current_position / cw;
-#ifdef _OPENMP
-            double max_cost = 1.0;
-            const int loop = SimulationConstants::getInstance().move_astar_loop;
-            std::vector<double> cost_list(loop);
-            std::vector<Vector2> pos_list(loop);
-            std::vector<Vector2> move_list(loop);
-            std::vector<std::uint_least8_t> slope_list(loop);
-            std::vector<std::vector<Vector2>> route_list(loop);
-
-            for (int i = 0; i < loop; ++i) {
-                move_list[i] = calcMovePosition(engine, district_, current_position, distance, has_agricultural_agents, japan_provinces_ptr);
-                slope_list[i] = environment->getSlope(move_list[i]);
-            }
-            {
-                target_position = move_list[0];
-                const Vector2 mp_cw = move_list[0] / cw;
-                if (cp_cw == mp_cw) return; // 同じ座標なので AStar 不可能
-                // 隣接座標なので AStar 不可能
-                else if (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1) return;
-            }
-#pragma omp parallel for
-            for (int i = 0; i < loop; ++i) {
-#else
-            for (std::uint_least32_t i = 0; i < SimulationConstants::getInstance().move_astar_loop; ++i) {
-#endif
-#ifdef _OPENMP
-                const Vector2 move_position = move_list[i];
-#else
-                const Vector2 move_position = calcMovePosition(engine, district_, current_position, distance, has_agricultural_agents, japan_provinces_ptr);
-                // 移動先が今の位置ならやり直し（可住地が見つからなかった）
-                if (move_position == current_position) continue;
-                const Vector2 mp_cw = move_position / cw;
-                if (cp_cw == mp_cw) break; // 同じ座標なので AStar 不可能
-                // 隣接座標なので AStar 不可能
-                else if (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1) break;
-#endif
-                AStar astar(current_position, move_position, cw);
-                astar.search(environment);
-#ifdef _OPENMP
-                pos_list[i] = move_position;
-                cost_list[i] = astar.getCost();
-                astar.setPath(route_list[i]);
-#else
-                // 最初の場合または以前よりもコストが低い場合は上書きする
-                if (cost == -1.0 || cost > astar.getCost()) {
-                    target_position = move_position;
-                    cost = astar.getCost();
-                    // 経路を設定
-                    astar.setPath(data_.getPositionsMutable());
-                }
-#endif
-
-            }
-#ifdef _OPENMP
-            int index_num = 0;
-            for (int i = 0; i < loop; ++i) {
-                if (max_cost < cost_list[i]) {
-                    max_cost = cost_list[i];
-                }
-            }
-            for (int i = 0; i < loop; ++i) {
-                // 傾斜含むコスト
-                const double slope_cost = cost_list[i] + max_cost * ((slope_list[i] <= 129) ? 0 : slope_list[i] / 250.0) /* 傾斜の 9.25334 度以下の土地を優先 */;
-                if (cost == -1.0 || cost > slope_cost) {
-                    cost = slope_cost;
-                    index_num = i;
-                }
-            }
-            target_position = pos_list[index_num];
-            data_.setPositions(route_list[index_num]);
-#endif
-            }
-
-        // 移動先を計算する
+        // 移動先を計算する（moveAStarより前に定義）
         Vector2 calcMovePosition(std::mt19937& engine, District& district_, const Vector2& current_position, const int distance,
             const bool has_agricultural_agents, JapanProvinces* japan_provinces_ptr) const noexcept {
             Vector2 target_position = current_position;
@@ -612,10 +644,140 @@ namespace paxs {
             return target_position;
         }
 
+        // A* の経路探索
+        void moveAStar(std::mt19937& engine, District& district_, const Vector2& current_position, Vector2& target_position,
+            const bool has_agricultural_agents, JapanProvinces* japan_provinces_ptr) noexcept {
+            double cost = -1.0;
+            const int distance = SimulationConstants::getInstance().move_dist(engine);
+
+            const GridType cw = SimulationConstants::getInstance().move_astar_distance;
+            const Vector2 cp_cw = current_position / cw;
+
+#ifdef _OPENMP
+            double max_cost = 1.0;
+            const int loop = SimulationConstants::getInstance().move_astar_loop;
+            std::vector<double> cost_list(loop);
+            std::vector<Vector2> pos_list(loop);
+            std::vector<Vector2> move_list(loop);
+            std::vector<std::uint_least8_t> slope_list(loop);
+            std::vector<std::vector<Vector2>> route_list(loop);
+
+            // ✅ 有効な移動先のみを収集
+            int valid_count = 0;
+            for (int i = 0; i < loop; ++i) {
+                Vector2 candidate = calcMovePosition(engine, district_, current_position, distance, has_agricultural_agents, japan_provinces_ptr);
+
+                // ✅ 移動先が現在位置と異なるかチェック
+                if (candidate == current_position) continue;
+
+                const Vector2 mp_cw = candidate / cw;
+
+                // ✅ スケール後の座標が同じまたは隣接の場合はスキップ
+                if (cp_cw == mp_cw || (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1)) {
+                    continue;
+                }
+
+                move_list[valid_count] = candidate;
+                slope_list[valid_count] = environment->getSlope(candidate);
+                ++valid_count;
+
+                if (valid_count >= loop) break;
+            }
+
+            // ✅ 有効な移動先がない場合は早期リターン
+            if (valid_count == 0) {
+                PAXS_WARNING("No valid move positions found for A*");
+                return;
+            }
+
+            // 最初の有効な移動先をデフォルトに設定
+            target_position = move_list[0];
+
+#pragma omp parallel for
+            for (int i = 0; i < valid_count; ++i) {
+#else
+            // ✅ 非OpenMP版も同様に修正
+            int valid_attempts = 0;
+            for (std::uint_least32_t i = 0; i < SimulationConstants::getInstance().move_astar_loop; ++i) {
+#endif
+#ifdef _OPENMP
+                const Vector2 move_position = move_list[i];
+#else
+                Vector2 move_position = calcMovePosition(engine, district_, current_position, distance, has_agricultural_agents, japan_provinces_ptr);
+
+                // ✅ 移動先が現在位置と同じならスキップ
+                if (move_position == current_position) continue;
+
+                const Vector2 mp_cw = move_position / cw;
+
+                // ✅ スケール後の座標が同じまたは隣接の場合はスキップ
+                if (cp_cw == mp_cw || (std::abs(cp_cw.x - mp_cw.x) <= 1 && std::abs(cp_cw.y - mp_cw.y) <= 1)) {
+                    continue;
+                }
+
+                ++valid_attempts;
+#endif
+                AStar astar(current_position, move_position, cw);
+                if (!astar.search(environment)) {
+                    // 経路が見つからない場合はスキップ
+                    continue;
+                }
+
+#ifdef _OPENMP
+                pos_list[i] = move_position;
+                cost_list[i] = astar.getCost();
+                astar.setPath(route_list[i]);
+#else
+                // 最初の場合または以前よりもコストが低い場合は上書きする
+                if (cost == -1.0 || cost > astar.getCost()) {
+                    target_position = move_position;
+                    cost = astar.getCost();
+                    // 経路を設定
+                    astar.setPath(data_.getPositionsMutable());
+                }
+#endif
+            }
+
+#ifdef _OPENMP
+            // ✅ 有効な経路の中から最良のものを選択
+            int index_num = -1;
+            for (int i = 0; i < valid_count; ++i) {
+                if (route_list[i].empty()) continue; // 経路が見つからなかった
+
+                if (max_cost < cost_list[i]) {
+                    max_cost = cost_list[i];
+                }
+            }
+
+            for (int i = 0; i < valid_count; ++i) {
+                if (route_list[i].empty()) continue;
+
+                // 傾斜含むコスト
+                const double slope_cost = cost_list[i] + max_cost * ((slope_list[i] <= 129) ? 0 : slope_list[i] / 250.0);
+                if (cost == -1.0 || cost > slope_cost) {
+                    cost = slope_cost;
+                    index_num = i;
+                }
+            }
+
+            if (index_num >= 0) {
+                target_position = pos_list[index_num];
+                data_.setPositions(route_list[index_num]);
+            }
+            else {
+                PAXS_WARNING("No valid A* path found");
+            }
+#else
+            if (cost == -1.0) {
+                PAXS_WARNING("No valid A* path found (non-OpenMP)");
+            }
+#endif
+            }
+
         /// @brief Move.
         /// @brief 移動
         /// @return 集落グリッドを移動したかどうか
-        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937& engine, District& district_, JapanProvinces* japan_provinces_ptr = nullptr) noexcept {
+        std::tuple<std::uint_least32_t, Vector2, Vector2> move(std::mt19937 & engine, District & district_, JapanProvinces * japan_provinces_ptr = nullptr) noexcept {
             // 確率で移動
             if (SimulationConstants::getInstance().random_dist(engine) > SimulationConstants::getInstance().move_probability) return { 0, Vector2(), Vector2() };
 
@@ -632,7 +794,7 @@ namespace paxs {
             const bool has_agricultural_agents = (getFarmingPopulation() > 0);
 
             // A* を使った方法
-            if(SimulationConstants::getInstance().move_method == MurMur3::calcHash("astar") && SimulationConstants::getInstance().move_astar_loop >= 1){
+            if (SimulationConstants::getInstance().move_method == MurMur3::calcHash("astar") && SimulationConstants::getInstance().move_astar_loop >= 1) {
                 moveAStar(engine, district_, current_position, target_position, has_agricultural_agents, japan_provinces_ptr);
             }
             else {
@@ -738,33 +900,61 @@ namespace paxs {
         /// @brief Divide the settlement.
         /// @brief 集落を分割
         Settlement divide() noexcept {
-            //　とりあえず、エージェントを半分に分ける
             std::vector<Agent>& agents_ref = data_.getAgents();
-            std::vector<Agent> new_settlement_agents = std::vector<Agent>(agents_ref.begin() + agents_ref.size() / 2, agents_ref.end());
-            agents_ref.resize(agents_ref.size() / 2); // 同義 agents_ref.erase(agents_ref.begin() + agents_ref.size() / 2, agents_ref.end());
+            std::vector<Agent> new_settlement_agents = std::vector<Agent>(
+                agents_ref.begin() + agents_ref.size() / 2, agents_ref.end());
+            agents_ref.resize(agents_ref.size() / 2);
 
-            // パートナー同士は同じ集落に振り分ける
+            // ✅ 一時的なインデックスマップを構築 O(n)
+            std::unordered_map<HumanIndexType, std::size_t> new_agents_index;
+            for (std::size_t i = 0; i < new_settlement_agents.size(); ++i) {
+                new_agents_index[new_settlement_agents[i].getId()] = i;
+            }
+
+            std::unordered_map<HumanIndexType, std::size_t> current_agents_index;
+            for (std::size_t i = 0; i < agents_ref.size(); ++i) {
+                current_agents_index[agents_ref[i].getId()] = i;
+            }
+
+            // ✅ パートナー同士を同じ集落に O(n)
             const std::size_t original_agents_ref_size = agents_ref.size();
             for (std::size_t i = 0; i < original_agents_ref_size; ++i) {
                 const Agent& agent = agents_ref[i];
                 if (agent.isMarried() && agent.isFemale()) {
-                    auto it = std::find_if(new_settlement_agents.begin(), new_settlement_agents.end(), [&agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
-                    if (it != new_settlement_agents.end()) {
-                        agents_ref.emplace_back(*it);
-                        (*it) = new_settlement_agents.back(); // 同義 new_settlement_agents.erase(it);
+                    auto it = new_agents_index.find(agent.getPartnerId());
+                    if (it != new_agents_index.end()) {
+                        std::size_t partner_idx = it->second;
+                        agents_ref.emplace_back(new_settlement_agents[partner_idx]);
+                        current_agents_index[new_settlement_agents[partner_idx].getId()] = agents_ref.size() - 1;
+
+                        // 削除処理
+                        new_settlement_agents[partner_idx] = new_settlement_agents.back();
+                        if (partner_idx < new_settlement_agents.size() - 1) {
+                            new_agents_index[new_settlement_agents[partner_idx].getId()] = partner_idx;
+                        }
+                        new_agents_index.erase(it);
                         new_settlement_agents.pop_back();
                     }
                 }
             }
 
+            // 逆方向も同様に処理
             const std::size_t original_new_settlement_agents_size = new_settlement_agents.size();
             for (std::size_t i = 0; i < original_new_settlement_agents_size; ++i) {
                 const Agent& agent = new_settlement_agents[i];
                 if (agent.isMarried() && agent.isFemale()) {
-                    auto it = std::find_if(agents_ref.begin(), agents_ref.end(), [&agent](const Agent& a) { return a.getId() == agent.getPartnerId(); });
-                    if (it != agents_ref.end()) {
-                        new_settlement_agents.emplace_back(*it);
-                        (*it) = agents_ref.back(); // 同義 agents_ref.erase(it);
+                    auto it = current_agents_index.find(agent.getPartnerId());
+                    if (it != current_agents_index.end()) {
+                        std::size_t partner_idx = it->second;
+                        new_settlement_agents.emplace_back(agents_ref[partner_idx]);
+                        new_agents_index[agents_ref[partner_idx].getId()] = new_settlement_agents.size() - 1;
+
+                        // 削除処理
+                        agents_ref[partner_idx] = agents_ref.back();
+                        if (partner_idx < agents_ref.size() - 1) {
+                            current_agents_index[agents_ref[partner_idx].getId()] = partner_idx;
+                        }
+                        current_agents_index.erase(it);
                         agents_ref.pop_back();
                     }
                 }
@@ -775,6 +965,7 @@ namespace paxs {
             new_settlement.setAgents(new_settlement_agents);
             return new_settlement;
         }
+
     private:
         /// @brief Settlement data
         /// @brief 集落データ
@@ -783,9 +974,17 @@ namespace paxs {
         std::mt19937* gen{}; // 乱数生成器
         std::shared_ptr<Environment> environment{}; // 環境
 
+        // 婚姻可能エージェントのキャッシュ
+        struct MarriageCache {
+            std::vector<std::size_t> marriageable_male_indices;
+            std::vector<std::size_t> marriageable_female_indices;
+            bool is_valid = false;
+        };
+        mutable MarriageCache marriage_cache_;
+
         /// @brief Birth.
         /// @brief 出産
-        void birth(KanakumaLifeSpan& kanakuma_life_span, JapanProvinces* japan_provinces_ptr = nullptr) noexcept {
+        void birth(KanakumaLifeSpan & kanakuma_life_span, JapanProvinces * japan_provinces_ptr = nullptr) noexcept {
             std::vector<Agent> children;
             std::vector<Agent>& agents_ref = data_.getAgents();
 
@@ -872,8 +1071,8 @@ namespace paxs {
             if (threshold >= 1.0) return true;
             return SimulationConstants::getInstance().random_dist(*gen) < threshold;
         }
-    };
+        };
 
-}
+    }
 
 #endif // !PAX_SAPIENTICA_SIMULATION_ENTITY_SETTLEMENT_HPP

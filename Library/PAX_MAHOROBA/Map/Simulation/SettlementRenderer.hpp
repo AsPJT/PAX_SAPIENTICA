@@ -220,7 +220,7 @@ namespace paxs {
         }
 
         /// @brief 移動線を描画
-        /// @brief Draw movement lines
+               /// @brief Draw movement lines
         static void drawMovementLines(
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
             const std::vector<GridType4>* marriage_pos_list,
@@ -243,12 +243,14 @@ namespace paxs {
 
                     if (settlement.getOldPosition().x == -1 || settlement.getOldPosition().x == 0) continue;
 
-                    if (settlement.getPositions().size() >= 1) {
+                    // ★修正箇所: A*の経路データがある場合 (通常2点以上入っているはず)
+                    if (settlement.getPositions().size() >= 2) {
                         // スプライン曲線で移動履歴を描画
                         std::vector<paxg::Vec2f> spline_points;
-                        spline_points.emplace_back(draw_pos);
 
-                        for (auto&& p : settlement.getPositions()) {
+                        // A*が生成した [Start -> ... -> End] の順序をそのまま使用する
+                        // 余計な draw_pos(End) や old_pos(Start) の追加は行わない
+                        for (const auto& p : settlement.getPositions()) {
                             const auto one_coord = positionToWebMercator(paxs::Vector2<int>(p.x, p.y));
                             const paxg::Vec2<double> one_pos = MapCoordinateConverter::toScreenPos(
                                 one_coord,
@@ -258,27 +260,23 @@ namespace paxs {
                                 static_cast<float>(one_pos.x()), static_cast<float>(one_pos.y()) });
                         }
 
-                        const auto old_coord = positionToWebMercator(settlement.getOldPosition());
-                        const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
-                            old_coord,
-                            map_view_size,
-                            map_view_center);
-                        spline_points.emplace_back(paxg::Vec2f{
-                            static_cast<float>(old_pos.x()), static_cast<float>(old_pos.y()) });
-
+                        // スプライン描画
                         paxg::Spline2D(spline_points).draw(MOVEMENT_LINE_WIDTH, paxg::Color(0, 0, 0));
 
-                        // 矢印を描画
-                        const auto first_coord = positionToWebMercator(settlement.getPositions()[0]);
-                        const paxg::Vec2<double> first_pos = MapCoordinateConverter::toScreenPos(
-                            first_coord,
-                            map_view_size,
-                            map_view_center);
-                        paxg::Line{ first_pos, draw_pos }
-                        .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
+                        // 矢印を描画 (パスの最後の区間に矢印を乗せる)
+                        if (spline_points.size() >= 2) {
+                            const auto& last = spline_points.back();
+                            const auto& prev = spline_points[spline_points.size() - 2];
+
+                            paxg::Line{
+                                paxg::Vec2<double>(prev.x(), prev.y()),
+                                paxg::Vec2<double>(last.x(), last.y())
+                            }
+                            .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
+                        }
                     }
                     else {
-                        // 単純な移動線
+                        // A*データがない、または単純移動の場合 (直線)
                         const auto old_coord = positionToWebMercator(settlement.getOldPosition());
                         const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
                             old_coord,
@@ -290,8 +288,9 @@ namespace paxs {
                 }
             }
 
-            // 婚姻移動を描画
+            // 婚姻移動を描画 (変更なし)
             for (const auto& marriage_pos : *marriage_pos_list) {
+                // ... (既存のコードのまま) ...
                 const auto coordinate = positionToWebMercator(paxs::Vector2<int>(marriage_pos.ex, marriage_pos.ey));
 
                 if (!isInViewport(coordinate, map_view_size, map_view_center)) {
