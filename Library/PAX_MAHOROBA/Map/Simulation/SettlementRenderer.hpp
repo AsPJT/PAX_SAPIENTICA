@@ -138,7 +138,7 @@ namespace paxs {
                     if (!isInViewport(coordinate, map_view_size, map_view_center)) continue;
 
                     // 描画位置
-                    const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
+                    const paxs::Vector2<double> draw_pos = MapCoordinateConverter::toScreenPos(
                         coordinate,
                         map_view_size,
                         map_view_center

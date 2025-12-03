@@ -84,14 +84,6 @@ namespace paxs {
             profiles_.emplace(name, FontProfile( size, buffer_thickness ));
         }
 
-        /// @brief プロファイルが存在するか確認
-        /// @brief Check if profile exists
-        /// @param name プロファイル名 / Profile name
-        /// @return 存在すれば true / true if exists
-        [[nodiscard]] bool hasProfile(const std::string& name) const {
-            return profiles_.contains(name);
-        }
-
         /// @brief デフォルトプロファイルの登録
         /// @brief Register default profiles
         void registerDefaultProfiles() {
@@ -239,11 +231,12 @@ namespace paxs {
         /// @param profile_name プロファイル名 / Profile name
         /// @return フォントへのポインタ、失敗時は nullptr / Pointer to font, nullptr on failure
         paxg::Font* getFont(std::uint_least32_t language_key, const std::string& profile_name) {
-            if (!hasProfile(profile_name)) {
+            const auto* const profile_ptr = profiles_.try_get(profile_name);
+            if (profile_ptr == nullptr) {
+                PAXS_WARNING("FontSystem::getFont - Profile not found: " + profile_name);
                 return nullptr;
             }
-            const auto& profile = profiles_.at(profile_name);
-            return getFont(language_key, profile.size, profile.buffer_thickness);
+            return getFont(language_key, profile_ptr->size, profile_ptr->buffer_thickness);
         }
 
         /// @brief 現在の選択言語でフォントを取得（サイズとバッファー厚を直接指定）

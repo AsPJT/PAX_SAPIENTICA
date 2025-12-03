@@ -57,7 +57,7 @@ namespace paxs {
         const std::uint_least32_t domain_hash{}; // ドメイン名のハッシュ値
 
         size_t index = 0;
-        paxg::Vec2i padding{ default_padding_x, default_padding_y };
+        paxs::Vector2<int> padding{ default_padding_x, default_padding_y };
         float all_rect_x{}; // 全ての項目の文字幅
         bool is_open = false;
 
@@ -99,7 +99,7 @@ namespace paxs {
                 rect.setH(static_cast<float>(paxg::FontConfig::PULLDOWN_FONT_SIZE) * 2.f);
             }
             else {
-                const float height = static_cast<float>(((*one_font).height()) + (padding.y() * 2));
+                const float height = static_cast<float>(((*one_font).height()) + (padding.y * 2));
                 rect.setH(height);
             }
 
@@ -142,8 +142,8 @@ namespace paxs {
                 }
             }
             // プルダウンの幅を設定
-            rect.setW(rect.w() + (padding.x() * 2 + down_button_size));
-            all_rect_x += (padding.x() * 2 + down_button_size);
+            rect.setW(rect.w() + (padding.x * 2 + down_button_size));
+            all_rect_x += (padding.x * 2 + down_button_size);
 
 #ifdef PAXS_USING_DXLIB
 #ifdef PAXS_PLATFORM_ANDROID
@@ -211,9 +211,7 @@ namespace paxs {
 
                 // ドロップダウン項目（開いている場合）
                 if (is_open) {
-                    paxg::Vec2i pos = paxg::Vec2i(
-                        rect_x,
-                        rect_y + rect_h);
+                    paxs::Vector2<float> pos{static_cast<float>(rect_x), static_cast<float>(rect_y + rect_h)};
                     for (std::size_t i = 0; i < items_key.size(); ++i) {
                         const paxg::Rect rect_tmp{ pos, rect.w(), rect.h() };
                         int rtx = static_cast<int>(rect_tmp.x());
@@ -223,7 +221,7 @@ namespace paxs {
                         if (event.pos.x >= rtx && event.pos.x < rtx + rtw && event.pos.y >= rty && event.pos.y < rty + rth) {
                             return EventHandlingResult::Handled();
                         }
-                        pos.setY(pos.y() + rect_h);
+                        pos.y += rect_h;
                     }
                 }
             }
@@ -243,9 +241,7 @@ namespace paxs {
 
                 // ドロップダウン項目をクリック（開いている場合）
                 if (is_open) {
-                    paxg::Vec2i pos = paxg::Vec2i(
-                        rect_x,
-                        rect_y + rect_h);
+                    paxs::Vector2<float> pos{static_cast<float>(rect_x), static_cast<float>(rect_y + rect_h)};
                     for (std::size_t i = 0; i < items_key.size(); ++i) {
                         const paxg::Rect rect_tmp{ pos, rect.w(), rect.h() };
                         int rtx = static_cast<int>(rect_tmp.x());
@@ -271,7 +267,7 @@ namespace paxs {
                                 return EventHandlingResult::Handled();
                             }
                         }
-                        pos.setY(pos.y() + rect_h);
+                        pos.y += rect_h;
                     }
                 }
             }
@@ -294,12 +290,12 @@ namespace paxs {
 
             // 三角形を描画（下向き▼）
             static constexpr paxg::TriangleShape down_arrow_shape(arrow_radius, arrow_rotation_pi);
-            const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x());
+            const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x);
             const float center_y = static_cast<float>(rect.y() + rect.h() / 2.0);
             paxg::Triangle triangle(center_x, center_y, down_arrow_shape);
             triangle.draw(paxg::Color{ 0, 0, 0 });
 
-            paxg::Vec2i pos = rect.pos();
+            paxs::Vector2<float> pos = rect.pos();
 
             const std::uint_least32_t select_key = (is_one_font ? items_key[item_index] : Fonts().getSelectedLanguageKey());
 
@@ -319,7 +315,8 @@ namespace paxs {
                 // 文字を描画
                 (*one_font).draw(
                     *str,
-                    paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{ 0, 0, 0 });
+                    paxs::Vector2<int>(pos) + padding,
+                    paxg::Color{ 0, 0, 0 });
             }
             else {
                 const std::string* str0 = nullptr;
@@ -333,10 +330,11 @@ namespace paxs {
                 // 文字を描画
                 (*one_font).draw(
                     *str0,
-                    paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{ 0, 0, 0 });
+                    paxs::Vector2<int>(pos) + padding,
+                    paxg::Color{ 0, 0, 0 });
             }
 
-            pos.setY(static_cast<int>(pos.y() + rect.h()));
+            pos.y += rect.h();
             if (!is_open) return;
 
             // 四角形を描画
@@ -366,8 +364,10 @@ namespace paxs {
                 // 文字を描画
                 (*one_font).draw(
                     *i_str,
-                    paxg::Vec2i(pos.x() + padding.x(), pos.y() + padding.y()), paxg::Color{ 0, 0, 0 });
-                pos.setY(static_cast<int>(pos.y() + rect.h()));
+                    paxs::Vector2<int>(pos) + padding,
+                    paxg::Color{ 0, 0, 0 }
+                );
+                pos.y += rect.h();
             }
             // ふちを描画
             back_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
@@ -392,9 +392,9 @@ namespace paxs {
                 PAXS_WARNING("Pulldown::getIsItemsKey: No items available.");
                 return true; // データがない場合
             }
-            const auto iterator = item_index_key.find(key);
-            if (iterator == item_index_key.end()) return true; // 引数の Key が存在しない場合
-            return getIsItems(iterator->second);
+            const auto* const ptr = item_index_key.try_get(key);
+            if (ptr == nullptr) return true; // 引数の Key が存在しない場合
+            return getIsItems(*ptr);
         }
 
         std::uint_least32_t getKey() const { return items_key[index]; }
@@ -418,16 +418,15 @@ namespace paxs {
             if (is_open) {
                 // ドロップダウン項目の幅は all_rect_x（全項目中の最大幅）
                 const float item_width = all_rect_x;
-                paxg::Vec2i pos = paxg::Vec2i(
-                    static_cast<int>(header_rect.x()),
-                    static_cast<int>(header_rect.y() + header_rect.h()));
+                paxs::Vector2<float> pos{header_rect.x(),
+                    header_rect.y() + header_rect.h()};
 
                 for (std::size_t i = 0; i < items_key.size(); ++i) {
                     const paxg::Rect item_rect{ pos, item_width, header_rect.h() };
                     if (item_rect.contains(mouse_pos)) {
                         return true;
                     }
-                    pos.setY(static_cast<int>(pos.y() + header_rect.h()));
+                    pos.y += header_rect.h();
                 }
             }
 
@@ -435,7 +434,7 @@ namespace paxs {
         }
 
         void setPos(const Vector2<int>& pos) override {
-            rect.setPos(paxg::Vec2i(pos.x, pos.y));
+            rect.setPos(pos);
         }
         Rect<int> getRect() const override {
             return {

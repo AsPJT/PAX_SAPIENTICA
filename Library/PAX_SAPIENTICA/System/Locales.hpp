@@ -81,18 +81,6 @@ namespace paxs {
         /// @brief Mapping from (domain key + text key + locale key) to text
         paxs::UnorderedMap<CombinedKey, std::string, CombinedKeyHash> text_dictionary_;
 
-        /// @brief ロケールキーからロケール名を取得
-        /// @brief Get locale name from locale key
-        /// @param locale_key ロケールキー / Locale key
-        /// @return ロケール名、見つからない場合は空文字列 / Locale name, empty string if not found
-        std::string getLocaleNameFromKey(std::uint_least32_t locale_key) const {
-            const auto iterator = locale_key_to_name_.find(locale_key);
-            if (iterator != locale_key_to_name_.end()) {
-                return iterator->second;
-            }
-            return std::string{};
-        }
-
         /// @brief ファイルからロケールデータを読み込む
         /// @brief Load locale data from file
         /// @param domain_name ドメイン名 / Domain name
@@ -201,7 +189,7 @@ namespace paxs {
         /// @brief Get domain name from file path using domain.tsv
         /// @param file_path ファイルパス / File path
         /// @return ドメイン名、見つからない場合は空文字列 / Domain name, empty string if not found
-        std::string getDomainNameFromPath(const std::string& file_path) {
+        static std::string getDomainNameFromPath(const std::string& file_path) {
             // ファイルパスからディレクトリパスを抽出
             const std::size_t last_slash = file_path.find_last_of("/\\");
             if (last_slash == std::string::npos) {
@@ -237,9 +225,9 @@ namespace paxs {
 
             // マッピングから取得
             const UnorderedMap<std::uint_least32_t, std::string>& entries = kv_tsv.get();
-            const auto it = entries.find(dir_name_hash);
-            if (it != entries.end()) {
-                return it->second;
+            const auto* const ptr = entries.try_get(dir_name_hash);
+            if (ptr != nullptr) {
+                return *ptr;
             }
 
             return std::string{};
@@ -323,7 +311,7 @@ namespace paxs {
                 }
 
                 // 進捗を報告
-                if (progress_reporter_ && total_files > 0) {
+                if ((progress_reporter_ != nullptr) && total_files > 0) {
                     const float progress = progress_start + (progress_end - progress_start) * (static_cast<float>(file_count) / static_cast<float>(total_files));
                     const std::string message = "Loading " + domain_name + "/" + locale_name + " (" + std::to_string(file_count + 1) + "/" + std::to_string(total_files) + ")";
                     progress_reporter_->reportProgress(progress, message);
@@ -345,7 +333,7 @@ namespace paxs {
             : progress_reporter_(reporter) {
 
             // ロケールリスト読み込み（進捗の10%）
-            if (progress_reporter_) {
+            if (progress_reporter_ != nullptr) {
                 progress_reporter_->reportProgress(progress_start, "Loading locale list...");
             }
             loadLocaleList();
@@ -355,7 +343,7 @@ namespace paxs {
             const float files_end = progress_end;
             loadAllDomains(files_start, files_end);
 
-            if (progress_reporter_) {
+            if (progress_reporter_ != nullptr) {
                 progress_reporter_->reportProgress(progress_end, "Locales initialized");
             }
         }
@@ -376,24 +364,28 @@ namespace paxs {
 
             // 指定されたロケールでテキストを検索
             const CombinedKey combined_key{domain_name_hash, text_key_hash, locale_key};
-            const auto iterator = text_dictionary_.find(combined_key);
-            if (iterator != text_dictionary_.end()) {
-                return &(iterator->second);
+            const auto* const ptr = text_dictionary_.try_get(combined_key);
+            if (ptr != nullptr) {
+                return ptr;
             }
             const std::uint_least32_t default_locale_key_ = getDefaultLocaleKey();
             if (locale_key == default_locale_key_) {
                 // 指定されたロケールが見つからない場合の警告
                 if (!suppress_warning) {
-                    const std::string locale_name = getLocaleNameFromKey(locale_key);
-                    PAXS_WARNING("[Locales::getStringPtr] Text key NOT found in locale '" + locale_name + "' - falling back to default locale");
+                    const std::string* const locale_name = locale_key_to_name_.try_get(locale_key);
+                    if (locale_name == nullptr) {
+                        PAXS_WARNING("[Locales::getStringPtr] Text key NOT found in locale (unknown) - falling back to default locale");
+                        return nullptr;
+                    }
+                    PAXS_WARNING("[Locales::getStringPtr] Text key NOT found in locale (" + *locale_name + ") - falling back to default locale");
                     return nullptr;
                 }
             }
 
             // フォールバック処理：en-USで再検索
             const CombinedKey fallback_key(domain_name_hash, text_key_hash, default_locale_key_);
-            const auto fallback_text_it = text_dictionary_.find(fallback_key);
-            if (fallback_text_it == text_dictionary_.end()) {
+            const auto* const fallback_text_ptr = text_dictionary_.try_get(fallback_key);
+            if (fallback_text_ptr == nullptr) {
                 // テキストキー自体が登録されていない
                 if (!suppress_warning) {
                     PAXS_WARNING("[Locales::getStringPtr] Text key NOT found in default locale (en-US) - returning nullptr");
@@ -401,7 +393,7 @@ namespace paxs {
                 return nullptr;
             }
 
-            return &(fallback_text_it->second);
+            return fallback_text_ptr;
         }
 
         /// @brief 登録されているロケール一覧を取得

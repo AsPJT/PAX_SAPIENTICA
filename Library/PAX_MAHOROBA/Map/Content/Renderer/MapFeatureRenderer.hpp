@@ -110,7 +110,7 @@ private:
             }
 
             // テキスト位置（肖像画の上部）
-            const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x(), draw_pos.y() - 60 };
+            const paxg::Vec2<double> draw_font_pos = paxg::Vec2<double>{ draw_pos.x, draw_pos.y - 60 };
 
             const std::string name = feature.getName();
             if (!name.empty()) {
@@ -139,28 +139,27 @@ private:
         // 各スクリーン座標で描画（経度ラップ対応）
         for (const auto& draw_pos : screen_positions) {
             // テクスチャを取得（親のテクスチャをフォールバック）
-            // Note: GeographicFeature は LocationPoint を使用しているため、親のテクスチャ情報は含まれていない
-            // 将来的には LocationPointGroup への参照も保持する必要があるかもしれない
             const std::uint_least32_t place_tex = data.texture_key;
-            if (!texture_map.contains(place_tex)) continue;
-
-            const auto& texture = texture_map.at(place_tex);
+            const auto* const texture_ptr = texture_map.try_get(place_tex);
+            if (texture_ptr == nullptr) {
+                continue;
+            }
 
             // draw_countが1の場合は通常描画
             if (draw_count == 1) {
-                texture.resizedDrawAt(display_size, draw_pos);
+                texture_ptr->resizedDrawAt(display_size, draw_pos);
             } else {
                 // draw_countが2以上の場合は横に複数並べて描画（中央揃え）
                 constexpr int spacing = 4;  // テクスチャ間の間隔
                 const int total_width = (draw_count - 1) * spacing;
-                const int start_x = static_cast<int>(draw_pos.x()) - total_width / 2;
+                const int start_x = static_cast<int>(draw_pos.x) - total_width / 2;
 
                 for (int i = 0; i < draw_count; ++i) {
-                    const paxg::Vec2<double> draw_item_pos{
+                    const paxs::Vector2<double> draw_item_pos{
                         static_cast<double>(start_x + i * spacing),
-                        draw_pos.y()
+                        draw_pos.y
                     };
-                    texture.resizedDrawAt(display_size, draw_item_pos);
+                    texture_ptr->resizedDrawAt(display_size, draw_item_pos);
                 }
             }
         }
@@ -238,8 +237,8 @@ private:
                 if (!name.empty()) {
                     // テクスチャの上部に名前を描画
                     const paxg::Vec2<double> text_pos = paxg::Vec2<double>{
-                        draw_pos.x(),
-                        draw_pos.y() - (display_size / 2) - 5  // アイコンの上部から少し離す
+                        draw_pos.x,
+                        draw_pos.y - (display_size / 2) - 5  // アイコンの上部から少し離す
                     };
                     font->drawBottomCenter(name, text_pos, paxg::Color(0, 0, 0));
                 }

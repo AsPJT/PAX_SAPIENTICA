@@ -44,6 +44,6 @@ int main() {
     while (paxg::Window::update()) {
         rect.draw();
         circle.draw();
-        texture.drawAt(paxg::Vec2i(200, 200));
+        texture.drawAt(paxs::Vector2<int>(200, 200));
     }
 }

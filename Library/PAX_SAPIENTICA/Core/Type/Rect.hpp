@@ -20,36 +20,38 @@ namespace paxs {
     /// @brief 矩形を表すクラス(位置とサイズ)
     template<typename T>
     struct Rect {
-        Vector2<T> position{};  // 左上の座標 (x, y) / Top-left position (x, y)
-        Vector2<T> size{};      // サイズ (width, height) / Size (width, height)
+        Vector2<T> pos_{};  // 左上の座標 (x, y) / Top-left position (x, y)
+        Vector2<T> sz_{};      // サイズ (width, height) / Size (width, height)
 
         constexpr Rect() noexcept = default;
 
         constexpr Rect(T x, T y, T width, T height) noexcept
-            : position(x, y), size(width, height) {}
+            : pos_(x, y), sz_(width, height) {}
 
         constexpr Rect(const Vector2<T>& pos, const Vector2<T>& sz) noexcept
-            : position(pos), size(sz) {}
+            : pos_(pos), sz_(sz) {}
 
         // Getters
-        [[nodiscard]] constexpr T x() const noexcept { return position.x; }
-        [[nodiscard]] constexpr T y() const noexcept { return position.y; }
-        [[nodiscard]] constexpr T width() const noexcept { return size.x; }
-        [[nodiscard]] constexpr T height() const noexcept { return size.y; }
+        [[nodiscard]] constexpr T x() const noexcept { return pos_.x; }
+        [[nodiscard]] constexpr T y() const noexcept { return pos_.y; }
+        [[nodiscard]] constexpr T width() const noexcept { return sz_.x; }
+        [[nodiscard]] constexpr T height() const noexcept { return sz_.y; }
+        [[nodiscard]] constexpr Vector2<T> position() const noexcept { return pos_; }
+        [[nodiscard]] constexpr Vector2<T> size() const noexcept { return sz_; }
 
         // Computed properties
-        [[nodiscard]] constexpr T left() const noexcept { return position.x; }
-        [[nodiscard]] constexpr T top() const noexcept { return position.y; }
-        [[nodiscard]] constexpr T right() const noexcept { return position.x + size.x; }
-        [[nodiscard]] constexpr T bottom() const noexcept { return position.y + size.y; }
+        [[nodiscard]] constexpr T left() const noexcept { return pos_.x; }
+        [[nodiscard]] constexpr T top() const noexcept { return pos_.y; }
+        [[nodiscard]] constexpr T right() const noexcept { return pos_.x + sz_.x; }
+        [[nodiscard]] constexpr T bottom() const noexcept { return pos_.y + sz_.y; }
 
-        [[nodiscard]] constexpr Vector2<T> topLeft() const noexcept { return position; }
+        [[nodiscard]] constexpr Vector2<T> topLeft() const noexcept { return pos_; }
         [[nodiscard]] constexpr Vector2<T> topRight() const noexcept { return Vector2<T>(right(), top()); }
         [[nodiscard]] constexpr Vector2<T> bottomLeft() const noexcept { return Vector2<T>(left(), bottom()); }
         [[nodiscard]] constexpr Vector2<T> bottomRight() const noexcept { return Vector2<T>(right(), bottom()); }
 
         [[nodiscard]] constexpr Vector2<T> center() const noexcept {
-            return Vector2<T>(position.x + (size.x / 2), position.y + (size.y / 2));
+            return Vector2<T>(pos_.x + (sz_.x / 2), pos_.y + (sz_.y / 2));
         }
 
         // Point containment check
@@ -77,10 +79,10 @@ namespace paxs {
         /// @brief マージン付き矩形を作成
         [[nodiscard]] constexpr Rect<T> expanded(T margin) const noexcept {
             return Rect<T>(
-                position.x - margin,
-                position.y - margin,
-                size.x + (margin * 2),
-                size.y + (margin * 2)
+                pos_.x - margin,
+                pos_.y - margin,
+                sz_.x + (margin * 2),
+                sz_.y + (margin * 2)
             );
         }
 
@@ -114,10 +116,10 @@ namespace paxs {
         template<typename U>
         [[nodiscard]] Rect<U> toType() const noexcept {
             return Rect<U>(
-                static_cast<U>(position.x),
-                static_cast<U>(position.y),
-                static_cast<U>(size.x),
-                static_cast<U>(size.y)
+                static_cast<U>(pos_.x),
+                static_cast<U>(pos_.y),
+                static_cast<U>(sz_.x),
+                static_cast<U>(sz_.y)
             );
         }
     };

@@ -21,8 +21,9 @@
 #include <PAX_GRAPHICA/SFML_Circle.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
 
@@ -30,15 +31,15 @@ namespace paxg {
     {
 #if defined(PAXS_USING_SIV3D)
         s3d::Circle circle;
-        constexpr Circle(const float x, const float y, const float r) : circle(x, y, r) {}
-        constexpr Circle(const paxg::Vec2i& pos, const float r) : circle(pos.x(), pos.y(), r) {}
-        constexpr Circle(const paxg::Vec2<double>& pos, const float r) : circle(static_cast<float>(pos.x()), static_cast<float>(pos.y()), r) {}
+        constexpr Circle(const paxs::Vector2<int>& pos, const float r) : circle(pos.x, pos.y, r) {}
+        constexpr Circle(const paxs::Vector2<float>& pos, const float r) : circle(pos.x, pos.y, r) {}
+        constexpr Circle(const paxs::Vector2<double>& pos, const float r) : circle(static_cast<float>(pos.x), static_cast<float>(pos.y), r) {}
         constexpr operator s3d::Circle() const { return circle; }
 #else
         float x, y, r;
-        constexpr Circle(const float x, const float y, const float r) : x(x), y(y), r(r) {}
-        constexpr Circle(const paxg::Vec2i& pos, const float r) : x(static_cast<float>(pos.x())), y(static_cast<float>(pos.y())), r(r) {}
-        constexpr Circle(const paxg::Vec2<double>& pos, const float r) : x(static_cast<float>(pos.x())), y(static_cast<float>(pos.y())), r(r) {}
+        constexpr Circle(const paxs::Vector2<int>& pos, const float r) : x(static_cast<float>(pos.x)), y(static_cast<float>(pos.y)), r(r) {}
+        constexpr Circle(const paxs::Vector2<float>& pos, const float r) : x(pos.x), y(pos.y), r(r) {}
+        constexpr Circle(const paxs::Vector2<double>& pos, const float r) : x(static_cast<float>(pos.x)), y(static_cast<float>(pos.y)), r(r) {}
 #endif
         void draw() const {
 #if defined(PAXS_USING_SIV3D)

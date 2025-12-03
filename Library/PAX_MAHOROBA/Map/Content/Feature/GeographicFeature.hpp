@@ -16,7 +16,6 @@
 #include <utility>
 
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Map/Content/Feature/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
@@ -120,8 +119,7 @@ public:
         // 表示サイズの計算（zoom適用）
         cached_display_size_ = static_cast<int>(data_.overall_length / 2 * data_.zoom);
 
-        // テクスチャサイズを描画時のサイズに合わせる（MapFeatureRenderer.hppと同じ）
-        // 描画時は resizedDrawAt(display_size) を使用するため、当たり判定もdisplay_sizeに合わせる
+        // テクスチャサイズを描画時のサイズに合わせる
         cached_texture_size_ = Vector2<int>(cached_display_size_, cached_display_size_);
 
         visible_ = true;
@@ -153,10 +151,10 @@ public:
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x, mouse_pos.y, cached_screen_positions_,
-            [texture_size](int mouse_x, int mouse_y, const paxg::Vec2<double>& pos) {
+            [texture_size](int mouse_x, int mouse_y, const paxs::Vector2<double>& pos) {
                 // テクスチャの矩形判定（中心から描画）
                 const Rect<int> texture_rect = Rect<int>::fromCenter(
-                    Vector2<int>(static_cast<int>(pos.x()), static_cast<int>(pos.y())),
+                    Vector2<int>(pos),
                     texture_size
                 );
                 return texture_rect.contains(mouse_x, mouse_y);

@@ -130,7 +130,7 @@ public:
             case DisplayMode::Flat: mode_text = "[Flat]"; break;
         }
         font_text->draw("Performance Monitor " + mode_text,
-                       paxg::Vec2i(pos.x + PADDING, pos.y + PADDING),
+                       paxs::Vector2<int>(pos.x + PADDING, pos.y + PADDING),
                        paxg::Color(0, 0, 0));
 
         // FPS情報（常に表示）
@@ -138,11 +138,11 @@ public:
         const paxg::Color fps_color = getFPSColor(fps_);
 
         font_text->draw("FPS: " + formatDouble(fps_, 1),
-                       paxg::Vec2i(pos.x + PADDING, text_y),
+                       paxs::Vector2<int>(pos.x + PADDING, text_y),
                        fps_color);
 
         font_text->draw("Frame Time: " + formatDouble(frame_time_ms_, 2) + " ms",
-                       paxg::Vec2i(pos.x + PADDING, text_y + 20),
+                       paxs::Vector2<int>(pos.x + PADDING, text_y + 20),
                        paxg::Color(0, 0, 0));
 
         // モードに応じた描画
@@ -261,7 +261,7 @@ private:
             }
 
             font_text->draw("Min: " + formatDouble(min_fps, 1) + " / Max: " + formatDouble(max_fps, 1),
-                           paxg::Vec2i(pos.x + PADDING, content_y),
+                           paxs::Vector2<int>(pos.x + PADDING, content_y),
                            paxg::Color(0, 0, 0));
         }
 
@@ -272,13 +272,13 @@ private:
 
         // グラフの目盛り
         font_text->draw("60",
-                       paxg::Vec2i(pos.x + PADDING - 20, graph_y),
+                       paxs::Vector2<int>(pos.x + PADDING - 20, graph_y),
                        paxg::Color(100, 100, 100));
         font_text->draw("30",
-                       paxg::Vec2i(pos.x + PADDING - 20, graph_y + GRAPH_HEIGHT / 2),
+                       paxs::Vector2<int>(pos.x + PADDING - 20, graph_y + GRAPH_HEIGHT / 2),
                        paxg::Color(100, 100, 100));
         font_text->draw("0",
-                       paxg::Vec2i(pos.x + PADDING - 20, graph_y + GRAPH_HEIGHT),
+                       paxs::Vector2<int>(pos.x + PADDING - 20, graph_y + GRAPH_HEIGHT),
                        paxg::Color(100, 100, 100));
     }
 
@@ -324,7 +324,7 @@ private:
 
         paxg::Color text_color = getTimeColor(scope_data->current_time_ms);
         font_text->draw(text,
-                       paxg::Vec2i(pos_x + indent, current_y),
+                       paxs::Vector2<int>(pos_x + indent, current_y),
                        text_color);
 
         current_y += LINE_HEIGHT;
@@ -372,7 +372,7 @@ private:
 
             paxg::Color text_color = getTimeColor(scope_data->current_time_ms);
             font_text->draw(text,
-                           paxg::Vec2i(pos.x + PADDING, current_y),
+                           paxs::Vector2<int>(pos.x + PADDING, current_y),
                            text_color);
 
             current_y += LINE_HEIGHT;

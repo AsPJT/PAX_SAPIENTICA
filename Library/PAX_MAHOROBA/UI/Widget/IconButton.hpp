@@ -17,7 +17,6 @@
 #include <PAX_GRAPHICA/Rect.hpp>
 #include <PAX_GRAPHICA/RoundRect.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/InteractiveUIComponent.hpp>
 
@@ -38,7 +37,9 @@ namespace paxs {
                 loadIconTextures();
             }
             if (!icon_textures.isSuccessfullyLoaded()) return;
-            if (!icon_textures.contains(icon_texture_path_hash)) return;
+
+            const paxg::Texture* const icon_texture_ptr = icon_textures.try_get(icon_texture_path_hash);
+            if (icon_texture_ptr == nullptr) return;
 
             // ボタン状態に応じた背景を描画（3pxのマージン付き）
             constexpr int margin = 3;
@@ -64,9 +65,7 @@ namespace paxs {
             }
 
             // アイコンを描画
-            icon_textures.at(icon_texture_path_hash).resizedDraw(rect.width(),
-                paxg::Vec2i{ rect.x(), rect.y() }
-            );
+            icon_texture_ptr->resizedDraw(rect.width(), rect.position());
 
             is_hovered = false;
             is_pressed = false;
@@ -89,10 +88,10 @@ namespace paxs {
         Rect<int> getRect() const override { return rect; }
         const char* getName() const override { return name; }
         bool isVisible() const override { return true; }
-        void setPos(const Vector2<int>& pos) override { rect.position = pos; }
+        void setPos(const Vector2<int>& pos) override { rect.pos_ = pos; }
 
     protected:
-        void setSize(const Vector2<int>& size) { rect.size = size; }
+        void setSize(const Vector2<int>& size) { rect.sz_ = size; }
 
     private:
         const std::uint_least32_t icon_texture_path_hash;

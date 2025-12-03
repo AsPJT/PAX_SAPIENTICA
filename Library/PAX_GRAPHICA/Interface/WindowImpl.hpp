@@ -1,0 +1,67 @@
+﻿/*##########################################################################################
+
+    PAX SAPIENTICA Library 💀🌿🌏
+
+    [Planning]		2023-2024 As Project
+    [Production]	2023-2024 As Project
+    [Contact Us]	wanotaitei@gmail.com			https://github.com/AsPJT/PAX_SAPIENTICA
+    [License]		Distributed under the CC0 1.0.	https://creativecommons.org/publicdomain/zero/1.0/
+
+##########################################################################################*/
+
+#ifndef PAX_GRAPHICA_WINDOW_IMPL_HPP
+#define PAX_GRAPHICA_WINDOW_IMPL_HPP
+
+#include <string>
+
+#include <PAX_GRAPHICA/Color.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
+
+namespace paxg {
+
+    /// @brief Abstract base class for window implementations
+    class WindowImpl {
+    public:
+        virtual ~WindowImpl() = default;
+
+        /// @brief ライブラリ初期化前の設定（DxLib_Init前など）
+        /// @brief Pre-initialization settings (before DxLib_Init, etc.)
+        virtual void preInit() {}
+
+        /// @brief メイン初期化
+        /// @brief Main initialization
+        virtual void init(int width, int height, const std::string& title) = 0;
+
+        virtual bool update() = 0;
+
+        virtual void setTitle(const std::string& title) = 0;
+        virtual void setSize(int width, int height) = 0;
+        virtual void setPosition(const paxs::Vector2<int>& pos) = 0;
+        virtual void setIcon(const std::string& path) = 0;
+        virtual void setVisible(bool visible) = 0;
+        virtual void setVSync(bool vsync) = 0;
+        virtual void setFPS(int fps) = 0;
+        virtual void setMouseCursorVisible(bool visible) = 0;
+        virtual void setMouseCursor(const std::string& path) = 0;
+        virtual void setMousePosition(const paxs::Vector2<int>& pos) = 0;
+        virtual void setBackgroundColor(paxg::Color color) = 0;
+        virtual void setLetterbox(paxg::Color color) = 0;
+        virtual void setResizable(bool resizable) = 0;
+        virtual void setDecorated(bool decorated) = 0;
+
+        virtual paxs::Vector2<int> center() const = 0;
+        virtual int width() const = 0;
+        virtual int height() const = 0;
+        virtual paxs::Vector2<int> size() const = 0;
+        virtual paxs::Vector2<int> getMousePosition() const = 0;
+        virtual bool hasFocus() const = 0;
+
+        virtual void clear() = 0;
+        virtual void display() = 0;
+        virtual void close() = 0;
+    };
+
+} // namespace paxg
+
+#endif // !PAX_GRAPHICA_WINDOW_IMPL_HPP

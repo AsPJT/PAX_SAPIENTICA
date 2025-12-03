@@ -313,13 +313,28 @@ namespace paxs {
                     break;
                 case paxs::cal::DateOutputType::name_and_value:
                 {
-                    if (text_str != nullptr) (*one_font).drawTopRight(*text_str,
-                        paxg::Vec2i(static_cast<int>(ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    if (text_str != nullptr) {
+                        (*one_font).drawTopRight(*text_str,
+                            paxs::Vector2<int>(
+                                static_cast<int>(ui_layout_.koyomi_font_en_x),
+                                static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))
+                            ),
+                            paxg::Color(0, 0, 0)
+                        );
+                    }
                 }
+
                 std::visit([&](const auto& x) {
-                    date_day = int(x.getDay());
+                    date_day = static_cast<int>(x.getDay());
                     }, koyomi_.date_list[i].date);
-                (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(315 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+
+                (*one_font).drawTopRight(
+                    std::to_string(date_day),
+                    paxs::Vector2<int>(
+                        static_cast<int>((315 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x),
+                        static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))
+                    ),
+                    paxg::Color(0, 0, 0));
                 break;
                 default:
                     break;

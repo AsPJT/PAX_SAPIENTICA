@@ -759,7 +759,7 @@ namespace paxs {
                 Live& live = (*live_list)[district_id];
 
                 while (live.live_probabilities.size() > 0 && // 集落を配置し切るまで
-                    district_population_map.find(district_id) != district_population_map.end() // 地区が残っている間
+                    district_population_map.contains(district_id) // 地区が残っている間
                     ) {
                     if (step_count == 0) {
                         if (progress_reporter_ != nullptr) {
@@ -778,19 +778,16 @@ namespace paxs {
                     const int live_probability_index = live_probability_dist(gen);
                     const Vector2 live_position = Vector2::from(live.habitable_land_positions[live_probability_index]);
 
-                    auto district_population_it = district_population_map.find(district_id);
-                    if (district_population_it == district_population_map.end()) {
-                        live.live_probabilities[live_probability_index] = live.live_probabilities.back();
-                        live.live_probabilities.pop_back();
-                        live.habitable_land_positions[live_probability_index] = live.habitable_land_positions.back();
-                        live.habitable_land_positions.pop_back();
+                    auto* const district_population_ptr = district_population_map.try_get(district_id);
+                    if (district_population_ptr == nullptr) {
+                        PAXS_WARNING("District population not found. District ID: " + std::to_string(district_id));
                         continue;
                     }
 
                     // 配置する集落の人口を決定
                     paxs::District district = japan_provinces->getDistrict(district_id);
                     int settlement_population = std::uniform_int_distribution<>(district.settlement_pop_min, district.settlement_pop_max)(gen);
-                    settlement_population = (std::min)(settlement_population, static_cast<int>(district_population_it->second));
+                    settlement_population = (std::min)(settlement_population, static_cast<int>(*district_population_ptr));
 
                     // 集落をグリッドに配置
                     Vector2 grid_position = live_position / SimulationConstants::getInstance().cell_group_length;
@@ -816,9 +813,9 @@ namespace paxs {
                     }
 
                     // 地区の人口を減らす
-                    district_population_it->second -= settlement_population;
-                    if (district_population_it->second == 0) {
-                        district_population_map.erase(district_population_it);
+                    *district_population_ptr -= settlement_population;
+                    if (*district_population_ptr == 0) {
+                        district_population_map.erase(district_id);
                     }
                     if (step_count == 0) {
                         population_sum += settlement_population;

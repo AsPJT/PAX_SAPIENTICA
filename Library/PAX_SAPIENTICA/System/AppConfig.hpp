@@ -52,11 +52,12 @@ namespace paxs {
         }
 
         [[nodiscard]] std::string getSettingPath(const std::uint_least32_t key) const {
-            if (!data_settings.contains(key)) {
+            const std::string* const setting_ptr = data_settings.try_get(key);
+            if (setting_ptr == nullptr) {
                 PAXS_WARNING("Data settings key " + std::to_string(key) + " not found.");
                 return std::string{};
             }
-            return data_settings.at(key);
+            return *setting_ptr;
         }
         template<typename Func_>
         void ifSettingExists(const std::uint_least32_t key, Func_&& func) const {
@@ -90,10 +91,11 @@ namespace paxs {
 
         // @brief 指定したキーのデータ設定が存在しているか
         [[nodiscard]] bool hasDataSettings(const std::uint_least32_t key_) const {
-            if (!data_settings.contains(key_)) {
+            const std::string* const setting_ptr = data_settings.try_get(key_);
+            if (setting_ptr == nullptr) {
                 return false;
             }
-            return (data_settings.at(key_).size() != 0);
+            return (setting_ptr->size() != 0);
         }
 
         /// @brief TSVファイルから key-value ペアを全て読み込む
@@ -167,7 +169,8 @@ namespace paxs {
             if (!loadAllKeyValueTSV(file_path, temp_map)) {
                 return std::string{};
             }
-            return temp_map.contains(target_key) ? temp_map.at(target_key) : std::string{};
+            const std::string* const value_ptr = temp_map.try_get(target_key);
+            return (value_ptr != nullptr) ? *value_ptr : std::string{};
         }
 
     };

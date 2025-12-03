@@ -14,7 +14,6 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Events/FeatureEvents.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/GenomeFeature.hpp>
@@ -208,11 +207,11 @@ namespace paxs {
                 };
 
                 for (const auto& col : known_columns) {
-                    const auto iterator = extra_data_.find(col.data_hash);
-                    if (iterator != extra_data_.end()) {
+                    const auto* const ptr = extra_data_.try_get(col.data_hash);
+                    if (ptr != nullptr) {
                         const std::string* label = Fonts().getLocalesText(feature_info_domain_hash, col.label_key);
                         if (label) {
-                            total_lines += calculateTextLines(*label + ": " + iterator->second, max_text_width);
+                            total_lines += calculateTextLines(*label + ": " + *ptr, max_text_width);
                         }
                     }
                 }
@@ -280,7 +279,7 @@ namespace paxs {
                     // 残りが全て1行に収まる
                     font->draw(
                         remaining_text.c_str(),
-                        paxg::Vec2i(bounds.x(), bounds.y() + line_height * current_line++),
+                        paxs::Vector2<int>{bounds.x(), bounds.y() + line_height * current_line++},
                         color
                     );
                     break;
@@ -305,7 +304,7 @@ namespace paxs {
                 std::string line_text = remaining_text.substr(0, actual_split);
                 font->draw(
                     line_text.c_str(),
-                    paxg::Vec2i(bounds.x(), bounds.y() + line_height * current_line++),
+                    paxs::Vector2<int>{bounds.x(), bounds.y() + line_height * current_line++},
                     color
                 );
 
@@ -406,7 +405,7 @@ namespace paxs {
             if (title_text) {
                 font->draw(
                     *title_text,
-                    paxg::Vec2i(text_x, text_y + line_height * current_line++),
+                    paxs::Vector2<int>{text_x, text_y + line_height * current_line++},
                     paxg::Color(0, 0, 0)
                 );
             }
@@ -461,12 +460,11 @@ namespace paxs {
                 };
 
                 for (const auto& col : known_columns) {
-                    const auto iterator = extra_data_.find(col.data_hash);
-                    if (iterator != extra_data_.end()) {
+                    const auto* const ptr = extra_data_.try_get(col.data_hash);
+                    if (ptr != nullptr) {
                         const std::string* label = Fonts().getLocalesText(feature_info_domain_hash, col.label_key);
                         if (label) {
-                            const std::string display_text = *label + ": " + iterator->second;
-
+                            const std::string display_text = *label + ": " + *ptr;
                             drawWrappedText(
                                 font,
                                 display_text,

@@ -15,8 +15,6 @@
 #include <string>
 #include <utility>
 
-#include <PAX_GRAPHICA/Vec2.hpp>
-
 #include <PAX_MAHOROBA/Map/Content/Feature/FeatureType.hpp>
 #include <PAX_MAHOROBA/Map/Content/Feature/MapFeature.hpp>
 #include <PAX_MAHOROBA/Map/Content/Interaction/ClickContext.hpp>
@@ -174,11 +172,11 @@ public:
 
         return MapContentHitTester::testMultiplePositions(
             mouse_pos.x, mouse_pos.y, cached_screen_positions_,
-            [text_size](int mouse_x, int mouse_y, const paxg::Vec2<double>& pos) {
+            [text_size](int mouse_x, int mouse_y, const paxs::Vector2<double>& pos) {
                 // テキストの矩形判定: drawAtは横方向中央、縦方向上を基準に描画
                 const Rect<int> text_rect(
-                    static_cast<int>(pos.x()) - (text_size.x / 2),
-                    static_cast<int>(pos.y()),
+                    static_cast<int>(pos.x) - (text_size.x / 2),
+                    static_cast<int>(pos.y),
                     text_size.x,
                     text_size.y
                 );

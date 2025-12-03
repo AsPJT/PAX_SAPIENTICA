@@ -82,6 +82,11 @@ namespace paxs {
             return *this;
         }
 
+        template<typename U>
+        explicit constexpr operator Vector2<U>() const noexcept {
+            return Vector2<U>(static_cast<U>(x), static_cast<U>(y));
+        }
+
         auto operator<=>(const Vector2<T>& v) const noexcept = default;
         /// @brief Get the length of the vector
         /// @brief べクトルの長さを取得。

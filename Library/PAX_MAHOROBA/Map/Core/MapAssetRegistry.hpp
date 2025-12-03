@@ -89,8 +89,7 @@ public:
     /// @param key ハッシュキー / Hash key
     /// @return テクスチャへのポインタ（存在しない場合nullptr） / Pointer to texture (nullptr if not found)
     const paxg::Texture* getTexture(std::uint_least32_t key) const {
-        const auto iterator = merged_textures_.find(key);
-        return (iterator != merged_textures_.end()) ? &iterator->second : nullptr;
+        return merged_textures_.try_get(key);
     }
 
     /// @brief ハッシュキーからテクスチャを取得（参照）
@@ -100,14 +99,6 @@ public:
     /// @throws std::out_of_range キーが存在しない場合 / If key does not exist
     const paxg::Texture& at(std::uint_least32_t key) const {
         return merged_textures_.at(key);
-    }
-
-    /// @brief テクスチャが存在するかチェック
-    /// @brief Check if texture exists
-    /// @param key ハッシュキー / Hash key
-    /// @return 存在する場合true / True if exists
-    bool contains(std::uint_least32_t key) const {
-        return merged_textures_.contains(key);
     }
 
     /// @brief 統合マップを取得

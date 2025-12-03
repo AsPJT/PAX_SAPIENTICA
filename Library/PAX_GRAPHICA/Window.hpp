@@ -18,16 +18,16 @@
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 #if defined(PAXS_USING_SIV3D)
-#include <PAX_GRAPHICA/implementations/Siv3DWindowImpl.hpp>
+#include <PAX_GRAPHICA/Siv3D/Siv3DWindowImpl.hpp>
 #elif defined(PAXS_USING_DXLIB)
-#include <PAX_GRAPHICA/implementations/DxLibWindowImpl.hpp>
+#include <PAX_GRAPHICA/DxLib/DxLibWindowImpl.hpp>
 #elif defined(PAXS_USING_SFML)
-#include <PAX_GRAPHICA/implementations/SFMLWindowImpl.hpp>
+#include <PAX_GRAPHICA/SFML/SFMLWindowImpl.hpp>
 #else
-#include <PAX_GRAPHICA/implementations/NullWindowImpl.hpp>
+#include <PAX_GRAPHICA/Null/NullWindowImpl.hpp>
 #endif
 
-#include <PAX_GRAPHICA/WindowImpl.hpp>
+#include <PAX_GRAPHICA/Interface/WindowImpl.hpp>
 
 namespace paxg {
 
@@ -80,11 +80,7 @@ namespace paxg {
             getImpl().setSize(width, height);
         }
 
-        static void setPosition(int x, int y) {
-            getImpl().setPosition(x, y);
-        }
-
-        static void setPosition(const paxg::Vec2i& pos) {
+        static void setPosition(const paxs::Vector2<int>& pos) {
             getImpl().setPosition(pos);
         }
 
@@ -110,24 +106,12 @@ namespace paxg {
             getImpl().setMouseCursorVisible(visible);
         }
 
-        static void setMouseCursorGrabbed(bool grabbed) {
-            getImpl().setMouseCursorGrabbed(grabbed);
-        }
-
         static void setMouseCursor(const std::string& path) {
             getImpl().setMouseCursor(path);
         }
 
-        static void setMousePosition(int x, int y) {
-            getImpl().setMousePosition(x, y);
-        }
-
-        static void setMousePosition(const paxg::Vec2i& pos) {
+        static void setMousePosition(const paxs::Vector2<int>& pos) {
             getImpl().setMousePosition(pos);
-        }
-
-        static void setKeyRepeat(bool repeat) {
-            getImpl().setKeyRepeat(repeat);
         }
 
         static void setBackgroundColor(const paxg::Color color) {
@@ -148,7 +132,7 @@ namespace paxg {
             getImpl().setDecorated(decorated);
         }
 
-        static paxg::Vec2i center() {
+        static paxs::Vector2<int> center() {
             return getImpl().center();
         }
 
@@ -160,17 +144,16 @@ namespace paxg {
             return getImpl().height();
         }
 
-        static paxg::Vec2i size() {
+        static paxs::Vector2<int> size() {
             return getImpl().size();
         }
 
         /// @brief Get window size (alias for size() to match Siv3D Scene::Size())
         static paxs::Vector2<int> Size() {
-            auto s = getImpl().size();
-            return paxs::Vector2<int>(s.x(), s.y());
+            return getImpl().size();
         }
 
-        static paxg::Vec2i getMousePosition() {
+        static paxs::Vector2<int> getMousePosition() {
             return getImpl().getMousePosition();
         }
 

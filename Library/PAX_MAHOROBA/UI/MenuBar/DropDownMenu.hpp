@@ -51,7 +51,7 @@ namespace paxs {
         // 描画定数
         static constexpr float arrow_radius = 8.0f;
         static constexpr float arrow_rotation_pi = 3.15f;  // π radians (down)　ずれるので少し大きめに
-        static constexpr paxg::Vec2i shadow_offset{ 1, 1 };
+        static constexpr paxs::Vector2<int> shadow_offset{ 1, 1 };
         static constexpr int shadow_blur_radius = 4;
         static constexpr int shadow_spread = 1;
 
@@ -68,7 +68,7 @@ namespace paxs {
 
         // レイアウト
         paxg::Rect rect;
-        paxg::Vec2i padding{ default_padding_x, default_padding_y };
+        paxs::Vector2<int> padding{ default_padding_x, default_padding_y };
         float all_rect_width{}; // 全ての項目の文字幅
 
         // 状態
@@ -86,12 +86,12 @@ namespace paxs {
             const std::span<const std::uint_least32_t> items_key_,
             std::uint_least8_t font_size_,
             std::uint_least8_t font_buffer_thickness_size_,
-            const paxg::Vec2i& pos_ = { 0, 0 })
+            const paxs::Vector2<int>& pos_ = { 0, 0 })
         {
             items_key = items_key_;
             font_size = font_size_;
             font_buffer_thickness_size = font_buffer_thickness_size_;
-            rect = paxg::Rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()), 0, 0 };
+            rect = paxg::Rect{ static_cast<float>(pos_.x), static_cast<float>(pos_.y), 0, 0 };
 
             updateLanguage();
 
@@ -116,7 +116,7 @@ namespace paxs {
                 rect.setH(static_cast<float>(font_size) * 2.f);
             }
             else {
-                const float height = static_cast<float>(((*one_font).height()) + padding.y() * 2);
+                const float height = static_cast<float>(((*one_font).height()) + padding.y * 2);
                 rect.setH(height);
             }
 
@@ -137,8 +137,8 @@ namespace paxs {
                 }
             }
 
-            rect.setW(rect.w() + (padding.x() * 2 + down_button_size));
-            all_rect_width += (padding.x() * 2 + down_button_size);
+            rect.setW(rect.w() + (padding.x * 2 + down_button_size));
+            all_rect_width += (padding.x * 2 + down_button_size);
 
             // チェックマークの幅を追加
             all_rect_width += checkmark_width;
@@ -154,8 +154,8 @@ namespace paxs {
 
         /// @brief 入力処理（
         EventHandlingResult handleEvent(const MouseEvent& event) override {
-            paxg::Vec2i pos = rect.pos();
-            pos.setY((int)(pos.y() + rect.h()));
+            paxs::Vector2<float> pos = rect.pos();
+            pos.y += rect.h();
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const paxg::Rect item_rect{ pos, all_rect_width, rect.h() };
@@ -174,7 +174,7 @@ namespace paxs {
                     visible_ = false;
                     return EventHandlingResult::Handled();
                 }
-                pos.setY((int)(pos.y() + rect.h()));
+                pos.y += rect.h();
             }
             return EventHandlingResult::NotHandled();
         }
@@ -191,7 +191,7 @@ namespace paxs {
 
             // 下向き三角形を描画
             static constexpr paxg::TriangleShape down_arrow_shape(arrow_radius, arrow_rotation_pi);
-            const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x());
+            const float center_x = static_cast<float>(rect.x() + rect.w() - down_button_size / 2.0 - padding.x);
             const float center_y = static_cast<float>(rect.y() + rect.h() / 2.0);
             paxg::Triangle triangle(center_x, center_y, down_arrow_shape);
             triangle.draw(paxg::Color{ 0, 0, 0 });
@@ -255,18 +255,18 @@ namespace paxs {
 
         /// @brief 項目の状態を取得（キー指定）
         bool getIsItems(const std::uint_least32_t key) const {
-            if (!item_index_key.contains(key)) {
+            const std::size_t* const index_ptr = item_index_key.try_get(key);
+            if (index_ptr == nullptr) {
                 PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
                 return true;
             }
-            const std::size_t index = item_index_key.at(key);
             // キーで取得する場合、インデックスは既に正しい位置を指しているので
             // ヘッダー（インデックス0）を参照している場合のみスキップ
-            if (index == 0) {
+            if (*index_ptr == 0) {
                 return true; // ヘッダー自体は常にtrue
             }
-            if (index < is_items.size()) {
-                return is_items[index];
+            if (*index_ptr < is_items.size()) {
+                return is_items[*index_ptr];
             }
             return is_items.front();
         }
@@ -277,11 +277,13 @@ namespace paxs {
                 PAXS_WARNING("DropDownMenu: No items to check for key.");
                 return true; // データがない場合
             }
-            if (!item_index_key.contains(key)) {
+
+            const std::size_t* const index_ptr = item_index_key.try_get(key);
+            if (index_ptr == nullptr) {
                 PAXS_WARNING("DropDownMenu: Key not found in item_index_key.");
                 return true; // 引数の Key が存在しない場合
             }
-            return getIsItems(item_index_key.at(key));
+            return getIsItems(*index_ptr);
         }
 
         bool isHitHeader(int x, int y) const {
@@ -297,21 +299,21 @@ namespace paxs {
 
             // ヘッダーは親(MenuSystem)が判定するのでここでは見ない
 
-            paxg::Vec2i pos = rect.pos();
-            pos.setY((int)(pos.y() + rect.h()));
+            paxs::Vector2<float> pos = rect.pos();
+            pos.y += rect.h();
 
             for (std::size_t i = 1; i < items_key.size(); ++i) {
                 const paxg::Rect item_rect{ pos, all_rect_width, rect.h() };
                 if (item_rect.contains((float)mouse_pos.x, (float)mouse_pos.y)) {
                     return true;
                 }
-                pos.setY((int)(pos.y() + rect.h()));
+                pos.y += rect.h();
             }
             return false;
         }
 
         void setPos(const Vector2<int>& pos) override {
-            rect.setPos(paxg::Vec2i(pos.x, pos.y));
+            rect.setPos(pos);
         }
         Rect<int> getRect() const override {
             return {
@@ -349,14 +351,14 @@ namespace paxs {
 
             (*one_font).draw(
                 *str,
-                paxg::Vec2i(static_cast<int>(rect.x() + padding.x()), static_cast<int>(rect.y() + padding.y())),
+                paxs::Vector2<int>(static_cast<int>(rect.x()) + padding.x, static_cast<int>(rect.y()) + padding.y),
                 paxg::Color{ 0, 0, 0 });
         }
 
         /// @brief ドロップダウンリストを描画（チェックマーク付き）
         void drawDropdownList() const {
-            paxg::Vec2i pos = rect.pos();
-            pos.setY(static_cast<int>(pos.y() + rect.h()));
+            paxs::Vector2<float> pos = rect.pos();
+            pos.y += rect.h();
 
             // 最初の項目（ヘッダー）をスキップ
             const std::size_t display_item_count = items_key.size() - 1;
@@ -374,14 +376,14 @@ namespace paxs {
 
                 // チェックマークを描画（ONの場合のみ）
                 if (i < is_items.size() && is_items[i]) {
-                    const int check_x = pos.x() + checkmark_x_offset;
+                    const int check_x = pos.x + checkmark_x_offset;
 
                     // シンプルなチェックマーク "✓" を描画
                     paxg::Font* check_font = Fonts().getFont(font_size, font_buffer_thickness_size);
                     if (check_font != nullptr) {
                         (*check_font).draw(
                             reinterpret_cast<const char*>(u8"✓"),
-                            paxg::Vec2i(check_x, pos.y() + padding.y()),
+                            paxs::Vector2<int>(check_x, pos.y + padding.y),
                             paxg::Color{ 0, 0, 0 });
                     }
                 }
@@ -392,9 +394,9 @@ namespace paxs {
 
                 (*one_font).draw(
                     *i_str,
-                    paxg::Vec2i(pos.x() + padding.x() + checkmark_width, pos.y() + padding.y()),
+                    paxs::Vector2<int>(pos.x + padding.x + checkmark_width, pos.y + padding.y),
                     paxg::Color{ 0, 0, 0 });
-                pos.setY(static_cast<int>(pos.y() + rect.h()));
+                pos.y += rect.h();
             }
 
             back_rect.drawFrame(1, 0, paxg::Color{ 128, 128, 128 });
