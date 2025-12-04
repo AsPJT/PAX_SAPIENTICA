@@ -39,8 +39,8 @@ namespace paxg {
 
         /// @brief Draw the circle with specified color
         /// @param color The color to draw the circle
-        void draw(const Color& color) const override {
-            circle.draw(color);
+        void draw(const paxg::Color& color) const override {
+            circle.draw(paxg::ColorF(color));
         }
 
         /// @brief Get the position of the circle center

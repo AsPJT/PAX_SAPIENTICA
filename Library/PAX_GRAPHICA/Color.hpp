@@ -50,6 +50,19 @@ namespace paxg {
         constexpr ColorT(T rgb, T a_ = std::is_same_v<T, int> ? T(255) : T(1.0))
             : r(rgb), g(rgb), b(rgb), a(a_) {}
 
+        /// @brief Conversion constructor from ColorT<int> to ColorT<double>
+        /// @brief ColorT<int>からColorT<double>への変換コンストラクタ
+        template <typename U = T>
+        constexpr ColorT(const ColorT<int>& other, typename std::enable_if_t<std::is_same_v<U, double>>* = nullptr)
+            : r(other.r / 255.0), g(other.g / 255.0), b(other.b / 255.0), a(other.a / 255.0) {}
+
+        /// @brief Conversion constructor from ColorT<double> to ColorT<int>
+        /// @brief ColorT<double>からColorT<int>への変換コンストラクタ
+        template <typename U = T>
+        constexpr ColorT(const ColorT<double>& other, typename std::enable_if_t<std::is_same_v<U, int>>* = nullptr)
+            : r(static_cast<int>(other.r * 255.0)), g(static_cast<int>(other.g * 255.0)),
+              b(static_cast<int>(other.b * 255.0)), a(static_cast<int>(other.a * 255.0)) {}
+
 #if defined(PAXS_USING_SIV3D)
         // Siv3D conversion operators
         // Use std::conditional to select the correct Siv3D type based on T

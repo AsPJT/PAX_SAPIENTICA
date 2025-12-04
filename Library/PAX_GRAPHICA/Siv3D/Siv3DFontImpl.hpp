@@ -42,7 +42,7 @@ namespace paxg {
 
         void setOutline(double inner, double outer, const Color& color) override {
             is_outline = true;
-            outline = s3d::TextStyle::Outline(inner, outer, color);
+            outline = s3d::TextStyle::Outline(inner, outer, paxg::ColorF(color));
         }
 
         void drawBottomLeft(const std::string& str, const paxs::Vector2<int>& pos, const Color& color) const override {
@@ -50,12 +50,12 @@ namespace paxg {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::bottomLeft = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::bottomLeft = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
         }
 
@@ -64,12 +64,12 @@ namespace paxg {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::topRight = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::topRight = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
         }
 
@@ -78,12 +78,12 @@ namespace paxg {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::bottomRight = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::bottomRight = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
         }
 
@@ -92,12 +92,12 @@ namespace paxg {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
         }
 
@@ -106,12 +106,12 @@ namespace paxg {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::bottomCenter = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::bottomCenter = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
         }
 
@@ -120,12 +120,12 @@ namespace paxg {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     outline,
                     s3d::Arg::topCenter = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).draw(
                     s3d::Arg::topCenter = s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
         }
 
@@ -134,12 +134,12 @@ namespace paxg {
                 font(s3d::Unicode::FromUTF8(str)).drawAt(
                     outline,
                     s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
             else {
                 font(s3d::Unicode::FromUTF8(str)).drawAt(
                     s3d::Vec2(pos.x, pos.y),
-                    color);
+                    paxg::ColorF(color));
             }
         }
 

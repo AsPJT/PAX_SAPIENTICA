@@ -72,11 +72,11 @@ namespace paxg {
         }
 
         void setBackgroundColor(const Color color) override {
-            s3d::Scene::SetBackground(color);
+            s3d::Scene::SetBackground(paxg::ColorF(color));
         }
 
         void setLetterbox(const Color color) override {
-            s3d::Scene::SetLetterbox(color);
+            s3d::Scene::SetLetterbox(paxg::ColorF(color));
         }
 
         void setResizable(bool resizable) override {

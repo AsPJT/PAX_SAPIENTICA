@@ -169,7 +169,7 @@ namespace paxg {
 
 #if defined(PAXS_USING_SIV3D)
         void draw(const paxg::Color& c_) const {
-            rect.draw(c_);
+            rect.draw(paxg::ColorF(c_));
         }
 #elif defined(PAXS_USING_DXLIB)
         void draw(const paxg::Color& c_) const {
@@ -287,7 +287,7 @@ namespace paxg {
 
 #if defined(PAXS_USING_SIV3D)
         void drawFrame(const double inner_thickness, const double outer_thickness, const paxg::Color& color_) const {
-            rect.drawFrame(inner_thickness, outer_thickness, color_);
+            rect.drawFrame(inner_thickness, outer_thickness, paxg::ColorF(color_));
 
         }
 #elif defined(PAXS_USING_DXLIB)

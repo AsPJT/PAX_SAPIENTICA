@@ -45,11 +45,11 @@ namespace paxg {
             : line(static_cast<float>(s.x), static_cast<float>(s.y),
                 static_cast<float>(e.x), static_cast<float>(e.y)) {}
         void draw(const double thickness, const paxg::Color& color) const {
-            line.draw(thickness, color);
+            line.draw(thickness, paxg::ColorF(color));
         }
 
         void drawArrow(const double thickness, const paxs::Vector2<float>& arrowSize, const paxg::Color& color) const {
-            line.drawArrow(thickness, s3d::Vec2(arrowSize.x, arrowSize.y), color);
+            line.drawArrow(thickness, s3d::Vec2(arrowSize.x, arrowSize.y), paxg::ColorF(color));
         }
 
 #elif defined(PAXS_USING_DXLIB)

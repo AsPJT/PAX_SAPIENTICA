@@ -156,13 +156,13 @@ namespace paxg {
 
 #if defined(PAXS_USING_SIV3D)
             // Left circle
-            s3d::Circle(x_ + radius, y_ + radius, radius).draw(bg_color);
+            s3d::Circle(x_ + radius, y_ + radius, radius).draw(paxg::ColorF(bg_color));
 
             // Center rectangle
-            s3d::Rect(x_ + radius, y_, width_ - height_, height_).draw(bg_color);
+            s3d::Rect(x_ + radius, y_, width_ - height_, height_).draw(paxg::ColorF(bg_color));
 
             // Right circle
-            s3d::Circle(x_ + width_ - radius, y_ + radius, radius).draw(bg_color);
+            s3d::Circle(x_ + width_ - radius, y_ + radius, radius).draw(paxg::ColorF(bg_color));
 
             // Knob
             const float knob_radius = height_ * 0.4f;
@@ -173,7 +173,7 @@ namespace paxg {
             s3d::Circle(knob_x + 2, knob_y + 2, knob_radius).draw(s3d::ColorF(0, 0, 0, 0.2));
 
             // Knob circle
-            s3d::Circle(knob_x, knob_y, knob_radius).draw(color_knob_);
+            s3d::Circle(knob_x, knob_y, knob_radius).draw(paxg::ColorF(color_knob_));
 
 #elif defined(PAXS_USING_DXLIB)
             // Get RGB values from bg_color for DxLib
