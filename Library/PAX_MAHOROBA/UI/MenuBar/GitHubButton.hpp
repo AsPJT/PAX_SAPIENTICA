@@ -12,8 +12,8 @@
 #ifndef PAX_MAHOROBA_UI_GITHUB_BUTTON_HPP
 #define PAX_MAHOROBA_UI_GITHUB_BUTTON_HPP
 
+#include <PAX_GRAPHICA/Network.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/System.hpp>
 #include <PAX_GRAPHICA/Texture.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
@@ -41,7 +41,7 @@ namespace paxs {
 
             // クリック時にGitHubリポジトリを開く
             if (event.left_button_state == MouseButtonState::Pressed) {
-                paxg::System::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
+                paxg::Network::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA");
             }
             return EventHandlingResult::Handled();
         }

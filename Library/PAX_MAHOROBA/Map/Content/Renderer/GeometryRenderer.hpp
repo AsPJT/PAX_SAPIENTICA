@@ -15,7 +15,6 @@
 #include <cstdint>
 
 #include <PAX_GRAPHICA/Texture.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>

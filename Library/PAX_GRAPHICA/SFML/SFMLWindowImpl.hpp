@@ -12,16 +12,16 @@
 #ifndef PAX_GRAPHICA_SFML_WINDOW_IMPL_HPP
 #define PAX_GRAPHICA_SFML_WINDOW_IMPL_HPP
 
-#if defined(PAXS_USING_SFML)
-
+#ifdef PAXS_USING_SFML
 #include <SFML/Graphics.hpp>
 
-#include <PAX_GRAPHICA/SFML_Event.hpp>
 #include <PAX_GRAPHICA/Interface/WindowImpl.hpp>
+#include <PAX_GRAPHICA/SFML_Event.hpp>
 
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/System/AppConst.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
+
 namespace paxg {
 
     class SFMLWindowImpl : public WindowImpl {
@@ -68,7 +68,7 @@ namespace paxg {
             bool upd = paxg::SFML_Event::getInstance()->update(m_window);
             if (upd) {
                 // ウィンドウが開いている場合のみクリア
-                m_window.clear(backgroundColor.color);
+                m_window.clear(backgroundColor);
             }
             return upd;
         }
@@ -184,7 +184,7 @@ namespace paxg {
         }
 
         void clear() override {
-            m_window.clear(backgroundColor.color);
+            m_window.clear(backgroundColor);
         }
 
         void display() override {

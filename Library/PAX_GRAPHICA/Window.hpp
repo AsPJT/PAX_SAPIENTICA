@@ -15,8 +15,6 @@
 #include <memory>
 #include <string>
 
-#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
-
 #if defined(PAXS_USING_SIV3D)
 #include <PAX_GRAPHICA/Siv3D/Siv3DWindowImpl.hpp>
 #elif defined(PAXS_USING_DXLIB)
@@ -28,6 +26,8 @@
 #endif
 
 #include <PAX_GRAPHICA/Interface/WindowImpl.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
 

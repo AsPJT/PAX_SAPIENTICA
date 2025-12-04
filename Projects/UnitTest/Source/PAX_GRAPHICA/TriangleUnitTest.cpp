@@ -35,7 +35,7 @@ TEST(TriangleUnitTest, ParameterizedConstruction) {
 
 // Test Vec2f constructor
 TEST(TriangleUnitTest, Vec2fConstruction) {
-    paxg::Vec2f center(150.0f, 250.0f);
+    paxs::Vector2<float> center(150.0f, 250.0f);
     paxg::Triangle triangle(center, 30.0f, 1.5708f);
     EXPECT_FLOAT_EQ(triangle.centerX(), 150.0f);
     EXPECT_FLOAT_EQ(triangle.centerY(), 250.0f);
@@ -57,7 +57,7 @@ TEST(TriangleUnitTest, Setters) {
     EXPECT_FLOAT_EQ(triangle.centerX(), 100.0f);
     EXPECT_FLOAT_EQ(triangle.centerY(), 150.0f);
 
-    paxg::Vec2f newCenter(200.0f, 300.0f);
+    paxs::Vector2<float> newCenter(200.0f, 300.0f);
     triangle.setCenter(newCenter);
     EXPECT_FLOAT_EQ(triangle.centerX(), 200.0f);
     EXPECT_FLOAT_EQ(triangle.centerY(), 300.0f);

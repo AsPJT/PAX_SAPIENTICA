@@ -22,6 +22,7 @@
 #include <Siv3D.hpp>
 
 #elif defined(PAXS_USING_SFML)
+#include <cstdlib>
 #include <fstream>
 #include <filesystem>
 
@@ -37,13 +38,63 @@
 #include <curl/curl.h>
 
 #endif // PAXS_PLATFORM_MACOS, PAXS_PLATFORM_WINDOWS, PAXS_PLATFORM_LINUX
-#endif // PAXS_USING_SFML
+
+#elif defined(PAXS_USING_DXLIB)
+#include <cstdlib>
+
+#endif // PAXS_USING_SIV3D, PAXS_USING_SFML, PAXS_USING_DXLIB
 
 namespace paxg {
 
     /// @brief ネットワーク関連の機能を提供するクラス
     class Network {
     public:
+        /// @brief URLをブラウザで開く
+        /// @param url 開くURL
+        /// @return 成功した場合true
+        static bool launchBrowser(const std::string& url) {
+#if defined(PAXS_USING_SIV3D)
+            return s3d::System::LaunchBrowser(s3d::Unicode::FromUTF8(url));
+#elif defined(PAXS_USING_SFML)
+            // macOS
+#if defined(PAXS_PLATFORM_MACOS)
+            std::string command = "open \"" + url + "\"";
+            return std::system(command.c_str()) == 0;
+#elif defined(PAXS_PLATFORM_WINDOWS)
+            // Windows
+            std::string command = "start \"\" \"" + url + "\"";
+            return std::system(command.c_str()) == 0;
+#elif defined(PAXS_PLATFORM_LINUX)
+            // Linux
+            std::string command = "xdg-open \"" + url + "\"";
+            return std::system(command.c_str()) == 0;
+#else
+            (void)url;
+            return false;
+#endif
+#elif defined(PAXS_USING_DXLIB)
+#if defined(PAXS_PLATFORM_ANDROID)
+            // Android - JNI経由でブラウザを開く
+            // Note: 実装には ANativeActivity へのアクセスが必要
+            // 現時点ではスタブとして false を返す
+            (void)url;
+            return false;
+#else
+            // Windows/その他のDxLib環境
+#if defined(PAXS_PLATFORM_WINDOWS)
+            std::string command = "start \"\" \"" + url + "\"";
+            return std::system(command.c_str()) == 0;
+#else
+            (void)url;
+            return false;
+#endif // PAXS_PLATFORM_WINDOWS
+#endif // PAXS_PLATFORM_ANDROID
+#else
+            (void)url;
+            return false;
+#endif
+        }
+
         /// @brief URLからファイルをダウンロードして保存する
         /// @param url ダウンロード元のURL
         /// @param save_path 保存先のファイルパス（アセットルートからの相対パス）

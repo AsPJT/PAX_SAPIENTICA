@@ -175,7 +175,7 @@ public:
                 }
                 // テキストの矩形判定（drawTopCenterは横中央、縦は上から描画）
                 // draw_font_pos = {x, y - 60}から描画されるため、
-                // 実際のテキスト位置は pos.y() - 60 から text_height の範囲
+                // 実際のテキスト位置は pos.y - 60 から text_height の範囲
                 if (text_size.x > 0 && text_size.y > 0) {
                     const int text_y = static_cast<int>(pos.y) - 60;  // テクスチャの上部（MapFeatureRenderer参照）
                     const Rect<int> text_rect(

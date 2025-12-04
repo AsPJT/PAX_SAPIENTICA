@@ -23,7 +23,6 @@
 #include <PAX_GRAPHICA/SFML_Event.hpp>
 #endif
 
-#include <PAX_GRAPHICA/Vec2.hpp>
 #include <PAX_GRAPHICA/Window.hpp>
 
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
@@ -141,18 +140,18 @@ namespace paxg {
         }
 
         // SFML 3.0.0: より安全なマウス位置取得（std::optional）
-        std::optional<Vec2i> tryGetPosition() const {
+        std::optional<paxs::Vector2<int>> tryGetPosition() const {
 #if defined(PAXS_USING_SIV3D)
-            return Vec2i(s3d::Cursor::Pos().x, s3d::Cursor::Pos().y);
+            return paxs::Vector2<int>(s3d::Cursor::Pos().x, s3d::Cursor::Pos().y);
 #elif defined(PAXS_USING_DXLIB)
             int x = 0, y = 0;
             if (DxLib::GetMousePoint(&x, &y) == -1) {
                 return std::nullopt;
             }
-            return Vec2i(x, y);
+            return paxs::Vector2<int>(x, y);
 #elif defined(PAXS_USING_SFML)
             // SFML 3.0 では常に成功するが、一貫性のためoptionalを返す
-            return Vec2i(pos_x, pos_y);
+            return paxs::Vector2<int>(pos_x, pos_y);
 #else
             return std::nullopt;
 #endif

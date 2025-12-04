@@ -202,20 +202,20 @@ namespace paxs {
                     continue;
                 }
 
-                const paxg::Vec2<double> end_pos = MapCoordinateConverter::toScreenPos(
+                const paxs::Vector2<double> end_pos = MapCoordinateConverter::toScreenPos(
                     end_coord,
                     map_view_size,
                     map_view_center);
 
                 const auto start_coord = positionToWebMercator(share.first);
-                const paxg::Vec2<double> start_pos = MapCoordinateConverter::toScreenPos(
+                const paxs::Vector2<double> start_pos = MapCoordinateConverter::toScreenPos(
                     start_coord,
                     map_view_size,
                     map_view_center);
 
                 // 青銅交換を表す直線の矢印を描画
                 paxg::Line{ start_pos, end_pos }
-                .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, BRONZE_SHARE_COLOR);
+                .drawArrow(MOVEMENT_LINE_WIDTH, paxs::Vector2<float>{ 8.0f, 16.0f }, BRONZE_SHARE_COLOR);
             }
         }
 
@@ -236,7 +236,7 @@ namespace paxs {
                         continue;
                     }
 
-                    const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
+                    const paxs::Vector2<double> draw_pos = MapCoordinateConverter::toScreenPos(
                         coordinate,
                         map_view_size,
                         map_view_center);
@@ -245,47 +245,45 @@ namespace paxs {
 
                     if (settlement.getPositions().size() >= 1) {
                         // スプライン曲線で移動履歴を描画
-                        std::vector<paxg::Vec2f> spline_points;
+                        std::vector<paxs::Vector2<double>> spline_points;
                         spline_points.emplace_back(draw_pos);
 
                         for (auto&& p : settlement.getPositions()) {
                             const auto one_coord = positionToWebMercator(paxs::Vector2<int>(p.x, p.y));
-                            const paxg::Vec2<double> one_pos = MapCoordinateConverter::toScreenPos(
+                            const paxs::Vector2<double> one_pos = MapCoordinateConverter::toScreenPos(
                                 one_coord,
                                 map_view_size,
                                 map_view_center);
-                            spline_points.emplace_back(paxg::Vec2f{
-                                static_cast<float>(one_pos.x()), static_cast<float>(one_pos.y()) });
+                            spline_points.emplace_back(one_pos);
                         }
 
                         const auto old_coord = positionToWebMercator(settlement.getOldPosition());
-                        const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
+                        const paxs::Vector2<double> old_pos = MapCoordinateConverter::toScreenPos(
                             old_coord,
                             map_view_size,
                             map_view_center);
-                        spline_points.emplace_back(paxg::Vec2f{
-                            static_cast<float>(old_pos.x()), static_cast<float>(old_pos.y()) });
+                        spline_points.emplace_back(old_pos);
 
                         paxg::Spline2D(spline_points).draw(MOVEMENT_LINE_WIDTH, paxg::Color(0, 0, 0));
 
                         // 矢印を描画
                         const auto first_coord = positionToWebMercator(settlement.getPositions()[0]);
-                        const paxg::Vec2<double> first_pos = MapCoordinateConverter::toScreenPos(
+                        const paxs::Vector2<double> first_pos = MapCoordinateConverter::toScreenPos(
                             first_coord,
                             map_view_size,
                             map_view_center);
                         paxg::Line{ first_pos, draw_pos }
-                        .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
+                        .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxs::Vector2<float>{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                     }
                     else {
                         // 単純な移動線
                         const auto old_coord = positionToWebMercator(settlement.getOldPosition());
-                        const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
+                        const paxs::Vector2<double> old_pos = MapCoordinateConverter::toScreenPos(
                             old_coord,
                             map_view_size,
                             map_view_center);
                         paxg::Line{ old_pos, draw_pos }
-                        .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
+                        .drawArrow(MOVEMENT_LINE_WIDTH, paxs::Vector2<float>{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                     }
                 }
             }
@@ -300,13 +298,13 @@ namespace paxs {
 
                 if (marriage_pos.sx == -1 || marriage_pos.sx == 0) continue;
 
-                const paxg::Vec2<double> draw_pos = MapCoordinateConverter::toScreenPos(
+                const paxs::Vector2<double> draw_pos = MapCoordinateConverter::toScreenPos(
                     coordinate,
                     map_view_size,
                     map_view_center);
 
                 const auto old_coord = positionToWebMercator(paxs::Vector2<int>(marriage_pos.sx, marriage_pos.sy));
-                const paxg::Vec2<double> old_pos = MapCoordinateConverter::toScreenPos(
+                const paxs::Vector2<double> old_pos = MapCoordinateConverter::toScreenPos(
                     old_coord,
                     map_view_size,
                     map_view_center);
@@ -314,7 +312,7 @@ namespace paxs {
                 const paxg::Color marriage_color = marriage_pos.is_matrilocality
                     ? MARRIAGE_COLOR_MATRILOCAL : MARRIAGE_COLOR_PATRILOCAL;
                 paxg::Line{ old_pos, draw_pos }
-                .drawArrow(MOVEMENT_LINE_WIDTH, paxg::Vec2f{ 8.0f, 16.0f }, marriage_color);
+                .drawArrow(MOVEMENT_LINE_WIDTH, paxs::Vector2<float>{ 8.0f, 16.0f }, marriage_color);
             }
         }
 
@@ -330,7 +328,7 @@ namespace paxs {
                 SimulationConstants::getInstance().getStartArea().y;
 
             const paxs::WebMercatorDeg start_coordinate = positionToWebMercator(paxs::Vector2<int>(0, 0));
-            const paxg::Vec2f draw_start_pos = paxg::Vec2f{
+            const paxs::Vector2<float> draw_start_pos {
                 static_cast<float>((start_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
                     map_view_size.x * double(paxg::Window::width())),
                 static_cast<float>(double(paxg::Window::height()) -
@@ -340,7 +338,7 @@ namespace paxs {
 
             const paxs::WebMercatorDeg end_coordinate = positionToWebMercator(
                 paxs::Vector2<int>(area_width * 256, area_height * 256));
-            const paxg::Vec2f draw_end_pos = paxg::Vec2f{
+            const paxs::Vector2<float> draw_end_pos {
                 static_cast<float>((end_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
                     map_view_size.x * double(paxg::Window::width())),
                 static_cast<float>(double(paxg::Window::height()) -
@@ -351,32 +349,32 @@ namespace paxs {
             const paxs::WebMercatorDeg tile_coordinate = positionToWebMercator(
                 paxs::Vector2<int>(SimulationConstants::getInstance().cell_group_length,
                     SimulationConstants::getInstance().cell_group_length));
-            const paxg::Vec2f tile_pos = paxg::Vec2f{
+            const paxs::Vector2<float> tile_pos {
                 static_cast<float>((tile_coordinate.x - (map_view_center.x - map_view_size.x / 2)) /
-                    map_view_size.x * double(paxg::Window::width())) - draw_start_pos.x(),
+                    map_view_size.x * double(paxg::Window::width())) - draw_start_pos.x,
                 static_cast<float>(double(paxg::Window::height()) -
                     ((tile_coordinate.y - (map_view_center.y - map_view_size.y / 2)) /
-                        map_view_size.y * double(paxg::Window::height()))) - draw_start_pos.y()
+                        map_view_size.y * double(paxg::Window::height()))) - draw_start_pos.y
             };
 
             // 外枠線を描画
-            paxg::Line(draw_start_pos.x(), draw_start_pos.y(),
-                draw_start_pos.x(), draw_end_pos.y()).draw(GRID_OUTER_LINE_WIDTH, paxg::Color(0, 0, 0));
-            paxg::Line(draw_start_pos.x(), draw_start_pos.y(),
-                draw_end_pos.x(), draw_start_pos.y()).draw(GRID_OUTER_LINE_WIDTH, paxg::Color(0, 0, 0));
-            paxg::Line(draw_end_pos.x(), draw_start_pos.y(),
-                draw_end_pos.x(), draw_end_pos.y()).draw(GRID_OUTER_LINE_WIDTH, paxg::Color(0, 0, 0));
-            paxg::Line(draw_start_pos.x(), draw_end_pos.y(),
-                draw_end_pos.x(), draw_end_pos.y()).draw(GRID_OUTER_LINE_WIDTH, paxg::Color(0, 0, 0));
+            paxg::Line(draw_start_pos.x, draw_start_pos.y,
+                draw_start_pos.x, draw_end_pos.y).draw(GRID_OUTER_LINE_WIDTH, paxg::Color(0, 0, 0));
+            paxg::Line(draw_start_pos.x, draw_start_pos.y,
+                draw_end_pos.x, draw_start_pos.y).draw(GRID_OUTER_LINE_WIDTH, paxg::Color(0, 0, 0));
+            paxg::Line(draw_end_pos.x, draw_start_pos.y,
+                draw_end_pos.x, draw_end_pos.y).draw(GRID_OUTER_LINE_WIDTH, paxg::Color(0, 0, 0));
+            paxg::Line(draw_start_pos.x, draw_end_pos.y,
+                draw_end_pos.x, draw_end_pos.y).draw(GRID_OUTER_LINE_WIDTH, paxg::Color(0, 0, 0));
 
             // 垂直グリッド線
-            for (float i = draw_start_pos.x(); i < draw_end_pos.x(); i += tile_pos.x()) {
-                paxg::Line(i, draw_start_pos.y(), i, draw_end_pos.y()).draw(
+            for (float i = draw_start_pos.x; i < draw_end_pos.x; i += tile_pos.x) {
+                paxg::Line(i, draw_start_pos.y, i, draw_end_pos.y).draw(
                     GRID_INNER_LINE_WIDTH, paxg::Color(0, 0, 0));
             }
             // 水平グリッド線
-            for (float i = draw_start_pos.y(); i < draw_end_pos.y(); i += tile_pos.y()) {
-                paxg::Line(draw_start_pos.x(), i, draw_end_pos.x(), i).draw(
+            for (float i = draw_start_pos.y; i < draw_end_pos.y; i += tile_pos.y) {
+                paxg::Line(draw_start_pos.x, i, draw_end_pos.x, i).draw(
                     GRID_INNER_LINE_WIDTH, paxg::Color(0, 0, 0));
             }
         }

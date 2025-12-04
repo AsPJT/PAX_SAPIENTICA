@@ -120,8 +120,8 @@ TEST(MouseUnitTest, OptionalUsagePattern) {
 
     if (auto pos = mouse->tryGetPosition()) {
         // If we have a position, use it
-        ASSERT_TRUE(pos->x() >= -1);
-        ASSERT_TRUE(pos->y() >= -1);
+        ASSERT_TRUE(pos->x >= -1);
+        ASSERT_TRUE(pos->y >= -1);
     } else {
         // If we don't have a position, handle gracefully
 #if !defined(PAXS_USING_SIV3D) && !defined(PAXS_USING_SFML) && !defined(PAXS_USING_DXLIB)
