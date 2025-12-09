@@ -147,7 +147,7 @@ namespace paxs {
             close(); // 既存のファイルを閉じる / Close existing files
 
             // 標準出力用ディレクトリとファイルを作成
-            result_directory_ = "SimulationResults/" + calcDateTime();
+            result_directory_ = "Save/SimulationResults/" + calcDateTime();
             FileSystem::createDirectories(result_directory_);
 
             pop_ofs.open(result_directory_ + "/Population.txt");
@@ -168,7 +168,7 @@ namespace paxs {
             if (!label_name.empty()) {
                 is_labeled_output_enabled_ = true;
                 const std::string timestamp = calcDateTime();
-                labeled_directory_ = "LabeledSimulationResults/" + label_name;
+                labeled_directory_ = "Save/LabeledSimulationResults/" + label_name;
 
                 // ディレクトリ作成
                 FileSystem::createDirectories(labeled_directory_ + "/Population");
