@@ -32,8 +32,14 @@ namespace paxg {
     /// @brief SFMLフォント実装
     class SFMLFontImpl : public FontImpl {
     private:
+        // Siv3Dの相対値からSFMLのピクセル値への変換係数
+        static constexpr double outline_scale_factor = 0.13;
+
         sf::Font font{};
         int size = 0;
+        double outline_thickness = 0.0;
+        Color outline_color{255, 255, 255, 255};
+        bool has_outline = false;
 
     public:
         SFMLFontImpl(int size_, const std::string& path, int /*buffer_thickness*/) {
@@ -44,10 +50,23 @@ namespace paxg {
             }
         }
 
-        void setOutline(double /*inner*/, double /*outer*/, const Color& /*color*/) override {
-            // SFML doesn't support outline in this implementation
+        void setOutline(double /*inner*/, double outer, const Color& color) override {
+            outline_thickness = outer;
+            outline_color = color;
+            has_outline = (outer > 0.0);
         }
 
+    private:
+        void applyOutline(sf::Text& text) const {
+            if (has_outline) {
+                text.setOutlineColor(outline_color);
+                // SFMLではピクセル単位なので、フォントサイズに応じてスケーリング
+                // Siv3Dの相対値をピクセル値に変換
+                text.setOutlineThickness(static_cast<float>(size * outline_thickness * outline_scale_factor));
+            }
+        }
+
+    public:
         void drawBottomLeft(const std::string& str, const paxs::Vector2<int>& pos, const Color& color) const override {
             sf::Text text(font);
             std::wstring wstr;
@@ -55,9 +74,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color);
-            text.setOutlineColor(sf::Color::White);
-            text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y - size / 2) });
+            applyOutline(text);
+            text.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y - text.getGlobalBounds().size.y) });
             Window::window().draw(text);
         }
 
@@ -68,9 +86,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color);
-            text.setOutlineColor(sf::Color::White);
-            text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x), static_cast<float>(pos.y + size / 2) });
+            applyOutline(text);
+            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x), static_cast<float>(pos.y) });
             Window::window().draw(text);
         }
 
@@ -81,8 +98,7 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color);
-            text.setOutlineColor(sf::Color::White);
-            text.setOutlineThickness(2.0f);
+            applyOutline(text);
             text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x), static_cast<float>(pos.y - text.getGlobalBounds().size.y) });
             Window::window().draw(text);
         }
@@ -94,8 +110,7 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color);
-            text.setOutlineColor(sf::Color::White);
-            text.setOutlineThickness(2.0f);
+            applyOutline(text);
             text.setPosition({ static_cast<float>(pos.x), static_cast<float>(pos.y) });
             Window::window().draw(text);
         }
@@ -107,9 +122,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color);
-            text.setOutlineColor(sf::Color::White);
-            text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y - size / 2) });
+            applyOutline(text);
+            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y - text.getGlobalBounds().size.y) });
             Window::window().draw(text);
         }
 
@@ -120,9 +134,8 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color);
-            text.setOutlineColor(sf::Color::White);
-            text.setOutlineThickness(2.0f);
-            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y + size / 2) });
+            applyOutline(text);
+            text.setPosition({ static_cast<float>(pos.x - text.getGlobalBounds().size.x / 2), static_cast<float>(pos.y) });
             Window::window().draw(text);
         }
 
@@ -133,8 +146,7 @@ namespace paxg {
             text.setString(wstr);
             text.setCharacterSize(size);
             text.setFillColor(color);
-            text.setOutlineColor(sf::Color::White);
-            text.setOutlineThickness(2.0f);
+            applyOutline(text);
             const sf::FloatRect bounds = text.getGlobalBounds();
             text.setPosition({
                 static_cast<float>(pos.x) - bounds.size.x / 2,

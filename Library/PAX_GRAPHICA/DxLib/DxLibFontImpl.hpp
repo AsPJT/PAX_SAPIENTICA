@@ -106,16 +106,20 @@ namespace paxg {
         }
 
         void drawBottomLeft(const std::string& str, const paxs::Vector2<int>& pos, const Color& color) const override {
-            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
-            else DxLib::DrawStringToHandle(pos.x, pos.y - 10, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
-        }
-
-        void drawTopRight(const std::string& str, const paxs::Vector2<int>& pos, const Color& color) const override {
-            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y - h, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0;
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x - size_x, pos.y + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+                DxLib::DrawStringToHandle(pos.x, pos.y - size_y, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+            }
+        }
+
+        void drawTopRight(const std::string& str, const paxs::Vector2<int>& pos, const Color& color) const override {
+            if (font == -1) DxLib::DrawFormatString(pos.x - static_cast<int>(str.size()) * h / 2, pos.y, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            else {
+                int size_x = 0, size_y = 0, line_count = 0;
+                DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
+                DxLib::DrawStringToHandle(pos.x - size_x, pos.y, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
 
@@ -134,20 +138,20 @@ namespace paxg {
         }
 
         void drawBottomCenter(const std::string& str, const paxs::Vector2<int>& pos, const Color& color) const override {
-            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y - 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            if (font == -1) DxLib::DrawFormatString(pos.x - static_cast<int>(str.size()) * h / 4, pos.y - h, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0;
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x - size_x / 2, pos.y - size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+                DxLib::DrawStringToHandle(pos.x - size_x / 2, pos.y - size_y, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
 
         void drawTopCenter(const std::string& str, const paxs::Vector2<int>& pos, const Color& color) const override {
-            if (font == -1) DxLib::DrawFormatString(pos.x, pos.y + 10, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
+            if (font == -1) DxLib::DrawFormatString(pos.x - static_cast<int>(str.size()) * h / 4, pos.y, DxLib::GetColor(color.r, color.g, color.b), str.c_str());
             else {
                 int size_x = 0, size_y = 0, line_count = 0;
                 DxLib::GetDrawStringSizeToHandle(&size_x, &size_y, &line_count, str.c_str(), static_cast<int>(str.size()), font, FALSE);
-                DxLib::DrawStringToHandle(pos.x - size_x / 2, pos.y + size_y / 2, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
+                DxLib::DrawStringToHandle(pos.x - size_x / 2, pos.y, str.c_str(), DxLib::GetColor(color.r, color.g, color.b), font, 0xffffffff);
             }
         }
 

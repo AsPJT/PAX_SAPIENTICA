@@ -110,9 +110,22 @@ namespace paxg {
         }
 
         bool update() override {
-            return (DxLib::ScreenFlip() != -1 &&
-                    DxLib::ClearDrawScreen() != -1 &&
-                    DxLib::ProcessMessage() != -1);
+            // DxLibの正しい描画フロー:
+            // 1. ProcessMessage() - メッセージ処理
+            // 2. ClearDrawScreen() - 裏画面をクリア
+            // 描画処理はこの後に行われる
+            // 3. ScreenFlip() - 裏画面と表画面を入れ替え（次のフレームの最初）
+
+            // 前フレームの描画を表示
+            if (DxLib::ScreenFlip() == -1) return false;
+
+            // メッセージ処理
+            if (DxLib::ProcessMessage() == -1) return false;
+
+            // 裏画面をクリア（これから描画を開始）
+            if (DxLib::ClearDrawScreen() == -1) return false;
+
+            return true;
         }
 
         void setTitle(const std::string& title) override {

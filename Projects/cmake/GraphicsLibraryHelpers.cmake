@@ -219,25 +219,38 @@ function(paxs_copy_generated_config_tsv TARGET_NAME)
         set(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
     endif()
 
-    # Calculate relative path from target's output directory to project root
-    # Note: We use CMAKE_CURRENT_BINARY_DIR as a proxy since we can't know
-    # the exact target directory at configure time
-    file(RELATIVE_PATH TARGET_ROOT_RELATIVE_PATH
+    # For multi-config generators (Visual Studio, Xcode), executables are in Debug/Release subdirs
+    # For single-config generators (Makefile, Ninja), executables are directly in CMAKE_CURRENT_BINARY_DIR
+    # We need to calculate the path dynamically at build time
+
+    # Calculate relative path from CMAKE_CURRENT_BINARY_DIR to project root (for template)
+    file(RELATIVE_PATH BASE_RELATIVE_PATH
         "${CMAKE_CURRENT_BINARY_DIR}"
         "${PROJECT_ROOT_DIR}"
     )
 
-    # Create a temporary file with the correct content
+    # Create a temporary file with the base path (for single-config generators)
     set(TEMP_TSV_FILE "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_Config.tsv")
-    file(WRITE ${TEMP_TSV_FILE} "key\tvalue\nasset_file\t${TARGET_ROOT_RELATIVE_PATH}\n")
+    file(WRITE ${TEMP_TSV_FILE} "key\tvalue\nasset_file\t${BASE_RELATIVE_PATH}\n")
 
-    # Copy the temporary file to the target directory
+    # For multi-config generators, we need one more "../" level
+    # Use a CMake script to generate the correct Config.tsv at build time
+    set(CONFIG_SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_generate_config.cmake")
+    file(WRITE ${CONFIG_SCRIPT} "
+        file(RELATIVE_PATH REL_PATH
+            \"\${TARGET_FILE_DIR}\"
+            \"${PROJECT_ROOT_DIR}\"
+        )
+        file(WRITE \"\${TARGET_FILE_DIR}/Config.tsv\" \"key\\tvalue\\nasset_file\\t\${REL_PATH}\\n\")
+    ")
+
+    # Copy the config file to the target directory at build time
     add_custom_command(
         TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${TEMP_TSV_FILE}"
-            $<TARGET_FILE_DIR:${TARGET_NAME}>/Config.tsv
-        COMMENT "Copying Config.tsv to ${TARGET_NAME}..."
+        COMMAND ${CMAKE_COMMAND}
+            -DTARGET_FILE_DIR=$<TARGET_FILE_DIR:${TARGET_NAME}>
+            -P "${CONFIG_SCRIPT}"
+        COMMENT "Generating Config.tsv for ${TARGET_NAME}..."
     )
     add_dependencies(${TARGET_NAME} GenerateConfigTSV)
 endfunction()

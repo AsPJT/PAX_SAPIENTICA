@@ -61,3 +61,49 @@ add_test(
 )
 set_tests_properties(UIComponentsEventDrivenTest PROPERTIES LABELS "Integration")
 
+# FontDrawingTest for each graphics library
+if(SFML_FOUND)
+    add_executable(SFMLFontDrawingTest Source/FontDrawingTest.cpp)
+    paxs_setup_sfml(SFMLFontDrawingTest DEFINE_MACRO)
+    paxs_copy_generated_config_tsv(SFMLFontDrawingTest)
+endif()
+
+if(WIN32 AND DxLib_FOUND)
+    add_executable(DxLibFontDrawingTest WIN32 Source/FontDrawingTest.cpp)
+    paxs_setup_dxlib(DxLibFontDrawingTest DEFINE_MACRO)
+    paxs_copy_generated_config_tsv(DxLibFontDrawingTest)
+endif()
+
+if(WIN32 AND Siv3D_FOUND)
+    # Determine OS-specific directory name for Siv3D resources
+    if(NOT DEFINED OS)
+        if(WIN32)
+            set(OS "Windows")
+        endif()
+    endif()
+
+    set(SIV3D_RESOURCE_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/../MapViewer/${OS}/OpenSiv3D_0.6.13/App/Resource.rc"
+    )
+
+    add_executable(Siv3DFontDrawingTest WIN32 Source/FontDrawingTest.cpp ${SIV3D_RESOURCE_FILES})
+    paxs_setup_siv3d(Siv3DFontDrawingTest DEFINE_MACRO)
+
+    # Copy Siv3D resources (engine, dll folders) from MapViewer
+    set(SIV3D_APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../MapViewer/${OS}/OpenSiv3D_0.6.13/App")
+    add_custom_command(
+        TARGET Siv3DFontDrawingTest POST_BUILD
+        # Copy engine folder
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${SIV3D_APP_DIR}/engine"
+            $<TARGET_FILE_DIR:Siv3DFontDrawingTest>/engine
+        # Copy dll folder if exists
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${SIV3D_APP_DIR}/dll"
+            $<TARGET_FILE_DIR:Siv3DFontDrawingTest>/dll
+        COMMENT "Copying Siv3D resources for Siv3DFontDrawingTest..."
+    )
+
+    paxs_copy_generated_config_tsv(Siv3DFontDrawingTest)
+endif()
+
