@@ -13,6 +13,7 @@
 #define PAX_GRAPHICA_INTERFACE_TRIANGLE_HPP
 
 #include <PAX_GRAPHICA/Color.hpp>
+
 #include <PAX_SAPIENTICA/Core/Math/Math.hpp>
 #include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 

@@ -9,6 +9,16 @@ BUILD_DIR_NAME="DevelopmentBuild"
 rm -rf "${BUILD_DIR_NAME}"
 mkdir "${BUILD_DIR_NAME}"
 
+# Set vcpkg toolchain file path
+# Prefer VCPKG_ROOT environment variable if set, otherwise use local vcpkg
+if [ -n "${VCPKG_ROOT}" ]; then
+    VCPKG_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+    echo "Using vcpkg from VCPKG_ROOT: ${VCPKG_ROOT}"
+else
+    VCPKG_TOOLCHAIN_FILE="${ROOT_PATH}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    echo "Using local vcpkg from: ${ROOT_PATH}/vcpkg"
+fi
+
 # Detect OS and set appropriate triplet
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
@@ -21,7 +31,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     cmake -S "Projects/MapViewer" -B "${BUILD_DIR_NAME}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DSFML_STATIC_LIBRARIES=TRUE \
-      -DCMAKE_TOOLCHAIN_FILE="${ROOT_PATH}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+      -DCMAKE_TOOLCHAIN_FILE="${VCPKG_TOOLCHAIN_FILE}" \
       -DVCPKG_INSTALLED_DIR="${ROOT_PATH}/vcpkg_installed" \
       -DVCPKG_OVERLAY_TRIPLETS="${ROOT_PATH}/Projects/cmake" \
       -DVCPKG_TARGET_TRIPLET="${VCPKG_TRIPLET}" \
@@ -32,7 +42,7 @@ else
     cmake -S "Projects/MapViewer" -B "${BUILD_DIR_NAME}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DSFML_STATIC_LIBRARIES=TRUE \
-      -DCMAKE_TOOLCHAIN_FILE="${ROOT_PATH}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
+      -DCMAKE_TOOLCHAIN_FILE="${VCPKG_TOOLCHAIN_FILE}" \
       -DVCPKG_INSTALLED_DIR="${ROOT_PATH}/vcpkg_installed"
 fi
 

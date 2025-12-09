@@ -3,9 +3,14 @@ version: "3.9"
 services:
   ubuntu-builder:
     image: ubuntu:24.04
+    container_name: paxs-ubuntu-builder
     volumes:
       - ../../:/workspace
     working_dir: /workspace
     environment:
       - DEBIAN_FRONTEND=noninteractive
-    command: ["Scripts/UbuntuBuild/Build.sh"]
+      - VCPKG_FORCE_SYSTEM_BINARIES=1  # For ARM64 compatibility
+    entrypoint: ["/workspace/Scripts/UbuntuBuild/entrypoint.sh"]
+    # Default command runs Build.sh, but can be overridden:
+    # docker-compose run ubuntu-builder /bin/bash
+    command: []
