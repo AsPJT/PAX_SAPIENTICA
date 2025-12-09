@@ -50,7 +50,7 @@ namespace paxs {
         std::vector<bool> is_items; // 項目が TRUE か FALSE になっているか格納
         paxs::UnorderedMap<std::uint_least32_t, std::size_t> item_index_key{}; // 項目の Key を格納
 
-        paxg::Rect rect;
+        paxg::Rect rect{ 3000.0f, 0.0f, 0.0f, 0.0f }; // プルダウンの矩形
         PulldownDisplayType display_type{}; // 表示タイプ (SelectedValue or FixedHeader)
         bool is_one_font = false;
 
@@ -162,11 +162,9 @@ namespace paxs {
         /// @param is_one_font_ 単一フォントを使用するか
         Pulldown(
             const std::uint_least32_t domain_hash_,
-            const paxg::Vec2i& pos_ = { 0,0 },
             PulldownDisplayType display_type_ = PulldownDisplayType::SelectedValue,
             const bool is_one_font_ = false)
-            : rect{ static_cast<float>(pos_.x()), static_cast<float>(pos_.y()),0, 0 }
-            , display_type(display_type_)
+            : display_type(display_type_)
             , is_one_font(is_one_font_)
             , domain_hash(domain_hash_) {
         }

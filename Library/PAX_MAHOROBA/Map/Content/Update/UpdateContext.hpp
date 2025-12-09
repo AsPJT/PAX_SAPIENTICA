@@ -45,7 +45,7 @@ struct SpatialContext : BaseContext {
     /// @details 経度が±180°で循環するため、3つのラップ座標（-360°, 0°, +360°）のいずれかが範囲内にあるかチェックします
     /// @details Checks if any of the three wrapped coordinates (-360°, 0°, +360°) are within bounds since longitude wraps at ±180°
     [[nodiscard]] bool isInViewBounds(Vector2<double> mercator_pos, double margin = 1.6) const {
-        const Rect<double> view_rect = Rect<double>::fromCenter(
+        const paxs::Rect<double> view_rect = paxs::Rect<double>::fromCenter(
             map_view_center,
             map_view_size * margin
         );
@@ -81,7 +81,7 @@ struct TemporalContext : BaseContext {
     /// @details 経度が±180°で循環するため、3つのラップ座標（-360°, 0°, +360°）のいずれかが範囲内にあるかチェックします
     /// @details Checks if any of the three wrapped coordinates (-360°, 0°, +360°) are within bounds since longitude wraps at ±180°
     [[nodiscard]] bool isInViewBounds(Vector2<double> mercator_pos, double margin = 1.6) const {
-        const Rect<double> view_rect = Rect<double>::fromCenter(
+        const paxs::Rect<double> view_rect = paxs::Rect<double>::fromCenter(
             map_view_center,
             map_view_size * margin
         );
@@ -170,7 +170,7 @@ struct UnifiedContext : BaseContext {
     /// @brief 座標がビューの範囲内にあるかチェック（SpatialContextと同じ実装）
     /// @brief Check if coordinates are within view bounds (same as SpatialContext)
     [[nodiscard]] bool isInViewBounds(Vector2<double> mercator_pos, double margin = 1.6) const {
-        const Rect<double> view_rect = Rect<double>::fromCenter(
+        const paxs::Rect<double> view_rect = paxs::Rect<double>::fromCenter(
             map_view_center,
             map_view_size * margin
         );

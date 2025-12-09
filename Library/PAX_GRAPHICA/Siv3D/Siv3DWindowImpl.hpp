@@ -12,8 +12,7 @@
 #ifndef PAX_GRAPHICA_SIV3D_WINDOW_IMPL_HPP
 #define PAX_GRAPHICA_SIV3D_WINDOW_IMPL_HPP
 
-#if defined(PAXS_USING_SIV3D)
-
+#ifdef PAXS_USING_SIV3D
 #include <Siv3D.hpp>
 
 #include <PAX_GRAPHICA/Interface/WindowImpl.hpp>
@@ -73,11 +72,11 @@ namespace paxg {
         }
 
         void setBackgroundColor(const Color color) override {
-            s3d::Scene::SetBackground(color.color);
+            s3d::Scene::SetBackground(paxg::ColorF(color));
         }
 
         void setLetterbox(const Color color) override {
-            s3d::Scene::SetLetterbox(color.color);
+            s3d::Scene::SetLetterbox(paxg::ColorF(color));
         }
 
         void setResizable(bool resizable) override {

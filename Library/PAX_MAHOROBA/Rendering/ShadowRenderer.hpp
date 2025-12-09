@@ -14,7 +14,7 @@
 
 #include <functional>
 
-#include <PAX_GRAPHICA/ColorF.hpp>
+#include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/RenderTexture.hpp>
 #include <PAX_GRAPHICA/ScopedRenderState.hpp>
 #include <PAX_GRAPHICA/ScopedRenderTarget.hpp>

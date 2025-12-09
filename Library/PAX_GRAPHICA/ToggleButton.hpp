@@ -156,13 +156,13 @@ namespace paxg {
 
 #if defined(PAXS_USING_SIV3D)
             // Left circle
-            s3d::Circle(x_ + radius, y_ + radius, radius).draw(bg_color.color);
+            s3d::Circle(x_ + radius, y_ + radius, radius).draw(paxg::ColorF(bg_color));
 
             // Center rectangle
-            s3d::Rect(x_ + radius, y_, width_ - height_, height_).draw(bg_color.color);
+            s3d::Rect(x_ + radius, y_, width_ - height_, height_).draw(paxg::ColorF(bg_color));
 
             // Right circle
-            s3d::Circle(x_ + width_ - radius, y_ + radius, radius).draw(bg_color.color);
+            s3d::Circle(x_ + width_ - radius, y_ + radius, radius).draw(paxg::ColorF(bg_color));
 
             // Knob
             const float knob_radius = height_ * 0.4f;
@@ -173,7 +173,7 @@ namespace paxg {
             s3d::Circle(knob_x + 2, knob_y + 2, knob_radius).draw(s3d::ColorF(0, 0, 0, 0.2));
 
             // Knob circle
-            s3d::Circle(knob_x, knob_y, knob_radius).draw(color_knob_.color);
+            s3d::Circle(knob_x, knob_y, knob_radius).draw(paxg::ColorF(color_knob_));
 
 #elif defined(PAXS_USING_DXLIB)
             // Get RGB values from bg_color for DxLib
@@ -275,20 +275,20 @@ namespace paxg {
             sf::CircleShape left_circle(radius);
             left_circle.setOrigin(sf::Vector2f(radius, radius));
             left_circle.setPosition(sf::Vector2f(x_ + radius, y_ + radius));
-            left_circle.setFillColor(bg_color.color);
+            left_circle.setFillColor(bg_color);
             paxg::Window::window().draw(left_circle);
 
             // Center rectangle
             sf::RectangleShape center_rect(sf::Vector2f(width_ - height_, height_));
             center_rect.setPosition(sf::Vector2f(x_ + radius, y_));
-            center_rect.setFillColor(bg_color.color);
+            center_rect.setFillColor(bg_color);
             paxg::Window::window().draw(center_rect);
 
             // Right circle
             sf::CircleShape right_circle(radius);
             right_circle.setOrigin(sf::Vector2f(radius, radius));
             right_circle.setPosition(sf::Vector2f(x_ + width_ - radius, y_ + radius));
-            right_circle.setFillColor(bg_color.color);
+            right_circle.setFillColor(bg_color);
             paxg::Window::window().draw(right_circle);
 
             // Knob
@@ -307,7 +307,7 @@ namespace paxg {
             sf::CircleShape knob(knob_radius);
             knob.setOrigin(sf::Vector2f(knob_radius, knob_radius));
             knob.setPosition(sf::Vector2f(knob_x, knob_y));
-            knob.setFillColor(color_knob_.color);
+            knob.setFillColor(color_knob_);
             paxg::Window::window().draw(knob);
 #else
             (void)radius;

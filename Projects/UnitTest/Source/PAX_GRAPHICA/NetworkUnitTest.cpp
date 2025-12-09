@@ -27,3 +27,12 @@ TEST(NetworkTest, DownloadFileDoesNotCrash) {
 		std::filesystem::remove("test_output.tmp");
 	}
 }
+
+// launchBrowser のテスト（実際にブラウザを開くわけにはいかないので、単に呼び出せることを確認）
+TEST(SystemTest, LaunchBrowserDoesNotCrash) {
+	// URLが空でも呼び出せることを確認
+	EXPECT_NO_THROW(paxg::Network::launchBrowser(""));
+
+	// 正しいURLでも呼び出せることを確認（実際には開かない）
+	EXPECT_NO_THROW(paxg::Network::launchBrowser("https://github.com/AsPJT/PAX_SAPIENTICA"));
+}

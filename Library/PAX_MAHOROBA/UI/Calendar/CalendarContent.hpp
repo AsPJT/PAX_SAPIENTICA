@@ -14,7 +14,6 @@
 
 #include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Font.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
 
 #include <PAX_MAHOROBA/Rendering/FontSystem.hpp>
 #include <PAX_MAHOROBA/Rendering/UIComponent.hpp>
@@ -150,7 +149,7 @@ namespace paxs {
                     }
 
                     (*one_font).drawTopRight(*text_str,
-                        paxg::Vec2i(static_cast<int>(ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        paxs::Vector2<int>(static_cast<int>(ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
 
                     // Get localized unit strings
                     const std::string* unit_year = Fonts().getLocalesText(calendar_ui_domain_key, unit_year_key);
@@ -158,30 +157,30 @@ namespace paxs {
                     const std::string* unit_day = Fonts().getLocalesText(calendar_ui_domain_key, unit_day_key);
 
                     if (unit_year != nullptr) {
-                        (*one_font).drawTopRight(*unit_year, paxg::Vec2i(static_cast<int>((120 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(*unit_year, paxs::Vector2<int>(static_cast<int>((120 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     } else {
                         PAXS_WARNING("[CalendarContent] Missing unit_year text");
                     }
                     if (unit_month != nullptr) {
-                        (*one_font).drawTopRight(*unit_month, paxg::Vec2i(static_cast<int>((220 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(*unit_month, paxs::Vector2<int>(static_cast<int>((220 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     } else {
                         PAXS_WARNING("[CalendarContent] Missing unit_month text");
                     }
                     if (unit_day != nullptr) {
-                        (*one_font).drawTopRight(*unit_day, paxg::Vec2i(static_cast<int>((300 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        (*one_font).drawTopRight(*unit_day, paxs::Vector2<int>(static_cast<int>((300 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     } else {
                         PAXS_WARNING("[CalendarContent] Missing unit_day text");
                     }
 
-                    (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>((85 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::to_string(date_month), paxg::Vec2i(static_cast<int>((190 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>((270 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_year), paxs::Vector2<int>(static_cast<int>((85 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_month), paxs::Vector2<int>(static_cast<int>((190 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_day), paxs::Vector2<int>(static_cast<int>((270 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     if (date_lm) {
                         const std::string* unit_leap = Fonts().getLocalesText(calendar_ui_domain_key, unit_leap_key);
                         if (unit_leap != nullptr) {
-                            (*one_font).drawTopRight(*unit_leap, paxg::Vec2i(static_cast<int>((
-                                (date_month < 10) ? int(167 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x : int(152 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x
-                                )), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                            (*one_font).drawTopRight(*unit_leap, paxs::Vector2<int>(static_cast<int>(
+                                (date_month < 10) ? (167 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x : (152 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x
+                                ), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                         } else {
                             PAXS_WARNING("[CalendarContent] Missing unit_leap text for leap month");
                         }
@@ -191,11 +190,11 @@ namespace paxs {
                 case paxs::cal::DateOutputType::name_and_value:
                 {
                     (*one_font).drawTopRight(*text_str,
-                        paxg::Vec2i(static_cast<int>(ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        paxs::Vector2<int>(ui_layout_.koyomi_font_x, ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3)), paxg::Color(0, 0, 0));
                     std::visit([&](const auto& x) {
                         date_day = int(x.getDay());
                         }, koyomi_.date_list[i].date);
-                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(300 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_day), paxs::Vector2<int>(static_cast<int>((300 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_x), static_cast<int>(ui_layout_.koyomi_font_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     break;
                 }
                 default:
@@ -291,23 +290,22 @@ namespace paxs {
 
                     if (text_str != nullptr) {
                         (*one_font).drawTopRight(*text_str,
-                        paxg::Vec2i(static_cast<int>(ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                        paxs::Vector2<int>(ui_layout_.koyomi_font_en_x, static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     }
 
-                    (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(95 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(",", paxg::Vec2i(static_cast<int>(int(235 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight("th", paxg::Vec2i(static_cast<int>(int(315 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(",", paxs::Vector2<int>(static_cast<int>((95 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(",", paxs::Vector2<int>(static_cast<int>((235 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight("th", paxs::Vector2<int>(static_cast<int>((315 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
 
-                    (*one_font).drawTopRight(std::to_string(date_year), paxg::Vec2i(static_cast<int>(int(en_cal_name_pos_x * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::string(koyomi_.month_name[date_month]), paxg::Vec2i(static_cast<int>(int(220 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-                    (*one_font).drawTopRight(std::to_string(date_day), paxg::Vec2i(static_cast<int>(int(280 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
-
+                    (*one_font).drawTopRight(std::to_string(date_year), paxs::Vector2<int>(static_cast<int>(en_cal_name_pos_x * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x, static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::string(koyomi_.month_name[date_month]), paxs::Vector2<int>(static_cast<int>(220 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x, static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                    (*one_font).drawTopRight(std::to_string(date_day), paxs::Vector2<int>(static_cast<int>(280 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x, static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                     if (date_lm) {
                         const std::string* unit_leap = Fonts().getLocalesText(calendar_ui_domain_key, unit_leap_key);
                         if (unit_leap != nullptr) {
-                            (*one_font).drawTopRight(*unit_leap, paxg::Vec2i(static_cast<int>((
-                                int(152 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x
-                                )), static_cast<int>(ui_layout_.koyomi_font_en_y + i * (paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
+                            (*one_font).drawTopRight(*unit_leap, paxs::Vector2<int>(static_cast<int>((
+                                (152 * paxg::FontConfig::KOYOMI_FONT_SIZE / 30.0) + ui_layout_.koyomi_font_en_x
+                                )), static_cast<int>(ui_layout_.koyomi_font_en_y + (i * paxg::FontConfig::KOYOMI_FONT_SIZE * 4 / 3))), paxg::Color(0, 0, 0));
                         }
                     }
                     break;

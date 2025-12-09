@@ -22,7 +22,7 @@ namespace paxs {
     /// @brief 2D Vector class.
     template<typename T>
     struct Vector2 {
-        constexpr explicit Vector2() noexcept = default;
+        constexpr explicit Vector2() noexcept : x(0), y(0) {}
         constexpr Vector2(T x, T y) noexcept : x(x), y(y) {}
 
         T x;

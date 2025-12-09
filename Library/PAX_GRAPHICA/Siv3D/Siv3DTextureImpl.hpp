@@ -12,14 +12,14 @@
 #ifndef PAX_GRAPHICA_SIV3D_TEXTURE_IMPL_HPP
 #define PAX_GRAPHICA_SIV3D_TEXTURE_IMPL_HPP
 
-#if defined(PAXS_USING_SIV3D)
-
+#ifdef PAXS_USING_SIV3D
 #include <Siv3D.hpp>
 
 #include <PAX_GRAPHICA/Image.hpp>
 #include <PAX_GRAPHICA/Interface/TextureImpl.hpp>
 
 #include <PAX_SAPIENTICA/System/AppConfig.hpp>
+
 namespace paxg {
 
     class Siv3DTextureImpl : public TextureImpl {
@@ -97,6 +97,6 @@ namespace paxg {
 
 } // namespace paxg
 
-#endif // defined(PAXS_USING_SIV3D)
+#endif // PAXS_USING_SIV3D
 
 #endif // !PAX_GRAPHICA_SIV3D_TEXTURE_IMPL_HPP

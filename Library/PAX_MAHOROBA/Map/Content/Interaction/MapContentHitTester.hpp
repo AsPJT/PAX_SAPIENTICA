@@ -12,13 +12,12 @@
 #ifndef PAX_MAHOROBA_MAP_CONTENT_HIT_TESTER_HPP
 #define PAX_MAHOROBA_MAP_CONTENT_HIT_TESTER_HPP
 
-#include <memory>
 #include <string>
-#include <vector>
 
 #include <PAX_GRAPHICA/Font.hpp>
 #include <PAX_GRAPHICA/Rect.hpp>
-#include <PAX_GRAPHICA/Vec2.hpp>
+
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxs {
 
@@ -39,24 +38,24 @@ public:
     static bool circleHitTest(
         int mouse_x,
         int mouse_y,
-        const paxg::Vec2i& center,
+        const paxs::Vector2<int>& center,
         int radius
     ) {
-        const int dx = mouse_x - center.x();
-        const int dy = mouse_y - center.y();
+        const int dx = mouse_x - center.x;
+        const int dy = mouse_y - center.y;
         return (dx * dx + dy * dy) <= (radius * radius);
     }
 
-    /// @brief 円形ヒット判定 (Vec2<double>版)
-    /// @brief Circle hit test (Vec2<double> version)
+    /// @brief 円形ヒット判定
+    /// @brief Circle hit test
     static bool circleHitTest(
         int mouse_x,
         int mouse_y,
-        const paxg::Vec2<double>& center,
+        const paxs::Vector2<double>& center,
         int radius
     ) {
-        const double dx = static_cast<double>(mouse_x) - center.x();
-        const double dy = static_cast<double>(mouse_y) - center.y();
+        const double dx = static_cast<double>(mouse_x) - center.x;
+        const double dy = static_cast<double>(mouse_y) - center.y;
         return (dx * dx + dy * dy) <= static_cast<double>(radius * radius);
     }
 
@@ -87,7 +86,7 @@ public:
         [[maybe_unused]] int mouse_x,
         [[maybe_unused]] int mouse_y,
         [[maybe_unused]] const std::string& text,
-        [[maybe_unused]] const paxg::Vec2i& pos,
+        [[maybe_unused]] const paxs::Vector2<int>& pos,
         [[maybe_unused]] paxg::Font* font,
         [[maybe_unused]] const char* align = "topCenter"
     ) {
@@ -125,7 +124,7 @@ public:
     /// @brief Calculate text bounding box (public method)
     static paxg::Rect getTextBoundingRect(
         [[maybe_unused]] const std::string& text,
-        const paxg::Vec2i& pos,
+        const paxs::Vector2<int>& pos,
         [[maybe_unused]] paxg::Font* font,
         [[maybe_unused]] const char* align
     ) {
@@ -134,8 +133,8 @@ public:
         // 	return paxg::Rect{0, 0, 0, 0};
         // }
         // const auto text_size = font->getSize(text);
-        // float x = static_cast<float>(pos.x());
-        // float y = static_cast<float>(pos.y());
+        // float x = static_cast<float>(pos.x);
+        // float y = static_cast<float>(pos.y);
         // // アライメントに応じて位置を調整
         // if (std::string(align).find("Center") != std::string::npos) {
         // 	x -= text_size.x / 2.0f;
@@ -150,7 +149,7 @@ public:
         // return paxg::Rect{x, y, text_size.x, text_size.y};
 
         // 仮実装：position周辺の矩形を返す
-        return paxg::Rect{static_cast<float>(pos.x()), static_cast<float>(pos.y()), 100.0f, 20.0f};
+        return paxg::Rect{static_cast<float>(pos.x), static_cast<float>(pos.y), 100.0f, 20.0f};
     }
 
 };

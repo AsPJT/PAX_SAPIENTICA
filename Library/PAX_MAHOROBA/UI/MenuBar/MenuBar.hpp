@@ -42,7 +42,6 @@ namespace paxs {
     public:
         MenuBar(const paxs::FeatureVisibilityManager& visible_manager) :
             language_selector_(paxs::MurMur3::calcHash("Language"),
-                paxs::Vector2<int>{ 3000, 0 },
                 paxs::PulldownDisplayType::SelectedValue,
                 true
             ) {
@@ -54,9 +53,9 @@ namespace paxs {
             github_button_.init(language_selector_);
 
             // 言語選択のコールバックを設定（キーベース）
-            language_selector_.setOnSelectionChanged([this](std::uint_least32_t key, bool is_selected) {
+            language_selector_.setOnSelectionChanged([](std::uint_least32_t key, bool is_selected) {
                 (void)is_selected;
-                handleLanguageChanged(key);
+                paxs::EventBus::getInstance().publish(LanguageChangeCommandEvent(key));
                 });
 
             // メニューバーにメニュー項目を追加（FontSystem経由）
@@ -98,14 +97,6 @@ namespace paxs {
         /// @brief ヘッダーの高さを取得
         int getHeight() const {
             return language_selector_.getRect().height();
-        }
-
-        /// @brief 言語変更時のハンドラー（コールバック駆動、キーベース）
-        /// @brief Language change handler (callback-driven, key-based)
-        /// @param language_key 選択された言語のキー / Selected language key
-        void handleLanguageChanged(std::uint_least32_t language_key) {
-            // EventBus経由で言語変更コマンドを発行（キーのみ）
-            paxs::EventBus::getInstance().publish(LanguageChangeCommandEvent(language_key));
         }
 
         /// @brief メニュー項目トグル時のハンドラー（コールバック駆動）

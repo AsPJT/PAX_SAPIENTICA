@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include <PAX_GRAPHICA/ColorF.hpp>
+#include <PAX_GRAPHICA/Color.hpp>
 #include <PAX_GRAPHICA/Interface/RenderTextureImpl.hpp>
 
 #if defined(PAXS_USING_SIV3D)

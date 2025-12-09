@@ -176,7 +176,7 @@ public:
                 }
 
                 // テキストの矩形判定（drawBottomCenterは横中央、縦は下から描画）
-                // text_pos.y = pos.y() - display_size / 2 - 5（アイコンの上部から少し離す）
+                // text_pos.y = pos.y - display_size / 2 - 5（アイコンの上部から少し離す）
                 // drawBottomCenterなので、そこから上にtext_heightの範囲
                 if (text_size.x > 0 && text_size.y > 0) {
                     const int text_bottom_y = static_cast<int>(pos.y) - (texture_size.y / 2) - 5;  // テキスト下端

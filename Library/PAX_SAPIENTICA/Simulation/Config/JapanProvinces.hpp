@@ -378,8 +378,11 @@ namespace paxs {
         std::uint_least8_t getLanguage(const std::uint_least8_t id, std::mt19937& gen) noexcept {
             for (const auto& district : district_list) {
                 if (district.id == id) {
-                    auto& weight_list = language_region_list.at(district.language_region_hash);
-                    return weight_list.id[weight_list.dist(gen)];
+                    auto* const weight_list = language_region_list.try_get(district.language_region_hash);
+                    if (weight_list == nullptr) {
+                        break;
+                    }
+                    return weight_list->id[weight_list->dist(gen)];
                 }
             }
             PAXS_WARNING("Failed to get District: " + std::to_string(id));
@@ -397,8 +400,11 @@ namespace paxs {
         std::uint_least8_t getMtDNA(const std::uint_least8_t id, std::mt19937& gen) noexcept {
             for (const auto& district : district_list) {
                 if (district.id == id) {
-                    auto& weight_list = mtdna_region_list.at(district.mtdna_region_hash);
-                    return weight_list.id[weight_list.dist(gen)];
+                    auto* const weight_list = mtdna_region_list.try_get(district.mtdna_region_hash);
+                    if (weight_list == nullptr) {
+                        break;
+                    }
+                    return weight_list->id[weight_list->dist(gen)];
                 }
             }
             PAXS_WARNING("Failed to get District: " + std::to_string(id));
