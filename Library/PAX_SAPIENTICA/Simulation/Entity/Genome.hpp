@@ -114,6 +114,20 @@ namespace paxs {
             return genome;
         }
 
+        static Genome generateRandomSetMtDNA(std::mt19937& engine, const std::uint_least8_t mtdna_, const std::uint_least8_t ydna_, const std::uint_least8_t snp_, const std::uint_least8_t language_) noexcept {
+            Genome genome;
+#ifdef USING_CHROMOSOME
+            genome.setChromosome(Chromosome::generateRandom(engine));
+#endif // USING_CHROMOSOME
+            const bool is_female = ((engine() % 2) == 0);
+            genome.setSNP(snp_);
+            genome.setMtDNA(mtdna_);
+            const std::uint_least8_t male_ydna = (ydna_ == 0) ? 1 : ydna_;
+            genome.setYDNA(is_female ? 0 : male_ydna);
+            genome.setLanguage(language_);
+            return genome;
+        }
+
         static Genome generateFromParents(std::mt19937& engine, const Genome& mother, const Genome& father) noexcept {
             Genome genome;
 #ifdef USING_CHROMOSOME
@@ -124,10 +138,11 @@ namespace paxs {
 
             genome.setMtDNA(mother.getMtDNA());
             if (is_female) {
-                genome.setYDNA(mother.getYDNA());
+                genome.setYDNA(0);
             }
             else {
-                genome.setYDNA(father.getYDNA());
+                const std::uint_least8_t father_ydna = father.getYDNA();
+                genome.setYDNA((father_ydna == 0) ? 1 : father_ydna);
             }
             genome.setLanguage((((engine_value >> 1) % 2) == 0) ? mother.language : father.language);
             genome.setSNP(static_cast<std::uint_least8_t>((int(mother.getSNP()) + int(father.getSNP())) / 2));

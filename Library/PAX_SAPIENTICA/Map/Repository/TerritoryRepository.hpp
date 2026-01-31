@@ -42,7 +42,7 @@ namespace paxs {
                 for (const auto& territory_data : loaded.territory_list) {
                     all_territories.emplace_back(territory_data, loaded);
                 }
-            });
+                });
 
             return all_territories;
         }
@@ -114,7 +114,7 @@ namespace paxs {
                         paxs::Vector2<double>(point_longitude, point_latitude)
                     ).toWebMercatorDeg()
                 );
-            });
+                });
 
             // 座標を何も読み込んでいない場合は何もしないで終わる
             if (coordinates.empty()) {
@@ -131,10 +131,10 @@ namespace paxs {
                 feature_type_hash
             );
 
-            // Territories.tsvからcolor_hashとline_widthを取得（paramsのtexture_hashを色として使用）
-            // TODO: 将来的にはcolorとline_width専用のカラムを追加
-            const std::uint_least32_t territory_color_hash = params.texture_hash;  // textureカラムを色として使用
-            const float territory_line_width = static_cast<float>(params.zoom);    // zoomカラムを線幅として使用
+            // Territories.tsvからcolor文字列とline_widthを取得
+            // Get color string and line_width from Territories.tsv
+            const std::string territory_color_string = params.color_string;  // colorカラムの文字列を直接使用
+            const float territory_line_width = static_cast<float>(params.line_width);  // line_widthカラムを使用
 
             // 読み込んだファイルを格納する
             return TerritoryLocationGroup(
@@ -142,7 +142,7 @@ namespace paxs {
                 params.zoom_range,
                 params.year_range,
                 feature_type_hash,
-                territory_color_hash,
+                territory_color_string,
                 territory_line_width
             );
         }

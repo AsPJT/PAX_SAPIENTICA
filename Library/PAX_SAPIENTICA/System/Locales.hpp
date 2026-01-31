@@ -85,10 +85,11 @@ namespace paxs {
         /// @brief Load locale data from file
         /// @param domain_name ドメイン名 / Domain name
         /// @param locale_name ロケール名 / Locale name
-        /// @param file_path ファイルパス / File path
+        /// @param file_path ファイルパス（拡張子なし） / File path (without extension)
         void loadFile(const std::string& domain_name, const std::string& locale_name, const std::string& file_path) {
-            KeyValueTSV<std::string> kv_tsv;
-            if (!kv_tsv.input(file_path)) {
+            // UnifiedTableを使用してTSVまたはバイナリ形式を読み込む
+            UnifiedTable table(file_path);
+            if (!table.isSuccessfullyLoaded()) {
                 // en-US ファイルが存在しない場合のみエラー、その他の言語はスキップ
                 if (locale_name == default_locale_name_) {
                     PAXS_ERROR("Required en-US locale file not found: " + file_path);
@@ -106,16 +107,35 @@ namespace paxs {
                 locale_name.c_str()
             );
 
-            // KeyValueTSVから全エントリを取得
-            UnorderedMap<std::uint_least32_t, std::string>& entries = kv_tsv.get();
-
             // ハッシュテーブルを事前予約（リハッシュを回避）
-            text_dictionary_.reserve(text_dictionary_.size() + entries.size());
+            const std::size_t row_count = table.rowCount();
+            text_dictionary_.reserve(text_dictionary_.size() + row_count);
 
-            for (auto& [text_key, value_str] : entries) {
+            // 手動ループで全行を読み込む（forEachRowは使用しない）
+            std::size_t loaded_count = 0;
+            for (std::size_t row_index = 0; row_index < row_count; ++row_index) {
+                // keyハッシュを取得（バイナリ形式ではkey_hash、TSV形式ではkeyからハッシュ化）
+                const std::uint32_t text_key = table.getKeyHash(row_index);
+                if (text_key == 0) {
+                    continue; // キーが取得できない場合はスキップ
+                }
+
+                // valueを取得
+                const std::uint_least32_t value_hash = MurMur3::calcHash("value");
+                const std::string& value_str = table.get(row_index, value_hash);
+                if (value_str.empty()) {
+                    continue; // 値が空の場合はスキップ
+                }
+
                 // 辞書に追加
                 const CombinedKey combined_key(domain_key, text_key, locale_key);
-                text_dictionary_.try_emplace(combined_key, std::move(value_str));
+                text_dictionary_.try_emplace(combined_key, std::string(value_str));
+                ++loaded_count;
+            }
+
+            // ロード成功時のみログ出力
+            if (loaded_count > 0) {
+                PAXS_INFO("[Locales] Loaded " + std::to_string(loaded_count) + " entries for " + domain_name + "/" + locale_name);
             }
         }
 
@@ -228,22 +248,29 @@ namespace paxs {
             // Data/Locales/以下の全ファイルを再帰的に取得
             const std::vector<std::string> all_files = FileSystem::getFilePathsRecursive(locales_dir);
 
-            // 対象ファイルをフィルタリング（.tsvファイルかつ登録済みロケール）
-            std::vector<std::string> target_files;
+            // 対象ファイルをフィルタリング（.tsvまたは.binファイルかつ登録済みロケール）
+            // 重複を避けるため、拡張子なしのパスをキーとして使用
+            paxs::UnorderedMap<std::string, bool> unique_files;
+
             for (const std::string& file_path : all_files) {
-                // .tsvファイルのみを対象
-                if (file_path.size() < 4 || file_path.substr(file_path.size() - 4) != ".tsv") {
+                // .tsvまたは.binファイルのみを対象
+                std::string base_path;
+                if (file_path.size() >= 4 && file_path.substr(file_path.size() - 4) == ".tsv") {
+                    base_path = file_path.substr(0, file_path.size() - 4);
+                } else if (file_path.size() >= 4 && file_path.substr(file_path.size() - 4) == ".bin") {
+                    base_path = file_path.substr(0, file_path.size() - 4);
+                } else {
                     continue;
                 }
 
                 // ファイル名を抽出（パスの最後の部分）
-                const std::size_t last_slash = file_path.find_last_of("/\\");
+                const std::size_t last_slash = base_path.find_last_of("/\\");
                 const std::string file_name = (last_slash != std::string::npos)
-                    ? file_path.substr(last_slash + 1)
-                    : file_path;
+                    ? base_path.substr(last_slash + 1)
+                    : base_path;
 
-                // ファイル名からロケール名を抽出（例: "ja-JP.tsv" -> "ja-JP"）
-                const std::string locale_name = file_name.substr(0, file_name.size() - 4);
+                // ロケール名を抽出
+                const std::string locale_name = file_name;
 
                 // 登録されているロケールかチェック
                 const std::uint_least32_t locale_key = MurMur3::calcHash(locale_name.size(), locale_name.c_str());
@@ -251,39 +278,47 @@ namespace paxs {
                     continue;  // 未登録のロケールはスキップ
                 }
 
-                target_files.push_back(file_path);
+                // 重複チェック（拡張子なしのパスで）
+                unique_files.emplace(base_path, true);
+            }
+
+            // ユニークなファイルパスのリストを作成
+            std::vector<std::string> target_files;
+            target_files.reserve(unique_files.size());
+            for (const auto& [base_path, _] : unique_files) {
+                target_files.push_back(base_path);
             }
 
             // ファイルを読み込む
             const std::size_t total_files = target_files.size();
             std::size_t file_count = 0;
 
-            for (const std::string& file_path : target_files) {
+            for (const std::string& base_path : target_files) {
                 // ファイル名を抽出
-                const std::size_t last_slash = file_path.find_last_of("/\\");
+                const std::size_t last_slash = base_path.find_last_of("/\\");
                 const std::string file_name = (last_slash != std::string::npos)
-                    ? file_path.substr(last_slash + 1)
-                    : file_path;
+                    ? base_path.substr(last_slash + 1)
+                    : base_path;
 
                 // ロケール名を抽出
-                const std::string locale_name = file_name.substr(0, file_name.size() - 4);
+                const std::string locale_name = file_name;
 
                 // domain.tsv からドメイン名を取得
-                const std::string domain_name = getDomainNameFromPath(file_path);
+                const std::string domain_name = getDomainNameFromPath(base_path + ".tsv");
                 if (domain_name.empty()) {
-                    PAXS_WARNING("domain.tsv not found or domain mapping not found for: " + file_path);
+                    PAXS_WARNING("domain.tsv not found or domain mapping not found for: " + base_path);
                     continue;  // ドメイン名が取得できない場合はスキップ
                 }
 
                 // 進捗を報告
                 if ((progress_reporter_ != nullptr) && total_files > 0) {
                     const float progress = progress_start + (progress_end - progress_start) * (static_cast<float>(file_count) / static_cast<float>(total_files));
-                    const std::string message = "Loading " + domain_name + "/" + locale_name + ".tsv (" + std::to_string(file_count + 1) + "/" + std::to_string(total_files) + ")";
+                    const std::string message = "Loading " + domain_name + "/" + locale_name + " (" + std::to_string(file_count + 1) + "/" + std::to_string(total_files) + ")";
                     progress_reporter_->reportProgress(progress, message);
                 }
 
-                // ファイルを読み込む（ドメイン名を使用）
-                loadFile(domain_name, locale_name, file_path);
+                // ファイルを読み込む（ドメイン名を使用、拡張子なしのパスを渡す）
+                loadFile(domain_name, locale_name, base_path);
                 ++file_count;
             }
         }

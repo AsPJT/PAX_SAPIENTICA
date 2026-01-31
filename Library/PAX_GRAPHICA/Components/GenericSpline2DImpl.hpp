@@ -95,7 +95,8 @@ namespace paxg {
             // Auto-detect closed loop and remove duplicate last point
             if (!is_closed) {
                 is_closed_ = detectAndFixClosedLoop(points_);
-            } else {
+            }
+            else {
                 is_closed_ = true;
                 // 明示的に閉じたループが指定された場合も重複チェック
                 // Also check for duplicates when explicitly specified as closed
@@ -123,7 +124,8 @@ namespace paxg {
             // Auto-detect closed loop and remove duplicate last point
             if (!is_closed) {
                 is_closed_ = detectAndFixClosedLoop(points_);
-            } else {
+            }
+            else {
                 is_closed_ = true;
                 // 明示的に閉じたループが指定された場合も重複チェック
                 // Also check for duplicates when explicitly specified as closed
@@ -154,7 +156,8 @@ namespace paxg {
             // Auto-detect closed loop and remove duplicate last point
             if (!is_closed) {
                 is_closed_ = detectAndFixClosedLoop(points_);
-            } else {
+            }
+            else {
                 is_closed_ = true;
                 // 明示的に閉じたループが指定された場合も重複チェック
                 // Also check for duplicates when explicitly specified as closed
@@ -198,7 +201,8 @@ namespace paxg {
                     p1 = points_[i];
                     p2 = points_[(i + 1) % point_count];
                     p3 = points_[(i + 2) % point_count];
-                } else {
+                }
+                else {
                     // 開いた曲線：既存のロジック
                     // Open curve: existing logic
                     p0 = (i == 0) ? points_[0] : points_[i - 1];

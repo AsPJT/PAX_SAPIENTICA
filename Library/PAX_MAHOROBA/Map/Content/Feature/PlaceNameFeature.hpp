@@ -54,18 +54,32 @@ public:
         if (!data_.key.empty()) {
             return MurMur3::calcHash(data_.key.c_str());
         }
-        return 0;
+        // バイナリ形式の場合はkey_hashを使用
+        return data_.key_hash;
     }
 
     std::string getName() const override {
-        const std::uint_least32_t key_hash = MurMur3::calcHash(data_.key.c_str());
+        // keyが空でない場合（TSV形式）: keyからハッシュを計算
+        std::uint_least32_t key_hash = 0;
+        if (!data_.key.empty()) {
+            key_hash = MurMur3::calcHash(data_.key.c_str());
+        } else {
+            // keyが空の場合（バイナリ形式）: 保存されたkey_hashを使用
+            key_hash = data_.key_hash;
+        }
+
+        // ロケールデータから名前を取得
         const std::string* name = Fonts().getLocalesText(place_names_domain_hash, key_hash);
         if (name != nullptr) {
             return *name;
         }
-        // フォールバック: keyをそのまま返す
-        PAXS_WARNING("[PlaceNameFeature] Missing localized name for key: " + data_.key + " - using key as fallback");
-        return data_.key;
+
+        // フォールバック: keyがある場合はそれを返す、ない場合は"[Unknown]"
+        if (!data_.key.empty()) {
+            return data_.key;
+        } else {
+            return "[Unknown]";
+        }
     }
 
     std::uint_least32_t getFeatureTypeHash() const override {

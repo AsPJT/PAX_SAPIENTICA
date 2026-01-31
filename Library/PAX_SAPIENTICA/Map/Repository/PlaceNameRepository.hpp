@@ -19,7 +19,7 @@
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
 #include <PAX_SAPIENTICA/Geography/Coordinate/Projection.hpp>
-#include <PAX_SAPIENTICA/IO/Data/TsvTable.hpp>
+#include <PAX_SAPIENTICA/IO/Data/UnifiedTable.hpp>
 #include <PAX_SAPIENTICA/Map/LocationPoint.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/FeatureListLoader.hpp>
 #include <PAX_SAPIENTICA/Map/Repository/LocationDataLoader.hpp>
@@ -45,12 +45,14 @@ namespace paxs {
             return all_points;
         }
 
-        /// @brief 個別の地名ファイルを読み込んでLocationPointGroupを返す
+        /// @brief 個別の地名ファイルを読み込んでLocationPointGroupを返す (TSVまたはバイナリ)
+        /// @brief Load individual place name file and return LocationPointGroup (TSV or binary)
         static LocationPointGroup loadPlaceFromFile(const FeatureListParams& params) {
             std::vector<LocationPoint> location_point_list{}; // 地物の一覧
             const std::uint_least32_t feature_type_hash = MurMur3::calcHash(params.type.size(), params.type.c_str());
 
-            paxs::TsvTable table(params.file_path);
+            // UnifiedTable を使用して TSV またはバイナリ形式を自動判別して読み込む
+            paxs::UnifiedTable table(params.file_path);
             if (!table.isSuccessfullyLoaded()) {
                 PAXS_WARNING("Failed to load place file: " + params.file_path);
                 return LocationPointGroup{};
@@ -72,18 +74,24 @@ namespace paxs {
             flags.setFromTable(table, hashes);
             CoordinateBounds bounds;
 
-            // 1 行ずつ読み込み
-            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) {
+            // 行数を取得
+            const std::size_t row_count = table.rowCount();
+
+            // 1 行ずつ読み込み（forEachRow の代わりに手動ループを使用）
+            for (std::size_t row_index = 0; row_index < row_count; ++row_index) {
                 auto row_data_opt = LocationDataLoader::loadRowData(table, row_index, hashes, flags, params);
                 if (!row_data_opt.has_value()) {
                     PAXS_WARNING("Skipping row " + std::to_string(row_index) + " in " + params.file_path + ": missing coordinates");
-                    return; // 経度・緯度が空の場合はスキップ
+                    continue; // 経度・緯度が空の場合はスキップ
                 }
 
                 const auto& data = row_data_opt.value();
 
                 // 経緯度の範囲を更新
                 bounds.update(data.longitude, data.latitude);
+
+                // key_hashを取得（バイナリの場合はハッシュ値、TSVの場合は文字列からハッシュ化）
+                std::uint32_t key_hash = table.getKeyHash(row_index);
 
                 // LocationPointを構築（地名は常にparams.texture_hashを使用）
                 location_point_list.emplace_back(
@@ -96,9 +104,10 @@ namespace paxs {
                     feature_type_hash,
                     params.texture_hash, // テクスチャの Key（地名は常にparams.texture_hashを使用）
                     params.zoom,
-                    data.extra_data
+                    data.extra_data,
+                    key_hash  // keyのハッシュ値
                 );
-            });
+            }
 
             // 地物を何も読み込んでいない場合は空のLocationPointGroupを返す
             if (location_point_list.size() == 0) {

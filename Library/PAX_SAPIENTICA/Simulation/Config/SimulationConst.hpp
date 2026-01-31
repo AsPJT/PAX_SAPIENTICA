@@ -44,8 +44,6 @@ namespace paxs {
     // Data の辞書型
     using DataGridsType = std::uint_least32_t;
 
-    constexpr std::array <Vector2<GridType>, 8> astar_adjacent_cell{ {Vector2<GridType>(-1, -1),Vector2<GridType>(1, -1),Vector2<GridType>(-1, 1),Vector2<GridType>(1, 1),Vector2<GridType>(0, -1),Vector2<GridType>(-1, 0),Vector2<GridType>(0, 1),Vector2<GridType>(1, 0)} };
-
     // 始点と終点を管理（婚姻の前後の位置情報を保持する用）
     struct GridType4 {
         GridType sx{}, sy{}, ex{}, ey{};
@@ -144,11 +142,24 @@ namespace paxs {
         // 青銅開始ステップ数
         std::uint_least64_t bronze_start_steps = 9601; // 前 300 年
 
+        std::uint_least64_t pottery_lineage_change_step = 0; // 渡来人の土器系統切替ステップ
+        std::uint_least64_t rice_paddy_start_steps = 0; // 水田稲作の開始ステップ
+
         // 渡来地区 ID
         std::uint_least8_t immigration_district_id = 73;
 
         // 青銅量
         std::uint_least64_t bronze = 500; // 渡来人が持ってくる青銅量
+
+        std::uint_least8_t pottery_make_mode = 1; // 土器作りの性別条件
+        std::uint_least8_t pottery_transmission_gender_mode = 3; // 土器伝播の性別条件
+        std::uint_least8_t pottery_transmission_interval_steps = 0; // 土器伝播の実行間隔
+        std::uint_least8_t pottery_lineage_initial = 0; // 在地人の初期土器系統
+        std::uint_least8_t pottery_lineage_immigrant_before = 0; // 渡来人の初期土器系統
+        std::uint_least8_t pottery_lineage_immigrant_after = 0; // 渡来人の後期土器系統
+        std::uint_least8_t pottery_lineage_multiple = 1; // 土器系統の複数保持可否
+        std::uint_least8_t pottery_lineage_merge = 1; // 土器系統を結合するかどうか
+        double immigrant_male_probability = 0.5; // 渡来人の男性比率
 
         // 初期化時の寿命までの最低年数
         AgeType init_lifespan_grace_period = 180;
@@ -157,6 +168,10 @@ namespace paxs {
         double max_agricultural_settlement_weight = 1.0 / 80.0;
         // 狩猟採集集落の最大人数
         double max_hunter_gatherer_settlement_weight = 1.0 / 25.0;
+        // 農耕集落の最大人数
+        std::uint_least32_t max_agricultural_settlement = 80;
+        // 狩猟採集集落の最大人数
+        std::uint_least32_t max_hunter_gatherer_settlement = 25;
 
         // 最小移動距離
         std::uint_least32_t min_move_distance = 10;
@@ -199,15 +214,16 @@ namespace paxs {
         std::uniform_int_distribution<int> move_dist = std::uniform_int_distribution<int>(min_move_distance, max_move_distance);
         std::uniform_real_distribution<double> theta_dist = std::uniform_real_distribution<double>(0.0, paxs::Math<double>::pi2()); // 0 ～ 2π
 
+        // 東、南東、南、南西、西、北西、北、北東の順番
         std::array<std::uniform_real_distribution<double>, 8> theta_dist_array = {
-            std::uniform_real_distribution<double>(-pi_per_8, pi_per_8), // -π／８ ～ π／８
-            std::uniform_real_distribution<double>(pi_per_8, pi_per_8 + pi_per_4), // π／８ ～ 3π／８
-            std::uniform_real_distribution<double>(pi_per_8 + pi_per_4, pi_per_8 + 2* pi_per_4), // 3π／８ ～ ５π／８
-            std::uniform_real_distribution<double>(pi_per_8 + 2 * pi_per_4, pi_per_8 + 3 * pi_per_4), // ５π／８ ～ ７π／８
-            std::uniform_real_distribution<double>(pi_per_8 + 3 * pi_per_4, pi_per_8 + 4 * pi_per_4), // ７π／８ ～ ９π／８
-            std::uniform_real_distribution<double>(pi_per_8 + 4 * pi_per_4, pi_per_8 + 5 * pi_per_4), // ９π／８ ～ １１π／８
-            std::uniform_real_distribution<double>(pi_per_8 + 5 * pi_per_4, pi_per_8 + 6 * pi_per_4), // １１π／８ ～ １３π／８
-            std::uniform_real_distribution<double>(pi_per_8 + 7 * pi_per_4, pi_per_8 + 8 * pi_per_4)  // １５π／８ ～ １７π／８
+            std::uniform_real_distribution<double>(-pi_per_8, pi_per_8),                           // 0: 東     -π/8 ～ π/8      (-22.5° ～ 22.5°)
+            std::uniform_real_distribution<double>(pi_per_8, pi_per_8 + pi_per_4),                 // 1: 南東    π/8 ～ 3π/8     (22.5° ～ 67.5°)
+            std::uniform_real_distribution<double>(pi_per_8 + pi_per_4, pi_per_8 + 2 * pi_per_4),  // 2: 南      3π/8 ～ 5π/8    (67.5° ～ 112.5°)
+            std::uniform_real_distribution<double>(pi_per_8 + 2 * pi_per_4, pi_per_8 + 3 * pi_per_4), // 3: 南西    5π/8 ～ 7π/8    (112.5° ～ 157.5°)
+            std::uniform_real_distribution<double>(pi_per_8 + 3 * pi_per_4, pi_per_8 + 4 * pi_per_4), // 4: 西      7π/8 ～ 9π/8    (157.5° ～ 202.5°)
+            std::uniform_real_distribution<double>(pi_per_8 + 4 * pi_per_4, pi_per_8 + 5 * pi_per_4), // 5: 北西    9π/8 ～ 11π/8   (202.5° ～ 247.5°)
+            std::uniform_real_distribution<double>(pi_per_8 + 5 * pi_per_4, pi_per_8 + 6 * pi_per_4), // 6: 北      11π/8 ～ 13π/8  (247.5° ～ 292.5°)
+            std::uniform_real_distribution<double>(pi_per_8 + 6 * pi_per_4, pi_per_8 + 7 * pi_per_4)  // 7: 北東    13π/8 ～ 15π/8  (292.5° ～ 337.5°)
         };
 
         std::string output_directory_name = "Sample";
@@ -222,6 +238,15 @@ namespace paxs {
             const auto* const ptr = key_value_tsv_.try_get(key_);
             if (ptr == nullptr || ptr->size() == 0) return;
             func_(*ptr);
+        }
+
+        std::uint_least8_t parsePotteryLineageMask(const std::string& value) const noexcept {
+            std::uint_least8_t mask = 0;
+            for (const char ch : value) {
+                if (ch < 'A' || ch > 'H') continue;
+                mask = static_cast<std::uint_least8_t>(mask | (1U << (ch - 'A')));
+            }
+            return mask;
         }
 
     public:
@@ -420,9 +445,13 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("immigration_end_steps"), [&](const std::string& str_) {immigration_end_steps = static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_step_interval"), [&](const std::string& str_) {immigration_step_interval = static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("immigration_district_id"), [&](const std::string& str_) {immigration_district_id = static_cast<std::uint_least8_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_lineage_change_step"), [&](const std::string& str_) {pottery_lineage_change_step = static_cast<std::uint_least64_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("rice_paddy_start_steps"), [&](const std::string& str_) {rice_paddy_start_steps = static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("init_lifespan_grace_period"), [&](const std::string& str_) {init_lifespan_grace_period = static_cast<AgeType>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("max_agricultural_settlement_population"), [&](const std::string& str_) {max_agricultural_settlement_weight = 1.0 / static_cast<std::uint_least64_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("max_hunter_gatherer_settlement_population"), [&](const std::string& str_) {max_hunter_gatherer_settlement_weight = 1.0 / static_cast<std::uint_least64_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("max_agricultural_settlement_population"), [&](const std::string& str_) {max_agricultural_settlement = static_cast<std::uint_least32_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("max_hunter_gatherer_settlement_population"), [&](const std::string& str_) {max_hunter_gatherer_settlement = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("min_move_distance"), [&](const std::string& str_) {min_move_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("max_move_distance"), [&](const std::string& str_) {max_move_distance = static_cast<std::uint_least32_t>(std::stoul(str_)); });
             stoiFunc(kvt, MurMur3::calcHash("move_redo"), [&](const std::string& str_) {move_redo = static_cast<std::uint_least32_t>(std::stoul(str_)); });
@@ -436,6 +465,15 @@ namespace paxs {
             stoiFunc(kvt, MurMur3::calcHash("hunter_gatherer_stillbirth_rate"), [&](const std::string& str_) {hunter_gatherer_stillbirth_rate = StringUtils::safeStod(str_, 0.0, true); });
             stoiFunc(kvt, MurMur3::calcHash("agricultural_stillbirth_rate"), [&](const std::string& str_) {agricultural_stillbirth_rate = StringUtils::safeStod(str_, 0.0, true); });
             stoiFunc(kvt, MurMur3::calcHash("maternal_residence_probability"), [&](const std::string& str_) {maternal_residence_probability = StringUtils::safeStod(str_, 0.0, true); });
+            stoiFunc(kvt, MurMur3::calcHash("immigrant_male_probability"), [&](const std::string& str_) {immigrant_male_probability = StringUtils::safeStod(str_, 0.0, true); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_make_mode"), [&](const std::string& str_) {pottery_make_mode = static_cast<std::uint_least8_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_transmission_gender_mode"), [&](const std::string& str_) {pottery_transmission_gender_mode = static_cast<std::uint_least8_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_transmission_interval_steps"), [&](const std::string& str_) {pottery_transmission_interval_steps = static_cast<std::uint_least8_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_lineage_initial"), [&](const std::string& str_) {pottery_lineage_initial = parsePotteryLineageMask(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_lineage_immigrant_before"), [&](const std::string& str_) {pottery_lineage_immigrant_before = parsePotteryLineageMask(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_lineage_immigrant_after"), [&](const std::string& str_) {pottery_lineage_immigrant_after = parsePotteryLineageMask(str_); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_lineage_multiple"), [&](const std::string& str_) {pottery_lineage_multiple = static_cast<std::uint_least8_t>(std::stoul(str_)); });
+            stoiFunc(kvt, MurMur3::calcHash("pottery_lineage_merge"), [&](const std::string& str_) {pottery_lineage_merge = static_cast<std::uint_least8_t>(std::stoul(str_)); });
 
             stoiFunc(kvt, MurMur3::calcHash("coast_cost"), [&](const std::string& str_) {coast_cost = StringUtils::safeStod(str_, 0.0, true); });
             stoiFunc(kvt, MurMur3::calcHash("ocean_cost"), [&](const std::string& str_) {ocean_cost = StringUtils::safeStod(str_, 0.0, true); });

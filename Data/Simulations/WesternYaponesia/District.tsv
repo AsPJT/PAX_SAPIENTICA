@@ -1,0 +1,91 @@
+﻿id	name	ja-JP	region	min_pop_placed_per_cell	max_pop_placed_per_cell	init_pop	immigrant	increased_immigration	mtdna_region	ydna_region	language_region	pop_ad725	directions	direction_min_distance	language	hunter_gatherer	farming	snp	agricultural_capable	current_costs	pottery_lineage_initial
+1	satsuma	薩摩	2	4	20	220	0	0	kyushu_jomon	jomon	satsuma	38400	1/1/2/4/4/2/4/1	160	1	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+2	osumi	大隅	2	4	20	220	0	0	kyushu_jomon	jomon	osumi	40600	1/2/2/2/4/2/2/2	160	1	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+3	hyuga	日向	2	4	20	220	0	0	kyushu_jomon	jomon	hyuga	30800	10/4/1/1/1/1/1/1	160	1	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+4	higo	肥後	2	4	20	2400	0	0	kyushu_jomon	jomon	higo	108700	10/4/1/1/1/1/1/4	160	1	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+5	bungo	豊後	3	4	20	340	0	0	kyushu_jomon	jomon	bungo	51600	10/4/1/1/1/1/1/2	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+6	chikugo	筑後	3	4	20	480	0	0	kyushu_jomon	jomon	chikugo	59300	10/10/1/2/2/1/1/2	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+7	hizen	肥前	3	4	20	1210	0	0	kyushu_jomon	jomon	hizen	48300	4/4/4/4/1/1/1/1	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+8	chikuzen	筑前	3	4	20	480	120	0	kyushu_jomon	jomon	chikuzen	112000	4/4/1/1/1/1/4/10	160	0	255	0	0	1	0.6/1.2/35/40/50/1.2/0.6/0.35	C
+9	buzen	豊前	3	4	20	420	0	0	kyushu_jomon	jomon	buzen	47200	10/2/1/1/1/1/1/2	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+10	iki	壱岐	3	4	20	80	0	0	kyushu_jomon	jomon	iki	12100	4/4/1/1/2/1/1/1	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+11	tsushima	対馬	3	4	20	80	0	0	kyushu_jomon	jomon	tsushima	9900	1/1/1/4/4/1/1/1	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+12	nagato	長門	5	4	20	50	0	0	chugoku_jomon	jomon	nagato	43900	2/2/1/1/1/2/10/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+13	suo	周防	5	4	20	50	0	0	chugoku_jomon	jomon	suo	49400	1/1/2/1/1/2/10/10	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+14	aki	安芸	5	4	20	190	0	0	chugoku_jomon	jomon	aki	69200	1/1/1/2/1/4/10/10	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+15	bingo	備後	5	4	20	190	0	0	chugoku_jomon	jomon	bingo	71400	1/1/1/1/1/2/10/4	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+16	bitchu	備中	5	4	20	200	0	0	chugoku_jomon	jomon	bitchu	79100	1/1/1/1/1/2/10/4	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+17	mimasaka	美作	5	4	20	200	0	0	chugoku_jomon	jomon	mimasaka	70300	2/2/1/2/2/2/1/2	160	0	255	0	0	1	1/1/1/1/1/1/1/1	C
+18	bizen	備前	5	4	20	180	0	0	chugoku_jomon	jomon	bizen	56000	2/1/1/1/4/4/10/4	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+19	harima	播磨	7	4	20	70	0	0	kinki_jomon	jomon	harima	107600	1/1/2/2/2/10/10/4	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+20	iwami	石見	6	4	20	410	0	0	chugoku_jomon	jomon	iwami	40600	2/2/1/2/1/1/10/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+21	izumo	出雲	6	4	20	410	0	0	chugoku_jomon	jomon	izumo	85700	4/2/2/2/1/1/10/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+22	hoki	伯耆	6	4	20	50	0	0	chugoku_jomon	jomon	hoki	52700	2/2/2/1/1/2/10/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+23	oki	隠岐	6	4	20	110	0	0	chugoku_jomon	jomon	oki	13200	1/1/1/1/10/1/1/1	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+24	inaba	因幡	6	4	20	50	0	0	chugoku_jomon	jomon	inaba	54900	2/2/4/2/1/1/10/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+25	tajima	但馬	6	4	20	70	0	0	chugoku_jomon	jomon	tajima	64800	2/2/2/1/1/4/10/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+26	tango	丹後	6	4	20	60	0	0	chugoku_jomon	jomon	tango	38400	2/2/2/2/2/4/10/4	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	C
+27	tanba	丹波	7	4	20	60	0	0	kinki_jomon	jomon	tanba	74700	2/2/2/2/2/10/4/4	160	0	255	0	0	1	1/1/1/1/1/1/1/1	C
+28	iyo	伊予	4	4	20	370	0	0	shikoku_jomon	jomon	iyo	79100	4/2/1/1/1/1/4/10	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+29	tosa	土佐	4	4	20	50	0	0	shikoku_jomon	jomon	tosa	47200	4/4/1/1/1/1/2/4	160	0	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+30	awa	阿波	4	4	20	50	0	0	shikoku_jomon	jomon	awa	50500	2/2/1/1/1/1/4/4	160	0	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+31	sanuki	讃岐	4	4	20	50	0	0	shikoku_jomon	jomon	sanuki	98800	10/10/2/4/4/4/2/10	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+32	awaji	淡路	7	4	20	70	0	0	kinki_jomon	jomon	awaji	18700	4/2/2/2/1/2/10/10	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+33	kii	紀伊	7	4	20	440	0	0	kinki_jomon	jomon	kii	61500	2/2/2/10/4/4/2/2	160	0	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+34	yamato	大和	8	4	20	610	0	0	kinki_jomon	jomon	yamato	171700	2/2/1/1/1/1/1/2	160	0	255	0	0	1	1/1/1/1/1/1/1/1	C
+35	kawachi	河内	8	4	20	60	0	0	kinki_jomon	jomon	kawachi	87900	1/1/1/1/1/1/2/1	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+36	yamashiro	山城	8	4	20	60	0	0	kinki_jomon	jomon	yamashiro	85700	1/1/1/1/2/2/2/1	160	0	255	0	0	1	1/1/1/1/1/1/1/1	C
+37	izumi	和泉	8	4	20	60	0	0	kinki_jomon	jomon	izumi	26400	2/1/1/1/1/1/2/2	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+38	settsu	摂津	8	4	20	60	0	0	kinki_jomon	jomon	settsu	85700	1/2/1/1/2/4/10/4	160	0	255	0	0	1	0.8/0.9/1.2/1.2/1.4/1.2/1.2/0.9	C
+39	wakasa	若狭	11	4	20	40	0	0	chubu_jomon	jomon	wakasa	23100	2/1/2/1/1/2/4/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+40	echizen	越前	11	4	20	40	0	0	chubu_jomon	jomon	echizen	60400	10/2/1/2/1/1/2/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+41	kaga	加賀	11	4	20	270	0	0	chubu_jomon	jomon	kaga	32900	10/2/1/1/1/1/2/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+42	etchu	越中	11	4	20	860	0	0	chubu_jomon	jomon	etchu	46100	2/4/2/2/2/1/4/10	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+43	noto	能登	11	4	20	270	0	0	chubu_jomon	jomon	noto	28600	1/1/1/1/4/4/10/4	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+44	echigo	越後	11	4	20	0	0	0	chubu_jomon	jomon	echigo	37300	4/2/2/4/4/4/1/4	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+45	sado	佐渡	11	4	20	0	0	0	chubu_jomon	jomon	sado	24200	1/1/1/4/4/4/4/4	160	0	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+46	shima	志摩	7	4	20	150	0	0	kinki_jomon	jomon	shima	154000	4/2/2/2/1/1/1/4	160	0	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	BC
+47	ise	伊勢	7	4	20	150	0	0	kinki_jomon	jomon	ise	103200	2/2/2/2/1/1/4/10	160	0	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	BC
+48	iga	伊賀	7	4	20	150	0	0	kinki_jomon	jomon	iga	19800	1/1/1/1/1/1/1/4	160	0	255	0	0	1	1/1/1/1/1/1/1/1	BC
+49	owari	尾張	9	4	20	2510	0	0	chubu_jomon	jomon	owari	75800	2/2/1/2/1/4/10/2	160	0	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	B
+50	mikawa	参河	9	4	20	2510	0	0	chubu_jomon	jomon	mikawa	75800	2/2/2/1/1/4/10/4	160	0	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	B
+51	totomi	遠江	9	4	20	0	0	0	chubu_jomon	jomon	totomi	105400	1/4/2/1/1/2/4/10	160	0	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	B
+52	suruga	駿河	9	4	20	0	0	0	chubu_jomon	jomon	suruga	64800	4/1/1/4/2/4/4/10	160	0	255	0	0	1	0.6/1.2/5/4/5/1.2/0.6/0.25	B
+53	izu	伊豆	9	4	20	0	0	0	chubu_jomon	jomon	izu	23100	4/2/2/1/1/1/1/10	160	0	255	0	0	1	0.6/1.2/5/4/5/1.2/0.6/0.25	B
+54	kai	甲斐	10	4	20	0	0	0	chubu_jomon	jomon	kai	34000	2/4/2/2/2/2/2/2	160	0	255	0	0	1	1/1/1/1/1/1/1/1	AB
+55	sagami	相模	12	4	20	0	0	0	kanto_jomon	jomon	sagami	73600	4/4/2/2/1/2/4/10	160	0	255	0	0	1	0.6/1.2/5/4/5/1.2/0.6/0.25	B
+56	musashi	武蔵	12	4	20	0	0	0	kanto_jomon	jomon	musashi	130700	4/10/2/2/2/4/4/4	160	0	255	0	0	1	0.6/1.2/5/4/5/1.2/0.6/0.25	B
+57	shimosa	下総	12	4	20	0	0	0	kanto_jomon	jomon	shimosa	99900	4/4/4/2/2/1/1/2	160	0	255	0	0	1	0.35/0.6/5/4/5/1.2/0.6/0.35	B
+58	kazusa	上総	12	4	20	0	0	0	kanto_jomon	jomon	kazusa	83500	2/4/4/2/2/1/1/1	160	0	255	0	0	1	0.35/0.6/5/4/5/1.2/0.6/0.35	B
+59	awa1	安房	12	4	20	0	0	0	kanto_jomon	jomon	awa1	35100	4/10/2/1/1/1/1/2	160	0	255	0	0	1	0.25/0.6/5/4/5/1.2/0.6/0.35	B
+60	hitachi	常陸	13	4	20	0	0	0	kanto_jomon	jomon	hitachi	168000	4/10/2/2/2/2/2/2	160	0	255	0	0	1	0.35/0.6/5/4/5/1.2/0.6/0.35	A
+61	omi	近江	7	4	20	150	0	0	kinki_jomon	jomon	omi	102100	2/2/2/2/4/4/10/2	160	0	255	0	0	1	1/1/1/1/1/1/1/1	C
+62	mino	美濃	9	4	20	1360	0	0	chubu_jomon	jomon	mino	143900	4/10/2/2/4/10/2/2	160	0	255	0	0	1	1/1/1/1/1/1/1/1	A
+63	hida	飛騨	10	4	20	1360	0	0	chubu_jomon	jomon	hida	14300	4/4/2/2/2/2/2/4	160	0	255	0	0	1	1/1/1/1/1/1/1/1	A
+64	shinano	信濃	10	4	20	0	0	0	chubu_jomon	jomon	shinano	73600	1/1/1/1/1/1/1/1	160	0	255	0	0	1	1/1/1/1/1/1/1/1	A
+65	kozuke	上野	13	4	20	0	0	0	kanto_jomon	jomon	kozuke	112000	4/4/1/1/2/2/2/4	160	0	255	0	0	1	1/1/1/1/1/1/1/1	A
+66	shimotsuke	下野	13	4	20	0	0	0	kanto_jomon	jomon	shimotsuke	76900	4/4/2/2/2/4/2/4	160	0	255	0	0	1	1/1/1/1/1/1/1/1	A
+67	fukushima	福島	15	4	20	0	0	0	tohoku_jomon	jomon	fukushima	206500	2/2/4/4/10/2/2/4	160	2	255	0	0	1	5.5/4/0.35/0.35/0.6/4/5.5/5.5	A
+68	yamagata	山形	14	4	20	0	0	0	tohoku_jomon	jomon	yamagata	78000	2/2/2/2/10/4/4/2	160	2	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+69	akita	秋田	15	4	20	0	0	0	tohoku_jomon	jomon	akita	0	1/1/1/1/10/1/1/1	160	2	255	0	0	1	0.6/1.2/3.5/4/5/1.2/0.6/0.35	A
+70	miyagi	宮城	16	4	20	0	0	0	hokkaido_jomon	jomon	miyagi	0	1/1/1/1/10/1/1/1	160	2	255	0	0	1	5.5/4/0.35/0.35/0.6/4/5.5/5.5	A
+71	iwate	岩手	16	4	20	0	0	0	hokkaido_jomon	jomon	iwate	0	1/1/1/1/1/1/1/1	160	2	255	0	0	1	5.5/4/0.35/0.35/0.6/4/5.5/5.5	A
+72	aomori	青森	16	4	20	0	0	0	hokkaido_jomon	jomon	aomori	0	1/1/1/1/1/1/1/1	160	2	255	0	0	1	0.35/0.6/1.2/3.5/5/3.5/1.2/0.6	A
+73	toraijin_land	渡来人	0	0	0	0	0	0	toraijin	toraijin	toraijin_land	0	1/1/1/1/1/1/1/1	160	3	0	255	255	1	1/1/1/1/1/1/1/1	
+74	donan	道南	16	4	20	0	0	0	hokkaido_jomon	jomon	donan	2960	1/1/1/1/1/1/1/1	160	2	255	0	0	0	0.35/0.6/1.2/3.5/5/3.5/1.2/0.6	
+75	dochu	道中	16	4	20	0	0	0	hokkaido_jomon	jomon	dochu	10240	1/1/1/1/1/1/1/1	160	2	255	0	0	0	0.6/1.2/3.5/4/5/1.2/0.6/0.4	
+76	dohoku	道北	16	4	20	0	0	0	hokkaido_jomon	jomon	dohoku	8410	1/1/1/1/1/1/1/1	160	2	255	0	0	0	0.6/1.2/3.5/4/5/1.2/0.6/0.4	
+77	doto	道東	16	4	20	0	0	0	hokkaido_jomon	jomon	doto	13620	1/1/1/1/1/1/1/1	160	2	255	0	0	0	5.5/4/0.35/0.35/0.6/4/5.5/5.5	
+78	habomai	歯舞群島	16	4	20	0	0	0	hokkaido_jomon	jomon	habomai	40	1/1/1/1/1/1/1/1	160	2	255	0	0	0	5.5/4/0.35/0.35/0.6/4/5.5/5.5	
+79	shikotan	色丹島	16	4	20	0	0	0	hokkaido_jomon	jomon	shikotan	110	1/1/1/1/1/1/1/1	160	2	255	0	0	0	5.5/4/0.35/0.35/0.6/4/5.5/5.5	
+80	kunashir	国後島	16	4	20	0	0	0	hokkaido_jomon	jomon	kunashir	670	1/1/1/1/1/1/1/1	160	2	255	0	0	0	5.5/4/0.35/0.35/0.6/4/5.5/5.5	
+81	iturup	択捉島	16	4	20	0	0	0	hokkaido_jomon	jomon	iturup	1430	1/1/1/1/1/1/1/1	160	2	255	0	0	0	5.5/4/0.35/0.35/0.6/4/5.5/5.5	
+82	osumi	大隅諸島	1	4	20	410	0	0	southern_islands_jomon	jomon	osumi	410	1/1/1/1/1/1/1/1	160	1	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+83	tokara	吐噶喇列島	1	4	20	0	0	0	southern_islands_jomon	jomon	tokara	40	1/1/1/1/1/1/1/1	160	1	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+84	amami	奄美群島	1	4	20	0	0	0	southern_islands_jomon	jomon	amami	500	1/1/1/1/1/1/1/1	160	1	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+85	okinawa	沖縄諸島	1	4	20	0	0	0	southern_islands_jomon	jomon	okinawa	760	1/1/1/1/1/1/1/1	160	1	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	C
+86	daito	大東諸島	1	4	20	0	0	0	southern_islands_jomon	jomon	daito	20	1/1/1/1/1/1/1/1	160	1	255	0	0	1	0.35/0.6/5/4/5/1.2/0.6/0.35	
+87	sakishima	先島諸島	1	4	20	0	0	0	southern_islands_jomon	jomon	sakishima	340	1/1/1/1/1/1/1/1	160	1	255	0	0	1	0.6/1.2/7/4/5/1.2/0.6/0.25	
+88	north_izu	北伊豆諸島	1	4	20	0	0	0	kanto_jomon	jomon	north_izu	120	1/1/1/1/1/1/1/1	160	0	255	0	0	1	0.6/1.2/5/4/5/1.2/0.6/0.25	
+89	south_izu	南伊豆諸島	1	4	20	0	0	0	kanto_jomon	jomon	south_izu	40	1/1/1/1/1/1/1/1	160	0	255	0	0	1	0.6/1.2/5/4/5/1.2/0.6/0.25	
+90	ogasawara	小笠原諸島	1	4	20	0	0	0	southern_islands_jomon	jomon	ogasawara	40	1/1/1/1/1/1/1/1	160	0	255	0	0	1	0.35/0.6/5/4/5/1.2/0.6/0.35	

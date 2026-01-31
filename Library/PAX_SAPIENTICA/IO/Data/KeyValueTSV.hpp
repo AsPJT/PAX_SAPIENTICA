@@ -15,14 +15,15 @@
 /*##########################################################################################
     * std::uint_least32_t Key
     * std::string Value
-    の２つの TSV 読み込み行うクラス
+    の２つの TSV/Binary 読み込み行うクラス
 ##########################################################################################*/
 
 #include <string>
 
 #include <PAX_SAPIENTICA/Core/Type/UnorderedMap.hpp>
-#include <PAX_SAPIENTICA/System/InputFile.hpp>
+#include <PAX_SAPIENTICA/IO/Data/UnifiedTable.hpp>
 #include <PAX_SAPIENTICA/Utility/Logger.hpp>
+#include <PAX_SAPIENTICA/Utility/MurMur3.hpp>
 
 namespace paxs {
 
@@ -33,10 +34,6 @@ namespace paxs {
         bool is_successfully_loaded{ false };
         bool is_loaded{ false };
 
-        // 項目の ID を返す
-         std::size_t inputPathGetMenuIndex(const paxs::UnorderedMap<std::uint_least32_t, std::size_t>& menu, const std::uint_least32_t& str_) {
-            return menu.value_or(str_, SIZE_MAX);
-        }
     public:
 
         void emplace(const std::uint_least32_t key_, const Value& value_) {
@@ -59,8 +56,8 @@ namespace paxs {
             return is_successfully_loaded;
         }
 
-        /// @brief TSVファイルを読み込む
-        /// @param relative_path アセットルートからの相対パス
+        /// @brief TSV/Binaryファイルを読み込む (UnifiedTable使用)
+        /// @param relative_path アセットルートからの相対パス（拡張子なし）
         /// @param func 値を変換する関数
         /// @return 成功時true
         template<typename Func>
@@ -68,50 +65,52 @@ namespace paxs {
             if (is_loaded) return true;
             is_loaded = true;
 
-            paxs::InputFile input_file(relative_path);
-            if (input_file.fail()) {
-                PAXS_ERROR(relative_path + " is missing.");
+            // UnifiedTableを使用（.binがあれば優先、なければ.tsvを読み込む）
+            paxs::UnifiedTable table(relative_path);
+            if (!table.isSuccessfullyLoaded()) {
+                PAXS_ERROR(relative_path + " (.tsv or .bin) is missing or failed to load.");
                 return false;
             }
-            // 1 行目を読み込む
-            if (!(input_file.getLine())) {
-                PAXS_ERROR("The first line of " + relative_path + " could not be read.");
+
+            // 必須カラムの存在確認
+            if (!table.hasColumn("key")) {
+                PAXS_ERROR(relative_path + " is missing a 'key' column.");
                 return false;
             }
-            // BOM を削除
-            input_file.deleteBOM();
-            // 1 行目を分割する
-            paxs::UnorderedMap<std::uint_least32_t, std::size_t> menu = input_file.splitHashMapMurMur3('\t');
-
-            const std::size_t key_index = inputPathGetMenuIndex(menu, MurMur3::calcHash("key"));
-            if (key_index == SIZE_MAX) {
-                PAXS_ERROR(relative_path + " is missing a Key on the first line.");
-                return false; // Key がないのはデータにならない
-            }
-            const std::size_t value_index = inputPathGetMenuIndex(menu, MurMur3::calcHash("value"));
-            if (value_index == SIZE_MAX) {
-                PAXS_ERROR(relative_path + " is missing a Value on the first line.");
-                return false; // Value がないのはデータにならない
+            if (!table.hasColumn("value")) {
+                PAXS_ERROR(relative_path + " is missing a 'value' column.");
+                return false;
             }
 
-            // 1 行ずつ読み込み（区切りはタブ）
-            while (input_file.getLine()) {
-                std::vector<std::string> strvec = input_file.split('\t');
+            const std::uint_least32_t key_hash = MurMur3::calcHash("key");
+            const std::uint_least32_t value_hash = MurMur3::calcHash("value");
 
-                // 列数が項目より小さい場合は読み込まない
-                if (key_index >= strvec.size() || value_index >= strvec.size()) continue;
+            // 1 行ずつ読み込み
+            table.forEachRow([&](std::size_t row_index, const std::vector<std::string>&) {
+                const std::string& value_str = table.get(row_index, value_hash);
 
-                // keyが空の場合は読み込まない
-                if (strvec[key_index].size() == 0) continue;
+                // バイナリ形式の場合: keyハッシュを直接取得
+                std::uint_least32_t key_hashed = 0;
+                if (table.isBinary()) {
+                    key_hashed = table.getKeyHash(row_index);
+                    if (key_hashed == 0) return;  // ハッシュが取得できない場合はスキップ
+                } else {
+                    // TSV形式の場合: keyを文字列として取得してハッシュ化
+                    const std::string& key_str = table.get(row_index, key_hash);
+                    if (key_str.empty()) return;  // keyが空の場合は読み込まない
+                    key_hashed = MurMur3::calcHash(key_str.size(), key_str.c_str());
+                }
 
-                // 値を変換して格納
-                path_list.emplace(MurMur3::calcHash(strvec[key_index].size(), strvec[key_index].c_str()), func(strvec[value_index]));
-            }
+                // keyハッシュと値を格納
+                path_list.emplace(key_hashed, func(value_str));
+            });
+
             is_successfully_loaded = true;
             return true;
         }
-        /// @brief TSVファイルを読み込む（デフォルト変換関数使用）
-        /// @param relative_path アセットルートからの相対パス
+
+        /// @brief TSV/Binaryファイルを読み込む（デフォルト変換関数使用）
+        /// @param relative_path アセットルートからの相対パス（拡張子なし）
         /// @return 成功時true
         bool input(const std::string& relative_path) {
             return input(relative_path, [](const std::string& value_) { return Value(value_); });

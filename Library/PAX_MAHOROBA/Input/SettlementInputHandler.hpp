@@ -50,7 +50,7 @@ namespace paxs {
         bool getIsArrow() const { return is_arrow_; }
 
     private:
-        std::size_t select_draw_ = 1;  // 表示モード (1-6)
+        std::size_t select_draw_ = 1;  // 表示モード (1-8)
         bool is_line_ = false;          // グリッド線を表示するか
         bool is_arrow_ = true;          // 移動線（矢印）を表示するか
 
@@ -74,13 +74,15 @@ namespace paxs {
             bool changed = false;
             std::size_t new_select_draw = select_draw_;
 
-            // 1-6キーで表示モードを切り替え（値が変わった場合のみ通知）
+            // 1-8キーで表示モードを切り替え（値が変わった場合のみ通知）
             if (paxg::Key(paxg::PAXG_KEY_1).isPressed()) { new_select_draw = 1; }
             else if (paxg::Key(paxg::PAXG_KEY_2).isPressed()) { new_select_draw = 2; }
             else if (paxg::Key(paxg::PAXG_KEY_3).isPressed()) { new_select_draw = 3; }
             else if (paxg::Key(paxg::PAXG_KEY_4).isPressed()) { new_select_draw = 4; }
             else if (paxg::Key(paxg::PAXG_KEY_5).isPressed()) { new_select_draw = 5; }
             else if (paxg::Key(paxg::PAXG_KEY_6).isPressed()) { new_select_draw = 6; }
+            else if (paxg::Key(paxg::PAXG_KEY_7).isPressed()) { new_select_draw = 7; }
+            else if (paxg::Key(paxg::PAXG_KEY_8).isPressed()) { new_select_draw = 8; }
 
             // 表示モードが変更された場合のみフラグを立てる
             if (new_select_draw != select_draw_) {

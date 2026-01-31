@@ -36,14 +36,16 @@ namespace paxs {
             const std::uint_least32_t feature_type_hash_,  // 地物の種別を識別するハッシュ値
             const std::uint_least32_t texture_key_, // テクスチャキー
             const double zoom_, // 拡大率
-            const paxs::UnorderedMap<std::uint_least32_t, std::string>& extra_data_ = {}  // 追加カラムデータ
+            const paxs::UnorderedMap<std::uint_least32_t, std::string>& extra_data_ = {},  // 追加カラムデータ
+            const std::uint_least32_t key_hash_ = 0  // keyのハッシュ値
         ) noexcept
             : key(std::move(key_)), coordinate(coordinate_), overall_length(overall_length_),
             zoom_range(zoom_range_), year_range(year_range_),
             feature_type_hash(feature_type_hash_), texture_key(texture_key_), zoom(zoom_),
-            extra_data(extra_data_){}
+            extra_data(extra_data_), key_hash(key_hash_){}
 
-        std::string key;  // 地物の一意キー（TSVのkeyカラムから）
+        std::string key;  // 地物の一意キー（TSVのkeyカラムから、バイナリの場合は空）
+        std::uint_least32_t key_hash = 0;  // keyのハッシュ値（バイナリから読み込んだ場合に使用）
         paxs::WebMercatorDeg coordinate; // 経緯度
         double overall_length = 10; // 全長
         Range<double> zoom_range{0.0, 9999.0}; // 表示するズームレベル範囲

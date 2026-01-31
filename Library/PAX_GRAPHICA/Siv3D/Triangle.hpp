@@ -16,6 +16,7 @@
 #include <Siv3D.hpp>
 
 #include <PAX_GRAPHICA/Interface/Triangle.hpp>
+#include <PAX_SAPIENTICA/Core/Type/Vector2.hpp>
 
 namespace paxg {
 

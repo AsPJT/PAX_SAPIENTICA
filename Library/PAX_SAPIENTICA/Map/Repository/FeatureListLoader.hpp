@@ -36,6 +36,8 @@ namespace paxs {
         Range<double> year_range;
         std::uint_least32_t texture_hash;
         double zoom;
+        std::string color_string;  // 色情報の文字列（例: "#ffffff"） / Color string (e.g., "#ffffff")
+        double line_width = 2.0;   // 線の太さ / Line width
     };
 
     /// @brief 地物リストの共通読み込みロジック
@@ -79,6 +81,8 @@ namespace paxs {
             const std::uint_least32_t zoom_hash = MurMur3::calcHash("zoom");
             const std::uint_least32_t first_year_hash = MurMur3::calcHash("first_year");
             const std::uint_least32_t last_year_hash = MurMur3::calcHash("last_year");
+            const std::uint_least32_t color_hash = MurMur3::calcHash("color");
+            const std::uint_least32_t line_width_hash = MurMur3::calcHash("line_width");
 
             const bool has_key = table.hasColumn(key_hash);
             const bool has_type = table.hasColumn(type_hash);
@@ -90,6 +94,8 @@ namespace paxs {
             const bool has_zoom = table.hasColumn(zoom_hash);
             const bool has_first_year = table.hasColumn(first_year_hash);
             const bool has_last_year = table.hasColumn(last_year_hash);
+            const bool has_color = table.hasColumn(color_hash);
+            const bool has_line_width = table.hasColumn(line_width_hash);
 
             const double days_in_a_year = Calendar<double>::daysInYearGregorian();
             const double julian_day_on_m1_1_1 = Calendar<double>::jdOfGregorianYear1Start();
@@ -151,17 +157,26 @@ namespace paxs {
                 const std::string& zoom_str = has_zoom ? table.get(row_index, zoom_hash) : "";
                 const double zoom = StringUtils::safeStod(zoom_str, 1.0, true);
 
+                // 色情報（16進数文字列）
+                const std::string& color_str = has_color ? table.get(row_index, color_hash) : "";
+
+                // 線の太さ
+                const std::string& line_width_str = has_line_width ? table.get(row_index, line_width_hash) : "";
+                const double line_width = StringUtils::safeStod(line_width_str, 2.0, true);
+
                 // コールバックを呼び出し
-                callback(FeatureListParams(
+                callback(FeatureListParams{
                     key_str,
                     file_path_str,
                     type_str,
                     Range<double>(min_zoom_level, max_zoom_level),
                     Range<double>(static_cast<double>(min_year), static_cast<double>(max_year)),
                     texture_hash_value,
-                    zoom
-                ));
-            });
+                    zoom,
+                    color_str,
+                    line_width
+                    });
+                });
         }
     };
 

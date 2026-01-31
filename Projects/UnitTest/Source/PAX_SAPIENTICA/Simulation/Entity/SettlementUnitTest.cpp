@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -177,11 +177,11 @@ TEST_F(SettlementUnitTest, Death_DivorcesPartnerWhenAgentDies) {
 
 	// 夫（寿命ちょうど、100ステップ）
 	paxs::SettlementAgent husband(1, 100, 100, male_genome, 100, 0, 5);
-	husband.marry(2, female_genome, 100, 0, 5);
+    husband.marry(2, female_genome, 100, 0, 5, 0, 0);
 
 	// 妻（若い、30ステップ）
 	paxs::SettlementAgent wife(2, 30, 100, female_genome, 100, 0, 5);
-	wife.marry(1, male_genome, 100, 0, 5);
+    wife.marry(1, male_genome, 100, 0, 5, 0, 0);
 
 	settlement.addAgent(husband);
 	settlement.addAgent(wife);
@@ -215,7 +215,7 @@ TEST_F(SettlementUnitTest, Birth_CreatesChildWhenBirthIntervalReachesZero) {
 	father_genome.setYDNA(1); // Male
 
 	paxs::SettlementAgent mother(1, 25 * 12, 100 * 12, mother_genome, 100, 0, 5);
-	mother.marry(2, father_genome, 100, 0, 5);
+    mother.marry(2, father_genome, 100, 0, 5, 0, 0);
 	mother.setBirthIntervalCount(1); // 次のステップで出産
 
 	settlement.addAgent(mother);
@@ -262,7 +262,7 @@ TEST_F(SettlementUnitTest, Birth_ChildInheritsGenomeFromParents) {
 	father_genome.setYDNA(1);
 
 	paxs::SettlementAgent mother(1, 25 * 12, 100 * 12, mother_genome, 100, 0, 5);
-	mother.marry(2, father_genome, 100, 0, 5);
+    mother.marry(2, father_genome, 100, 0, 5, 0, 0);
 	mother.setBirthIntervalCount(1);
 
 	settlement.addAgent(mother);
@@ -286,7 +286,7 @@ TEST_F(SettlementUnitTest, Birth_ChildInheritsCultureFromParents) {
 	father_genome.setYDNA(1);
 
 	paxs::SettlementAgent mother(1, 25 * 12, 100 * 12, mother_genome, 100, 0, 5);
-	mother.marry(2, father_genome, 80, 0, 3);
+    mother.marry(2, father_genome, 80, 0, 3, 0, 0);
 	mother.setBirthIntervalCount(1);
 
 	settlement.addAgent(mother);
@@ -832,8 +832,8 @@ TEST_F(SettlementUnitTest, Divide_KeepsMarriedCouplesTogether) {
 		paxs::SettlementAgent husband(i * 2, 25 * 12, 100 * 12, male_genome, 0, 0, 0);
 		paxs::SettlementAgent wife(i * 2 + 1, 25 * 12, 100 * 12, female_genome, 0, 0, 0);
 
-		husband.marry(i * 2 + 1, female_genome, 0, 0, 0);
-		wife.marry(i * 2, male_genome, 0, 0, 0);
+        husband.marry(i * 2 + 1, female_genome, 0, 0, 0, 0, 0);
+        wife.marry(i * 2, male_genome, 0, 0, 0, 0, 0);
 
 		settlement.addAgent(husband);
 		settlement.addAgent(wife);
