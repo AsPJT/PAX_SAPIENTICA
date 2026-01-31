@@ -23,7 +23,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <functional>
 #include <fstream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -377,6 +379,82 @@ namespace paxs {
         /// @return Number of data rows / データ行数
         std::size_t rowCount() const {
             return row_count_;
+        }
+
+        /// @brief Iterate over rows and provide a string representation for each column.
+        /// @brief 各行を走査し、各カラムを文字列化した行データをコールバックに渡す
+        /// @param callback Callback called for each row
+        void forEachRow(const std::function<void(std::size_t, const std::vector<std::string>&)>& callback) const {
+            if (!is_successfully_loaded_ || row_count_ == 0) {
+                return;
+            }
+
+            const auto key_hash = MurMur3::calcHash("key");
+            const auto value_hash = MurMur3::calcHash("value");
+            const auto longitude_hash = MurMur3::calcHash("longitude");
+            const auto latitude_hash = MurMur3::calcHash("latitude");
+            const auto first_year_hash = MurMur3::calcHash("first_year");
+            const auto last_year_hash = MurMur3::calcHash("last_year");
+            const auto first_julian_day_hash = MurMur3::calcHash("first_julian_day");
+            const auto last_julian_day_hash = MurMur3::calcHash("last_julian_day");
+            const auto min_size_hash = MurMur3::calcHash("min_size");
+            const auto max_size_hash = MurMur3::calcHash("max_size");
+
+            struct ColDef {
+                std::uint_least32_t hash;
+                BinaryColumnType type;
+            };
+
+            std::vector<ColDef> cols;
+            cols.reserve(10);
+            if (hasColumn(key_hash)) cols.push_back({ key_hash, BinaryColumnType::KeyHash });
+            if (hasColumn(value_hash)) cols.push_back({ value_hash, BinaryColumnType::ValueString });
+            if (hasColumn(longitude_hash)) cols.push_back({ longitude_hash, BinaryColumnType::Longitude });
+            if (hasColumn(latitude_hash)) cols.push_back({ latitude_hash, BinaryColumnType::Latitude });
+            if (hasColumn(first_year_hash)) cols.push_back({ first_year_hash, BinaryColumnType::FirstYear });
+            if (hasColumn(last_year_hash)) cols.push_back({ last_year_hash, BinaryColumnType::LastYear });
+            if (hasColumn(first_julian_day_hash)) cols.push_back({ first_julian_day_hash, BinaryColumnType::FirstJulianDay });
+            if (hasColumn(last_julian_day_hash)) cols.push_back({ last_julian_day_hash, BinaryColumnType::LastJulianDay });
+            if (hasColumn(min_size_hash)) cols.push_back({ min_size_hash, BinaryColumnType::MinSize });
+            if (hasColumn(max_size_hash)) cols.push_back({ max_size_hash, BinaryColumnType::MaxSize });
+
+            std::vector<std::string> row;
+            row.reserve(cols.size());
+
+            for (std::size_t row_index = 0; row_index < row_count_; ++row_index) {
+                row.clear();
+                for (const auto& col : cols) {
+                    switch (col.type) {
+                    case BinaryColumnType::KeyHash:
+                        row.emplace_back(std::to_string(getKeyHash(row_index)));
+                        break;
+                    case BinaryColumnType::ValueString:
+                        row.emplace_back(get(row_index, col.hash));
+                        break;
+                    case BinaryColumnType::Longitude:
+                    case BinaryColumnType::Latitude:
+                    {
+                        const double v = getDouble(row_index, col.hash);
+                        row.emplace_back(std::to_string(v));
+                        break;
+                    }
+                    case BinaryColumnType::FirstYear:
+                    case BinaryColumnType::LastYear:
+                    case BinaryColumnType::FirstJulianDay:
+                    case BinaryColumnType::LastJulianDay:
+                        row.emplace_back(std::to_string(getInt32(row_index, col.hash)));
+                        break;
+                    case BinaryColumnType::MinSize:
+                    case BinaryColumnType::MaxSize:
+                        row.emplace_back(std::to_string(getFloat(row_index, col.hash)));
+                        break;
+                    default:
+                        row.emplace_back("");
+                        break;
+                    }
+                }
+                callback(row_index, row);
+            }
         }
 
         /// @brief Get the number of columns

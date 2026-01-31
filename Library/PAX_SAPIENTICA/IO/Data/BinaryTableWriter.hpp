@@ -95,7 +95,7 @@ namespace paxs {
             if (hash == last_julian_day_hash) return BinaryColumnType::LastJulianDay;
             if (hash == min_size_hash) return BinaryColumnType::MinSize;
             if (hash == max_size_hash) return BinaryColumnType::MaxSize;
-            
+
             return BinaryColumnType::Unknown;
         }
 
@@ -147,7 +147,7 @@ namespace paxs {
 
             for (std::size_t i = 0; i < column_count; ++i) {
                 const std::uint_least32_t column_key = header_keys[i];
-                
+
                 if (column_key == key_hash) {
                     column_types[i] = BinaryColumnType::KeyHash;
                     column_names[i] = "key";
@@ -219,7 +219,7 @@ namespace paxs {
             }
 
             // データを書き込む
-            for (std::size_t row = 0; row_count; ++row) {
+            for (std::size_t row = 0; row < row_count; ++row) {
                 bool longitude_latitude_written = false;
 
                 for (std::size_t col = 0; col < column_count; ++col) {
@@ -259,9 +259,9 @@ namespace paxs {
                         writeString(ofs, cell_value);
                     }
                     else if (column_types[col] == BinaryColumnType::FirstYear ||
-                             column_types[col] == BinaryColumnType::LastYear ||
-                             column_types[col] == BinaryColumnType::FirstJulianDay ||
-                             column_types[col] == BinaryColumnType::LastJulianDay) {
+                        column_types[col] == BinaryColumnType::LastYear ||
+                        column_types[col] == BinaryColumnType::FirstJulianDay ||
+                        column_types[col] == BinaryColumnType::LastJulianDay) {
                         // 年/ユリウス日をint32として書き込む
                         auto value_opt = StringUtils::toInt(cell_value);
                         if (value_opt) {
@@ -272,7 +272,7 @@ namespace paxs {
                         }
                     }
                     else if (column_types[col] == BinaryColumnType::MinSize ||
-                             column_types[col] == BinaryColumnType::MaxSize) {
+                        column_types[col] == BinaryColumnType::MaxSize) {
                         // サイズをfloatとして書き込む
                         auto value_opt = StringUtils::toDouble(cell_value);
                         if (value_opt) {
@@ -349,7 +349,7 @@ namespace paxs {
                     ofs << row[i];
                 }
                 ofs << '\n';
-            });
+                });
 
             ofs.close();
             PAXS_INFO("Successfully converted binary to TSV: " + tsv_relative_path);

@@ -73,6 +73,7 @@ namespace paxs {
         // 描画定数
         static constexpr double MAX_POPULATION_VISUALIZATION = 75.0;  // 人口可視化の最大値
         static constexpr double MTDNA_SCALE_FACTOR = 27.0;  // mtDNA可視化のスケール因子
+        static constexpr double YDNA_SCALE_FACTOR = 27.0;  // Y-DNA可視化のスケール因子
         static constexpr int ZOOM_LEVEL = 10;  // ズームレベル
         static constexpr float CIRCLE_BASE_SIZE = 1.0f;  // 円の基本サイズ
         static constexpr float CIRCLE_POPULATION_SCALE = 10.0f;  // 円のサイズの人口スケール
@@ -95,6 +96,17 @@ namespace paxs {
         // 青銅交換色の定義
         static constexpr paxg::Color BRONZE_SHARE_COLOR = paxg::Color(221, 215, 66); // 黄色 #DDD742
 
+        // 土器系統色の定義 (A-H)
+        static constexpr paxg::Color POTTERY_COLOR_A = paxg::Color(231, 76, 60);
+        static constexpr paxg::Color POTTERY_COLOR_B = paxg::Color(230, 126, 34);
+        static constexpr paxg::Color POTTERY_COLOR_C = paxg::Color(241, 196, 15);
+        static constexpr paxg::Color POTTERY_COLOR_D = paxg::Color(46, 204, 113);
+        static constexpr paxg::Color POTTERY_COLOR_E = paxg::Color(26, 188, 156);
+        static constexpr paxg::Color POTTERY_COLOR_F = paxg::Color(52, 152, 219);
+        static constexpr paxg::Color POTTERY_COLOR_G = paxg::Color(155, 89, 182);
+        static constexpr paxg::Color POTTERY_COLOR_H = paxg::Color(149, 165, 166);
+        static constexpr paxg::Color POTTERY_COLOR_NONE = paxg::Color(99, 99, 99);
+
         SettlementRenderer() = default;
 
         /// @brief グリッド座標をEPSG:3857(Webメルカトル) 座標に変換
@@ -107,6 +119,39 @@ namespace paxs {
                 position,
                 ZOOM_LEVEL
             );
+        }
+
+        static paxg::Color getPotteryColor(const std::uint_least8_t pottery_id) {
+            switch (pottery_id) {
+            case 0: return POTTERY_COLOR_A;
+            case 1: return POTTERY_COLOR_B;
+            case 2: return POTTERY_COLOR_C;
+            case 3: return POTTERY_COLOR_D;
+            case 4: return POTTERY_COLOR_E;
+            case 5: return POTTERY_COLOR_F;
+            case 6: return POTTERY_COLOR_G;
+            case 7: return POTTERY_COLOR_H;
+            default: return POTTERY_COLOR_NONE;
+            }
+        }
+
+        static std::uint_least8_t getDominantPotteryId(const paxs::Settlement& settlement) {
+            const auto stats = settlement.getStatistics();
+            if (stats.pottery_counts.empty()) {
+                return 255;
+            }
+
+            int max_count = 0;
+            std::uint_least8_t max_id = 255;
+            for (const auto& kv : stats.pottery_counts) {
+                const std::uint_least8_t id = kv.first;
+                const int count = kv.second;
+                if (count > max_count) {
+                    max_count = count;
+                    max_id = id;
+                }
+            }
+            return max_id;
         }
 
         /// @brief 言語番号から色を取得
@@ -149,7 +194,23 @@ namespace paxs {
                         (settlement.getPopulation() / CIRCLE_POPULATION_SCALE);
 
                     // 表示モード別に描画
-                    if (select_draw != 5) {
+                    if (select_draw == 5) {
+                        // 言語
+                        paxg::Circle(draw_pos, circle_size).draw(
+                            getLanguageColor(settlement.getLanguage()));
+                    }
+                    else if (select_draw == 7) {
+                        // 土器（最多系統）
+                        const std::uint_least8_t pottery_id = getDominantPotteryId(settlement);
+                        paxg::Circle(draw_pos, circle_size).draw(
+                            getPotteryColor(pottery_id));
+                    }
+                    else if (select_draw == 8) {
+                        // Y-DNA
+                        paxg::Circle(draw_pos, circle_size).draw(
+                            getLanguageColor(settlement.getMostYDNA()));
+                    }
+                    else {
                         // 人口、農耕、mtDNA、SNP、青銅器
                         double pop_original = 0.0;
                         switch (select_draw) {
@@ -177,11 +238,6 @@ namespace paxs {
                             : static_cast<std::uint_least8_t>(pop_original);
                         paxg::Circle(draw_pos, circle_size).draw(
                             SimulationColor::getSettlementColor(pop));
-                    }
-                    else {
-                        // 言語
-                        paxg::Circle(draw_pos, circle_size).draw(
-                            getLanguageColor(settlement.getLanguage()));
                     }
                 }
             }

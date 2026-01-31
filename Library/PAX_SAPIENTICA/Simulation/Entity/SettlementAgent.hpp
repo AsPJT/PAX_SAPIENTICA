@@ -24,17 +24,26 @@ namespace paxs {
     class SettlementAgent {
     public:
 
+        static constexpr std::uint_least8_t RiceTypeNone = 0; // 稲作なし
+        static constexpr std::uint_least8_t RiceTypeIne = 1; // イネ栽培
+        static constexpr std::uint_least8_t RiceTypePaddy = 2; // 水田稲作
+
         constexpr SettlementAgent() = default;
 
         explicit SettlementAgent(const HumanIndexType id,
             const AgeType age, const AgeType life_span, const Genome& genome,
             std::uint_least8_t farming_, // 農耕文化
             std::uint_least8_t hunter_gatherer_, // 狩猟採集文化
-            std::uint_least8_t language_ // 言語
+            std::uint_least8_t language_, // 言語
+            std::uint_least8_t pottery_make_ = 0,
+            std::uint_least8_t pottery_lineage_ = 0,
+            std::uint_least8_t rice_type_ = 0
         ) noexcept
             : farming(farming_), hunter_gatherer(hunter_gatherer_), language(language_),
+            pottery_make(pottery_make_), pottery_lineage(pottery_lineage_), rice_type(rice_type_),
             age(age), life_span(life_span),
-            id(id), genome(genome) {}
+            id(id), genome(genome) {
+        }
 
         /// @brief Get the id.
         /// @brief idを取得
@@ -87,6 +96,16 @@ namespace paxs {
 
         constexpr std::uint_least8_t cgetPartnerLanguage() const noexcept { return partner_language; }
 
+        constexpr std::uint_least8_t cgetPotteryMake() const noexcept { return pottery_make; }
+
+        constexpr std::uint_least8_t cgetPotteryLineage() const noexcept { return pottery_lineage; }
+
+        constexpr std::uint_least8_t cgetRiceType() const noexcept { return rice_type; }
+
+        constexpr std::uint_least8_t cgetPartnerPotteryLineage() const noexcept { return partner_pottery_lineage; }
+
+        constexpr std::uint_least8_t cgetPartnerRiceType() const noexcept { return partner_rice_type; }
+
         constexpr bool operator==(const SettlementAgent& a) const noexcept {
             return  id == a.id &&
                 age == a.age &&
@@ -96,26 +115,34 @@ namespace paxs {
                 partner_genome == a.partner_genome &&
                 partner_farming == a.partner_farming &&
                 partner_hunter_gatherer == a.partner_hunter_gatherer &&
-                partner_language == a.partner_language;
+                partner_language == a.partner_language &&
+                pottery_make == a.pottery_make &&
+                pottery_lineage == a.pottery_lineage &&
+                rice_type == a.rice_type &&
+                partner_pottery_lineage == a.partner_pottery_lineage &&
+                partner_rice_type == a.partner_rice_type;
         }
 
         /// @brief Is the agent married?
         /// @brief エージェントが結婚しているかどうかを返す
-        bool isMarried() const noexcept { return is_married; }
+        bool isMarried() const noexcept { return partner_id != 0; }
 
         /// @brief Set the agent's marriage status.
         /// @brief 結婚する
         void marry(const HumanIndexType partner_id_, const Genome& partner_genome_,
             std::uint_least8_t partner_farming_, // 結婚相手の農耕文化
-        std::uint_least8_t partner_hunter_gatherer_, // 結婚相手の狩猟採集文化
-        std::uint_least8_t partner_language_ // 結婚相手の言語
+            std::uint_least8_t partner_hunter_gatherer_, // 結婚相手の狩猟採集文化
+            std::uint_least8_t partner_language_, // 結婚相手の言語
+            std::uint_least8_t partner_pottery_lineage_,
+            std::uint_least8_t partner_rice_type_
         ) noexcept {
-            is_married = true;
             partner_id = partner_id_;
             partner_genome = partner_genome_;
             partner_farming = partner_farming_;
             partner_hunter_gatherer = partner_hunter_gatherer_;
             partner_language = partner_language_;
+            partner_pottery_lineage = partner_pottery_lineage_;
+            partner_rice_type = partner_rice_type_;
         }
 
         /// @brief Is the agent able to marry?
@@ -128,7 +155,7 @@ namespace paxs {
                 age_f < (genome.isMale() ?
                     SimulationConstants::getInstance().male_marriageable_age_max :
                     SimulationConstants::getInstance().female_marriageable_age_max) &&
-                !is_married;
+                partner_id == 0;
         }
 
         /// @brief Is able to give birth?
@@ -136,7 +163,7 @@ namespace paxs {
         bool isAbleToGiveBirth() const noexcept {
             const float age_f = static_cast<float>(age) / SimulationConstants::getInstance().steps_per_year;
             return age_f > SimulationConstants::getInstance().childbearing_age_min
-                && age_f < SimulationConstants::getInstance().childbearing_age_max && is_married;
+                && age_f < SimulationConstants::getInstance().childbearing_age_max && partner_id != 0;
         }
 
         /// @brief Get the partner's ID.
@@ -146,7 +173,6 @@ namespace paxs {
         /// @brief Divorce.
         /// @brief 離婚
         void divorce() noexcept {
-            is_married = false;
             partner_id = 0;
         }
 
@@ -157,9 +183,11 @@ namespace paxs {
         void setAge(const AgeType age_) { age = age_; }
         void setLifeSpan(const AgeType life_span_) { life_span = life_span_; }
         void setPartnerId(const HumanIndexType partner_id_) { partner_id = partner_id_; }
+        void setPotteryMake(const std::uint_least8_t value) { pottery_make = value; }
+        void setPotteryLineage(const std::uint_least8_t value) { pottery_lineage = value; }
+        void setRiceType(const std::uint_least8_t value) { rice_type = value; }
 
     protected:
-        bool is_married = false; // 結婚しているかどうか
         std::uint_least8_t birth_interval_count = 0; // 出産の間隔のカウント
 
         std::uint_least8_t farming = 0; // 農耕文化
@@ -170,11 +198,18 @@ namespace paxs {
         std::uint_least8_t language = 0; // 言語
         std::uint_least8_t partner_language = 0; // 結婚相手の言語
 
+        std::uint_least8_t pottery_make = 0; // 土器を作るかどうか
+        std::uint_least8_t pottery_lineage = 0; // 土器系統（ビットマスク）
+        std::uint_least8_t rice_type = 0; // 稲作の種別
+
+        std::uint_least8_t partner_pottery_lineage = 0; // 結婚相手の土器系統
+        std::uint_least8_t partner_rice_type = 0; // 結婚相手の稲作種別
+
         AgeType age = 0; // 年齢
         AgeType life_span = 0; // 寿命
 
-        HumanIndexType id = 0; // ID
-        HumanIndexType partner_id = 0; // 結婚相手のID
+        HumanIndexType id = 0;
+        HumanIndexType partner_id = 0; // 結婚相手のID（0は未婚）
 
         Genome genome{}; // ゲノム
         Genome partner_genome{}; // 結婚相手のゲノム

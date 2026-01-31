@@ -19,6 +19,7 @@
 
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
+#include <PAX_SAPIENTICA/System/AppConfig.hpp>
 #include <PAX_SAPIENTICA/Utility/TimeUtils.hpp>
 
 namespace paxs {
@@ -30,7 +31,9 @@ namespace paxs {
         double snp_avg = 0.0;
         double language_avg = 0.0;
         std::map<std::uint_least8_t, int> mtdna_counts;
+        std::map<std::uint_least8_t, int> ydna_counts;
         std::map<std::uint_least8_t, int> language_counts;
+        std::map<std::uint_least8_t, int> pottery_counts;
     };
 
     /// @brief ステップ統計データ
@@ -42,7 +45,9 @@ namespace paxs {
         std::vector<DistrictStatistics> district_stats;
         std::vector<DistrictStatistics> region_stats;
         std::function<std::string(std::uint_least8_t)> get_mtdna_name;
+        std::function<std::string(std::uint_least8_t)> get_ydna_name;
         std::function<std::string(std::uint_least8_t)> get_language_name;
+        std::function<std::string(std::uint_least8_t)> get_pottery_name;
     };
 
     /// @brief シミュレーション結果をファイルに出力するクラス
@@ -54,14 +59,18 @@ namespace paxs {
         // 標準出力用ファイルストリーム / File streams for standard output
         std::ofstream pop_ofs;
         std::ofstream mtdna_ofs;
+        std::ofstream ydna_ofs;
         std::ofstream language_dna_ofs;
+        std::ofstream pottery_ofs;
         std::ofstream snp_ofs;
         std::ofstream language_ofs;
         std::ofstream live_ofs;
 
         std::ofstream pop_region_ofs;
         std::ofstream mtdna_region_ofs;
+        std::ofstream ydna_region_ofs;
         std::ofstream language_dna_region_ofs;
+        std::ofstream pottery_region_ofs;
         std::ofstream snp_region_ofs;
         std::ofstream language_region_ofs;
         std::ofstream live_region_ofs;
@@ -69,14 +78,18 @@ namespace paxs {
         // ラベル形式用のファイルストリーム / File streams for labeled format
         std::ofstream labeled_pop_ofs;
         std::ofstream labeled_mtdna_ofs;
+        std::ofstream labeled_ydna_ofs;
         std::ofstream labeled_language_dna_ofs;
+        std::ofstream labeled_pottery_ofs;
         std::ofstream labeled_snp_ofs;
         std::ofstream labeled_language_ofs;
         std::ofstream labeled_live_ofs;
 
         std::ofstream labeled_pop_region_ofs;
         std::ofstream labeled_mtdna_region_ofs;
+        std::ofstream labeled_ydna_region_ofs;
         std::ofstream labeled_language_dna_region_ofs;
+        std::ofstream labeled_pottery_region_ofs;
         std::ofstream labeled_snp_region_ofs;
         std::ofstream labeled_language_region_ofs;
         std::ofstream labeled_live_region_ofs;
@@ -149,20 +162,25 @@ namespace paxs {
             // 標準出力用ディレクトリとファイルを作成
             result_directory_ = "SimulationResults/" + calcDateTime();
             FileSystem::createDirectories(result_directory_);
+            const std::string root_path = AppConfig::getInstance().getRootPath();
 
-            pop_ofs.open(result_directory_ + "/Population.txt");
-            mtdna_ofs.open(result_directory_ + "/mtDNA.txt");
-            language_dna_ofs.open(result_directory_ + "/Language_DNA.txt");
-            snp_ofs.open(result_directory_ + "/SNP.txt");
-            language_ofs.open(result_directory_ + "/Language.txt");
-            live_ofs.open(result_directory_ + "/HabitableLand.txt");
+            pop_ofs.open(root_path + result_directory_ + "/Population.txt");
+            mtdna_ofs.open(root_path + result_directory_ + "/mtDNA.txt");
+            ydna_ofs.open(root_path + result_directory_ + "/Y-DNA.txt");
+            language_dna_ofs.open(root_path + result_directory_ + "/Language_DNA.txt");
+            pottery_ofs.open(root_path + result_directory_ + "/Pottery.txt");
+            snp_ofs.open(root_path + result_directory_ + "/SNP.txt");
+            language_ofs.open(root_path + result_directory_ + "/Language.txt");
+            live_ofs.open(root_path + result_directory_ + "/HabitableLand.txt");
 
-            pop_region_ofs.open(result_directory_ + "/Region_Population.txt");
-            mtdna_region_ofs.open(result_directory_ + "/Region_mtDNA.txt");
-            language_dna_region_ofs.open(result_directory_ + "/Region_Language_DNA.txt");
-            snp_region_ofs.open(result_directory_ + "/Region_SNP.txt");
-            language_region_ofs.open(result_directory_ + "/Region_Language.txt");
-            live_region_ofs.open(result_directory_ + "/Region_HabitableLand.txt");
+            pop_region_ofs.open(root_path + result_directory_ + "/Region_Population.txt");
+            mtdna_region_ofs.open(root_path + result_directory_ + "/Region_mtDNA.txt");
+            ydna_region_ofs.open(root_path + result_directory_ + "/Region_Y-DNA.txt");
+            language_dna_region_ofs.open(root_path + result_directory_ + "/Region_Language_DNA.txt");
+            pottery_region_ofs.open(root_path + result_directory_ + "/Region_Pottery.txt");
+            snp_region_ofs.open(root_path + result_directory_ + "/Region_SNP.txt");
+            language_region_ofs.open(root_path + result_directory_ + "/Region_Language.txt");
+            live_region_ofs.open(root_path + result_directory_ + "/Region_HabitableLand.txt");
 
             // ラベル形式の出力が必要な場合
             if (!label_name.empty()) {
@@ -173,26 +191,34 @@ namespace paxs {
                 // ディレクトリ作成
                 FileSystem::createDirectories(labeled_directory_ + "/Population");
                 FileSystem::createDirectories(labeled_directory_ + "/mtDNA");
+                FileSystem::createDirectories(labeled_directory_ + "/Y-DNA");
                 FileSystem::createDirectories(labeled_directory_ + "/SNP");
                 FileSystem::createDirectories(labeled_directory_ + "/Language");
                 FileSystem::createDirectories(labeled_directory_ + "/Language_DNA");
+                FileSystem::createDirectories(labeled_directory_ + "/Pottery");
                 FileSystem::createDirectories(labeled_directory_ + "/Region_Population");
                 FileSystem::createDirectories(labeled_directory_ + "/Region_mtDNA");
+                FileSystem::createDirectories(labeled_directory_ + "/Region_Y-DNA");
                 FileSystem::createDirectories(labeled_directory_ + "/Region_SNP");
                 FileSystem::createDirectories(labeled_directory_ + "/Region_Language");
                 FileSystem::createDirectories(labeled_directory_ + "/Region_Language_DNA");
+                FileSystem::createDirectories(labeled_directory_ + "/Region_Pottery");
 
                 // ファイルを開く
-                labeled_pop_ofs.open(labeled_directory_ + "/Population/" + timestamp + ".txt");
-                labeled_mtdna_ofs.open(labeled_directory_ + "/mtDNA/" + timestamp + ".txt");
-                labeled_language_dna_ofs.open(labeled_directory_ + "/Language_DNA/" + timestamp + ".txt");
-                labeled_snp_ofs.open(labeled_directory_ + "/SNP/" + timestamp + ".txt");
-                labeled_language_ofs.open(labeled_directory_ + "/Language/" + timestamp + ".txt");
-                labeled_pop_region_ofs.open(labeled_directory_ + "/Region_Population/" + timestamp + ".txt");
-                labeled_mtdna_region_ofs.open(labeled_directory_ + "/Region_mtDNA/" + timestamp + ".txt");
-                labeled_language_dna_region_ofs.open(labeled_directory_ + "/Region_Language_DNA/" + timestamp + ".txt");
-                labeled_snp_region_ofs.open(labeled_directory_ + "/Region_SNP/" + timestamp + ".txt");
-                labeled_language_region_ofs.open(labeled_directory_ + "/Region_Language/" + timestamp + ".txt");
+                labeled_pop_ofs.open(root_path + labeled_directory_ + "/Population/" + timestamp + ".txt");
+                labeled_mtdna_ofs.open(root_path + labeled_directory_ + "/mtDNA/" + timestamp + ".txt");
+                labeled_ydna_ofs.open(root_path + labeled_directory_ + "/Y-DNA/" + timestamp + ".txt");
+                labeled_language_dna_ofs.open(root_path + labeled_directory_ + "/Language_DNA/" + timestamp + ".txt");
+                labeled_pottery_ofs.open(root_path + labeled_directory_ + "/Pottery/" + timestamp + ".txt");
+                labeled_snp_ofs.open(root_path + labeled_directory_ + "/SNP/" + timestamp + ".txt");
+                labeled_language_ofs.open(root_path + labeled_directory_ + "/Language/" + timestamp + ".txt");
+                labeled_pop_region_ofs.open(root_path + labeled_directory_ + "/Region_Population/" + timestamp + ".txt");
+                labeled_mtdna_region_ofs.open(root_path + labeled_directory_ + "/Region_mtDNA/" + timestamp + ".txt");
+                labeled_ydna_region_ofs.open(root_path + labeled_directory_ + "/Region_Y-DNA/" + timestamp + ".txt");
+                labeled_language_dna_region_ofs.open(root_path + labeled_directory_ + "/Region_Language_DNA/" + timestamp + ".txt");
+                labeled_pottery_region_ofs.open(root_path + labeled_directory_ + "/Region_Pottery/" + timestamp + ".txt");
+                labeled_snp_region_ofs.open(root_path + labeled_directory_ + "/Region_SNP/" + timestamp + ".txt");
+                labeled_language_region_ofs.open(root_path + labeled_directory_ + "/Region_Language/" + timestamp + ".txt");
 
                 // ヘッダーを書き込む
                 writeHeaders(true, district_list);
@@ -212,47 +238,61 @@ namespace paxs {
 
             auto& pop = labeled ? labeled_pop_ofs : pop_ofs;
             auto& mtdna = labeled ? labeled_mtdna_ofs : mtdna_ofs;
+            auto& ydna = labeled ? labeled_ydna_ofs : ydna_ofs;
             auto& lang_dna = labeled ? labeled_language_dna_ofs : language_dna_ofs;
+            auto& pottery = labeled ? labeled_pottery_ofs : pottery_ofs;
             auto& snp = labeled ? labeled_snp_ofs : snp_ofs;
             auto& lang = labeled ? labeled_language_ofs : language_ofs;
             auto& pop_reg = labeled ? labeled_pop_region_ofs : pop_region_ofs;
             auto& mtdna_reg = labeled ? labeled_mtdna_region_ofs : mtdna_region_ofs;
+            auto& ydna_reg = labeled ? labeled_ydna_region_ofs : ydna_region_ofs;
             auto& lang_dna_reg = labeled ? labeled_language_dna_region_ofs : language_dna_region_ofs;
+            auto& pottery_reg = labeled ? labeled_pottery_region_ofs : pottery_region_ofs;
             auto& snp_reg = labeled ? labeled_snp_region_ofs : snp_region_ofs;
             auto& lang_reg = labeled ? labeled_language_region_ofs : language_region_ofs;
 
             outputResultString(pop);
             outputResultString(mtdna);
+            outputResultString(ydna);
             outputResultString(lang_dna);
+            outputResultString(pottery);
             outputResultString(snp);
             outputResultString(lang);
 
             if (labeled) {
                 outputResultString(pop_reg);
                 outputResultString(mtdna_reg);
+                outputResultString(ydna_reg);
                 outputResultString(lang_dna_reg);
+                outputResultString(pottery_reg);
                 outputResultString(snp_reg);
                 outputResultString(lang_reg);
             }
 
-            for (std::size_t i = 0; i < max_number_of_districts - 1; ++i) {
+            for (std::size_t i = 0; i < district_list.size(); ++i) {
                 outputResultDistrictName(pop, district_list[i].name);
                 outputResultDistrictName(mtdna, district_list[i].name);
+                outputResultDistrictName(ydna, district_list[i].name);
                 outputResultDistrictName(lang_dna, district_list[i].name);
+                outputResultDistrictName(pottery, district_list[i].name);
                 outputResultDistrictName(snp, district_list[i].name);
                 outputResultDistrictName(lang, district_list[i].name);
             }
 
             outputResultLastString(pop);
             outputResultLastString(mtdna);
+            outputResultLastString(ydna);
             outputResultLastString(lang_dna);
+            outputResultLastString(pottery);
             outputResultLastString(snp);
             outputResultLastString(lang);
 
             if (labeled) {
                 outputResultLastString(pop_reg);
                 outputResultLastString(mtdna_reg);
+                outputResultLastString(ydna_reg);
                 outputResultLastString(lang_dna_reg);
+                outputResultLastString(pottery_reg);
                 outputResultLastString(snp_reg);
                 outputResultLastString(lang_reg);
             }
@@ -263,28 +303,36 @@ namespace paxs {
         void close() {
             closeStream(pop_ofs);
             closeStream(mtdna_ofs);
+            closeStream(ydna_ofs);
             closeStream(language_dna_ofs);
+            closeStream(pottery_ofs);
             closeStream(snp_ofs);
             closeStream(language_ofs);
             closeStream(live_ofs);
 
             closeStream(pop_region_ofs);
             closeStream(mtdna_region_ofs);
+            closeStream(ydna_region_ofs);
             closeStream(language_dna_region_ofs);
+            closeStream(pottery_region_ofs);
             closeStream(snp_region_ofs);
             closeStream(language_region_ofs);
             closeStream(live_region_ofs);
 
             closeStream(labeled_pop_ofs);
             closeStream(labeled_mtdna_ofs);
+            closeStream(labeled_ydna_ofs);
             closeStream(labeled_language_dna_ofs);
+            closeStream(labeled_pottery_ofs);
             closeStream(labeled_snp_ofs);
             closeStream(labeled_language_ofs);
             closeStream(labeled_live_ofs);
 
             closeStream(labeled_pop_region_ofs);
             closeStream(labeled_mtdna_region_ofs);
+            closeStream(labeled_ydna_region_ofs);
             closeStream(labeled_language_dna_region_ofs);
+            closeStream(labeled_pottery_region_ofs);
             closeStream(labeled_snp_region_ofs);
             closeStream(labeled_language_region_ofs);
             closeStream(labeled_live_region_ofs);
@@ -311,15 +359,15 @@ namespace paxs {
         /// @param stats 統計データ / Statistics data
         void writeStepStatistics(const StepStatistics& stats) {
             writeStepStatisticsToStreams(stats,
-                pop_ofs, mtdna_ofs, language_dna_ofs, snp_ofs, language_ofs,
-                pop_region_ofs, mtdna_region_ofs, language_dna_region_ofs, snp_region_ofs, language_region_ofs
+                pop_ofs, mtdna_ofs, ydna_ofs, language_dna_ofs, pottery_ofs, snp_ofs, language_ofs,
+                pop_region_ofs, mtdna_region_ofs, ydna_region_ofs, language_dna_region_ofs, pottery_region_ofs, snp_region_ofs, language_region_ofs
             );
 
             // ラベル付き出力
             if (is_labeled_output_enabled_) {
                 writeStepStatisticsToStreams(stats,
-                    labeled_pop_ofs, labeled_mtdna_ofs, labeled_language_dna_ofs, labeled_snp_ofs, labeled_language_ofs,
-                    labeled_pop_region_ofs, labeled_mtdna_region_ofs, labeled_language_dna_region_ofs, labeled_snp_region_ofs, labeled_language_region_ofs
+                    labeled_pop_ofs, labeled_mtdna_ofs, labeled_ydna_ofs, labeled_language_dna_ofs, labeled_pottery_ofs, labeled_snp_ofs, labeled_language_ofs,
+                    labeled_pop_region_ofs, labeled_mtdna_region_ofs, labeled_ydna_region_ofs, labeled_language_dna_region_ofs, labeled_pottery_region_ofs, labeled_snp_region_ofs, labeled_language_region_ofs
                 );
             }
         }
@@ -342,8 +390,8 @@ namespace paxs {
 
         void writeStepStatisticsToStreams(
             const StepStatistics& stats,
-            std::ofstream& pop, std::ofstream& mtdna, std::ofstream& lang_dna, std::ofstream& snp, std::ofstream& lang,
-            std::ofstream& pop_reg, std::ofstream& mtdna_reg, std::ofstream& lang_dna_reg, std::ofstream& snp_reg, std::ofstream& lang_reg
+            std::ofstream& pop, std::ofstream& mtdna, std::ofstream& ydna, std::ofstream& lang_dna, std::ofstream& pottery, std::ofstream& snp, std::ofstream& lang,
+            std::ofstream& pop_reg, std::ofstream& mtdna_reg, std::ofstream& ydna_reg, std::ofstream& lang_dna_reg, std::ofstream& pottery_reg, std::ofstream& snp_reg, std::ofstream& lang_reg
         ) {
             const std::uint_least64_t sc = stats.step_count;
             const std::size_t set_count = stats.settlement_count;
@@ -352,12 +400,16 @@ namespace paxs {
             // ヘッダー行
             pop << sc << '\t' << set_count << '\t' << pop_count << '\t';
             mtdna << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            ydna << sc << '\t' << set_count << '\t' << pop_count << '\t';
             lang_dna << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            pottery << sc << '\t' << set_count << '\t' << pop_count << '\t';
             snp << sc << '\t' << set_count << '\t' << pop_count << '\t';
             lang << sc << '\t' << set_count << '\t' << pop_count << '\t';
             pop_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
             mtdna_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            ydna_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
             lang_dna_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
+            pottery_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
             snp_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
             lang_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
 
@@ -372,10 +424,20 @@ namespace paxs {
                 }
                 mtdna << '\t';
 
+                for (const auto& [haplotype, count] : stat.ydna_counts) {
+                    if (count > 0) ydna << stats.get_ydna_name(haplotype) << ':' << count << '/';
+                }
+                ydna << '\t';
+
                 for (const auto& [language_id, count] : stat.language_counts) {
                     if (count > 0) lang_dna << stats.get_language_name(language_id) << ':' << count << '/';
                 }
                 lang_dna << '\t';
+
+                for (const auto& [pottery_id, count] : stat.pottery_counts) {
+                    if (count > 0) pottery << stats.get_pottery_name(pottery_id) << ':' << count << '/';
+                }
+                pottery << '\t';
             }
 
             // 地域別統計
@@ -389,21 +451,35 @@ namespace paxs {
                 }
                 mtdna_reg << '\t';
 
+                for (const auto& [haplotype, count] : stat.ydna_counts) {
+                    if (count > 0) ydna_reg << stats.get_ydna_name(haplotype) << ':' << count << '/';
+                }
+                ydna_reg << '\t';
+
                 for (const auto& [language_id, count] : stat.language_counts) {
                     if (count > 0) lang_dna_reg << stats.get_language_name(language_id) << ':' << count << '/';
                 }
                 lang_dna_reg << '\t';
+
+                for (const auto& [pottery_id, count] : stat.pottery_counts) {
+                    if (count > 0) pottery_reg << stats.get_pottery_name(pottery_id) << ':' << count << '/';
+                }
+                pottery_reg << '\t';
             }
 
             // 終端
             pop << sc << '\n';
             mtdna << sc << '\n';
+            ydna << sc << '\n';
             lang_dna << sc << '\n';
+            pottery << sc << '\n';
             snp << sc << '\n';
             lang << sc << '\n';
             pop_reg << sc << '\n';
             mtdna_reg << sc << '\n';
+            ydna_reg << sc << '\n';
             lang_dna_reg << sc << '\n';
+            pottery_reg << sc << '\n';
             snp_reg << sc << '\n';
             lang_reg << sc << '\n';
         }

@@ -182,19 +182,35 @@ namespace paxs {
             }
         }
 
-        // 人口を計算
+        // 人口を計算（キャッシュ対応版）
         void calcPop() {
-            population_num = 0; // 人口数
-            settlement_num = 0; // 集落数
+            if (population_cache_valid) {
+                population_num = cached_population_num;
+                settlement_num = cached_settlement_num;
+                return;
+            }
 
-            // 地名を描画
+            cached_population_num = 0;
+            cached_settlement_num = 0;
+
             for (const auto& settlement_grid : settlement_grids) {
                 for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
-                    ++settlement_num; // 集落数を増加させる
-                    population_num += settlement.getPopulation(); // 人口数を増加させる
+                    ++cached_settlement_num;
+                    cached_population_num += settlement.getPopulation();
                 }
             }
+
+            population_num = cached_population_num;
+            settlement_num = cached_settlement_num;
+            population_cache_valid = true;
         }
+
+        /// @brief キャッシュを無効化（人口変動時に呼び出す）
+        /// @brief Invalidate cache (call when population changes)
+        void invalidatePopulationCache() noexcept {
+            population_cache_valid = false;
+        }
+
         // 結果の文字列を出力
         static void outputResultString(std::ofstream& ofs_) {
             ofs_ << "step_count" << '\t' << "settlement" << '\t' << "population" << '\t';
@@ -238,11 +254,18 @@ namespace paxs {
             randomizeSettlements(true, false /* 在地人 */, false /*青銅文化は持たない*/);
             calcPop(); // 人口を計算
 
+            // 毎回取得すると重い＆読みづらいので参照をとる
+            const auto& dist_list = japan_provinces->getDistrictList();
+            const auto& lives = *live_list;
+
             // 可住地の数を出力
-            for (std::size_t i = 1; i < max_number_of_districts; ++i) {
+            for (std::size_t i = 1;
+                i < max_number_of_districts && i < dist_list.size() && (i + 1) < lives.size();
+                ++i) {
+
                 result_writer_->writeHabitableLand(
-                    japan_provinces->getDistrictList()[i].name,
-                    (*live_list)[i + 1].habitable_land_positions.size()
+                    dist_list[i].name,
+                    lives[i + 1].habitable_land_positions.size()
                 );
             }
         }
@@ -296,7 +319,9 @@ namespace paxs {
                 std::size_t pop_num = 0; // 人口数
                 std::size_t sat_num = 0; // 集落数
                 std::vector < std::vector<int>> mtdna_num(max_number_of_districts, std::vector<int>(256, 0)); // mtDNA 数
+                std::vector < std::vector<int>> ydna_num(max_number_of_districts, std::vector<int>(256, 0)); // Y-DNA 数
                 std::vector < std::vector<int>> language_num(max_number_of_districts, std::vector<int>(256, 0)); // 言語 数
+                std::vector<std::vector<int>> pottery_num(max_number_of_districts, std::vector<int>(8, 0)); // 土器系統 数
                 std::size_t ryopop[max_number_of_districts]{};
                 std::size_t ryoset[max_number_of_districts]{};
                 double ryosnp[max_number_of_districts]{};
@@ -307,7 +332,9 @@ namespace paxs {
                 std::array<std::uint_least32_t, 10> region_snp{};
                 std::array<std::uint_least32_t, 10> region_language{};
                 std::vector<std::vector<int>> mtdna_region_num(10, std::vector<int>(256, 0)); // mtDNA 数
+                std::vector<std::vector<int>> ydna_region_num(10, std::vector<int>(256, 0)); // Y-DNA 数
                 std::vector<std::vector<int>> language_region_num(10, std::vector<int>(256, 0)); // 言語 数
+                std::vector<std::vector<int>> pottery_region_num(10, std::vector<int>(8, 0)); // 土器系統 数
 
                 // 地名を描画
                 for (const auto& agent : getSettlementGrids()) {
@@ -325,15 +352,31 @@ namespace paxs {
                             // 地域区分
                             const std::uint_least8_t region_id = japan_provinces->getJapanRegionId(ryo_id);
 
-                            // mtDNA と言語 ごとにカウント
-                            for (std::size_t popi = 0; popi < settlement.cgetAgents().size(); ++popi) {
-                                const auto get_mtdna = settlement.cgetAgents()[popi].cgetGenome().getMtDNA();
-                                mtdna_num[ryo_id][get_mtdna] += 1;
-                                if (region_id < 10) mtdna_region_num[region_id][get_mtdna] += 1;
+                            // O(n) で統計を一括取得
+                            const auto stats = settlement.getStatistics();
 
-                                const auto get_language_dna = settlement.cgetAgents()[popi].cgetGenome().getLanguage();
-                                language_num[ryo_id][get_language_dna] += 1;
-                                if (region_id < 10) language_region_num[region_id][get_language_dna] += 1;
+                            // mtDNA カウントの集計
+                            for (const auto& mtdna_pair : stats.mtdna_counts) {
+                                mtdna_num[ryo_id][mtdna_pair.first] += mtdna_pair.second;
+                                if (region_id < 10) mtdna_region_num[region_id][mtdna_pair.first] += mtdna_pair.second;
+                            }
+
+                            // Y-DNA カウントの集計 (男性のみ)
+                            for (const auto& ydna_pair : stats.ydna_counts) {
+                                ydna_num[ryo_id][ydna_pair.first] += ydna_pair.second;
+                                if (region_id < 10) ydna_region_num[region_id][ydna_pair.first] += ydna_pair.second;
+                            }
+
+                            // 言語カウントの集計
+                            for (const auto& lang_pair : stats.language_counts) {
+                                language_num[ryo_id][lang_pair.first] += lang_pair.second;
+                                if (region_id < 10) language_region_num[region_id][lang_pair.first] += lang_pair.second;
+                            }
+
+                            // 土器系統カウントの集計
+                            for (const auto& pottery_pair : stats.pottery_counts) {
+                                pottery_num[ryo_id][pottery_pair.first] += pottery_pair.second;
+                                if (region_id < 10) pottery_region_num[region_id][pottery_pair.first] += pottery_pair.second;
                             }
                         }
                     }
@@ -345,7 +388,9 @@ namespace paxs {
                 stats.settlement_count = sat_num;
                 stats.population_count = pop_num;
                 stats.get_mtdna_name = [this](std::uint_least8_t id) { return japan_provinces->getMtDNA_Name(id); };
+                stats.get_ydna_name = [this](std::uint_least8_t id) { return japan_provinces->getYDNA_Name(id); };
                 stats.get_language_name = [this](std::uint_least8_t id) { return japan_provinces->getLanguageName(id); };
+                stats.get_pottery_name = [](std::uint_least8_t id) { return std::string(1, static_cast<char>('A' + id)); };
 
                 // Aggregate region stats and prepare district stats
                 for (std::size_t i = 1; i < max_number_of_districts; ++i) {
@@ -369,9 +414,19 @@ namespace paxs {
                             district_stat.mtdna_counts[static_cast<std::uint_least8_t>(j)] = int(mtdna_num[i][j]);
                         }
                     }
+                    for (std::size_t j = 0; j < japan_provinces->getSizeYDNA(); ++j) {
+                        if (int(ydna_num[i][j]) > 0) {
+                            district_stat.ydna_counts[static_cast<std::uint_least8_t>(j)] = int(ydna_num[i][j]);
+                        }
+                    }
                     for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
                         if (int(language_num[i][j]) > 0) {
                             district_stat.language_counts[static_cast<std::uint_least8_t>(j)] = int(language_num[i][j]);
+                        }
+                    }
+                    for (std::size_t j = 0; j < pottery_num[i].size(); ++j) {
+                        if (pottery_num[i][j] > 0) {
+                            district_stat.pottery_counts[static_cast<std::uint_least8_t>(j)] = pottery_num[i][j];
                         }
                     }
                     stats.district_stats.push_back(district_stat);
@@ -389,9 +444,19 @@ namespace paxs {
                             region_stat.mtdna_counts[static_cast<std::uint_least8_t>(j)] = int(mtdna_region_num[region_id][j]);
                         }
                     }
+                    for (std::size_t j = 0; j < japan_provinces->getSizeYDNA(); ++j) {
+                        if (int(ydna_region_num[region_id][j]) > 0) {
+                            region_stat.ydna_counts[static_cast<std::uint_least8_t>(j)] = int(ydna_region_num[region_id][j]);
+                        }
+                    }
                     for (std::size_t j = 0; j < japan_provinces->getSizeLanguage(); ++j) {
                         if (int(language_region_num[region_id][j]) > 0) {
                             region_stat.language_counts[static_cast<std::uint_least8_t>(j)] = int(language_region_num[region_id][j]);
+                        }
+                    }
+                    for (std::size_t j = 0; j < pottery_region_num[region_id].size(); ++j) {
+                        if (pottery_region_num[region_id][j] > 0) {
+                            region_stat.pottery_counts[static_cast<std::uint_least8_t>(j)] = pottery_region_num[region_id][j];
                         }
                     }
                     stats.region_stats.push_back(region_stat);
@@ -432,6 +497,7 @@ namespace paxs {
 
             // このステップでの出生数をカウント（preUpdate前の人口）
             std::size_t population_before_birth = 0;
+            invalidatePopulationCache();
             for (const auto& settlement_grid : settlement_grids) {
                 for (const auto& settlement : settlement_grid.second.cgetSettlements()) {
                     population_before_birth += settlement.getPopulation();
@@ -494,18 +560,17 @@ namespace paxs {
                     }
                 }
                 for (auto& close_settlements : close_settlements_list) {
-                    // 青銅交換
-                    if (close_settlements->size() >= 2) {
-                        std::uint_fast32_t bronze = (close_settlements->front().getBronze() + close_settlements->back().getBronze()) / 2;
-                        close_settlements->front().setBronze(bronze);
-                        close_settlements->back().setBronze(bronze);
+                    if (close_settlements->size() < 2) continue;
 
-                        // 青銅交換の矢印のための記録
-                        bronze_share_list.emplace_back(
-                            close_settlements->front().getPosition(),
-                            close_settlements->back().getPosition()
-                        );
-                    }
+                    // 参照をキャッシュ
+                    Settlement& first = close_settlements->front();
+                    Settlement& last = close_settlements->back();
+
+                    const std::uint_fast32_t bronze = (first.getBronze() + last.getBronze()) / 2;
+                    first.setBronze(bronze);
+                    last.setBronze(bronze);
+
+                    bronze_share_list.emplace_back(first.getPosition(), last.getPosition());
                 }
                 for (auto& settlement : settlements) {
                     settlement.marriage(
@@ -525,13 +590,24 @@ namespace paxs {
                     settlement.setIsMoved(false);
                 }
             }
+            invalidatePopulationCache();
             // 集落の削除処理と集落の分割処理
             for (auto& settlement_grid : settlement_grids) {
                 settlement_grid.second.checkSettlements();
+                invalidatePopulationCache();
                 settlement_grid.second.divideSettlements();
             }
 
             calcPop();
+
+            if (SimulationConstants::getInstance().pottery_transmission_interval_steps > 0 &&
+                (step_count % SimulationConstants::getInstance().pottery_transmission_interval_steps) == 0) {
+                for (auto& settlement_grid : settlement_grids) {
+                    for (auto& settlement : settlement_grid.second.getSettlements()) {
+                        settlement.propagatePottery();
+                    }
+                }
+            }
 
             // 渡来期間
             if (SimulationConstants::getInstance().immigration_step_interval > 0 &&
@@ -584,6 +660,11 @@ namespace paxs {
         std::size_t population_num = 0; // 人口数
         std::size_t settlement_num = 0; // 集落数
 
+        // キャッシュ管理用のメンバ追加
+        mutable std::size_t cached_population_num = 0;
+        mutable std::size_t cached_settlement_num = 0;
+        mutable bool population_cache_valid = false;
+
         double processing_time = 0.0;
         double move_processing_time = 0.0;
         double marriage_processing_time = 0.0;
@@ -591,9 +672,17 @@ namespace paxs {
         paxs::UnorderedMap<SettlementGridsType, SettlementGrid> settlement_grids;
         std::shared_ptr<Environment> environment;
 
+        // 地区ID → 集落グリッドキーのマップを追加
+        std::unordered_map<std::uint_least8_t, std::vector<SettlementGridsType>> district_to_grids_;
+
         std::unique_ptr<paxs::JapanProvinces> japan_provinces;
 
-        std::mt19937 gen; // 乱数生成器
+        std::mt19937 gen; // 乱数生成器（メインスレッド用）
+
+        // スレッドローカルな乱数生成器（OpenMP用）
+#ifdef _OPENMP
+        std::vector<std::mt19937> thread_local_gens_;
+#endif
 
         KanakumaLifeSpan kanakuma_life_span;
 
@@ -632,26 +721,69 @@ namespace paxs {
         std::vector<std::size_t> birth_count_history_;
         std::size_t birth_history_index_ = 0;
 
-        /// @brief エージェントをランダムに生成するヘルパーメソッド
-        /// @brief Create a random agent helper method
+        /// @brief スレッドローカル乱数生成器を初期化
+        /// @brief Initialize thread-local random generators
+        void initThreadLocalGenerators() noexcept {
+#ifdef _OPENMP
+            const int num_threads = omp_get_max_threads();
+            thread_local_gens_.clear();
+            thread_local_gens_.reserve(num_threads);
+
+            // 各スレッドに異なるシードを設定
+            std::seed_seq seed_seq{ gen(), gen(), gen(), gen() };
+            std::vector<std::uint32_t> seeds(num_threads);
+            seed_seq.generate(seeds.begin(), seeds.end());
+
+            for (int i = 0; i < num_threads; ++i) {
+                thread_local_gens_.emplace_back(seeds[i]);
+            }
+#endif
+        }
+
+        /// @brief スレッド安全な乱数生成器を取得
+        /// @brief Get thread-safe random generator
+        /// @return スレッドローカルな乱数生成器の参照
+        std::mt19937& getThreadLocalGen() noexcept {
+#ifdef _OPENMP
+            const int thread_id = omp_get_thread_num();
+            return thread_local_gens_[thread_id];
+#else
+            return gen;
+#endif
+        }
+
+        /// @brief エージェントをランダムに生成するヘルパーメソッド（スレッドセーフ版）
+        /// @brief Create a random agent helper method (thread-safe)
         /// @param is_farming 農耕民かどうか / Is farming
         /// @param district_id 地区ID / District ID
+        /// @param thread_gen スレッドローカルな乱数生成器 / Thread-local random generator
         /// @return 生成されたエージェント / Generated agent
-        Agent createRandomAgent(bool is_farming, std::uint_least8_t district_id) {
+        Agent createRandomAgentThreadSafe(bool is_farming, std::uint_least8_t district_id, std::mt19937& thread_gen) {
+            const std::uint_least8_t mtdna_value = japan_provinces->getMtDNA(district_id, thread_gen);
+            const std::uint_least8_t ydna_value = japan_provinces->getYDNA(district_id, thread_gen);
             Genome genome = Genome::generateRandomSetMtDNA(
-                gen,
-                japan_provinces->getMtDNA(district_id, gen),
+                thread_gen,
+                mtdna_value,
+                ydna_value,
                 static_cast<std::uint_least8_t>(japan_provinces->getSNP(district_id)),
-                japan_provinces->getLanguage(district_id, gen)
+                japan_provinces->getLanguage(district_id, thread_gen)
             );
-            const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(is_farming, genome.isMale(), gen);
+            applyImmigrantGenderBias(genome, is_farming, thread_gen, ydna_value);
+
+            const std::uint_least8_t rice_type = selectRiceType(is_farming);
+            const AgeType set_lifespan = kanakuma_life_span.setLifeSpan(
+                rice_type == SettlementAgent::RiceTypePaddy, genome.isMale(), thread_gen);
+
+            const std::uint_least8_t pottery_lineage = selectPotteryLineage(is_farming, district_id);
+            const std::uint_least8_t pottery_make =
+                (pottery_lineage > 0 && isPotteryGenderAllowed(genome, SimulationConstants::getInstance().pottery_make_mode)) ? 1 : 0;
 
             AgeType age_value = 0;
             if (set_lifespan > SimulationConstants::getInstance().init_lifespan_grace_period) {
                 std::uniform_int_distribution<> lifespan_dist{
                     0, static_cast<int>(set_lifespan - SimulationConstants::getInstance().init_lifespan_grace_period)
                 };
-                age_value = static_cast<AgeType>(lifespan_dist(gen));
+                age_value = static_cast<AgeType>(lifespan_dist(thread_gen));
             }
 
             return Agent(
@@ -661,8 +793,74 @@ namespace paxs {
                 genome,
                 static_cast<std::uint_least8_t>(japan_provinces->getFarming(district_id)),
                 static_cast<std::uint_least8_t>(japan_provinces->getHunterGatherer(district_id)),
-                static_cast<std::uint_least8_t>(japan_provinces->getLanguage(district_id))
+                static_cast<std::uint_least8_t>(japan_provinces->getLanguage(district_id)),
+                pottery_make,
+                pottery_lineage,
+                rice_type
             );
+        }
+
+        /// @brief エージェントをランダムに生成するヘルパーメソッド
+        /// @brief Create a random agent helper method
+        /// @param is_farming 農耕民かどうか / Is farming
+        /// @param district_id 地区ID / District ID
+        /// @return 生成されたエージェント / Generated agent
+        Agent createRandomAgent(bool is_farming, std::uint_least8_t district_id) {
+            return createRandomAgentThreadSafe(is_farming, district_id, gen);
+        }
+
+        bool isPotteryGenderAllowed(const Genome& genome, const std::uint_least8_t mode) const noexcept {
+            // 土器作り対象の性別判定（女性/男性/男女）
+            if (mode == 1) return genome.isFemale();
+            if (mode == 2) return genome.isMale();
+            if (mode == 3) return true;
+            return false;
+        }
+
+        std::uint_least8_t selectRiceType(const bool is_farming) const noexcept {
+            // 農耕でなければ稲作なし
+            if (!is_farming) return SettlementAgent::RiceTypeNone;
+            // 水田稲作開始ステップ以降は水田稲作
+            if (SimulationConstants::getInstance().rice_paddy_start_steps > 0 &&
+                step_count >= SimulationConstants::getInstance().rice_paddy_start_steps) {
+                return SettlementAgent::RiceTypePaddy;
+            }
+            // それ以前はイネ栽培
+            return SettlementAgent::RiceTypeIne;
+        }
+
+        std::uint_least8_t selectPotteryLineage(const bool is_farming) const noexcept {
+            return selectPotteryLineage(is_farming, 0);
+        }
+
+        std::uint_least8_t selectPotteryLineage(const bool is_farming, const std::uint_least8_t district_id = 0) const noexcept {
+            // 在地人は地区ごとの初期系統を利用
+            if (!is_farming) return japan_provinces->getPotteryLineageInitial(district_id);
+            // 渡来人は期間に応じて系統を切り替える
+            if (SimulationConstants::getInstance().pottery_lineage_change_step > 0 &&
+                step_count >= SimulationConstants::getInstance().pottery_lineage_change_step) {
+                return SimulationConstants::getInstance().pottery_lineage_immigrant_after;
+            }
+            // 変更前の渡来系統
+            return SimulationConstants::getInstance().pottery_lineage_immigrant_before;
+        }
+
+        void applyImmigrantGenderBias(Genome& genome, const bool is_farming, std::mt19937& thread_gen, const std::uint_least8_t ydna_value) const noexcept {
+            // 農耕文化以外は性別操作しない
+            if (!is_farming) return;
+            const double male_probability = SimulationConstants::getInstance().immigrant_male_probability;
+            // 男性のみ/女性のみのケースを先に処理
+            if (male_probability <= 0.0) {
+                genome.setYDNA(0);
+                return;
+            }
+            if (male_probability >= 1.0) {
+                genome.setYDNA(ydna_value);
+                return;
+            }
+            // 確率で男性/女性を決める
+            const bool is_male = (SimulationConstants::getInstance().random_dist(thread_gen) < male_probability);
+            genome.setYDNA(is_male ? ydna_value : 0);
         }
 
         /// @brief ()
@@ -718,119 +916,200 @@ namespace paxs {
                     (*live_list)[district_id].emplaceBack(live_probability, land_position);
                 }
             }
+
+            // スレッドローカル乱数生成器を初期化
+            initThreadLocalGenerators();
+
             return true;
         }
 
-        /// @brief Randomly place settlements.
-        /// @brief 集落をランダムに配置する
+        /// @brief Randomly place settlements (OpenMP parallelized version - Further optimized).
+        /// @brief 集落をランダムに配置する（OpenMP並列化版 - さらなる最適化）
         void randomizeSettlements(
             bool is_ad200,
-            bool is_farming, // 渡来人であるか？
-            bool is_bronze // 青銅文化であるか？
+            bool is_farming,
+            bool is_bronze
         ) noexcept {
-            // 地区 ID の最大値
             std::uint_least8_t district_id_max = 0;
 
-            // 地区と人口のマップ
             paxs::UnorderedMap<std::uint_least8_t, std::uint_least32_t> district_population_map;
             for (const auto& district : japan_provinces->getDistrictList()) {
                 if (((is_ad200) ? district.init_pop : district.immigrant) == 0) {
                     continue;
                 }
                 district_population_map.emplace(district.id, ((is_ad200) ? district.init_pop : district.immigrant));
-                // より地区 ID が大きい値を見つけたら上書き
                 district_id_max = (std::max)(district.id, district_id_max);
             }
-            // 全人口
+
             int all_population = 0;
             if (step_count == 0) {
-                // プログレスバー用に人口配置数を算出
                 for (auto& district_population : district_population_map) {
                     all_population += static_cast<int>(district_population.second);
                 }
             }
-            int population_sum = 0;
-            // より小さい値を選択
+
             district_id_max = (district_id_max < max_number_of_districts) ? district_id_max + 1 : max_number_of_districts;
 
-            // 集落配置
+            // 地区情報を事前キャッシュ
+            std::vector<paxs::District> district_cache(district_id_max);
+            for (std::uint_least8_t i = 0; i < district_id_max; ++i) {
+                district_cache[i] = japan_provinces->getDistrict(i);
+            }
+
+            // 並列処理用の地区リストを作成
+            std::vector<std::uint_least8_t> district_ids_to_process;
+            district_ids_to_process.reserve(district_id_max);
             for (std::uint_least8_t district_id = 0; district_id < district_id_max; ++district_id) {
-
                 Live& live = (*live_list)[district_id];
+                if (live.live_probabilities.size() > 0 && district_population_map.contains(district_id)) {
+                    district_ids_to_process.push_back(district_id);
+                }
+            }
 
-                while (live.live_probabilities.size() > 0 && // 集落を配置し切るまで
-                    district_population_map.contains(district_id) // 地区が残っている間
-                    ) {
-                    if (step_count == 0) {
-                        if (progress_reporter_ != nullptr) {
-                            if (all_population > 0) {
-                                progress_reporter_->reportProgress(static_cast<float>(population_sum) / static_cast<float>(all_population), "Randomizing settlements...");
-                            }
-                        }
-                        else {
-                            StatusDisplayer::displayProgressBar(population_sum, all_population);
-                        }
-                    }
+            // 最適化1: 地区ごとの処理結果構造体を改良
+            struct DistrictProcessingResult {
+                std::vector<Settlement> settlements;
+                std::vector<std::pair<SettlementGridsType, Vector2>> grid_positions;
+                std::vector<std::uint_least8_t> district_ids; // ✅ 追加: 地区IDリスト
+                int population_processed = 0;
+                std::uint_least64_t local_migration_count = 0;
 
-                    // 重みからインデックスを取得するための分布
-                    std::discrete_distribution<> live_probability_dist(live.live_probabilities.begin(), live.live_probabilities.end());
+                // メモリを事前確保
+                void reserve(std::size_t estimated_settlements) {
+                    settlements.reserve(estimated_settlements);
+                    grid_positions.reserve(estimated_settlements);
+                    district_ids.reserve(estimated_settlements);
+                }
+            };
 
-                    const int live_probability_index = live_probability_dist(gen);
+            std::vector<DistrictProcessingResult> district_results(district_ids_to_process.size());
+
+            // 最適化2: 各地区の推定集落数を事前計算
+#ifdef _OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+            for (int idx = 0; idx < static_cast<int>(district_ids_to_process.size()); ++idx) {
+                const std::uint_least8_t district_id = district_ids_to_process[idx];
+                auto* const district_population_ptr = district_population_map.try_get(district_id);
+                if (district_population_ptr != nullptr) {
+                    paxs::District& district = district_cache[district_id];
+                    const std::size_t estimated_settlements =
+                        (*district_population_ptr) / ((district.settlement_pop_min + district.settlement_pop_max) / 2) + 5;
+                    district_results[idx].reserve(estimated_settlements);
+                }
+            }
+
+            // 最適化3: 並列処理（動的スケジューリング）
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, 2)
+#endif
+            for (int idx = 0; idx < static_cast<int>(district_ids_to_process.size()); ++idx) {
+                const std::uint_least8_t district_id = district_ids_to_process[idx];
+                Live& live = (*live_list)[district_id];
+                paxs::District& district = district_cache[district_id];
+
+                auto* const district_population_ptr = district_population_map.try_get(district_id);
+                if (district_population_ptr == nullptr) continue;
+
+                std::mt19937& thread_gen = getThreadLocalGen();
+                std::discrete_distribution<> live_probability_dist(live.live_probabilities.begin(), live.live_probabilities.end());
+                const std::uint_least8_t immigration_and_district_id = (is_farming) ?
+                    SimulationConstants::getInstance().immigration_district_id : district_id;
+
+                DistrictProcessingResult& result = district_results[idx];
+                int remaining_population = static_cast<int>(*district_population_ptr);
+
+                // 最適化4: エージェント生成バッチサイズを調整
+                constexpr int BATCH_SIZE = 100; // 100人単位でバッチ処理
+                std::vector<Agent> agent_batch;
+                agent_batch.reserve(BATCH_SIZE);
+
+                while (live.live_probabilities.size() > 0 && remaining_population > 0) {
+                    const int live_probability_index = live_probability_dist(thread_gen);
                     const Vector2 live_position = Vector2::from(live.habitable_land_positions[live_probability_index]);
 
-                    auto* const district_population_ptr = district_population_map.try_get(district_id);
-                    if (district_population_ptr == nullptr) {
-                        PAXS_WARNING("District population not found. District ID: " + std::to_string(district_id));
-                        continue;
-                    }
+                    int settlement_population = std::uniform_int_distribution<>(
+                        district.settlement_pop_min, district.settlement_pop_max)(thread_gen);
+                    settlement_population = (std::min)(settlement_population, remaining_population);
 
-                    // 配置する集落の人口を決定
-                    paxs::District district = japan_provinces->getDistrict(district_id);
-                    int settlement_population = std::uniform_int_distribution<>(district.settlement_pop_min, district.settlement_pop_max)(gen);
-                    settlement_population = (std::min)(settlement_population, static_cast<int>(*district_population_ptr));
-
-                    // 集落をグリッドに配置
                     Vector2 grid_position = live_position / SimulationConstants::getInstance().cell_group_length;
                     SettlementGridsType key = grid_position.to(SettlementGridsType{});
-                    // グリッドが存在しない場合は作成
-                    settlement_grids.try_emplace(key, SettlementGrid(grid_position * SimulationConstants::getInstance().cell_group_length, environment, gen));
-                    // 集落を作成
+
                     Settlement settlement = Settlement(
                         UniqueIdentification<std::uint_least32_t>::generate(),
-                        gen,
+                        thread_gen,
                         environment
                     );
-                    // 青銅の持ち込み
                     if (is_bronze) settlement.setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance().bronze));
                     settlement.setPosition(live_position);
 
-                    // 渡来人込みの地区 ID
-                    const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance().immigration_district_id/*toraijin*/ : district_id;
-                    settlement.resizeAgents(settlement_population);
+                    // 最適化5: バッチ処理でエージェント生成
+                    std::vector<Agent> agents;
+                    agents.reserve(settlement_population);
+
                     for (int i = 0; i < settlement_population; ++i) {
-                        settlement.setAgent(createRandomAgent(is_farming, immigration_and_district_id), static_cast<std::size_t>(i));
-                        if (is_farming) ++migration_count; // 農耕カウント
+                        agents.emplace_back(createRandomAgentThreadSafe(is_farming, immigration_and_district_id, thread_gen));
+                        if (is_farming) ++result.local_migration_count;
                     }
 
-                    // 地区の人口を減らす
-                    *district_population_ptr -= settlement_population;
-                    if (*district_population_ptr == 0) {
-                        district_population_map.erase(district_id);
-                    }
-                    if (step_count == 0) {
-                        population_sum += settlement_population;
-                    }
+                    settlement.setAgents(std::move(agents));
 
-                    // 集落をグリッドに配置
-                    settlement_grids.at(key).addSettlement(settlement);
-                    settlement_grids.at(key).addDistrictId(district_id);
+                    result.settlements.push_back(std::move(settlement));
+                    result.grid_positions.emplace_back(key, grid_position * SimulationConstants::getInstance().cell_group_length);
+                    result.district_ids.push_back(district_id); // ✅ 地区IDを記録
+                    result.population_processed += settlement_population;
+                    remaining_population -= settlement_population;
 
-                    live.live_probabilities[live_probability_index] = live.live_probabilities.back();
-                    live.live_probabilities.pop_back();
-                    live.habitable_land_positions[live_probability_index] = live.habitable_land_positions.back();
-                    live.habitable_land_positions.pop_back();
+                    // 分布の更新
+                    if (live.live_probabilities.size() > 1) {
+                        const std::size_t last_idx = live.live_probabilities.size() - 1;
+                        if (live_probability_index != static_cast<int>(last_idx)) {
+                            live.live_probabilities[live_probability_index] = live.live_probabilities[last_idx];
+                            live.habitable_land_positions[live_probability_index] = live.habitable_land_positions[last_idx];
+                        }
+                        live.live_probabilities.pop_back();
+                        live.habitable_land_positions.pop_back();
+
+                        if (live.live_probabilities.size() > 0) {
+                            live_probability_dist = std::discrete_distribution<>(
+                                live.live_probabilities.begin(),
+                                live.live_probabilities.end()
+                            );
+                        }
+                    }
+                    else {
+                        break;
+                    }
                 }
             }
+
+            // 最適化6: 結果マージ処理の高速化（unordered_setで重複チェック）
+            int population_sum = 0;
+            std::unordered_map<std::uint_least8_t, std::unordered_set<SettlementGridsType>> district_grid_cache;
+
+            for (auto& result : district_results) {
+                for (std::size_t i = 0; i < result.settlements.size(); ++i) {
+                    const auto& settlement = result.settlements[i];
+                    const auto& [key, grid_pos] = result.grid_positions[i];
+                    const std::uint_least8_t district_id = result.district_ids[i];
+
+                    auto [grid_it, inserted] = settlement_grids.try_emplace(key,
+                        SettlementGrid(grid_pos, environment, gen));
+
+                    grid_it->second.addSettlement(settlement);
+                    grid_it->second.addDistrictId(district_id);
+
+                    // unordered_setで高速重複チェック（O(1)）
+                    auto& grid_set = district_grid_cache[district_id];
+                    if (grid_set.insert(key).second) {
+                        district_to_grids_[district_id].push_back(key);
+                    }
+                }
+
+                population_sum += result.population_processed;
+                migration_count += result.local_migration_count;
+            }
+
             if (step_count == 0) {
                 if (progress_reporter_ != nullptr) {
                     progress_reporter_->endProgress();
@@ -840,34 +1119,90 @@ namespace paxs {
                     std::cout << std::endl;
                 }
             }
-            // 地区の人口が残っている場合は、ランダムに配置
+
+            // 最適化7: 残存人口処理も並列化可能な場合は並列化
+            std::vector<std::pair<std::uint_least8_t, int>> remaining_populations;
             for (auto& district_population : district_population_map) {
-                std::uint_least8_t district_id = district_population.first;
-                const int population = district_population.second;
-                std::vector<Settlement> settlements;
-                getSettlements(settlements, district_id);
-
-                if (settlements.size() == 0) {
-                    PAXS_WARNING("Settlements not found. District ID: " + std::to_string(district_id));
-                    continue;
+                if (district_population.second > 0) {
+                    remaining_populations.emplace_back(district_population.first, district_population.second);
                 }
+            }
 
-                const int add_population = population / static_cast<int>(settlements.size());
+            // 残存人口が少ない場合は直列処理、多い場合は並列化
+            const bool parallelize_remaining = remaining_populations.size() > 10;
 
-                // 渡来人込みの地区 ID
-                const std::uint_least8_t immigration_and_district_id = (is_farming) ? SimulationConstants::getInstance().immigration_district_id/*toraijin*/ : district_id;
-                for (auto& settlement : settlements) {
-                    std::vector<Agent> agents(add_population);
-                    for (int i = 0; i < add_population; ++i) {
-                        agents[i] = createRandomAgent(is_farming, immigration_and_district_id);
-                        if (is_farming) {
-                            ++migration_count; // 農耕カウント
+#ifdef _OPENMP
+            if (parallelize_remaining) {
+#pragma omp parallel for schedule(dynamic)
+                for (int i = 0; i < static_cast<int>(remaining_populations.size()); ++i) {
+                    const auto& [district_id, population] = remaining_populations[i];
+
+                    std::vector<Settlement*> settlement_ptrs;
+#pragma omp critical
+                    {
+                        getSettlements(settlement_ptrs, district_id);
+                    }
+
+                    if (settlement_ptrs.empty()) {
+                        continue;
+                    }
+
+                    const int add_population = population / static_cast<int>(settlement_ptrs.size());
+                    const std::uint_least8_t immigration_and_district_id = (is_farming) ?
+                        SimulationConstants::getInstance().immigration_district_id : district_id;
+
+                    std::mt19937& thread_gen = getThreadLocalGen();
+
+                    for (auto* settlement_ptr : settlement_ptrs) {
+                        std::vector<Agent> agents;
+                        agents.reserve(add_population);
+
+                        for (int j = 0; j < add_population; ++j) {
+                            agents.emplace_back(createRandomAgentThreadSafe(is_farming, immigration_and_district_id, thread_gen));
+                        }
+
+#pragma omp critical
+                        {
+                            settlement_ptr->addAgents(agents);
+                            if (is_farming) migration_count += add_population;
+                            if (is_bronze) {
+                                settlement_ptr->setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance().bronze));
+                            }
                         }
                     }
-                    settlement.addAgents(agents);
-                    // 青銅の持ち込み
-                    if (is_bronze) {
-                        settlement.setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance().bronze));
+                }
+            }
+            else
+#endif
+            {
+                // 直列処理（元のコード）
+                for (const auto& [district_id, population] : remaining_populations) {
+                    std::vector<Settlement*> settlement_ptrs;
+                    getSettlements(settlement_ptrs, district_id);
+
+                    if (settlement_ptrs.empty()) {
+                        PAXS_WARNING("Settlements not found. District ID: " + std::to_string(district_id));
+                        continue;
+                    }
+
+                    const int add_population = population / static_cast<int>(settlement_ptrs.size());
+                    const std::uint_least8_t immigration_and_district_id = (is_farming) ?
+                        SimulationConstants::getInstance().immigration_district_id : district_id;
+
+                    for (auto* settlement_ptr : settlement_ptrs) {
+                        std::vector<Agent> agents;
+                        agents.reserve(add_population);
+
+                        for (int i = 0; i < add_population; ++i) {
+                            agents.emplace_back(createRandomAgent(is_farming, immigration_and_district_id));
+                            if (is_farming) ++migration_count;
+                        }
+
+                        settlement_ptr->addAgents(agents);
+
+                        if (is_bronze) {
+                            settlement_ptr->setBronze(static_cast<std::uint_least32_t>(SimulationConstants::getInstance().bronze));
+                        }
                     }
                 }
             }
@@ -895,13 +1230,19 @@ namespace paxs {
             }
         }
 
-        /// @brief 指定した地区のIDの集落を取得
-        void getSettlements(std::vector<Settlement>& settlements, const std::uint_least8_t district_id_) noexcept {
-            std::vector<SettlementGrid> settlement_grids_;
-            getSettlementGrids(settlement_grids_, district_id_);
-            for (auto& settlement_grid : settlement_grids_) {
-                for (auto& settlement : settlement_grid.getSettlements()) {
-                    settlements.emplace_back(settlement);
+        /// @brief 指定した地区のIDの集落を取得（最適化版）
+        /// @brief Get settlements of specified district ID (optimized)
+        void getSettlements(std::vector<Settlement*>& settlements, const std::uint_least8_t district_id) noexcept {
+            auto it = district_to_grids_.find(district_id);
+            if (it == district_to_grids_.end()) return;
+
+            settlements.reserve(settlements.size() + it->second.size() * 10); // 概算予約
+
+            for (const auto& grid_key : it->second) {
+                if (auto* grid_ptr = settlement_grids.try_get(grid_key)) {
+                    for (auto& settlement : grid_ptr->getSettlements()) {
+                        settlements.push_back(&settlement);
+                    }
                 }
             }
         }
