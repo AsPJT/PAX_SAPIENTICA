@@ -530,8 +530,8 @@ TEST(SettlementAgentUnitTest, EqualityOperator_SameAgents) {
 	genome.setMtDNA(10);
 	genome.setYDNA(5);
 
-	paxs::SettlementAgent agent1(1, 25, 60, genome, 100, 50, 5);
-	paxs::SettlementAgent agent2(1, 25, 60, genome, 100, 50, 5);
+	paxs::SettlementAgent agent1(1, 25, 60, genome, 100, 50, 5, 0, 0, 0);
+	paxs::SettlementAgent agent2(1, 25, 60, genome, 100, 50, 5, 0, 0, 0);
 
 	// Then: 等価
 	EXPECT_TRUE(agent1 == agent2);
@@ -551,7 +551,7 @@ TEST(SettlementAgentUnitTest, EqualityOperator_DifferentAge) {
 	// Given: 年齢が異なる2つのエージェント
 	paxs::Genome genome;
     paxs::SettlementAgent agent1(1, 25, 60, genome, 100, 50, 5, 0, 0, 0);
-    paxs::SettlementAgent agent2(1, 25, 60, genome, 100, 50, 5, 0, 0, 0);
+    paxs::SettlementAgent agent2(1, 26, 60, genome, 100, 50, 5, 0, 0, 0);
 
 	// Then: 非等価
 	EXPECT_FALSE(agent1 == agent2);
