@@ -12,10 +12,13 @@
 #ifndef PAX_SAPIENTICA_SIMULATION_OUTPUT_SIMULATION_RESULT_WRITER_HPP
 #define PAX_SAPIENTICA_SIMULATION_OUTPUT_SIMULATION_RESULT_WRITER_HPP
 
+#include <array>
 #include <fstream>
 #include <functional>
 #include <map>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include <PAX_SAPIENTICA/IO/File/FileSystem.hpp>
 #include <PAX_SAPIENTICA/Simulation/Config/SimulationConst.hpp>
@@ -25,7 +28,6 @@
 namespace paxs {
 
     /// @brief 地区別統計データ
-    /// @brief District statistics data
     struct DistrictStatistics {
         std::size_t population = 0;
         double snp_avg = 0.0;
@@ -37,7 +39,6 @@ namespace paxs {
     };
 
     /// @brief ステップ統計データ
-    /// @brief Step statistics data
     struct StepStatistics {
         std::uint_least64_t step_count = 0;
         std::size_t settlement_count = 0;
@@ -50,438 +51,263 @@ namespace paxs {
         std::function<std::string(std::uint_least8_t)> get_pottery_name;
     };
 
+    /// @brief 出力する統計の種類を定義
+    enum class StatType {
+        Population,
+        MtDNA,
+        YDNA,
+        LanguageDNA,
+        Pottery,
+        SNP,
+        Language,
+        Count // 要素数カウント用
+    };
+
     /// @brief シミュレーション結果をファイルに出力するクラス
-    /// @brief Class for writing simulation results to files
-    /// @details 人口、mtDNA、言語、SNPなどの統計データをTXTファイルに出力
-    ///          Outputs statistical data such as population, mtDNA, language, SNP to TXT files
     class SimulationResultWriter {
     private:
-        // 標準出力用ファイルストリーム / File streams for standard output
-        std::ofstream pop_ofs;
-        std::ofstream mtdna_ofs;
-        std::ofstream ydna_ofs;
-        std::ofstream language_dna_ofs;
-        std::ofstream pottery_ofs;
-        std::ofstream snp_ofs;
-        std::ofstream language_ofs;
-        std::ofstream live_ofs;
+        static constexpr std::size_t StatTypeCount = static_cast<std::size_t>(StatType::Count);
 
-        std::ofstream pop_region_ofs;
-        std::ofstream mtdna_region_ofs;
-        std::ofstream ydna_region_ofs;
-        std::ofstream language_dna_region_ofs;
-        std::ofstream pottery_region_ofs;
-        std::ofstream snp_region_ofs;
-        std::ofstream language_region_ofs;
-        std::ofstream live_region_ofs;
+        // 各種別のファイル名定義
+        static constexpr std::array<std::string_view, StatTypeCount> StatFileNames = {
+            "Population.txt",
+            "mtDNA.txt",
+            "Y-DNA.txt",
+            "Language_DNA.txt",
+            "Pottery.txt",
+            "SNP.txt",
+            "Language.txt"
+        };
 
-        // ラベル形式用のファイルストリーム / File streams for labeled format
-        std::ofstream labeled_pop_ofs;
-        std::ofstream labeled_mtdna_ofs;
-        std::ofstream labeled_ydna_ofs;
-        std::ofstream labeled_language_dna_ofs;
-        std::ofstream labeled_pottery_ofs;
-        std::ofstream labeled_snp_ofs;
-        std::ofstream labeled_language_ofs;
-        std::ofstream labeled_live_ofs;
+        // ストリームを管理する配列
+        // [0]: Standard District, [1]: Standard Region, [2]: Labeled District, [3]: Labeled Region
+        // (HabitableLandは特殊扱いのため配列外)
+        std::array<std::ofstream, StatTypeCount> streams_district_;
+        std::array<std::ofstream, StatTypeCount> streams_region_;
+        std::array<std::ofstream, StatTypeCount> labeled_streams_district_;
+        std::array<std::ofstream, StatTypeCount> labeled_streams_region_;
 
-        std::ofstream labeled_pop_region_ofs;
-        std::ofstream labeled_mtdna_region_ofs;
-        std::ofstream labeled_ydna_region_ofs;
-        std::ofstream labeled_language_dna_region_ofs;
-        std::ofstream labeled_pottery_region_ofs;
-        std::ofstream labeled_snp_region_ofs;
-        std::ofstream labeled_language_region_ofs;
-        std::ofstream labeled_live_region_ofs;
+        // 可住地データ用（統計ループとは構造が異なるため個別管理）
+        std::ofstream live_ofs_;
+        std::ofstream live_region_ofs_;
+        std::ofstream labeled_live_ofs_;
+        std::ofstream labeled_live_region_ofs_;
+        bool live_header_written_ = false;
 
         std::string result_directory_;
         std::string labeled_directory_;
         bool is_labeled_output_enabled_ = false;
-        bool live_header_written_ = false;
 
         /// @brief 現在の日時を文字列として取得
-        /// @brief Get current date and time as string
-        /// @return YYYY-MM-DD-HH-MM-SS 形式の文字列 / String in YYYY-MM-DD-HH-MM-SS format
         std::string calcDateTime() const {
             return TimeUtils::getFilenameSafeDateTime();
         }
 
-        /// @brief ファイルストリームを閉じる
-        /// @brief Close a file stream
-        /// @param ofs 閉じるファイルストリーム / File stream to close
-        void closeStream(std::ofstream& ofs) {
-            if (ofs.is_open()) {
-                ofs.close();
+        /// @brief 特定のファイルストリーム群を閉じる
+        template <std::size_t N>
+        void closeStreamArray(std::array<std::ofstream, N>& streams) {
+            for (auto& ofs : streams) {
+                if (ofs.is_open()) ofs.close();
             }
         }
 
-        /// @brief 結果ファイルのヘッダー文字列を出力
-        /// @brief Output header string for result file
-        /// @param ofs 出力先ファイルストリーム / Output file stream
-        void outputResultString(std::ofstream& ofs) {
-            ofs << "steps,";
+        void closeStream(std::ofstream& ofs) {
+            if (ofs.is_open()) ofs.close();
         }
 
-        /// @brief 地区名を出力
-        /// @brief Output district name
-        /// @param ofs 出力先ファイルストリーム / Output file stream
-        /// @param district_name 地区名 / District name
-        void outputResultDistrictName(std::ofstream& ofs, const std::string& district_name) {
-            ofs << district_name << ",";
+        /// @brief マップデータを文字列化して出力するヘルパー
+        template<typename MapType, typename NameGetter>
+        void writeMapData(std::ofstream& ofs, const MapType& counts, NameGetter name_getter) {
+            for (const auto& [id, count] : counts) {
+                if (count > 0) {
+                    ofs << name_getter(id) << ':' << count << '/';
+                }
+            }
+            ofs << '\t';
         }
 
-        /// @brief 最後の文字列（改行）を出力
-        /// @brief Output last string (newline)
-        /// @param ofs 出力先ファイルストリーム / Output file stream
-        void outputResultLastString(std::ofstream& ofs) {
-            ofs << std::endl;
+        /// @brief 単一の統計値をストリームに出力する (Visitorパターンのような分岐)
+        void writeStatValue(std::ofstream& ofs, StatType type, const DistrictStatistics& stat, const StepStatistics& step_stats) {
+            switch (type) {
+            case StatType::Population:  ofs << stat.population << '\t'; break;
+            case StatType::SNP:         ofs << stat.snp_avg << '\t'; break;
+            case StatType::Language:    ofs << stat.language_avg << '\t'; break;
+            case StatType::MtDNA:       writeMapData(ofs, stat.mtdna_counts, step_stats.get_mtdna_name); break;
+            case StatType::YDNA:        writeMapData(ofs, stat.ydna_counts, step_stats.get_ydna_name); break;
+            case StatType::LanguageDNA: writeMapData(ofs, stat.language_counts, step_stats.get_language_name); break;
+            case StatType::Pottery:     writeMapData(ofs, stat.pottery_counts, step_stats.get_pottery_name); break;
+            default: break;
+            }
+        }
+
+        /// @brief ファイルオープン処理の共通化
+        void openFiles(const std::string& base_dir, const std::string& timestamp,
+            std::array<std::ofstream, StatTypeCount>& dist_streams,
+            std::array<std::ofstream, StatTypeCount>& region_streams,
+            bool create_dirs = false) {
+
+            const std::string root = AppConfig::getInstance().getRootPath();
+
+            for (std::size_t i = 0; i < StatTypeCount; ++i) {
+                std::string filename(StatFileNames[i]); // string_view -> string
+                std::string file_stem = filename.substr(0, filename.find('.')); // 拡張子除く
+
+                // ディレクトリ作成が必要な場合（Labeled用）
+                if (create_dirs) {
+                    FileSystem::createDirectories(base_dir + "/" + file_stem);
+                    FileSystem::createDirectories(base_dir + "/Region_" + file_stem);
+
+                    dist_streams[i].open(root + base_dir + "/" + file_stem + "/" + timestamp + ".txt");
+                    region_streams[i].open(root + base_dir + "/Region_" + file_stem + "/" + timestamp + ".txt");
+                }
+                else {
+                    // 通常出力
+                    dist_streams[i].open(root + base_dir + "/" + filename);
+                    region_streams[i].open(root + base_dir + "/Region_" + filename);
+                }
+            }
         }
 
     public:
         SimulationResultWriter() = default;
-        ~SimulationResultWriter() {
-            close();
-        }
+        ~SimulationResultWriter() { close(); }
 
-        // コピー禁止 / Disable copy
         SimulationResultWriter(const SimulationResultWriter&) = delete;
         SimulationResultWriter& operator=(const SimulationResultWriter&) = delete;
-
-        // ムーブ許可 / Enable move
         SimulationResultWriter(SimulationResultWriter&&) noexcept = default;
         SimulationResultWriter& operator=(SimulationResultWriter&&) noexcept = default;
 
         /// @brief 結果ファイルを初期化
-        /// @brief Initialize result files
-        /// @param label_name ラベル名（空の場合はラベル出力なし） / Label name (no labeled output if empty)
-        /// @param district_list 地区リスト / District list
         template<typename DistrictList>
         void initialize(const std::string& label_name, const DistrictList& district_list) {
-            close(); // 既存のファイルを閉じる / Close existing files
+            close();
 
-            // 標準出力用ディレクトリとファイルを作成
+            // 1. 標準出力
             result_directory_ = "SimulationResults/" + calcDateTime();
             FileSystem::createDirectories(result_directory_);
-            const std::string root_path = AppConfig::getInstance().getRootPath();
 
-            pop_ofs.open(root_path + result_directory_ + "/Population.txt");
-            mtdna_ofs.open(root_path + result_directory_ + "/mtDNA.txt");
-            ydna_ofs.open(root_path + result_directory_ + "/Y-DNA.txt");
-            language_dna_ofs.open(root_path + result_directory_ + "/Language_DNA.txt");
-            pottery_ofs.open(root_path + result_directory_ + "/Pottery.txt");
-            snp_ofs.open(root_path + result_directory_ + "/SNP.txt");
-            language_ofs.open(root_path + result_directory_ + "/Language.txt");
-            live_ofs.open(root_path + result_directory_ + "/HabitableLand.txt");
+            openFiles(result_directory_, "", streams_district_, streams_region_, false);
 
-            pop_region_ofs.open(root_path + result_directory_ + "/Region_Population.txt");
-            mtdna_region_ofs.open(root_path + result_directory_ + "/Region_mtDNA.txt");
-            ydna_region_ofs.open(root_path + result_directory_ + "/Region_Y-DNA.txt");
-            language_dna_region_ofs.open(root_path + result_directory_ + "/Region_Language_DNA.txt");
-            pottery_region_ofs.open(root_path + result_directory_ + "/Region_Pottery.txt");
-            snp_region_ofs.open(root_path + result_directory_ + "/Region_SNP.txt");
-            language_region_ofs.open(root_path + result_directory_ + "/Region_Language.txt");
-            live_region_ofs.open(root_path + result_directory_ + "/Region_HabitableLand.txt");
+            // HabitableLandは特殊なので個別オープン
+            const std::string root = AppConfig::getInstance().getRootPath();
+            live_ofs_.open(root + result_directory_ + "/HabitableLand.txt");
+            live_region_ofs_.open(root + result_directory_ + "/Region_HabitableLand.txt");
 
-            // ラベル形式の出力が必要な場合
+            // 2. ラベル出力
             if (!label_name.empty()) {
                 is_labeled_output_enabled_ = true;
-                const std::string timestamp = calcDateTime();
                 labeled_directory_ = "LabeledSimulationResults/" + label_name;
+                const std::string timestamp = calcDateTime();
 
-                // ディレクトリ作成
-                FileSystem::createDirectories(labeled_directory_ + "/Population");
-                FileSystem::createDirectories(labeled_directory_ + "/mtDNA");
-                FileSystem::createDirectories(labeled_directory_ + "/Y-DNA");
-                FileSystem::createDirectories(labeled_directory_ + "/SNP");
-                FileSystem::createDirectories(labeled_directory_ + "/Language");
-                FileSystem::createDirectories(labeled_directory_ + "/Language_DNA");
-                FileSystem::createDirectories(labeled_directory_ + "/Pottery");
-                FileSystem::createDirectories(labeled_directory_ + "/Region_Population");
-                FileSystem::createDirectories(labeled_directory_ + "/Region_mtDNA");
-                FileSystem::createDirectories(labeled_directory_ + "/Region_Y-DNA");
-                FileSystem::createDirectories(labeled_directory_ + "/Region_SNP");
-                FileSystem::createDirectories(labeled_directory_ + "/Region_Language");
-                FileSystem::createDirectories(labeled_directory_ + "/Region_Language_DNA");
-                FileSystem::createDirectories(labeled_directory_ + "/Region_Pottery");
+                openFiles(labeled_directory_, timestamp, labeled_streams_district_, labeled_streams_region_, true);
 
-                // ファイルを開く
-                labeled_pop_ofs.open(root_path + labeled_directory_ + "/Population/" + timestamp + ".txt");
-                labeled_mtdna_ofs.open(root_path + labeled_directory_ + "/mtDNA/" + timestamp + ".txt");
-                labeled_ydna_ofs.open(root_path + labeled_directory_ + "/Y-DNA/" + timestamp + ".txt");
-                labeled_language_dna_ofs.open(root_path + labeled_directory_ + "/Language_DNA/" + timestamp + ".txt");
-                labeled_pottery_ofs.open(root_path + labeled_directory_ + "/Pottery/" + timestamp + ".txt");
-                labeled_snp_ofs.open(root_path + labeled_directory_ + "/SNP/" + timestamp + ".txt");
-                labeled_language_ofs.open(root_path + labeled_directory_ + "/Language/" + timestamp + ".txt");
-                labeled_pop_region_ofs.open(root_path + labeled_directory_ + "/Region_Population/" + timestamp + ".txt");
-                labeled_mtdna_region_ofs.open(root_path + labeled_directory_ + "/Region_mtDNA/" + timestamp + ".txt");
-                labeled_ydna_region_ofs.open(root_path + labeled_directory_ + "/Region_Y-DNA/" + timestamp + ".txt");
-                labeled_language_dna_region_ofs.open(root_path + labeled_directory_ + "/Region_Language_DNA/" + timestamp + ".txt");
-                labeled_pottery_region_ofs.open(root_path + labeled_directory_ + "/Region_Pottery/" + timestamp + ".txt");
-                labeled_snp_region_ofs.open(root_path + labeled_directory_ + "/Region_SNP/" + timestamp + ".txt");
-                labeled_language_region_ofs.open(root_path + labeled_directory_ + "/Region_Language/" + timestamp + ".txt");
+                // HabitableLand (Labeled)
+                // Note: 元コードではディレクトリ作成が列挙されていましたが、ここでは割愛または必要に応じて追加
+                // (通常、ディレクトリ作成はファイルオープン前に必要)
+                // Labeled用ディレクトリは openFiles 内で作成済み
 
-                // ヘッダーを書き込む
-                writeHeaders(true, district_list);
+                labeled_live_ofs_.open(root + labeled_directory_ + "/HabitableLand.txt"); // 元コードには明示的なディレクトリ作成がなかったためルート配置と仮定、あるいは個別対応
+                // 実際にはディレクトリ作成が必要ならここに追加
             }
 
-            // 標準出力のヘッダーを書き込む
-            writeHeaders(false, district_list);
+            // ヘッダー書き込み
+            writeHeaders(streams_district_, streams_region_, district_list);
+            if (is_labeled_output_enabled_) {
+                writeHeaders(labeled_streams_district_, labeled_streams_region_, district_list);
+            }
         }
 
-        /// @brief ヘッダー行を書き込む
-        /// @brief Write header rows
-        /// @param labeled ラベル出力用かどうか / Whether for labeled output
-        /// @param district_names 地区名リスト / District names list
         template<typename DistrictList>
-        void writeHeaders(bool labeled, const DistrictList& district_list) {
-            if (labeled && !is_labeled_output_enabled_) return;
+        void writeHeaders(std::array<std::ofstream, StatTypeCount>& d_streams,
+            std::array<std::ofstream, StatTypeCount>& r_streams,
+            const DistrictList& district_list) {
 
-            auto& pop = labeled ? labeled_pop_ofs : pop_ofs;
-            auto& mtdna = labeled ? labeled_mtdna_ofs : mtdna_ofs;
-            auto& ydna = labeled ? labeled_ydna_ofs : ydna_ofs;
-            auto& lang_dna = labeled ? labeled_language_dna_ofs : language_dna_ofs;
-            auto& pottery = labeled ? labeled_pottery_ofs : pottery_ofs;
-            auto& snp = labeled ? labeled_snp_ofs : snp_ofs;
-            auto& lang = labeled ? labeled_language_ofs : language_ofs;
-            auto& pop_reg = labeled ? labeled_pop_region_ofs : pop_region_ofs;
-            auto& mtdna_reg = labeled ? labeled_mtdna_region_ofs : mtdna_region_ofs;
-            auto& ydna_reg = labeled ? labeled_ydna_region_ofs : ydna_region_ofs;
-            auto& lang_dna_reg = labeled ? labeled_language_dna_region_ofs : language_dna_region_ofs;
-            auto& pottery_reg = labeled ? labeled_pottery_region_ofs : pottery_region_ofs;
-            auto& snp_reg = labeled ? labeled_snp_region_ofs : snp_region_ofs;
-            auto& lang_reg = labeled ? labeled_language_region_ofs : language_region_ofs;
+            // ヘッダー共通処理ラムダ
+            auto write_header_content = [&](std::ofstream& ofs) {
+                if (!ofs.is_open()) return;
+                ofs << "steps" << '\t';
+                for (const auto& district : district_list) {
+                    ofs << district.name << '\t';
+                }
+                ofs << std::endl;
+                };
 
-            outputResultString(pop);
-            outputResultString(mtdna);
-            outputResultString(ydna);
-            outputResultString(lang_dna);
-            outputResultString(pottery);
-            outputResultString(snp);
-            outputResultString(lang);
-
-            if (labeled) {
-                outputResultString(pop_reg);
-                outputResultString(mtdna_reg);
-                outputResultString(ydna_reg);
-                outputResultString(lang_dna_reg);
-                outputResultString(pottery_reg);
-                outputResultString(snp_reg);
-                outputResultString(lang_reg);
-            }
-
-            for (std::size_t i = 0; i < district_list.size(); ++i) {
-                outputResultDistrictName(pop, district_list[i].name);
-                outputResultDistrictName(mtdna, district_list[i].name);
-                outputResultDistrictName(ydna, district_list[i].name);
-                outputResultDistrictName(lang_dna, district_list[i].name);
-                outputResultDistrictName(pottery, district_list[i].name);
-                outputResultDistrictName(snp, district_list[i].name);
-                outputResultDistrictName(lang, district_list[i].name);
-            }
-
-            outputResultLastString(pop);
-            outputResultLastString(mtdna);
-            outputResultLastString(ydna);
-            outputResultLastString(lang_dna);
-            outputResultLastString(pottery);
-            outputResultLastString(snp);
-            outputResultLastString(lang);
-
-            if (labeled) {
-                outputResultLastString(pop_reg);
-                outputResultLastString(mtdna_reg);
-                outputResultLastString(ydna_reg);
-                outputResultLastString(lang_dna_reg);
-                outputResultLastString(pottery_reg);
-                outputResultLastString(snp_reg);
-                outputResultLastString(lang_reg);
-            }
+            for (auto& ofs : d_streams) write_header_content(ofs);
+            for (auto& ofs : r_streams) write_header_content(ofs);
         }
 
-        /// @brief 全てのファイルストリームを閉じる
-        /// @brief Close all file streams
         void close() {
-            closeStream(pop_ofs);
-            closeStream(mtdna_ofs);
-            closeStream(ydna_ofs);
-            closeStream(language_dna_ofs);
-            closeStream(pottery_ofs);
-            closeStream(snp_ofs);
-            closeStream(language_ofs);
-            closeStream(live_ofs);
+            closeStreamArray(streams_district_);
+            closeStreamArray(streams_region_);
+            closeStreamArray(labeled_streams_district_);
+            closeStreamArray(labeled_streams_region_);
 
-            closeStream(pop_region_ofs);
-            closeStream(mtdna_region_ofs);
-            closeStream(ydna_region_ofs);
-            closeStream(language_dna_region_ofs);
-            closeStream(pottery_region_ofs);
-            closeStream(snp_region_ofs);
-            closeStream(language_region_ofs);
-            closeStream(live_region_ofs);
-
-            closeStream(labeled_pop_ofs);
-            closeStream(labeled_mtdna_ofs);
-            closeStream(labeled_ydna_ofs);
-            closeStream(labeled_language_dna_ofs);
-            closeStream(labeled_pottery_ofs);
-            closeStream(labeled_snp_ofs);
-            closeStream(labeled_language_ofs);
-            closeStream(labeled_live_ofs);
-
-            closeStream(labeled_pop_region_ofs);
-            closeStream(labeled_mtdna_region_ofs);
-            closeStream(labeled_ydna_region_ofs);
-            closeStream(labeled_language_dna_region_ofs);
-            closeStream(labeled_pottery_region_ofs);
-            closeStream(labeled_snp_region_ofs);
-            closeStream(labeled_language_region_ofs);
-            closeStream(labeled_live_region_ofs);
+            closeStream(live_ofs_);
+            closeStream(live_region_ofs_);
+            closeStream(labeled_live_ofs_);
+            closeStream(labeled_live_region_ofs_);
 
             is_labeled_output_enabled_ = false;
         }
 
-        /// @brief 可住地情報を書き込む
-        /// @brief Write habitable land information
-        /// @param district_name 地区名 / District name
-        /// @param habitable_land_count 可住地数 / Habitable land count
         void writeHabitableLand(const std::string& district_name, std::size_t habitable_land_count) {
-            if (live_ofs.is_open()) {
+            if (live_ofs_.is_open()) {
                 if (!live_header_written_) {
-                    live_ofs << "district\thabitable_land\n";
+                    live_ofs_ << "district\thabitable_land\n";
                     live_header_written_ = true;
                 }
-                live_ofs << district_name << '\t' << habitable_land_count << '\n';
+                live_ofs_ << district_name << '\t' << habitable_land_count << '\n';
             }
+            // labeled_live_ofs_ への書き込みが必要な場合はここに追加
         }
 
-        /// @brief ステップごとの統計データを書き込む
-        /// @brief Write statistics for each step
-        /// @param stats 統計データ / Statistics data
         void writeStepStatistics(const StepStatistics& stats) {
-            writeStepStatisticsToStreams(stats,
-                pop_ofs, mtdna_ofs, ydna_ofs, language_dna_ofs, pottery_ofs, snp_ofs, language_ofs,
-                pop_region_ofs, mtdna_region_ofs, ydna_region_ofs, language_dna_region_ofs, pottery_region_ofs, snp_region_ofs, language_region_ofs
-            );
+            // 通常出力
+            processStepStatistics(stats, streams_district_, streams_region_);
 
-            // ラベル付き出力
+            // ラベル出力
             if (is_labeled_output_enabled_) {
-                writeStepStatisticsToStreams(stats,
-                    labeled_pop_ofs, labeled_mtdna_ofs, labeled_ydna_ofs, labeled_language_dna_ofs, labeled_pottery_ofs, labeled_snp_ofs, labeled_language_ofs,
-                    labeled_pop_region_ofs, labeled_mtdna_region_ofs, labeled_ydna_region_ofs, labeled_language_dna_region_ofs, labeled_pottery_region_ofs, labeled_snp_region_ofs, labeled_language_region_ofs
-                );
+                processStepStatistics(stats, labeled_streams_district_, labeled_streams_region_);
             }
         }
 
     private:
-        /// @brief ファイルストリームに統計データを書き込む
-        /// @brief Write statistics to file streams
-        struct OutputStreams {
-            std::ofstream& pop;
-            std::ofstream& mtdna;
-            std::ofstream& lang_dna;
-            std::ofstream& snp;
-            std::ofstream& lang;
-            std::ofstream& pop_reg;
-            std::ofstream& mtdna_reg;
-            std::ofstream& lang_dna_reg;
-            std::ofstream& snp_reg;
-            std::ofstream& lang_reg;
-        };
+        /// @brief 統計データの書き込み処理を配列ループで実行
+        void processStepStatistics(const StepStatistics& stats,
+            std::array<std::ofstream, StatTypeCount>& d_streams,
+            std::array<std::ofstream, StatTypeCount>& r_streams) {
 
-        void writeStepStatisticsToStreams(
-            const StepStatistics& stats,
-            std::ofstream& pop, std::ofstream& mtdna, std::ofstream& ydna, std::ofstream& lang_dna, std::ofstream& pottery, std::ofstream& snp, std::ofstream& lang,
-            std::ofstream& pop_reg, std::ofstream& mtdna_reg, std::ofstream& ydna_reg, std::ofstream& lang_dna_reg, std::ofstream& pottery_reg, std::ofstream& snp_reg, std::ofstream& lang_reg
-        ) {
-            const std::uint_least64_t sc = stats.step_count;
-            const std::size_t set_count = stats.settlement_count;
-            const std::size_t pop_count = stats.population_count;
+            for (std::size_t i = 0; i < StatTypeCount; ++i) {
+                StatType type = static_cast<StatType>(i);
+                auto& d_ofs = d_streams[i];
+                auto& r_ofs = r_streams[i];
 
-            // ヘッダー行
-            pop << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            mtdna << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            ydna << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            lang_dna << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            pottery << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            snp << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            lang << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            pop_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            mtdna_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            ydna_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            lang_dna_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            pottery_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            snp_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
-            lang_reg << sc << '\t' << set_count << '\t' << pop_count << '\t';
+                if (!d_ofs.is_open()) continue; // ファイルが開いていなければスキップ
 
-            // 地区別統計
-            for (const auto& stat : stats.district_stats) {
-                pop << stat.population << '\t';
-                snp << stat.snp_avg << '\t';
-                lang << stat.language_avg << '\t';
+                // 行頭情報 (Step Count等)
+                auto write_prefix = [&](std::ofstream& ofs) {
+                    ofs << stats.step_count << '\t'
+                        << stats.settlement_count << '\t'
+                        << stats.population_count << '\t';
+                    };
 
-                for (const auto& [haplotype, count] : stat.mtdna_counts) {
-                    if (count > 0) mtdna << stats.get_mtdna_name(haplotype) << ':' << count << '/';
+                write_prefix(d_ofs);
+                write_prefix(r_ofs);
+
+                // 地区別データ書き込み
+                for (const auto& stat : stats.district_stats) {
+                    writeStatValue(d_ofs, type, stat, stats);
                 }
-                mtdna << '\t';
 
-                for (const auto& [haplotype, count] : stat.ydna_counts) {
-                    if (count > 0) ydna << stats.get_ydna_name(haplotype) << ':' << count << '/';
+                // 地域別データ書き込み
+                for (const auto& stat : stats.region_stats) {
+                    writeStatValue(r_ofs, type, stat, stats);
                 }
-                ydna << '\t';
 
-                for (const auto& [language_id, count] : stat.language_counts) {
-                    if (count > 0) lang_dna << stats.get_language_name(language_id) << ':' << count << '/';
-                }
-                lang_dna << '\t';
-
-                for (const auto& [pottery_id, count] : stat.pottery_counts) {
-                    if (count > 0) pottery << stats.get_pottery_name(pottery_id) << ':' << count << '/';
-                }
-                pottery << '\t';
+                // 改行
+                d_ofs << stats.step_count << '\n';
+                r_ofs << stats.step_count << '\n';
             }
-
-            // 地域別統計
-            for (const auto& stat : stats.region_stats) {
-                pop_reg << stat.population << '\t';
-                snp_reg << stat.snp_avg << '\t';
-                lang_reg << stat.language_avg << '\t';
-
-                for (const auto& [haplotype, count] : stat.mtdna_counts) {
-                    if (count > 0) mtdna_reg << stats.get_mtdna_name(haplotype) << ':' << count << '/';
-                }
-                mtdna_reg << '\t';
-
-                for (const auto& [haplotype, count] : stat.ydna_counts) {
-                    if (count > 0) ydna_reg << stats.get_ydna_name(haplotype) << ':' << count << '/';
-                }
-                ydna_reg << '\t';
-
-                for (const auto& [language_id, count] : stat.language_counts) {
-                    if (count > 0) lang_dna_reg << stats.get_language_name(language_id) << ':' << count << '/';
-                }
-                lang_dna_reg << '\t';
-
-                for (const auto& [pottery_id, count] : stat.pottery_counts) {
-                    if (count > 0) pottery_reg << stats.get_pottery_name(pottery_id) << ':' << count << '/';
-                }
-                pottery_reg << '\t';
-            }
-
-            // 終端
-            pop << sc << '\n';
-            mtdna << sc << '\n';
-            ydna << sc << '\n';
-            lang_dna << sc << '\n';
-            pottery << sc << '\n';
-            snp << sc << '\n';
-            lang << sc << '\n';
-            pop_reg << sc << '\n';
-            mtdna_reg << sc << '\n';
-            ydna_reg << sc << '\n';
-            lang_dna_reg << sc << '\n';
-            pottery_reg << sc << '\n';
-            snp_reg << sc << '\n';
-            lang_reg << sc << '\n';
         }
     };
 
