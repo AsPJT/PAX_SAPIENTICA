@@ -1,4 +1,4 @@
-/*##########################################################################################
+﻿/*##########################################################################################
 
 	PAX SAPIENTICA Library 💀🌿🌏
 
@@ -44,7 +44,10 @@ TEST(SettlementAgentUnitTest, ParameterizedConstruction) {
 		genome,
 		100,     // farming
 		50,      // hunter_gatherer
-		5        // language
+		5,        // language
+        1, // pottery_make
+        2, // pottery_lineage
+        0  // rice_type
 	);
 
 	// Then: 全てのプロパティが正しく設定される
@@ -193,7 +196,7 @@ TEST(SettlementAgentUnitTest, Marry_SetsMarriedStatus) {
 	partner_genome.setYDNA(5);
 
 	// When: 結婚
-	agent.marry(2, partner_genome, 80, 20, 8);
+	agent.marry(2, partner_genome, 80, 20, 8, 0, 0);
 
 	// Then: 婚姻状態になる
 	EXPECT_TRUE(agent.isMarried());
@@ -216,7 +219,7 @@ TEST(SettlementAgentUnitTest, Marry_StoresPartnerInfo) {
 	std::uint8_t groom_language = 8;
 
 	// When: 結婚
-	bride.marry(groom_id, father_genome, groom_farming, groom_hunter, groom_language);
+    bride.marry(groom_id, father_genome, groom_farming, groom_hunter, groom_language, 0, 0);
 
 	// Then: 配偶者情報が保存される
 	EXPECT_EQ(bride.getPartnerId(), groom_id);
@@ -230,7 +233,7 @@ TEST(SettlementAgentUnitTest, Marry_StoresPartnerInfo) {
 TEST(SettlementAgentUnitTest, Divorce_ClearsMarriedStatus) {
 	// Given: 結婚しているエージェント
 	paxs::SettlementAgent agent(1, 25, 60, paxs::Genome(), 100, 0, 5);
-	agent.marry(2, paxs::Genome(), 80, 20, 8);
+    agent.marry(2, paxs::Genome(), 80, 20, 8, 0, 0);
 	ASSERT_TRUE(agent.isMarried());
 
 	// When: 離婚
@@ -243,7 +246,7 @@ TEST(SettlementAgentUnitTest, Divorce_ClearsMarriedStatus) {
 TEST(SettlementAgentUnitTest, Divorce_ClearsPartnerId) {
 	// Given: 結婚しているエージェント
 	paxs::SettlementAgent agent(1, 25, 60, paxs::Genome(), 100, 0, 5);
-	agent.marry(2, paxs::Genome(), 80, 20, 8);
+    agent.marry(2, paxs::Genome(), 80, 20, 8, 0, 0);
 	ASSERT_EQ(agent.getPartnerId(), 2);
 
 	// When: 離婚
@@ -323,7 +326,7 @@ TEST(SettlementAgentUnitTest, IsAbleToMarriage_AlreadyMarried) {
 	paxs::SettlementAgent agent(1, age_in_steps, 1000, genome, 100, 0, 5);
 
 	// When: 結婚
-	agent.marry(2, paxs::Genome(), 80, 20, 8);
+    agent.marry(2, paxs::Genome(), 80, 20, 8, 0, 0);
 
 	// Then: 婚姻不可（既婚）
 	EXPECT_FALSE(agent.isAbleToMarriage());
@@ -342,7 +345,7 @@ TEST(SettlementAgentUnitTest, IsAbleToGiveBirth_Female_WithinAgeRange_Married) {
 	genome.setYDNA(0);  // Female
 	paxs::AgeType age_in_steps = static_cast<paxs::AgeType>(28 * config.steps_per_year);
 	paxs::SettlementAgent agent(1, age_in_steps, 1000, genome, 100, 0, 5);
-	agent.marry(2, paxs::Genome(), 80, 20, 8);
+    agent.marry(2, paxs::Genome(), 80, 20, 8, 0, 0);
 
 	// Then: 出産可能
 	EXPECT_TRUE(agent.isAbleToGiveBirth());
@@ -371,7 +374,7 @@ TEST(SettlementAgentUnitTest, IsAbleToGiveBirth_Female_TooYoung) {
 	genome.setYDNA(0);  // Female
 	paxs::AgeType age_in_steps = static_cast<paxs::AgeType>(10 * config.steps_per_year);
 	paxs::SettlementAgent agent(1, age_in_steps, 1000, genome, 100, 0, 5);
-	agent.marry(2, paxs::Genome(), 80, 20, 8);
+    agent.marry(2, paxs::Genome(), 80, 20, 8, 0, 0);
 
 	// Then: 出産不可（若すぎる）
 	EXPECT_FALSE(agent.isAbleToGiveBirth());
@@ -386,7 +389,7 @@ TEST(SettlementAgentUnitTest, IsAbleToGiveBirth_Female_TooOld) {
 	genome.setYDNA(0);  // Female
 	paxs::AgeType age_in_steps = static_cast<paxs::AgeType>(50 * config.steps_per_year);
 	paxs::SettlementAgent agent(1, age_in_steps, 1000, genome, 100, 0, 5);
-	agent.marry(2, paxs::Genome(), 80, 20, 8);
+    agent.marry(2, paxs::Genome(), 80, 20, 8, 0, 0);
 
 	// Then: 出産不可（高齢）
 	EXPECT_FALSE(agent.isAbleToGiveBirth());
@@ -475,7 +478,7 @@ TEST(SettlementAgentUnitTest, PartnerCulturalAttributes) {
 	paxs::SettlementAgent agent(1, 25, 60, paxs::Genome(), 100, 0, 5);
 
 	// When: 文化的属性が異なる配偶者と結婚
-	agent.marry(2, paxs::Genome(), 80, 120, 8);
+    agent.marry(2, paxs::Genome(), 80, 120, 8, 0, 0);
 
 	// Then: 配偶者の文化属性が取得できる
 	EXPECT_EQ(agent.cgetPartnerFarming(), 80);
@@ -561,10 +564,10 @@ TEST(SettlementAgentUnitTest, EqualityOperator_WithPartnerInfo) {
 	partner_genome.setMtDNA(20);
 
 	paxs::SettlementAgent agent1(1, 25, 60, genome, 100, 50, 5);
-	agent1.marry(2, partner_genome, 80, 20, 8);
+    agent1.marry(2, partner_genome, 80, 20, 8, 0, 0);
 
 	paxs::SettlementAgent agent2(1, 25, 60, genome, 100, 50, 5);
-	agent2.marry(2, partner_genome, 80, 20, 8);
+    agent2.marry(2, partner_genome, 80, 20, 8, 0, 0);
 
 	// Then: 等価
 	EXPECT_TRUE(agent1 == agent2);
@@ -574,10 +577,10 @@ TEST(SettlementAgentUnitTest, EqualityOperator_DifferentPartner) {
 	// Given: 配偶者IDが異なる2つのエージェント
 	paxs::Genome genome;
 	paxs::SettlementAgent agent1(1, 25, 60, genome, 100, 50, 5);
-	agent1.marry(2, paxs::Genome(), 80, 20, 8);
+    agent1.marry(2 / 3, paxs::Genome(), 80, 20, 8, 0, 0);
 
 	paxs::SettlementAgent agent2(1, 25, 60, genome, 100, 50, 5);
-	agent2.marry(3, paxs::Genome(), 80, 20, 8);
+    agent2.marry(2 / 3, paxs::Genome(), 80, 20, 8, 0, 0);
 
 	// Then: 非等価
 	EXPECT_FALSE(agent1 == agent2);

@@ -276,7 +276,7 @@ namespace paxs {
         }
 
         /// @brief 移動線を描画
-               /// @brief Draw movement lines
+        /// @brief Draw movement lines
         static void drawMovementLines(
             const paxs::UnorderedMap<SettlementGridsType, paxs::SettlementGrid>* agents,
             const std::vector<GridType4>* marriage_pos_list,
@@ -299,15 +299,20 @@ namespace paxs {
 
                     if (settlement.getOldPosition().x == -1 || settlement.getOldPosition().x == 0) continue;
 
-                    // ★修正箇所: A*の経路データがある場合 (通常2点以上入っているはず)
-                    if (settlement.getPositions().size() >= 2) {
+                    // 修正箇所: サイズチェックは安全のため >= 2 が望ましいですが、元の >= 1 でも動作します
+                    if (settlement.getPositions().size() >= 1) {
                         // スプライン曲線で移動履歴を描画
                         std::vector<paxs::Vector2<double>> spline_points;
                         spline_points.emplace_back(draw_pos);
 
-                        // A*が生成した [Start -> ... -> End] の順序をそのまま使用する
-                        // 余計な draw_pos(End) や old_pos(Start) の追加は行わない
-                        for (const auto& p : settlement.getPositions()) {
+                        // =========================================================
+                        // 【修正】パスを逆順（rbegin -> rend）で追加する
+                        // これにより [現在地(終点)] -> [パス終点...パス始点] -> [過去地(始点)] と繋がり
+                        // 滑らかな曲線になります。
+                        // =========================================================
+                        const auto& path_positions = settlement.getPositions();
+                        for (auto it = path_positions.rbegin(); it != path_positions.rend(); ++it) {
+                            const auto& p = *it;
                             const auto one_coord = positionToWebMercator(paxs::Vector2<int>(p.x, p.y));
                             const paxs::Vector2<double> one_pos = MapCoordinateConverter::toScreenPos(
                                 one_coord,
@@ -315,6 +320,7 @@ namespace paxs {
                                 map_view_center);
                             spline_points.emplace_back(one_pos);
                         }
+                        // =========================================================
 
                         const auto old_coord = positionToWebMercator(settlement.getOldPosition());
                         const paxs::Vector2<double> old_pos = MapCoordinateConverter::toScreenPos(
@@ -323,23 +329,21 @@ namespace paxs {
                             map_view_center);
                         spline_points.emplace_back(old_pos);
 
-                        // 矢印を描画 (パスの最後の区間に矢印を乗せる)
-                        if (spline_points.size() >= 2) {
-                            const auto& last = spline_points.back();
-                            const auto& prev = spline_points[spline_points.size() - 2];
+                        paxg::Spline2D(spline_points).draw(MOVEMENT_LINE_WIDTH, paxg::Color(0, 0, 0));
 
-                            // 矢印を描画
-                            const auto first_coord = positionToWebMercator(settlement.getPositions()[0]);
-                            const paxs::Vector2<double> first_pos = MapCoordinateConverter::toScreenPos(
-                                first_coord,
-                                map_view_size,
-                                map_view_center);
-                            paxg::Line{ first_pos, draw_pos }
-                            .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxs::Vector2<float>{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
-                        }
+                        // 矢印を描画
+                        // ※A*が[始点->終点]の順序なので、Positions[0]は「始点側」です。
+                        // 矢印は「始点付近」から「現在地」へ向かう線で正しいので、ここは変更不要です。
+                        const auto first_coord = positionToWebMercator(settlement.getPositions()[0]);
+                        const paxs::Vector2<double> first_pos = MapCoordinateConverter::toScreenPos(
+                            first_coord,
+                            map_view_size,
+                            map_view_center);
+                        paxg::Line{ first_pos, draw_pos }
+                        .drawArrow(MOVEMENT_ARROW_LINE_WIDTH, paxs::Vector2<float>{ 8.0f, 16.0f }, paxg::Color(0, 0, 0));
                     }
                     else {
-                        // A*データがない、または単純移動の場合 (直線)
+                        // 単純な移動線
                         const auto old_coord = positionToWebMercator(settlement.getOldPosition());
                         const paxs::Vector2<double> old_pos = MapCoordinateConverter::toScreenPos(
                             old_coord,
