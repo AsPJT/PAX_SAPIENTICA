@@ -550,8 +550,8 @@ TEST(SettlementAgentUnitTest, EqualityOperator_DifferentId) {
 TEST(SettlementAgentUnitTest, EqualityOperator_DifferentAge) {
 	// Given: 年齢が異なる2つのエージェント
 	paxs::Genome genome;
-	paxs::SettlementAgent agent1(1, 25, 60, genome, 100, 50, 5);
-	paxs::SettlementAgent agent2(1, 30, 60, genome, 100, 50, 5);
+    paxs::SettlementAgent agent1(1, 25, 60, genome, 100, 50, 5, 0, 0, 0);
+    paxs::SettlementAgent agent2(1, 25, 60, genome, 100, 50, 5, 0, 0, 0);
 
 	// Then: 非等価
 	EXPECT_FALSE(agent1 == agent2);
@@ -577,10 +577,10 @@ TEST(SettlementAgentUnitTest, EqualityOperator_DifferentPartner) {
 	// Given: 配偶者IDが異なる2つのエージェント
 	paxs::Genome genome;
 	paxs::SettlementAgent agent1(1, 25, 60, genome, 100, 50, 5);
-    agent1.marry(2 / 3, paxs::Genome(), 80, 20, 8, 0, 0);
+    agent1.marry(2, paxs::Genome(), 80, 20, 8, 0, 0);
 
 	paxs::SettlementAgent agent2(1, 25, 60, genome, 100, 50, 5);
-    agent2.marry(2 / 3, paxs::Genome(), 80, 20, 8, 0, 0);
+    agent2.marry(3, paxs::Genome(), 80, 20, 8, 0, 0);
 
 	// Then: 非等価
 	EXPECT_FALSE(agent1 == agent2);
